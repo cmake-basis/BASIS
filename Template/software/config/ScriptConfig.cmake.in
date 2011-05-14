@@ -1,0 +1,80 @@
+##############################################################################
+# \file  SbiaScriptConfig.cmake.in
+# \brief Default script configuration file.
+#
+# This CMake file defines CMake variables which can be used within scripts.
+# If the project structure differs for the build tree and the install tree,
+# the CMake variables used within the script can be set depending on the
+# value of the variable BUILD_INSTALL_SCRIPT. This variable evaluates to true,
+# when the script is build, i.e., configured, for the installation tree and
+# to false, otherwise.
+#
+# Example:
+#
+# \code
+# if (BUILD_INSTALL_SCRIPT)
+#   set (PROJECT_BIN_DIR "@CMAKE_INSTALL_PREFIX@/@INSTALL_BIN_DIR@")
+# else ()
+#   set (PROJECT_BIN_DIR "@RUNTIME_OUTPUT_DIRECTORY@")
+# endif ()
+# \endcode
+#
+# DO NOT use absolute paths! If you want to refer to data files, for example,
+# consider the combination of an environment variable pointing to the project
+# root directory and a relative path set in this file. Note that the
+# environment variable needs to be read by the script and the path then
+# appended by the relative path. Alternatively, set the data path relative to
+# the directory in which the script file is located.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See LICENSE or Copyright file in project root directory for details.
+#
+# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+##############################################################################
+
+# ============================================================================
+# helper
+# ============================================================================
+
+# ****************************************************************************
+# \function set_path
+# \brief    Sets the specified variable to the given path and makes path
+#           relative to script location if it is absolute.
+#
+# \param [in] VAR  Name of the variable.
+# \param [in] PATH Path to directory or file inside source tree.
+# \param [in] ARG3 Path to directory or file inside install tree.
+#                  If this argument is not given, PATH is used for both the
+#                  build and install tree version of the script.
+
+function (set_path VAR PATH)
+  if (ARGC EQUAL 3 AND BUILD_INSTALL_SCRIPT)
+    set (PATH "${ARG3}")
+  endif ()
+
+  if (IS_ABSOLUTE "${PATH}")
+    if (BUILD_INSTALL_SCRIPT)
+      file (RELATIVE_PATH PATH "@INSTALL_BIN_DIR@" "${PATH}")
+	else ()
+	  file (RELATIVE_PATH PATH "@RUNTIME_OUTPUT_DIRECTORY@" "${PATH}")
+	endif ()
+  endif ()
+endfunction ()
+
+# ============================================================================
+# script variables
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# project attributes
+
+set (VERSION       "@PROJECT_VERSION@")
+set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+set (VERSION_PATCH "@PROJECT_VERSION_PATCH@")
+
+# ----------------------------------------------------------------------------
+# directories
+
+set_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
+

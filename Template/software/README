@@ -1,0 +1,65 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software -at- uphs.upenn.edu
+
+
+
+INTRODUCTION
+============
+
+  Introduce your software package here and describe its purpose. This section
+  is very similar to an abstract of a scientific article. The focus here is,
+  however, on the software, not the methodology.
+
+
+
+PACKAGE OVERVIEW
+================
+
+  Source Package
+  --------------
+
+  - CMakeLists.txt      Root CMakeLists.txt file.
+  - CTestConfig.cmake   The configuration file for CTest.
+  - config/             Package configuration files.
+  - data/               Auxiliary data required by the executables (optional).
+  - doc/                Package documentation such as the User Manual.
+  - src/                Source files including scripts.
+  - tests/              Implementation of unit tests (optional).
+
+  - AUTHORS             A list of the people who contributed to this software.
+                        This list is in particular also used as input for the
+                        svn2cl utility when generating the ChangeLog.
+  - README              This readme file.
+  - LICENSE             The copyright and license notices.
+  - INSTALL             Build and installation instructions.
+
+
+  Binary Package
+  --------------
+
+  For details on where the built executables and libraries, the auxiliary data,
+  and the documentation files are installed, please refer to the INSTALL file.
+
+
+
+LICENSING
+=========
+
+  See LICENSE file in project root or 'doc' directory for details.
+
+
+
+REFERENCES
+==========
+
+  [1] Reference 1
+
+  [2] Reference 2
+
