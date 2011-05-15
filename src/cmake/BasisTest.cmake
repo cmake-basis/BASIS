@@ -30,14 +30,14 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisGlobals.cmake")
 # directories
 # ============================================================================
 
-set (TESTING_BIN_DIR    "tests/bin"    CACHE PATH "Output directory for test executables (relative to CMAKE_BINARY_DIR).")
-set (TESTING_OUTPUT_DIR "tests/output" CACHE PATH "Directory in which tests output generated data (relative to CMAKE_BINARY_DIR).")
+set (TESTING_BIN_DIR    "test/bin"    CACHE PATH "Output directory for test executables (relative to CMAKE_BINARY_DIR).")
+set (TESTING_OUTPUT_DIR "test/output" CACHE PATH "Directory in which tests output generated data (relative to CMAKE_BINARY_DIR).")
 
 # make relative paths absolute and make options advanced
 foreach(P BIN OUTPUT)
   set(VAR TESTING_${P}_DIR)
   if(NOT IS_ABSOLUTE "${${VAR}}")
-    set(${VAR} "${CMAKE_BINARY_DIR}/${${VAR}}")
+    set(${VAR} "${PROJECT_BINARY_DIR}/${${VAR}}")
   endif()
   mark_as_advanced ("${VAR}")
 endforeach()
@@ -52,7 +52,7 @@ include (CTest)
 mark_as_advanced (DART_TESTING_TIMEOUT)
 
 if (NOT PROJECT_TESTING_DIR)
-  set (PROJECT_TESTING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+  set (PROJECT_TESTING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
 endif ()
 
 if (NOT EXISTS "${PROJECT_TESTING_DIR}")

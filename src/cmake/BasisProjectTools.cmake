@@ -123,9 +123,6 @@ macro (basis_project_initialize)
   set (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
   set (PROJECT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-  # instantiate project directory structure
-  basis_initialize_directories ()
- 
   # clear project attributes of CMake defaults or superproject
   set (PROJECT_NAME)
   set (PROJECT_VERSION)
@@ -239,6 +236,9 @@ macro (basis_project_initialize)
     endif ()
   endif ()
 
+  # instantiate project directory structure
+  basis_initialize_directories ()
+ 
   # initialize automatic file update
   basis_update_initialize ()
 
@@ -341,7 +341,7 @@ macro (basis_project_finalize)
     # finalize addition of custom targets
     basis_add_custom_finalize ()
     # create and add execname executable
-    basis_add_execname ()
+    #basis_add_execname ()
     # add uninstall target
     basis_add_uninstall ()
   endif ()

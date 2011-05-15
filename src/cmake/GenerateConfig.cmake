@@ -96,17 +96,10 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install" @ON
 # ----------------------------------------------------------------------------
 # install project configuration file
 
-get_filename_component (CONFIG_DIR  "${CONFIG_FILE}" PATH)
-get_filename_component (CONFIG_NAME "${CONFIG_FILE}" NAME)
-
-if (NOT CONFIG_DIR)
-  set (CONFIG_DIR ".")
-endif ()
-
 install (
   FILES       "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install"
-  DESTINATION "${CONFIG_DIR}"
-  RENAME      "${CONFIG_NAME}"
+  DESTINATION "${INSTALL_LIB_DIR}"
+  RENAME      "${CONFIG_FILE}"
 )
 
 # ============================================================================
@@ -130,17 +123,9 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${VERSION_FILE}" @ONLY)
 # ----------------------------------------------------------------------------
 # install project configuration version file
 
-get_filename_component (VERSION_DIR  "${VERSION_FILE}" PATH)
-get_filename_component (VERSION_NAME "${VERSION_FILE}" NAME)
-
-if (NOT VERSION_DIR)
-  set (VERSION_DIR ".")
-endif ()
-
 install (
   FILES       "${PROJECT_BINARY_DIR}/${VERSION_FILE}"
-  DESTINATION "${VERSION_DIR}"
-  RENAME      "${VERSION_NAME}"
+  DESTINATION "${INSTALL_LIB_DIR}"
 )
 
 # ============================================================================
@@ -164,16 +149,8 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${USE_FILE}" @ONLY)
 # ----------------------------------------------------------------------------
 # install project use file
 
-get_filename_component (USE_DIR  "${USE_FILE}" PATH)
-get_filename_component (USE_NAME "${USE_FILE}" NAME)
-
-if (NOT USE_DIR)
-  set (USE_DIR ".")
-endif ()
-
 install (
   FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
-  DESTINATION "${USE_DIR}"
-  RENAME      "${USE_NAME}"
+  DESTINATION "${INSTALL_LIB_DIR}"
 )
 

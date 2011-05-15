@@ -52,6 +52,6 @@ set (
 
 install (
   FILES       ${MODULES} ${FIND_MODULES} ${AUXILIARY_FILES}
-  DESTINATION "${INSTALL_LIB_DIR}/cmake"
+  DESTINATION "${INSTALL_SHARE_DIR}/cmake"
 )
 
