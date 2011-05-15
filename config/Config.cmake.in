@@ -18,7 +18,10 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 
 
 # absolute path to CMake modules
-set (BASIS_MODULE_PATH "@BASIS_MODULE_PATH@")
+set (BASIS_MODULE_PATH "@MODULE_PATH_CONFIG@")
+
+# include directories
+set (BASIS_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 
 # absolute path of project use file which is included by other projects
 set (BASIS_USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
