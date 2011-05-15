@@ -1,64 +1,75 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Root CMake configuration file of example component.
-#
-# By default, all content of the example folder is simply copied to the
-# directory INSTALL_EXAMPLE_DIR.
+# \brief CMakeLists.txt file to generate example projects.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE file in project root or 'doc' directory for details.
+# See LICENSE or Copyright file in project root directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
-# CMake version
+# helpers
 # ============================================================================
 
-cmake_minimum_required (VERSION 2.8.2)
-
-# ============================================================================
-# initialize
-# ============================================================================
-
-# The TEMPLATE_VERSION variable specifies the version of the BASIS Template
-# which this project was instantiated from. This information is required by
-# the automatic update of template files (see BASIS documentation).
-# Further, the BASIS CMake functions might make use of this variable to ensure
-# backwards compatibility with previous template versions.
-
-set (TEMPLATE_VERSION "0.0")
-
-find_package (BASIS REQUIRED)
-
-if (NOT BASIS_FOUND)
-  return ()
-endif ()
-
-include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
-
-# The following macro call replaces the CMake command project ().
+# ****************************************************************************
+# \brief Creates an example project from the specified source files.
 #
-# \see basis_example ()
+# This helper function is used to instantiate example projects from the BASIS
+# project template during the build of the BASIS package itself.
+# By creating the example projects during the build of BASIS, the examples are
+# guaranteed to by in sync with the actual project template. Otherwise, the
+# example projects tend to get outdated, respectively, keeping them up-to-date
+# has to be done manually every time the template is modified.
 
-basis_example_initialize ("BASIS")
+function (create_example EXAMPLE)
+  basis_target_uid (CREATESCRIPT createproject)
+
+  CMAKE_PARSE_ARGUMENTS (ARG "" "DESCRIPTION" "" ${ARGN})
+
+  add_custom_target (
+    ${EXAMPLE}
+    COMMAND "${CREATESCRIPT}" "${EXAMPLE}"
+            -t "${PROJECT_MAJOR_VERSION}"
+            -d "\"${ARGN_DESCRIPTION}\""
+            -r "\"${PROJECT_BINARY_DIR}/example/${EXAMPLE}-src\""
+    COMMENT "Creating example project ${EXAMPLE}..."
+  )
+
+  add_dependencies (${EXAMPLE} ${CREATESCRIPT})
+
+  add_custom_command (
+    TARGET ${EXAMPLE} PRE_BUILD
+    COMMAND "${CMAKE_COMMAND}"
+            -E remove_directory "${PROJECT_BINARY_DIR}/example/${EXAMPLE}-src"
+    COMMENT "Removing directory ${PROJECT_BINARY_DIR}/example/${EXAMPLE}-src"
+  )
+endfunction ()
 
 # ============================================================================
-# install example files
+# examples
 # ============================================================================
 
-install (
-  DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/"
-  DESTINATION "${INSTALL_EXAMPLE_DIR}"
-  PATTERN     CMakeLists.txt EXCLUDE
-  PATTERN     *~             EXCLUDE
-  PATTERN     .svn           EXCLUDE
-  PATTERN     .git           EXCLUDE
-)
+# ----------------------------------------------------------------------------
+# SimpleExample
+
+#create_example (
+#  SimpleExample
+#  DESCRIPTION
+#    "This is a simple example project."
+#  SRC_FILES
+#    CMakeLists.txt
+#    greetings.cpp
+#    greetingsInPython.py
+#    greetingsInPerl.pl
+#    greetingsInBASH.sh
+#)
 
 # ============================================================================
-# finalize
+# subdirectories
 # ============================================================================
 
-basis_example_finalize ()
+# DO NOT traverse into folders which contain the source files of the
+# example projects! The CMakeLists.txt files in these folders will be copied
+# to the created example projects in the build and install tree.
 
