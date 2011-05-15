@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  Use.cmake.in
-# \brief CMake use file of @PROJECT_NAME@ package.
+# \brief CMake use file of BASIS package.
 #
 # If this CMake module was already included before, it will do nothing.
 #
@@ -25,23 +25,22 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT @PROJECT_NAME@_USE_FILE_INCLUDED)
-set (@PROJECT_NAME@_USE_FILE_INCLUDED 1)
+if (NOT BASIS_USE_FILE_INCLUDED)
+set (BASIS_USE_FILE_INCLUDED 1)
 
 
 # set CMake module path
-set (CMAKE_MODULE_PATH "${@PROJECT_NAME@_MODULE_PATH}")
+set (CMAKE_MODULE_PATH "${BASIS_MODULE_PATH}" "${CMAKE_MODULE_PATH}")
 
 # include default settings
 include (BasisSettings NO_POLICY_SCOPE)
-include (BasisDirectories)
 
 # include functions
 include (BasisProjectTools)
 
 # include directories
-basis_include_directories ("${@PROJECT_NAME@_INCLUDE_DIRS}")
+basis_include_directories ("${BASIS_INCLUDE_DIR}")
 
 
-endif () # @PROJECT_NAME@_USE_FILE_INCLUDED
+endif () # BASIS_USE_FILE_INCLUDED
 

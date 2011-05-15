@@ -16,47 +16,7 @@
 ##############################################################################
 
 # ============================================================================
-# project attributes
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-# Update package version whenever a new release of the project is published
-# and/or the project is tagged.
-#
-# The version number consists of three components: the major version number,
-# the minor version number, and the patch number. The format of the version
-# string is "Major.Minor.Patch", where the minor version number and patch
-# number default to 0 if not given. Only digits are allowed except of the
-# two separating dots.
-#
-# * A change of the major version number indicates changes of the softwares
-#   API (and ABI) and/or its behavior and/or the change or addition of major
-#   features.
-# * A change of the minor version number indicates changes that are not only
-#   bug fixes and no major changes. Hence, changes of the API but not the ABI.
-# * A change of the patch number indicates changes only related to bug fixes
-#   which did not change the softwares API. It is the least important component
-#   of the version number.
-
-set (PROJECT_VERSION "1.0.0")
-
-# ----------------------------------------------------------------------------
-# The name of the vendor of the project's package. This variable is mainly
-# used for the packaging via CPack, i.e., as value of CPACK_PACKAGE_VENDOR.
-
-set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
-
-# ----------------------------------------------------------------------------
-# Give a brief description of the project in the following. This description
-# is in particular used as value of CPACK_PACKAGE_DESCRIPTION_SUMMARY for
-# the package creation via CPack (see SbiaPackage module).
-
-set (PROJECT_DESCRIPTION "This package implements and supports the development"
-                         " of software projects which follow the SBIA Build"
-                         " And Software Implementation Standard (BASIS).")
-
-# ============================================================================
-# common files, e.g., readme and license files
+# common files
 # ============================================================================
 
 # ----------------------------------------------------------------------------
