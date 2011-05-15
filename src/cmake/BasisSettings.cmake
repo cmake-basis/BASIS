@@ -51,14 +51,16 @@ if (CMAKE_VERSION_PATCH GREATER 3)
 endif ()
 
 # ============================================================================
-# required modules
+# project directory structure
 # ============================================================================
 
-include (CheckTypeSize)
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisDirectories.cmake")
 
 # ============================================================================
 # system checks
 # ============================================================================
+
+include (CheckTypeSize)
 
 # check if type long long is supported
 CHECK_TYPE_SIZE("long long" LONG_LONG)

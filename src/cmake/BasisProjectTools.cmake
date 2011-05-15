@@ -41,99 +41,153 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
 # ============================================================================
 
 # ****************************************************************************
-# \brief Initialize software component, calls CMake's project () command.
+# \brief Initialize project, calls CMake's project () command.
 #
-# Any BASIS software component has to call this macro in the beginning of its
-# root CMakeLists.txt file. Further, the macro basis_project_finalize () has
-# to be called at the end of that CMake configuration file.
+# Any BASIS project has to call this macro in the beginning of its root CMake
+# configuration file. Further, the macro basis_project_finalize () has to be
+# called at the end of the file.
 #
-# The project specific attributes such as project version, among others, need
-# to be defined in the Settings.cmake file which has to be located in the
-# SOFTWARE_CONFIG_DIR folder. The SOFTWARE_CONFIG_DIR is set by default in
-# the BasisSettings.cmake file.
+# The project specific attributes such as project version, among others, which
+# are not specified as argument to this macro, need to be defined in the
+# Settings.cmake file which has to be located in PROJECT_CONFIG_DIR. The
+# PROJECT_CONFIG_DIR is set by default in the BasisSettings.cmake file.
+#
+# The version number consists of three components: the major version number,
+# the minor version number, and the patch number. The format of the version
+# string is "Major.Minor.Patch", where the minor version number and patch
+# number default to 0 if not given. Only digits are allowed except of the
+# two separating dots.
+#
+# - A change of the major version number indicates changes of the softwares
+#   API (and ABI) and/or its behavior and/or the change or addition of major
+#   features.
+#
+# - A change of the minor version number indicates changes that are not only
+#   bug fixes and no major changes. Hence, changes of the API but not the ABI.
+#
+# - A change of the patch number indicates changes only related to bug fixes
+#   which did not change the softwares API. It is the least important component
+#   of the version number.
 #
 # Dependencies to external packages should be resolved via find_package ()
 # or find_sbia_package () commands in the Depends.cmake file which as well
-# has to be located in SOFTWARE_CONFIG_DIR (note that this variable may be
+# has to be located in PROJECT_CONFIG_DIR (note that this variable may be
 # modified within the Settings.cmake file). The Depends.cmake file is
 # included by this macro if present.
 #
 # Each BASIS project further has to have a README file in the root directory
 # of the software component. This file is the root documentation file which
-# refers the user to the further documentation files in SOFTWARE_DOC_DIR.
+# refers the user to the further documentation files in PROJECT_DOC_DIR.
 # A different name for the readme file can be set in the Settings.cmake file.
 #
 # A LICENSE file with the copyright and license notices must be present in
 # the root directory of the source tree. The name of this file can be
 # changed in the Settings.cmake file.
 #
+# As the BasisTest.cmake module has to be included after the project ()
+# command was used, this module is not included by the CMake use file of
+# BASIS. Instead, it is included by this macro.
+#
+# The CMake module BasisUpdate.cmake realizes a feature referred to as
+# "(automatic) file update". This feature is initialized by this macro and
+# finalized by the corresponding basis_project_finalize () macro.
+# As the CTest configuration file is usually maintained by the maintainer of
+# the BASIS package and not the project developer, this file, if present in
+# the project's source directory, is updated if the template was modified.
+# If you experience problems with the automatic file update, contact the
+# maintainer of the BASIS package and consider to disable the automatic file
+# update for single files  by adding their path relative to the project's
+# source directory to BASIS_UPDATE_EXCLUDE in the Settings.cmake file of
+# your project. For example, to prevent the automatic udpate of the CTest
+# configuration file, add "CTestConfig.cmake" to the list BASIS_UPDATE_EXCLUDE.
+#
 # \see basis_project_finalize ()
 #
-# \param [in] NAME Project name.
+# \param [in] ARGVN This list is parsed for the following arguments.
+#                   Moreover, any of these arguments can be specified
+#                   in the file PROJECT_CONFIG_DIR/Settings.cmake
+#                   instead with the prefix PROJECT_*, e.g.,
+#                   "set (PROJECT_VERSION 1.0.0)".
+#
+#   NAME             The project name.
+#   VERSION          The project version.
+#   DESCRIPTION      Package description, used for packing.
+#   PACKAGE_VENDOR   The vendor of this package, used for packaging.
+#
+# \note The DESCRIPTION and PACKAGE_VENDOR arguments can be lists of strings
+#       which are concatenated to one string.
 
-macro (basis_project_initialize PROJECT_NAME)
+macro (basis_project_initialize)
   # set common CMake variables which would not be valid before project ()
   # such that they can be used in the Settings.cmake file, for example
   set (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
   set (PROJECT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-  # instantiate directory structure of source tree
-  set (PROJECT_SOFTWARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+  # instantiate project directory structure
+  basis_initialize_directories ()
+ 
+  # clear project attributes of CMake defaults or superproject
+  set (PROJECT_NAME)
+  set (PROJECT_VERSION)
+  set (PROJECT_DESCRIPTION)
+  set (PROJECT_PACKAGE_VENDOR)
+  set (PROJECT_LICENSE_FILE)
+  set (PROJECT_README_FILE)
 
-  foreach (P CONFIG DATA DOC SOURCE)
-    set (VAR SOFTWARE_${P}_DIR)
-    if (NOT IS_ABSOLUTE "${${VAR}}")
-      set (${VAR} "${PROJECT_SOFTWARE_DIR}/${${VAR}}")
-    endif ()
-  endforeach ()
+  # parse arguments and/or include project settings file
+  CMAKE_PARSE_ARGUMENTS (ARGN "" "NAME;VERSION" "DESCRIPTION;PACKAGE_VENDOR" ${ARGN})
 
-  if (IS_ABSOLUTE "${PROJECT_EXAMPLE_DIR}")
-    set (PROJECT_EXAMPLE_DIR)
-  else ()
-    set (PROJECT_EXAMPLE_DIR "${PROJECT_SOURCE_DIR}/${PROJECT_EXAMPLE_DIR}")
+  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
+
+  if (NOT PROJECT_NAME)
+    set (PROJECT_NAME "${ARGN_NAME}")
+  elseif (ARGN_NAME)
+    message (WARNING "Project name specified as argument to basis_project_initialize ()"
+                     " and within Settings.cmake file. Ignoring macro argument!")
   endif ()
 
-  if (IS_ABSOLUTE "${PROJECT_TESTING_DIR}")
-    set (PROJECT_TESTING_DIR)
-  else ()
-    set (PROJECT_TESTING_DIR "${PROJECT_SOURCE_DIR}/${PROJECT_TESTING_DIR}")
-  endif ()
-
-  # instantiate direcotory structure of build tree
-  foreach (P RUNTIME LIBRARY ARCHIVE)
-    set (VAR CMAKE_${P}_OUTPUT_DIRECTORY)
-    get_filename_component (${VAR} "${${VAR}}" ABSOLUTE)
-  endforeach ()
-
-  # instantiate directory structure of install tree
-  set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "Installation directories prefix." FORCE)
-
-  foreach (P BIN LIB INCLUDE DOC DATA EXAMPLE MAN)
-    set (VAR INSTALL_${P}_DIR)
-    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
-  endforeach ()
-
-  # include project settings
-  if (NOT EXISTS "${SOFTWARE_CONFIG_DIR}/Settings.cmake")
-    message (FATAL_ERROR "File Settings.cmake is missing in ${SOFTWARE_CONFIG_DIR}")
-  endif ()
-
-  include ("${SOFTWARE_CONFIG_DIR}/Settings.cmake")
-
-  # check required project information
   if (NOT PROJECT_VERSION)
-    message (FATAL_ERROR "PROJECT_VERSION not defined.")
+    set (PROJECT_VERSION "${ARGN_VERSION}")
+  elseif (ARGN_VERSION)
+    message (WARNING "Project version specified as argument to basis_project_initialize ()"
+                     " and within Settings.cmake file. Ignoring macro argument!")
+  endif ()
+
+  if (NOT PROJECT_DESCRIPTION)
+    set (PROJECT_DESCRIPTION "${ARGN_DESCRIPTION}")
+  elseif (ARGN_DESCRIPTION)
+    message (WARNING "Project description specified as argument to basis_project_initialize ()"
+                     " and within Settings.cmake file. Ignoring macro argument!")
+  endif ()
+
+  if (NOT PROJECT_PACKAGE_VENDOR)
+    set (PROJECT_PACKAGE_VENDOR "${ARGN_PACKAGE_VENDOR}")
+  elseif (ARGN_PACKAGE_VENDOR)
+    message (WARNING "Package vendor specified as argument to basis_project_initialize ()"
+                     " and within Settings.cmake file. Ignoring macro argument!")
+  endif ()
+
+  # check required project attributes or set default values
+  if (NOT PROJECT_NAME)
+    message (FATAL_ERROR "Project name not specified.")
+  endif ()
+
+  if (NOT PROJECT_VERSION)
+    set (PROJECT_VERSION "0.0.0")
   endif ()
 
   if (PROJECT_PACKAGE_VENDOR)
     basis_list_to_string (PROJECT_PACKAGE_VENDOR ${PROJECT_PACKAGE_VENDOR})
+  else ()
+    set (PROJECT_PACKAGE_VENDOR "")
   endif ()
 
   if (PROJECT_DESCRIPTION)
     basis_list_to_string (PROJECT_DESCRIPTION ${PROJECT_DESCRIPTION})
+  else ()
+    set (PROJECT_DESCRIPTION "")
   endif ()
 
-  # default project information
   if (NOT PROJECT_README_FILE)
     set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README")
   endif ()
@@ -188,8 +242,17 @@ macro (basis_project_initialize PROJECT_NAME)
   # initialize automatic file update
   basis_update_initialize ()
 
+  # update CTest configuration and include testing module
+  basis_update_initialize ()
+
+  if (EXISTS CTestConfig.cmake)
+    basis_update (CTestConfig.cmake)
+  endif ()
+
+  include (BasisTest)
+
   # resolve dependencies
-  include ("${SOFTWARE_CONFIG_DIR}/Depends.cmake" OPTIONAL)
+  include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
 
   # copy license to binary tree
   if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
@@ -262,7 +325,8 @@ endmacro ()
 # each BASIS project initialized by basis_project ().
 #
 # The project configuration files are generated by including the CMake script
-# SOFTWARE_CONFIG_DIR/GenerateConfig.cmake when this file exists.
+# PROJECT_CONFIG_DIR/GenerateConfig.cmake when this file exists or using
+# the default script of BASIS.
 #
 # \see basis_project ()
 
@@ -283,7 +347,11 @@ macro (basis_project_finalize)
   endif ()
 
   # generate configuration files
-  include ("${SOFTWARE_CONFIG_DIR}/GenerateConfig.cmake" OPTIONAL)
+  if (EXISTS "${PROJECT_CONFIG_DIR}/GenerateConfig.cmake")
+    include ("${PROJECT_CONFIG_DIR}/GenerateConfig.cmake")
+  else ()
+    include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
+  endif ()
 
   # create software package
   include (BasisPack)
@@ -291,96 +359,6 @@ macro (basis_project_finalize)
   # finalize update of files
   basis_update_finalize ()
 endmacro ()
-
-# ****************************************************************************
-# \brief Initialize example component, calls CMake's project () command.
-#
-# \param [in] PROJECT_NAME Name of the project this example belongs to.
-
-function (basis_example PROJECT_NAME)
-  # find software component
-  find_package (${PROJECT_NAME} REQUIRED)
-
-  if (NOT ${PROJECT_NAME}_FOUND)
-    return ()
-  endif ()
-
-  # start example project
-  project ("${PROJECT_NAME}Example")
-
-  # initialize automatic file udpate
-  basis_update_initialize ()
-endfunction ()
-
-# ****************************************************************************
-# \brief Finalize example component configuration.
-
-function (basis_example_finalize)
-  # finalize update of files
-  basis_update_finalize ()
-endfunction ()
-
-# ****************************************************************************
-# \brief Initialize testing component, calls CMake's project () command.
-#
-# As the BasisTest.cmake module has to be included after the project ()
-# command was used, this module is not included by the CMake use file of the
-# BASIS Core. Instead, this macro includes it.
-#
-# The CMake module BasisUpdate.cmake realizes a feature referred to as
-# "(automatic) file update". This feature is initialized by this macro and
-# finalized by the corresponding basis_project_finalize () macro.
-# As the CTest configuration file is usually maintained by the maintainer of
-# the BASIS package and not the project developer, this file, if present in
-# the project's source directory, is updated if the template was modified.
-# If you experience problems with the automatic file update, contact the
-# maintainer of the BASIS package and consider to disable the automatic file
-# update for single files  by adding their path relative to the project's
-# source directory to BASIS_UPDATE_EXCLUDE in the Settings.cmake file of
-# your project. For example, to prevent the automatic udpate of the CTest
-# configuration file, add "CTestConfig.cmake" to the list BASIS_UPDATE_EXCLUDE.
-#
-# \param [in] PROJECT_NAME Name of the project whose software is tested.
-
-function (basis_testing PROJECT_NAME)
-  # find software component
-  find_package (${PROJECT_NAME} REQUIRED)
-
-  if (NOT ${PROJECT_NAME}_FOUND)
-    return ()
-  endif ()
-
-  include ("${${PROJECT_NAME}_USE_FILE}")
-  set (PROJECT_SOFTWARE_DIR "${${PROJECT_NAME}_DIR}")
-
-  # find example component (optional)
-  find_package (${PROJECT_NAME}Example)
-
-  if (${PROJECT_NAME}Example_FOUND)
-    set (PROJECT_EXAMPLE_DIR "${${PROJECT_NAME}Example_DIR}")
-  endif ()
-
-  # start testing project
-  project ("${PROJECT_NAME}Testing")
-
-  # update CTest configuration
-  basis_update_initialize ()
-
-  if (EXISTS CTestConfig.cmake)
-    basis_update (CTestConfig.cmake)
-  endif ()
-
-  # include testing module
-  include (BasisTest)
-endfunction ()
-
-# ****************************************************************************
-# \brief Finalize testing component configuration.
-
-function (basis_testing_finalize)
-  # finalize update of files
-  basis_update_finalize ()
-endfunction ()
 
 # ============================================================================
 # auxiliary source files
@@ -402,20 +380,20 @@ endfunction ()
 #                 It shall not be included by any other source file!
 #
 # \note If there exists a *.in file of the corresponding source file in the
-#       SOFTWARE_SOURCE_DIR of the project, it will be used as template.
+#       PROJECT_CODE_DIR of the project, it will be used as template.
 #       Otherwise, the template file of BASIS is used.
 #
 # \param [out] SOURCES Configured auxiliary source files.
 
 function (basis_configure_auxiliary_sources SOURCES)
-  # get binary directory corresponding to SOFTWARE_SOURCE_DIR
-  file (RELATIVE_PATH DIR "${PROJECT_SOURCE_DIR}" "${SOFTWARE_SOURCE_DIR}")
+  # get binary directory corresponding to PROJECT_CODE_DIR
+  file (RELATIVE_PATH DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
   set (DIR "${PROJECT_BINARY_DIR}/${DIR}")
 
   # configure auxiliary source files
   set (CPP_SOURCES "")
   foreach (SOURCE mainaux.h)
-    set (TEMPLATE "${SOFTWARE_CONFIG_DIR}/${SOURCE}.in")
+    set (TEMPLATE "${PROJECT_CONFIG_DIR}/${SOURCE}.in")
     if (NOT EXISTS "${TEMPLATE}")
       set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
     endif ()
