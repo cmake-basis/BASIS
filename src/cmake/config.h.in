@@ -1,0 +1,147 @@
+/*!
+ * \file  @CONFIG_H@
+ * \brief Default include file with project configuration macros.
+ *
+ * For copyright information please see Copyright.txt in the root
+ * directory of the project.
+ *
+ * Contact: SBIA Group <sbia-software@uphs.upenn.edu>
+ */
+
+#pragma once
+#ifndef SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
+#define SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
+
+
+//////////////////////////////////////////////////////////////////////////////
+// version
+//////////////////////////////////////////////////////////////////////////////
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR
+ * \brief The major version number.
+ */ 
+#define SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR
+ * \brief The minor version number.
+ */
+#define SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR @PROJECT_VERSION_MINOR@
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH
+ * \brief The patch number.
+ */
+#define SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION
+ * \brief The version string given as "Major.Minor.Patch".
+ *
+ * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR
+ * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR
+ * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH
+ */
+#define SBIA_@PROJECT_NAME_UPPER@_VERSION "@PROJECT_VERSION@"
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_REVISION
+ * \brief The SVN revision number of the project (if applicable).
+ *
+ * The SVN revision number can only be provided when the project is build from
+ * a revision controlled working copy of the project. It is not available in
+ * case of a distribution package of the project! Hence, it may only be used for
+ * informational debug outputs, but not for actual version dependent
+ * processing/compilation. If the revision number is not known, this macro
+ * expands to the invalid revision number 0.
+ *
+ * Example:
+ *
+ * \code
+ *
+ * #if SBIA_@PROJECT_NAME_UPPER@_REVISION
+ *   std::cout << "Revision: " << SBIA_@PROJECT_NAME_UPPER@_REVISION << std::endl;
+ * #else
+ *   std::cout << "Revision: n/a" << std::endl;
+ * #endif
+ *
+ * \endcode
+ *
+ * \see SBIA_@PROJECT_NAME_UPPER@_VERSION
+ * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR
+ * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR
+ * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH
+ */
+#define SBIA_@PROJECT_NAME_UPPER@_REVISION @PROJECT_REVISION@
+
+//////////////////////////////////////////////////////////////////////////////
+// namespace
+//////////////////////////////////////////////////////////////////////////////
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE
+ * \brief Full project own namespace identifier.
+ *
+ * This macro should preferably be used when referring to the project own
+ * namespace. The namespace can then be renamed later on without affecting
+ * written source code.
+ *
+ * \note Namespace identifier may reflect a nested namespace.
+ */
+#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE \
+  ::sbia::@PROJECT_NAME_LOWER@
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+ * \brief Macro used to enter project own namespace.
+ *
+ * Example: 
+ * \code
+ * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+ *
+ * // project source code within project own namespace
+ * // ... 
+ *
+ * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+ * \endcode 
+ */ 
+#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN \
+  namespace sbia \
+  { \
+  \
+  namespace @PROJECT_NAME_LOWER@ \
+  {
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+ * \brief Macro used to exit project own namespace.
+ *
+ * Example: 
+ * \code
+ * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+ *
+ * // project source code within project own namespace
+ * // ... 
+ *
+ * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+ * \endcode 
+ */     
+#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END \
+  } \
+  \
+  }
+
+/*!
+ * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_USE
+ * \brief Macro that can be used to import all members of the project own
+ *        namespace into the global namespace.
+ *
+ * \note A using directive, and hence this macro, should never be used in a
+ *       source code header file!
+ */
+#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_USE \
+  using namespace SBIA_@PROJECT_NAME_UPPER@_NAMESPACE
+
+
+#endif // SBIA_@PROJECT_NAME_UPPER@_CONFIG_H

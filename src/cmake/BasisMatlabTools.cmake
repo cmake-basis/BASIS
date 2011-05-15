@@ -1,0 +1,577 @@
+##############################################################################
+# \file  BasisMatlabTools.cmake
+# \brief Enables use of MATLAB Compiler and build of MEX-files.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See LICENSE file in project root or 'doc' directory for details.
+#
+# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+##############################################################################
+
+if (NOT BASIS_MATLABTOOLS_INCLUDED)
+set (BASIS_MATLABTOOLS_INCLUDED 1)
+
+
+# get directory of this file
+#
+# \note This variable was just recently introduced in CMake, it is derived
+#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
+#       to maintain compatibility with older CMake versions.
+get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+
+# ============================================================================
+# required modules
+# ============================================================================
+
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisGlobals.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommon.cmake")
+
+# ============================================================================
+# options
+# ============================================================================
+
+option (MCC_MATLAB_MODE "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler." "ON")
+
+mark_as_advanced (MCC_MATLAB_MODE)
+
+# ============================================================================
+# build configuration
+# ============================================================================
+
+set (
+  MCC_FLAGS
+    "-v -R -singleCompThread"
+  CACHE STRING
+    "Common MATLAB Compiler flags (separated by ' '; use '\\' to mask ' ')."
+)
+
+set (MCC_TIMEOUT "600" CACHE STRING "Timeout for MATLAB Compiler execution")
+
+mark_as_advanced (MCC_FLAGS)
+mark_as_advanced (MCC_TIMEOUT)
+
+# ============================================================================
+# find programs
+# ============================================================================
+
+find_program (
+  BASIS_CMD_MATLAB
+    NAMES matlab
+    DOC "The MATLAB application (matlab)."
+)
+
+mark_as_advanced (BASIS_CMD_MATLAB)
+
+find_program (
+  BASIS_CMD_MCC
+    NAMES mcc
+    DOC "The MATLAB Compiler (mcc)."
+)
+
+mark_as_advanced (BASIS_CMD_MCC)
+
+find_file (
+  BASIS_SCRIPT_MCC
+    NAMES runmcc.m
+    HINTS "${CMAKE_CURRENT_LIST_DIR}"
+    DOC "MATLAB script runmcc.m used to invoke MATLAB Compiler in MATLAB mode."
+    NO_DEFAULT_PATH
+)
+
+mark_as_advanced (BASIS_SCRIPT_MCC)
+
+find_program (
+  BASIS_CMD_MEXEXT
+    NAMES mexext
+    DOC "The MEXEXT script of MATLAB (mexext)."
+)
+
+mark_as_advanced (BASIS_CMD_MEXEXT)
+
+find_program (
+  BASIS_CMD_MEX
+    NAMES mex
+    DOC "The MEX-file generator of MATLAB (mex)."
+)
+
+mark_as_advanced (BASIS_CMD_MEX)
+
+# ============================================================================
+# utilities
+# ============================================================================
+
+# ****************************************************************************
+# \brief Determine extension of MEX-files for this architecture.
+#
+# \param [out] EXT The extension of MEX-files (excluding '.'). If the CMake
+#                  variable MEX_EXT is set, its value is returned. Otherwise,
+#                  this function tries to determine it from the system
+#                  information. If the extension could not be determined,
+#                  an empty string is returned.
+
+function (basis_mexext EXT)
+  # default return value
+  set (MEXEXT "${MEX_EXT}")
+
+  # use MEXEXT if possible
+  if (NOT MEXEXT AND BASIS_CMD_MEXEXT)
+    execute_process (
+      COMMAND         "${BASIS_CMD_MEXEXT}"
+      RESULT_VARIABLE RETVAL
+      OUTPUT_VARIABLE MEXEXT
+      ERROR_QUIET
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if (RETVAL)
+      set (MEXEXT "")
+    endif ()
+  endif ()
+
+  # otherwise, determine extension given CMake variables describing the system
+  if (NOT MEXEXT)
+    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+      if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+        set (MEXEXT ".mexa64")
+      elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86" OR
+              ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+        set (MEXEXT ".mexglx")
+      endif ()
+    elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+      if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+        set (MEXEXT ".mexw64")
+      elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86" OR
+              ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+        set (MEXEXT ".mexw32")
+      endif ()
+    elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+      set (MEXEXT ".mexaci")
+    elseif (${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
+      set (MEXEXT ".mexs64")
+    endif ()
+  endif ()
+
+  # return value
+  set ("${EXT}" "${MEXEXT}" PARENT_SCOPE)
+endfunction ()
+
+# ****************************************************************************
+# \brief This function writes a MATLAB M-file with addpath () statements.
+#
+# This function writes the MATLAB M-file addpaths.m into the root directory
+# of the build tree which contains an addpath () statement for each
+# directory that was added via basis_include_directories ().
+
+function (basis_create_addpaths_mfile)
+  set (MFILE "${CMAKE_CURRENT_BINARY_DIR}/Add${PROJECT_NAME}Paths.m")
+
+  file (WRITE "${MFILE}" "% DO NOT edit. This file is automatically generated by BASIS.\n")
+  foreach (P ${BASIS_INCLUDE_DIRECTORIES})
+    file (APPEND "${MFILE}" "addpath ('${P}');\n")
+  endforeach ()
+endfunction ()
+
+# ============================================================================
+# MATLAB Compiler target
+# ============================================================================
+
+# ****************************************************************************
+# \brief Add MATLAB Compiler target.
+#
+# This function is used to at an executable or library target which is built
+# using the MATLAB Compilier (MCC). It is invoked by basis_add_executable ()
+# and basis_add_library (), respectively, when at least one M-file is given
+# as source file. Thus, it is recommended to use these functions instead.
+#
+# \note The custom build command is not added yet by this function.
+#       Only a custom target which stores all the information required to
+#       setup this build command is added. The custom command is added
+#       by either basis_project_finalize () or basis_superproject_finalize ().
+#       This way, the properties such as the OUTPUT_NAME of the custom
+#       target can be still modified.
+#
+# \see basis_add_executable ()
+# \see basis_add_library ()
+#
+# \param [in] TARGET_NAME Name of the target.
+# \param [in] ARGN        Remaining arguments such as in particular the
+#                         input source files.
+#
+#   TYPE Type of the target. Either EXECUTABLE (default) or LIBRARY.
+
+function (basis_add_mcc_target TARGET_NAME)
+  basis_check_target_name ("${TARGET_NAME}")
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (ARGN "" "COMPONENT;TYPE" "" ${ARGN})
+
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
+  endif ()
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "Unspecified")
+  endif ()
+
+  if (NOT ARGN_TYPE)
+    set (ARGN_TYPE "EXECUTABLE")
+  else ()
+    string (TOUPPER "${ARGN_TYPE}" ARGN_TYPE)
+  endif ()
+
+  if (NOT ARGN_TYPE MATCHES "^EXECUTABLE$|^LIBRARY$")
+    message (FATAL_ERROR "Invalid type for MCC target ${TARGET_NAME}: ${ARGN_TYPE}")
+  endif ()
+
+  if (ARGN_TYPE STREQUAL "LIBRARY")
+    message (STATUS "Adding MATLAB library ${TARGET_UID}...")
+    message (FATAL_ERROR "Build of MATLAB library from M-files not yet supported.")
+    message (STATUS "Adding MATLAB library ${TARGET_UID}... - failed")
+  else ()
+    message (STATUS "Adding MATLAB executable ${TARGET_UID}...")
+  endif ()
+
+  # required commands available ?
+  if (NOT BASIS_CMD_MCC)
+    message (FATAL_ERROR "MATLAB Compiler not found. It is required to build target ${TARGET_UID}."
+                         "Set BASIS_CMD_MCC manually and try again.")
+  endif ()
+
+  if (NOT BASIS_SCRIPT_EXECUTE_PROCESS)
+    message (FATAL_ERROR "CMake script required for execution of process in script mode not found."
+                         "It is required to build the target ${TARGET_UID}. "
+                         "Set BASIS_SCRIPT_EXECUTE_PROCESS manually and try again.")
+  endif ()
+ 
+  # MCC flags
+  set (COMPILE_FLAGS)
+
+  if (MCC_FLAGS)
+    string (REPLACE "\\ "    "&nbsp;" COMPILE_FLAGS "${MCC_FLAGS}")
+    string (REPLACE " "      ";"      COMPILE_FLAGS "${COMPILE_FLAGS}")
+    string (REPLACE "&nbsp;" " "      COMPILE_FLAGS "${COMPILE_FLAGS}")
+  endif ()
+
+  # get list of target arguments
+  set (SOURCES)
+  set (LINK_DEPENDS)
+
+  foreach (ARG ${ARGN_UNPARSED_ARGUMENTS})
+    basis_target_uid (UID "${ARG}")
+    if (TARGET ${UID})
+      list (APPEND LINK_DEPENDS "${UID}")
+    else ()
+      if (NOT IS_ABSOLUTE)
+        set (ARG "${CMAKE_CURRENT_SOURCE_DIR}/${ARG}")
+      endif ()
+      list (APPEND SOURCES "${ARG}")
+    endif ()
+  endforeach ()
+
+  # add custom target
+  add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
+
+  # set target properties required by basis_add_mcc_target_finalize ()
+  set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      TYPE                      "${ARGN_TYPE}"
+      BASIS_TYPE                 "MCC_${ARGN_TYPE}"
+      VERSION                   "${PROJECT_VERSION}"
+      SOVERSION                 "${PROJECT_SOVERSION}"
+      SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
+      BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
+      RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+      LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+      RUNTIME_INSTALL_DIRECTORY "${INSTALL_BIN_DIR}"
+      LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIB_DIR}"
+      INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
+      LINK_DEPENDS              "${LINK_DEPENDS}"
+      COMPILE_FLAGS             "${USER_FLAGS}"
+      COMPONENT                 "${ARGN_COMPONENT}"
+  )
+
+  if (ARGN_TYPE STREQUAL "LIBRARY")
+    message (STATUS "Adding MATLAB library ${TARGET_UID}... - done")
+  else ()
+    message (STATUS "Adding MATLAB executable ${TARGET_UID}... - done")
+  endif ()
+endfunction ()
+
+# ****************************************************************************
+# \brief Finalizes addition of MATLAB Compiler target.
+#
+# This function uses the properties of the custom MATLAB Compiler target
+# added by basis_add_mcc_target () to create the custom build command and
+# adds this build command as dependency of this added target.
+#
+# \see basis_add_mcc_target ()
+#
+# \param [in] TARGET_UID "Global" target name. If this function is used
+#                        within the same project as basis_add_mcc_target (),
+#                        the "local" target name may be given alternatively.
+
+function (basis_add_mcc_target_finalize TARGET_UID)
+  # if used within (sub-)project itself, allow user to specify "local" target name
+  basis_target_uid (TARGET_UID "${TARGET_UID}")
+
+  # does this target exist ?
+  if (NOT TARGET "${TARGET_UID}")
+    message (FATAL_ERROR "Unknown target ${TARGET_UID}.")
+    return ()
+  endif ()
+
+  # get target properties
+  basis_target_name (TARGET_NAME ${TARGET_UID})
+
+  set (
+    PROPERTIES
+      "TYPE"
+      "BASIS_TYPE"
+      "SOURCE_DIRECTORY"
+      "BINARY_DIRECTORY"
+      "RUNTIME_OUTPUT_DIRECTORY"
+      "LIBRARY_OUTPUT_DIRECTORY"
+      "RUNTIME_INSTALL_DIRECTORY"
+      "LIBRARY_INSTALL_DIRECTORY"
+      "PREFIX"
+      "OUTPUT_NAME"
+      "SUFFIX"
+      "VERSION"
+      "SOVERSION"
+      "INCLUDE_DIRECTORIES"
+      "SOURCES"
+      "LINK_DEPENDS"
+      "COMPILE_FLAGS"
+  )
+
+  foreach (PROPERTY ${PROPERTIES})
+    get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
+  endforeach ()
+
+  if (NOT BASIS_TYPE MATCHES "^MCC_EXECUTABLE$|^MCC_LIBRARY$")
+    message (FATAL_ERROR "Target ${TARGET_UID} had invalid BASIS_TYPE: ${BASIS_TYPE}")
+  endif ()
+
+  if (TYPE STREQUAL "LIBRARY")
+    message (STATUS "Adding build command for MATLAB library ${TARGET_UID}...")
+  elseif (TYPE STREQUAL "EXECUTABLE")
+    message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}...")
+  else ()
+    message (FATAL_ERROR "Target ${TARGET_UID} has invalid TYPE: ${TYPE}")
+  endif ()
+
+  # build directory
+  list (GET SOURCES 0 BUILD_DIR)
+  set (BUILD_DIR "${BUILD_DIR}.dir")
+
+  list (REMOVE_AT SOURCES 0)
+
+  # output name
+  if (NOT OUTPUT_NAME)
+    set (OUTPUT_NAME "${TARGET_NAME}")
+  endif ()
+  if (PREFIX)
+    set (OUTPUT_NAME "${PREFIX}${OUTPUT_NAME}")
+  endif ()
+  if (SUFFIX)
+    set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
+  endif ()
+
+  # initialize dependencies of custom build command
+  set (DEPENDS ${SOURCES})
+
+  # get list of libraries to link to (e.g., MEX-file)
+  set (LINK_LIBS)
+
+  foreach (LIB ${LINK_DEPENDS})
+    basis_target_uid (UID "${LIB}")
+    if (TARGET ${UID})
+      get_target_property (LIB_FILE ${UID} "LOCATION")
+      list (APPEND DEPENDS ${UID})
+    else ()
+      set (LIB_FILE "${LIB}")
+      list (APPEND DEPENDS "${LIB_FILE}")
+    endif ()
+    list (APPEND LINK_LIBS "${LIB_FILE}")
+  endforeach ()
+
+  # assemble build command
+  set (MCC_ARGS ${COMPILE_FLAGS})                    # user specified flags
+  foreach (INCLUDE_PATH ${INCLUDE_DIRECTORIES})      # add directories added via
+    list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)       # basis_include_directories ()
+    if (INCLUDE_PATH AND IDX EQUAL -1)               # function to search path
+      list (APPEND MCC_ARGS "-I" "${INCLUDE_PATH}")
+    endif ()
+  endforeach ()
+  list (FIND INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX)
+  if (IDX EQUAL -1)
+    # add current source directory to search path,
+    # needed for build in MATLAB mode as working directory
+    # differs from the current source directory then
+    list (APPEND MCC_ARGS "-I" "${SOURCE_DIRECTORY}")
+  endif ()
+  if (TYPE STREQUAL "LIBRARY")
+    list (APPEND MCC_ARGS "-l")                       # build library
+  else ()
+    list (APPEND MCC_ARGS "-m")                       # build standalone application
+  endif ()
+  list (APPEND MCC_ARGS "-d" "${BUILD_DIR}")          # output directory
+  list (APPEND MCC_ARGS "-o" "${OUTPUT_NAME}")        # output name
+  list (APPEND MCC_ARGS ${SOURCES})                   # source (M-)files
+  list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries (e.g., MEX-files)
+
+  # build command for invocation of MATLAB Compiler in standalone mode
+  set (BUILD_CMD      "${BASIS_CMD_MCC}" ${MCC_ARGS})
+  set (BUILD_LOG      "${BUILD_DIR}/mccBuild.log")
+  set (WORKING_DIR    "${SOURCE_DIRECTORY}")
+  set (MATLAB_MODE    OFF)
+
+  # build command for invocation of MATLAB Compiler in MATLAB mode
+  if (MCC_MATLAB_MODE)
+    set (MATLAB_MODE ON)
+
+    if (NOT BASIS_CMD_MATLAB)
+      message (WARNING "MATLAB not found. It is required to build target ${TARGET_UID} in MATLAB mode."
+                       " Set BASIS_CMD_MATLAB manually and try again or set MCC_MATLAB_MODE to OFF."
+                       " Will build target ${TARGET_UID} in standalone mode instead.")
+      set (MATLAB_MODE OFF)
+    endif ()
+
+    if (NOT BASIS_SCRIPT_MCC)
+      message (WARNING "MATLAB script to run MATLAB Compiler not found. It is required to build target ${TARGET_UID} in MATLAB mode."
+                       " Set BASIS_SCRIPT_MCC manually and try again or set MCC_MATLAB_MODE to OFF."
+                       " Will build target ${TARGET_UID} in standalone mode instead.")
+      set (MATLAB_MODE OFF)
+    endif ()
+
+    if (MATLAB_MODE)
+      get_filename_component (WORKING_DIR "${BASIS_SCRIPT_MCC}" PATH)
+      get_filename_component (MFUNC       "${BASIS_SCRIPT_MCC}" NAME_WE)
+
+      set (MATLAB_CMD "${MFUNC} -q") # -q option quits MATLAB when build is finished
+      foreach (MCC_ARG ${MCC_ARGS})
+        set (MATLAB_CMD "${MATLAB_CMD} ${MCC_ARG}")
+      endforeach ()
+
+      set (
+        BUILD_CMD
+          "${BASIS_CMD_MATLAB}" # run MATLAB
+          "-nosplash"           # do not display splash screen on start up
+          "-nodesktop"          # run in command line mode
+          "-nojvm"              # we do not need the Java Virtual Machine
+          "-r" "${MATLAB_CMD}"  # MATLAB command which invokes MATLAB Compiler
+      )
+    endif ()
+  endif ()
+
+  # relative paths used for comments of commands
+  file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME}")
+
+  # output files of build command
+  if (TYPE STREQUAL "LIBRARY")
+    set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+
+    set (
+      POST_BUILD_COMMAND
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${BUILD_DIR}/${OUTPUT_NAME}"
+                "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
+    )
+
+    set (BUILD_COMMENT "Building MATLAB library ${REL}...")
+  else ()
+    set (BUILD_OUTPUT "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+
+    set (
+      POST_BUILD_COMMAND
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${BUILD_DIR}/${OUTPUT_NAME}"
+                "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
+    )
+
+    set (BUILD_COMMENT "Building MATLAB executable ${REL}...")
+  endif ()
+
+  # add custom command to build executable using MATLAB Compiler
+  add_custom_command (
+    OUTPUT ${BUILD_OUTPUT}
+    # rebuild when input sources were modified
+    DEPENDS ${DEPENDS}
+    # invoke MATLAB Compiler in either MATLAB or standalone mode
+    # wrapping command in CMake execute_process () command allows for inspection
+    # parsing of command output for error messages and specification of timeout
+    COMMAND "${CMAKE_COMMAND}"
+            "-DCOMMAND=${BUILD_CMD}"
+            "-DWORKING_DIRECTORY=${WORKING_DIR}"
+            "-DTIMEOUT=${MCC_TIMEOUT}"
+            "-DERROR_EXPRESSION=[E|e]rror"
+            "-DOUTPUT_FILE=${BUILD_LOG}"
+            "-DERROR_FILE=${BUILD_LOG}"
+            "-DBASIS_VERBOSE=OFF"
+            "-DLOG_ARGS=ON"
+            "-P" "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+    # post build command(s)
+    ${POST_BUILD_COMMAND}
+    # inform user where build log can be found
+    COMMAND "${CMAKE_COMMAND}" -E echo "Build log written to ${BUILD_LOG}"
+    # comment
+    COMMENT "${BUILD_COMMENT}"
+    VERBATIM
+  )
+
+  # add custom target
+  add_custom_target (
+    ${TARGET_UID}+
+    DEPENDS ${BUILD_OUTPUT}
+    SOURCES ${SOURCES}
+  )
+
+  add_dependencies (${TARGET_UID} ${TARGET_UID}+)
+
+  # cleanup on "make clean"
+  set_property (
+    DIRECTORY
+    APPEND PROPERTY
+      ADDITIONAL_MAKE_CLEAN_FILES
+        ${BUILD_OUTPUT}
+        "${BUILD_DIR}/${OUTPUT_NAME}.prj"
+        "${BUILD_DIR}/mccExcludedFiles.log"
+        "${BUILD_DIR}/mccBuild.log"
+        "${BUILD_DIR}/readme.txt"
+  )
+
+  if (TYPE STREQUAL "LIBRARY")
+  else ()
+    set_property (
+      DIRECTORY
+      APPEND PROPERTY
+        ADDITIONAL_MAKE_CLEAN_FILES
+          "${BUILD_DIR}/${OUTPUT_NAME}"
+          "${BUILD_DIR}/run_${OUTPUT_NAME}.sh"
+          "${BUILD_DIR}/${OUTPUT_NAME}_main.c"
+          "${BUILD_DIR}/${OUTPUT_NAME}_mcc_component_data.c"
+    )
+  endif ()
+
+  # install target
+  if (TYPE STREQUAL "LIBRARY")
+  else ()
+    install (
+      PROGRAMS    ${BUILD_OUTPUT}
+      DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
+      COMPONENT   "${COMPONENT}"
+    )
+  endif ()
+
+  if (TYPE STREQUAL "LIBRARY")
+    message (STATUS "Adding build command for MATLAB library ${TARGET_UID}... - done")
+  else ()
+    message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}... - done")
+  endif ()
+endfunction ()
+
+
+endif (NOT BASIS_MATLABTOOLS_INCLUDED)
+

@@ -1,0 +1,111 @@
+##############################################################################
+# \file  BasisScriptConfig.cmake.in
+# \brief Default script configuration file.
+#
+# This CMake file defines CMake variables which can be used within scripts.
+# If the project structure differs for the build tree and the install tree,
+# the CMake variables used within the script can be set depending on the
+# value of the variable BUILD_INSTALL_SCRIPT. This variable evaluates to true,
+# when the script is build, i.e., configured, for the installation tree and
+# to false, otherwise.
+#
+# Example:
+#
+# \code
+# if (BUILD_INSTALL_SCRIPT)
+#   set (PROJECT_BIN_DIR "@CMAKE_INSTALL_PREFIX@/@INSTALL_BIN_DIR@")
+# else ()
+#   set (PROJECT_BIN_DIR "@RUNTIME_OUTPUT_DIRECTORY@")
+# endif ()
+# \endcode
+#
+# \attention Avoid the use of absolute paths! If you want to refer to data
+#            files, for example, consider the combination of an environment
+#            variable pointing to the project root dir and a relative path set
+#            in this file. Note that the environment variable needs to be read
+#            by the script and the path then appended by the relative path.
+#
+# Example:
+#
+# \code
+# #! /usr/bin/env bash
+#
+# # in the following, PROJECT_DIR is an environment variable which has to be
+# # set by the user on their system; the variable PROJECT_DATA_DIR, on the
+# # other side, is set by the project's script configuration relative to the
+# # project root directory.
+# dataPath="${PROJECT_DIR}/@PROJECT_DATA_DIR@"
+# \endcode
+#
+# Directories should be given relative to the project root directory which is
+# either the root of the build tree or the root of the install tree. Note that
+# many CMake variables are set to absolute paths. Hence, these paths have to be
+# converted to relative paths in order to guarantee consistency between paths
+# used for the build tree script and those of the install tree script.
+#
+# Example:
+#
+# \code
+# if (BUILD_INSTALL_SCRIPT)
+#   set (PROJECT_BIN_DIR "@INSTALL_BIN_DIR@")
+# else ()
+#   set (PROJECT_BIN_DIR "@RUNTIME_OUTPUT_DIRECTORY@")
+#   file (RELATIVE_PATH PROJECT_BIN_DIR "@CMAKE_BINARY_DIR@" "${PROJECT_BIN_DIR}")
+# endif ()
+# \endcode
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See LICENSE or Copyright file in project root directory for details.
+#
+# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+##############################################################################
+
+# ============================================================================
+# helper
+# ============================================================================
+
+# ****************************************************************************
+# \function set_script_path
+# \brief    Sets a variable to the specified path and ensures that it is
+#           relative to the project root directory.
+#
+# \param [in] VAR  Name of the variable.
+# \param [in] PATH Path to directory or file.
+# \param [in] ARG3 Path to directory or file inside install tree.
+#                  If this argument is not given, PATH is used for both the
+#                  build and install tree version of the script.
+
+function (set_script_path VAR PATH)
+  if (ARGC GREATER 3)
+    message (FATAL_ERROR "Too many arguments given for function set_script_path ()")
+  endif ()
+
+  if (ARGC EQUAL 3 AND BUILD_INSTALL_SCRIPT)
+    set (PATH "${ARG3}")
+  endif ()
+
+  if (IS_ABSOLUTE "${PATH}")
+    if (BUILD_INSTALL_SCRIPT)
+      file (RELATIVE_PATH PATH "@CMAKE_INSTALL_PREFIX@" "${PATH}")
+	else ()
+	  file (RELATIVE_PATH PATH "@CMAKE_BINARY_DIR@" "${PATH}")
+	endif ()
+  endif ()
+endfunction ()
+
+# ============================================================================
+# project attributes
+# ============================================================================
+
+set (VERSION       "@PROJECT_VERSION@")
+set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+set (VERSION_PATCH "@PROJECT_VERSION_PATCH@")
+
+# ============================================================================
+# directories
+# ============================================================================
+
+set_script_path (BIN_DIR "@RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_BIN_DIR@")
+set_script_path (DATA_DIR "@SOFTWARE_DATA_DIR@" "@INSTALL_DATA_DIR@")
+

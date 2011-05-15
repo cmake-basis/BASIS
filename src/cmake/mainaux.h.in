@@ -1,0 +1,73 @@
+/*!
+ * \file  @MAINUTILS_H@
+ * \brief Auxiliary functions useful for implementation of main () function.
+ *
+ * For copyright information please see Copyright.txt in the root
+ * directory of the project.
+ *
+ * Contact: SBIA Group <sbia-software@uphs.upenn.edu>
+ */
+
+#pragma once
+#ifndef SBIA_@PROJECT_NAME@_MAINUTILS_H
+#define SBIA_@PROJECT_NAME@_MAINUTILS_H
+
+
+#include <stdio.h>
+
+#include "@CONFIG_H@"
+
+
+/*!
+ * \brief Extract program name from first command line argument.
+ *
+ * \param argv Command line arguments.
+ *
+ * \return Program name without relative or absolute path to directory where
+ *         the executable is located. Do not try to free the memory of the
+ *         returned pointer! It just points to the first character of the
+ *         program name within argv [0].        
+ */
+inline
+const char *getProgName (char *argv[])
+{
+	const char *progName = argv [0];
+
+	if (progName && *progName)
+	{
+		// go to last character of string
+		while (*progName) ++progName;
+		--progName;
+		// rewind until beginning of string or
+		// '/' (UNIX) or '\\' (WIN) is encountered
+		while (progName != argv [0])
+		{
+			--progName;
+			if (*progName == '/' || *progName == '\\')
+			{
+				++progName;
+				break;
+			}
+		}
+	}
+
+	return progName;
+}
+
+/*!
+ * \brief Prints version information.
+ *
+ * \param progName Name of program.
+ */
+inline
+void version (const char *progName)
+{
+	printf ("%s %s", progName, SBIA_@PROJECT_NAME_UPPER@_VERSION);
+#if SBIA_@PROJECT_NAME_UPPER@_REVISION
+	printf (" (Rev. %d)", SBIA_@PROJECT_NAME_UPPER@_REVISION);
+#endif // SBIA_@PROJECT_NAME_UPPER@_REVISION
+	printf ("\n");
+}
+
+
+#endif // SBIA_@PROJECT_NAME@_MAINUTILS_H
