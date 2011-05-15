@@ -4,6 +4,8 @@
 #
 # Use the _CONFIG suffix for variables that are replaced in Config.cmake.in.
 #
+# \note The default install tree configuration is included prior to this file.
+#
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE or Copyright file in project root directory for details.
 #
@@ -12,12 +14,12 @@
 
 
 # CMake module path
-set (MODULE_PATH_CONFIG "@INSTALL_LIB_DIR@/cmake")
+file (
+  RELATIVE_PATH
+    MODULE_PATH_CONFIG
+    "${INSTALL_PREFIX}/${INSTALL_LIB_DIR}"
+    "${INSTALL_PREFIX}/${INSTALL_SHARE_DIR}/cmake"
+)
 
-# include directories
-set (INCLUDE_DIR_CONFIG "")
-
-if (INCLUDE_DIR_CONFIG)
-  list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
-endif ()
+set (MODULE_PATH_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${MODULE_PATH_CONFIG}")
 
