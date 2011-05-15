@@ -26,13 +26,13 @@ cmake_minimum_required (VERSION 2.8.2)
 
 set (TEMPLATE_VERSION "0.0")
 
-find_package (BASIS REQUIRED)
+find_package (BASIS REQUIRED Core)
 
-if (NOT BASIS_FOUND)
+if (NOT BASIS_Core_FOUND)
   return ()
 endif ()
 
-include ("${BASIS_USE_FILE}")
+include ("${BASIS_Core_USE_FILE}")
 
 # The following macro call replaces the CMake command project ().
 #
@@ -41,8 +41,8 @@ include ("${BASIS_USE_FILE}")
 # PROJECT_VERSION_MINOR, PROJECT_VERSION_PATCH,... please refer to
 # the documentation of the macro for a list of available variables.
 #
-# The project attributes have to be specified as CMake variables in the
-# CMake module SOFTWARE_CONFIG_DIR/Settings.cmake.
+# The project attributes have to be specified as CMake variables in a file
+# named Settings.cmake in SOFTWARE_CONFIG_DIR.
 #
 # The common CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR
 # should be used in the subsequent CMake code to refer to the source or
@@ -50,9 +50,9 @@ include ("${BASIS_USE_FILE}")
 # as these variables differ from the project specific variables when the
 # project is part of a superproject.
 #
-# \see basis_project ()
+# \see basis_project_initialize ()
 
-basis_project ("ReplaceByProjectName")
+basis_project_initialize ("ReplaceByProjectName")
 
 # ============================================================================
 # subdirectories
@@ -64,10 +64,6 @@ if (EXISTS "${SOFTWARE_DATA_DIR}")
   add_subdirectory ("${SOFTWARE_DATA_DIR}")
 endif ()
 
-if (EXISTS "${SOFTWARE_TESTS_DIR}" AND BUILD_TESTING)
-  add_subdirectory ("${SOFTWARE_TESTS_DIR}")
-endif ()
-
 add_subdirectory ("${SOFTWARE_DOC_DIR}")
 
 # optionally traverse into subdirectories of other major components, too
@@ -75,7 +71,7 @@ if (EXISTS "${PROJECT_EXAMPLE_DIR}")
   add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
 endif ()
 
-if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
+if (EXISTS "${PROJECT_TESTING_DIR}")
   add_subdirectory ("${PROJECT_TESTING_DIR}")
 endif ()
 
@@ -83,6 +79,5 @@ endif ()
 # finalize
 # ============================================================================
 
-# finalize configuration of project
 basis_project_finalize ()
 

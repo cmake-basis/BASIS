@@ -13,17 +13,16 @@
 INTRODUCTION
 ============
 
-  This is an example application of the software package ReplaceByProjectName.
-  The example files within this folder are needed to follow the step-by-step
+  This is an example application of the ReplaceByProjectName software package.
+  The example files within this package are needed to follow the step-by-step
   software usage instructions given in the user manual. Please refer to the
-  user manual of ReplaceByProjectName [1].
-
+  user manual of the ReplaceByProjectName package [1].
 
 
 PACKAGE OVERVIEW
 ================
 
-  Give a brief overview of the example files.
+  \todo Give a brief overview of the example files.
 
 
 
@@ -31,5 +30,5 @@ REFERENCES
 ==========
 
   [1] ReplaceByProjectName: User Manual.
-      See 'doc' folder of the software installation.
+      See 'doc' folder of the software package installation.
 

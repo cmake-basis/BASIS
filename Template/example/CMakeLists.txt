@@ -29,13 +29,13 @@ cmake_minimum_required (VERSION 2.8.2)
 
 set (TEMPLATE_VERSION "0.0")
 
-find_package (BASIS REQUIRED)
+find_package (BASIS_Core REQUIRED)
 
-if (NOT BASIS_FOUND)
+if (NOT BASIS_Core_FOUND)
   return ()
 endif ()
 
-include ("${BASIS_USE_FILE}")
+include ("${BASIS_Core_USE_FILE}")
 
 # The following macro call replaces the CMake command project ().
 #

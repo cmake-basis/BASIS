@@ -26,7 +26,7 @@ cmake_minimum_required (VERSION 2.8.2)
 
 set (TEMPLATE_VERSION "0.0")
 
-find_package (BASIS REQUIRED Core)
+find_package (BASIS_Core REQUIRED)
 
 if (NOT BASIS_Core_FOUND)
   return ()
