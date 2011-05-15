@@ -11,6 +11,8 @@
 set (
   MODULES
     CMakeParseArguments.cmake
+    ExternalData.cmake
+    ExternalData_config.cmake.in
     BasisCommon.cmake
     BasisDirectories.cmake
     BasisDocTools.cmake
@@ -35,6 +37,12 @@ set (
 set (
   AUXILIARY_FILES
     ExecuteProcess.cmake
+    Config.cmake.in
+    ConfigBuild.cmake
+    ConfigInstall.cmake
+    ConfigVersion.cmake.in
+    Use.cmake.in
+    GenerateConfig.cmake
     updatefile.py
     runmcc.m
     config.h.in
@@ -44,6 +52,6 @@ set (
 
 install (
   FILES       ${MODULES} ${FIND_MODULES} ${AUXILIARY_FILES}
-  DESTINATION "${INSTALL_SINFIX}/cmake"
+  DESTINATION "${INSTALL_LIB_DIR}/cmake"
 )
 

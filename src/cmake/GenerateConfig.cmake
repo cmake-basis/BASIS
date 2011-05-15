@@ -61,6 +61,14 @@ endif ()
 include ("${CMAKE_CURRENT_LIST_DIR}/ConfigBuild.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigBuild.cmake" OPTIONAL)
 
+if (INCLUDE_DIR_CONFIG)
+  list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
+endif ()
+
+if (LIBRARY_CONFIG)
+  list (REMOVE_DUPLICATES LIBRARY_CONFIG)
+endif ()
+
 # ----------------------------------------------------------------------------
 # configure project configuration file for build tree
 
@@ -71,6 +79,14 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 
 include ("${CMAKE_CURRENT_LIST_DIR}/ConfigInstall.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigInstall.cmake" OPTIONAL)
+
+if (INCLUDE_DIR_CONFIG)
+  list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
+endif ()
+
+if (LIBRARY_CONFIG)
+  list (REMOVE_DUPLICATES LIBRARY_CONFIG)
+endif ()
 
 # ----------------------------------------------------------------------------
 # configure project configuration file for install tree
