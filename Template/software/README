@@ -15,7 +15,9 @@ INTRODUCTION
 
   Introduce your software package here and describe its purpose. This section
   is very similar to an abstract of a scientific article. The focus here is,
-  however, on the software, not the methodology.
+  however, on the software, not the mathematics. Cite any of your publications
+  which are related to this software package here as [1] and add a reference
+  to the References section at the end of this file.
 
 
 
@@ -25,17 +27,13 @@ PACKAGE OVERVIEW
   Source Package
   --------------
 
-  - CMakeLists.txt      Root CMakeLists.txt file.
-  - CTestConfig.cmake   The configuration file for CTest.
+  - CMakeLists.txt      Root CMake configuration file.
   - config/             Package configuration files.
   - data/               Auxiliary data required by the executables (optional).
-  - doc/                Package documentation such as the User Manual.
-  - src/                Source files including scripts.
-  - tests/              Implementation of unit tests (optional).
+  - doc/                Software documentation such as the user manual.
+  - src/                Source files including public header files and scripts.
 
   - AUTHORS             A list of the people who contributed to this software.
-                        This list is in particular also used as input for the
-                        svn2cl utility when generating the ChangeLog.
   - README              This readme file.
   - LICENSE             The copyright and license notices.
   - INSTALL             Build and installation instructions.
@@ -60,6 +58,7 @@ REFERENCES
 ==========
 
   [1] Reference 1
+      Line 2 of this first reference.
 
   [2] Reference 2
 

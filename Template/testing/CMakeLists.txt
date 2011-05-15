@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Root CMakeLists.txt file of testing component.
+# \brief Root CMake configuration file of testing component.
 #
 # Copyright (c) University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
@@ -15,47 +15,28 @@
 cmake_minimum_required (VERSION 2.8.2)
 
 # ============================================================================
-# template version
+# initialize
 # ============================================================================
 
-# Specifies the tagged project template which this project was instantiated
-# from. This information is required by the automatic update of template
-# files from the project template repository or working copy, respectively.
-# Further, the BASIS CMake modules can make use of this variable for the
-# purpose of backwards compatibility with previous template versions.
+# The TEMPLATE_VERSION variable specifies the version of the BASIS Template
+# which this project was instantiated from. This information is required by
+# the automatic update of template files (see documentation of BASIS Core).
+# Further, the BASIS Core functions might make use of this variable to ensure
+# backwards compatibility with previous template versions.
 
 set (TEMPLATE_VERSION "0.0")
 
-# ============================================================================
-# BASIS
-# ============================================================================
+find_package (BASIS REQUIRED Core)
 
-find_package (BASIS REQUIRED)
-
-if (BASIS_FOUND)
-  include ("${BASIS_USE_FILE}")
-else ()
+if (NOT BASIS_Core_FOUND)
   return ()
 endif ()
 
-# ============================================================================
-# settings
-# ============================================================================
+include ("${BASIS_Core_USE_FILE}")
 
-# configure custom CTest settings and/or copy them to binary tree
-configure_file (
-  "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
-  @ONLY
-)
-
-# directories of test input data and expected output data
-set (TESTING_DATA_DIR     "${CMAKE_CURRENT_SOURCE_DIR}/data")
-set (TESTING_EXPECTED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/expected")
-
-# ============================================================================
-# start
-# ============================================================================
+# The following macro call replaces the CMake command project ().
+#
+# \see basis_testing ()
 
 basis_testing ("ReplaceByProjectName")
 
@@ -63,6 +44,5 @@ basis_testing ("ReplaceByProjectName")
 # subdirectories
 # ============================================================================
 
-# configure build system of test executables and/or add tests
-add_subdirectory (src)
+add_subdirectory ("${TESTING_SOURCE_DIR}")
 
