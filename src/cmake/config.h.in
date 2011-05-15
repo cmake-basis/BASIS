@@ -1,17 +1,31 @@
 /*!
- * \file  @CONFIG_H@
+ * \file  config.h
  * \brief Default include file with project configuration macros.
  *
- * For copyright information please see Copyright.txt in the root
- * directory of the project.
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+ * See LICENSE file in project root or 'doc' directory for details.
  *
- * Contact: SBIA Group <sbia-software@uphs.upenn.edu>
+ * Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
  */
 
 #pragma once
 #ifndef SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
 #define SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
 
+
+//////////////////////////////////////////////////////////////////////////////
+// constants
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef TRUE
+#  define TRUE 1
+#endif
+#ifndef FALSE
+#  define FALSE 0
+#endif
+#ifndef NULL
+#  define NULL 0
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 // version
@@ -37,7 +51,7 @@
 
 /*!
  * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION
- * \brief The version string given as "Major.Minor.Patch".
+ * \brief The version string given as "<major>.<minor>.<patch>".
  *
  * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR
  * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR
@@ -51,7 +65,7 @@
  *
  * The SVN revision number can only be provided when the project is build from
  * a revision controlled working copy of the project. It is not available in
- * case of a distribution package of the project! Hence, it may only be used for
+ * case of a distribution package of the project. Hence, it may only be used for
  * informational debug outputs, but not for actual version dependent
  * processing/compilation. If the revision number is not known, this macro
  * expands to the invalid revision number 0.
@@ -143,5 +157,38 @@
 #define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_USE \
   using namespace SBIA_@PROJECT_NAME_UPPER@_NAMESPACE
 
+//////////////////////////////////////////////////////////////////////////////
+// system
+//////////////////////////////////////////////////////////////////////////////
+
+/*!
+ * \def HAVE_SSTREAM
+ * \brief Whether the ANSI string stream classes are available.
+ */
+#ifndef HAVE_SSTREAM
+#  define HAVE_SSTREAM @HAVE_SSTREAM@
+#endif
+
+/*!
+ * \def   HAVE_STRSTREAM
+ * \brief Whether the obsolete string stream classes are available.
+ *
+ * \note As the strstream implementations are obsolete already for a long
+ *       time, this macro always evaluates to FALSE.
+ */
+ #ifdef HAVE_STRSTREAM
+ #  undef HAVE_STRSTREAM
+ #endif
+ #define HAVE_STRSTREAM FALSE
+
+/*!
+ * \def   HAVE_LONG_LONG
+ * \brief Whether the long long type is supported by the compiler.
+ */
+#ifndef HAVE_LONG_LONG
+#  define HAVE_LONG_LONG @HAVE_LONG_LONG@
+#endif
+
 
 #endif // SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
+

@@ -392,8 +392,8 @@ function (basis_configure_auxiliary_sources SOURCES)
 
   # configure auxiliary source files
   set (CPP_SOURCES "")
-  foreach (SOURCE mainaux.h)
-    set (TEMPLATE "${PROJECT_CONFIG_DIR}/${SOURCE}.in")
+  foreach (SOURCE config.h mainaux.h)
+    set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}.in")
     if (NOT EXISTS "${TEMPLATE}")
       set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
     endif ()

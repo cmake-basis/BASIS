@@ -69,9 +69,9 @@ CHECK_TYPE_SIZE("long long" LONG_LONG)
 include (TestForSSTREAM)
 
 if (CMAKE_NO_ANSI_STRING_STREAM)
-  set (HAVE_SSTREAM 0)
+  set (HAVE_SSTREAM FALSE)
 else ()
-  set (HAVE_SSTREAM 1)
+  set (HAVE_SSTREAM TRUE)
 endif ()
 
 # ============================================================================
