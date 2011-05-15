@@ -1,0 +1,34 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software -at- uphs.upenn.edu
+
+
+
+INTRODUCTION
+============
+
+  This is an example application of the ReplaceByProjectName software package.
+  The example files within this package are needed to follow the step-by-step
+  software usage instructions given in the user manual. Please refer to the
+  user manual of the ReplaceByProjectName package [1].
+
+
+PACKAGE OVERVIEW
+================
+
+  \todo Give a brief overview of the example files.
+
+
+
+REFERENCES
+==========
+
+  [1] ReplaceByProjectName: User Manual.
+      See 'doc' folder of the software package installation.
+

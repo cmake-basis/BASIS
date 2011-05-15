@@ -1,0 +1,307 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software -at- uphs.upenn.edu
+
+
+
+INTRODUCTION
+============
+
+  This document describes the directory structure of projects following BASIS.
+  This structure is based on the Filesystem Hierarchy Standard of Linux
+  (http://www.linuxfoundation.org/en/FHS). The configuration of the installation
+  was furhter designed to account for the differences in UNIX-based systems and
+  Windows as well as the installation of multiple versions of each package.
+
+
+
+LEGEND
+======
+
+  In the following, <project> is a placeholder for the project name in lowercase
+  letters only and <Project> is the case-sensitive project name.
+  
+  Further, <version> is a placeholder for the project version string
+  "<major>.<minor>.<patch>", where <major> is the major version number, <minor>
+  the minor version number, and <patch> the patch number.
+
+  The root directory of a particular project source tree is denoted by <source>,
+  while the root directory of the project binary tree is referred to as <build>.
+  Note that each software project consists of more than one project components
+  (not identical to, but related with software package components).
+  Each component can be downloaded, configured, build, and installed separately.
+  See design-components file and section Source Tree for details.
+
+  The root directory of a development branch such as in particular the trunk
+  (cf. section Repository Organization), is considered relative to the base URL of the
+  project repository and denoted by <tag>, while the base URL is referred to as <url>.
+
+
+
+REPOSITORY ORGANIZATION
+=======================
+
+  The URL of the project repository is "https://sbia-svn/projects/<project>".
+  The common directories "trunk", "branches", and "tags" are located here.
+
+  - trunk/                      The current development version of the project.
+                                Most development is done in this master branch.
+
+  - branches/<name>/            Separate branches named <name> are developed in
+                                subdirectories under the branches directory.
+                                One reason for branching is, for example, to
+                                develop new features separate from the main
+                                development branch, i.e., the trunk, and merging
+                                the desired changes back to the trunk once the
+                                new feature is implemented and tested.
+
+                                See guide-branches.
+
+  - branches/release/           This branch is specifically used prior to
+                                releasing a new version of the project.
+
+                                See guide-branches.
+
+  - tags/<project>-<version>/   Tagged release version of the project.
+                                The reason for including the project name in the
+                                name of the tagged branch is, that revision
+                                control systems often use the last URL part as
+                                name for the directory to which the URL's content
+                                is checked out or exported if no name for this
+                                directory is specified explicitly.
+
+                                In case of SVN, the following command will
+                                export the released software to a new directory
+                                under the current working directory named
+                                <project>-<version>/.
+
+                                  svn export <url>/tags/<project>-<version>
+
+  Under the trunk and the release branches, a version of the entire source tree
+  can be found. Other branches under branches/ may only contain a subset of the
+  trunk such as, for example, only the software component (see Source Tree).
+
+
+
+SOURCE TREE
+===========
+
+  As the example data and the testing tree are not required in order to build
+  and install the software, all files related to the software component of a
+  project are separated from these two components on a directory level. This
+  allows an SVN check-out or export of the each of these components alone.
+  Details on the components of a project are given in design-components.
+
+  It is important to note the difference between unit tests and system tests.
+  Most often, only system tests will be performed due to the research character
+  of the projects. These tests are usually implemented in a scripting language
+  such as BASH, Python, or Perl. They simply call the built executables with
+  different test input data and compare the output to the expected results.
+  System tests can also be performed using the installed software. Unit tests,
+  on the other side, are not supposed to be installed (and may not even be
+  distributed to reduce the size of the packages). Unit tests test only single
+  modules such as a C++ class. The size of the additional data required for
+  unit tests shall be small. Entire medical image data sets are mostly only
+  required for system tests.
+
+
+  Directories
+  -----------
+
+    - PROJECT_SOFTWARE_DIR      := <source>/software/
+        / SOFTWARE_CONFIG_DIR   :=   config/
+        / SOFTWARE_SOURCE_DIR   :=   src/
+        / SOFTWARE_DATA_DIR     :=   data/
+        / SOFTWARE_DOC_DIR      :=   doc/
+        / SOFTWARE_TESTS_DIR    :=   tests/
+    - PROJECT_EXAMPLE_DIR       := <source>/example/
+    - PROJECT_TESTING_DIR       := <source>/testing/
+        / TESTING_DATA_DIR      :=   data/
+        / TESTING_EXPECTED_DIR  :=   expected/
+        / TESTING_TESTS_DIR     :=   tests/
+
+
+  Software
+  --------
+
+  - PROJECT_SOFTWARE_DIR          Root directory of software component.
+      / CMakeLists.txt            Root CMakeLists.txt file of software component.
+      / AUTHORS                   Lists names of authors.
+      / LICENSE                   Copyright and license notices.
+      / README                    Root documentation file (readme file).
+      / INSTALL                   Build and installation instructions.
+      / SOFTWARE_CONFIG_DIR       BASIS CMake configuration files.
+      / SOFTWARE_SOURCE_DIR       All source code files.
+      / SOFTWARE_DATA_DIR         Auxiliary data such as medical atlases and
+                                  pre-computed lookup tables, for example.
+      / SOFTWARE_DOC_DIR          Documentation files.
+      / SOFTWARE_TESTS_DIR        Implementation of unit tests and test data.
+         / CTestConfig.cmake      CTest configuration file.
+         / CTestCustom.cmake.in   Custom CTest configurations.
+
+
+  Example
+  -------
+
+  - PROJECT_EXAMPLE_DIR           Root directory of example component.
+      / CMakeLists.txt            Root CMakeLists.txt file of example component.
+      / (.*)                      Files required for example application.
+
+
+  Testing
+  -------
+
+  - PROJECT_TESTING_DIR           Root directory of testing component.
+      / CMakeLists.txt            Root CMakeLists.txt file of testing component.
+      / CTestConfig.cmake         CTest configuration file.
+      / CTestCustom.cmake.in      Custom CTest configurations.
+      / TESTING_DATA_DIR          Data used by system tests as input to the software.
+      / TESTING_EXPECTED_DIR      Testing baseline data, for example, PNG images of
+                                  slices which are compared to same slices of output.
+      / TESTING_TESTS_DIR         Implementations of system tests.
+
+
+
+BUILD TREE
+==========
+
+  Even though CMake supports in-source tree builds, it is recommended to have
+  the build tree separate from the source tree. Only the files in the source
+  tree are considered of importance as all files in the build tree are just
+  generated from the files of the source tree.
+
+
+  Directories
+  -----------
+
+    - RUNTIME_OUTPUT_DIRECTORY := bin/
+    - LIBRARY_OUTPUT_DIRECTORY := lib/
+    - ARCHIVE_OUTPUT_DIRECTORY := lib/
+
+
+  Software
+  --------
+
+    - RUNTIME_OUTPUT_DIRECTORY   All executables and shared libraries (Windows).
+    - LIBRARY_OUTPUT_DIRECTORY   Shared libraries (UNIX).
+    - ARCHIVE_OUTPUT_DIRECTORY   Static libraries and import libraries (Windows).
+
+
+  Example
+  -------
+
+  By default, nothing to do as the example files just need to be copied to some
+  directory. These files are mainly just used as input to the programs without
+  the need to configure or build them. The implementation of exceptions is up
+  to the project developer.
+
+
+  Testing
+  -------
+
+  \todo
+
+
+INSTALL TREE
+============
+
+  When installing the software by building either the install target or
+  running an installer of a binary distribution package, the following
+  directory strucure is used.
+
+
+  Options
+  -------
+
+    - INSTALL_PREFIX   Installation directories prefix (<prefix>).
+                       Defaults to "/usr/local" on UNIX-based systems
+                       and "C:\Program Files\SBIA" on Windows.
+
+    - INSTALL_SINFIX   Installation directories suffix or infix, respectively
+                       (<sinfix>). Defaults to "sbia/\${PROJECT_NAME_LOWER}"
+                       on UNIX-based systems and an empty string on Windows.
+
+
+  Directories
+  -----------
+
+  Based on above options, the installation directories are set as follows:
+
+    - INSTALL_BIN_DIR     := "<prefix>/bin/<sinfix>/"
+    - INSTALL_LIB_DIR     := "<prefix>/lib/<sinfix>/"
+    - INSTALL_INCLUDE_DIR := "<prefix>/include/<sinfix>/sbia/<project>/"
+    - INSTALL_DOC_DIR     := "<prefix>/share/<sinfix>/doc/"
+    - INSTALL_DATA_DIR    := "<prefix>/share/<sinfix>/data/"
+    - INSTALL_EXAMPLE_DIR := "<prefix>/share/<sinfix>/example/"
+    - INSTALL_MAN_DIR     := "<prefix>/share/<sinfix>/man/"
+
+  Note that the include directory by intention always ends in sbia/<project>.
+  The header files of a project have to be included as follows:
+
+    #include <sbia/<project>/some-header.h>
+
+  Hence, the include directory which is added to the search path has to be set
+  to <prefix>/include/<sinfix>. Note that <sinfix> may include the project
+  version such that multiple versions can be installed using the same prefix.
+
+
+  Content
+  -------
+
+    - INSTALL_BIN_DIR          Main executables only.
+
+    - INSTALL_LIB_DIR          Static and shared libraries. Moreover, utility
+                               executables which are called by other executables
+                               only. Furhter, the CMake configuration files
+                               <Project>Config.cmake and <Project>ConfigVersion.cmake
+                               are installed here such that they are found by
+                               CMake when LD_LIBRARY_PATH on UNIX-systems includes
+                               the directory INSTALL_LIB_DIR.
+
+    - INSTALL_INCLUDE_DIR      Public header files of static and shared libraries
+
+    - INSTALL_DOC_DIR
+        / README               Root documentation file. Links to other documents
+        / AUTHORS              List of authors of the software project
+        / LICENSE              Copyright and license information
+        / ChangeLog            Generated from SVN history
+        / UserManual.pdf       Guides user through example application
+        / DeveloperManual.pdf  Describes implementation details
+        / API/                 API documentation generated from source code, e.g.,
+                               using Doxygen, Epydoc, Sphinx,...
+
+    - INSTALL_MAN_DIR
+        / man1/                Man pages of main executables.
+        / man3/                Man pages of libraries.
+
+    - INSTALL_DATA_DIR         Auxiliary data such as medial atlases and
+                               pre-computed lookup tables, for example.
+
+    - INSTALL_EXAMPLE_DIR      All data required to follow example as described
+                               in User Manual.
+
+
+  Symbolic links
+  --------------
+
+  On UNIX-based systems, the following symbolic links are created when <sinfix>
+  is not an empty string and the option INSTALL_SYMLINKS is TRUE.
+  Note that the link creation will fail if a file or directory with the links
+  name already exists. This is desired and will simply be reported to the user.
+  The projects files are yet installed in the specified installation directories.
+
+    - If INSTALL_BIN_DIR != "<prefix>/bin" create symbolic links
+      "<prefix>/bin/<exec>" -> "INSTALL_BIN_DIR/<exec>"
+
+    - If INSTALL_MAN_DIR != "<prefix>/share/man" create symbolic links
+      "<prefix>/share/man/man?/<name>.?" -> "INSTALL_MAN_DIR/man?/<name>.?"
+
+    - If INSTALL_DOC_DIR != "<prefix>/share/doc/<sinfix>" create symbolic link
+      "<prefix>/share/doc/<sinfix>" to "INSTALL_DOC_DIR"
+

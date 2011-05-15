@@ -1,0 +1,192 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/software/
+  Email: sbia-software -at- uphs.upenn.edu
+
+
+
+INTRODUCTION
+============
+
+  This document defines the different components used to modularize the content
+  of each software project. At the directory level, a project is split into three
+  major components: the software, example, and testing component.
+
+  The software component itself is further divided into logical components, such
+  as the Runtime component consisting of the binary programs, the Development
+  component consisting of binary libraries and corresponding header files, and
+  the Documentation component consisting of readme file and user manual.
+
+
+
+MAJOR COMPONENTS
+================
+
+  In order to separate the software of a project from the example and the
+  testing components on a directory level to enable the separate SVN export
+  or check out as these components may consist of many data files, each project
+  is divided into three major components:
+
+    - Software
+    - Example
+    - Testing
+
+  The software component contains the source code, auxiliary data files, build
+  configuration files, unit tests and documentation files. Only the software
+  component is required when installing the project on a target system.
+  
+  The example component contains all the files required to follow the example
+  application of the installed software as described in the user manual of the
+  software. Hence, the example component can be considered a separate project
+  which uses the software package. Therefore, the example component is dependent
+  on the software component. In particular, it may consist of medical input
+  datasets and/or implementations using the libraries provided by the software
+  package.
+
+  The testing component provides test implementations, test input data, and
+  expected results based on a system level, i.e., the tests execute the
+  programs of the software component with the given input data and compare
+  the output to the expected results. Just as the example component can the
+  testing component be viewed as separate project which depends on the software.
+
+
+  Root CMake Configurations
+  -------------------------
+
+    - Software
+
+      sbia_project (<PROJECT_NAME>)
+      # ...
+      sbia_project_finalize ()
+
+    - Example
+
+      sbia_example (<PROJECT_NAME>)
+
+      This macro uses find_package () to find the software component of the
+      project and then starts a new CMake project.
+
+    - Testing
+
+      sbia_testing (<PROJECT_NAME>)
+
+      This macro uses find_package () to find the software component of the
+      project, starts a new CMake project and includes the SbiaTest module.
+
+
+
+Assembling the Major Components
+===============================
+
+  The three components can optionally be assembled as follows:
+
+    - software/       The root of the assembled source tree.
+                      This directory corresponds to the root of the
+                      source tree of the software component.
+        + example/    The sources of the example component are placed
+                      into this subdirectory (optional).
+        + testing/    The sources of the testing component are placed
+                      into this subdirectory (optional).
+
+  The root CMake configuration file of the software component is therefore
+  implemented to traverse into the "example" and "testing" subdirectories
+  if they exist. Thus, when running CMake with this source tree as input,
+  all three components are configured as one single project.
+
+  Alternatively, a CMake configuration file in the project root directory
+  is provided which simply traverses into the three subdirectories,
+  "software", "example", and "testing".
+
+  For the user (not the developer), the following is recommended, however.
+
+
+
+Delayed Download of Optional Components
+=======================================
+
+  During the configuration step of the software component via CMake, the user
+  is presented with the options:
+
+    - BUILD_EXAMPLE   Whether to build and install the example component.
+    - BUILD_TESTING   Whether to build and install the testing component.
+
+  If BUILD_EXAMPLE is TRUE and the "example" subdirectory does not exist,
+  a custom target is added which either checks out the example source files from
+  the SVN repository or downloads and extracts the source distribution package
+  of the example using the public URL. The downloaded files are located in the
+  build tree, leaving the source tree unmodified. Similarly, for the testing
+  component if BUILD_TESTING is TRUE and the "testing" subdirectory is missing.
+  This is implemented using the ExternalProject CMake module.
+
+
+  SVN Repository vs. Source Distribution
+  --------------------------------------
+
+  The CMake implementations of the software component either export the sources
+  of the missing components directly from the SVN repository or download and
+  extract the corresponding source distribution packages.
+
+  Therefore, the following CMake variable is used:
+
+    - BASE_URL  The URL of either the SVN branch
+                (e.g., "https://sbia-svn/projects/BASIS/tags/BASIS-1.0.0/Core")
+                or the public distribution folder
+                (e.g., "https://www.rad.upenn.edu/sbia/downloads/software/basis").
+
+  If BASE_URL is not specified and the software component is a working copy,
+  BASE_URL is set automatically using the SVN information of this working copy.
+  Otherwise, if the command "svn info ${BASE_URL}" is successful, the sources of
+  the selected packages are exported from this repository. If BASE_URL does not
+  point to a SVN repository, source packages are downloaded. The (default) names
+  of the source packages is defined in the root CMake configuration file of the
+  software component via advanced CMake variables:
+
+    - SOFTWARE_PACKAGE   Name of the software source package.
+    - EXAMPLE_PACKAGE    Name of the example source package.
+    - TESTING_PACKAGE    Name of the testing source package.
+
+  For example, these variables are set for the Core component of BASIS 1.0.0 to
+
+    - SOFTWARE_PACKAGE := "basis-1.0.0-core-software-src.tar.gz"
+    - EXAMPLE_PACKAGE  := "basis-1.0.0-core-example-src.tar.gz"
+    - TESTING_PACKAGE  := "basis-1.0.0-core-testing-src.tar.gz"
+
+
+
+Software Components
+===================
+
+  For the packaging and installation of a software project, the following
+  package components and component groups are distinguished.
+
+    - Runtime                 Executables and shared libraries required to run
+                              the software programs.
+
+    - Development             Static and shared libraries which can be used to
+                              implement software that builds upon these libraries.
+
+    - Documentation
+
+        + User Manual         Introduces software for the end-user and
+                              demonstrates its use on one or more examples.
+        + Developer Manual    Describes implementation details.
+        + API Documentation   Documents API of libraries.
+
+    - Examples
+
+        + Runtime             All example files using the programs of the Runtime
+                              component and are required to follow the steps in
+                              the User Manual.
+        + Development         Example implementations which make use of the
+                              provided libraries of the Development component.
+
+    - Testing                 System tests which can be used to test the correct
+                              function and/or installation of the Runtime component.
+                              Note that unit tests are not included as these
+                              are not supposed to be packaged.
+

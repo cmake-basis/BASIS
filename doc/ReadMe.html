@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+
+<!--
+##############################################################################
+# \file  ReadMe.html
+# \brief Root documentation file.
+#
+# For copyright information please see Copyright.txt in the root
+# directory of the project.
+#
+# Contact: SBIA Group <sbia-software@uphs.upenn.edu>
+##############################################################################
+-->
+
+<html>
+<!--
+# For an introduction to HTML, visit http://www.w3schools.com/html/default.asp.
+# Further, check out http://www.w3schools.com/html5/default.asp for a reference
+# on the most recent HTML standard, known as HTML5.
+#
+# Please note that CSS should be used to format the HTML document and that each
+# markup tag requires an opening tag and a closing tag similar to XML.
+# If a markup tag is an empty tag, it does not require a closing tag, however,
+# such as <br />, for example.
+#
+# See http://www.w3schools.com/css/default.asp for a tutorial on CSS.
+-->
+
+<!--
+##############################################################################
+# HTML header
+##############################################################################
+-->
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>SBIA Software Project Template</title>
+  <link rel="StyleSheet" href="ReadMe.css" type="text/css" />
+</head>
+<body>
+
+<!--
+##############################################################################
+# document header
+##############################################################################
+-->
+<h1>SBIA Software Project Template</h1>
+
+<table class="header">
+  <tbody>
+    <tr class="header">
+      <td class="header"><b>Author:</b></td>
+      <td class="header">Andreas Schuh</td>
+    </tr>
+    <tr class="header">
+      <td class="header"><b>Date:</b></td>
+      <td class="header">02/15/2011</td>
+    </tr>
+  </tbody>
+</table>
+
+<!--
+##############################################################################
+# contact
+##############################################################################
+-->
+
+<!--
+# The contact information for users of the software package outside the lab.
+# Here, no personalized contact information shall be given. Hence, nothing
+# has to be modified here. The contact information will be kept up-to-date
+# automatically via the file update during the configure step of CMake.
+-->
+<h2><a name="contact">Contact</a></h2>
+
+<p class="contact">
+Section of Biomedical Image Analysis<br />
+Department of Radiology<br />
+University of Pennsylvania<br />
+3600 Market Street Suite 380<br />
+Philadelphia, PA 19104
+</p>
+
+<p class="contact"><a href="mailto:sbia-software@uphs.upenn.edu">sbia-software@uphs.upenn.edu</a></p>
+
+<!--
+##############################################################################
+# introduction
+##############################################################################
+-->
+
+<h2><a name="intro"></a>Introduction</h2>
+
+The project template used at SBIA to instantiate new software development
+projects is documented herein. The purpose of this project template is twofold:
+At first, it standardizes the organization, build and test process, and
+automatic packaging of software packages developed at the lab. Second, it
+provides the developer with a predefined build configuration and convenient
+macros for tasks such as adding build targets and automatic generation of API
+documentation. It therefore makes use of
+<a href="http://www.cmake.org">CMake</a>, a cross-platform, open-source build
+system. The template also contains various so-called Find modules which
+ease the task of resolving dependencies to external software libraries.
+The project template thus enables the software developer to concentrate
+as much as possible on the actual important part, the algorithmic details of
+their software, instead of the organization and configuration of the build
+system.
+
+<!--
+##############################################################################
+# overview
+##############################################################################
+-->
+
+<h2><a name="overview">Package Overview</a></h2>
+
+<p>
+This package contains not only the project template itself, but also a
+documentation of the template for both users and template developers and
+tests which are used to test the build system configuration. The following
+table lists all files and folders which are found in the top directory of the
+package and describes their content.
+</p>
+
+<table>
+  <tbody>
+    <tr>
+      <th style="white-space: nowrap">File/Folder</th>
+      <th>Description</th>
+    </tr>
+    <tr class="alt1">
+      <td class="file"><a href=ReadMe.html>ReadMe.html</a></td>
+      <td>The main documentation of this package. Other documents such as
+          user manual and developer manual are referenced here.</td>
+    </tr>
+    <tr class="alt2">
+      <td class="file"><a href=Copyright.txt>Copyright.txt</a></td>
+      <td>The copyright notices can be found in this file. Please refer also
+          to the <a href="#License">License</a> section of this document for
+          information regarding licensing and copyright.</td>
+    </tr>
+    <tr class="alt1">
+      <td class="folder">Doc</td>
+      <td>Further documentation of the project template, in particular, the
+          user manual<sup><a href="#usermanual">1</a></sup> and the developer
+          manual<sup><a href="#develmanual">2</a></sup>, can be found in this
+          folder.</td>
+    </tr>
+    <tr class="alt2">
+      <td class="folder">Template</td>
+      <td>The project template, consisting of a particular standardized folder
+          structure, common source files, and CMake files from which actual
+          projects are instantiated from is located in this folder.</td>
+    </tr>
+    <tr class="alt1">
+      <td class="folder">Testing</td>
+      <td>Tests of the default build system of the project template can be
+          found in this folder.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!--
+##############################################################################
+# license/copyright
+##############################################################################
+-->
+
+<h2><a name="license">License</a></h2>
+<p>See the <a href="Copyright.txt">copyright notices</a> for more information.</p>
+
+<!--
+##############################################################################
+# requirements
+##############################################################################
+-->
+
+<h2><a name="requirements">Requirements</a></h2>
+
+<p>
+The minimal requirements for using this project template is the availability
+of a CMake installation. In order to support the extraction of the project's
+current Subversion revision of an project using SVN for revision control, the
+<tt>svn</tt> command must be installed, which, however, is certainly given in
+this case anyways. Further, in order for the automatic file update feature to
+be able to merge the project's modified files with the latest version of the
+template files, Python has to be installed. In particular, the <tt>python</tt>
+interpreter and the standard modules <tt>os</tt> and <tt>sys</tt>, but also
+<tt>getopt</tt> have to be available. Otherwise, the project template can still
+be used, whereby the automatic file udpate will just be disabled.
+</p>
+
+<!--
+##############################################################################
+# automatic file update
+##############################################################################
+-->
+
+<h2><a name="updates">Automatic File Update</a></h2>
+
+One, on first sight extraordinary, feature of the project template is the
+mechanism of automatic file updates implemented as part of the configuration
+step of CMake. The reasons for this feature are as follows.
+
+<ol>
+  <li>A copy of CMake configuration files and modules which are common among
+      all projects should still be part of each project such that the entire
+      package is self-contained. If some of the CMake modules would be
+      accessible at a system-wide location only, the distribution of the
+      software packages becomes more difficult. In case of Find modules, a
+      separate revision controlled SBIA package of such modules can be
+      considered, though. A public distribution of such package is, however,
+      required then. For instance, these CMake Find modules could be
+      distributed as part of the SBIA Toolkit.</li>
+  <li>The standard build configuration is maintained via the project template
+      and each derived project at SBIA should adopt the modified standard as
+      long as the changes do not interfere with the project specific part of
+      the configuration of the build system.
+      Note that the projects themselves shall and will mostly only be concerned
+      about the implementations of particular algorithms and how to modularize
+      these algorithms. Each component of the software is represented by one
+      build target. The project developer shall ideally only be concerned about
+      telling the build system which targets are to be build from which sources
+      and which external dependencies have to be resolved. The template provides
+      a build system which simplifies as much of this process as possible.
+      As this SBIA specific build system may, however, continuously improved,
+      in particular as long as the template is not entirely fixed, an update
+      of projects which are already using the template is desired.</li>
+  <li>In particular CMake Find modules to resolve external dependencies are
+      continuously improved and, given that the developers of the Find modules
+      go by the rule of keeping the input and output of those Find modules
+      stable, each project will benefit from the improvements and hence should
+      update the
+</ol>
+
+In the following, this mechanism is
+described in detail. Afterwards, the advantages of this automatic update of
+template files are discussed along a discussion why other options such as
+exploiting SVN externals are only restricted feasible to achieve some of the
+desired goals.
+
+<!--
+##############################################################################
+# references
+##############################################################################
+-->
+
+<!--
+# References of all other documents which document the use or implementation
+# of this package shall be listed in the following customizable section.
+#
+# For example, all publications related to the software submitted to
+# conferences and or journals have to be listed. The corresponding PDF document
+# and, if applicable, a suitable BibTex file should be found in the 'Doc'
+# folder and be linked here as shown in the following example;
+
+<h2><a name="references">References</a></h2>
+
+<table class="ref">
+  <tbody>
+    <tr class="ref" valign="top">
+      <td class="ref"><a name="LastNameOfFirstAuthor:LastTwoDigitsOfYear">[1]</a></td>
+      <td class="ref">Reference of publication as it would be given in a scientific paper<br>
+          [ <a href="Doc/paper.bib">bib</a> | <a href="Doc/paper.pdf">PDF</a> ]
+      </td>
+    </tr>
+  </tbody>
+</table> 
+-->
+
+<h2><a name="references">References</a></h2>
+
+<table class="ref">
+  <tbody>
+    <tr class="ref" valign="top">
+      <td class="ref"><a name="usermanual">[1]</a></td>
+      <td class="ref">User manual of the software development project template
+          [ <a href="Doc/UserManual.pdf">PDF</a> ]
+      </td>
+    </tr>
+    <tr class="ref" valign="top">
+      <td class="ref"><a name="develmanual">[2]</a></td>
+      <td class="ref">Developer manual of the software development project template
+          [ <a href="Doc/DeveloperManual.pdf">PDF</a> ]
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!--
+##############################################################################
+# footer
+##############################################################################
+-->
+
+<p class="footer">
+Last changed by $Author$ on
+$Date$
+</p>
+
+<!-- END -->
+</body>
+</html>

@@ -1,0 +1,298 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software -at- uphs.upenn.edu
+
+
+
+INTRODUCTION
+============
+
+  This document describes the common procedure to build and install any
+  software developed at and distributed by SBIA. In particular, software built
+  on top of BASIS, a meta-project which defines the Build And Software
+  Implementation Standard which was established in the summer of the year 2011.
+  Please refer to the documentation of BASIS for details on the standard.
+
+  If you obtained a binary distribution package for a supported platform,
+  please follow the corresponding installation instructions corresponding
+  to your operating system. The build step can be omitted in this case.
+
+  In case of problems to build, install, or use the software, please contact
+  the SBIA Group at the University of Pennsylvania, PA.
+
+  In the following $ at the beginning of a line indicates the command prompt of
+  the used shell. Hence, the command followed after the $ has to be entered in a
+  terminal. The instructions given in this guide are based on bash.
+
+
+
+OBTAINING A COPY OF THE SOFTWARE
+================================
+
+  Visit https://www.rad.upenn.edu/sbia/software/index.html for an overview of
+  publicly available software distribution packages.
+
+  A download link for a specific software package can be requested at:
+
+    https://www.rad.upenn.edu/sbia/software/request.php
+
+  The file names of the distribution packages follow the convention
+  "<package>-<version>-<arch>.<ext>", where <package> is the name of the
+  package in lowercase letters, and <version> is the package version in the
+  format "<major>.<minor>.<patch>". The <arch> file name part specifies the
+  operating system and hardware architecture, i.e.,
+
+    linux-x86     ->  Linux, 32-bit
+    linux-x86_64  ->  Linux, 64-bit
+    darwin-x86    ->  Darwin x86 Intel
+    darwin-ppc    ->  Darwin Power PC
+    win32         ->  Windows, 32-bit
+    win64         ->  Windows, 64-bit
+
+  In case of a source distribution package the value of <arch> is "src".
+  The file name extension <ext> is "tar.gz" for a compressed tarball,
+  "deb" for a Debian package, and "rpm" for a RPM package.
+
+
+
+INSTALLING A BINARY DISTRIBUTION PACKAGE
+========================================
+
+  Debian Package
+  --------------
+
+    This package can be installed on Debian Linux and its derivatives such as
+    Ubuntu Linux using, for example, the Advanced Package Tool (APT).
+
+    To install the software package, run
+
+      $ sudo apt-get install <package>-<version>-<arch>.deb
+
+    in a terminal or use the package manager of your choice.
+
+
+  RPM Package
+  -----------
+
+    This package can be installed on Red Hat Linux and its derivatives such as
+    CentOS Linux and openSUSE Linux using, for example, the Yellowdog Updater,
+    Modified (YUM).
+
+    To install the software package, run
+
+      $ sudo yum install <package>-<version>-<arch>.deb
+
+    in a terminal or use the RPM package manager of your choice.
+
+
+  Mac OS
+  ------
+
+    Bundles for Mac OS might be available for some software packages,
+    but is not supported by default. Please refer to the INSTALL file which
+    is located in the root directory of the respective software package.
+
+
+  Windows
+  -------
+
+    Currently, Microsoft Windows is not supported as operating system.
+    The software development at SBIA is based on Linux, in particular
+    CentOS, and most software packages are therefore dependent on a
+    UNIX-based operating system. Thus, building and executing SBIA software
+    under Windows will most likely require an installation of Cygwin
+    (http://www.cygwin.com/) and the build of the software from sources
+    as described below.
+
+    As an alternative, consider the use of a Live Linux Distribution,
+    a dual boot installation of Linux or an installation of a Linux operating
+    system in a virtual machine using virtualization tools such as VirtualBox
+    (http://www.virtualbox.org/).
+
+
+
+BUILDING THE SOFWARE FROM SOURCES
+=================================
+
+  Build Dependencies
+  ------------------
+
+  The build of the software packages developed at SBIA is based on CMake,
+  a cross-platform, open-source build tool. This tool can be used to configure
+  the build system for various build tools which perform the actual build.
+  Because of the focus on Linux-based development at SBIA, build instructions
+  are based on GNU Make and the GNU Compiler Collection.
+
+  - GNU Compiler Collection
+
+    Web:      http://gcc.gnu.org/
+    Download: http://gcc.gnu.org/install/
+
+    Ubuntu:   g++
+
+  - GNU Make
+
+    Web:      http://www.gnu.org/
+    Download: http://www.gnu.org/software/software.html
+
+    Ubuntu:   (pre-installed)
+
+  - CMake 2.6.2 or greater
+
+    Web:      http://www.cmake.org/
+    Download: http://www.cmake.org/cmake/resources/software.html
+
+    Ubuntu:   cmake, cmake-curses-gui
+
+  - BASIS Core
+
+    Web:      https://www.rad.upenn.edu/sbia/software/
+    Download: https://www.rad.upenn.edu/sbia/software/basis/
+
+    Any software built on top of BASIS depends at least on the Core component
+    of BASIS. The Core defines the project directory structure and provides
+    CMake implementations to ease and standardize the build and installation.
+
+
+  Build and Installation Instructions
+  -----------------------------------
+
+  In the following, we assume you obtained a copy of the source package as
+  compressed tarball (*.tar.gz). The name and version part of the package file
+  is referred to as bash variable
+
+    $ pkg=<package>-<version>
+
+  1. Extract the source tree
+
+     At first, extract the downloaded source package, e.g.,
+
+       $ tar xzf $pkg-src.tar.gz ~
+
+     This will extract the sources in a new diretory in your home directory
+     named "<package>-<version>-src".
+
+  2. Configure the build tree
+
+     Create a directory for the build tree of the package and change to it, e.g.,
+
+       $ mkdir ~/$pkg-build
+       $ cd ~/$pkg-build
+
+     Note that even though an in-source build is supported by most packages, i.e.,
+     building the software within the source tree, it is not recommended.
+     A CMake warning will be displayed and the in-source build has to be
+     explicitly acknowledged before the configuration step is performed.
+
+     To configure the build tree, run CMake's graphical tool ccmake
+
+       $ ccmake ~/$pkg-src
+
+     Put "c" to trigger the configuration step of CMake. Warnings can be
+     ignored by pressing "e". Once all CMake variables are configured
+     properly, which might require the repeated execution of CMake's configure
+     step, press "g". This will generate the configuration files for the
+     selected build tool (i.e., GNU Make Makefiles in our case) and exit CMake.
+
+     The common CMake variables which configure the build process are:
+
+       BUILD_DOC        Whether the documentation target should be built by
+                        default, too. If FALSE, the documentation, such as
+                        in particular the man pages and API documentation,
+                        can be built by building the "doc" target.
+       BUILD_EXAMPLE    Whether the examples should be built (if required)
+                        and/or installed.
+       BUILD_TESTING    Whether the testing tree should be built.
+       BUILD_TYPE       Specify the build configuration to built. If not
+                        set, the "Release" configuration will be built.
+                        Valid values are "Release", "Debug", and "Coverage".
+       INSTALL_PREFIX   Prefix used for package installation (see Step 4).
+       INSTALL_SINFIX   Suffix/Infix used for package installation (see Step 4).
+       INSTALL_LINKS    Whether (symbolic) links should be created (see Step 4).
+
+     Please refer to the package specific build instruction given in the
+     INSTALL file which is located in the root directory of the source tree
+     for details on the package specific CMake variables.
+
+     Additionally, refer to the documentation of the CMake variables displayed
+     in the status bar of ccmake.
+
+  3. Build the software
+
+     To build the package executables, run GNU Make in the root directory
+     of the configured build tree, i.e.,
+
+       $ make
+
+  4. Install the package (optional)
+
+     First, make sure that the CMake variables INSTALL_PREFIX and
+     INSTALL_SINFIX are set properly by running CMake as follows:
+
+       $ cmake -DINSTALL_PREFIX=<prefix> -DINSTALL_SINFIX=<sinfix>
+
+     This can be omitted if these variables were set already during
+     the configuration of the build tree or if the default values
+     should be used. On Linux, INSTALL_PREFIX is by default set to
+     "/usr/local" and INSTALL_SINFIX to "sbia/<package>".
+
+     After the package was configured successfully, the executables and
+     auxiliary files can be installed using the command
+
+       $ make install
+
+     in the root directory of the build tree. This will copy the installation
+     files into the directories specified during the configuration of the build
+     tree (see build step 2).
+ 
+     This will install the package's files into the following locations:
+
+       <prefix>/bin/<sinfix>/              Main executable files.
+       <prefix>/lib/<sinfix>/              Libraries and auxiliary executables.
+       <prefix>/etc/<sinfix>/              Package configuration files.
+       <prefix>/doc/<sinfix>/              Package documentation files.
+       <prefix>/share/<sinfix>/data/       Auxiliary package data.
+       <prefix>/share/<sinfix>/example/    Files required to run example as
+                                             described in the User Manual.
+       <prefix>/share/<sinfix>/man/man.1   Man pages of main executables.
+       <prefix>/share/<sinfix>/man/man.3   Man pages of library functions.
+
+     where <prefix> is the value of INSTALL_PREFIX and <sinfix> the value
+     of INSTALL_SINFIX. Hence, if more than one version of a software package
+     shall be installed, include the package version in the <sinfix>, e.g.,
+     "sbia/<package>-<version>".
+
+     Additionally, if <sinfix> is not an empty string and INSTALL_LINKS is
+     set to TRUE (the default), the following (symbolic) links are created:
+
+       <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
+       <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
+       <prefix>/share/man/man.3/<func>.3 -> <prefix>/share/<sinfix>/man/man.3/<func>.3
+
+     Consider also the package specific installation instructions given in
+     the INSTALL file of the respective package.
+
+     After the successful installation, the build tree can be deleted. Note,
+     however, that the Makefile-based deinstallation of the package requires
+     the build tree to be present. To save disk space, the intermediate
+     object files and built executables should still be deleted by
+
+       $ make clean
+
+
+  Makefile-based Deinstallation
+  -----------------------------
+
+  In order to undo the installation of the package files built from the sources,
+  run the following command in the root directory of the build tree which was
+  used to install the package
+
+    $ cd ~/build/$pkg
+    $ make uninstall
+
