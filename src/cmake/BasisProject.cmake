@@ -322,21 +322,32 @@ macro (basis_project_initialize)
   set (LICENSE)
 
   # configure default auxiliary source files
-  basis_configure_auxiliary_sources (DEFAULT_SOURCES)
+  basis_configure_auxiliary_sources (DEFAULT_SOURCES DEFAULT_PUBLIC_HEADERS)
 
   set (DEFAULT_SOURCES_DIRS)
-  foreach (DEFAULT_SOURCE ${DEFAULT_SOURCES})
-    get_filename_component (TMP "${DEFAULT_SOURCE}" PATH)
+  foreach (SOURCE ${DEFAULT_SOURCES})
+    get_filename_component (TMP "${SOURCE}" PATH)
     list (APPEND DEFAULT_SOURCES_DIRS "${TMP}")
     set (TMP)
   endforeach ()
+  set (SOURCE)
   if (DEFAULT_SOURCES_DIRS)
     list (REMOVE_DUPLICATES DEFAULT_SOURCES_DIRS)
   endif ()
+  if (DEFAULT_SOURCES_DIRS)
+    include_directories (BEFORE ${DEFAULT_SOURCES_DIRS})
+  endif ()
 
-  include_directories (BEFORE ${DEFAULT_SOURCES_DIRS})
+  if (DEFAULT_SOURCES)
+    source_group ("Default" FILES ${DEFAULT_SOURCES})
+  endif ()
 
-  source_group ("Default" ${DEFAULT_SOURCES})
+  # install default auxiliary source files
+  install (
+    FILES       ${DEFAULT_PUBLIC_HEADERS}
+    DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
+  #  COMPONENT   ${BASIS_LIBRARY_COMPONENT}
+  )
 endmacro ()
 
 # ****************************************************************************
@@ -407,27 +418,45 @@ endmacro ()
 #       PROJECT_CODE_DIR of the project, it will be used as template.
 #       Otherwise, the template file of BASIS is used.
 #
-# \param [out] SOURCES Configured auxiliary source files.
+# \param [out] SOURCES        Configured auxiliary source files.
+# \param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
 
-function (basis_configure_auxiliary_sources SOURCES)
+function (basis_configure_auxiliary_sources SOURCES PUBLIC_HEADERS)
   # get binary directory corresponding to PROJECT_CODE_DIR
   file (RELATIVE_PATH DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
   set (DIR "${PROJECT_BINARY_DIR}/${DIR}")
 
+  # lists of auxiliary source files
+  set (
+    PRIVATE_SOURCES
+      "mainaux.h"
+  )
+
+  set (
+    PUBLIC_SOURCES
+      "config.h"
+  )
+
   # configure auxiliary source files
-  set (CPP_SOURCES "")
-  foreach (SOURCE config.h mainaux.h)
+  set (SOURCES_OUT "")
+  foreach (SOURCE ${PRIVATE_SOURCES} ${PUBLIC_SOURCES})
     set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}.in")
     if (NOT EXISTS "${TEMPLATE}")
       set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
     endif ()
-    set (CPP_SOURCE "${DIR}/${SOURCE}")
-    configure_file (${TEMPLATE} ${CPP_SOURCE} @ONLY)
-    list (APPEND CPP_SOURCES "${CPP_SOURCE}")
+    configure_file ("${TEMPLATE}" "${DIR}/${SOURCE}" @ONLY)
+    list (APPEND SOURCES_OUT "${DIR}/${SOURCE}")
+  endforeach ()
+
+  # output list of public headers
+  set (PUBLIC_HEADERS_OUT "")
+  foreach (SOURCE ${PUBLIC_SOURCES})
+    list (APPEND PUBLIC_HEADERS_OUT "${DIR}/${SOURCE}")
   endforeach ()
 
   # return
-  set (SOURCES "${CPP_SOURCES}" PARENT_SCOPE)
+  set (${SOURCES}        "${SOURCES_OUT}"        PARENT_SCOPE)
+  set (${PUBLIC_HEADERS} "${PUBLIC_HEADERS_OUT}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================

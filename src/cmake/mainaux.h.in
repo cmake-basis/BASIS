@@ -1,21 +1,21 @@
 /*!
- * \file  @MAINUTILS_H@
+ * \file  mainaux.h
  * \brief Auxiliary functions useful for implementation of main () function.
  *
- * For copyright information please see Copyright.txt in the root
- * directory of the project.
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+ * See LICENSE file in project root or 'doc' directory for details.
  *
- * Contact: SBIA Group <sbia-software@uphs.upenn.edu>
+ * Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
  */
 
 #pragma once
-#ifndef SBIA_@PROJECT_NAME@_MAINUTILS_H
-#define SBIA_@PROJECT_NAME@_MAINUTILS_H
+#ifndef @PROJECT_NAME@_MAINAUX_H
+#define @PROJECT_NAME@_MAINAUX_H
 
 
 #include <stdio.h>
 
-#include "@CONFIG_H@"
+#include "config.h"
 
 
 /*!
@@ -62,12 +62,12 @@ const char *getProgName (char *argv[])
 inline
 void version (const char *progName)
 {
-	printf ("%s %s", progName, SBIA_@PROJECT_NAME_UPPER@_VERSION);
-#if SBIA_@PROJECT_NAME_UPPER@_REVISION
-	printf (" (Rev. %d)", SBIA_@PROJECT_NAME_UPPER@_REVISION);
-#endif // SBIA_@PROJECT_NAME_UPPER@_REVISION
+	printf ("%s %s", progName, @PROJECT_NAME_UPPER@_VERSION);
+#if @PROJECT_NAME_UPPER@_REVISION
+	printf (" (Rev. %d)", @PROJECT_NAME_UPPER@_REVISION);
+#endif // @PROJECT_NAME_UPPER@_REVISION
 	printf ("\n");
 }
 
 
-#endif // SBIA_@PROJECT_NAME@_MAINUTILS_H
+#endif // @PROJECT_NAME@_MAINAUX_H

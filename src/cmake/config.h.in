@@ -9,20 +9,34 @@
  */
 
 #pragma once
-#ifndef SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
-#define SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
+#ifndef @PROJECT_NAME_UPPER@_CONFIG_H
+#define @PROJECT_NAME_UPPER@_CONFIG_H
 
 
 //////////////////////////////////////////////////////////////////////////////
 // constants
 //////////////////////////////////////////////////////////////////////////////
 
+/*!
+ * \def   TRUE
+ * \brief Boolean value TRUE.
+ */
 #ifndef TRUE
 #  define TRUE 1
 #endif
+
+/*!
+ * \def   FALSE
+ * \brief Boolean value FALSE.
+ */
 #ifndef FALSE
 #  define FALSE 0
 #endif
+
+/*!
+ * \def   NULL
+ * \brief Value of invalid pointer, i.e., NULL pointer.
+ */
 #ifndef NULL
 #  define NULL 0
 #endif
@@ -32,35 +46,35 @@
 //////////////////////////////////////////////////////////////////////////////
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR
+ * \def   @PROJECT_NAME_UPPER@_VERSION_MAJOR
  * \brief The major version number.
  */ 
-#define SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define @PROJECT_NAME_UPPER@_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR
+ * \def   @PROJECT_NAME_UPPER@_VERSION_MINOR
  * \brief The minor version number.
  */
-#define SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define @PROJECT_NAME_UPPER@_VERSION_MINOR @PROJECT_VERSION_MINOR@
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH
+ * \def   @PROJECT_NAME_UPPER@_VERSION_PATCH
  * \brief The patch number.
  */
-#define SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define @PROJECT_NAME_UPPER@_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_VERSION
+ * \def   @PROJECT_NAME_UPPER@_VERSION
  * \brief The version string given as "<major>.<minor>.<patch>".
  *
- * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR
- * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR
- * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH
+ * \see @PROJECT_NAME_UPPER@_VERSION_MAJOR
+ * \see @PROJECT_NAME_UPPER@_VERSION_MINOR
+ * \see @PROJECT_NAME_UPPER@_VERSION_PATCH
  */
-#define SBIA_@PROJECT_NAME_UPPER@_VERSION "@PROJECT_VERSION@"
+#define @PROJECT_NAME_UPPER@_VERSION "@PROJECT_VERSION@"
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_REVISION
+ * \def   @PROJECT_NAME_UPPER@_REVISION
  * \brief The SVN revision number of the project (if applicable).
  *
  * The SVN revision number can only be provided when the project is build from
@@ -71,30 +85,29 @@
  * expands to the invalid revision number 0.
  *
  * Example:
- *
  * \code
  *
- * #if SBIA_@PROJECT_NAME_UPPER@_REVISION
- *   std::cout << "Revision: " << SBIA_@PROJECT_NAME_UPPER@_REVISION << std::endl;
+ * #if @PROJECT_NAME_UPPER@_REVISION
+ *   std::cout << "Revision: " << @PROJECT_NAME_UPPER@_REVISION << std::endl;
  * #else
  *   std::cout << "Revision: n/a" << std::endl;
  * #endif
  *
  * \endcode
  *
- * \see SBIA_@PROJECT_NAME_UPPER@_VERSION
- * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MAJOR
- * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_MINOR
- * \see SBIA_@PROJECT_NAME_UPPER@_VERSION_PATCH
+ * \see @PROJECT_NAME_UPPER@_VERSION
+ * \see @PROJECT_NAME_UPPER@_VERSION_MAJOR
+ * \see @PROJECT_NAME_UPPER@_VERSION_MINOR
+ * \see @PROJECT_NAME_UPPER@_VERSION_PATCH
  */
-#define SBIA_@PROJECT_NAME_UPPER@_REVISION @PROJECT_REVISION@
+#define @PROJECT_NAME_UPPER@_REVISION @PROJECT_REVISION@
 
 //////////////////////////////////////////////////////////////////////////////
 // namespace
 //////////////////////////////////////////////////////////////////////////////
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE
+ * \def   @PROJECT_NAME_UPPER@_NAMESPACE
  * \brief Full project own namespace identifier.
  *
  * This macro should preferably be used when referring to the project own
@@ -103,24 +116,24 @@
  *
  * \note Namespace identifier may reflect a nested namespace.
  */
-#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE \
+#define @PROJECT_NAME_UPPER@_NAMESPACE \
   ::sbia::@PROJECT_NAME_LOWER@
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+ * \def   @PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
  * \brief Macro used to enter project own namespace.
  *
  * Example: 
  * \code
- * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+ * @PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
  *
  * // project source code within project own namespace
  * // ... 
  *
- * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+ * @PROJECT_NAME_UPPER@_NAMESPACE_END
  * \endcode 
  */ 
-#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN \
+#define @PROJECT_NAME_UPPER@_NAMESPACE_BEGIN \
   namespace sbia \
   { \
   \
@@ -128,34 +141,34 @@
   {
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+ * \def   @PROJECT_NAME_UPPER@_NAMESPACE_END
  * \brief Macro used to exit project own namespace.
  *
  * Example: 
  * \code
- * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+ * @PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
  *
  * // project source code within project own namespace
  * // ... 
  *
- * SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+ * @PROJECT_NAME_UPPER@_NAMESPACE_END
  * \endcode 
  */     
-#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END \
+#define @PROJECT_NAME_UPPER@_NAMESPACE_END \
   } \
   \
   }
 
 /*!
- * \def   SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_USE
+ * \def   @PROJECT_NAME_UPPER@_NAMESPACE_USE
  * \brief Macro that can be used to import all members of the project own
  *        namespace into the global namespace.
  *
  * \note A using directive, and hence this macro, should never be used in a
  *       source code header file!
  */
-#define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_USE \
-  using namespace SBIA_@PROJECT_NAME_UPPER@_NAMESPACE
+#define @PROJECT_NAME_UPPER@_NAMESPACE_USE \
+  using namespace @PROJECT_NAME_UPPER@_NAMESPACE
 
 //////////////////////////////////////////////////////////////////////////////
 // system
@@ -190,5 +203,5 @@
 #endif
 
 
-#endif // SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
+#endif // @PROJECT_NAME_UPPER@_CONFIG_H
 
