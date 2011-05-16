@@ -13,7 +13,7 @@
 ##############################################################################
 
 # CMake module path
-basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_SHARED_DIR}/cmake")
+basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_SHARE_DIR}/cmake")
 
 # URL of project template
 basis_set_config_path (TEMPLATE_URL_CONFIG "${INSTALL_TEMPLATE_DIR}")
