@@ -1,6 +1,6 @@
 ##############################################################################
-# \file  BasisProjectTools.cmake
-# \brief Functions and macros used by any BASIS project.
+# \file  BasisProject.cmake
+# \brief Settings, functions and macros used by any BASIS project.
 #
 # This is the main module that is included by BASIS projects. Most of the other
 # BASIS CMake modules are included by this main module and hence do not need
@@ -12,8 +12,8 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_PROJECTTOOLS_INCLUDED)
-set (BASIS_PROJECTTOOLS_INCLUDED 1)
+if (NOT BASIS_PROJECT_INCLUDED)
+set (BASIS_PROJECT_INCLUDED 1)
 
 
 # get directory of this file
@@ -29,8 +29,9 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # ============================================================================
 
 include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisGlobals.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommon.cmake")
+
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake" NO_POLICY_SCOPE)
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisSubversionTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisDocTools.cmake")
@@ -565,5 +566,5 @@ function (basis_create_execname SOURCES)
 endfunction ()
 
 
-endif (NOT BASIS_PROJECTTOOLS_INCLUDED)
+endif (NOT BASIS_PROJECT_INCLUDED)
 

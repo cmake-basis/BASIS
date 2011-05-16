@@ -1,12 +1,14 @@
 ##############################################################################
 # \file  BasisSettings.cmake
-# \brief Default CMake settings used by BASIS projects.
+# \brief BASIS configuration and default CMake settings used by projects.
 #
-# This file specifies the common CMake settings such as the common build
-# configuration used by projects following BASIS. Note that this file is
-# included in the root CMake file by the macro basis_project () prior to the
-# invocation of the CMake command project (). Thus, project related
-# variables are not available at this point.
+# This module defines global CMake constants and variables which are used
+# by the BASIS CMake functions and macros. Hence, these values can be used
+# to configure the behaviour of these functions to some extent without the
+# need to modify the functions themselves.
+#
+# Moreover, this file specifies the common CMake settings such as the build
+# configuration used by projects following BASIS.
 #
 # \note As this file also sets the CMake policies to be used, it has to
 #       be included using the NO_POLICY_SCOPE in order for these policies
@@ -51,12 +53,6 @@ if (CMAKE_VERSION_PATCH GREATER 3)
 endif ()
 
 # ============================================================================
-# project directory structure
-# ============================================================================
-
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisDirectories.cmake")
-
-# ============================================================================
 # system checks
 # ============================================================================
 
@@ -73,6 +69,112 @@ if (CMAKE_NO_ANSI_STRING_STREAM)
 else ()
   set (HAVE_SSTREAM TRUE)
 endif ()
+
+# ============================================================================
+# common options
+# ============================================================================
+
+option (BASIS_VERBOSE "Whether BASIS functions should be verbose." "OFF")
+mark_as_advanced (BASIS_VERBOSE)
+
+# ============================================================================
+# constants and global settings
+# ============================================================================
+
+# \brief List of names used for special purpose targets.
+#
+# Contains a list of target names that are used by the BASIS functions for
+# special purposes and are hence not to be used for project targets.
+set (BASIS_RESERVED_TARGET_NAMES "uninstall" "doc" "changelog" "execname")
+
+# \brief Default components used when no component is specified.
+#
+# The default component a target of the given kind and its auxiliary files
+# are associated with if no component was specified, explicitly.
+set (BASIS_DEFAULT_ARCHIVE_COMPONENT   "Development")
+set (BASIS_DEFAULT_BUNDLE_COMPONENT    "Runtime")
+set (BASIS_DEFAULT_FRAMEWORK_COMPONENT "Development")
+set (BASIS_DEFAULT_LIBRARY_COMPONENT   "Runtime")
+set (BASIS_DEFAULT_RUNTIME_COMPONENT   "Runtime")
+
+# \brief Character used to separate namespace and target name to build target UID.
+#
+# This separator is used to construct a UID for a particular target.
+# For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>".
+set (BASIS_NAMESPACE_SEPARATOR "@")
+
+# \brief Character used to separate version and project name (e.g., in target UID).
+#
+# This separator is used to construct a UID for a particular target.
+# For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>@BASIS_VERSION_SEPARATOR@<version>".
+# Note that the version need not be included if only a single version of each
+# package is supposed to be installed on a target system.
+set (BASIS_VERSION_SEPARATOR "#")
+
+# \brief Prefix used for CMake package config files.
+#
+# This string is used as prefix for the names of the <project>Config.cmake
+# et al. files. For example, a value of "SBIA_", results in the CMake package
+# configuration file "SBIA_<project>Config.cmake".
+set (BASIS_CONFIG_PREFIX "")
+
+# \brief Suffix used for installation of header files.
+#
+# This variable has to be configured during the project initialization when
+# the project name and version are known to substitute for these. The resulting
+# string is the prefix required by other packages to include the header files
+# of the installed project.
+#
+# For example, the header file utilities.h is installed as follows:
+# \code
+# install (FILES utilities.h DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}")
+# \endcode
+#
+# Users of this header file have to include it using the specified prefix:
+# \code
+# #include <@BASIS_INCLUDE_PREFIX@/utilities.h>
+# \endcode
+set (BASIS_INCLUDE_PREFIX "sbia/@PROJECT_NAME_LOWER@")
+
+# \brief Script used to execute a process in CMake script mode.
+#
+# In order to be able to assign a timeout to the execution of a custom command
+# and to add some error message parsing, this script is used by some build
+# rules to actually perform the build step. See for example, the build of
+# executables using the MATLAB Compiler.
+set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmake")
+
+# \brief Default script configuration template.
+#
+# This is the default template used by basis_add_script () to configure the
+# script during the build step.
+set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
+
+# ============================================================================
+# cached variables
+# ============================================================================
+
+# The following variables are used across BASIS macros and functions. They
+# in particular remember information added by one function or macro and is
+# required by another function or macro.
+#
+# \note These variables are reset whenever this module is included the first
+#       time. The guard directive at the beginning of this file protects
+#       these variables to be overwritten each time this module is included.
+
+# Caches all directories given as argument to basis_include_directories ().
+set (BASIS_CACHED_INCLUDE_DIRECTORIES_DOC "All include directories.")
+set (BASIS_CACHED_INCLUDE_DIRECTORIES "" CACHE INTERNAL "${BASIS_CACHED_INCLUDE_DIRECTORIES_DOC}" FORCE)
+
+# Caches the global names (UIDs) of all project targets.
+set (BASIS_TARGETS_DOC "Names of all targets.")
+set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
+
+# ============================================================================
+# project directory structure
+# ============================================================================
+
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisDirectories.cmake")
 
 # ============================================================================
 # build configuration(s)

@@ -24,32 +24,36 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # required modules
 # ============================================================================
 
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisGlobals.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommon.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
 
 # ============================================================================
 # options
 # ============================================================================
 
-option (MCC_MATLAB_MODE "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler." "ON")
+option (
+  BASIS_MCC_MATLAB_MODE
+  "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler."
+  "ON" # prefer as it releases the license immediately once done
+)
 
-mark_as_advanced (MCC_MATLAB_MODE)
+mark_as_advanced (BASIS_MCC_MATLAB_MODE)
 
 # ============================================================================
 # build configuration
 # ============================================================================
 
 set (
-  MCC_FLAGS
+  BASIS_MCC_FLAGS
     "-v -R -singleCompThread"
   CACHE STRING
     "Common MATLAB Compiler flags (separated by ' '; use '\\' to mask ' ')."
 )
 
-set (MCC_TIMEOUT "600" CACHE STRING "Timeout for MATLAB Compiler execution")
+set (BASIS_MCC_TIMEOUT "600" CACHE STRING "Timeout for MATLAB Compiler execution")
 
-mark_as_advanced (MCC_FLAGS)
-mark_as_advanced (MCC_TIMEOUT)
+mark_as_advanced (BASIS_MCC_FLAGS)
+mark_as_advanced (BASIS_MCC_TIMEOUT)
 
 # ============================================================================
 # find programs
@@ -247,8 +251,8 @@ function (basis_add_mcc_target TARGET_NAME)
   # MCC flags
   set (COMPILE_FLAGS)
 
-  if (MCC_FLAGS)
-    string (REPLACE "\\ "    "&nbsp;" COMPILE_FLAGS "${MCC_FLAGS}")
+  if (BASIS_MCC_FLAGS)
+    string (REPLACE "\\ "    "&nbsp;" COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
     string (REPLACE " "      ";"      COMPILE_FLAGS "${COMPILE_FLAGS}")
     string (REPLACE "&nbsp;" " "      COMPILE_FLAGS "${COMPILE_FLAGS}")
   endif ()
@@ -434,19 +438,19 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   set (MATLAB_MODE    OFF)
 
   # build command for invocation of MATLAB Compiler in MATLAB mode
-  if (MCC_MATLAB_MODE)
+  if (BASIS_MCC_MATLAB_MODE)
     set (MATLAB_MODE ON)
 
     if (NOT BASIS_CMD_MATLAB)
       message (WARNING "MATLAB not found. It is required to build target ${TARGET_UID} in MATLAB mode."
-                       " Set BASIS_CMD_MATLAB manually and try again or set MCC_MATLAB_MODE to OFF."
+                       " Set BASIS_CMD_MATLAB manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
                        " Will build target ${TARGET_UID} in standalone mode instead.")
       set (MATLAB_MODE OFF)
     endif ()
 
     if (NOT BASIS_SCRIPT_MCC)
       message (WARNING "MATLAB script to run MATLAB Compiler not found. It is required to build target ${TARGET_UID} in MATLAB mode."
-                       " Set BASIS_SCRIPT_MCC manually and try again or set MCC_MATLAB_MODE to OFF."
+                       " Set BASIS_SCRIPT_MCC manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
                        " Will build target ${TARGET_UID} in standalone mode instead.")
       set (MATLAB_MODE OFF)
     endif ()
@@ -510,7 +514,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     COMMAND "${CMAKE_COMMAND}"
             "-DCOMMAND=${BUILD_CMD}"
             "-DWORKING_DIRECTORY=${WORKING_DIR}"
-            "-DTIMEOUT=${MCC_TIMEOUT}"
+            "-DTIMEOUT=${BASIS_MCC_TIMEOUT}"
             "-DERROR_EXPRESSION=[E|e]rror"
             "-DOUTPUT_FILE=${BUILD_LOG}"
             "-DERROR_FILE=${BUILD_LOG}"

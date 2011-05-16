@@ -24,8 +24,8 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # required modules
 # ============================================================================
 
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisGlobals.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommon.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisMatlabTools.cmake")
 
 # ============================================================================

@@ -1,6 +1,6 @@
 ##############################################################################
-# \file  BasisCommon.cmake
-# \brief Definition of common CMake functions and variables.
+# \file  BasisCommonTools.cmake
+# \brief Definition of common CMake functions.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root directory for details.
@@ -8,8 +8,8 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_COMMON_INCLUDED)
-set (BASIS_COMMON_INCLUDED 1)
+if (NOT BASIS_COMMONTOOLS_INCLUDED)
+set (BASIS_COMMONTOOLS_INCLUDED 1)
 
 
 # get directory of this file
@@ -273,5 +273,5 @@ function (basis_check_test_name TEST_NAME)
 endfunction ()
 
 
-endif (NOT BASIS_COMMON_INCLUDED)
+endif (NOT BASIS_COMMONTOOLS_INCLUDED)
 
