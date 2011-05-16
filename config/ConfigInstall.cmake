@@ -12,24 +12,9 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-
 # CMake module path
-file (
-  RELATIVE_PATH
-    MODULE_PATH_CONFIG
-    "${INSTALL_PREFIX}/${INSTALL_LIB_DIR}"
-    "${INSTALL_PREFIX}/${INSTALL_SHARE_DIR}/cmake"
-)
-
-set (MODULE_PATH_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${MODULE_PATH_CONFIG}")
+basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_SHARED_DIR}/cmake")
 
 # URL of project template
-file (
-  RELATIVE_PATH
-    TEMPLATE_URL_CONFIG
-    "${INSTALL_PREFIX}/${INSTALL_LIB_DIR}"
-    "${INSTALL_PREFIX}/${INSTALL_TEMPLATE_DIR}"
-)
-
-set (TEMPLATE_URL_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${TEMPLATE_URL_CONFIG}")
+basis_set_config_path (TEMPLATE_URL_CONFIG "${INSTALL_TEMPLATE_DIR}")
 
