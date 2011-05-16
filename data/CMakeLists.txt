@@ -11,7 +11,7 @@
 # install project template
 install (
   DIRECTORY   template/
-  DESTINATION "${INSTALL_DATA_DIR}"
+  DESTINATION "${INSTALL_TEMPLATE_DIR}"
   PATTERN     .svn EXCLUDE
   PATTERN     .git EXCLUDE
 )

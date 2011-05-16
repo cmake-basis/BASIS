@@ -14,7 +14,7 @@ add_subdirectory (cmake)
 # install TCLAP header files
 install (
   DIRECTORY   tclap
-  DESTINATION "${INSTALL_INCLUDE_DIR}"
+  DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
   PATTERN     .svn EXCLUDE
   PATTERN     .git EXCLUDE
 )
