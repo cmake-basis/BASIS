@@ -110,13 +110,20 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
 #                   instead with the prefix PROJECT_*, e.g.,
 #                   "set (PROJECT_VERSION 1.0.0)".
 #
-#   NAME             The project name.
-#   VERSION          The project version.
-#   DESCRIPTION      Package description, used for packing.
-#   PACKAGE_VENDOR   The vendor of this package, used for packaging.
-#                    Defaults to "SBIA Group at University of Pennsylvania".
-#   README_FILE      Path of readme file. Defaults to PROJECT_SOURCE_DIR/README.
-#   LICENSE_FILE     Path of license file. Defaults to PROJECT_SOURCE_DIR/LICENSE.
+#   NAME                 The name of the project.
+#   VERSION              Project version string, i.e., "<major>(.<minor>(.<patch>))".
+#   DESCRIPTION          Package description, used for packing.
+#   PACKAGE_VENDOR       The vendor of this package, used for packaging.
+#                        Defaults to "SBIA Group at University of Pennsylvania".
+#   README_FILE          Readme file. Defaults to PROJECT_SOURCE_DIR/README.
+#   LICENSE_FILE         File containing copyright and license notices.
+#                        Defaults to PROJECT_SOURCE_DIR/LICENSE.
+#   REDIST_LICENSE_FILES Additional license files of other packages
+#                        redistributed as part of this project.
+#                        These licenses will be installed along with the
+#                        project's LICENSE_FILE. By default, all files which
+#                        match the regular expression
+#                        "^PROJECT_SOURCE_DIR/LICENSE-.+" are considered.
 #
 # \note The DESCRIPTION and PACKAGE_VENDOR arguments can be lists of strings
 #       which are concatenated to one string.
@@ -136,13 +143,14 @@ macro (basis_project_initialize)
   set (PROJECT_README_FILE)
   set (PROJECT_INSTALL_FILE)
   set (PROJECT_LICENSE_FILE)
+  set (PROJECT_REDIST_LICENSE_FILES)
 
   # parse arguments and/or include project settings file
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
       ""
       "NAME;VERSION;AUTHORS_FILE;README_FILE;INSTALL_FILE;LICENSE_FILE"
-      "DESCRIPTION;PACKAGE_VENDOR"
+      "DESCRIPTION;PACKAGE_VENDOR;REDIST_LICENSE_FILES"
     ${ARGN}
   )
 
@@ -187,6 +195,10 @@ macro (basis_project_initialize)
   endif ()
   if (NOT EXISTS "${PROJECT_LICENSE_FILE}")
     message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a LICENSE file.")
+  endif ()
+
+  if (NOT PROJECT_REDIST_LICENSE_FILES)
+    file (GLOB PROJECT_REDIST_LICENSE_FILES "${PROJECT_SOURCE_DIR}/LICENSE-*")
   endif ()
 
   # start CMake project
@@ -312,6 +324,13 @@ macro (basis_project_initialize)
   else ()
     install (
       FILES       "${PROJECT_LICENSE_FILE}"
+      DESTINATION "${INSTALL_DOC_DIR}"
+    )
+  endif ()
+
+  if (PROJECT_REDIST_LICENSE_FILES)
+    install (
+      FILES       "${PROJECT_REDIST_LICENSE_FILES}"
       DESTINATION "${INSTALL_DOC_DIR}"
     )
   endif ()
