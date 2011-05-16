@@ -3,7 +3,7 @@
 # \brief Root CMake configuration file.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
@@ -26,11 +26,8 @@ set (CMAKE_MODULE_PATH "${BASIS_MODULE_PATH}")
 # instantiated from a template as this package contains the template
 set (TEMPLATE_VERSION "0.0")
 
-# include BASIS settings
-include (BasisSettings NO_POLICY_SCOPE)
-
-# include BASIS functions
-include (BasisProjectTools)
+# include BASIS policies, settings, macros, and functions
+include (BasisProject NO_POLICY_SCOPE)
 
 # initialize project
 basis_project_initialize (
@@ -51,11 +48,11 @@ if (EXISTS "${PROJECT_DATA_DIR}")
   add_subdirectory ("${PROJECT_DATA_DIR}")
 endif ()
 
-if (EXISTS "${PROJECT_EXAMPLE_DIR}")
+if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
   add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
 endif ()
 
-if (EXISTS "${PROJECT_TESTING_DIR}")
+if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
   add_subdirectory ("${PROJECT_TESTING_DIR}")
 endif ()
 
