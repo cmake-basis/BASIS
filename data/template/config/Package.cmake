@@ -1,22 +1,21 @@
 ##############################################################################
 # \file  Package.cmake
-# \brief Contains project specific CPack packaging information.
+# \brief Package information.
 #
-# This file is included by the module SbiaPack.cmake before the CPack
-# package is included by this module. It can be used to overwrite the default
-# CPack settings used by SbiaPack.cmake.
+# This file is included by the module BasisPack.cmake before the CPack module.
+# It can be used to overwrite or extend the default CPack settings of BASIS.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
-# package information / general settings
+# package information/general settings
 # ============================================================================
 
-# Overwrite default package information set in SbiaPack.cmake here.
+# overwrite default package information here.
 #
 # \see http://www.vtk.org/Wiki/CMake:Packaging_With_CPack
 

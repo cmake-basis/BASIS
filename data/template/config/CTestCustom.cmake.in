@@ -3,7 +3,7 @@
 # \brief Custom CTest configuration.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
@@ -121,11 +121,13 @@ set (
 )
 
 # specify additional files which should be considered
+file (RELATIVE_PATH SRC "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
+
 set (
   CTEST_EXTRA_COVERAGE_GLOB
     ${CTEST_EXTRA_COVERAGE_GLOB} # keep current globbing expressions
-    "./src/*.inl"                # add inline definition
-    "./src/*.txx"                # add template definitions
+    "./${SRC}/*.inl"             # add inline definition
+    "./${SRC}/*.txx"             # add template definitions
     # add further globbing expressions here
 )
 

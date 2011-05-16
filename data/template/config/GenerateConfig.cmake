@@ -1,89 +1,131 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Configures and installs the configuration files Config.cmake.in,
-#        ConfigVersion.cmake.in, and Use.cmake.in.
+# \brief Configures <project>(Config|ConfigVersion|Use).cmake files.
 #
-# This CMake script configures the project's CMake configuration file for
-# both the build tree (depends on source tree) and the install tree.
-# Further, it configures and installs the corresponding project version file
-# and finally also configures and installs the project's use file which can
-# be included by other projects at their convenience.
+# This CMake script configures the <project>Config.cmake et al. files.
+# Once for the build tree and once for the install tree. Variables with a
+# _CONFIG suffix are replaced in the default template files by either the
+# value for the build or the install tree, respectively.
+#
+# If present, this script includes the PROJECT_CONFIG_DIR/ConfigBuild.cmake
+# and/or PROJECT_CONFIG_DIR/ConfigInstall.cmake file before configuring the
+# Config.cmake.in template. If a file PROJECT_CONFIG_DIR/Config.cmake.in
+# exists, it is used as template. Otherwise, the default template file is used.
+#
+# Similarly, if the file PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
+# it is used as template for the <project>ConfigVersion.cmake file. The same
+# applies to Use.cmake.in.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
+
+# get directory of this file
+#
+# \note This variable was just recently introduced in CMake, it is derived
+#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
+#       to maintain compatibility with older CMake versions.
+get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+
 # ============================================================================
-# configure names of output files
+# names of output files
 # ============================================================================
 
 # \attention This has to be done before configuring any files such that these
 #            variables can be used by the template files.
 
-string (CONFIGURE "${PROJECT_CONFIG_FILE}"  CONFIG_FILE  @ONLY)
-string (CONFIGURE "${PROJECT_VERSION_FILE}" VERSION_FILE @ONLY)
-string (CONFIGURE "${PROJECT_USE_FILE}"     USE_FILE     @ONLY)
+set (CONFIG_FILE  "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake")
+set (VERSION_FILE "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}ConfigVersion.cmake")
+set (USE_FILE     "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Use.cmake")
 
 # ============================================================================
 # project configuration file
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# build tree related configuration
+# choose template
 
-
+if (EXISTS "${PROJECT_CONFIG_DIR}/Config.cmake.in")
+  set (TEMPLATE "${PROJECT_CONFIG_DIR}/Config.cmake.in")
+else ()
+  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in")
+endif ()
 
 # ----------------------------------------------------------------------------
-# configure Config.cmake file for build tree
+# build tree related configuration
 
-configure_file ("${PROJECT_CONFIG_TEMPLATE}"
-                "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
+include ("${CMAKE_CURRENT_LIST_DIR}/ConfigBuild.cmake")
+include ("${PROJECT_CONFIG_DIR}/ConfigBuild.cmake" OPTIONAL)
+
+if (INCLUDE_DIR_CONFIG)
+  list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
+endif ()
+
+if (LIBRARY_CONFIG)
+  list (REMOVE_DUPLICATES LIBRARY_CONFIG)
+endif ()
+
+# ----------------------------------------------------------------------------
+# configure project configuration file for build tree
+
+configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 
 # ----------------------------------------------------------------------------
 # install tree related configuration
 
+include ("${CMAKE_CURRENT_LIST_DIR}/ConfigInstall.cmake")
+include ("${PROJECT_CONFIG_DIR}/ConfigInstall.cmake" OPTIONAL)
 
+if (INCLUDE_DIR_CONFIG)
+  list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
+endif ()
+
+if (LIBRARY_CONFIG)
+  list (REMOVE_DUPLICATES LIBRARY_CONFIG)
+endif ()
 
 # ----------------------------------------------------------------------------
 # configure project configuration file for install tree
 
-configure_file ("${PROJECT_CONFIG_TEMPLATE}"
-                "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install" @ONLY)
+configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install" @ONLY)
 
 # ----------------------------------------------------------------------------
 # install project configuration file
 
-get_filename_component (CONFIG_DIR  "${CONFIG_FILE}" PATH)
-get_filename_component (CONFIG_NAME "${CONFIG_FILE}" NAME)
-
 install (
   FILES       "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install"
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/${CONFIG_DIR}"
-  RENAME      "${CONFIG_NAME}"
+  DESTINATION "${INSTALL_CONFIG_DIR}"
+  RENAME      "${CONFIG_FILE}"
 )
 
 # ============================================================================
-# project version 
+# project version file
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# choose template
+
+if (EXISTS "${PROJECT_CONFIG_DIR}/ConfigVersion.cmake.in")
+  set (TEMPLATE "${PROJECT_CONFIG_DIR}/ConfigVersion.cmake.in")
+else ()
+  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/ConfigVersion.cmake.in")
+endif ()
 
 # ----------------------------------------------------------------------------
 # configure project configuration version file
 
-configure_file ("${PROJECT_VERSION_TEMPLATE}"
-                "${PROJECT_BINARY_DIR}/${VERSION_FILE}" @ONLY)
+configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${VERSION_FILE}" @ONLY)
 
 # ----------------------------------------------------------------------------
 # install project configuration version file
 
-get_filename_component (VERSION_DIR  "${VERSION_FILE}" PATH)
-get_filename_component (VERSION_NAME "${VERSION_FILE}" NAME)
-
 install (
   FILES       "${PROJECT_BINARY_DIR}/${VERSION_FILE}"
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/${VERSION_DIR}"
-  RENAME      "${VERSION_NAME}"
+  DESTINATION "${INSTALL_CONFIG_DIR}"
 )
 
 # ============================================================================
@@ -91,20 +133,24 @@ install (
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+# choose template
+
+if (EXISTS "${PROJECT_CONFIG_DIR}/Use.cmake.in")
+  set (TEMPLATE "${PROJECT_CONFIG_DIR}/Use.cmake.in")
+else ()
+  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/Use.cmake.in")
+endif ()
+
+# ----------------------------------------------------------------------------
 # configure project use file
 
-configure_file ("${PROJECT_USE_TEMPLATE}"
-                "${PROJECT_BINARY_DIR}/${USE_FILE}" @ONLY)
+configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${USE_FILE}" @ONLY)
 
 # ----------------------------------------------------------------------------
 # install project use file
 
-get_filename_component (USE_DIR  "${USE_FILE}" PATH)
-get_filename_component (USE_NAME "${USE_FILE}" NAME)
-
 install (
   FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/${USE_DIR}"
-  RENAME      "${USE_NAME}"
+  DESTINATION "${INSTALL_CONFIG_DIR}"
 )
 
