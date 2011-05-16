@@ -5,6 +5,8 @@
 # Unit tests test only single functions, classes, and modules of the software.
 # Besides system tests, unit tests are not part of distribution packages.
 #
+# The built test executables can be found in TESTING_RUNTIME_DIR.
+#
 # All input data to the tests is stored in TESTING_INPUT_DIR, while the
 # expected test output data can be found in TESTING_EXPECTED_DIR.
 # The actual test output shall be written to TESTING_OUTPUT_DIR.

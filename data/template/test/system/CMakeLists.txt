@@ -6,6 +6,8 @@
 # and compare the output of the programs to the expected results.
 # These tests can be distributed as part of the distribution packages.
 #
+# The built test executables can be found in TESTING_RUNTIME_DIR.
+#
 # All input data to the tests is stored in TESTING_INPUT_DIR, while the
 # expected test output data can be found in TESTING_EXPECTED_DIR.
 # The actual test output shall be written to TESTING_OUTPUT_DIR.

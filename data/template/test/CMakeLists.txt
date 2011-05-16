@@ -8,6 +8,10 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
+
 if (EXISTS "${TESTING_SYSTEMTESTS_DIR}")
   add_subdirectory ("${TESTING_SYSTEMTESTS_DIR}")
 endif ()
