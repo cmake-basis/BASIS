@@ -336,10 +336,13 @@ macro (basis_project_finalize)
     basis_create_addpaths_mfile ()
   endif ()
 
+  # finalize addition of custom targets
+  # \note Should be done for each (sub-)project as the finalize functions
+  #       might make use of the PROJECT_* variables.
+  basis_add_custom_finalize ()
+
   # finalize (super-)project
   if (NOT IS_SUBPROJECT)
-    # finalize addition of custom targets
-    basis_add_custom_finalize ()
     # create and add execname executable
     #basis_add_execname ()
     # add uninstall target

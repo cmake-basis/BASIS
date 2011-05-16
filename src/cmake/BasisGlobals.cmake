@@ -53,6 +53,9 @@ set (BASIS_CONFIG_PREFIX "")
 # Script used to execute a process in CMake script mode.
 set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmake")
 
+# Default script configuration template.
+set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
+
 # ============================================================================
 # cached variables
 # ============================================================================

@@ -52,6 +52,8 @@ macro (basis_initialize_directories)
   endforeach ()
 
   # install tree
+  string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
+
   set (
     CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}"
     CACHE INTERNAL "Installation directories prefix." FORCE

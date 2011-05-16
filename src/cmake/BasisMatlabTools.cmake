@@ -316,6 +316,11 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
   basis_target_uid (TARGET_UID "${TARGET_UID}")
 
+  # finalized before ?
+  if (TARGET "${TARGET_UID}+")
+    return ()
+  endif ()
+
   # does this target exist ?
   if (NOT TARGET "${TARGET_UID}")
     message (FATAL_ERROR "Unknown target ${TARGET_UID}.")

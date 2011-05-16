@@ -18,37 +18,19 @@
 #
 # 1. The option BASIS_UPDATE, which is added by this module, is enabled.
 #
-# 2. BASIS_TEMPLATE_ROOT is a valid URL to the root directory
-#    or repository directory in which the project template is stored,
-#    respectively, all released versions of the project templates are
-#    stored. Note that local directories must be specified including the
-#    "file://" prefix.
+# 2. BASIS_TEMPLATE_URL is a valid URL to the local root directory or
+#    repository root directory of the BASIS project template, respectively,
+#    Note that local directories must be prefixed by "file://".
 #
-# 3. TEMPLATE_VERSION specifies an existent project template version,
-#    i.e., the template root directory
-#
-#      BASIS_TEMPLATE_ROOT/BASIS_TEMPLATE
-#
-#    exists, where the variable BASIS_TEMPLATE is set by this module when
-#    included to the name/directory of the tagged project template corresponding
-#    to the specified version. Therefore, the value of BASIS_TEMPLATE contains
-#    parts of TEMPLATE_VERSION, e.g.,
-#
-#      "template-${TEMPLATE_VERSION_MAJOR}".
-#
-# 4. The Python interpreter "python" was found and thus the variable
+# 3. The Python interpreter "python" was found and thus the variable
 #    BASIS_CMD_PYTHON is set.
 #
-# 5. The script used to merge the content of the template with the existing
+# 4. The script used to merge the content of the template with the existing
 #    project files has to be in the same directory as this CMake module.
 #
-# 6. The project itself has to be under revision control, in particular,
+# 5. The project itself has to be under revision control, in particular,
 #    a valid Subversion working copy. This is required to ensure that changes
 #    applied during the automatic file udpate can be reverted.
-#
-# Hence, when the project is not configured and build inside the SBIA
-# environment, the automatic file update is disabled. This is in fact desired
-# as the project is not supposed to be modified at this point any more.
 #
 # When this module is included, it adds the advanced option BASIS_UPDATE_AUTO
 # which is ON by default. If BASIS_UPDATE_AUTO is ON, files are updated
@@ -109,26 +91,6 @@ find_file (
 )
 
 # ============================================================================
-# template branch
-# ============================================================================
-
-basis_version_numbers (
-  ${TEMPLATE_VERSION}
-    TEMPLATE_VERSION_MAJOR
-    TEMPLATE_VERSION_MINOR
-    TEMPLATE_VERSION_PATCH
-)
-
-set (BASIS_TEMPLATE "template-${TEMPLATE_VERSION_MAJOR}")
-
-set (
-  BASIS_TEMPLATE_ROOT "@BASIS_TEMPLATE_ROOT@"
-  CACHE STRING "Root directory of project template(s) (e.g., \"SVN_ROOT_URL/tags\")."
-)
-
-mark_as_advanced (BASIS_TEMPLATE_ROOT)
-
-# ============================================================================
 # initialization
 # ============================================================================
 
@@ -149,7 +111,7 @@ mark_as_advanced (BASIS_TEMPLATE_ROOT)
 #
 # \code
 # basis_update_initialize ()
-# basis_update (CMakeLists.txt)
+# basis_update (CTestConfig.cmake)
 # basis_update_finalize ()
 # \endcode
 #
@@ -165,55 +127,31 @@ function (basis_update_initialize)
 
   mark_as_advanced (BASIS_UPDATE_SCRIPT)
 
-  # check BASIS_TEMPLATE_ROOT
-  set (BASIS_TEMPLATE_ROOT_VALID 0)
+  # check BASIS_TEMPLATE_URL
+  set (BASIS_TEMPLATE_URL_VALID 0)
 
-  if (BASIS_TEMPLATE_ROOT MATCHES "file://.*")
-    string (REGEX REPLACE "file://" "" TMP "${BASIS_TEMPLATE_ROOT}")
+  if (BASIS_TEMPLATE_URL MATCHES "file://.*")
+    string (REGEX REPLACE "file://" "" TMP "${BASIS_TEMPLATE_URL}")
     if (IS_DIRECTORY "${TMP}")
-      set (BASIS_TEMPLATE_ROOT_VALID 1)
+      set (BASIS_TEMPLATE_URL_VALID 1)
     endif ()
-  elseif (BASIS_TEMPLATE_ROOT MATCHES "http.*://.*")
-    basis_svn_get_revision (${BASIS_TEMPLATE_ROOT} REV)
+  elseif (BASIS_TEMPLATE_URL MATCHES "http.*://.*")
+    basis_svn_get_revision (${BASIS_TEMPLATE_URL} REV)
     if (REV)
-      set (BASIS_TEMPLATE_ROOT_VALID 1)
+      set (BASIS_TEMPLATE_URL_VALID 1)
     endif ()
   endif ()
-  
-  # check BASIS_TEMPLATE
-  set (BASIS_TEMPLATE_VALID 1) # we cannot know if BASIS_TEMPLATE_ROOT is not valid...
-
-  if (BASIS_TEMPLATE_ROOT_VALID)
-    set (BASIS_TEMPLATE_VALID 0)
-
-    if (NOT BASIS_TEMPLATE STREQUAL "")
-      set (TMP "${BASIS_TEMPLATE_ROOT}/${BASIS_TEMPLATE}")
-
-      if (TMP MATCHES "file://.*")
-        string (REGEX REPLACE "file://" "" TMP "${TMP}")
-        if (IS_DIRECTORY "${TMP}")
-          set (BASIS_TEMPLATE_VALID 1)
-        endif ()
-      elseif (TMP MATCHES "http.*://.*")
-        basis_svn_get_revision (${BASIS_TEMPLATE_ROOT} REV)
-        if (REV)
-          set (BASIS_TEMPLATE_VALID 1)
-        endif ()
-      endif ()
-    endif ()
-  endif ()
-
+ 
   # --------------------------------------------------------------------------
   # update enabled
   # --------------------------------------------------------------------------
 
   if (
-        BASIS_UPDATE              # 1. update is enabled
-    AND BASIS_TEMPLATE_ROOT_VALID # 2. valid template root dir
-    AND BASIS_TEMPLATE_VALID      # 3. valid project template
-    AND BASIS_CMD_PYTHON          # 4. python interpreter found
-    AND BASIS_UPDATE_SCRIPT       # 5. update script found
-    AND PROJECT_REVISION          # 6. project is under revision control
+        BASIS_UPDATE             # 1. update is enabled
+    AND BASIS_TEMPLATE_URL_VALID # 2. valid template root dir
+    AND BASIS_CMD_PYTHON         # 3. python interpreter found
+    AND BASIS_UPDATE_SCRIPT      # 4. update script found
+    AND PROJECT_REVISION         # 5. project is under revision control
   )
 
     # update files which were not updated during last configure run. Instead,
@@ -237,8 +175,7 @@ function (basis_update_initialize)
   BASIS_UPDATE_AUTO   : ${BASIS_UPDATE_AUTO}
   BASIS_CMD_PYTHON    : ${BASIS_CMD_PYTHON}
   BASIS_UPDATE_SCRIPT : ${BASIS_UPDATE_SCRIPT}
-  BASIS_TEMPLATE_ROOT : ${BASIS_TEMPLATE_ROOT}
-  BASIS_TEMPLATE      : ${BASIS_TEMPLATE}
+  BASIS_TEMPLATE_URL  : ${BASIS_TEMPLATE_URL}
   PROJECT_REVISION    : ${PROJECT_REVISION}
 ")
       endif ()
@@ -249,12 +186,9 @@ function (basis_update_initialize)
 	  if (NOT BASIS_UPDATE_SCRIPT)
         message ("=> File update script not found.")
       endif ()
-      if (NOT BASIS_TEMPLATE_ROOT_VALID)
-        message ("=> Invalid BASIS_TEMPLATE_ROOT path.")
+      if (NOT BASIS_TEMPLATE_URL_VALID)
+        message ("=> Invalid BASIS_TEMPLATE_URL path.")
       endif()
-      if (NOT BASIS_TEMPLATE_VALID)
-        message ("=> Template BASIS_TEMPLATE does not exist. Check value of TEMPLATE_VERSION.")
-      endif ()
       if (NOT PROJECT_REVISION)
         message ("=> Project is not under revision control.")
       endif ()
@@ -587,7 +521,7 @@ endfunction ()
 
 function (basis_update_cached_template REL TEMPLATE)
   # URL of template file
-  set (SRC "${BASIS_TEMPLATE_ROOT}/${BASIS_TEMPLATE}/${REL}")
+  set (SRC "${BASIS_TEMPLATE_URL}/${REL}")
 
   # get revision of template file. If no revision number can be determined,
   # we either did not find the svn client or the file referenced by SRC
@@ -652,7 +586,7 @@ endfunction ()
 function (basis_update_template REL TEMPLATE RETVAL)
 
   # URL of template file
-  set (SRC "${BASIS_TEMPLATE_ROOT}/${BASIS_TEMPLATE}/${REL}")
+  set (SRC "${BASIS_TEMPLATE_URL}/${REL}")
 
   # if template file is not under revision control or has local modifications
   # we cannot use caching as there is no unique revision number assigned

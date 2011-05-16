@@ -20,7 +20,6 @@ set (
     BasisMatlabTools.cmake
     BasisPack.cmake
     BasisProjectTools.cmake
-    BasisScriptConfig.cmake.in
     BasisSettings.cmake
     BasisSubversionTools.cmake
     BasisTargetTools.cmake
@@ -37,6 +36,7 @@ set (
 set (
   AUXILIARY_FILES
     ExecuteProcess.cmake
+    ScriptConfig.cmake.in
     Config.cmake.in
     ConfigBuild.cmake
     ConfigInstall.cmake

@@ -91,6 +91,22 @@ function (basis_version_numbers VERSION MAJOR MINOR PATCH)
 endfunction ()
 
 # ============================================================================
+# set
+# ============================================================================
+
+# ****************************************************************************
+# \brief Set value of variable only if variable is not set already.
+#
+# \param [in] VAR  Name of variable.
+# \param [in] ARGN Arguments to CMake's set () command excluding variable name.
+
+function (basis_setifempty VAR)
+  if (NOT ${VAR})
+    set (${VAR} ${ARGN})
+  endif ()
+endfunction ()
+
+# ============================================================================
 # list / string manipulations
 # ============================================================================
 
