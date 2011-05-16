@@ -1,8 +1,8 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Configures <Project>(Config|ConfigVersion|Use).cmake files.
+# \brief Configures <project>(Config|ConfigVersion|Use).cmake files.
 #
-# This CMake script configures the <Project>Config.cmake et al. files.
+# This CMake script configures the <project>Config.cmake et al. files.
 # Once for the build tree and once for the install tree. Variables with a
 # _CONFIG suffix are replaced in the default template files by either the
 # value for the build or the install tree, respectively.
@@ -13,11 +13,11 @@
 # exists, it is used as template. Otherwise, the default template file is used.
 #
 # Similarly, if the file PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
-# it is used as template for the <Project>ConfigVersion.cmake file. The same
+# it is used as template for the <project>ConfigVersion.cmake file. The same
 # applies to Use.cmake.in.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################

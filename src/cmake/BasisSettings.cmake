@@ -153,7 +153,9 @@ set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmak
 # \brief Default script configuration template.
 #
 # This is the default template used by basis_add_script () to configure the
-# script during the build step.
+# script during the build step. If the file
+# PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
+# is set to its path by basis_project_initialize ().
 set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 
 # ============================================================================

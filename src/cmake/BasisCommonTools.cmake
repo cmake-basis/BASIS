@@ -49,7 +49,7 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 # \param [in] PACKAGE Package/project name.
 # \param [in] ARGN    Other arguments as accepted by CMake's find_package ().
 
-macro (find_sbia_package PACKAGE)
+macro (find_basis_package PACKAGE)
   find_package ("${BASIS_CONFIG_PREFIX}${PACKAGE}" ${ARGN})
 endmacro ()
 

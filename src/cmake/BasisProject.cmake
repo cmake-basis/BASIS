@@ -114,6 +114,9 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
 #   VERSION          The project version.
 #   DESCRIPTION      Package description, used for packing.
 #   PACKAGE_VENDOR   The vendor of this package, used for packaging.
+#                    Defaults to "SBIA Group at University of Pennsylvania".
+#   README_FILE      Path of readme file. Defaults to PROJECT_SOURCE_DIR/README.
+#   LICENSE_FILE     Path of license file. Defaults to PROJECT_SOURCE_DIR/LICENSE.
 #
 # \note The DESCRIPTION and PACKAGE_VENDOR arguments can be lists of strings
 #       which are concatenated to one string.
@@ -129,11 +132,19 @@ macro (basis_project_initialize)
   set (PROJECT_VERSION)
   set (PROJECT_DESCRIPTION)
   set (PROJECT_PACKAGE_VENDOR)
-  set (PROJECT_LICENSE_FILE)
+  set (PROJECT_AUTHORS_FILE)
   set (PROJECT_README_FILE)
+  set (PROJECT_INSTALL_FILE)
+  set (PROJECT_LICENSE_FILE)
 
   # parse arguments and/or include project settings file
-  CMAKE_PARSE_ARGUMENTS (PROJECT "" "NAME;VERSION" "DESCRIPTION;PACKAGE_VENDOR" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (
+    PROJECT
+      ""
+      "NAME;VERSION;AUTHORS_FILE;README_FILE;INSTALL_FILE;LICENSE_FILE"
+      "DESCRIPTION;PACKAGE_VENDOR"
+    ${ARGN}
+  )
 
   # check required project attributes or set default values
   if (NOT PROJECT_NAME)
@@ -147,7 +158,7 @@ macro (basis_project_initialize)
   if (PROJECT_PACKAGE_VENDOR)
     basis_list_to_string (PROJECT_PACKAGE_VENDOR ${PROJECT_PACKAGE_VENDOR})
   else ()
-    set (PROJECT_PACKAGE_VENDOR "")
+    set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
   endif ()
 
   if (PROJECT_DESCRIPTION)
@@ -156,18 +167,26 @@ macro (basis_project_initialize)
     set (PROJECT_DESCRIPTION "")
   endif ()
 
+  if (NOT PROJECT_AUTHORS_FILE)
+    set (PROJECT_AUTHORS_FILE "${PROJECT_SOURCE_DIR}/AUTHORS")
+  endif ()
+
   if (NOT PROJECT_README_FILE)
     set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README")
   endif ()
   if (NOT EXISTS "${PROJECT_README_FILE}")
-    message (FATAL_ERROR "Project README file not found.")
+    message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a README file.")
+  endif ()
+
+  if (NOT PROJECT_INSTALL_FILE)
+    set (PROJECT_INSTALL_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
   endif ()
 
   if (NOT PROJECT_LICENSE_FILE)
     set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/LICENSE")
   endif ()
   if (NOT EXISTS "${PROJECT_LICENSE_FILE}")
-    message (FATAL_ERROR "Project LICENSE file not found.")
+    message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a LICENSE file.")
   endif ()
 
   # start CMake project
@@ -211,6 +230,13 @@ macro (basis_project_initialize)
   basis_initialize_directories ()
   string (CONFIGURE "${BASIS_INCLUDE_PREFIX}" BASIS_INCLUDE_PREFIX @ONLY)
  
+  # include project specific settings
+  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
+
+  if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
+    set (BASIS_SCRIPT_CONFIG_FILE "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
+  endif ()
+
   # initialize automatic file update
   basis_update_initialize ()
 
@@ -223,50 +249,65 @@ macro (basis_project_initialize)
 
   include (BasisTest)
 
-  # include project specific settings
-  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
-
   # resolve dependencies
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
 
-  # copy license to binary tree
+  basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
+
+  # authors, readme, install and license files
+  get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME)
+  get_filename_component (README  "${PROJECT_LICENSE_FILE}" NAME)
+  get_filename_component (INSTALL "${PROJECT_INSTALL_FILE}" NAME)
+  get_filename_component (LICENSE "${PROJECT_README_FILE}" NAME)
+
   if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
-    get_filename_component (TMP "${PROJECT_LICENSE_FILE}" NAME)
-    configure_file ("${PROJECT_LICENSE_FILE}" "${PROJECT_BINARY_DIR}/${TMP}" COPYONLY)
-    set (TMP)
+    configure_file ("${PROJECT_README_FILE}" "${PROJECT_BINARY_DIR}/${README}" COPYONLY)
+    configure_file ("${PROJECT_LICENSE_FILE}" "${PROJECT_BINARY_DIR}/${LICENSE}" COPYONLY)
+    if (EXISTS "${PROJECT_AUTHORS_FILE}")
+      configure_file ("${PROJECT_AUTHORS_FILE}" "${PROJECT_BINARY_DIR}/${AUTHORS}" COPYONLY)
+    endif ()
+    if (EXISTS "${PROJECT_INSTALL_FILE}")
+      configure_file ("${PROJECT_INSTALL_FILE}" "${PROJECT_BINARY_DIR}/${INSTALL}" COPYONLY)
+    endif ()
   endif ()
 
-  # install license
-  if (IS_SUBPROJECT)
-    get_filename_component (LICENSE_NAME "${PROJECT_LICENSE_FILE}" NAME)
+  install (
+    FILES       "${PROJECT_README_FILE}"
+    DESTINATION "${INSTALL_DOC_DIR}"
+  )
 
-    set (INSTALL_LICENSE 1)
-    if (EXISTS "${CMAKE_SOURCE_DIR}/${LICENSE_NAME}")
-      file (READ "${CMAKE_SOURCE_DIR}/${LICENSE_NAME}" SUPER_LICENSE)
-      file (READ "${PROJECT_LICENSE_FILE}"             PROJECT_LICENSE)
-      if (PROJECT_LICENSE STREQUAL SUPER_LICENSE)
-        set (INSTALL_LICENSE 0)
-      endif ()
-    endif ()
+  install (
+    FILES       "${PROJECT_AUTHORS_FILE}" "${PROJECT_INSTALL_FILE}"
+    DESTINATION "${INSTALL_DOC_DIR}"
+    OPTIONAL
+  )
+
+  if (IS_SUBPROJECT)
+    execute_process (
+      COMMAND "${CMAKE_COMMAND}"
+              -E compare_files "${CMAKE_SOURCE_DIR}/${LICENSE}" "${PROJECT_LICENSE_FILE}"
+      RESULT_VARIABLE INSTALL_LICENSE
+    )
 
     if (INSTALL_LICENSE)
       install (
         FILES       "${PROJECT_LICENSE_FILE}"
         DESTINATION "${INSTALL_DOC_DIR}"
-        RENAME      "${LICENSE_NAME}-${PROJECT_NAME}"
+        RENAME      "${LICENSE}-${PROJECT_NAME}"
       )
       file (
-        APPEND "${CMAKE_BINARY_DIR}/${LICENSE_NAME}"
+        APPEND "${CMAKE_BINARY_DIR}/${LICENSE}"
         "\n\n------------------------------------------------------------------------------\n"
-        "See ${LICENSE_NAME}-${PROJECT_NAME} file\n"
-        "for licensing information of the ${PROJECT_NAME} package.\n"
+        "See ${LICENSE}-${PROJECT_NAME} file for\n"
+        "copyright and license notices of the ${PROJECT_NAME} package.\n"
         "------------------------------------------------------------------------------\n"
       )
       install (
-        FILES       "${CMAKE_BINARY_DIR}/${LICENSE_NAME}"
+        FILES       "${CMAKE_BINARY_DIR}/${LICENSE}"
         DESTINATION "${INSTALL_DOC_DIR}"
       )
     endif ()
+
     set (INSTALL_LICENSE)
   else ()
     install (
@@ -274,6 +315,11 @@ macro (basis_project_initialize)
       DESTINATION "${INSTALL_DOC_DIR}"
     )
   endif ()
+
+  set (AUTHORS)
+  set (README)
+  set (INSTALL)
+  set (LICENSE)
 
   # configure default auxiliary source files
   basis_configure_auxiliary_sources (DEFAULT_SOURCES)
