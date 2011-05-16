@@ -198,25 +198,30 @@ macro (basis_initialize_directories)
   # source tree
   foreach (P CONFIG DATA DOC EXAMPLE CODE TESTING)
     set (VAR PROJECT_${P}_DIR)
-    if (NOT IS_ABSOLUTE "${${VAR}}")
-      set (${VAR} "${PROJECT_SOURCE_DIR}/${${VAR}}")
-    endif ()
+    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
 
   # build tree
   foreach (P RUNTIME LIBRARY ARCHIVE)
     set (VAR CMAKE_${P}_OUTPUT_DIRECTORY)
-    if (NOT IS_ABSOLUTE "${${VAR}}")
-      set (${VAR} "${PROJECT_BINARY_DIR}/${${VAR}}")
-    endif ()
+    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
+  endforeach ()
+
+  # testing tree
+  foreach (P RUNTIME INPUT OUTPUT EXPECTED)
+    set (VAR TESTING_${P}_DIR)
+    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
 
   # install tree
   string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
 
   set (
-    CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}"
-    CACHE INTERNAL "Installation directories prefix." FORCE
+    CMAKE_INSTALL_PREFIX
+      "${INSTALL_PREFIX}"
+    CACHE INTERNAL
+      "Installation directories prefix."
+    FORCE
   )
 
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC DATA EXAMPLE MAN CONFIG)
@@ -229,24 +234,27 @@ endmacro ()
 # source tree
 # ----------------------------------------------------------------------------
 
-# The directories of the source tree are given here relative to the root
-# directory of the project or corresponding subtree, respectively.
-#
 # \note The project template must follow this directory structure.
 #       Ideally, when changing the name of one of these directories,
 #       only the directory structure of the tempate needs to be updated.
 #       The BASIS CMake functions should not be required to change as they
 #       are supposed to use these variables instead of the actual names.
 
-set (PROJECT_CODE_DIR    "src")
-set (PROJECT_CONFIG_DIR  "config")
-set (PROJECT_DATA_DIR    "data")
-set (PROJECT_DOC_DIR     "doc")
-set (PROJECT_EXAMPLE_DIR "example")
-set (PROJECT_TESTING_DIR "test")
+set (PROJECT_CODE_DIR    "@PROJECT_SOURCE_DIR@/src")
+set (PROJECT_CONFIG_DIR  "@PROJECT_SOURCE_DIR@/config")
+set (PROJECT_DATA_DIR    "@PROJECT_SOURCE_DIR@/data")
+set (PROJECT_DOC_DIR     "@PROJECT_SOURCE_DIR@/doc")
+set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
+set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 
-set (TESTING_INPUT_DIR    "data")
-set (TESTING_EXPECTED_DIR "expected")
+# ----------------------------------------------------------------------------
+# testing tree
+# ----------------------------------------------------------------------------
+
+set (TESTING_INPUT_DIR    "@PROJECT_TESTING_DIR@/data")
+set (TESTING_EXPECTED_DIR "@PROJECT_TESTING_DIR@/expected")
+set (TESTING_RUNTIME_DIR  "@PROJECT_BINARY_DIR@/Testing/bin")
+set (TESTING_OUTPUT_DIR   "@PROJECT_BINARY_DIR@/Testing/Temporary/output")
 
 # ----------------------------------------------------------------------------
 # build tree
@@ -254,9 +262,9 @@ set (TESTING_EXPECTED_DIR "expected")
 
 # These directory paths will be made absolute by the initialization functions.
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin")
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "bin")
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 
 # ----------------------------------------------------------------------------
 # install tree

@@ -27,22 +27,6 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
 
 # ============================================================================
-# directories
-# ============================================================================
-
-set (TESTING_BIN_DIR    "test/bin"    CACHE PATH "Output directory for test executables (relative to CMAKE_BINARY_DIR).")
-set (TESTING_OUTPUT_DIR "test/output" CACHE PATH "Directory in which tests output generated data (relative to CMAKE_BINARY_DIR).")
-
-# make relative paths absolute and make options advanced
-foreach(P BIN OUTPUT)
-  set(VAR TESTING_${P}_DIR)
-  if(NOT IS_ABSOLUTE "${${VAR}}")
-    set(${VAR} "${PROJECT_BINARY_DIR}/${${VAR}}")
-  endif()
-  mark_as_advanced ("${VAR}")
-endforeach()
-
-# ============================================================================
 # configuration
 # ============================================================================
 
@@ -51,10 +35,6 @@ include (CTest)
 
 mark_as_advanced (DART_TESTING_TIMEOUT)
 
-if (NOT PROJECT_TESTING_DIR)
-  set (PROJECT_TESTING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
-endif ()
-
 if (NOT EXISTS "${PROJECT_TESTING_DIR}")
   set (BUILD_TESTING "OFF" CACHE INTERNAL "No testing tree to build." FORCE)
 else ()
@@ -62,7 +42,7 @@ else ()
 endif ()
 
 # configure custom CTest settings and/or copy them to binary tree
-# \todo How does this go well with the superproject/subproject concept?
+# \todo How does this go well with the super-build?
 if ("${PROJECT_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   set (CTEST_CUSTOM_FILE "CTestCustom.cmake")
 else ()
@@ -122,6 +102,8 @@ endfunction ()
 
 # ****************************************************************************
 # \brief Add test.
+#
+# \todo Make use of ExternalData module to fetch remote test data.
 #
 # \param [in] TEST_NAME Name of the test.
 # \param [in] ARGN      Parameters passed to add_test () (excluding test name).
