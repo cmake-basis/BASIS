@@ -1,6 +1,10 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Add tests in this CMake configuration file.
+# \brief CMake configuration file of system tests.
+#
+# System tests execute the programs of this package with given test input data
+# and compare the output of the programs to the expected results.
+# These tests can be distributed as part of the distribution packages.
 #
 # All input data to the tests is stored in TESTING_INPUT_DIR, while the
 # expected test output data can be found in TESTING_EXPECTED_DIR.
