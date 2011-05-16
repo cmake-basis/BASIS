@@ -126,7 +126,7 @@ function (basis_set_config_path VAR PATH)
       "${INSTALL_PREFIX}/${PATH}"
   )
 
-  set (${VAR} "\${CMAKE_CURRENT_LIST_DIR}/${VAR}" PARENT_SCOPE)
+  set (${VAR} "\${CMAKE_CURRENT_LIST_DIR}/${${VAR}}" PARENT_SCOPE)
 endfunction ()
  
 # ****************************************************************************
