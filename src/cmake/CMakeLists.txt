@@ -11,20 +11,18 @@
 set (
   MODULES
     CMakeParseArguments.cmake
-    ExternalData.cmake
-    ExternalData_config.cmake.in
-    BasisCommon.cmake
-    BasisDirectories.cmake
+    BasisCommonTools.cmake
     BasisDocTools.cmake
-    BasisGlobals.cmake
     BasisMatlabTools.cmake
     BasisPack.cmake
-    BasisProjectTools.cmake
+    BasisProject.cmake
     BasisSettings.cmake
     BasisSubversionTools.cmake
     BasisTargetTools.cmake
     BasisTest.cmake
     BasisUpdate.cmake
+    ExternalData.cmake
+    ExternalData_config.cmake.in
 )
 
 set (
