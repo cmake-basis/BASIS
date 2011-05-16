@@ -97,11 +97,11 @@ set (BASIS_RESERVED_TARGET_NAMES "uninstall" "doc" "changelog" "execname")
 #
 # The default component a target of the given kind and its auxiliary files
 # are associated with if no component was specified, explicitly.
-set (BASIS_DEFAULT_ARCHIVE_COMPONENT   "Development")
-set (BASIS_DEFAULT_BUNDLE_COMPONENT    "Runtime")
-set (BASIS_DEFAULT_FRAMEWORK_COMPONENT "Development")
-set (BASIS_DEFAULT_LIBRARY_COMPONENT   "Runtime")
-set (BASIS_DEFAULT_RUNTIME_COMPONENT   "Runtime")
+set (BASIS_ARCHIVE_COMPONENT   "Development")
+set (BASIS_BUNDLE_COMPONENT    "Runtime")
+set (BASIS_FRAMEWORK_COMPONENT "Development")
+set (BASIS_LIBRARY_COMPONENT   "Runtime")
+set (BASIS_RUNTIME_COMPONENT   "Runtime")
 
 # \brief Character used to separate namespace and target name to build target UID.
 #
@@ -220,7 +220,7 @@ macro (basis_initialize_directories)
     CACHE INTERNAL "Installation directories prefix." FORCE
   )
 
-  foreach (P BIN LIB INCLUDE SHARE DOC DATA EXAMPLE MAN)
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC DATA EXAMPLE MAN CONFIG)
     set (VAR INSTALL_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
@@ -291,24 +291,33 @@ else ()
   )
 endif ()
 
-set (INSTALL_BIN_DIR     "bin")
-set (INSTALL_INCLUDE_DIR "include")
-set (INSTALL_LIB_DIR     "lib")
-set (INSTALL_SHARE_DIR   "share")
+set (INSTALL_RUNTIME_DIR   "bin")     # shared libraries (WIN32) and main executable
+if (WIN32)
+  set (INSTALL_LIBEXEC_DIR "bin")     # auxiliary executables
+else ()
+  set (INSTALL_LIBEXEC_DIR "lib")     # auxiliary executables
+endif ()
+set (INSTALL_LIBRARY_DIR   "lib")     # shared (UNIX) and module libraries
+set (INSTALL_ARCHIVE_DIR   "lib")     # static and import libraries
+set (INSTALL_INCLUDE_DIR   "include") # public header files of libraries
+set (INSTALL_SHARE_DIR     "share")   # other shared files
 
 if (INSTALL_SINFIX)
-  set (INSTALL_BIN_DIR       "${INSTALL_BIN_DIR}/${INSTALL_SINFIX}")
-  if (NOT INSTALL_SINFIX STREQUAL "sbia/@PROJECT_NAME_LOWER@")
+  if (NOT "${INSTALL_SINFIX}" STREQUAL "${BASIS_INCLUDE_PREFIX}")
     set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
   endif ()
-  set (INSTALL_LIB_DIR       "${INSTALL_LIB_DIR}/${INSTALL_SINFIX}")
-  set (INSTALL_SHARE_DIR     "${INSTALL_SHARE_DIR}/${INSTALL_SINFIX}")
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE SHARE)
+    set (VAR "INSTALL_${P}_DIR")
+    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+  endforeach ()
 endif ()
 
-set (INSTALL_DOC_DIR     "${INSTALL_SHARE_DIR}/doc")
-set (INSTALL_DATA_DIR    "${INSTALL_SHARE_DIR}/data")
-set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example")
-set (INSTALL_MAN_DIR     "${INSTALL_SHARE_DIR}/man")
+set (INSTALL_DOC_DIR     "${INSTALL_SHARE_DIR}/doc")     # documentaton files
+set (INSTALL_DATA_DIR    "${INSTALL_SHARE_DIR}/data")    # required auxiliary data
+set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
+set (INSTALL_MAN_DIR     "${INSTALL_SHARE_DIR}/man")     # man pages
+
+set (INSTALL_CONFIG_DIR  "${INSTALL_LIBRARY_DIR}") # <project>Config.cmake et al. files
 
 # ============================================================================
 # build configuration(s)
@@ -341,9 +350,6 @@ set (
     "Current build configuration. Specify either \"Debug\", \"Coverage\", or \"Release\"."
   FORCE
 )
-
-# default script configuration file \see basis_add_script ()
-set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/BasisScriptConfig.cmake.in")
 
 # ----------------------------------------------------------------------------
 # common

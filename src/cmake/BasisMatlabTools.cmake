@@ -183,10 +183,25 @@ endfunction ()
 # ****************************************************************************
 # \brief Add MATLAB Compiler target.
 #
-# This function is used to at an executable or library target which is built
+# This function is used to add an executable or library target which is built
 # using the MATLAB Compilier (MCC). It is invoked by basis_add_executable ()
-# and basis_add_library (), respectively, when at least one M-file is given
+# or basis_add_library (), respectively, when at least one M-file is given
 # as source file. Thus, it is recommended to use these functions instead.
+#
+# An install command for the added executable or library target is added by
+# this function as well. The executable will be installed as part of the
+# RUNTIME_COMPONENT in the directory INSTALL_RUNTIME_DIR. The runtime
+# library will be installed as part of the RUNTIME_COMPONENT in the directory
+# INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR on Windows.
+# Static/import libraries will be installed as part of the LIBRARY_COMPONENT
+# in the directory INSTALL_ARCHIVE_DIR, while the corresponding public header
+# files will be installed as part of the same component in the directory
+# INSTALL_INCLUDE_DIR, whereby the BASIS_INCLUDE_PREFIX is appended to this
+# path. By default, all header files are considered public. To declare certain
+# header files private and hence exclude them from the installation, add them
+# to the variable <TARGET_NAME>_PRIVATE_HEADER before calling this function.
+# Note that the header file path must be exacly the same as the one passed to
+# this function as part of ARGN!
 #
 # \note The custom build command is not added yet by this function.
 #       Only a custom target which stores all the information required to
@@ -202,21 +217,24 @@ endfunction ()
 # \param [in] ARGN        Remaining arguments such as in particular the
 #                         input source files.
 #
-#   TYPE Type of the target. Either EXECUTABLE (default) or LIBRARY.
+#   TYPE              Type of the target. Either EXECUTABLE (default) or LIBRARY.
+#   COMPONENT         Name of the component. Defaults to
+#                     BASIS_RUNTIME_COMPONENT if TYPE is EXECUTABLE or
+#                     BASIS_LIBRARY_COMPONENT, otherwise.
+#   RUNTIME_COMPONENT Name of runtime component. Defaults to COMPONENT
+#                     if specified or BASIS_RUNTIME_COMPONENT, otherwise.
+#   LIBRARY_COMPONENT Name of library component. Defaults to COMPONENT
+#                     if specified or BASIS_LIBRARY_COMPONENT, otherwise.
+#   LIBEXEC           Specifies that the built executable is an auxiliary
+#                     executable called by other executables only.
+
 
 function (basis_add_mcc_target TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "COMPONENT;TYPE" "" ${ARGN})
-
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
-  endif ()
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "Unspecified")
-  endif ()
+  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC" "TYPE;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT" "" ${ARGN})
 
   if (NOT ARGN_TYPE)
     set (ARGN_TYPE "EXECUTABLE")
@@ -228,6 +246,38 @@ function (basis_add_mcc_target TARGET_NAME)
     message (FATAL_ERROR "Invalid type for MCC target ${TARGET_NAME}: ${ARGN_TYPE}")
   endif ()
 
+  if (NOT ARGN_LIBRARY_COMPONENT AND ARGN_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "${ARGN_COMPONENT}")
+  endif ()
+  if (NOT ARGN_RUNTIME_COMPONENT AND ARGN_COMPONENT)
+    set (ARGN_RUNTIME_COMPONENT "${ARGN_COMPONENT}")
+  endif ()
+
+  if (NOT ARGN_COMPONENT)
+    if (ARGN_TYPE STREQUAL "EXECUTABLE")
+      set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+    else ()
+      set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+    endif ()
+  endif ()
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "Unspecified")
+  endif ()
+
+  if (NOT ARGN_LIBRARY_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+  endif ()
+  if (NOT ARGN_LIBRARY_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "Unspecified")
+  endif ()
+
+  if (NOT ARGN_RUNTIME_COMPONENT)
+    set (ARGN_RUNTIME_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+  endif ()
+  if (NOT ARGN_RUNTIME_COMPONENT)
+    set (ARGN_RUNTIME_COMPONENT "Unspecified")
+  endif ()
+
   if (ARGN_TYPE STREQUAL "LIBRARY")
     message (STATUS "Adding MATLAB library ${TARGET_UID}...")
     message (FATAL_ERROR "Build of MATLAB library from M-files not yet supported.")
@@ -237,12 +287,12 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
 
   # required commands available ?
-  if (NOT BASIS_CMD_MCC)
+  if (NOT EXISTS BASIS_CMD_MCC)
     message (FATAL_ERROR "MATLAB Compiler not found. It is required to build target ${TARGET_UID}."
                          "Set BASIS_CMD_MCC manually and try again.")
   endif ()
 
-  if (NOT BASIS_SCRIPT_EXECUTE_PROCESS)
+  if (NOT EXISTS BASIS_SCRIPT_EXECUTE_PROCESS)
     message (FATAL_ERROR "CMake script required for execution of process in script mode not found."
                          "It is required to build the target ${TARGET_UID}. "
                          "Set BASIS_SCRIPT_EXECUTE_PROCESS manually and try again.")
@@ -276,6 +326,13 @@ function (basis_add_mcc_target TARGET_NAME)
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
 
+  # install directories
+  if (ARGN_LIBEXEC)
+    set (RUNTIME_INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+  else ()
+    set (RUNTIME_INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+  endif ()
+
   # set target properties required by basis_add_mcc_target_finalize ()
   set_target_properties (
     ${TARGET_UID}
@@ -288,12 +345,13 @@ function (basis_add_mcc_target TARGET_NAME)
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
       LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-      RUNTIME_INSTALL_DIRECTORY "${INSTALL_BIN_DIR}"
-      LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIB_DIR}"
+      RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
+      LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
       INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
       LINK_DEPENDS              "${LINK_DEPENDS}"
       COMPILE_FLAGS             "${USER_FLAGS}"
-      COMPONENT                 "${ARGN_COMPONENT}"
+      RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
+      LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
   )
 
   if (ARGN_TYPE STREQUAL "LIBRARY")
@@ -353,6 +411,8 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       "SOURCES"
       "LINK_DEPENDS"
       "COMPILE_FLAGS"
+      "RUNTIME_COMPONENT"
+      "LIBRARY_COMPONENT"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -360,7 +420,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endforeach ()
 
   if (NOT BASIS_TYPE MATCHES "^MCC_EXECUTABLE$|^MCC_LIBRARY$")
-    message (FATAL_ERROR "Target ${TARGET_UID} had invalid BASIS_TYPE: ${BASIS_TYPE}")
+    message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
   if (TYPE STREQUAL "LIBRARY")
@@ -518,7 +578,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
             "-DERROR_EXPRESSION=[E|e]rror"
             "-DOUTPUT_FILE=${BUILD_LOG}"
             "-DERROR_FILE=${BUILD_LOG}"
-            "-DBASIS_VERBOSE=OFF"
+            "-DVERBOSE=OFF"
             "-DLOG_ARGS=ON"
             "-P" "${BASIS_SCRIPT_EXECUTE_PROCESS}"
     # post build command(s)
@@ -571,7 +631,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     install (
       PROGRAMS    ${BUILD_OUTPUT}
       DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
-      COMPONENT   "${COMPONENT}"
+      COMPONENT   "${RUNTIME_COMPONENT}"
     )
   endif ()
 

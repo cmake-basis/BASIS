@@ -33,7 +33,7 @@
 # the error expressions, a fatal error message is displayed causing CMake to
 # return the exit code 1.
 #
-# Setting CMAKE_VERBOSE to true, enabled verbose output messages.
+# Setting VERBOSE to true, enables verbose output messages.
 #
 # When the input argument LOG_ARGS evaluates to true, the values of COMMAND,
 # WORKING_DIRECTORY, and TIMEOUT are added to the top of the output files
@@ -151,7 +151,7 @@ foreach (ARG ${COMMAND})
   endif ()
 endforeach ()
 
-if (CMAKE_VERBOSE)
+if (VERBOSE)
   message ("${CMD}")
 endif ()
 

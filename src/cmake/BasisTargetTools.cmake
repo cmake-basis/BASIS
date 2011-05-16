@@ -149,8 +149,6 @@ function (basis_link_directories)
   link_directories (${ARGN})
 endfunction ()
 
-
-
 # ============================================================================
 # dependencies
 # ============================================================================
@@ -229,7 +227,8 @@ endfunction ()
 #
 # An install command for the added executable target is added by this function
 # as well. The executable will be installed as part of the component COMPONENT
-# in the directory INSTALL_BIN_DIR.
+# in the directory INSTALL_RUNTIME_DIR or INSTALL_LIBEXEC_DIR if the option
+# LIBEXEC is given.
 #
 # Besides adding usual executable targets build by the set C/CXX language
 # compiler, this function inspects the list of source files given and detects
@@ -239,23 +238,25 @@ endfunction ()
 # CXX    - The default behavior, adding an executable target build from C/C++
 #          source code. The target is added via CMake's add_executable () command.
 # MATLAB - Standalone application build from MATLAB sources using the
-#          MATLAB Compiler (mcc). This option is used when the list of source
-#          files contains one or more *.m files. A custom target is added which
-#          depends on custom command(s) that build the executable.
+#          MATLAB Compiler (mcc). This language option is used when the list
+#          of source files contains one or more *.m files. A custom target is
+#          added which depends on custom command(s) that build the executable.
 #
-#          \attention The *.m file with the entry point / main function of the
+#          \attention The *.m file with the entry point/main function of the
 #                     executable has to be given before any other *.m file.
 #
 # \param [in] TARGET_NAME Name of the executable target.
 # \param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted, all other arguments are passed
-#                         on to add_executable () or the respective custom commands
-#                         used to build the executable.
+#                         on to add_executable () or the respective custom
+#                         commands used to build the executable.
 #
-#   COMPONENT Name of the component. Defaults to BASIS_DEFAULT_COMPONENT.
+#   COMPONENT Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
 #   LANGUAGE  Source code language. By default determined from the extensions of
 #             of the given source files, where CXX is assumed if no other
 #             language is detected.
+#   LIBEXEC   Specifies that the built executable is an auxiliary executable
+#             which is only called by other executable.
 
 function (basis_add_executable TARGET_NAME)
   basis_check_target_name (${TARGET_NAME})
@@ -264,11 +265,11 @@ function (basis_add_executable TARGET_NAME)
   message (STATUS "Adding executable ${TARGET_UID}...")
 
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "COMPONENT;LANGUAGE" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC" "COMPONENT;LANGUAGE" "" ${ARGN})
 
   # if no component is specified, use default
   if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
+    set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
   endif ()
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "Unspecified")
@@ -277,17 +278,12 @@ function (basis_add_executable TARGET_NAME)
   # if the language is not explicitly selected, determine it from the
   # extensions of the source files
   if (NOT ARGN_LANGUAGE)
+    set (ARGN_LANGUAGE "CXX")
     foreach (ARG ${ARGN})
       if (ARG MATCHES "\\.m$")
         set (ARGN_LANGUAGE "MATLAB")
       endif ()
     endforeach ()
-  endif ()
-
-  # by default, consider source files as CXX language
-  # (i.e., defaults to behavior of CMake's add_executable ())
-  if (NOT ARGN_LANGUAGE)
-    set (ARGN_LANGUAGE "CXX")
   endif ()
 
   # --------------------------------------------------------------------------
@@ -296,10 +292,17 @@ function (basis_add_executable TARGET_NAME)
 
   if (ARGN_LANGUAGE STREQUAL "MATLAB")
 
+    if (ARGN_LIBEXEC)
+      set (LIBEXEC "LIBEXEC")
+    else ()
+      set (LIBEXEC "")
+    endif ()
+
     basis_add_mcc_target (
       ${TARGET_NAME}
       TYPE      "EXECUTABLE"
       COMPONENT "${ARGN_COMPONENT}"
+      ${LIBEXEC}
       ${ARGN_UNPARSED_ARGUMENTS}
     )
 
@@ -327,16 +330,22 @@ function (basis_add_executable TARGET_NAME)
     )
 
     # install executable
+    if (ARGN_LIBEXEC)
+      set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+    else ()
+      set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+    endif ()
+
     install (
       TARGETS     ${TARGET_UID}
-      DESTINATION "${INSTALL_BIN_DIR}"
+      DESTINATION "${INSTALL_DIR}"
       COMPONENT   "${ARGN_COMPONENT}"
     )
 
     set_target_properties (
       ${TARGET_UID}
       PROPERTIES
-        RUNTIME_INSTALL_DIRECTORY "${INSTALL_BIN_DIR}"
+        RUNTIME_INSTALL_DIRECTORY "${INSTALL_DIR}"
     )
 
     # add target to list of targets
@@ -357,11 +366,12 @@ endfunction ()
 #
 # An install command for the added library target is added by this function
 # as well. The runtime library will be installed as part of the component
-# RUNTIME_COMPONENT in the directory INSTALL_BIN_DIR, the static/import library
-# will be installed as part of the component DEVELOPMENT_COMPONENT in the
-# directory INSTALL_LIB_DIR, while the corresponding public header files will
-# be installed as part of the same component in the directory INSTALL_INCLUDE_DIR
-# whereby the BASIS_INCLUDE_PREFIX is appended. By default, all header files
+# RUNTIME_COMPONENT in the directory INSTALL_LIBRARY_DIR on UNIX systems and
+# INSTALL_RUNTIME_DIR on Windows. Static/import libraries will be installed
+# as part of the LIBRARY_COMPONENT in the directory INSTALL_ARCHIVE_DIR,
+# while the corresponding public header files will be installed as part of
+# the same component in the directory INSTALL_INCLUDE_DIR, whereby the
+# BASIS_INCLUDE_PREFIX is appended to this path. By default, all header files
 # are considered public. To declare certain header files private and hence
 # exclude them from the installation, add them to the variable
 # <TARGET_NAME>_PRIVATE_HEADER before calling this function. Note that the
@@ -385,7 +395,12 @@ endfunction ()
 #
 # basis_add_library (MyLib1 STATIC ${MYLIB_SOURCE})
 # basis_add_library (MyLib2 STATIC ${MYLIB_SOURCE} COMPONENT dev)
-# basis_add_library (MyLib3 STATIC ${MYLIB_SOURCE} RUNTIME_COMPONENT bin DEVELOPMENT_COMPONENT dev)
+#
+# basis_add_library (
+#   MyLib3 SHARED ${MYLIB_SOURCE}
+#   RUNTIME_COMPONENT bin
+#   LIBRARY_COMPONENT dev
+# )
 # \endcode
 #
 # \param [in] TARGET_NAME Name of the library target.
@@ -394,9 +409,11 @@ endfunction ()
 #                         arguments are extracted, all other arguments are passed
 #                         on to add_library ().
 #
-#   COMPONENT                Name of the component. Defaults to BASIS_DEFAULT_COMPONENT.
-#   RUNTIME_COMPONENT        Name of runtime component. Defaults to COMPONENT.
-#   DEVELOPMENT_COMPONENT    Name of development component. Defaults to COMPONENT.
+#   COMPONENT                Name of the component. Defaults to BASIS_LIBRARY_COMPONENT.
+#   RUNTIME_COMPONENT        Name of runtime component. Defaults to COMPONENT
+#                            if specified or BASIS_RUNTIME_COMPONENT, otherwise.
+#   LIBRARY_COMPONENT        Name of library component. Defaults to COMPONENT
+#                            if specified or BASIS_LIBRARY_COMPONENT, otherwise.
 #
 #   STATIC|SHARED|MODULE|MEX Type of the library.
 #   EXTERNAL                 Whether the library target is an external library, i.e.,
@@ -410,23 +427,37 @@ function (basis_add_library TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
       "STATIC;SHARED;MODULE;MEX;EXTERNAL"
-      "COMPONENT;DEVELOPMENT_COMPONENT;RUNTIME_COMPONENT;LANGUAGE"
+      "COMPONENT;LIBRARY_COMPONENT;RUNTIME_COMPONENT;LANGUAGE"
       ""
     ${ARGN}
   )
 
+  if (NOT ARGN_LIBRARY_COMPONENT AND ARGN_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "${ARGN_COMPONENT}")
+  endif ()
+  if (NOT ARGN_RUNTIME_COMPONENT AND ARGN_COMPONENT)
+    set (ARGN_RUNTIME_COMPONENT "${ARGN_COMPONENT}")
+  endif ()
+
   if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
+    set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
   endif ()
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
-  if (NOT ARGN_DEVELOPMENT_COMPONENT)
-    set (ARGN_DEVELOPMENT_COMPONENT "${ARGN_COMPONENT}")
+  if (NOT ARGN_LIBRARY_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+  endif ()
+  if (NOT ARGN_LIBRARY_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "Unspecified")
+  endif ()
+
+  if (NOT ARGN_RUNTIME_COMPONENT)
+    set (ARGN_RUNTIME_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
   endif ()
   if (NOT ARGN_RUNTIME_COMPONENT)
-    set (ARGN_RUNTIME_COMPONENT "${ARGN_COMPONENT}")
+    set (ARGN_RUNTIME_COMPONENT "Unspecified")
   endif ()
 
   # if the language is not explicitly selected, determine it from the
@@ -499,8 +530,9 @@ function (basis_add_library TARGET_NAME)
 
     basis_add_mcc_target (
       ${TARGET_NAME}
-      TYPE      "LIBRARY"
-      COMPONENT ${ARGN_COMPONENT}
+      TYPE              "LIBRARY"
+      RUNTIME_COMPONENT "${ARGN_RUNTIME_COMPONENT}"
+      LIBRARY_COMPONENT "${ARGN_LIBRARY_COMPONENT}"
       ${ARGN_UNPARSED_ARGUMENTS}
     )
 
@@ -531,8 +563,8 @@ function (basis_add_library TARGET_NAME)
 
       # MATLAB external library found ?
       if (NOT MATLAB_FOUND)
-        message (FATAL_ERROR "MATLAB not found (or package not searched). It is required to build target ${TARGET_UID}."
-                             "Set MATLAB_ROOT or MATLAB_INCLUDE_DIR and MATLAB_LIBRARIES manually and try again.")
+        message (FATAL_ERROR "MATLAB package not found or not searched for."
+                             " It is required to build target ${TARGET_UID}.")
       endif ()
 
       # determine extension of MEX-files for this architecture
@@ -621,17 +653,17 @@ function (basis_add_library TARGET_NAME)
     install (
       TARGETS ${TARGET_UID}
       RUNTIME
-        DESTINATION "${INSTALL_BIN_DIR}"
+        DESTINATION "${INSTALL_RUNTIME_DIR}"
         COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
-      ARCHIVE
-        DESTINATION "${INSTALL_LIB_DIR}"
-        COMPONENT   "${ARGN_DEVELOPMENT_COMPONENT}"
       LIBRARY
-        DESTINATION "${INSTALL_LIB_DIR}"
-        COMPONENT   "${ARGN_DEVELOPMENT_COMPONENT}"
+        DESTINATION "${INSTALL_LIBRARY_DIR}"
+        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
+      ARCHIVE
+        DESTINATION "${INSTALL_ARCHIVE_DIR}"
+        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
       PUBLIC_HEADER
         DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
-        COMPONENT   "${ARGN_DEVELOPMENT_COMPONENT}"
+        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
     )
 
     # add target to list of targets
@@ -661,10 +693,13 @@ endfunction ()
 # ****************************************************************************
 # \brief Add script target.
 #
-# This function adds a script "target" to the project, where the script is
-# simply configured via configure_file () and copied to the directory
-# specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY or INSTALL_BIN_DIR, respectively.
-# If the scripts' name ends in ".in", the ".in" suffix is removed from the
+# This function adds a script target to the project, where during the build
+# step the script is configured via configure_file () and copied to the
+# directory specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY. During installation,
+# the script built for the install tree is copied to INSTALL_RUNTIME_DIR or
+# INSTALL_LIBEXEC_DIR if the LIBEXEC option is given.
+#
+# If the script name ends in ".in", the ".in" suffix is removed from the
 # output name. Further, all occurrences of ".in." anywhere within the script
 # name are removed as well. The extension of the script such as .sh or .py is
 # removed from the output filename if the project is build on UNIX systems
@@ -682,13 +717,13 @@ endfunction ()
 #
 # Certain CMake variables within the script are replaced during the configure step.
 # These variables and their values are given by a so-called script config(uration)
-# file. The specified script configuration file is loaded during the build of the script
-# prior to the configure_file () command. As paths may be different for scripts that
-# are used directly from the build tree and scripts that are copied into the install tree,
-# the variable BUILD_INSTALL_SCRIPT is 1 when the script is build for the install tree
-# and 0 otherwise. This variable can be used within the script configuration file to
-# set the value of the CMake variables used within the script differently for either
-# case.
+# file. The specified script configuration file is loaded during the build of
+# the script prior to the configure_file () command. As paths may be different
+# for scripts that are used directly from the build tree and scripts that are
+# copied into the install tree, the variable BUILD_INSTALL_SCRIPT is 1 when the
+# script is build for the install tree and 0 otherwise. This variable can be
+# used within the script configuration file to set the value of the CMake
+# variables used within the script differently for either case.
 #
 # Example:
 # \code
@@ -697,12 +732,11 @@ endfunction ()
 #
 # Script1Config.cmake
 # \code
-# if (BUILD_INSTALL_SCRIPT)
-#   set (DATA_DIR "${INSTALL_DATA_DIR}")
-# else ()
-#   set (DATA_DIR "${PROJECT_DATA_DIR}")
-# endif ()
+# basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 # \endcode
+#
+# See documentation of basis_set_script_path_definition () and ScriptConfig.cmake
+# file in BASIS_MODULE_PATH for details.
 #
 # Note that this function only adds a custom target and stores all information
 # required to setup the actual custom build command as properties of this target.
@@ -721,28 +755,29 @@ endfunction ()
 # \param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted:
 #
-#   SCRIPT    Script file paths relative to current source directory.
-#   COMPONENT Name of the component. Defaults to BASIS_DEFAULT_COMPONENT.
-#   CONFIG    Script configuration file. Defaults to the value of
-#             BASIS_SCRIPT_CONFIG_FILE if defined. If no script configuration
-#             file is specified or the specified file does not exist, the script
-#             is copied only.
+#   SCRIPT    Script file path relative to current source directory.
+#   COMPONENT Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
+#   CONFIG    Script configuration file. Defaults to BASIS_SCRIPT_CONFIG_FILE.
+#             If "NONE", "None", or "none" is given, the script is copied only.
+#   LIBEXEC   Specifies that the script is an auxiliary executable called by
+#             other executables only.
 
 function (basis_add_script TARGET_NAME)
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "SCRIPT;CONFIG;COMPONENT" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC" "SCRIPT;CONFIG;COMPONENT" "" ${ARGN})
 
   if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
+    set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
   endif ()
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
+
   if (NOT ARGN_CONFIG)
     set (ARGN_CONFIG "${BASIS_SCRIPT_CONFIG_FILE}")
   endif ()
 
-  if (ARGN_CONFIG STREQUAL "NONE" OR ARGN_CONFIG STREQUAL "none" OR ARGN_CONFIG STREQUAL "None")
+  if (ARGN_CONFIG MATCHES "^NONE$|^None$|^none$")
     set (ARGN_CONFIG)
   endif ()
 
@@ -791,6 +826,13 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
 
+  # install directory
+  if (ARGN_LIBEXEC)
+    set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+  else ()
+    set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+  endif ()
+
   # script configuration
   set (SCRIPT_CONFIG)
 
@@ -814,9 +856,9 @@ function (basis_add_script TARGET_NAME)
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-      RUNTIME_INSTALL_DIRECTORY "${INSTALL_BIN_DIR}"
+      RUNTIME_INSTALL_DIRECTORY "${INSTALL_DIR}"
       COMPILE_DEFINITIONS       "${SCRIPT_CONFIG}"
-      COMPONENT                 "${ARGN_COMPONENT}"
+      RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
   )
 
   # add target to list of targets
@@ -875,7 +917,7 @@ function (basis_add_script_finalize TARGET_UID)
       "SOVERSION"
       "SOURCES"
       "COMPILE_DEFINITIONS"
-      "COMPONENT"
+      "RUNTIME_COMPONENT"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -997,7 +1039,7 @@ endif ()"
     PROGRAMS    "${INSTALL_FILE}"
     RENAME      "${OUTPUT_NAME}"
     DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
-    COMPONENT   "${COMPONENT}"
+    COMPONENT   "${RUNTIME_COMPONENT}"
   )
 
   message (STATUS "Adding build command for script ${TARGET_UID}... - done")
@@ -1013,7 +1055,7 @@ endfunction ()
 # \param [in] ARGN This argument list is parsed and the following
 #                  arguments are extracted:
 #
-#   COMPONENT Name of the component. Defaults to BASIS_DEFAULT_COMPONENT.
+#   COMPONENT Name of the component. See basis_add_script () for default.
 
 function (basis_add_scripts_by_extension EXT)
   if (BASIS_VERBOSE)
@@ -1025,15 +1067,12 @@ function (basis_add_scripts_by_extension EXT)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "" "COMPONENT" "" ${ARGN})
 
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
-  endif ()
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "Unspecified")
-  endif ()
-
   if (ARGN_UNPARSED_ARGUMENTS)
     message ("Unknown arguments given for basis_add_scripts_by_extension (${EXT}): ${ARGN_UNPARSED_ARGUMENTS}")
+  endif ()
+
+  if (ARGN_COMPONENT)
+    set (COMPONENT "COMPONENT" "${ARGN_COMPONENT}")
   endif ()
 
   # glob script files with given extension
@@ -1043,7 +1082,7 @@ function (basis_add_scripts_by_extension EXT)
   foreach (SCRIPT ${FILES})
     if (NOT IS_DIRECTORY "${SCRIPT}")
       if ("${SCRIPT}" MATCHES ".*\\.${EXT}$|.*\\.${EXT}\\.in$")
-        basis_add_script ("${SCRIPT}" COMPONENT "${ARGN_COMPONENT}")
+        basis_add_script ("${SCRIPT}" ${COMPONENT})
       endif ()
     endif ()
   endforeach ()
@@ -1058,22 +1097,19 @@ endfunction ()
 #                  are extracted. All other arguments are considered script
 #                  extension.
 #
-#   COMPONENT Name of the component.
+#   COMPONENT Name of the component. See basis_add_script () for default.
 
 macro (basis_add_scripts_by_extensions)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "" "COMPONENT" "" ${ARGN})
 
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
-  endif ()
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "Unspecified")
+  if (ARGN_COMPONENT)
+    set (COMPONENT "COMPONENT" "${ARGN_COMPONENT}")
   endif ()
 
   # add scripts by extension
   foreach (EXT ${ARGN_UNPARSED_ARGUMENTS})
-    basis_add_scripts_by_extension ("${EXT}" COMPONENT "${ARGN_COMPONENT}")
+    basis_add_scripts_by_extension ("${EXT}" ${COMPONENT})
   endforeach ()
 endmacro ()
 
@@ -1089,27 +1125,24 @@ endmacro ()
 # \param [in] ARGN This argument list is parsed and the following arguments
 #                  are extracted.
 #
-#   COMPONENT Name of the component.
+#   COMPONENT Name of the componen. See basis_add_script () for default.
 
 macro (basis_add_scripts)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "" "COMPONENT" "" ${ARGN})
 
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
-  endif ()
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "Unspecified")
-  endif ()
-
   if (ARGN_UNPARSED_ARGUMENTS)
     message ("Unknown arguments given for basis_add_scripts (): '${ARGN_UNPARSED_ARGUMENTS}'")
   endif ()
 
+  if (ARGN_COMPONENT)
+    set (COMPONENT "COMPONENT" "${ARGN_COMPONENT}")
+  endif ()
+
   # add scripts with known extensions
-  basis_add_scripts_by_extension (sh COMPONENT "${ARGN_COMPONENT}") # shell scripts
-  basis_add_scripts_by_extension (py COMPONENT "${ARGN_COMPONENT}") # python scripts
-  basis_add_scripts_by_extension (pl COMPONENT "${ARGN_COMPONENT}") # Perl scripts
+  basis_add_scripts_by_extension (sh ${COMPONENT}) # shell scripts
+  basis_add_scripts_by_extension (py ${COMPONENT}) # python scripts
+  basis_add_scripts_by_extension (pl ${COMPONENT}) # Perl scripts
 endmacro ()
 
 # ****************************************************************************
@@ -1163,60 +1196,6 @@ function (basis_add_uninstall)
     )
   endif ()
 endfunction ()
-
-# ============================================================================
-# helpers
-# ============================================================================
-
-# ****************************************************************************
-# \brief Generates the definition of the basis_set_script_path () function.
-#
-# This macro generates the definition of the basis_set_script_path ()
-# function, the definition of which is evaluated during the build step of
-# scripts before the inclusion of the script configuration. Hence,
-# basis_set_script_path () can be used in script configuration files. This
-# function takes a variable name and a path as input arguments. If the given
-# path is relative, it makes it first absolute using PROJECT_SOURCE_DIR. Then
-# the path is made relative to the directory of the built script file. A CMake
-# variable of the given name is set to the specified relative path. Optionally,
-# a third argument, the path used for building the script for the install tree
-# can be passed as well. If a relative path is given as this argument, it is
-# made absolute by prefixing it with INSTALL_PREFIX instead.
-#
-# \param [out] FUNC The generated basis_set_script_path () function definition.
-#
-#   VAR  Name of the variable.
-#   PATH Path to directory or file.
-#   ARG3 Path to directory or file inside install tree.
-#        If this argument is not given, PATH is used for both
-#        the build and install tree version of the script.
-
-macro (basis_set_script_path_definition FUNC)
-  set (${FUNC} "function (basis_set_script_path VAR PATH)
-  if (ARGC GREATER 3)
-    message (FATAL_ERROR \"Too many arguments given for function basis_set_script_path ()\")
-  endif ()
-
-  if (ARGC EQUAL 3 AND BUILD_INSTALL_SCRIPT)
-    set (PREFIX \"@INSTALL_PREFIX@\")
-    set (PATH   \"\${ARGV2}\")
-  else ()
-    set (PREFIX \"@PROJECT_SOURCE_DIR@\")
-  endif ()
-
-  if (NOT IS_ABSOLUTE \"\${PATH}\")
-    set (PATH \"\${PREFIX}/\${PATH}\")
-  endif ()
-
-  file (RELATIVE_PATH PATH \"\${SCRIPT_DIR}\" \"\${PATH}\")
-
-  if (NOT PATH)
-    set (PATH \".\")
-  endif ()
-
-  set (\${VAR} \"\${PATH}\" PARENT_SCOPE)
-endfunction ()")
-endmacro ()
 
 
 endif (NOT BASIS_TARGETTOOLS_INCLUDED)

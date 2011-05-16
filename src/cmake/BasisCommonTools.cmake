@@ -100,11 +100,84 @@ endfunction ()
 # \param [in] VAR  Name of variable.
 # \param [in] ARGN Arguments to CMake's set () command excluding variable name.
 
-function (basis_setifempty VAR)
+function (basis_set_if_empty VAR)
   if (NOT ${VAR})
     set (${VAR} ${ARGN})
   endif ()
 endfunction ()
+
+# ****************************************************************************
+# \brief Set value of variable used in <project>Config.cmake of install tree.
+#
+# This function sets the value of a variable VAR to
+# "\${CMAKE_CURRENT_LIST_DIR}/<path>", where <path> is the relative path
+# to the file or directory specified by INSTALL_PATH relative to
+# INSTALL_CONFIG_DIR.
+#
+# \param [in] VAR  Name of variable. Used in template of
+#                  <project>Config.cmake as @VAR@.
+# \param [in] PATH Path of variable relative to INSTALL_PREFIX.
+
+function (basis_set_config_path VAR PATH)
+  file (
+    RELATIVE_PATH
+      ${VAR}
+      "${INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
+      "${INSTALL_PREFIX}/${PATH}"
+  )
+
+  set (${VAR} "\${CMAKE_CURRENT_LIST_DIR}/${VAR}" PARENT_SCOPE)
+endfunction ()
+ 
+# ****************************************************************************
+# \brief Generates the definition of the basis_set_script_path () function.
+#
+# This macro generates the definition of the basis_set_script_path ()
+# function, the definition of which is evaluated during the build step of
+# scripts before the inclusion of the script configuration. Hence,
+# basis_set_script_path () can be used in script configuration files. This
+# function takes a variable name and a path as input arguments. If the given
+# path is relative, it makes it first absolute using PROJECT_SOURCE_DIR. Then
+# the path is made relative to the directory of the built script file. A CMake
+# variable of the given name is set to the specified relative path. Optionally,
+# a third argument, the path used for building the script for the install tree
+# can be passed as well. If a relative path is given as this argument, it is
+# made absolute by prefixing it with INSTALL_PREFIX instead.
+#
+# \param [out] FUNC The generated basis_set_script_path () function definition.
+#
+#   VAR  Name of the variable.
+#   PATH Path to directory or file.
+#   ARG3 Path to directory or file inside install tree.
+#        If this argument is not given, PATH is used for both
+#        the build and install tree version of the script.
+
+macro (basis_set_script_path_definition FUNC)
+  set (${FUNC} "function (basis_set_script_path VAR PATH)
+  if (ARGC GREATER 3)
+    message (FATAL_ERROR \"Too many arguments given for function basis_set_script_path ()\")
+  endif ()
+
+  if (ARGC EQUAL 3 AND BUILD_INSTALL_SCRIPT)
+    set (PREFIX \"@INSTALL_PREFIX@\")
+    set (PATH   \"\${ARGV2}\")
+  else ()
+    set (PREFIX \"@PROJECT_SOURCE_DIR@\")
+  endif ()
+
+  if (NOT IS_ABSOLUTE \"\${PATH}\")
+    set (PATH \"\${PREFIX}/\${PATH}\")
+  endif ()
+
+  file (RELATIVE_PATH PATH \"\${SCRIPT_DIR}\" \"\${PATH}\")
+
+  if (NOT PATH)
+    set (PATH \".\")
+  endif ()
+
+  set (\${VAR} \"\${PATH}\" PARENT_SCOPE)
+endfunction ()")
+endmacro ()
 
 # ============================================================================
 # list / string manipulations

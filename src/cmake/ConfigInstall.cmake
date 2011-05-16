@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  ConfigInstall.cmake
-# \brief Default configuration of <Project>Config.cmake of install tree.
+# \brief Default configuration of <project>Config.cmake of install tree.
 #
 # Use the _CONFIG suffix for variables that are replaced in Config.cmake.in.
 #
@@ -10,14 +10,6 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-
 # include directories
-file (
-  RELATIVE_PATH
-    INCLUDE_DIR_CONFIG
-    "${INSTALL_PREFIX}/${INSTALL_LIB_DIR}"
-    "${INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}"
-)
-
-set (INCLUDE_DIR_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${INCLUDE_DIR_CONFIG}")
+basis_set_config_path (INCLUDE_DIR_CONFIG "${INSTALL_INCLUDE_DIR}")
 

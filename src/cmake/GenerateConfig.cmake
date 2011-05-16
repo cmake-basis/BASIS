@@ -98,7 +98,7 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install" @ON
 
 install (
   FILES       "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install"
-  DESTINATION "${INSTALL_LIB_DIR}"
+  DESTINATION "${INSTALL_CONFIG_DIR}"
   RENAME      "${CONFIG_FILE}"
 )
 
@@ -125,7 +125,7 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${VERSION_FILE}" @ONLY)
 
 install (
   FILES       "${PROJECT_BINARY_DIR}/${VERSION_FILE}"
-  DESTINATION "${INSTALL_LIB_DIR}"
+  DESTINATION "${INSTALL_CONFIG_DIR}"
 )
 
 # ============================================================================
@@ -151,6 +151,6 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${USE_FILE}" @ONLY)
 
 install (
   FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
-  DESTINATION "${INSTALL_LIB_DIR}"
+  DESTINATION "${INSTALL_CONFIG_DIR}"
 )
 
