@@ -366,8 +366,8 @@ endfunction ()
 #
 # An install command for the added library target is added by this function
 # as well. The runtime library will be installed as part of the component
-# RUNTIME_COMPONENT in the directory INSTALL_LIBRARY_DIR on UNIX systems and
-# INSTALL_RUNTIME_DIR on Windows. Static/import libraries will be installed
+# RUNTIME_COMPONENT in the directory INSTALL_LIBRARY_DIR on UNIX systems
+# and INSTALL_RUNTIME_DIR on Windows. Static/import libraries will be installed
 # as part of the LIBRARY_COMPONENT in the directory INSTALL_ARCHIVE_DIR,
 # while the corresponding public header files will be installed as part of
 # the same component in the directory INSTALL_INCLUDE_DIR, whereby the

@@ -24,15 +24,15 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # options
 # ============================================================================
 
-option (BUILD_DOC       "Whether to generate the (API) documentation" "ON")
-option (BUILD_CHANGELOG "Whether to generate the ChangeLog (requires SVN working copy and possibly user interaction)" "ON")
+# The following options are only enabled when at least one doc or changelog
+# target were added. Otherwise, there is nothing to build.
 
-if (NOT TARGET doc)
-  mark_as_advanced (BUILD_DOC)
+if (NOT DEFINED BUILD_DOC)
+  set (BUILD_DOC "UNUSED")
 endif ()
 
-if (NOT TARGET changelog)
-  mark_as_advanced (BUILD_CHANGELOG)
+if (NOT DEFINED BUILD_CHANGELOG)
+  set (BUILD_CHANGELOG "UNUSED")
 endif ()
 
 # ============================================================================
@@ -50,6 +50,99 @@ find_program (
 )
 
 mark_as_advanced (BASIS_CMD_SVN2CL)
+
+# Doxygen filters
+find_file (
+  DOXYGEN_FILTER_BASH
+    NAMES bash2cpp.pl
+    HINTS "${CMAKE_CURRENT_LIST_DIR}"
+    DOC   "Filter used by default by Doxygen to convert shell scripts (bash2cpp.pl)."
+    NO_DEFAULT_PATH
+)
+
+mark_as_advanced (DOXYGEN_FILTER_BASH)
+
+find_file (
+  DOXYGEN_FILTER_MATLAB
+    NAMES matlab2cpp.pl
+    HINTS "${CMAKE_CURRENT_LIST_DIR}"
+    DOC   "Filter used by default by Doxygen to convert MATLAB scripts (matlab2cpp.pl)."
+    NO_DEFAULT_PATH
+)
+
+mark_as_advanced (DOXYGEN_FILTER_MATLAB)
+
+# ============================================================================
+# settings
+# ============================================================================
+
+set (DOXYGEN_FILTER_PATTERNS "")
+
+if (DOXYGEN_FILTER_BASH)
+  list (APPEND DOXYGEN_FILTER_PATTERNS "*.sh=${DOXYGEN_FILTER_BASH}")
+endif ()
+
+if (DOXYGEN_FILTER_MATLAB)
+  list (APPEND DOXYGEN_FILTER_PATTERNS "*.m=${DOXYGEN_FILTER_MATLAB}")
+endif ()
+
+basis_list_to_string (DOXYGEN_FILTER_PATTERNS ${DOXYGEN_FILTER_PATTERNS})
+
+find_file (
+  DOXYGEN_DOXYFILE
+    NAMES Doxyfile.in
+    HINTS "${CMAKE_CURRENT_LIST_DIR}"
+    DOC   "Default doxyfile template used for Doxygen (Doxyfile.in)."
+    NO_DEFAULT_PATH
+)
+
+mark_as_advanced (DOXYGEN_DOXYFILE)
+
+# ============================================================================
+# helper
+# ============================================================================
+
+# ****************************************************************************
+# \brief Adds a custom 'doc' target along with a build switch.
+
+function (basis_add_doc_target)
+  if (NOT TARGET doc)
+    if ("${BUILD_DOC}" STREQUAL "UNUSED")
+      set (
+        BUILD_DOC "NO"
+        CACHE BOOL
+          "Whether to generate the (API) documentation."
+        FORCE
+      )
+    endif ()
+    if (BUILD_DOC)
+      add_custom_target (doc ALL)
+    else ()
+      add_custom_target (doc)
+    endif ()
+  endif ()
+endfunction ()
+
+# ****************************************************************************
+# \brief Adds a custom 'changelog' target along with a build switch.
+
+function (basis_add_changelog_target)
+  if (NOT TARGET changelog)
+    if ("${BUILD_CHANGELOG}" STREQUAL "UNUSED")
+      set (
+        BUILD_CHANGELOG "NO"
+        CACHE BOOL
+          "Whether to generate the ChangeLog (requires Subversion controlled working copy and possibly user interaction)."
+        FORCE
+      )
+    endif ()
+    if (BUILD_CHANGELOG)
+      add_custom_target (changelog ALL)
+    else ()
+      add_custom_target (changelog)
+    endif ()
+  endif ()
+endfunction ()
 
 # ============================================================================
 # adding / generating documentation
@@ -86,6 +179,8 @@ mark_as_advanced (BASIS_CMD_SVN2CL)
 # Common options:
 #
 # COMPONENT Name of the component this documentation belongs to.
+#           Defaults to BASIS_LIBRARY_COMPONENT for documentation generated
+#           from in-source comments and BASIS_RUNTIME_COMPONENT, otherwise.
 # GENERATOR Documentation generator, where the case of the generator name is
 #           ignored, i.e., "Doxygen", "DOXYGEN", "doxYgen" are all valid
 #           arguments which select the DOXYGEN generator. The arguments for the
@@ -124,7 +219,7 @@ mark_as_advanced (BASIS_CMD_SVN2CL)
 #                  Default: "PROJECT_SOURCE_DIR/Code;PROJECT_BINARY_DIR/Code".
 # FILTER_PATTERNS  Value for Doxygen's FILTER_PATTERNS tag which
 #                  can be used to specify filters on a per file
-#                  pattern basis.
+#                  pattern basis. Defaults to BASIS_DOXYGEN_FILTER_PATTERNS.
 # EXCLUDE          Value for Doxygen's EXCLUDE tag which can be used
 #                  to specify files and/or directories that should 
 #                  excluded from the INPUT source files.
@@ -164,21 +259,29 @@ function (basis_add_doc TARGET_NAME)
   if (NOT ARGN_GENERATOR)
     set (ARGN_GENERATOR "NONE")
   endif ()
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_DEFAULT_COMPONENT}")
+
+  # generator name is case insensitive
+  string (TOUPPER "${ARGN_GENERATOR}" ARGN_GENERATOR)
+
+  # default component
+  if (ARGN_GENERATOR STREQUAL "DOXYGEN")
+    if (NOT ARGN_COMPONENT)
+      set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+    endif ()
+  else ()
+    if (NOT ARGN_COMPONENT)
+      set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+    endif ()
   endif ()
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
-  # generator name is case insensitive
-  string (TOUPPER "${ARGN_GENERATOR}" ARGN_GENERATOR)
-
   # --------------------------------------------------------------------------
   # generator: NONE
   # --------------------------------------------------------------------------
 
-  if (ARGN_GENERATOR STREQUAL "NONE")
+  if ("${ARGN_GENERATOR}" STREQUAL "NONE")
 
     message (STATUS "Adding documentation ${TARGET_UID}...")
 
@@ -195,7 +298,7 @@ function (basis_add_doc TARGET_NAME)
   # generator: DOXYGEN
   # --------------------------------------------------------------------------
 
-  elseif (ARGN_GENERATOR STREQUAL "DOXYGEN")
+  elseif ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
 
     message (STATUS "Adding documentation ${TARGET_UID}...")
 
@@ -227,23 +330,24 @@ function (basis_add_doc TARGET_NAME)
     )
  
     if (NOT DOXYGEN_DOXYFILE)
-      message (FATAL_ERROR "basis_add_doc (): Missing option DOXYFILE.")
+      set (DOXYGEN_DOXYFILE "${BASIS_DOXYGEN_DOXYFILE}")
     endif ()
     if (NOT EXISTS "${DOXYGEN_DOXYFILE}")
-      message (FATAL_ERROR "Input Doxyfile ${DOXYGEN_DOXYFILE} not found.")
+      message (FATAL_ERROR "Missing option DOXYGEN_FILE or Doxyfile ${DOXYGEN_DOXYFILE} does not exist.")
     endif ()
 
     if (NOT DOXYGEN_PROJECT_NAME)
       set (DOXYGEN_PROJECT_NAME "${PROJECT_NAME}")
     endif ()
     if (NOT DOXYGEN_PROJECT_NUMBER)
-      set (DOXYGEN_PROJECT_NUMBER "${PROJECT_NUMBER}")
+      set (DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
     endif ()
     if (NOT DOXYGEN_INPUT)
-      set (DOXYGEN_INPUT "${PROJECT_SOURCE_DIR}/Code" "${PROJECT_BINARY_DIR}/Code")
+      file (RELATIVE_PATH CODE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
+      set (DOXYGEN_INPUT "${PROJECT_CODE_DIR}" "${PROJECT_BINARY_DIR}/${CODE_DIR}")
     endif ()
     if (NOT DOXYGEN_FILTER_PATTERNS)
-      set (DOXYGEN_FILTER_PATTERNS "")
+      set (DOXYGEN_FILTER_PATTERNS "${BASIS_DOXYGEN_FILTER_PATTERNS}")
     endif ()
     if (NOT DOXYGEN_EXCLUDE)
       set (DOXYGEN_EXCLUDE "")
@@ -273,7 +377,7 @@ function (basis_add_doc TARGET_NAME)
     set (DOXYGEN_INPUT "${TMP}")
     set (TMP)
 
-    # click & jump in Emacs and Visual Studio
+    # click & jump in emacs and Visual Studio
     if (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
       set (DOXYGEN_WARN_FORMAT "\"$file($line) : $text \"")
     else ()
@@ -299,14 +403,7 @@ function (basis_add_doc TARGET_NAME)
     )
 
     # add target as dependency to doc target
-    if (NOT TARGET doc)
-      if (BUILD_DOC)
-        add_custom_target (doc ALL)
-      else ()
-        add_custom_target (doc)
-      endif ()
-      mark_as_advanced (BUILD_DOC CLEAR)
-    endif ()
+    basis_add_doc_target ()
 
     add_dependencies (doc ${TARGET_UID})
 
@@ -332,7 +429,7 @@ function (basis_add_doc TARGET_NAME)
   # generator: svn2cl
   # --------------------------------------------------------------------------
 
-  elseif (ARGN_GENERATOR STREQUAL "SVN2CL")
+  elseif ("${ARGN_GENERATOR}" STREQUAL "SVN2CL")
 
     message (STATUS "Adding documentation ${TARGET_UID}...")
 
@@ -359,9 +456,10 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
     # svn2cl command arguments
+    # \todo parse arguments
     set (SVN2CL_PATH             "${PROJECT_SOURCE_DIR}")
     set (SVN2CL_OUTPUT           "${PROJECT_BINARY_DIR}/${TARGET_NAME}")
-    set (SVN2CL_AUTHORS          "${PROJECT_SOURCE_DIR}/Authors")
+    set (SVN2CL_AUTHORS          "${PROJECT_AUTHORS_FILE}")
     set (SVN2CL_LINELEN          79)
     set (SVN2CL_REPARAGRAPH      0)
     set (SVN2CL_INCLUDE_ACTIONS  1)
@@ -406,21 +504,14 @@ function (basis_add_doc TARGET_NAME)
     set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${SVN2CL_OUTPUT}")
 
     # add target as dependency to changelog target
-    if (NOT TARGET changelog)
-      if (BUILD_CHANGELOG)
-        add_custom_target (changelog ALL)
-      else ()
-        add_custom_target (changelog)
-      endif ()
-      mark_as_advanced (BUILD_CHANGELOG CLEAR)
-    endif ()
+    basis_add_changelog_target ()
 
     add_dependencies (changelog ${TARGET_UID})
 
     # install documentation
     install (
       FILES       "${SVN2CL_OUTPUT}"
-      DESTINATION "${CMAKE_INSTALL_PREFIX}"
+      DESTINATION "${INSTALL_DOC_DIR}"
       COMPONENT   "${ARGN_COMPONENT}"
       OPTIONAL
     )

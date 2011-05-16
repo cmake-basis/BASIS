@@ -97,11 +97,8 @@ set (BASIS_RESERVED_TARGET_NAMES "uninstall" "doc" "changelog" "execname")
 #
 # The default component a target of the given kind and its auxiliary files
 # are associated with if no component was specified, explicitly.
-set (BASIS_ARCHIVE_COMPONENT   "Development")
-set (BASIS_BUNDLE_COMPONENT    "Runtime")
-set (BASIS_FRAMEWORK_COMPONENT "Development")
-set (BASIS_LIBRARY_COMPONENT   "Runtime")
-set (BASIS_RUNTIME_COMPONENT   "Runtime")
+set (BASIS_LIBRARY_COMPONENT "Development")
+set (BASIS_RUNTIME_COMPONENT "Runtime")
 
 # \brief Character used to separate namespace and target name to build target UID.
 #

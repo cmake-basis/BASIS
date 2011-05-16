@@ -43,6 +43,9 @@ set (
     GenerateConfig.cmake
     updatefile.py
     runmcc.m
+    bash2cpp.pl
+    matlab2cpp.pl
+    Doxyfile.in
     config.h.in
     mainaux.h.in
     execname.cpp.in

@@ -42,10 +42,16 @@ basis_project_initialize (
 # subdirectories
 # ============================================================================
 
-add_subdirectory ("${PROJECT_CODE_DIR}")
+if (EXISTS "${PROJECT_CODE_DIR}")
+  add_subdirectory ("${PROJECT_CODE_DIR}")
+endif ()
 
 if (EXISTS "${PROJECT_DATA_DIR}")
   add_subdirectory ("${PROJECT_DATA_DIR}")
+endif ()
+
+if (EXISTS "${PROJECT_DOC_DIR}")
+  add_subdirectory ("${PROJECT_DOC_DIR}")
 endif ()
 
 if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
