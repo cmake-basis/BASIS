@@ -1,18 +1,18 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMake file to configure build system of package data.
+# \brief CMake configuration file of auxiliary data.
 #
 # The data within this folder is required to execute the software tools of
 # this project. Example data which is only required for an example run of
 # the software are, on the other side, available in the example folder.
 #
 # By default, all content of the data folder is simply installed in the
-# data subdirectory of the installation tree.
+# data directory of the installation tree.
 #
-# For copyright information please see Copyright.txt in the root
-# directory of the project.
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See LICENSE file in project root or 'doc' directory for details.
 #
-# Contact: SBIA Group <sbia-software@uphs.upenn.edu>
+# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
 install (

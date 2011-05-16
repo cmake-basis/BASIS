@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMake configuration file of testing tree.
+# \brief CMake configuration file of test targets.
 #
 # Copyright (c) University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.

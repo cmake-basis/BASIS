@@ -3,7 +3,7 @@
 # \brief CMake configuration of auxiliary data files.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
