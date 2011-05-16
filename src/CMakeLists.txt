@@ -15,6 +15,7 @@ add_subdirectory (cmake)
 install (
   DIRECTORY   tclap
   DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
+  COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
   PATTERN     .svn EXCLUDE
   PATTERN     .git EXCLUDE
 )
