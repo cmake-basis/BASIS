@@ -9,7 +9,7 @@
 ##############################################################################
 
 # set CTest/CDash project name
-string (REGEX REPLACE "Testing$" "" CTEST_PROJECT_NAME "${PROJECT_NAME}")
+set (CTEST_PROJECT_NAME "${PROJECT_NAME}")
 
 # start time of Nightly test model
 #
