@@ -13,5 +13,8 @@
 ##############################################################################
 
 # CMake module path
-set (MODULE_PATH_CONFIG "${PROJECT_SOURCE_DIR}/src/cmake")
+set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
+
+# URL of project template
+set (TEMPLATE_URL_CONFIG "${PROJECT_DATA_DIR}/template")
 

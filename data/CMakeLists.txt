@@ -1,24 +1,18 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMakeLists.txt file of source code directory.
+# \brief CMake configuration of auxiliary data files.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE file in project root or 'doc' directory for details.
+# See LICENSE or Copyright file in project root directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-# configure and install CMake modules
-add_subdirectory (cmake)
-
-# install TCLAP header files
+# install project template
 install (
-  DIRECTORY   tclap
-  DESTINATION "${INSTALL_INCLUDE_DIR}"
+  DIRECTORY   template/
+  DESTINATION "${INSTALL_DATA_DIR}"
   PATTERN     .svn EXCLUDE
   PATTERN     .git EXCLUDE
 )
-
-# add script used to instantiate the project template
-basis_add_script (createbasisproject.sh)
 

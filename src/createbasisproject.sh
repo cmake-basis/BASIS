@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  createproject
-# \brief This BASH script can be used to instantiate the project template
-#        in order to create the structure for a new project.
+# \file  createbasisproject
+# \brief This shell script instantiates the project template and creates the
+#        structure for a new project based on BASIS.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
@@ -17,15 +17,15 @@
 
 progName=${0##*/} # name of this script
 
-versionMajor=@PROJECT_VERSION_MAJOR@ # major version number
-versionMinor=@PROJECT_VERSION_MINOR@ # minor version number
-versionPatch=@PROJECT_VERSION_PATCH@ # version patch number
+versionMajor=@VERSION_MAJOR@ # major version number
+versionMinor=@VERSION_MINOR@ # minor version number
+versionPatch=@VERSION_PATCH@ # version patch number
 
 # version string
 version="$versionMajor.$versionMinor.$versionPatch"
 
 # repository URL of project templates
-baseURL="https://sbia-svn/projects/Development_Project_Templates/RevisedCMakeProjectTemplate"
+baseURL="@TEMPLATE_URL@"
 
 settingsFile="Settings.cmake" # name of project settings file
 dependsFile="Depends.cmake"   # name of project dependencies file
@@ -48,13 +48,13 @@ usage ()
 	version
 	echo
 	echo "Description:"
-    echo "  Instantiates the project template, creating the project structure"
+    echo "  Instantiates the BASIS project template, creating the project structure"
     echo "  for a new project."
     echo
     echo "  Besides the name of the new project and a brief description,"
     echo "  names of external packages required or optionally used by this"
     echo "  project can be specified. For each such package, an entry in the"
-    echo "  file $dependsFile is created. If the package is not supported"
+    echo "  $dependsFile file is created. If the package is not supported"
     echo "  explicitly by this script, generic CMake statements to find the"
     echo "  package are added. Note that these may not work for this unsupported"
     echo "  package. In this case, the $dependsFile file has to be edited manually."
@@ -83,7 +83,7 @@ usage ()
     echo "  $progName MatlabITKExample -d \"An example project which uses MATLAB and ITK.\" -p Matlab -p ITK"
     echo
     echo "Contact:"
-    echo "  SBIA Group at University of Pennsylvania <sbia-software -at- uphs.upenn.edu>"
+    echo "  SBIA Group <sbia-software -at- uphs.upenn.edu>"
 }
 
 # ****************************************************************************
@@ -136,7 +136,6 @@ makeAbsolute ()
 # default options
 # ----------------------------------------------------------------------------
 
-template=""              # template (version), i.e., name of tagged branch
 name=""                  # name of the project to create
 root=""                  # root directory of new project (defaults to `pwd`/$name)
 description=""           # project description
@@ -170,25 +169,6 @@ do
 
         -v|--verbose)
             ((verbosity++))
-            ;;
-
-        -t|--template)
-            if [ "X$template" != "X" ]; then
-                usage
-                echo
-                echo "Option -t may only be given once!" 1>&2
-                exit 1
-            fi
-
-            shift
-            if [ $# -gt 0 ]; then
-                template="$1"
-            else
-                usage
-                echo
-                echo "Option -t requires an argument!" 1>&2
-                exit 1
-            fi
             ;;
 
         -r|--root)
@@ -281,12 +261,6 @@ if [ -z "$name" ]; then
     exit 1
 fi
 
-# set default template
-if [ -z "$template" ]; then
-    #template="@PROJECT_VERSION_MAJOR@"
-    template="trunk"
-fi
-
 # set project root from project name if not explicitly specified
 if [ -z "$root" ]; then
     root="$(pwd)/$name"
@@ -309,20 +283,14 @@ fi
 
 # ----------------------------------------------------------------------------
 # create project structure
-# ----------------------------------------------------------------------------
 
-# export project template
-if [[ "$template" == "trunk" || "$template" == "HEAD" ]]; then
-    URL="$baseURL/trunk/src/template"
-else
-    URL="$baseURL/tags/@PROJECT_NAME@-$template/src/template"
-fi
+echo "Creating project structure..."
 
-svn export $URL $root
+cp $URL $root
 
 if [ $? -ne 0 ]; then
     echo
-    echo "Failed to export project template!" 1>&2
+    echo "Failed to create project structure!" 1>&2
     exit 1
 fi
 
@@ -330,7 +298,6 @@ echo
 
 # ----------------------------------------------------------------------------
 # alter project settings
-# ----------------------------------------------------------------------------
 
 echo "Altering project settings..."
 
