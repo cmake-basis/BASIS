@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Root CMake configuration file of software component.
+# \brief Root CMake configuration file.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
@@ -18,60 +18,49 @@ cmake_minimum_required (VERSION 2.8.2)
 # initialize
 # ============================================================================
 
-# The TEMPLATE_VERSION variable specifies the version of the BASIS Template
-# which this project was instantiated from. This information is required by
-# the automatic update of template files (see documentation of BASIS Core).
-# Further, the BASIS Core functions might make use of this variable to ensure
-# backwards compatibility with previous template versions.
+find_package (BASIS REQUIRED)
 
-set (TEMPLATE_VERSION "0.0")
-
-find_package (BASIS REQUIRED Core)
-
-if (NOT BASIS_Core_FOUND)
+if (BASIS_FOUND)
+  include ("${BASIS_USE_FILE}")
+else ()
   return ()
 endif ()
 
-include ("${BASIS_Core_USE_FILE}")
+# use invalid template version to indicate that this project is not
+# instantiated from a template as this package contains the template
+set (TEMPLATE_VERSION "0.0")
 
-# The following macro call replaces the CMake command project ().
-#
-# Besides calling this command, it sets further common CMake variables such
-# as PROJECT_NAME_UPPER, PROJECT_NAME_LOWER, PROJECT_VERSION_MAJOR,
-# PROJECT_VERSION_MINOR, PROJECT_VERSION_PATCH,... please refer to
-# the documentation of the macro for a list of available variables.
-#
-# The project attributes have to be specified as CMake variables in a file
-# named Settings.cmake in SOFTWARE_CONFIG_DIR.
-#
-# The common CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR
-# should be used in the subsequent CMake code to refer to the source or
-# binary tree of the project. DO NOT use CMAKE_SOURCE_DIR and CMAKE_BINARY_DIR
-# as these variables differ from the project specific variables when the
-# project is part of a superproject.
-#
-# \see basis_project_initialize ()
+# include BASIS policies, settings, macros, and functions
+include (BasisProject NO_POLICY_SCOPE)
 
-basis_project_initialize ("ReplaceByProjectName")
+# initialize project
+basis_project_initialize (
+  NAME        ReplaceByProjectName
+  VERSION     0.0.0
+  DESCRIPTION "ReplaceByDescription"
+)
 
 # ============================================================================
 # subdirectories
 # ============================================================================
 
-add_subdirectory ("${SOFTWARE_SOURCE_DIR}")
-
-if (EXISTS "${SOFTWARE_DATA_DIR}")
-  add_subdirectory ("${SOFTWARE_DATA_DIR}")
+if (EXISTS "${PROJECT_CODE_DIR}")
+  add_subdirectory ("${PROJECT_CODE_DIR}")
 endif ()
 
-add_subdirectory ("${SOFTWARE_DOC_DIR}")
+if (EXISTS "${PROJECT_DATA_DIR}")
+  add_subdirectory ("${PROJECT_DATA_DIR}")
+endif ()
 
-# optionally traverse into subdirectories of other major components, too
-if (EXISTS "${PROJECT_EXAMPLE_DIR}")
+if (EXISTS "${PROJECT_DOC_DIR}")
+  add_subdirectory ("${PROJECT_DOC_DIR}")
+endif ()
+
+if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
   add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
 endif ()
 
-if (EXISTS "${PROJECT_TESTING_DIR}")
+if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
   add_subdirectory ("${PROJECT_TESTING_DIR}")
 endif ()
 
