@@ -50,6 +50,17 @@ set (BASIS_VERSION_SEPARATOR "#")
 # Prefix used for CMake package config files.
 set (BASIS_CONFIG_PREFIX "")
 
+# Suffix used for installation of header files. This variable is configured
+# by basis_project_initialize () to substitute project name and version
+# (if present). The resulting string is the prefix required by other packages
+# to include the header files of the installed project.
+#
+# Example:
+# \code
+# install (FILES *.h DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}")
+# \endcode
+set (BASIS_INCLUDE_PREFIX "sbia/@PROJECT_NAME_LOWER@")
+
 # Script used to execute a process in CMake script mode.
 set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmake")
 

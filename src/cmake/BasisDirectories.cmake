@@ -109,8 +109,6 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 # INSTALL_PREFIX. This has to be done after the project attributes are known.
 # Hence, it is done by basis_project (), which configures the variables below.
 
-mark_as_advanced (CMAKE_INSTALL_PREFIX)
-
 if (WIN32)
   set (
     INSTALL_PREFIX "C:\\Program Files\\SBIA\\\${PROJECT_NAME}"
@@ -119,7 +117,7 @@ if (WIN32)
 
   set (
     INSTALL_SINFIX ""
-    CACHE PATH "Installation directories suffix or infix, respectively."
+    CACHE PATH "Installation directories suffix (or infix, respectively)."
   )
 else ()
   set (
@@ -129,24 +127,22 @@ else ()
 
   set (
     INSTALL_SINFIX "sbia/@PROJECT_NAME_LOWER@"
-    CACHE PATH "Installation directories suffix or infix, respectively."
+    CACHE PATH "Installation directories suffix (or infix, respectively)."
   )
 endif ()
 
+set (INSTALL_BIN_DIR     "bin")
+set (INSTALL_INCLUDE_DIR "include")
+set (INSTALL_LIB_DIR     "lib")
+set (INSTALL_SHARE_DIR   "share")
+
 if (INSTALL_SINFIX)
-  set (INSTALL_BIN_DIR     "bin/${INSTALL_SINFIX}")
-  if (INSTALL_SINFIX STREQUAL "sbia/@PROJECT_NAME_LOWER@")
-    set (INSTALL_INCLUDE_DIR "include/sbia/@PROJECT_NAME_LOWER@")
-  else ()
-    set (INSTALL_INCLUDE_DIR "include/${INSTALL_SINFIX}/sbia/@PROJECT_NAME_LOWER@")
+  set (INSTALL_BIN_DIR       "${INSTALL_BIN_DIR}/${INSTALL_SINFIX}")
+  if (NOT INSTALL_SINFIX STREQUAL "sbia/@PROJECT_NAME_LOWER@")
+    set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
   endif ()
-  set (INSTALL_LIB_DIR     "lib/${INSTALL_SINFIX}")
-  set (INSTALL_SHARE_DIR   "share/${INSTALL_SINFIX}")
-else ()
-  set (INSTALL_BIN_DIR     "bin")
-  set (INSTALL_INCLUDE_DIR "include/sbia/@PROJECT_NAME_LOWER@")
-  set (INSTALL_LIB_DIR     "lib")
-  set (INSTALL_SHARE_DIR   "share")
+  set (INSTALL_LIB_DIR       "${INSTALL_LIB_DIR}/${INSTALL_SINFIX}")
+  set (INSTALL_SHARE_DIR     "${INSTALL_SHARE_DIR}/${INSTALL_SINFIX}")
 endif ()
 
 set (INSTALL_DOC_DIR     "${INSTALL_SHARE_DIR}/doc")

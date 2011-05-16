@@ -562,6 +562,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
   # install target
   if (TYPE STREQUAL "LIBRARY")
+    # \todo
   else ()
     install (
       PROGRAMS    ${BUILD_OUTPUT}

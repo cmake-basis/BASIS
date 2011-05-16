@@ -47,11 +47,6 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
 # configuration file. Further, the macro basis_project_finalize () has to be
 # called at the end of the file.
 #
-# The project specific attributes such as project version, among others, which
-# are not specified as argument to this macro, need to be defined in the
-# Settings.cmake file which has to be located in PROJECT_CONFIG_DIR. The
-# PROJECT_CONFIG_DIR is set by default in the BasisSettings.cmake file.
-#
 # The version number consists of three components: the major version number,
 # the minor version number, and the patch number. The format of the version
 # string is "Major.Minor.Patch", where the minor version number and patch
@@ -69,11 +64,16 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
 #   which did not change the softwares API. It is the least important component
 #   of the version number.
 #
-# Dependencies to external packages should be resolved via find_package ()
-# or find_sbia_package () commands in the Depends.cmake file which as well
-# has to be located in PROJECT_CONFIG_DIR (note that this variable may be
-# modified within the Settings.cmake file). The Depends.cmake file is
-# included by this macro if present.
+# The default settings set by BasisSettings.cmake can be overwritten by the
+# file Settings.cmake in the PROJECT_CONFIG_DIR. This file is included by
+# this macro after the project was initialized and before dependencies on
+# other packages were resolved.
+#
+# Dependencies on other packages should be resolved via find_package () or
+# find_sbia_package () commands in the Depends.cmake file which as well has to
+# be located in PROJECT_CONFIG_DIR (note that this variable may be modified
+# within the Settings.cmake file). The Depends.cmake file is included by this
+# macro if present after the inclusion of the Settings.cmake file.
 #
 # Each BASIS project further has to have a README file in the root directory
 # of the software component. This file is the root documentation file which
@@ -132,37 +132,7 @@ macro (basis_project_initialize)
   set (PROJECT_README_FILE)
 
   # parse arguments and/or include project settings file
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "NAME;VERSION" "DESCRIPTION;PACKAGE_VENDOR" ${ARGN})
-
-  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
-
-  if (NOT PROJECT_NAME)
-    set (PROJECT_NAME "${ARGN_NAME}")
-  elseif (ARGN_NAME)
-    message (WARNING "Project name specified as argument to basis_project_initialize ()"
-                     " and within Settings.cmake file. Ignoring macro argument!")
-  endif ()
-
-  if (NOT PROJECT_VERSION)
-    set (PROJECT_VERSION "${ARGN_VERSION}")
-  elseif (ARGN_VERSION)
-    message (WARNING "Project version specified as argument to basis_project_initialize ()"
-                     " and within Settings.cmake file. Ignoring macro argument!")
-  endif ()
-
-  if (NOT PROJECT_DESCRIPTION)
-    set (PROJECT_DESCRIPTION "${ARGN_DESCRIPTION}")
-  elseif (ARGN_DESCRIPTION)
-    message (WARNING "Project description specified as argument to basis_project_initialize ()"
-                     " and within Settings.cmake file. Ignoring macro argument!")
-  endif ()
-
-  if (NOT PROJECT_PACKAGE_VENDOR)
-    set (PROJECT_PACKAGE_VENDOR "${ARGN_PACKAGE_VENDOR}")
-  elseif (ARGN_PACKAGE_VENDOR)
-    message (WARNING "Package vendor specified as argument to basis_project_initialize ()"
-                     " and within Settings.cmake file. Ignoring macro argument!")
-  endif ()
+  CMAKE_PARSE_ARGUMENTS (PROJECT "" "NAME;VERSION" "DESCRIPTION;PACKAGE_VENDOR" ${ARGN})
 
   # check required project attributes or set default values
   if (NOT PROJECT_NAME)
@@ -238,6 +208,7 @@ macro (basis_project_initialize)
 
   # instantiate project directory structure
   basis_initialize_directories ()
+  string (CONFIGURE "${BASIS_INCLUDE_PREFIX}" BASIS_INCLUDE_PREFIX @ONLY)
  
   # initialize automatic file update
   basis_update_initialize ()
@@ -250,6 +221,9 @@ macro (basis_project_initialize)
   endif ()
 
   include (BasisTest)
+
+  # include project specific settings
+  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
 
   # resolve dependencies
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
