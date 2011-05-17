@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  createbasisproject
+# \file  createbasisproject.sh
 # \brief This shell script instantiates the project template and creates the
 #        structure for a new project based on BASIS.
 #
@@ -16,6 +16,7 @@
 # ============================================================================
 
 progName=${0##*/} # name of this script
+progDir=`cd \`dirname $0\`; pwd`
 
 versionMajor=@VERSION_MAJOR@ # major version number
 versionMinor=@VERSION_MINOR@ # minor version number
@@ -23,12 +24,6 @@ versionPatch=@VERSION_PATCH@ # version patch number
 
 # version string
 version="$versionMajor.$versionMinor.$versionPatch"
-
-# repository URL of project templates
-baseURL="@TEMPLATE_URL@"
-
-settingsFile="Settings.cmake" # name of project settings file
-dependsFile="Depends.cmake"   # name of project dependencies file
 
 # ============================================================================
 # usage / help / version
@@ -45,19 +40,19 @@ version ()
 # \brief Prints usage information.
 usage ()
 {
-	version
+	$progName $versionMajor.$versionMinor
 	echo
 	echo "Description:"
-    echo "  Instantiates the BASIS project template, creating the project structure"
-    echo "  for a new project."
+    echo "  Instantiates the BASIS project template version $versionMajor.$versionMinor,"
+    echo "  creating the core project structure for a new project."
     echo
     echo "  Besides the name of the new project and a brief description,"
     echo "  names of external packages required or optionally used by this"
     echo "  project can be specified. For each such package, an entry in the"
-    echo "  $dependsFile file is created. If the package is not supported"
+    echo "  Depends.cmake file is created. If the package is not supported"
     echo "  explicitly by this script, generic CMake statements to find the"
     echo "  package are added. Note that these may not work for this unsupported"
-    echo "  package. In this case, the $dependsFile file has to be edited manually."
+    echo "  package. In this case, the Depends.cmake file has to be edited manually."
     echo
 	echo "Usage:"
 	echo "  $progName [options] <project name>"
@@ -67,7 +62,7 @@ usage ()
     echo "  -d [--description] arg  Brief project description."
     echo
     echo "Options:"
-    echo "  -t [ --template ] arg   Name of the template branch, i.e., template version."
+    echo "  -t [ --template ] arg   Root directory of project template."
     echo "  -r [ --root ] arg       Specify root directory of new project."
     echo "  -p [ --pkg ] arg        Name of external package required by this project."
     echo "  --optPkg arg            Name of external package optionally used by this project."
@@ -107,7 +102,7 @@ help ()
 # abspath=$(makeAbsolute $relpath)
 # \endcode
 #
-# \param [in]  $1     The (relative) path of a file or directory
+# \param [in]  1      The (relative) path of a file or directory
 #                     (does not need to exist yet).
 # \param [out] stdout Prints the absolute path of the specified file or
 #                     directory to STDOUT.
@@ -128,6 +123,45 @@ makeAbsolute ()
     return 0
 }
 
+# ****************************************************************************
+# \brief Create directory or file in project root from template.
+#
+# Only the name directory or file is copied to the project root directory.
+# If verbosity is > 0, all created directories and files are printed.
+#
+# \param [in] 1 The path of the directory or file relative to the template
+#               or project root, respectively.
+
+create ()
+{
+    local path="$1"
+    if [ $overwrite -ne 0 -o ! -e "$root/$path" ]; then
+        if [ -d "$template/$path" ]; then
+            if [ ! -d "$root/$path" ]; then
+                mkdir -p "$root/$path"
+                if [ $verbosity -gt 0 ]; then
+                    echo "$root/$path"
+                fi
+            fi
+        elif [ -f "$template/$path" ]; then
+            local dir="`dirname \"$root/$path\"`"
+            if [ ! -d $dir ]; then
+                mkdir -p $dir
+                if [ $verbosity -gt 0 ]; then
+                    echo "$dir"
+                fi
+            fi
+            cp "$template/$path" "$root/$path"
+            if [ $verbosity -gt 0 ]; then
+                echo "$root/$path"
+            fi
+        else
+            echo "Template $template/$path is missing!" 1>&2
+            exit 1
+        fi
+    fi
+}
+
 # ============================================================================
 # options
 # ============================================================================
@@ -136,14 +170,18 @@ makeAbsolute ()
 # default options
 # ----------------------------------------------------------------------------
 
-name=""                  # name of the project to create
-root=""                  # root directory of new project (defaults to `pwd`/$name)
-description=""           # project description
-verbosity=0              # verbosity level of output messages
-packageNames=()          # names of packages the new project depends on
-packageRequired=()       # whether the package at the same index in packageNames
-                         # is required or optional
-packageNum=0             # length of arrays packageNames and packageRequired
+# root directory of project template
+template="$progDir/@TEMPLATE_DIR@"
+
+root=""            # root directory of new project (defaults to `pwd`/$name)
+name=""            # name of the project to create
+description=""     # project description
+verbosity=0        # verbosity level of output messages
+packageNames=()    # names of packages the new project depends on
+packageRequired=() # whether the package at the same index in packageNames
+                   # is required or optional
+packageNum=0       # length of arrays packageNames and packageRequired
+overwrite=0        # whether to overwrite existing files
 
 # ----------------------------------------------------------------------------
 # parse options
@@ -171,6 +209,18 @@ do
             ((verbosity++))
             ;;
 
+        -t|--template)
+            shift
+            if [ $# -gt 0 ]; then
+                template=$(makeAbsolute $1)
+            else
+                usage
+                echo
+                echo "Option -t requires an argument!" 1>&2
+                exit 1
+            fi
+            ;;
+ 
         -r|--root)
             if [ "X$root" != "X" ]; then
                 usage
@@ -207,6 +257,10 @@ do
                 echo "Option -d requires an argument!" 1>&2
                 exit 1
             fi
+            ;;
+
+        --overwrite)
+            overwrite=1
             ;;
 
         -p|--pkg)
@@ -253,6 +307,16 @@ do
     shift
 done
 
+# simplify template path
+cwd=$(pwd)
+cd $template
+if [ $? -ne 0 ]; then
+    echo "Invalid project template!"
+    exit 1
+fi
+template=$(pwd)
+cd $cwd
+
 # check required options
 if [ -z "$name" ]; then
     usage
@@ -267,14 +331,16 @@ if [ -z "$root" ]; then
 fi
 
 # test if project root already exists
-if [ -d "$root" ]; then
+if [ -d "$root" -a $overwrite -eq 0 ]; then
     usage
     echo
     echo "Project root directory already exists!" 1>&2
-    echo "Please choose another project name or specify a non-existent directory using the -d option." 1>&2
+    echo "Please choose another project name or specify a non-existent directory using the -d option or use the --overwrite option." 1>&2
     exit 1
 elif [ $verbosity -gt 0 ]; then
     echo "Project root: $root"
+    echo "Project template: $template"
+    echo
 fi
 
 # ============================================================================
@@ -285,16 +351,60 @@ fi
 # create project structure
 
 echo "Creating project structure..."
+set +e
 
-cp $URL $root
-
-if [ $? -ne 0 ]; then
+if [ $verbosity -gt 0 ]; then
     echo
-    echo "Failed to create project structure!" 1>&2
-    exit 1
 fi
 
+# minimal project structure
+create "AUTHORS"
+create "README"
+create "INSTALL"
+create "LICENSE"
+create "CMakeLists.txt"
+create "config/Settings.cmake"
+create "config/Depends.cmake"
+create "doc/CMakeLists.txt"
+create "src/CMakeLists.txt"
+
+# additional configuration files
+create "config/ScriptConfig.cmake.in"
+create "config/Config.cmake.in"
+create "config/ConfigVersion.cmake.in"
+create "config/ConfigBuild.cmake"
+create "config/ConfigInstall.cmake"
+create "config/GenerateConfig.cmake"
+create "config/Use.cmake.in"
+
+# package configuration files
+create "config/Package.cmake"
+create "config/Components.cmake"
+
+# auxiliary data
+create "data/CMakeLists.txt"
+
+# testing tree
+create "CTestConfig.cmake"
+create "config/CTestCustom.cmake.in"
+create "test/CMakeLists.txt"
+create "test/data"
+create "test/expected"
+create "test/system/CMakeLists.txt"
+create "test/unit/CMakeLists.txt"
+
+# example
+create "example/CMakeLists.txt"
+
+if [ $verbosity -gt 0 ]; then
+    echo
+fi
+
+set -e
+echo "Creating project structure... - done"
 echo
+
+exit 0 # \todo
 
 # ----------------------------------------------------------------------------
 # alter project settings
