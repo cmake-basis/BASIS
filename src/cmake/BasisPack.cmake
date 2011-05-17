@@ -55,6 +55,7 @@ include (InstallRequiredSystemLibraries)
 # package information
 # ============================================================================
 
+# general information
 set (CPACK_PACKAGE_NAME                "${PROJECT_NAME}")
 set (CPACK_PACKAGE_VERSION_MAJOR       "${PROJECT_VERSION_MAJOR}")
 set (CPACK_PACKAGE_VERSION_MINOR       "${PROJECT_VERSION_MINOR}")
@@ -62,13 +63,42 @@ set (CPACK_PACKAGE_VERSION_PATCH       "${PROJECT_VERSION_PATCH}")
 set (CPACK_PACKAGE_VERSION             "${PROJECT_VERSION}")
 set (CPACK_PACKAGE_VENDOR              "${PROJECT_PACKAGE_VENDOR}")
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
-set (CPACK_PACKAGE_DESCRIPTION_FILE    "${PROJECT_README_FILE}")
 set (CPACK_RESOURCE_FILE_README        "${PROJECT_README_FILE}")
 set (CPACK_RESOURCE_FILE_LICENSE       "${PROJECT_LICENSE_FILE}")
 
-set (CPACK_GENERATOR                   "STGZ" "TGZ")
-set (CPACK_SOURCE_GENERATOR            "TGZ")
+if (PROJECT_INSTALL_FILE)
+  set (CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_INSTALL_FILE}")
+endif ()
+
+if (PROJECT_WELCOME_FILE)
+  set (CPACK_RESOURCE_FILE_WELCOME "${PROJECT_WELCOME_FILE}")
+endif ()
+
+set (CPACK_INSTALL_PREFIX "${INSTALL_PREFIX}")
+
+# system name
+string (TOLOWER "${CMAKE_SYSTEM_NAME}" CPACK_SYSTEM_NAME)
+if (${CPACK_SYSTEM_NAME} MATCHES "windows")
+  if (CMAKE_CL_64)
+    set (CPACK_SYSTEM_NAME "win64")
+  else ()
+    set (CPACK_SYSTEM_NAME "win32")
+  endif ()
+endif ()
+
+# binary package
+set (CPACK_GENERATOR                   "TGZ")
 set (CPACK_INCLUDE_TOPLEVEL_DIRECTORY  "1")
+set (CPACK_TOPLEVEL_TAG                "${CPACK_SYSTEM_NAME}")
+set (CPACK_PACKAGE_FILE_NAME           "${PROJECT_NAME_LOWER}-${PROJECT_VERSION}-${CPACK_SYSTEM_NAME}")
+if (CMAKE_SYSTEM_PROCESSOR)
+  set (CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+endif ()
+
+# source package
+set (CPACK_SOURCE_GENERATOR         "TGZ")
+set (CPACK_SOURCE_TOPLEVEL_TAG      "${CPACK_SYTEM_NAME}-source")
+set (CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME_LOWER}-${PROJECT_VERSION}-source")
 
 # ----------------------------------------------------------------------------
 # \todo The proper values for the following options still need to be

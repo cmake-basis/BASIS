@@ -136,6 +136,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
 #   DESCRIPTION          Package description, used for packing.
 #   PACKAGE_VENDOR       The vendor of this package, used for packaging.
 #                        Defaults to "SBIA Group at University of Pennsylvania".
+#   WELCOME_FILE         Welcome file used for installer.
 #   README_FILE          Readme file. Defaults to PROJECT_SOURCE_DIR/README.
 #   LICENSE_FILE         File containing copyright and license notices.
 #                        Defaults to PROJECT_SOURCE_DIR/LICENSE.
@@ -161,6 +162,7 @@ macro (basis_project_initialize)
   set (PROJECT_DESCRIPTION)
   set (PROJECT_PACKAGE_VENDOR)
   set (PROJECT_AUTHORS_FILE)
+  set (PROJECT_WELCOME_FILE)
   set (PROJECT_README_FILE)
   set (PROJECT_INSTALL_FILE)
   set (PROJECT_LICENSE_FILE)
