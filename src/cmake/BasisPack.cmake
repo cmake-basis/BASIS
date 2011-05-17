@@ -244,9 +244,22 @@ endfunction ()
 
 # ****************************************************************************
 # \brief Add pre-configured install type.
+#
+# \see CPack.cmake
+# \see cpack_add_install_type ()
 
 function (basis_add_install_type)
   cpack_add_install_type (${ARGN})
+endfunction ()
+
+# ****************************************************************************
+# \brief Configure installation-time downloads of selected components.
+#
+# \see CPack.cmake
+# \see cpack_configure_downloads ()
+
+function (basis_configure_downloads)
+  cpack_configure_downloads (${ARGN})
 endfunction ()
 
 # ----------------------------------------------------------------------------
