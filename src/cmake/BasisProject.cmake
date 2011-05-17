@@ -25,12 +25,33 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 
 
 # ============================================================================
+# CMake version and policies
+# ============================================================================
+
+cmake_minimum_required (VERSION 2.8.2)
+
+# Add policies introduced with CMake versions newer than the one specified
+# above. These policies would otherwise trigger a polciy not set warning by
+# newer CMake versions.
+
+# CMake >= 2.8.3
+if (CMAKE_VERSION_PATCH GREATER 2)
+  cmake_policy (SET CMP0016 NEW)
+endif ()
+
+# CMake >= 2.8.4
+if (CMAKE_VERSION_PATCH GREATER 3)
+  message ("Set policy CMP0017 to NEW")
+  cmake_policy (SET CMP0017 NEW)
+endif ()
+
+# ============================================================================
 # (required) modules
 # ============================================================================
 
 include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
 
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake" NO_POLICY_SCOPE)
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisSubversionTools.cmake")
@@ -259,7 +280,7 @@ macro (basis_project_initialize)
     basis_update (CTestConfig.cmake)
   endif ()
 
-  include (BasisTest)
+  include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
 
   # resolve dependencies
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
@@ -408,7 +429,7 @@ macro (basis_project_finalize)
   endif ()
 
   # create software package
-  include (BasisPack)
+  include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
 
   # finalize update of files
   basis_update_finalize ()
