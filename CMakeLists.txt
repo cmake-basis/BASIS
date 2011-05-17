@@ -18,16 +18,13 @@ cmake_minimum_required (VERSION 2.8.2)
 # initialize
 # ============================================================================
 
-# set CMake module path
-set (BASIS_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
-set (CMAKE_MODULE_PATH "${BASIS_MODULE_PATH}")
-
 # use invalid template version to indicate that this project is not
 # instantiated from a template as this package contains the template
 set (TEMPLATE_VERSION "0.0")
 
 # include BASIS policies, settings, macros, and functions
-include (BasisProject NO_POLICY_SCOPE)
+set (BASIS_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
+include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # initialize project
 basis_project_initialize (
