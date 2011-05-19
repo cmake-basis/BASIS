@@ -49,5 +49,17 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
+# ============================================================================
+# project attributes
+# ============================================================================
+
+set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+set (VERSION_PATCH "@PROJECT_VERSION_PATCH@")
+
+# ============================================================================
+# directories
+# ============================================================================
+
 basis_set_script_path (TEMPLATE_DIR "@PROJECT_DATA_DIR@/template" "@INSTALL_TEMPLATE_DIR@")
 

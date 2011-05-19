@@ -35,9 +35,9 @@ include (BasisProject NO_POLICY_SCOPE)
 
 # initialize project
 basis_project_initialize (
-  NAME        ReplaceByProjectName
+  NAME        "ReplaceByProjectName"
   VERSION     0.0.0
-  DESCRIPTION "ReplaceByDescription"
+  DESCRIPTION "ReplaceByProjectDescription"
 )
 
 # ============================================================================

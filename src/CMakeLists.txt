@@ -20,6 +20,6 @@ install (
   PATTERN     .git EXCLUDE
 )
 
-# add script used to instantiate the project template
-basis_add_script (createbasisproject.sh)
+# add script used to create or modify a project instantiated from the template
+basis_add_script (basisproject.sh)
 
