@@ -29,14 +29,8 @@ if (NOT BASIS_USE_FILE_INCLUDED)
 set (BASIS_USE_FILE_INCLUDED 1)
 
 
-# set CMake module path
-set (CMAKE_MODULE_PATH "${BASIS_MODULE_PATH}" "${CMAKE_MODULE_PATH}")
-
-# include default settings
-include (BasisSettings NO_POLICY_SCOPE)
-
-# include functions
-include (BasisProjectTools)
+# include BASIS settings and functions
+include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # include directories
 basis_include_directories ("${BASIS_INCLUDE_DIR}")

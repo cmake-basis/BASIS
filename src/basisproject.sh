@@ -47,7 +47,7 @@ usage ()
 	echo "Description:"
     echo "  This command-line tool can be used to create a new BASIS project from the"
     echo "  project template version $versionMajor.$versionMinor or to modify or upgrade"
-    echo "  an already existing project which was previously created using this script."
+    echo "  an already existing project which was previously created."
     echo
     echo "  Depending on the grade of customization or optional inclusion of template"
     echo "  components, different subsets of the fully featured project template can be"
@@ -68,25 +68,26 @@ usage ()
     echo "  of the template files which a project file was created from are stored in hidden"
     echo "  '.basis' subdirectories under each directory. These directories should be kept and"
     echo "  commited to the reversion control system if it is intended to manage the project"
-    echo "  files using this tool in the future, i.e., upgrading to a newer template version."
+    echo "  files using this tool in the future, e.g., to upgrade to a newer template version."
     echo "  Otherwise, the option --clean-all can be used to have this tool delete those"
     echo "  directories from the project."
     echo
     echo "  Besides the name of the new project and a brief description, names of external"
     echo "  packages required or optionally used by this project can be specified. For each"
     echo "  such package, an entry in the project's $dependsFile file is created. If the"
-    echo "  package is not supported explicitly by this script, generic CMake statements to"
+    echo "  package is not supported explicitly by BASIS, generic CMake statements to"
     echo "  find the package are added. Note that these may not work for this unsupported"
     echo "  package. In this case, the $dependsFile file has to be edited manually."
     echo "  Note that if an existing project is modified, the $dependsFile file is added if"
-    echo "  not yet existent, i.e., ignoring the option --no-config-depends."
+    echo "  not yet existent, ignoring the option --no-config-depends."
     echo
 	echo "Usage:"
 	echo "  $progName [options] <project name>"
 	echo
     echo "Required options:"
     echo "  <project name>             Name of the new project."
-    echo "  -d [ --description ] arg   Brief project description."
+    echo "  -d [ --description ] arg   Brief project description. Option not allowed when modifying"
+    echo "                             an existent project."
     echo "  -r [ --root ] arg          Specify root directory of new project or directory of"
     echo "                             existing project. If the specified directory already exists"
     echo "                             this program will modify this project. The project name and"
@@ -134,7 +135,7 @@ usage ()
     echo
     echo "  --full                  Choose full project template. Corresponds to selecting all files."
     echo
-    echo "Options to select template files:"
+    echo "Options to add files:"
     echo "  --conf-components       Whether to include custom Components.cmake file."
     echo "  --conf-depends          Whether to include custom Depends.cmake file."
     echo "  --conf-find             Whether to include custom <project>Config.cmake file."
@@ -150,7 +151,7 @@ usage ()
     echo "  --tests                 Whether to include support of system tests."
     echo "  --unit-tests            Whether to include support of unit tests."
     echo
-    echo "Options to deselect template files:"
+    echo "Options to remove files:"
     echo "  --no-conf-components    Whether to exclude custom Components.cmake file."
     echo "  --no-conf-depends       Whether to exclude custom Depends.cmake file."
     echo "  --no-conf-find          Whether to exclude custom <project>Config.cmake file."
@@ -581,7 +582,7 @@ done
 
 # dependsFile required if external packages should be found
 if [ $packageNum -gt 0 ]; then
-    $confDepends=1
+    confDepends=1
 fi
 
 # simplify template path
@@ -627,7 +628,8 @@ elif [ ! -z "$root" ]; then
     if [ ! -z "$description" ]; then
         usage
         echo
-        echo "Cannot modify description of existing project. You have to do this manually." 1>&2
+        echo "Cannot modify description of existing project. Please edit root CMakeLists.txt file manually." 1>&2
+        echo "Do not use option -d when attempting to modify an existing project." 1>&2
         exit 1
     fi
     if [ -z "$name" ]; then
@@ -965,7 +967,7 @@ if [ $minimal -gt 0 ]; then
 fi
 
 # additional configuration files
-addordel $confDepends     "config/Depends.cmake"          || retval=1
+addordel $confDepends     "config/$dependsFile"           || retval=1
 addordel $confSettings    "config/Settings.cmake"         || retval=1
 addordel $confComponents  "config/Components.cmake"       || retval=1
 addordel $confPackage     "config/Package.cmake"          || retval=1
@@ -977,10 +979,11 @@ addordel $confGenerate    "config/GenerateConfig.cmake"   || retval=1
 addordel $confScript      "config/ScriptConfig.cmake.in"  || retval=1
 addordel $confTests       "config/CTestCustom.cmake.in"   || retval=1
 addordel $confUse         "config/Use.cmake.in"           || retval=1
-addordel 
 
-if [[ $(ls $root/config) == '' ]]; then
-    rm -rf $root/config &> /dev/null
+if [ -d "$root/config" ]; then
+    if [[ $(ls "$root/config") == '' ]]; then
+        rm -rf "$root/config" &> /dev/null
+    fi
 fi
 
 # auxiliary data
@@ -1068,32 +1071,29 @@ findPackage ()
     #echo "  endif ()" >> $file
     fi
     echo "endif ()" >> $file
+
+    echo "M $file - added entry for package $package"
 }
 
 # ----------------------------------------------------------------------------
 # modify dependencies
 
 if [ $packageNum -gt 0 ]; then
+    echo
     echo "Adding dependencies..."
 
-    dependsFilePath="$(find "$root" -name "$dependsFile")"
+    dependsFilePath=$root/config/$dependsFile
 
-    if [ -z "$dependsFilePath" ]; then
-        echo "Dependencies file $dependsFile not found!" 1>&2
+    if [ ! -f "$dependsFilePath" ]; then
+        echo "Dependencies configuration file $dependsFile not found!" 1>&2
         exit 1
-    fi
-
-    if [ $verbosity -gt 0 ]; then
-        echo
-        echo "Dependencies configuration file: $dependsFilePath"
-        echo
     fi
 
     idx=0
     while [ $idx -lt $packageNum ]
     do
         pkg="${packageNames[$idx]}"
-        required="${packageRequired[$idx]}"
+        required=${packageRequired[$idx]}
 
         case "$pkg" in
             # use package name for both find_package ()
