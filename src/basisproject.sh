@@ -33,6 +33,7 @@ dependsFile='Depends.cmake'
 
 # ****************************************************************************
 # \brief Prints version information.
+
 version ()
 {
 	echo "$progName $version"
@@ -40,6 +41,7 @@ version ()
 
 # ****************************************************************************
 # \brief Prints usage information.
+
 usage ()
 {
 	echo "$progName $versionMajor.$versionMinor"
@@ -60,14 +62,14 @@ usage ()
     echo "  can be forced by using the --force option. Non-empty directories are yet kept"
     echo "  and have to be deleted manually."
     echo
-    echo "  An additional feature of this tool is that it can upgrade an existing project"
+    echo "  An additional feature of this tool is, that it can upgrade an existing project"
     echo "  to a newer project template version, given that the existing directory structure"
     echo "  and file names were preserved. User changes to previously added template files"
     echo "  are preserved and merged with the changes of the template using a so-called"
     echo "  three-way diff using diff3 similar to the Subversion tool svn. Therefore, copies"
     echo "  of the template files which a project file was created from are stored in hidden"
     echo "  '.basis' subdirectories under each directory. These directories should be kept and"
-    echo "  commited to the reversion control system if it is intended to manage the project"
+    echo "  commited to the version control system if it is intended to manage the project"
     echo "  files using this tool in the future, e.g., to upgrade to a newer template version."
     echo "  Otherwise, the option --clean-all can be used to have this tool delete those"
     echo "  directories from the project."
@@ -648,7 +650,7 @@ else
 fi
 
 # verify that project name is valid
-
+# \todo
 
 # print template and root path
 if [ $verbosity -gt 0 ]; then
@@ -669,32 +671,6 @@ retval=0
 # sanitize project description for use in regular expression
 description=${description//\//\\\/}
 description=${description//\\/\\\\}
-
-# ****************************************************************************
-# \brief Clean temporary files.
-
-function cleanTemp
-{
-    # *.template
-    for file in $(find "$root" -type f -name '*.template'); do
-        rm -f "$file"
-    done
-    # *.update
-    for file in $(find "$root" -type f -name '*.update'); do
-        rm -f "$file"
-    done
-}
-
-# ****************************************************************************
-# \brief Remove hidden copies of template files.
-
-function cleanHidden
-{
-    # .basis
-    for dir in $(find "$root" -type d -name '.basis'); do
-        rm -rf "$dir"
-    done
-}
 
 # ****************************************************************************
 # \brief Add or modify project directory or file.
@@ -1123,6 +1099,35 @@ fi
 # ============================================================================
 # clean up
 # ============================================================================
+
+# ****************************************************************************
+# \brief Clean temporary files.
+
+function cleanTemp
+{
+    # *.template
+    for file in $(find "$root" -type f -name '*.template'); do
+        rm -f "$file"
+    done
+    # *.update
+    for file in $(find "$root" -type f -name '*.update'); do
+        rm -f "$file"
+    done
+}
+
+# ****************************************************************************
+# \brief Remove hidden copies of template files.
+
+function cleanHidden
+{
+    # .basis
+    for dir in $(find "$root" -type d -name '.basis'); do
+        rm -rf "$dir"
+    done
+}
+
+# ----------------------------------------------------------------------------
+# do the clean up
 
 if [ $clean -ne 0 -o $cleanAll -ne 0 ]; then
     msg="Cleaning up"

@@ -3,7 +3,7 @@
 # \brief CMake configuration file of unit tests.
 #
 # Unit tests test only single functions, classes, and modules of the software.
-# Besides system tests, unit tests are not part of distribution packages.
+# Unlike system tests, unit tests are not part of distribution packages.
 #
 # The built test executables can be found in TESTING_RUNTIME_DIR.
 #
