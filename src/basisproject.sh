@@ -320,8 +320,6 @@ do
             if [ $# -gt 0 ]; then
                 template=$(makeAbsolute $1)
             else
-                usage
-                echo
                 echo "Option -t requires an argument!" 1>&2
                 exit 1
             fi
@@ -329,8 +327,6 @@ do
  
         -r|--root)
             if [ ! -z "$root" ]; then
-                usage
-                echo
                 echo "Option -r may only be given once!" 1>&2
                 exit 1
             fi
@@ -339,8 +335,6 @@ do
             if [ $# -gt 0 ]; then
                 root=$(makeAbsolute $1)
             else
-                usage
-                echo
                 echo "Option -r requires an argument!" 1>&2
                 exit 1
             fi
@@ -348,8 +342,6 @@ do
 
         -d|--description)
             if [ ! -z "$description" ]; then
-                usage
-                echo
                 echo "Option -d may only be given once!" 1>&2
                 exit 1
             fi
@@ -358,8 +350,6 @@ do
             if [ $# -gt 0 ]; then
                 description="$1"
             else
-                usage
-                echo
                 echo "Option -d requires an argument!" 1>&2
                 exit 1
             fi
@@ -563,17 +553,13 @@ do
             ;;
 
         -*)
-            usage
-            echo
             echo "Invalid option $1!" 1>&2
             exit 1
             ;;
 
         *)
             if [ ! -z "$name" ]; then
-                usage
-                echo
-                echo "Project name already specified!" 1>&2
+                echo "More than one project name specified!" 1>&2
                 exit 1
             fi
             name="$1"
@@ -601,8 +587,6 @@ cd $cwd
 if [ ! -z "$name" ]; then
     mode=0
     if [ -z "$description" ]; then
-        usage
-        echo
         echo "No project description given!"
         exit 1
     fi
@@ -610,8 +594,6 @@ if [ ! -z "$name" ]; then
         root="$(pwd)/$name"
     fi
     if [ -e "$root" ]; then
-        usage
-        echo
         echo "Directory or file of name $root exists already." 1>&2
         echo "Please choose another project name or root directory using the -r option." 1>&2
         echo "If you want to modify an existing project, please provide the root directory using the -r option." 1>&2
@@ -621,15 +603,11 @@ if [ ! -z "$name" ]; then
 elif [ ! -z "$root" ]; then
     mode=1
     if [ ! -d "$root" ]; then
-        usage
-        echo
         echo "Project directory $root does not exist!" 1>&2
         echo "If you want to create a new project, please specify a project name." 1>&2
         exit 1
     fi
     if [ ! -z "$description" ]; then
-        usage
-        echo
         echo "Cannot modify description of existing project. Please edit root CMakeLists.txt file manually." 1>&2
         echo "Do not use option -d when attempting to modify an existing project." 1>&2
         exit 1
@@ -643,14 +621,18 @@ elif [ ! -z "$root" ]; then
     fi
 # invalid usage
 else
-    usage
-    echo
     echo "Either project name or project root must be specified!" 1>&2
     exit 1
 fi
 
 # verify that project name is valid
-# \todo
+if [[ ! $name =~ ^[a-zA-Z0-9]+$ ]]; then
+    echo "Invalid project name: $name" 1>&2
+    echo "Project name may only consist of alphanumeric characters!" 1>&2
+    echo "If you are attempting to modify an existent project, check whether the" 1>&2
+    echo "project name is correctly extracted from the root CMakeLists.txt file." 1>&2
+    exit 1
+fi
 
 # print template and root path
 if [ $verbosity -gt 0 ]; then
@@ -671,6 +653,7 @@ retval=0
 # sanitize project description for use in regular expression
 description=${description//\//\\\/}
 description=${description//\\/\\\\}
+description=${description//"/\\"}
 
 # ****************************************************************************
 # \brief Add or modify project directory or file.
@@ -924,7 +907,7 @@ function addordel
 # ----------------------------------------------------------------------------
 # modify project files
 
-if [ -d $root ]; then
+if [ $mode -eq 1 ]; then
     msg="Modifying project"
 else
     msg="Creating project"
@@ -980,6 +963,7 @@ elif [ $tests -lt 0 -a $unitTests -lt 0 ]; then
     del "test/CMakeLists.txt" || retval=1
     del "test/data"           || retval=1
     del "test/expected"       || retval=1
+    del "test"                || retval=1
 fi
 
 # example
