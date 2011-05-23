@@ -16,17 +16,17 @@ INTRODUCTION
   This document describes the common procedure to build and install any
   software developed at and distributed by SBIA. In particular, software built
   on top of BASIS, a meta-project which defines the Build And Software
-  Implementation Standard which was established in the summer of the year 2011.
+  Implementation Standard which was established in the summer of 2011.
   Please refer to the documentation of BASIS for details on the standard.
 
   If you obtained a binary distribution package for a supported platform,
-  please follow the corresponding installation instructions corresponding
-  to your operating system. The build step can be omitted in this case.
+  please follow the installation instructions corresponding to your operating
+  system. The build step can be omitted in this case.
 
   In case of problems to build, install, or use the software, please contact
   the SBIA Group at the University of Pennsylvania, PA.
 
-  In the following $ at the beginning of a line indicates the command prompt of
+  In the following, $ at the beginning of a line indicates the command prompt of
   the used shell. Hence, the command followed after the $ has to be entered in a
   terminal. The instructions given in this guide are based on bash.
 
@@ -50,12 +50,12 @@ OBTAINING A COPY OF THE SOFTWARE
 
     linux-x86     ->  Linux, 32-bit
     linux-x86_64  ->  Linux, 64-bit
-    darwin-x86    ->  Darwin x86 Intel
+    darwin-i386   ->  Darwin x86 Intel
     darwin-ppc    ->  Darwin Power PC
     win32         ->  Windows, 32-bit
     win64         ->  Windows, 64-bit
 
-  In case of a source distribution package the value of <arch> is "src".
+  In case of a source distribution package the value of <arch> is "source".
   The file name extension <ext> is "tar.gz" for a compressed tarball,
   "deb" for a Debian package, and "rpm" for a RPM package.
 
@@ -143,21 +143,21 @@ BUILDING THE SOFWARE FROM SOURCES
 
     Ubuntu:   (pre-installed)
 
-  - CMake 2.6.2 or greater
+  - CMake 2.8.2 or greater
 
     Web:      http://www.cmake.org/
     Download: http://www.cmake.org/cmake/resources/software.html
 
     Ubuntu:   cmake, cmake-curses-gui
 
-  - BASIS Core
+  - BASIS
 
     Web:      https://www.rad.upenn.edu/sbia/software/
     Download: https://www.rad.upenn.edu/sbia/software/basis/
 
-    Any software built on top of BASIS depends at least on the Core component
-    of BASIS. The Core defines the project directory structure and provides
-    CMake implementations to ease and standardize the build and installation.
+    The Build And Software Implementation Standard (BASIS) defines the project
+    directory structure and provides CMake implementations to ease and
+    standardize the build and installation.
 
 
   Build and Installation Instructions
@@ -173,10 +173,10 @@ BUILDING THE SOFWARE FROM SOURCES
 
      At first, extract the downloaded source package, e.g.,
 
-       $ tar xzf $pkg-src.tar.gz ~
+       $ tar xzf $pkg-source.tar.gz ~
 
      This will extract the sources in a new diretory in your home directory
-     named "<package>-<version>-src".
+     named "<package>-<version>-source".
 
   2. Configure the build tree
 
@@ -192,7 +192,7 @@ BUILDING THE SOFWARE FROM SOURCES
 
      To configure the build tree, run CMake's graphical tool ccmake
 
-       $ ccmake ~/$pkg-src
+       $ ccmake ~/$pkg-source
 
      Put "c" to trigger the configuration step of CMake. Warnings can be
      ignored by pressing "e". Once all CMake variables are configured
@@ -205,18 +205,21 @@ BUILDING THE SOFWARE FROM SOURCES
        BUILD_DOC        Whether the documentation target should be built by
                         default, too. If FALSE, the documentation, such as
                         in particular the man pages and API documentation,
-                        can be built by building the "doc" target.
+                        can be built manually by building the "doc" target.
        BUILD_EXAMPLE    Whether the examples should be built (if required)
                         and/or installed.
-       BUILD_TESTING    Whether the testing tree should be built.
-       BUILD_TYPE       Specify the build configuration to built. If not
-                        set, the "Release" configuration will be built.
+       BUILD_TESTING    Whether the testing tree should be built and system
+                        tests, i.e., tests that execute the installed programs
+                        and compare the outputs to the expected results should
+                        be installed.
+       BUILD_TYPE       Specify the build configuration to build. If not
+                        set, the "Release" configuration will be build.
                         Valid values are "Release", "Debug", and "Coverage".
        INSTALL_PREFIX   Prefix used for package installation (see Step 4).
        INSTALL_SINFIX   Suffix/Infix used for package installation (see Step 4).
        INSTALL_LINKS    Whether (symbolic) links should be created (see Step 4).
 
-     Please refer to the package specific build instruction given in the
+     Please refer to the package specific build instructions given in the
      INSTALL file which is located in the root directory of the source tree
      for details on the package specific CMake variables.
 
@@ -256,7 +259,7 @@ BUILDING THE SOFWARE FROM SOURCES
        <prefix>/bin/<sinfix>/              Main executable files.
        <prefix>/lib/<sinfix>/              Libraries and auxiliary executables.
        <prefix>/etc/<sinfix>/              Package configuration files.
-       <prefix>/doc/<sinfix>/              Package documentation files.
+       <prefix>/share/<sinfix>/doc/        Package documentation files.
        <prefix>/share/<sinfix>/data/       Auxiliary package data.
        <prefix>/share/<sinfix>/example/    Files required to run example as
                                              described in the User Manual.
@@ -272,6 +275,7 @@ BUILDING THE SOFWARE FROM SOURCES
      set to TRUE (the default), the following (symbolic) links are created:
 
        <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
+       <prefix>/doc/<sinfix>             -> <prefix>/share/<sinfix>/doc/
        <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
        <prefix>/share/man/man.3/<func>.3 -> <prefix>/share/<sinfix>/man/man.3/<func>.3
 
@@ -293,6 +297,6 @@ BUILDING THE SOFWARE FROM SOURCES
   run the following command in the root directory of the build tree which was
   used to install the package
 
-    $ cd ~/build/$pkg
+    $ cd ~/$pkg-build
     $ make uninstall
 

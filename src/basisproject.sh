@@ -11,11 +11,18 @@
 ##############################################################################
  
 # ============================================================================
+# default functions
+# ============================================================================
+
+@BASH_FUNCTION_getProgDir@
+@BASH_FUNCTION_getProgName@
+
+# ============================================================================
 # constants
 # ============================================================================
 
-progName=${0##*/}                # name of this script
-progDir=`cd \`dirname $0\`; pwd` # directory of this script
+progName=$(getProgName) # name of this script
+progDir=$(getProgDir)   # directory of this script
 
 versionMajor='@VERSION_MAJOR@' # major version number
 versionMinor='@VERSION_MINOR@' # minor version number

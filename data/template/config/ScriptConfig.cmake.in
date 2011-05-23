@@ -49,21 +49,5 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-# ============================================================================
-# project attributes
-# ============================================================================
-
-set (VERSION       "@PROJECT_VERSION@")
-set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
-set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
-set (VERSION_PATCH "@PROJECT_VERSION_PATCH@")
-
-# ============================================================================
-# directories
-# ============================================================================
-
-basis_set_script_path (RUNTIME_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_BIN_DIR@")
-basis_set_script_path (LIBRARY_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_LIB_DIR@")
-basis_set_script_path (ARCHIVE_DIR "@CMAKE_ARCHIVE_OUTPUT_DIRECTORY@" "@INSTALL_LIB_DIR@")
-basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
+@BASIS_SCRIPT_CONFIG@
 
