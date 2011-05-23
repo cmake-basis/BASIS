@@ -97,7 +97,7 @@ endif ()
 
 # source package
 set (CPACK_SOURCE_GENERATOR         "TGZ")
-set (CPACK_SOURCE_TOPLEVEL_TAG      "${CPACK_SYTEM_NAME}-source")
+set (CPACK_SOURCE_TOPLEVEL_TAG      "${CPACK_SYSTEM_NAME}-source")
 set (CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME_LOWER}-${PROJECT_VERSION}-source")
 
 # ----------------------------------------------------------------------------
