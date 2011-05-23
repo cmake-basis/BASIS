@@ -59,6 +59,9 @@ mark_as_advanced (BASIS_MCC_TIMEOUT)
 # find programs
 # ============================================================================
 
+# The script used to invoke the MATLAB Compiler in MATLAB mode.
+set (BASIS_SCRIPT_MCC "${CMAKE_CURRENT_LIST_DIR}/runmcc.m")
+
 find_program (
   BASIS_CMD_MATLAB
     NAMES matlab
@@ -75,15 +78,6 @@ find_program (
 
 mark_as_advanced (BASIS_CMD_MCC)
 
-find_file (
-  BASIS_SCRIPT_MCC
-    NAMES runmcc.m
-    HINTS "${CMAKE_CURRENT_LIST_DIR}"
-    DOC "MATLAB script runmcc.m used to invoke MATLAB Compiler in MATLAB mode."
-    NO_DEFAULT_PATH
-)
-
-mark_as_advanced (BASIS_SCRIPT_MCC)
 
 find_program (
   BASIS_CMD_MEXEXT
@@ -287,15 +281,9 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
 
   # required commands available ?
-  if (NOT EXISTS BASIS_CMD_MCC)
+  if (NOT BASIS_CMD_MCC)
     message (FATAL_ERROR "MATLAB Compiler not found. It is required to build target ${TARGET_UID}."
                          "Set BASIS_CMD_MCC manually and try again.")
-  endif ()
-
-  if (NOT EXISTS BASIS_SCRIPT_EXECUTE_PROCESS)
-    message (FATAL_ERROR "CMake script required for execution of process in script mode not found."
-                         "It is required to build the target ${TARGET_UID}. "
-                         "Set BASIS_SCRIPT_EXECUTE_PROCESS manually and try again.")
   endif ()
  
   # MCC flags
@@ -327,12 +315,16 @@ function (basis_add_mcc_target TARGET_NAME)
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
 
   # set target properties required by basis_add_mcc_target_finalize ()
-  if (ARGN_LIBEXEC)
-    set (RUNTIME_INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
-    set (TPYE                "MCC_LIBEXEC")
+  if (ARGN_TYPE STREQUAL "LIBRARY")
+    set (TYPE "MCC_LIBRARY")
   else ()
-    set (RUNTIME_INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
-    set (TYPE                "MCC_${ARGN_TYPE}")
+    if (ARGN_LIBEXEC)
+      set (RUNTIME_INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+      set (TPYE                "MCC_LIBEXEC")
+    else ()
+      set (RUNTIME_INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+      set (TYPE                "MCC_EXEC")
+    endif ()
   endif ()
 
   set_target_properties (
@@ -420,7 +412,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
 
-  if (NOT BASIS_TYPE MATCHES "^MCC_EXECUTABLE$|^MCC_LIBEXEC$|^MCC_LIBRARY$")
+  if (NOT BASIS_TYPE MATCHES "^MCC_EXEC$|^MCC_LIBEXEC$|^MCC_LIBRARY$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 

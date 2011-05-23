@@ -318,7 +318,7 @@ function (basis_add_executable TARGET_NAME)
     if (ARGN_LIBEXEC)
       set (TYPE "LIBEXEC")
     else ()
-      set (TYPE "EXECUTABLE")
+      set (TYPE "EXEC")
     endif ()
 
     set_target_properties (
@@ -834,11 +834,13 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
 
-  # install directory
+  # auxiliary executable?
   if (ARGN_LIBEXEC)
     set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+    set (TYPE        "LIBSCRIPT")
   else ()
     set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+    set (TYPE        "SCRIPT")
   endif ()
 
   # script configuration
@@ -872,7 +874,7 @@ function (basis_add_script TARGET_NAME)
     ${TARGET_UID}
     PROPERTIES
       TYPE                      "EXECUTABLE"
-      BASIS_TYPE                "SCRIPT"
+      BASIS_TYPE                "${TYPE}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"

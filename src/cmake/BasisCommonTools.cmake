@@ -345,6 +345,39 @@ function (basis_check_test_name TEST_NAME)
   endif ()
 endfunction ()
 
+# ============================================================================
+# assertions
+# ============================================================================
+
+# ****************************************************************************
+# \brief Common configuration/build assertions.
+
+function(build_asserts)
+  get_filename_component (srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+  get_filename_component (bindir "${CMAKE_BINARY_DIR}" REALPATH)
+
+  if ("${srcdir}" STREQUAL "${bindir}")
+    message(FATAL_ERROR "This package should not be configured & built in the source directory"
+                        " You must run cmake in a build directory.")
+  endif()
+endfunction()
+
+# ****************************************************************************
+# \brief Common installation assertions.
+
+function (install_asserts)
+  string (TOLOWER "${CMAKE_SOURCE_DIR}" _SOURCE)
+  string (TOLOWER "${CMAKE_BINARY_DIR}" _BUILD)
+  string (TOLOWER "${INSTALL_PREFIX}"   _PREFIX)
+
+  if ("${_PREFIX}" MATCHES "${_BUILD}|${_SOURCE}")
+    message (FATAL_ERROR "The current INSTALL_PREFIX points at the source or build tree:\n"
+                         "  ${INSTALL_PREFIX}\n"
+                         "This is not supported. Please choose another installation prefix."
+    )
+  endif()
+endfunction ()
+
 
 endif (NOT BASIS_COMMONTOOLS_INCLUDED)
 

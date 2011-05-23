@@ -683,6 +683,59 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
+# \brief Install symbolic link.
+#
+# \param [in] OLD The value of the symbolic link.
+# \param [in] NEW The name of the symbolic link.
+
+function (basis_install_symlink OLD NEW)
+  set (CMD_IN
+    "
+    set (OLD \"@OLD@\")
+    set (NEW \"@NEW@\")
+
+
+    if (NOT IS_ABSOLUTE \"\${OLD}\")
+      set (OLD \"\${CMAKE_INSTALL_PREFIX}/\${OLD}\")
+    endif ()
+    if (NOT IS_ABSOLUTE \"\${NEW}\")
+      set (NEW \"\${CMAKE_INSTALL_PREFIX}/\${NEW}\")
+    endif ()
+
+    if (IS_SYMLINK \"\${NEW}\")
+      file (REMOVE \"\${NEW}\")
+    endif ()
+
+    if (EXISTS \"\${NEW}\")
+      message (STATUS \"Skipping: \${NEW} -> \${OLD}\")
+    else ()
+      message (STATUS \"Installing: \${NEW} -> \${OLD}\")
+
+      get_filename_component (SYMDIR \"\${NEW}\" PATH)
+
+      file (RELATIVE_PATH OLD \"\${SYMDIR}\" \"\${OLD}\")
+
+      if (NOT EXISTS \${SYMDIR})
+        file (MAKE_DIRECTORY \"\${SYMDIR}\")
+      endif ()
+
+      execute_process (
+        COMMAND \"${CMAKE_COMMAND}\" -E create_symlink \"\${OLD}\" \"\${NEW}\"
+        RESULT_VARIABLE RETVAL
+      )
+
+      if (NOT RETVAL EQUAL 0)
+        message (ERROR \"Failed to create symbolic link \${NEW} -> \${OLD}\")
+      endif ()
+    endif ()
+    "
+  )
+
+  string (CONFIGURE "${CMD_IN}" CMD @ONLY)
+  install (CODE "${CMD}")
+endfunction ()
+
+# ****************************************************************************
 # \brief Create symbolic links to main executables.
 #
 # This function creates for each main executable a symbolic link directly
@@ -695,29 +748,37 @@ function (basis_install_symlinks)
     return ()
   endif ()
 
-  set (CMD_IN "execute_process (COMMAND \"${CMAKE_COMMAND}\" -E create_symlink @OLD@  @NEW@)")
+  # main executables
+  if (INSTALL_SINFIX)
+    string (REGEX REPLACE "(.*)/${INSTALL_SINFIX}" "\\1" RUNTIME_DIR "${INSTALL_RUNTIME_DIR}")
 
-  foreach (TARGET_UID ${BASIS_TARGETS})
-    get_target_property (BASIS_TYPE  ${TARGET_UID} "BASIS_TYPE")
+    foreach (TARGET_UID ${BASIS_TARGETS})
+      get_target_property (BASIS_TYPE  ${TARGET_UID} "BASIS_TYPE")
 
-    if (BASIS_TYPE MATCHES "EXECUTABLE|SCRIPT")
-      if (NOT "${INSTALL_RUNTIME_DIR}" STREQUAL "bin")
+      if (BASIS_TYPE MATCHES "^EXEC$|^MCC_EXEC$|^SCRIPT$")
         get_target_property (OUTPUT_NAME ${TARGET_UID} "OUTPUT_NAME")
 
         if (NOT OUTPUT_NAME)
           basis_target_name (OUTPUT_NAME ${TARGET_UID})
         endif ()
 
-        string (REGEX REPLACE "(.*)/${INSTALL_SINFIX}" "\\1" RUNTIME_DIR "${INSTALL_RUNTIME_DIR}")
-
-        set (OLD "\"${INSTALL_SINFIX}/${OUTPUT_NAME}\"")
-        set (NEW "\"${INSTALL_PREFIX}/${RUNTIME_DIR}/${OUTPUT_NAME}\"")
-        string (CONFIGURE "${CMD_IN}" CMD @ONLY)
-
-        install (CODE "${CMD}" MESSAGE "Creating symbolic link ${NEW}")
+        basis_install_symlink (
+          "${INSTALL_RUNTIME_DIR}/${OUTPUT_NAME}"
+          "${RUNTIME_DIR}/${OUTPUT_NAME}"
+        )
       endif ()
-    endif ()
-  endforeach ()
+    endforeach ()
+  endif ()
+
+  # documentation
+  # \note Not all CPack generators preserve symbolic links to directories
+  # \note The presence of a <prefix>/doc/* folder is not part of the
+  #       Linux file hierarchy standard.
+  #string (REGEX REPLACE ".*/${INSTALL_SINFIX}/(.*)" "\\1" DOC_DIR "${INSTALL_DOC_DIR}")
+  #basis_install_symlink (
+  #  "${INSTALL_DOC_DIR}"
+  #  "${DOC_DIR}/${INSTALL_SINFIX}"
+  #)
 endfunction ()
 
 # ****************************************************************************
