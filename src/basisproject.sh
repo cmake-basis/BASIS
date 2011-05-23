@@ -1004,6 +1004,10 @@ findPackage ()
     local prefix=$package
 
     if [ $# -gt 5 ]; then
+        prefix=$6
+    fi
+
+    if [ $uppercasePrefix -ne 0 ]; then
         prefix=$(echo $prefix | tr [:lower:] [:upper:])
     fi
 
@@ -1036,6 +1040,11 @@ findPackage ()
     #echo "  elseif (${prefix}_LIBRARY_DIR)" >> $file
     #echo "    link_directories (\${${prefix}_LIBRARY_DIR})" >> $file
     #echo "  endif ()" >> $file
+    fi
+    if [ $required -ne 0 ]; then
+    echo "else ()" >> $file
+    echo "  # raise fatal error in case Find${package}.cmake did not do it" >> $file
+    echo "  message (FATAL_ERROR \"Package ${package} not found.\"" >> $file
     fi
     echo "endif ()" >> $file
 
