@@ -326,19 +326,20 @@ function (basis_add_mcc_target TARGET_NAME)
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
 
-  # install directories
+  # set target properties required by basis_add_mcc_target_finalize ()
   if (ARGN_LIBEXEC)
     set (RUNTIME_INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+    set (TPYE                "MCC_LIBEXEC")
   else ()
     set (RUNTIME_INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+    set (TYPE                "MCC_${ARGN_TYPE}")
   endif ()
 
-  # set target properties required by basis_add_mcc_target_finalize ()
   set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       TYPE                      "${ARGN_TYPE}"
-      BASIS_TYPE                 "MCC_${ARGN_TYPE}"
+      BASIS_TYPE                "${TYPE}"
       VERSION                   "${PROJECT_VERSION}"
       SOVERSION                 "${PROJECT_SOVERSION}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -419,7 +420,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
 
-  if (NOT BASIS_TYPE MATCHES "^MCC_EXECUTABLE$|^MCC_LIBRARY$")
+  if (NOT BASIS_TYPE MATCHES "^MCC_EXECUTABLE$|^MCC_LIBEXEC$|^MCC_LIBRARY$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 

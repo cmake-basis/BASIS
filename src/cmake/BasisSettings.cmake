@@ -195,6 +195,7 @@ macro (basis_initialize_directories)
 
   # install tree
   string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
+  string (CONFIGURE "${INSTALL_SINFIX}" INSTALL_SINFIX @ONLY)
 
   set (
     CMAKE_INSTALL_PREFIX
@@ -276,6 +277,8 @@ else ()
     INSTALL_SINFIX "sbia/@PROJECT_NAME_LOWER@"
     CACHE PATH "Installation directories suffix (or infix, respectively)."
   )
+
+  option (INSTALL_SYMLINKS "Whether to create symlinks if INSTALL_SINFIX is not empty." ON)
 endif ()
 
 set (INSTALL_RUNTIME_DIR   "bin")     # shared libraries (WIN32) and main executable

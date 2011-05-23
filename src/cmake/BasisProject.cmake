@@ -266,11 +266,11 @@ macro (basis_project_initialize)
   string (CONFIGURE "${BASIS_INCLUDE_PREFIX}" BASIS_INCLUDE_PREFIX @ONLY)
  
   # include project specific settings
-  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
-
   if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
-    set (BASIS_SCRIPT_CONFIG_FILE "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
+    set (DEFAULT_SCRIPT_CONFIG_FILE "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
   endif ()
+
+  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
 
   # initialize automatic file update
   basis_update_initialize ()
@@ -421,6 +421,10 @@ macro (basis_project_finalize)
     #basis_add_execname ()
     # add uninstall target
     basis_add_uninstall ()
+
+    if (INSTALL_SYMLINKS)
+      basis_install_symlinks ()
+    endif ()
   endif ()
 
   # generate configuration files
@@ -650,18 +654,10 @@ function (basis_create_execname SOURCES)
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
   
     if (BASIS_TYPE MATCHES "EXECUTABLE|SCRIPT")
-      get_target_property (PREFIX      "${TARGET_UID}" "PREFIX")
-      get_target_property (SUFFIX      "${TARGET_UID}" "SUFFIX")
       get_target_property (OUTPUT_NAME "${TARGET_UID}" "OUTPUT_NAME")
   
       if (NOT OUTPUT_NAME)
         set (OUTPUT_NAME "${TARGET_UID}")
-      endif ()
-      if (NOT PREFIX)
-        set (PREFIX "")
-      endif ()
-      if (NOT SUFFIX)
-        set (SUFFIX "")
       endif ()
   
       set (EXECUTABLE_NAME "${PREFIX}${OUTPUT_NAME}${SUFFIX}")
@@ -680,6 +676,83 @@ function (basis_create_execname SOURCES)
 
   # return
   set (SOURCES "${SOURCE_FILE}" PARENT_SCOPE)
+endfunction ()
+
+# ============================================================================
+# installation
+# ============================================================================
+
+# ****************************************************************************
+# \brief Create symbolic links to main executables.
+#
+# This function creates for each main executable a symbolic link directly
+# under INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string and the
+# software is installed on a UNIX-based system, i.e., one which supports the
+# creation of symbolic links.
+
+function (basis_install_symlinks)
+  if (NOT UNIX)
+    return ()
+  endif ()
+
+  set (CMD_IN "execute_process (COMMAND \"${CMAKE_COMMAND}\" -E create_symlink @OLD@  @NEW@)")
+
+  foreach (TARGET_UID ${BASIS_TARGETS})
+    get_target_property (BASIS_TYPE  ${TARGET_UID} "BASIS_TYPE")
+
+    if (BASIS_TYPE MATCHES "EXECUTABLE|SCRIPT")
+      if (NOT "${INSTALL_RUNTIME_DIR}" STREQUAL "bin")
+        get_target_property (OUTPUT_NAME ${TARGET_UID} "OUTPUT_NAME")
+
+        if (NOT OUTPUT_NAME)
+          basis_target_name (OUTPUT_NAME ${TARGET_UID})
+        endif ()
+
+        string (REGEX REPLACE "(.*)/${INSTALL_SINFIX}" "\\1" RUNTIME_DIR "${INSTALL_RUNTIME_DIR}")
+
+        set (OLD "\"${INSTALL_SINFIX}/${OUTPUT_NAME}\"")
+        set (NEW "\"${INSTALL_PREFIX}/${RUNTIME_DIR}/${OUTPUT_NAME}\"")
+        string (CONFIGURE "${CMD_IN}" CMD @ONLY)
+
+        install (CODE "${CMD}" MESSAGE "Creating symbolic link ${NEW}")
+      endif ()
+    endif ()
+  endforeach ()
+endfunction ()
+
+# ****************************************************************************
+# \brief Add uninstall target.
+#
+# Unix version works with any SUS-compliant operating system, as it needs
+# only Bourne Shell features Win32 version works with any Windows which
+# supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
+# NT 3.x too).
+#
+# \author Pau Garcia i Quiles, modified by the SBIA Group
+# \see    http://www.cmake.org/pipermail/cmake/2007-May/014221.html
+
+function (basis_add_uninstall)
+  if (WIN32)
+    add_custom_target (
+      uninstall
+        \"FOR /F \"tokens=1* delims= \" %%f IN \(${CMAKE_BINARY_DIR}/install_manifest.txt"}\)\" DO \(
+            IF EXIST %%f \(
+              del /q /f %%f"
+            \) ELSE \(
+               echo Problem when removing %%f - Probable causes: File already removed or not enough permissions
+             \)
+         \)
+      VERBATIM
+    )
+  else ()
+    # Unix
+    add_custom_target (
+      uninstall
+        cat "${CMAKE_BINARY_DIR}/install_manifest.txt"
+          | while read f \; do if [ -e \"\$\${f}\" ]; then rm \"\$\${f}\" \; else echo \"Problem when removing \"\$\${f}\" - Probable causes: File already removed or not enough permissions\" \; fi\; done
+      COMMENT Uninstalling...
+    )
+  endif ()
 endfunction ()
 
 

@@ -67,3 +67,49 @@ basis_set_script_path (LIBRARY_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_
 basis_set_script_path (ARCHIVE_DIR "@CMAKE_ARCHIVE_OUTPUT_DIRECTORY@" "@INSTALL_LIB_DIR@")
 basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 
+# ============================================================================
+# utility implementations
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# BASH
+# ----------------------------------------------------------------------------
+
+set (BASH_FUNCTION_getProgDir "
+# ****************************************************************************
+# \\brief Get real directory of executable.
+#
+# \\see http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+
+function getProgDir
+{
+  # get the absolute path of the executable
+  progPath=$(cd -P -- \"$(dirname -- \"$0\")\" && pwd -P) && progPath=$progPath/$(basename -- \"$0\")
+
+  # resolve symlinks
+  while [ -h $progPath ]; do
+    # 1) cd to directory of the symlink
+    # 2) cd to the directory of where the symlink points
+    # 3) get the pwd
+    # 4) append the basename
+    linkDir=$(dirname -- \"$progPath\")
+    symLink=$(readlink $progPath)
+    progPath=$(cd $linkDir && cd $(dirname -- \"$symLink\") && pwd)/$(basename -- \"$symLink\")
+  done
+
+  echo `cd -P \\`dirname $progPath\\`; pwd -P`
+}
+"
+)
+
+set (BASH_FUNCTION_getProgName "
+# ****************************************************************************
+# \\brief Get name of executable.
+
+function getProgName
+{
+  echo \${0##*/}
+}
+"
+)
+

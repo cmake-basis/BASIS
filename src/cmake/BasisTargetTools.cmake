@@ -315,10 +315,16 @@ function (basis_add_executable TARGET_NAME)
     # add executable target
     add_executable (${TARGET_UID} ${ARGN_UNPARSED_ARGUMENTS})
 
+    if (ARGN_LIBEXEC)
+      set (TYPE "LIBEXEC")
+    else ()
+      set (TYPE "EXECUTABLE")
+    endif ()
+
     set_target_properties (
       ${TARGET_UID}
       PROPERTIES
-        BASIS_TYPE "EXECUTABLE"
+        BASIS_TYPE "${TYPE}"
     )
 
     # target version information
@@ -745,6 +751,10 @@ endfunction ()
 # (super-)project. This way properties such as the OUTPUT_NAME can still be modified
 # after adding the script target.
 #
+# If a custom script configuration file is used, the variable
+# @BASIS_SCRIPT_CONFIG@ can be used within this custom script configuration file
+# to include the default configuration of the BASIS_SCRIPT_CONFIG_FILE.
+#
 # \see basis_add_script_finalize ()
 #
 # \param [in] TARGET_NAME Name of the target. Alternatively, the script file
@@ -757,8 +767,10 @@ endfunction ()
 #
 #   SCRIPT    Script file path relative to current source directory.
 #   COMPONENT Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
-#   CONFIG    Script configuration file. Defaults to BASIS_SCRIPT_CONFIG_FILE.
-#             If "NONE", "None", or "none" is given, the script is copied only.
+#   CONFIG    Script configuration file. Defaults to DEFAULT_SCRIPT_CONFIG_FILE
+#             if this variable is set. If "NONE", "None", or "none" is given,
+#             the script is copied only. Otherwise, a script configuration
+#             consiting of the single line "@BASIS_SCRIPT_CONFIG@" is used.
 #   LIBEXEC   Specifies that the script is an auxiliary executable called by
 #             other executables only.
 
@@ -773,12 +785,8 @@ function (basis_add_script TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
-  if (NOT ARGN_CONFIG)
-    set (ARGN_CONFIG "${BASIS_SCRIPT_CONFIG_FILE}")
-  endif ()
-
-  if (ARGN_CONFIG MATCHES "^NONE$|^None$|^none$")
-    set (ARGN_CONFIG)
+  if (NOT ARGN_CONFIG AND DEFAULT_SCRIPT_CONFIG_FILE)
+    set (ARGN_CONFIG "${DEFAULT_SCRIPT_CONFIG_FILE}")
   endif ()
 
   if (ARGN_UNPARSED_ARGUMENTS)
@@ -836,12 +844,24 @@ function (basis_add_script TARGET_NAME)
   # script configuration
   set (SCRIPT_CONFIG)
 
-  if (ARGN_CONFIG)
-    if (NOT EXISTS "${ARGN_CONFIG}")
-      message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG}\" does not exist. It is required to build the script ${TARGET_UID}.")
+  if (NOT ARGN_CONFIG MATCHES "^NONE$|^None$|^none$")
+    if (BASIS_SCRIPT_CONFIG_FILE)
+      file (READ "${BASIS_SCRIPT_CONFIG_FILE}" BASIS_SCRIPT_CONFIG)
+    else ()
+      set (BASIS_SCRIPT_CONFIG)
     endif ()
-    file (READ "${ARGN_CONFIG}" SCRIPT_CONFIG)
+
+    if (ARGN_CONFIG)
+      if (NOT EXISTS "${ARGN_CONFIG}")
+        message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG}\" does not exist. It is required to build the script ${TARGET_UID}.")
+      endif ()
+      file (READ "${ARGN_CONFIG}" SCRIPT_CONFIG)
+    else ()
+      set (SCRIPT_CONFIG "@BASIS_SCRIPT_CONFIG@")
+    endif ()
     string (CONFIGURE "${SCRIPT_CONFIG}" SCRIPT_CONFIG @ONLY)
+
+    set (BASIS_SCRIPT_CONFIG)
   endif ()
 
   # add custom target
@@ -1160,41 +1180,6 @@ function (basis_add_custom_finalize)
       basis_add_mcc_target_finalize (${TARGET_UID})
     endif ()
   endforeach ()
-endfunction ()
-
-# ****************************************************************************
-# \brief Add uninstall target.
-#
-# Unix version works with any SUS-compliant operating system, as it needs
-# only Bourne Shell features Win32 version works with any Windows which
-# supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
-# NT 3.x too).
-#
-# \author Pau Garcia i Quiles, modified by the SBIA Group
-# \see    http://www.cmake.org/pipermail/cmake/2007-May/014221.html
-
-function (basis_add_uninstall)
-  if (WIN32)
-    add_custom_target (
-      uninstall
-        \"FOR /F \"tokens=1* delims= \" %%f IN \(${CMAKE_BINARY_DIR}/install_manifest.txt"}\)\" DO \(
-            IF EXIST %%f \(
-              del /q /f %%f"
-            \) ELSE \(
-               echo Problem when removing %%f - Probable causes: File already removed or not enough permissions
-             \)
-         \)
-      VERBATIM
-    )
-  else ()
-    # Unix
-    add_custom_target (
-      uninstall
-        cat "${CMAKE_BINARY_DIR}/install_manifest.txt"
-          | while read f \; do if [ -e \"\$\${f}\" ]; then rm \"\$\${f}\" \; else echo \"Problem when removing \"\$\${f}\" - Probable causes: File already removed or not enough permissions\" \; fi\; done
-      COMMENT Uninstalling...
-    )
-  endif ()
 endfunction ()
 
 
