@@ -23,32 +23,40 @@
 # has to be done manually every time the template is modified.
 
 function (create_example EXAMPLE)
-  basis_target_uid (CREATESCRIPT createproject)
+  basis_target_uid (CREATESCRIPT basisproject)
 
   CMAKE_PARSE_ARGUMENTS (ARG "" "DESCRIPTION" "" ${ARGN})
 
+  # instantiate project template
   add_custom_target (
     ${EXAMPLE}
-    COMMAND "${CREATESCRIPT}" "${EXAMPLE}"
-            -t "${PROJECT_MAJOR_VERSION}"
+    COMMAND "${CREATESCRIPT}"
+            "${EXAMPLE}"
             -d "\"${ARGN_DESCRIPTION}\""
-            -r "\"${PROJECT_BINARY_DIR}/example/${EXAMPLE}-src\""
+            -r "\"${PROJECT_BINARY_DIR}/example/${EXAMPLE}-source\""
     COMMENT "Creating example project ${EXAMPLE}..."
   )
 
   add_dependencies (${EXAMPLE} ${CREATESCRIPT})
 
-  add_custom_command (
-    TARGET ${EXAMPLE} PRE_BUILD
-    COMMAND "${CMAKE_COMMAND}"
-            -E remove_directory "${PROJECT_BINARY_DIR}/example/${EXAMPLE}-src"
-    COMMENT "Removing directory ${PROJECT_BINARY_DIR}/example/${EXAMPLE}-src"
-  )
+  # copy example files
+  get_filename_component (SOURCE_DIR "${PROJECT_SOURCE_DIR}" NAME)
+  message ("Source directory name: ${SOURCE_DIR}")
+  if (EXISTS ${PROJECT_EXAMPLE_DIR}/${EXAMPLE}/${SOURCE_DIR})
+  endif ()
 endfunction ()
 
 # ============================================================================
 # examples
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# HelloWorld
+
+create_example (
+  HelloWorld
+  DESCRIPTION "The typical Hello World example."
+)
 
 # ----------------------------------------------------------------------------
 # SimpleExample
