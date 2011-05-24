@@ -45,8 +45,24 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # system libraries
 # ============================================================================
 
-# install required runtime libraries
+# find required runtime libraries
+set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include (InstallRequiredSystemLibraries)
+
+# include system runtime libraries in the installation
+if (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS)
+  if (WIN32)
+    install (
+      PROGRAMS    ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+      DESTINATION ${INSTALL_RUNTIME_DIR}
+    )
+  else ()
+    install (
+      PROGRAMS    ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+      DESTINATION ${INSTALL_LIBRARY_DIR}
+    )
+  endif ()
+endif ()
 
 # ============================================================================
 # package information
