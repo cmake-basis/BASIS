@@ -856,8 +856,9 @@ function (basis_add_script TARGET_NAME)
     else ()
       set (SCRIPT_CONFIG "@BASIS_SCRIPT_CONFIG@")
     endif ()
-    string (CONFIGURE "${SCRIPT_CONFIG}" SCRIPT_CONFIG @ONLY)
-
+    while (SCRIPT_CONFIG MATCHES "@.*@")
+      string (CONFIGURE "${SCRIPT_CONFIG}" SCRIPT_CONFIG @ONLY)
+    endwhile ()
     set (BASIS_SCRIPT_CONFIG)
   endif ()
 
