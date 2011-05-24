@@ -298,34 +298,32 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 # relative to CMAKE_INSTALL_PREFIX. Therefore, this prefix is excluded from the
 # following paths.
 
-# C:/Program Files/Project -> C:/Program Files/@PROJECT_NAME@
+# C:/Program Files/Project -> C:/Program Files/SBIA
 string (
   REGEX REPLACE
     "/Project$"
-    "/\@PROJECT_NAME\@"
+    "/SBIA"
   CMAKE_INSTALL_PREFIX
     "${CMAKE_INSTALL_PREFIX}"
 )
 
+# prefix/suffix/infix of installation directories
 set (
   INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
   CACHE PATH "Installation directories prefix."
 )
 
-if (WIN32)
-  set (
-    INSTALL_SINFIX ""
-    CACHE PATH "Installation directories suffix (or infix, respectively)."
-  )
-else ()
-  set (
-    INSTALL_SINFIX "sbia/@PROJECT_NAME_LOWER@"
-    CACHE PATH "Installation directories suffix (or infix, respectively)."
-  )
+set (
+  INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@"
+  CACHE PATH "Installation directories suffix (or infix, respectively)."
+)
 
+# option to create symbolic links
+if (UNIX)
   option (INSTALL_SYMLINKS "Whether to create symbolic links if INSTALL_SINFIX is not empty." ON)
 endif ()
 
+# install tree directories
 set (INSTALL_RUNTIME_DIR   "bin")     # shared libraries (WIN32) and main executable
 if (WIN32)
   set (INSTALL_LIBEXEC_DIR "bin")     # auxiliary executables
@@ -351,13 +349,7 @@ set (INSTALL_DOC_DIR     "${INSTALL_SHARE_DIR}/doc")     # documentaton files
 set (INSTALL_DATA_DIR    "${INSTALL_SHARE_DIR}/data")    # required auxiliary data
 set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
 set (INSTALL_MAN_DIR     "${INSTALL_SHARE_DIR}/man")     # man pages
-
-set (
-  INSTALL_CONFIG_DIR "@INSTALL_LIBRARY_DIR@"
-  CACHE PATH "Installation directory of CMake package configuration files (relative to CMAKE_INSTALL_PREFIX)."
-)
-
-mark_as_advanced (INSTALL_CONFIG_DIR)
+set (INSTALL_CONFIG_DIR  "${INSTALL_SHARE_DIR}/cmake")   # package config files
 
 # ============================================================================
 # build configuration(s)
