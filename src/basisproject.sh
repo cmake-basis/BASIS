@@ -796,7 +796,11 @@ add ()
                 fi
             fi
             # alter project file, e.g., substitute for project name
-            cat "$root/$path" | sed "s/ReplaceByProjectName/$name/g" | sed "s/ReplaceByProjectDescription/$description/g" > "$root/$path.temp"
+            cat "$root/$path" \
+                | sed "s/ReplaceByProjectName/$name/g" \
+                | sed "s/ReplaceByProjectDescription/$description/g" \
+                | sed "s/ReplaceByTemplateVersion/$version/g" \
+              > "$root/$path.temp"
             if [ -f "$root/$path.temp" ]; then
                 diff "$root/$path" "$root/$path.temp" &> /dev/null
                 if [ $? -ne 0 ]; then

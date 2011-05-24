@@ -30,7 +30,7 @@ include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 # initialize project
 basis_project_initialize (
   NAME        "BASIS"
-  VERSION     "1.0.0"
+  VERSION     "0.0.0"
   DESCRIPTION "This package implements and supports the development of"
               " software which follows the SBIA Build And Software"
               " Implementation Standard (BASIS)."

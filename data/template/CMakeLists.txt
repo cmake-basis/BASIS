@@ -20,7 +20,7 @@ cmake_minimum_required (VERSION 2.8.2)
 
 # use invalid template version to indicate that this project is not
 # instantiated from a template as this package contains the template
-set (TEMPLATE_VERSION "0.0.0")
+set (TEMPLATE_VERSION "ReplaceByTemplateVersion")
 
 # find BASIS package
 find_package (BASIS REQUIRED)
