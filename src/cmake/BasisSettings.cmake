@@ -157,6 +157,46 @@ set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+# assertions
+# ----------------------------------------------------------------------------
+
+# ****************************************************************************
+# \brief Ensure certain requirements on build tree.
+
+macro (buildtree_asserts)
+  # root of build tree must not be root of source tree
+  string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
+  string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
+
+  if ("${BUILD_ROOT}" STREQUAL "${SOURCE_ROOT}")
+    message(FATAL_ERROR "This project should not be configured & built in the source directory."
+                        " You must run CMake in a build directory.")
+  endif()
+endmacro ()
+
+# ****************************************************************************
+# \brief Ensure certain requirements on install tree.
+
+macro (installtree_asserts)
+  # prefix must be an absolute path
+  if (NOT IS_ABSOLUTE "${CMAKE_INSTALL_PREFIX}")
+    message (FATAL_ERROR "CMAKE_INSTALL_PREFIX must be an absolute path!")
+  endif ()
+
+  # install tree must be different from source and build tree
+  string (TOLOWER "${CMAKE_SOURCE_DIR}"     SOURCE_ROOT)
+  string (TOLOWER "${CMAKE_BINARY_DIR}"     BUILD_ROOT)
+  string (TOLOWER "${CMAKE_INSTALL_PREFIX}" INSTALL_ROOT)
+
+  if ("${INSTALL_ROOT}" MATCHES "${BUILD_ROOT}|${SOURCE_ROOT}")
+    message (FATAL_ERROR "The current CMAKE_INSTALL_PREFIX points at the source or build tree:\n"
+                         "  ${CMAKE_INSTALL_PREFIX}\n"
+                         "This is not supported. Please choose another installation prefix."
+    )
+  endif()
+endmacro ()
+
+# ----------------------------------------------------------------------------
 # instantiation for specific project
 # ----------------------------------------------------------------------------
 
@@ -194,13 +234,7 @@ macro (basis_initialize_directories)
   string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
   string (CONFIGURE "${INSTALL_SINFIX}" INSTALL_SINFIX @ONLY)
 
-  set (
-    CMAKE_INSTALL_PREFIX
-      "${INSTALL_PREFIX}"
-    CACHE INTERNAL
-      "Installation directories prefix."
-    FORCE
-  )
+  set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
 
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC DATA EXAMPLE MAN)
     set (VAR INSTALL_${P}_DIR)
@@ -216,7 +250,8 @@ macro (basis_initialize_directories)
   endif ()
 
   # assertions
-  # \todo
+  buildtree_asserts ()
+  installtree_asserts ()
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -260,23 +295,21 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 # ----------------------------------------------------------------------------
 
 # In order for CPack to work correctly, the destination paths have to be given
-# relative (to CMAKE_INSTALL_PREFIX). Therefore, the INSTALL_PREFIX prefix is
-# excluded from the following paths. Instead, CMAKE_INSTALL_PREFIX is set to
-# INSTALL_PREFIX. This has to be done after the project attributes are known.
-# Hence, it is done by basis_project (), which configures the variables below.
-# As, however, CMAKE_INSTALL_PREFIX is used by CPack and also more commonly
-# known, we initialize the INSTALL_PREFIX variable using CMAKE_INSTALL_PREFIX.
+# relative to CMAKE_INSTALL_PREFIX. Therefore, this prefix is excluded from the
+# following paths.
 
+# C:/Program Files/Project -> C:/Program Files/@PROJECT_NAME@
 string (
-  REPLACE
-    "Project" "@PROJECT_NAME_LOWER@"
+  REGEX REPLACE
+    "/Project$"
+    "/\@PROJECT_NAME\@"
   CMAKE_INSTALL_PREFIX
     "${CMAKE_INSTALL_PREFIX}"
-) 
+)
 
 set (
   INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
-  CACHE PATH "Installation directory prefix."
+  CACHE PATH "Installation directories prefix."
 )
 
 if (WIN32)
@@ -321,7 +354,7 @@ set (INSTALL_MAN_DIR     "${INSTALL_SHARE_DIR}/man")     # man pages
 
 set (
   INSTALL_CONFIG_DIR "@INSTALL_LIBRARY_DIR@"
-  CACHE PATH "Installation directory of CMake package configuration files (relative to INSTALL_PREFIX)."
+  CACHE PATH "Installation directory of CMake package configuration files (relative to CMAKE_INSTALL_PREFIX)."
 )
 
 mark_as_advanced (INSTALL_CONFIG_DIR)

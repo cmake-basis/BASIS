@@ -86,12 +86,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisSubversionTools.cmake")
 find_program (BASIS_CMD_PYTHON NAMES python DOC "Python interpreter (python).")
 mark_as_advanced (BASIS_CMD_PYTHON)
 
-find_file (
-  BASIS_UPDATE_SCRIPT
-  NAMES updatefile.py
-  PATHS "${CMAKE_CURRENT_LIST_DIR}"
-  NO_DEFAULT_PATHS
-)
+set (BASIS_UPDATE_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/updatefile.py")
 
 # ============================================================================
 # initialization

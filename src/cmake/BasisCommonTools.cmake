@@ -107,14 +107,14 @@ endfunction ()
 #
 # \param [in] VAR  Name of variable. Used in template of
 #                  <project>Config.cmake as @VAR@.
-# \param [in] PATH Path of variable relative to INSTALL_PREFIX.
+# \param [in] PATH Path of variable relative to CMAKE_INSTALL_PREFIX.
 
 function (basis_set_config_path VAR PATH)
   file (
     RELATIVE_PATH
       ${VAR}
-      "${INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
-      "${INSTALL_PREFIX}/${PATH}"
+      "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
+      "${CMAKE_INSTALL_PREFIX}/${PATH}"
   )
 
   set (${VAR} "\${CMAKE_CURRENT_LIST_DIR}/${${VAR}}" PARENT_SCOPE)
@@ -133,7 +133,7 @@ endfunction ()
 # variable of the given name is set to the specified relative path. Optionally,
 # a third argument, the path used for building the script for the install tree
 # can be passed as well. If a relative path is given as this argument, it is
-# made absolute by prefixing it with INSTALL_PREFIX instead.
+# made absolute by prefixing it with CMAKE_INSTALL_PREFIX instead.
 #
 # \param [out] FUNC The generated basis_set_script_path () function definition.
 #
@@ -150,7 +150,7 @@ macro (basis_set_script_path_definition FUNC)
   endif ()
 
   if (ARGC EQUAL 3 AND BUILD_INSTALL_SCRIPT)
-    set (PREFIX \"@INSTALL_PREFIX@\")
+    set (PREFIX \"@CMAKE_INSTALL_PREFIX@\")
     set (PATH   \"\${ARGV2}\")
   else ()
     set (PREFIX \"@PROJECT_SOURCE_DIR@\")
@@ -334,38 +334,5 @@ function (basis_check_test_name TEST_NAME)
                          " contain special characters '${BASIS_NAMESPACE_SEPARATOR}'"
                          " and '${BASIS_VERSION_SEPARATOR}'.")
   endif ()
-endfunction ()
-
-# ============================================================================
-# assertions
-# ============================================================================
-
-# ****************************************************************************
-# \brief Common configuration/build assertions.
-
-function(build_asserts)
-  get_filename_component (srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
-  get_filename_component (bindir "${CMAKE_BINARY_DIR}" REALPATH)
-
-  if ("${srcdir}" STREQUAL "${bindir}")
-    message(FATAL_ERROR "This package should not be configured & built in the source directory"
-                        " You must run cmake in a build directory.")
-  endif()
-endfunction()
-
-# ****************************************************************************
-# \brief Common installation assertions.
-
-function (install_asserts)
-  string (TOLOWER "${CMAKE_SOURCE_DIR}" _SOURCE)
-  string (TOLOWER "${CMAKE_BINARY_DIR}" _BUILD)
-  string (TOLOWER "${INSTALL_PREFIX}"   _PREFIX)
-
-  if ("${_PREFIX}" MATCHES "${_BUILD}|${_SOURCE}")
-    message (FATAL_ERROR "The current INSTALL_PREFIX points at the source or build tree:\n"
-                         "  ${INSTALL_PREFIX}\n"
-                         "This is not supported. Please choose another installation prefix."
-    )
-  endif()
 endfunction ()
 

@@ -745,7 +745,7 @@ endfunction ()
 # \brief Create symbolic links to main executables.
 #
 # This function creates for each main executable a symbolic link directly
-# under INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string and the
+# under CMAKE_INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string and the
 # software is installed on a UNIX-based system, i.e., one which supports the
 # creation of symbolic links.
 
@@ -755,40 +755,41 @@ function (basis_install_symlinks)
   endif ()
 
   # main executables
-  if (INSTALL_SINFIX)
-    string (REGEX REPLACE "(.*)/${INSTALL_SINFIX}" "\\1" RUNTIME_DIR "${INSTALL_RUNTIME_DIR}")
+  foreach (TARGET_UID ${BASIS_TARGETS})
+    get_target_property (BASIS_TYPE  ${TARGET_UID} "BASIS_TYPE")
 
-    foreach (TARGET_UID ${BASIS_TARGETS})
-      get_target_property (BASIS_TYPE  ${TARGET_UID} "BASIS_TYPE")
+    if (BASIS_TYPE MATCHES "^EXEC$|^MCC_EXEC$|^SCRIPT$")
+      get_target_property (OUTPUT_NAME ${TARGET_UID} "OUTPUT_NAME")
 
-      if (BASIS_TYPE MATCHES "^EXEC$|^MCC_EXEC$|^SCRIPT$")
-        get_target_property (OUTPUT_NAME ${TARGET_UID} "OUTPUT_NAME")
-
-        if (NOT OUTPUT_NAME)
-          basis_target_name (OUTPUT_NAME ${TARGET_UID})
-        endif ()
-
-        basis_install_symlink (
-          "${INSTALL_RUNTIME_DIR}/${OUTPUT_NAME}"
-          "${RUNTIME_DIR}/${OUTPUT_NAME}"
-        )
+      if (NOT OUTPUT_NAME)
+        basis_target_name (OUTPUT_NAME ${TARGET_UID})
       endif ()
-    endforeach ()
-  endif ()
+
+      basis_install_symlink (
+        "${INSTALL_RUNTIME_DIR}/${OUTPUT_NAME}"
+        "bin/${OUTPUT_NAME}"
+      )
+    endif ()
+  endforeach ()
 
   # CMake package configuration
-  basis_install_symlink (
-    "${INSTALL_LIB_DIR}/${PROJECT_NAME}Config.cmake"
+  # \note Therefore, <project>Config.cmake must resolve the symbolic link!
+  #basis_install_symlink (
+  #  "${INSTALL_CONFIG_DIR}/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake"
+  #  "lib/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake"
+  #)
+  #basis_install_symlink (
+  #  "${INSTALL_CONFIG_DIR}/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}ConfigVersion.cmake"
+  #  "lib/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}ConfigVersion.cmake"
+  #)
 
-  )
   # documentation
   # \note Not all CPack generators preserve symbolic links to directories
   # \note The presence of a <prefix>/doc/* folder is not part of the
   #       Linux file hierarchy standard.
-  #string (REGEX REPLACE ".*/${INSTALL_SINFIX}/(.*)" "\\1" DOC_DIR "${INSTALL_DOC_DIR}")
   #basis_install_symlink (
   #  "${INSTALL_DOC_DIR}"
-  #  "${DOC_DIR}/${INSTALL_SINFIX}"
+  #  "doc/${INSTALL_SINFIX}"
   #)
 endfunction ()
 
