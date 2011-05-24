@@ -1044,7 +1044,7 @@ findPackage ()
     if [ $required -ne 0 ]; then
     echo "else ()" >> $file
     echo "  # raise fatal error in case Find${package}.cmake did not do it" >> $file
-    echo "  message (FATAL_ERROR \"Package ${package} not found.\"" >> $file
+    echo "  message (FATAL_ERROR \"Package ${package} not found.\")" >> $file
     fi
     echo "endif ()" >> $file
 
