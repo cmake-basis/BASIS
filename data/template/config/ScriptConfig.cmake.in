@@ -12,7 +12,7 @@
 # Example:
 # \code
 # if (BUILD_INSTALL_SCRIPT)
-#   set (BIN_DIR "@INSTALL_PREFIX@/bin")
+#   set (BIN_DIR "@CMAKE_INSTALL_PREFIX@/bin")
 # else ()
 #   set (BIN_DIR "@RUNTIME_OUTPUT_DIRECTORY@")
 # endif ()
