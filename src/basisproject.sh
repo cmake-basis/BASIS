@@ -850,14 +850,14 @@ add ()
                 fi
                 # replace hidden template file
                 if [ $verbosity -gt 0 ]; then
-                    cp -f "$template/$path" "$dir/.base/$base"
+                    cp -f "$template/$path" "$dir/.basis/$base"
                     if [ $? -ne 0 ]; then
                         echo "U $root/$path - updated file, but failed to update hidden template"
                     else
                         echo "U $root/$path"
                     fi
                 else
-                    cp -f "$template/$path" "$dir/.base/$base" &> /dev/null
+                    cp -f "$template/$path" "$dir/.basis/$base" &> /dev/null
                     echo "U $root/$path"
                 fi
             else
