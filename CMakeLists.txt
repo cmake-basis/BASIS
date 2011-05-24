@@ -24,6 +24,7 @@ set (TEMPLATE_VERSION "0.0")
 
 # include BASIS policies, settings, macros, and functions
 set (BASIS_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
+set (BASIS_UPDATE "OFF" CACHE INTERNAL "" FORCE)
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # initialize project
