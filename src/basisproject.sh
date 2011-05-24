@@ -47,16 +47,133 @@ version ()
 }
 
 # ****************************************************************************
+# \brief Prints contact information.
+
+contact ()
+{
+    echo "Contact:"
+    echo "  SBIA Group <sbia-software -at- uphs.upenn.edu>"
+}
+
+# ****************************************************************************
+# \brief Prints options information.
+
+options ()
+{
+    echo "Required Options:"
+    echo "  <project name>             Name of the new project."
+    echo "  -d [ --description ] arg   Brief project description. Option not allowed when modifying"
+    echo "                             an existent project."
+    echo "  -r [ --root ] arg          Specify root directory of new project or directory of"
+    echo "                             existing project. If the specified directory already exists"
+    echo "                             this program will modify this project. The project name and"
+    echo "                             description options must not be given in this case as these"
+    echo "                             attributes of a project cannot be modified any more."
+    echo "Template Options:"
+    echo "  --minimal                  Choose minimal project template. Corresponds to not selecting any"
+    echo "                             of the additional template files."
+    echo "  --standard                 Choose standard project template. This is the default template used"
+    echo "                             if no other project template is chosen. Corresponds to:"
+    echo
+    echo "                               --example"
+    echo "                               --system-tests"
+    echo "                               --no-conf-components"
+    echo "                               --no-conf-depends"
+    echo "                               --no-conf-find"
+    echo "                               --no-conf-generate"
+    echo "                               --no-conf-package"
+    echo "                               --no-conf-script"
+    echo "                               --no-conf-settings"
+    echo "                               --no-conf-use"
+    echo "                               --no-conf-version"
+    echo "                               --no-data"
+    echo "                               --no-unit-tests"
+    echo
+    echo "  --full                     Choose full project template. Corresponds to selecting all files."
+    echo
+    echo "  --conf-components          Whether to include custom Components.cmake file."
+    echo "  --conf-depends             Whether to include custom Depends.cmake file."
+    echo "  --conf-find                Whether to include custom <project>Config.cmake file."
+    echo "  --conf-find-version        Whether to include custom <project>ConfigVersion.cmake file."
+    echo "  --conf-generate            Whether to include custom GenerateConfig.cmake script."
+    echo "  --conf-package             Whether to include custom Package.cmake file."
+    echo "  --conf-script              Whether to include custom ScriptConfig.cmake file."
+    echo "  --conf-settings            Whether to include custom Settings.cmake file."
+    echo "  --conf-tests               Whether to include custom CTestCustom.cmake file."
+    echo "  --conf-use                 Whether to include custom <project>Use.cmake file."
+    echo "  --data                     Whether to include support of auxiliary data."
+    echo "  --example                  Whether to include support of example."
+    echo "  --tests                    Alias for '--system-tests --unit-tests'."
+    echo "  --system-tests             Whether to include support of system tests."
+    echo "  --unit-tests               Whether to include support of unit tests."
+    echo
+    echo "  --no-conf-components       Whether to exclude custom Components.cmake file."
+    echo "  --no-conf-depends          Whether to exclude custom Depends.cmake file."
+    echo "  --no-conf-find             Whether to exclude custom <project>Config.cmake file."
+    echo "  --no-conf-find-version     Whether to exclude custom <project>ConfigVersion.cmake file."
+    echo "  --no-conf-generate         Whether to exclude custom GenerateConfig.cmake script."
+    echo "  --no-conf-package          Whether to exclude custom Package.cmake file."
+    echo "  --no-conf-script           Whether to exclude custom ScriptConfig.cmake file."
+    echo "  --no-conf-settings         Whether to exclude custom Settings.cmake file."
+    echo "  --no-conf-tests            Whether to exclude custom CTestCustom.cmake file."
+    echo "  --no-conf-use              Whether to exclude custom <project>Use.cmake file."
+    echo "  --no-data                  Whether to exclude support of auxiliary data."
+    echo "  --no-example               Whether to exclude support of example."
+    echo "  --no-tests                 Alias for '--no-system-tests --no-unit-tests --no-conf-tests'."
+    echo "  --no-system-tests          Whether to exclude support of system tests."
+    echo "  --no-unit-tests            Whether to exclude support of unit tests."
+    echo
+    echo "  -p [ --pkg ] arg           Name of external package required by this project."
+    echo "  --optPkg arg               Name of external package optionally used by this project."
+    echo
+    echo "Options:"
+    echo "  --clean                    Remove backup and other temporary files left behind."
+    echo "  --clean-all                Remove not only backup and other temporary files, but also"
+    echo "                             the hidden '.basis' directories with copies of the template files."
+    echo "  --force                    Force deletion of modified template files."
+    echo "  --no-update                Do not update existing files. Only add new files."
+    echo "                             By default, in case of existing files, the project file is updated"
+    echo "                             by merging changes of the possibly newer template and the existing file."
+    echo "  --no-backup                Do not backup project files before updating them."
+    echo "                             By default, before any existing project file is modified,"
+    echo "                             it is copied to a file with extension '~' before."
+    echo "                             The creation of these backup files is disabled by this option."
+    echo "  -t [ --template ] arg      Root directory of project template."
+    echo
+    echo "  -v [ --verbose ]           Increases verbosity of output messages. Can be given multiple times."
+    echo "  -h [ --help ]              Displays help and exit."
+    echo "  -u [ --usage ]             Displays usage information and exits."
+    echo "  -V [ --version ]           Displays version information and exits."
+}
+
+# ****************************************************************************
 # \brief Prints usage information.
 
 usage ()
 {
-	echo "$progName $versionMajor.$versionMinor"
+    echo "$progName $versionMajor.$versionMinor"
+    echo
+    echo "Usage:"
+	echo "  $progName [options] <project name>"
+    echo
+    options
+    echo
+    contact
+}
+
+# ****************************************************************************
+# \brief Prints help.
+
+help ()
+{
+    echo "$progName $versionMajor.$versionMinor"
+    echo
+    echo "Usage:"
+	echo "  $progName [options] <project name>"
 	echo
 	echo "Description:"
     echo "  This command-line tool can be used to create a new BASIS project from the"
-    echo "  project template version $versionMajor.$versionMinor or to modify or upgrade"
-    echo "  an already existing project which was previously created."
+    echo "  template version $versionMajor.$versionMinor or to modify or upgrade an already existing project."
     echo
     echo "  Depending on the grade of customization or optional inclusion of template"
     echo "  components, different subsets of the fully featured project template can be"
@@ -90,108 +207,23 @@ usage ()
     echo "  Note that if an existing project is modified, the $dependsFile file is added if"
     echo "  not yet existent, ignoring the option --no-config-depends."
     echo
-	echo "Usage:"
-	echo "  $progName [options] <project name>"
-	echo
-    echo "Required options:"
-    echo "  <project name>             Name of the new project."
-    echo "  -d [ --description ] arg   Brief project description. Option not allowed when modifying"
-    echo "                             an existent project."
-    echo "  -r [ --root ] arg          Specify root directory of new project or directory of"
-    echo "                             existing project. If the specified directory already exists"
-    echo "                             this program will modify this project. The project name and"
-    echo "                             description options must not be given in this case as these"
-    echo "                             attributes of a project cannot be modified any more."
+	options
     echo
-    echo "Options:"
-    echo "  -t [ --template ] arg   Root directory of project template."
-    echo "  --no-update             Do not update existing files. Only add new files."
-    echo "                          By default, in case of existing files, the project file is updated"
-    echo "                          by merging changes of the possibly newer template and the existing file."
-    echo "  --no-backup             Do not backup project files before updating them."
-    echo "                          By default, before any existing project file is modified,"
-    echo "                          it is copied to a file with extension '~' before."
-    echo "                          The creation of these backup files is disabled by this option."
-    echo "  --clean                 Remove backup and other temporary files left behind."
-    echo "  --clean-all             Remove not only backup and other temporary files, but also"
-    echo "                          the hidden '.basis' directories with copies of the template files."
-    echo "  -p [ --pkg ] arg        Name of external package required by this project."
-    echo "  --optPkg arg            Name of external package optionally used by this project."
-    echo "  -v [ --verbose ]        Increases verbosity of output messages. Can be given multiple times."
-    echo "  -h [ --help ]           Displays help and exit."
-    echo "  -u [ --usage ]          Displays usage information and exits."
-    echo "  -V [ --version ]        Displays version information and exits."
-	echo
-    echo "Pre-configured project templates:"
-    echo "  --minimal               Choose minimal project template. Corresponds to not selecting any"
-    echo "                          of the additional template files."
-    echo "  --standard              Choose standard project template. This is the default template used"
-    echo "                          if no other project template is chosen. Corresponds to:"
+    echo "Examples:"
+	echo "  $progName ProjectName -d \"Novel image analysis method.\""
+    echo "    Create a new project named 'ProjectName' under the current working"
+    echo "    directory using the default project template."
     echo
-    echo "                            --conf-depends"
-    echo "                            --conf-find"
-    echo "                            --conf-settings"
-    echo "                            --conf-use"
-    echo "                            --example"
-    echo "                            --tests"
-    echo "                            --no-conf-components"
-    echo "                            --no-conf-generate"
-    echo "                            --no-conf-package"
-    echo "                            --no-conf-script"
-    echo "                            --no-conf-version"
-    echo "                            --no-data"
-    echo "                            --no-unit-tests"
+	echo "  $progName ProjectName -d \"Novel image analysis method.\" -p VTK"
+    echo "    Create new project with dependency on the package 'VTK'."
     echo
-    echo "  --full                  Choose full project template. Corresponds to selecting all files."
+    echo "  $progName -r path/to/existing/project --tests --conf-tests"
+    echo "    Add full testing support to existing project."
     echo
-    echo "Options to add files:"
-    echo "  --conf-components       Whether to include custom Components.cmake file."
-    echo "  --conf-depends          Whether to include custom Depends.cmake file."
-    echo "  --conf-find             Whether to include custom <project>Config.cmake file."
-    echo "  --conf-find-version     Whether to include custom <project>ConfigVersion.cmake file."
-    echo "  --conf-generate         Whether to include custom GenerateConfig.cmake script."
-    echo "  --conf-package          Whether to include custom Package.cmake file."
-    echo "  --conf-script           Whether to include custom ScriptConfig.cmake file."
-    echo "  --conf-settings         Whether to include custom Settings.cmake file."
-    echo "  --conf-tests            Whether to include custom CTestCustom.cmake file."
-    echo "  --conf-use              Whether to include custom <project>Use.cmake file."
-    echo "  --data                  Whether to include support of auxiliary data."
-    echo "  --example               Whether to include support of example."
-    echo "  --tests                 Whether to include support of system tests."
-    echo "  --unit-tests            Whether to include support of unit tests."
+    echo "  $progName -r path/to/existing/porject -p ITK --optPkg Matlab"
+    echo "    Add dependencies on ITK (mandatory) and MATLAB (optional) to existing project."
     echo
-    echo "Options to remove files:"
-    echo "  --no-conf-components    Whether to exclude custom Components.cmake file."
-    echo "  --no-conf-depends       Whether to exclude custom Depends.cmake file."
-    echo "  --no-conf-find          Whether to exclude custom <project>Config.cmake file."
-    echo "  --no-conf-find-version  Whether to exclude custom <project>ConfigVersion.cmake file."
-    echo "  --no-conf-generate      Whether to exclude custom GenerateConfig.cmake script."
-    echo "  --no-conf-package       Whether to exclude custom Package.cmake file."
-    echo "  --no-conf-script        Whether to exclude custom ScriptConfig.cmake file."
-    echo "  --no-conf-settings      Whether to exclude custom Settings.cmake file."
-    echo "  --no-conf-tests         Whether to exclude custom CTestCustom.cmake file."
-    echo "  --no-conf-use           Whether to exclude custom <project>Use.cmake file."
-    echo "  --no-data               Whether to exclude support of auxiliary data."
-    echo "  --no-example            Whether to exclude support of example."
-    echo "  --no-tests              Whether to exclude support of system tests."
-    echo "  --no-unit-tests         Whether to exclude support of unit tests."
-    echo
-	echo "Example:"
-	echo "  $progName SimpleExample -d \"Novel image analysis method.\""
-    echo "  $progName ITKExample -d \"An example project which uses ITK.\" -p ITK"
-    echo "  $progName MatlabExample -d \"An example project which uses MATLAB.\" -p Matlab"
-    echo "  $progName MatlabITKExample -d \"An example project which uses MATLAB and ITK.\" -p Matlab -p ITK"
-    echo "  $progName ExistingProject -r \"/path/to/existing/project\" --conf-tests"
-    echo
-    echo "Contact:"
-    echo "  SBIA Group <sbia-software -at- uphs.upenn.edu>"
-}
-
-# ****************************************************************************
-# \brief Prints help.
-help ()
-{
-	usage
+    contact
 }
 
 # ============================================================================
@@ -281,8 +313,8 @@ clean=0            # whether to remove backup and other temporary files
 cleanAll=0         # whether to remove all additional files
 
 minimal=1          # start with minimal project template
-confSettings=1     # add/remove project settings file
-confDepends=1      # add/remove dependencies configuration file
+confSettings=0     # add/remove project settings file
+confDepends=0      # add/remove dependencies configuration file
 confComponents=0   # add/remove components configuration file
 confPackage=0      # add/remove package configuration file
 confFind=0         # add/remove find package configuration file
@@ -293,7 +325,7 @@ confTests=0        # add/remove testing configuration file
 confUse=0          # add/remove unit testing
 data=0             # add/remove auxiliary data
 example=1          # add/remove example
-tests=1            # add/remove system testing
+systemTests=0      # add/remove system testing
 unitTests=0        # add/remove unit testing
  
 # ----------------------------------------------------------------------------
@@ -313,12 +345,12 @@ do
 			exit 0
 			;;
 
-		-V|--version)
+		-v|--version)
 			version
 			exit 0
 			;;
 
-        -v|--verbose)
+        -V|--verbose)
             ((verbosity++))
             ;;
 
@@ -408,7 +440,7 @@ do
             confUse=-1
             data=-1
             example=-1
-            tests=-1
+            systemTests=-1
             unitTests=-1
             ;;
         --standard)
@@ -544,11 +576,22 @@ do
             ;;
 
         --tests)
-            tests=1
+            systemTests=1
+            unitTests=1
             ;;
 
         --no-tests)
-            tests=-1
+            systemTests=-1
+            unitTests=-1
+            confTests=-1
+            ;;
+
+        --system-tests)
+            systemTests=1
+            ;;
+
+        --no-system-tests)
+            systemTests=-1
             ;;
 
         --unit-tests)
@@ -593,10 +636,6 @@ cd $cwd
 # request to create new project
 if [ ! -z "$name" ]; then
     mode=0
-    if [ -z "$description" ]; then
-        echo "No project description given!"
-        exit 1
-    fi
     if [ -z "$root" ]; then
         root="$(pwd)/$name"
     fi
@@ -604,6 +643,10 @@ if [ ! -z "$name" ]; then
         echo "Directory or file of name $root exists already." 1>&2
         echo "Please choose another project name or root directory using the -r option." 1>&2
         echo "If you want to modify an existing project, please provide the root directory using the -r option." 1>&2
+        exit 1
+    fi
+    if [ -z "$description" ]; then
+        echo "No project description given!"
         exit 1
     fi
 # request to modify existing project
@@ -957,15 +1000,15 @@ addordel $data "data/CMakeLists.txt" || retval=1
 addordel $data "data"                || retval=1
 
 # testing tree
-addordel $tests     "test/system/CMakeLists.txt" || retval=1
-addordel $unitTests "test/unit/CMakeLists.txt"   || retval=1
+addordel $systemTests "test/system/CMakeLists.txt" || retval=1
+addordel $unitTests   "test/unit/CMakeLists.txt"   || retval=1
 
-if [ $tests -gt 0 -o $unitTests -gt 0 ]; then
+if [ $systemTests -gt 0 -o $unitTests -gt 0 ]; then
     add "CTestConfig.cmake"   || retval=1
     add "test/CMakeLists.txt" || retval=1
     add "test/data"           || retval=1
     add "test/expected"       || retval=1
-elif [ $tests -lt 0 -a $unitTests -lt 0 ]; then
+elif [ $systemTests -lt 0 -a $unitTests -lt 0 ]; then
     del "CTestConfig.cmake"   || retval=1
     del "test/CMakeLists.txt" || retval=1
     del "test/data"           || retval=1
