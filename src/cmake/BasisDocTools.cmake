@@ -114,9 +114,10 @@ function (basis_add_doc_target)
       set (
         BUILD_DOCUMENTATION "NO"
         CACHE BOOL
-          "Whether to generate the (API) documentation."
+          "Whether to generate the (API) documentation as part of the ALL target."
         FORCE
       )
+      mark_as_advanced (BUILD_DOCUMENTATION)
     endif ()
     if (BUILD_DOCUMENTATION)
       add_custom_target (doc ALL)
@@ -135,9 +136,10 @@ function (basis_add_changelog_target)
       set (
         BUILD_CHANGELOG "NO"
         CACHE BOOL
-          "Whether to generate the ChangeLog."
+          "Whether to generate the ChangeLog as part of the ALL target."
         FORCE
       )
+      mark_as_advanced (BUILD_CHANGELOG)
     endif ()
     if (BUILD_CHANGELOG)
       add_custom_target (changelog ALL)
