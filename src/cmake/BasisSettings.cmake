@@ -171,7 +171,7 @@ macro (buildtree_asserts)
   if ("${BUILD_ROOT}" STREQUAL "${SOURCE_ROOT}")
     message(FATAL_ERROR "This project should not be configured & build in the source directory:\n"
                         "  ${CMAKE_SOURCE_DIR}\n"
-                        "You must run CMake in a build directory different from the source directory.")
+                        "You must run CMake in a separate build directory.")
   endif()
 endmacro ()
 
