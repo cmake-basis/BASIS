@@ -8,8 +8,11 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_DOCTOOLS_INCLUDED)
-set (BASIS_DOCTOOLS_INCLUDED 1 CACHE INTERNAL "BasisDocTools.cmake" FORCE)
+if (__BASIS_DOCTOOLS_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_DOCTOOLS_INCLUDED TRUE)
+endif ()
 
 
 # get directory of this file
@@ -524,7 +527,4 @@ function (basis_add_doc TARGET_NAME)
     message (FATAL_ERROR "Unknown documentation generator: ${ARGN_GENERATOR}.")
   endif ()
 endfunction ()
-
-
-endif (NOT BASIS_DOCTOOLS_INCLUDED)
 

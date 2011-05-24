@@ -8,8 +8,11 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_SUBVERSIONTOOLS_INCLUDED)
-set (BASIS_SUBVERSIONTOOLS_INCLUDED 1 CACHE INTERNAL "BasisSubversionTools.cmake" FORCE)
+if (__BASIS_SUBVERSIONTOOLS_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_SUBVERSIONTOOLS_INCLUDED TRUE)
+endif ()
 
 
 # get directory of this file
@@ -136,7 +139,4 @@ function (basis_svn_status URL STATUS)
     set ("${STATUS}" "" PARENT_SCOPE)
   endif ()
 endfunction ()
-
-
-endif (NOT BASIS_SUBVERSIONTOOLS_INCLUDED)
 

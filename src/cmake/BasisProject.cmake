@@ -12,6 +12,15 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
+
+# get directory of this file
+#
+# \note This variable was just recently introduced in CMake, it is derived
+#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
+#       to maintain compatibility with older CMake versions.
+get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+
 # ============================================================================
 # CMake version and policies
 # ============================================================================
@@ -34,40 +43,26 @@ if (CMAKE_VERSION_PATCH GREATER 3)
 endif ()
 
 # ============================================================================
-# BASIS modules
+# modules
 # ============================================================================
 
+# The CMakeParseArguments.cmake CMake module was added to CMake since version
+# 2.8.4 which just recenlty was released when the following macros and
+# functions were first implemented. In order to support also previous CMake
+# versions, a copy of the CMakeParseArguments.cmake module was added to the
+# BASIS Core CMake modules.
+include ("${CMAKE_CURRENT_LIST_DIR}/CMakeParseArguments.cmake")
+
+# The ExternalData.cmake module is yet only part of ITK.
+include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
+
+# BASIS modules
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisSubversionTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisDocTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
-
-# ============================================================================
-# guard
-# ============================================================================
-
-# \attention Some of the BASIS modules should be included once within each
-#            subtree of the source tree, i.e., once for each subproject.
-#            Therefore, include the other modules before using the guard.
-
-if (NOT BASIS_PROJECT_INCLUDED)
-set (BASIS_PROJECT_INCLUDED 1 CACHE INTERNAL "BasisProject.cmake" FORCE)
-
-
-# get directory of this file
-#
-# \note This variable was just recently introduced in CMake, it is derived
-#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
-#       to maintain compatibility with older CMake versions.
-get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-
-# ============================================================================
-# external modules
-# ============================================================================
-
-include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
 
 # ============================================================================
 # initialize/finalize major components
@@ -831,7 +826,4 @@ function (basis_add_uninstall)
     )
   endif ()
 endfunction ()
-
-
-endif (NOT BASIS_PROJECT_INCLUDED)
 

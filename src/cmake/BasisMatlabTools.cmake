@@ -8,8 +8,11 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_MATLABTOOLS_INCLUDED)
-set (BASIS_MATLABTOOLS_INCLUDED 1 CACHE INTERNAL "BasisMatlabTools.cmake" FORCE)
+if (__BASIS_MATLABTOOLS_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_MATLABTOOLS_INCLUDED TRUE)
+endif ()
 
 
 # get directory of this file
@@ -19,13 +22,6 @@ set (BASIS_MATLABTOOLS_INCLUDED 1 CACHE INTERNAL "BasisMatlabTools.cmake" FORCE)
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
-
-# ============================================================================
-# required modules
-# ============================================================================
-
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
 
 # ============================================================================
 # options
@@ -634,7 +630,4 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}... - done")
   endif ()
 endfunction ()
-
-
-endif (NOT BASIS_MATLABTOOLS_INCLUDED)
 

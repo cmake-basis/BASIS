@@ -26,12 +26,6 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-# \attention This file sets mainly non-cached CMake variables. Hence, it has
-#            to be included by each subproject. Therefore, do NOT cache the
-#            guard variable.
-if (NOT BASIS_SETTINGS_INCLUDED)
-set (BASIS_SETTINGS_INCLUDED 1)
-
 
 # get directory of this file
 #
@@ -415,7 +409,4 @@ set (CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
 set (CMAKE_EXE_LINKER_FLAGS_COVERAGE    "-fprofile-arcs -ftest-coverage")
 set (CMAKE_MODULE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 set (CMAKE_SHARED_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
-
-
-endif (NOT BASIS_SETTINGS_INCLUDED)
 

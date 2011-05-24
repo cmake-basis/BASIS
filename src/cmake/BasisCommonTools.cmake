@@ -8,8 +8,11 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_COMMONTOOLS_INCLUDED)
-set (BASIS_COMMONTOOLS_INCLUDED 1 CACHE INTERNAL "BasisCommonTools.cmake" FORCE)
+if (__BASIS_COMMONTOOLS_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_COMMONTOOLS_INCLUDED TRUE)
+endif ()
 
 
 # get directory of this file
@@ -19,18 +22,6 @@ set (BASIS_COMMONTOOLS_INCLUDED 1 CACHE INTERNAL "BasisCommonTools.cmake" FORCE)
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
-
-# ============================================================================
-# common CMake modules
-# ============================================================================
-
-# The CMakeParseArguments.cmake CMake module was added to CMake since version
-# 2.8.4 which just recenlty was released when the following macros and
-# functions were first implemented. In order to support also previous CMake
-# versions, a copy of the CMakeParseArguments.cmake module was added to the
-# BASIS Core CMake modules.
-
-include ("${CMAKE_CURRENT_LIST_DIR}/CMakeParseArguments.cmake")
 
 # ============================================================================
 # common commands
@@ -377,7 +368,4 @@ function (install_asserts)
     )
   endif()
 endfunction ()
-
-
-endif (NOT BASIS_COMMONTOOLS_INCLUDED)
 

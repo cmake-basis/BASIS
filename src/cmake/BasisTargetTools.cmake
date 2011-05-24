@@ -8,8 +8,11 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_TARGETTOOLS_INCLUDED)
-set (BASIS_TARGETTOOLS_INCLUDED 1 CACHE INTERNAL "BasisTargetTools.cmake" FORCE)
+if (__BASIS_TARGETTOOLS_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_TARGETTOOLS_INCLUDED TRUE)
+endif ()
 
 
 # get directory of this file
@@ -1175,7 +1178,4 @@ function (basis_add_custom_finalize)
     endif ()
   endforeach ()
 endfunction ()
-
-
-endif (NOT BASIS_TARGETTOOLS_INCLUDED)
 

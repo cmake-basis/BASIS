@@ -47,8 +47,11 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_UPDATE_INCLUDED)
-set (BASIS_UPDATE_INCLUDED 1 CACHE INTERNAL "BasisUpdate.cmake" FORCE)
+if (__BASIS_UPDATE_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_UPDATE_INCLUDED TRUE)
+endif ()
 
 
 # get directory of this file
@@ -760,7 +763,4 @@ function (basis_update_files)
     set (UPDATE_ALL "" CACHE INTERNAL "Unused option." FORCE)
   endif ()
 endfunction ()
-
-
-endif (NOT BASIS_UPDATE_INCLUDED)
 
