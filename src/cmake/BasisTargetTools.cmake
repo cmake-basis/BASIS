@@ -874,6 +874,7 @@ function (basis_add_script TARGET_NAME)
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
       RUNTIME_INSTALL_DIRECTORY "${INSTALL_DIR}"
+      OUTPUT_NAME               "${OUTPUT_NAME}"
       COMPILE_DEFINITIONS       "${SCRIPT_CONFIG}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
   )
@@ -956,12 +957,6 @@ function (basis_add_script_finalize TARGET_UID)
   # output name
   if (NOT OUTPUT_NAME)
     set (OUTPUT_NAME "${TARGET_NAME}")
-  endif ()
-  if (PREFIX)
-    set (OUTPUT_NAME "${PREFIX}${OUTPUT_NAME}")
-  endif ()
-  if (SUFFIX)
-    set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
 
   # create build script
