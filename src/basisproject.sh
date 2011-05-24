@@ -796,19 +796,16 @@ add ()
                 fi
             fi
             # alter project file, e.g., substitute for project name
-            sed -i '~' "s/ReplaceByProjectName/$name/g" "$root/$path"
-            if [ $? -ne 0 -a -f "$root/$path~" ]; then
-                cp -f "$root/$path~" "$root/$path" &> /dev/null
+            cat "$root/$path" | sed "s/ReplaceByProjectName/$name/g" | sed "s/ReplaceByProjectDescription/$description/g" > "$root/$path.temp"
+            if [ -f "$root/$path.temp" ]; then
+                diff "$root/$path" "$root/$path.temp" &> /dev/null
+                if [ $? -ne 0 ]; then
+                    mv "$root/$path.temp" "$root/$path"
+                    echo "M $root/$path"
+                else
+                    rm -f "$root/$path.temp"
+                fi
             fi
-            sed -i '~' "s/ReplaceByProjectDescription/$description/g" "$root/$path"
-            if [ $? -ne 0 -a -f "$root/$path~" ]; then
-                cp -f "$root/$path~" "$root/$path" &> /dev/null
-            fi
-            diff "$root/$path" "$root/$path~" &> /dev/null
-            if [ $? -ne 0 ]; then
-                echo "M $root/$path"
-            fi
-            rm -f "$root/$path~" &> /dev/null
         # update project file if backup of template used for creation exists
         elif [ -f "$dir/.basis/$base" ]; then
             # merge new template with project file using three-way diff
