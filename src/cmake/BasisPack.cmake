@@ -32,9 +32,6 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_PACK_INCLUDED)
-set (BASIS_PACK_INCLUDED 1)
-
 
 # get directory of this file
 #
@@ -274,7 +271,4 @@ if (EXISTS "${SOFTWARE_CONFIG_DIR}/Components.cmake.in")
 elseif (EXISTS "${SOFTWARE_CONFIG_DIR}/Components.cmake")
   include ("${SOFTWARE_CONFIG_DIR}/Components.cmake")
 endif ()
-
-
-endif (NOT BASIS_PACK_INCLUDED)
 

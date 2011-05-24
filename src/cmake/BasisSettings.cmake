@@ -21,11 +21,14 @@
 #       to take effect also in the including file and its subdirectories.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
+# \attention This file sets mainly non-cached CMake variables. Hence, it has
+#            to be included by each subproject. Therefore, do NOT cache the
+#            guard variable.
 if (NOT BASIS_SETTINGS_INCLUDED)
 set (BASIS_SETTINGS_INCLUDED 1)
 
@@ -205,10 +208,21 @@ macro (basis_initialize_directories)
     FORCE
   )
 
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC DATA EXAMPLE MAN CONFIG)
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC DATA EXAMPLE MAN)
     set (VAR INSTALL_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
+    if ("${${VAR}}" STREQUAL "")
+      set (${VAR} ".")
+    endif ()
   endforeach ()
+
+  string (CONFIGURE "${INSTALL_CONFIG_DIR}" INSTALL_CONFIG_DIR @ONLY)
+  if ("${INSTALL_CONFIG_DIR}" STREQUAL "")
+    set (INSTALL_CONFIG_DIR ".")
+  endif ()
+
+  # assertions
+  # \todo
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -256,29 +270,33 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 # excluded from the following paths. Instead, CMAKE_INSTALL_PREFIX is set to
 # INSTALL_PREFIX. This has to be done after the project attributes are known.
 # Hence, it is done by basis_project (), which configures the variables below.
+# As, however, CMAKE_INSTALL_PREFIX is used by CPack and also more commonly
+# known, we initialize the INSTALL_PREFIX variable using CMAKE_INSTALL_PREFIX.
+
+string (
+  REPLACE
+    "Project" "@PROJECT_NAME_LOWER@"
+  CMAKE_INSTALL_PREFIX
+    "${CMAKE_INSTALL_PREFIX}"
+) 
+
+set (
+  INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+  CACHE PATH "Installation directory prefix."
+)
 
 if (WIN32)
-  set (
-    INSTALL_PREFIX "C:\\Program Files\\SBIA\\\${PROJECT_NAME}"
-    CACHE PATH "Installation directory prefix."
-  )
-
   set (
     INSTALL_SINFIX ""
     CACHE PATH "Installation directories suffix (or infix, respectively)."
   )
 else ()
   set (
-    INSTALL_PREFIX "/usr/local"
-    CACHE PATH "Installation directories prefix."
-  )
-
-  set (
     INSTALL_SINFIX "sbia/@PROJECT_NAME_LOWER@"
     CACHE PATH "Installation directories suffix (or infix, respectively)."
   )
 
-  option (INSTALL_SYMLINKS "Whether to create symlinks if INSTALL_SINFIX is not empty." ON)
+  option (INSTALL_SYMLINKS "Whether to create symbolic links if INSTALL_SINFIX is not empty." ON)
 endif ()
 
 set (INSTALL_RUNTIME_DIR   "bin")     # shared libraries (WIN32) and main executable
@@ -293,7 +311,7 @@ set (INSTALL_INCLUDE_DIR   "include") # public header files of libraries
 set (INSTALL_SHARE_DIR     "share")   # other shared files
 
 if (INSTALL_SINFIX)
-  if (NOT "${INSTALL_SINFIX}" STREQUAL "${BASIS_INCLUDE_PREFIX}")
+  if ("${BASIS_INCLUDE_PREFIX}" STREQUAL "")
     set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
   endif ()
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE SHARE)
@@ -307,7 +325,12 @@ set (INSTALL_DATA_DIR    "${INSTALL_SHARE_DIR}/data")    # required auxiliary da
 set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
 set (INSTALL_MAN_DIR     "${INSTALL_SHARE_DIR}/man")     # man pages
 
-set (INSTALL_CONFIG_DIR  "${INSTALL_LIBRARY_DIR}") # <project>Config.cmake et al. files
+set (
+  INSTALL_CONFIG_DIR "@INSTALL_LIBRARY_DIR@"
+  CACHE PATH "Installation directory of CMake package configuration files (relative to INSTALL_PREFIX)."
+)
+
+mark_as_advanced (INSTALL_CONFIG_DIR)
 
 # ============================================================================
 # build configuration(s)

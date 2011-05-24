@@ -9,7 +9,7 @@
 ##############################################################################
 
 if (NOT BASIS_SUBVERSIONTOOLS_INCLUDED)
-set (BASIS_SUBVERSIONTOOLS_INCLUDED 1)
+set (BASIS_SUBVERSIONTOOLS_INCLUDED 1 CACHE INTERNAL "BasisSubversionTools.cmake" FORCE)
 
 
 # get directory of this file

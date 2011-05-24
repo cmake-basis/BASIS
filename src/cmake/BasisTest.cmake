@@ -8,9 +8,6 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT BASIS_TEST_INCLUDED)
-set (BASIS_TEST_INCLUDED 1)
-
 
 # get directory of this file
 #
@@ -19,12 +16,6 @@ set (BASIS_TEST_INCLUDED 1)
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
-
-# ============================================================================
-# required modules
-# ============================================================================
-
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
 
 # ============================================================================
 # configuration
@@ -203,7 +194,4 @@ function (basis_add_tests_of_default_options TARGET_NAME)
     message (STATUS "Adding tests of default options for ${EXEC}... - done")
   endif ()
 endfunction ()
-
-
-endif (NOT BASIS_TEST_INCLUDED)
 

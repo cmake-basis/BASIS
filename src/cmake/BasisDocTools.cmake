@@ -9,7 +9,7 @@
 ##############################################################################
 
 if (NOT BASIS_DOCTOOLS_INCLUDED)
-set (BASIS_DOCTOOLS_INCLUDED 1)
+set (BASIS_DOCTOOLS_INCLUDED 1 CACHE INTERNAL "BasisDocTools.cmake" FORCE)
 
 
 # get directory of this file
@@ -27,12 +27,12 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # The following options are only enabled when at least one doc or changelog
 # target were added. Otherwise, there is nothing to build.
 
-if (NOT DEFINED BUILD_DOC)
-  set (BUILD_DOC "UNUSED")
+if (NOT DEFINED BUILD_DOCUMENTATION)
+  set (BUILD_DOCUMENTATION)
 endif ()
 
 if (NOT DEFINED BUILD_CHANGELOG)
-  set (BUILD_CHANGELOG "UNUSED")
+  set (BUILD_CHANGELOG)
 endif ()
 
 # ============================================================================
@@ -107,15 +107,15 @@ mark_as_advanced (DOXYGEN_DOXYFILE)
 
 function (basis_add_doc_target)
   if (NOT TARGET doc)
-    if ("${BUILD_DOC}" STREQUAL "UNUSED")
+    if (NOT DEFINED BUILD_DOCUMENTATION)
       set (
-        BUILD_DOC "NO"
+        BUILD_DOCUMENTATION "NO"
         CACHE BOOL
           "Whether to generate the (API) documentation."
         FORCE
       )
     endif ()
-    if (BUILD_DOC)
+    if (BUILD_DOCUMENTATION)
       add_custom_target (doc ALL)
     else ()
       add_custom_target (doc)
@@ -128,11 +128,11 @@ endfunction ()
 
 function (basis_add_changelog_target)
   if (NOT TARGET changelog)
-    if ("${BUILD_CHANGELOG}" STREQUAL "UNUSED")
+    if (NOT DEFINED BUILD_CHANGELOG)
       set (
         BUILD_CHANGELOG "NO"
         CACHE BOOL
-          "Whether to generate the ChangeLog (requires Subversion controlled working copy and possibly user interaction)."
+          "Whether to generate the ChangeLog."
         FORCE
       )
     endif ()
@@ -159,10 +159,6 @@ endfunction ()
 #
 # The documentation files are installed in/as INSTALL_DOC_DIR/DOC_NAME as part
 # of the component specified by the COMPONENT option.
-#
-# \note If the option BUILD_DOC is not defined or does not evaluate to true,
-#       only documentation generated with the NONE generator is build and
-#       installed.
 #
 # Example:
 #
@@ -302,7 +298,8 @@ function (basis_add_doc TARGET_NAME)
 
     message (STATUS "Adding documentation ${TARGET_UID}...")
 
-    if (BUILD_DOC)
+    # Doxygen found ?
+    if (BUILD_DOCUMENTATION)
       set (ERRMSGTYP "")
       set (ERRMSG    "failed")
     else ()
@@ -310,7 +307,6 @@ function (basis_add_doc TARGET_NAME)
       set (ERRMSG    "skipped")
     endif ()
 
-    # Doxygen found ?
     if (NOT DOXYGEN_EXECUTABLE)
       message (${ERRMSGTYP} "Doxygen not found. Skipping build of ${TARGET_UID}.")
       message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
@@ -441,12 +437,14 @@ function (basis_add_doc TARGET_NAME)
       set (ERRMSG    "skipped")
     endif ()
 
+    # svn2cl found?
     if (NOT BASIS_CMD_SVN2CL)
-      message (${ERRMSGTYP} "Could not find svn2cl installation. Skipping build of ${TARGET_UID}.")
+      message (${ERRMSGTYP} "svn2cl not found. Skipping build of ${TARGET_UID}.")
       message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
       return ()
     endif ()
 
+    # source tree is a Subversion working copy?
     basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" REV)
 
     if (NOT REV)

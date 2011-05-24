@@ -9,7 +9,7 @@
 ##############################################################################
 
 if (NOT BASIS_COMMONTOOLS_INCLUDED)
-set (BASIS_COMMONTOOLS_INCLUDED 1)
+set (BASIS_COMMONTOOLS_INCLUDED 1 CACHE INTERNAL "BasisCommonTools.cmake" FORCE)
 
 
 # get directory of this file

@@ -48,7 +48,7 @@
 ##############################################################################
 
 if (NOT BASIS_UPDATE_INCLUDED)
-set (BASIS_UPDATE_INCLUDED 1)
+set (BASIS_UPDATE_INCLUDED 1 CACHE INTERNAL "BasisUpdate.cmake" FORCE)
 
 
 # get directory of this file

@@ -9,7 +9,7 @@
 ##############################################################################
 
 if (NOT BASIS_MATLABTOOLS_INCLUDED)
-set (BASIS_MATLABTOOLS_INCLUDED 1)
+set (BASIS_MATLABTOOLS_INCLUDED 1 CACHE INTERNAL "BasisMatlabTools.cmake" FORCE)
 
 
 # get directory of this file

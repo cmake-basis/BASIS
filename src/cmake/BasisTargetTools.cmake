@@ -9,7 +9,7 @@
 ##############################################################################
 
 if (NOT BASIS_TARGETTOOLS_INCLUDED)
-set (BASIS_TARGETTOOLS_INCLUDED 1)
+set (BASIS_TARGETTOOLS_INCLUDED 1 CACHE INTERNAL "BasisTargetTools.cmake" FORCE)
 
 
 # get directory of this file
@@ -19,14 +19,6 @@ set (BASIS_TARGETTOOLS_INCLUDED 1)
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
-
-# ============================================================================
-# required modules
-# ============================================================================
-
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisMatlabTools.cmake")
 
 # ============================================================================
 # properties
