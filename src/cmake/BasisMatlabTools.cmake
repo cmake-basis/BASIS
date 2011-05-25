@@ -420,7 +420,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
   # \todo The TYPE property seemed to be set to "UTILITY" by CMake.
   #       Check if this is true or if there is a bug in BASIS.
-  if (MCC_TYPE STREQUAL "MCC_LIBRARY")
+  if ("${BASIS_TYPE}" STREQUAL "MCC_LIBRARY")
     set (TYPE "LIBRARY")
   else ()
     set (TYPE "EXECUTABLE")
