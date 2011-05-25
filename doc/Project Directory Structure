@@ -311,11 +311,11 @@ INSTALL TREE
   - INSTALL_SHARE_DIR     Other shared package files.
 
 
-  Symbolic Links
-  --------------
+  Links
+  -----
 
   On UNIX-based systems, the following symbolic links are created when the option
-  INSTALL_SYMLINKS is set to TRUE. Note that the link creation will fail if a
+  INSTALL_LINKS is set to TRUE. Note that the link creation will fail if a
   file or directory with the links' name already exists.  This is desired and
   will simply be reported to the user. If a symbolic name of the same name
   already exists, it is replaced however.
