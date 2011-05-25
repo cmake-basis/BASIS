@@ -733,7 +733,7 @@ endfunction ()
 #
 # Script1Config.cmake
 # \code
-# basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
+# basis_set_script_path (ETC_DIR "@PROJECT_ETC_DIR@" "@INSTALL_ETC_DIR@")
 # \endcode
 #
 # See documentation of basis_set_script_path_definition () and ScriptConfig.cmake
