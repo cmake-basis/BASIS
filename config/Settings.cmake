@@ -16,5 +16,5 @@
 # ============================================================================
 
 # installation directory of project template files
-set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
+set (INSTALL_TEMPLATE_DIR "${INSTALL_ETC_DIR}/template")
 

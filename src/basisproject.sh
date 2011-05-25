@@ -86,7 +86,7 @@ options ()
     echo "                               --no-conf-settings"
     echo "                               --no-conf-use"
     echo "                               --no-conf-version"
-    echo "                               --no-data"
+    echo "                               --no-etc"
     echo "                               --no-unit-tests"
     echo
     echo "  --full                     Choose full project template. Corresponds to selecting all files."
@@ -101,7 +101,7 @@ options ()
     echo "  --conf-settings            Whether to include custom Settings.cmake file."
     echo "  --conf-tests               Whether to include custom CTestCustom.cmake file."
     echo "  --conf-use                 Whether to include custom <project>Use.cmake file."
-    echo "  --data                     Whether to include support of auxiliary data."
+    echo "  --etc                      Whether to include support of software configuration data."
     echo "  --example                  Whether to include support of example."
     echo "  --tests                    Alias for '--system-tests --unit-tests'."
     echo "  --system-tests             Whether to include support of system tests."
@@ -117,7 +117,7 @@ options ()
     echo "  --no-conf-settings         Whether to exclude custom Settings.cmake file."
     echo "  --no-conf-tests            Whether to exclude custom CTestCustom.cmake file."
     echo "  --no-conf-use              Whether to exclude custom <project>Use.cmake file."
-    echo "  --no-data                  Whether to exclude support of auxiliary data."
+    echo "  --no-etc                   Whether to exclude support of software configuration data."
     echo "  --no-example               Whether to exclude support of example."
     echo "  --no-tests                 Alias for '--no-system-tests --no-unit-tests --no-conf-tests'."
     echo "  --no-system-tests          Whether to exclude support of system tests."
@@ -323,7 +323,7 @@ confGenerate=0     # add/remove generate find package configuration script
 confScript=0       # add/remove script configuration file
 confTests=0        # add/remove testing configuration file
 confUse=0          # add/remove unit testing
-data=0             # add/remove auxiliary data
+etc=0              # add/remove software configuration data
 example=1          # add/remove example
 systemTests=0      # add/remove system testing
 unitTests=0        # add/remove unit testing
@@ -438,7 +438,7 @@ do
             confScript=-1
             confTests=-1
             confUse=-1
-            data=-1
+            etc=-1
             example=-1
             systemTests=-1
             unitTests=-1
@@ -455,7 +455,7 @@ do
             confScript=-1
             confTests=-1
             confUse=-1
-            data=-1
+            etc=-1
             example=1
             tests=1
             unitTests=-1
@@ -473,7 +473,7 @@ do
             confScript=1
             confTests=1
             confUse=1
-            data=1
+            etc=1
             example=1
             tests=1
             unitTests=1
@@ -559,12 +559,12 @@ do
             confUse=-1
             ;;
 
-        --data)
-            data=1
+        --etc)
+            etc=1
             ;;
 
-        --no-data)
-            data=-1
+        --no-etc)
+            etc=-1
             ;;
 
         --example)
@@ -996,9 +996,9 @@ if [ -d "$root/config" ]; then
     fi
 fi
 
-# auxiliary data
-addordel $data "data/CMakeLists.txt" || retval=1
-addordel $data "data"                || retval=1
+# software configuration data
+addordel $etc "etc/CMakeLists.txt" || retval=1
+addordel $etc "etc"                || retval=1
 
 # testing tree
 addordel $systemTests "test/system/CMakeLists.txt" || retval=1

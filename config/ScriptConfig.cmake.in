@@ -29,10 +29,10 @@
 # \code
 # #! /usr/bin/env bash
 # progDir=`dirname $0`
-# dataDir=$progDir/@DATA_DIR@
+# dataDir=$progDir/@ETC_DIR@
 # \endcode
 #
-# where DATA_DIR is the relative path determined during the script configuration.
+# where ETC_DIR is the relative path determined during the script configuration.
 # See documentation of basis_set_script_path_definition () for a convenience
 # function which can be used just for that. This function generates the
 # definition of a function which is prepended to this script configuration.
@@ -40,7 +40,7 @@
 #
 # Example:
 # \code
-# basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
+# basis_set_script_path (ETC_DIR "@PROJECT_ETC_DIR@" "@INSTALL_ETC_DIR@")
 # \endcode
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -51,5 +51,5 @@
 
 @BASIS_SCRIPT_CONFIG@
 
-basis_set_script_path (TEMPLATE_DIR "@PROJECT_DATA_DIR@/template" "@INSTALL_TEMPLATE_DIR@")
+basis_set_script_path (TEMPLATE_DIR "@PROJECT_ETC_DIR@/template" "@INSTALL_TEMPLATE_DIR@")
 
