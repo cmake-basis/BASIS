@@ -273,7 +273,7 @@ INSTALL TREE
       + INSTALL_INCLUDE_DIR            + include/sbia/<project>/
       + INSTALL_ETC_DIR                + etc/<sinfix>/
       + INSTALL_SHARE_DIR              + share/
-          + INSTALL_CONFIG_DIR             + cmake/<sinfix>/
+          + INSTALL_CONFIG_DIR             + cmake/
           + INSTALL_DOC_DIR                + doc/<sinfix>
           + INSTALL_EXAMPLE_DIR            + example/<sinfix>/
           + INSTALL_MAN_DIR                + man/<sinfix>/
