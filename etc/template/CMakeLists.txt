@@ -47,8 +47,8 @@ if (EXISTS "${PROJECT_CODE_DIR}")
   add_subdirectory ("${PROJECT_CODE_DIR}")
 endif ()
 
-if (EXISTS "${PROJECT_DATA_DIR}")
-  add_subdirectory ("${PROJECT_DATA_DIR}")
+if (EXISTS "${PROJECT_ETC_DIR}")
+  add_subdirectory ("${PROJECT_ETC_DIR}")
 endif ()
 
 if (EXISTS "${PROJECT_DOC_DIR}")
