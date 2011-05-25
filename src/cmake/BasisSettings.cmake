@@ -226,7 +226,7 @@ macro (basis_initialize_directories)
   endforeach ()
 
   # testing tree
-  foreach (P RUNTIME INPUT OUTPUT EXPECTED)
+  foreach (P RUNTIME INPUT OUTPUT EXPECTED SYSTEM UNIT)
     set (VAR TESTING_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()

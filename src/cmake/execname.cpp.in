@@ -1,9 +1,9 @@
 /*!
- * \file  execname.cpp.in
- * \brief Maps CMake target name to executable name.
+ * \file  execname.cpp
+ * \brief Maps build target name to executable name.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See LICENSE or Copyright file in project root directory for details.
+ * See LICENSE file in project root or 'doc' directory for details.
  *
  * Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
  */
@@ -12,6 +12,7 @@
 #include <string>
 #include <iostream>
 
+// \todo Change implementation to use TCLAP instead
 #include <boost/program_options.hpp>
 
 
@@ -52,6 +53,8 @@ const char *** const targetNameToExecNameMap = NULL;
 // ===========================================================================
 // version / usage / help
 // ===========================================================================
+
+// \todo Cannot we make use of mainaux.h?
 
 /*!
  * \brief Extract program name from first command line argument.

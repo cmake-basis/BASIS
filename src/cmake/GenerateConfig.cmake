@@ -1,10 +1,10 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Configures <project>(Config|ConfigVersion|Use).cmake files.
+# \brief Generates package configuration files.
 #
-# This CMake script configures the <project>Config.cmake et al. files.
-# Once for the build tree and once for the install tree. Variables with a
-# _CONFIG suffix are replaced in the default template files by either the
+# This CMake script configures the <package>Config.cmake et al. files,
+# once for the build tree and once for the install tree. Variables with a
+# _CONFIG suffix are replaced in the default template file by either the
 # value for the build or the install tree, respectively.
 #
 # If present, this script includes the PROJECT_CONFIG_DIR/ConfigBuild.cmake
@@ -13,8 +13,12 @@
 # exists, it is used as template. Otherwise, the default template file is used.
 #
 # Similarly, if the file PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
-# it is used as template for the <project>ConfigVersion.cmake file. The same
+# it is used as template for the <package>ConfigVersion.cmake file. The same
 # applies to Use.cmake.in.
+#
+# The variable PACKAGE_NAME is set to the name of the project prefixed by the
+# value of BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
+# to find this software package.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
@@ -38,9 +42,11 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # \attention This has to be done before configuring any files such that these
 #            variables can be used by the template files.
 
-set (CONFIG_FILE  "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake")
-set (VERSION_FILE "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}ConfigVersion.cmake")
-set (USE_FILE     "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Use.cmake")
+set (PACKAGE_NAME "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}")
+
+set (CONFIG_FILE  "${PACKAGE_NAME}Config.cmake")
+set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
+set (USE_FILE     "${PACKAGE_NAME}Use.cmake")
 
 # ============================================================================
 # project configuration file

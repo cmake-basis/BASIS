@@ -2,6 +2,12 @@
 # \file  BasisUpdate.cmake
 # \brief Implements automatic file udpate feature.
 #
+# \note The automatic file update works well and the implementation is fine.
+#       However, its use became more and more obsolete during the enhancement
+#       of BASIS and the development of a more advanced BASIS project
+#       management tool. Moreover, the update of project files during the
+#       configuration of the build system was controversy.
+#
 # This file provides functions which implement the automatic file update
 # of project files from the corresponding template files which they were
 # instantiated from. Instead of the need to manually copy files and/or parts
@@ -247,13 +253,14 @@ function (basis_update FILENAME)
 
   # skip file if excluded from file update
   if (BASIS_UPDATE_EXCLUDE)
-    list (FIND BASIS_UPDATE_EXCLUDE "${REL}" IDX)
-
+    list (FIND BASIS_UPDATE_EXCLUDE "${CUR}" IDX)
     if (IDX EQUAL -1)
+      list (FIND BASIS_UPDATE_EXCLUDE "${REL}" IDX)
+    endif ()
+    if (NOT IDX EQUAL -1)
       if (BASIS_VERBOSE)
         message (STATUS "Checking for update of file '${REL}'... - excluded")
       endif ()
-
       return ()
     endif ()
   endif ()

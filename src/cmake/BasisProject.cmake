@@ -59,10 +59,10 @@ include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
 # BASIS modules
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisSubversionTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisDocTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisUpdate.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisMatlabTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 
 # ============================================================================
 # initialize/finalize major components
@@ -278,16 +278,7 @@ macro (basis_project_initialize)
 
   include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
 
-  # initialize automatic file update
-  basis_update_initialize ()
-
-  # update CTest configuration and include testing module
-  basis_update_initialize ()
-
-  if (EXISTS CTestConfig.cmake)
-    basis_update (CTestConfig.cmake)
-  endif ()
-
+  # enable testing
   include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
 
   # resolve dependencies
@@ -440,11 +431,8 @@ macro (basis_project_finalize)
     include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
   endif ()
 
-  # create software package
+  # package software
   include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
-
-  # finalize update of files
-  basis_update_finalize ()
 endmacro ()
 
 # ============================================================================

@@ -1,6 +1,6 @@
 ##############################################################################
-# \file  Use.cmake.in
-# \brief CMake use file of @PROJECT_NAME@ package.
+# \file  Use.cmake
+# \brief CMake package configuration use file of @PACKAGE_NAME@.
 #
 # If this CMake module was already included before, it will do nothing.
 #
@@ -10,11 +10,9 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-if (NOT @PROJECT_NAME@_USE_FILE_INCLUDED)
-set (@PROJECT_NAME@_USE_FILE_INCLUDED 1)
-
-
-
-
-endif () # @PROJECT_NAME@_USE_FILE_INCLUDED
+if (__@PACKAGE_NAME@_USE_FILE_INCLUDED)
+  return ()
+else ()
+  set (__@PACKAGE_NAME@_USE_FILE_INCLUDED 1)
+endif ()
 

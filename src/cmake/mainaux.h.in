@@ -9,8 +9,8 @@
  */
 
 #pragma once
-#ifndef @PROJECT_NAME@_MAINAUX_H
-#define @PROJECT_NAME@_MAINAUX_H
+#ifndef __@PROJECT_NAME@_MAINAUX_H
+#define __@PROJECT_NAME@_MAINAUX_H
 
 
 #include <stdio.h>
@@ -65,9 +65,9 @@ void version (const char *progName)
 	printf ("%s %s", progName, @PROJECT_NAME_UPPER@_VERSION);
 #if @PROJECT_NAME_UPPER@_REVISION
 	printf (" (Rev. %d)", @PROJECT_NAME_UPPER@_REVISION);
-#endif // @PROJECT_NAME_UPPER@_REVISION
+#endif
 	printf ("\n");
 }
 
 
-#endif // @PROJECT_NAME@_MAINAUX_H
+#endif // __@PROJECT_NAME@_MAINAUX_H
