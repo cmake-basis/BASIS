@@ -329,9 +329,9 @@ endif ()
 # install tree directories
 set (INSTALL_RUNTIME_DIR   "bin")           # main executables and shared libraries (WIN32)
 if (WIN32)
-  set (INSTALL_LIBEXEC_DIR "bin")           # auxiliary executables
+set (INSTALL_LIBEXEC_DIR "bin")             # auxiliary executables
 else ()
-  set (INSTALL_LIBEXEC_DIR "lib")           # auxiliary executables
+set (INSTALL_LIBEXEC_DIR "lib")             # auxiliary executables
 endif ()
 set (INSTALL_LIBRARY_DIR   "lib")           # shared (UNIX) and module libraries
 set (INSTALL_ARCHIVE_DIR   "lib")           # static and import libraries
@@ -340,7 +340,11 @@ set (INSTALL_ETC_DIR       "etc")           # software configuration files
 set (INSTALL_DOC_DIR       "share/doc")     # documentaton files
 set (INSTALL_EXAMPLE_DIR   "share/example") # package example
 set (INSTALL_MAN_DIR       "share/man")     # man pages
-set (INSTALL_CONFIG_DIR    "share/cmake")   # package config files
+if (WIN32)
+set (INSTALL_CONFIG_DIR    "cmake")         # package configuration files
+else ()
+set (INSTALL_CONFIG_DIR    "share/cmake/\@PROJECT_NAME_LOWER\@")
+endif ()
 set (INSTALL_SHARE_DIR     "share")         # other shared files
 
 if (INSTALL_SINFIX)
