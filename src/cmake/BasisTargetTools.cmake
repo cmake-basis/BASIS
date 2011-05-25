@@ -606,7 +606,7 @@ function (basis_add_library TARGET_NAME)
 
       if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_ISGNUCXX)
         list (APPEND MEX_DEFINITIONS "_GNU_SOURCE")
-        list (APPEND MEX_COMPILE_FLAGS "-pthread -fexceptions -fno-omit-frame-pointer")
+        list (APPEND MEX_COMPILE_FLAGS "-pthread -fPIC -fexceptions -fno-omit-frame-pointer")
       endif ()
 
       set_target_properties (
