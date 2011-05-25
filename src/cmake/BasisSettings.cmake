@@ -321,9 +321,9 @@ set (
   CACHE PATH "Installation directories suffix (or infix, respectively)."
 )
 
-# option to create symbolic links
+# option to create (symbolic) links
 if (UNIX)
-  option (INSTALL_SYMLINKS "Whether to create symbolic links if INSTALL_SINFIX is not empty." ON)
+  option (INSTALL_LINKS "Whether to create (symbolic) links." ON)
 endif ()
 
 # install tree directories

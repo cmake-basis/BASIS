@@ -428,8 +428,8 @@ macro (basis_project_finalize)
     # add uninstall target
     basis_add_uninstall ()
 
-    if (INSTALL_SYMLINKS)
-      basis_install_symlinks ()
+    if (INSTALL_LINKS)
+      basis_install_links ()
     endif ()
   endif ()
 
@@ -694,7 +694,7 @@ endfunction ()
 # \param [in] OLD The value of the symbolic link.
 # \param [in] NEW The name of the symbolic link.
 
-function (basis_install_symlink OLD NEW)
+function (basis_install_link OLD NEW)
   set (CMD_IN
     "
     set (OLD \"@OLD@\")
@@ -731,7 +731,7 @@ function (basis_install_symlink OLD NEW)
       )
 
       if (NOT RETVAL EQUAL 0)
-        message (ERROR \"Failed to create symbolic link \${NEW} -> \${OLD}\")
+        message (ERROR \"Failed to create (symbolic) link \${NEW} -> \${OLD}\")
       endif ()
     endif ()
     "
@@ -749,7 +749,7 @@ endfunction ()
 # software is installed on a UNIX-based system, i.e., one which supports the
 # creation of symbolic links.
 
-function (basis_install_symlinks)
+function (basis_install_links)
   if (NOT UNIX)
     return ()
   endif ()
@@ -765,7 +765,7 @@ function (basis_install_symlinks)
         basis_target_name (OUTPUT_NAME ${TARGET_UID})
       endif ()
 
-      basis_install_symlink (
+      basis_install_link (
         "${INSTALL_RUNTIME_DIR}/${OUTPUT_NAME}"
         "bin/${OUTPUT_NAME}"
       )
@@ -774,7 +774,7 @@ function (basis_install_symlinks)
 
   # CMake package configuration
   # \note Therefore, <project>Config.cmake must resolve the symbolic link!
-  #basis_install_symlink (
+  #basis_install_link (
   #  "${INSTALL_CONFIG_DIR}/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake"
   #  "lib/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake"
   #)
@@ -787,7 +787,7 @@ function (basis_install_symlinks)
   # \note Not all CPack generators preserve symbolic links to directories
   # \note The presence of a <prefix>/doc/* folder is not part of the
   #       Linux file hierarchy standard.
-  #basis_install_symlink (
+  #basis_install_link (
   #  "${INSTALL_DOC_DIR}"
   #  "doc/${INSTALL_SINFIX}"
   #)
