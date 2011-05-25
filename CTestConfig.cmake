@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CTestConfig.cmake
-# \brief CTest configuration file.
+# \brief Dashboard configuration file.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.

@@ -1,8 +1,8 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMake configuration to generate and/or install documentation.
+# \brief Build configuration of software documentation.
 #
-# This CMake configuration builds and/or installs the documentation of the
+# This build configuration builds and/or installs the documentation of the
 # software package. The documentation can be divided into user documentation
 # (user manual) and developer documentation (developer manual). For
 # developers, the documentation of the API is of particular interest,

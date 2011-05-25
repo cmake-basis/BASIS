@@ -1,11 +1,12 @@
 ##############################################################################
 # \file  Settings.cmake
-# \brief Project settings.
+# \brief General project build configuration.
 #
-# This file can be used to overwrite the BASIS settings set by the module
-# BasisSettings.cmake and to add project specific settings.
+# This file can be used to overwrite the BASIS build configuration as defined
+# by the BasisSettings module and to add project specific settings.
 #
-# This file is included by basis_project_initialize ().
+# This file is included by basis_project_initialize () if found in the
+# PROJECT_CONFIG_DIR directory.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
@@ -46,16 +47,4 @@
 #
 # \see BasisSettings.cmake
 
-# ============================================================================
-# update
-# ============================================================================
-
-# exclude certain project files from (automatic) file update
-#
-# \note File paths have to be specified relative to the project source
-#       directory such as "coc/Doxyfile.in" or "config/Config.cmake.in".
-set (
-  BASIS_UPDATE_EXCLUDE
-    # add relative paths here
-)
 

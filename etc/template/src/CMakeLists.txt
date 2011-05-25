@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Root CMake configuration file of build targets.
+# \brief Build configuration of software.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.

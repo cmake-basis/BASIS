@@ -1,9 +1,9 @@
 ##############################################################################
 # \file  Package.cmake
-# \brief Package information.
+# \brief Package configuration.
 #
-# This file is included by the module BasisPack.cmake before the CPack module.
-# It can be used to overwrite or extend the default CPack settings of BASIS.
+# This file is included by the BasisPack module prior to the CPack module.
+# It can be used to overwrite or extend the default package configuration.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.

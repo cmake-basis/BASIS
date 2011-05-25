@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMake configuration file of system tests.
+# \brief Build configuration of system tests.
 #
 # System tests execute the programs of this package with given test input data
 # and compare the output of the programs to the expected results.

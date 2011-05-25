@@ -1,6 +1,6 @@
 ##############################################################################
-# \file  ScriptConfig.cmake.in
-# \brief Default script configuration template.
+# \file  ScriptConfig.cmake
+# \brief Default script configuration.
 #
 # This CMake file defines CMake variables which can be used within scripts.
 # If the project structure differs for the build tree and the install tree,
@@ -12,7 +12,7 @@
 # Example:
 # \code
 # if (BUILD_INSTALL_SCRIPT)
-#   set (BIN_DIR "@INSTALL_PREFIX@/bin")
+#   set (BIN_DIR "@CMAKE_INSTALL_PREFIX@/bin")
 # else ()
 #   set (BIN_DIR "@RUNTIME_OUTPUT_DIRECTORY@")
 # endif ()
@@ -20,23 +20,27 @@
 #
 # Avoid the use of absolute paths, however! Instead, use the variable
 # @SCRIPT_DIR@ which is set to the directory of the script file to make these
-# paths relative to the directory of the script file. The relative paths
-# determined by the script configuration script shall be used in the script.
-# Therefore, the script has to determine its directory at runtime. This can
-# usually easily be done by extracting the path component from the first argument.
+# paths relative to the directory of the script file (possibly resolving
+# symbolic links). The relative paths determined by the script configuration
+# script shall be used in the script. Therefore, the script has to determine
+# its directory at runtime. This can usually easily be done by extracting the
+# path component from the first argument (and following symbolic links).
+# To ease this task, the default script configuration provides function
+# definitions for commonly used scripting languages.
 #
 # Example:
 # \code
 # #! /usr/bin/env bash
-# progDir=`dirname $0`
-# dataDir=$progDir/@ETC_DIR@
+# @BASH_FUNCTION_getProgDir@
+# progDir=$(getProgDir)
+# etcDir=$progDir/@ETC_DIR@
 # \endcode
 #
-# where ETC_DIR is the relative path determined during the script configuration.
-# See documentation of basis_set_script_path_definition () for a convenience
-# function which can be used just for that. This function generates the
-# definition of a function which is prepended to this script configuration.
-# Use this function as follows within this file.
+# where ETC_DIR is the relative path determined during the configuration of
+# the script. See documentation of basis_set_script_path_definition () for a
+# convenience function which can be used to set the CMake variable ETC_DIR.
+# This function generates the definition of a function which is prepended to
+# this script configuration. Use this function as follows within this file.
 #
 # Example:
 # \code

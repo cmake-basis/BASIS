@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  Config.cmake.in
-# \brief CMake package configuration file of BASIS package.
+# \brief CMake package configuration file of BASIS.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
@@ -18,18 +18,18 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 
 
 # absolute path to CMake modules
-get_filename_component (BASIS_MODULE_PATH "@MODULE_PATH_CONFIG@" ABSOLUTE)
+get_filename_component (@PACKAGE_NAME@_MODULE_PATH "@MODULE_PATH_CONFIG@" ABSOLUTE)
 
 # absolute path to project template
-get_filename_component (BASIS_TEMPLATE_URL "@TEMPLATE_URL_CONFIG@" ABSOLUTE)
+get_filename_component (@PACKAGE_NAME@_TEMPLATE_URL "@TEMPLATE_URL_CONFIG@" ABSOLUTE)
 
-if (NOT BASIS_TEMPLATE_URL MATCHES "^file://|^http://|^https://")
-  set (BASIS_TEMPLATE_URL "file://${BASIS_TEMPLATE_URL}")
+if (NOT @PACKAGE_NAME@_TEMPLATE_URL MATCHES "^file://|^http://|^https://")
+  set (@PACKAGE_NAME@_TEMPLATE_URL "file://${@PACKAGE_NAME@_TEMPLATE_URL}")
 endif ()
 
 # include directories
-set (BASIS_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
+set (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 
 # absolute path of project use file which is included by other projects
-set (BASIS_USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
+set (@PACKAGE_NAME@_USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
 

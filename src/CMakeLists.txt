@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMakeLists.txt file of source code directory.
+# \brief Build configuration of software.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
@@ -20,6 +20,6 @@ install (
   PATTERN     .git EXCLUDE
 )
 
-# add script used to create or modify a project instantiated from the template
+# build project management tool
 basis_add_script (basisproject.sh)
 

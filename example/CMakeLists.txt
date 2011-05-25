@@ -1,9 +1,9 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMakeLists.txt file to generate example projects.
+# \brief Build configuration to example projects.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See LICENSE file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################

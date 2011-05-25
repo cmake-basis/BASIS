@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Root CMake configuration file.
+# \brief Root build configuration file.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
@@ -19,7 +19,7 @@ cmake_minimum_required (VERSION 2.8.2)
 # ============================================================================
 
 # use invalid template version to indicate that this project is not
-# instantiated from a template as this package contains the template
+# instantiated from a template as this package provides the template
 set (TEMPLATE_VERSION "ReplaceByTemplateVersion")
 
 # find BASIS package
@@ -43,22 +43,27 @@ basis_project_initialize (
 # subdirectories
 # ============================================================================
 
+# source code of programs
 if (EXISTS "${PROJECT_CODE_DIR}")
   add_subdirectory ("${PROJECT_CODE_DIR}")
 endif ()
 
+# software configuration files
 if (EXISTS "${PROJECT_ETC_DIR}")
   add_subdirectory ("${PROJECT_ETC_DIR}")
 endif ()
 
+# package documentation
 if (EXISTS "${PROJECT_DOC_DIR}")
   add_subdirectory ("${PROJECT_DOC_DIR}")
 endif ()
 
+# example application
 if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
   add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
 endif ()
 
+# software testing
 if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
   add_subdirectory ("${PROJECT_TESTING_DIR}")
 endif ()

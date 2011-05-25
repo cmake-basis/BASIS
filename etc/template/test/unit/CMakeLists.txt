@@ -1,6 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief CMake configuration file of unit tests.
+# \brief Build configuration of unit tests.
 #
 # Unit tests test only single functions, classes, and modules of the software.
 # Besides system tests, unit tests are not part of distribution packages.

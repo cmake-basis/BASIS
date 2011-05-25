@@ -1,10 +1,10 @@
 ##############################################################################
 # \file  Components.cmake
-# \brief Configuration of component-based installer.
+# \brief Configuration of component-based installers.
 #
-# This file is included by the module BasisPack.cmake if present in the
+# This file is included by the BasisPack module if found in the
 # PROJECT_CONFIG_DIR after the CPack module was included. It is used to
-# configure a component-based installer.
+# configure component-based installers.
 #
 # Use the functions basis_add_component () and basis_add_component_group ()
 # to add a component or component group, respectively. See documentation of
