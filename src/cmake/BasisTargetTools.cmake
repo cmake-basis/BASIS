@@ -257,8 +257,6 @@ function (basis_add_executable TARGET_NAME)
   basis_check_target_name (${TARGET_NAME})
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
-  message (STATUS "Adding executable ${TARGET_UID}...")
-
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC" "COMPONENT;LANGUAGE" "" ${ARGN})
 
@@ -306,6 +304,8 @@ function (basis_add_executable TARGET_NAME)
   # --------------------------------------------------------------------------
 
   else ()
+
+    message (STATUS "Adding executable ${TARGET_UID}...")
 
     # add executable target
     add_executable (${TARGET_UID} ${ARGN_UNPARSED_ARGUMENTS})
@@ -355,9 +355,9 @@ function (basis_add_executable TARGET_NAME)
       CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
     )
 
-  endif ()
+    message (STATUS "Adding executable ${TARGET_UID}... - done")
 
-  message (STATUS "Adding executable ${TARGET_UID}... - done")
+  endif ()
 endfunction ()
 
 # ****************************************************************************
@@ -944,8 +944,8 @@ function (basis_add_script_finalize TARGET_UID)
   endforeach ()
 
   # check target type
-  if (NOT BASIS_TYPE STREQUAL "SCRIPT")
-    message (FATAL_ERROR "Target ${TARGET_UID} is no BASIS script target. Invalid type: ${BASIS_TYPE}")
+  if (NOT BASIS_TYPE MATCHES "^SCRIPT$|^LIBSCRIPT$")
+    message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
   # build directory (note that CMake returns basename of build directory as first element of SOURCES list)

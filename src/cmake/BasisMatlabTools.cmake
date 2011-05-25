@@ -343,6 +343,12 @@ function (basis_add_mcc_target TARGET_NAME)
       LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
   )
 
+  # add target to list of targets
+  set (
+    BASIS_TARGETS "${BASIS_TARGETS};${TARGET_UID}"
+    CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
+  )
+
   if (ARGN_TYPE STREQUAL "LIBRARY")
     message (STATUS "Adding MATLAB library ${TARGET_UID}... - done")
   else ()
@@ -410,6 +416,14 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
   if (NOT BASIS_TYPE MATCHES "^MCC_EXEC$|^MCC_LIBEXEC$|^MCC_LIBRARY$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
+  endif ()
+
+  # \todo The TYPE property seemed to be set to "UTILITY" by CMake.
+  #       Check if this is true or if there is a bug in BASIS.
+  if (MCC_TYPE STREQUAL "MCC_LIBRARY")
+    set (TYPE "LIBRARY")
+  else ()
+    set (TYPE "EXECUTABLE")
   endif ()
 
   if (TYPE STREQUAL "LIBRARY")
