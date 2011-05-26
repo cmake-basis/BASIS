@@ -323,12 +323,16 @@ function (basis_add_executable TARGET_NAME)
     )
 
     # target version information
-    set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        VERSION   ${PROJECT_VERSION}
-        SOVERSION ${PROJECT_SOVERSION}
-    )
+    # \note On UNIX-based systems this only creates annoying files with
+    #       the version string as suffix and two symbolic links.
+    if (WIN32)
+      set_target_properties (
+        ${TARGET_UID}
+        PROPERTIES
+          VERSION   ${PROJECT_VERSION}
+          SOVERSION ${PROJECT_SOVERSION}
+      )
+    endif ()
 
     # install executable
     if (ARGN_LIBEXEC)
@@ -641,7 +645,13 @@ function (basis_add_library TARGET_NAME)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # target version information
-    if (NOT ARGN_EXTERNAL)
+    # \note      On UNIX-based systems this only creates annoying files with the
+    #            version string as suffix.
+    # \attention MEX-files may NEVER have a suffix after the MEX extension!
+    #            Otherwise, the MATLAB Compiler when using the symbolic link
+    #            without this suffix will create code that fails on runtime
+    #            with an .auth file missing error.
+    if (NOT ARGN_EXTERNAL AND WIN32)
       set_target_properties (
         ${TARGET_NAME}
         PROPERTIES

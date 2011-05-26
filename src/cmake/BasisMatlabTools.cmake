@@ -338,7 +338,7 @@ function (basis_add_mcc_target TARGET_NAME)
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
       INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
       LINK_DEPENDS              "${LINK_DEPENDS}"
-      COMPILE_FLAGS             "${USER_FLAGS}"
+      COMPILE_FLAGS             "${COMPILE_FLAGS}"
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
   )
@@ -440,6 +440,9 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
   list (REMOVE_AT SOURCES 0)
 
+  # main source file
+  list (GET SOURCES 0 MAIN)
+
   # output name
   if (NOT OUTPUT_NAME)
     set (OUTPUT_NAME "${TARGET_NAME}")
@@ -477,6 +480,13 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       list (APPEND MCC_ARGS "-I" "${INCLUDE_PATH}")
     endif ()
   endforeach ()
+  foreach (LIB ${LINK_LIBS})
+    get_filename_component (LIB_DIR "${LIB}" PATH)
+    list (FIND MCC_ARGS "${LIB_DIR}" IDX)
+    if (LIB_DIR AND IDX EQUAL -1)
+      list (APPEND MCC_ARGS "-I" "${LIB_DIR}")
+    endif ()
+  endforeach ()
   list (FIND INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX)
   if (IDX EQUAL -1)
     # add current source directory to search path,
@@ -491,8 +501,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endif ()
   list (APPEND MCC_ARGS "-d" "${BUILD_DIR}")          # output directory
   list (APPEND MCC_ARGS "-o" "${OUTPUT_NAME}")        # output name
-  list (APPEND MCC_ARGS ${SOURCES})                   # source (M-)files
-  list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries (e.g., MEX-files)
+  list (APPEND MCC_ARGS ${MAIN})                      # source (M-)files
 
   # build command for invocation of MATLAB Compiler in standalone mode
   set (BUILD_CMD      "${BASIS_CMD_MCC}" ${MCC_ARGS})
@@ -507,13 +516,6 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     if (NOT BASIS_CMD_MATLAB)
       message (WARNING "MATLAB not found. It is required to build target ${TARGET_UID} in MATLAB mode."
                        " Set BASIS_CMD_MATLAB manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
-                       " Will build target ${TARGET_UID} in standalone mode instead.")
-      set (MATLAB_MODE OFF)
-    endif ()
-
-    if (NOT BASIS_SCRIPT_MCC)
-      message (WARNING "MATLAB script to run MATLAB Compiler not found. It is required to build target ${TARGET_UID} in MATLAB mode."
-                       " Set BASIS_SCRIPT_MCC manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
                        " Will build target ${TARGET_UID} in standalone mode instead.")
       set (MATLAB_MODE OFF)
     endif ()
