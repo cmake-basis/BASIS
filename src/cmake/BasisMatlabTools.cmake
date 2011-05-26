@@ -440,9 +440,6 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
   list (REMOVE_AT SOURCES 0)
 
-  # main source file
-  list (GET SOURCES 0 MAIN)
-
   # output name
   if (NOT OUTPUT_NAME)
     set (OUTPUT_NAME "${TARGET_NAME}")
@@ -480,13 +477,6 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       list (APPEND MCC_ARGS "-I" "${INCLUDE_PATH}")
     endif ()
   endforeach ()
-  foreach (LIB ${LINK_LIBS})
-    get_filename_component (LIB_DIR "${LIB}" PATH)
-    list (FIND MCC_ARGS "${LIB_DIR}" IDX)
-    if (LIB_DIR AND IDX EQUAL -1)
-      list (APPEND MCC_ARGS "-I" "${LIB_DIR}")
-    endif ()
-  endforeach ()
   list (FIND INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX)
   if (IDX EQUAL -1)
     # add current source directory to search path,
@@ -501,7 +491,8 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endif ()
   list (APPEND MCC_ARGS "-d" "${BUILD_DIR}")          # output directory
   list (APPEND MCC_ARGS "-o" "${OUTPUT_NAME}")        # output name
-  list (APPEND MCC_ARGS ${MAIN})                      # source (M-)files
+  list (APPEND MCC_ARGS ${SOURCES})                   # source (M-)files
+  list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries, e.g. MEX-files
 
   # build command for invocation of MATLAB Compiler in standalone mode
   set (BUILD_CMD      "${BASIS_CMD_MCC}" ${MCC_ARGS})
