@@ -15,9 +15,9 @@ INTRODUCTION
 
   This document describes the common procedure to build and install any
   software developed at and distributed by SBIA. In particular, software built
-  on top of BASIS, a meta-project which defines the Build And Software
-  Implementation Standard which was established in the summer of 2011.
-  Please refer to the documentation of BASIS for details on the standard.
+  on top of BASIS, a meta-project which defines the Build system And Software
+  Implementation Standard established in the summer of 2011.
+  Please refer to the documentation of BASIS for details on this standard.
 
   If you obtained a binary distribution package for a supported platform,
   please follow the installation instructions corresponding to your operating
@@ -28,7 +28,7 @@ INTRODUCTION
 
   In the following, $ at the beginning of a line indicates the command prompt of
   the used shell. Hence, the command followed after the $ has to be entered in a
-  terminal. The instructions given in this guide are based on bash.
+  terminal. The instructions given in this guide are based on BASH, in particular.
 
 
 
@@ -95,7 +95,7 @@ INSTALLING A BINARY DISTRIBUTION PACKAGE
   ------
 
     Bundles for Mac OS might be available for some software packages,
-    but is not supported by default. Please refer to the INSTALL file which
+    but this is not supported by default. Please refer to the INSTALL file which
     is located in the root directory of the respective software package.
 
 
@@ -113,7 +113,8 @@ INSTALLING A BINARY DISTRIBUTION PACKAGE
     As an alternative, consider the use of a Live Linux Distribution,
     a dual boot installation of Linux or an installation of a Linux operating
     system in a virtual machine using virtualization tools such as VirtualBox
-    (http://www.virtualbox.org/).
+    (http://www.virtualbox.org/) or proprietary virtualization solutions
+    available for your host operating system.
 
 
 
@@ -152,12 +153,12 @@ BUILDING THE SOFWARE FROM SOURCES
 
   - BASIS
 
-    Web:      https://www.rad.upenn.edu/sbia/software/
-    Download: https://www.rad.upenn.edu/sbia/software/basis/
+    Web:      n/a
+    Download: n/a
 
-    The Build And Software Implementation Standard (BASIS) defines the project
-    directory structure and provides CMake implementations to ease and
-    standardize the build and installation.
+    The Build system And Software Implementation Standard (BASIS) among other
+    features defines the project directory structure and provides CMake
+    implementations to ease and standardize the build and installation.
 
 
   Build and Installation Instructions
@@ -165,7 +166,7 @@ BUILDING THE SOFWARE FROM SOURCES
 
   In the following, we assume you obtained a copy of the source package as
   compressed tarball (*.tar.gz). The name and version part of the package file
-  is referred to as bash variable
+  is referred to as BASH variable
 
     $ pkg=<package>-<version>
 
@@ -175,7 +176,7 @@ BUILDING THE SOFWARE FROM SOURCES
 
        $ tar xzf $pkg-source.tar.gz ~
 
-     This will extract the sources in a new diretory in your home directory
+     This will extract the sources to a new diretory in your home directory
      named "<package>-<version>-source".
 
   2. Configure the build tree
@@ -185,10 +186,9 @@ BUILDING THE SOFWARE FROM SOURCES
        $ mkdir ~/$pkg-build
        $ cd ~/$pkg-build
 
-     Note that even though an in-source build is supported by most packages, i.e.,
-     building the software within the source tree, it is not recommended.
-     A CMake warning will be displayed and the in-source build has to be
-     explicitly acknowledged before the configuration step is performed.
+     Note that an in-source build, i.e., building the software within the
+     source tree is not supported to force a clear separation of source and
+     build tree.
 
      To configure the build tree, run CMake's graphical tool ccmake
 
@@ -200,31 +200,32 @@ BUILDING THE SOFWARE FROM SOURCES
      step, press "g". This will generate the configuration files for the
      selected build tool (i.e., GNU Make Makefiles in our case) and exit CMake.
 
-     The common CMake variables which configure the build process are:
+     The common CMake variables which configure the build and installation are:
 
-       BUILD_DOC        Whether the documentation target should be built by
-                        default, too. If FALSE, the documentation, such as
-                        in particular the man pages and API documentation,
-                        can be built manually by building the "doc" target.
-       BUILD_EXAMPLE    Whether the examples should be built (if required)
-                        and/or installed.
-       BUILD_TESTING    Whether the testing tree should be built and system
-                        tests, i.e., tests that execute the installed programs
-                        and compare the outputs to the expected results should
-                        be installed.
-       BUILD_TYPE       Specify the build configuration to build. If not
-                        set, the "Release" configuration will be build.
-                        Valid values are "Release", "Debug", and "Coverage".
-       INSTALL_PREFIX   Prefix used for package installation (see Step 4).
-       INSTALL_SINFIX   Suffix/Infix used for package installation (see Step 4).
-       INSTALL_LINKS    Whether (symbolic) links should be created (see Step 4).
+       BUILD_DOCUMENTATION Whether the documentation target should be built by
+                           default, too. If FALSE, the documentation, such as
+                           in particular the man pages and API documentation,
+                           can be built manually by building the "doc" target.
+       BUILD_EXAMPLE       Whether the examples should be built (if required)
+                           and/or installed.
+       BUILD_TESTING       Whether the testing tree should be built and system
+                           tests, i.e., tests that execute the installed programs
+                           and compare the outputs to the expected results should
+                           be installed.
+       BUILD_TYPE          Specify the build configuration to build. If not
+                           set, the "Release" configuration will be build.
+                           Valid values are "Release", "Debug", and "Coverage".
+       INSTALL_PREFIX      Prefix used for package installation (see Step 4).
+       INSTALL_SINFIX      Suffix/Infix used for package installation (see Step 4).
+       INSTALL_LINKS       Whether (symbolic) links should be created (see Step 4).
 
      Please refer to the package specific build instructions given in the
      INSTALL file which is located in the root directory of the source tree
-     for details on the package specific CMake variables.
+     or the 'doc' directory of the installation for details on the package specific
+     CMake variables.
 
-     Additionally, refer to the documentation of the CMake variables displayed
-     in the status bar of ccmake.
+     Note: The ccmake tool also provides a brief description to each variable
+           in the status bar.
 
   3. Build the software
 
@@ -243,7 +244,18 @@ BUILDING THE SOFWARE FROM SOURCES
      This can be omitted if these variables were set already during
      the configuration of the build tree or if the default values
      should be used. On Linux, INSTALL_PREFIX is by default set to
-     "/usr/local" and INSTALL_SINFIX to "sbia/<package>".
+     "/usr/local" and INSTALL_SINFIX to "<package>". Note that the
+     following strings can be used in the specification of these
+     variables which will be substituted by the corresponding
+     package specific values.
+
+       @PROJECT_NAME@            The case-sensitive name of the software package.
+       @PROJECT_NAME_UPPER@      The name of the package in uppercase only.
+       @PROJECT_NAME_LOWER@      The name of the package in lowercase only.
+       @PROJECT_VERSION@         The package version.
+       @PROJECT_VERSION_MAJOR@   The major number of the package version.
+       @PROJECT_VERSION_MINOR@   The minor number of the package version.
+       @PROJECT_VERSION_PATCH@   The patch number of the package version.
 
      After the package was configured successfully, the executables and
      auxiliary files can be installed using the command
@@ -254,28 +266,31 @@ BUILDING THE SOFWARE FROM SOURCES
      files into the directories specified during the configuration of the build
      tree (see build step 2).
  
-     This will install the package's files into the following locations:
+     The package files are installed in the following locations:
 
        <prefix>/bin/<sinfix>/              Main executable files.
-       <prefix>/lib/<sinfix>/              Libraries and auxiliary executables.
        <prefix>/etc/<sinfix>/              Package configuration files.
-       <prefix>/share/<sinfix>/doc/        Package documentation files.
-       <prefix>/share/<sinfix>/data/       Auxiliary package data.
+       <prefix>/include/sbia/<package>/    Include files, where <prefix>/include/
+                                           is the directory that needs to be
+                                           in the search path for include files.
+       <prefix>/lib/<sinfix>/              Libraries and auxiliary executables.
+       <prefix>/share/doc/<sinfix>         Package documentation files.
        <prefix>/share/<sinfix>/example/    Files required to run example as
-                                             described in the User Manual.
+                                           described in the User Manual.
        <prefix>/share/<sinfix>/man/man.1   Man pages of main executables.
        <prefix>/share/<sinfix>/man/man.3   Man pages of library functions.
 
      where <prefix> is the value of INSTALL_PREFIX and <sinfix> the value
-     of INSTALL_SINFIX. Hence, if more than one version of a software package
-     shall be installed, include the package version in the <sinfix>, e.g.,
-     "sbia/<package>-<version>".
+     of INSTALL_SINFIX. If more than one version of a software package
+     shall be installed, include the package version in the <prefix> by setting
+     INSTALL_PREFIX to "/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@",
+     for example.
 
      Additionally, if <sinfix> is not an empty string and INSTALL_LINKS is
-     set to TRUE (the default), the following (symbolic) links are created:
+     set to TRUE (the default), the following (symbolic) links are created
+     on UNIX-based systems:
 
        <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
-       <prefix>/doc/<sinfix>             -> <prefix>/share/<sinfix>/doc/
        <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
        <prefix>/share/man/man.3/<func>.3 -> <prefix>/share/<sinfix>/man/man.3/<func>.3
 
@@ -299,4 +314,9 @@ BUILDING THE SOFWARE FROM SOURCES
 
     $ cd ~/$pkg-build
     $ make uninstall
+
+  Attention: With the current implementation, this command will simply
+             delete all the files which were installed during the *last*
+             build of the install target ("make install"). Directories will
+             not be removed even when empty afterwards.
 
