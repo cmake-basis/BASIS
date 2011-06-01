@@ -221,9 +221,9 @@ endfunction ()
 # FILTER_PATTERNS  Value for Doxygen's FILTER_PATTERNS tag which
 #                  can be used to specify filters on a per file
 #                  pattern basis. Defaults to BASIS_DOXYGEN_FILTER_PATTERNS.
-# EXCLUDE          Value for Doxygen's EXCLUDE tag which can be used
-#                  to specify files and/or directories that should 
-#                  excluded from the INPUT source files.
+# EXCLUDE_PATTERNS Additional patterns used for Doxygen's EXCLUDE_PATTERNS tag
+#                  which can be used to specify files and/or directories that
+#                  should excluded from the INPUT source files.
 #                  Default: ""
 # OUTPUT_DIRECTORY Value for Doxygen's OUTPUT_DIRECTORY tag which
 #                  can be used to specify the output directory.
@@ -286,12 +286,24 @@ function (basis_add_doc TARGET_NAME)
 
     message (STATUS "Adding documentation ${TARGET_UID}...")
 
+    # install documentation directory
+    if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
+      install (
+        DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
+        DESTINATION "${INSTALL_DOC_DIR}"
+        COMPONENT   "${ARGN_COMPONENT}"
+        PATTERN     ".svn" EXCLUDE
+        PATTERN     ".git" EXCLUDE
+        PATTERN     "*~"   EXCLUDE
+      )
     # install documentation file
-    install (
-      FILES       "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
-      DESTINATION "${INSTALL_DOC_DIR}"
-      COMPONENT   "${ARGN_COMPONENT}"
-    )
+    else ()
+      install (
+        FILES       "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
+        DESTINATION "${INSTALL_DOC_DIR}"
+        COMPONENT   "${ARGN_COMPONENT}"
+      )
+    endif ()
 
     message (STATUS "Adding documentation ${TARGET_UID}... - done")
 
@@ -326,7 +338,7 @@ function (basis_add_doc TARGET_NAME)
       DOXYGEN
         "GENERATE_HTML;GENERATE_LATEX;GENERATE_RTF;GENERATE_MAN"
         "DOXYFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY"
-        "INPUT;FILTER_PATTERNS;EXCLUDE"
+        "INPUT;FILTER_PATTERNS;EXCLUDE_PATTERNS"
         ${ARGN_UNPARSED_ARGUMENTS}
     )
  
@@ -350,8 +362,8 @@ function (basis_add_doc TARGET_NAME)
     if (NOT DOXYGEN_FILTER_PATTERNS)
       set (DOXYGEN_FILTER_PATTERNS "${BASIS_DOXYGEN_FILTER_PATTERNS}")
     endif ()
-    if (NOT DOXYGEN_EXCLUDE)
-      set (DOXYGEN_EXCLUDE "")
+    if (NOT DOXYGEN_EXCLUDE_PATTERNS)
+      set (DOXYGEN_EXCLUDE_PATTERNS "")
     endif ()
     if (NOT DOXYGEN_OUTPUT_DIRECTORY)
       set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}")
