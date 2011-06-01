@@ -337,8 +337,8 @@ function (basis_add_mcc_target TARGET_NAME)
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
       INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
-      LINK_DEPENDS              "${LINK_DEPENDS}"
       COMPILE_FLAGS             "${COMPILE_FLAGS}"
+      LINK_DEPENDS              "${LINK_DEPENDS}"
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
   )
@@ -404,8 +404,8 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       "SOVERSION"
       "INCLUDE_DIRECTORIES"
       "SOURCES"
-      "LINK_DEPENDS"
       "COMPILE_FLAGS"
+      "LINK_DEPENDS"
       "RUNTIME_COMPONENT"
       "LIBRARY_COMPONENT"
   )
@@ -525,7 +525,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
           "${BASIS_CMD_MATLAB}" # run MATLAB
           "-nosplash"           # do not display splash screen on start up
           "-nodesktop"          # run in command line mode
-          "-nojvm"              # we do not need the Java Virtual Machine
+          #"-nojvm"              # we do not need the Java Virtual Machine
           "-r" "${MATLAB_CMD}"  # MATLAB command which invokes MATLAB Compiler
       )
     endif ()

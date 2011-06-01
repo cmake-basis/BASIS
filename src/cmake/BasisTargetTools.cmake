@@ -30,7 +30,7 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # ****************************************************************************
 # \brief Replaces CMake's set_target_properties () command.
 
-function (basis_set_target_properties TARGET_NAME)
+function (basis_set_target_properties)
   set (UIDS)
   list (GET ARGN 0 ARG)
   while (ARG AND NOT ARG STREQUAL "PROPERTIES")
@@ -39,6 +39,9 @@ function (basis_set_target_properties TARGET_NAME)
     list (REMOVE_AT ARGN 0)
     list (GET ARGN 0 ARG)
   endwhile ()
+  if (NOT UIDS)
+    message (FATAL_ERROR "basis_set_target_properties (): No targets specified")
+  endif ()
   set_target_properties (${UIDS} ${ARGN})
 endfunction ()
 
@@ -204,7 +207,7 @@ function (basis_target_link_libraries TARGET_NAME)
       endif ()
     endforeach ()
  
-    set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS ${DEPENDS})
+    set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
   # other
   else ()
     target_link_libraries (${TARGET_UID} ${ARGN})
