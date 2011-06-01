@@ -35,6 +35,12 @@ version="$versionMajor.$versionMinor.$versionPatch"
 # name of CMake configuration file used to resolve dependencies
 dependsFile='Depends.cmake'
 
+# project configuration file relative to project root directory
+#
+# This file stores the latest configuration used to create or modify the
+# project using this command-line tool.
+cache=".basis/cache"
+
 # ============================================================================
 # usage / help / version
 # ============================================================================
@@ -104,11 +110,11 @@ options ()
     echo "  --conf-package             Whether to include custom Package.cmake file."
     echo "  --conf-script              Whether to include custom ScriptConfig.cmake file."
     echo "  --conf-settings            Whether to include custom Settings.cmake file."
-    echo "  --conf-tests               Whether to include custom CTestCustom.cmake file."
+    echo "  --conf-test                Whether to include custom CTestCustom.cmake file."
     echo "  --conf-use                 Whether to include custom <project>Use.cmake file."
     echo "  --data                     Whether to include support of auxiliary data files."
     echo "  --example                  Whether to include support of example."
-    echo "  --tests                    Whether to include support for testing."
+    echo "  --test                     Whether to include support for testing."
     echo
     echo "  --no-conf-components       Whether to exclude custom Components.cmake file."
     echo "  --no-conf-depends          Whether to exclude custom Depends.cmake file."
@@ -118,11 +124,11 @@ options ()
     echo "  --no-conf-package          Whether to exclude custom Package.cmake file."
     echo "  --no-conf-script           Whether to exclude custom ScriptConfig.cmake file."
     echo "  --no-conf-settings         Whether to exclude custom Settings.cmake file."
-    echo "  --no-conf-tests            Whether to exclude custom CTestCustom.cmake file."
+    echo "  --no-conf-test             Whether to exclude custom CTestCustom.cmake file."
     echo "  --no-conf-use              Whether to exclude custom <project>Use.cmake file."
     echo "  --no-data                  Whether to exclude support of auxiliary data files."
     echo "  --no-example               Whether to exclude support of example."
-    echo "  --no-tests                 Whether to exclude support for testing (implies --no-conf-tests)."
+    echo "  --no-test                  Whether to exclude support for testing (implies --no-conf-test)."
     echo
     echo "  -p [ --pkg ] arg           Name of external package required by this project."
     echo "  --optPkg arg               Name of external package optionally used by this project."
@@ -313,7 +319,6 @@ backup=1           # whether to backup project files before updating them
 clean=0            # whether to remove backup and other temporary files
 cleanAll=0         # whether to remove all additional files
 
-minimal=1          # start with minimal project template
 confSettings=0     # add/remove project settings file
 confDepends=0      # add/remove dependencies configuration file
 confComponents=0   # add/remove components configuration file
@@ -325,7 +330,7 @@ confScript=0       # add/remove script configuration file
 confTests=0        # add/remove testing configuration file
 confUse=0          # add/remove unit testing
 data=0             # add/remove auxiliary data files
-example=1          # add/remove example
+example=0          # add/remove example
 tests=0            # add/remove testing tree
  
 # ----------------------------------------------------------------------------
@@ -427,7 +432,6 @@ do
             ;;
 
         --minimal)
-            minimal=1
             confSettings=-1
             confDepends=-1
             confComponents=-1
@@ -442,8 +446,8 @@ do
             example=-1
             tests=-1
             ;;
+
         --standard)
-            minimal=1
             confSettings=1
             confDepends=1
             confComponents=-1
@@ -460,7 +464,6 @@ do
             ;;
 
         --full)
-            minimal=1
             confSettings=1
             confDepends=1
             confComponents=1
@@ -540,11 +543,11 @@ do
             confScript=-1
             ;;
 
-        --conf-tests)
+        --conf-test|--conf-tests)
             confTests=1
             ;;
 
-        --no-conf-tests)
+        --no-conf-test|--no-conf-tests)
             confTests=-1
             ;;
 
@@ -572,11 +575,11 @@ do
             example=-1
             ;;
 
-        --tests)
+        --test|--tests)
             tests=1
             ;;
 
-        --no-tests)
+        --no-test|--no-tests)
             tests=-1
             ;;
 
@@ -682,6 +685,34 @@ retval=0
 description=${description//\//\\\/}
 description=${description//\\/\\\\}
 description=${description//"/\\"}
+
+# read cache
+cache=$root/$cache
+
+if [ -f "$cache" ]; then
+    source $cache
+
+    if [ $? -ne 0 ]; then
+        echo "W Failed to cache $cache. Continuing with default." 1>&2
+    else
+        if [ $confSettings    -eq 0 ]; then confSettings=$_confSettings; fi
+        if [ $confDepends     -eq 0 ]; then confDepends=$_confDepends; fi
+        if [ $confComponents  -eq 0 ]; then confComponents=$_confComponents; fi
+        if [ $confPackage     -eq 0 ]; then confPackage=$_confPackage; fi
+        if [ $confFind        -eq 0 ]; then confFind=$_confFind; fi
+        if [ $confFindVersion -eq 0 ]; then confFindVersion=$_confFindVersion; fi
+        if [ $confGenerate    -eq 0 ]; then confGenerate=$_confGenerate; fi
+        if [ $confScript      -eq 0 ]; then confScript=$_confScript; fi
+        if [ $confTests       -eq 0 ]; then confTests=$_confTests; fi
+        if [ $confUse         -eq 0 ]; then confUse=$_confUse; fi
+        if [ $data            -eq 0 ]; then data=$_data; fi
+        if [ $example         -eq 0 ]; then example=$_example; fi
+        if [ $tests           -eq 0 ]; then tests=$_tests; fi
+    fi
+else
+    if [ $example -eq 0 ]; then example=1; fi
+    if [ $tests   -eq 0 ]; then tests=1; fi
+fi
 
 # ****************************************************************************
 # \brief Add or modify project directory or file.
@@ -933,6 +964,8 @@ function addordel
     return 0
 }
 
+
+
 # ----------------------------------------------------------------------------
 # modify project files
 
@@ -944,15 +977,13 @@ fi
 echo "$msg..."
 
 # minimal project structure
-if [ $minimal -gt 0 ]; then
-    add "AUTHORS"            || retval=1
-    add "README"             || retval=1
-    add "INSTALL"            || retval=1
-    add "LICENSE"            || retval=1
-    add "CMakeLists.txt"     || retval=1
-    add "doc/CMakeLists.txt" || retval=1
-    add "src/CMakeLists.txt" || retval=1
-fi
+add "AUTHORS"            || retval=1
+add "README"             || retval=1
+add "INSTALL"            || retval=1
+add "LICENSE"            || retval=1
+add "CMakeLists.txt"     || retval=1
+add "doc/CMakeLists.txt" || retval=1
+add "src/CMakeLists.txt" || retval=1
 
 # additional configuration files
 addordel $confDepends     "config/$dependsFile"           || retval=1
@@ -981,10 +1012,26 @@ addordel $data "data"                || retval=1
 # testing tree
 addordel $tests "CTestConfig.cmake"   || retval=1
 addordel $tests "test/CMakeLists.txt" || retval=1
+addordel $tests "test"                || retval=1
 
 # example
 addordel $example "example/CMakeLists.txt" || retval=1
 addordel $example "example"                || retval=1
+
+# write cache
+echo "_confSettings=$confSettings"       >  $cache
+echo "_confDepends=$confDepends"         >> $cache
+echo "_confComponents=$confComponents"   >> $cache
+echo "_confPackage=$confPackage"         >> $cache
+echo "_confFind=$confFind"               >> $cache
+echo "_confFindVersion=$confFindVersion" >> $cache
+echo "_confGenerate=$confGenerate"       >> $cache
+echo "_confScript=$confScript"           >> $cache
+echo "_confTests=$confTests"             >> $cache
+echo "_confUse=$confUse"                 >> $cache
+echo "_data=$data"                       >> $cache
+echo "_example=$example"                 >> $cache
+echo "_tests=$tests"                     >> $cache
 
 # done
 if [ $retval -ne 0 ]; then
