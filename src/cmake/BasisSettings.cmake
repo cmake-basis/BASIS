@@ -214,7 +214,7 @@ endmacro ()
 
 macro (basis_initialize_directories)
   # source tree
-  foreach (P CONFIG DOC ETC EXAMPLE CODE TESTING)
+  foreach (P CODE CONFIG DATA DOC EXAMPLE TESTING)
     set (VAR PROJECT_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
@@ -226,7 +226,7 @@ macro (basis_initialize_directories)
   endforeach ()
 
   # testing tree
-  foreach (P RUNTIME INPUT OUTPUT EXPECTED SYSTEM UNIT)
+  foreach (P RUNTIME OUTPUT)
     set (VAR TESTING_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
@@ -237,7 +237,7 @@ macro (basis_initialize_directories)
 
   set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
 
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC ETC EXAMPLE MAN)
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC EXAMPLE MAN)
     set (VAR INSTALL_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
     if ("${${VAR}}" STREQUAL "")
@@ -267,7 +267,7 @@ endmacro ()
 
 set (PROJECT_CODE_DIR    "@PROJECT_SOURCE_DIR@/src")
 set (PROJECT_CONFIG_DIR  "@PROJECT_SOURCE_DIR@/config")
-set (PROJECT_ETC_DIR     "@PROJECT_SOURCE_DIR@/etc")
+set (PROJECT_DATA_DIR    "@PROJECT_SOURCE_DIR@/data")
 set (PROJECT_DOC_DIR     "@PROJECT_SOURCE_DIR@/doc")
 set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
 set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
@@ -276,12 +276,8 @@ set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 # testing tree
 # ----------------------------------------------------------------------------
 
-set (TESTING_EXPECTED_DIR "@PROJECT_TESTING_DIR@/expected")
-set (TESTING_INPUT_DIR    "@PROJECT_TESTING_DIR@/data")
-set (TESTING_OUTPUT_DIR   "@PROJECT_BINARY_DIR@/Testing/Temporary/output")
-set (TESTING_RUNTIME_DIR  "@PROJECT_BINARY_DIR@/Testing/bin")
-set (TESTING_SYSTEM_DIR   "@PROJECT_TESTING_DIR@/system")
-set (TESTING_UNIT_DIR     "@PROJECT_TESTING_DIR@/unit")
+set (TESTING_OUTPUT_DIR  "@PROJECT_BINARY_DIR@/Testing/Temporary/output")
+set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 
 # ----------------------------------------------------------------------------
 # build tree
@@ -329,21 +325,19 @@ endif ()
 # install tree directories
 set (INSTALL_RUNTIME_DIR   "bin")           # main executables and shared libraries (WIN32)
 if (WIN32)
-set (INSTALL_LIBEXEC_DIR "bin")             # auxiliary executables
+set (INSTALL_LIBEXEC_DIR   "bin")           # auxiliary executables
 else ()
-set (INSTALL_LIBEXEC_DIR "lib")             # auxiliary executables
+set (INSTALL_LIBEXEC_DIR   "lib")           # auxiliary executables
 endif ()
 set (INSTALL_LIBRARY_DIR   "lib")           # shared (UNIX) and module libraries
 set (INSTALL_ARCHIVE_DIR   "lib")           # static and import libraries
 set (INSTALL_INCLUDE_DIR   "include")       # public header files of libraries
-set (INSTALL_ETC_DIR       "etc")           # software configuration files
 set (INSTALL_DOC_DIR       "share/doc")     # documentaton files
-set (INSTALL_EXAMPLE_DIR   "share/example") # package example
 set (INSTALL_MAN_DIR       "share/man")     # man pages
 if (WIN32)
 set (INSTALL_CONFIG_DIR    "cmake")         # package configuration files
 else ()
-set (INSTALL_CONFIG_DIR    "share/cmake/\@PROJECT_NAME_LOWER\@")
+set (INSTALL_CONFIG_DIR    "lib/cmake/\@PROJECT_NAME_LOWER\@")
 endif ()
 set (INSTALL_SHARE_DIR     "share")         # other shared files
 
@@ -351,11 +345,14 @@ if (INSTALL_SINFIX)
   if (NOT BASIS_INCLUDE_PREFIX)
     set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
   endif ()
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE ETC DOC EXAMPLE MAN SHARE)
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE DOC MAN SHARE)
     set (VAR "INSTALL_${P}_DIR")
     set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
   endforeach ()
 endif ()
+
+set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
+set (INSTALL_DATA_DIR    "${INSTALL_SHARE_DIR}/data")    # auxiliary data files
 
 # ============================================================================
 # build configuration(s)

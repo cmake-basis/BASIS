@@ -74,7 +74,6 @@ find_program (
 
 mark_as_advanced (BASIS_CMD_MCC)
 
-
 find_program (
   BASIS_CMD_MEXEXT
     NAMES mexext
