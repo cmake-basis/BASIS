@@ -27,6 +27,7 @@ progDir=$(getProgDir)   # directory of this script
 versionMajor='@VERSION_MAJOR@' # major version number
 versionMinor='@VERSION_MINOR@' # minor version number
 versionPatch='@VERSION_PATCH@' # version patch number
+revision='@REVISION@'          # revision number (0 if not applicable)
 
 # version string
 version="$versionMajor.$versionMinor.$versionPatch"
@@ -43,7 +44,11 @@ dependsFile='Depends.cmake'
 
 version ()
 {
-	echo "$progName $version"
+    if [ $revision -gt 0 ]; then
+        echo "$progName $version (rev. $revision)"
+    else
+	    echo "$progName $version"
+    fi
 }
 
 # ****************************************************************************
