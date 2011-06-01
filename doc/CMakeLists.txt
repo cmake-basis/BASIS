@@ -31,7 +31,7 @@ basis_add_doc (ChangeLog GENERATOR svn2cl)
 #
 # \see basis_add_doc ()
 
-basis_add_doc (API GENERATOR Doxygen)
+basis_add_doc (API GENERATOR Doxygen EXCLUDE_PATTERNS "*/tclap/*")
 
 # ============================================================================
 # manuals
@@ -42,4 +42,5 @@ basis_add_doc (API GENERATOR Doxygen)
 #
 # \see basis_add_doc ()
 
+basis_add_doc (tclap)
 
