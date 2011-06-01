@@ -86,7 +86,7 @@ options ()
     echo "                               --no-conf-settings"
     echo "                               --no-conf-use"
     echo "                               --no-conf-version"
-    echo "                               --no-etc"
+    echo "                               --no-data"
     echo "                               --no-unit-tests"
     echo
     echo "  --full                     Choose full project template. Corresponds to selecting all files."
@@ -101,11 +101,9 @@ options ()
     echo "  --conf-settings            Whether to include custom Settings.cmake file."
     echo "  --conf-tests               Whether to include custom CTestCustom.cmake file."
     echo "  --conf-use                 Whether to include custom <project>Use.cmake file."
-    echo "  --etc                      Whether to include support of software configuration data."
+    echo "  --data                     Whether to include support of auxiliary data files."
     echo "  --example                  Whether to include support of example."
-    echo "  --tests                    Alias for '--system-tests --unit-tests'."
-    echo "  --system-tests             Whether to include support of system tests."
-    echo "  --unit-tests               Whether to include support of unit tests."
+    echo "  --tests                    Whether to include support for testing."
     echo
     echo "  --no-conf-components       Whether to exclude custom Components.cmake file."
     echo "  --no-conf-depends          Whether to exclude custom Depends.cmake file."
@@ -117,11 +115,9 @@ options ()
     echo "  --no-conf-settings         Whether to exclude custom Settings.cmake file."
     echo "  --no-conf-tests            Whether to exclude custom CTestCustom.cmake file."
     echo "  --no-conf-use              Whether to exclude custom <project>Use.cmake file."
-    echo "  --no-etc                   Whether to exclude support of software configuration data."
+    echo "  --no-data                  Whether to exclude support of auxiliary data files."
     echo "  --no-example               Whether to exclude support of example."
-    echo "  --no-tests                 Alias for '--no-system-tests --no-unit-tests --no-conf-tests'."
-    echo "  --no-system-tests          Whether to exclude support of system tests."
-    echo "  --no-unit-tests            Whether to exclude support of unit tests."
+    echo "  --no-tests                 Whether to exclude support for testing (implies --no-conf-tests)."
     echo
     echo "  -p [ --pkg ] arg           Name of external package required by this project."
     echo "  --optPkg arg               Name of external package optionally used by this project."
@@ -323,10 +319,9 @@ confGenerate=0     # add/remove generate find package configuration script
 confScript=0       # add/remove script configuration file
 confTests=0        # add/remove testing configuration file
 confUse=0          # add/remove unit testing
-etc=0              # add/remove software configuration data
+data=0             # add/remove auxiliary data files
 example=1          # add/remove example
-systemTests=0      # add/remove system testing
-unitTests=0        # add/remove unit testing
+tests=0            # add/remove testing tree
  
 # ----------------------------------------------------------------------------
 # parse options
@@ -438,10 +433,9 @@ do
             confScript=-1
             confTests=-1
             confUse=-1
-            etc=-1
+            data=-1
             example=-1
-            systemTests=-1
-            unitTests=-1
+            tests=-1
             ;;
         --standard)
             minimal=1
@@ -455,10 +449,9 @@ do
             confScript=-1
             confTests=-1
             confUse=-1
-            etc=-1
+            data=-1
             example=1
             tests=1
-            unitTests=-1
             ;;
 
         --full)
@@ -473,10 +466,9 @@ do
             confScript=1
             confTests=1
             confUse=1
-            etc=1
+            data=1
             example=1
             tests=1
-            unitTests=1
             ;;
 
         --conf-settings)
@@ -559,12 +551,12 @@ do
             confUse=-1
             ;;
 
-        --etc)
-            etc=1
+        --data)
+            data=1
             ;;
 
-        --no-etc)
-            etc=-1
+        --no-data)
+            data=-1
             ;;
 
         --example)
@@ -576,30 +568,11 @@ do
             ;;
 
         --tests)
-            systemTests=1
-            unitTests=1
+            tests=1
             ;;
 
         --no-tests)
-            systemTests=-1
-            unitTests=-1
-            confTests=-1
-            ;;
-
-        --system-tests)
-            systemTests=1
-            ;;
-
-        --no-system-tests)
-            systemTests=-1
-            ;;
-
-        --unit-tests)
-            unitTests=1
-            ;;
-
-        --no-unit-tests)
-            unitTests=-1
+            tests=-1
             ;;
 
         -*)
@@ -997,25 +970,12 @@ if [ -d "$root/config" ]; then
 fi
 
 # software configuration data
-addordel $etc "etc/CMakeLists.txt" || retval=1
-addordel $etc "etc"                || retval=1
+addordel $data "data/CMakeLists.txt" || retval=1
+addordel $data "data"                || retval=1
 
 # testing tree
-addordel $systemTests "test/system/CMakeLists.txt" || retval=1
-addordel $unitTests   "test/unit/CMakeLists.txt"   || retval=1
-
-if [ $systemTests -gt 0 -o $unitTests -gt 0 ]; then
-    add "CTestConfig.cmake"   || retval=1
-    add "test/CMakeLists.txt" || retval=1
-    add "test/data"           || retval=1
-    add "test/expected"       || retval=1
-elif [ $systemTests -lt 0 -a $unitTests -lt 0 ]; then
-    del "CTestConfig.cmake"   || retval=1
-    del "test/CMakeLists.txt" || retval=1
-    del "test/data"           || retval=1
-    del "test/expected"       || retval=1
-    del "test"                || retval=1
-fi
+addordel $tests "CTestConfig.cmake"   || retval=1
+addordel $tests "test/CMakeLists.txt" || retval=1
 
 # example
 addordel $example "example/CMakeLists.txt" || retval=1

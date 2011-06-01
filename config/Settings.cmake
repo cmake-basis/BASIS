@@ -22,7 +22,7 @@
 # installation directory of project template files
 set (
   INSTALL_TEMPLATE_DIR
-    "\@INSTALL_ETC_DIR\@/template"
+    "\@INSTALL_SHARE_DIR\@/template"
   CACHE PATH
     "Installation directory of project template (relative to INSTALL_PREFIX)."
 )
@@ -33,7 +33,7 @@ string (CONFIGURE "${INSTALL_TEMPLATE_DIR}" INSTALL_TEMPLATE_DIR @ONLY)
 # installation directory of CMake modules
 set (
   INSTALL_MODULES_DIR
-    "\@INSTALL_CONFIG_DIR\@"
+    "\@INSTALL_SHARE_DIR\@/modules"
   CACHE PATH
     "Installation directory of CMake modules (relative to INSTALL_PREFIX)."
 )

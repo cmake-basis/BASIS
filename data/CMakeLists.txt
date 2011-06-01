@@ -1,9 +1,6 @@
 ##############################################################################
 # \file  CMakeLists.txt
-# \brief Build configuration of software configuration files.
-#
-# A "configuration file" is a local file used to control the operation of a
-# program; it must be static and cannot be an executable binary.
+# \brief Build configuration of auxiliary data files.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.

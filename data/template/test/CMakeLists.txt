@@ -2,6 +2,15 @@
 # \file  CMakeLists.txt
 # \brief Build configuration of software testing.
 #
+# Unit tests test only single functions, classes, and modules of the software.
+# System tests, on the other side, execute the programs of this package with
+# given test input data and compare the output of the programs to the expected
+# results.
+#
+# The built test executables can be found in TESTING_RUNTIME_DIR.
+# The test output shall be written to TESTING_OUTPUT_DIR. In most cases,
+# a subdirectory for each test should be created under this output directory.
+#
 # Copyright (c) University of Pennsylvania. All rights reserved.
 # See LICENSE file in project root or 'doc' directory for details.
 #
@@ -17,14 +26,6 @@ set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
 
 # ============================================================================
-# subdirectories
+# tests
 # ============================================================================
-
-if (EXISTS "${TESTING_SYSTEM_DIR}")
-  add_subdirectory ("${TESTING_SYSTEM_DIR}")
-endif ()
-
-if (EXISTS "${TESTING_UNIT_DIR}")
-  add_subdirectory ("${TESTING_UNIT_DIR}")
-endif ()
 
