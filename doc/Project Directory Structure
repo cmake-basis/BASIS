@@ -153,13 +153,9 @@ SOURCE TREE
       + PROJECT_CODE_DIR                + src/
       + PROJECT_CONFIG_DIR              + config/
       + PROJECT_DOC_DIR                 + doc/
-      + PROJECT_ETC_DIR                 + etc/
+      + PROJECT_DATA_DIR                + data/
       + PROJECT_EXAMPLE_DIR             + example/
       + PROJECT_TESTING_DIR             + test/
-          + TESTING_INPUT_DIR               + data/
-          + TESTING_EXPECTED_DIR            + expected/
-          + TESTING_SYSTEM_DIR              + system/
-          + TESTING_UNIT_DIR                + unit/
 
 
   Description
@@ -168,31 +164,26 @@ SOURCE TREE
   - PROJECT_SOURCE_DIR     Root directory of source tree.
   - PROJECT_CONFIG_DIR     BASIS configuration files.
   - PROJECT_CODE_DIR       All source code files.
-  - PROJECT_ETC_DIR        Software configuration files including
+  - PROJECT_DATA_DIR       Software configuration files including
                            auxiliary data such as medical atlases.
   - PROJECT_EXAMPLE_DIR    Example application of software.
   - PROJECT_DOC_DIR        Software documentation.
   - PROJECT_TESTING_DIR    Implementation of tests and test data.
-  - TESTING_INPUT_DIR      Test input data.
-  - TESTING_EXPECTED_DIR   Testing baseline data, for example, images
-                           of representative slices which are compared
-                           to same slices of test output.
-  - TESTING_SYSTEM_DIR     Source code of system tests.
-  - TESTING_UNIT_DIR       Source code of unit tests.
 
 
   Common Files
   ------------
 
+  - AUTHORS                Lists names of people who actively contributed to
+                           the software package. The contributions of other
+                           kind shall be acknowledged in the readme file.
+  - LICENSE                Copyright notice and license notice.
+  - README                 Root documentation file (readme file).
+  - INSTALL                Build and installation instructions.
+
   - CMakeLists.txt         Build configuration files.
   - CTestConfig.cmake      Dashboard configuration file.
   - CTestCustom.cmake.in   Test configuration file.
-  - AUTHORS                Lists names of people who actively contributed to the
-                           the software package. The contributions of other
-                           kind shall be acknowledged in the readme file.
-  - LICENSE                Licensing information.
-  - README                 Root documentation file (readme file).
-  - INSTALL                Build and installation instructions.
 
 
 
@@ -213,7 +204,7 @@ BUILD TREE
 
   - PROJECT_BINARY_DIR              - <build>/
       + RUNTIME_OUTPUT_DIRECTORY        + bin/
-      + LIBRARY_OUTPUT_DIRECTORY        + bin/
+      + LIBRARY_OUTPUT_DIRECTORY        + lib/
       + ARCHIVE_OUTPUT_DIRECTORY        + lib/
       + TESTING_RUNTIME_DIR             + Testing/bin/
       + TESTING_OUTPUT_DIR              + Testing/Temporary/output
@@ -270,10 +261,9 @@ INSTALL TREE
       + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/
       + INSTALL_LIBRARY_DIR            + lib/<sinfix>/
       + INSTALL_ARCHIVE_DIR            + lib/<sinfix>/
+      + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix>/
       + INSTALL_INCLUDE_DIR            + include/sbia/<project>/
-      + INSTALL_ETC_DIR                + etc/<sinfix>/
       + INSTALL_SHARE_DIR              + share/
-          + INSTALL_CONFIG_DIR             + cmake/
           + INSTALL_DOC_DIR                + doc/<sinfix>
           + INSTALL_EXAMPLE_DIR            + example/<sinfix>/
           + INSTALL_MAN_DIR                + man/<sinfix>/
@@ -296,8 +286,6 @@ INSTALL TREE
   - INSTALL_LIBRARY_DIR   Shared libraries on UNIX and module libraries.
   - INSTALL_ARCHIVE_DIR   Static and import libraries on Windows.
   - INSTALL_INCLUDE_DIR   Public header files of libraries.
-  - INSTALL_ETC_DIR       Software configuration files such as medical atlases
-                          and pre-computed lookup tables.
   - INSTALL_DOC_DIR       Readme file, licensing information, authors file,
                           and other documentation files including the user
                           manual are installed here.
@@ -308,7 +296,8 @@ INSTALL TREE
       + man3/             Man pages of libraries.
   - INSTALL_CONFIG_DIR    CMake configuration files, i.e., <Project>Config.cmake
                           et al. files are installed here.
-  - INSTALL_SHARE_DIR     Other shared package files.
+  - INSTALL_SHARE_DIR     Shared package files including auxiliary data files
+                          such as pre-computed lookup tables and medical atlases.
 
 
   Links
