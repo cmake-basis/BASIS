@@ -129,11 +129,12 @@ SOURCE TREE
   the expected results. Therefore, system tests can also be performed on a
   target system using the installed software where both the software and system
   tests are distributed as separate binary distribution packages. Unit tests,
-  on the other side, are not supposed to be installed and may not even be
-  distributed to reduce the size of the distribution packages. Each unit test
-  only tests a single software module such as a C++ class. The size of the 
-  additional data required for unit tests shall be reasonably small. Entire
-  medical image data sets should only be required for system tests.
+  on the other side, only test a single software module such as a C++ class.
+  The size of the  additional data required for unit tests shall be reasonably
+  small. Entire medical image data sets should only be required for system tests.
+  The unit tests are compiled into separate executable files called test drivers.
+  These executable files are not essential for the functioning of the software
+  and are solely build for the purpose of testing.
 
   As the testing as well as the example in the field of medical imaging often
   requires a huge amount of image data, these datasets are stored and managed
@@ -257,16 +258,16 @@ INSTALL TREE
   Based on above options, the installation directories are set as follows:
 
   - INSTALL_PREFIX                 - <prefix>/
+      + INSTALL_CONFIG_DIR             + lib/<sinfix>/cmake/ (UNIX) | cmake/ (Windows)
       + INSTALL_RUNTIME_DIR            + bin/<sinfix>/
-      + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/
+      + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/ | bin/<sinfix>/ (Windows)
       + INSTALL_LIBRARY_DIR            + lib/<sinfix>/
       + INSTALL_ARCHIVE_DIR            + lib/<sinfix>/
-      + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix>/
       + INSTALL_INCLUDE_DIR            + include/sbia/<project>/
       + INSTALL_SHARE_DIR              + share/
-          + INSTALL_DOC_DIR                + doc/<sinfix>
-          + INSTALL_EXAMPLE_DIR            + example/<sinfix>/
-          + INSTALL_MAN_DIR                + man/<sinfix>/
+          + INSTALL_DOC_DIR                + <sinfix>/doc/
+          + INSTALL_EXAMPLE_DIR            + <sinfix>/example/
+          + INSTALL_MAN_DIR                + <sinfix>/man/
 
   Note that the include directory by intention always ends in "sbia/<project>",
   such that header files of a project have to be included as follows:
@@ -280,6 +281,8 @@ INSTALL TREE
   Description
   -----------
 
+  - INSTALL_CONFIG_DIR    CMake configuration files, i.e., <Project>Config.cmake
+                          et al. files are installed here.
   - INSTALL_RUNTIME_DIR   Main executables and shared libraries on Windows.
   - INSTALL_LIBEXEC_DIR   Utility executables which are called by other
                           executables only.
@@ -294,8 +297,6 @@ INSTALL TREE
   - INSTALL_MAN_DIR       Man pages are installed to this directory.
       + man1/             Man pages of main executables.
       + man3/             Man pages of libraries.
-  - INSTALL_CONFIG_DIR    CMake configuration files, i.e., <Project>Config.cmake
-                          et al. files are installed here.
   - INSTALL_SHARE_DIR     Shared package files including auxiliary data files
                           such as pre-computed lookup tables and medical atlases.
 
@@ -311,6 +312,9 @@ INSTALL TREE
 
   - If INSTALL_RUNTIME_DIR != "<prefix>/bin" create symbolic links
     "<prefix>/bin/<exec>" -> "INSTALL_RUNTIME_DIR/<exec>".
+
+  - If INSTALL_DOC_DIR != "<prefix>/share/doc/<sinfix>" create symbolic link
+    "<prefix>/share/doc/<sinfix>/" -> "INSTALL_DOC_DIR".
 
   - If INSTALL_MAN_DIR != "<prefix>/share/man" create symbolic links
     "<prefix>/share/man/man?/<name>.?" -> "INSTALL_MAN_DIR/man?/<name>.?".
