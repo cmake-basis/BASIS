@@ -286,7 +286,7 @@ set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 # These directory paths will be made absolute by the initialization functions.
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 
 # ----------------------------------------------------------------------------
@@ -334,11 +334,7 @@ set (INSTALL_ARCHIVE_DIR   "lib")           # static and import libraries
 set (INSTALL_INCLUDE_DIR   "include")       # public header files of libraries
 set (INSTALL_DOC_DIR       "share/doc")     # documentaton files
 set (INSTALL_MAN_DIR       "share/man")     # man pages
-if (WIN32)
-set (INSTALL_CONFIG_DIR    "cmake")         # package configuration files
-else ()
 set (INSTALL_CONFIG_DIR    "lib/cmake/\@PROJECT_NAME_LOWER\@")
-endif ()
 set (INSTALL_SHARE_DIR     "share")         # other shared files
 
 if (INSTALL_SINFIX)
@@ -352,7 +348,6 @@ if (INSTALL_SINFIX)
 endif ()
 
 set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
-set (INSTALL_DATA_DIR    "${INSTALL_SHARE_DIR}/data")    # auxiliary data files
 
 # ============================================================================
 # build configuration(s)
