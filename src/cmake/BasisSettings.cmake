@@ -325,29 +325,43 @@ endif ()
 # install tree directories
 set (INSTALL_RUNTIME_DIR   "bin")           # main executables and shared libraries (WIN32)
 if (WIN32)
-set (INSTALL_LIBEXEC_DIR   "bin")           # auxiliary executables
+  set (INSTALL_LIBEXEC_DIR "bin")           # auxiliary executables
 else ()
-set (INSTALL_LIBEXEC_DIR   "lib")           # auxiliary executables
+  set (INSTALL_LIBEXEC_DIR "lib")           # auxiliary executables
 endif ()
 set (INSTALL_LIBRARY_DIR   "lib")           # shared (UNIX) and module libraries
 set (INSTALL_ARCHIVE_DIR   "lib")           # static and import libraries
 set (INSTALL_INCLUDE_DIR   "include")       # public header files of libraries
-set (INSTALL_DOC_DIR       "share/doc")     # documentaton files
-set (INSTALL_MAN_DIR       "share/man")     # man pages
-set (INSTALL_CONFIG_DIR    "lib/cmake/\@PROJECT_NAME_LOWER\@")
 set (INSTALL_SHARE_DIR     "share")         # other shared files
 
 if (INSTALL_SINFIX)
   if (NOT BASIS_INCLUDE_PREFIX)
     set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
   endif ()
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE DOC MAN SHARE)
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE SHARE)
     set (VAR "INSTALL_${P}_DIR")
     set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
   endforeach ()
 endif ()
 
-set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
+if (WIN32)
+  set (INSTALL_CONFIG_DIR  "cmake")   # CMake configuration files
+  set (INSTALL_DOC_DIR     "doc")     # documentaton files
+  set (INSTALL_EXAMPLE_DIR "example") # package example
+  set (INSTALL_MAN_DIR     "man")     # man pages
+else ()
+  set (INSTALL_CONFIG_DIR  "${INSTALL_LIBRARY_DIR}/cmake") # CMake configuration files
+  set (INSTALL_DOC_DIR     "${INSTALL_SHARE_DIR}/doc")     # documentaton files
+  set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
+  set (INSTALL_MAN_DIR     "${INSTALL_SHARE_DIR}/man")     # man pages
+endif ()
+
+if (WIN32 AND INSTALL_SINFIX)
+  foreach (P CONFIG DOC EXAMPLE MAN)
+    set (VAR "INSTALL_${P}_DIR")
+    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+  endforeach ()
+endif ()
 
 # ============================================================================
 # build configuration(s)

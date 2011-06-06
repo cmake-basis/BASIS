@@ -760,25 +760,14 @@ function (basis_install_links)
     endif ()
   endforeach ()
 
-  # CMake package configuration
-  # \note Therefore, <project>Config.cmake must resolve the symbolic link!
-  #basis_install_link (
-  #  "${INSTALL_CONFIG_DIR}/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake"
-  #  "lib/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}Config.cmake"
-  #)
-  #basis_install_symlink (
-  #  "${INSTALL_CONFIG_DIR}/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}ConfigVersion.cmake"
-  #  "lib/${BASIS_CONFIG_PREFIX}${PROJECT_NAME}ConfigVersion.cmake"
-  #)
-
   # documentation
   # \note Not all CPack generators preserve symbolic links to directories
-  # \note The presence of a <prefix>/doc/* folder is not part of the
-  #       Linux file hierarchy standard.
-  #basis_install_link (
-  #  "${INSTALL_DOC_DIR}"
-  #  "doc/${INSTALL_SINFIX}"
-  #)
+  # \note This is not part of the filesystem hierarchy standard of Linux,
+  #       but of the standard of certain distributions including Ubuntu.
+  basis_install_link (
+    "${INSTALL_DOC_DIR}"
+    "share/doc/${INSTALL_SINFIX}"
+  )
 endfunction ()
 
 # ****************************************************************************
