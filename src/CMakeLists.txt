@@ -20,6 +20,9 @@ install (
   PATTERN     .git EXCLUDE
 )
 
+# configure and install utilities
+add_subdirectory (utilities)
+
 # build project management tool
 basis_add_script (basisproject.sh)
 

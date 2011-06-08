@@ -377,3 +377,6 @@ std::string getExecutableName ();
 
 SBIA_BASIS_NAMESPACE_END
 
+
+#endif // SBIA_BASIS_PATH_H_
+

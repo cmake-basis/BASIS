@@ -166,7 +166,7 @@ std::string toWindowsPath (const std::string &path)
     // prepend drive specification to absolute paths
     if (windowsPath [0] == '\\') {
         windowsPath.reserve (windowsPath.size () + 2);
-        windowsPath.insert  (windowsPath.begin (), "C:");
+        windowsPath.insert  (0, "C:");
     }
 
     return cleanPath (windowsPath);
@@ -357,15 +357,15 @@ std::string toAbsolutePath (const std::string &base, const std::string &path)
     if (isRelativePath (absPath)) {
         std::string absBase (base);
         if (isRelativePath (absBase)) {
-            absBase.insert (absBase.begin (), getWorkingDirectory () + '/');
+            absBase.insert (0, getWorkingDirectory () + '/');
         }
-        absPath.insert (absPath.begin (), absBase + '/');
+        absPath.insert (0, absBase + '/');
     }
     // clean path
     absPath = cleanPath (absPath);
     // on Windows, prepend drive letter followed by a colon (:)
 #if WINDOWS
-    if (absPath [0] == '/') absPath.insert (absPath.begin (), "C:");
+    if (absPath [0] == '/') absPath.insert (0, "C:");
 #endif
     return absPath;
 }
@@ -387,7 +387,7 @@ std::string toRelativePath (const std::string &base, const std::string &path)
     // make base path absolute
     std::string absBase = toUnixPath (base, true);
     if (isRelativePath (absBase)) {
-        absBase.insert (absBase.begin (), getWorkingDirectory () + '/');
+        absBase.insert (0, getWorkingDirectory () + '/');
     }
     // path must have same root as base path; this check is intended for
     // Windows, where there is no relative path from one drive to another
@@ -397,13 +397,13 @@ std::string toRelativePath (const std::string &base, const std::string &path)
     std::string::const_iterator p   = unixPath.begin ();
     size_t                      pos = 0;
     size_t                      i   = 0;
-    while (b && p && *b == *p) {
+    while (b != absBase.end () && p != unixPath.end () && *b == *p) {
         if (*p == '/') pos = i;
         ++ b; ++ p; ++ i;
     }
     // skip trailing slash of other path if end of one path reached
     if (b == absBase .end () && p != unixPath.end () && *p == '/') ++ p;
-    if (p == unixPath.end () && b != absPath .end () && *b == '/') ++ b;
+    if (p == unixPath.end () && b != absBase .end () && *b == '/') ++ b;
     // if paths are the same, just return a period (.)
     //
     // Thanks to the previous skipping of trailing slashes, this condition
@@ -415,17 +415,17 @@ std::string toRelativePath (const std::string &base, const std::string &path)
     //    base := "/usr/bin/" path := "/usr/bin"
     //
     // Note: The paths have been cleaned before by the toUnixPath function.
-    if (b == absBase.end () && p == unixPath.end ()) return '.';
+    if (b == absBase.end () && p == unixPath.end ()) return ".";
     // otherwise, pos is the index of the last slash for which both paths
     // were identical; hence, everything that comes after in the original
     // path is preserved and for each following component in the base path
     // a "../" is prepended to the relative path
     std::string relPath;
     if (absBase [absBase.size () - 1] != '/') absBase += '/';
-    while (b) {
-        if (*b == '/') relPath.push_back ("../");
+    while (b != absBase.end ()) {
+        if (*b == '/') relPath += "../";
     }
-    relPath.push_back (unixPath.substr (pos + 1));
+    relPath += unixPath.substr (pos + 1);
     return relPath;
 }
 
@@ -473,7 +473,7 @@ bool readSymbolicLink (const std::string &link, std::string &value)
             }
             break;
         }
-        size += 256;
+        buflen += 256;
     }
 
     free (buffer);
