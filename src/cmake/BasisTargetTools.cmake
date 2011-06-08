@@ -554,7 +554,7 @@ function (basis_add_library TARGET_NAME)
     set (${TARGET_NAME}_PUBLIC_HEADER "")
 
     foreach (SOURCE_FILE ${ARGN})
-      if (${SOURCE_FILE} MATCHES "\\.\(h|hpp|hxx|inl|txx\)$")
+      if (${SOURCE_FILE} MATCHES "\\.\(h|hh|hpp|hxx|inl|txx\)$")
         list (APPEND ${TARGET_NAME}_PUBLIC_HEADER "${SOURCE_FILE}")
       endif ()
     endforeach ()
@@ -633,13 +633,15 @@ function (basis_add_library TARGET_NAME)
 
       add_library (${TARGET_UID} ${ARGN_TYPE} ${ARGN_UNPARSED_ARGUMENTS})
 
-      set_target_properties (
-        ${TARGET_UID}
-        PROPERTIES
-          BASIS_TYPE      "LIBRARY"
-          PUBLIC_HEADER  ${${TARGET_NAME}_PUBLIC_HEADER}
-          PRIVATE_HEADER ${${TARGET_NAME}_PRIVATE_HEADER}
-      )
+      set (PROPERTIES "BASIS_TYPE" "LIBRARY")
+      if (${TARGET_NAME}_PUBLIC_HEADER)
+        list (APPEND PROPERTIES PUBLIC_HEADER ${${TARGET_NAME}_PUBLIC_HEADER})
+      endif ()
+      if (${TARGET_NAME}_PRIVATE_HEADER)
+        list (APPEND PROPERTIES PRIVATE_HEADER ${${TARGET_NAME}_PRIVATE_HEADER})
+      endif ()
+
+      set_target_properties (${TARGET_UID} PROPERTIES ${PROPERTIES})
 
     endif ()
 
