@@ -9,7 +9,7 @@
  */
 
 
-#include "path.h"
+#include <sbia/basis/path.h>
 
 #if WINDOWS
 #  include <direct.h>        // _getcwd
