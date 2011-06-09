@@ -300,6 +300,10 @@ set (
   CACHE PATH "Installation directories suffix (or infix, respectively)."
 )
 
+# option to apply sinfix only optional
+option (INSTALL_SINFIX_FOR_INCLUDES "Whether to append INSTALL_SINFIX to installation directory of header files as well." OFF)
+mark_as_advanced (INSTALL_SINFIX_FOR_INCLUDES)
+
 # option to create (symbolic) links
 if (UNIX)
   option (INSTALL_LINKS "Whether to create (symbolic) links." ON)
@@ -318,6 +322,9 @@ set (INSTALL_INCLUDE_DIR   "include")       # public header files of libraries
 set (INSTALL_SHARE_DIR     "share")         # other shared files
 
 if (INSTALL_SINFIX)
+  if (INSTALL_SINFIX_FOR_INCLUDES)
+    set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
+  endif ()
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE SHARE)
     set (VAR "INSTALL_${P}_DIR")
     set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
