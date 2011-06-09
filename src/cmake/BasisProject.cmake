@@ -389,7 +389,7 @@ macro (basis_project_initialize)
   # install public headers
   install (
     DIRECTORY   "${PROJECT_INCLUDE_DIR}/"
-    DESTINATION "${INSTALL_INCLUDE_DIR}/sbia"
+    DESTINATION "${INSTALL_INCLUDE_DIR}"
     OPTIONAL
     PATTERN     ".svn" EXCLUDE
     PATTERN     ".git" EXCLUDE
