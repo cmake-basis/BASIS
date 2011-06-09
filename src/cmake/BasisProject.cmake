@@ -285,6 +285,7 @@ macro (basis_project_initialize)
 
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
   basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
+  basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}")
 
   # authors, readme, install and license files
   get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME)
