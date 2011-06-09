@@ -765,12 +765,12 @@ function (basis_add_script TARGET_NAME)
   if (NOT ARGN_SCRIPT)
     set (ARGN_SCRIPT "${TARGET_NAME}")
  
+    # use file basename as target name
+    get_filename_component (TARGET_NAME "${TARGET_NAME}" NAME_WE)
+
     # remove ".in" from target name
     string (REGEX REPLACE "\\.in$"          ""    TARGET_NAME "${TARGET_NAME}")
     string (REGEX REPLACE "\\.in\(\\..*\)$" "\\1" TARGET_NAME "${TARGET_NAME}")
-
-    # use file basename as target name
-    get_filename_component (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
 
   # check target name
