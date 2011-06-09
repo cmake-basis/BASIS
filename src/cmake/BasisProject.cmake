@@ -386,7 +386,15 @@ macro (basis_project_initialize)
     source_group ("Default" FILES ${DEFAULT_SOURCES} ${DEFAULT_HEADERS})
   endif ()
 
-  # install public auxiliary headers
+  # install public headers
+  install (
+    DIRECTORY   "${PROJECT_INCLUDE_DIR}/"
+    DESTINATION "${INSTALL_INCLUDE_DIR}/sbia"
+    OPTIONAL
+    PATTERN     ".svn" EXCLUDE
+    PATTERN     ".git" EXCLUDE
+  )
+
   install (
     FILES       ${DEFAULT_PUBLIC_HEADERS}
     DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
