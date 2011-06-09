@@ -183,14 +183,7 @@ endfunction ()
 # library will be installed as part of the RUNTIME_COMPONENT in the directory
 # INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR on Windows.
 # Static/import libraries will be installed as part of the LIBRARY_COMPONENT
-# in the directory INSTALL_ARCHIVE_DIR, while the corresponding public header
-# files will be installed as part of the same component in the directory
-# INSTALL_INCLUDE_DIR, whereby the BASIS_INCLUDE_PREFIX is appended to this
-# path. By default, all header files are considered public. To declare certain
-# header files private and hence exclude them from the installation, add them
-# to the variable <TARGET_NAME>_PRIVATE_HEADER before calling this function.
-# Note that the header file path must be exacly the same as the one passed to
-# this function as part of ARGN!
+# in the directory INSTALL_ARCHIVE_DIR.
 #
 # \note The custom build command is not added yet by this function.
 #       Only a custom target which stores all the information required to

@@ -376,36 +376,15 @@ endfunction ()
 # as well. The runtime library will be installed as part of the component
 # RUNTIME_COMPONENT in the directory INSTALL_LIBRARY_DIR on UNIX systems
 # and INSTALL_RUNTIME_DIR on Windows. Static/import libraries will be installed
-# as part of the LIBRARY_COMPONENT in the directory INSTALL_ARCHIVE_DIR,
-# while the corresponding public header files will be installed as part of
-# the same component in the directory INSTALL_INCLUDE_DIR, whereby the
-# BASIS_INCLUDE_PREFIX is appended to this path. By default, all header files
-# are considered public. To declare certain header files private and hence
-# exclude them from the installation, add them to the variable
-# <TARGET_NAME>_PRIVATE_HEADER before calling this function. Note that the
-# header file path must be exacly the same as the one passed to this function
-# as part of ARGN!
+# as part of the LIBRARY_COMPONENT in the directory INSTALL_ARCHIVE_DIR.
 #
 # Example:
 # \code
-# set (
-#   MYLIB_PRIVATE_HEADER
-#     mylibprivate.h
-#     utilities/utility.h
-# )
-#
-# set (
-#   MYLIB_SOURCE
-#     mylib.c
-#     mylibpublic.h
-#     ${MYLIB_PRIVATE_HEADER}
-# )
-#
-# basis_add_library (MyLib1 STATIC ${MYLIB_SOURCE})
-# basis_add_library (MyLib2 STATIC ${MYLIB_SOURCE} COMPONENT dev)
+# basis_add_library (MyLib1 STATIC mylib.cc)
+# basis_add_library (MyLib2 STATIC mylib.cc COMPONENT dev)
 #
 # basis_add_library (
-#   MyLib3 SHARED ${MYLIB_SOURCE}
+#   MyLib3 SHARED mylib.cc
 #   RUNTIME_COMPONENT bin
 #   LIBRARY_COMPONENT dev
 # )
@@ -550,19 +529,6 @@ function (basis_add_library TARGET_NAME)
 
   else ()
 
-    # public and private headers
-    set (${TARGET_NAME}_PUBLIC_HEADER "")
-
-    foreach (SOURCE_FILE ${ARGN})
-      if (${SOURCE_FILE} MATCHES "\\.\(h|hh|hpp|hxx|inl|txx\)$")
-        list (APPEND ${TARGET_NAME}_PUBLIC_HEADER "${SOURCE_FILE}")
-      endif ()
-    endforeach ()
-
-    foreach (PRIVATE_HEADER_FILE ${${TARGET_NAME}_PRIVATE_HEADER})
-      list (REMOVE_ITEM ${TARGET_NAME}_PUBLIC_HEADER "${PRIVATE_HEADER_FILE}")
-    endforeach ()
-
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # MEX-file
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -633,15 +599,11 @@ function (basis_add_library TARGET_NAME)
 
       add_library (${TARGET_UID} ${ARGN_TYPE} ${ARGN_UNPARSED_ARGUMENTS})
 
-      set (PROPERTIES "BASIS_TYPE" "LIBRARY")
-      if (${TARGET_NAME}_PUBLIC_HEADER)
-        list (APPEND PROPERTIES PUBLIC_HEADER ${${TARGET_NAME}_PUBLIC_HEADER})
-      endif ()
-      if (${TARGET_NAME}_PRIVATE_HEADER)
-        list (APPEND PROPERTIES PRIVATE_HEADER ${${TARGET_NAME}_PRIVATE_HEADER})
-      endif ()
-
-      set_target_properties (${TARGET_UID} PROPERTIES ${PROPERTIES})
+      set_target_properties (
+        ${TARGET_UID}
+        PROPERTIES
+          BASIS_TYPE "LIBRARY"
+      )
 
     endif ()
 
@@ -676,9 +638,6 @@ function (basis_add_library TARGET_NAME)
         COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
       ARCHIVE
         DESTINATION "${INSTALL_ARCHIVE_DIR}"
-        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
-      PUBLIC_HEADER
-        DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
         COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
     )
 

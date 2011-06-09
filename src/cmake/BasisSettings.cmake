@@ -98,24 +98,6 @@ set (BASIS_VERSION_SEPARATOR "#")
 # configuration file "SBIA_<project>Config.cmake".
 set (BASIS_CONFIG_PREFIX "")
 
-# \brief Suffix used for installation of header files.
-#
-# This variable has to be configured during the project initialization when
-# the project name and version are known to substitute for these. The resulting
-# string is the prefix required by other packages to include the header files
-# of the installed project.
-#
-# For example, the header file utilities.h is installed as follows:
-# \code
-# install (FILES utilities.h DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}")
-# \endcode
-#
-# Users of this header file have to include it using the specified prefix:
-# \code
-# #include <@BASIS_INCLUDE_PREFIX@/utilities.h>
-# \endcode
-set (BASIS_INCLUDE_PREFIX "sbia/@PROJECT_NAME_LOWER@")
-
 # \brief Script used to execute a process in CMake script mode.
 #
 # In order to be able to assign a timeout to the execution of a custom command
@@ -335,9 +317,6 @@ set (INSTALL_INCLUDE_DIR   "include")       # public header files of libraries
 set (INSTALL_SHARE_DIR     "share")         # other shared files
 
 if (INSTALL_SINFIX)
-  if (NOT BASIS_INCLUDE_PREFIX)
-    set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
-  endif ()
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE SHARE)
     set (VAR "INSTALL_${P}_DIR")
     set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
@@ -400,7 +379,7 @@ set (
 # ----------------------------------------------------------------------------
 
 # common compiler flags
-set (CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}")
+set (CMAKE_C_FLAGS "" CACHE INTERNAL "" FORCE) # disabled
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # common linker flags
@@ -413,7 +392,7 @@ set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lm")
 # ----------------------------------------------------------------------------
 
 # compiler flags of MinSizeRel configuration
-set (CMAKE_C_FLAGS_MINSIZEREL   "" CACHE INTERNAL "" FORCE)
+set (CMAKE_C_FLAGS_MINSIZEREL ""   CACHE INTERNAL "" FORCE)
 set (CMAKE_CXX_FLAGS_MINSIZEREL "" CACHE INTERNAL "" FORCE)
 
 # linker flags of MinSizeRel configuration
@@ -426,7 +405,6 @@ set (CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "" CACHE INTERNAL "" FORCE)
 # ----------------------------------------------------------------------------
 
 # compiler flags of RelWithDebInfo configuration
-set (CMAKE_C_FLAGS_RELWITHDEBINFO   "" CACHE INTERNAL "" FORCE)
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "" CACHE INTERNAL "" FORCE)
 
 # linker flags of RelWithDebInfo configuration
@@ -435,11 +413,37 @@ set (CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "" CACHE INTERNAL "" FORCE)
 set (CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "" CACHE INTERNAL "" FORCE)
 
 # ----------------------------------------------------------------------------
+# Debug
+# ----------------------------------------------------------------------------
+
+# compiler flags of Debug configuration
+set (CMAKE_C_FLAGS_DEBUG "" CACHE INTERNAL "" FORCE) # disabled
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+
+# linker flags of Debug configuration
+set (CMAKE_EXE_LINKER_FLAGS_DEBUG    "${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
+set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}")
+set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG}")
+
+# ----------------------------------------------------------------------------
+# Release
+# ----------------------------------------------------------------------------
+
+# compiler flags of Release configuration
+set (CMAKE_C_FLAGS_RELEASE "" CACHE INTERNAL "" FORCE) # disabled
+set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+
+# linker flags of Release configuration
+set (CMAKE_EXE_LINKER_FLAGS_RELEASE    "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+set (CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE}")
+set (CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
+
+# ----------------------------------------------------------------------------
 # Coverage
 # ----------------------------------------------------------------------------
 
 # compiler flags for Coverage configuration
-set (CMAKE_C_FLAGS_COVERAGE   "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
+set (CMAKE_C_FLAGS_COVERAGE "" CACHE INTERNAL "" FORCE) # disabled
 set (CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
 
 # linker flags for Coverage configuration

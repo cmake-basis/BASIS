@@ -231,7 +231,7 @@ macro (basis_project_initialize)
   endif ()
 
   # start CMake project
-  project ("${PROJECT_NAME}")
+  project ("${PROJECT_NAME}" CXX)
 
   set (CMAKE_PROJECT_NAME "${PROJECT_NAME}") # variable used by CPack
 
@@ -269,7 +269,6 @@ macro (basis_project_initialize)
 
   # instantiate project directory structure
   basis_initialize_directories ()
-  string (CONFIGURE "${BASIS_INCLUDE_PREFIX}" BASIS_INCLUDE_PREFIX @ONLY)
  
   # include project specific settings
   if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
@@ -384,8 +383,8 @@ macro (basis_project_initialize)
   # install default auxiliary source files
   install (
     FILES       ${DEFAULT_PUBLIC_HEADERS}
-    DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
-  #  COMPONENT   ${BASIS_LIBRARY_COMPONENT}
+    DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
+    COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
   )
 endmacro ()
 
