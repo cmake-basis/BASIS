@@ -2,6 +2,9 @@
 # \file  ScriptConfig.cmake
 # \brief Default script configuration.
 #
+# \note The file ScriptConfig.cmake.in is configured and used by BASIS to
+#       generate CMake build scripts used to "build" script files.
+#
 # This CMake file defines CMake variables which can be used within scripts.
 # If the project structure differs for the build tree and the install tree,
 # the CMake variables used within the script can be set depending on the
@@ -48,7 +51,7 @@
 # \endcode
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE file in project root or 'doc' directory for details.
+# See COPYING file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################

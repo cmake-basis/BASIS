@@ -178,7 +178,7 @@ SOURCE TREE
   - AUTHORS                Lists names of people who actively contributed to
                            the software package. The contributions of other
                            kind shall be acknowledged in the readme file.
-  - LICENSE                Copyright notice and license notice.
+  - COPYING                Copyright notice and license notice.
   - README                 Root documentation file (readme file).
   - INSTALL                Build and installation instructions.
 

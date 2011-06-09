@@ -3,7 +3,7 @@
 # \brief Dashboard configuration file.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE file in project root or 'doc' directory for details.
+# See COPYING file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################

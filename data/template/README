@@ -35,7 +35,7 @@ PACKAGE OVERVIEW
 
   - AUTHORS             A list of the people who contributed to this software.
   - README              This readme file.
-  - LICENSE             The copyright and license notices.
+  - COPYING             The copyright and license notices.
   - INSTALL             Build and installation instructions.
 
 
@@ -50,7 +50,7 @@ PACKAGE OVERVIEW
 LICENSING
 =========
 
-  See LICENSE file in project root or 'doc' directory for details.
+  See COPYING file in project root or 'doc' directory for details.
 
 
 

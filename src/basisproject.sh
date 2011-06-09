@@ -5,7 +5,7 @@
 # \brief This shell script is used to create or modify a BASIS project.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE file in project root or 'doc' directory for details.
+# See COPYING file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
@@ -980,7 +980,7 @@ echo "$msg..."
 add "AUTHORS"            || retval=1
 add "README"             || retval=1
 add "INSTALL"            || retval=1
-add "LICENSE"            || retval=1
+add "COPYING"            || retval=1
 add "CMakeLists.txt"     || retval=1
 add "doc/CMakeLists.txt" || retval=1
 add "src/CMakeLists.txt" || retval=1
