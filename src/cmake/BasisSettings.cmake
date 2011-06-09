@@ -196,7 +196,7 @@ endmacro ()
 
 macro (basis_initialize_directories)
   # source tree
-  foreach (P CODE CONFIG DATA DOC EXAMPLE TESTING)
+  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
     set (VAR PROJECT_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
@@ -252,6 +252,7 @@ set (PROJECT_CONFIG_DIR  "@PROJECT_SOURCE_DIR@/config")
 set (PROJECT_DATA_DIR    "@PROJECT_SOURCE_DIR@/data")
 set (PROJECT_DOC_DIR     "@PROJECT_SOURCE_DIR@/doc")
 set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
+set (PROJECT_INCLUDE_DIR "@PROJECT_SOURCE_DIR@/include")
 set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 
 # ----------------------------------------------------------------------------

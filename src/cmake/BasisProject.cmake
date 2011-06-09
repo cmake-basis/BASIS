@@ -284,6 +284,7 @@ macro (basis_project_initialize)
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
 
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
+  basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
 
   # authors, readme, install and license files
   get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME)
@@ -360,27 +361,31 @@ macro (basis_project_initialize)
   set (LICENSE)
 
   # configure default auxiliary source files
-  basis_configure_auxiliary_sources (DEFAULT_SOURCES DEFAULT_PUBLIC_HEADERS)
+  basis_configure_auxiliary_sources (
+    DEFAULT_SOURCES
+    DEFAULT_HEADERS
+    DEFAULT_PUBLIC_HEADERS
+  )
 
-  set (DEFAULT_SOURCES_DIRS)
-  foreach (SOURCE ${DEFAULT_SOURCES})
+  set (DEFAULT_INCLUDE_DIRS)
+  foreach (SOURCE ${DEFAULT_HEADERS})
     get_filename_component (TMP "${SOURCE}" PATH)
-    list (APPEND DEFAULT_SOURCES_DIRS "${TMP}")
+    list (APPEND DEFAULT_INCLUDE_DIRS "${TMP}")
     set (TMP)
   endforeach ()
   set (SOURCE)
-  if (DEFAULT_SOURCES_DIRS)
-    list (REMOVE_DUPLICATES DEFAULT_SOURCES_DIRS)
+  if (DEFAULT_INCLUDE_DIRS)
+    list (REMOVE_DUPLICATES DEFAULT_INCLUDE_DIRS)
   endif ()
-  if (DEFAULT_SOURCES_DIRS)
-    include_directories (BEFORE ${DEFAULT_SOURCES_DIRS})
+  if (DEFAULT_INCLUDE_DIRS)
+    include_directories (BEFORE ${DEFAULT_INCLUDE_DIRS})
   endif ()
 
   if (DEFAULT_SOURCES)
-    source_group ("Default" FILES ${DEFAULT_SOURCES})
+    source_group ("Default" FILES ${DEFAULT_SOURCES} ${DEFAULT_HEADERS})
   endif ()
 
-  # install default auxiliary source files
+  # install public auxiliary headers
   install (
     FILES       ${DEFAULT_PUBLIC_HEADERS}
     DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
@@ -454,47 +459,66 @@ endmacro ()
 #                 It shall not be included by any other source file!
 #
 # \note If there exists a *.in file of the corresponding source file in the
-#       PROJECT_CODE_DIR of the project, it will be used as template.
-#       Otherwise, the template file of BASIS is used.
+#       PROJECT_CONFIG_DIR, it will be used as template. Otherwise, the
+#       template file of BASIS is used.
 #
 # \param [out] SOURCES        Configured auxiliary source files.
+# \param [out] HEADERS        Configured auxiliary header files.
 # \param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
 
-function (basis_configure_auxiliary_sources SOURCES PUBLIC_HEADERS)
-  # get binary directory corresponding to PROJECT_CODE_DIR
-  file (RELATIVE_PATH DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
-  set (DIR "${PROJECT_BINARY_DIR}/${DIR}")
+function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
+  set (SOURCES_OUT        "")
+  set (HEADERS_OUT        "")
+  set (PUBLIC_HEADERS_OUT "")
 
-  # lists of auxiliary source files
+  # get binary output directories
+  file (RELATIVE_PATH TMP "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
+  set (BINARY_CODE_DIR "${PROJECT_BINARY_DIR}/${TMP}")
+  file (RELATIVE_PATH TMP "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
+  set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/${TMP}")
+
+  # configure private auxiliary source files
   set (
-    PRIVATE_SOURCES
+    SOURCES_NAMES
+      "config.cc"
       "mainaux.h"
   )
 
-  set (
-    PUBLIC_SOURCES
-      "config.h"
-  )
-
-  # configure auxiliary source files
-  set (SOURCES_OUT "")
-  foreach (SOURCE ${PRIVATE_SOURCES} ${PUBLIC_SOURCES})
+  foreach (SOURCE ${SOURCES_NAMES})
     set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}.in")
     if (NOT EXISTS "${TEMPLATE}")
       set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
     endif ()
-    configure_file ("${TEMPLATE}" "${DIR}/${SOURCE}" @ONLY)
-    list (APPEND SOURCES_OUT "${DIR}/${SOURCE}")
+    set  (SOURCE_OUT "${BINARY_CODE_DIR}/${SOURCE}")
+    configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
+    if (SOURCE MATCHES ".h$")
+      list (APPEND HEADERS_OUT "${SOURCE_OUT}")
+    else ()
+      list (APPEND SOURCES_OUT "${SOURCE_OUT}")
+    endif ()
   endforeach ()
 
-  # output list of public headers
-  set (PUBLIC_HEADERS_OUT "")
-  foreach (SOURCE ${PUBLIC_SOURCES})
-    list (APPEND PUBLIC_HEADERS_OUT "${DIR}/${SOURCE}")
+  # configure public auxiliary header files
+  set (
+    SOURCES_NAMES
+      "config.h"
+  )
+
+  foreach (SOURCE ${SOURCES_NAMES})
+    set (TEMPLATE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}.in")
+    if (NOT EXISTS "${TEMPLATE}")
+      set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
+    endif ()
+    set  (SOURCE_OUT "${BINARY_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}")
+    configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
+    list (APPEND PUBLIC_HEADERS_OUT "${SOURCE_OUT}")
   endforeach ()
+
+  list (APPEND HEADERS ${PUBLIC_HEADERS_OUT})
 
   # return
   set (${SOURCES}        "${SOURCES_OUT}"        PARENT_SCOPE)
+  set (${HEADERS}        "${HEADERS_OUT}"        PARENT_SCOPE)
   set (${PUBLIC_HEADERS} "${PUBLIC_HEADERS_OUT}" PARENT_SCOPE)
 endfunction ()
 
