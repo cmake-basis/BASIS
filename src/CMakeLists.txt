@@ -8,21 +8,85 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-# configure and install CMake modules
-add_subdirectory (cmake)
+# ============================================================================
+# CMake modules
+# ============================================================================
 
-# install TCLAP header files
-install (
-  DIRECTORY   tclap
-  DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
-  COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-  PATTERN     .svn EXCLUDE
-  PATTERN     .git EXCLUDE
+# ----------------------------------------------------------------------------
+# modules
+set (
+  CMAKE_MODULES
+    "cmake/CMakeParseArguments.cmake"
+    "cmake/BasisCommonTools.cmake"
+    "cmake/BasisDocTools.cmake"
+    "cmake/BasisMatlabTools.cmake"
+    "cmake/BasisPack.cmake"
+    "cmake/BasisProject.cmake"
+    "cmake/BasisSettings.cmake"
+    "cmake/BasisSubversionTools.cmake"
+    "cmake/BasisTargetTools.cmake"
+    "cmake/BasisTest.cmake"
+    "cmake/BasisUpdate.cmake"
+    "cmake/ExternalData.cmake"
+    "cmake/ExternalData_config.cmake.in"
 )
 
-# configure and install utilities
-add_subdirectory (utilities)
+# ----------------------------------------------------------------------------
+# auxiliary files
+set (
+  CMAKE_MODULES_AUXILIARY_FILES
+    "cmake/ExecuteProcess.cmake"
+    "cmake/ScriptConfig.cmake.in"
+    "cmake/Config.cmake.in"
+    "cmake/ConfigBuild.cmake"
+    "cmake/ConfigInstall.cmake"
+    "cmake/ConfigVersion.cmake.in"
+    "cmake/Use.cmake.in"
+    "cmake/GenerateConfig.cmake"
+    "cmake/updatefile.py"
+    "cmake/runmcc.m"
+    "cmake/bash2cpp.pl"
+    "cmake/matlab2cpp.pl"
+    "cmake/Doxyfile.in"
+    "cmake/config.h.in"
+    "cmake/config.cc.in"
+    "cmake/mainaux.h.in"
+    "cmake/execname.cpp.in"
+)
 
-# build project management tool
-basis_add_script (basisproject.sh)
+# ----------------------------------------------------------------------------
+# Find<Pkg>.cmake modules
+set (
+  CMAKE_FIND_MODULES
+    "cmake/FindGTest.cmake"
+    "cmake/FindGMock.cmake"
+    "cmake/FindNiftiCLib.cmake"
+    "cmake/FindMatlabNiftiTools.cmake"
+)
+
+# ----------------------------------------------------------------------------
+# install files
+install (
+  FILES       ${CMAKE_MODULES} ${CMAKE_FIND_MODULES} ${CMAKE_MODULES_AUXILIARY_FILES}
+  DESTINATION "${INSTALL_MODULES_DIR}"
+)
+
+# ============================================================================
+# utilities
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# C++ utilities
+basis_add_library (
+  basis STATIC
+    "utilities/path.cc"
+)
+
+# ============================================================================
+# tools
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# project management tool
+basis_add_script (tools/basisproject.sh)
 
