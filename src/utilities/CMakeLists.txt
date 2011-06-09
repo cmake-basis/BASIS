@@ -8,10 +8,10 @@
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
 
-set (BASIS_SOURCES
-    "path.h"
+# ----------------------------------------------------------------------------
+# basis C++ library
+basis_add_library (
+  basis STATIC
     "path.cc"
 )
-
-basis_add_library (basis STATIC ${BASIS_SOURCES})
 
