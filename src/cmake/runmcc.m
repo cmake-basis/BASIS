@@ -8,7 +8,7 @@ function runmcc (varargin)
 % Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 
 % Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-% See LICENSE file in project root or 'doc' directory for details.
+% See COPYING file in project root or 'doc' directory for details.
 
 % parse arguments and append create mcc command
 cmd = 'mcc';

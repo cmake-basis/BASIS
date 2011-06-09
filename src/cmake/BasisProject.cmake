@@ -7,7 +7,7 @@
 # to be included separately.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE file in project root or 'doc' directory for details.
+# See COPYING file in project root or 'doc' directory for details.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
@@ -108,7 +108,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 # refers the user to the further documentation files in PROJECT_DOC_DIR.
 # A different name for the readme file can be set in the Settings.cmake file.
 #
-# A LICENSE file with the copyright and license notices must be present in
+# A COPYING file with the copyright and license notices must be present in
 # the root directory of the source tree. The name of this file can be
 # changed in the Settings.cmake file.
 #
@@ -220,14 +220,14 @@ macro (basis_project_initialize)
   endif ()
 
   if (NOT PROJECT_LICENSE_FILE)
-    set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/LICENSE")
+    set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING")
   endif ()
   if (NOT EXISTS "${PROJECT_LICENSE_FILE}")
-    message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a LICENSE file.")
+    message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a COPYING file.")
   endif ()
 
   if (NOT PROJECT_REDIST_LICENSE_FILES)
-    file (GLOB PROJECT_REDIST_LICENSE_FILES "${PROJECT_SOURCE_DIR}/LICENSE-*")
+    file (GLOB PROJECT_REDIST_LICENSE_FILES "${PROJECT_SOURCE_DIR}/COPYING-*")
   endif ()
 
   # start CMake project
@@ -288,9 +288,9 @@ macro (basis_project_initialize)
 
   # authors, readme, install and license files
   get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME)
-  get_filename_component (README  "${PROJECT_LICENSE_FILE}" NAME)
+  get_filename_component (README  "${PROJECT_README_FILE}" NAME)
   get_filename_component (INSTALL "${PROJECT_INSTALL_FILE}" NAME)
-  get_filename_component (LICENSE "${PROJECT_README_FILE}" NAME)
+  get_filename_component (LICENSE "${PROJECT_LICENSE_FILE}" NAME)
 
   if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     configure_file ("${PROJECT_README_FILE}" "${PROJECT_BINARY_DIR}/${README}" COPYONLY)
