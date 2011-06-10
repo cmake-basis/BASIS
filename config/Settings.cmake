@@ -9,7 +9,7 @@
 # PROJECT_CONFIG_DIR directory.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE file in project root or 'doc' directory for details.
+# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################

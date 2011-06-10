@@ -11,7 +11,7 @@
 #       and default values can be overwritten in this file.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See LICENSE or Copyright file in project root directory for details.
+# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################

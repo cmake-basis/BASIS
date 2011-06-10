@@ -12,7 +12,7 @@
 # INSTALL_SHARE_DIR.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file in project root or 'doc' directory for details.
+# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################

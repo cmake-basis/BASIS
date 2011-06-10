@@ -8,6 +8,9 @@
   Web:   https://www.rad.upenn.edu/sbia/
   Email: sbia-software -at- uphs.upenn.edu
 
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+  See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+
 
 
 INTRODUCTION
@@ -53,4 +56,9 @@ CALLING CONVENTIONS
 
   These calling conventions are shall be hidden to the developer by automatically
   generating utility functions for each supported programming language.
+
+
+
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+  See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 
