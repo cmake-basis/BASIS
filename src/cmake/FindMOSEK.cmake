@@ -20,7 +20,7 @@
 #   MOSEK_MEX_R2006b_LIBRARY    Mex libraries for MATLAB R2006b
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file in project root or 'doc' directory for details.
+# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
 # Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
 ##############################################################################
