@@ -13,7 +13,7 @@
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
-# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 basis_set_config_path (ETC_DIR_CONFIG "${INSTALL_ETC_DIR}")
