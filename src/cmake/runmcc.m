@@ -5,7 +5,7 @@ function runmcc (varargin)
 %                    option -q is given, this function quits the MATLAB
 %                    interpreter on return.
 %
-% Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+% Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 % Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 % See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.

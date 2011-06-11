@@ -28,7 +28,7 @@
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
-# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 """
 
@@ -75,7 +75,7 @@ def usage (progName):
     print "  " + progName + " -i CMakeLists.txt -t CMakeLists.txt.template -o CMakeLists.txt"
     print
     print "Contact:"
-    print "  SBIA Group <sbia-software -at- uphs.upenn.edu>"
+    print "  SBIA Group <sbia-software at uphs.upenn.edu>"
 
 # ****************************************************************************
 def help (progName):

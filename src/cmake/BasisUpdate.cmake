@@ -50,7 +50,7 @@
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
-# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 if (__BASIS_UPDATE_INCLUDED)

@@ -29,7 +29,7 @@
 # Copyright (c) 2011 Univeristy of Pennsylvania. All rights reserved.
 # See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
-# Contact: SBIA Group <sbia-software -at- uphs.upenn.edu>
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 
@@ -128,7 +128,7 @@ if (WIN32 AND NOT UNIX)
 #  set (CPACK_NSIS_DISPLAY_NAME        "${CPACK_PACKAGE_INSTALL_DIRECTORY} ${PROJECT_NAME}")
 #  set (CPACK_NSIS_HELP_LINK           "http:\\\\\\\\www.my-project-home-page.org")
 #  set (CPACK_NSIS_URL_INFO_ABOUT      "http:\\\\\\\\www.my-personal-home-page.com")
-  set (CPACK_NSIS_CONTACT             "sbia-software -at- uphs.upenn.edu")
+  set (CPACK_NSIS_CONTACT             "sbia-software at uphs.upenn.edu")
   set (CPACK_NSIS_MODIFY_PATH         "ON")
 else ()
 #  set (CPACK_STRIP_FILES        "bin/MyExecutable")
