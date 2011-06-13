@@ -484,7 +484,13 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   list (APPEND MCC_ARGS "-d" "${BUILD_DIR}")          # output directory
   list (APPEND MCC_ARGS "-o" "${OUTPUT_NAME}")        # output name
   list (APPEND MCC_ARGS ${SOURCES})                   # source (M-)files
-  list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries, e.g. MEX-files
+  foreach (LIB ${LINK_LIBS})                          # link libraries, e.g. MEX-files
+    list (FIND MCC_ARGS "${LIB}" IDX)
+    if (LIB AND IDX EQUAL -1)
+      list (APPEND MCC_ARGS "-a" "${LIB}")
+    endif ()
+  endforeach ()
+  #list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries, e.g. MEX-files
 
   # build command for invocation of MATLAB Compiler in standalone mode
   set (BUILD_CMD      "${BASIS_CMD_MCC}" ${MCC_ARGS})
