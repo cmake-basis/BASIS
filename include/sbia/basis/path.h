@@ -43,16 +43,28 @@ SBIA_BASIS_NAMESPACE_BEGIN
 /*!
  * \brief Native path separator, i.e., either slash (/) or backslash (\).
  */
-extern const char pathSeparator;
+extern const char cPathSeparator;
 
 /*!
  * \brief Native path separator, i.e., either slash (/) or backslash (\).
  */
-extern const std::string pathSeparatorStr;
+extern const std::string cPathSeparatorStr;
 
 //////////////////////////////////////////////////////////////////////////////
 // path representations
 //////////////////////////////////////////////////////////////////////////////
+
+/*!
+ * \brief Whether a given string is a valid path.
+ *
+ * \attention This function only checks whether the string is a valid path
+ *            identifier. It does <b>not</b> check whether the file exists.
+ *
+ * \param [in] path The path string.
+ *
+ * \return Whether the given string is a valid path.
+ */
+bool IsValidPath (const std::string &path);
 
 /*!
  * \brief Clean path, i.e., remove occurences of "./", duplicate slashes,...
@@ -67,12 +79,13 @@ extern const std::string pathSeparatorStr;
  *
  * \return Cleaned path.
  */
-std::string cleanPath (const std::string &path);
+std::string CleanPath (const std::string &path);
 
 /*!
  * \brief Convert path to Unix representation.
  *
- * \sa toWindowsPath, toNativePath
+ * \sa ToWindowsPath, ToNativePath
+ * \sa IsValidPath
  *
  * \param [in] path  Path.
  * \param [in] drive Whether the drive specification should be preserved.
@@ -80,21 +93,26 @@ std::string cleanPath (const std::string &path);
  * \return Path in Unix representation, i.e., with slashes (/) as path
  *         separators and without drive specification if the drive parameter
  *         is set to false.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string toUnixPath (const std::string &path, bool drive = false);
+std::string ToUnixPath (const std::string &path, bool drive = false);
 
 /*!
  * \brief Convert path to Windows representation.
  *
- * \sa toUnixPath, toNativePath
+ * \sa ToUnixPath, ToNativePath
+ * \sa IsValidPath
  *
  * \param [in] path Path.
  *
  * \return Path in Windows representation, i.e., with backslashes (\) as path
  *         separators and drive specification. If the input path does not
  *         specify the drive, "C:/" is used as drive specification.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string toWindowsPath (const std::string &path);
+std::string ToWindowsPath (const std::string &path);
 
 /*!
  * \brief Convert path to native representation.
@@ -102,14 +120,17 @@ std::string toWindowsPath (const std::string &path);
  * In general, Unix-style paths should be preferred as these in most cases also
  * work on Windows.
  *
- * \sa toUnixPath, toWindowsPath
+ * \sa ToUnixPath, ToWindowsPath
+ * \sa IsValidPath
  *
  * \param [in] path Path.
  *
  * \return Path in native representation, i.e., the representation used by
  *         the underlying operating system.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string toNativePath (const std::string &path);
+std::string ToNativePath (const std::string &path);
 
 //////////////////////////////////////////////////////////////////////////////
 // working directory
@@ -120,7 +141,7 @@ std::string toNativePath (const std::string &path);
  *
  * \return Absolute path of working directory or empty string on error.
  */
-std::string getWorkingDirectory ();
+std::string GetWorkingDirectory ();
 
 //////////////////////////////////////////////////////////////////////////////
 // path components
@@ -151,6 +172,8 @@ std::string getWorkingDirectory ();
  *
  * On Windows, if the path starts with a slash (/) without leading drive letter
  * followed by a colon (:), the returned root component is set to "C:/".
+ * On Unix, if the path starts with a drive specification, a slash (/) is
+ * returned as root.
  *
  * The original path (note that the resulting string will, however, not
  * necessarily equal the input path string) can be reassembled as follows:
@@ -159,6 +182,8 @@ std::string getWorkingDirectory ();
  * std::string path = root + dir + fname + ext;
  * \endcode
  *
+ * \sa IsValidPath
+ *
  * \param [in]  path  Path.
  * \param [out] root  Root component of the given path. If the given path is
  *                    absolute, the root component is a slash (/) on
@@ -166,75 +191,91 @@ std::string getWorkingDirectory ();
  *                    colon (:) and a trailing slash (/) on Windows. Otherwise,
  *                    the root component is the current working directory and
  *                    hence a period (.) followed by a slash (/) is returned.
+ *                    If NULL is given, the root is not returned.
  * \param [out] dir   The directory part of the path including trailing slash
  *                    (/). Note that the directory component of the path
  *                    '/bla/bla/' is 'bla/bla/', while the directory component
- *                    of '/bla/bla' is 'bla/'.
+ *                    of '/bla/bla' is 'bla/'. If NULL is given, the
+ *                    directory component is not returned.
  * \param [out] fname The name of the directory or the name of the file
- *                    without extension.
- * \param [out] ext   The file name extension.
+ *                    without extension. If NULL is given, the name is not
+ *                    returned.
+ * \param [out] ext   The file name extension. If NULL is given, the extension
+ *                    is not returned.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-void splitPath (const std::string &path,
-                std::string       &root,
-                std::string       &dir,
-                std::string       &fname,
-                std::string       &ext);
+void SplitPath (const std::string &path,
+                std::string       *root,
+                std::string       *dir,
+                std::string       *fname,
+                std::string       *ext);
 
 /*!
  * \brief Get file root.
  *
- * \sa splitPath
+ * \sa SplitPath() IsValidPath()
  *
  * \param [in] path Path.
  *
- * \return Root component of file path (see splitPath ()).
+ * \return Root component of file path.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string getFileRoot (const std::string &path);
+std::string GetFileRoot (const std::string &path);
 
 /*!
  * \brief Get file directory.
  *
- * \sa splitPath
+ * \sa SplitPath() IsValidPath()
  *
  * \param [in] path Path.
  *
  * \return Root component plus directory component of file path without
- *         leading slash (see splitPath ()).
+ *         leading slash.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string getFileDirectory (const std::string &path);
+std::string GetFileDirectory (const std::string &path);
 
 /*!
  * \brief Get file name with extension.
  *
- * \sa splitPath
+ * \sa SplitPath() IsValidPath()
  *
  * \param [in] path Path.
  *
- * \return File name without directory (see splitPath ()).
+ * \return File name without directory.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string getFileName (const std::string &path);
+std::string GetFileName (const std::string &path);
 
 /*!
  * \brief Get file name without extension.
  *
- * \sa splitPath
+ * \sa SplitPath() IsValidPath()
  *
  * \param [in] path Path.
  *
- * \return File name without directory and extension (see splitPath ()).
+ * \return File name without directory and extension.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string getFileNameWithoutExtension (const std::string &path);
+std::string GetFileNameWithoutExtension (const std::string &path);
 
 /*!
  * \brief Get file name extension.
  *
- * \sa splitPath
+ * \sa SplitPath() IsValidPath()
  *
  * \param [in] path Path.
  *
- * \return File name extension including leading period (.) (see splitPath ()).
+ * \return File name extension including leading period (.).
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string getFileNameExtension (const std::string &path);
+std::string GetFileNameExtension (const std::string &path);
 
 //////////////////////////////////////////////////////////////////////////////
 // absolute / relative paths
@@ -243,20 +284,28 @@ std::string getFileNameExtension (const std::string &path);
 /*!
  * \brief Test whether a given path is absolute.
  *
+ * \sa IsValidPath()
+ *
  * \param path [in] Absolute or relative path.
  *
  * \return Whether the given path is absolute.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-bool isAbsolutePath (const std::string &path);
+bool IsAbsolutePath (const std::string &path);
 
 /*!
  * \brief Test whether a given path is relative.
  *
+ * \sa IsValidPath()
+ *
  * \param path [in] Absolute or relative path.
  *
  * \return Whether the given path is relative.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-bool isRelativePath (const std::string &path);
+bool IsRelativePath (const std::string &path);
 
 /*!
  * \brief Get absolute path given a relative path.
@@ -264,12 +313,16 @@ bool isRelativePath (const std::string &path);
  * This function converts a relative path to an absolute path. If the given
  * path is already absolute, this path is passed through unchanged.
  *
+ * \sa IsValidPath()
+ *
  * \param [in] path Absolute or relative path.
  * \param [in] base Base
  *
  * \return Absolute path.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string toAbsolutePath (const std::string &path);
+std::string ToAbsolutePath (const std::string &path);
 
 /*!
  * \brief Get absolute path given a relative path and a base path.
@@ -277,12 +330,16 @@ std::string toAbsolutePath (const std::string &path);
  * This function converts a relative path to an absolute path. If the given
  * path is already absolute, this path is passed through unchanged.
  *
+ * \sa IsValidPath()
+ *
  * \param [in] base Base path used for relative path.
  * \param [in] path Absolute or relative path.
  *
  * \return Absolute path.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string toAbsolutePath (const std::string &base, const std::string &path);
+std::string ToAbsolutePath (const std::string &base, const std::string &path);
 
 /*!
  * \brief Get path relative to current working directory.
@@ -291,11 +348,15 @@ std::string toAbsolutePath (const std::string &base, const std::string &path);
  * directory. If the input path is relative, it is first made absolute using
  * the current working directory and then made relative to the given base path.
  *
+ * \sa IsValidPath()
+ *
  * \param [in] path Absolute or relative path.
  *
  * \return Path relative to current working directory.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string toRelativePath (const std::string &path);
+std::string ToRelativePath (const std::string &path);
 
 /*!
  * \brief Get path relative to given absolute path.
@@ -304,12 +365,16 @@ std::string toRelativePath (const std::string &path);
  * If the input path is relative, it is first made absolute using the
  * current working directory and then made relative to the given base path.
  *
+ * \sa IsValidPath()
+ *
  * \param [in] path Absolute or relative path.
  * \param [in] base Base path used for relative path.
  *
  * \return Path relative to base path.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-std::string toRelativePath (const std::string &base, const std::string &path);
+std::string ToRelativePath (const std::string &base, const std::string &path);
 
 //////////////////////////////////////////////////////////////////////////////
 // symbolic links
@@ -318,11 +383,15 @@ std::string toRelativePath (const std::string &base, const std::string &path);
 /*!
  * \brief Whether a given path is a symbolic link.
  *
+ * \sa IsValidPath()
+ *
  * \param [in] path Path.
  *
  * \return Whether the given path denotes a symbolic link.
+ *
+ * \throw std::invalid_argument if the given path is not valid.
  */
-bool isSymbolicLink (const std::string &path);
+bool IsSymbolicLink (const std::string &path);
 
 /*!
  * \brief Read value of symbolic link.
@@ -333,21 +402,21 @@ bool isSymbolicLink (const std::string &path);
  * \return Whether the given path is a symbolic link and its value could be
  *         read and returned successfully.
  */
-bool readSymbolicLink (const std::string &link, std::string &value);
+bool ReadSymbolicLink (const std::string &link, std::string &value);
 
 /*!
  * \brief Get canonical file path.
  *
  * This function resolves symbolic links and returns a cleaned path.
  *
- * \sa readSymbolicLink, cleanPath
+ * \sa ReadSymbolicLink() CleanPath()
  *
  * \param [in] path Path.
  *
  * \return Canonical file path without duplicate slashes, ".", "..", and
  *         symbolic links.
  */
-std::string getRealPath (const std::string &path);
+std::string GetRealPath (const std::string &path);
 
 //////////////////////////////////////////////////////////////////////////////
 // executable file
@@ -356,9 +425,11 @@ std::string getRealPath (const std::string &path);
 /*!
  * \brief Get absolute path of executable file.
  *
+ * \sa getExecutableName()
+ *
  * \return Canonical path of executable file or empty string on error.
  */
-std::string getExecutablePath ();
+std::string GetExecutablePath ();
 
 /*!
  * \brief Get name of executable.
@@ -369,10 +440,12 @@ std::string getExecutablePath ();
  *       getFileName (getExecutablePath ()) nor
  *       getFileNameWithoutExtension (getExecutablePath ()).
  *
+ * \sa getExecutablePath()
+ *
  * \return Name of the executable derived from the executable's file path
  *         or empty string on error.
  */
-std::string getExecutableName ();
+std::string GetExecutableName ();
 
 
 SBIA_BASIS_NAMESPACE_END

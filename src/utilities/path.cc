@@ -9,7 +9,7 @@
  */
 
 
-#include "path.h"
+#include "path.h"            // declarations and BASIS configuration
 
 #if WINDOWS
 #  include <direct.h>        // _getcwd
@@ -23,6 +23,11 @@
 #  include <mach-o/dyld.h>   // _NSGetExecutablePath
 #endif
 
+#include "exceptions.h"      // to throw exceptions
+
+
+using namespace std; // this a .cc file, hence it is ok to do so
+
 
 SBIA_BASIS_NAMESPACE_BEGIN
 
@@ -32,30 +37,57 @@ SBIA_BASIS_NAMESPACE_BEGIN
 //////////////////////////////////////////////////////////////////////////////
 
 #if WINDOWS
-const char        pathSeparator = '\\';
-const std::string pathSeparatorStr ("\\");
+const char   cPathSeparator = '\\';
+const string cPathSeparatorStr ("\\");
 #else
-const char        pathSeparator = '/';
-const std::string pathSeparatorStr ("/");
+const char   cPathSeparator = '/';
+const string cPathSeparatorStr ("/");
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
 // path representations
 //////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************/
-std::string cleanPath (const std::string &path)
+// ***************************************************************************
+bool IsValidPath (const string &path)
 {
-    std::string cleanedPath;
+    // an empty string is clearly no valid path
+    if (path.empty ()) return false;
+    // we do not allow a path to start with a colon (:) (also not on Unix!)
+    if (path [0] == ':') return false;
+    // absolute Windows-style path with drive specification
+    if (path.size () > 1 && path [1] == ':') {
+        // first character must be a drive letter
+        if ((path [0] < 'a' || 'z' < path [0]) &&
+            (path [0] < 'A' || 'Z' < path [0])) return false;
+#if WINDOWS
+        // absolute path must follow the drive specification
+        if (path.size () == 2) return false;
+        if (path [2] != '/' && path [2] != '\\') return false;
+#else
+        // on Unix systems, a drive specification is invalid
+        return false;
+#endif
+    }
+    // otherwise, the path is valid
+    return true;
+}
 
-    std::string::const_iterator prev;
-    std::string::const_iterator curr;
-    std::string::const_iterator next;
+// ***************************************************************************
+string CleanPath (const string &path)
+{
+    string cleanedPath;
+
+    string::const_iterator prev;
+    string::const_iterator curr;
+    string::const_iterator next;
 
     // remove periods enclosed by slashes (or backslashes)
     prev = path.begin ();
-    curr = ++ prev;
-    next = ++ curr;
+    if (prev == path.end ()) return "";
+
+    curr = prev + 1;
+    next = ((curr == path.end ()) ? curr : (curr + 1));
 
     cleanedPath.reserve (path.size ());
     cleanedPath.push_back (*prev);
@@ -70,15 +102,15 @@ std::string cleanPath (const std::string &path)
 
         ++ prev;
         ++ curr;
-        ++ next;
+        if (next != path.end ()) ++ next;
     }
 
     // remove duplicate slashes (and backslashes)
-    std::string tmp;
+    string tmp;
     cleanedPath.swap (tmp);
 
     prev = tmp.begin ();
-    curr = ++ prev;
+    curr = prev + 1;
 
     cleanedPath.reserve (tmp.size ());
     cleanedPath.push_back (*prev);
@@ -92,16 +124,16 @@ std::string cleanPath (const std::string &path)
     }
 
     // remove references to parent directories
-    std::string ref = "/..";
-    size_t      pos = 0;
+    string ref = "/..";
+    size_t pos = 0;
 
     for (;;) {
         pos = cleanedPath.find (ref, pos);
-        if (pos == std::string::npos) {
+        if (pos == string::npos) {
             if (ref == "\\..") break;
             ref = "\\..";
             pos = cleanedPath.find (ref, pos);
-            if (pos == std::string::npos) break;
+            if (pos == string::npos) break;
         }
         if (pos + 3 >= cleanedPath.size ()
                 || cleanedPath [pos + 3] == '/'
@@ -112,7 +144,7 @@ std::string cleanPath (const std::string &path)
                 pos = 0;
             } else {
                 size_t start = cleanedPath.find_last_of ("/\\", pos - 1);
-                if (start != std::string::npos) {
+                if (start != string::npos) {
                     cleanedPath.erase (start + 1, pos + 3 - start);
                     pos = start + 1;
                 } else {
@@ -127,12 +159,16 @@ std::string cleanPath (const std::string &path)
 }
 
 /****************************************************************************/
-std::string toUnixPath (const std::string &path, bool drive)
+string ToUnixPath (const string &path, bool drive)
 {
-    std::string unixPath;
+    if (!IsValidPath (path)) {
+        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+    }
+
+    string unixPath;
     unixPath.reserve (path.size ());
 
-    std::string::const_iterator in  = path.begin ();
+    string::const_iterator in = path.begin ();
 
     // skip drive specification
     if (!drive && path.size () > 1 && path [1] == ':') in += 2;
@@ -144,17 +180,21 @@ std::string toUnixPath (const std::string &path, bool drive)
         ++ in;
     }
 
-    return cleanPath (unixPath);
+    return CleanPath (unixPath);
 }
 
 /****************************************************************************/
-std::string toWindowsPath (const std::string &path)
+string ToWindowsPath (const string &path)
 {
-    std::string windowsPath (path.size (), '\0');
+    if (!IsValidPath (path)) {
+        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+    }
+
+    string windowsPath (path.size (), '\0');
 
     // copy path while replacing slashes by backslashes
-    std::string::const_iterator in  = path.begin ();
-    std::string::iterator       out = windowsPath.begin ();
+    string::const_iterator in  = path.begin ();
+    string::iterator       out = windowsPath.begin ();
 
     while (in != path.end ()) {
         if (*in == '/') *out = '\\';
@@ -169,16 +209,16 @@ std::string toWindowsPath (const std::string &path)
         windowsPath.insert  (0, "C:");
     }
 
-    return cleanPath (windowsPath);
+    return CleanPath (windowsPath);
 }
 
 /****************************************************************************/
-std::string toNativePath (const std::string &path)
+string ToNativePath (const string &path)
 {
 #if WINDOWS
-    return toWindowsPath (path);
+    return ToWindowsPath (path);
 #else
-    return toUnixPath (path);
+    return ToUnixPath (path);
 #endif
 }
 
@@ -187,9 +227,9 @@ std::string toNativePath (const std::string &path)
 //////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************/
-std::string getWorkingDirectory ()
+string GetWorkingDirectory ()
 {
-    std::string wd;
+    string wd;
 #if WINDOWS
     char *buffer = _getcwd (NULL, 0);
 #else
@@ -207,21 +247,24 @@ std::string getWorkingDirectory ()
 //////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************/
-void splitPath (const std::string &path,
-                std::string       *root,
-                std::string       *dir,
-                std::string       *fname,
-                std::string       *ext)
+void SplitPath (const string &path,
+                string       *root,
+                string       *dir,
+                string       *fname,
+                string       *ext)
 {
+    // \note No need to validate path here as this will be done
+    //       either by GetFileRoot() or ToUnixPath().
+
     // file root
-    if (root) *root = getFileRoot (path);
+    if (root) *root = GetFileRoot (path);
     // convert path to clean Unix-style path
-    std::string unixPath = toUnixPath (path);
+    string unixPath = ToUnixPath (path);
     // get position of last slash
     size_t last = unixPath.find_last_of ('/');
     // file directory without root
     if (dir) {
-        if (last == std::string::npos) {
+        if (last == string::npos) {
             *dir = "";
         } else {
             size_t start = 0;
@@ -239,9 +282,9 @@ void splitPath (const std::string &path,
     }
     // file name and extension
     if (fname || ext) {
-        std::string name;
+        string name;
 
-        if (last == std::string::npos) {
+        if (last == string::npos) {
             name = unixPath;
         } else {
             name = unixPath.substr (last + 1);
@@ -249,7 +292,7 @@ void splitPath (const std::string &path,
 
         size_t pos = unixPath.find_last_of ('.');
 
-        if (pos == std::string::npos) {
+        if (pos == string::npos) {
             if (fname) {
                 *fname = name;
             }
@@ -268,9 +311,12 @@ void splitPath (const std::string &path,
 }
 
 /****************************************************************************/
-std::string getFileRoot (const std::string &path)
+string GetFileRoot (const string &path)
 {
-    if (path.empty ()) return "";
+    if (!IsValidPath (path)) {
+        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+    }
+
     // absolute Unix-style input path
     if (path [0] == '/' || path [0] == '\\') {
 #if WINDOWS
@@ -280,50 +326,52 @@ std::string getFileRoot (const std::string &path)
 #endif
     }
     // absolute Windows-style input path
-#if WINDOWS
     if (path.size () > 1 && path [1] == ':') {
         char letter = path [0];
         if ('a' <= letter && letter <= 'z') {
             letter = 'A' + (letter - 'a');
         }
-        return std::string (letter) + ":/";
-    }
+#if WINDOWS
+        return string (letter) + ":/";
+#else
+        return "/";
 #endif
+    }
     // otherwise, it's a relative path
     return "./";
 }
 
 /****************************************************************************/
-std::string getFileDirectory (const std::string &path)
+string GetFileDirectory (const string &path)
 {
-    std::string root;
-    std::string dir;
-    splitPath (path, &root, &dir, NULL, NULL);
+    string root;
+    string dir;
+    SplitPath (path, &root, &dir, NULL, NULL);
     return root + dir.substr (0, dir.size () - 1);
 }
 
 /****************************************************************************/
-std::string getFileName (const std::string &path)
+string GetFileName (const string &path)
 {
-    std::string fname;
-    std::string ext;
-    splitPath (path, NULL, NULL, &fname, &ext);
+    string fname;
+    string ext;
+    SplitPath (path, NULL, NULL, &fname, &ext);
     return fname + ext;
 }
 
 /****************************************************************************/
-std::string getFileNameWithoutExtension (const std::string &path)
+string GetFileNameWithoutExtension (const string &path)
 {
-    std::string fname;
-    splitPath (path, NULL, NULL, &fname, NULL);
+    string fname;
+    SplitPath (path, NULL, NULL, &fname, NULL);
     return fname;
 }
 
 /****************************************************************************/
-std::string getFileNameExtension (const std::string &path)
+string GetFileNameExtension (const string &path)
 {
-    std::string ext;
-    splitPath (path, NULL, NULL, NULL, &ext);
+    string ext;
+    SplitPath (path, NULL, NULL, NULL, &ext);
     return ext;
 }
 
@@ -332,37 +380,37 @@ std::string getFileNameExtension (const std::string &path)
 //////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************/
-bool isAbsolutePath (const std::string &path)
+bool IsAbsolutePath (const string &path)
 {
-    return getFileRoot (path) != "./";
+    return GetFileRoot (path) != "./";
 }
 
 /****************************************************************************/
-bool isRelativePath (const std::string &path)
+bool IsRelativePath (const string &path)
 {
-    return getFileRoot (path) == "./";
+    return GetFileRoot (path) == "./";
 }
 
 /****************************************************************************/
-std::string toAbsolutePath (const std::string &path)
+string ToAbsolutePath (const string &path)
 {
-    return toAbsolutePath (getWorkingDirectory (), path);
+    return ToAbsolutePath (GetWorkingDirectory (), path);
 }
 
 /****************************************************************************/
-std::string toAbsolutePath (const std::string &base, const std::string &path)
+string ToAbsolutePath (const string &base, const string &path)
 {
-    std::string absPath (path);
+    string absPath (path);
     // make relative path absolute
-    if (isRelativePath (absPath)) {
-        std::string absBase (base);
-        if (isRelativePath (absBase)) {
-            absBase.insert (0, getWorkingDirectory () + '/');
+    if (IsRelativePath (absPath)) {
+        string absBase (base);
+        if (IsRelativePath (absBase)) {
+            absBase.insert (0, GetWorkingDirectory () + '/');
         }
         absPath.insert (0, absBase + '/');
     }
     // clean path
-    absPath = cleanPath (absPath);
+    absPath = CleanPath (absPath);
     // on Windows, prepend drive letter followed by a colon (:)
 #if WINDOWS
     if (absPath [0] == '/') absPath.insert (0, "C:");
@@ -371,32 +419,32 @@ std::string toAbsolutePath (const std::string &base, const std::string &path)
 }
 
 /****************************************************************************/
-std::string toRelativePath (const std::string &path)
+string ToRelativePath (const string &path)
 {
-    std::string unixPath = toUnixPath (path, true);
-    if (isRelativePath (unixPath)) return cleanPath (unixPath);
-    return toRelativePath (getWorkingDirectory (), unixPath);
+    string unixPath = ToUnixPath (path, true);
+    if (IsRelativePath (unixPath)) return CleanPath (unixPath);
+    return ToRelativePath (GetWorkingDirectory (), unixPath);
 }
 
 /****************************************************************************/
-std::string toRelativePath (const std::string &base, const std::string &path)
+string ToRelativePath (const string &base, const string &path)
 {
-    std::string unixPath = toUnixPath (path, true);
+    string unixPath = ToUnixPath (path, true);
     // if relative path is given just return it cleaned
-    if (isRelativePath (unixPath)) return cleanPath (path);
+    if (IsRelativePath (unixPath)) return CleanPath (path);
     // make base path absolute
-    std::string absBase = toUnixPath (base, true);
-    if (isRelativePath (absBase)) {
-        absBase.insert (0, getWorkingDirectory () + '/');
+    string absBase = ToUnixPath (base, true);
+    if (IsRelativePath (absBase)) {
+        absBase.insert (0, GetWorkingDirectory () + '/');
     }
     // path must have same root as base path; this check is intended for
     // Windows, where there is no relative path from one drive to another
-    if (getFileRoot (absBase) != getFileRoot (unixPath)) return "";
+    if (GetFileRoot (absBase) != GetFileRoot (unixPath)) return "";
     // find start of first path component in which paths differ
-    std::string::const_iterator b   = absBase .begin ();
-    std::string::const_iterator p   = unixPath.begin ();
-    size_t                      pos = 0;
-    size_t                      i   = 0;
+    string::const_iterator b   = absBase .begin ();
+    string::const_iterator p   = unixPath.begin ();
+    size_t                 pos = 0;
+    size_t                 i   = 0;
     while (b != absBase.end () && p != unixPath.end () && *b == *p) {
         if (*p == '/') pos = i;
         ++ b; ++ p; ++ i;
@@ -420,7 +468,7 @@ std::string toRelativePath (const std::string &base, const std::string &path)
     // were identical; hence, everything that comes after in the original
     // path is preserved and for each following component in the base path
     // a "../" is prepended to the relative path
-    std::string relPath;
+    string relPath;
     if (absBase [absBase.size () - 1] != '/') absBase += '/';
     while (b != absBase.end ()) {
         if (*b == '/') relPath += "../";
@@ -434,8 +482,12 @@ std::string toRelativePath (const std::string &base, const std::string &path)
 //////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************/
-bool isSymbolicLink (const std::string &path)
+bool IsSymbolicLink (const string &path)
 {
+    if (!IsValidPath (path)) {
+        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+    }
+
 #if WINDOWS
     return false;
 #else
@@ -446,8 +498,12 @@ bool isSymbolicLink (const std::string &path)
 }
 
 /****************************************************************************/
-bool readSymbolicLink (const std::string &link, std::string &value)
+bool ReadSymbolicLink (const string &link, string &value)
 {
+    if (!IsValidPath (link)) {
+        BASIS_THROW (invalid_argument, "Invalid path: " << link);
+    }
+
     bool ok = true;
 #if !WINDOWS
     char   *buffer = NULL;
@@ -464,13 +520,12 @@ bool readSymbolicLink (const std::string &link, std::string &value)
 
         int n = readlink (link.c_str (), buffer, buflen);
 
-        if (n < buflen) {
-            if (n < 0) {
-                ok = false;
-            } else {
-                buffer [buflen - 1] = '\0';
-                value = buffer;
-            }
+        if (n < 0) {
+            ok = false;
+            break;
+        } else if (static_cast<size_t> (n) < buflen) {
+            buffer [buflen - 1] = '\0';
+            value = buffer;
             break;
         }
         buflen += 256;
@@ -482,19 +537,19 @@ bool readSymbolicLink (const std::string &link, std::string &value)
 }
 
 /****************************************************************************/
-std::string getRealPath (const std::string &path)
+string GetRealPath (const string &path)
 {
     // make path just absolute if it is no symbolic link
-    if (!isSymbolicLink (path)) {
-        return toAbsolutePath (path);
+    if (!IsSymbolicLink (path)) {
+        return ToAbsolutePath (path);
     }
-    std::string currPath (path);
-    std::string nextPath;
+    string currPath (path);
+    string nextPath;
     // for safety reasons, restrict the depth of symbolic links followed
     for (unsigned int i = 0; i < 100; ++ i) {
-        if (readSymbolicLink (currPath, nextPath)) {
-            nextPath = toAbsolutePath (getFileDirectory (currPath), nextPath);
-            if (!isSymbolicLink (nextPath)) {
+        if (ReadSymbolicLink (currPath, nextPath)) {
+            nextPath = ToAbsolutePath (GetFileDirectory (currPath), nextPath);
+            if (!IsSymbolicLink (nextPath)) {
                 return nextPath;
             }
             currPath = nextPath;
@@ -507,7 +562,7 @@ std::string getRealPath (const std::string &path)
     // if real path could not be determined with the given maximum number of
     // loop iterations (endless cycle?) or one of the symbolic links could
     // not be read, just return original path as clean absolute path
-    return toAbsolutePath (path);
+    return ToAbsolutePath (path);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -515,11 +570,11 @@ std::string getRealPath (const std::string &path)
 //////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************/
-std::string getExecutablePath ()
+string GetExecutablePath ()
 {
-    std::string path;
+    string path;
 #if LINUX
-    path = getRealPath ("/proc/self/exe");
+    path = GetRealPath ("/proc/self/exe");
 #elif WINDOWS
     LPTSTR buffer = NULL;
     LPTSTR newbuf = NULL;
@@ -554,7 +609,6 @@ std::string getExecutablePath ()
 #elif MACOS
     char    *buffer = NULL;
     char    *newbuf = NULL;
-    int      retval = 0;
     uint32_t buflen = 256;
 
     buffer = reinterpret_cast <char *> (malloc (buflen * sizeof (char)));
@@ -580,20 +634,20 @@ std::string getExecutablePath ()
 }
 
 /****************************************************************************/
-std::string getExecutableName ()
+string GetExecutableName ()
 {
-    std::string name = getExecutablePath ();
+    string name = GetExecutablePath ();
     if (name.empty ()) return "";
 
 #if WINDOWS
-    std::string ext = getFileNameExtension (name);
+    string ext = GetFileNameExtension (name);
     if (ext == ".exe" || ext == ".com") {
-        name = getFileNameWithoutExtension (name);
+        name = GetFileNameWithoutExtension (name);
     } else {
-        name = getFileName (name);
+        name = GetFileName (name);
     }
 #else
-    name = getFileName (name);
+    name = GetFileName (name);
 #endif
 
     return name;
