@@ -19,7 +19,7 @@
 #   GTest_INCLUDE_DIR    Package include directories.
 #   GTest_INCLUDES       Include directories including prerequisite libraries.
 #   GTest_LIBRARY        Path of gtest library.
-#   GTest_MAIN_LIBRARY   Path of gtest_main library.
+#   GTest_MAIN_LIBRARY   Path of gtest_main library (optional).
 #   GTest_LIBRARIES      Package libraries and prerequisite libraries.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -104,8 +104,15 @@ find_library (
 
 # ----------------------------------------------------------------------------
 # add prerequisites
-set (GTest_INCLUDES  "${GTest_INCLUDE_DIR}")
-set (GTest_LIBRARIES "${GTest_LIBRARY}" "${GTest_MAIN_LIBRARY}")
+set (GTest_INCLUDES "${GTest_INCLUDE_DIR}")
+
+set (GTest_LIBRARIES)
+if (GTest_LIBRARY)
+  list (APPEND GTest_LIBRARIES "${GTest_LIBRARY}")
+endif ()
+if (GTest_MAIN_LIBRARY)
+  list (APPEND GTest_LIBRARIES "${GTest_MAIN_LIBRARY}")
+endif ()
 
 # ----------------------------------------------------------------------------
 # reset CMake variables
@@ -127,6 +134,5 @@ find_package_handle_standard_args (
 # VARIABLES
     GTest_INCLUDE_DIR
     GTest_LIBRARY
-    GTest_MAIN_LIBRARY
 )
 
