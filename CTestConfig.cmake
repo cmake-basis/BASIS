@@ -9,7 +9,7 @@
 ##############################################################################
 
 # set CTest/CDash project name
-set (CTEST_PROJECT_NAME "${PROJECT_NAME}")
+set (CTEST_PROJECT_NAME "BASIS")
 
 # start time of Nightly test model
 #
