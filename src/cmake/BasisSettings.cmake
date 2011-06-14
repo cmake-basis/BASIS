@@ -68,7 +68,7 @@ mark_as_advanced (BASIS_VERBOSE)
 #
 # Contains a list of target names that are used by the BASIS functions for
 # special purposes and are hence not to be used for project targets.
-set (BASIS_RESERVED_TARGET_NAMES "uninstall" "doc" "changelog" "execname")
+set (BASIS_RESERVED_TARGET_NAMES "test" "uninstall" "doc" "changelog" "execname")
 
 # \brief Default components used when no component is specified.
 #
@@ -133,6 +133,10 @@ set (BASIS_CACHED_INCLUDE_DIRECTORIES "" CACHE INTERNAL "${BASIS_CACHED_INCLUDE_
 # Caches the global names (UIDs) of all project targets.
 set (BASIS_TARGETS_DOC "Names of all targets.")
 set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
+
+# Caches target names (UIDs) of exported targets.
+set (BASIS_CACHED_EXPORTS_DOC "All exported targets.")
+set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
 
 # ============================================================================
 # project directory structure

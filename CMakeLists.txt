@@ -27,8 +27,12 @@ cmake_minimum_required (VERSION 2.8.2)
 # instantiated from a template as this package provides the template
 set (TEMPLATE_VERSION "0.0.0")
 
+# the following variables would be set by the BASISConfig.cmake file if
+# this would be a project which uses BASIS; in fact, this *is* BASIS, though
+set (BASIS_MODULE_PATH  "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
+set (BASIS_TEST_LIBRARY "basis_test")
+
 # include BASIS policies, settings, macros, and functions
-set (BASIS_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # initialize project

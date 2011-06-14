@@ -346,8 +346,14 @@ function (basis_add_executable TARGET_NAME)
 
     install (
       TARGETS     ${TARGET_UID}
+      EXPORT      "${PROJECT_NAME}"
       DESTINATION "${INSTALL_DIR}"
       COMPONENT   "${ARGN_COMPONENT}"
+    )
+
+    set (
+      BASIS_CACHED_EXPORTS "${BASIS_CACHED_EXPORTS};${TARGET_UID}"
+      CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE
     )
 
     set_target_properties (
@@ -630,6 +636,7 @@ function (basis_add_library TARGET_NAME)
     # install library
     install (
       TARGETS ${TARGET_UID}
+      EXPORT  "${PROJECT_NAME}"
       RUNTIME
         DESTINATION "${INSTALL_RUNTIME_DIR}"
         COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
@@ -639,6 +646,11 @@ function (basis_add_library TARGET_NAME)
       ARCHIVE
         DESTINATION "${INSTALL_ARCHIVE_DIR}"
         COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
+    )
+
+    set (
+      BASIS_CACHED_EXPORTS "${BASIS_CACHED_EXPORTS};${TARGET_UID}"
+      CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE
     )
 
     # add target to list of targets

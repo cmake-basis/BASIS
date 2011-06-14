@@ -406,7 +406,7 @@ macro (basis_project_initialize)
 endmacro ()
 
 # ****************************************************************************
-# \brief Finalize software component configuration.
+# \brief Finalize project build configuration.
 #
 # This macro has to be called at the end of the root CMakeLists.txt file of
 # each BASIS project initialized by basis_project ().

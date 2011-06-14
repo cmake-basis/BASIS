@@ -111,8 +111,53 @@ function (basis_add_test TEST_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \function basis_add_tests_of_default_options
-# \brief    Adds tests of default options for given executable (or script).
+# \brief Add unit test.
+#
+# \param [in] TEST_NAME Name of the test.
+# \param [in] ARGN      The following parameters are parsed.
+#
+#   LANGUAGE       The programming language in which both the module and unit test
+#                  are implemented. Defaults to CXX (i.e., C++).
+#   SOURCES        The source files of the unit test. If this list contains a
+#                  file named either "*-main.*" or "*_main.*", the default
+#                  implementation of the main () function is not included.
+#   LINK_DEPENDS   Link libraries.
+#   ARGS           Arguments passed to basis_add_test ().
+
+function (basis_add_unit_test TEST_NAME)
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (ARGN "" "LANGUAGE" "SOURCES;LINK_DEPENDS;ARGS" ${ARGN})
+
+  if (NOT ARGN_LANGUAGE)
+    set (ARGN_LANGUAGE "CXX")
+  endif ()
+  string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
+
+  set (DEFAULT_MAIN "1")
+  foreach (SOURCE ${ARGN_SOURCES})
+    if (SOURCE MATCHES "-main\\.|_main\\.")
+      set (DEFAULT_MAIN "0")
+    endif ()
+  endforeach ()
+
+  # build test
+  if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
+    if (DEFAULT_MAIN)
+      list (APPEND ARGN_SOURCES "${BASIS_MODULE_PATH}/test_main.cc")
+    endif ()
+    basis_add_executable ("${TEST_NAME}" ${ARGN_SOURCES})
+    basis_target_link_libraries ("${TEST_NAME}" "${BASIS_TEST_LIBRARY}" ${ARGN_LINK_DEPENDS})
+  else ()
+    message (FATAL_ERROR "Invalid unit test language: \"${ARGN_LANGUAGE}\".")
+  endif ()
+
+  # add test
+  basis_get_target_property (DIR "${TEST_NAME}" RUNTIME_OUTPUT_DIRECTORY) 
+  basis_add_test ("${TEST_NAME}" "${DIR}/${TEST_NAME}" ${ARGN_ARGS})
+endfunction ()
+
+# ****************************************************************************
+# \brief Adds tests of default options for given executable (or script).
 #
 # \param [in] TARGET_NAME Name of executable or script target.
 

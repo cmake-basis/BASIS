@@ -244,7 +244,7 @@ function (basis_check_target_name TARGET_NAME)
   # reserved target name ?
   list (FIND BASIS_RESERVED_TARGET_NAMES "${TARGET_NAME}" IDX)
   if (NOT IDX EQUAL -1)
-    message (FATAL_ERROR "Target name ${TARGET_NAME} is reserved and cannot be used.")
+    message (FATAL_ERROR "Target name \"${TARGET_NAME}\" is reserved and cannot be used.")
   endif ()
 
   if (TARGET_NAME MATCHES "\\+$")
@@ -322,15 +322,15 @@ endfunction ()
 function (basis_check_test_name TEST_NAME)
   list (FIND BASIS_RESERVED_TEST_NAMES "${TEST_NAME}" IDX)
   if (NOT IDX EQUAL -1)
-    message (FATAL_ERROR "Test name ${TEST_NAME} is reserved and cannot be used.")
+    message (FATAL_ERROR "Test name \"${TEST_NAME}\" is reserved and cannot be used.")
   endif ()
 
   if (TEST_NAME MATCHES " ")
-    message (FATAL_ERROR "Test name ${TEST_NAME} is invalid. Test names cannot contain whitespaces.")
+    message (FATAL_ERROR "Test name \"${TEST_NAME}\" is invalid. Test names cannot contain whitespaces.")
   endif ()
 
   if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}|${BASIS_VERSION_SEPARATOR}")
-    message (FATAL_ERROR "Test name ${TEST_NAME} is invalid. Test names cannot"
+    message (FATAL_ERROR "Test name \"${TEST_NAME}\" is invalid. Test names cannot"
                          " contain special characters '${BASIS_NAMESPACE_SEPARATOR}'"
                          " and '${BASIS_VERSION_SEPARATOR}'.")
   endif ()

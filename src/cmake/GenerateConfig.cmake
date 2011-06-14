@@ -49,6 +49,26 @@ set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
 set (USE_FILE     "${PACKAGE_NAME}Use.cmake")
 
 # ============================================================================
+# install exports
+# ============================================================================
+
+if (BASIS_CACHED_EXPORTS)
+  install (
+    EXPORT      "${PROJECT_NAME}"
+    DESTINATION "${INSTALL_CONFIG_DIR}"
+    FILE        "${PACKAGE_NAME}Exports.cmake"
+    COMPONENT   "${BASIS_RUNTIME_COMPONENT}"
+  )
+
+  install (
+    EXPORT      "${PROJECT_NAME}"
+    DESTINATION "${INSTALL_CONFIG_DIR}"
+    FILE        "${PACKAGE_NAME}Exports.cmake"
+    COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
+  )
+endif ()
+
+# ============================================================================
 # project configuration file
 # ============================================================================
 
