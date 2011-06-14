@@ -33,6 +33,14 @@ if (CTEST_DROP_METHOD STREQUAL "https")
 endif ()
 
 # ============================================================================
+# relative project directories
+# ============================================================================
+
+file (RELATIVE_PATH SRC  "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
+file (RELATIVE_PATH INCL "@PROJECT_SOURCE_DIR@" "@PROJECT_INCLUDE_DIR@")
+file (RELATIVE_PATH TEST "@PROJECT_SOURCE_DIR@" "@PROJECT_TESTING_DIR@")
+
+# ============================================================================
 # custom CTest settings
 # ============================================================================
 
@@ -48,8 +56,7 @@ endif ()
 # match expressions for warning messages
 set (
   CTEST_CUSTOM_WARNING_MATCH
-    ${CTEST_CUSTOM_WARNING_MATCH} # keep current warning matches
-    "[0-9][0-9]*: WARNING "       # add match expressions on separate lines
+    "[0-9][0-9]*: WARNING "
     "[0-9][0-9]*: Warning "
     "[0-9][0-9]*: warning "
 )
@@ -57,8 +64,7 @@ set (
 # match expressions for ignored warning messages
 set (
   CTEST_CUSTOM_WARNING_EXCEPTION
-    ${CTEST_CUSTOM_WARNING_EXCEPTION} # keep current warning exceptions
-#   "Example-1.0"                     # add exception expressions on separate lines
+#   "Example-1.0"
 )
 
 # specify maximum number of warnings to display
@@ -71,8 +77,7 @@ set (
 # match expressions for error messages
 set (
   CTEST_CUSTOM_ERROR_MATCH
-    ${CTEST_CUSTOM_ERROR_MATCH} # keep current error matches
-    "[0-9][0-9]*: ERROR "       # add match expressions on separate lines
+    "[0-9][0-9]*: ERROR "
     "[0-9][0-9]*: Error "
     "[0-9][0-9]*: error "
 )
@@ -80,8 +85,7 @@ set (
 # match expressions for ignored error messages
 set (
   CTEST_CUSTOM_ERROR_EXCEPTION
-    ${CTEST_CUSTOM_ERROR_EXCEPTION} # keep current error exceptions
-#   "ExampleExec-1.0"               # add exception expressions on separate lines
+#   "ExampleExec-1.0"
 )
 
 # specify maximum number of errors to display
@@ -94,21 +98,18 @@ set (
 # specify tests which should be ignored during the test stage
 set (
   CTEST_CUSTOM_TESTS_IGNORE
-    ${CTEST_CUSTOM_TESTS_IGNORE}
     ""
 )
 
 # specify command to execute before execution of any test during test stage
 set (
   CTEST_CUSTOM_PRE_TEST
-    ${CTEST_CUSTOM_PRE_TEST}
     ""
 )
 
 # specify command to execute at the end of the test stage
 set (
   CTEST_CUSTOM_POST_TEST
-    ${CTEST_CUSTOM_POST_TEST}
     ""
 )
 
@@ -119,25 +120,20 @@ set (
 # exclude certain files from coverage analysis
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
-    ${CTEST_CUSTOM_COVERAGE_EXCLUDE} # keep current exclude expressions
-    # add further exclude expressions here
     "./*/gmock-gtest-all.cc" # exclude Google Mock/Test files
     "./*/gtest/*"
     "./*/gmock/*"
-    "./*/tclap/*"             # exclude TCLAP library files
-    "./test/*"                # exclude test implementations
+    "./*/tclap/*"            # exclude TCLAP library files
+    "./${TEST}/*"            # exclude test implementations
 )
 
 # specify additional files which should be considered
-file (RELATIVE_PATH SRC "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
-
 set (
   CTEST_EXTRA_COVERAGE_GLOB
-    ${CTEST_EXTRA_COVERAGE_GLOB} # keep current globbing expressions
-    "./include/*.inl"            # add inline definition
-    "./src/*.inl"                # add inline definition
-    "./include/*.txx"            # add template definitions
-    "./src/*.txx"                # add template definitions
+    "./${INCL}/*.inl"            # add inline definition
+    "./${SRC}/*.inl"             # add inline definition
+    "./${INCL}/*.txx"            # add template definitions
+    "./${SRC}/*.txx"             # add template definitions
     # add further globbing expressions here
 )
 
