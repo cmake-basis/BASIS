@@ -40,13 +40,13 @@ else ()
   set (CTEST_CUSTOM_FILE "CTestCustom-${PROJECT_NAME}.cmake")
 endif ()
 
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in")
+if (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake.in")
   configure_file (
-    "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in"
+    "${PROJECT_CONFIG_DIR}/CTestCustom.cmake.in"
     "${CMAKE_BINARY_DIR}/${CTEST_CUSTOM_FILE}"
     @ONLY
   )
-elseif (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake")
+elseif (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake")
   configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake"
     "${CMAKE_BINARY_DIR}/${CTEST_CUSTOM_FILE}"
