@@ -19,6 +19,25 @@
 # CMake module path
 set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
+# libraries
+basis_get_target_property (OUTPUT_NAME "basis_utils" OUTPUT_NAME)
+basis_get_target_property (PREFIX      "basis_utils" PREFIX)
+basis_get_target_property (SUFFIX      "basis_utils" SUFFIX)
+
+if (OUTPUT_NAME)
+  set (UTILS_LIBRARY_CONFIG "${OUTPUT_NAME}")
+else ()
+  set (UTILS_LIBRARY_CONFIG "basis_utils")
+endif ()
+if (PREFIX)
+  set (UTILS_LIBRARY_CONFIG "${PREFIX}${UTILS_LIBRARY_CONFIG}")
+endif ()
+if (SUFFIX)
+  set (UTILS_LIBRARY_CONFIG "${UTILS_LIBRARY_CONFIG}${SUFFIX}")
+endif ()
+
+set (UTILS_LIBRARY_CONFIG "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/lib/${UTILS_LIBRARY_CONFIG}")
+
 # URL of project template
 set (TEMPLATE_URL_CONFIG "${PROJECT_ETC_DIR}/template")
 

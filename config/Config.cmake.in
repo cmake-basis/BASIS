@@ -30,6 +30,15 @@ endif ()
 # include directories
 set (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 
+# libraries
+set (@PACKAGE_NAME@_UTILS_LIBRARY "@UTILS_LIBRARY_CONFIG@")
+set (@PACKAGE_NAME@_TEST_LIBRARY  "@TEST_LIBRARY_CONFIG@")
+
+set (
+  @PACKAGE_NAME@_LIBRARIES
+    @PACKAGE_NAME@_UTILS_LIBRARY
+)
+
 # absolute path of project use file which is included by other projects
 set (@PACKAGE_NAME@_USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
 

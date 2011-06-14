@@ -52,6 +52,7 @@ set (
     "cmake/config.cc.in"
     "cmake/mainaux.h.in"
     "cmake/execname.cpp.in"
+    "cmake/gmock_main.cc"
 )
 
 # ----------------------------------------------------------------------------
@@ -72,15 +73,27 @@ install (
 )
 
 # ============================================================================
-# utilities
+# C++ utilities
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# C++ utilities
+# basic utilities
 basis_add_library (
-  basis STATIC
-    "utilities/path.cc"
+  basis_utils STATIC
+    "utilities/path.cc" # utility path functions
 )
+
+# ----------------------------------------------------------------------------
+# unit testing
+
+# add include/sbia directory to include search path as the original Google
+# Test and Google Mock sources include the headers via
+# \code
+# #include "gtest/gtest.h"
+# \endcode
+basis_include_directories ("${PROJECT_INCLUDE_DIR}/sbia") 
+
+basis_add_library (basis_test STATIC "utilities/gmock-gtest-all.cc")
 
 # ============================================================================
 # tools
