@@ -40,6 +40,7 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # ============================================================================
 
 include (CheckTypeSize)
+include (CheckIncludeFile)
 
 # check if type long long is supported
 CHECK_TYPE_SIZE("long long" LONG_LONG)
@@ -52,6 +53,9 @@ if (CMAKE_NO_ANSI_STRING_STREAM)
 else ()
   set (HAVE_SSTREAM TRUE)
 endif ()
+
+# check if tr/tuple header file is available
+CHECK_INCLUDE_FILE ("tr/tuple" HAVE_TR1_TUPLE)
 
 # ============================================================================
 # common options

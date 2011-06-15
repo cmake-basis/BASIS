@@ -45,6 +45,14 @@
 #endif
 
 /*!
+ * \def   HAVE_LONG_LONG
+ * \brief Whether the long long type is supported by the compiler.
+ */
+#ifndef HAVE_LONG_LONG
+#  define HAVE_LONG_LONG @HAVE_LONG_LONG@
+#endif
+
+/*!
  * \def HAVE_SSTREAM
  * \brief Whether the ANSI string stream classes are available.
  */
@@ -59,17 +67,21 @@
  * \note As the strstream implementations are obsolete already for a long
  *       time, this macro always evaluates to 0.
  */
- #ifdef HAVE_STRSTREAM
- #  undef HAVE_STRSTREAM
- #endif
- #define HAVE_STRSTREAM 0
+#ifdef HAVE_STRSTREAM
+  #  undef HAVE_STRSTREAM
+#endif
+#define HAVE_STRSTREAM 0
 
 /*!
- * \def   HAVE_LONG_LONG
- * \brief Whether the long long type is supported by the compiler.
+ * \def HAVE_TR1_TUPLE
+ * \brief Whether the tr1/tuple header file is available.
+ *
+ * \note This header file is only more recently supported by compilers
+ *       and be used by Google Test, for example. If not supported by
+ *       the compiler, Google Test can use it's own implementation.
  */
-#ifndef HAVE_LONG_LONG
-#  define HAVE_LONG_LONG @HAVE_LONG_LONG@
+#ifndef HAVE_TR1_TUPLE
+#  define HAVE_TR1_TUPLE @HAVE_TR1_TUPLE@
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
