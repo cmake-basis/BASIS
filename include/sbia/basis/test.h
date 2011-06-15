@@ -24,15 +24,23 @@
 
 // let Google use their own tr1/tuple implementation if the compiler
 // does not support it; note that HAVE_TR1_TUPLE is set in config.h
-#ifndef GTEST_HAS_TR1_TUPLE
-#  define GTEST_HAS_TR1_TUPLE 1
+#ifdef GTEST_USE_OWN_TR1_TUPLE
+#  undef GTEST_USE_OWN_TR1_TUPLE
 #endif
-#ifndef GTEST_USE_OWN_TR1_TUPLE
-#  if HAVE_TR1_TUPLE
-#    define GTEST_USE_OWN_TR1_TUPLE 0
-#  else
-#    define GTEST_USE_OWN_TR1_TUPLE 1
-#  endif
+#if HAVE_TR1_TUPLE
+#  define GTEST_USE_OWN_TR1_TUPLE 0
+#else
+#  define GTEST_USE_OWN_TR1_TUPLE 1
+#endif
+
+// disable use of pthreads library if not available
+#ifdef GTEST_HAS_PTHREAD
+#  undef GTEST_HAS_PTHREAD
+#endif
+#if HAVE_PTHREAD
+#  define GTEST_HAS_PTHREAD 1
+#else
+#  define GTEST_HAS_PTHREAD 0
 #endif
 
 #include "../gtest/gtest.h"
