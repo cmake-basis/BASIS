@@ -48,7 +48,11 @@
  * \def   HAVE_LONG_LONG
  * \brief Whether the long long type is supported by the compiler.
  */
-#ifndef HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
+#  if HAVE_LONG_LONG != @HAVE_LONG_LONG@
+#    error "Macro HAVE_LONG_LONG was previously defined with different value!"
+#  endif
+#else
 #  define HAVE_LONG_LONG @HAVE_LONG_LONG@
 #endif
 
@@ -56,7 +60,11 @@
  * \def HAVE_SSTREAM
  * \brief Whether the ANSI string stream classes are available.
  */
-#ifndef HAVE_SSTREAM
+#ifdef HAVE_SSTREAM
+#  if HAVE_SSTREAM != @HAVE_SSTREAM@
+#    error "Macro HAVE_SSTREAM was previously defined with different value!"
+#  endif
+#else
 #  define HAVE_SSTREAM @HAVE_SSTREAM@
 #endif
 
@@ -73,6 +81,18 @@
 #define HAVE_STRSTREAM 0
 
 /*!
+ * \def HAVE_PTHREAD
+ * \brief Whether the pthread library is available.
+ */
+#ifdef HAVE_PTHREAD
+#  if HAVE_PTHREAD != @HAVE_PTHREAD@
+#    error "Macro HAVE_PTHREAD was previously defined with different value!"
+#  endif
+#else
+#  define HAVE_PTHREAD @HAVE_PTHREAD@
+#endif
+
+/*!
  * \def HAVE_TR1_TUPLE
  * \brief Whether the tr1/tuple header file is available.
  *
@@ -80,7 +100,11 @@
  *       and be used by Google Test, for example. If not supported by
  *       the compiler, Google Test can use it's own implementation.
  */
-#ifndef HAVE_TR1_TUPLE
+#ifdef HAVE_TR1_TUPLE
+#  if HAVE_TR1_TUPLE != @HAVE_TR1_TUPLE@
+#    error "Macro HAVE_TR1_TUPLE was previously defined with different value!"
+#  endif
+#else
 #  define HAVE_TR1_TUPLE @HAVE_TR1_TUPLE@
 #endif
 

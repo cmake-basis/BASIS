@@ -69,6 +69,15 @@ else ()
   set (HAVE_TR1_TUPLE 0)
 endif ()
 
+# check for availibility of pthreads library
+find_package (Threads) # defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT
+
+if (CMAKE_USE_PTHREADS_INIT)
+  set(HAVE_PTHREAD 1)
+else()
+  set(HAVE_PTHREAD 0)
+endif()
+
 # ============================================================================
 # common options
 # ============================================================================
