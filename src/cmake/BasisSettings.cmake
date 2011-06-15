@@ -61,7 +61,7 @@ else ()
 endif ()
 
 # check if tr/tuple header file is available
-CHECK_INCLUDE_FILE ("tr/tuple" HAVE_TR1_TUPLE)
+CHECK_INCLUDE_FILE ("tr1/tuple" HAVE_TR1_TUPLE)
 
 if (HAVE_TR1_TUPLE)
   set (HAVE_TR1_TUPLE 1)
