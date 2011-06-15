@@ -1,0 +1,338 @@
+##############################################################################
+# \file  nightly.ctest
+# \brief CTest script executed by cron job for nightly testing at SBIA.
+#
+# Usage:
+#   ctest -S nightly.ctest[,<options>] [-V]
+#
+# Options:
+#   help   Prints help and exits.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html for details.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+# ============================================================================
+# help
+# ============================================================================
+
+# ****************************************************************************
+# \brief Prints help.
+
+function (help)
+  message ("Usage:
+  ctest -S nightly.ctest[,option[=value]]* [-V]
+
+  Note: No commas or euquality signs are allowed inside of option values even
+        if the value is enclosed by quotation marks.
+
+Description:
+  This CTest script is used at SBIA for nightly testing of software projects.
+  Nightly tests are scheduled by a cron job, for example, every night once.
+  Contrary to continous testing, does the nightly testing job not loop for
+  a certain time of iterations and look for changes actively. The nightly
+  testing job will only perform one test run and then exit.
+
+Required options:
+  project=<project>   Name of the BASIS project to test.
+
+Options:
+  model=<model>   Name of the dashboard model, i.e., one of
+                  \"Nightly\", \"Continuous\", and \"Experimental\".
+                  Defaults to \"Nightly\".
+  wd=<path>       Path of the working directory.
+                  Defaults to \"$HOME/comp_space/testing\".
+  url=<url>       Base URL of the project's SVN repository.
+                  Defaults to \"https://sbia-svn/projects/<project>\".
+  branch=<name>   Name of the SVN branch to test, e.g., \"tags/1.0.0\".
+                  Defaults to \"trunk\".
+  memcheck        Perform memory check.
+                  No memory checks are performed by default.
+  coverage        Perform coverage analysis.
+                  No coverage analysis is performed by default.
+  force           Force execution of tests even when no files were updated.
+  help            Prints help and exits without performing any test.
+  version         Prints version information and exits.
+")
+endfunction ()
+
+# ****************************************************************************
+# \brief Print version information.
+
+function (version)
+  if (@REVISION@ GREATER 0)
+    message ("CTest Script nightly.ctest @VERSION@ (Rev. @REVISION@)")
+  else ()
+    message ("CTest Script nightly.ctest @VERSION@")
+  endif ()
+  message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
+  message ("See https://www.rad.upenn.edu/sbia/software/license.html for details.")
+endfunction ()
+
+# ============================================================================
+# settings
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# general
+set (CTEST_WORKING_DIRECTORY "$ENV{HOME}/comp_space/testing")
+set (CTEST_MODEL             "Nightly")
+
+# ----------------------------------------------------------------------------
+# project attributes
+set (CTEST_PROJECT_NAME "BASIS")
+set (CTEST_SVN_URL      "https://sbia-svn/projects/${CTEST_PROJECT_NAME}")
+set (CTEST_SVN_BRANCH   "trunk")
+
+# ----------------------------------------------------------------------------
+# build configuration
+set (CTEST_CMAKE_GENERATOR     "Unix Makefiles")
+set (CTEST_BUILD_CONFIGURATION "Release")
+
+set (WITH_MEMCHECK 0) # whether to perform memory checks
+set (WITH_COVERAGE 0) # whether to perform coverage analysis
+
+#set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "config/valgrind.sup")
+
+# ============================================================================
+# options
+# ============================================================================
+
+macro (set_bool_option VAR)
+  if (VALUE)
+    set (FAILURE 1)
+  else ()
+    set (${VAR} 1)
+  endif ()
+endmacro ()
+
+macro (set_option VAR)
+  if (VALUE)
+    set (${VAR} "${VALUE}")
+  else ()
+    set (FAILURE 1)
+  endif ()
+endmacro ()
+
+string (REPLACE "," ";" ARGV "${CTEST_SCRIPT_ARG}")
+foreach (ARG ${ARGV})
+  set (FAILURE 0)
+  set (OPTION)
+  set (VALUE)
+
+  string (REPLACE "=" ";" PARTS "${ARG}")
+  list (LENGTH PARTS LEN)
+
+  if (LEN EQUAL 1)
+    set (OPTION "${PARTS}")
+  elseif (LEN EQUAL 2)
+    list (GET PARTS 0 OPTION)
+    list (GET PARTS 1 VALUE)
+  endif ()
+ 
+  if (OPTION)
+    if (${OPTION} STREQUAL "project")
+      set_option (CTEST_PROJECT_NAME)
+    elseif (${OPTION} STREQUAL "model")
+      set_option (CTEST_MODEL)
+    elseif ($[OPTION} STREQUAL "wd")
+      set_option (CTEST_WORKING_DIRECTORY)
+    elseif (${OPTION} STREQUAL "url")
+      set_option (CTEST_SVN_URL)
+    elseif (${OPTION} STREQUAL "branch")
+      set_option (CTEST_SVN_BRANCH)
+    elseif (${OPTION} STREQUAL "memcheck")
+      set_bool_option (WITH_MEMCHECK)
+    elseif (${OPTION} STREQUAL "coverage")
+      set_bool_option (WITH_COVERAGE)
+    elseif (${OPTION} STREQUAL "force")
+      set_bool_option (FORCE)
+    elseif (${OPTION} STREQUAL "version")
+      version ()
+      return ()
+    elseif (${OPTION} STREQUAL "help")
+      help ()
+      return ()
+    else ()
+      set (FAILURE 1)
+    endif ()
+  else ()
+    set (FAILURE 1)
+  endif ()
+
+  if (FAILURE)
+    message (FATAL_ERROR "Invalid options: ${CTEST_SCRIPT_ARG}
+Failed to parse argument \"${ARG}\"")
+  endif ()
+endforeach ()
+
+# ============================================================================
+# initialization
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# testing tools
+find_program (CTEST_SVN_COMMAND         NAMES svn)
+find_program (CTEST_COVERAGE_COMMAND    NAMES gcov)
+find_program (CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
+
+if (NOT CTEST_SVN_COMMAND)
+  message (FATAL_ERROR "Could not find \"svn\" command!")
+endif ()
+
+if (NOT CTEST_COVERAGE_COMMAND AND WITH_COVERAGE)
+  message (FATAL_ERROR "Cannot perform coverage analysis without gcov")
+endif ()
+if (NOT CTEST_MEMORYCHECK_COMMAND AND WITH_MEMCHECK)
+  message (FATAL_ERROR "Cannot perform coverage analysis without valgrind")
+endif ()
+
+# ----------------------------------------------------------------------------
+# site information
+site_name (CTEST_SITE)
+
+# remove ".local" or ".uphs.upenn.edu" suffix from site name
+string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" CTEST_SITE "${CTEST_SITE}")
+
+# \note The build name given in the .xml files will be replaced by this script
+#       before the submission once the used compiler could be determined.
+set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
+
+# ----------------------------------------------------------------------------
+# directories
+set (CTEST_SOURCE_DIRECTORY "${CTEST_WORKING_DIRECTORY}/${CTEST_SITE}-${CMAKE_SYSTEM_NAME}/${CTEST_PROJECT_NAME}/${CTEST_SVN_BRANCH}")
+set (CTEST_BINARY_DIRECTORY "${CTEST_SOURCE_DIRECTORY}-build")
+
+# ----------------------------------------------------------------------------
+# memory check suppressions file
+if (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE AND NOT IS_ABSOLUTE "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
+  set (
+    CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+      "${CTEST_SOURCE_DIRECTORY}/${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}"
+  )
+endif ()
+
+# ----------------------------------------------------------------------------
+# test commands
+if (WITH_COVERAGE)
+  set (CTEST_BUILD_CONFIGURATION "Coverage")
+endif ()
+
+if (NOT EXISTS "${CTEST_SOURCE_DIRECTORY}")
+  set (CTEST_CHECKOUT_COMMAND "${CTEST_SVN_COMMAND} co \"${CTEST_SVN_URL}/${CTEST_SVN_BRANCH}\" ${CTEST_SOURCE_DIRECTORY}")
+endif ()
+
+set (CTEST_UPDATE_COMMAND "${CTEST_SVN_COMMAND}")
+
+set (CTEST_CONFIGURE_COMMAND "\"${CMAKE_COMMAND}\"")
+set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DCMAKE_BUILD_TYPE:STRING=${CTEST_BUILD_CONFIGURATION}")
+set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_TESTING:BOOL=ON")
+set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=OFF")
+set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-G${CTEST_CMAKE_GENERATOR}\"")
+set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
+
+# ============================================================================
+# testing
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# start a new test run
+ctest_empty_binary_directory ("${CTEST_BINARY_DIRECTORY}")
+ctest_start ("${CTEST_MODEL}")
+
+# ----------------------------------------------------------------------------
+# update working copy
+ctest_update (RETURN_VALUE NUM_FILES)
+
+# ----------------------------------------------------------------------------
+# configure build
+ctest_configure ()
+
+#ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
+#include ("${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake")
+
+# ----------------------------------------------------------------------------
+# build project
+ctest_build ()
+
+# ----------------------------------------------------------------------------
+# perform other (time consuming) testing only if files were updated
+if (FORCE OR CTEST_CHECKOUT_COMMAND OR NOT NUM_FILES EQUAL 0)
+  # --------------------------------------------------------------------------
+  # run tests
+  ctest_test ()
+
+  # --------------------------------------------------------------------------
+  # perform coverage analysis
+  if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
+    ctest_coverage ()
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # perform memory checks
+  if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
+    ctest_memcheck ()
+  endif ()
+else ()
+  message ("Nothing changed. No tests were performed.")
+endif ()
+
+# ----------------------------------------------------------------------------
+# adjust build name
+
+# get compiler name
+function (read_cmake_cache_value VAR)
+  file (STRINGS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" ENTRY REGEX "${VAR}:.*=(.*)")
+  string (REGEX REPLACE "${VAR}:.*=(.*)" "\\1" VALUE "${ENTRY}")
+  set (${VAR} "${VALUE}" PARENT_SCOPE)
+endfunction ()
+
+if (WIN32)
+  set (NAME_COMPONENT "NAME_WE")
+else ()
+  set (NAME_COMPONENT "NAME")
+endif ()
+if (UNIX OR BORLAND)
+  read_cmake_cache_value (CMAKE_CXX_COMPILER)
+  get_filename_component (COMPILER_NAME "${CMAKE_CXX_COMPILER}" ${NAME_COMPONENT})
+else ()
+  read_cmake_cache_value (CMAKE_BUILD_TOOL)
+  get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
+endif ()
+
+if (COMPILER_NAME MATCHES "msdev")
+  set (COMPILER_NAME "vs60")
+elseif (COMPILER_NAME MATCHES "devenv")
+  read_cmake_cache_value (CMAKE_GENERATOR)
+  string (REGEX REPLACE "Visual Studio ([0-9][0-9]?)($|.*)" "\\1" NUMBER "${CMAKE_GENERATOR}") 
+  if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio 7 .NET 2003")
+    set (COMPILER_NAME "vs71")
+  else ()
+    set (COMPILER_NAME "vs${NUMBER}")
+  endif ()
+endif ()
+
+# desired build name
+set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${COMPILER_NAME}")
+
+# replace intermediate build name
+if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
+  # get tag, i.e., subdirectory name
+  file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
+  # glob XML files
+  file (GLOB FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
+  # replace build name
+  foreach (FILENAME ${FILES})
+    file (READ "${FILENAME}" XML)
+    string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+    string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+    file (WRITE "${FILENAME}" "${XML}")
+  endforeach ()
+endif ()
+
+# ----------------------------------------------------------------------------
+# submit results
+ctest_submit ()
+
