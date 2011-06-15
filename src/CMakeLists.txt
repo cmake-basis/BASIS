@@ -93,6 +93,10 @@ basis_add_library (
 # \endcode
 basis_include_directories ("${PROJECT_INCLUDE_DIR}/sbia") 
 
+if (NOT HAVE_TR1_TUPLE)
+  basis_add_definitions ("-DGTEST_USE_OWN_TR1_TUPLE=1")
+endif ()
+
 basis_add_library (basis_test STATIC "utilities/gmock-gtest-all.cc")
 
 # ============================================================================
