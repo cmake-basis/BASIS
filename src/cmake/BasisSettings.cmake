@@ -72,11 +72,13 @@ endif ()
 # check for availibility of pthreads library
 find_package (Threads) # defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT
 
-if (CMAKE_USE_PTHREADS_INIT)
-  set(HAVE_PTHREAD 1)
-else()
-  set(HAVE_PTHREAD 0)
-endif()
+if (Threads_FOUND)
+  if (CMAKE_USE_PTHREADS_INIT)
+    set(HAVE_PTHREAD 1)
+  else()
+    set(HAVE_PTHREAD 0)
+  endif()
+endif ()
 
 # ============================================================================
 # common options
@@ -420,9 +422,14 @@ set (CMAKE_C_FLAGS "" CACHE INTERNAL "" FORCE) # disabled
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # common linker flags
-set (CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS}    -lm")
-set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -lm")
-set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lm")
+set (CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -lm")
+if (Threads_FOUND)
+  set (CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} ${CMAKE_THREADS_LIBS_INIT}")
+endif ()
+
+set (CMAKE_EXE_LINKER_FLAGS    "${CMAKE_LINKER_FLAGS}")
+set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}")
+set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}")
 
 # ----------------------------------------------------------------------------
 # MinSizeRel - disabled
