@@ -57,6 +57,12 @@ endif ()
 # check if tr/tuple header file is available
 CHECK_INCLUDE_FILE ("tr/tuple" HAVE_TR1_TUPLE)
 
+if (HAVE_TR1_TUPLE)
+  set (HAVE_TR1_TUPLE TRUE)
+else ()
+  set (HAVE_TR1_TUPLE FALSE)
+endif ()
+
 # ============================================================================
 # common options
 # ============================================================================

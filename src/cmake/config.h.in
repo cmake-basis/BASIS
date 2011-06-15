@@ -65,12 +65,12 @@
  * \brief Whether the obsolete string stream classes are available.
  *
  * \note As the strstream implementations are obsolete already for a long
- *       time, this macro always evaluates to 0.
+ *       time, this macro always evaluates to FALSE.
  */
 #ifdef HAVE_STRSTREAM
   #  undef HAVE_STRSTREAM
 #endif
-#define HAVE_STRSTREAM 0
+#define HAVE_STRSTREAM FALSE
 
 /*!
  * \def HAVE_TR1_TUPLE
