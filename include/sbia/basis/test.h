@@ -20,6 +20,21 @@
 #define SBIA_BASIS_TEST_H_
 
 
+#include "config.h"
+
+// let Google use their own tr1/tuple implementation if the compiler
+// does not support it; note that HAVE_TR1_TUPLE is set in config.h
+#ifndef GTEST_HAS_TR1_TUPLE
+#  define GTEST_HAS_TR1_TUPLE 1
+#endif
+#ifndef GTEST_USE_OWN_TR1_TUPLE
+#  if HAVE_TR1_TUPLE
+#    define GTEST_USE_OWN_TR1_TUPLE 0
+#  else
+#    define GTEST_USE_OWN_TR1_TUPLE 1
+#  endif
+#endif
+
 #include "../gtest/gtest.h"
 #include "../gmock/gmock.h"
 
