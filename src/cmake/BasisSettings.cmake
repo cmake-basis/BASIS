@@ -43,24 +43,30 @@ include (CheckTypeSize)
 include (CheckIncludeFile)
 
 # check if type long long is supported
-CHECK_TYPE_SIZE("long long" LONG_LONG)
+CHECK_TYPE_SIZE ("long long" LONG_LONG)
+
+if (HAVE_LONG_LONG)
+  set (HAVE_LONG_LONG 1)
+else ()
+  set (HAVE_LONG_LONG 0)
+endif ()
 
 # check for presence of sstream header
 include (TestForSSTREAM)
 
 if (CMAKE_NO_ANSI_STRING_STREAM)
-  set (HAVE_SSTREAM FALSE)
+  set (HAVE_SSTREAM 0)
 else ()
-  set (HAVE_SSTREAM TRUE)
+  set (HAVE_SSTREAM 1)
 endif ()
 
 # check if tr/tuple header file is available
 CHECK_INCLUDE_FILE ("tr/tuple" HAVE_TR1_TUPLE)
 
 if (HAVE_TR1_TUPLE)
-  set (HAVE_TR1_TUPLE TRUE)
+  set (HAVE_TR1_TUPLE 1)
 else ()
-  set (HAVE_TR1_TUPLE FALSE)
+  set (HAVE_TR1_TUPLE 0)
 endif ()
 
 # ============================================================================
