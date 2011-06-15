@@ -68,7 +68,7 @@
  *       time, this macro always evaluates to FALSE.
  */
 #ifdef HAVE_STRSTREAM
-  #  undef HAVE_STRSTREAM
+#  undef HAVE_STRSTREAM
 #endif
 #define HAVE_STRSTREAM FALSE
 
