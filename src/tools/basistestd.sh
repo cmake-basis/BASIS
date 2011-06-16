@@ -60,8 +60,7 @@ printVersion ()
     else
         echo "basistestd (BASIS) $version"
     fi
-    cat -
-<< EOF-COPYRIGHT
+    cat - << EOF-COPYRIGHT
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 EOF-COPYRIGHT
@@ -148,7 +147,7 @@ EOF-DESCRIPTION
     echo
     cat - << EOF-EXAMPLES
 Examples:
-  testd --version
+  $progName --version
 
     Prints version information and exits.
 EOF-EXAMPLES
