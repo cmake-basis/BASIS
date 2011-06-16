@@ -81,8 +81,8 @@ printOptionsSection ()
     cat - << EOF-OPTIONS
 Options:
   -V [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
-  -h [ --help ]      Print this help and exit.
-  -u [ --usage ]     Print usage and exit.
+  -h [ --help ]      Print help and exit.
+  -u [ --usage ]     Print usage information and exit.
   -v [ --version ]   Print version information and exit.
 EOF-OPTIONS
 }
