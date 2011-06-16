@@ -48,9 +48,9 @@ Options:
                   Defaults to \"https://sbia-svn/projects/<project>\".
   branch=<name>   Name of the SVN branch to test, e.g., \"tags/1.0.0\".
                   Defaults to \"trunk\".
-  memcheck        Perform memory check.
+  memcheck        Perform memory check. Requires valgrind.
                   No memory checks are performed by default.
-  coverage        Perform coverage analysis.
+  coverage        Perform coverage analysis. Requires gcov.
                   No coverage analysis is performed by default.
   force           Force execution of tests even when no files were updated.
   help            Prints help and exits without performing any test.
@@ -62,6 +62,7 @@ Example:
     Performs an experimental nightly test of the main development branch of
     BASIS itself, including coverage analysis and memory checks.
     The -V option of ctest enables more verbose output of CTest.
+    Even more verbose output can be requested using -VV.
 
 Contact:
   SBIA Group <sbia-software at uphs.upenn.edu>
@@ -94,8 +95,8 @@ set (CTEST_MODEL             "Nightly")
 
 # ----------------------------------------------------------------------------
 # project attributes
-set (CTEST_PROJECT_NAME "BASIS")
-set (CTEST_SVN_URL      "https://sbia-svn/projects/${CTEST_PROJECT_NAME}")
+set (CTEST_PROJECT_NAME "")
+set (CTEST_SVN_URL      "https://sbia-svn/projects/@CTEST_PROJECT_NAME@")
 set (CTEST_SVN_BRANCH   "trunk")
 
 # ----------------------------------------------------------------------------
@@ -180,6 +181,11 @@ Failed to parse argument \"${ARG}\"")
   endif ()
 endforeach ()
 
+if (NOT CTEST_PROJECT_NAME)
+  help ()
+  message (FATAL_ERROR "No project specified!")
+endif ()
+
 # ============================================================================
 # initialization
 # ============================================================================
@@ -228,6 +234,8 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # test commands
+string (CONFIGURE "${CTEST_SVN_URL}" CTEST_SVN_URL @ONLY)
+
 if (WITH_COVERAGE)
   set (CTEST_BUILD_CONFIGURATION "Coverage")
 endif ()
