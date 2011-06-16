@@ -37,10 +37,15 @@ revision='@REVISION@'
 ctestScript="$progDir/nightly.ctest"
 
 # absolute path of tests configuration file
-confFile='/etc/basistestd.conf'
+#confFile='/etc/basistestd.conf'
+confFile="$progDir/basistestd.conf"
 
 # absolute path of file with timestamps for next test execution
-scheduleFile='/var/run/basistestd'
+#scheduleFile='/var/run/basistestd.schedule'
+scheduleFile="$progDir/basistestd.schedule"
+
+# command used to submit test jobs
+submitCmd='qsub -l centos5'
 
 # ============================================================================
 # help/version
@@ -103,7 +108,7 @@ printHelp ()
 {
     echo "$progName (BASIS)"
     echo
-    printUsageSection ()
+    printUsageSection
     echo
     cat -
 << EOF-DESCRIPTION
@@ -142,9 +147,11 @@ Configuration:
 
     x:x:1:BASIS:trunk:Nightly:coverage,memcheck
 
+  Attention: The entire line may not contain any whitespace character!
+
 EOF-DESCRIPTION
     echo
-    printOptionsSection ()
+    printOptionsSection
     echo
     cat -
 << EOF-EXAMPLES
@@ -153,7 +160,7 @@ Examples:
     Prints version information and exits.
 EOF-EXAMPLES
     echo
-    printContactSection ()
+    printContactSection
 }
 
 # ****************************************************************************
@@ -162,11 +169,11 @@ printUsage ()
 {
     echo "$progName (BASIS)"
     echo
-    printUsageSection ()
+    printUsageSection
     echo
-    printOptionsSection ()
+    printOptionsSection
     echo
-    printContactSection ()
+    printContactSection
 }
 
 # ============================================================================
@@ -177,11 +184,10 @@ printUsage ()
 # \brief Runs a test given the arguments in the configuration file.
 runTest ()
 {
-    cmd='ctest'
-    if [ $verbosity -gt 0 ]; then
-        cmd="$cmd -V"
-    fi
-    cmd="$cmd -S $ctestScript,project=$1,branch=$2,model=$3,$options"
+    cmd="$submitCmd ctest"
+    if [ $verbosity -gt 0 ]; then cmd="$cmd -V"; fi
+    cmd="$cmd -S $ctestScript,project=$1,branch=$2,model=$3"
+    if [ ! -z "$options" ]; then cmd="$cmd,$options"; fi
     echo "> $cmd"
     $cmd
     return $?
@@ -261,21 +267,39 @@ dateDiff ()
 # \brief Get next scheduled date of a given test.
 scheduleDate ()
 {
-    local
+    local retval='now'
+    for line in ${schedule[@]}; do
+        parts=(`echo $line | tr ':' ' '`)
+        num=${#parts[@]}
+        if [ $num -lt 6 -o $num -gt 7 ]; then continue; fi
+        if [    "${parts[3]}" == "$2" \
+             -a "${parts[4]}" == "$3" \
+             -a "${parts[5]}" == "$4" \
+             -a "${parts[6]}" == "$5" ]
+        then
+            retval="${parts[0]} ${parts[1]}:${parts[2]}"
+        fi
+    done
+    echo "$retval"
 }
 
 # ***************************************************************************
 # \brief Add entry to test schedule.
 scheduleTest ()
 {
-    idx=${newSchedule[@]}
+    idx=${#newSchedule[@]}
     ((idx++))
-    newSchedule[$idx]="$2:$3:$4:$5:$6"
+    local dt=$(date --utc --date "$1" "+%Y-%m-%d:%H:%M")
+    newSchedule[$idx]="$dt:$2:$3:$4:$5"
 }
 
 # ============================================================================
 # options
 # ============================================================================
+
+verbosity=0
+
+((verbosity++))
 
 # ============================================================================
 # main
@@ -308,10 +332,6 @@ if [ -f "$scheduleFile" ]; then
         schedule[$idx]=$line
         ((idx++))
     done < $scheduleFile
-    if [ $? -ne 0 ]; then
-        echo "Failed to read existing schedule $scheduleFile" 1>&2
-        exit 1
-    fi
 fi
 
 # variables set by readConfLine () which store the configuration for a
@@ -326,40 +346,40 @@ options=''
 
 # read configuration file line by line
 linenumber=0
-skipped=0
+errors=0
 while read line; do
     ((linenumber++))
+    # skip empty lines
+    if [ -z "$line" ]; then continue; fi
     # skip comments
-    if [ $line =~ /^#/ ]; then
-        continue
-    fi
+    if [[ "$line" =~ "^#" ]]; then continue; fi
     # parse line
-    parts=$(echo $1 | tr ':' ' ')
+    parts=(`echo $line | tr ':' ' '`)
     num=${#parts[@]}
-    if [ $num -ne 7 ]; then
-        echo "$confFile:$linenumber: Failed to parse configuration, skipping test" 1>&2
+    if [ $num -lt 4 ]; then
+        echo "$confFile:$linenumber: Invalid configuration, skipping test" 1>&2
+        ((errors++))
         continue
     fi
-    minutes=parts[0]
-    hours=parts[1]
-    days=parts[2]
-    project=parts[3]
-    branch=parts[4]
-    model=parts[5]
-    options=parts[6]
-
-    echo "minutes=$minutes,hours=$hours,days=$days,project=$project,branch=$branch,model=$model,$options"
-    continue
-
+    minutes=${parts[0]}
+    hours=${parts[1]}
+    days=${parts[2]}
+    project=${parts[3]}
+    branch=${parts[4]}
+    model=${parts[5]}
+    options=${parts[6]}
     # check arguments
+    if [ "$minutes" == "x" ]; then minutes=0; fi
+    if [ "$hours"   == "x" ]; then hours=0;   fi
+    if [ "$days"    == "x" ]; then days=0;   fi
     if [ $minutes -eq 0 -a $hours -eq 0 -a $days -eq 0 ]; then
         echo "$confFile:$linenumber: Invalid test interval, skipping test" 1>&2
-        skipped=$(($skipped + 1))
+        ((errors++))
         continue
     fi
     if [ -z "$project" ]; then
         echo "$confFile:$linenumber: No project name given, skipping test" 1>&2
-        skipped=$(($skipped + 1))
+        ((errors++))
         continue
     fi
     if [ -z "$branch" ]; then
@@ -371,25 +391,29 @@ while read line; do
     # determine whether test is already due for execution
     nextDate=$(scheduleDate $schedule $project $branch $model $options)
     if [ $(dateDiff -m 'now' $nextDate) -gt 0 ]; then
+        echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $nextDate UTC"
         # skip test as it is not yet scheduled for execution
-        scheduleTest $project $branch $model $options $nextDate
+        scheduleTest "$nextDate" "$project" "$branch" "$model" "$options"
         continue
     fi
     # run test
     runTest $project $branch $model $options
     if [ $? -ne 0 ]; then
         echo "$confFile:$linenumber: Failed to run test" 1>&2
+        ((errors++))
         # try again after a fixed time
         minutes=0
         hours=1
         days=0
     fi
     # update time of next execution
-    minutes=$(($minutes + $hours * 60 + $days * 1440))
+    nextDate=$(date --utc --date "$nextDate" "+%Y-%m-%d %T")
+    minutes=$((minutes + hours * 60 + days * 1440))
     nextDate=$(dateAdd -m 'now' $minutes)
-    scheduleTest $project $branch $model $options $nextDate
+    scheduleTest "$nextDate" "$project" "$branch" "$model" "$options"
     if [ $? -ne 0 ]; then
         echo "$confFile:$linenumber: Failed to reschedule test" 1>&2
+        ((errors++))
     fi
 done < "$confFile"
 
@@ -398,4 +422,10 @@ rm -f $scheduleFile
 for line in ${newSchedule[@]}; do
     echo "$line" >> $scheduleFile
 done
+sort "$scheduleFile" -o "$scheduleFile"
 
+# done
+if [ $errors -ne 0 ]; then
+    exit 1
+fi
+exit 0
