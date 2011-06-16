@@ -71,23 +71,20 @@ EOF-COPYRIGHT
 # \brief Print usage section of help/usage.
 printUsageSection ()
 {
-    cat -
-<< EOF-USAGE
-Usage:
-  $progName [options]
-EOF-USAGE
+    echo "Usage:"
+    echo "  $progName [options]"
 }
 
 # ****************************************************************************
 # \brief Print documentation of options.
 printOptionsSection ()
 {
-    cat -
-<< EOF-OPTIONS
+    cat - << EOF-OPTIONS
 Options:
-  -h (--help)      Print this help and exit.
-  -u (--usage)     Print usage and exit.
-  -v (--version)   Print version information and exit.
+  -V [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
+  -h [ --help ]      Print this help and exit.
+  -u [ --usage ]     Print usage and exit.
+  -v [ --version ]   Print version information and exit.
 EOF-OPTIONS
 }
 
@@ -95,11 +92,8 @@ EOF-OPTIONS
 # \brief Print contact information.
 printContactSection ()
 {
-    cat -
-<< EOF-CONTACT
-Contact:
-  SBIA Group <sbia-software at uphs.upenn.edu>
-EOF-CONTACT
+    echo "Contact:"
+    echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
 }
 
 # ****************************************************************************
@@ -110,8 +104,7 @@ printHelp ()
     echo
     printUsageSection
     echo
-    cat -
-<< EOF-DESCRIPTION
+    cat - << EOF-DESCRIPTION
 Description:
   
 Configuration:
@@ -135,11 +128,12 @@ Configuration:
     <branch>    Branch within the project's SVN repository, e.g., "tags/1.0.0".
                 Defaults to "trunk" if a "x" is given.
     <model>     Dashboard model, i.e., either one of "Nightly", "Continuous",
-                and "Experimental". Defaults to "Nightly" is a "x" is given.
+                and "Experimental". Defaults to "Nightly".
     <options>   Additional options to the CTest script.
                 The "nightly.ctest" script of BASIS is used by default.
                 Run "ctest -S <path>/nightly.ctest,help" to get a list of
-                available options.
+                available options. By default, the default options of the
+                CTest script are used.
 
   For example, nightly tests of the main development branch (trunk) of the
   project BASIS itself which are run once every day including coverage
@@ -148,15 +142,14 @@ Configuration:
     x:x:1:BASIS:trunk:Nightly:coverage,memcheck
 
   Attention: The entire line may not contain any whitespace character!
-
 EOF-DESCRIPTION
     echo
     printOptionsSection
     echo
-    cat -
-<< EOF-EXAMPLES
+    cat - << EOF-EXAMPLES
 Examples:
   testd --version
+
     Prints version information and exits.
 EOF-EXAMPLES
     echo
@@ -299,7 +292,26 @@ scheduleTest ()
 
 verbosity=0
 
-((verbosity++))
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-h|--help)
+			printHelp
+			exit 0
+			;;
+
+		-u|--usage)
+			printUsage
+			exit 0
+			;;
+        -v|--version)
+            printVersion
+            exit 0
+            ;;
+        -V|--verbose)
+            ((verbosity++))
+            ;;
+    esac
+done
 
 # ============================================================================
 # main
@@ -369,6 +381,11 @@ while read line; do
     model=${parts[5]}
     options=${parts[6]}
     # check arguments
+    if [ -z "$minutes" -o -z "$hours" -o -z "$days" ]; then
+        echo "$confFile:$linenumber: Invalid configuration, skipping test" 1>&2
+        ((errors++))
+        continue
+    fi
     if [ "$minutes" == "x" ]; then minutes=0; fi
     if [ "$hours"   == "x" ]; then hours=0;   fi
     if [ "$days"    == "x" ]; then days=0;   fi
