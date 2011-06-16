@@ -66,10 +66,11 @@ set (VERSION_PATCH "@PROJECT_VERSION_PATCH@")
 # directories
 # ============================================================================
 
-basis_set_script_path (RUNTIME_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_BIN_DIR@")
-basis_set_script_path (LIBRARY_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_LIB_DIR@")
-basis_set_script_path (ARCHIVE_DIR "@CMAKE_ARCHIVE_OUTPUT_DIRECTORY@" "@INSTALL_LIB_DIR@")
-basis_set_script_path (ETC_DIR     "@PROJECT_ETC_DIR@"                "@INSTALL_ETC_DIR@")
+basis_set_script_path (RUNTIME_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_RUNTIME_DIR@")
+basis_set_script_path (LIBEXEC_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_LIBEXEC_DIR@")
+basis_set_script_path (LIBRARY_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_LIBRARY_DIR@")
+basis_set_script_path (ARCHIVE_DIR "@CMAKE_ARCHIVE_OUTPUT_DIRECTORY@" "@INSTALL_ARCHIVE_DIR@")
+basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_SHARE_DIR@")
 
 # ============================================================================
 # utility implementations
@@ -84,7 +85,6 @@ set (BASH_FUNCTION_getProgDir "
 # \\brief Get real directory of executable.
 #
 # \\see http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-
 function getProgDir
 {
   # get the absolute path of the executable
@@ -109,7 +109,6 @@ function getProgDir
 set (BASH_FUNCTION_getProgName "
 # ****************************************************************************
 # \\brief Get name of executable.
-
 function getProgName
 {
   echo \${0##*/}
