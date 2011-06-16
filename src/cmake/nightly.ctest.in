@@ -42,8 +42,10 @@ Options:
   model=<model>   Name of the dashboard model, i.e., one of
                   \"Nightly\", \"Continuous\", and \"Experimental\".
                   Defaults to \"Nightly\".
-  wd=<path>       Path of the working directory.
-                  Defaults to \"$HOME/comp_space/testing\".
+  srcdir=<path>   Base path of the source directory.
+                  Defaults to \"${HOME}/comp_space/testing\".
+  bindir=<path>   Base path of the binary directory.
+                  Defaults to the base path of the source directory.
   url=<url>       Base URL of the project's SVN repository.
                   Defaults to \"https://sbia-svn/projects/<project>\".
   branch=<name>   Name of the SVN branch to test, e.g., \"tags/1.0.0\".
@@ -53,6 +55,7 @@ Options:
   coverage        Perform coverage analysis. Requires gcov.
                   No coverage analysis is performed by default.
   force           Force execution of tests even when no files were updated.
+  tmpbin          Delete binary directory on completion (also if not successful).
   help            Prints help and exits without performing any test.
   version         Prints version information and exits.
 
@@ -90,13 +93,14 @@ endfunction ()
 
 # ----------------------------------------------------------------------------
 # general
-set (CTEST_WORKING_DIRECTORY "$ENV{HOME}/comp_space/testing")
-set (CTEST_MODEL             "Nightly")
+set (CTEST_SOURCE_DIRECTORY "$ENV{HOME}/comp_space/testing")
+set (CTEST_BINARY_DIRECTORY "")
+set (CTEST_MODEL            "Nightly")
 
 # ----------------------------------------------------------------------------
 # project attributes
 set (CTEST_PROJECT_NAME "")
-set (CTEST_SVN_URL      "https://sbia-svn/projects/@CTEST_PROJECT_NAME@")
+set (CTEST_SVN_URL      "https://sbia-svn/projects/\@CTEST_PROJECT_NAME\@")
 set (CTEST_SVN_BRANCH   "trunk")
 
 # ----------------------------------------------------------------------------
@@ -132,8 +136,8 @@ endmacro ()
 string (REPLACE "," ";" ARGV "${CTEST_SCRIPT_ARG}")
 foreach (ARG ${ARGV})
   set (FAILURE 0)
-  set (OPTION)
-  set (VALUE)
+  set (OPTION "")
+  set (VALUE  "")
 
   string (REPLACE "=" ";" PARTS "${ARG}")
   list (LENGTH PARTS LEN)
@@ -150,8 +154,10 @@ foreach (ARG ${ARGV})
       set_option (CTEST_PROJECT_NAME)
     elseif (${OPTION} STREQUAL "model")
       set_option (CTEST_MODEL)
-    elseif ($[OPTION} STREQUAL "wd")
-      set_option (CTEST_WORKING_DIRECTORY)
+    elseif (${OPTION} STREQUAL "srcdir")
+      set_option (CTEST_SOURCE_DIRECTORY)
+    elseif (${OPTION} STREQUAL "bindir")
+      set_option (CTEST_BINARY_DIRECTORY)
     elseif (${OPTION} STREQUAL "url")
       set_option (CTEST_SVN_URL)
     elseif (${OPTION} STREQUAL "branch")
@@ -160,6 +166,8 @@ foreach (ARG ${ARGV})
       set_bool_option (WITH_MEMCHECK)
     elseif (${OPTION} STREQUAL "coverage")
       set_bool_option (WITH_COVERAGE)
+    elseif (${OPTION} STREQUAL "tmpbin")
+      set_bool_option (TMPBIN)
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE)
     elseif (${OPTION} STREQUAL "version")
@@ -177,13 +185,16 @@ foreach (ARG ${ARGV})
 
   if (FAILURE)
     message (FATAL_ERROR "Invalid options: ${CTEST_SCRIPT_ARG}
-Failed to parse argument \"${ARG}\"")
+Failed to parse argument \"${ARG}\" (option: ${OPTION}, value: ${VALUE})")
   endif ()
 endforeach ()
 
 if (NOT CTEST_PROJECT_NAME)
   help ()
   message (FATAL_ERROR "No project specified!")
+endif ()
+if (NOT CTEST_BINARY_DIRECTORY)
+  set (CTEST_BINARY_DIRECTORY "${CTEST_SOURCE_DIRECTORY}")
 endif ()
 
 # ============================================================================
@@ -220,8 +231,8 @@ set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
 
 # ----------------------------------------------------------------------------
 # directories
-set (CTEST_SOURCE_DIRECTORY "${CTEST_WORKING_DIRECTORY}/${CTEST_SITE}-${CMAKE_SYSTEM_NAME}/${CTEST_PROJECT_NAME}/${CTEST_SVN_BRANCH}")
-set (CTEST_BINARY_DIRECTORY "${CTEST_SOURCE_DIRECTORY}-build")
+set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
+set (CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-${CMAKE_SYSTEM_NAME}/${CTEST_SVN_BRANCH}")
 
 # ----------------------------------------------------------------------------
 # memory check suppressions file
@@ -353,4 +364,10 @@ endif ()
 # ----------------------------------------------------------------------------
 # submit results
 ctest_submit ()
+
+# ----------------------------------------------------------------------------
+# remove temporary build tree
+if (TMPBIN)
+  file (REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+endif ()
 
