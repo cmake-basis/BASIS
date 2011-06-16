@@ -199,16 +199,18 @@ endfunction ()
 # \param [in] ARGN        Remaining arguments such as in particular the
 #                         input source files.
 #
-#   TYPE              Type of the target. Either EXECUTABLE (default) or LIBRARY.
-#   COMPONENT         Name of the component. Defaults to
-#                     BASIS_RUNTIME_COMPONENT if TYPE is EXECUTABLE or
-#                     BASIS_LIBRARY_COMPONENT, otherwise.
-#   RUNTIME_COMPONENT Name of runtime component. Defaults to COMPONENT
-#                     if specified or BASIS_RUNTIME_COMPONENT, otherwise.
-#   LIBRARY_COMPONENT Name of library component. Defaults to COMPONENT
-#                     if specified or BASIS_LIBRARY_COMPONENT, otherwise.
-#   LIBEXEC           Specifies that the built executable is an auxiliary
-#                     executable called by other executables only.
+#   TYPE                Type of the target. Either EXECUTABLE (default) or LIBRARY.
+#   COMPONENT           Name of the component. Defaults to
+#                       BASIS_RUNTIME_COMPONENT if TYPE is EXECUTABLE or
+#                       BASIS_LIBRARY_COMPONENT, otherwise.
+#   RUNTIME_COMPONENT   Name of runtime component. Defaults to COMPONENT
+#                       if specified or BASIS_RUNTIME_COMPONENT, otherwise.
+#   LIBRARY_COMPONENT   Name of library component. Defaults to COMPONENT
+#                       if specified or BASIS_LIBRARY_COMPONENT, otherwise.
+#   LIBEXEC             Specifies that the built executable is an auxiliary
+#                       executable called by other executables only.
+#   TEST                Specifies that the built executable is a test executable.
+#                       If LIBEXEC is given as well, it will be ignored.
 
 
 function (basis_add_mcc_target TARGET_NAME)
@@ -216,7 +218,13 @@ function (basis_add_mcc_target TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC" "TYPE;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "LIBEXEC;TEST"
+      "TYPE;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT"
+      ""
+    ${ARGN}
+  )
 
   if (NOT ARGN_TYPE)
     set (ARGN_TYPE "EXECUTABLE")
@@ -306,7 +314,10 @@ function (basis_add_mcc_target TARGET_NAME)
   if (ARGN_TYPE STREQUAL "LIBRARY")
     set (TYPE "MCC_LIBRARY")
   else ()
-    if (ARGN_LIBEXEC)
+    if (ARGN_TEST)
+      set (RUNTIME_INSTALL_DIR "")
+      set (TYPE                "MCC_TEST")
+    elseif (ARGN_LIBEXEC)
       set (RUNTIME_INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
       set (TPYE                "MCC_LIBEXEC")
     else ()
@@ -406,7 +417,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
 
-  if (NOT BASIS_TYPE MATCHES "^MCC_EXEC$|^MCC_LIBEXEC$|^MCC_LIBRARY$")
+  if (NOT BASIS_TYPE MATCHES "^MCC_EXEC$|^MCC_LIBEXEC$|^MCC_TEST$|^MCC_LIBRARY$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
@@ -622,11 +633,15 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   if (TYPE STREQUAL "LIBRARY")
     # \todo
   else ()
-    install (
-      PROGRAMS    ${BUILD_OUTPUT}
-      DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
-      COMPONENT   "${RUNTIME_COMPONENT}"
-    )
+    if (BASIS_TYPE STREQUAL "MCC_TEST")
+      # \todo Install selected test executables
+    else ()
+      install (
+        PROGRAMS    ${BUILD_OUTPUT}
+        DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
+        COMPONENT   "${RUNTIME_COMPONENT}"
+      )
+    endif ()
   endif ()
 
   if (TYPE STREQUAL "LIBRARY")

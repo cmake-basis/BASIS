@@ -249,19 +249,21 @@ endfunction ()
 #                         on to add_executable () or the respective custom
 #                         commands used to build the executable.
 #
-#   COMPONENT Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
-#   LANGUAGE  Source code language. By default determined from the extensions of
-#             of the given source files, where CXX is assumed if no other
-#             language is detected.
-#   LIBEXEC   Specifies that the built executable is an auxiliary executable
-#             which is only called by other executable.
+#   COMPONENT   Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
+#   LANGUAGE    Source code language. By default determined from the extensions of
+#               of the given source files, where CXX is assumed if no other
+#               language is detected.
+#   LIBEXEC     Specifies that the built executable is an auxiliary executable
+#               which is only called by other executable.
+#   TEST        Specifies that the built executable is a test executable used
+#               with basis_add_test(). If LIBEXEC is given as well, it is ignored.
 
 function (basis_add_executable TARGET_NAME)
   basis_check_target_name (${TARGET_NAME})
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC" "COMPONENT;LANGUAGE" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC;TEST" "COMPONENT;LANGUAGE" "" ${ARGN})
 
   # if no component is specified, use default
   if (NOT ARGN_COMPONENT)
@@ -288,17 +290,19 @@ function (basis_add_executable TARGET_NAME)
 
   if (ARGN_LANGUAGE STREQUAL "MATLAB")
 
-    if (ARGN_LIBEXEC)
-      set (LIBEXEC "LIBEXEC")
+    if (ARGN_TEST)
+      set (EXECOPT "TEST")
+    elseif (ARGN_LIBEXEC)
+      set (EXECOPT "LIBEXEC")
     else ()
-      set (LIBEXEC "")
+      set (EXECOPT "")
     endif ()
 
     basis_add_mcc_target (
       ${TARGET_NAME}
       TYPE      "EXECUTABLE"
       COMPONENT "${ARGN_COMPONENT}"
-      ${LIBEXEC}
+      ${EXECOPT}
       ${ARGN_UNPARSED_ARGUMENTS}
     )
 
@@ -313,7 +317,9 @@ function (basis_add_executable TARGET_NAME)
     # add executable target
     add_executable (${TARGET_UID} ${ARGN_UNPARSED_ARGUMENTS})
 
-    if (ARGN_LIBEXEC)
+    if (ARGN_TEST)
+      set (TYPE "TEST")
+    elseif (ARGN_LIBEXEC)
       set (TYPE "LIBEXEC")
     else ()
       set (TYPE "EXEC")
@@ -338,29 +344,33 @@ function (basis_add_executable TARGET_NAME)
     endif ()
 
     # install executable
-    if (ARGN_LIBEXEC)
-      set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+    if (ARGN_TEST)
+      # \todo install (selected?) tests
     else ()
-      set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+      if (ARGN_LIBEXEC)
+        set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+      else ()
+        set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
+      endif ()
+
+      install (
+        TARGETS     ${TARGET_UID}
+        EXPORT      "${PROJECT_NAME}"
+        DESTINATION "${INSTALL_DIR}"
+        COMPONENT   "${ARGN_COMPONENT}"
+      )
+
+      set (
+        BASIS_CACHED_EXPORTS "${BASIS_CACHED_EXPORTS};${TARGET_UID}"
+        CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE
+      )
+
+      set_target_properties (
+        ${TARGET_UID}
+        PROPERTIES
+          RUNTIME_INSTALL_DIRECTORY "${INSTALL_DIR}"
+      )
     endif ()
-
-    install (
-      TARGETS     ${TARGET_UID}
-      EXPORT      "${PROJECT_NAME}"
-      DESTINATION "${INSTALL_DIR}"
-      COMPONENT   "${ARGN_COMPONENT}"
-    )
-
-    set (
-      BASIS_CACHED_EXPORTS "${BASIS_CACHED_EXPORTS};${TARGET_UID}"
-      CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE
-    )
-
-    set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        RUNTIME_INSTALL_DIRECTORY "${INSTALL_DIR}"
-    )
 
     # add target to list of targets
     set (
