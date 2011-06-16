@@ -34,15 +34,15 @@ version='@VERSION@'
 revision='@REVISION@'
 
 # absolute path of CTest script
-ctestScript="$progDir/nightly.ctest"
+ctestScript="$progDir/@MODULES_DIR@/nightly.ctest"
 
 # absolute path of tests configuration file
 #confFile='/etc/basistestd.conf'
-confFile="$progDir/basistestd.conf"
+confFile="$progDir/@DATA_DIR@/basistestd.conf"
 
 # absolute path of file with timestamps for next test execution
 #scheduleFile='/var/run/basistestd.schedule'
-scheduleFile="$progDir/basistestd.schedule"
+scheduleFile="$progDir/@DATA_DIR@/basistestd.schedule"
 
 # command used to submit test jobs
 submitCmd='qsub -l centos5'

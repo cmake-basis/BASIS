@@ -55,5 +55,6 @@
 
 @BASIS_SCRIPT_CONFIG@
 
-basis_set_script_path (TEMPLATE_DIR "@PROJECT_ETC_DIR@/template" "@INSTALL_TEMPLATE_DIR@")
+basis_set_script_path (TEMPLATE_DIR "@PROJECT_DATA_DIR@/template" "@INSTALL_TEMPLATE_DIR@")
+basis_set_script_path (MODULES_DIR  "@PROJECT_CODE_DIR@/cmake"    "@INSTALL_MODULES_DIR@")
 
