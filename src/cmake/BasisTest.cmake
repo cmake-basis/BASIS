@@ -21,11 +21,23 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # configuration
 # ============================================================================
 
-# include CTest module which enables testing
+# include CTest module which enables testing, but prevent it from generating
+# any configuration file or adding targets yet as we want to adjust the
+# default CTest settings--in particular the site name--before
+set (RUN_FROM_DART 1)
 include (CTest)
 
+# mark timeout option as advanced
 mark_as_advanced (DART_TESTING_TIMEOUT)
 
+# remove ".local" or ".uphs.upenn.edu" suffix from site name
+string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" SITE "${SITE}")
+
+set (RUN_FROM_CTEST_OR_DART 1)
+include (CTestTargets)
+set (RUN_FROM_CTEST_OR_DART)
+
+# disable testing if no testing sources found
 if (NOT EXISTS "${PROJECT_TESTING_DIR}")
   set (BUILD_TESTING "OFF" CACHE INTERNAL "No testing tree to build." FORCE)
 else ()
