@@ -32,13 +32,12 @@ cmake_minimum_required (VERSION 2.8.2)
 # newer CMake versions.
 
 # CMake >= 2.8.3
-if (CMAKE_VERSION_PATCH GREATER 2)
+if (CMAKE_PATCH_VERSION GREATER 2)
   cmake_policy (SET CMP0016 NEW)
 endif ()
 
 # CMake >= 2.8.4
-if (CMAKE_VERSION_PATCH GREATER 3)
-  message ("Set policy CMP0017 to NEW")
+if (CMAKE_PATCH_VERSION GREATER 3)
   cmake_policy (SET CMP0017 NEW)
 endif ()
 
