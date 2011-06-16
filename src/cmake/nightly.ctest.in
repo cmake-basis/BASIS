@@ -261,9 +261,7 @@ ctest_update (RETURN_VALUE NUM_FILES)
 # ----------------------------------------------------------------------------
 # configure build
 ctest_configure ()
-
-#ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
-#include ("${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake")
+ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
 
 # ----------------------------------------------------------------------------
 # build project
