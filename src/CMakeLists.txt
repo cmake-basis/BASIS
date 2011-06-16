@@ -52,7 +52,7 @@ set (
     "cmake/config.cc.in"
     "cmake/mainaux.h.in"
     "cmake/execname.cpp.in"
-    "cmake/gmock_main.cc"
+    "cmake/test_main.cc"
 )
 
 # ----------------------------------------------------------------------------
@@ -70,6 +70,30 @@ set (
 install (
   FILES       ${CMAKE_MODULES} ${CMAKE_FIND_MODULES} ${CMAKE_MODULES_AUXILIARY_FILES}
   DESTINATION "${INSTALL_MODULES_DIR}"
+)
+
+# ============================================================================
+# CTest scripts
+# ============================================================================
+
+macro (add_ctest_script NAME)
+  configure_file (
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${NAME}.ctest.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake/${NAME}.ctest"
+    @ONLY
+  )
+
+  install (
+    FILES       "${CMAKE_CURRENT_BINARY_DIR}/cmake/${NAME}.ctest"
+    DESTINATION "${INSTALL_MODULES_DIR}"
+  )
+endmacro ()
+
+basis_add_script (
+  nightly_ctest
+  NOEXEC SCRIPT    "cmake/nightly.ctest"
+  OUTPUT_DIRECTORY "cmake"
+  DESTINATION      "${INSTALL_MODULES_DIR}"
 )
 
 # ============================================================================
