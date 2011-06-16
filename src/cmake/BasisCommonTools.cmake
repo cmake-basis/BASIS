@@ -45,6 +45,34 @@ macro (find_basis_package PACKAGE)
 endmacro ()
 
 # ============================================================================
+# get_filename_component
+# ============================================================================
+
+# ****************************************************************************
+# \brief Replaces CMake's get_filename_component () command to fix a bug.
+#
+# The get_filename_component () command of CMake returns the entire portion
+# after the first period (.) [including the period] as extension. However,
+# only the component following the last period (.) should be considered to
+# be the extension.
+
+function (get_filename_component)
+  _get_filename_component (${ARGN})
+  list (GET ARGN 0 VAR)
+  list (GET ARGN 2 CMD)
+  if (${CMD} STREQUAL "EXT")
+    string (REGEX MATCHALL "\\.[^.]*" PARTS "${${VAR}}")
+    list (LENGTH PARTS LEN)
+    if (LEN GREATER 1)
+      math (EXPR LEN "${LEN} - 1")
+      list (GET PARTS ${LEN} ${VAR})
+    endif ()
+  else ()
+  endif ()
+  set (${VAR} "${${VAR}}" PARENT_SCOPE)
+endfunction ()
+
+# ============================================================================
 # version
 # ============================================================================
 

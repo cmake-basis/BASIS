@@ -682,9 +682,8 @@ endfunction ()
 #
 # This function adds a script target to the project, where during the build
 # step the script is configured via configure_file () and copied to the
-# directory specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY. During installation,
-# the script built for the install tree is copied to INSTALL_RUNTIME_DIR or
-# INSTALL_LIBEXEC_DIR if the LIBEXEC option is given.
+# directory specified by OUTPUT_DIRECTORY. During installation, the script
+# built for the install tree is copied to the specified DESTINATION.
 #
 # If the script name ends in ".in", the ".in" suffix is removed from the
 # output name. Further, all occurrences of ".in." anywhere within the script
@@ -746,18 +745,35 @@ endfunction ()
 # \param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted:
 #
-#   SCRIPT    Script file path relative to current source directory.
-#   COMPONENT Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
-#   CONFIG    Script configuration file. Defaults to DEFAULT_SCRIPT_CONFIG_FILE
-#             if this variable is set. If "NONE", "None", or "none" is given,
-#             the script is copied only. Otherwise, a script configuration
-#             consiting of the single line "@BASIS_SCRIPT_CONFIG@" is used.
-#   LIBEXEC   Specifies that the script is an auxiliary executable called by
-#             other executables only.
+#   SCRIPT             Script file path relative to current source directory.
+#   OUTPUT_DIRECTORY   The output directory for the configured script in the
+#                      build tree. Defaults to CMAKE_RUNTIME_OUTPUT_DIRECTORY.
+#   DESTINATION        The installation directory relative to INSTALL_PREFIX.
+#                      Defaults to INSTALL_RUNTIME_DIR or INSTALL_LIBEXEC_DIR if
+#                      the LIBEXEC option is given.
+#   COMPONENT          Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
+#   CONFIG             Script configuration file. Defaults to DEFAULT_SCRIPT_CONFIG_FILE
+#                      if this variable is set. If "NONE", "None", or "none" is given,
+#                      the script is copied only. Otherwise, a script configuration
+#                      consiting of the single line "@BASIS_SCRIPT_CONFIG@" is used.
+#   LIBEXEC            Specifies that the script is an auxiliary executable called
+#                      by other executables only.
+#   NOEXEC             Specifies that the script cannot be "executed" directly,
+#                      but always requires some kind of interpreter. Note that
+#                      with this option, the meaning of "script" can be even more
+#                      general. Any text file, which is processed by a program
+#                      to perform certain tasks, i.e., a configuration file
+#                      can be considered as "script" in this sense.
 
 function (basis_add_script TARGET_NAME)
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC" "SCRIPT;CONFIG;COMPONENT" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "LIBEXEC;NOEXEC"
+      "SCRIPT;CONFIG;COMPONENT;OUTPUT_DIRECTORY;DESTINATION"
+      ""
+    ${ARGN}
+  )
 
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
@@ -766,12 +782,30 @@ function (basis_add_script TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
+  if (NOT ARGN_OUTPUT_DIRECTORY)
+    set (ARGN_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+  endif ()
+  if (NOT IS_ABSOLUTE "${ARGN_OUTPUT_DIRECTORY}")
+    set (ARGN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${ARGN_OUTPUT_DIRECTORY}")
+  endif ()
+  if (NOT ARGN_DESTINATION)
+    if (ARGN_LIBEXEC)
+      set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
+    else ()
+      set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
+    endif ()
+  endif ()
+
+  if (IS_ABSOLUTE "${ARGN_DESTINATION}")
+    message (FATAL_ERROR "basis_add_script (${TARGET_NAME}: Destination must be a relative path")
+  endif ()
+
   if (NOT ARGN_CONFIG AND DEFAULT_SCRIPT_CONFIG_FILE)
     set (ARGN_CONFIG "${DEFAULT_SCRIPT_CONFIG_FILE}")
   endif ()
 
   if (ARGN_UNPARSED_ARGUMENTS)
-    message ("Unknown arguments given for basis_add_script (${TARGET_NAME}): ${ARGN_UNPARSED_ARGUMENTS}")
+    message (FATAL_ERROR "Unknown arguments given for basis_add_script (${TARGET_NAME}): ${ARGN_UNPARSED_ARGUMENTS}")
   endif ()
 
   if (NOT ARGN_SCRIPT)
@@ -797,6 +831,19 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   if (NOT EXISTS "${ARGN_SCRIPT}")
+    if (EXISTS "${ARGN_SCRIPT}.in")
+      set (ARGN_SCRIPT "${ARGN_SCRIPT}.in")
+    else ()
+      get_filename_component (DIR    "${ARGN_SCRIPT}" PATH)
+      get_filename_component (FNAME  "${ARGN_SCRIPT}" NAME_WE)
+      get_filename_component (SUFFIX "${ARGN_SCRIPT}" EXT)
+      if (EXISTS "${DIR}/${FNAME}.in${SUFFIX}")
+        set (ARGN_SCRIPT "${DIR}/${FNAME}.in${SUFFIX}")
+      endif ()
+    endif ()
+  endif ()
+
+  if (NOT EXISTS "${ARGN_SCRIPT}")
     message (FATAL_ERROR "Missing script ${ARGN_SCRIPT}!")
   endif ()
 
@@ -817,14 +864,16 @@ function (basis_add_script TARGET_NAME)
 
   # auxiliary executable?
   if (ARGN_LIBEXEC)
-    set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
-    set (TYPE        "LIBSCRIPT")
+    set (TYPE "LIBSCRIPT")
   else ()
-    set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
-    set (TYPE        "SCRIPT")
+    set (TYPE "SCRIPT")
+  endif ()
+  if (ARGN_NOEXEC)
+    set (TYPE "NOEXEC_${TYPE}")
   endif ()
 
   # script configuration
+  set (INSTALL_DIR "${ARGN_DESTINATION}")
   set (SCRIPT_CONFIG)
 
   if (NOT ARGN_CONFIG MATCHES "^NONE$|^None$|^none$")
@@ -859,8 +908,8 @@ function (basis_add_script TARGET_NAME)
       BASIS_TYPE                "${TYPE}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
-      RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-      RUNTIME_INSTALL_DIRECTORY "${INSTALL_DIR}"
+      RUNTIME_OUTPUT_DIRECTORY  "${ARGN_OUTPUT_DIRECTORY}"
+      RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
       OUTPUT_NAME               "${OUTPUT_NAME}"
       COMPILE_DEFINITIONS       "${SCRIPT_CONFIG}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
@@ -930,7 +979,7 @@ function (basis_add_script_finalize TARGET_UID)
   endforeach ()
 
   # check target type
-  if (NOT BASIS_TYPE MATCHES "^SCRIPT$|^LIBSCRIPT$")
+  if (NOT BASIS_TYPE MATCHES "^SCRIPT$|^NOEXEC_SCRIPT$|^LIBSCRIPT$|^NOEXEC_LIBSCRIPT$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
@@ -969,18 +1018,22 @@ function (basis_add_script_finalize TARGET_UID)
     set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${RUNTIME_OUTPUT_DIRECTORY}\")\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}${COMPILE_DEFINITIONS}\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${OUTPUT_FILE}\" @ONLY)\n")
+    if (NOT BASIS_TYPE MATCHES "NOEXEC")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}\nif (UNIX)\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}  execute_process (COMMAND chmod +x \"${OUTPUT_FILE}\")\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}endif ()\n")
+    endif ()
     set (BUILD_COMMANDS "${BUILD_COMMANDS}\nset (BUILD_INSTALL_SCRIPT 1)\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${CMAKE_INSTALL_PREFIX}/${RUNTIME_INSTALL_DIRECTORY}\")\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}${COMPILE_DEFINITIONS}\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${INSTALL_FILE}\" @ONLY)\n")
   else ()
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${OUTPUT_FILE}\" COPYONLY)\n")
+    if (NOT BASIS_TYPE MATCHES "NOEXEC")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}\nif (UNIX)\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}  execute_process (COMMAND chmod +x \"${OUTPUT_FILE}\")\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}endif ()\n")
+    endif ()
   endif ()
 
   # write build script only if it differs from previous build script
@@ -1034,8 +1087,14 @@ endif ()"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
 
   # install script
+  if (BASIS_TYPE MATCHES "NOEXEC")
+    set (WHAT "FILES")
+  else ()
+    set (WHAT "PROGRAMS")
+  endif ()
+
   install (
-    PROGRAMS    "${INSTALL_FILE}"
+    ${WHAT}     "${INSTALL_FILE}"
     RENAME      "${OUTPUT_NAME}"
     DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
     COMPONENT   "${RUNTIME_COMPONENT}"
@@ -1153,7 +1212,7 @@ endmacro ()
 function (basis_add_custom_finalize)
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
-    if (BASIS_TYPE STREQUAL "SCRIPT")
+    if (BASIS_TYPE MATCHES "SCRIPT")
       basis_add_script_finalize (${TARGET_UID})
     elseif (BASIS_TYPE MATCHES "^MCC_")
       basis_add_mcc_target_finalize (${TARGET_UID})

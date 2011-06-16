@@ -3,7 +3,7 @@
 # \brief CTest script executed by cron job for nightly testing at SBIA.
 #
 # Usage:
-#   ctest -S nightly.ctest[,<options>] [-V]
+#   ctest -S nightly.ctest[,option[=value]*
 #
 # Options:
 #   help   Prints help and exits.
@@ -23,9 +23,9 @@
 
 function (help)
   message ("Usage:
-  ctest -S nightly.ctest[,option[=value]]* [-V]
+  ctest [ctest options] -S nightly.ctest[,option[=value]]*
 
-  Note: No commas or euquality signs are allowed inside of option values even
+  Note: No commas or equality signs are allowed inside of option values even
         if the value is enclosed by quotation marks.
 
 Description:
@@ -55,6 +55,16 @@ Options:
   force           Force execution of tests even when no files were updated.
   help            Prints help and exits without performing any test.
   version         Prints version information and exits.
+
+Example:
+  ctest -V -S nightly.ctest,project=BASIS,model=Experimental,coverage,memcheck
+
+    Performs an experimental nightly test of the main development branch of
+    BASIS itself, including coverage analysis and memory checks.
+    The -V option of ctest enables more verbose output of CTest.
+
+Contact:
+  SBIA Group <sbia-software at uphs.upenn.edu>
 ")
 endfunction ()
 
@@ -62,13 +72,15 @@ endfunction ()
 # \brief Print version information.
 
 function (version)
-  if (@REVISION@ GREATER 0)
-    message ("CTest Script nightly.ctest @VERSION@ (Rev. @REVISION@)")
+  set (VERSION  "@VERSION@")
+  set (REVISION "@REVISION@")
+  if (REVISION GREATER 0)
+    message ("CTest Script nightly.ctest (BASIS) ${VERSION} (Rev. ${REVISION})")
   else ()
-    message ("CTest Script nightly.ctest @VERSION@")
+    message ("CTest Script nightly.ctest (BASIS) ${VERSION}")
   endif ()
   message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
-  message ("See https://www.rad.upenn.edu/sbia/software/license.html for details.")
+  message ("See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.")
 endfunction ()
 
 # ============================================================================
@@ -151,10 +163,10 @@ foreach (ARG ${ARGV})
       set_bool_option (FORCE)
     elseif (${OPTION} STREQUAL "version")
       version ()
-      return ()
+      message (FATAL_ERROR "Successfully displayed version information. This error shall just interrupt CTest.")
     elseif (${OPTION} STREQUAL "help")
       help ()
-      return ()
+      message (FATAL_ERROR "Successfully displayed help. This error shall just interrupt CTest.")
     else ()
       set (FAILURE 1)
     endif ()

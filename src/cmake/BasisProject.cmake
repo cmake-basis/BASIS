@@ -787,9 +787,10 @@ function (basis_install_links)
       if (NOT OUTPUT_NAME)
         basis_target_name (OUTPUT_NAME ${TARGET_UID})
       endif ()
+      get_target_property (INSTALL_DIR ${TARGET_UID} "RUNTIME_INSTALL_DIRECTORY")
 
       basis_install_link (
-        "${INSTALL_RUNTIME_DIR}/${OUTPUT_NAME}"
+        "${INSTALL_DIR}/${OUTPUT_NAME}"
         "bin/${OUTPUT_NAME}"
       )
     endif ()
