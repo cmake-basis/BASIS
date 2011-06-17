@@ -200,15 +200,15 @@ runTest ()
 # ****************************************************************************
 # \brief Convert date to timestamp.
 #
-# \param [in] $1 UTC date.
+# \param [in] $1 Date.
 #
 # \return Timestamp corresponding to given date.
 date2stamp ()
 {
     if [ $(uname) == 'Darwin' ]; then
-        date -ju -f '%Y-%m-%d %T' "$1" +%s
+        date -j -f '%Y-%m-%d %T' "$1" +%s
     else
-        date -u -d "$1" +%s
+        date -d "$1" +%s
     fi
 }
 
@@ -217,13 +217,13 @@ date2stamp ()
 #
 # \param [in] $1 Timestamp.
 #
-# \return UTC date corresponding to given timestamp.
+# \return Date corresponding to given timestamp.
 stamp2date ()
 {
     if [ $(uname) == 'Darwin' ]; then
-      date -ju -r $1 '+%Y-%m-%d %T'
+      date -j -r $1 '+%Y-%m-%d %T'
     else
-      date -u -d "1970-01-01 $1 sec" '+%Y-%m-%d %T'
+      date -d "1970-01-01 $1 sec" '+%Y-%m-%d %T'
     fi
 }
 
