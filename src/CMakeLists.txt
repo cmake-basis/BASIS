@@ -111,6 +111,6 @@ basis_add_script (tools/basisproject.sh)
 # testing tools
 basis_add_script (tools/basisctest NOEXEC)
 basis_add_script (tools/basistest.sh)
-basis_add_script (tools/basistest-sge.sh)
 basis_add_script (tools/basistestd.sh)
+basis_add_script (tools/basistestd-cron.sh)
 

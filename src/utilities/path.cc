@@ -60,13 +60,14 @@ bool IsValidPath (const string &path)
         // first character must be a drive letter
         if ((path [0] < 'a' || 'z' < path [0]) &&
             (path [0] < 'A' || 'Z' < path [0])) return false;
-#if WINDOWS
         // absolute path must follow the drive specification
         if (path.size () == 2) return false;
         if (path [2] != '/' && path [2] != '\\') return false;
-#else
+#if !WINDOWS
         // on Unix systems, a drive specification is invalid
-        return false;
+        // however, to be consistent, the drive C: is just ignored and
+        // interpreted as root on Unix
+        if (path [0] != 'C' && path [0] != 'c') return false;
 #endif
     }
     // otherwise, the path is valid
@@ -124,9 +125,19 @@ string CleanPath (const string &path)
     }
 
     // remove references to parent directories
-    string ref = "/..";
-    size_t pos = 0;
+    string ref  = "/..";
+    size_t skip = 0;
 
+    // in case of relative paths like "../../*" we need to skip the first
+    // parent directory references
+    while (skip + 3 < cleanedPath.size ()) {
+        std::string sub = cleanedPath.substr (skip, 3);
+        if (sub != "../" && sub != "..\\") break;
+        skip += 3;
+    }
+    if (skip > 0) skip -= 1; // below, we look for "/.." instead of "../"
+
+    size_t pos = skip;
     for (;;) {
         pos = cleanedPath.find (ref, pos);
         if (pos == string::npos) {
@@ -141,17 +152,21 @@ string CleanPath (const string &path)
             if (pos == 0) {
                 if (cleanedPath.size () == 3) cleanedPath.erase (1, 2);
                 else                          cleanedPath.erase (0, 3);
-                pos = 0;
+                pos = skip;
             } else {
                 size_t start = cleanedPath.find_last_of ("/\\", pos - 1);
                 if (start != string::npos) {
                     cleanedPath.erase (start + 1, pos + 3 - start);
                     pos = start + 1;
+                } else if (cleanedPath [0] == '/' || cleanedPath [0] == '\\') {
+                    cleanedPath.erase (skip, pos + 3);
+                    pos = skip;
                 } else {
-                    cleanedPath.erase (0, pos + 3);
-                    pos = 0;
+                    pos += 3;
                 }
             }
+        } else {
+            pos += 3;
         }
     }
 
