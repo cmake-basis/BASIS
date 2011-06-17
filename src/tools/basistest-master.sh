@@ -202,9 +202,9 @@ runTest ()
     fi
     if [ $dry -eq 0 ]; then
         if [ $verbosity -gt 0 ]; then
-            $cmd >> /dev/null # avoid messages such as "Your job has been submitted"
-        else
             $cmd
+        else
+            $cmd >> /dev/null # avoid messages such as "Your job has been submitted"
         fi
         return $?
     fi
