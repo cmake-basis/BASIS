@@ -482,6 +482,9 @@ while read line; do
         echo "$confFile:$linenumber: Failed to reschedule test" 1>&2
         ((errors++))
     fi
+    if [ $verbosity -gt 0 ]; then
+        echo "$confFile:$linenumber: Test will re-execute in $minutes minutes from now ($(date '+%Y-%m-%d %T')), i.e., not before $nextDate"
+    fi
 done < "$confFile"
 
 # write new schedule
