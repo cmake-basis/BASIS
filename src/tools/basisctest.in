@@ -71,7 +71,11 @@ Description:
   Nightly tests are scheduled by a cron job, for example, every night once.
   Contrary to continous testing, does the nightly testing job not loop for
   a certain time of iterations and look for changes actively. The nightly
-  testing job will only perform one test run and then exit.")
+  testing job will only perform one test run and then exit.
+  
+  Note: Due to a bug in CTest 2.8.2, the first test will fail because of
+        a missing CTestConfig.cmake file. Therefore, the use of CTest 2.8.4
+        is recommened as here this bug was solved.")
   printOptions ()
   message ("
 Example:
