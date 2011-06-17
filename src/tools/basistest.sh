@@ -232,7 +232,7 @@ fi
 
 # compose command
 cmd='ctest'
-if [ $verbosity -gt 1 ]; then
+if [ $verbosity -gt 2 ]; then
     cmd="$cmd -VV"
 elif [ $verbosity -gt 0 ]; then
     cmd="$cmd -V"
