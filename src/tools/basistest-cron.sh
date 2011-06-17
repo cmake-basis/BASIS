@@ -44,7 +44,7 @@ conf='/sbia/home/swtest/etc/basistest.conf'
 schedule='/sbia/home/swtest/var/run/basistest.schedule'
 
 # test execution command
-cmd='/sbia/home/swtest/basis/bin/basistest-slave -V'
+cmd='/sbia/home/swtest/bin/basistest-slave -V'
 
 # ============================================================================
 # main
