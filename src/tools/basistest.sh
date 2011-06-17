@@ -63,7 +63,7 @@ printUsageSection ()
 printOptionsSection ()
 {
     cat - << EOF-OPTIONS
-Required Options:
+Required options:
   -p [ --project ]   The name of the BASIS project to be tested.
 
 Options:

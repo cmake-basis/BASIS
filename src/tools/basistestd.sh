@@ -34,12 +34,10 @@ version='@VERSION@'
 revision='@REVISION@'
 
 # absolute path of tests configuration file
-#confFile='/etc/basistestd.conf'
-confFile="$progDir/@DATA_DIR@/basistestd.conf"
+confFile='/etc/basistestd.conf'
 
 # absolute path of file with timestamps for next test execution
-#scheduleFile='/var/run/basistestd.schedule'
-scheduleFile="$progDir/@DATA_DIR@/basistestd.schedule"
+scheduleFile='/var/run/basistestd.schedule'
 
 # ============================================================================
 # help/version
@@ -141,10 +139,10 @@ Configuration:
 
   Attention: The entire line may not contain any whitespace character!
 
-Test Execution:
-  By default, the basistest command is invoked for each entry in the
+Test execution:
+  By default, the "basistest" command is invoked for each entry in the
   configuration file. A custom test command can be set using the option
-  -t [ --testCmd ]. The provided command has to support the following
+  -t [ --testcmd ]. The provided command has to support the following
   command line arguments.
 
     --project <arg>   The name of the project as given in the configuration.
