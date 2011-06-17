@@ -133,7 +133,7 @@ printUsage ()
 # ============================================================================
 
 # CTest script
-ctestScript="$progDir/@MODULES_DIR@/basisctest"
+ctestScript="$progDir/basisctest"
 
 project=''      # name of the BASIS project
 branch='trunk'  # the branch to test
@@ -202,6 +202,7 @@ while [ $# -gt 0 ]; do
             echo "Invalid option $1!" 1>&2
             ;;
     esac
+    shift
 done
 
 # check options

@@ -7,9 +7,6 @@
 # This shell script is supposed to be scheduled as cron job. On execution,
 # it parses the configuration file and executes the configured tests.
 #
-# Note: This script runs on Linux only. It may need to be modified for other
-#       Unix systems. In particular, it does not run on Mac OS.
-#
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 #
@@ -207,7 +204,11 @@ runTest ()
 # \return Timestamp corresponding to given date.
 date2stamp ()
 {
-    date --utc --date "$1" +%s
+    if [ $(uname) == 'Darwin' ]; then
+        date -ju -f '%Y-%m-%d %T' "$1" +%s
+    else
+        date -u -d "$1" +%s
+    fi
 }
 
 # ****************************************************************************
@@ -218,7 +219,11 @@ date2stamp ()
 # \return UTC date corresponding to given timestamp.
 stamp2date ()
 {
-    date --utc --date "1970-01-01 $1 sec" "+%Y-%m-%d %T"
+    if [ $(uname) == 'Darwin' ]; then
+      date -ju -r $1 '+%Y-%m-%d %T'
+    else
+      date -u -d "1970-01-01 $1 sec" '+%Y-%m-%d %T'
+    fi
 }
 
 # ****************************************************************************
@@ -239,10 +244,10 @@ dateAdd ()
         -d) sec=86400;  shift;;
          *) sec=86400;;
     esac
-    local dte1=$(date2stamp $1)
+    local dte1=$(date2stamp "$1")
     local interval=$2
     local addSec=$((dte1 + interval * sec))
-    echo $(stamp2date $addSec)
+    echo $(stamp2date "$addSec")
 }
 
 # ****************************************************************************
@@ -263,8 +268,8 @@ dateDiff ()
         -d) sec=86400;  shift;;
          *) sec=86400;;
     esac
-    local dte1=$(date2stamp $1)
-    local dte2=$(date2stamp $2)
+    local dte1=$(date2stamp "$1")
+    local dte2=$(date2stamp "$2")
     local interval=$((dte2 - dte1))
     echo $((interval / sec))
 }
@@ -273,7 +278,7 @@ dateDiff ()
 # \brief Get next scheduled date of a given test.
 scheduleDate ()
 {
-    local retval='now'
+    local retval=$(date '+%Y-%m-%d %T')
     for line in ${schedule[@]}; do
         parts=(`echo $line | tr ':' ' '`)
         num=${#parts[@]}
@@ -295,7 +300,12 @@ scheduleTest ()
 {
     idx=${#newSchedule[@]}
     ((idx++))
-    local dt=$(date --utc --date "$1" "+%Y-%m-%d:%H:%M")
+    local dt=''
+    if [ $(uname) == 'Darwin' ]; then
+        dt=$(date -ju -f '%Y-%m-%d %T' "$1" '+%Y-%m-%d:%H:%M')
+    else
+        dt=$(date -u -d "$1" '+%Y-%m-%d:%H:%M')
+    fi
     newSchedule[$idx]="$dt:$2:$3:$4:$5"
 }
 
@@ -349,6 +359,7 @@ while [ $# -gt 0 ]; do
             echo "Invalid option $1!" 1>&2
             ;;
     esac
+    shift
 done
 
 # ============================================================================
@@ -399,8 +410,10 @@ while read line; do
     if [ -z "$line" ]; then continue; fi
     # skip comments
     if [[ "$line" =~ "^#" ]]; then continue; fi
-    # parse line
-    parts=(`echo $line | tr ':' ' '`)
+    # sanitize line
+    line=${line//\*/x}
+    # "parse" line
+    parts=($line)
     num=${#parts[@]}
     if [ $num -lt 4 ]; then
         echo "$confFile:$linenumber: Invalid configuration, skipping test" 1>&2
@@ -441,7 +454,7 @@ while read line; do
     fi
     # determine whether test is already due for execution
     nextDate=$(scheduleDate $schedule $project $branch $model $options)
-    if [ $(dateDiff -m 'now' $nextDate) -gt 0 ]; then
+    if [ $(dateDiff -m "$(date '+%Y-%m-%d %T')" "$nextDate") -gt 0 ]; then
         echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $nextDate UTC"
         # skip test as it is not yet scheduled for execution
         scheduleTest "$nextDate" "$project" "$branch" "$model" "$options"
@@ -458,9 +471,8 @@ while read line; do
         days=0
     fi
     # update time of next execution
-    nextDate=$(date --utc --date "$nextDate" "+%Y-%m-%d %T")
     minutes=$((minutes + hours * 60 + days * 1440))
-    nextDate=$(dateAdd -m 'now' $minutes)
+    nextDate=$(dateAdd -m "$(date '+%Y-%m-%d %T')" "$minutes")
     scheduleTest "$nextDate" "$project" "$branch" "$model" "$options"
     if [ $? -ne 0 ]; then
         echo "$confFile:$linenumber: Failed to reschedule test" 1>&2
@@ -472,8 +484,14 @@ done < "$confFile"
 rm -f $scheduleFile
 for line in ${newSchedule[@]}; do
     echo "$line" >> $scheduleFile
+    if [ $? -ne 0 ]; then
+        echo "Failed to write schedule to file $scheduleFile!" 1&>2
+        break
+    fi
 done
-sort "$scheduleFile" -o "$scheduleFile"
+if [ -f $scheduleFile ]; then
+    sort "$scheduleFile" -o "$scheduleFile"
+fi
 
 # done
 if [ $errors -ne 0 ]; then
