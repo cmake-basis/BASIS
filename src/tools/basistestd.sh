@@ -455,7 +455,7 @@ while read line; do
     # determine whether test is already due for execution
     nextDate=$(scheduleDate $project $branch $model $options)
     if [ $(dateDiff -m "$(date '+%Y-%m-%d %T')" "$nextDate") -gt 0 ]; then
-        echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $nextDate UTC"
+        echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $nextDate"
         # skip test as it is not yet scheduled for execution
         scheduleTest "$nextDate" "$project" "$branch" "$model" "$options"
         continue
