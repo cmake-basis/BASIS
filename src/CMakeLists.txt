@@ -109,8 +109,12 @@ basis_add_script (tools/basisproject.sh)
 
 # ----------------------------------------------------------------------------
 # testing tools
-basis_add_script (tools/basisctest NOEXEC)
-basis_add_script (tools/basistest.sh)
-basis_add_script (tools/basistestd.sh)
-basis_add_script (tools/basistestd-cron.sh)
+basis_add_script (
+  tools/basistest.ctest NOEXEC
+  DESTINATION "${INSTALL_MODULES_DIR}"
+)
+
+basis_add_script (tools/basistest-slave.sh)
+basis_add_script (tools/basistest-master.sh)
+basis_add_script (tools/basistest-cron.sh)
 

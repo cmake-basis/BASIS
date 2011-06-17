@@ -1,9 +1,9 @@
 ##############################################################################
-# \file  basisctest
+# \file  basistest.ctest
 # \brief CTest script used to test BASIS projects.
 #
 # Usage:
-#   ctest -S basisctest[,option[=value]*
+#   ctest -S basistest.ctest[,option[=value]*
 #
 # Options:
 #   help   Prints help and exits.
@@ -21,7 +21,7 @@
 function (printUsageSection)
   message ("
 Usage:
-  ctest [ctest options] -S basisctest[,option[=value]]*
+  ctest [ctest options] -S basistest.ctest[,option[=value]]*
 
   Note: No commas or equality signs are allowed inside of option values even
         if the value is enclosed by quotation marks.")
@@ -48,7 +48,9 @@ Options:
                       No memory checks are performed by default.
   coverage            Perform coverage analysis. Requires gcov.
                       No coverage analysis is performed by default.
-  force               Force execution of tests even when no files were updated.
+  force-build         Force build even if no files were updated.
+  force-test          Force test even if no files were updated.
+  force               Alias for options force-build and force-test.
   tmpbin              Delete binary directory on completion (also if not successful).
   help                Prints help and exits without performing any test.
   version             Prints version information and exits.")
@@ -63,7 +65,7 @@ endfunction ()
 # ****************************************************************************
 # \brief Prints help.
 function (printHelp)
-  message ("CTest script basisctest (BASIS)")
+  message ("CTest script basistest.ctest (BASIS)")
   printUsageSection ()
   message ("
 Description:
@@ -74,12 +76,25 @@ Description:
   testing job will only perform one test run and then exit.
   
   Note: Due to a bug in CTest 2.8.2, the first test will fail because of
-        a missing CTestConfig.cmake file. Therefore, the use of CTest 2.8.4
-        is recommened as here this bug was solved.")
+        a missing CTestConfig.cmake file if the source tree is not checked
+        out already. Therefore, the use of CTest 2.8.4 is recommened.
+        
+Dashboard models:
+  By default, the dashboard models \"Nightly\", \"Continuous\", and \"Experimental\"
+  are configured as follows. These default configurations can be modified by
+  supplying the available options listed below.
+  
+    Nightly        Performs all test stages even if the project has not been
+                   updated since the last test run.
+    Continuous     Performs an update of the project's working copy and
+                   exits without submission of any test results if no files
+                   were updated. Otherwise, it performs all test stages.
+    Experimental   Performs all test stages even if the project has not been
+                   updated since the last test run.")
   printOptions ()
   message ("
 Example:
-  ctest -V -S basis.ctest,project=BASIS,model=Experimental,coverage,memcheck
+  ctest -V -S basistest.ctest,project=BASIS,model=Experimental,coverage,memcheck
 
     Performs an experimental nightly test of the main development branch of
     BASIS itself, including coverage analysis and memory checks.
@@ -91,7 +106,7 @@ endfunction ()
 # ****************************************************************************
 # \brief Print usage information.
 function (printUsage)
-  message ("CTest script basisctest (BASIS)")
+  message ("CTest script basistest.ctest (BASIS)")
   printUsageSection ()
   printOptions ()
   printContactSection ()
@@ -103,9 +118,9 @@ function (printVersion)
   set (VERSION  "@VERSION@")
   set (REVISION "@REVISION@")
   if (REVISION GREATER 0)
-    message ("CTest script basisctest (BASIS) ${VERSION} (Rev. ${REVISION})")
+    message ("CTest script basistest.ctest (BASIS) ${VERSION} (Rev. ${REVISION})")
   else ()
-    message ("CTest script basisctest (BASIS) ${VERSION}")
+    message ("CTest script basistest.ctest (BASIS) ${VERSION}")
   endif ()
   message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
   message ("See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.")
@@ -193,7 +208,12 @@ foreach (ARG ${ARGV})
     elseif (${OPTION} STREQUAL "tmpbin")
       set_bool_option (TMPBIN)
     elseif (${OPTION} STREQUAL "force")
-      set_bool_option (FORCE)
+      set_bool_option (FORCE_BUILD)
+      set_bool_option (FORCE_TEST)
+    elseif (${OPTION} STREQUAL "force-build")
+      set_bool_option (FORCE_BUILD)
+    elseif (${OPTION} STREQUAL "force-test")
+      set_bool_option (FORCE_TEST)
     elseif (${OPTION} STREQUAL "version")
       printVersion ()
       return ()
@@ -297,102 +317,116 @@ set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECT
 
 # ----------------------------------------------------------------------------
 # start a new test run
-ctest_empty_binary_directory ("${CTEST_BINARY_DIRECTORY}")
 ctest_start ("${CTEST_MODEL}")
 
 # ----------------------------------------------------------------------------
 # update working copy
 ctest_update (RETURN_VALUE NUM_FILES)
 
-# ----------------------------------------------------------------------------
-# configure build
-ctest_configure ()
-ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
+if (NOT CTEST_CHECKOUT_COMMAND AND NUM_FILES EQUAL 0)
+  set (UPDATED_FILES 0)
+else
+  set (UPDATED_FILES 1)
+endif ()
 
-# ----------------------------------------------------------------------------
-# build project
-ctest_build ()
-
-# ----------------------------------------------------------------------------
-# perform other (time consuming) testing only if files were updated
-if (FORCE OR CTEST_CHECKOUT_COMMAND OR NOT NUM_FILES EQUAL 0)
-  # --------------------------------------------------------------------------
-  # run tests
-  ctest_test ()
+# perform other test stages and submit results only if required
+if (FORCE_BUILD OR UPDATED_FILES OR NOT "${CTEST_MODEL}" STREQUAL "Continuous")
 
   # --------------------------------------------------------------------------
-  # perform coverage analysis
-  if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
-    ctest_coverage ()
+  # empty the binary directory
+  ctest_empty_binary_directory ("${CTEST_BINARY_DIRECTORY}")
+
+  # --------------------------------------------------------------------------
+  # configure build
+  ctest_configure ()
+  ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
+
+  # --------------------------------------------------------------------------
+  # build project
+  ctest_build ()
+
+  # perform tests only if required
+  if (FORCE_TEST OR UPDATED_FILES)
+
+    # ------------------------------------------------------------------------
+    # run tests
+    ctest_test ()
+
+    # --------------------------------------------------------------------------
+    # perform coverage analysis
+    if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
+      ctest_coverage ()
+    endif ()
+
+    # --------------------------------------------------------------------------
+    # perform memory checks
+    if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
+      ctest_memcheck ()
+    endif ()
+
   endif ()
 
   # --------------------------------------------------------------------------
-  # perform memory checks
-  if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
-    ctest_memcheck ()
-  endif ()
-else ()
-  message ("Nothing changed. No tests were performed.")
-endif ()
+  # adjust build name
 
-# ----------------------------------------------------------------------------
-# adjust build name
+  # get compiler name
+  function (read_cmake_cache_value VAR)
+    file (STRINGS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" ENTRY REGEX "${VAR}:.*=(.*)")
+    string (REGEX REPLACE "${VAR}:.*=(.*)" "\\1" VALUE "${ENTRY}")
+    set (${VAR} "${VALUE}" PARENT_SCOPE)
+  endfunction ()
 
-# get compiler name
-function (read_cmake_cache_value VAR)
-  file (STRINGS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" ENTRY REGEX "${VAR}:.*=(.*)")
-  string (REGEX REPLACE "${VAR}:.*=(.*)" "\\1" VALUE "${ENTRY}")
-  set (${VAR} "${VALUE}" PARENT_SCOPE)
-endfunction ()
-
-if (WIN32)
-  set (NAME_COMPONENT "NAME_WE")
-else ()
-  set (NAME_COMPONENT "NAME")
-endif ()
-if (UNIX OR BORLAND)
-  read_cmake_cache_value (CMAKE_CXX_COMPILER)
-  get_filename_component (COMPILER_NAME "${CMAKE_CXX_COMPILER}" ${NAME_COMPONENT})
-else ()
-  read_cmake_cache_value (CMAKE_BUILD_TOOL)
-  get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
-endif ()
-
-if (COMPILER_NAME MATCHES "msdev")
-  set (COMPILER_NAME "vs60")
-elseif (COMPILER_NAME MATCHES "devenv")
-  read_cmake_cache_value (CMAKE_GENERATOR)
-  string (REGEX REPLACE "Visual Studio ([0-9][0-9]?)($|.*)" "\\1" NUMBER "${CMAKE_GENERATOR}") 
-  if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio 7 .NET 2003")
-    set (COMPILER_NAME "vs71")
+  if (WIN32)
+    set (NAME_COMPONENT "NAME_WE")
   else ()
-    set (COMPILER_NAME "vs${NUMBER}")
+    set (NAME_COMPONENT "NAME")
   endif ()
+  if (UNIX OR BORLAND)
+    read_cmake_cache_value (CMAKE_CXX_COMPILER)
+    get_filename_component (COMPILER_NAME "${CMAKE_CXX_COMPILER}" ${NAME_COMPONENT})
+  else ()
+    read_cmake_cache_value (CMAKE_BUILD_TOOL)
+    get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
+  endif ()
+
+  if (COMPILER_NAME MATCHES "msdev")
+    set (COMPILER_NAME "vs60")
+  elseif (COMPILER_NAME MATCHES "devenv")
+    read_cmake_cache_value (CMAKE_GENERATOR)
+    string (REGEX REPLACE "Visual Studio ([0-9][0-9]?)($|.*)" "\\1" NUMBER "${CMAKE_GENERATOR}") 
+    if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio 7 .NET 2003")
+      set (COMPILER_NAME "vs71")
+    else ()
+      set (COMPILER_NAME "vs${NUMBER}")
+    endif ()
+  endif ()
+
+  # desired build name
+  set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${COMPILER_NAME}")
+
+  # replace intermediate build name
+  if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
+    message ("Change the build name to ${BUILDNAME}")
+    # get tag, i.e., subdirectory name
+    file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
+    # glob XML files
+    file (GLOB FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
+    # replace build name
+    foreach (FILENAME ${FILES})
+      file (READ "${FILENAME}" XML)
+      string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+      string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+      file (WRITE "${FILENAME}" "${XML}")
+    endforeach ()
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # submit results
+  ctest_submit ()
+
 endif ()
 
-# desired build name
-set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${COMPILER_NAME}")
-
-# replace intermediate build name
-if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
-  # get tag, i.e., subdirectory name
-  file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
-  # glob XML files
-  file (GLOB FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
-  # replace build name
-  foreach (FILENAME ${FILES})
-    file (READ "${FILENAME}" XML)
-    string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
-    string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-    file (WRITE "${FILENAME}" "${XML}")
-  endforeach ()
-endif ()
-
-# ----------------------------------------------------------------------------
-# submit results
-ctest_submit ()
-
-# ----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # remove temporary build tree
 if (TMPBIN)
   file (REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")

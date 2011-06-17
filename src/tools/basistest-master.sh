@@ -1,11 +1,15 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  basistestd.sh
-# \brief Test "daemon" which can be run as a cron job.
+# \file  basistest-master.sh
+# \brief Test master which can be run as a cron job.
 #
-# This shell script is supposed to be scheduled as cron job. On execution,
-# it parses the configuration file and executes the configured tests.
+# This shell script is supposed to be scheduled as cron job, where possibly
+# the basistest-cron.sh script is in fact used as cron job command without
+# arguments where all the settings for the cron job are fixed within this
+# latter script. On execution, this master script parses the configuration
+# file and executes the configured tests using by default the
+# basistest-slave.sh script.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
@@ -31,10 +35,10 @@ version='@VERSION@'
 revision='@REVISION@'
 
 # absolute path of tests configuration file
-confFile='/etc/basistestd.conf'
+confFile='/etc/basistest.conf'
 
 # absolute path of file with timestamps for next test execution
-scheduleFile='/var/run/basistestd.schedule'
+scheduleFile='/var/run/basistest.schedule'
 
 # ============================================================================
 # help/version
@@ -45,9 +49,9 @@ scheduleFile='/var/run/basistestd.schedule'
 printVersion ()
 {
     if [ ! -z $revision -o $revision -gt 0 ]; then
-        echo "basistestd (BASIS) $version (Rev. $revision)"
+        echo "basistest-master (BASIS) $version (Rev. $revision)"
     else
-        echo "basistestd (BASIS) $version"
+        echo "basistest-master (BASIS) $version"
     fi
     cat - << EOF-COPYRIGHT
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -74,7 +78,7 @@ Options:
                       command in the same directory as this executable.
   -s [ --schedule ]   The test schedule file which is created and updated by
                       this program. Defaults to "$scheduleFile".
-  --dry               Dry run, i.e., do not actually execute any tests.
+  --dry               Dry run, i.e., do not actually invoke the test execution command.
   -V [ --verbose ]    Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]       Print help and exit.
   -u [ --usage ]      Print usage information and exit.
@@ -138,8 +142,8 @@ Configuration:
   Attention: The entire line may not contain any whitespace character!
 
 Test execution:
-  By default, the "basistest" command is invoked for each entry in the
-  configuration file. A custom test command can be set using the option
+  By default, the "basistest-slave" command is invoked for each entry in
+  the configuration file. A custom test command can be set using the option
   -t [ --testcmd ]. The provided command has to support the following
   command line arguments.
 

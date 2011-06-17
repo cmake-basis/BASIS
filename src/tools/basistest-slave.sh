@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  basistest.sh
+# \file  basistest-slave.sh
 # \brief Test execution command.
 #
 # This shell script runs the tests of a BASIS project. It is a wrapper for
-# the CTest script. In particular, the testing master script or "daemon"
-# basistestd uses this script by default in order to run a test.
+# a CTest script. In particular, the testing master basistest-master uses
+# this script by default in order to run a test.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
@@ -40,9 +40,9 @@ revision='@REVISION@'
 printVersion ()
 {
     if [ ! -z $revision -o $revision -gt 0 ]; then
-        echo "basistest (BASIS) $version (Rev. $revision)"
+        echo "basistest-slave (BASIS) $version (Rev. $revision)"
     else
-        echo "basistest (BASIS) $version"
+        echo "basistest-slave (BASIS) $version"
     fi
     cat - << EOF-COPYRIGHT
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -72,7 +72,7 @@ Options:
   -m [ --model ]     The name of the dashboard model, i.e., either "Nightly",
                      "Continuous", or "Experimental". Defaults to "Nightly".
   -S [ --script ]    CTest script which performs the testing.
-                     Defaults to the "basisctest" script of BASIS.
+                     Defaults to the "basistest.ctest" script of BASIS.
   -a [ --args ]      Additional arguments for the CTest script.
   -V [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]      Print help and exit.
@@ -133,7 +133,7 @@ printUsage ()
 # ============================================================================
 
 # CTest script
-ctestScript="$progDir/basisctest"
+ctestScript="$progDir/@MODULES_DIR@/basistest.ctest"
 
 project=''      # name of the BASIS project
 branch='trunk'  # the branch to test
