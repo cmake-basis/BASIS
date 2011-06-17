@@ -243,6 +243,6 @@ cmd="$cmd"
 
 # run test
 if [ $verbosity -gt 1 ]; then
-    echo "$> $cmd"
+    echo "Exec $cmd"
 fi
 exec $cmd
