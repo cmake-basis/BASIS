@@ -74,6 +74,7 @@ Options:
                       command in the same directory as this executable.
   -s [ --schedule ]   The test schedule file which is created and updated by
                       this program. Defaults to "$scheduleFile".
+  --dry               Dry run, i.e., do not actually execute any tests.
   -V [ --verbose ]    Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]       Print help and exit.
   -u [ --usage ]      Print usage information and exit.
@@ -193,7 +194,7 @@ runTest ()
     cmd="$cmd --project $1 --branch $2 --model $3"
     if [ ! -z "$options" ]; then cmd="$cmd --args $options"; fi
     echo "$> $cmd"
-    $cmd
+    if [ $dry -eq 0 ]; then $cmd; fi
 }
 
 # ****************************************************************************
@@ -279,17 +280,20 @@ dateDiff ()
 scheduleDate ()
 {
     local retval=$(date '+%Y-%m-%d %T')
-    for line in ${schedule[@]}; do
-        parts=(`echo $line | tr ':' ' '`)
+    idx=0
+    num=${#schedule[@]}
+    while [ $idx -lt $num ]; do
+        parts=(${schedule[$idx]})
         num=${#parts[@]}
-        if [ $num -lt 6 -o $num -gt 7 ]; then continue; fi
-        if [    "${parts[3]}" == "$2" \
+        if [ $num -lt 5 -o $num -gt 6 ]; then continue; fi
+        if [    "${parts[2]}" == "$1" \
+             -a "${parts[3]}" == "$2" \
              -a "${parts[4]}" == "$3" \
-             -a "${parts[5]}" == "$4" \
-             -a "${parts[6]}" == "$5" ]
+             -a "${parts[5]}" == "$4" ]
         then
-            retval="${parts[0]} ${parts[1]}:${parts[2]}"
+            retval="${parts[0]} ${parts[1]}"
         fi
+        ((idx++))
     done
     echo "$retval"
 }
@@ -299,14 +303,7 @@ scheduleDate ()
 scheduleTest ()
 {
     idx=${#newSchedule[@]}
-    ((idx++))
-    local dt=''
-    if [ $(uname) == 'Darwin' ]; then
-        dt=$(date -ju -f '%Y-%m-%d %T' "$1" '+%Y-%m-%d:%H:%M')
-    else
-        dt=$(date -u -d "$1" '+%Y-%m-%d:%H:%M')
-    fi
-    newSchedule[$idx]="$dt:$2:$3:$4:$5"
+    newSchedule[$idx]="$1 $2 $3 $4 $5"
 }
 
 # ============================================================================
@@ -315,6 +312,7 @@ scheduleTest ()
 
 testCmd="$progDir/basistest" # command used to run tests
 verbosity=0                  # verbosity of output messages
+dry=0                        # whether this is a dry testing run
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -345,6 +343,7 @@ while [ $# -gt 0 ]; do
                 exit 1
             fi
             ;;
+        --dry) dry=1; ;;
 
         # standard options
 		-h|--help)    printHelp;    exit 0; ;;
@@ -383,6 +382,7 @@ fi
 
 # parse existing test schedule
 schedule=()
+newSchedule=()
 if [ -f "$scheduleFile" ]; then
     idx=0
     while read line; do
@@ -453,7 +453,7 @@ while read line; do
         model='Nightly'
     fi
     # determine whether test is already due for execution
-    nextDate=$(scheduleDate $schedule $project $branch $model $options)
+    nextDate=$(scheduleDate $project $branch $model $options)
     if [ $(dateDiff -m "$(date '+%Y-%m-%d %T')" "$nextDate") -gt 0 ]; then
         echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $nextDate UTC"
         # skip test as it is not yet scheduled for execution
@@ -482,12 +482,15 @@ done < "$confFile"
 
 # write new schedule
 rm -f $scheduleFile
-for line in ${newSchedule[@]}; do
-    echo "$line" >> $scheduleFile
+idx=0
+num=${#newSchedule[@]}
+while [ $idx -lt $num ]; do
+    echo ${newSchedule[$idx]} >> $scheduleFile
     if [ $? -ne 0 ]; then
         echo "Failed to write schedule to file $scheduleFile!" 1&>2
         break
     fi
+    ((idx++))
 done
 if [ -f $scheduleFile ]; then
     sort "$scheduleFile" -o "$scheduleFile"
