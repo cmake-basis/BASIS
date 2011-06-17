@@ -232,9 +232,9 @@ fi
 
 # compose command
 cmd='ctest'
-if [ $verbosity -gt 2 ]; then
+if [ $verbosity -gt 1 ]; then
     cmd="$cmd -VV"
-elif [ $verbosity -gt 1 ]; then
+elif [ $verbosity -gt 0 ]; then
     cmd="$cmd -V"
 fi
 cmd="$cmd -S $ctestScript,project=$project,branch=$branch,model=$model"
@@ -242,7 +242,7 @@ if [ ! -z "$args" ]; then cmd="$cmd,$args"; fi
 cmd="$cmd"
 
 # run test
-if [ $verbosity -gt 0 ]; then
+if [ $verbosity -gt 1 ]; then
     echo "$> $cmd"
 fi
 exec $cmd
