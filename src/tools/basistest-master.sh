@@ -200,7 +200,11 @@ runTest ()
     if [ $verbosity -gt 0 ]; then
         echo "Run $cmd"
     fi
-    if [ $dry -eq 0 ]; then $cmd; fi
+    if [ $dry -eq 0 ]; then
+        $cmd
+        return $?
+    fi
+    return 0
 }
 
 # ****************************************************************************
@@ -473,7 +477,7 @@ while read line; do
     if [ $? -ne 0 ]; then
         echo "$confFile:$linenumber: Failed to run test" 1>&2
         ((errors++))
-        # try again after a fixed time
+        # do not retry failing test too often
         minutes=0
         hours=1
         days=0
