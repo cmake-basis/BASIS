@@ -325,6 +325,13 @@ set (SUBMIT_RESULTS 0)
 # start a new test run
 ctest_start ("${CTEST_MODEL}")
 
+# get tag, i.e., subdirectory name required later to update build name
+if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
+  file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
+else ()
+  set (TAG ".")
+endif ()
+
 # ----------------------------------------------------------------------------
 # update working copy
 ctest_update (RETURN_VALUE NUM_FILES)
@@ -376,8 +383,6 @@ if (FORCE_BUILD OR UPDATED_FILES OR NOT "${CTEST_MODEL}" STREQUAL "Continuous")
 
   endif ()
 
-  
-
 endif ()
 
 if (SUBMIT_RESULTS)
@@ -423,22 +428,15 @@ if (SUBMIT_RESULTS)
   # replace intermediate build name
   if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
     message ("Change the build name to ${BUILDNAME}")
-    # get tag, i.e., subdirectory name
-    if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
-      file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
-      # glob XML files
-      file (GLOB FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
-      # replace build name
-      foreach (FILENAME ${FILES})
-        file (READ "${FILENAME}" XML)
-        string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
-        string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-        file (WRITE "${FILENAME}" "${XML}")
-      endforeach ()
-    else ()
-      message (WARNING "File ${CTEST_BINARY_DIRECTORY}/Testing/TAG not found.")
-      message (WARNING "Build name not updated")
-    endif ()
+    # glob XML files
+    file (GLOB_RECURSE FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
+    # replace build name
+    foreach (FILENAME ${FILES})
+      file (READ "${FILENAME}" XML)
+      string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+      string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+      file (WRITE "${FILENAME}" "${XML}")
+    endforeach ()
   endif ()
 
   # ---------------------------------------------------------------------------
