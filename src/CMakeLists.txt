@@ -132,6 +132,8 @@ basis_add_library (basis_test STATIC "utilities/gmock-gtest-all.cc")
 basis_add_script (tools/basisproject.sh)
 
 # ----------------------------------------------------------------------------
-# testing control script
+# testing tools
+basis_add_script (tools/basistest.sh)
+basis_add_script (tools/basistest-sge.sh)
 basis_add_script (tools/basistestd.sh)
 
