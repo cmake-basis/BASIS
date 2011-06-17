@@ -19,4 +19,4 @@
 ##############################################################################
 
 # simply call the wrapper script with the password encoded as svnuser
-exec sudo -u svnuser /bin/sh /sbia/home/svn/bin/svnwrap $@
+exec sudo -u svnuser /bin/sh /sbia/home/svn/bin/svnwrap "$@"
