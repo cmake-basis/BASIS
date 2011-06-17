@@ -90,7 +90,10 @@ Dashboard models:
                    exits without submission of any test results if no files
                    were updated. Otherwise, it performs all test stages.
     Experimental   Performs all test stages even if the project has not been
-                   updated since the last test run.")
+                   updated since the last test run.
+ 
+  Attention: For each model, only one test process may be running for each
+             project on each site at one time.")
   printOptions ()
   message ("
 Example:
@@ -279,8 +282,8 @@ set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
 
 # ----------------------------------------------------------------------------
 # directories
-set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
-set (CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-${CMAKE_SYSTEM_NAME}/${CTEST_SVN_BRANCH}")
+set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
+set (CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-${CMAKE_SYSTEM_NAME}/${CTEST_SVN_BRANCH}")
 
 # ----------------------------------------------------------------------------
 # memory check suppressions file
@@ -421,16 +424,21 @@ if (SUBMIT_RESULTS)
   if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
     message ("Change the build name to ${BUILDNAME}")
     # get tag, i.e., subdirectory name
-    file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
-    # glob XML files
-    file (GLOB FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
-    # replace build name
-    foreach (FILENAME ${FILES})
-      file (READ "${FILENAME}" XML)
-      string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
-      string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-      file (WRITE "${FILENAME}" "${XML}")
-    endforeach ()
+    if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
+      file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
+      # glob XML files
+      file (GLOB FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
+      # replace build name
+      foreach (FILENAME ${FILES})
+        file (READ "${FILENAME}" XML)
+        string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+        string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+        file (WRITE "${FILENAME}" "${XML}")
+      endforeach ()
+    else ()
+      message (WARNING "File ${CTEST_BINARY_DIRECTORY}/Testing/TAG not found.")
+      message (WARNING "Build name not updated")
+    endif ()
   endif ()
 
   # ---------------------------------------------------------------------------
