@@ -1,7 +1,7 @@
 #! /bin/bash
 
 ##############################################################################
-# \file  basistest-cron
+# \file  basistestd-cron
 # \brief This script is setup as a cron job to perform the automated tests.
 #
 # This script sets up the environment for the actual daemon which handles
