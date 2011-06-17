@@ -73,30 +73,6 @@ install (
 )
 
 # ============================================================================
-# CTest scripts
-# ============================================================================
-
-macro (add_ctest_script NAME)
-  configure_file (
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${NAME}.ctest.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake/${NAME}.ctest"
-    @ONLY
-  )
-
-  install (
-    FILES       "${CMAKE_CURRENT_BINARY_DIR}/cmake/${NAME}.ctest"
-    DESTINATION "${INSTALL_MODULES_DIR}"
-  )
-endmacro ()
-
-basis_add_script (
-  nightly_ctest
-  NOEXEC SCRIPT    "cmake/nightly.ctest"
-  OUTPUT_DIRECTORY "cmake"
-  DESTINATION      "${INSTALL_MODULES_DIR}"
-)
-
-# ============================================================================
 # C++ utilities
 # ============================================================================
 
@@ -133,6 +109,7 @@ basis_add_script (tools/basisproject.sh)
 
 # ----------------------------------------------------------------------------
 # testing tools
+basis_add_script (tools/basisctest NOEXEC)
 basis_add_script (tools/basistest.sh)
 basis_add_script (tools/basistest-sge.sh)
 basis_add_script (tools/basistestd.sh)

@@ -72,7 +72,7 @@ Options:
   -m [ --model ]     The name of the dashboard model, i.e., either "Nightly",
                      "Continuous", or "Experimental". Defaults to "Nightly".
   -S [ --script ]    CTest script which performs the testing.
-                     Defaults to the "nightly.ctest" script of BASIS.
+                     Defaults to the "basisctest" script of BASIS.
   -a [ --args ]      Additional arguments for the CTest script.
   -V [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]      Print help and exit.
@@ -133,7 +133,7 @@ printUsage ()
 # ============================================================================
 
 # CTest script
-ctestScript="$progDir/@MODULES_DIR@/nightly.ctest"
+ctestScript="$progDir/@MODULES_DIR@/basisctest"
 
 project=''      # name of the BASIS project
 branch='trunk'  # the branch to test

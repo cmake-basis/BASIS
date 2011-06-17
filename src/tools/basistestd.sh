@@ -126,8 +126,8 @@ Configuration:
     <model>     Dashboard model, i.e., either one of "Nightly", "Continuous",
                 and "Experimental". Defaults to "Nightly".
     <options>   Additional options to the CTest script.
-                The "nightly.ctest" script of BASIS is used by default.
-                Run "ctest -S <path>/nightly.ctest,help" to get a list of
+                The "basisctest" script of BASIS is used by default.
+                Run "ctest -S <path>/basisctest,usage" to get a list of
                 available options. By default, the default options of the
                 CTest script are used.
 
