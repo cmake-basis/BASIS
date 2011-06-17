@@ -44,7 +44,8 @@ conf='/sbia/home/swtest/etc/basistest.conf'
 schedule='/sbia/home/swtest/var/run/basistest.schedule'
 
 # test execution command
-cmd='/sbia/home/swtest/bin/basistest-slave -V'
+master='/sbia/home/swtest/bin/basistest-master'
+slave='/sbia/home/swtest/bin/basistest-slave -V'
 
 # ============================================================================
 # main
@@ -59,8 +60,8 @@ if [ $SGE -ne 0 ]; then
     if [ ! -z "$queue" ]; then submit="$submit -l $queue"; fi
     if [ ! -z "$mail" ]; then submit="$submit -M $mail -m b -m e -m a"; fi
     if [ ! -z "$log" ]; then submit="$submit -o $log -e $log"; fi
-    cmd="$submit $cmd"
+    slave="$submit $slave"
 fi
 
 # run actual testing master
-exec /sbia/home/swtest/basis/bin/basistest-master -c "$conf" -s "$schedule" -t "$cmd"
+exec $master -c "$conf" -s "$schedule" -t "$slave"
