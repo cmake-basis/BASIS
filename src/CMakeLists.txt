@@ -114,6 +114,7 @@ basis_add_script (
   DESTINATION "${INSTALL_MODULES_DIR}"
 )
 
+basis_add_script (tools/basistest-svn.sh)
 basis_add_script (tools/basistest-slave.sh)
 basis_add_script (tools/basistest-master.sh)
 basis_add_script (tools/basistest-cron.sh)
