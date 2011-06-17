@@ -322,6 +322,10 @@ set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECT
 set (SUBMIT_RESULTS 0)
 
 # ----------------------------------------------------------------------------
+# empty the binary directory
+ctest_empty_binary_directory ("${CTEST_BINARY_DIRECTORY}")
+
+# ----------------------------------------------------------------------------
 # start a new test run
 ctest_start ("${CTEST_MODEL}")
 
@@ -345,13 +349,9 @@ else ()
 endif ()
 
 # perform other test stages and submit results only if required
-if (FORCE_BUILD OR UPDATED_FILES OR NOT "${CTEST_MODEL}" STREQUAL "Continuous")
+if (FORCE_BUILD OR UPDATED_FILES OR CTEST_MODEL MATCHES "Nightly|Experimental")
 
   set (SUBMIT_RESULTS 1)
-
-  # --------------------------------------------------------------------------
-  # empty the binary directory
-  ctest_empty_binary_directory ("${CTEST_BINARY_DIRECTORY}")
 
   # --------------------------------------------------------------------------
   # configure build
