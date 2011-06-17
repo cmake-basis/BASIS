@@ -189,11 +189,13 @@ printUsage ()
 runTest ()
 {
     cmd="$testCmd"
-    if [ $verbosity -gt 0 ]; then cmd="$cmd --verbose"; fi
     if [ $verbosity -gt 1 ]; then cmd="$cmd --verbose"; fi
+    if [ $verbosity -gt 2 ]; then cmd="$cmd --verbose"; fi
     cmd="$cmd --project $1 --branch $2 --model $3"
     if [ ! -z "$options" ]; then cmd="$cmd --args $options"; fi
-    echo "$> $cmd"
+    if [ $verbosity -gt 0 ]; then
+        echo "Run $cmd"
+    fi
     if [ $dry -eq 0 ]; then $cmd; fi
 }
 
@@ -455,7 +457,9 @@ while read line; do
     # determine whether test is already due for execution
     nextDate=$(scheduleDate $project $branch $model $options)
     if [ $(dateDiff -m "$(date '+%Y-%m-%d %T')" "$nextDate") -gt 0 ]; then
-        echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $nextDate"
+        if [ $verbosity -gt 0 ]; then
+            echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $nextDate"
+        fi
         # skip test as it is not yet scheduled for execution
         scheduleTest "$nextDate" "$project" "$branch" "$model" "$options"
         continue
