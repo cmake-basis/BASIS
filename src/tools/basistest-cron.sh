@@ -43,9 +43,13 @@ conf='/sbia/home/swtest/etc/basistest.conf'
 # schedule file; note that this file is created/updated by the testing daemon
 schedule='/sbia/home/swtest/var/run/basistest.schedule'
 
+# CTest script; has to be given with full path because SGE copies the slave
+# script which looks for the CTest script relative to its own location
+ctest='/sbia/home/swtest/share/basis/modules/basistest.ctest'
+
 # test execution command
 master='/sbia/home/swtest/bin/basistest-master'
-slave='/sbia/home/swtest/bin/basistest-slave -V'
+slave="/sbia/home/swtest/bin/basistest-slave -V -S $ctest"
 
 # ============================================================================
 # main
