@@ -245,4 +245,8 @@ cmd="$cmd"
 if [ $verbosity -gt 1 ]; then
     echo "Exec $cmd"
 fi
-exec $cmd
+if [ $verbosity -gt 0 ]; then
+    exec $cmd > /dev/null # avoid output such as "Your job has been submitted"
+else
+    exec $cmd
+fi
