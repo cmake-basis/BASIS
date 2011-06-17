@@ -225,7 +225,7 @@ stamp2date ()
     if [ $(uname) == 'Darwin' ]; then
       date -j -r $1 '+%Y-%m-%d %T'
     else
-      date -d "1970-01-01 $1 sec" '+%Y-%m-%d %T'
+      date -d "1970-01-01 $1 sec UTC" '+%Y-%m-%d %T'
     fi
 }
 
