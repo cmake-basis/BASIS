@@ -373,6 +373,12 @@ if (FORCE_BUILD OR UPDATED_FILES OR NOT "${CTEST_MODEL}" STREQUAL "Continuous")
 
   endif ()
 
+  
+
+endif ()
+
+if (SUBMIT_RESULTS)
+
   # --------------------------------------------------------------------------
   # adjust build name
 
@@ -427,12 +433,10 @@ if (FORCE_BUILD OR UPDATED_FILES OR NOT "${CTEST_MODEL}" STREQUAL "Continuous")
     endforeach ()
   endif ()
 
-endif ()
-
-# ----------------------------------------------------------------------------
-# submit results
-if (SUBMIT_RESULTS)
+  # ---------------------------------------------------------------------------
+  # submit results
   ctest_submit ()
+
 endif ()
 
 # -----------------------------------------------------------------------------
