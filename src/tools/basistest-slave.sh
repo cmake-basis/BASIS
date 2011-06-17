@@ -218,7 +218,7 @@ fi
 # ============================================================================
 
 # see if ctest can be found
-which ctest &>> /dev/null
+which ctest &> /dev/null
 if [ $? -ne 0 ]; then
     echo "Could not find the ctest command" 1>&2
     exit 1

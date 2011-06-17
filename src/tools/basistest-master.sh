@@ -204,7 +204,7 @@ runTest ()
         if [ $verbosity -gt 0 ]; then
             $cmd
         else
-            $cmd >> /dev/null # avoid messages such as "Your job has been submitted"
+            $cmd > /dev/null # avoid messages such as "Your job has been submitted"
         fi
         return $?
     fi
