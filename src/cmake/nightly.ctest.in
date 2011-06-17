@@ -18,70 +18,90 @@
 # help
 # ============================================================================
 
-# ****************************************************************************
-# \brief Prints help.
-
-function (help)
-  message ("Usage:
+function (printUsageSection)
+  message ("
+Usage:
   ctest [ctest options] -S nightly.ctest[,option[=value]]*
 
   Note: No commas or equality signs are allowed inside of option values even
-        if the value is enclosed by quotation marks.
+        if the value is enclosed by quotation marks.")
+endfunction ()
 
+function (printOptions)
+  message ("
+Required options:
+  project=<project>   Name of the BASIS project to test.
+
+Options:
+  model=<model>       Name of the dashboard model, i.e., one of
+                      \"Nightly\", \"Continuous\", and \"Experimental\".
+                      Defaults to \"Nightly\".
+  srcdir=<path>       Base path of the source directory.
+                      Defaults to \"${HOME}/comp_space/testing\".
+  bindir=<path>       Base path of the binary directory.
+                      Defaults to the base path of the source directory.
+  url=<url>           Base URL of the project's SVN repository.
+                      Defaults to \"https://sbia-svn/projects/<project>\".
+  branch=<name>       Name of the SVN branch to test, e.g., \"tags/1.0.0\".
+                      Defaults to \"trunk\".
+  memcheck            Perform memory check. Requires valgrind.
+                      No memory checks are performed by default.
+  coverage            Perform coverage analysis. Requires gcov.
+                      No coverage analysis is performed by default.
+  force               Force execution of tests even when no files were updated.
+  tmpbin              Delete binary directory on completion (also if not successful).
+  help                Prints help and exits without performing any test.
+  version             Prints version information and exits.")
+endfunction ()
+
+function (printContactSection)
+  message ("
+Contact:
+  SBIA Group <sbia-software at uphs.upenn.edu>")
+endfunction ()
+
+# ****************************************************************************
+# \brief Prints help.
+function (printHelp)
+  message ("CTest script nightly.ctest (BASIS)")
+  printUsageSection ()
+  message ("
 Description:
   This CTest script is used at SBIA for nightly testing of software projects.
   Nightly tests are scheduled by a cron job, for example, every night once.
   Contrary to continous testing, does the nightly testing job not loop for
   a certain time of iterations and look for changes actively. The nightly
-  testing job will only perform one test run and then exit.
-
-Required options:
-  project=<project>   Name of the BASIS project to test.
-
-Options:
-  model=<model>   Name of the dashboard model, i.e., one of
-                  \"Nightly\", \"Continuous\", and \"Experimental\".
-                  Defaults to \"Nightly\".
-  srcdir=<path>   Base path of the source directory.
-                  Defaults to \"${HOME}/comp_space/testing\".
-  bindir=<path>   Base path of the binary directory.
-                  Defaults to the base path of the source directory.
-  url=<url>       Base URL of the project's SVN repository.
-                  Defaults to \"https://sbia-svn/projects/<project>\".
-  branch=<name>   Name of the SVN branch to test, e.g., \"tags/1.0.0\".
-                  Defaults to \"trunk\".
-  memcheck        Perform memory check. Requires valgrind.
-                  No memory checks are performed by default.
-  coverage        Perform coverage analysis. Requires gcov.
-                  No coverage analysis is performed by default.
-  force           Force execution of tests even when no files were updated.
-  tmpbin          Delete binary directory on completion (also if not successful).
-  help            Prints help and exits without performing any test.
-  version         Prints version information and exits.
-
+  testing job will only perform one test run and then exit.")
+  printOptions ()
+  message ("
 Example:
   ctest -V -S nightly.ctest,project=BASIS,model=Experimental,coverage,memcheck
 
     Performs an experimental nightly test of the main development branch of
     BASIS itself, including coverage analysis and memory checks.
     The -V option of ctest enables more verbose output of CTest.
-    Even more verbose output can be requested using -VV.
+    Even more verbose output can be requested using -VV.")
+  printContactSection ()
+endfunction ()
 
-Contact:
-  SBIA Group <sbia-software at uphs.upenn.edu>
-")
+# ****************************************************************************
+# \brief Print usage information.
+function (printUsage)
+  message ("CTest script nightly.ctest (BASIS)")
+  printUsageSection ()
+  printOptions ()
+  printContactSection ()
 endfunction ()
 
 # ****************************************************************************
 # \brief Print version information.
-
-function (version)
+function (printVersion)
   set (VERSION  "@VERSION@")
   set (REVISION "@REVISION@")
   if (REVISION GREATER 0)
-    message ("CTest Script nightly.ctest (BASIS) ${VERSION} (Rev. ${REVISION})")
+    message ("CTest script nightly.ctest (BASIS) ${VERSION} (Rev. ${REVISION})")
   else ()
-    message ("CTest Script nightly.ctest (BASIS) ${VERSION}")
+    message ("CTest script nightly.ctest (BASIS) ${VERSION}")
   endif ()
   message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
   message ("See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.")
@@ -171,11 +191,14 @@ foreach (ARG ${ARGV})
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE)
     elseif (${OPTION} STREQUAL "version")
-      version ()
-      message (FATAL_ERROR "Successfully displayed version information. This error shall just interrupt CTest.")
+      printVersion ()
+      return ()
+    elseif (${OPTION} STREQUAL "usage")
+      printUsage ()
+      return ()
     elseif (${OPTION} STREQUAL "help")
-      help ()
-      message (FATAL_ERROR "Successfully displayed help. This error shall just interrupt CTest.")
+      printHelp ()
+      return ()
     else ()
       set (FAILURE 1)
     endif ()
