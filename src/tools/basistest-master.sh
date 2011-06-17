@@ -201,7 +201,11 @@ runTest ()
         echo "Run $cmd"
     fi
     if [ $dry -eq 0 ]; then
-        $cmd
+        if [ $verbosity -gt 0 ]; then
+            $cmd >> /dev/null # avoid messages such as "Your job has been submitted"
+        else
+            $cmd
+        fi
         return $?
     fi
     return 0

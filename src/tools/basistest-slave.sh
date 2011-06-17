@@ -218,7 +218,7 @@ fi
 # ============================================================================
 
 # see if ctest can be found
-which ctest &> /dev/null
+which ctest &>> /dev/null
 if [ $? -ne 0 ]; then
     echo "Could not find the ctest command" 1>&2
     exit 1
@@ -245,8 +245,4 @@ cmd="$cmd"
 if [ $verbosity -gt 1 ]; then
     echo "Exec $cmd"
 fi
-if [ $verbosity -gt 0 ]; then
-    exec $cmd > /dev/null # avoid output such as "Your job has been submitted"
-else
-    exec $cmd
-fi
+exec $cmd
