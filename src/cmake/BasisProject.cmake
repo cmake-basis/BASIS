@@ -46,7 +46,7 @@ endif ()
 # ============================================================================
 
 # append CMake module path of BASIS to CMAKE_MODULE_PATH
-set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_LIST_DIR}")
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}")
 
 # The CMakeParseArguments.cmake CMake module was added to CMake since version
 # 2.8.4 which just recenlty was released when the following macros and
@@ -272,6 +272,9 @@ macro (basis_project_initialize)
   # instantiate project directory structure
   basis_initialize_directories ()
  
+  # add project config directory to CMAKE_MODULE_PATH
+  set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})
+
   # include project specific settings
   if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
     set (DEFAULT_SCRIPT_CONFIG_FILE "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
