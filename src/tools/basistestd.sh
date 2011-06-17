@@ -33,9 +33,6 @@ progDir=$(getProgDir)
 version='@VERSION@'
 revision='@REVISION@'
 
-# absolute path of CTest script
-ctestScript="$progDir/@MODULES_DIR@/nightly.ctest"
-
 # absolute path of tests configuration file
 #confFile='/etc/basistestd.conf'
 confFile="$progDir/@DATA_DIR@/basistestd.conf"
@@ -43,9 +40,6 @@ confFile="$progDir/@DATA_DIR@/basistestd.conf"
 # absolute path of file with timestamps for next test execution
 #scheduleFile='/var/run/basistestd.schedule'
 scheduleFile="$progDir/@DATA_DIR@/basistestd.schedule"
-
-# command used to submit test jobs
-submitCmd='qsub -l centos5'
 
 # ============================================================================
 # help/version
@@ -80,10 +74,15 @@ printOptionsSection ()
 {
     cat - << EOF-OPTIONS
 Options:
-  -V [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
-  -h [ --help ]      Print help and exit.
-  -u [ --usage ]     Print usage information and exit.
-  -v [ --version ]   Print version information and exit.
+  -c [ --conf ]       The test configuration file. Defaults to "$confFile".
+  -t [ --testcmd ]    The test execution command. Defaults to the basistest
+                      command in the same directory as this executable.
+  -s [ --schedule ]   The test schedule file which is created and updated by
+                      this program. Defaults to "$scheduleFile".
+  -V [ --verbose ]    Increases verbosity of output messages. Can be given multiple times.
+  -h [ --help ]       Print help and exit.
+  -u [ --usage ]      Print usage information and exit.
+  -v [ --version ]    Print version information and exit.
 EOF-OPTIONS
 }
 
@@ -141,6 +140,20 @@ Configuration:
     x:x:1:BASIS:trunk:Nightly:coverage,memcheck
 
   Attention: The entire line may not contain any whitespace character!
+
+Test Execution:
+  By default, the basistest command is invoked for each entry in the
+  configuration file. A custom test command can be set using the option
+  -t [ --testCmd ]. The provided command has to support the following
+  command line arguments.
+
+    --project <arg>   The name of the project as given in the configuration.
+    --branch <arg>    The branch as given in the configuration.
+    --model <arg>     The name of the model as given in the configuration.
+    --args <arg>      The additional options given in the configuration.
+    --verbose         Enable verbose output messages. May be given multiple times.
+
+  The --args and --verbose options have to be optional.
 EOF-DESCRIPTION
     echo
     printOptionsSection
@@ -176,13 +189,13 @@ printUsage ()
 # \brief Runs a test given the arguments in the configuration file.
 runTest ()
 {
-    cmd="$submitCmd ctest"
-    if [ $verbosity -gt 0 ]; then cmd="$cmd -V"; fi
-    cmd="$cmd -S $ctestScript,project=$1,branch=$2,model=$3"
-    if [ ! -z "$options" ]; then cmd="$cmd,$options"; fi
-    echo "> $cmd"
+    cmd="$testCmd"
+    if [ $verbosity -gt 0 ]; then cmd="$cmd --verbose"; fi
+    if [ $verbosity -gt 1 ]; then cmd="$cmd --verbose"; fi
+    cmd="$cmd --project $1 --branch $2 --model $3"
+    if [ ! -z "$options" ]; then cmd="$cmd --args \"$options\""; fi
+    echo "$> $cmd"
     $cmd
-    return $?
 }
 
 # ****************************************************************************
@@ -289,25 +302,50 @@ scheduleTest ()
 # options
 # ============================================================================
 
-verbosity=0
+testCmd="$progDir/basistest" # command used to run tests
+verbosity=0                  # verbosity of output messages
 
 while [ $# -gt 0 ]; do
 	case "$1" in
-		-h|--help)
-			printHelp
-			exit 0
-			;;
-
-		-u|--usage)
-			printUsage
-			exit 0
-			;;
-        -v|--version)
-            printVersion
-            exit 0
+        -c|--conf)
+            shift
+            if [ $# -gt 0 ]; then
+                confFile=$1
+            else
+                echo "Option -c [ --conf ] requires an argument!" 1>&2
+                exit 1
+            fi
             ;;
-        -V|--verbose)
-            ((verbosity++))
+        -t|--testcmd)
+            shift
+            if [ $# -gt 0 ]; then
+                testCmd=$1
+            else
+                echo "Option -t [ --testCmd ] requires an argument!" 1>&2
+                exit 1
+            fi
+            ;;
+        -s|--schedule)
+            shift
+            if [ $# -gt 0 ]; then
+                scheduleFile=$1
+            else
+                echo "Option -s [ --schedule ] requires an argument!" 1>&2
+                exit 1
+            fi
+            ;;
+
+        # standard options
+		-h|--help)    printHelp;    exit 0; ;;
+		-u|--usage)   printUsage;   exit 0; ;;
+        -v|--version) printVersion; exit 0; ;;
+        -V|--verbose) ((verbosity++)); ;;
+
+        # invalid option
+        *)
+            printUsage
+            echo
+            echo "Invalid option $1!" 1>&2
             ;;
     esac
 done
@@ -322,18 +360,14 @@ if [ ! -f "$confFile" ]; then
     exit 1
 fi
 
-# check existence of ctest command
-which ctest > /dev/null
+# check existence of test command
+which $testCmd &> /dev/null
 if [ $? -ne 0 ]; then
-    echo "Could not find ctest command in the PATH" 1>&2
+    echo "Could not find test command $testCmd" 1>&2
     exit 1
 fi
 
-# check existence of CTest script
-if [ ! -f "$ctestScript" ]; then
-    echo "Missing CTest script $ctestScript" 1>&2
-    exit 1
-fi
+
 
 # parse existing test schedule
 schedule=()
