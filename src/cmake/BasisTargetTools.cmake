@@ -559,9 +559,7 @@ function (basis_add_library TARGET_NAME)
 
       # determine extension of MEX-files for this architecture
       if (NOT MEX_EXT)
-        basis_mexext (MEXEXT)
-        set (MEX_EXT "${MEXEXT}" CACHE STRING "Extension of MEX-files." FORCE)
-        mark_as_advanced (MEX_EXT)
+        basis_mexext ()
       endif ()
 
       if (NOT MEX_EXT)

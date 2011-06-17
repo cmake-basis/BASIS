@@ -102,8 +102,10 @@ mark_as_advanced (BASIS_CMD_MEX)
 #                  this function tries to determine it from the system
 #                  information. If the extension could not be determined,
 #                  an empty string is returned.
+#                  If this argument is not given, the extension is cached
+#                  as the MEX_EXT variable.
 
-function (basis_mexext EXT)
+function (basis_mexext)
   # default return value
   set (MEXEXT "${MEX_EXT}")
 
@@ -146,7 +148,19 @@ function (basis_mexext EXT)
   endif ()
 
   # return value
-  set ("${EXT}" "${MEXEXT}" PARENT_SCOPE)
+  if (ARGC GREATER 0)
+    set ("${ARGV0}" "${MEXEXT}" PARENT_SCOPE)
+  else ()
+    if (NOT DEFINED MEX_EXT)
+      set (MARKIT 1)
+    else ()
+      set (MARKIT 0)
+    endif ()
+    set (MEX_EXT "${MEXEXT}" CACHE STRING "The extension of MEX-files for this architecture." FORCE)
+    if (MARKIT)
+      mark_as_advanced (MEX_EXT)
+    endif ()
+  endif ()
 endfunction ()
 
 # ****************************************************************************
