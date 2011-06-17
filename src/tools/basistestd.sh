@@ -158,9 +158,12 @@ EOF-DESCRIPTION
     echo
     cat - << EOF-EXAMPLES
 Examples:
-  $progName --version
+  $progName --conf /etc/basis/testd.conf --schedule /var/run/basis/testd
 
-    Prints version information and exits.
+    Runs this daemon with the configuration file "/etc/basis/testd.conf",
+    where the test schedule "/var/run/basis/testd" is created (or updated).
+    Note that this command should be setup as cron job instead of executing
+    it manually.
 EOF-EXAMPLES
     echo
     printContactSection
