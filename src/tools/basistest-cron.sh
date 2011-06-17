@@ -31,6 +31,9 @@ queue='tesla'
 # mail address for SGE notifications; set to '' to disable notifications
 mail='sbia-admin@uphs.upenn.edu'
 
+# output file for test log; used for -o and -e option of qsub
+log='/sbia/home/swtest/var/log/basistest.$JOB_ID.log'
+
 # configurtion file; configure the automated tests here, see basistestd -h
 conf='/sbia/home/swtest/etc/basistestd.conf'
 
@@ -44,14 +47,17 @@ cmd='/sbia/home/swtest/basis/bin/basistest -V'
 # main
 # ============================================================================
 
-# adjust test command
+# source environment settings of test user
+source /sbia/home/swtest/.bashrc
+
+# prepend test command by qsub command
 if [ $SGE -ne 0 ]; then
     submit='qsub -S /bin/bash -cwd'
-    if [ ! -z "$queue" ]; then submitCmd="$submit -l $queue"; fi
-    if [ ! -z "$mail" ]; then submitCmd="$submit -M $mail -m b -m e -m a"; fi
+    if [ ! -z "$queue" ]; then submit="$submit -l $queue"; fi
+    if [ ! -z "$mail" ]; then submit="$submit -M $mail -m b -m e -m a"; fi
+    if [ ! -z "$log" ]; then submit="$submit -o '$log' -e '$log'"; fi
     cmd="$submit $cmd"
 fi
 
 # run actual testing daemon
-source /sbia/home/swtest/.bashrc
 exec /sbia/home/swtest/basis/bin/basistestd -c "$conf" -s "$schedule" -t "$cmd"
