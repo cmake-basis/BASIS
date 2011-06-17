@@ -44,4 +44,4 @@
 # ============================================================================
 
 progDir=$(getProgDir)
-exec "$progDir/basistest"
+exec "$progDir/basistest" $@
