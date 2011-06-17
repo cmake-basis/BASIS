@@ -237,9 +237,9 @@ if [ $verbosity -gt 1 ]; then
 elif [ $verbosity -gt 0 ]; then
     cmd="$cmd -V"
 fi
-cmd="$cmd -S \"$ctestScript,project=$project,branch=$branch,model=$model"
+cmd="$cmd -S $ctestScript,project=$project,branch=$branch,model=$model"
 if [ ! -z "$args" ]; then cmd="$cmd,$args"; fi
-cmd="$cmd\""
+cmd="$cmd"
 
 # run test
 echo "$> $cmd"
