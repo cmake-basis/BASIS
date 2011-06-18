@@ -587,13 +587,18 @@ function (basis_add_library TARGET_NAME)
           "MATLAB_MEX_FILE"
       )
 
-      set (
-        MEX_COMPILE_FLAGS
-      )
+      set (MEX_COMPILE_FLAGS)
+      set (MEX_LINK_FLAGS)
 
       if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_ISGNUCXX)
         list (APPEND MEX_DEFINITIONS "_GNU_SOURCE")
-        list (APPEND MEX_COMPILE_FLAGS "-pthread -fPIC -fexceptions -fno-omit-frame-pointer")
+        if (HAVE_PTHREAD)
+          list (APPEND MEX_COMPILE_FLAGS "-pthread")
+        endif ()
+        list (APPEND MEX_COMPILE_FLAGS "-fPIC -fexceptions -fno-omit-frame-pointer")
+        list (APPEND MEX_LINK_FLAGS "-lstdc++")
+      else ()
+        message (WARNING "Build of MEX-files with non-GNU compiler is not supported")
       endif ()
 
       set_target_properties (
@@ -601,8 +606,9 @@ function (basis_add_library TARGET_NAME)
         PROPERTIES
           PREFIX              ""
           SUFFIX              ".${MEX_EXT}"
-          COMPILE_FLAGS       "${MEX_COMPILE_FLAGS}"
           COMPILE_DEFINITIONS "${MEX_DEFINITIONS}"
+          COMPILE_FLAGS       "${MEX_COMPILE_FLAGS}"
+          LINK_FLAGS          "${MEX_LINK_FLAGS}"
       )
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
