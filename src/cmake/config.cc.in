@@ -33,10 +33,10 @@ const std::string cDataPath          ("@DATA_PATH_CONFIG@");
 
 const std::string cVersion ("@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@");
 
-const unsigned int cVersionMajor = @VERSION_MAJOR_CONFIG@;
-const unsigned int cVersionMinor = @VERSION_MINOR_CONFIG@;
-const unsigned int cVersionPatch = @VERSION_PATCH_CONFIG@;
-const unsigned int cRevision     = @REVISION_CONFIG@;
+const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
+const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
+const unsigned int cVersionPatch = @PROJECT_VERSION_PATCH@;
+const unsigned int cRevision     = @PROJECT_REVISION@;
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
