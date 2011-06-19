@@ -253,7 +253,7 @@ function (basis_string_to_list LST STR)
   if (TMP MATCHES "^[^\" ]+")
     set (OUT "${CMAKE_MATCH_0};${OUT}")
   endif ()
-  if (TMP MATCHES "[^\" ]+$")
+  if (NOT CMAKE_MATCH_0 STREQUAL "${TMP}" AND TMP MATCHES "[^\" ]+$")
     set (OUT "${OUT};${CMAKE_MATCH_0}")
   endif ()
   # return resulting list
