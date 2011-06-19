@@ -46,10 +46,20 @@ set (
     "Common MATLAB Compiler flags (separated by ' '; use '\\' to mask ' ')."
 )
 
+set (
+  BASIS_MEX_FLAGS
+    "-v"
+  CACHE STRING
+    "Common MEX switches (separated by ' '; use '\\' to mask ' ')."
+)
+
 set (BASIS_MCC_TIMEOUT "600" CACHE STRING "Timeout for MATLAB Compiler execution")
+set (BASIS_MEX_TIMEOUT "600" CACHE STRING "Timeout for MEX script execution")
 
 mark_as_advanced (BASIS_MCC_FLAGS)
+mark_as_advanced (BASIS_MEX_FLAGS)
 mark_as_advanced (BASIS_MCC_TIMEOUT)
+mark_as_advanced (BASIS_MEX_TIMEOUT)
 
 # ============================================================================
 # find programs
@@ -239,15 +249,13 @@ function (basis_add_mex_target TARGET_NAME)
   endif ()
  
   # MEX flags
-  set (COMPILE_FLAGS)
-
-  if (BASIS_MEX_FLAGS)
-    string (REPLACE "\\ "    "&nbsp;" COMPILE_FLAGS "${BASIS_MEX_FLAGS}")
-    string (REPLACE " "      ";"      COMPILE_FLAGS "${COMPILE_FLAGS}")
-    string (REPLACE "&nbsp;" " "      COMPILE_FLAGS "${COMPILE_FLAGS}")
-  endif ()
-
   basis_mexext (MEXEXT)
+
+  set (SOURCES)
+  foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
+    get_filename_component (ABSPATH "${SOURCE}" ABSOLUTE)
+    list (APPEND SOURCES "${ABSPATH}")
+  endforeach ()
 
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
@@ -269,7 +277,7 @@ function (basis_add_mex_target TARGET_NAME)
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
       INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
-      COMPILE_FLAGS             "${COMPILE_FLAGS}"
+      COMPILE_FLAGS             "${BASIS_MEX_FLAGS}"
       LINK_DEPENDS              ""
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
   )
@@ -383,29 +391,82 @@ function (basis_add_mex_target_finalize TARGET_UID)
 
   get_filename_component (OUTPUT_NAME_WE "${OUTPUT_NAME}" NAME_WE)
 
+  # decompose user supplied MEX switches
+  macro (extract VAR)
+    string (REGEX REPLACE "${VAR}=\"([^\"]+)\"|${VAR}=([^\" ])*" "" COMPILE_FLAGS "${COMPILE_FLAGS}")
+    if (CMAKE_MATCH_1)
+      set (${VAR} "${CMAKE_MATCH_1}")
+    elseif (CMAKE_MATCH_2)
+      set (${VAR} "${CMAKE_MATCH_2}")
+    else ()
+      set (${VAR})
+    endif ()
+  endmacro ()
+
+  extract (CC)
+  extract (CFLAGS)
+  extract (CXX)
+  extract (CXXFLAGS)
+  extract (CLIBS)
+  extract (CXXLIBS)
+  extract (LD)
+  extract (LDFLAGS)
+
+  # set defaults for not provided options
+  if (NOT CC)
+    set (CC "${CMAKE_C_COMPILER}")
+  endif ()
+  if (NOT CFLAGS)
+    set (CFLAGS "${CMAKE_C_FLAGS}")
+  endif ()
+  if (NOT CFLAGS MATCHES "( |^)-fPIC( |$)")
+    set (CFLAGS "-fPIC ${CFLAGS}")
+  endif ()
+  if (NOT CXX)
+    set (CXX "${CMAKE_CXX_COMPILER}")
+  endif ()
+  if (NOT CXXFLAGS)
+    set (CXXFLAGS "${CMAKE_CXX_FLAGS}")
+  endif ()
+  if (NOT CXXFLAGS MATCHES "( |^)-fPIC( |$)")
+    set (CXXFLAGS "-fPIC ${CXXFLAGS}")
+  endif ()
+
+  # We chose to use CLIBS and CXXLIBS instead of the -L and -l switches
+  # to add also link libraries added via basis_target_link_libraries ()
+  # because the MEX script will not use these arguments if CLIBS or CXXLIBS
+  # is set. Moreover, the -l switch can only be used to link to a shared
+  # library and not a static one (on UNIX).
+  foreach (LIB ${LINK_LIBS})
+    set (CLIBS   "${CLIBS} ${LIB}")
+    set (CXXLIBS "${CXXLIBS} ${LIB}")
+  endforeach ()
+
+  # get remaining switches
+  basis_string_to_list (MEX_USER_ARGS "${COMPILE_FLAGS}")
+
   # assemble MEX switches
-  set (MEX_ARGS ${COMPILE_FLAGS})                    # user specified flags
-  list (APPEND MEX_ARGS "-outdir ${BUILD_DIR}")      # output directory
-  list (APPEND MEX_ARGS "-output ${OUTPUT_NAME_WE}") # output name (no extension)
-  foreach (INCLUDE_PATH ${INCLUDE_DIRECTORIES})      # add directories added via
-    list (FIND MEX_ARGS "${INCLUDE_PATH}" IDX)       # basis_include_directories ()
-    if (INCLUDE_PATH AND IDX EQUAL -1)               # function to search path
+  set (MEX_ARGS)
+
+  list (APPEND MEX_ARGS "CC=${CC}"   "CFLAGS=${CFLAGS}")         # C compiler and flags
+  list (APPEND MEX_ARGS "CXX=${CXX}" "CXXFLAGS=${CXXFLAGS}")     # C++ compiler and flags
+  list (APPEND MEX_ARGS "CXXLIBS=${CXXLIBS}")                    # C++ link libraries
+  if (LD)
+    list (APPEND MEX_ARGS "LD=${LD}")
+  endif ()
+  if (LDFLAGS)
+    list (APPEND MEX_ARGS "LDFLAGS=${LDFLAGS}")
+  endif ()
+  list (APPEND MEX_ARGS "-outdir" "${BUILD_DIR}")                # output directory
+  list (APPEND MEX_ARGS "-output" "${OUTPUT_NAME_WE}")           # output name (w/o extension)
+  foreach (INCLUDE_PATH ${INCLUDE_DIRECTORIES})                  # include directories
+    list (FIND MEX_ARGS "-I${INCLUDE_PATH}" IDX)                 # as specified via
+    if (INCLUDE_PATH AND IDX EQUAL -1)                           # basis_include_directories ()
       list (APPEND MEX_ARGS "-I${INCLUDE_PATH}")
     endif ()
   endforeach ()
-  list (FIND INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX) # add current source directory
-  if (IDX EQUAL -1)
-    list (APPEND MEX_ARGS "-I${SOURCE_DIRECTORY}")
-  endif ()
-  list (APPEND MEX_ARGS ${SOURCES})                   # source files
-  foreach (LIB ${LINK_LIBS})                          # link libraries
-    get_filename_component (LIBNAME "${LIB}" NAME_WE)
-    list (FIND MEX_ARGS "${LIBNAME}" IDX)
-    if (LIB AND IDX EQUAL -1)
-      get_filename_component (LIBDIR  "${LIB}" PATH)
-      list (APPEND MEX_ARGS "-L${LIBDIR}" "-l${LIBNAME}")
-    endif ()
-  endforeach ()
+  list (APPEND MEX_ARGS ${MEX_USER_ARGS})                        # other user switches
+  list (APPEND MEX_ARGS ${SOURCES})                              # source files
 
   # build command for invocation of MEX script
   set (BUILD_CMD      "${BASIS_CMD_MEX}" ${MEX_ARGS})
@@ -417,7 +478,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
 
   # add custom command to build executable using MATLAB Compiler
   add_custom_command (
-    OUTPUT ${BUILD_OUTPUT}
+    OUTPUT "${BUILD_OUTPUT}"
     # rebuild when input sources were modified
     DEPENDS ${DEPENDS}
     # invoke MEX script, wrapping the command in CMake execute_process ()
@@ -426,12 +487,16 @@ function (basis_add_mex_target_finalize TARGET_UID)
     COMMAND "${CMAKE_COMMAND}"
             "-DCOMMAND=${BUILD_CMD}"
             "-DWORKING_DIRECTORY=${BUILD_DIR}"
+            "-DTIMEOUT=${BASIS_MEX_TIMEOUT}"
             "-DERROR_EXPRESSION=[E|e]rror"
             "-DOUTPUT_FILE=${BUILD_LOG}"
             "-DERROR_FILE=${BUILD_LOG}"
             "-DVERBOSE=OFF"
             "-DLOG_ARGS=ON"
             "-P" "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+    # post-build command
+    COMMAND "${CMAKE_COMMAND}" -E copy   "${BUILD_DIR}/${OUTPUT_NAME}" "${BUILD_OUTPUT}"
+    COMMAND "${CMAKE_COMMAND}" -E remove "${BUILD_DIR}/${OUTPUT_NAME}"
     # inform user where build log can be found
     COMMAND "${CMAKE_COMMAND}" -E echo "Build log written to ${BUILD_LOG}"
     # comment
@@ -442,7 +507,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   # add custom target
   add_custom_target (
     ${TARGET_UID}+
-    DEPENDS ${BUILD_OUTPUT}
+    DEPENDS "${BUILD_OUTPUT}"
     SOURCES ${SOURCES}
   )
 
@@ -453,12 +518,14 @@ function (basis_add_mex_target_finalize TARGET_UID)
     DIRECTORY
     APPEND PROPERTY
       ADDITIONAL_MAKE_CLEAN_FILES
-        ${BUILD_OUTPUT}
+        "${BUILD_DIR}/${OUTPUT_NAME}"
+        "${BUILD_OUTPUT}"
+        "${BUILD_LOG}"
   )
 
   # install target
   install (
-    FILES       ${BUILD_OUTPUT}
+    FILES       "${BUILD_OUTPUT}"
     DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
     COMPONENT   "${LIBRARY_COMPONENT}"
   )

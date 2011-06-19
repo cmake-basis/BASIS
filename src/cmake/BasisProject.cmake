@@ -384,7 +384,7 @@ macro (basis_project_initialize)
     list (REMOVE_DUPLICATES DEFAULT_INCLUDE_DIRS)
   endif ()
   if (DEFAULT_INCLUDE_DIRS)
-    include_directories (BEFORE ${DEFAULT_INCLUDE_DIRS})
+    basis_include_directories (BEFORE ${DEFAULT_INCLUDE_DIRS})
   endif ()
 
   if (DEFAULT_SOURCES)

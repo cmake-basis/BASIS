@@ -120,11 +120,13 @@ function (basis_include_directories)
     list (REMOVE_DUPLICATES BASIS_INCLUDE_DIRECTORIES)
   endif ()
 
+  set (BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}" PARENT_SCOPE)
+
   # cached include directories
   if (BASIS_CACHED_INCLUDE_DIRECTORIES)
     set (
       BASIS_CACHED_INCLUDE_DIRECTORIES
-        "${BASIS_INCLUDE_DIRECTORIES};${ARGN_UNPARSED_ARGUMENTS}"
+        "${BASIS_CACHED_INCLUDE_DIRECTORIES};${ARGN_UNPARSED_ARGUMENTS}"
     )
   else ()
     set (BASIS_CACHED_INCLUDE_DIRECTORIES "${ARGN_UNPARSED_ARGUMENTS}")
@@ -190,8 +192,8 @@ function (basis_target_link_libraries TARGET_NAME)
 
   get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
 
-  # MATLAB Compiler target
-  if (BASIS_TYPE MATCHES "^MCC_")
+  # MATLAB Compiler or MEX target
+  if (BASIS_TYPE MATCHES "MCC|MEX")
     get_target_property (DEPENDS ${TARGET_UID} "LINK_DEPENDS")
 
     if (NOT DEPENDS)
@@ -529,6 +531,7 @@ function (basis_add_library TARGET_NAME)
         message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}.")
       endif ()
       set (ARGN_TYPE "LIBMEX")
+    endif ()
   endif ()
 
   # --------------------------------------------------------------------------
@@ -546,24 +549,28 @@ function (basis_add_library TARGET_NAME)
     )
 
   # --------------------------------------------------------------------------
+  # MEX
+  # --------------------------------------------------------------------------
+
+  elseif (ARGN_TYPE STREQUAL "MEX")
+ 
+    basis_add_mex_target (
+      ${TARGET_NAME}
+      COMPONENT ${ARGN_LIBRARY_COMPONENT}
+      ${ARGN_UNPARSED_ARGUMENTS}
+    )
+
+  # --------------------------------------------------------------------------
   # C/C++
   # --------------------------------------------------------------------------
 
   else ()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # MEX-file
+    # MEX (build simply as shared library)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    if (ARGN_TYPE STREQUAL "MEX")
-    
-      basis_add_mex_target (
-        ${TARGET_NAME}
-        COMPONENT ${ARGN_LIBRARY_COMPONENT}
-        ${ARGN_UNPARSED_ARGUMENTS}
-      )
-
-    elseif (ARGN_TYPE STREQUAL "LIBMEX")
+    if (ARGN_TYPE STREQUAL "LIBMEX")
 
       # MATLAB external library found ?
       if (NOT MATLAB_FOUND)
@@ -1240,7 +1247,9 @@ function (basis_add_custom_finalize)
     get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
     if (BASIS_TYPE MATCHES "SCRIPT")
       basis_add_script_finalize (${TARGET_UID})
-    elseif (BASIS_TYPE MATCHES "^MCC_")
+    elseif (BASIS_TYPE MATCHES "MEX")
+      basis_add_mex_target_finalize (${TARGET_UID})
+    elseif (BASIS_TYPE MATCHES "MCC")
       basis_add_mcc_target_finalize (${TARGET_UID})
     endif ()
   endforeach ()
