@@ -180,6 +180,293 @@ function (basis_create_addpaths_mfile)
 endfunction ()
 
 # ============================================================================
+# MEX target
+# ============================================================================
+
+# ****************************************************************************
+# \brief Add MEX target.
+#
+# This function is used to add a shared library target which is built
+# using the MATLAB MEX script (mex). It is invoked by basis_add_library ().
+# Thus, it is recommended to use this function instead.
+#
+# An install command for the added library target is added by this function
+# as well. The MEX-file will be installed as part of the RUNTIME_COMPONENT
+# in the directory INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR
+# on Windows.
+#
+# \note The custom build command is not added yet by this function.
+#       Only a custom target which stores all the information required to
+#       setup this build command is added. The custom command is added
+#       by either basis_project_finalize () or basis_superproject_finalize ().
+#       This way, the properties such as the OUTPUT_NAME of the custom
+#       target can be still modified.
+#
+# \see basis_add_library ()
+#
+# \param [in] TARGET_NAME Name of the target.
+# \param [in] ARGN        Remaining arguments such as in particular the
+#                         input source files.
+#
+#   COMPONENT   Name of the component. Defaults to BASIS_LIBRARY_COMPONENT.
+
+function (basis_add_mex_target TARGET_NAME)
+  basis_check_target_name ("${TARGET_NAME}")
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      ""
+      "COMPONENT"
+      ""
+    ${ARGN}
+  )
+
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+  endif ()
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "Unspecified")
+  endif ()
+
+  message (STATUS "Adding MEX-file ${TARGET_UID}...")
+
+  # required commands available ?
+  if (NOT BASIS_CMD_MEX)
+    message (FATAL_ERROR "MATLAB MEX script (mex) not found. It is required to build target ${TARGET_UID}."
+                         "Set BASIS_CMD_MEX manually and try again.")
+  endif ()
+ 
+  # MEX flags
+  set (COMPILE_FLAGS)
+
+  if (BASIS_MEX_FLAGS)
+    string (REPLACE "\\ "    "&nbsp;" COMPILE_FLAGS "${BASIS_MEX_FLAGS}")
+    string (REPLACE " "      ";"      COMPILE_FLAGS "${COMPILE_FLAGS}")
+    string (REPLACE "&nbsp;" " "      COMPILE_FLAGS "${COMPILE_FLAGS}")
+  endif ()
+
+  basis_mexext (MEXEXT)
+
+  # add custom target
+  add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
+
+  # set target properties required by basis_add_mex_target_finalize ()
+  set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      TYPE                      "LIBRARY"
+      BASIS_TYPE                "MEX"
+      PREFIX                    ""
+      SUFFIX                    ".${MEXEXT}"
+      VERSION                   "${PROJECT_VERSION}"
+      SOVERSION                 "${PROJECT_SOVERSION}"
+      SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
+      BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
+      RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+      LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+      RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
+      LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
+      INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
+      COMPILE_FLAGS             "${COMPILE_FLAGS}"
+      LINK_DEPENDS              ""
+      LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
+  )
+
+  # add target to list of targets
+  set (
+    BASIS_TARGETS "${BASIS_TARGETS};${TARGET_UID}"
+    CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
+  )
+
+  message (STATUS "Adding MEX-file ${TARGET_UID}... - done")
+endfunction ()
+
+# ****************************************************************************
+# \brief Finalizes addition of MEX target.
+#
+# This function uses the properties of the custom MEX-file target added by
+# basis_add_mex_target () to create the custom build command and adds this
+# build command as dependency of this added target.
+#
+# \see basis_add_mex_target ()
+#
+# \param [in] TARGET_UID "Global" target name. If this function is used
+#                        within the same project as basis_add_mcc_target (),
+#                        the "local" target name may be given alternatively.
+
+function (basis_add_mex_target_finalize TARGET_UID)
+  # if used within (sub-)project itself, allow user to specify "local" target name
+  basis_target_uid (TARGET_UID "${TARGET_UID}")
+
+  # finalized before ?
+  if (TARGET "${TARGET_UID}+")
+    return ()
+  endif ()
+
+  # does this target exist ?
+  if (NOT TARGET "${TARGET_UID}")
+    message (FATAL_ERROR "Unknown target ${TARGET_UID}.")
+    return ()
+  endif ()
+
+  # get target properties
+  basis_target_name (TARGET_NAME ${TARGET_UID})
+
+  set (
+    PROPERTIES
+      "TYPE"
+      "BASIS_TYPE"
+      "SOURCE_DIRECTORY"
+      "BINARY_DIRECTORY"
+      "RUNTIME_OUTPUT_DIRECTORY"
+      "LIBRARY_OUTPUT_DIRECTORY"
+      "RUNTIME_INSTALL_DIRECTORY"
+      "LIBRARY_INSTALL_DIRECTORY"
+      "PREFIX"
+      "OUTPUT_NAME"
+      "SUFFIX"
+      "VERSION"
+      "SOVERSION"
+      "INCLUDE_DIRECTORIES"
+      "SOURCES"
+      "COMPILE_FLAGS"
+      "LINK_DEPENDS"
+      "LIBRARY_COMPONENT"
+  )
+
+  foreach (PROPERTY ${PROPERTIES})
+    get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
+  endforeach ()
+
+  if (NOT BASIS_TYPE MATCHES "^MEX$")
+    message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
+  endif ()
+
+  message (STATUS "Adding build command for MEX-file ${TARGET_UID}...")
+
+  # build directory
+  list (GET SOURCES 0 BUILD_DIR)
+  set (BUILD_DIR "${BUILD_DIR}.dir")
+
+  list (REMOVE_AT SOURCES 0)
+
+  # output name
+  if (NOT OUTPUT_NAME)
+    set (OUTPUT_NAME "${TARGET_NAME}")
+  endif ()
+  if (PREFIX)
+    set (OUTPUT_NAME "${PREFIX}${OUTPUT_NAME}")
+  endif ()
+  if (SUFFIX)
+    set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
+  endif ()
+
+  # initialize dependencies of custom build command
+  set (DEPENDS ${SOURCES})
+
+  # get list of libraries to link to
+  set (LINK_LIBS)
+
+  foreach (LIB ${LINK_DEPENDS})
+    basis_target_uid (UID "${LIB}")
+    if (TARGET ${UID})
+      get_target_property (LIB_FILE ${UID} "LOCATION")
+      list (APPEND DEPENDS ${UID})
+    else ()
+      set (LIB_FILE "${LIB}")
+      list (APPEND DEPENDS "${LIB_FILE}")
+    endif ()
+    list (APPEND LINK_LIBS "${LIB_FILE}")
+  endforeach ()
+
+  get_filename_component (OUTPUT_NAME_WE "${OUTPUT_NAME}" NAME_WE)
+
+  # assemble MEX switches
+  set (MEX_ARGS ${COMPILE_FLAGS})                    # user specified flags
+  list (APPEND MEX_ARGS "-outdir ${BUILD_DIR}")      # output directory
+  list (APPEND MEX_ARGS "-output ${OUTPUT_NAME_WE}") # output name (no extension)
+  foreach (INCLUDE_PATH ${INCLUDE_DIRECTORIES})      # add directories added via
+    list (FIND MEX_ARGS "${INCLUDE_PATH}" IDX)       # basis_include_directories ()
+    if (INCLUDE_PATH AND IDX EQUAL -1)               # function to search path
+      list (APPEND MEX_ARGS "-I${INCLUDE_PATH}")
+    endif ()
+  endforeach ()
+  list (FIND INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX) # add current source directory
+  if (IDX EQUAL -1)
+    list (APPEND MEX_ARGS "-I${SOURCE_DIRECTORY}")
+  endif ()
+  list (APPEND MEX_ARGS ${SOURCES})                   # source files
+  foreach (LIB ${LINK_LIBS})                          # link libraries
+    get_filename_component (LIBNAME "${LIB}" NAME_WE)
+    list (FIND MEX_ARGS "${LIBNAME}" IDX)
+    if (LIB AND IDX EQUAL -1)
+      get_filename_component (LIBDIR  "${LIB}" PATH)
+      list (APPEND MEX_ARGS "-L${LIBDIR}" "-l${LIBNAME}")
+    endif ()
+  endforeach ()
+
+  # build command for invocation of MEX script
+  set (BUILD_CMD      "${BASIS_CMD_MEX}" ${MEX_ARGS})
+  set (BUILD_LOG      "${BUILD_DIR}/mexBuild.log")
+  set (BUILD_OUTPUT   "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+
+  # relative paths used for comments of commands
+  file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME}")
+
+  # add custom command to build executable using MATLAB Compiler
+  add_custom_command (
+    OUTPUT ${BUILD_OUTPUT}
+    # rebuild when input sources were modified
+    DEPENDS ${DEPENDS}
+    # invoke MEX script, wrapping the command in CMake execute_process ()
+    # command allows for inspection of command output for error messages
+    # and specification of timeout
+    COMMAND "${CMAKE_COMMAND}"
+            "-DCOMMAND=${BUILD_CMD}"
+            "-DWORKING_DIRECTORY=${BUILD_DIR}"
+            "-DERROR_EXPRESSION=[E|e]rror"
+            "-DOUTPUT_FILE=${BUILD_LOG}"
+            "-DERROR_FILE=${BUILD_LOG}"
+            "-DVERBOSE=OFF"
+            "-DLOG_ARGS=ON"
+            "-P" "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+    # inform user where build log can be found
+    COMMAND "${CMAKE_COMMAND}" -E echo "Build log written to ${BUILD_LOG}"
+    # comment
+    COMMENT "${BUILD_COMMENT}"
+    VERBATIM
+  )
+
+  # add custom target
+  add_custom_target (
+    ${TARGET_UID}+
+    DEPENDS ${BUILD_OUTPUT}
+    SOURCES ${SOURCES}
+  )
+
+  add_dependencies (${TARGET_UID} ${TARGET_UID}+)
+
+  # cleanup on "make clean"
+  set_property (
+    DIRECTORY
+    APPEND PROPERTY
+      ADDITIONAL_MAKE_CLEAN_FILES
+        ${BUILD_OUTPUT}
+  )
+
+  # install target
+  install (
+    FILES       ${BUILD_OUTPUT}
+    DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
+    COMPONENT   "${LIBRARY_COMPONENT}"
+  )
+
+  message (STATUS "Adding build command for MEX-file ${TARGET_UID}... - done")
+endfunction ()
+
+# ============================================================================
 # MATLAB Compiler target
 # ============================================================================
 

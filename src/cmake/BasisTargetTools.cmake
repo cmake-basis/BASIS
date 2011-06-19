@@ -418,7 +418,7 @@ endfunction ()
 #   LIBRARY_COMPONENT        Name of library component. Defaults to COMPONENT
 #                            if specified or BASIS_LIBRARY_COMPONENT, otherwise.
 #
-#   STATIC|SHARED|MODULE|MEX Type of the library.
+#   STATIC|SHARED|MODULE|MEX|LIBMEX Type of the library.
 #   EXTERNAL                 Whether the library target is an external library, i.e.,
 #                            the project version does not apply.
 
@@ -429,7 +429,7 @@ function (basis_add_library TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "STATIC;SHARED;MODULE;MEX;EXTERNAL"
+      "STATIC;SHARED;MODULE;MEX;LIBMEX;EXTERNAL"
       "COMPONENT;LIBRARY_COMPONENT;RUNTIME_COMPONENT;LANGUAGE"
       ""
     ${ARGN}
@@ -523,6 +523,12 @@ function (basis_add_library TARGET_NAME)
       endif ()
       set (ARGN_TYPE "MEX")
     endif ()
+    if (ARGN_LIBMEX)
+      message (STATUS "Adding MEX-file (library) ${TARGET_UID}...")
+      if (ARGN_TYPE)
+        message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}.")
+      endif ()
+      set (ARGN_TYPE "LIBMEX")
   endif ()
 
   # --------------------------------------------------------------------------
@@ -550,6 +556,14 @@ function (basis_add_library TARGET_NAME)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     if (ARGN_TYPE STREQUAL "MEX")
+    
+      basis_add_mex_target (
+        ${TARGET_NAME}
+        COMPONENT ${ARGN_LIBRARY_COMPONENT}
+        ${ARGN_UNPARSED_ARGUMENTS}
+      )
+
+    elseif (ARGN_TYPE STREQUAL "LIBMEX")
 
       # MATLAB external library found ?
       if (NOT MATLAB_FOUND)
@@ -558,9 +572,7 @@ function (basis_add_library TARGET_NAME)
       endif ()
 
       # determine extension of MEX-files for this architecture
-      if (NOT MEX_EXT)
-        basis_mexext ()
-      endif ()
+      basis_mexext ()
 
       if (NOT MEX_EXT)
         message (FATAL_ERROR "Failed to determine extension of MEX-files. It is required to build target ${TARGET_UID}."
