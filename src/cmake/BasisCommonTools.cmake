@@ -216,6 +216,50 @@ function (basis_list_to_string STR)
   set ("${STR}" "${OUT}" PARENT_SCOPE)
 endfunction ()
 
+# ****************************************************************************
+# \brief Splits a string at space characters into a list.
+#
+# \todo Probably this can be done in a better way...
+#       Difficulty is, that string (REPLACE) does always replace all
+#       occurrences. Therefore, we need a regular expression which matches
+#       the entire string. More sophisticated regular expressions should do
+#       a better job, though.
+#
+# \param [out] LST Output list.
+# \param [in]  STR Input string.
+
+function (basis_string_to_list LST STR)
+  set (TMP "${STR}")
+  set (OUT)
+  # 1. extract elements such as "a string with spaces"
+  while (TMP MATCHES "\"[^\"]*\"")
+    string (REGEX REPLACE "^(.*)\"([^\"]*)\"(.*)$" "\\1\\3" TMP "${TMP}")
+    if (OUT)
+      set (OUT "${CMAKE_MATCH_2};${OUT}")
+    else (OUT)
+      set (OUT "${CMAKE_MATCH_2}")
+    endif ()
+  endwhile ()
+  # 2. extract other elements separated by spaces (excluding first and last)
+  while (TMP MATCHES " [^\" ]+ ")
+    string (REGEX REPLACE "^(.*) ([^\" ]+) (.*)$" "\\1\\3" TMP "${TMP}")
+    if (OUT)
+      set (OUT "${CMAKE_MATCH_2};${OUT}")
+    else (OUT)
+      set (OUT "${CMAKE_MATCH_2}")
+    endif ()
+  endwhile ()
+  # 3. extract first and last elements (if not done yet)
+  if (TMP MATCHES "^[^\" ]+")
+    set (OUT "${CMAKE_MATCH_0};${OUT}")
+  endif ()
+  if (TMP MATCHES "[^\" ]+$")
+    set (OUT "${OUT};${CMAKE_MATCH_0}")
+  endif ()
+  # return resulting list
+  set (${LST} "${OUT}" PARENT_SCOPE)
+endfunction ()
+
 # ============================================================================
 # name <=> UID
 # ============================================================================
