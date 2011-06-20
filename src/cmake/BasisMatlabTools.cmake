@@ -277,7 +277,9 @@ function (basis_add_mex_target TARGET_NAME)
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
       INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
+      LINK_DIRECTORIES          "${BASIS_LINK_DIRECTORIES}"
       COMPILE_FLAGS             "${BASIS_MEX_FLAGS}"
+      LINK_FLAGS                ""
       LINK_DEPENDS              ""
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
   )
@@ -338,9 +340,11 @@ function (basis_add_mex_target_finalize TARGET_UID)
       "VERSION"
       "SOVERSION"
       "INCLUDE_DIRECTORIES"
+      "LINK_DIRECTORIES"
       "SOURCES"
       "COMPILE_FLAGS"
       "LINK_DEPENDS"
+      "LINK_FLAGS"
       "LIBRARY_COMPONENT"
   )
 
@@ -384,7 +388,6 @@ function (basis_add_mex_target_finalize TARGET_UID)
       list (APPEND DEPENDS ${UID})
     else ()
       set (LIB_FILE "${LIB}")
-      list (APPEND DEPENDS "${LIB_FILE}")
     endif ()
     list (APPEND LINK_LIBS "${LIB_FILE}")
   endforeach ()
@@ -412,6 +415,10 @@ function (basis_add_mex_target_finalize TARGET_UID)
   extract (LD)
   extract (LDFLAGS)
 
+  if (LINK_FLAGS)
+    set (LDFLAGS "${LDFLAGS} ${LINK_FLAGS}")
+  endif ()
+
   # set defaults for not provided options
   if (NOT CC)
     set (CC "${CMAKE_C_COMPILER}")
@@ -437,10 +444,11 @@ function (basis_add_mex_target_finalize TARGET_UID)
   # because the MEX script will not use these arguments if CLIBS or CXXLIBS
   # is set. Moreover, the -l switch can only be used to link to a shared
   # library and not a static one (on UNIX).
-  foreach (LIB ${LINK_LIBS})
-    set (CLIBS   "${CLIBS} ${LIB}")
-    set (CXXLIBS "${CXXLIBS} ${LIB}")
-  endforeach ()
+  #foreach (LIB ${LINK_LIBS})
+  #  if (LIB MATCHES "[/\\\.]")
+  #    set (CXXLIBS "${CXXLIBS} ${LIB}")
+  #  endif ()
+  #endforeach ()
 
   # get remaining switches
   basis_string_to_list (MEX_USER_ARGS "${COMPILE_FLAGS}")
@@ -449,8 +457,13 @@ function (basis_add_mex_target_finalize TARGET_UID)
   set (MEX_ARGS)
 
   list (APPEND MEX_ARGS "CC=${CC}"   "CFLAGS=${CFLAGS}")         # C compiler and flags
+  if (CLIBS)
+    list (APPEND MEX_ARGS "CLIBS=${CLIBS}")                      # C link libraries
+  endif ()
   list (APPEND MEX_ARGS "CXX=${CXX}" "CXXFLAGS=${CXXFLAGS}")     # C++ compiler and flags
-  list (APPEND MEX_ARGS "CXXLIBS=${CXXLIBS}")                    # C++ link libraries
+  if (CXXLIBS)
+    list (APPEND MEX_ARGS "CXXLIBS=${CXXLIBS}")                  # C++ link libraries
+  endif ()
   if (LD)
     list (APPEND MEX_ARGS "LD=${LD}")
   endif ()
@@ -463,6 +476,28 @@ function (basis_add_mex_target_finalize TARGET_UID)
     list (FIND MEX_ARGS "-I${INCLUDE_PATH}" IDX)                 # as specified via
     if (INCLUDE_PATH AND IDX EQUAL -1)                           # basis_include_directories ()
       list (APPEND MEX_ARGS "-I${INCLUDE_PATH}")
+    endif ()
+  endforeach ()
+  foreach (LIBRARY_PATH ${LINK_DIRECTORIES})                     # link directories
+    list (FIND MEX_ARGS "-L${LIBRARY_PATH}" IDX)                 # as specified via
+    if (LIBRARY_PATH AND IDX EQUAL -1)                           # basis_link_directories ()
+      list (APPEND MEX_ARGS "-L${LIBRARY_PATH}")
+    endif ()
+  endforeach ()
+  foreach (LIBRARY ${LINK_LIBS})                                 # link libraries
+    get_filename_component (LINK_DIR "${LIBRARY}" PATH)         # as specified via
+    get_filename_component (LINK_LIB "${LIBRARY}" NAME_WE)      # basis_target_link_libraries ()
+    string (REGEX REPLACE "^-l" "" LINK_LIB "${LINK_LIB}")
+    if (UNIX)
+      string (REGEX REPLACE "^lib" "" LINK_LIB "${LINK_LIB}")
+    endif ()
+    list (FIND MEX_ARGS "-L${LINK_DIR}" IDX)
+    if (LINK_DIR AND IDX EQUAL -1)
+      list (APPEND MEX_ARGS "-L${LINK_DIR}")
+    endif ()
+    list (FIND MEX_ARGS "-l${LINK_LIB}" IDX)
+    if (LINK_LIB AND IDX EQUAL -1)
+      list (APPEND MEX_ARGS "-l${LINK_LIB}")
     endif ()
   endforeach ()
   list (APPEND MEX_ARGS ${MEX_USER_ARGS})                        # other user switches
@@ -500,7 +535,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
     # inform user where build log can be found
     COMMAND "${CMAKE_COMMAND}" -E echo "Build log written to ${BUILD_LOG}"
     # comment
-    COMMENT "${BUILD_COMMENT}"
+    COMMENT "Building MEX-file ${REL}..."
     VERBATIM
   )
 
@@ -835,7 +870,6 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       list (APPEND DEPENDS ${UID})
     else ()
       set (LIB_FILE "${LIB}")
-      list (APPEND DEPENDS "${LIB_FILE}")
     endif ()
     list (APPEND LINK_LIBS "${LIB_FILE}")
   endforeach ()
@@ -844,7 +878,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   set (MCC_ARGS ${COMPILE_FLAGS})                    # user specified flags
   foreach (INCLUDE_PATH ${INCLUDE_DIRECTORIES})      # add directories added via
     list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)       # basis_include_directories ()
-    if (INCLUDE_PATH AND IDX EQUAL -1)               # function to search path
+    if (EXISTS INCLUDE_PATH AND IDX EQUAL -1)               # function to search path
       list (APPEND MCC_ARGS "-I" "${INCLUDE_PATH}")
     endif ()
   endforeach ()

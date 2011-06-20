@@ -146,7 +146,24 @@ endfunction ()
 # \brief Replaces CMake's link_directories () command.
 
 function (basis_link_directories)
+  # CMake's link_directories ()
   link_directories (${ARGN})
+
+  # current link directories
+  if (BASIS_LINK_DIRECTORIES)
+    set (
+      BASIS_LINK_DIRECTORIES
+        "${BASIS_LINK_DIRECTORIES};${ARGN}"
+    )
+  else ()
+    set (BASIS_LINK_DIRECTORIES "${ARGN}")
+  endif ()
+
+  if (BASIS_LINK_DIRECTORIES)
+    list (REMOVE_DUPLICATES BASIS_LINK_DIRECTORIES)
+  endif ()
+
+  set (BASIS_LINK_DIRECTORIES "${BASIS_LINK_DIRECTORIES}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
@@ -209,6 +226,26 @@ function (basis_target_link_libraries TARGET_NAME)
       endif ()
     endforeach ()
  
+    # pull dependencies (e.g., ITK uses this)
+    if (NOT BASIS_TYPE MATCHES "MCC")
+      set (DEPENDENCY_ADDED 1)
+      while (DEPENDENCY_ADDED)
+        set (DEPENDENCY_ADDED 0)
+        foreach (LIB ${DEPENDS})
+          foreach (LIB_DEPEND ${${LIB}_LIB_DEPENDS})
+            if (NOT LIB_DEPEND MATCHES "^general$")
+              string (REGEX REPLACE "^-l" "" LIB_DEPEND "${LIB_DEPEND}")
+              list (FIND DEPENDS ${LIB_DEPEND} IDX)
+              if (IDX EQUAL -1)
+                list (APPEND DEPENDS ${LIB_DEPEND})
+                set (DEPENDENCY_ADDED 1)
+              endif ()
+            endif ()
+          endforeach ()
+        endforeach ()
+      endwhile ()
+    endif ()
+
     set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
   # other
   else ()
