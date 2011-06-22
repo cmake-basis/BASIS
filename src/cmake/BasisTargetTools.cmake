@@ -54,6 +54,47 @@ function (basis_get_target_property VAR TARGET_NAME)
   set (${VAR} "${VALUE}" PARENT_SCOPE)
 endfunction ()
 
+
+# ****************************************************************************
+# \brief Replaces CMake's get_target_property () command.
+
+function (basis_get_target_location VAR TARGET_NAME)
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  if (TARGET "${TARGET_UID}")
+    get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
+    if (BASIS_TYPE MATCHES "MCC|^MEX$")
+      if (BASIS_TYPE MATCHES "^MCC_LIBRARY$|^MEX$")
+        get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_OUTPUT_DIRECTORY")
+      else ()
+        get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
+      endif ()
+      get_target_property (FNAME  "${TARGET_UID}" "OUTPUT_NAME")
+      get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
+      get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
+
+      set (TARGET_FILE)
+      if (FNAME)
+        set (TARGET_FILE "${FNAME}")
+      else ()
+        set (TARGET_FILE "${TARGET_NAME}")
+      endif ()
+      if (PREFIX)
+        set (TARGET_FILE "${PREFIX}${TARGET_FILE}")
+      endif ()
+      if (SUFFIX)
+        set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
+      endif ()
+
+      set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
+    else ()
+      get_target_property (LOCATION "${TARGET_UID}" "LOCATION")
+    endif ()
+  else ()
+    set (LOCATION "NOTFOUND")
+  endif ()
+  set ("${VAR}" "LOCATION" PARENT_SCOPE)
+endfunction ()
+
 # ============================================================================
 # definitions
 # ============================================================================
