@@ -92,7 +92,7 @@ function (basis_get_target_location VAR TARGET_NAME)
   else ()
     set (LOCATION "NOTFOUND")
   endif ()
-  set ("${VAR}" "LOCATION" PARENT_SCOPE)
+  set ("${VAR}" "${LOCATION}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
