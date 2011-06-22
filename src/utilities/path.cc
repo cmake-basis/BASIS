@@ -11,16 +11,17 @@
 
 #include "path.h"            // declarations and BASIS configuration
 
+#include <stdlib.h>          // malloc & free, _splitpath_s (WINDOWS)
+
 #if WINDOWS
-#  include <direct.h>        // _getcwd
-#  include <stdlib.h>        // _splitpath_s
-#  include <windows.h>       // GetModuleFileName
+#include <direct.h>        // _getcwd
+#include <windows.h>       // GetModuleFileName
 #else
-#  include <unistd.h>        // getcwd
-#  include <sys/stat.h>      // lstat
+#include <unistd.h>        // getcwd
+#include <sys/stat.h>      // lstat
 #endif
 #if MACOS
-#  include <mach-o/dyld.h>   // _NSGetExecutablePath
+#include <mach-o/dyld.h>   // _NSGetExecutablePath
 #endif
 
 #include "exceptions.h"      // to throw exceptions
