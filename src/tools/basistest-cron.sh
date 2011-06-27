@@ -41,7 +41,7 @@ SGE=1
 queue='tesla'
 
 # mail address for SGE notifications; set to '' to disable notifications
-mail='sbia-admin@uphs.upenn.edu'
+mail=''
 
 # output file for test log; used for -o and -e option of qsub
 log='/sbia/home/swtest/var/log/basistest.$JOB_ID.log'

@@ -117,14 +117,14 @@ Configuration:
   where
 
     <m>         Interval in minutes between consecutive test runs.
-                Defaults to "0" if "x" is given.
+                Defaults to "0" if "*" is given.
     <h>         Interval in hours between consecutive test runs.
-                Defaults to "0" if "x" is given.
+                Defaults to "0" if "*" is given.
     <d>         Interval in days (i.e., multiples of 24 hours) between consecutive
-                test runs. Defaults to "1" if "x" is given.
+                test runs. Defaults to "1" if "*" is given.
     <project>   Name of the BASIS project.
     <branch>    Branch within the project's SVN repository, e.g., "tags/1.0.0".
-                Defaults to "trunk" if a "x" is given.
+                Defaults to "trunk" if a "*" is given.
     <model>     Dashboard model, i.e., either one of "Nightly", "Continuous",
                 and "Experimental". Defaults to "Nightly".
     <options>   Additional options to the CTest script.
