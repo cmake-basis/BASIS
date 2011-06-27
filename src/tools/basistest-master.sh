@@ -137,7 +137,7 @@ Configuration:
   project BASIS itself which are run once every day including coverage
   analysis and memory checks are scheduled by
 
-    x:x:1:BASIS:trunk:Nightly:coverage,memcheck
+    *:*:1:BASIS:trunk:Nightly:coverage,memcheck
 
   Attention: The entire line may not contain any whitespace character!
 
