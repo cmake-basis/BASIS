@@ -493,20 +493,20 @@ TEST (Path, IsSymbolicLink)
     const string tmpDir = GetWorkingDirectory () + "/basis-path-test-IsSymbolicLink";
     string cmd, link, value;
  
-    cmd = "mkdir -p "; cmd += tmpDir;
+    cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
     ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     link  = tmpDir; link += "/symlink";
-    value = "/etc";
-    cmd   = "ln -s "; cmd += value; cmd += " "; cmd += link;
+    value = ".";
+    cmd   = "ln -sn \""; cmd += value; cmd += "\" \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_TRUE (IsSymbolicLink (link)) << "Link: " << link;
     link  = tmpDir; link += "/nolink";
     value = "";
-    cmd   = "touch "; cmd += link;
+    cmd   = "touch \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_FALSE (IsSymbolicLink (link)) << "Link: " << link;
 
-    cmd = "rm -rf "; cmd += tmpDir;
+    cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0);
 #endif
 }
@@ -525,22 +525,27 @@ TEST (Path, ReadSymbolicLink)
     const string tmpDir = GetWorkingDirectory () + "/basis-path-test-ReadSymbolicLink";
     string cmd, link;
  
-    cmd = "mkdir -p "; cmd += tmpDir;
+    cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
+    cout << "> " << cmd << endl;
     ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
 
     link  = tmpDir; link += "/symlink";
-    value = "/etc";
-    cmd   = "ln -s "; cmd += value; cmd += " "; cmd += link;
+    value = "hello world";
+    cmd   = "ln -sn \""; cmd += value; cmd += "\" \""; cmd += link; cmd += "\"";
+    cout << "> " << cmd << endl;
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     value = "";
     EXPECT_TRUE (ReadSymbolicLink (link, value)) << "Link: " << link;
-    EXPECT_STREQ ("/etc", value.c_str ());
+    EXPECT_STREQ ("hello world", value.c_str ());
     link  = tmpDir; link += "/nolink";
-    cmd   = "touch "; cmd += link;
+    cmd   = "touch \""; cmd += link; cmd += "\"";
+    cout << "> " << cmd << endl;
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_FALSE (ReadSymbolicLink (link, value)) << "Link: " << link;
 
-    cmd = "rm -rf "; cmd += tmpDir;
+    cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
+    cout << "> " << cmd << endl;
+    ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_TRUE (system (cmd.c_str ()) == 0);
 #endif
 
@@ -558,21 +563,27 @@ TEST (Path, GetRealPath)
     const string tmpDir = wd + "/basis-path-test-GetRealPath";
     string cmd, link, value;
  
-    cmd = "mkdir -p "; cmd += tmpDir;
+    cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
+    cout << "> " << cmd << endl;
+    ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
 
     link  = tmpDir; link += "/symlink";
     value = "..";
-    cmd   = "ln -s "; cmd += value; cmd += " "; cmd += link;
+    cmd   = "ln -sn \""; cmd += value; cmd += "\" \""; cmd += link; cmd += "\"";
+    cout << "> " << cmd << endl;
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_NO_THROW (value = GetRealPath (link)) << "Link: " << link;
     EXPECT_STREQ (wd.c_str (), value.c_str ()) << "Link: " << link;
     link  = tmpDir; link += "/nolink";
-    cmd   = "touch "; cmd += link;
+    cmd   = "touch \""; cmd += link; cmd += "\"";
+    cout << "> " << cmd << endl;
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_TRUE (GetRealPath (link) == link) << "Link: " << link;
 
-    cmd = "rm -rf "; cmd += tmpDir;
+    cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
+    cout << "> " << cmd << endl;
+    ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_TRUE (system (cmd.c_str ()) == 0);
 #endif
 }
