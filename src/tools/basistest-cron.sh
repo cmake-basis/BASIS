@@ -46,7 +46,7 @@ mail=''
 # output file for test log; used for -o and -e option of qsub
 log='/sbia/home/swtest/var/log/basistest.$JOB_ID.log'
 
-# configurtion file; configure the automated tests here, see basistestd -h
+# configuration file; configure the automated tests here, see basistestd -h
 conf='/sbia/home/swtest/etc/basistest.conf'
 
 # schedule file; note that this file is created/updated by the testing daemon
