@@ -283,11 +283,13 @@ void SplitPath (const string &path,
                 string       *fname,
                 string       *ext)
 {
-    // \note No need to validate path here as this will be done
-    //       either by GetFileRoot() or ToUnixPath().
-
     // file root
     if (root) *root = GetFileRoot (path);
+    // \note No need to validate path here if GetFileRoot () is executed.
+    //       Otherwise, it is necessary as ToUnixPath () is not as restrict.
+    else if (!IsValidPath (path)) {
+        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
+    }
     // convert path to clean Unix-style path
     string unixPath = ToUnixPath (path);
     // get position of last slash
@@ -343,7 +345,7 @@ void SplitPath (const string &path,
 /****************************************************************************/
 string GetFileRoot (const string &path)
 {
-    if (!IsValidPath (path, false)) {
+    if (!IsValidPath (path)) {
         BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
     }
 
@@ -377,7 +379,12 @@ string GetFileDirectory (const string &path)
     string root;
     string dir;
     SplitPath (path, &root, &dir, NULL, NULL);
-    return root + dir.substr (0, dir.size () - 1);
+    if (root == "./") {
+        if (dir.empty ()) return "./";
+        else              return dir;
+    } else {
+        return root + dir.substr (0, dir.size () - 1);
+    }
 }
 
 /****************************************************************************/
@@ -660,7 +667,7 @@ string GetExecutablePath ()
 #else
     // functionality not supported on this (unknown) platform
 #endif
-    return path;
+    return CleanPath (path);
 }
 
 /****************************************************************************/

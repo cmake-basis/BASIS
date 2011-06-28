@@ -288,13 +288,15 @@ TEST (Path, GetFileRoot)
     EXPECT_STREQ ("/", GetFileRoot ("\\").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS\\").c_str ());
+#if WINDOWS
     EXPECT_STREQ ("C:/", GetFileRoot ("c:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("C:/", GetFileRoot ("C:\\WINDOWS\\").c_str ());
-#if WINDOWS
     EXPECT_STREQ ("D:/", GetFileRoot ("d:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("A:/", GetFileRoot ("a:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("Z:/", GetFileRoot ("z:\\WINDOWS\\").c_str ());
 #else
+    EXPECT_STREQ ("/", GetFileRoot ("c:\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("/", GetFileRoot ("C:\\WINDOWS\\").c_str ());
     EXPECT_THROW (GetFileRoot ("d:\\WINDOWS\\"), invalid_argument);
     EXPECT_THROW (GetFileRoot ("a:\\WINDOWS\\"), invalid_argument);
     EXPECT_THROW (GetFileRoot ("z:\\WINDOWS\\"), invalid_argument);
@@ -316,8 +318,8 @@ TEST (Path, GetFileDirectory)
     EXPECT_STREQ ("/etc", GetFileDirectory ("/etc/config").c_str ());
     EXPECT_STREQ ("/etc", GetFileDirectory ("/etc/").c_str ());
     EXPECT_STREQ ("/",    GetFileDirectory ("/etc").c_str ());
-    EXPECT_STREQ (".",    GetFileDirectory ("./CMakeLists.txt").c_str ());
-    EXPECT_STREQ ("..",   GetFileDirectory ("../CMakeLists.txt").c_str ());
+    EXPECT_STREQ ("./",   GetFileDirectory ("./CMakeLists.txt").c_str ());
+    EXPECT_STREQ ("../",  GetFileDirectory ("../CMakeLists.txt").c_str ());
 
     // test with invalid argument
     EXPECT_THROW (GetFileDirectory (""), invalid_argument);
@@ -344,19 +346,19 @@ TEST (Path, GetFileNameWithoutExtension)
     EXPECT_STREQ ("Copyright", GetFileNameWithoutExtension ("Copyright.txt").c_str ());
 
     // test with invalid argument
-    EXPECT_THROW (GetFileDirectory (""), invalid_argument);
+    EXPECT_THROW (GetFileNameWithoutExtension (""), invalid_argument);
 }
 
 // ***************************************************************************
 // Tests the retrieval of the extension component - see also SplitPath() test
 TEST (Path, GetFileNameExtension)
 {
-    EXPECT_STREQ (".doc", GetFileNameWithoutExtension ("/Users/andreas/word.doc").c_str ());
-    EXPECT_STREQ ("",     GetFileNameWithoutExtension ("doc/README").c_str ());
-    EXPECT_STREQ (".txt", GetFileNameWithoutExtension ("Copyright.txt").c_str ());
+    EXPECT_STREQ (".doc", GetFileNameExtension ("/Users/andreas/word.doc").c_str ());
+    EXPECT_STREQ ("",     GetFileNameExtension ("doc/README").c_str ());
+    EXPECT_STREQ (".txt", GetFileNameExtension ("Copyright.txt").c_str ());
 
     // test with invalid argument
-    EXPECT_THROW (GetFileDirectory (""), invalid_argument);
+    EXPECT_THROW (GetFileNameExtension (""), invalid_argument);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -477,11 +479,9 @@ TEST (Path, GetRealPath)
 TEST (Path, GetExecutablePath)
 {
     string path;
-
     EXPECT_NO_THROW (path = GetExecutablePath ());
-    cout << "Path of test executable is \"" << path << "\"" << endl;
-
-    FAIL () << "Test not implemented";
+    cout << path << endl;
+    EXPECT_STREQ ("test_path", GetFileNameWithoutExtension (path).c_str ());
 }
 
 // ***************************************************************************
@@ -489,8 +489,7 @@ TEST (Path, GetExecutablePath)
 TEST (Path, GetExecutableName)
 {
     string name;
-
-    //EXPECT_NO_THROW (name = GetExecutableName ());
+    EXPECT_NO_THROW (name = GetExecutableName ());
     EXPECT_STREQ ("test_path", name.c_str ());
 }
 
