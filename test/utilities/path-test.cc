@@ -102,6 +102,9 @@ TEST (Path, CleanPath)
     EXPECT_STREQ ("/",          CleanPath ("/../../.").c_str ());
     EXPECT_STREQ ("/",          CleanPath ("/.././../.").c_str ());
     EXPECT_STREQ ("\\",         CleanPath ("\\").c_str ());
+    EXPECT_STREQ ("\\",         CleanPath ("\\..\\..").c_str ());
+    EXPECT_STREQ ("\\",         CleanPath ("\\..\\..\\.").c_str ());
+    EXPECT_STREQ ("\\",         CleanPath ("\\..\\.\\..\\.").c_str ());
     EXPECT_STREQ ("C:/",        CleanPath ("C:/").c_str ());
     EXPECT_STREQ ("C:\\",       CleanPath ("C:\\").c_str ());
     EXPECT_STREQ ("/usr/local", CleanPath ("/usr/local/.").c_str ());

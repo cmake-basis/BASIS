@@ -158,6 +158,7 @@ string CleanPath (const string &path)
             if (ref == "\\..") break;
             // no occurrences of "/.." found, now clean up the ones of "\.."
             ref = "\\..";
+            pos = skip;
             pos = cleanedPath.find (ref, pos);
             if (pos == string::npos) break;
         }
