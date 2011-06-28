@@ -562,7 +562,9 @@ bool ReadSymbolicLink (const string &link, string &value)
     }
 
     bool ok = true;
-#if !WINDOWS
+#if WINDOWS
+    value = link;
+#else
     char   *buffer = NULL;
     char   *newbuf = NULL;
     size_t  buflen = 256;

@@ -14,6 +14,9 @@
 #include <sbia/basis/test.h> // the unit testing framework
 #include <sbia/basis/path.h> // the testee's declaration
 
+#if UNIX
+#  include <stdlib.h> // the system () function is used to create symbolic links
+#endif
 
 using namespace SBIA_BASIS_NAMESPACE;
 using namespace std;
@@ -484,21 +487,94 @@ TEST (Path, ToRelativePath)
 // Tests the check whether a given file is a symbolic link
 TEST (Path, IsSymbolicLink)
 {
-    FAIL () << "Test not implemented";
+#if WINDOWS
+    EXPECT_FALSE (IsSymbolicLink ("/proc/exe"))
+#else
+    const string tmpDir = GetWorkingDirectory () + "/basis-path-test-IsSymbolicLink";
+    string cmd, link, value;
+ 
+    cmd = "mkdir -p "; cmd += tmpDir;
+    ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+    link  = tmpDir; link += "/symlink";
+    value = "/etc";
+    cmd   = "ln -s "; cmd += value; cmd += " "; cmd += link;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+    EXPECT_TRUE (IsSymbolicLink (link)) << "Link: " << link;
+    link  = tmpDir; link += "/nolink";
+    value = "";
+    cmd   = "touch "; cmd += link;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+    EXPECT_FALSE (IsSymbolicLink (link)) << "Link: " << link;
+
+    cmd = "rm -rf "; cmd += tmpDir;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0);
+#endif
 }
 
 // ***************************************************************************
-// Tests the reading a symbolic link's value
+// Tests the reading of a symbolic link's value
 TEST (Path, ReadSymbolicLink)
 {
-    FAIL () << "Test not implemented";
+    std::string value;
+#if WINDOWS
+    EXPECT_TRUE (ReadSymbolicLink ("/proc/exe", value));
+    EXPECT_TRUE (value == "/proc/exe");
+    EXPECT_TRUE (ReadSymbolicLink ("/does/not/exist", value));
+    EXPECT_TRUE (value == "/does/not/exist");
+#else
+    const string tmpDir = GetWorkingDirectory () + "/basis-path-test-ReadSymbolicLink";
+    string cmd, link;
+ 
+    cmd = "mkdir -p "; cmd += tmpDir;
+    ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+
+    link  = tmpDir; link += "/symlink";
+    value = "/etc";
+    cmd   = "ln -s "; cmd += value; cmd += " "; cmd += link;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+    value = "";
+    EXPECT_TRUE (ReadSymbolicLink (link, value)) << "Link: " << link;
+    EXPECT_STREQ ("/etc", value.c_str ());
+    link  = tmpDir; link += "/nolink";
+    cmd   = "touch "; cmd += link;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+    EXPECT_FALSE (ReadSymbolicLink (link, value)) << "Link: " << link;
+
+    cmd = "rm -rf "; cmd += tmpDir;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0);
+#endif
+
+    EXPECT_THROW (ReadSymbolicLink ("",     value), invalid_argument);
+    EXPECT_THROW (ReadSymbolicLink ("C::/", value), invalid_argument);
 }
 
 // ***************************************************************************
 // Tests the retrieval of an actual absolute path with symbolic links resolved
 TEST (Path, GetRealPath)
 {
-    FAIL () << "Test not implemented";
+#if WINDOWS
+#else
+    const string wd     = GetWorkingDirectory ();
+    const string tmpDir = wd + "/basis-path-test-GetRealPath";
+    string cmd, link, value;
+ 
+    cmd = "mkdir -p "; cmd += tmpDir;
+    ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+
+    link  = tmpDir; link += "/symlink";
+    value = "..";
+    cmd   = "ln -s "; cmd += value; cmd += " "; cmd += link;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+    EXPECT_NO_THROW (value = GetRealPath (link)) << "Link: " << link;
+    EXPECT_STREQ (wd.c_str (), value.c_str ()) << "Link: " << link;
+    link  = tmpDir; link += "/nolink";
+    cmd   = "touch "; cmd += link;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
+    EXPECT_TRUE (GetRealPath (link) == link) << "Link: " << link;
+
+    cmd = "rm -rf "; cmd += tmpDir;
+    EXPECT_TRUE (system (cmd.c_str ()) == 0);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
