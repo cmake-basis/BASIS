@@ -452,7 +452,8 @@ string ToAbsolutePath (const string &base, const string &path)
 #if WINDOWS
     if (absPath [0] == '/') absPath.insert (0, "C:");
 #endif
-    return absPath;
+    // convert to Unix-stype path with drive specification allowed
+    return ToUnixPath (absPath, true);
 }
 
 /****************************************************************************/
@@ -486,8 +487,16 @@ string ToRelativePath (const string &base, const string &path)
         if (*p == '/') pos = i;
         ++ b; ++ p; ++ i;
     }
+    // set pos to i (in this case, the size of one of the paths) if the end
+    // of one path was reached, but the other path has a slash (or backslash)
+    // at this position, this is required later below
+    if ((b != absBase .end () && (*b == '/' || *b == '\\')) ||
+        (p != unixPath.end () && (*p == '/' || *p == '\\'))) pos = i;
     // skip trailing slash of other path if end of one path reached
-    if (b == absBase .end () && p != unixPath.end () && *p == '/') ++ p;
+    if (b == absBase .end () && p != unixPath.end () && *p == '/') {
+        ++ p;
+        ++ pos;
+    }
     if (p == unixPath.end () && b != absBase .end () && *b == '/') ++ b;
     // if paths are the same, just return a period (.)
     //
@@ -499,18 +508,28 @@ string ToRelativePath (const string &base, const string &path)
     //    base := "/usr/bin"  path := "/usr/bin/"
     //    base := "/usr/bin/" path := "/usr/bin"
     //
-    // Note: The paths have been cleaned before by the toUnixPath function.
+    // Note: The paths have been cleaned before by the ToUnixPath() function.
     if (b == absBase.end () && p == unixPath.end ()) return ".";
     // otherwise, pos is the index of the last slash for which both paths
     // were identical; hence, everything that comes after in the original
     // path is preserved and for each following component in the base path
     // a "../" is prepended to the relative path
     string relPath;
-    if (absBase [absBase.size () - 1] != '/') absBase += '/';
-    while (b != absBase.end ()) {
-        if (*b == '/') relPath += "../";
+    if (absBase [absBase.size () - 1] != '/') {
+        // \attention This operation may invalidate the iterator b!
+        //            Therefore, remember position of iterator and get a new one.
+        size_t pos = b - absBase.begin ();
+        absBase += '/';
+        b = absBase.begin () + pos;
     }
-    relPath += unixPath.substr (pos + 1);
+    while (b != absBase.end ()) {
+        if (*b == '/') {
+            if (relPath.empty ()) relPath = "..";
+            else                  relPath += "/..";
+        }
+        ++ b;
+    }
+    if (pos < unixPath.size ()) relPath += unixPath.substr (pos);
     return relPath;
 }
 

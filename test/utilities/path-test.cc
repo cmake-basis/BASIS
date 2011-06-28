@@ -435,14 +435,42 @@ TEST (Path, IsRelativePath)
 // Tests the conversion of a path to an absolute path
 TEST (Path, ToAbsolutePath)
 {
-    FAIL () << "Test not implemented";
+#if WINDOWS
+    EXPECT_STREQ ("C:/usr/local",  ToAbsolutePath ("/usr",   "local").c_str ());
+    EXPECT_STREQ ("C:/usr/local",  ToAbsolutePath ("/usr/",  "local").c_str ());
+    EXPECT_STREQ ("C:/usr/local/", ToAbsolutePath ("/usr/",  "local/").c_str ());
+    EXPECT_STREQ ("C:/usr/local/", ToAbsolutePath ("\\usr/", "local/").c_str ());
+    EXPECT_STREQ ("C:/tmp",        ToAbsolutePath ("/usr",   "/tmp").c_str ());
+    EXPECT_STREQ ("C:/tmp",        ToAbsolutePath ("/usr",   "\\tmp").c_str ());
+    EXPECT_STREQ ("C:/tmp/",       ToAbsolutePath ("/usr",   "/tmp/").c_str ());
+    EXPECT_STREQ ("C:/tmp/",       ToAbsolutePath ("/usr",   "/tmp\\").c_str ());
+#else
+    EXPECT_STREQ ("/usr/local",  ToAbsolutePath ("/usr",   "local").c_str ());
+    EXPECT_STREQ ("/usr/local",  ToAbsolutePath ("/usr/",  "local").c_str ());
+    EXPECT_STREQ ("/usr/local/", ToAbsolutePath ("/usr/",  "local/").c_str ());
+    EXPECT_STREQ ("/usr/local/", ToAbsolutePath ("\\usr/", "local/").c_str ());
+    EXPECT_STREQ ("/tmp",        ToAbsolutePath ("/usr",   "/tmp").c_str ());
+    EXPECT_STREQ ("/tmp",        ToAbsolutePath ("/usr",   "\\tmp").c_str ());
+    EXPECT_STREQ ("/tmp/",       ToAbsolutePath ("/usr",   "/tmp/").c_str ());
+    EXPECT_STREQ ("/tmp/",       ToAbsolutePath ("/usr",   "/tmp\\").c_str ());
+#endif
+
+    string wd = GetWorkingDirectory ();
+
+    EXPECT_TRUE (ToAbsolutePath ("tmp") == ToAbsolutePath (wd, "tmp"));
+
+    EXPECT_THROW (ToAbsolutePath (""), invalid_argument);
 }
 
 // ***************************************************************************
 // Tests the conversion of a path to a relative path
 TEST (Path, ToRelativePath)
 {
-    FAIL () << "Test not implemented";
+    EXPECT_STREQ (".",             ToRelativePath ("/usr",        "/usr").c_str ());
+    EXPECT_STREQ ("..",            ToRelativePath ("/usr/local",  "/usr").c_str ());
+    EXPECT_STREQ ("..",            ToRelativePath ("/usr/local/", "/usr").c_str ());
+    EXPECT_STREQ ("../",           ToRelativePath ("/usr/local",  "/usr/").c_str ());
+    EXPECT_STREQ ("../config.txt", ToRelativePath ("/usr/local",  "/usr/config.txt").c_str ());
 }
 
 //////////////////////////////////////////////////////////////////////////////
