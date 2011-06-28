@@ -28,16 +28,14 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 cmake_minimum_required (VERSION 2.8.2)
 
 # Add policies introduced with CMake versions newer than the one specified
-# above. These policies would otherwise trigger a polciy not set warning by
+# above. These policies would otherwise trigger a policy not set warning by
 # newer CMake versions.
 
-# CMake >= 2.8.3
-if (CMAKE_PATCH_VERSION GREATER 2)
+if (POLICY CMP0016)
   cmake_policy (SET CMP0016 NEW)
 endif ()
 
-# CMake >= 2.8.4
-if (CMAKE_PATCH_VERSION GREATER 3)
+if (POLICY CMP0017)
   cmake_policy (SET CMP0017 NEW)
 endif ()
 
