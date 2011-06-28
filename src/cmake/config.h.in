@@ -48,6 +48,14 @@
 #endif
 
 /*!
+ * \def   UNIX
+ * \brief Whether the sources are compiled on a Unix-based system.
+ */
+#ifndef UNIX
+#  define UNIX (!WINDOWS)
+#endif
+
+/*!
  * \def   HAVE_LONG_LONG
  * \brief Whether the long long type is supported by the compiler.
  */
