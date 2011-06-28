@@ -104,7 +104,12 @@ printHelp ()
     echo
     cat - << EOF-DESCRIPTION
 Description:
-  
+  This so-called testing master script is executed by the basistest-cron command.
+  On each run, it reads in the configuration file given by the -c (--config) option
+  line-by-line. Each line in the configuration file specifies one test job to be
+  executed. See the next section for details on the format and content of such
+  configuration file.
+
 Configuration:
   The format of the configuration file is detailed here. Comments within the
   configuration file start with a '#' character at the beginning of each line.
@@ -121,7 +126,7 @@ Configuration:
     <h>         Interval in hours between consecutive test runs.
                 Defaults to "0" if "*" is given.
     <d>         Interval in days (i.e., multiples of 24 hours) between consecutive
-                test runs. Defaults to "1" if "*" is given.
+                test runs. Defaults to "0" if "*" is given.
     <project>   Name of the BASIS project.
     <branch>    Branch within the project's SVN repository, e.g., "tags/1.0.0".
                 Defaults to "trunk" if a "*" is given.
