@@ -50,7 +50,7 @@ const string cPathSeparatorStr ("/");
 //////////////////////////////////////////////////////////////////////////////
 
 // ***************************************************************************
-bool IsValidPath (const string &path)
+bool IsValidPath (const string &path, bool strict)
 {
     // an empty string is clearly no valid path
     if (path.empty ()) return false;
@@ -64,12 +64,14 @@ bool IsValidPath (const string &path)
         // absolute path must follow the drive specification
         if (path.size () == 2) return false;
         if (path [2] != '/' && path [2] != '\\') return false;
+        if (strict) {
 #if !WINDOWS
-        // on Unix systems, a drive specification is invalid
-        // however, to be consistent, the drive C: is just ignored and
-        // interpreted as root on Unix
-        if (path [0] != 'C' && path [0] != 'c') return false;
+            // on Unix systems, a drive specification is invalid
+            // however, to be consistent, the drive C: is just ignored and
+            // interpreted as root on Unix
+            if (path [0] != 'C' && path [0] != 'c') return false;
 #endif
+        }
     }
     // otherwise, the path is valid
     return true;
@@ -78,6 +80,10 @@ bool IsValidPath (const string &path)
 // ***************************************************************************
 string CleanPath (const string &path)
 {
+    if (!IsValidPath (path, false)) {
+        BASIS_THROW (invalid_argument, "Invalid path: ''");
+    }
+
     string cleanedPath;
 
     string::const_iterator prev;
@@ -95,7 +101,12 @@ string CleanPath (const string &path)
     cleanedPath.push_back (*prev);
     while (curr != path.end ()) {
         if (*curr == '.' && (*prev == '/' || *prev == '\\')) {
-            if (next != path.end () && *next != '/' && *next != '\\') {
+            if (next == path.end ()) {
+                // remove the "/" that was added before b/c the
+                // final "/." should be removed together
+                cleanedPath.erase (cleanedPath.size () - 1);
+            }
+            else if (*next != '/' && *next != '\\') {
                 cleanedPath.push_back (*curr);
             }
         } else {
@@ -126,28 +137,31 @@ string CleanPath (const string &path)
     }
 
     // remove references to parent directories
-    string ref  = "/..";
     size_t skip = 0;
 
     // in case of relative paths like "../../*" we need to skip the first
     // parent directory references
-    while (skip + 3 < cleanedPath.size ()) {
+    while (skip + 3 <= cleanedPath.size ()) {
         std::string sub = cleanedPath.substr (skip, 3);
         if (sub != "../" && sub != "..\\") break;
         skip += 3;
     }
     if (skip > 0) skip -= 1; // below, we look for "/.." instead of "../"
 
-    size_t pos = skip;
+    string ref = "/.."; // will be set to "\.." on the "second" run
+    size_t pos = skip;  // the starting position of the path "absolute" to
+                        // to the root directory given by "../../" or "/",
+                        // for example.
     for (;;) {
         pos = cleanedPath.find (ref, pos);
         if (pos == string::npos) {
             if (ref == "\\..") break;
+            // no occurrences of "/.." found, now clean up the ones of "\.."
             ref = "\\..";
             pos = cleanedPath.find (ref, pos);
             if (pos == string::npos) break;
         }
-        if (pos + 3 >= cleanedPath.size ()
+        if (pos + 3 == cleanedPath.size ()
                 || cleanedPath [pos + 3] == '/'
                 || cleanedPath [pos + 3] == '\\') {
             if (pos == 0) {
@@ -157,7 +171,7 @@ string CleanPath (const string &path)
             } else {
                 size_t start = cleanedPath.find_last_of ("/\\", pos - 1);
                 if (start != string::npos) {
-                    cleanedPath.erase (start + 1, pos + 3 - start);
+                    cleanedPath.erase (start, pos - start + 3);
                     pos = start + 1;
                 } else if (cleanedPath [0] == '/' || cleanedPath [0] == '\\') {
                     cleanedPath.erase (skip, pos + 3);
@@ -178,7 +192,7 @@ string CleanPath (const string &path)
 string ToUnixPath (const string &path, bool drive)
 {
     if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
     }
 
     string unixPath;
@@ -202,8 +216,8 @@ string ToUnixPath (const string &path, bool drive)
 /****************************************************************************/
 string ToWindowsPath (const string &path)
 {
-    if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+    if (!IsValidPath (path, false)) {
+        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
     }
 
     string windowsPath (path.size (), '\0');
@@ -306,7 +320,7 @@ void SplitPath (const string &path,
             name = unixPath.substr (last + 1);
         }
 
-        size_t pos = unixPath.find_last_of ('.');
+        size_t pos = name.find_last_of ('.');
 
         if (pos == string::npos) {
             if (fname) {
@@ -329,8 +343,8 @@ void SplitPath (const string &path,
 /****************************************************************************/
 string GetFileRoot (const string &path)
 {
-    if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+    if (!IsValidPath (path, false)) {
+        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
     }
 
     // absolute Unix-style input path
@@ -501,7 +515,7 @@ string ToRelativePath (const string &base, const string &path)
 bool IsSymbolicLink (const string &path)
 {
     if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: " << path);
+        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
     }
 
 #if WINDOWS
@@ -517,7 +531,7 @@ bool IsSymbolicLink (const string &path)
 bool ReadSymbolicLink (const string &link, string &value)
 {
     if (!IsValidPath (link)) {
-        BASIS_THROW (invalid_argument, "Invalid path: " << link);
+        BASIS_THROW (invalid_argument, "Invalid path: '" << link << "'");
     }
 
     bool ok = true;

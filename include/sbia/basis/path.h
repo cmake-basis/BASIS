@@ -60,11 +60,14 @@ extern const std::string cPathSeparatorStr;
  * \attention This function only checks whether the string is a valid path
  *            identifier. It does <b>not</b> check whether the file exists.
  *
- * \param [in] path The path string.
+ * \param [in] path   The path string.
+ * \param [in] strict Whether to be strict, i.e., whether a drive specification
+ *                    other than "C:" is considered invalid on UNIX-based
+ *                    systems.
  *
  * \return Whether the given string is a valid path.
  */
-bool IsValidPath (const std::string &path);
+bool IsValidPath (const std::string &path, bool strict = true);
 
 /*!
  * \brief Clean path, i.e., remove occurences of "./", duplicate slashes,...
