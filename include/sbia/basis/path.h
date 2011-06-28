@@ -319,7 +319,6 @@ bool IsRelativePath (const std::string &path);
  * \sa IsValidPath()
  *
  * \param [in] path Absolute or relative path.
- * \param [in] base Base
  *
  * \return Absolute path.
  *
@@ -370,8 +369,8 @@ std::string ToRelativePath (const std::string &path);
  *
  * \sa IsValidPath()
  *
- * \param [in] path Absolute or relative path.
  * \param [in] base Base path used for relative path.
+ * \param [in] path Absolute or relative path.
  *
  * \return Path relative to base path.
  *
