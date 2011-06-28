@@ -365,7 +365,8 @@ string GetFileRoot (const string &path)
             letter = 'A' + (letter - 'a');
         }
 #if WINDOWS
-        return string (letter) + ":/";
+		string root; root += letter; root += ":/";
+        return root;
 #else
         return "/";
 #endif
