@@ -494,10 +494,7 @@ string ToRelativePath (const string &base, const string &path)
     if ((b != absBase .end () && (*b == '/' || *b == '\\')) ||
         (p != unixPath.end () && (*p == '/' || *p == '\\'))) pos = i;
     // skip trailing slash of other path if end of one path reached
-    if (b == absBase .end () && p != unixPath.end () && *p == '/') {
-        ++ p;
-        ++ pos;
-    }
+    if (b == absBase .end () && p != unixPath.end () && *p == '/') ++ p;
     if (p == unixPath.end () && b != absBase .end () && *b == '/') ++ b;
     // if paths are the same, just return a period (.)
     //
