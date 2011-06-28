@@ -131,7 +131,7 @@ TEST (Path, ToUnixPath)
     EXPECT_STREQ ("/WINDOWS",   ToUnixPath ("C:\\WINDOWS").c_str ());
     EXPECT_STREQ ("/WINDOWS",   ToUnixPath ("C:\\WINDOWS", false).c_str ());
     EXPECT_STREQ ("C:/WINDOWS", ToUnixPath ("C:\\WINDOWS", true).c_str ());
-    EXPECT_STREQ ("c:/WINDOWS", ToUnixPath ("c:\\WINDOWS", true).c_str ());
+    EXPECT_STREQ ("C:/WINDOWS", ToUnixPath ("c:\\WINDOWS", true).c_str ());
 
     // test with invalid paths
     EXPECT_THROW (ToUnixPath (""),      invalid_argument);
@@ -211,54 +211,66 @@ TEST (Path, SplitPath)
 
     // test the paths given as example in the documentation
     EXPECT_NO_THROW (SplitPath ("/usr/bin", &root, &dir, &fname, &ext));
-    EXPECT_TRUE (root  == "/");
-    EXPECT_TRUE (dir   == "usr/");
-    EXPECT_TRUE (fname == "bin");
-    EXPECT_TRUE (ext   == "");
-    
+#if WINDOWS
+    EXPECT_STREQ ("C:/", root.c_str ());
+#else
+    EXPECT_STREQ ("/",  root.c_str ());
+#endif
+    EXPECT_STREQ ("usr/", dir  .c_str ());
+    EXPECT_STREQ ("bin",  fname.c_str ());
+    EXPECT_STREQ ("",     ext  .c_str ());
+ 
     EXPECT_NO_THROW (SplitPath ("/home/user/info.txt", &root, &dir, &fname, &ext));
-    EXPECT_TRUE (root  == "/");
-    EXPECT_TRUE (dir   == "home/user/");
-    EXPECT_TRUE (fname == "info");
-    EXPECT_TRUE (ext   == ".txt");
-    
+#if WINDOWS
+    EXPECT_STREQ ("C:/", root.c_str ());
+#else
+    EXPECT_STREQ ("/", root.c_str ());
+#endif
+    EXPECT_STREQ ("home/user/", dir  .c_str ());
+    EXPECT_STREQ ("info",       fname.c_str ());
+    EXPECT_STREQ (".txt",       ext  .c_str ());
+
     EXPECT_NO_THROW (SplitPath ("word.doc", &root, &dir, &fname, &ext));
-    EXPECT_TRUE (root  == "./");
-    EXPECT_TRUE (dir   == "");
-    EXPECT_TRUE (fname == "word");
-    EXPECT_TRUE (ext   == ".doc");
-    
+    EXPECT_STREQ ("./",   root .c_str ());
+    EXPECT_STREQ ("",     dir  .c_str ());
+    EXPECT_STREQ ("word", fname.c_str ());
+    EXPECT_STREQ (".doc", ext  .c_str ());
+
     EXPECT_NO_THROW (SplitPath ("../word.doc", &root, &dir, &fname, &ext));
-    EXPECT_TRUE (root  == "./");
-    EXPECT_TRUE (dir   == "../");
-    EXPECT_TRUE (fname == "word");
-    EXPECT_TRUE (ext   == ".doc");
-    
+    EXPECT_STREQ ("./",   root .c_str ());
+    EXPECT_STREQ ("../",  dir  .c_str ());
+    EXPECT_STREQ ("word", fname.c_str ());
+    EXPECT_STREQ (".doc", ext  .c_str ());
+
     EXPECT_NO_THROW (SplitPath ("C:/WINDOWS/regedit.exe", &root, &dir, &fname, &ext));
 #if WINDOWS
-    EXPECT_TRUE (root  == "C:/");
+    EXPECT_STREQ ("C:/", root.c_str ());
 #else
-    EXPECT_TRUE (root  == "/");
+    EXPECT_STREQ ("/", root.c_str ());
 #endif
-    EXPECT_TRUE (dir   == "WINDOWS/");
-    EXPECT_TRUE (fname == "regedit");
-    EXPECT_TRUE (ext   == ".exe");
-    
+    EXPECT_STREQ ("WINDOWS/", dir  .c_str ());
+    EXPECT_STREQ ("regedit",  fname.c_str ());
+    EXPECT_STREQ (".exe",     ext  .c_str ());
+ 
 #if WINDOWS
     EXPECT_NO_THROW (SplitPath ("d:\\data", &root, &dir, &fname, &ext));
-    EXPECT_TRUE (root  == "D:/");
-    EXPECT_TRUE (dir   == "");
-    EXPECT_TRUE (fname == "data");
-    EXPECT_TRUE (ext   == "");
+    EXPECT_STREQ ("D:/",  root.c_str ());
+    EXPECT_STREQ ("",     dir .c_str ());
+    EXPECT_STREQ ("data", fname.c_str ());
+    EXPECT_STREQ ("",     ext  .c_str ());
 #else
     EXPECT_THROW (SplitPath ("d:\\data", &root, &dir, &fname, &ext), invalid_argument);
 #endif
-    
+ 
     EXPECT_NO_THROW (SplitPath ("/usr/local/", &root, &dir, &fname, &ext));
-    EXPECT_TRUE (root  == "/");
-    EXPECT_TRUE (dir   == "usr/local/");
-    EXPECT_TRUE (fname == "");
-    EXPECT_TRUE (ext   == "");
+#if WINDOWS
+    EXPECT_STREQ ("C:/", root.c_str ());
+#else
+    EXPECT_STREQ ("/", root.c_str ());
+#endif
+    EXPECT_STREQ ("usr/local/", dir  .c_str ());
+    EXPECT_STREQ ("",           fname.c_str ());
+    EXPECT_STREQ ("",           ext  .c_str ());
 }
 
 // ***************************************************************************
@@ -281,6 +293,16 @@ TEST (Path, GetFileRoot)
     EXPECT_STREQ ("./", GetFileRoot ("..\\dir\\readme.txt").c_str ());
 
     // absolute Unix-style path
+#if WINDOWS
+    EXPECT_STREQ ("C:/", GetFileRoot ("/").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("/.").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("/./").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("/..").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("/usr").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("/usr/").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("/usr/..").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("/usr/local").c_str ());
+#else
     EXPECT_STREQ ("/", GetFileRoot ("/").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("/.").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("/./").c_str ());
@@ -289,18 +311,22 @@ TEST (Path, GetFileRoot)
     EXPECT_STREQ ("/", GetFileRoot ("/usr/").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("/usr/..").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("/usr/local").c_str ());
+#endif
 
     // absolute Windows-style path
-    EXPECT_STREQ ("/", GetFileRoot ("\\").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS\\").c_str ());
 #if WINDOWS
+    EXPECT_STREQ ("C:/", GetFileRoot ("\\").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("\\WINDOWS").c_str ());
+    EXPECT_STREQ ("C:/", GetFileRoot ("\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("C:/", GetFileRoot ("c:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("C:/", GetFileRoot ("C:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("D:/", GetFileRoot ("d:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("A:/", GetFileRoot ("a:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("Z:/", GetFileRoot ("z:\\WINDOWS\\").c_str ());
 #else
+    EXPECT_STREQ ("/", GetFileRoot ("\\").c_str ());
+    EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS").c_str ());
+    EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("c:\\WINDOWS\\").c_str ());
     EXPECT_STREQ ("/", GetFileRoot ("C:\\WINDOWS\\").c_str ());
     EXPECT_THROW (GetFileRoot ("d:\\WINDOWS\\"), invalid_argument);
@@ -321,9 +347,15 @@ TEST (Path, GetFileRoot)
 // Tests the retrieval of the directory component - see also SplitPath() test
 TEST (Path, GetFileDirectory)
 {
+#if WINDOWS
+	EXPECT_STREQ ("C:/etc", GetFileDirectory ("/etc/config").c_str ());
+	EXPECT_STREQ ("C:/etc", GetFileDirectory ("/etc/").c_str ());
+	EXPECT_STREQ ("C:/",    GetFileDirectory ("/etc").c_str ());
+#else
     EXPECT_STREQ ("/etc", GetFileDirectory ("/etc/config").c_str ());
     EXPECT_STREQ ("/etc", GetFileDirectory ("/etc/").c_str ());
     EXPECT_STREQ ("/",    GetFileDirectory ("/etc").c_str ());
+#endif
     EXPECT_STREQ ("./",   GetFileDirectory ("./CMakeLists.txt").c_str ());
     EXPECT_STREQ ("../",  GetFileDirectory ("../CMakeLists.txt").c_str ());
 
@@ -488,7 +520,7 @@ TEST (Path, ToRelativePath)
 TEST (Path, IsSymbolicLink)
 {
 #if WINDOWS
-    EXPECT_FALSE (IsSymbolicLink ("/proc/exe"))
+    EXPECT_FALSE (IsSymbolicLink ("/proc/exe"));
 #else
     const string tmpDir = GetWorkingDirectory () + "/basis-path-test-IsSymbolicLink";
     string cmd, link, value;

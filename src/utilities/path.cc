@@ -201,8 +201,15 @@ string ToUnixPath (const string &path, bool drive)
 
     string::const_iterator in = path.begin ();
 
-    // skip drive specification
-    if (!drive && path.size () > 1 && path [1] == ':') in += 2;
+    // optional drive specification
+	if (path.size () > 1 && path [1] == ':') {
+        if (drive) {
+            if ('a' <= path [0] && path [0] <= 'z') unixPath += 'A' + (path [0] - 'a');
+            else                                    unixPath += path [0];
+            unixPath += ":/";
+        }
+        in += 2;
+	}
 
     // copy path while replacing backslashes by slashes
     while (in != path.end ()) {
@@ -270,6 +277,7 @@ string GetWorkingDirectory ()
         wd = buffer;
         free (buffer);
     }
+    if (!wd.empty ()) wd = ToUnixPath (wd, true);
     return wd;
 }
 
@@ -448,14 +456,13 @@ string ToAbsolutePath (const string &base, const string &path)
         }
         absPath.insert (0, absBase + '/');
     }
-    // clean path
-    absPath = CleanPath (absPath);
+    // convert to (clean) Unix-style path with drive specification
+    absPath = ToUnixPath (absPath, true);
     // on Windows, prepend drive letter followed by a colon (:)
 #if WINDOWS
     if (absPath [0] == '/') absPath.insert (0, "C:");
 #endif
-    // convert to Unix-stype path with drive specification allowed
-    return ToUnixPath (absPath, true);
+    return absPath;
 }
 
 /****************************************************************************/
