@@ -583,7 +583,7 @@ bool ReadSymbolicLink (const string &link, string &value)
             ok = false;
             break;
         } else if (static_cast<size_t> (n) < buflen) {
-            buffer [buflen - 1] = '\0';
+            buffer [n] = '\0';
             value = buffer;
             break;
         }
