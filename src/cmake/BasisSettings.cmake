@@ -422,7 +422,9 @@ set (CMAKE_C_FLAGS "" CACHE INTERNAL "" FORCE) # disabled
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # common linker flags
-set (CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -lm")
+if (UNIX)
+  set (CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -lm")
+endif ()
 if (Threads_FOUND)
   set (CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
 endif ()
