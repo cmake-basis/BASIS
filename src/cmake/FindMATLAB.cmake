@@ -54,6 +54,10 @@ if (NOT MATLAB_PATH_SUFFIXES)
       # assume people are generally using 7.1,
       # if using 7.0 need to link to: extern/lib/win32/microsoft/msvc70
       set (MATLAB_PATH_SUFFIXES "extern/lib/win32/microsoft/msvc71")
+    elseif (CMAKE_GENERATOR MATCHES "Visual Studio 8")
+      set (MATLAB_PATH_SUFFIXES "extern/lib/win32/microsoft/msvc80")
+    elseif (CMAKE_GENERATOR MATCHES "Visual Studio 9")
+      set (MATLAB_PATH_SUFFIXES "extern/lib/win32/microsoft/msvc90")
     elseif (CMAKE_GENERATOR MATCHES "Borland")
       # assume people are generally using 5.4
       # if using 5.0 need to link to: ../extern/lib/win32/microsoft/bcc50
@@ -87,7 +91,7 @@ if (MATLAB_DIR)
   foreach (LIB ${MATLAB_LIBRARY_NAMES})
     find_library (
       MATLAB_${LIB}_LIBRARY
-        NAMES         ${LIB}
+        NAMES         ${LIB} lib${LIB}
         HINTS         "${MATLAB_DIR}"
         PATH_SUFFIXES ${MATLAB_PATH_SUFFIXES}
         DOC           "MATLAB ${LIB} link library."
@@ -124,6 +128,7 @@ set (MATLAB_LIBRARY)
 foreach (LIB ${MATLAB_LIBRARY_NAMES})
   if (MATLAB_${LIB}_LIBRARY)
     list (APPEND MATLAB_LIBRARY "${MATLAB_${LIB}_LIBRARY}")
+  endif ()
 endforeach ()
 
 # ----------------------------------------------------------------------------

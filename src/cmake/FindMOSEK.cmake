@@ -138,7 +138,7 @@ if (WIN32)
     list (APPEND MOSEK_LIBRARY_NAMES "${MOSEK_LIBRARY_NAME}${VERSION_SUFFIX}")
   endforeach ()
 else ()
-  if (CMAKE_SIZE_OF_VOID_P GREATER 4)
+  if (CMAKE_PROCESSOR STREQUAL "64_x86")
     set (MOSEK_LIBRARY_NAME "${MOSEK_LIBRARY_NAME}64")
   endif ()
 endif ()
@@ -147,18 +147,18 @@ endif ()
 if (NOT MOSEK_TOOLS_SUFFIX)
   set (MOSEK_TOOLS_SUFFIX "tools/platform/")
   if (WIN32)
-    set (MOSEK_TOOLS_SUFFIX "${MOSEK_PATH_SUFFIX}win")
+    set (MOSEK_TOOLS_SUFFIX "${MOSEK_TOOLS_SUFFIX}win")
   elseif (APPLE)
-    set (MOSEK_TOOLS_SUFFIX "${MOSEK_PATH_SUFFIX}osx")
+    set (MOSEK_TOOLS_SUFFIX "${MOSEK_TOOLS_SUFFIX}osx")
   else ()
-    set (MOSEK_TOOLS_SUFFIX "${MOSEK_PATH_SUFFIX}linux")
+    set (MOSEK_TOOLS_SUFFIX "${MOSEK_TOOLS_SUFFIX}linux")
   endif ()
-  if (CMAKE_SIZE_OF_VOID_P EQUAL 4)
-    set (MOSEK_TOOLS_SUFFIX "${MOSEK_PATH_SUFFIX}32")
+  if (CMAKE_PROCESSOR STREQUAL "64_x86")
+    set (MOSEK_TOOLS_SUFFIX "${MOSEK_TOOLS_SUFFIX}64")
   else ()
-    set (MOSEK_TOOLS_SUFFIX "${MOSEK_PATH_SUFFIX}64")
+    set (MOSEK_TOOLS_SUFFIX "${MOSEK_TOOLS_SUFFIX}32")
   endif ()
-  set (MOSEK_TOOLS_SUFFIX "${MOSEK_PATH_SUFFIX}x86")
+  set (MOSEK_TOOLS_SUFFIX "${MOSEK_TOOLS_SUFFIX}x86")
 endif ()
 
 #-------------------------------------------------------------
@@ -169,7 +169,7 @@ if (MOSEK_DIR)
     MOSEK_INCLUDE_DIR
       NAMES         mosek.h
       HINTS         "${MOSEK_DIR}"
-      PATH_SUFFIXES "${MOSEK_PATH_SUFFIX}/h"
+      PATH_SUFFIXES "${MOSEK_TOOLS_SUFFIX}/h"
       DOC           "Include directory for MOSEK libraries."
       NO_DEFAULT_PATH
   )
@@ -178,7 +178,7 @@ if (MOSEK_DIR)
     MOSEK_LIBRARY
       NAMES         ${MOSEK_LIBRARY_NAMES}
       HINTS         "${MOSEK_DIR}"
-      PATH_SUFFIXES "${MOSEK_PATH_SUFFIX}/bin"
+      PATH_SUFFIXES "${MOSEK_TOOLS_SUFFIX}/bin"
       DOC           "MOSEK link library."
       NO_DEFAULT_PATH
   )
