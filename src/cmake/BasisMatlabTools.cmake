@@ -111,24 +111,33 @@ mark_as_advanced (BASIS_CMD_MEX)
 #                      an empty string if execution of MATLAB failed.
 
 function (basis_get_full_matlab_version VERSION)
-  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion")
+  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
   # run matlab command to write return value of "version" command to text file
-  if (NOT EXISTS "${TMP_FILE}")
+  if (NOT EXISTS "${OUTPUT_FILE}")
     set (CMD "matlab" "-nodesktop" "-nosplash")
     if (WIN32)
       list (APPEND CMD "-automation")
     endif ()
-    list (APPEND CMD "-r" "fid = fopen ('${OUTPUT_FILE}', 'w'); fprintf (fid, '%s\n', version); fclose (fid); exit")
+    list (APPEND CMD "-r")
+    set (MATLAB_CMD
+      "fid = fopen ('${OUTPUT_FILE}', 'w')"
+      "fprintf (fid, '%s', version)"
+      "fclose (fid)"
+      "exit"
+    )
+    message (STATUS "Determining MATLAB version...")
     execute_process (
-      COMMAND         ${CMD}
+      COMMAND         ${CMD} "${MATLAB_CMD}"
       RESULT_VARIABLE RETVAL
       OUTPUT_QUIET
       ERROR_QUIET
     )
     if (NOT RETVAL EQUAL 0)
       set (VERSION "" PARENT_SCOPE)
+      message (STATUS "Determining MATLAB version... - failed")
       return ()
     endif ()
+    message (STATUS "Determining MATLAB version... - done")
   endif ()
   # read MATLAB version from text file
   file (READ "${OUTPUT_FILE}" VERSION)
@@ -154,7 +163,7 @@ function (basis_get_matlab_version)
     return ()
   endif ()
   basis_get_full_matlab_version (VERSION)
-  if (VERSION MATCHES "^([0-9]+\.[0-9]+\.[0-9]+)")
+  if (VERSION MATCHES "^([0-9]+\\.[0-9]+\\.[0-9]+)")
     set (VERSION "${CMAKE_MATCH_1}")
   else ()
     set (VERSION "")
@@ -162,7 +171,8 @@ function (basis_get_matlab_version)
   if (ARGC EQUAL 1)
     set (${ARGV0} "${VERSION}" PARENT_SCOPE)
   else ()
-    set (MATLAB_VERSION "${VERSION}" CACHE STRING "The version string of the MATLAB installation.")
+    set (MATLAB_VERSION "${VERSION}" CACHE STRING "The version string of the MATLAB installation." FORCE)
+    mark_as_advanced (MATLAB_VERSION)
   endif ()
 endfunction ()
 
@@ -176,7 +186,7 @@ endfunction ()
 #                    present yet. Note that if no output variable is given and
 #                    MATLAB_RELEASE is already set, nothing is done.
 
-function (basis_get_matlab_release RELEASE)
+function (basis_get_matlab_release)
   if (ARGC GREATER 1)
     message (FATAL_ERROR "basis_get_matlab_release (): Invalid number of arguments.")
   endif ()
@@ -184,15 +194,16 @@ function (basis_get_matlab_release RELEASE)
     return ()
   endif ()
   basis_get_full_matlab_version (VERSION)
-  if (VERSION MATCHES ".*\((.*\))")
-    set (RELEASE "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  if (VERSION MATCHES ".*\\\((.+)\\\)")
+    set (RELEASE "${CMAKE_MATCH_1}")
   else ()
-    set (RELEASE "" PARENT_SCOPE)
+    set (RELEASE "")
   endif ()
   if (ARGC EQUAL 1)
     set (${ARGV0} "${RELEASE}" PARENT_SCOPE)
   else ()
-    set (MATLAB_RELEASE "${RELEASE}" CACHE STRING "The release version of the MATLAB installation.")
+    set (MATLAB_RELEASE "${RELEASE}" CACHE STRING "The release version of the MATLAB installation." FORCE)
+    mark_as_advanced (MATLAB_RELEASE)
   endif ()
 endfunction ()
 
@@ -243,7 +254,11 @@ function (basis_mexext)
         set (MEXEXT "mexw32")
       endif ()
     elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-      set (MEXEXT "mexaci")
+      if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+        set (MEXEXT "mexaci64")
+      else ()
+        set (MEXEXT "mexaci")
+      endif ()
     elseif (${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
       set (MEXEXT "mexs64")
     endif ()
