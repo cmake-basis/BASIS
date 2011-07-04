@@ -105,6 +105,69 @@ mark_as_advanced (BASIS_CMD_MEX)
 # ============================================================================
 
 # ****************************************************************************
+# \brief Determine version of MATLAB installation.
+#
+# \param [out] VERSION Value returned by the "version" command of MATLAB or
+#                      an empty string if execution of MATLAB failed.
+
+function (basis_get_full_matlab_version VERSION)
+  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion")
+  # run matlab command to write return value of "version" command to text file
+  if (NOT EXISTS "${TMP_FILE}")
+    set (CMD "matlab" "-nodesktop" "-nosplash")
+    if (WIN32)
+      list (APPEND CMD "-automation")
+    endif ()
+    list (APPEND CMD "-r" "fid = fopen ('${OUTPUT_FILE}', 'w'); fprintf (fid, '%s\n', version); fclose (fid); exit")
+    execute_process (
+      COMMAND         ${CMD}
+      RESULT_VARIABLE RETVAL
+      OUTPUT_QUIET
+      ERROR_QUIET
+    )
+    if (NOT RETVAL EQUAL 0)
+      set (VERSION "" PARENT_SCOPE)
+      return ()
+    endif ()
+  endif ()
+  # read MATLAB version from text file
+  file (READ "${OUTPUT_FILE}" VERSION)
+  # return
+  set (VERSION "${VERSION}" PARENT_SCOPE)
+endfunction ()
+
+# ****************************************************************************
+# \brief Determine version of MATLAB installation.
+#
+# \param [out] VERSION Version of the MATLAB installation, i.e., "7.9.0",
+#                      for example, or an empty string if execution of MATLAB failed.
+
+function (basis_get_matlab_version VERSION)
+  basis_get_full_matlab_version (VERSION)
+  if (VERSION MATCHES "^([0-9]+\.[0-9]+\.[0-9]+)")
+    set (VERSION "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  else ()
+    set (VERSION "" PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+# ****************************************************************************
+# \brief Determine release version of MATLAB installation.
+#
+# \param [out] RELEASE Release version of the MATLAB installation, i.e.,
+#                      "R2009b", for example, or an empty string if execution
+#                      of MATLAB failed.
+
+function (basis_get_matlab_release RELEASE)
+  basis_get_full_matlab_version (VERSION)
+  if (VERSION MATCHES ".*\((.*\))")
+    set (RELEASE "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  else ()
+    set (RELEASE "" PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+# ****************************************************************************
 # \brief Determine extension of MEX-files for this architecture.
 #
 # \param [out] EXT The extension of MEX-files (excluding '.'). If the CMake
