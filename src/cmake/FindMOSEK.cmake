@@ -214,6 +214,12 @@ else ()
 
 endif ()
 
+mark_as_advanced (MOSEK_INCLUDE_DIR)
+mark_as_advanced (MOSEK_LIBRARY)
+mark_as_advanced (MOSEK_mosekopt_MEX)
+mark_as_advanced (MOSEK_mosek_JAR)
+mark_as_advanced (MOSEK_PYTHONPATH)
+
 if (MOSEK_mosek_JAR)
   set (MOSEK_CLASSPATH "${MOSEK_mosek_JAR}")
 endif ()

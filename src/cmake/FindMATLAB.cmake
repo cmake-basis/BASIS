@@ -115,6 +115,11 @@ else ()
 
 endif ()
 
+mark_as_advanced (MATLAB_INCLUDE_DIR)
+foreach (LIB ${MATLAB_LIBRARY_NAMES})
+  mark_as_advanced (MATLAB_${LIB}_LIBRARY)
+endforeach ()
+
 set (MATLAB_LIBRARY)
 foreach (LIB ${MATLAB_LIBRARY_NAMES})
   if (MATLAB_${LIB}_LIBRARY)
