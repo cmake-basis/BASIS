@@ -875,12 +875,15 @@ endfunction ()
 #                      general. Any text file, which is processed by a program
 #                      to perform certain tasks, i.e., a configuration file
 #                      can be considered as "script" in this sense.
+#   KEEPEXT            If this option is given, it forces this function to keep
+#                      the scripts file name extension even if a sha-bang
+#                      directive is given on UNIX systems.
 
 function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;NOEXEC"
+      "LIBEXEC;NOEXEC;KEEPEXT"
       "SCRIPT;CONFIG;COMPONENT;OUTPUT_DIRECTORY;DESTINATION"
       ""
     ${ARGN}
@@ -966,7 +969,7 @@ function (basis_add_script TARGET_NAME)
   string (REGEX REPLACE "\\.in\(\\..*\)$" "\\1" OUTPUT_NAME "${OUTPUT_NAME}")
 
   # remove extension from script name (if UNIX system and sha-bang directive exists)
-  if (UNIX)
+  if (NOT KEEPEXT AND UNIX)
     file (STRINGS "${ARGN_SCRIPT}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
     if (SHABANG STREQUAL "#!")
       get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
