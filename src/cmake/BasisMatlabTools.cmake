@@ -139,31 +139,60 @@ endfunction ()
 # ****************************************************************************
 # \brief Determine version of MATLAB installation.
 #
-# \param [out] VERSION Version of the MATLAB installation, i.e., "7.9.0",
-#                      for example, or an empty string if execution of MATLAB failed.
+# \param [out] ARGV0 Version of the MATLAB installation, i.e., "7.9.0",
+#                    for example, or an empty string if execution of MATLAB failed.
+#                    If no output variable name is specified, the variable
+#                    MATLAB_VERSION is added to the cache if not present yet.
+#                    Note that if no output variable is given and MATLAB_VERSION
+#                    is already set, nothing is done.
 
-function (basis_get_matlab_version VERSION)
+function (basis_get_matlab_version)
+  if (ARGC GREATER 1)
+    message (FATAL_ERROR "basis_get_matlab_version (): Invalid number of arguments.")
+  endif ()
+  if (ARGC EQUAL 0 AND MATLAB_VERSION)
+    return ()
+  endif ()
   basis_get_full_matlab_version (VERSION)
   if (VERSION MATCHES "^([0-9]+\.[0-9]+\.[0-9]+)")
-    set (VERSION "${CMAKE_MATCH_1}" PARENT_SCOPE)
+    set (VERSION "${CMAKE_MATCH_1}")
   else ()
-    set (VERSION "" PARENT_SCOPE)
+    set (VERSION "")
+  endif ()
+  if (ARGC EQUAL 1)
+    set (${ARGV0} "${VERSION}" PARENT_SCOPE)
+  else ()
+    set (MATLAB_VERSION "${VERSION}" CACHE STRING "The version string of the MATLAB installation.")
   endif ()
 endfunction ()
 
 # ****************************************************************************
 # \brief Determine release version of MATLAB installation.
 #
-# \param [out] RELEASE Release version of the MATLAB installation, i.e.,
-#                      "R2009b", for example, or an empty string if execution
-#                      of MATLAB failed.
+# \param [out] ARGV0 Release version of the MATLAB installation, i.e.,
+#                    "R2009b", for example, or an empty string if execution
+#                    of MATLAB failed. If no output variable name is specified,
+#                    the variable MATLAB_RELEASE is added to the cache if not
+#                    present yet. Note that if no output variable is given and
+#                    MATLAB_RELEASE is already set, nothing is done.
 
 function (basis_get_matlab_release RELEASE)
+  if (ARGC GREATER 1)
+    message (FATAL_ERROR "basis_get_matlab_release (): Invalid number of arguments.")
+  endif ()
+  if (ARGC EQUAL 0 AND MATLAB_RELEASE)
+    return ()
+  endif ()
   basis_get_full_matlab_version (VERSION)
   if (VERSION MATCHES ".*\((.*\))")
     set (RELEASE "${CMAKE_MATCH_1}" PARENT_SCOPE)
   else ()
     set (RELEASE "" PARENT_SCOPE)
+  endif ()
+  if (ARGC EQUAL 1)
+    set (${ARGV0} "${RELEASE}" PARENT_SCOPE)
+  else ()
+    set (MATLAB_RELEASE "${RELEASE}" CACHE STRING "The release version of the MATLAB installation.")
   endif ()
 endfunction ()
 
