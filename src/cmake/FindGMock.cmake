@@ -29,8 +29,12 @@
 
 # ----------------------------------------------------------------------------
 # initialize search
-if (NOT DEFINED GMock_DIR)
-  set (GMock_DIR "" CACHE PATH "Installation prefix for Google Mock")
+if (NOT GMock_DIR)
+  if ($ENV{GMOCK_DIR})
+    set (GMock_DIR "$ENV{GMOCK_DIR}" CACHE PATH "Installation prefix for Google Mock.")
+  else ()
+    set (GMock_DIR "$ENV{GMock_DIR}" CACHE PATH "Installation prefix for Google Mock.")
+  endif ()
 endif ()
 
 set (GMock_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
@@ -49,41 +53,48 @@ else ()
   endif()
 endif ()
 
-set (GMock_HINTS "HINTS ${GMock_DIR}" ENV GMock_DIR ENV GMOCK_DIR)
-
 # ----------------------------------------------------------------------------
 # find paths/files
-find_path (
-  GMock_INCLUDE_DIR
-    NAMES         gmock.h
-    ${GMock_HINTS}
-    PATH_SUFFIXES "include/gmock"
-    DOC           "Include directory for Google Mock"
-    NO_DEFAULT_PATH
-)
+if (GMock_DIR)
 
-find_path (
-  GMock_INCLUDE_DIR
-    NAMES gmock.h
-    HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-    DOC   "Include directory for Google Mock"
-)
+  find_path (
+    GMock_INCLUDE_DIR
+      NAMES         gmock.h
+      HINTS         "${GMock_DIR}"
+      PATH_SUFFIXES "include/gmock"
+      DOC           "Include directory for Google Mock."
+      NO_DEFAULT_PATH
+  )
 
-find_library (
-  GMock_LIBRARY
-    NAMES         gmock
-    ${GMock_HINTS}
-    PATH_SUFFIXES "lib"
-    DOC           "Link library for Google Mock (gmock)"
-    NO_DEFAULT_PATH
-)
+  find_library (
+    GMock_LIBRARY
+      NAMES         gmock
+      HINTS         "${GMock_DIR}"
+      PATH_SUFFIXES "lib"
+      DOC           "Link library for Google Mock (gmock)."
+      NO_DEFAULT_PATH
+  )
 
-find_library (
-  GMock_LIBRARY
-    NAMES gmock
-    HINTS ENV LD_LIBRARY_PATH
-    DOC   "Link library for Google Mock (gmock)"
-)
+else ()
+
+  find_path (
+    GMock_INCLUDE_DIR
+      NAMES gmock.h
+      HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+      DOC   "Include directory for Google Mock."
+  )
+
+  find_library (
+    GMock_LIBRARY
+      NAMES gmock
+      HINTS ENV LD_LIBRARY_PATH
+      DOC   "Link library for Google Mock (gmock)."
+  )
+
+endif ()
+
+mark_as_advanced (GMock_INCLUDE_DIR)
+mark_as_advanced (GMock_LIBRARY)
 
 # ----------------------------------------------------------------------------
 # prerequisite libraries

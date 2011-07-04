@@ -30,8 +30,12 @@
 
 # ----------------------------------------------------------------------------
 # initialize search
-if (NOT DEFINED GTest_DIR)
-  set (GTest_DIR "" CACHE PATH "Installation prefix for Google Test")
+if (NOT GTest_DIR)
+  if ($ENV{GTEST_DIR})
+    set (GTest_DIR "$ENV{GTEST_DIR}" CACHE PATH "Installation prefix for Google Test")
+  else ()
+    set (GTest_DIR "$ENV{GTest_DIR}" CACHE PATH "Installation prefix for Google Test")
+  endif ()
 endif ()
 
 set (GTest_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
@@ -50,57 +54,65 @@ else ()
   endif()
 endif ()
 
-set (GTest_HINTS "HINTS ${GTest_DIR}" ENV GTest_DIR ENV GTEST_DIR)
-
 # ----------------------------------------------------------------------------
 # find paths/files
-find_path (
-  GTest_INCLUDE_DIR
-    NAMES         gtest.h
-    ${GTest_HINTS}
-    PATH_SUFFIXES "include/gtest"
-    DOC           "Include directory for Google Test"
-    NO_DEFAULT_PATH
-)
+if (GTest_DIR)
 
-find_path (
-  GTest_INCLUDE_DIR
-    NAMES gtest.h
-    HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-    DOC   "Include directory for Google Test"
-)
+  find_path (
+    GTest_INCLUDE_DIR
+      NAMES         gtest.h
+      HINTS         "${GTest_DIR}"
+      PATH_SUFFIXES "include/gtest"
+      DOC           "Include directory for Google Test."
+      NO_DEFAULT_PATH
+  )
 
-find_library (
-  GTest_LIBRARY
-    NAMES         gtest
-    ${GTest_HINTS}
-    PATH_SUFFIXES "lib"
-    DOC           "Link library for Google Test (gtest)"
-    NO_DEFAULT_PATH
-)
+  find_library (
+    GTest_LIBRARY
+      NAMES         gtest
+      HINTS         "${GTest_DIR}"
+      PATH_SUFFIXES "lib"
+      DOC           "Link library for Google Test (gtest)."
+      NO_DEFAULT_PATH
+  )
 
-find_library (
-  GTest_LIBRARY
-    NAMES gtest
-    HINTS ENV LD_LIBRARY_PATH
-    DOC   "Link library for Google Test (gtest)"
-)
+  find_library (
+    GTest_MAIN_LIBRARY
+      NAMES         gtest_main
+      HINTS         "${GTest_DIR}"
+      PATH_SUFFIXES "lib"
+      DOC           "Link library for Google Test's automatic main () definition (gtest_main)."
+      NO_DEFAULT_PATH
+  )
 
-find_library (
-  GTest_MAIN_LIBRARY
-    NAMES         gtest_main
-    ${GTest_HINTS}
-    PATH_SUFFIXES "lib"
-    DOC           "Link library for Google Test's automatic main () definition (gtest_main)"
-    NO_DEFAULT_PATH
-)
+else ()
 
-find_library (
-  GTest_MAIN_LIBRARY
-    NAMES gtest_main
-    HINTS ENV LD_LIBRARY_PATH
-    DOC   "Link library for Google Test's automatic main () definition (gtest_main)"
-)
+  find_path (
+    GTest_INCLUDE_DIR
+      NAMES gtest.h
+      HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+      DOC   "Include directory for Google Test."
+  )
+
+  find_library (
+    GTest_LIBRARY
+      NAMES gtest
+      HINTS ENV LD_LIBRARY_PATH
+      DOC   "Link library for Google Test (gtest)."
+  )
+
+  find_library (
+    GTest_MAIN_LIBRARY
+      NAMES gtest_main
+      HINTS ENV LD_LIBRARY_PATH
+      DOC   "Link library for Google Test's automatic main () definition (gtest_main)."
+  )
+
+endif ()
+
+mark_as_advanced (GTest_INCLUDE_DIR)
+mark_as_advanced (GTest_LIBRARY)
+mark_as_advanced (GTest_MAIN_LIBRARY)
 
 # ----------------------------------------------------------------------------
 # add prerequisites
