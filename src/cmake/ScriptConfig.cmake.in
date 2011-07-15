@@ -116,3 +116,25 @@ function getProgName
 "
 )
 
+# ----------------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------------
+
+set (PYTHON_FUNCTION_getProgDir "
+# ****************************************************************************
+def getProgDir ():
+    \"\"\"Get real directory of executable.\"\"\"
+    import os, sys
+    return os.path.realpath (os.path.dirname (sys.argv [0]))
+"
+)
+
+set (PYTHON_FUNCTION_getProgName "
+# ****************************************************************************
+def getProgName ():
+    \"\"\"Get name of program without path.\"\"\"
+    import os, sys
+    return os.path.basename (sys.argv [0])
+"
+)
+
