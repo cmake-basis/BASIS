@@ -114,7 +114,7 @@ function (basis_get_full_matlab_version VERSION)
   set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
   # run matlab command to write return value of "version" command to text file
   if (NOT EXISTS "${OUTPUT_FILE}")
-    set (CMD "matlab" "-nodesktop" "-nosplash")
+    set (CMD "${BASIS_CMD_MATLAB}" "-nodesktop" "-nosplash")
     if (WIN32)
       list (APPEND CMD "-automation")
     endif ()
