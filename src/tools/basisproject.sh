@@ -345,12 +345,12 @@ do
 			exit 0
 			;;
 
-		-v|--version)
+		-V|--version)
 			version
 			exit 0
 			;;
 
-        -V|--verbose)
+        -v|--verbose)
             ((verbosity++))
             ;;
 

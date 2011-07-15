@@ -74,10 +74,10 @@ Options:
   -S [ --script ]    CTest script which performs the testing.
                      Defaults to the "basistest.ctest" script of BASIS.
   -a [ --args ]      Additional arguments for the CTest script.
-  -V [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
+  -v [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]      Print help and exit.
   -u [ --usage ]     Print usage information and exit.
-  -v [ --version ]   Print version information and exit.
+  -V [ --version ]   Print version information and exit.
 EOF-OPTIONS
 }
 
@@ -192,8 +192,8 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    printHelp;    exit 0; ;;
 		-u|--usage)   printUsage;   exit 0; ;;
-        -v|--version) printVersion; exit 0; ;;
-        -V|--verbose) ((verbosity++)); ;;
+        -V|--version) printVersion; exit 0; ;;
+        -v|--verbose) ((verbosity++)); ;;
 
         # invalid option
         *)

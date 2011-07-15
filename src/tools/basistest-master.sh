@@ -79,10 +79,10 @@ Options:
   -s [ --schedule ]   The test schedule file which is created and updated by
                       this program. Defaults to "$scheduleFile".
   --dry               Dry run, i.e., do not actually invoke the test execution command.
-  -V [ --verbose ]    Increases verbosity of output messages. Can be given multiple times.
+  -v [ --verbose ]    Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]       Print help and exit.
   -u [ --usage ]      Print usage information and exit.
-  -v [ --version ]    Print version information and exit.
+  -V [ --version ]    Print version information and exit.
 EOF-OPTIONS
 }
 
@@ -367,8 +367,8 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    printHelp;    exit 0; ;;
 		-u|--usage)   printUsage;   exit 0; ;;
-        -v|--version) printVersion; exit 0; ;;
-        -V|--verbose) ((verbosity++)); ;;
+        -V|--version) printVersion; exit 0; ;;
+        -v|--verbose) ((verbosity++)); ;;
 
         # invalid option
         *)
