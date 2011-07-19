@@ -57,12 +57,12 @@ include ("${CMAKE_CURRENT_LIST_DIR}/CMakeParseArguments.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
 
 # BASIS modules
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisSettings.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisSubversionTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisDocTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisMatlabTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/Settings.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/SubversionTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/DocTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/MatlabTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 
 # ============================================================================
 # initialize/finalize major components
@@ -92,7 +92,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 #   which did not change the softwares API. It is the least important component
 #   of the version number.
 #
-# The default settings set by BasisSettings.cmake can be overwritten by the
+# The default settings set by Settings.cmake can be overwritten by the
 # file Settings.cmake in the PROJECT_CONFIG_DIR. This file is included by
 # this macro after the project was initialized and before dependencies on
 # other packages were resolved.
@@ -115,19 +115,6 @@ include ("${CMAKE_CURRENT_LIST_DIR}/BasisTargetTools.cmake")
 # As the BasisTest.cmake module has to be included after the project ()
 # command was used, this module is not included by the CMake use file of
 # BASIS. Instead, it is included by this macro.
-#
-# The CMake module BasisUpdate.cmake realizes a feature referred to as
-# "(automatic) file update". This feature is initialized by this macro and
-# finalized by the corresponding basis_project_finalize () macro.
-# As the CTest configuration file is usually maintained by the maintainer of
-# the BASIS package and not the project developer, this file, if present in
-# the project's source directory, is updated if the template was modified.
-# If you experience problems with the automatic file update, contact the
-# maintainer of the BASIS package and consider to disable the automatic file
-# update for single files  by adding their path relative to the project's
-# source directory to BASIS_UPDATE_EXCLUDE in the Settings.cmake file of
-# your project. For example, to prevent the automatic udpate of the CTest
-# configuration file, add "CTestConfig.cmake" to the list BASIS_UPDATE_EXCLUDE.
 #
 # \see basis_project_finalize ()
 #
@@ -205,25 +192,47 @@ macro (basis_project_initialize)
   endif ()
 
   if (NOT PROJECT_AUTHORS_FILE)
-    set (PROJECT_AUTHORS_FILE "${PROJECT_SOURCE_DIR}/AUTHORS")
+    if (EXISTS "${PROJECT_SOURCE_DIR}/AUTHORS.txt")
+      set (PROJECT_AUTHORS_FILE "${PROJECT_SOURCE_DIR}/AUTHORS.txt")
+    elseif (EXISTS "${PROJECT_SOURCE_DIR}/AUTHORS")
+      set (PROJECT_AUTHORS_FILE "${PROJECT_SOURCE_DIR}/AUTHORS")
+    endif ()
+  elseif (NOT EXISTS "${PROJECT_AUTHORS_FILE}")
+    message (FATAL_ERROR "Specified project AUTHORS file does not exist.")
   endif ()
 
   if (NOT PROJECT_README_FILE)
-    set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README")
-  endif ()
-  if (NOT EXISTS "${PROJECT_README_FILE}")
-    message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a README file.")
+    if (EXISTS "${PROJECT_SOURCE_DIR}/README.txt")
+      set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README.txt")
+    elseif (EXISTS "${PROJECT_SOURCE_DIR}/README")
+      set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README")
+    else ()
+      message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a README file.")
+    endif ()
+  elseif (NOT EXISTS "${PROJECT_README_FILE}")
+    message (FATAL_ERROR "Specified project README file does not exist.")
   endif ()
 
   if (NOT PROJECT_INSTALL_FILE)
-    set (PROJECT_INSTALL_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
+    if (EXISTS "${PROJECT_SOURCE_DIR}/INSTALL.txt")
+      set (PROJECT_INSTALL_FILE "${PROJECT_SOURCE_DIR}/INSTALL.txt")
+    elseif (EXISTS "${PROJECT_SOURCE_DIR}/INSTALL")
+      set (PROJECT_INSTALL_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
+    endif ()
+  elseif (NOT EXISTS "${PROJECT_INSTALL_FILE}")
+    message (FATAL_ERROR "Specified project INSTALL file does not exist.")
   endif ()
 
   if (NOT PROJECT_LICENSE_FILE)
-    set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING")
-  endif ()
-  if (NOT EXISTS "${PROJECT_LICENSE_FILE}")
-    message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a COPYING file.")
+    if (EXISTS "${PROJECT_SOURCE_DIR}/COPYING.txt")
+      set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING.txt")
+    elseif (EXISTS "${PROJECT_SOURCE_DIR}/COPYING")
+      set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING")
+    else ()
+      message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a COPYING file.")
+    endif ()
+  elseif (NOT EXISTS "${PROJECT_LICENSE_FILE}")
+    message (FATAL_ERROR "Specified project license file does not exist.")
   endif ()
 
   if (NOT PROJECT_REDIST_LICENSE_FILES)
@@ -291,18 +300,25 @@ macro (basis_project_initialize)
   basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}")
 
   # authors, readme, install and license files
-  get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME)
-  get_filename_component (README  "${PROJECT_README_FILE}" NAME)
-  get_filename_component (INSTALL "${PROJECT_INSTALL_FILE}" NAME)
-  get_filename_component (LICENSE "${PROJECT_LICENSE_FILE}" NAME)
+  if (WIN32)
+    get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME)
+    get_filename_component (README  "${PROJECT_README_FILE}"  NAME)
+    get_filename_component (INSTALL "${PROJECT_INSTALL_FILE}" NAME)
+    get_filename_component (LICENSE "${PROJECT_LICENSE_FILE}" NAME)
+  else ()
+    get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME_WE)
+    get_filename_component (README  "${PROJECT_README_FILE}"  NAME_WE)
+    get_filename_component (INSTALL "${PROJECT_INSTALL_FILE}" NAME_WE)
+    get_filename_component (LICENSE "${PROJECT_LICENSE_FILE}" NAME_WE)
+  endif ()
 
   if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     configure_file ("${PROJECT_README_FILE}" "${PROJECT_BINARY_DIR}/${README}" COPYONLY)
     configure_file ("${PROJECT_LICENSE_FILE}" "${PROJECT_BINARY_DIR}/${LICENSE}" COPYONLY)
-    if (EXISTS "${PROJECT_AUTHORS_FILE}")
+    if (PROJECT_AUTHORS_FILE)
       configure_file ("${PROJECT_AUTHORS_FILE}" "${PROJECT_BINARY_DIR}/${AUTHORS}" COPYONLY)
     endif ()
-    if (EXISTS "${PROJECT_INSTALL_FILE}")
+    if (PROJECT_INSTALL_FILE)
       configure_file ("${PROJECT_INSTALL_FILE}" "${PROJECT_BINARY_DIR}/${INSTALL}" COPYONLY)
     endif ()
   endif ()
@@ -310,13 +326,24 @@ macro (basis_project_initialize)
   install (
     FILES       "${PROJECT_README_FILE}"
     DESTINATION "${INSTALL_DOC_DIR}"
+    RENAME      "${README}"
   )
 
-  install (
-    FILES       "${PROJECT_AUTHORS_FILE}" "${PROJECT_INSTALL_FILE}"
-    DESTINATION "${INSTALL_DOC_DIR}"
-    OPTIONAL
-  )
+  if (PROJECT_AUTHORS_FILE)
+    install (
+      FILES       "${PROJECT_AUTHORS_FILE}"
+      DESTINATION "${INSTALL_DOC_DIR}"
+      RENAME      "${AUTHORS}"
+    )
+  endif ()
+
+  if (PROJECT_INSTALL_FILE)
+    install (
+      FILES       "${PROJECT_INSTALL_FILE}"
+      DESTINATION "${INSTALL_DOC_DIR}"
+      RENAME      "${INSTALL}"
+    )
+  endif ()
 
   if (IS_SUBPROJECT)
     execute_process (
@@ -326,15 +353,23 @@ macro (basis_project_initialize)
     )
 
     if (INSTALL_LICENSE)
+      if (WIN32)
+        get_filename_component (LICENSE "${LICENSE}" NAME_WE)
+      endif ()
+      set (PROJECT_LICENSE "${LICENSE}-${PROJECT_NAME}")
+      if (WIN32)
+        set (PROJECT_LICENSE "${PROJECT_LICENSE}.txt")
+      endif ()
+
       install (
         FILES       "${PROJECT_LICENSE_FILE}"
         DESTINATION "${INSTALL_DOC_DIR}"
-        RENAME      "${LICENSE}-${PROJECT_NAME}"
+        RENAME      "${PROJECT_LICENSE}"
       )
       file (
         APPEND "${CMAKE_BINARY_DIR}/${LICENSE}"
         "\n\n------------------------------------------------------------------------------\n"
-        "See ${LICENSE}-${PROJECT_NAME} file for\n"
+        "See ${PROJECT_LICENSE} file for\n"
         "copyright and license notices of the ${PROJECT_NAME} package.\n"
         "------------------------------------------------------------------------------\n"
       )
@@ -349,6 +384,7 @@ macro (basis_project_initialize)
     install (
       FILES       "${PROJECT_LICENSE_FILE}"
       DESTINATION "${INSTALL_DOC_DIR}"
+      RENAME      "${LICENSE}"
     )
   endif ()
 
