@@ -35,7 +35,7 @@ endif ()
 # initialize project
 basis_project_initialize (
   NAME        "ReplaceByProjectName"
-  VERSION     "0.0.0"
+  VERSION     "0.0"
   DESCRIPTION "ReplaceByProjectDescription"
 )
 
