@@ -56,7 +56,6 @@
 # project attributes
 # ============================================================================
 
-set (REVISION      "@PROJECT_REVISION@") # 0 if not applicable
 set (VERSION       "@PROJECT_VERSION@")
 set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
 set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
