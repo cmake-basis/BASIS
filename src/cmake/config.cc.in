@@ -18,25 +18,30 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 
 //////////////////////////////////////////////////////////////////////////////
-// paths
+// constants
 //////////////////////////////////////////////////////////////////////////////
+
+// ---------------------------------------------------------------------------
+// project attributes
+// ---------------------------------------------------------------------------
+
+const std::string cProjectName ("@PROJECT_NAME@")
+const std::string cVersion     ("@PROJECT_VERSION@");
+
+const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
+const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
+const unsigned int cVersionPatch = @PROJECT_VERSION_PATCH@;
+const unsigned int cRevision     = @PROJECT_REVISION@;
+
+// ---------------------------------------------------------------------------
+// paths
+// ---------------------------------------------------------------------------
 
 const std::string cRuntimePathPrefix ("@RUNTIME_PATH_PREFIX_CONFIG@");
 const std::string cLibexecPathPrefix ("@LIBEXEC_PATH_PREFIX_CONFIG@");
 const std::string cRuntimePath       ("@RUNTIME_PATH_CONFIG@");
 const std::string cLibexecPath       ("@LIBEXEC_PATH_CONFIG@");
 const std::string cDataPath          ("@DATA_PATH_CONFIG@");
-
-//////////////////////////////////////////////////////////////////////////////
-// version
-//////////////////////////////////////////////////////////////////////////////
-
-const std::string cVersion ("@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@");
-
-const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
-const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
-const unsigned int cVersionPatch = @PROJECT_VERSION_PATCH@;
-const unsigned int cRevision     = @PROJECT_REVISION@;
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

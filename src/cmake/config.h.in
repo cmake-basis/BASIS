@@ -172,8 +172,13 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 
 // ---------------------------------------------------------------------------
-// version
+// project attributes
 // ---------------------------------------------------------------------------
+
+/*!
+ * \brief The project name.
+ */
+extern const std::string cProjectName;
 
 /*!
  * \brief The major version number.

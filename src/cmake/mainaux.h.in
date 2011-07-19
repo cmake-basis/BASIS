@@ -18,6 +18,9 @@
 
 #include <string>
 
+#include <sbia/basis/path.h>
+
+
 #include "config.h"
 
 
@@ -30,28 +33,26 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
  * \return Absolute path to auxiliary data.
  */
 inline
-std::string getDataPath ()
+std::string GetDataPath ()
 {
-    std::string prefix = getExecutablePath ();
+    std::string prefix = GetExecutableDirectory ();
 #ifdef LIBEXEC
     prefix += cLibexecPrefix;
 #else
     prefix += cRuntimePrefix;
 #endif
-    return toAbsolutePath (prefix + cDataPath);
+    return ToAbsolutePath (prefix + cDataPath);
 }
 
 /*!
- * \brief Prints version information.
+ * \brief Print version information.
  */
 inline
-void printVersion ()
+void PrintVersion ()
 {
-    std::cout << getExecutableName () << ' ' << cVersion;
-    if (cRevision) {
-        std::cout << " (Rev. " << cRevision << ')';
-    }
-    std::cout << std::endl;
+    std::cout << GetExecutableName () << "(" << cProjectName << ") version " << cVersion << std::endl;
+    std::cout << "Copyright (c) 2011 University of Pennsylvania. All rights reserved." << std::endl;
+    std::cout << "See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html." << std::endl;
 }
 
 
