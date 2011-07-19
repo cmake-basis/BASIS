@@ -975,10 +975,10 @@ fi
 echo "$msg..."
 
 # minimal project structure
-add "AUTHORS"            || retval=1
-add "README"             || retval=1
-add "INSTALL"            || retval=1
-add "COPYING"            || retval=1
+add "AUTHORS.txt"        || retval=1
+add "README.txt"         || retval=1
+add "INSTALL.txt"        || retval=1
+add "COPYING.txt"        || retval=1
 add "CMakeLists.txt"     || retval=1
 add "doc/CMakeLists.txt" || retval=1
 add "src/CMakeLists.txt" || retval=1
