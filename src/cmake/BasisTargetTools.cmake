@@ -875,15 +875,19 @@ endfunction ()
 #                      general. Any text file, which is processed by a program
 #                      to perform certain tasks, i.e., a configuration file
 #                      can be considered as "script" in this sense.
+#                      If the option LIBEXEC is given, this option is ignored.
 #   KEEPEXT            If this option is given, it forces this function to keep
 #                      the scripts file name extension even if a sha-bang
 #                      directive is given on UNIX systems.
+#   MODULE             Specifies that the script is a module file which is
+#                      included by other scripts. In particular, this is an
+#                      alias for NOEXEC and KEEPEXT.
 
 function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;NOEXEC;KEEPEXT"
+      "LIBEXEC;NOEXEC;KEEPEXT;MODULE"
       "SCRIPT;CONFIG;COMPONENT;OUTPUT_DIRECTORY;DESTINATION"
       ""
     ${ARGN}
@@ -916,6 +920,15 @@ function (basis_add_script TARGET_NAME)
 
   if (NOT ARGN_CONFIG AND DEFAULT_SCRIPT_CONFIG_FILE)
     set (ARGN_CONFIG "${DEFAULT_SCRIPT_CONFIG_FILE}")
+  endif ()
+
+  if (ARGN_MODULE)
+    set (ARGN_KEEPEXT 1)
+    set (ARGN_NOEXEC  1)
+  endif ()
+
+  if (ARGN_LIBEXEC)
+    set (ARGN_NOEXEC 0)
   endif ()
 
   if (ARGN_UNPARSED_ARGUMENTS)
@@ -969,7 +982,7 @@ function (basis_add_script TARGET_NAME)
   string (REGEX REPLACE "\\.in\(\\..*\)$" "\\1" OUTPUT_NAME "${OUTPUT_NAME}")
 
   # remove extension from script name (if UNIX system and sha-bang directive exists)
-  if (NOT KEEPEXT AND UNIX)
+  if (NOT ARGN_KEEPEXT AND UNIX)
     file (STRINGS "${ARGN_SCRIPT}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
     if (SHABANG STREQUAL "#!")
       get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)

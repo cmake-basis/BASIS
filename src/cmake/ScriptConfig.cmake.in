@@ -80,38 +80,38 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 # BASH
 # ----------------------------------------------------------------------------
 
-set (BASH_FUNCTION_getProgDir "
+set (BASH_FUNCTION_get_executable_directory "
 # ****************************************************************************
 # \\brief Get real directory of executable.
 #
 # \\see http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-function getProgDir
+get_executable_directory ()
 {
-  # get the absolute path of the executable
-  progPath=$(cd -P -- \"$(dirname -- \"$0\")\" && pwd -P) && progPath=$progPath/$(basename -- \"$0\")
+    # get the absolute path of the executable
+    local path=$(cd -P -- \"$(dirname -- \"$0\")\" && pwd -P) && path=$path/$(basename -- \"$0\")
 
-  # resolve symlinks
-  while [ -h $progPath ]; do
-    # 1) cd to directory of the symlink
-    # 2) cd to the directory of where the symlink points
-    # 3) get the pwd
-    # 4) append the basename
-    linkDir=$(dirname -- \"$progPath\")
-    symLink=$(readlink $progPath)
-    progPath=$(cd $linkDir && cd $(dirname -- \"$symLink\") && pwd)/$(basename -- \"$symLink\")
-  done
+    # resolve symbolic links
+    while [ -h $path ]; do
+        # 1) change to directory of the symbolic link
+        # 2) change to directory where the symbolic link points to
+        # 3) get the current working directory
+        # 4) append the basename
+        local linkdir=$(dirname -- \"$path\")
+        local symlink=$(readlink $path)
+        path=$(cd $linkdir && cd $(dirname -- \"$symlink\") && pwd)/$(basename -- \"$symlink\")
+    done
 
-  echo `cd -P \\`dirname $progPath\\`; pwd -P`
+    echo `cd -P \\`dirname $path\\`; pwd -P`
 }
 "
 )
 
-set (BASH_FUNCTION_getProgName "
+set (BASH_FUNCTION_get_executable_name "
 # ****************************************************************************
 # \\brief Get name of executable.
-function getProgName
+get_executable_name ()
 {
-  echo \${0##*/}
+    echo \${0##*/}
 }
 "
 )
@@ -120,21 +120,48 @@ function getProgName
 # Python
 # ----------------------------------------------------------------------------
 
-set (PYTHON_FUNCTION_getProgDir "
+set (PYTHON_FUNCTION_get_executable_directory "
 # ****************************************************************************
-def getProgDir ():
+def get_executable_directory ():
     \"\"\"Get real directory of executable.\"\"\"
-    import os, sys
+    import sys
+    import os
     return os.path.realpath (os.path.dirname (sys.argv [0]))
 "
 )
 
-set (PYTHON_FUNCTION_getProgName "
+set (PYTHON_FUNCTION_get_executable_name "
 # ****************************************************************************
-def getProgName ():
+def get_executable_name ():
     \"\"\"Get name of program without path.\"\"\"
-    import os, sys
+    import sys
+    import os
     return os.path.basename (sys.argv [0])
+"
+)
+
+# ----------------------------------------------------------------------------
+# Perl
+# ----------------------------------------------------------------------------
+
+set (PERL_FUNCTION_get_executable_directory "
+# ****************************************************************************
+sub get_executable_directory
+{
+    use Cwd qw(realpath);
+    use File::Basename;
+    return dirname (realpath ($0));
+}
+"
+)
+
+set (PERL_FUNCTION_get_executable_name "
+# ****************************************************************************
+sub get_executable_name
+{
+    use File::Basename;
+    return basename ($0);
+}
 "
 )
 
