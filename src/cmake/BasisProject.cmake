@@ -538,7 +538,7 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   )
 
   foreach (SOURCE ${SOURCES_NAMES})
-    set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}.in")
+    set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}")
     if (NOT EXISTS "${TEMPLATE}")
       set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
     endif ()
