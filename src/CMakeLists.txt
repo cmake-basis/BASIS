@@ -16,19 +16,19 @@
 # modules
 set (
   CMAKE_MODULES
-    "cmake/CMakeParseArguments.cmake"
-    "cmake/BasisCommonTools.cmake"
-    "cmake/BasisDocTools.cmake"
-    "cmake/BasisMatlabTools.cmake"
     "cmake/BasisPack.cmake"
     "cmake/BasisProject.cmake"
-    "cmake/BasisSettings.cmake"
-    "cmake/BasisSubversionTools.cmake"
-    "cmake/BasisTargetTools.cmake"
     "cmake/BasisTest.cmake"
     "cmake/BasisUpdate.cmake"
+    "cmake/CMakeParseArguments.cmake"
+    "cmake/CommonTools.cmake"
+    "cmake/DocTools.cmake"
     "cmake/ExternalData.cmake"
     "cmake/ExternalData_config.cmake.in"
+    "cmake/MatlabTools.cmake"
+    "cmake/Settings.cmake"
+    "cmake/SubversionTools.cmake"
+    "cmake/TargetTools.cmake"
 )
 
 # ----------------------------------------------------------------------------
