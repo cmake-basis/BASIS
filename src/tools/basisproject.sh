@@ -24,10 +24,7 @@
 # executable information
 exec_name=$(get_executable_name)
 exec_dir=$(get_executable_directory)
-version='@VERSION@'
-version_major='@VERSION_MAJOR@'
-version_minor='@VERSION_MINOR@'
-revision='@REVISION@'
+exec_version='@VERSION@'
 
 # name of CMake configuration file used to resolve dependencies
 depends_file='Depends.cmake'
@@ -47,7 +44,7 @@ cache=".basis/cache"
 
 print_version ()
 {
-    echo "basisproject (BASIS) version $version.$revision"
+    echo "basisproject (BASIS) version $exec_version"
     cat - << EOF-COPYRIGHT
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
@@ -177,7 +174,7 @@ print_help ()
 	echo
 	echo "Description:"
     echo "  This command-line tool can be used to create a new BASIS project from the"
-    echo "  template version $version_major.$version_minor or to modify or upgrade an already existing project."
+    echo "  template version @VERSION_MAJOR@.@VERSION_MINOR@ or to modify or upgrade an already existing project."
     echo
     echo "  Depending on the grade of customization or optional inclusion of template"
     echo "  components, different subsets of the fully featured project template can be"

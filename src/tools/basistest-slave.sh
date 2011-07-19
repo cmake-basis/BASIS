@@ -28,8 +28,7 @@
 # executable information
 exec_name=$(get_executable_name)
 exec_dir=$(get_executable_directory)
-version='@VERSION@'
-revision='@REVISION@'
+exec_version='@VERSION@'
 
 # ============================================================================
 # help/version
@@ -39,11 +38,7 @@ revision='@REVISION@'
 # \brief Print version information.
 print_version ()
 {
-    if [ ! -z $revision -o $revision -gt 0 ]; then
-        echo "basistest-slave (BASIS) $version (Rev. $revision)"
-    else
-        echo "basistest-slave (BASIS) $version"
-    fi
+    echo "basistest-slave (BASIS) version $exec_version"
     cat - << EOF-COPYRIGHT
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
@@ -133,7 +128,7 @@ print_usage ()
 # ============================================================================
 
 # CTest script
-ctest_script="$exec_dir/@MODULES_DIR@/basistest.ctest"
+ctest_script="$exec_dir/@BASISTEST_CTEST_SCRIPT_DIR@/basistest.ctest"
 
 project=''      # name of the BASIS project
 branch='trunk'  # the branch to test

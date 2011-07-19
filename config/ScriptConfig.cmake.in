@@ -14,7 +14,7 @@
 # if (BUILD_INSTALL_SCRIPT)
 #   set (BIN_DIR "@CMAKE_INSTALL_PREFIX@/bin")
 # else ()
-#   set (BIN_DIR "@RUNTIME_OUTPUT_DIRECTORY@")
+#   set (BIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
 # endif ()
 # \endcode
 #
@@ -55,6 +55,20 @@
 
 @BASIS_SCRIPT_CONFIG@
 
-basis_set_script_path (TEMPLATE_DIR "@PROJECT_DATA_DIR@/template" "@INSTALL_TEMPLATE_DIR@")
-basis_set_script_path (MODULES_DIR  "@PROJECT_CODE_DIR@/cmake"    "@INSTALL_MODULES_DIR@")
+basis_set_script_path (
+  TEMPLATE_DIR
+    "@PROJECT_DATA_DIR@/template"
+    "@INSTALL_TEMPLATE_DIR@"
+)
 
+basis_set_script_path (
+  MODULES_DIR
+    "@PROJECT_CODE_DIR@/cmake"
+    "@INSTALL_MODULES_DIR@"
+)
+
+basis_set_script_path (
+  BASISTEST_CTEST_SCRIPT_DIR
+    "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
+    "@INSTALL_MODULES_DIR@"
+)

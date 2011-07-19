@@ -31,8 +31,7 @@
 # executable information
 exec_name=$(get_executable_name)
 exec_dir=$(get_executable_directory)
-version='@VERSION@'
-revision='@REVISION@'
+exec_version='@VERSION@'
 
 # absolute path of tests configuration file
 conf_file='/etc/basistest.conf'
@@ -48,7 +47,7 @@ schedule_file='/var/run/basistest.schedule'
 # \brief Print version information.
 print_version ()
 {
-    echo "basistest-master (BASIS) version $version.$revision"
+    echo "basistest-master (BASIS) version $exec_version"
     cat - << EOF-COPYRIGHT
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
