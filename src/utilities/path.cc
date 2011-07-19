@@ -189,7 +189,7 @@ string CleanPath (const string &path)
     return cleanedPath;
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string ToUnixPath (const string &path, bool drive)
 {
     if (!IsValidPath (path)) {
@@ -221,7 +221,7 @@ string ToUnixPath (const string &path, bool drive)
     return CleanPath (unixPath);
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string ToWindowsPath (const string &path)
 {
     if (!IsValidPath (path, false)) {
@@ -250,7 +250,7 @@ string ToWindowsPath (const string &path)
     return CleanPath (windowsPath);
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string ToNativePath (const string &path)
 {
 #if WINDOWS
@@ -264,7 +264,7 @@ string ToNativePath (const string &path)
 // working directory
 //////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************/
+// ***************************************************************************
 string GetWorkingDirectory ()
 {
     string wd;
@@ -285,7 +285,7 @@ string GetWorkingDirectory ()
 // path components
 //////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************/
+// ***************************************************************************
 void SplitPath (const string &path,
                 string       *root,
                 string       *dir,
@@ -351,7 +351,7 @@ void SplitPath (const string &path,
     }
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string GetFileRoot (const string &path)
 {
     if (!IsValidPath (path)) {
@@ -383,7 +383,7 @@ string GetFileRoot (const string &path)
     return "./";
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string GetFileDirectory (const string &path)
 {
     string root;
@@ -397,7 +397,7 @@ string GetFileDirectory (const string &path)
     }
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string GetFileName (const string &path)
 {
     string fname;
@@ -406,7 +406,7 @@ string GetFileName (const string &path)
     return fname + ext;
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string GetFileNameWithoutExtension (const string &path)
 {
     string fname;
@@ -414,7 +414,7 @@ string GetFileNameWithoutExtension (const string &path)
     return fname;
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string GetFileNameExtension (const string &path)
 {
     string ext;
@@ -426,25 +426,25 @@ string GetFileNameExtension (const string &path)
 // absolute / relative paths
 //////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************/
+// ***************************************************************************
 bool IsAbsolutePath (const string &path)
 {
     return GetFileRoot (path) != "./";
 }
 
-/****************************************************************************/
+// ***************************************************************************
 bool IsRelativePath (const string &path)
 {
     return GetFileRoot (path) == "./";
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string ToAbsolutePath (const string &path)
 {
     return ToAbsolutePath (GetWorkingDirectory (), path);
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string ToAbsolutePath (const string &base, const string &path)
 {
     string absPath (path);
@@ -465,7 +465,7 @@ string ToAbsolutePath (const string &base, const string &path)
     return absPath;
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string ToRelativePath (const string &path)
 {
     string unixPath = ToUnixPath (path, true);
@@ -473,7 +473,7 @@ string ToRelativePath (const string &path)
     return ToRelativePath (GetWorkingDirectory (), unixPath);
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string ToRelativePath (const string &base, const string &path)
 {
     string unixPath = ToUnixPath (path, true);
@@ -543,7 +543,7 @@ string ToRelativePath (const string &base, const string &path)
 // symbolic links
 //////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************/
+// ***************************************************************************
 bool IsSymbolicLink (const string &path)
 {
     if (!IsValidPath (path)) {
@@ -559,7 +559,7 @@ bool IsSymbolicLink (const string &path)
 #endif
 }
 
-/****************************************************************************/
+// ***************************************************************************
 bool ReadSymbolicLink (const string &link, string &value)
 {
     if (!IsValidPath (link)) {
@@ -600,7 +600,7 @@ bool ReadSymbolicLink (const string &link, string &value)
     return ok;
 }
 
-/****************************************************************************/
+// ***************************************************************************
 string GetRealPath (const string &path)
 {
     // make path just absolute if it is no symbolic link
@@ -633,7 +633,7 @@ string GetRealPath (const string &path)
 // executable file
 //////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************/
+// ***************************************************************************
 string GetExecutablePath ()
 {
     string path;
@@ -697,7 +697,14 @@ string GetExecutablePath ()
     return CleanPath (path);
 }
 
-/****************************************************************************/
+// ***************************************************************************
+string GetExecutableDirectory ()
+{
+    string path = GetExecutablePath ();
+    return path.empty () ? "" : GetFileDirectory (path);
+}
+
+// ***************************************************************************
 string GetExecutableName ()
 {
     string name = GetExecutablePath ();

@@ -627,6 +627,16 @@ TEST (Path, GetExecutablePath)
 }
 
 // ***************************************************************************
+// Tests the retrieval of the current executable's directory
+TEST (Path, GetExecutableDirectory)
+{
+    string path;
+    EXPECT_NO_THROW (path = GetExecutableDirectory ());
+    cout << path << endl;
+    EXPECT_TRUE (path == GetFileDirectory (GetExecutablePath ()));
+}
+
+// ***************************************************************************
 // Tests the retrieval of the current executable's name
 TEST (Path, GetExecutableName)
 {

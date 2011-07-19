@@ -18,7 +18,7 @@
 # help
 # ============================================================================
 
-function (printUsageSection)
+function (print_usage_section)
   message ("
 Usage:
   ctest [ctest options] -S basistest.ctest[,option[=value]]*
@@ -27,7 +27,7 @@ Usage:
         if the value is enclosed by quotation marks.")
 endfunction ()
 
-function (printOptions)
+function (print_options_section)
   message ("
 Required options:
   project=<project>   Name of the BASIS project to test.
@@ -56,7 +56,7 @@ Options:
   version             Prints version information and exits.")
 endfunction ()
 
-function (printContactSection)
+function (print_contact_section)
   message ("
 Contact:
   SBIA Group <sbia-software at uphs.upenn.edu>")
@@ -64,9 +64,9 @@ endfunction ()
 
 # ****************************************************************************
 # \brief Prints help.
-function (printHelp)
+function (print_help)
   message ("CTest script basistest.ctest (BASIS)")
-  printUsageSection ()
+  print_usage_section ()
   message ("
 Description:
   This CTest script is used at SBIA for nightly testing of software projects.
@@ -94,7 +94,7 @@ Dashboard models:
  
   Attention: For each model, only one test process may be running for each
              project on each site at one time.")
-  printOptions ()
+  print_options_section ()
   message ("
 Example:
   ctest -V -S basistest.ctest,project=BASIS,model=Experimental,coverage,memcheck
@@ -103,21 +103,21 @@ Example:
     BASIS itself, including coverage analysis and memory checks.
     The -V option of ctest enables more verbose output of CTest.
     Even more verbose output can be requested using -VV.")
-  printContactSection ()
+  print_contact_section ()
 endfunction ()
 
 # ****************************************************************************
 # \brief Print usage information.
-function (printUsage)
+function (print_usage)
   message ("CTest script basistest.ctest (BASIS)")
-  printUsageSection ()
-  printOptions ()
-  printContactSection ()
+  print_usage_section ()
+  print_options_section ()
+  print_contact_section ()
 endfunction ()
 
 # ****************************************************************************
 # \brief Print version information.
-function (printVersion)
+function (print_version)
   set (VERSION  "@VERSION@")
   set (REVISION "@REVISION@")
   if (REVISION GREATER 0)
@@ -218,13 +218,13 @@ foreach (ARG ${ARGV})
     elseif (${OPTION} STREQUAL "force-test")
       set_bool_option (FORCE_TEST)
     elseif (${OPTION} STREQUAL "version")
-      printVersion ()
+      print_version ()
       return ()
     elseif (${OPTION} STREQUAL "usage")
-      printUsage ()
+      print_usage ()
       return ()
     elseif (${OPTION} STREQUAL "help")
-      printHelp ()
+      print_help ()
       return ()
     else ()
       set (FAILURE 1)
@@ -240,7 +240,7 @@ Failed to parse argument \"${ARG}\" (option: ${OPTION}, value: ${VALUE})")
 endforeach ()
 
 if (NOT CTEST_PROJECT_NAME)
-  printUsage ()
+  print_usage ()
   message (FATAL_ERROR "No project specified!")
 endif ()
 if (NOT CTEST_BINARY_DIRECTORY)

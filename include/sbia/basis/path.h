@@ -87,8 +87,9 @@ std::string CleanPath (const std::string &path);
 /*!
  * \brief Convert path to Unix representation.
  *
- * \sa ToWindowsPath, ToNativePath
- * \sa IsValidPath
+ * \sa ToWindowsPath()
+ * \sa ToNativePath()
+ * \sa IsValidPath()
  *
  * \param [in] path  Path.
  * \param [in] drive Whether the drive specification should be preserved.
@@ -104,8 +105,9 @@ std::string ToUnixPath (const std::string &path, bool drive = false);
 /*!
  * \brief Convert path to Windows representation.
  *
- * \sa ToUnixPath, ToNativePath
- * \sa IsValidPath
+ * \sa ToUnixPath()
+ * \sa ToNativePath()
+ * \sa IsValidPath()
  *
  * \param [in] path Path.
  *
@@ -123,8 +125,9 @@ std::string ToWindowsPath (const std::string &path);
  * In general, Unix-style paths should be preferred as these in most cases also
  * work on Windows.
  *
- * \sa ToUnixPath, ToWindowsPath
- * \sa IsValidPath
+ * \sa ToUnixPath()
+ * \sa ToWindowsPath()
+ * \sa IsValidPath()
  *
  * \param [in] path Path.
  *
@@ -217,7 +220,8 @@ void SplitPath (const std::string &path,
 /*!
  * \brief Get file root.
  *
- * \sa SplitPath() IsValidPath()
+ * \sa SplitPath()
+ * \sa IsValidPath()
  *
  * \param [in] path Path.
  *
@@ -230,7 +234,8 @@ std::string GetFileRoot (const std::string &path);
 /*!
  * \brief Get file directory.
  *
- * \sa SplitPath() IsValidPath()
+ * \sa SplitPath()
+ * \sa IsValidPath()
  *
  * \param [in] path Path.
  *
@@ -244,7 +249,8 @@ std::string GetFileDirectory (const std::string &path);
 /*!
  * \brief Get file name with extension.
  *
- * \sa SplitPath() IsValidPath()
+ * \sa SplitPath()
+ * \sa IsValidPath()
  *
  * \param [in] path Path.
  *
@@ -257,7 +263,8 @@ std::string GetFileName (const std::string &path);
 /*!
  * \brief Get file name without extension.
  *
- * \sa SplitPath() IsValidPath()
+ * \sa SplitPath()
+ * \sa IsValidPath()
  *
  * \param [in] path Path.
  *
@@ -270,7 +277,8 @@ std::string GetFileNameWithoutExtension (const std::string &path);
 /*!
  * \brief Get file name extension.
  *
- * \sa SplitPath() IsValidPath()
+ * \sa SplitPath()
+ * \sa IsValidPath()
  *
  * \param [in] path Path.
  *
@@ -411,7 +419,8 @@ bool ReadSymbolicLink (const std::string &link, std::string &value);
  *
  * This function resolves symbolic links and returns a cleaned path.
  *
- * \sa ReadSymbolicLink() CleanPath()
+ * \sa ReadSymbolicLink()
+ * \sa CleanPath()
  *
  * \param [in] path Path.
  *
@@ -425,13 +434,23 @@ std::string GetRealPath (const std::string &path);
 //////////////////////////////////////////////////////////////////////////////
 
 /*!
- * \brief Get absolute path of executable file.
+ * \brief Get canonical path of executable file.
  *
- * \sa getExecutableName()
+ * \sa GetExecutableDirectory ()
+ * \sa GetExecutableName()
  *
  * \return Canonical path of executable file or empty string on error.
  */
 std::string GetExecutablePath ();
+
+/*!
+ * \brief Get canonical path of directory containing executable file.
+ *
+ * \sa GetExecutablePath()
+ *
+ * \return Canonical path of directory containing executable file.
+ */
+std::string GetExecutableDirectory ();
 
 /*!
  * \brief Get name of executable.
@@ -439,10 +458,11 @@ std::string GetExecutablePath ();
  * \note The name of the executable may or may not include the file name
  *       extension depending on the executable type and operating system.
  *       Hence, this function is neither an equivalent to
- *       getFileName (getExecutablePath ()) nor
- *       getFileNameWithoutExtension (getExecutablePath ()).
+ *       GetFileName (GetExecutablePath ()) nor
+ *       GetFileNameWithoutExtension (GetExecutablePath ()).
  *
- * \sa getExecutablePath()
+ * \sa GetExecutablePath()
+ * \sa GetExecutableDirectory()
  *
  * \return Name of the executable derived from the executable's file path
  *         or empty string on error.

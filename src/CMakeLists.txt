@@ -62,7 +62,9 @@ set (
     "cmake/FindGTest.cmake"
     "cmake/FindGMock.cmake"
     "cmake/FindNiftiCLib.cmake"
+    "cmake/FindMATLAB.cmake"
     "cmake/FindMatlabNiftiTools.cmake"
+    "cmake/FindMOSEK.cmake"
 )
 
 # ----------------------------------------------------------------------------
@@ -109,10 +111,7 @@ basis_add_script (tools/basisproject.sh)
 
 # ----------------------------------------------------------------------------
 # testing tools
-basis_add_script (
-  tools/basistest.ctest NOEXEC
-  DESTINATION "${INSTALL_MODULES_DIR}"
-)
+basis_add_script (tools/basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
 basis_add_script (tools/basistest-svn.sh)
 basis_add_script (tools/basistest-slave.sh)
