@@ -353,6 +353,10 @@ function (basis_add_executable TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
+  if (ARGN_TEST)
+    set (ARGN_LIBEXEC 0)
+  endif ()
+
   # if the language is not explicitly selected, determine it from the
   # extensions of the source files
   if (NOT ARGN_LANGUAGE)
@@ -410,6 +414,14 @@ function (basis_add_executable TARGET_NAME)
       PROPERTIES
         BASIS_TYPE "${TYPE}"
     )
+
+    if (ARGN_LIBEXEC)
+      set_target_properties (
+        ${TARGET_UID}
+        PROPERTIES
+          COMPILE_DEFINITIONS "LIBEXEC"
+      )
+    endif ()
 
     # target version information
     # \note On UNIX-based systems this only creates annoying files with
