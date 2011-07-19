@@ -200,26 +200,6 @@ extern const unsigned int cVersionPatch;
  */
 extern const std::string cVersion;
 
-/*!
- * \brief The SVN revision number of the project (if applicable).
- *
- * The SVN revision number can only be provided when the project is build from
- * a revision controlled working copy of the project. It is not available in
- * case of a source distribution package of the project. Hence, it may only be
- * used for informational debug outputs, but not for actual version dependent
- * processing. If the revision number is not known, this constant is set to 0.
- *
- * Example:
- * \code
- * if (cRevision) {
- *     std::cout << "Revision: " << cRevision << std::endl;
- * } else {
- *     std::cout << "Revision: n/a" << std::endl;
- * }
- * \endcode
- */
-extern const unsigned int cRevision;
-
 // ---------------------------------------------------------------------------
 // paths
 // ---------------------------------------------------------------------------
