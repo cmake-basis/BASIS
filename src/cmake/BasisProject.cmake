@@ -122,10 +122,10 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 #                   Moreover, any of these arguments can be specified
 #                   in the file PROJECT_CONFIG_DIR/Settings.cmake
 #                   instead with the prefix PROJECT_*, e.g.,
-#                   "set (PROJECT_VERSION 1.0.0)".
+#                   "set (PROJECT_VERSION 1.0)".
 #
 #   NAME                 The name of the project.
-#   VERSION              Project version string, i.e., "<major>(.<minor>(.<patch>))".
+#   VERSION              Project version string, i.e., "<major>(.<minor>)".
 #   DESCRIPTION          Package description, used for packing.
 #   PACKAGE_VENDOR       The vendor of this package, used for packaging.
 #                        Defaults to "SBIA Group at University of Pennsylvania".
@@ -176,7 +176,7 @@ macro (basis_project_initialize)
   endif ()
 
   if (NOT PROJECT_VERSION)
-    set (PROJECT_VERSION "0.0.0")
+    set (PROJECT_VERSION "0.0")
   endif ()
 
   if (PROJECT_PACKAGE_VENDOR)
@@ -248,6 +248,9 @@ macro (basis_project_initialize)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
 
+  # get project revision
+  basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
+
   # extract version numbers from version string
   basis_version_numbers (
     "${PROJECT_VERSION}"
@@ -256,12 +259,14 @@ macro (basis_project_initialize)
       PROJECT_VERSION_PATCH
   )
 
+  if (NOT PROJECT_VERSION_PATCH EQUAL 0)
+    message (WARNING "Specified project patch version number is ignored and replaced by revision number.")
+  endif ()
+  set (PROJECT_VERSION_PATCH "${PROJECT_REVISION}")
+
   # combine version numbers to version strings (also ensures consistency)
   set (PROJECT_VERSION   "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
   set (PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
-
-  # get project revision
-  basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
 
   # print project information
   if (BASIS_VERBOSE)
