@@ -516,6 +516,12 @@ endmacro ()
 #   - stdaux.h    Auxiliary functions such as functions to get absolute path
 #                 to the subdirectories of the installation.
 #
+#   - stdaux.cc   Definition of auxiliary functions declared in stdaux.h.
+#                 This source file in particular contains the constructor
+#                 code which is configured during the finalization of the
+#                 project's build configuration which maps the build target
+#                 names to executable file paths.
+#
 # \note If there exists a *.in file of the corresponding source file in the
 #       PROJECT_CONFIG_DIR, it will be used as template. Otherwise, the
 #       template file of BASIS is used.
@@ -561,6 +567,24 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
 
   set (EXECUTABLE_TARGET_INFO_CONFIG "\@EXECUTABLE_TARGET_INFO_CONFIG\@")
 
+  # configure public auxiliary header files
+  set (
+    SOURCES_NAMES
+      "config.h"
+  )
+
+  foreach (SOURCE ${SOURCES_NAMES})
+    set (TEMPLATE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}.in")
+    if (NOT EXISTS "${TEMPLATE}")
+      set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
+    endif ()
+    set  (SOURCE_OUT "${BINARY_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}")
+    configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
+    list (APPEND PUBLIC_HEADERS_OUT "${SOURCE_OUT}")
+  endforeach ()
+
+  list (APPEND HEADERS ${PUBLIC_HEADERS_OUT})
+
   # configure private auxiliary source files
   set (
     SOURCES_NAMES
@@ -582,24 +606,6 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
       list (APPEND SOURCES_OUT "${SOURCE_OUT}")
     endif ()
   endforeach ()
-
-  # configure public auxiliary header files
-  set (
-    SOURCES_NAMES
-      "config.h"
-  )
-
-  foreach (SOURCE ${SOURCES_NAMES})
-    set (TEMPLATE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}.in")
-    if (NOT EXISTS "${TEMPLATE}")
-      set (TEMPLATE "${BASIS_MODULE_PATH}/${SOURCE}.in")
-    endif ()
-    set  (SOURCE_OUT "${BINARY_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}")
-    configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
-    list (APPEND PUBLIC_HEADERS_OUT "${SOURCE_OUT}")
-  endforeach ()
-
-  list (APPEND HEADERS ${PUBLIC_HEADERS_OUT})
 
   # return
   set (${SOURCES}        "${SOURCES_OUT}"        PARENT_SCOPE)
@@ -675,7 +681,7 @@ function (basis_configure_ExecutableTargetInfo)
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
  
-    if (BASIS_TYPE MATCHES "EXEC|SCRIPT")
+    if (BASIS_TYPE MATCHES "EXEC|SCRIPT" AND NOT BASIS_TYPE MATCHES "NOEXEC")
       get_target_property (RUNTIME_OUTPUT_NAME "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
       get_target_property (OUTPUT_NAME         "${TARGET_UID}" "OUTPUT_NAME")
       get_target_property (BUILD_DIR           "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")

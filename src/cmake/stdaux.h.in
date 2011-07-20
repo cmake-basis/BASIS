@@ -31,7 +31,6 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
  */
 void PrintDefaultVersion ();
 
-
 /*!
  * \brief Print official contact information.
  */
@@ -67,7 +66,10 @@ bool ExecutingInBuildTree ();
  *
  * \note If the executable is executed from within the build tree, the
  *       returned path will not be correct. Therefore, only use this
- *       function when ExecutingInBuildTree() returns false.
+ *       function when ExecutingInBuildTree() returns false. Otherwise,
+ *       the configured absolute paths which are valid for the build tree
+ *       have to be used. Note that the build tree is not supposed to be
+ *       relocatable in any case.
  *
  * \return Absolute path of top directory of installation tree.
  */

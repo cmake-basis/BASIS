@@ -216,6 +216,3 @@ string GetExecutableFile (const string &targetName)
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
 
-
-#endif // SBIA_@PROJECT_NAME_UPPER@_STDAUX_H_
-
