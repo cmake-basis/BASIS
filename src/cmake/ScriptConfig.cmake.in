@@ -60,6 +60,7 @@ set (VERSION       "@PROJECT_VERSION@")
 set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
 set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
 set (VERSION_PATCH "@PROJECT_VERSION_PATCH@")
+set (REVISION      "@PROJECT_REVISION@")
 
 # ============================================================================
 # directories
@@ -111,6 +112,35 @@ set (BASH_FUNCTION_get_executable_name "
 get_executable_name ()
 {
     echo \${0##*/}
+}
+"
+)
+
+set (BASH_FUNCTION_print_version "
+# ****************************************************************************
+# \\brief Print version information.
+print_version ()
+{
+    echo -n \"$(get_executable_name) (BASIS) version @PROJECT_VERSION@\"
+    if [ @PROJECT_REVISION@ -gt 0 ]; then
+        echo -n \" (revision @PROJECT_REVISION@)\"
+    fi
+    echo
+    cat - << EOF-COPYRIGHT
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+EOF-COPYRIGHT
+}
+"
+)
+
+set (BASH_FUNCTION_print_contact "
+# ****************************************************************************
+# \\brief Print contact information.
+print_contact ()
+{
+    echo \"Contact:\"
+    echo \"  SBIA Group <sbia-software at uphs.upenn.edu>\"
 }
 "
 )

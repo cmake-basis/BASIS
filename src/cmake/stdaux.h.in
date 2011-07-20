@@ -27,14 +27,14 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // ===========================================================================
 
 /*!
- * \brief Print version information including the official SBIA copyright.
+ * \brief Print version information including the default copyright notice.
  */
-void PrintDefaultVersion ();
+void PrintVersion ();
 
 /*!
- * \brief Print official contact information.
+ * \brief Print default contact information.
  */
-void PrintDefaultContact ();
+void PrintContact ();
 
 // ===========================================================================
 // installation directories

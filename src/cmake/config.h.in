@@ -200,6 +200,17 @@ extern const unsigned int cVersionPatch;
  */
 extern const std::string cVersion;
 
+/*!
+ * \brief The Subversion revision number of the project.
+ *
+ * Note that the revision number is not known when the software is built
+ * from a source distribution package instead of a Subversion working copy.
+ * In this case, the revision number is set to 0, an invalid revision number.
+ * Therefore, the revision number should only be used within the version
+ * information of executables, but not for conditional execution.
+ */
+extern const unsigned int cRevision;
+
 // ---------------------------------------------------------------------------
 // paths
 // ---------------------------------------------------------------------------

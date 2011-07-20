@@ -29,15 +29,19 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // ===========================================================================
 
 // ***************************************************************************
-void PrintDefaultVersion ()
+void PrintVersion ()
 {
-    cout << GetExecutableName () << "(" << cProjectName << ") version " << cVersion << endl;
+    cout << GetExecutableName () << "(" << cProjectName << ") version " << cVersion;
+    if (cRevision > 0) {
+        cout << " (revision " << cRevision << ")";
+    }
+    cout << endl;
     cout << "Copyright (c) 2011 University of Pennsylvania. All rights reserved." << endl;
     cout << "See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html." << endl;
 }
 
 // ***************************************************************************
-void PrintDefaultContact ()
+void PrintContact ()
 {
     cout << "Contact:" << endl;
     cout << "  SBIA Group <sbia-software at uphs.upenn.edu>" << endl;

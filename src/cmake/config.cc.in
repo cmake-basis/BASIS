@@ -31,6 +31,7 @@ const std::string cVersion     ("@PROJECT_VERSION@");
 const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
 const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
 const unsigned int cVersionPatch = @PROJECT_VERSION_PATCH@;
+const unsigned int cRevision     = @PROJECT_REVISION@;
 
 // ---------------------------------------------------------------------------
 // paths
