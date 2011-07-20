@@ -16,6 +16,8 @@
 
 @BASH_FUNCTION_get_executable_name@
 @BASH_FUNCTION_get_executable_directory@
+@BASH_FUNCTION_print_version@
+@BASH_FUNCTION_print_contact@
 
 # ============================================================================
 # settings
@@ -24,7 +26,6 @@
 # executable information
 exec_name=$(get_executable_name)
 exec_dir=$(get_executable_directory)
-exec_version='@VERSION@'
 
 # name of CMake configuration file used to resolve dependencies
 depends_file='Depends.cmake'
@@ -38,27 +39,6 @@ cache=".basis/cache"
 # ============================================================================
 # usage / help / version
 # ============================================================================
-
-# ****************************************************************************
-# \brief Prints version information.
-
-print_version ()
-{
-    echo "basisproject (BASIS) version $exec_version"
-    cat - << EOF-COPYRIGHT
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-EOF-COPYRIGHT
-}
-
-# ****************************************************************************
-# \brief Prints contact information.
-
-print_contact_section ()
-{
-    echo "Contact:"
-    echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
-}
 
 # ****************************************************************************
 # \brief Prints options information.
@@ -157,9 +137,9 @@ print_usage ()
     echo "Usage:"
 	echo "  $exec_name [options] <project name>"
     echo
-    print_options_section
+    print_options
     echo
-    print_contact_section
+    print_contact
 }
 
 # ****************************************************************************
@@ -208,7 +188,7 @@ print_help ()
     echo "  Note that if an existing project is modified, the $depends_file file is added if"
     echo "  not yet existent, ignoring the option --no-config-depends."
     echo
-	print_options_section
+	print_options
     echo
     echo "Examples:"
 	echo "  $exec_name ProjectName -d \"Novel image analysis method.\""
@@ -224,7 +204,7 @@ print_help ()
     echo "  $exec_name -r path/to/existing/porject -p ITK --optPkg Matlab"
     echo "    Add dependencies on ITK (mandatory) and MATLAB (optional) to existing project."
     echo
-    print_contact_section
+    print_contact
 }
 
 # ============================================================================

@@ -118,7 +118,11 @@ endfunction ()
 # ****************************************************************************
 # \brief Print version information.
 function (print_version)
-  message ("CTest script basistest.ctest (BASIS) version @VERSION@")
+  set (VERSION_INFO "version @VERSION@")
+  if (@REVISION@ GREATER 0) # revision > 0
+    set (VERSION_INFO "${VERSION_INFO} (revision @REVISION@)")
+  endif ()
+  message ("CTest script basistest.ctest (BASIS) ${VERSION_INFO}")
   message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
   message ("See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.")
 endfunction ()

@@ -20,6 +20,8 @@
 
 @BASH_FUNCTION_get_executable_name@
 @BASH_FUNCTION_get_executable_directory@
+@BASH_FUNCTION_print_version@
+@BASH_FUNCTION_print_contact@
 
 # ============================================================================
 # settings
@@ -29,33 +31,15 @@
 exec_name=$(get_executable_name)
 exec_dir=$(get_executable_directory)
 exec_version='@VERSION@'
+exec_revision='@REVISION@'
 
 # ============================================================================
 # help/version
 # ============================================================================
 
 # ****************************************************************************
-# \brief Print version information.
-print_version ()
-{
-    echo "basistest-slave (BASIS) version $exec_version"
-    cat - << EOF-COPYRIGHT
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-EOF-COPYRIGHT
-}
-
-# ****************************************************************************
-# \brief Print usage section of help/usage.
-print_usage_section ()
-{
-    echo "Usage:"
-    echo "  $exec_name [options]"
-}
-
-# ****************************************************************************
 # \brief Print documentation of options.
-print_options_section ()
+print_options ()
 {
     cat - << EOF-OPTIONS
 Required options:
@@ -77,27 +61,20 @@ EOF-OPTIONS
 }
 
 # ****************************************************************************
-# \brief Print contact information.
-print_contact_section ()
-{
-    echo "Contact:"
-    echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
-}
-
-# ****************************************************************************
 # \brief Print help.
 print_help ()
 {
     echo "$exec_name (BASIS)"
     echo
-    print_usage_section
+    echo "Usage:"
+    echo "  $exec_name [options]"
     echo
     cat - << EOF-DESCRIPTION
 Description:
   This program performs the testing of specified BASIS project at SBIA.
 EOF-DESCRIPTION
     echo
-    print_options_section
+    print_options
     echo
     cat - << EOF-EXAMPLES
 Examples:
@@ -107,7 +84,7 @@ Examples:
     analysis and memory checks.
 EOF-EXAMPLES
     echo
-    print_contact_section
+    print_contact
 }
 
 # ****************************************************************************
@@ -116,11 +93,12 @@ print_usage ()
 {
     echo "$exec_name (BASIS)"
     echo
-    print_usage_section
+    echo "Usage:"
+    echo "  $exec_name [options]"
     echo
-    print_options_section
+    print_options
     echo
-    print_contact_section
+    print_contact
 }
 
 # ============================================================================

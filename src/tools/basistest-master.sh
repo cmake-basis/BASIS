@@ -23,6 +23,8 @@
 
 @BASH_FUNCTION_get_executable_name@
 @BASH_FUNCTION_get_executable_directory@
+@BASH_FUNCTION_print_version@
+@BASH_FUNCTION_print_contact@
 
 # ============================================================================
 # settings
@@ -31,7 +33,6 @@
 # executable information
 exec_name=$(get_executable_name)
 exec_dir=$(get_executable_directory)
-exec_version='@VERSION@'
 
 # absolute path of tests configuration file
 conf_file='/etc/basistest.conf'
@@ -44,27 +45,8 @@ schedule_file='/var/run/basistest.schedule'
 # ============================================================================
 
 # ****************************************************************************
-# \brief Print version information.
-print_version ()
-{
-    echo "basistest-master (BASIS) version $exec_version"
-    cat - << EOF-COPYRIGHT
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-EOF-COPYRIGHT
-}
-
-# ****************************************************************************
-# \brief Print usage section of help/usage.
-print_usage_section ()
-{
-    echo "Usage:"
-    echo "  $exec_name [options]"
-}
-
-# ****************************************************************************
 # \brief Print documentation of options.
-print_options_section ()
+print_options ()
 {
     cat - << EOF-OPTIONS
 Options:
@@ -82,20 +64,13 @@ EOF-OPTIONS
 }
 
 # ****************************************************************************
-# \brief Print contact information.
-print_contact_section ()
-{
-    echo "Contact:"
-    echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
-}
-
-# ****************************************************************************
 # \brief Print help.
 print_help ()
 {
     echo "$exec_name (BASIS)"
     echo
-    print_usage_section
+    echo "Usage:"
+    echo "  $exec_name [options]"
     echo
     cat - << EOF-DESCRIPTION
 Description:
@@ -156,7 +131,7 @@ Test execution:
   The --args and --verbose options have to be optional.
 EOF-DESCRIPTION
     echo
-    print_options_section
+    print_options
     echo
     cat - << EOF-EXAMPLES
 Examples:
@@ -168,7 +143,7 @@ Examples:
     it manually.
 EOF-EXAMPLES
     echo
-    print_contact_section
+    print_contact
 }
 
 # ****************************************************************************
@@ -177,11 +152,12 @@ print_usage ()
 {
     echo "$exec_name (BASIS)"
     echo
-    print_usage_section
+    echo "Usage:"
+    echo "  $exec_name [options]"
     echo
-    print_options_section
+    print_options
     echo
-    print_contact_section
+    print_contact
 }
 
 # ============================================================================
