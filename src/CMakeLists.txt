@@ -50,8 +50,8 @@ set (
     "cmake/Doxyfile.in"
     "cmake/config.h.in"
     "cmake/config.cc.in"
-    "cmake/mainaux.h.in"
-    "cmake/execname.cpp.in"
+    "cmake/stdaux.h.in"
+    "cmake/stdaux.cc.in"
     "cmake/test_main.cc"
 )
 
