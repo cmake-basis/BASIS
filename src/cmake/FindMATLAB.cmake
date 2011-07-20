@@ -39,10 +39,10 @@
 # ----------------------------------------------------------------------------
 # initialize search
 if (NOT MATLAB_DIR)
-  if ($ENV{MATLABDIR})
-    set (MATLAB_DIR "$ENV{MATLABDIR}"  CACHE PATH "Installation prefix for MATLAB.")
+  if (NOT $ENV{MATLABDIR} STREQUAL "")
+    set (MATLAB_DIR "$ENV{MATLABDIR}"  CACHE PATH "Installation prefix for MATLAB." FORCE)
   else ()
-    set (MATLAB_DIR "$ENV{MATLAB_DIR}" CACHE PATH "Installation prefix for MATLAB.")
+    set (MATLAB_DIR "$ENV{MATLAB_DIR}" CACHE PATH "Installation prefix for MATLAB." FORCE)
   endif ()
 endif ()
 
@@ -68,7 +68,7 @@ if (NOT MATLAB_PATH_SUFFIXES)
     if (CMAKE_SIZE_OF_VOID_P EQUAL 4)
       set (MATLAB_PATH_SUFFIXES "bin/glnx86")
     else ()
-      set (MATLAB_PATH_SUFFIXES "bin/glna64")
+      set (MATLAB_PATH_SUFFIXES "bin/glnxa64")
     endif ()
   endif ()
 endif ()
