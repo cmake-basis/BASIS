@@ -19,9 +19,9 @@
 #include <string>
 
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // system
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \def   LINUX
@@ -119,9 +119,9 @@
 #  define HAVE_TR1_TUPLE @HAVE_TR1_TUPLE@
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // namespace
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Full project own namespace identifier.
@@ -164,9 +164,9 @@
  */
 #define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END } }
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // constants
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
@@ -204,6 +204,54 @@ extern const std::string cVersion;
 // paths
 // ---------------------------------------------------------------------------
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// build tree
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/*!
+ * \brief Absolute path of top directory of build tree.
+ *
+ * This constant is set to the absolute path of the top directory of the build
+ * tree in which the software is built. It can be used to determine whether
+ * an executable was executed from within the build tree rather than an
+ * installation.
+ *
+ * \sa GetInstallationDirectory()
+ */
+extern const std::string cBuildRoot;
+
+/*!
+ * \brief Absolute path to runtime executables in build tree.
+ *
+ * \sa GetRuntimeDirectory()
+ */
+extern const std::string cRuntimeBuildPath;
+
+/*!
+ * \brief Absolute path to auxiliary executables in build tree.
+ *
+ * \sa GetLibexecDirectory()
+ */
+extern const std::string cLibexecBuildPath;
+
+/*!
+ * \brief Absolute path to modules and shared libraries in build tree.
+ *
+ * \sa GetLibraryDirectory()
+ */
+extern const std::string cLibraryBuildPath;
+
+/*!
+ * \brief Absolute path to auxiliary data files in build tree.
+ *
+ * \sa GetDataDirectory()
+ */
+extern const std::string cDataBuildPath;
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// installation
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 /*!
  * \brief Path prefix used by runtime executables.
  *
@@ -212,11 +260,13 @@ extern const std::string cVersion;
  *
  * Example:
  * <code>
- * std::string path = GetExecutablePath () + cRuntimePathPrefix + cDataPath;
+ * std::string path = GetExecutableDirectory () + cRuntimePathPrefix + cDataPath;
  * <endcode>
  *
  * The resulting path is the absolute path to the shared data directory if
  * executed by a main executable which is located in the runtime directory.
+ *
+ * \sa GetInstallationDirectory()
  */
 extern const std::string cRuntimePathPrefix;
 
@@ -228,26 +278,53 @@ extern const std::string cRuntimePathPrefix;
  *
  * Example:
  * <code>
- * std::string path = GetExecutablePath () + cLibexecPathPrefix + cDataPath;
+ * std::string path = GetExecutableDirectory () + cLibexecPathPrefix + cDataPath;
  * <endcode>
  *
  * The resulting path is the absolute path to the shared data directory if
  * executed by an auxiliary executable which is located in the libexec directory.
+ *
+ * \sa GetInstallationDirectory()
  */
 extern const std::string cLibexecPathPrefix;
 
 /*!
- * \brief Path to runtime executables relative to executable path prefix.
+ * \brief Path to runtime executables relative to executable directory.
+ *
+ * \sa cRuntimePathPrefix
+ * \sa cLibexecPathPrefix
+ *
+ * \sa GetRuntimeDirectory()
  */
 extern const std::string cRuntimePath;
 
 /*!
- * \brief Path to auxiliary executables relative to executable path prefix.
+ * \brief Path to auxiliary executables relative to executable directory.
+ *
+ * \sa cRuntimePathPrefix
+ * \sa cLibexecPathPrefix
+ *
+ * \sa GetLibexecDirectory()
  */
 extern const std::string cLibexecPath;
 
 /*!
+ * \brief Path to modules and shared libraries relative to executable directory.
+ *
+ * \sa cRuntimePathPrefix
+ * \sa cLibexecPathPrefix
+ *
+ * \sa GetLibraryDirectory()
+ */
+extern const std::string cLibraryPath;
+
+/*!
  * \brief Path to shared data relative to executable path prefix.
+ *
+ * \sa cRuntimePathPrefix
+ * \sa cLibexecPathPrefix
+ *
+ * \sa GetDataDirectory()
  */
 extern const std::string cDataPath;
 

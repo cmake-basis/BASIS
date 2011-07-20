@@ -24,25 +24,12 @@
 #include "config.h"
 
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+using SBIA_@PROJECT_NAME_UPPER@_NAMESPACE
 
 
-/*!
- * \brief Get absolute path to auxiliary data.
- *
- * \return Absolute path to auxiliary data.
- */
-inline
-std::string GetDataPath ()
-{
-    std::string prefix = GetExecutableDirectory ();
-#ifdef LIBEXEC
-    prefix += cLibexecPrefix;
-#else
-    prefix += cRuntimePrefix;
-#endif
-    return ToAbsolutePath (prefix + cDataPath);
-}
+// ===========================================================================
+// executable information
+// ===========================================================================
 
 /*!
  * \brief Print version information.
@@ -55,8 +42,138 @@ void PrintVersion ()
     std::cout << "See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html." << std::endl;
 }
 
+/*!
+ * \brief Print contact information.
+ */
+inline
+void PrintContactSection ()
+{
+    std::cout << "Contact:" << std::endl;
+    std::cout << "  SBIA Group <sbia-software at uphs.upenn.edu>" << std::endl;
+}
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+// ===========================================================================
+// paths
+// ===========================================================================
+
+/*!
+ * \brief Whether the executable was executed from within the build tree.
+ *
+ * \param [in] execDir Absolute path of executable directory as returned by
+ *                     GetExecutableDirectory (). This function is called
+ *                     implicitly if an empty string is given as argument.
+ *
+ * \return Whether the executable was executed from within the build tree.
+ */
+inline
+bool ExecutingInBuildTree (std::string execDir = "")
+{
+    // get directory of executable if not specified
+    if (execDir.empty ()) execDir = GetExecutableDirectory ();
+
+    // make path relative to top directory of build tree
+    std::string relpath = ToRelativePath (cBuildRoot, execDir);
+
+    // return whether executable directory is inside the build tree or not
+    return !(relpath == "" || relpath == "." ||
+            (relpath.substr (0, 2) == ".." && (relpath.size () == 2 || relpath [2] == '/')));
+}
+
+/*!
+ * \brief Get absolute path of top directory of either build or install tree.
+ *
+ * This function returns the absolute path of the top directory of the
+ * build tree if the executable is executed from within the build tree.
+ * Otherwise, the absolute path of the top directory of the installation
+ * tree is returned, i.e., the absolute INSTALL_PREFIX path as specified
+ * during installation. Note that even when the installation tree was
+ * moved after the configuration and build of the software, the correct
+ * path is returned as long as the relative directory structure of the
+ * installation tree is maintained. This is because the path is determined
+ * relative to the directory of the executable, knowning in which path this
+ * executable should be located relative to the INSTALL_PREFIX.
+ * The build tree, on the other side, is not supposed to be relocatable.
+ *
+ * \return Absolute path of top directory of either build or install tree.
+ */
+inline
+std::string GetInstallationDirectory ()
+{
+    // get directory of executable
+    std::string execDir = GetExecutableDirectory ();
+
+    // if executable is located in build tree, just return configured path
+    if (ExecutingInBuildTree (execDir)) {
+        return cBuildRoot;
+    // otherwise, determine root directory relative to executable directory
+    } else {
+#ifdef LIBEXEC
+        return JoinPaths (execDir, cLibexecPrefix);
+#else
+        return JoinPaths (execDir, cRuntimePrefix);
+#endif
+    }
+}
+
+/*!
+ * \brief Get absolute path of directory containing runtime executables.
+ *
+ * \return Absolute path of directory containing runtime executables.
+ */
+inline
+std::string GetRuntimeDirectory ()
+{
+    if (ExecutingInBuildTree ()) {
+        return cRuntimeBuildPath;
+    } else {
+        return JoinPaths (GetInstallationDirectory (), cRuntimePath);
+    }
+}
+
+/*!
+ * \brief Get absolute path of directory containing auxiliary executables.
+ *
+ * \return Absolute path of directory containing auxiliary executables.
+ */
+inline
+std::string GetLibexecDirectory ()
+{
+    if (ExecutingInBuildTree ()) {
+        return cLibexecBuildPath;
+    } else {
+        return JoinPaths (GetInstallationDirectory (), cLibexecPath);
+    }
+}
+
+/*!
+ * \brief Get absolute path of directory containing libraries.
+ *
+ * \return Absolute path of directory containing libraries.
+ */
+inline
+std::string GetLibraryDirectory ()
+{
+    if (ExecutingInBuildTree ()) {
+        return cLibraryBuildPath;
+    } else {
+        return JoinPaths (GetInstallationDirectory (), cLibraryPath);
+    }
+}
+
+/*!
+ * \brief Get absolute path of directory containing auxiliary data.
+ *
+ * \return Absolute path of directory containing auxiliary data.
+ */
+inline
+std::string GetDataDirectory ()
+{
+    if (ExecutingInBuildTree ()) {
+        return cDataBuildPath;
+    } else {
+        return JoinPaths (GetInstallationDirectory (), cDataPath);
+    }
+}
 
 
 #endif // SBIA_@PROJECT_NAME@_MAINAUX_H_

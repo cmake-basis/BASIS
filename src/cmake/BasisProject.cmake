@@ -507,8 +507,14 @@ endmacro ()
 #                 they use a library of this project. Therefore, it is
 #                 important to avoid potential name conflicts.
 #
+#   - config.cc   Definition of constants declared in config.h file.
+#                 In particular, the paths of the installation directories
+#                 relative to the executables are defined by this file.
+#                 These constants are used by the helper functions provided
+#                 by the mainaux.h file.
+#
 #   - mainaux.h   This file is intended to be included by .(c|cc|cpp|cxx) files
-#                 only which contain the definition of the main () function.
+#                 only which contain the definition of the main() function.
 #                 It shall not be included by any other source file!
 #
 # \note If there exists a *.in file of the corresponding source file in the
@@ -529,6 +535,24 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (BINARY_CODE_DIR "${PROJECT_BINARY_DIR}/${TMP}")
   file (RELATIVE_PATH TMP "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
   set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/${TMP}")
+
+  # set variables to be substituted within auxiliary source files
+  set (BUILD_ROOT_PATH_CONFIG    "${CMAKE_BINARY_DIR}")
+  set (RUNTIME_BUILD_PATH_CONFIG "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+  set (LIBEXEC_BUILD_PATH_CONFIG "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+  set (LIBRARY_BUILD_PATH_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+  set (DATA_BUILD_PATH_CONFIG    "${PROJECT_DATA_DIR}")
+
+  file (RELATIVE_PATH RUNTIME_PATH_PREFIX_CONFIG "${INSTALL_PREFIX}/${INSTALL_RUNTIME_DIR}" "${INSTALL_PREFIX}")
+  file (RELATIVE_PATH LIBEXEC_PATH_PREFIX_CONFIG "${INSTALL_PREFIX}/${INSTALL_LIBEXEC_DIR}" "${INSTALL_PREFIX}")
+
+  string (REGEX REPLACE "/$|\\$" "" RUNTIME_PATH_PREFIX_CONFIG "${RUNTIME_PATH_PREFIX_CONFIG}")
+  string (REGEX REPLACE "/$|\\$" "" LIBEXEC_PATH_PREFIX_CONFIG "${LIBEXEC_PATH_PREFIX_CONFIG}")
+
+  set (RUNTIME_PATH_CONFIG "${INSTALL_RUNTIME_DIR}")
+  set (LIBEXEC_PATH_CONFIG "${INSTALL_LIBEXEC_DIR}")
+  set (LIBRARY_PATH_CONFIG "${INSTALL_LIBRARY_DIR}")
+  set (DATA_PATH_CONFIG    "${INSTALL_SHARE_DIR}")
 
   # configure private auxiliary source files
   set (
