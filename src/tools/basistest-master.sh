@@ -87,7 +87,7 @@ Configuration:
   For each test of a specific branch of a project, the configuration file
   contains a line following the format:
 
-    <m>:<h>:<d>:<project>:<branch>:<model>:<options>
+    <m> <h> <d> <project> <branch> <model> <options>
 
   where
 
@@ -112,7 +112,7 @@ Configuration:
   project BASIS itself which are run once every day including coverage
   analysis and memory checks are scheduled by
 
-    *:*:1:BASIS:trunk:Nightly:coverage,memcheck
+    * * 1 BASIS trunk Nightly coverage,memcheck
 
   Attention: The entire line may not contain any whitespace character!
 
