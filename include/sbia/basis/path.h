@@ -36,9 +36,9 @@
 SBIA_BASIS_NAMESPACE_BEGIN
 
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // constants
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Native path separator, i.e., either slash (/) or backslash (\).
@@ -50,9 +50,9 @@ extern const char cPathSeparator;
  */
 extern const std::string cPathSeparatorStr;
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // path representations
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Whether a given string is a valid path.
@@ -138,9 +138,9 @@ std::string ToWindowsPath (const std::string &path);
  */
 std::string ToNativePath (const std::string &path);
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // working directory
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Get absolute path of the (current) working directory.
@@ -149,9 +149,9 @@ std::string ToNativePath (const std::string &path);
  */
 std::string GetWorkingDirectory ();
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // path components
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Split path into its components.
@@ -288,9 +288,9 @@ std::string GetFileNameWithoutExtension (const std::string &path);
  */
 std::string GetFileNameExtension (const std::string &path);
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // absolute / relative paths
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Test whether a given path is absolute.
@@ -386,9 +386,24 @@ std::string ToRelativePath (const std::string &path);
  */
 std::string ToRelativePath (const std::string &base, const std::string &path);
 
-//////////////////////////////////////////////////////////////////////////////
+/*!
+ * \brief Join two paths, e.g., base path and relative path.
+ *
+ * This function joins two paths. If the second path is an absolute path,
+ * this cleaned absolute path is returned. Otherwise, the base path is
+ * prepended to the relative path and the resulting relative or absolute
+ * path returned.
+ *
+ * \param [in] base Base path.
+ * \param [in] path Relative or absolute path.
+ *
+ * \return Joined path.
+ */
+std::string JoinPaths (const std::string &base, const std::string &path);
+
+// ===========================================================================
 // symbolic links
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Whether a given path is a symbolic link.
@@ -429,9 +444,9 @@ bool ReadSymbolicLink (const std::string &link, std::string &value);
  */
 std::string GetRealPath (const std::string &path);
 
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 // executable file
-//////////////////////////////////////////////////////////////////////////////
+// ===========================================================================
 
 /*!
  * \brief Get canonical path of executable file.
