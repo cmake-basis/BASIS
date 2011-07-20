@@ -248,8 +248,8 @@ macro (basis_project_initialize)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
 
-  # get project revision
-  basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
+  # get revision of project branch
+  basis_svn_get_last_changed_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
 
   # extract version numbers from version string
   basis_version_numbers (
