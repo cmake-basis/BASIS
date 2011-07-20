@@ -471,8 +471,8 @@ macro (basis_project_finalize)
 
   # finalize (super-)project
   if (NOT IS_SUBPROJECT)
-    # create and add execname executable
-    #basis_add_execname ()
+    # configure constructor of ExecutableTargetInfo
+    basis_configure_ExecutableTargetInfo ()
     # add uninstall target
     basis_add_uninstall ()
 
@@ -510,12 +510,11 @@ endmacro ()
 #   - config.cc   Definition of constants declared in config.h file.
 #                 In particular, the paths of the installation directories
 #                 relative to the executables are defined by this file.
-#                 These constants are used by the helper functions provided
-#                 by the mainaux.h file.
+#                 These constants are used by the auxiliary functions
+#                 implemented in stdaux.h.
 #
-#   - mainaux.h   This file is intended to be included by .(c|cc|cpp|cxx) files
-#                 only which contain the definition of the main() function.
-#                 It shall not be included by any other source file!
+#   - stdaux.h    Auxiliary functions such as functions to get absolute path
+#                 to the subdirectories of the installation.
 #
 # \note If there exists a *.in file of the corresponding source file in the
 #       PROJECT_CONFIG_DIR, it will be used as template. Otherwise, the
@@ -554,11 +553,20 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (LIBRARY_PATH_CONFIG "${INSTALL_LIBRARY_DIR}")
   set (DATA_PATH_CONFIG    "${INSTALL_SHARE_DIR}")
 
+  if (IS_SUBPROJECT)
+    set (IS_SUBPROJECT_CONFIG "true")
+  else ()
+    set (IS_SUBPROJECT_CONFIG "false")
+  endif ()
+
+  set (EXECUTABLE_TARGET_INFO_CONFIG "\@EXECUTABLE_TARGET_INFO_CONFIG\@")
+
   # configure private auxiliary source files
   set (
     SOURCES_NAMES
       "config.cc"
-      "mainaux.h"
+      "stdaux.h"
+      "stdaux.cc"
   )
 
   foreach (SOURCE ${SOURCES_NAMES})
@@ -640,136 +648,73 @@ function (basis_get_property VAR SCOPE ELEMENT)
 endfunction ()
 
 # ============================================================================
-# execname
+# mapping of build target name to executable file
 # ============================================================================
 
 # ****************************************************************************
-# \brief Create source code of execname command and add executable target.
+# \brief Configure constructor definition of ExecutableTargetInfo class.
 #
-# \see basis_create_execname
+# The previously configured source file stdaux.cc (such that it can be used
+# within add_executable() statements), is configured a second time by this
+# function in order to add the missing implementation of the ExecutableTargetInfo
+# constructor. Therefore, the BASIS_TARGETS variable and the target properties
+# of these targets are used. Note that only during the finalization of the
+# build configuration all build targets are known. Hence, this function is
+# called by the finalization routine.
 #
-# \param [in] TARGET_NAME Name of target. Defaults to "execname".
+# \sa ExecutableTargetInfo
 
-function (basis_add_execname)
-  if (ARGC GREATER 1)
-    message (FATAL_ERROR "Too many arguments given for function basis_add_execname ().")
+function (basis_configure_ExecutableTargetInfo)
+  if (BASIS_VERBOSE)
+    message (STATUS "Configuring constructor of ExecutableTargetInfo...")
   endif ()
 
-  if (ARGC GREATER 0)
-    set (TARGET_UID "${ARGV1}")
-  else ()
-    set (TARGET_UID "execname")
-  endif ()
-
-  # create source code
-  basis_create_execname (SOURCES)
-
-  # add executable target
-  add_executable (${TARGET_UID} ${SOURCES})
-endfunction ()
-
-# ****************************************************************************
-# \brief Create source code of execname target.
-#
-# The source file of the executable which is build by this target is
-# configured using BASIS_TARGETS and the properties BASIS_TYPE, PREFIX,
-# OUTPUT_NAME, and SUFFIX of these targets. The purpose of the built executable
-# is to map CMake target names to their executable output names.
-#
-# Within source code of a certain project, other SBIA executables are called
-# only indirectly using the target name which must be fixed and unique within
-# the lab. The output name of these targets may however vary and depend on
-# whether the project is build as part of a superproject or not. Each BASIS
-# CMake function may adjust the output name in order to resolve name
-# conflicts with other targets or SBIA executables.
-#
-# The idea is that a target name is supposed to be stable and known to the
-# developer as soon as the target is added to a CMakeLists.txt file, while
-# the name of the actual executable file is not known a priori as it is set
-# by the BASIS CMake functions during the configure step. Thus, the developer
-# should not rely on a particular name of the executable, but on the name of
-# the corresponding CMake target.
-#
-# The execname target implements the calling conventions specified in the
-# design Conventions document in the 'doc' directory.
-#
-# Example template file snippet:
-#
-# \code
-# //! Number of targets.
-# const int numberOfTargets = @NUMBER_OF_TARGETS@;
-#
-# //! Map which maps target names to executable names.
-# const char * const targetNameToOutputNameMap [numberOfTargets][2] =
-# {
-# @TARGET_NAME_TO_OUTPUT_NAME_MAP@
-# };
-# \endcode
-#
-# Example usage:
-#
-# \code
-# execname TargetA@ProjectA
-# execname TargetA@ProjectB
-# execname --namespace ProjectA TargetA
-# \endcode
-#
-# \param [out] SOURCES List of generated source files.
-# \param [in]  ARGN    The remaining list of arguments is parsed for the
-#                      following options:
-#
-#    BASENAME Basename of generated source file.
-#             If not given, the basename of the template source file is used.
-#    TEMPLATE Template source file. If not specified, the default template
-#             which is part of the SBIA CMake Modules package is used.
-
-function (basis_create_execname SOURCES)
-  # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "BASENAME;TEMPLATE" "" ${ARGN})
-
-  if (NOT ARGN_TEMPLATE)
-    set (ARGN_TEMPLATE "${BASIS_MODULE_PATH}/execname.cpp.in")
-  endif ()
-
-  if (NOT ARGN_BASENAME)
-    get_filename_component (ARGN_BASENAME "${ARGN_TEMPLATE}" NAME_WE)
-    string (REGEX REPLACE "\\.in$"          ""    ARGN_BASENAME "${ARGN_BASENAME}")
-    string (REGEX REPLACE "\\.in\(\\..*\)$" "\\1" ARGN_BASENAME "${ARGN_BASENAME}")
-  endif ()
-
-  # output name
-  set (SOURCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/${ARGN_BASENAME}.cpp")
-
-  # create initialization code of target name to executable name map
-  set (NUMBER_OF_TARGETS "0")
-  set (TARGET_NAME_TO_EXECUTABLE_NAME_MAP)
-
+  # generate source code
+  set (C)
+  set (N 0)
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
-  
-    if (BASIS_TYPE MATCHES "EXECUTABLE|SCRIPT")
-      get_target_property (OUTPUT_NAME "${TARGET_UID}" "OUTPUT_NAME")
-  
-      if (NOT OUTPUT_NAME)
-        set (OUTPUT_NAME "${TARGET_UID}")
+ 
+    if (BASIS_TYPE MATCHES "EXEC|SCRIPT")
+      get_target_property (RUNTIME_OUTPUT_NAME "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
+      get_target_property (OUTPUT_NAME         "${TARGET_UID}" "OUTPUT_NAME")
+      get_target_property (BUILD_DIR           "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
+ 
+      if (RUNTIME_OUTPUT_NAME)
+        set (EXEC_NAME "${RUNTIME_OUTPUT_NAME}")
+      elseif (OUTPUT_NAME)
+        set (EXEC_NAME "${OUTPUT_NAME}")
+      else ()
+        set (EXEC_NAME "${TARGET_UID}")
       endif ()
-  
-      set (EXECUTABLE_NAME "${PREFIX}${OUTPUT_NAME}${SUFFIX}")
-
-      if (TARGET_NAME_TO_EXECUTABLE_NAME_MAP)
-        set (TARGET_NAME_TO_EXECUTABLE_NAME_MAP "${TARGET_NAME_TO_EXECUTABLE_NAME_MAP},\n")
+ 
+      if (BASIS_TYPE MATCHES "LIBEXEC")
+        set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
+      else ()
+        set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
       endif ()
-      set (TARGET_NAME_TO_EXECUTABLE_NAME_MAP "${TARGET_NAME_TO_EXECUTABLE_NAME_MAP}    {\"${TARGET_UID}\", \"${EXECUTABLE_NAME}\"}")
 
-      math (EXPR NUMBER_OF_TARGETS "${NUMBER_OF_TARGETS} + 1")
+      set (C "${C}\n")
+      set (C "${C}    // ${TARGET_UID}\n")
+      set (C "${C}    _execNames   [\"${TARGET_UID}\"] = \"${EXEC_NAME}\";\n")
+      set (C "${C}    _buildDirs   [\"${TARGET_UID}\"] = \"${BUILD_DIR}\";\n")
+      set (C "${C}    _installDirs [\"${TARGET_UID}\"] = \"${INSTALL_DIR}\";\n")
+
+      math (EXPR N "${N} + 1")
     endif ()
   endforeach ()
 
   # configure source file
-  configure_file ("${ARGN_TEMPLATE}" "${SOURCE_FILE}" @ONLY)
+  file (RELATIVE_PATH SRC "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
+  set (SOURCE_FILE "${PROJECT_BINARY_DIR}/${SRC}/stdaux.cc")
+  set (EXECUTABLE_TARGET_INFO_CONFIG "${C}")
 
-  # return
-  set (SOURCES "${SOURCE_FILE}" PARENT_SCOPE)
+  configure_file ("${SOURCE_FILE}" "${SOURCE_FILE}" @ONLY)
+
+  if (BASIS_VERBOSE)
+    message (STATUS "Added ${N} entries to ExecutableTargetInfo maps")
+    message (STATUS "Configuring constructor of ExecutableTargetInfo... - done")
+  endif ()
 endfunction ()
 
 # ============================================================================
