@@ -108,13 +108,13 @@ Configuration:
                 available options. By default, the default options of the
                 CTest script are used.
 
+  Attention: Neither of these entries may contain any whitespace character!
+
   For example, nightly tests of the main development branch (trunk) of the
   project BASIS itself which are run once every day including coverage
   analysis and memory checks are scheduled by
 
     * * 1 BASIS trunk Nightly coverage,memcheck
-
-  Attention: The entire line may not contain any whitespace character!
 
 Test execution:
   By default, the "basistest-slave" command is invoked for each entry in
