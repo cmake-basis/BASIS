@@ -142,7 +142,7 @@ if __name__ == "__main__":
                         argv = reArgs.split (args)
                     else:
                         argv = []
-                    sys.stdout.write (name + " (")
+                    sys.stdout.write ("function " + name + " (")
                     for i in range (0, len (argv)):
                         if i > 0:
                             sys.stdout.write (", ")
@@ -162,7 +162,7 @@ if __name__ == "__main__":
                         argv = reArgs.split (args)
                     else:
                         argv = []
-                    sys.stdout.write (name + " (")
+                    sys.stdout.write ("macro " + name + " (")
                     for i in range (0, len (argv)):
                         if i > 0:
                             sys.stdout.write (", ")
