@@ -1,39 +1,37 @@
 #! /usr/bin/env python
 
-"""
-  ATTENTION: DO NOT use the tokens used by the file update within this
-             file. Write < basis-custom > instead, for example.
-"""
+# ATTENTION: DO NOT use the tokens used by the file update anywhere within
+#            this file. Write < basis-custom > instead, for example.
 
 """
-##############################################################################
-# \file  updatefile.py
-# \brief Update file from template file while preserving custom sections.
-#
-# This script is used by the BasisUpdate CMake module. This module is used to
-# update files of a project instantiated from a particular revision of the
-# BASIS project template during the configure step of CMake. This way,
-# projects pull the changes of the compatible template automatically.
-# Sections in the original file which are enclosed by the tokens
-# < basis-custom > and </ basis-custom > or < basis-license > and
-# </ basis-license > (without trailing spaces) are preserved while all other
-# content is replaced by the template file. The customized sections are
-# inserted into the template in the order they appear in the original file
-# and the template file. If more custom sections are present in the original
-# file than in the template file, these custom sections are appended at the
-# end of the resulting file.
-#
-# See the documentation of BasisUpdate.cmake for further details.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-##############################################################################
+@file  updatefile.py
+@brief Update file from template file while preserving custom sections.
+
+This script is used by the BasisUpdate CMake module. This module is used to
+update files of a project instantiated from a particular revision of the
+BASIS project template during the configure step of CMake. This way,
+projects pull the changes of the compatible template automatically.
+Sections in the original file which are enclosed by the tokens
+< basis-custom > and </ basis-custom > or < basis-license > and
+</ basis-license > (without trailing spaces) are preserved while all other
+content is replaced by the template file. The customized sections are
+inserted into the template in the order they appear in the original file
+and the template file. If more custom sections are present in the original
+file than in the template file, these custom sections are appended at the
+end of the resulting file.
+
+See the documentation of BasisUpdate.cmake for further details.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 """
 
 # modules
-import os, sys, getopt
+import os
+import sys
+import getopt
 
 # constants
 customTag  = "basis-custom"
@@ -47,6 +45,7 @@ tokenKeepTemplate = "REMOVE_THIS_STRING_IF_YOU_WANT_TO_KEEP_YOUR_CHANGES"
 
 # ****************************************************************************
 def version (progName):
+    """Print version information."""
     print progName + "1.0.0"
 
 # ****************************************************************************

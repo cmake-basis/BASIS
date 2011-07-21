@@ -15,6 +15,7 @@ if __name__ == "__main__":
         sys.stderr.write ("Failed to open file " + fileName + " for reading!\n")
         sys.exit (1)
     # compile regular expressions
+    reInclude       = re.compile (r"include\s*\((?P<module>.+)\)\s*$")
     reFunctionStart = re.compile (r"function\s*\((?P<name>\w+)(?P<args>.*)\)\s*$")
     reFunctionEnd   = re.compile (r"endfunction\s\(.*\)\s*$")
     reMacroStart    = re.compile (r"macro\s*\((?P<name>\w+)(?P<args>.*)\)\s*$")
@@ -107,6 +108,14 @@ if __name__ == "__main__":
             continue
         # look for new comment block or block following a comment
         if currentBlock == '':
+            # include
+            m = reInclude.match (line)
+            if m is not None:
+                module = m.group ('module')
+                module = module.replace ("\"", "")
+                module = module.replace ("${CMAKE_CURRENT_LIST_DIR}/", "")
+                sys.stdout.write ("#include \"" + module + "\"\n")
+                continue
             # enter if-clause
             m = reIfClauseStart.match (line)
             if m is not None:

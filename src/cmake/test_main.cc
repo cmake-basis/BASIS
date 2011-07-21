@@ -1,3 +1,8 @@
+/*!
+ * @file  test_main.cc
+ * @brief Implementation of main() function for GMock based test drivers.
+ */
+
 // Copyright 2008, Google Inc.
 // All rights reserved.
 //
