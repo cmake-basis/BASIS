@@ -31,7 +31,16 @@ basis_add_doc (ChangeLog GENERATOR svn2cl)
 #
 # \see basis_add_doc ()
 
-basis_add_doc (API GENERATOR Doxygen EXCLUDE_PATTERNS "*/tclap/*")
+basis_add_doc (
+  API 
+  GENERATOR Doxygen
+  EXCLUDE_PATTERNS "*/tclap/*"
+                   "*/gmock/*"
+                   "*/gtest/*"
+                   "*/gmock-gtest-all.cc"
+                   "cmake_install.cmake"
+                   "CTestTestfile.cmake"
+)
 
 # ============================================================================
 # manuals
