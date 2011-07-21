@@ -1,30 +1,30 @@
 ##############################################################################
-# \file  FindGMock.cmake
-# \brief Find Google Mock package.
-#
-# Input variables:
-#
-#   GMock_DIR                The Google Mock package files are searched under
-#                            the specified root directory. If they are not found
-#                            there, the default search paths are considered.
-#                            This variable can also be set as environment variable.
-#   GMOCK_DIR                Alternative environment variable for GMock_DIR.
-#   GMock_SHARED_LIBRARIES   Forces this module to search for shared libraries.
-#                            Otherwise, static libraries are preferred.
-#
-# Sets the following CMake variables:
-#
-#   GMock_FOUND          Whether the package was found and the following CMake
-#                        variables are valid.
-#   GMock_INCLUDE_DIR    Package include directories.
-#   GMock_INCLUDES       Include directories including prerequisite libraries.
-#   GMock_LIBRARY        Package libraries.
-#   GMock_LIBRARIES      Package ibraries and prerequisite libraries.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  FindGMock.cmake
+#! @brief Find Google Mock package.
+#!
+#! Input variables:
+#!
+#! - GMock_DIR                The Google Mock package files are searched under
+#!                            the specified root directory. If they are not found
+#!                            there, the default search paths are considered.
+#!                            This variable can also be set as environment variable.
+#! - GMOCK_DIR                Alternative environment variable for GMock_DIR.
+#! - GMock_SHARED_LIBRARIES   Forces this module to search for shared libraries.
+#!                            Otherwise, static libraries are preferred.
+#!
+#! Sets the following CMake variables:
+#!
+#! - GMock_FOUND          Whether the package was found and the following CMake
+#!                        variables are valid.
+#! - GMock_INCLUDE_DIR    Package include directories.
+#! - GMock_INCLUDES       Include directories including prerequisite libraries.
+#! - GMock_LIBRARY        Package libraries.
+#! - GMock_LIBRARIES      Package ibraries and prerequisite libraries.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ----------------------------------------------------------------------------

@@ -1,32 +1,32 @@
 ##############################################################################
-# \file  FindNiftCLib.cmake
-# \brief Find nifticlib package.
-#
-# Input variables:
-#
-#   NiftiCLib_DIR            The nifticlib package files are searched under the
-#                            specified root directory. If they are not found
-#                            there, the default search paths are considered.
-#                            This variable can also be set as environment variable.
-#   NIFTICLIB_DIR            Alternative environment variable for NiftiCLib_DIR.
-#   NiftiCLib_USE_STATIC_LIB Forces this module to search for the static
-#                            library. Otherwise, the shared library is preferred.
-#
-# Sets the following CMake variables:
-#
-#   NiftiCLib_FOUND        Whether the nifticlib package was found and the
-#                          following CMake variables are valid.
-#   NiftiCLib_INCLUDE_DIR  Cached include directory/ies.
-#   NiftiCLib_INCLUDE_DIRS Alias for NiftiCLib_INCLUDE_DIR (not cached).
-#   NiftiCLib_INCLUDES     Alias for NiftiCLib_INCLUDE_DIR (not cached).
-#   NiftiCLib_LIB          Path of niftiio library.
-#   NiftiCLib_LIBRARY      Alias for NiftiCLib_LIB (not cached).
-#   NiftiCLib_LIBRARIES    Path of niftiio library and prerequisite libraries.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  FindNiftCLib.cmake
+#! @brief Find nifticlib package.
+#!
+#! Input variables:
+#!
+#! - NiftiCLib_DIR            The nifticlib package files are searched under the
+#!                            specified root directory. If they are not found
+#!                            there, the default search paths are considered.
+#!                            This variable can also be set as environment variable.
+#! - NIFTICLIB_DIR            Alternative environment variable for NiftiCLib_DIR.
+#! - NiftiCLib_USE_STATIC_LIB Forces this module to search for the static
+#!                            library. Otherwise, the shared library is preferred.
+#!
+#! Sets the following CMake variables:
+#!
+#! - NiftiCLib_FOUND        Whether the nifticlib package was found and the
+#!                          following CMake variables are valid.
+#! - NiftiCLib_INCLUDE_DIR  Cached include directory/ies.
+#! - NiftiCLib_INCLUDE_DIRS Alias for NiftiCLib_INCLUDE_DIR (not cached).
+#! - NiftiCLib_INCLUDES     Alias for NiftiCLib_INCLUDE_DIR (not cached).
+#! - NiftiCLib_LIB          Path of niftiio library.
+#! - NiftiCLib_LIBRARY      Alias for NiftiCLib_LIB (not cached).
+#! - NiftiCLib_LIBRARIES    Path of niftiio library and prerequisite libraries.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================

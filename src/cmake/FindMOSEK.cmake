@@ -1,62 +1,62 @@
 ##############################################################################
-# \file  FindMOSEK.cmake
-# \brief Find MOSEK (http://www.mosek.com) package.
-#
-# Input variables:
-#
-#   MOSEK_DIR            The MOSEK package files are searched under the specified
-#                        root directory. If they are not found there, the default
-#                        search paths are considered.
-#                        This variable can also be set as environment variable.
-#   MOSEK_NO_OMP         Whether to use the link libraries build without
-#                        OpenMP, i.e., multi-threading, enabled. By default,
-#                        the multi-threaded libraries are used.
-#   MOSEK_MATLAB         Whether the MATLAB components of the MOSEK packages
-#                        should be found. Defaults to 1, if MATLAB_FOUND
-#                        evaluates to true and 0 otherwise.
-#   MOSEK_JAVA           Whether the Java components of the MOSEK package should
-#                        be found. Defaults to 0.
-#   MOSEK_PYTHON         Whether the Python components of the MOSEK package
-#                        should be found. Defaults to 0.
-#   MOSEK_TOOLS_SUFFIX   Platform specific path suffix for tools, i.e.,
-#                        "tools/platform/linux64x86" on 64-bit Linux systems.
-#                        If not specified, this module determines the right
-#                        suffix depending on the CMake system variables.
-#   MATLAB_RELEASE       Release of MATLAB installation. Set to the 'Release'
-#                        return value of the "ver ('MATLAB')" command of MATLAB
-#                        without brackets. If this variable is not set and the
-#                        basis_get_matlab_release command is available, it is
-#                        invoked to determine the release version automatically.
-#                        Otherwise, the release version defaults to "R2009b".
-#   MEX_EXT              The extension of MEX-files. If this variable is not set
-#                        and the basis_mexext command is available, it is invoked
-#                        to determine the extension automatically. Otherwise,
-#                        the MEX extension defaults to "mexa64".
-#   PYTHON_VERSION       Version of Python installation. Set to first two or three
-#                        return values of "sys.version_info" separated by a period (.).
-#                        If this variable is not set and the basis_get_python_version
-#                        command is available, it is invoked to determine the version
-#                        automatically. Otherwise, the Python version defaults to 2.6.
-#
-# Sets the following CMake variables:
-#
-#   MOSEK_FOUND          Whether the package was found and the following CMake
-#                        variables are valid.
-#   MOSEK_INCLUDE_DIR    Package include directories.
-#   MOSEK_INCLUDES       Include directories including prerequisite libraries (non-cached).
-#   MOSEK_LIBRARY        Package libraries.
-#   MOSEK_LIBRARIES      Package libraries and prerequisite libraries (non-cached).
-#   MOSEK_mosekopt_MEX   Package mosekopt MEX-file.
-#   MOSEK_MEX_FILES      List of MEX-files (non-cached).
-#   MOSEK_mosek_JAR      Package mosek Java library (.jar file).
-#   MOSEK_CLASSPATH      List of Java package libraries and prerequisite
-#                        libraries (non-cached).
-#   MOSEK_PYTHONPATH     Path to Python modules of this package.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  FindMOSEK.cmake
+#! @brief Find MOSEK (http://www.mosek.com) package.
+#!
+#! Input variables:
+#!
+#! - MOSEK_DIR            The MOSEK package files are searched under the specified
+#!                        root directory. If they are not found there, the default
+#!                        search paths are considered.
+#!                        This variable can also be set as environment variable.
+#! - MOSEK_NO_OMP         Whether to use the link libraries build without
+#!                        OpenMP, i.e., multi-threading, enabled. By default,
+#!                        the multi-threaded libraries are used.
+#! - MOSEK_MATLAB         Whether the MATLAB components of the MOSEK packages
+#!                        should be found. Defaults to 1, if MATLAB_FOUND
+#!                        evaluates to true and 0 otherwise.
+#! - MOSEK_JAVA           Whether the Java components of the MOSEK package should
+#!                        be found. Defaults to 0.
+#! - MOSEK_PYTHON         Whether the Python components of the MOSEK package
+#!                        should be found. Defaults to 0.
+#! - MOSEK_TOOLS_SUFFIX   Platform specific path suffix for tools, i.e.,
+#!                        "tools/platform/linux64x86" on 64-bit Linux systems.
+#!                        If not specified, this module determines the right
+#!                        suffix depending on the CMake system variables.
+#! - MATLAB_RELEASE       Release of MATLAB installation. Set to the 'Release'
+#!                        return value of the "ver ('MATLAB')" command of MATLAB
+#!                        without brackets. If this variable is not set and the
+#!                        basis_get_matlab_release command is available, it is
+#!                        invoked to determine the release version automatically.
+#!                        Otherwise, the release version defaults to "R2009b".
+#! - MEX_EXT              The extension of MEX-files. If this variable is not set
+#!                        and the basis_mexext command is available, it is invoked
+#!                        to determine the extension automatically. Otherwise,
+#!                        the MEX extension defaults to "mexa64".
+#! - PYTHON_VERSION       Version of Python installation. Set to first two or three
+#!                        return values of "sys.version_info" separated by a period (.).
+#!                        If this variable is not set and the basis_get_python_version
+#!                        command is available, it is invoked to determine the version
+#!                        automatically. Otherwise, the Python version defaults to 2.6.
+#!
+#! Sets the following CMake variables:
+#!
+#! - MOSEK_FOUND          Whether the package was found and the following CMake
+#!                        variables are valid.
+#! - MOSEK_INCLUDE_DIR    Package include directories.
+#! - MOSEK_INCLUDES       Include directories including prerequisite libraries (non-cached).
+#! - MOSEK_LIBRARY        Package libraries.
+#! - MOSEK_LIBRARIES      Package libraries and prerequisite libraries (non-cached).
+#! - MOSEK_mosekopt_MEX   Package mosekopt MEX-file.
+#! - MOSEK_MEX_FILES      List of MEX-files (non-cached).
+#! - MOSEK_mosek_JAR      Package mosek Java library (.jar file).
+#! - MOSEK_CLASSPATH      List of Java package libraries and prerequisite
+#!                        libraries (non-cached).
+#! - MOSEK_PYTHONPATH     Path to Python modules of this package.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ----------------------------------------------------------------------------

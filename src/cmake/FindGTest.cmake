@@ -1,31 +1,31 @@
 ##############################################################################
-# \file  FindGTest.cmake
-# \brief Find Google Test package.
-#
-# Input variables:
-#
-#   GTest_DIR                The Google Test package files are searched under
-#                            the specified root directory. If they are not found
-#                            there, the default search paths are considered.
-#                            This variable can also be set as environment variable.
-#   GTEST_DIR                Alternative environment variable for GTest_DIR.
-#   GTest_SHARED_LIBRARIES   Forces this module to search for shared libraries.
-#                            Otherwise, static libraries are preferred.
-#
-# Sets the following CMake variables:
-#
-#   GTest_FOUND          Whether the package was found and the following CMake
-#                        variables are valid.
-#   GTest_INCLUDE_DIR    Package include directories.
-#   GTest_INCLUDES       Include directories including prerequisite libraries.
-#   GTest_LIBRARY        Path of gtest library.
-#   GTest_MAIN_LIBRARY   Path of gtest_main library (optional).
-#   GTest_LIBRARIES      Package libraries and prerequisite libraries.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  FindGTest.cmake
+#! @brief Find Google Test package.
+#!
+#! Input variables:
+#!
+#! - GTest_DIR                The Google Test package files are searched under
+#!                            the specified root directory. If they are not found
+#!                            there, the default search paths are considered.
+#!                            This variable can also be set as environment variable.
+#! - GTEST_DIR                Alternative environment variable for GTest_DIR.
+#! - GTest_SHARED_LIBRARIES   Forces this module to search for shared libraries.
+#!                            Otherwise, static libraries are preferred.
+#!
+#! Sets the following CMake variables:
+#!
+#! - GTest_FOUND          Whether the package was found and the following CMake
+#!                        variables are valid.
+#! - GTest_INCLUDE_DIR    Package include directories.
+#! - GTest_INCLUDES       Include directories including prerequisite libraries.
+#! - GTest_LIBRARY        Path of gtest library.
+#! - GTest_MAIN_LIBRARY   Path of gtest_main library (optional).
+#! - GTest_LIBRARIES      Package libraries and prerequisite libraries.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ----------------------------------------------------------------------------

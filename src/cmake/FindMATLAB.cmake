@@ -1,39 +1,39 @@
 ##############################################################################
-# \file  FindMATLAB.cmake
-# \brief Find MATLAB installation.
-#
-# Input variables:
-#
-#   MATLAB_DIR             The installation directory of MATLAB.
-#                          Can also be set as environment variable.
-#   MATLABDIR              Alternative environment variable for MATLAB_DIR.
-#   MATLAB_PATH_SUFFIXES   Path suffixes which are used to find the
-#                          proper MATLAB libraries. By default, this
-#                          find module tries to determine the path
-#                          suffix from the CMake variables which describe
-#                          the system. For example, on 64-bit UNIX, the
-#                          libraries are searched in MATLAB_DIR/bin/glna64.
-#                          Set this variable before the find_package ()
-#                          command if this find module fails to
-#                          determine the correct location of the
-#                          MATLAB libraries underneath the root directory.
-#
-# Sets the following CMake variables:
-#
-#   MATLAB_FOUND         Whether the package was found and the following CMake
-#                        variables are valid.
-#   MATLAB_INCLUDE_DIR   Package include directories.
-#   MATLAB_INCLUDES      Include directories including prerequisite libraries.
-#   MATLAB_mex_LIBRARY   The MEX library of MATLAB.
-#   MATLAB_mx_LIBRARY    The mx library of MATLAB.
-#   MATLAB_eng_LIBRARY   The MATLAB engine library.
-#   MATLAB_LIBRARY       All MATLAB libraries.
-#   MATLAB_LIBRARIES     Package libraries and prerequisite libraries.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  FindMATLAB.cmake
+#! @brief Find MATLAB installation.
+#!
+#! Input variables:
+#!
+#! - MATLAB_DIR             The installation directory of MATLAB.
+#!                          Can also be set as environment variable.
+#! - MATLABDIR              Alternative environment variable for MATLAB_DIR.
+#! - MATLAB_PATH_SUFFIXES   Path suffixes which are used to find the
+#!                          proper MATLAB libraries. By default, this
+#!                          find module tries to determine the path
+#!                          suffix from the CMake variables which describe
+#!                          the system. For example, on 64-bit UNIX, the
+#!                          libraries are searched in MATLAB_DIR/bin/glna64.
+#!                          Set this variable before the find_package ()
+#!                          command if this find module fails to
+#!                          determine the correct location of the
+#!                          MATLAB libraries underneath the root directory.
+#!
+#! Sets the following CMake variables:
+#!
+#! - MATLAB_FOUND         Whether the package was found and the following CMake
+#!                        variables are valid.
+#! - MATLAB_INCLUDE_DIR   Package include directories.
+#! - MATLAB_INCLUDES      Include directories including prerequisite libraries.
+#! - MATLAB_mex_LIBRARY   The MEX library of MATLAB.
+#! - MATLAB_mx_LIBRARY    The mx library of MATLAB.
+#! - MATLAB_eng_LIBRARY   The MATLAB engine library.
+#! - MATLAB_LIBRARY       All MATLAB libraries.
+#! - MATLAB_LIBRARIES     Package libraries and prerequisite libraries.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ----------------------------------------------------------------------------
