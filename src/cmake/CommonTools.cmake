@@ -203,10 +203,10 @@ endmacro ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Concatenates all list elements into a single string.
-#
-# \param [out] STR  Output string.
-# \param [in]  ARGN Input list.
+#! @brief Concatenates all list elements into a single string.
+#!
+#! @param [out] STR  Output string.
+#! @param [in]  ARGN Input list.
 
 function (basis_list_to_string STR)
   set (OUT)
@@ -217,16 +217,40 @@ function (basis_list_to_string STR)
 endfunction ()
 
 # ****************************************************************************
-# \brief Splits a string at space characters into a list.
-#
-# \todo Probably this can be done in a better way...
-#       Difficulty is, that string (REPLACE) does always replace all
-#       occurrences. Therefore, we need a regular expression which matches
-#       the entire string. More sophisticated regular expressions should do
-#       a better job, though.
-#
-# \param [out] LST Output list.
-# \param [in]  STR Input string.
+#! @brief Concatenates all list elements into a single string.
+#!
+#! @param [out] STR   Output string.
+#! @param [in]  DELIM Delimiter to use to separate list elements.
+#!                    Each element which contains the delimiter as substring
+#!                    is surrounded by double quotes (") in the output string.
+#! @param [in]  ARGN  Input list.
+
+function (basis_list_to_delimited_string STR DELIM)
+  set (OUT)
+  foreach (ELEM ${ARGN})
+    if (OUT)
+      set (OUT "${OUT}${DELIM}")
+    endif ()
+    if (ELEM MATCHES "${DELIM}")
+      set (OUT "${OUT}\"${ELEM}\"")
+    else ()
+      set (OUT "${OUT}${ELEM}")
+    endif ()
+  endforeach ()
+  set ("${STR}" "${OUT}" PARENT_SCOPE)
+endfunction ()
+
+# ****************************************************************************
+#! @brief Splits a string at space characters into a list.
+#!
+#! @TODO Probably this can be done in a better way...
+#!       Difficulty is, that string (REPLACE) does always replace all
+#!       occurrences. Therefore, we need a regular expression which matches
+#!       the entire string. More sophisticated regular expressions should do
+#!       a better job, though.
+#!
+#! @param [out] LST Output list.
+#! @param [in]  STR Input string.
 
 function (basis_string_to_list LST STR)
   set (TMP "${STR}")

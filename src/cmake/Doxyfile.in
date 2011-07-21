@@ -633,8 +633,9 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = */.svn/*   \
                          */.git/*   \
                          */Testing* \
-                         */CMake*   \
-                         @DOXYGEN_EXCLUDE_PATTERNS@
+                         */CMake*
+
+EXCLUDE_PATTERNS      += @DOXYGEN_EXCLUDE_PATTERNS@
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names 
 # (namespaces, classes, functions, etc.) that should be excluded from the 

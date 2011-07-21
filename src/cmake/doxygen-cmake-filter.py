@@ -27,26 +27,17 @@ if __name__ == "__main__":
     reOptionEnd     = re.compile (r".*\)\s*$")
     reArgs          = re.compile (r"\W+")
     reCommentLine   = re.compile (r"#!(?P<comment>.*)")
+    reIfClauseStart = re.compile (r"if\s*\(")
+    reIfClauseEnd   = re.compile (r"else\s*\(|elseif\s*\(|endif\s*\(")
 
     # parse line-by-line in output pseudo C++ code to stdout
-    previousBlock = '' # name of previous CMake code block
-    currentBlock  = '' # name of current CMake code block
+    ifClauseDepth = 0     # current depth of if-clauses
+    commentDepth  = 0     # if-clause depth where comment was encountered
+    previousBlock = ''    # name of previous CMake code block
+    currentBlock  = ''    # name of current CMake code block
     for line in f:
         line = line.strip ()
-        if currentBlock == 'function':
-            m = reFunctionEnd.match (line)
-            if m is not None:
-                sys.stdout.write ("\n")
-                previousBlock = currentBlock
-                currentBlock = ''
-            continue
-        if currentBlock == 'macro':
-            m = reMacroEnd.match (line)
-            if m is not None:
-                sys.stdout.write ("\n")
-                previousBlock = currentBlock
-                currentBlock = ''
-            continue
+        # next comment line,
         if currentBlock == 'comment':
             m = reCommentLine.match (line)
             if m is not None:
@@ -57,7 +48,24 @@ if __name__ == "__main__":
                 sys.stdout.write ("\n")
                 previousBlock = currentBlock
                 currentBlock = ''
-                # continue processing of line below
+                # continue processing of this (yet unhandled) line
+        # inside function definition
+        if currentBlock == 'function':
+            m = reFunctionEnd.match (line)
+            if m is not None:
+                sys.stdout.write ("\n")
+                previousBlock = currentBlock
+                currentBlock = ''
+            continue
+        # inside macro definition
+        if currentBlock == 'macro':
+            m = reMacroEnd.match (line)
+            if m is not None:
+                sys.stdout.write ("\n")
+                previousBlock = currentBlock
+                currentBlock = ''
+            continue
+        # inside brackets of multi-line set() command
         if currentBlock == 'set':
             m = reSetEnd.match (line)
             if m is not None:
@@ -77,6 +85,7 @@ if __name__ == "__main__":
                     previousBlock = currentBlock
                     currentBlock = ''
             continue
+        # inside brackets of multi-line options command
         if currentBlock == 'option':
             m = reOptionEnd.match (line)
             if m is not None:
@@ -96,84 +105,104 @@ if __name__ == "__main__":
                     previousBlock = currentBlock
                     currentBlock = ''
             continue
+        # look for new comment block or block following a comment
         if currentBlock == '':
-            m = reFunctionStart.match (line)
+            # enter if-clause
+            m = reIfClauseStart.match (line)
             if m is not None:
-                name = m.group ('name')
-                args = m.group ('args').strip ()
-                if args != '':
-                    argv = reArgs.split (args)
-                else:
-                    argv = []
-                sys.stdout.write (name + " (")
-                for i in range (0, len (argv)):
-                    if i > 0:
-                        sys.stdout.write (", ")
-                    sys.stdout.write ("Variable " + argv [i])
-                if len (argv) > 0:
-                    sys.stdout.write (", ")
-                sys.stdout.write ("Variable ARGN")
-                sys.stdout.write (");\n")
-                currentBlock = 'function'
+                ifClauseDepth = ifClauseDepth + 1
                 continue
-            m = reMacroStart.match (line)
-            if m is not None:
-                name = m.group ('name')
-                args = m.group ('args').strip ()
-                if args != '':
-                    argv = reArgs.split (args)
-                else:
-                    argv = []
-                sys.stdout.write (name + " (")
-                for i in range (0, len (argv)):
-                    if i > 0:
-                        sys.stdout.write (", ")
-                    sys.stdout.write ("Variable " + argv [i])
-                if len (argv) > 0:
-                    sys.stdout.write (", ")
-                sys.stdout.write ("Variable ARGN")
-                sys.stdout.write (");\n")
-                currentBlock = 'macro'
-                continue
+            # leave if-clause
+            if ifClauseDepth > 0:
+                m = reIfClauseEnd.match (line)
+                if m is not None:
+                    ifClauseDepth = ifClauseDepth - 1
+                    if commentDepth > ifClauseDepth:
+                        previousBlock = ''
+                        currentBlock  = ''
+            # Doxygen comment
             m = reCommentLine.match (line)
             if m is not None:
                 comment = m.group ('comment')
                 sys.stdout.write ("///" + comment + "\n")
                 currentBlock = 'comment'
+                commentDepth = ifClauseDepth
                 continue
-            # global (documented) variable
-            m = reSetStart.match (line)
-            if m is not None and previousBlock == 'comment':
-                name = m.group ('name')
-                if name == '':
-                    currentBlock = 'set-no-name'
+            # if previous block was a Doxygen comment process
+            # supported following blocks such as variable setting
+            # and function definition optionally only the one
+            # inside the if-case of an if-else-clause
+            if previousBlock == 'comment':
+                # function
+                m = reFunctionStart.match (line)
+                if m is not None:
+                    name = m.group ('name')
+                    args = m.group ('args').strip ()
+                    if args != '':
+                        argv = reArgs.split (args)
+                    else:
+                        argv = []
+                    sys.stdout.write (name + " (")
+                    for i in range (0, len (argv)):
+                        if i > 0:
+                            sys.stdout.write (", ")
+                        sys.stdout.write ("arg " + argv [i])
+                    if len (argv) > 0:
+                        sys.stdout.write (", ")
+                    sys.stdout.write ("arg ARGN")
+                    sys.stdout.write (");\n")
+                    currentBlock = 'function'
                     continue
-                sys.stdout.write (name + ";\n")
-                m = reSetEnd.match (line)
-                if m is None:
-                    currentBlock = 'set'
-                else:
-                    previousBlock = 'set'
-                    sys.stdout.write ("\n")
-                continue
-            # option
-            m = reOptionStart.match (line)
-            if m is not None:
-                name = m.group ('name')
-                if name == '':
-                    currentBlock = 'option-no-name'
+                # macro
+                m = reMacroStart.match (line)
+                if m is not None:
+                    name = m.group ('name')
+                    args = m.group ('args').strip ()
+                    if args != '':
+                        argv = reArgs.split (args)
+                    else:
+                        argv = []
+                    sys.stdout.write (name + " (")
+                    for i in range (0, len (argv)):
+                        if i > 0:
+                            sys.stdout.write (", ")
+                        sys.stdout.write ("arg " + argv [i])
+                    if len (argv) > 0:
+                        sys.stdout.write (", ")
+                    sys.stdout.write ("arg ARGN")
+                    sys.stdout.write (");\n")
+                    currentBlock = 'macro'
                     continue
-                sys.stdout.write ("option " + name + ";\n")
-                m = reOptionEnd.match (line)
-                if m is None:
-                    currentBlock = 'option'
-                else:
-                    previousBlock = 'option'
-                    sys.stdout.write ("\n")
-                continue
-            # all unhandled blocks
-            if line != '':
-                previousBlock = ''
+                # setting of global variable/constant
+                m = reSetStart.match (line)
+                if m is not None:
+                    name = m.group ('name')
+                    if name == '':
+                        currentBlock = 'set-no-name'
+                        continue
+                    sys.stdout.write (name + ";\n")
+                    m = reSetEnd.match (line)
+                    if m is None:
+                        currentBlock = 'set'
+                    else:
+                        previousBlock = 'set'
+                        sys.stdout.write ("\n")
+                    continue
+                # option
+                m = reOptionStart.match (line)
+                if m is not None:
+                    name = m.group ('name')
+                    if name == '':
+                        currentBlock = 'option-no-name'
+                        continue
+                    sys.stdout.write ("option " + name + ";\n")
+                    m = reOptionEnd.match (line)
+                    if m is None:
+                        currentBlock = 'option'
+                    else:
+                        previousBlock = 'option'
+                        sys.stdout.write ("\n")
+                    continue
     # close input file
     f.close ()
     # done

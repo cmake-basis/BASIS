@@ -155,20 +155,23 @@ set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 # in particular remember information added by one function or macro and is
 # required by another function or macro.
 #
-# \note These variables are reset whenever this module is included the first
+# Note: These variables are reset whenever this module is included the first
 #       time. The guard directive at the beginning of this file protects
 #       these variables to be overwritten each time this module is included.
 
-# Caches all directories given as argument to basis_include_directories ().
+#! @brief Documentation string for BASIS_CACHED_INCLUDE_DIRECTORIES.
 set (BASIS_CACHED_INCLUDE_DIRECTORIES_DOC "All include directories.")
+#! @brief Cached include directories added across subdirectories.
 set (BASIS_CACHED_INCLUDE_DIRECTORIES "" CACHE INTERNAL "${BASIS_CACHED_INCLUDE_DIRECTORIES_DOC}" FORCE)
 
-# Caches the global names (UIDs) of all project targets.
+#! @brief Documentation string for BASIS_TARGETS.
 set (BASIS_TARGETS_DOC "Names of all targets.")
+#! @brief Cached UIDs of all build targets.
 set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
 
-# Caches target names (UIDs) of exported targets.
+#! @brief Documentation string for BASIS_CACHED_EXPORTS.
 set (BASIS_CACHED_EXPORTS_DOC "All exported targets.")
+#! @brief Cached UIDs of exported build targets.
 set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
 
 # ============================================================================
@@ -289,19 +292,28 @@ endmacro ()
 #       The BASIS CMake functions should not be required to change as they
 #       are supposed to use these variables instead of the actual names.
 
-set (PROJECT_CODE_DIR    "@PROJECT_SOURCE_DIR@/src")
-set (PROJECT_CONFIG_DIR  "@PROJECT_SOURCE_DIR@/config")
-set (PROJECT_DATA_DIR    "@PROJECT_SOURCE_DIR@/data")
-set (PROJECT_DOC_DIR     "@PROJECT_SOURCE_DIR@/doc")
+#! @brief Absolute path of directory of project sources in source tree.
+set (PROJECT_CODE_DIR "@PROJECT_SOURCE_DIR@/src")
+#! @brief Absolute path of directory of BASIS project configuration in source tree.
+set (PROJECT_CONFIG_DIR "@PROJECT_SOURCE_DIR@/config")
+#! @brief Absolute path of directory of auxiliary data in source tree.
+set (PROJECT_DATA_DIR "@PROJECT_SOURCE_DIR@/data")
+#! @brief Absolute path of directory of documentation files in source tree.
+set (PROJECT_DOC_DIR "@PROJECT_SOURCE_DIR@/doc")
+#! @brief Absolute path of directory of example in source tree.
 set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
+#! @brief Absolute path of diretory of public header files in source tree.
 set (PROJECT_INCLUDE_DIR "@PROJECT_SOURCE_DIR@/include")
+#! @brief Absolute path of directory of testing tree in source tree.
 set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 
 # ----------------------------------------------------------------------------
 # testing tree
 # ----------------------------------------------------------------------------
 
-set (TESTING_OUTPUT_DIR  "@PROJECT_BINARY_DIR@/Testing/Temporary/output")
+#! @brief Absolute path of output directory for tests.
+set (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary/output")
+#! @brief Absolute path of output directory for built test executables.
 set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 
 # ----------------------------------------------------------------------------
@@ -310,8 +322,11 @@ set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 
 # These directory paths will be made absolute by the initialization functions.
 
+#! @brief Absolute path of output directory for built runtime executables.
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
+#! @brief Absolute path of output directory for built shared libraries and modules.
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
+#! @brief Absolute path of output directory for built static libraries.
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 
 # ----------------------------------------------------------------------------
@@ -331,37 +346,55 @@ string (
     "${CMAKE_INSTALL_PREFIX}"
 )
 
-# prefix/suffix/infix of installation directories
+#! @brief Installation prefix.
 set (
   INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
   CACHE PATH "Installation directories prefix."
 )
 
+#! @brief Installation sinfix.
 set (
   INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@"
   CACHE PATH "Installation directories suffix (or infix, respectively)."
 )
 
-# option to apply sinfix only optional
+#! @brief Enable/Disable the use of the INSTALL_SINFIX also for the
+#!        installation directory for public header files.
 option (INSTALL_SINFIX_FOR_INCLUDES "Whether to append INSTALL_SINFIX to installation directory of header files as well." OFF)
 mark_as_advanced (INSTALL_SINFIX_FOR_INCLUDES)
 
-# option to create (symbolic) links
+#! @brief Enable/Disable installation of symbolic links on Unix-based systems.
 if (UNIX)
   option (INSTALL_LINKS "Whether to create (symbolic) links." ON)
 endif ()
 
-# install tree directories
-set (INSTALL_RUNTIME_DIR   "bin")           # main executables and shared libraries (WIN32)
+#! @brief Path of installation directory for runtime executables and shared
+#!        libraries on Windows relative to INSTALL_PREFIX.
+set (INSTALL_RUNTIME_DIR "bin")
+
+#! @brief Path of installation directory for auxiliary executables
+#!        relative to INSTALL_PREFIX.
 if (WIN32)
-  set (INSTALL_LIBEXEC_DIR "bin")           # auxiliary executables
+  set (INSTALL_LIBEXEC_DIR "bin")
 else ()
-  set (INSTALL_LIBEXEC_DIR "lib")           # auxiliary executables
+  set (INSTALL_LIBEXEC_DIR "lib")
 endif ()
-set (INSTALL_LIBRARY_DIR   "lib")           # shared (UNIX) and module libraries
-set (INSTALL_ARCHIVE_DIR   "lib")           # static and import libraries
-set (INSTALL_INCLUDE_DIR   "include")       # public header files of libraries
-set (INSTALL_SHARE_DIR     "share")         # other shared files
+
+#! @brief Path of installation directory for shared libraries on Unix-based
+#!        systems and module libraries relative to INSTALL_PREFIX.
+set (INSTALL_LIBRARY_DIR "lib")
+
+#! @brief Path of installation directory for static and import libraries
+#!        relative to INSTALL_PREFIX.
+set (INSTALL_ARCHIVE_DIR "lib")
+
+#! @brief Path of installation directory for public header files
+#!        relative to INSTALL_PREFIX.
+set (INSTALL_INCLUDE_DIR "include")
+
+#! @brief Path of installation directory for shared data files
+#!        relative to INSTALL_PREFIX.
+set (INSTALL_SHARE_DIR "share")
 
 if (INSTALL_SINFIX)
   if (INSTALL_SINFIX_FOR_INCLUDES)
@@ -373,16 +406,36 @@ if (INSTALL_SINFIX)
   endforeach ()
 endif ()
 
+#! @brief Path of installation directory for CMake package configuration
+#!        files relative to INSTALL_PREFIX.
 if (WIN32)
-  set (INSTALL_CONFIG_DIR  "cmake")   # CMake configuration files
-  set (INSTALL_DOC_DIR     "doc")     # documentaton files
-  set (INSTALL_EXAMPLE_DIR "example") # package example
-  set (INSTALL_MAN_DIR     "man")     # man pages
+  set (INSTALL_CONFIG_DIR "cmake")
 else ()
-  set (INSTALL_CONFIG_DIR  "${INSTALL_LIBRARY_DIR}/cmake") # CMake configuration files
-  set (INSTALL_DOC_DIR     "${INSTALL_SHARE_DIR}/doc")     # documentaton files
-  set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example") # package example
-  set (INSTALL_MAN_DIR     "${INSTALL_SHARE_DIR}/man")     # man pages
+  set (INSTALL_CONFIG_DIR "${INSTALL_LIBRARY_DIR}/cmake")
+endif ()
+
+#! @brief Path of installation directory for documentation files
+#!        relative to INSTALL_PREFIX.
+if (WIN32)
+  set (INSTALL_DOC_DIR "doc")
+else ()
+  set (INSTALL_DOC_DIR "${INSTALL_SHARE_DIR}/doc")
+endif ()
+
+#! @brief Path of installation directory for example files
+#!        relative to INSTALL_PREFIX.
+if (WIN32)
+  set (INSTALL_EXAMPLE_DIR "example")
+else ()
+  set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example")
+endif ()
+
+#! @brief Path of installation directory for man pages
+#!        relative to INSTALL_PREFIX.
+if (WIN32)
+  set (INSTALL_MAN_DIR "man")
+else ()
+  set (INSTALL_MAN_DIR "${INSTALL_SHARE_DIR}/man")
 endif ()
 
 if (WIN32 AND INSTALL_SINFIX)
@@ -396,7 +449,7 @@ endif ()
 # build configuration(s)
 # ============================================================================
 
-# list of all available build configurations
+#! @brief List of all available/supported build configurations.
 set (
   CMAKE_CONFIGURATION_TYPES
     "Debug"
@@ -405,8 +458,10 @@ set (
   CACHE STRING "Build configurations." FORCE
 )
 
-# list of debug configurations, used by target_link_libraries (), for example,
-# to determine whether to link to the optimized or debug libraries
+#! @brief List of debug configurations.
+#!
+#! Used by the target_link_libraries() CMake command, for example,
+#! to determine whether to link to the optimized or debug libraries.
 set (DEBUG_CONFIGURATIONS "Debug")
 
 mark_as_advanced (CMAKE_CONFIGURATION_TYPES)
@@ -416,6 +471,7 @@ if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$|^Coverage$|^Release$")
   set (CMAKE_BUILD_TYPE "Release")
 endif ()
 
+#! @brief Current build configuration for GNU Make Makefiles generator.
 set (
   CMAKE_BUILD_TYPE
     "${CMAKE_BUILD_TYPE}"

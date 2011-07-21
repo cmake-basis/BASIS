@@ -63,13 +63,13 @@ set (BASIS_DOXYGEN_FILTER_CMAKE  "${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter
 set (BASIS_DOXYGEN_FILTER_BASH   "${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.pl")
 set (BASIS_DOXYGEN_FILTER_MATLAB "${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
 
-set (BASIS_DOXYGEN_FILTER_PATTERNS "")
-list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"*.cmake=${BASIS_DOXYGEN_FILTER_CMAKE}\" ")
-list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"CMakeLists.txt=${BASIS_DOXYGEN_FILTER_CMAKE}\" ")
-list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"*.sh=${BASIS_DOXYGEN_FILTER_BASH}\" ")
-list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"*.m=${BASIS_DOXYGEN_FILTER_MATLAB}\" ")
-
-basis_list_to_string (BASIS_DOXYGEN_FILTER_PATTERNS ${BASIS_DOXYGEN_FILTER_PATTERNS})
+set (
+  BASIS_DOXYGEN_FILTER_PATTERNS
+    "*.cmake=${BASIS_DOXYGEN_FILTER_CMAKE}"
+    "CMakeLists.txt=${BASIS_DOXYGEN_FILTER_CMAKE}"
+    "*.sh=${BASIS_DOXYGEN_FILTER_BASH}"
+    "*.m=${BASIS_DOXYGEN_FILTER_MATLAB}"
+)
 
 # Doxygen configuration
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
@@ -184,27 +184,28 @@ endfunction ()
 # DOXYFILE         Name of the template Doxyfile.
 # PROJECT_NAME     Value for Doxygen's PROJECT_NAME tag which is used
 #                  to specify the project name.
-#                  Default: "PROJECT_NAME".
+#                  Default: PROJECT_NAME.
 # PROJECT_NUMBER   Value for Doxygen's PROJECT_NUMBER tag which is used
 #                  to specify the project version number.
 #                  Default: PROJECT_VERSION.
 # INPUT            Value for Doxygen's INPUT tag which is used to
 #                  specify input directories/files.
-#                  Default: "PROJECT_SOURCE_DIR/Code;PROJECT_BINARY_DIR/Code".
+#                  Default: PROJECT_CODE_DIR BINARY_CODE_DIR
+#                           PROJECT_INCLUDE_DIR BINARY_INCLUDE_DIR.
 # FILTER_PATTERNS  Value for Doxygen's FILTER_PATTERNS tag which
 #                  can be used to specify filters on a per file
 #                  pattern basis. Defaults to BASIS_DOXYGEN_FILTER_PATTERNS.
 # EXCLUDE_PATTERNS Additional patterns used for Doxygen's EXCLUDE_PATTERNS tag
 #                  which can be used to specify files and/or directories that
-#                  should excluded from the INPUT source files.
-#                  Default: ""
+#                  should be excluded from the INPUT source files.
+#                  Default: None
 # OUTPUT_DIRECTORY Value for Doxygen's OUTPUT_DIRECTORY tag which
 #                  can be used to specify the output directory.
-#                  Default: "CMAKE_CURRENT_BINARY_DIR/TARGET_NAME".
-# GENERATE_HTML    If given, Doxygen's GENERATE_HTML tag is set to "YES", otherwise "NO".
-# GENERATE_LATEX   If given, Doxygen's GENERATE_LATEX tag is set to "YES", otherwise "NO".
-# GENERATE_RTF     If given, Doxygen's GENERATE_RTF tag is set to "YES", otherwise "NO".
-# GENERATE_MAN     If given, Doxygen's GENERATE_MAN tag is set to "YES", otherwise "NO".
+#                  Default: CMAKE_CURRENT_BINARY_DIR/TARGET_NAME.
+# GENERATE_HTML    If given, Doxygen's GENERATE_HTML tag is set to YES, otherwise NO.
+# GENERATE_LATEX   If given, Doxygen's GENERATE_LATEX tag is set to YES, otherwise NO.
+# GENERATE_RTF     If given, Doxygen's GENERATE_RTF tag is set to YES, otherwise NO.
+# GENERATE_MAN     If given, Doxygen's GENERATE_MAN tag is set to YES, otherwise NO.
 #
 # Generator: SVN2CL
 #
@@ -329,22 +330,23 @@ function (basis_add_doc TARGET_NAME)
       set (DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
     endif ()
     if (NOT DOXYGEN_INPUT)
-      file (RELATIVE_PATH CODE_DIR    "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
-      file (RELATIVE_PATH INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
       set (
         DOXYGEN_INPUT
+          "${BINARY_INCLUDE_DIR}"
+          "${BINARY_CODE_DIR}"
           "${PROJECT_INCLUDE_DIR}"
-          "${PROJECT_BINARY_DIR}/${INCLUDE_DIR}"
           "${PROJECT_CODE_DIR}"
-          "${PROJECT_BINARY_DIR}/${CODE_DIR}"
       )
     endif ()
+    basis_list_to_delimited_string (DOXYGEN_INPUT " " ${DOXYGEN_INPUT})
     if (NOT DOXYGEN_FILTER_PATTERNS)
       set (DOXYGEN_FILTER_PATTERNS "${BASIS_DOXYGEN_FILTER_PATTERNS}")
     endif ()
+    basis_list_to_delimited_string (DOXYGEN_FILTER_PATTERNS " " ${DOXYGEN_FILTER_PATTERNS})
     if (NOT DOXYGEN_EXCLUDE_PATTERNS)
       set (DOXYGEN_EXCLUDE_PATTERNS "")
     endif ()
+    basis_list_to_delimited_string (DOXYGEN_EXCLUDE_PATTERNS " " ${DOXYGEN_EXCLUDE_PATTERNS})
     if (NOT DOXYGEN_OUTPUT_DIRECTORY)
       set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}")
     endif ()
@@ -362,13 +364,6 @@ function (basis_add_doc TARGET_NAME)
     if (GENERATE_DEFAULT)
       set (DOXYGEN_GENERATE_HTML "YES")
     endif ()
- 
-    set (TMP)
-    foreach (DIR ${DOXYGEN_INPUT})
-      set (TMP "${TMP} \"${DIR}\"")
-    endforeach ()
-    set (DOXYGEN_INPUT "${TMP}")
-    set (TMP)
 
     # click & jump in emacs and Visual Studio
     if (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
