@@ -584,27 +584,28 @@ INPUT_ENCODING         = UTF-8
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx 
 # *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.py *.f90
 
-FILE_PATTERNS          = *.c    \
-                         *.cc   \
-                         *.cxx  \
-                         *.cpp  \
-                         *.txx  \
-                         *.inl  \
-                         *.h    \
-                         *.hh   \
-                         *.hxx  \
-                         *.hpp  \
-                         *.java \
-                         *.php  \
-                         *.py   \
-                         *.pl   \
-                         *.pm   \
-                         *.php3 \
-                         *.m    \
-                         *.mm   \
-                         *.f90  \
-                         *.sh   \
-                         *.cmake
+FILE_PATTERNS          = *.c        \
+                         *.cc       \
+                         *.cxx      \
+                         *.cpp      \
+                         *.txx      \
+                         *.inl      \
+                         *.h        \
+                         *.hh       \
+                         *.hxx      \
+                         *.hpp      \
+                         *.java     \
+                         *.php      \
+                         *.py       \
+                         *.pl       \
+                         *.pm       \
+                         *.php3     \
+                         *.m        \
+                         *.mm       \
+                         *.f90      \
+                         *.sh       \
+                         *.cmake    \
+                         *.cmake.in
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
@@ -633,7 +634,7 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = */.svn/*   \
                          */.git/*   \
                          */Testing* \
-                         */CMake*
+                         */CMakeFiles*
 
 EXCLUDE_PATTERNS      += @DOXYGEN_EXCLUDE_PATTERNS@
 

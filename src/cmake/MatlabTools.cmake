@@ -1,11 +1,11 @@
 ##############################################################################
-# \file  BasisMatlabTools.cmake
-# \brief Enables use of MATLAB Compiler and build of MEX-files.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  MatlabTools.cmake
+#! @brief Enables use of MATLAB Compiler and build of MEX-files.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 if (__BASIS_MATLABTOOLS_INCLUDED)
@@ -17,7 +17,7 @@ endif ()
 
 # get directory of this file
 #
-# \note This variable was just recently introduced in CMake, it is derived
+# Note: This variable was just recently introduced in CMake, it is derived
 #       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
@@ -27,6 +27,7 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # options
 # ============================================================================
 
+#! @brief Enable/Disable invocation of MATLAB Compiler in MATLAB mode.
 option (
   BASIS_MCC_MATLAB_MODE
   "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler."
@@ -39,6 +40,7 @@ mark_as_advanced (BASIS_MCC_MATLAB_MODE)
 # build configuration
 # ============================================================================
 
+#! @brief Compile flags used to build MATLAB Compiler targets.
 set (
   BASIS_MCC_FLAGS
     "-v -R -singleCompThread"
@@ -46,6 +48,7 @@ set (
     "Common MATLAB Compiler flags (separated by ' '; use '\\' to mask ' ')."
 )
 
+#! @brief Compile flags used to build MEX-files using the MEX script.
 set (
   BASIS_MEX_FLAGS
     "-v"
@@ -53,7 +56,9 @@ set (
     "Common MEX switches (separated by ' '; use '\\' to mask ' ')."
 )
 
+#! @brief Timeout for building MATLAB Compiler targets.
 set (BASIS_MCC_TIMEOUT "600" CACHE STRING "Timeout for MATLAB Compiler execution")
+#! @brief Timeout for building MEX-file targets.
 set (BASIS_MEX_TIMEOUT "600" CACHE STRING "Timeout for MEX script execution")
 
 mark_as_advanced (BASIS_MCC_FLAGS)
@@ -65,9 +70,10 @@ mark_as_advanced (BASIS_MEX_TIMEOUT)
 # find programs
 # ============================================================================
 
-# The script used to invoke the MATLAB Compiler in MATLAB mode.
+#! @brief Script used to invoke the MATLAB Compiler in MATLAB mode.
 set (BASIS_SCRIPT_MCC "${CMAKE_CURRENT_LIST_DIR}/runmcc.m")
 
+#! @brief The MATLAB interpreter.
 find_program (
   BASIS_CMD_MATLAB
     NAMES matlab
@@ -76,6 +82,7 @@ find_program (
 
 mark_as_advanced (BASIS_CMD_MATLAB)
 
+#! @brief The MATLAB Compiler command-line tool.
 find_program (
   BASIS_CMD_MCC
     NAMES mcc
@@ -84,6 +91,7 @@ find_program (
 
 mark_as_advanced (BASIS_CMD_MCC)
 
+#! @brief The mexext script optionally used to determine platform specific extension of MEX-files.
 find_program (
   BASIS_CMD_MEXEXT
     NAMES mexext
@@ -92,6 +100,7 @@ find_program (
 
 mark_as_advanced (BASIS_CMD_MEXEXT)
 
+#! @brief The MEX script used to build MEX-files in native mode.
 find_program (
   BASIS_CMD_MEX
     NAMES mex
@@ -105,10 +114,10 @@ mark_as_advanced (BASIS_CMD_MEX)
 # ============================================================================
 
 # ****************************************************************************
-# \brief Determine version of MATLAB installation.
-#
-# \param [out] VERSION Value returned by the "version" command of MATLAB or
-#                      an empty string if execution of MATLAB failed.
+#! @brief Determine version of MATLAB installation.
+#!
+#! @param [out] VERSION Value returned by the "version" command of MATLAB or
+#!                      an empty string if execution of MATLAB failed.
 
 function (basis_get_full_matlab_version VERSION)
   set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
@@ -146,14 +155,14 @@ function (basis_get_full_matlab_version VERSION)
 endfunction ()
 
 # ****************************************************************************
-# \brief Determine version of MATLAB installation.
-#
-# \param [out] ARGV0 Version of the MATLAB installation, i.e., "7.9.0",
-#                    for example, or an empty string if execution of MATLAB failed.
-#                    If no output variable name is specified, the variable
-#                    MATLAB_VERSION is added to the cache if not present yet.
-#                    Note that if no output variable is given and MATLAB_VERSION
-#                    is already set, nothing is done.
+#! @brief Determine version of MATLAB installation.
+#!
+#! @param [out] ARGV0 Version of the MATLAB installation, i.e., "7.9.0",
+#!                    for example, or an empty string if execution of MATLAB failed.
+#!                    If no output variable name is specified, the variable
+#!                    MATLAB_VERSION is added to the cache if not present yet.
+#!                    Note that if no output variable is given and MATLAB_VERSION
+#!                    is already set, nothing is done.
 
 function (basis_get_matlab_version)
   if (ARGC GREATER 1)
@@ -177,14 +186,14 @@ function (basis_get_matlab_version)
 endfunction ()
 
 # ****************************************************************************
-# \brief Determine release version of MATLAB installation.
-#
-# \param [out] ARGV0 Release version of the MATLAB installation, i.e.,
-#                    "R2009b", for example, or an empty string if execution
-#                    of MATLAB failed. If no output variable name is specified,
-#                    the variable MATLAB_RELEASE is added to the cache if not
-#                    present yet. Note that if no output variable is given and
-#                    MATLAB_RELEASE is already set, nothing is done.
+#! @brief Determine release version of MATLAB installation.
+#!
+#! @param [out] ARGV0 Release version of the MATLAB installation, i.e.,
+#!                    "R2009b", for example, or an empty string if execution
+#!                    of MATLAB failed. If no output variable name is specified,
+#!                    the variable MATLAB_RELEASE is added to the cache if not
+#!                    present yet. Note that if no output variable is given and
+#!                    MATLAB_RELEASE is already set, nothing is done.
 
 function (basis_get_matlab_release)
   if (ARGC GREATER 1)
@@ -208,15 +217,15 @@ function (basis_get_matlab_release)
 endfunction ()
 
 # ****************************************************************************
-# \brief Determine extension of MEX-files for this architecture.
-#
-# \param [out] EXT The extension of MEX-files (excluding '.'). If the CMake
-#                  variable MEX_EXT is set, its value is returned. Otherwise,
-#                  this function tries to determine it from the system
-#                  information. If the extension could not be determined,
-#                  an empty string is returned.
-#                  If this argument is not given, the extension is cached
-#                  as the MEX_EXT variable.
+#! @brief Determine extension of MEX-files for this architecture.
+#!
+#! @param [out] EXT The extension of MEX-files (excluding '.'). If the CMake
+#!                  variable MEX_EXT is set, its value is returned. Otherwise,
+#!                  this function tries to determine it from the system
+#!                  information. If the extension could not be determined,
+#!                  an empty string is returned.
+#!                  If this argument is not given, the extension is cached
+#1                  as the MEX_EXT variable.
 
 function (basis_mexext)
   # default return value
@@ -281,11 +290,11 @@ function (basis_mexext)
 endfunction ()
 
 # ****************************************************************************
-# \brief This function writes a MATLAB M-file with addpath () statements.
-#
-# This function writes the MATLAB M-file addpaths.m into the root directory
-# of the build tree which contains an addpath () statement for each
-# directory that was added via basis_include_directories ().
+#! @brief This function writes a MATLAB M-file with addpath () statements.
+#!
+#! This function writes the MATLAB M-file addpaths.m into the root directory
+#! of the build tree which contains an addpath () statement for each
+#! directory that was added via basis_include_directories ().
 
 function (basis_create_addpaths_mfile)
   set (MFILE "${CMAKE_CURRENT_BINARY_DIR}/Add${PROJECT_NAME}Paths.m")
@@ -301,31 +310,31 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Add MEX target.
-#
-# This function is used to add a shared library target which is built
-# using the MATLAB MEX script (mex). It is invoked by basis_add_library ().
-# Thus, it is recommended to use this function instead.
-#
-# An install command for the added library target is added by this function
-# as well. The MEX-file will be installed as part of the RUNTIME_COMPONENT
-# in the directory INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR
-# on Windows.
-#
-# \note The custom build command is not added yet by this function.
-#       Only a custom target which stores all the information required to
-#       setup this build command is added. The custom command is added
-#       by either basis_project_finalize () or basis_superproject_finalize ().
-#       This way, the properties such as the OUTPUT_NAME of the custom
-#       target can be still modified.
-#
-# \see basis_add_library ()
-#
-# \param [in] TARGET_NAME Name of the target.
-# \param [in] ARGN        Remaining arguments such as in particular the
-#                         input source files.
-#
-#   COMPONENT   Name of the component. Defaults to BASIS_LIBRARY_COMPONENT.
+#! @brief Add MEX target.
+#!
+#! This function is used to add a shared library target which is built
+#! using the MATLAB MEX script (mex). It is invoked by basis_add_library().
+#! Thus, it is recommended to use this function instead.
+#!
+#! An install command for the added library target is added by this function
+#! as well. The MEX-file will be installed as part of the RUNTIME_COMPONENT
+#! in the directory INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR
+#! on Windows.
+#!
+#! @note The custom build command is not added yet by this function.
+#!       Only a custom target which stores all the information required to
+#!       setup this build command is added. The custom command is added
+#!       by either basis_project_finalize() or basis_superproject_finalize().
+#!       This way, the properties such as the OUTPUT_NAME of the custom
+#!       target can be still modified.
+#!
+#! @sa basis_add_library()
+#!
+#! @param [in] TARGET_NAME Name of the target.
+#! @param [in] ARGN        Remaining arguments such as in particular the
+#!                         input source files.
+#!
+#! - COMPONENT   Name of the component. Defaults to BASIS_LIBRARY_COMPONENT.
 
 function (basis_add_mex_target TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
@@ -401,17 +410,17 @@ function (basis_add_mex_target TARGET_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Finalizes addition of MEX target.
-#
-# This function uses the properties of the custom MEX-file target added by
-# basis_add_mex_target () to create the custom build command and adds this
-# build command as dependency of this added target.
-#
-# \see basis_add_mex_target ()
-#
-# \param [in] TARGET_UID "Global" target name. If this function is used
-#                        within the same project as basis_add_mcc_target (),
-#                        the "local" target name may be given alternatively.
+#! @brief Finalizes addition of MEX target.
+#!
+#! This function uses the properties of the custom MEX-file target added by
+#! basis_add_mex_target() to create the custom build command and adds this
+#! build command as dependency of this added target.
+#!
+#! @sa basis_add_mex_target()
+#!
+#! @param [in] TARGET_UID "Global" target name. If this function is used
+#!                        within the same project as basis_add_mex_target(),
+#!                        the "local" target name may be given alternatively.
 
 function (basis_add_mex_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
@@ -680,47 +689,47 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Add MATLAB Compiler target.
-#
-# This function is used to add an executable or library target which is built
-# using the MATLAB Compilier (MCC). It is invoked by basis_add_executable ()
-# or basis_add_library (), respectively, when at least one M-file is given
-# as source file. Thus, it is recommended to use these functions instead.
-#
-# An install command for the added executable or library target is added by
-# this function as well. The executable will be installed as part of the
-# RUNTIME_COMPONENT in the directory INSTALL_RUNTIME_DIR. The runtime
-# library will be installed as part of the RUNTIME_COMPONENT in the directory
-# INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR on Windows.
-# Static/import libraries will be installed as part of the LIBRARY_COMPONENT
-# in the directory INSTALL_ARCHIVE_DIR.
-#
-# \note The custom build command is not added yet by this function.
-#       Only a custom target which stores all the information required to
-#       setup this build command is added. The custom command is added
-#       by either basis_project_finalize () or basis_superproject_finalize ().
-#       This way, the properties such as the OUTPUT_NAME of the custom
-#       target can be still modified.
-#
-# \see basis_add_executable ()
-# \see basis_add_library ()
-#
-# \param [in] TARGET_NAME Name of the target.
-# \param [in] ARGN        Remaining arguments such as in particular the
-#                         input source files.
-#
-#   TYPE                Type of the target. Either EXECUTABLE (default) or LIBRARY.
-#   COMPONENT           Name of the component. Defaults to
-#                       BASIS_RUNTIME_COMPONENT if TYPE is EXECUTABLE or
-#                       BASIS_LIBRARY_COMPONENT, otherwise.
-#   RUNTIME_COMPONENT   Name of runtime component. Defaults to COMPONENT
-#                       if specified or BASIS_RUNTIME_COMPONENT, otherwise.
-#   LIBRARY_COMPONENT   Name of library component. Defaults to COMPONENT
-#                       if specified or BASIS_LIBRARY_COMPONENT, otherwise.
-#   LIBEXEC             Specifies that the built executable is an auxiliary
-#                       executable called by other executables only.
-#   TEST                Specifies that the built executable is a test executable.
-#                       If LIBEXEC is given as well, it will be ignored.
+#! @brief Add MATLAB Compiler target.
+#!
+#! This function is used to add an executable or library target which is built
+#! using the MATLAB Compilier (MCC). It is invoked by basis_add_executable()
+#! or basis_add_library(), respectively, when at least one M-file is given
+#! as source file. Thus, it is recommended to use these functions instead.
+#!
+#! An install command for the added executable or library target is added by
+#! this function as well. The executable will be installed as part of the
+#! RUNTIME_COMPONENT in the directory INSTALL_RUNTIME_DIR. The runtime
+#! library will be installed as part of the RUNTIME_COMPONENT in the directory
+#! INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR on Windows.
+#! Static/import libraries will be installed as part of the LIBRARY_COMPONENT
+#! in the directory INSTALL_ARCHIVE_DIR.
+#!
+#! @note The custom build command is not added yet by this function.
+#!       Only a custom target which stores all the information required to
+#!       setup this build command is added. The custom command is added
+#!       by either basis_project_finalize() or basis_superproject_finalize().
+#!       This way, the properties such as the OUTPUT_NAME of the custom
+#!       target can be still modified.
+#!
+#! @sa basis_add_executable()
+#! @sa basis_add_library()
+#!
+#! @param [in] TARGET_NAME Name of the target.
+#! @param [in] ARGN        Remaining arguments such as in particular the
+#!                         input source files.
+#!
+#! - TYPE                Type of the target. Either EXECUTABLE (default) or LIBRARY.
+#! - COMPONENT           Name of the component. Defaults to
+#!                       BASIS_RUNTIME_COMPONENT if TYPE is EXECUTABLE or
+#!                       BASIS_LIBRARY_COMPONENT, otherwise.
+#! - RUNTIME_COMPONENT   Name of runtime component. Defaults to COMPONENT
+#!                       if specified or BASIS_RUNTIME_COMPONENT, otherwise.
+#! - LIBRARY_COMPONENT   Name of library component. Defaults to COMPONENT
+#!                       if specified or BASIS_LIBRARY_COMPONENT, otherwise.
+#! - LIBEXEC             Specifies that the built executable is an auxiliary
+#!                       executable called by other executables only.
+#! - TEST                Specifies that the built executable is a test executable.
+#!                       If LIBEXEC is given as well, it will be ignored.
 
 
 function (basis_add_mcc_target TARGET_NAME)
@@ -870,17 +879,17 @@ function (basis_add_mcc_target TARGET_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Finalizes addition of MATLAB Compiler target.
-#
-# This function uses the properties of the custom MATLAB Compiler target
-# added by basis_add_mcc_target () to create the custom build command and
-# adds this build command as dependency of this added target.
-#
-# \see basis_add_mcc_target ()
-#
-# \param [in] TARGET_UID "Global" target name. If this function is used
-#                        within the same project as basis_add_mcc_target (),
-#                        the "local" target name may be given alternatively.
+#! @brief Finalizes addition of MATLAB Compiler target.
+#!
+#! This function uses the properties of the custom MATLAB Compiler target
+#! added by basis_add_mcc_target() to create the custom build command and
+#! adds this build command as dependency of this added target.
+#!
+#! @sa basis_add_mcc_target()
+#!
+#! @param [in] TARGET_UID "Global" target name. If this function is used
+#!                        within the same project as basis_add_mcc_target(),
+#!                        the "local" target name may be given alternatively.
 
 function (basis_add_mcc_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
@@ -931,8 +940,8 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
-  # \todo The TYPE property seemed to be set to "UTILITY" by CMake.
-  #       Check if this is true or if there is a bug in BASIS.
+  # TODO The TYPE property seemed to be set to "UTILITY" by CMake.
+  #      Check if this is true or if there is a bug in BASIS.
   if ("${BASIS_TYPE}" STREQUAL "MCC_LIBRARY")
     set (TYPE "LIBRARY")
   else ()
@@ -1140,10 +1149,10 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
   # install target
   if (TYPE STREQUAL "LIBRARY")
-    # \todo
+    # TODO
   else ()
     if (BASIS_TYPE STREQUAL "MCC_TEST")
-      # \todo Install selected test executables
+      # TODO Install selected test executables
     else ()
       install (
         PROGRAMS    ${BUILD_OUTPUT}

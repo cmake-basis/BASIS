@@ -1,17 +1,17 @@
 ##############################################################################
-# \file  BasisTest.cmake
-# \brief CTest configuration. Include this module instead of CTest.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  BasisTest.cmake
+#! @brief CTest configuration. Include this module instead of CTest.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 
 # get directory of this file
 #
-# \note This variable was just recently introduced in CMake, it is derived
+# Note: This variable was just recently introduced in CMake, it is derived
 #       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
@@ -45,7 +45,7 @@ else ()
 endif ()
 
 # configure custom CTest settings and/or copy them to binary tree
-# \todo How does this go well with the super-build?
+# TODO How does this go well with the super-build?
 if ("${PROJECT_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   set (CTEST_CUSTOM_FILE "CTestCustom.cmake")
 else ()
@@ -80,7 +80,7 @@ endif ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Replaces CMake's set_tests_properties () command.
+#! @brief Replaces CMake's set_tests_properties () command.
 
 function (basis_set_tests_properties)
   set (UIDS)
@@ -95,7 +95,7 @@ function (basis_set_tests_properties)
 endfunction ()
 
 # ****************************************************************************
-# \brief Replaces CMake's get_test_property () command.
+#! @brief Replaces CMake's get_test_property () command.
 
 function (basis_get_test_property VAR TEST_NAME)
   basis_test_uid (TEST_UID "${TEST_NAME}")
@@ -104,12 +104,12 @@ function (basis_get_test_property VAR TEST_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Add test.
-#
-# \todo Make use of ExternalData module to fetch remote test data.
-#
-# \param [in] TEST_NAME Name of the test.
-# \param [in] ARGN      Parameters passed to add_test () (excluding test name).
+#! @brief Add test.
+#!
+#! \TODO Make use of ExternalData module to fetch remote test data.
+#!
+#! @param [in] TEST_NAME Name of the test.
+#! @param [in] ARGN      Parameters passed to add_test () (excluding test name).
 
 function (basis_add_test TEST_NAME)
   basis_check_test_name ("${TEST_NAME}")
@@ -123,18 +123,18 @@ function (basis_add_test TEST_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Add unit test.
-#
-# \param [in] TEST_NAME Name of the test.
-# \param [in] ARGN      The following parameters are parsed.
-#
-#   LANGUAGE       The programming language in which both the module and unit test
-#                  are implemented. Defaults to CXX (i.e., C++).
-#   SOURCES        The source files of the unit test. If this list contains a
-#                  file named either "*-main.*" or "*_main.*", the default
-#                  implementation of the main () function is not included.
-#   LINK_DEPENDS   Link libraries.
-#   ARGS           Arguments passed to basis_add_test ().
+#! @brief Add unit test.
+#!
+#! @param [in] TEST_NAME Name of the test.
+#! @param [in] ARGN      The following parameters are parsed.
+#!
+#! - LANGUAGE       The programming language in which both the module and unit test
+#!                  are implemented. Defaults to CXX (i.e., C++).
+#! - SOURCES        The source files of the unit test. If this list contains a
+#!                  file named either "*-main.*" or "*_main.*", the default
+#!                  implementation of the main () function is not included.
+#! - LINK_DEPENDS   Link libraries.
+#! - ARGS           Arguments passed to basis_add_test ().
 
 function (basis_add_unit_test TEST_NAME)
   # parse arguments
@@ -169,9 +169,9 @@ function (basis_add_unit_test TEST_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Adds tests of default options for given executable (or script).
-#
-# \param [in] TARGET_NAME Name of executable or script target.
+#! @brief Adds tests of default options for given executable (or script).
+#!
+#! @param [in] TARGET_NAME Name of executable or script target.
 
 function (basis_add_tests_of_default_options TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")

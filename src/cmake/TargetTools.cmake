@@ -1,11 +1,11 @@
 ##############################################################################
-# \file  BasisTargetTools.cmake
-# \brief Functions and macros to add executable and library targets.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  TargetTools.cmake
+#! @brief Functions and macros to add executable and library targets.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 if (__BASIS_TARGETTOOLS_INCLUDED)
@@ -17,7 +17,7 @@ endif ()
 
 # get directory of this file
 #
-# \note This variable was just recently introduced in CMake, it is derived
+# Note: This variable was just recently introduced in CMake, it is derived
 #       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
@@ -28,7 +28,7 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # ============================================================================
 
 # ****************************************************************************
-# \brief Replaces CMake's set_target_properties () command.
+#! @brief Replaces CMake's set_target_properties() command.
 
 function (basis_set_target_properties)
   set (UIDS)
@@ -46,7 +46,7 @@ function (basis_set_target_properties)
 endfunction ()
 
 # ****************************************************************************
-# \brief Replaces CMake's get_target_property () command.
+#! @brief Replaces CMake's get_target_property() command.
 
 function (basis_get_target_property VAR TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -56,7 +56,7 @@ endfunction ()
 
 
 # ****************************************************************************
-# \brief Replaces CMake's get_target_property () command.
+#! @brief Replaces CMake's get_target_property() command.
 
 function (basis_get_target_location VAR TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -100,14 +100,14 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Replaces CMake's add_definitions () command.
+#! @brief Replaces CMake's add_definitions() command.
 
 function (basis_add_definitions)
   add_definitions (${ARGN})
 endfunction ()
 
 # ****************************************************************************
-# \brief Replaces CMake's remove_definitions () command.
+#! @brief Replaces CMake's remove_definitions() command.
 
 function (basis_remove_definitions)
   remove_definitions (${ARGN})
@@ -118,20 +118,20 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Replaces CMake's include_directories () command.
-#
-# All arguments are passed on to CMake's include_directories () command.
-# Additionally, the list of include directories is stored in the cached CMake
-# variable BASIS_INCLUDE_DIRECTORIES. This variable can be used by custom
-# commands for the build process, e.g., it is used as argument for the -I
-# option of the MATLAB Compiler.
-#
-# Additionally, a list of all include directories added is cached. Hence,
-# this list is extended even across subdirectories. Directories are always
-# appended ignoring the BEFORE argument. The value of this internal cache
-# variabel is cleared by basis_project ().
-#
-# \param ARGN Argument list passed on to CMake's include_directories command.
+#! \brief Replaces CMake's include_directories() command.
+#!
+#! All arguments are passed on to CMake's include_directories() command.
+#! Additionally, the list of include directories is stored in the cached CMake
+#! variable BASIS_INCLUDE_DIRECTORIES. This variable can be used by custom
+#! commands for the build process, e.g., it is used as argument for the -I
+#! option of the MATLAB Compiler.
+#!
+#! Additionally, a list of all include directories added is cached. Hence,
+#! this list is extended even across subdirectories. Directories are always
+#! appended ignoring the BEFORE argument. The value of this internal cache
+#! variabel is cleared by basis_project_initialize().
+#!
+#! @param ARGN Argument list passed on to CMake's include_directories command.
 
 function (basis_include_directories)
   # CMake's include_directories ()
@@ -184,10 +184,10 @@ function (basis_include_directories)
 endfunction ()
 
 # ****************************************************************************
-# \brief Replaces CMake's link_directories () command.
+#! @brief Replaces CMake's link_directories() command.
 
 function (basis_link_directories)
-  # CMake's link_directories ()
+  # CMake's link_directories()
   link_directories (${ARGN})
 
   # current link directories
@@ -212,7 +212,7 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Replaces CMake's add_dependencies () command.
+#! @brief Replaces CMake's add_dependencies() command.
 
 function (basis_add_dependencies)
   set (UIDS)
@@ -224,22 +224,22 @@ function (basis_add_dependencies)
 endfunction ()
 
 # ****************************************************************************
-# \brief Replaces CMake's target_link_libraries () command.
-#
-# The main reason for replacing this function is to treat libraries such as
-# MEX-files which are supposed to be compiled into a MATLAB executable added
-# by basis_add_executable () special. In this case, these libraries are added
-# to the LINK_DEPENDS property of the given MATLAB Compiler target.
-#
-# Example:
-# \code
-# basis_add_library (MyMEXFunc MEX myfunc.c)
-# basis_add_executable (MyMATLABApp main.m)
-# basis_target_link_libraries (MyMATLABApp MyMEXFunc OtherMEXFunc.mexa64)
-# \endcode
-#
-# \param [in] TARGET_NAME Name of the target.
-# \param [in] ARGN        Link libraries.
+#! @brief Replaces CMake's target_link_libraries() command.
+#!
+#! The main reason for replacing this function is to treat libraries such as
+#! MEX-files which are supposed to be compiled into a MATLAB executable added
+#! by basis_add_executable() special. In this case, these libraries are added
+#! to the LINK_DEPENDS property of the given MATLAB Compiler target.
+#!
+#! Example:
+#! @code
+#! basis_add_library (MyMEXFunc MEX myfunc.c)
+#! basis_add_executable (MyMATLABApp main.m)
+#! basis_target_link_libraries (MyMATLABApp MyMEXFunc OtherMEXFunc.mexa64)
+#! @endcode
+#!
+#! @param [in] TARGET_NAME Name of the target.
+#! @param [in] ARGN        Link libraries.
 
 function (basis_target_link_libraries TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -299,44 +299,44 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Replacement for CMake's add_executable () command.
-#
-# This function adds an executable target.
-#
-# An install command for the added executable target is added by this function
-# as well. The executable will be installed as part of the component COMPONENT
-# in the directory INSTALL_RUNTIME_DIR or INSTALL_LIBEXEC_DIR if the option
-# LIBEXEC is given.
-#
-# Besides adding usual executable targets build by the set C/CXX language
-# compiler, this function inspects the list of source files given and detects
-# whether this list contains sources which need to be build using a different
-# compiler. In particular, it supports the following languages:
-#
-# CXX    - The default behavior, adding an executable target build from C/C++
-#          source code. The target is added via CMake's add_executable () command.
-# MATLAB - Standalone application build from MATLAB sources using the
-#          MATLAB Compiler (mcc). This language option is used when the list
-#          of source files contains one or more *.m files. A custom target is
-#          added which depends on custom command(s) that build the executable.
-#
-#          \attention The *.m file with the entry point/main function of the
-#                     executable has to be given before any other *.m file.
-#
-# \param [in] TARGET_NAME Name of the executable target.
-# \param [in] ARGN        This argument list is parsed and the following
-#                         arguments are extracted, all other arguments are passed
-#                         on to add_executable () or the respective custom
-#                         commands used to build the executable.
-#
-#   COMPONENT   Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
-#   LANGUAGE    Source code language. By default determined from the extensions of
-#               of the given source files, where CXX is assumed if no other
-#               language is detected.
-#   LIBEXEC     Specifies that the built executable is an auxiliary executable
-#               which is only called by other executable.
-#   TEST        Specifies that the built executable is a test executable used
-#               with basis_add_test(). If LIBEXEC is given as well, it is ignored.
+#! @brief Replacement for CMake's add_executable() command.
+#!
+#! This function adds an executable target.
+#!
+#! An install command for the added executable target is added by this function
+#! as well. The executable will be installed as part of the component COMPONENT
+#! in the directory INSTALL_RUNTIME_DIR or INSTALL_LIBEXEC_DIR if the option
+#! LIBEXEC is given.
+#!
+#! Besides adding usual executable targets build by the set C/CXX language
+#! compiler, this function inspects the list of source files given and detects
+#! whether this list contains sources which need to be build using a different
+#! compiler. In particular, it supports the following languages:
+#!
+#! - CXX      The default behavior, adding an executable target build from C/C++
+#!            source code. The target is added via CMake's add_executable() command.
+#! - MATLAB   Standalone application build from MATLAB sources using the
+#!            MATLAB Compiler (mcc). This language option is used when the list
+#!            of source files contains one or more *.m files. A custom target is
+#!            added which depends on custom command(s) that build the executable.
+#!
+#!            @attention The *.m file with the entry point/main function of the
+#!                       executable has to be given before any other *.m file.
+#!
+#! @param [in] TARGET_NAME Name of the executable target.
+#! @param [in] ARGN        This argument list is parsed and the following
+#!                         arguments are extracted, all other arguments are passed
+#!                         on to add_executable() or the respective custom
+#!                         commands used to build the executable.
+#!
+#! - COMPONENT   Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
+#! - LANGUAGE    Source code language. By default determined from the extensions of
+#!               of the given source files, where CXX is assumed if no other
+#!               language is detected.
+#! - LIBEXEC     Specifies that the built executable is an auxiliary executable
+#!               which is only called by other executable.
+#! - TEST        Specifies that the built executable is a test executable used
+#!               with basis_add_test(). If LIBEXEC is given as well, it is ignored.
 
 function (basis_add_executable TARGET_NAME)
   basis_check_target_name (${TARGET_NAME})
@@ -424,7 +424,7 @@ function (basis_add_executable TARGET_NAME)
     endif ()
 
     # target version information
-    # \note On UNIX-based systems this only creates annoying files with
+    # Note: On UNIX-based systems this only creates annoying files with
     #       the version string as suffix and two symbolic links.
     if (WIN32)
       set_target_properties (
@@ -437,7 +437,7 @@ function (basis_add_executable TARGET_NAME)
 
     # install executable
     if (ARGN_TEST)
-      # \todo install (selected?) tests
+      # TODO install (selected?) tests
     else ()
       if (ARGN_LIBEXEC)
         set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
@@ -476,43 +476,43 @@ function (basis_add_executable TARGET_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Replaces CMake's add_library () command.
-#
-# This function adds a library target.
-#
-# An install command for the added library target is added by this function
-# as well. The runtime library will be installed as part of the component
-# RUNTIME_COMPONENT in the directory INSTALL_LIBRARY_DIR on UNIX systems
-# and INSTALL_RUNTIME_DIR on Windows. Static/import libraries will be installed
-# as part of the LIBRARY_COMPONENT in the directory INSTALL_ARCHIVE_DIR.
-#
-# Example:
-# \code
-# basis_add_library (MyLib1 STATIC mylib.cc)
-# basis_add_library (MyLib2 STATIC mylib.cc COMPONENT dev)
-#
-# basis_add_library (
-#   MyLib3 SHARED mylib.cc
-#   RUNTIME_COMPONENT bin
-#   LIBRARY_COMPONENT dev
-# )
-# \endcode
-#
-# \param [in] TARGET_NAME Name of the library target.
-# \param [in] ARGN        Arguments passed to add_library () (excluding target name).
-#                         This argument list is parsed and the following
-#                         arguments are extracted, all other arguments are passed
-#                         on to add_library ().
-#
-#   COMPONENT                Name of the component. Defaults to BASIS_LIBRARY_COMPONENT.
-#   RUNTIME_COMPONENT        Name of runtime component. Defaults to COMPONENT
-#                            if specified or BASIS_RUNTIME_COMPONENT, otherwise.
-#   LIBRARY_COMPONENT        Name of library component. Defaults to COMPONENT
-#                            if specified or BASIS_LIBRARY_COMPONENT, otherwise.
-#
-#   STATIC|SHARED|MODULE|MEX|LIBMEX Type of the library.
-#   EXTERNAL                 Whether the library target is an external library, i.e.,
-#                            the project version does not apply.
+#! @brief Replaces CMake's add_library() command.
+#!
+#! This function adds a library target.
+#!
+#! An install command for the added library target is added by this function
+#! as well. The runtime library will be installed as part of the component
+#! RUNTIME_COMPONENT in the directory INSTALL_LIBRARY_DIR on UNIX systems
+#! and INSTALL_RUNTIME_DIR on Windows. Static/import libraries will be installed
+#! as part of the LIBRARY_COMPONENT in the directory INSTALL_ARCHIVE_DIR.
+#!
+#! Example:
+#! @code
+#! basis_add_library (MyLib1 STATIC mylib.cc)
+#! basis_add_library (MyLib2 STATIC mylib.cc COMPONENT dev)
+#!
+#! basis_add_library (
+#!   MyLib3 SHARED mylib.cc
+#!   RUNTIME_COMPONENT bin
+#!   LIBRARY_COMPONENT dev
+#! )
+#! @endcode
+#!
+#! @param [in] TARGET_NAME Name of the library target.
+#! @param [in] ARGN        Arguments passed to add_library() (excluding target name).
+#!                         This argument list is parsed and the following
+#!                         arguments are extracted, all other arguments are passed
+#!                         on to add_library().
+#!
+#! - COMPONENT                Name of the component. Defaults to BASIS_LIBRARY_COMPONENT.
+#! - RUNTIME_COMPONENT        Name of runtime component. Defaults to COMPONENT
+#!                            if specified or BASIS_RUNTIME_COMPONENT, otherwise.
+#! - LIBRARY_COMPONENT        Name of library component. Defaults to COMPONENT
+#!                            if specified or BASIS_LIBRARY_COMPONENT, otherwise.
+#!
+#! - STATIC|SHARED|MODULE|MEX|LIBMEX Type of the library.
+#! - EXTERNAL                 Whether the library target is an external library, i.e.,
+#!                            the project version does not apply.
 
 function (basis_add_library TARGET_NAME)
   basis_check_target_name (${TARGET_NAME})
@@ -741,9 +741,9 @@ function (basis_add_library TARGET_NAME)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # target version information
-    # \note      On UNIX-based systems this only creates annoying files with the
+    # Note:      On UNIX-based systems this only creates annoying files with the
     #            version string as suffix.
-    # \attention MEX-files may NEVER have a suffix after the MEX extension!
+    # Attention: MEX-files may NEVER have a suffix after the MEX extension!
     #            Otherwise, the MATLAB Compiler when using the symbolic link
     #            without this suffix will create code that fails on runtime
     #            with an .auth file missing error.
@@ -801,99 +801,99 @@ function (basis_add_library TARGET_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Add script target.
-#
-# This function adds a script target to the project, where during the build
-# step the script is configured via configure_file () and copied to the
-# directory specified by OUTPUT_DIRECTORY. During installation, the script
-# built for the install tree is copied to the specified DESTINATION.
-#
-# If the script name ends in ".in", the ".in" suffix is removed from the
-# output name. Further, all occurrences of ".in." anywhere within the script
-# name are removed as well. The extension of the script such as .sh or .py is
-# removed from the output filename if the project is build on UNIX systems
-# and the script file contains a sha-bang directive, i.e., the first two
-# characters on the first line are "#!" followed by the path to the script
-# language interpreter.
-#
-# Example:
-#
-# \code
-# basis_add_script (MyShellScript.sh.in)
-# basis_add_script (AnotherShellScript.in.sh)
-# basis_add_script (Script SCRIPT Script1.sh)
-# \endcode
-#
-# Certain CMake variables within the script are replaced during the configure step.
-# These variables and their values are given by a so-called script config(uration)
-# file. The specified script configuration file is loaded during the build of
-# the script prior to the configure_file () command. As paths may be different
-# for scripts that are used directly from the build tree and scripts that are
-# copied into the install tree, the variable BUILD_INSTALL_SCRIPT is 1 when the
-# script is build for the install tree and 0 otherwise. This variable can be
-# used within the script configuration file to set the value of the CMake
-# variables used within the script differently for either case.
-#
-# Example:
-# \code
-# basis_add_script (Script1 SCRIPT Script1.sh CONFIG Script1Config.cmake)
-# \endcode
-#
-# Script1Config.cmake
-# \code
-# basis_set_script_path (ETC_DIR "@PROJECT_ETC_DIR@" "@INSTALL_ETC_DIR@")
-# \endcode
-#
-# See documentation of basis_set_script_path_definition () and ScriptConfig.cmake
-# file in BASIS_MODULE_PATH for details.
-#
-# Note that this function only adds a custom target and stores all information
-# required to setup the actual custom build command as properties of this target.
-# The custom build command itself is added by basis_add_script_finalize (), which
-# is supposed to be called once at the end of the root CMakeLists.txt file of the
-# (super-)project. This way properties such as the OUTPUT_NAME can still be modified
-# after adding the script target.
-#
-# If a custom script configuration file is used, the variable
-# @BASIS_SCRIPT_CONFIG@ can be used within this custom script configuration file
-# to include the default configuration of the BASIS_SCRIPT_CONFIG_FILE.
-#
-# \see basis_add_script_finalize ()
-#
-# \param [in] TARGET_NAME Name of the target. Alternatively, the script file
-#                         path relative to the current source directory can be
-#                         given here. In this case, the basename of the script
-#                         file is used as target name and the SCRIPT option may
-#                         not be used.
-# \param [in] ARGN        This argument list is parsed and the following
-#                         arguments are extracted:
-#
-#   SCRIPT             Script file path relative to current source directory.
-#   OUTPUT_DIRECTORY   The output directory for the configured script in the
-#                      build tree. Defaults to CMAKE_RUNTIME_OUTPUT_DIRECTORY.
-#   DESTINATION        The installation directory relative to INSTALL_PREFIX.
-#                      Defaults to INSTALL_RUNTIME_DIR or INSTALL_LIBEXEC_DIR if
-#                      the LIBEXEC option is given.
-#   COMPONENT          Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
-#   CONFIG             Script configuration file. Defaults to DEFAULT_SCRIPT_CONFIG_FILE
-#                      if this variable is set. If "NONE", "None", or "none" is given,
-#                      the script is copied only. Otherwise, a script configuration
-#                      consiting of the single line "@BASIS_SCRIPT_CONFIG@" is used.
-#   LIBEXEC            Specifies that the script is an auxiliary executable called
-#                      by other executables only.
-#   NOEXEC             Specifies that the script cannot be "executed" directly,
-#                      but always requires some kind of interpreter. Note that
-#                      with this option, the meaning of "script" can be even more
-#                      general. Any text file, which is processed by a program
-#                      to perform certain tasks, i.e., a configuration file
-#                      can be considered as "script" in this sense.
-#                      If the option LIBEXEC is given, this option is ignored.
-#   KEEPEXT            If this option is given, it forces this function to keep
-#                      the scripts file name extension even if a sha-bang
-#                      directive is given on UNIX systems.
-#   MODULE             Specifies that the script is a module file which is
-#                      included by other scripts. In particular, this is an
-#                      alias for NOEXEC and KEEPEXT.
+#! @brief Add script target.
+#!
+#! This function adds a script target to the project, where during the build
+#! step the script is configured via configure_file() and copied to the
+#! directory specified by OUTPUT_DIRECTORY. During installation, the script
+#! built for the install tree is copied to the specified DESTINATION.
+#!
+#! If the script name ends in ".in", the ".in" suffix is removed from the
+#! output name. Further, all occurrences of ".in." anywhere within the script
+#! name are removed as well. The extension of the script such as .sh or .py is
+#! removed from the output filename if the project is build on UNIX systems
+#! and the script file contains a sha-bang directive, i.e., the first two
+#! characters on the first line are "#!" followed by the path to the script
+#! language interpreter.
+#!
+#! Example:
+#!
+#! @code
+#! basis_add_script (MyShellScript.sh.in)
+#! basis_add_script (AnotherShellScript.in.sh)
+#! basis_add_script (Script SCRIPT Script1.sh)
+#! @endcode
+#!
+#! Certain CMake variables within the script are replaced during the configure step.
+#! These variables and their values are given by a so-called script config(uration)
+#! file. The specified script configuration file is loaded during the build of
+#! the script prior to the configure_file() command. As paths may be different
+#! for scripts that are used directly from the build tree and scripts that are
+#! copied into the install tree, the variable BUILD_INSTALL_SCRIPT is 1 when the
+#! script is build for the install tree and 0 otherwise. This variable can be
+#! used within the script configuration file to set the value of the CMake
+#! variables used within the script differently for either case.
+#!
+#! Example:
+#! @code
+#! basis_add_script (Script1 SCRIPT Script1.sh CONFIG Script1Config.cmake)
+#! @endcode
+#!
+#! Script1Config.cmake
+#! @code
+#! basis_set_script_path (ETC_DIR "@PROJECT_ETC_DIR@" "@INSTALL_ETC_DIR@")
+#! @endcode
+#!
+#! See documentation of basis_set_script_path_definition() and ScriptConfig.cmake
+#! file in BASIS_MODULE_PATH for details.
+#!
+#! Note that this function only adds a custom target and stores all information
+#! required to setup the actual custom build command as properties of this target.
+#! The custom build command itself is added by basis_add_script_finalize(), which
+#! is supposed to be called once at the end of the root CMakeLists.txt file of the
+#! (super-)project. This way properties such as the OUTPUT_NAME can still be modified
+#! after adding the script target.
+#!
+#! If a custom script configuration file is used, the variable
+#! \@BASIS_SCRIPT_CONFIG\@ can be used within this custom script configuration file
+#! to include the default configuration of the BASIS_SCRIPT_CONFIG_FILE.
+#!
+#! @sa basis_add_script_finalize()
+#!
+#! @param [in] TARGET_NAME Name of the target. Alternatively, the script file
+#!                         path relative to the current source directory can be
+#!                         given here. In this case, the basename of the script
+#!                         file is used as target name and the SCRIPT option may
+#!                         not be used.
+#! @param [in] ARGN        This argument list is parsed and the following
+#!                         arguments are extracted:
+#!
+#! - SCRIPT             Script file path relative to current source directory.
+#! - OUTPUT_DIRECTORY   The output directory for the configured script in the
+#!                      build tree. Defaults to CMAKE_RUNTIME_OUTPUT_DIRECTORY.
+#! - DESTINATION        The installation directory relative to INSTALL_PREFIX.
+#!                      Defaults to INSTALL_RUNTIME_DIR or INSTALL_LIBEXEC_DIR if
+#!                      the LIBEXEC option is given.
+#! - COMPONENT          Name of the component. Defaults to BASIS_RUNTIME_COMPONENT.
+#! - CONFIG             Script configuration file. Defaults to DEFAULT_SCRIPT_CONFIG_FILE
+#!                      if this variable is set. If "NONE", "None", or "none" is given,
+#!                      the script is copied only. Otherwise, a script configuration
+#!                      consiting of the single line "\@BASIS_SCRIPT_CONFIG\@" is used.
+#! - LIBEXEC            Specifies that the script is an auxiliary executable called
+#!                      by other executables only.
+#! - NOEXEC             Specifies that the script cannot be "executed" directly,
+#!                      but always requires some kind of interpreter. Note that
+#!                      with this option, the meaning of "script" can be even more
+#!                      general. Any text file, which is processed by a program
+#!                      to perform certain tasks, i.e., a configuration file
+#!                      can be considered as "script" in this sense.
+#!                      If the option LIBEXEC is given, this option is ignored.
+#! - KEEPEXT            If this option is given, it forces this function to keep
+#!                      the scripts file name extension even if a sha-bang
+#!                      directive is given on UNIX systems.
+#! - MODULE             Specifies that the script is a module file which is
+#!                      included by other scripts. In particular, this is an
+#!                      alias for NOEXEC and KEEPEXT.
 
 function (basis_add_script TARGET_NAME)
   # parse arguments
@@ -1030,7 +1030,7 @@ function (basis_add_script TARGET_NAME)
     else ()
       set (SCRIPT_CONFIG "@BASIS_SCRIPT_CONFIG@")
     endif ()
-    while (SCRIPT_CONFIG MATCHES "@.*@")
+    while (SCRIPT_CONFIG MATCHES "@[a-zA-Z0-9_-]+@")
       string (CONFIGURE "${SCRIPT_CONFIG}" SCRIPT_CONFIG @ONLY)
     endwhile ()
     set (BASIS_SCRIPT_CONFIG)
@@ -1064,17 +1064,17 @@ function (basis_add_script TARGET_NAME)
 endfunction ()
 
 # ****************************************************************************
-# \brief Finalizes addition of script.
-#
-# This function uses the properties of the custom script target added by
-# basis_add_script () to create the custom build command and adds this build
-# command as dependency of this added target.
-#
-# \see basis_add_script ()
-#
-# \param [in] TARGET_UID "Global" target name. If this function is used
-#                        within the same project as basis_add_script (),
-#                        the "local" target name may be given alternatively.
+#! @brief Finalizes addition of script.
+#!
+#! This function uses the properties of the custom script target added by
+#! basis_add_script() to create the custom build command and adds this build
+#! command as dependency of this added target.
+#!
+#! @sa basis_add_script()
+#!
+#! @param [in] TARGET_UID "Global" target name. If this function is used
+#!                        within the same project as basis_add_script(),
+#!                        the "local" target name may be given alternatively.
 
 function (basis_add_script_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
@@ -1177,12 +1177,12 @@ function (basis_add_script_finalize TARGET_UID)
 
   # write build script only if it differs from previous build script
   #
-  # \note Adding BUILD_SCRIPT to the dependencies of the custom command
+  # Note: Adding BUILD_SCRIPT to the dependencies of the custom command
   #       caused the custom command to be executed every time even when the
   #       BUILD_SCRIPT file was not modified. Therefore, use dummy output
   #       file which is deleted when the script differs from the previous one.
   #
-  # \todo There must be a better solution to this problem.
+  # TODO There must be a better solution to this problem.
   file (WRITE "${BUILD_SCRIPT}" "${BUILD_COMMANDS}")
 
   file (WRITE "${BUILD_SCRIPT}.check" "# DO NOT edit. Automatically generated by BASIS.
@@ -1243,16 +1243,16 @@ endif ()"
 endfunction ()
 
 # ****************************************************************************
-# \brief Adds scripts with specified extension.
-#
-# This function calls basis_add_script () for each script within the current
-# source directory which has the extension ".EXT" or ".EXT.in".
-#
-# \param [in] EXT  Script extension, e.g., "sh" for shell scripts.
-# \param [in] ARGN This argument list is parsed and the following
-#                  arguments are extracted:
-#
-#   COMPONENT Name of the component. See basis_add_script () for default.
+#! @brief Adds scripts with specified extension.
+#!
+#! This function calls basis_add_script() for each script within the current
+#! source directory which has the extension ".EXT" or ".EXT.in".
+#!
+#! @param [in] EXT  Script extension, e.g., "sh" for shell scripts.
+#! @param [in] ARGN This argument list is parsed and the following
+#!                  arguments are extracted:
+#!
+#! - COMPONENT Name of the component. See basis_add_script() for default.
 
 function (basis_add_scripts_by_extension EXT)
   if (BASIS_VERBOSE)
@@ -1286,15 +1286,15 @@ function (basis_add_scripts_by_extension EXT)
 endfunction ()
 
 # ****************************************************************************
-# \brief Adds scripts with specified extensions.
-#
-# \see basis_add_scripts_by_extension
-#
-# \param [in] ARGN This argument list is parsed and the following arguments
-#                  are extracted. All other arguments are considered script
-#                  extension.
-#
-#   COMPONENT Name of the component. See basis_add_script () for default.
+#! @brief Adds scripts with specified extensions.
+#!
+#! @sa basis_add_scripts_by_extension()
+#!
+#! @param [in] ARGN This argument list is parsed and the following arguments
+#!                  are extracted. All other arguments are considered script
+#!                  extension.
+#!
+#! - COMPONENT Name of the component. See basis_add_script() for default.
 
 macro (basis_add_scripts_by_extensions)
   # parse arguments
@@ -1311,18 +1311,18 @@ macro (basis_add_scripts_by_extensions)
 endmacro ()
 
 # ****************************************************************************
-# \brief Adds scripts with default extensions.
-#
-# This macro adds each script within the current source directory which has
-# a default extension using basis_add_script ().
-#
-# Considered default extensions are "sh" for shell scripts, "py" for Python
-# scripts, and "pl" for Perl scripts.
-#
-# \param [in] ARGN This argument list is parsed and the following arguments
-#                  are extracted.
-#
-#   COMPONENT Name of the componen. See basis_add_script () for default.
+#! @brief Adds scripts with default extensions.
+#!
+#! This macro adds each script within the current source directory which has
+#! a default extension using basis_add_script().
+#!
+#! Considered default extensions are "sh" for shell scripts, "py" for Python
+#! scripts, and "pl" for Perl scripts.
+#!
+#! \param [in] ARGN This argument list is parsed and the following arguments
+#!                  are extracted.
+#!
+#! - COMPONENT Name of the componen. See basis_add_script() for default.
 
 macro (basis_add_scripts)
   # parse arguments
@@ -1343,10 +1343,10 @@ macro (basis_add_scripts)
 endmacro ()
 
 # ****************************************************************************
-# \brief Fianlizes addition of custom BASIS targets.
-#
-# \see basis_add_script_finalize ()
-# \see basis_add_mcc_target_finalize ()
+#! @brief Fianlizes addition of custom BASIS targets.
+#!
+#! @sa basis_add_script_finalize()
+#! @sa basis_add_mcc_target_finalize()
 
 function (basis_add_custom_finalize)
   foreach (TARGET_UID ${BASIS_TARGETS})

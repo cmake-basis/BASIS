@@ -1,35 +1,35 @@
 ##############################################################################
-# \file  CMakeLists.txt
-# \brief Generates package configuration files.
-#
-# This CMake script configures the <package>Config.cmake et al. files,
-# once for the build tree and once for the install tree. Variables with a
-# _CONFIG suffix are replaced in the default template file by either the
-# value for the build or the install tree, respectively.
-#
-# If present, this script includes the PROJECT_CONFIG_DIR/ConfigBuild.cmake
-# and/or PROJECT_CONFIG_DIR/ConfigInstall.cmake file before configuring the
-# Config.cmake.in template. If a file PROJECT_CONFIG_DIR/Config.cmake.in
-# exists, it is used as template. Otherwise, the default template file is used.
-#
-# Similarly, if the file PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
-# it is used as template for the <package>ConfigVersion.cmake file. The same
-# applies to Use.cmake.in.
-#
-# The variable PACKAGE_NAME is set to the name of the project prefixed by the
-# value of BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
-# to find this software package.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  GenerateConfig.cmake
+#! @brief Generates package configuration files.
+#!
+#! This CMake script configures the <package>Config.cmake et al. files,
+#! once for the build tree and once for the install tree. Variables with a
+#! _CONFIG suffix are replaced in the default template file by either the
+#! value for the build or the install tree, respectively.
+#!
+#! If present, this script includes the PROJECT_CONFIG_DIR/ConfigBuild.cmake
+#! and/or PROJECT_CONFIG_DIR/ConfigInstall.cmake file before configuring the
+#! Config.cmake.in template. If a file PROJECT_CONFIG_DIR/Config.cmake.in
+#! exists, it is used as template. Otherwise, the default template file is used.
+#!
+#! Similarly, if the file PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
+#! it is used as template for the <package>ConfigVersion.cmake file. The same
+#! applies to Use.cmake.in.
+#!
+#! The variable PACKAGE_NAME is set to the name of the project prefixed by the
+#! value of BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
+#! to find this software package.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 
 # get directory of this file
 #
-# \note This variable was just recently introduced in CMake, it is derived
+# Note: This variable was just recently introduced in CMake, it is derived
 #       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
@@ -39,14 +39,17 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # names of output files
 # ============================================================================
 
-# \attention This has to be done before configuring any files such that these
+# Attention: This has to be done before configuring any files such that these
 #            variables can be used by the template files.
 
+#! @brief Name of the package.
 set (PACKAGE_NAME "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}")
-
-set (CONFIG_FILE  "${PACKAGE_NAME}Config.cmake")
+#! @brief Name of the CMake package configuration file.
+set (CONFIG_FILE "${PACKAGE_NAME}Config.cmake")
+#! @brief Name of the CMake package version file.
 set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
-set (USE_FILE     "${PACKAGE_NAME}Use.cmake")
+#! @brief Name of the CMake package use file.
+set (USE_FILE "${PACKAGE_NAME}Use.cmake")
 
 # ============================================================================
 # install exports

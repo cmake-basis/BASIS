@@ -1,11 +1,11 @@
 ##############################################################################
-# \file  BasisDocTools.cmake
-# \brief Tools related to gnerating or adding software documentation.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  DocTools.cmake
+#! @brief Tools related to gnerating or adding software documentation.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 if (__BASIS_DOCTOOLS_INCLUDED)
@@ -17,7 +17,7 @@ endif ()
 
 # get directory of this file
 #
-# \note This variable was just recently introduced in CMake, it is derived
+# Note: This variable was just recently introduced in CMake, it is derived
 #       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
@@ -30,10 +30,12 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # The following options are only enabled when at least one doc or changelog
 # target were added. Otherwise, there is nothing to build.
 
+#! @brief Enable/Disable build of documentation target as part of ALL.
 if (NOT DEFINED BUILD_DOCUMENTATION)
   set (BUILD_DOCUMENTATION)
 endif ()
 
+#! @brief Enable/Disable build of changelog target as part of ALL.
 if (NOT DEFINED BUILD_CHANGELOG)
   set (BUILD_CHANGELOG)
 endif ()
@@ -45,7 +47,7 @@ endif ()
 # Doxygen - API documentation
 find_package (Doxygen)
 
-# svn2cl - ChangeLog
+#! @brief Command svn2cl which is used to generate a ChangeLog from the Subversion log.
 find_program (
   BASIS_CMD_SVN2CL
     NAMES svn2cl
@@ -58,20 +60,24 @@ mark_as_advanced (BASIS_CMD_SVN2CL)
 # settings
 # ============================================================================
 
-# Doxygen filters
-set (BASIS_DOXYGEN_FILTER_CMAKE  "${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
-set (BASIS_DOXYGEN_FILTER_BASH   "${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.pl")
+#! @brief Doxygen filter used to process CMake scripts.
+set (BASIS_DOXYGEN_FILTER_CMAKE "${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
+#! @brief Doxygen filter used to process BASH scripts.
+set (BASIS_DOXYGEN_FILTER_BASH "${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.pl")
+#! @brief Doxygen filter used to process MATLAB scripts.
 set (BASIS_DOXYGEN_FILTER_MATLAB "${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
 
+#! @brief Default Doxygen filter patterns.
 set (
   BASIS_DOXYGEN_FILTER_PATTERNS
     "*.cmake=${BASIS_DOXYGEN_FILTER_CMAKE}"
+    "*.cmake.in=${BASIS_DOXYGEN_FILTER_CMAKE}"
     "CMakeLists.txt=${BASIS_DOXYGEN_FILTER_CMAKE}"
     "*.sh=${BASIS_DOXYGEN_FILTER_BASH}"
     "*.m=${BASIS_DOXYGEN_FILTER_MATLAB}"
 )
 
-# Doxygen configuration
+#! @brief Default Doxygen configuration.
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
 # ============================================================================
@@ -79,7 +85,7 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 # ============================================================================
 
 # ****************************************************************************
-# \brief Adds a custom 'doc' target along with a build switch.
+#! @brief Add a custom 'doc' target along with a build switch.
 
 function (basis_add_doc_target)
   if (NOT TARGET doc)
@@ -101,7 +107,7 @@ function (basis_add_doc_target)
 endfunction ()
 
 # ****************************************************************************
-# \brief Adds a custom 'changelog' target along with a build switch.
+#! @brief Add a custom 'changelog' target along with a build switch.
 
 function (basis_add_changelog_target)
   if (NOT TARGET changelog)
@@ -127,98 +133,97 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Adds documentation target.
-#
-# This function is especially used to add a custom target to the "doc" target
-# which is used to generate documentation from input files such as in
-# particular source code files. Other documentation files such as HTML, Word,
-# or PDF documents can be added as well using this function. A component
-# as part of which this documentation shall be installed can be specified.
-#
-# The documentation files are installed in/as INSTALL_DOC_DIR/DOC_NAME as part
-# of the component specified by the COMPONENT option.
-#
-# Example:
-#
-# \code
-# basis_add_doc (UserManual.pdf)
-# basis_add_doc (DeveloperManual.docx COMPONENT dev)
-# basis_add_doc (SourceManual.html    COMPONENT src)
-# \endcode
-#
-# \param [in] TARGET_NAME Name of the documentation target or file.
-# \param [in] ARGN        Further options which are given as pairs
-#                         "OPTION_NAME <OPTION_VALUE>".
-#
-# Common options:
-#
-# COMPONENT Name of the component this documentation belongs to.
-#           Defaults to BASIS_LIBRARY_COMPONENT for documentation generated
-#           from in-source comments and BASIS_RUNTIME_COMPONENT, otherwise.
-# GENERATOR Documentation generator, where the case of the generator name is
-#           ignored, i.e., "Doxygen", "DOXYGEN", "doxYgen" are all valid
-#           arguments which select the DOXYGEN generator. The arguments for the
-#           the different supported generators are documented below.
-#           The default generator is "NONE". The NONE generator simply installs
-#           the document with the filename TARGET_NAME and has no own options.
-#
-# Generator: DOXYGEN
-# 
-# Example:
-#
-# \code
-# basis_add_doc (
-#   API
-#   GENERATOR Doxygen
-#     DOXYFILE        "Doxyfile.in"
-#     PROJECT_NAME    "${PROJECT_NAME}"
-#     PROJECT_VERSION "${PROJECT_VERSION}"
-#   COMPONENT dev
-# )
-# \endcode
-#
-# Options of DOXYGEN generator:
-#
-# \see http://www.stack.nl/~dimitri/doxygen/config.html
-#
-# DOXYFILE         Name of the template Doxyfile.
-# PROJECT_NAME     Value for Doxygen's PROJECT_NAME tag which is used
-#                  to specify the project name.
-#                  Default: PROJECT_NAME.
-# PROJECT_NUMBER   Value for Doxygen's PROJECT_NUMBER tag which is used
-#                  to specify the project version number.
-#                  Default: PROJECT_VERSION.
-# INPUT            Value for Doxygen's INPUT tag which is used to
-#                  specify input directories/files.
-#                  Default: PROJECT_CODE_DIR BINARY_CODE_DIR
-#                           PROJECT_INCLUDE_DIR BINARY_INCLUDE_DIR.
-# FILTER_PATTERNS  Value for Doxygen's FILTER_PATTERNS tag which
-#                  can be used to specify filters on a per file
-#                  pattern basis. Defaults to BASIS_DOXYGEN_FILTER_PATTERNS.
-# EXCLUDE_PATTERNS Additional patterns used for Doxygen's EXCLUDE_PATTERNS tag
-#                  which can be used to specify files and/or directories that
-#                  should be excluded from the INPUT source files.
-#                  Default: None
-# OUTPUT_DIRECTORY Value for Doxygen's OUTPUT_DIRECTORY tag which
-#                  can be used to specify the output directory.
-#                  Default: CMAKE_CURRENT_BINARY_DIR/TARGET_NAME.
-# GENERATE_HTML    If given, Doxygen's GENERATE_HTML tag is set to YES, otherwise NO.
-# GENERATE_LATEX   If given, Doxygen's GENERATE_LATEX tag is set to YES, otherwise NO.
-# GENERATE_RTF     If given, Doxygen's GENERATE_RTF tag is set to YES, otherwise NO.
-# GENERATE_MAN     If given, Doxygen's GENERATE_MAN tag is set to YES, otherwise NO.
-#
-# Generator: SVN2CL
-#
-# Example:
-#
-# \code
-# basis_add_doc (
-#   ChangeLog
-#   GENERATOR svn2cl
-#   COMPONENT dev
-# )
-# \endcode
-#
+#! @brief Add documentation target.
+#!
+#! This function is especially used to add a custom target to the "doc" target
+#! which is used to generate documentation from input files such as in
+#! particular source code files. Other documentation files such as HTML, Word,
+#! or PDF documents can be added as well using this function. A component
+#! as part of which this documentation shall be installed can be specified.
+#!
+#! The documentation files are installed in/as INSTALL_DOC_DIR/TARGET_NAME as
+#! part of the component specified by the COMPONENT option.
+#!
+#! Example:
+#!
+#! @code
+#! basis_add_doc (UserManual.pdf)
+#! basis_add_doc (DeveloperManual.docx COMPONENT dev)
+#! basis_add_doc (SourceManual.html    COMPONENT src)
+#! @endcode
+#!
+#! @param [in] TARGET_NAME Name of the documentation target or file.
+#! @param [in] ARGN        Further options which are given as pairs
+#!                         "OPTION_NAME <OPTION_VALUE>".
+#!
+#! Common options:
+#!
+#! - COMPONENT Name of the component this documentation belongs to.
+#!             Defaults to BASIS_LIBRARY_COMPONENT for documentation generated
+#!             from in-source comments and BASIS_RUNTIME_COMPONENT, otherwise.
+#! - GENERATOR Documentation generator, where the case of the generator name is
+#!             ignored, i.e., "Doxygen", "DOXYGEN", "doxYgen" are all valid
+#!             arguments which select the DOXYGEN generator. The arguments for the
+#!             the different supported generators are documented below.
+#!             The default generator is "NONE". The NONE generator simply installs
+#!             the document with the filename TARGET_NAME and has no own options.
+#!
+#! Generator: DOXYGEN
+#! 
+#! Example:
+#!
+#! @code
+#! basis_add_doc (
+#!   API
+#!   GENERATOR Doxygen
+#!     DOXYFILE        "Doxyfile.in"
+#!     PROJECT_NAME    "${PROJECT_NAME}"
+#!     PROJECT_VERSION "${PROJECT_VERSION}"
+#!   COMPONENT dev
+#! )
+#! @endcode
+#!
+#! Options of DOXYGEN generator:
+#!
+#! @sa http://www.stack.nl/~dimitri/doxygen/config.html
+#!
+#! - DOXYFILE         Name of the template Doxyfile.
+#! - PROJECT_NAME     Value for Doxygen's PROJECT_NAME tag which is used
+#!                    to specify the project name.
+#!                    Default: PROJECT_NAME.
+#! - PROJECT_NUMBER   Value for Doxygen's PROJECT_NUMBER tag which is used
+#!                    to specify the project version number.
+#!                    Default: PROJECT_VERSION.
+#! - INPUT            Value for Doxygen's INPUT tag which is used to
+#!                    specify input directories/files.
+#!                    Default: PROJECT_CODE_DIR BINARY_CODE_DIR
+#!                             PROJECT_INCLUDE_DIR BINARY_INCLUDE_DIR.
+#! - FILTER_PATTERNS  Value for Doxygen's FILTER_PATTERNS tag which
+#!                    can be used to specify filters on a per file
+#!                    pattern basis. Defaults to BASIS_DOXYGEN_FILTER_PATTERNS.
+#! - EXCLUDE_PATTERNS Additional patterns used for Doxygen's EXCLUDE_PATTERNS tag
+#!                    which can be used to specify files and/or directories that
+#!                    should be excluded from the INPUT source files.
+#!                    Default: None
+#! - OUTPUT_DIRECTORY Value for Doxygen's OUTPUT_DIRECTORY tag which
+#!                    can be used to specify the output directory.
+#!                    Default: CMAKE_CURRENT_BINARY_DIR/TARGET_NAME.
+#! - GENERATE_HTML    If given, Doxygen's GENERATE_HTML tag is set to YES, otherwise NO.
+#! - GENERATE_LATEX   If given, Doxygen's GENERATE_LATEX tag is set to YES, otherwise NO.
+#! - GENERATE_RTF     If given, Doxygen's GENERATE_RTF tag is set to YES, otherwise NO.
+#! - GENERATE_MAN     If given, Doxygen's GENERATE_MAN tag is set to YES, otherwise NO.
+#!
+#! Generator: SVN2CL
+#!
+#! Example:
+#!
+#! @code
+#! basis_add_doc (
+#!   ChangeLog
+#!   GENERATOR svn2cl
+#!   COMPONENT dev
+#! )
+#! @endcode
 
 function (basis_add_doc TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
