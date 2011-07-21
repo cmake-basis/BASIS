@@ -46,7 +46,7 @@ SBIA_BASIS_NAMESPACE_BEGIN
 extern const char cPathSeparator;
 
 /*!
- * \brief Native path separator, i.e., either slash (/) or backslash (\).
+ * \brief Native path separator as string, i.e., either slash (/) or backslash (\).
  */
 extern const std::string cPathSeparatorStr;
 

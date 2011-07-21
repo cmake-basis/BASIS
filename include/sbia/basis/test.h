@@ -1,6 +1,6 @@
 /*!
  * \file  test.h
- * \brief Main include file of BASIS C++ unit testing.
+ * \brief Main include file for BASIS C++ unit tests.
  *
  * This file should be included by implementations of unit tests.
  * Note that currently, we are simply using Google Test and Google Mock.
