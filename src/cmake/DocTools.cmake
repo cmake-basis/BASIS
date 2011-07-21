@@ -54,52 +54,25 @@ find_program (
 
 mark_as_advanced (BASIS_CMD_SVN2CL)
 
-# Doxygen filters
-find_file (
-  DOXYGEN_FILTER_BASH
-    NAMES bash2cpp.pl
-    HINTS "${CMAKE_CURRENT_LIST_DIR}"
-    DOC   "Filter used by default by Doxygen to convert shell scripts (bash2cpp.pl)."
-    NO_DEFAULT_PATH
-)
-
-mark_as_advanced (DOXYGEN_FILTER_BASH)
-
-find_file (
-  DOXYGEN_FILTER_MATLAB
-    NAMES matlab2cpp.pl
-    HINTS "${CMAKE_CURRENT_LIST_DIR}"
-    DOC   "Filter used by default by Doxygen to convert MATLAB scripts (matlab2cpp.pl)."
-    NO_DEFAULT_PATH
-)
-
-mark_as_advanced (DOXYGEN_FILTER_MATLAB)
-
 # ============================================================================
 # settings
 # ============================================================================
 
-set (DOXYGEN_FILTER_PATTERNS "")
+# Doxygen filters
+set (BASIS_DOXYGEN_FILTER_CMAKE  "${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
+set (BASIS_DOXYGEN_FILTER_BASH   "${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.pl")
+set (BASIS_DOXYGEN_FILTER_MATLAB "${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
 
-if (DOXYGEN_FILTER_BASH)
-  list (APPEND DOXYGEN_FILTER_PATTERNS "*.sh=${DOXYGEN_FILTER_BASH}")
-endif ()
+set (BASIS_DOXYGEN_FILTER_PATTERNS "")
+list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"*.cmake=${BASIS_DOXYGEN_FILTER_CMAKE}\" ")
+list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"CMakeLists.txt=${BASIS_DOXYGEN_FILTER_CMAKE}\" ")
+list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"*.sh=${BASIS_DOXYGEN_FILTER_BASH}\" ")
+list (APPEND BASIS_DOXYGEN_FILTER_PATTERNS "\"*.m=${BASIS_DOXYGEN_FILTER_MATLAB}\" ")
 
-if (DOXYGEN_FILTER_MATLAB)
-  list (APPEND DOXYGEN_FILTER_PATTERNS "*.m=${DOXYGEN_FILTER_MATLAB}")
-endif ()
+basis_list_to_string (BASIS_DOXYGEN_FILTER_PATTERNS ${BASIS_DOXYGEN_FILTER_PATTERNS})
 
-basis_list_to_string (DOXYGEN_FILTER_PATTERNS ${DOXYGEN_FILTER_PATTERNS})
-
-find_file (
-  DOXYGEN_DOXYFILE
-    NAMES Doxyfile.in
-    HINTS "${CMAKE_CURRENT_LIST_DIR}"
-    DOC   "Default doxyfile template used for Doxygen (Doxyfile.in)."
-    NO_DEFAULT_PATH
-)
-
-mark_as_advanced (DOXYGEN_DOXYFILE)
+# Doxygen configuration
+set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
 # ============================================================================
 # helper
@@ -356,8 +329,15 @@ function (basis_add_doc TARGET_NAME)
       set (DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
     endif ()
     if (NOT DOXYGEN_INPUT)
-      file (RELATIVE_PATH CODE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
-      set (DOXYGEN_INPUT "${PROJECT_CODE_DIR}" "${PROJECT_BINARY_DIR}/${CODE_DIR}")
+      file (RELATIVE_PATH CODE_DIR    "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
+      file (RELATIVE_PATH INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
+      set (
+        DOXYGEN_INPUT
+          "${PROJECT_INCLUDE_DIR}"
+          "${PROJECT_BINARY_DIR}/${INCLUDE_DIR}"
+          "${PROJECT_CODE_DIR}"
+          "${PROJECT_BINARY_DIR}/${CODE_DIR}"
+      )
     endif ()
     if (NOT DOXYGEN_FILTER_PATTERNS)
       set (DOXYGEN_FILTER_PATTERNS "${BASIS_DOXYGEN_FILTER_PATTERNS}")

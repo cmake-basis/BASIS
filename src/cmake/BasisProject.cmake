@@ -1,15 +1,15 @@
 ##############################################################################
-# \file  BasisProject.cmake
-# \brief Settings, functions and macros used by any BASIS project.
-#
-# This is the main module that is included by BASIS projects. Most of the other
-# BASIS CMake modules are included by this main module and hence do not need
-# to be included separately.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! \file  BasisProject.cmake
+#! \brief Settings, functions and macros used by any BASIS project.
+#!
+#! This is the main module that is included by BASIS projects. Most of the other
+#! BASIS CMake modules are included by this main module and hence do not need
+#! to be included separately.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 
@@ -69,82 +69,82 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 # ============================================================================
 
 # ****************************************************************************
-# \brief Initialize project, calls CMake's project () command.
-#
-# Any BASIS project has to call this macro in the beginning of its root CMake
-# configuration file. Further, the macro basis_project_finalize () has to be
-# called at the end of the file.
-#
-# The version number consists of three components: the major version number,
-# the minor version number, and the patch number. The format of the version
-# string is "Major.Minor.Patch", where the minor version number and patch
-# number default to 0 if not given. Only digits are allowed except of the
-# two separating dots.
-#
-# - A change of the major version number indicates changes of the softwares
-#   API (and ABI) and/or its behavior and/or the change or addition of major
-#   features.
-#
-# - A change of the minor version number indicates changes that are not only
-#   bug fixes and no major changes. Hence, changes of the API but not the ABI.
-#
-# - A change of the patch number indicates changes only related to bug fixes
-#   which did not change the softwares API. It is the least important component
-#   of the version number.
-#
-# The default settings set by Settings.cmake can be overwritten by the
-# file Settings.cmake in the PROJECT_CONFIG_DIR. This file is included by
-# this macro after the project was initialized and before dependencies on
-# other packages were resolved.
-#
-# Dependencies on other packages should be resolved via find_package () or
-# find_sbia_package () commands in the Depends.cmake file which as well has to
-# be located in PROJECT_CONFIG_DIR (note that this variable may be modified
-# within the Settings.cmake file). The Depends.cmake file is included by this
-# macro if present after the inclusion of the Settings.cmake file.
-#
-# Each BASIS project further has to have a README file in the root directory
-# of the software component. This file is the root documentation file which
-# refers the user to the further documentation files in PROJECT_DOC_DIR.
-# A different name for the readme file can be set in the Settings.cmake file.
-#
-# A COPYING file with the copyright and license notices must be present in
-# the root directory of the source tree. The name of this file can be
-# changed in the Settings.cmake file.
-#
-# As the BasisTest.cmake module has to be included after the project ()
-# command was used, this module is not included by the CMake use file of
-# BASIS. Instead, it is included by this macro.
-#
-# \see basis_project_finalize ()
-#
-# \param [in] ARGVN This list is parsed for the following arguments.
-#                   Moreover, any of these arguments can be specified
-#                   in the file PROJECT_CONFIG_DIR/Settings.cmake
-#                   instead with the prefix PROJECT_*, e.g.,
-#                   "set (PROJECT_VERSION 1.0)".
-#
-#   NAME                 The name of the project.
-#   VERSION              Project version string, i.e., "<major>(.<minor>(.<patch>))".
-#   DESCRIPTION          Package description, used for packing.
-#   PACKAGE_VENDOR       The vendor of this package, used for packaging.
-#                        Defaults to "SBIA Group at University of Pennsylvania".
-#   WELCOME_FILE         Welcome file used for installer.
-#   README_FILE          Readme file. Defaults to PROJECT_SOURCE_DIR/README.
-#   LICENSE_FILE         File containing copyright and license notices.
-#                        Defaults to PROJECT_SOURCE_DIR/LICENSE.
-#   REDIST_LICENSE_FILES Additional license files of other packages
-#                        redistributed as part of this project.
-#                        These licenses will be installed along with the
-#                        project's LICENSE_FILE. By default, all files which
-#                        match the regular expression
-#                        "^PROJECT_SOURCE_DIR/LICENSE-.+" are considered.
-#
-# \note The DESCRIPTION and PACKAGE_VENDOR arguments can be lists of strings
-#       which are concatenated to one string.
+#! @brief Initialize project, calls CMake's project() command.
+#!
+#! Any BASIS project has to call this macro in the beginning of its root CMake
+#! configuration file. Further, the macro basis_project_finalize() has to be
+#! called at the end of the file.
+#!
+#! The version number consists of three components: the major version number,
+#! the minor version number, and the patch number. The format of the version
+#! string is "<major>.<minor>.<patch>", where the minor version number and
+#! patch number default to 0 if not given. Only digits are allowed except of
+#! the two separating dots.
+#!
+#! - A change of the major version number indicates changes of the softwares
+#!   API (and ABI) and/or its behavior and/or the change or addition of major
+#!   features.
+#!
+#! - A change of the minor version number indicates changes that are not only
+#!   bug fixes and no major changes. Hence, changes of the API but not the ABI.
+#!
+#! - A change of the patch number indicates changes only related to bug fixes
+#!   which did not change the softwares API. It is the least important component
+#!   of the version number.
+#!
+#! The default settings set by Settings.cmake can be overwritten by the
+#! file Settings.cmake in the PROJECT_CONFIG_DIR. This file is included by
+#! this macro after the project was initialized and before dependencies on
+#! other packages were resolved.
+#!
+#! Dependencies on other packages should be resolved via find_package() or
+#! find_sbia_package() commands in the Depends.cmake file which as well has to
+#! be located in PROJECT_CONFIG_DIR (note that this variable may be modified
+#! within the Settings.cmake file). The Depends.cmake file is included by this
+#! macro if present after the inclusion of the Settings.cmake file.
+#!
+#! Each BASIS project further has to have a README(.txt) file in the root
+#! directory of the software component. This file is the root documentation
+#! file which refers the user to the further documentation files in PROJECT_DOC_DIR.
+#! A different name for the readme file can be set in the Settings.cmake file.
+#!
+#! A COPYING(.txt) file with the copyright and license notices must be present
+#! in the root directory of the source tree. The name of this file can be
+#! changed in the Settings.cmake file.
+#!
+#! As the BasisTest.cmake module has to be included after the project()
+#! command was used, this module is not included by the CMake use file of
+#! BASIS. Instead, it is included by this macro.
+#!
+#! @sa basis_project_finalize()
+#!
+#! @param [in] ARGVN This list is parsed for the following arguments.
+#!                   Moreover, any of these arguments can be specified
+#!                   in the file PROJECT_CONFIG_DIR/Settings.cmake
+#!                   instead with the prefix PROJECT_*, e.g.,
+#!                   "set (PROJECT_VERSION 1.0)".
+#!
+#!   NAME                 The name of the project.
+#!   VERSION              Project version string, i.e., "<major>(.<minor>(.<patch>))".
+#!   DESCRIPTION          Package description, used for packing.
+#!   PACKAGE_VENDOR       The vendor of this package, used for packaging.
+#!                        Defaults to "SBIA Group at University of Pennsylvania".
+#!   WELCOME_FILE         Welcome file used for installer.
+#!   README_FILE          Readme file. Defaults to PROJECT_SOURCE_DIR/README.
+#!   LICENSE_FILE         File containing copyright and license notices.
+#!                        Defaults to PROJECT_SOURCE_DIR/LICENSE.
+#!   REDIST_LICENSE_FILES Additional license files of other packages
+#!                        redistributed as part of this project.
+#!                        These licenses will be installed along with the
+#!                        project's LICENSE_FILE. By default, all files which
+#!                        match the regular expression
+#!                        "^PROJECT_SOURCE_DIR/LICENSE-.+" are considered.
+#!
+#! @note The DESCRIPTION and PACKAGE_VENDOR arguments can be lists of strings
+#!       which are concatenated to one string.
 
 macro (basis_project_initialize)
-  # set common CMake variables which would not be valid before project ()
+  # set common CMake variables which would not be valid before project()
   # such that they can be used in the Settings.cmake file, for example
   set (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
   set (PROJECT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
@@ -442,16 +442,16 @@ macro (basis_project_initialize)
 endmacro ()
 
 # ****************************************************************************
-# \brief Finalize project build configuration.
-#
-# This macro has to be called at the end of the root CMakeLists.txt file of
-# each BASIS project initialized by basis_project ().
-#
-# The project configuration files are generated by including the CMake script
-# PROJECT_CONFIG_DIR/GenerateConfig.cmake when this file exists or using
-# the default script of BASIS.
-#
-# \see basis_project ()
+#! @brief Finalize project build configuration.
+#!
+#! This macro has to be called at the end of the root CMakeLists.txt file of
+#! each BASIS project initialized by basis_project().
+#!
+#! The project configuration files are generated by including the CMake script
+#! PROJECT_CONFIG_DIR/GenerateConfig.cmake when this file exists or using
+#! the default script of BASIS.
+#!
+#! @sa basis_project_initialize()
 
 macro (basis_project_finalize)
   # if project uses MATLAB
@@ -460,7 +460,8 @@ macro (basis_project_finalize)
   endif ()
 
   # finalize addition of custom targets
-  # \note Should be done for each (sub-)project as the finalize functions
+  #
+  # Note: Should be done for each (sub-)project as the finalize functions
   #       might make use of the PROJECT_* variables.
   basis_add_custom_finalize ()
 
@@ -492,38 +493,38 @@ endmacro ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Configure default auxiliary source files.
-#
-# This function configures the following default auxiliary source files
-# which can be used by the projects which are making use of BASIS.
-#
-#   - config.h    This file is intended to be included by all source files.
-#                 Hence, other projects will indirectly include this file when
-#                 they use a library of this project. Therefore, it is
-#                 important to avoid potential name conflicts.
-#
-#   - config.cc   Definition of constants declared in config.h file.
-#                 In particular, the paths of the installation directories
-#                 relative to the executables are defined by this file.
-#                 These constants are used by the auxiliary functions
-#                 implemented in stdaux.h.
-#
-#   - stdaux.h    Auxiliary functions such as functions to get absolute path
-#                 to the subdirectories of the installation.
-#
-#   - stdaux.cc   Definition of auxiliary functions declared in stdaux.h.
-#                 This source file in particular contains the constructor
-#                 code which is configured during the finalization of the
-#                 project's build configuration which maps the build target
-#                 names to executable file paths.
-#
-# \note If there exists a *.in file of the corresponding source file in the
-#       PROJECT_CONFIG_DIR, it will be used as template. Otherwise, the
-#       template file of BASIS is used.
-#
-# \param [out] SOURCES        Configured auxiliary source files.
-# \param [out] HEADERS        Configured auxiliary header files.
-# \param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
+#! @brief Configure default auxiliary source files.
+#!
+#! This function configures the following default auxiliary source files
+#! which can be used by the projects which are making use of BASIS.
+#!
+#!   - config.h    This file is intended to be included by all source files.
+#!                 Hence, other projects will indirectly include this file when
+#!                 they use a library of this project. Therefore, it is
+#!                 important to avoid potential name conflicts.
+#!
+#!   - config.cc   Definition of constants declared in config.h file.
+#!                 In particular, the paths of the installation directories
+#!                 relative to the executables are defined by this file.
+#!                 These constants are used by the auxiliary functions
+#!                 implemented in stdaux.h.
+#!
+#!   - stdaux.h    Auxiliary functions such as functions to get absolute path
+#!                 to the subdirectories of the installation.
+#!
+#!   - stdaux.cc   Definition of auxiliary functions declared in stdaux.h.
+#!                 This source file in particular contains the constructor
+#!                 code which is configured during the finalization of the
+#!                 project's build configuration which maps the build target
+#!                 names to executable file paths.
+#!
+#! @note If there exists a *.in file of the corresponding source file in the
+#!       PROJECT_CONFIG_DIR, it will be used as template. Otherwise, the
+#!       template file of BASIS is used.
+#!
+#! @param [out] SOURCES        Configured auxiliary source files.
+#! @param [out] HEADERS        Configured auxiliary header files.
+#! @param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
 
 function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (SOURCES_OUT        "")
@@ -613,7 +614,7 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Replaces CMake's set_property () command.
+#! @brief Replaces CMake's set_property() command.
 
 function (basis_set_property SCOPE)
   if (SCOPE MATCHES "^TARGET$|^TEST$")
@@ -636,7 +637,7 @@ function (basis_set_property SCOPE)
 endfunction ()
 
 # ****************************************************************************
-# \brief Replaces CMake's get_property () command.
+#! @brief Replaces CMake's get_property() command.
 
 function (basis_get_property VAR SCOPE ELEMENT)
   if (SCOPE STREQUAL "TARGET")
@@ -653,17 +654,17 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Configure constructor definition of ExecutableTargetInfo class.
-#
-# The previously configured source file stdaux.cc (such that it can be used
-# within add_executable() statements), is configured a second time by this
-# function in order to add the missing implementation of the ExecutableTargetInfo
-# constructor. Therefore, the BASIS_TARGETS variable and the target properties
-# of these targets are used. Note that only during the finalization of the
-# build configuration all build targets are known. Hence, this function is
-# called by the finalization routine.
-#
-# \sa ExecutableTargetInfo
+#! @brief Configure constructor definition of ExecutableTargetInfo class.
+#!
+#! The previously configured source file stdaux.cc (such that it can be used
+#! within add_executable() statements), is configured a second time by this
+#! function in order to add the missing implementation of the ExecutableTargetInfo
+#! constructor. Therefore, the BASIS_TARGETS variable and the target properties
+#! of these targets are used. Note that only during the finalization of the
+#! build configuration all build targets are known. Hence, this function is
+#! called by the finalization routine.
+#!
+#! @sa ExecutableTargetInfo
 
 function (basis_configure_ExecutableTargetInfo)
   if (BASIS_VERBOSE)
@@ -723,10 +724,10 @@ endfunction ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Install symbolic link.
-#
-# \param [in] OLD The value of the symbolic link.
-# \param [in] NEW The name of the symbolic link.
+#! @brief Install symbolic link.
+#!
+#! @param [in] OLD The value of the symbolic link.
+#! @param [in] NEW The name of the symbolic link.
 
 function (basis_install_link OLD NEW)
   set (CMD_IN
@@ -776,12 +777,12 @@ function (basis_install_link OLD NEW)
 endfunction ()
 
 # ****************************************************************************
-# \brief Create symbolic links to main executables.
-#
-# This function creates for each main executable a symbolic link directly
-# under CMAKE_INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string and the
-# software is installed on a UNIX-based system, i.e., one which supports the
-# creation of symbolic links.
+#! @brief Create symbolic links to main executables.
+#!
+#! This function creates for each main executable a symbolic link directly
+#! under CMAKE_INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string and the
+#! software is installed on a UNIX-based system, i.e., one which supports the
+#! creation of symbolic links.
 
 function (basis_install_links)
   if (NOT UNIX)
@@ -808,8 +809,8 @@ function (basis_install_links)
   endforeach ()
 
   # documentation
-  # \note Not all CPack generators preserve symbolic links to directories
-  # \note This is not part of the filesystem hierarchy standard of Linux,
+  # Note: Not all CPack generators preserve symbolic links to directories
+  # Note: This is not part of the filesystem hierarchy standard of Linux,
   #       but of the standard of certain distributions including Ubuntu.
   basis_install_link (
     "${INSTALL_DOC_DIR}"
@@ -818,15 +819,15 @@ function (basis_install_links)
 endfunction ()
 
 # ****************************************************************************
-# \brief Add uninstall target.
-#
-# Unix version works with any SUS-compliant operating system, as it needs
-# only Bourne Shell features Win32 version works with any Windows which
-# supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
-# NT 3.x too).
-#
-# \author Pau Garcia i Quiles, modified by the SBIA Group
-# \see    http://www.cmake.org/pipermail/cmake/2007-May/014221.html
+#! @brief Add uninstall target.
+#!
+#! Unix version works with any SUS-compliant operating system, as it needs
+#! only Bourne Shell features Win32 version works with any Windows which
+#! supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
+#! NT 3.x too).
+#!
+#! @author Pau Garcia i Quiles, modified by the SBIA Group
+#! @sa     http://www.cmake.org/pipermail/cmake/2007-May/014221.html
 
 function (basis_add_uninstall)
   if (WIN32)

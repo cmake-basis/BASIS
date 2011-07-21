@@ -54,7 +54,7 @@ foreach $my_fic (@listeFic)
 
   while (<$in>)
   {
-    if (/(^\s*)(%>)(.*)/)
+    if (/(^\s*)(\#!)(.*)/)
     {
       $output=$output."$1///$3";
     }
@@ -66,7 +66,7 @@ foreach $my_fic (@listeFic)
     {
       $inAbstractMethodBlock = 0;
     }
-    if (($listeProperties == 1) && (/^\s*([\w\d]*)\s*(=\s*[\w\d{}'',\s\[\]\.]*)?.*(%>.*)?/))
+    if (($listeProperties == 1) && (/^\s*([\w\d]*)\s*(=\s*[\w\d{}'',\s\[\]\.]*)?.*(\#!.*)?/))
     {
       $propertyName = $1;
       $propertyValue = $2;
@@ -82,8 +82,8 @@ foreach $my_fic (@listeFic)
           $properties = $propertyName.";$propertyComment";
         }
 
-        $properties =~ s/%>/\/\/\//g;
-        $properties =~ s/%/\/\//g;
+        $properties =~ s/\#!/\/\/\//g;
+        $properties =~ s/\#/\/\//g;
         $output=$output.$typeProperties."Property ".$properties;
       }
     }
@@ -103,12 +103,12 @@ foreach $my_fic (@listeFic)
       if (!($name_event =~ /^$/))
       {
         $event = $name_event.",";
-        $event =~ s/%>/\/\/\//g;
-        $event =~ s/%/\/\//g;
+        $event =~ s/\#!/\/\/\//g;
+        $event =~ s/\#/\/\//g;
         $output=$output.$event;
       }
     }
-    if (($listeEnumeration == 1) && (/^\s*([\w\d]*)\s*(\(.*\))?(%>.*)?/))
+    if (($listeEnumeration == 1) && (/^\s*([\w\d]*)\s*(\(.*\))?(\#!.*)?/))
     {
       $name_enum = $1;
       $val_enum = $2;
@@ -117,20 +117,20 @@ foreach $my_fic (@listeFic)
         if (!($val_enum =~ /^$/))
         {
           $enum = "$name_enum=$val_enum,";
-          $enum =~ s/%>/\/\/\//g;
-          $enum =~ s/%/\/\//g;
+          $enum =~ s/\#!/\/\/\//g;
+          $enum =~ s/\#/\/\//g;
           $output=$output.$enum;
         }
         else
         {
           $enum = "$name_enum,";
-          $enum =~ s/%>/\/\/\//g;
-          $enum =~ s/%/\/\//g;
+          $enum =~ s/\#!/\/\/\//g;
+          $enum =~ s/\#/\/\//g;
           $output=$output.$enum;
         }
       }
     }
-    if (/(^\s*function)\s*([\] \w\d,_\[]+=)?\s*([.\w\d_-]*)\s*\(?([\w\d\s,~]*)\)?(%?.*)/)
+    if (/(^\s*function)\s*([\] \w\d,_\[]+=)?\s*([.\w\d_-]*)\s*\(?([\w\d\s,~]*)\)?(\#?.*)/)
     {
       $functionKeyWord = $1;
       $functionName = $3;
@@ -151,7 +151,7 @@ foreach $my_fic (@listeFic)
       $output=$output.$ligne;
     }
     # Signature of functions in abstract methods
-    elsif ((/^\s*([\] \w\d,_\[]+=)?\s*([.\w\d_-]+)\s*\(?([\w\d\s,~]*)\)?(%?.*)/) & ($inAbstractMethodBlock == 1) )
+    elsif ((/^\s*([\] \w\d,_\[]+=)?\s*([.\w\d_-]+)\s*\(?([\w\d\s,~]*)\)?(\#?.*)/) & ($inAbstractMethodBlock == 1) )
     {
       $functionName = $2;
       $arguments = $3;

@@ -233,6 +233,11 @@ macro (basis_initialize_directories)
   endforeach ()
 
   # build tree
+  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
+    file (RELATIVE_PATH SUBDIR "${PROJECT_SOURCE_DIR}" "${PROJECT_${P}_DIR}")
+    set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${SUBDIR}")
+  endforeach ()
+
   foreach (P RUNTIME LIBRARY ARCHIVE)
     set (VAR CMAKE_${P}_OUTPUT_DIRECTORY)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
