@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  basisproject.sh
-# \brief This shell script is used to create or modify a BASIS project.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  basisproject.sh
+#! @brief Project management tool, create and/or modify BASIS project.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
  
 # ============================================================================
@@ -41,9 +41,9 @@ cache=".basis/cache"
 # ============================================================================
 
 # ****************************************************************************
-# \brief Prints options information.
+#! @brief Print options.
 
-print_options ()
+function print_options
 {
     echo "Required Options:"
     echo "  <project name>             Name of the new project."
@@ -128,9 +128,9 @@ print_options ()
 }
 
 # ****************************************************************************
-# \brief Prints usage information.
+#! @brief Print usage information.
 
-print_usage ()
+function print_usage
 {
     echo "$exec_name (BASIS)"
     echo
@@ -143,9 +143,9 @@ print_usage ()
 }
 
 # ****************************************************************************
-# \brief Prints help.
+#! @brief Print help.
 
-print_help ()
+function print_help
 {
     echo "$exec_name (BASIS)"
     echo
@@ -212,23 +212,23 @@ print_help ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Make path absolute.
+#! @brief Make path absolute.
 #
 # This function returns the absolute path via command substitution, i.e.,
 # use it as follows:
 #
-# \code
+# @code
 # abspath=$(make_absolute $relpath)
-# \endcode
+# @endcode
 #
-# \param [in]  1      The (relative) path of a file or directory
+# @param [in]  1      The (relative) path of a file or directory
 #                     (does not need to exist yet).
-# \param [out] stdout Prints the absolute path of the specified file or
+# @param [out] stdout Prints the absolute path of the specified file or
 #                     directory to STDOUT.
 #
-# \return 0 on success and 1 on failure.
+# @return 0 on success and 1 on failure.
 
-make_absolute ()
+function make_absolute
 {
     local path="$1"
 
@@ -244,9 +244,9 @@ make_absolute ()
 }
 
 # ****************************************************************************
-# \brief Extract project name from existing project.
+#! @brief Extract project name from existing project.
 
-get_project_name ()
+function get_project_name
 {
     local active=0
     local name=''
@@ -690,14 +690,14 @@ else
 fi
 
 # ****************************************************************************
-# \brief Add or modify project directory or file.
-#
-# Only the named directory or file is added or modified.
-#
-# \param [in] 1 The path of the directory or file relative to the template
-#               or project root, respectively.
+#! @brief Add or modify project directory or file.
+#!
+#! Only the named directory or file is added or modified.
+#!
+#! @param [in] 1 The path of the directory or file relative to the template
+#!               or project root, respectively.
 
-add ()
+function add
 {
     local path="$1"
 
@@ -858,11 +858,11 @@ add ()
 }
 
 # ****************************************************************************
-# \brief Delete file or empty directory.
-#
-# \param [in] 1 Path relative to template or project root, respectively.
+#! @brief Delete file or empty directory.
+#!
+#! @param [in] 1 Path relative to template or project root, respectively.
 
-del ()
+function del
 {
     local path=$1
 
@@ -919,13 +919,13 @@ del ()
 }
 
 # ****************************************************************************
-# \brief Add or delete file depending on option given.
-#
-# \param [in] 1 Switch option. If > 0, the file is added or updated.
-#               If < 0, the file is deleted. Otherwise, nothing is done.
-# \param [in] 2 File path relative to tempate or project root, respectively.
+#! @brief Add or delete file depending on option given.
+#!
+#! @param [in] 1 Switch option. If > 0, the file is added or updated.
+#!               If < 0, the file is deleted. Otherwise, nothing is done.
+#! @param [in] 2 File path relative to tempate or project root, respectively.
 
-addordel ()
+function addordel
 {
     local switch=$1
     local path=$2
@@ -1016,16 +1016,16 @@ else
 fi
 
 # ****************************************************************************
-# \brief Append find_package () commands to CMake configuration file.
-#
-# \param [in] 1 The path to the CMake configuration file.
-# \param [in] 2 The name of the package.
-# \param [in] 3 Whether this package is required.
-# \param [in] 4 Whether to use uppercase only prefix for variables.
-# \param [in] 5 Whether this package provides a <name>Use.cmake file.
-# \param [in] 6 Prefix to use for package variables. Defaults to package name.
+#! @brief Append find_package() commands to CMake configuration file.
+#!
+#! @param [in] 1 The path to the CMake configuration file.
+#! @param [in] 2 The name of the package.
+#! @param [in] 3 Whether this package is required.
+#! @param [in] 4 Whether to use uppercase only prefix for variables.
+#! @param [in] 5 Whether this package provides a <name>Use.cmake file.
+#! @param [in] 6 Prefix to use for package variables. Defaults to package name.
 
-find_package ()
+function find_package
 {
     local file=$1
     local package=$2
@@ -1132,9 +1132,9 @@ fi
 # ============================================================================
 
 # ****************************************************************************
-# \brief Clean temporary files.
+#! @brief Clean temporary files.
 
-clean_temp_files ()
+function clean_temp_files
 {
     # *.template
     for file in $(find "$root" -type f -name '*.template'); do
@@ -1147,9 +1147,9 @@ clean_temp_files ()
 }
 
 # ****************************************************************************
-# \brief Remove hidden copies of template files.
+#! @brief Remove hidden copies of template files.
 
-clean_hidden_files ()
+function clean_hidden_files
 {
     # .basis
     for dir in $(find "$root" -type d -name '.basis'); do

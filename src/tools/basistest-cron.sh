@@ -1,24 +1,24 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  basistest-cron
-# \brief This script is setup as a cron job to perform the automated tests.
-#
-# This script sets up the environment for the actual master script which
-# handles the automated testing. Further, it uses qsub to submit testing jobs
-# to the configured SGE queue, with the SGE options as set in this script.
-#
-# Edit this script to change the settings of the automated testing.
-# The default settings are the ones used for the cron job running on the
-# cluster of our lab as the 'swtest' user.
-#
-# The configuration of automated tests is done in the configuration file
-# for the basistest-master. See value of conf variable below.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html for details.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  basistest-cron.sh
+#! @brief Script intended to be run as cron job to perform automated testing.
+#!
+#! This script sets up the environment for the actual master script which
+#! handles the automated testing. Further, it uses qsub to submit testing jobs
+#! to the configured SGE queue, with the SGE options as set in this script.
+#!
+#! Edit this script to change the settings of the automated testing.
+#! The default settings are the ones used for the cron job running on the
+#! cluster of our lab as the 'swtest' user.
+#!
+#! The configuration of automated tests is done in the configuration file
+#! for the basistest-master.sh. See value of conf variable below.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See https://www.rad.upenn.edu/sbia/software/license.html for details.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================

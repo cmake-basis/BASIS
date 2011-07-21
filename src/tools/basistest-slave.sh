@@ -1,17 +1,17 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  basistest-slave.sh
-# \brief Test execution command.
-#
-# This shell script runs the tests of a BASIS project. It is a wrapper for
-# a CTest script. In particular, the testing master basistest-master uses
-# this script by default in order to run a test.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  basistest-slave.sh
+#! @brief Test execution command.
+#!
+#! This shell script runs the tests of a BASIS project. It is a wrapper for
+#! a CTest script. In particular, the testing master basistest-master uses
+#! this script by default in order to run a test.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
@@ -38,8 +38,9 @@ exec_revision='@REVISION@'
 # ============================================================================
 
 # ****************************************************************************
-# \brief Print documentation of options.
-print_options ()
+#! @brief Print documentation of options.
+
+function print_options
 {
     cat - << EOF-OPTIONS
 Required options:
@@ -61,8 +62,9 @@ EOF-OPTIONS
 }
 
 # ****************************************************************************
-# \brief Print help.
-print_help ()
+#! @brief Print help.
+
+function print_help
 {
     echo "$exec_name (BASIS)"
     echo
@@ -88,8 +90,9 @@ EOF-EXAMPLES
 }
 
 # ****************************************************************************
-# \brief Print usage (i.e., only usage and options).
-print_usage ()
+#! @brief Print usage (i.e., only usage and options).
+
+function print_usage
 {
     echo "$exec_name (BASIS)"
     echo

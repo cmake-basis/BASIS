@@ -1,22 +1,25 @@
 ##############################################################################
-# \file  basistest.ctest
-# \brief CTest script used to test BASIS projects.
-#
-# Usage:
-#   ctest -S basistest.ctest[,option[=value]*
-#
-# Options:
-#   help   Prints help and exits.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html for details.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  basistest.ctest
+#! @brief CTest script used to test BASIS projects.
+#!
+#! Usage:
+#!   ctest -S basistest.ctest[,option[=value]*
+#!
+#! Options:
+#!   help   Prints help and exits.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See https://www.rad.upenn.edu/sbia/software/license.html for details.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
 # help
 # ============================================================================
+
+# ****************************************************************************
+#! @brief Print usage section of usage information and help screen.
 
 function (print_usage_section)
   message ("
@@ -26,6 +29,9 @@ Usage:
   Note: No commas or equality signs are allowed inside of option values even
         if the value is enclosed by quotation marks.")
 endfunction ()
+
+# ****************************************************************************
+#! @brief Print options section of usage information and help screen.
 
 function (print_options_section)
   message ("
@@ -56,6 +62,9 @@ Options:
   version             Prints version information and exits.")
 endfunction ()
 
+# ****************************************************************************
+#! @brief Print contact section of usage information and help screen.
+
 function (print_contact_section)
   message ("
 Contact:
@@ -63,7 +72,8 @@ Contact:
 endfunction ()
 
 # ****************************************************************************
-# \brief Prints help.
+#! @brief Print help screen.
+
 function (print_help)
   message ("CTest script basistest.ctest (BASIS)")
   print_usage_section ()
@@ -107,7 +117,8 @@ Example:
 endfunction ()
 
 # ****************************************************************************
-# \brief Print usage information.
+#! @brief Print usage information.
+
 function (print_usage)
   message ("CTest script basistest.ctest (BASIS)")
   print_usage_section ()
@@ -116,7 +127,8 @@ function (print_usage)
 endfunction ()
 
 # ****************************************************************************
-# \brief Print version information.
+#! @brief Print version information.
+
 function (print_version)
   set (VERSION_INFO "version @VERSION@")
   if (@REVISION@ GREATER 0) # revision > 0
@@ -393,13 +405,16 @@ if (SUBMIT_RESULTS)
   # --------------------------------------------------------------------------
   # adjust build name
 
-  # get compiler name
+  #! @brief Read value from CMake cache.
+  #!
+  #! @param [inout] VAR Name of CMake variable.
   function (read_cmake_cache_value VAR)
     file (STRINGS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" ENTRY REGEX "${VAR}:.*=(.*)")
     string (REGEX REPLACE "${VAR}:.*=(.*)" "\\1" VALUE "${ENTRY}")
     set (${VAR} "${VALUE}" PARENT_SCOPE)
   endfunction ()
 
+  # get compiler name
   if (WIN32)
     set (NAME_COMPONENT "NAME_WE")
   else ()

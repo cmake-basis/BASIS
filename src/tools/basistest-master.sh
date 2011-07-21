@@ -1,20 +1,20 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# \file  basistest-master.sh
-# \brief Test master which can be run as a cron job.
-#
-# This shell script is supposed to be scheduled as cron job, where possibly
-# the basistest-cron.sh script is in fact used as cron job command without
-# arguments where all the settings for the cron job are fixed within this
-# latter script. On execution, this master script parses the configuration
-# file and executes the configured tests using by default the
-# basistest-slave.sh script.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  basistest-master.sh
+#! @brief Test master which can be run as a cron job.
+#!
+#! This shell script is supposed to be scheduled as cron job, where possibly
+#! the basistest-cron.sh script is in fact used as cron job command without
+#! arguments where all the settings for the cron job are fixed within this
+#! latter script. On execution, this master script parses the configuration
+#! file and executes the configured tests using by default the
+#! basistest-slave.sh script.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
@@ -45,8 +45,8 @@ schedule_file='/var/run/basistest.schedule'
 # ============================================================================
 
 # ****************************************************************************
-# \brief Print documentation of options.
-print_options ()
+#! @brief Print documentation of options.
+function print_options
 {
     cat - << EOF-OPTIONS
 Options:
@@ -64,8 +64,8 @@ EOF-OPTIONS
 }
 
 # ****************************************************************************
-# \brief Print help.
-print_help ()
+#! @brief Print help.
+function print_help
 {
     echo "$exec_name (BASIS)"
     echo
@@ -147,8 +147,9 @@ EOF-EXAMPLES
 }
 
 # ****************************************************************************
-# \brief Print usage (i.e., only usage and options).
-print_usage ()
+#! @brief Print usage (i.e., only usage and options).
+
+function print_usage
 {
     echo "$exec_name (BASIS)"
     echo
@@ -165,8 +166,9 @@ print_usage ()
 # ============================================================================
 
 # ****************************************************************************
-# \brief Runs a test given the arguments in the configuration file.
-run_test ()
+#! @brief Runs a test given the arguments in the configuration file.
+
+function run_test
 {
     cmd="$test_cmd"
     if [ $verbosity -gt 1 ]; then cmd="$cmd --verbose"; fi
@@ -188,12 +190,13 @@ run_test ()
 }
 
 # ****************************************************************************
-# \brief Convert date to timestamp.
-#
-# \param [in] $1 Date.
-#
-# \return Timestamp corresponding to given date.
-date2stamp ()
+#! @brief Convert date to timestamp.
+#!
+#! @param [in] $1 Date.
+#!
+#! @return Timestamp corresponding to given date.
+
+function date2stamp
 {
     if [ $(uname) == 'Darwin' ]; then
         date -j -f '%Y-%m-%d %T' "$1" +%s
@@ -203,12 +206,13 @@ date2stamp ()
 }
 
 # ****************************************************************************
-# \brief Convert timestamp to date.
-#
-# \param [in] $1 Timestamp.
-#
-# \return Date corresponding to given timestamp.
-stamp2date ()
+#! @brief Convert timestamp to date.
+#!
+#! @param [in] $1 Timestamp.
+#!
+#! @return Date corresponding to given timestamp.
+
+function stamp2date
 {
     if [ $(uname) == 'Darwin' ]; then
       date -j -r $1 '+%Y-%m-%d %T'
@@ -218,15 +222,16 @@ stamp2date ()
 }
 
 # ****************************************************************************
-# \brief Adds a certain time interval to a given date.
-#
-# \param [in] $1 Unit of the time interval. Either one of -s, -m, -h, or -d.
-#                Defaults to number of days.
-# \param [in] $2 The date to which the time interval is added.
-# \param [in] $3 The time interval given in the specified units.
-#
-# \return The date which is $3 time units after the given date.
-date_add ()
+#! @brief Adds a certain time interval to a given date.
+#!
+#! @param [in] $1 Unit of the time interval. Either one of -s, -m, -h, or -d.
+#!                Defaults to number of days.
+#! @param [in] $2 The date to which the time interval is added.
+#! @param [in] $3 The time interval given in the specified units.
+#!
+#! @return The date which is $3 time units after the given date.
+
+function date_add
 {
     case $1 in
         -s) sec=1;      shift;;
@@ -242,15 +247,16 @@ date_add ()
 }
 
 # ****************************************************************************
-# \brief Computes the time interval between two given dates.
-#
-# \param [in] $1 Unit of the time interval. Either one of -s, -m, -h, or -d.
-#                Defaults to number of days.
-# \param [in] $2 The first date.
-# \param [in] $3 The second date.
-#
-# \return Time interval, i.e., an absolute value, in the given units.
-date_diff ()
+#! @brief Computes the time interval between two given dates.
+#!
+#! @param [in] $1 Unit of the time interval. Either one of -s, -m, -h, or -d.
+#!                Defaults to number of days.
+#! @param [in] $2 The first date.
+#! @param [in] $3 The second date.
+#!
+#! @return Time interval, i.e., an absolute value, in the given units.
+
+function date_diff
 {
     case $1 in
         -s) sec=1;      shift;;
@@ -266,8 +272,9 @@ date_diff ()
 }
 
 # ****************************************************************************
-# \brief Get next scheduled date of a given test.
-schedule_date ()
+#! @brief Get next scheduled date of a given test.
+
+function schedule_date
 {
     local retval=$(date '+%Y-%m-%d %T')
     idx=0
@@ -289,8 +296,9 @@ schedule_date ()
 }
 
 # ***************************************************************************
-# \brief Add entry to test schedule.
-schedule_test ()
+#! @brief Add entry to test schedule.
+
+function schedule_test
 {
     idx=${#new_schedule[@]}
     new_schedule[$idx]="$1 $2 $3 $4 $5"
