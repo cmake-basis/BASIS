@@ -1,9 +1,9 @@
 /*!
- * \file  path.cc
- * \brief Basic file path manipulation and related system functions.
+ * @file  path.cc
+ * @brief Basic file path manipulation and related system functions.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */

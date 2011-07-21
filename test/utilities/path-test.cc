@@ -1,9 +1,9 @@
 /*!
- * \file  path-test.cc
- * \brief Implements unit test for path.cc module.
+ * @file  path-test.cc
+ * @brief Implements unit test for path.cc module.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
@@ -17,6 +17,7 @@
 #if UNIX
 #  include <stdlib.h> // the system () function is used to create symbolic links
 #endif
+
 
 using namespace SBIA_BASIS_NAMESPACE;
 using namespace std;

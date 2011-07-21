@@ -1,16 +1,16 @@
 ##############################################################################
-# \file  CMakeLists.txt
-# \brief Root build configuration file.
-#
-# This is the root build configuration of the BASIS package. As can be noted
-# does BASIS make use of exactly the standard it advocates and hence also the
-# CMake modules which implement this standard. Therefore, these modules are
-# considered the cornerstone of BASIS.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  CMakeLists.txt
+#! @brief Root build configuration file.
+#!
+#! This is the root build configuration of the BASIS package. As can be noted
+#! does BASIS make use of exactly the standard it advocates and hence also the
+#! CMake modules which implement this standard. Therefore, these modules are
+#! considered the cornerstone of BASIS.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================

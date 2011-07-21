@@ -1,9 +1,9 @@
 /*!
- * \file  exceptions.h
- * \brief Common exceptions and helper macros.
+ * @file  exceptions.h
+ * @brief Common exceptions and helper macros.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
@@ -23,19 +23,19 @@ SBIA_BASIS_NAMESPACE_BEGIN
 
 
 /*!
- * \brief Throw exception with given message.
+ * @brief Throw exception with given message.
  *
  * Example:
- * \code
+ * @code
  * void Func (int i) {
  *     if (i < 0) BASIS_THROW (std::invalid_argument, "Argument i (= " << i << ") must be positive");
  * }
- * \endcode
+ * @endcode
  *
- * \param [in] type The type of the exception. Note that this exception
+ * @param [in] type The type of the exception. Note that this exception
  *                  type has to implement a constructor with one std::string
  *                  as argument, the exception message.
- * \param [in] msg  The exception message. The given argument is streamed
+ * @param [in] msg  The exception message. The given argument is streamed
  *                  into a std::ostringstream.
  */
 #define BASIS_THROW( type, msg ) \

@@ -1,56 +1,56 @@
 ##############################################################################
-# \file  ScriptConfig.cmake
-# \brief Default script configuration.
-#
-# This CMake file defines CMake variables which can be used within scripts.
-# If the project structure differs for the build tree and the install tree,
-# the CMake variables used within the script can be set depending on the
-# value of the variable BUILD_INSTALL_SCRIPT. This variable evaluates to true,
-# when the script is build, i.e., configured, for the installation tree and
-# to false, otherwise.
-#
-# Example:
-# \code
-# if (BUILD_INSTALL_SCRIPT)
-#   set (BIN_DIR "@CMAKE_INSTALL_PREFIX@/bin")
-# else ()
-#   set (BIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
-# endif ()
-# \endcode
-#
-# Avoid the use of absolute paths, however! Instead, use the variable
-# @SCRIPT_DIR@ which is set to the directory of the script file to make these
-# paths relative to the directory of the script file (possibly resolving
-# symbolic links). The relative paths determined by the script configuration
-# script shall be used in the script. Therefore, the script has to determine
-# its directory at runtime. This can usually easily be done by extracting the
-# path component from the first argument (and following symbolic links).
-# To ease this task, the default script configuration provides function
-# definitions for commonly used scripting languages.
-#
-# Example:
-# \code
-# #! /usr/bin/env bash
-# @BASH_FUNCTION_getProgDir@
-# progDir=$(getProgDir)
-# etcDir=$progDir/@ETC_DIR@
-# \endcode
-#
-# where ETC_DIR is the relative path determined during the configuration of
-# the script. See documentation of basis_set_script_path_definition () for a
-# convenience function which can be used to set the CMake variable ETC_DIR.
-# This function generates the definition of a function which is prepended to
-# this script configuration. Use this function as follows within this file.
-#
-# Example:
-# \code
-# basis_set_script_path (ETC_DIR "@PROJECT_ETC_DIR@" "@INSTALL_ETC_DIR@")
-# \endcode
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  ScriptConfig.cmake
+#! @brief Default script configuration.
+#!
+#! This CMake file defines CMake variables which can be used within scripts.
+#! If the project structure differs for the build tree and the install tree,
+#! the CMake variables used within the script can be set depending on the
+#! value of the variable BUILD_INSTALL_SCRIPT. This variable evaluates to true,
+#! when the script is build, i.e., configured, for the installation tree and
+#! to false, otherwise.
+#!
+#! Example:
+#! @code
+#! if (BUILD_INSTALL_SCRIPT)
+#!   set (BIN_DIR "@CMAKE_INSTALL_PREFIX@/bin")
+#! else ()
+#!   set (BIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
+#! endif ()
+#! @endcode
+#!
+#! Avoid the use of absolute paths, however! Instead, use the variable
+#! SCRIPT_DIR which is set to the directory of the script file to make these
+#! paths relative to the directory of the script file (possibly resolving
+#! symbolic links). The relative paths determined by the script configuration
+#! script shall be used in the script. Therefore, the script has to determine
+#! its directory at runtime. This can usually easily be done by extracting the
+#! path component from the first argument (and following symbolic links).
+#! To ease this task, the default script configuration provides function
+#! definitions for commonly used scripting languages.
+#!
+#! Example:
+#! @code
+#! #! /usr/bin/env bash
+#! \@BASH_FUNCTION_getProgDir\@
+#! progDir=$(getProgDir)
+#! dataDir=$progDir/\@DATA_DIR\@
+#! @endcode
+#!
+#! where DATA_DIR is the relative path determined during the configuration of
+#! the script. See documentation of basis_set_script_path_definition() for a
+#! convenience function which can be used to set the CMake variable DATA_DIR.
+#! This function generates the definition of a function which is prepended to
+#! this script configuration. Use this function as follows within this file.
+#!
+#! Example:
+#! @code
+#! basis_set_script_path (DATA_DIR "\@PROJECT_DATA_DIR\@" "\@INSTALL_DATA_DIR\@")
+#! @endcode
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 @BASIS_SCRIPT_CONFIG@

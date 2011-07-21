@@ -16,7 +16,7 @@
 #! for the basistest-master.sh. See value of conf variable below.
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html for details.
+#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################

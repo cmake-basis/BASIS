@@ -1,6 +1,6 @@
 /*!
- * \file  test.h
- * \brief Main include file for BASIS C++ unit tests.
+ * @file  test.h
+ * @brief Main include file for BASIS C++ unit tests.
  *
  * This file should be included by implementations of unit tests.
  * Note that currently, we are simply using Google Test and Google Mock.
@@ -10,7 +10,7 @@
  * be replaced by own implementations.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
