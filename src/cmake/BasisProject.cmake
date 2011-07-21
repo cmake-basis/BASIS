@@ -124,16 +124,16 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 #!                   instead with the prefix PROJECT_*, e.g.,
 #!                   "set (PROJECT_VERSION 1.0)".
 #!
-#!   NAME                 The name of the project.
-#!   VERSION              Project version string, i.e., "<major>(.<minor>(.<patch>))".
-#!   DESCRIPTION          Package description, used for packing.
-#!   PACKAGE_VENDOR       The vendor of this package, used for packaging.
+#! - NAME                 The name of the project.
+#! - VERSION              Project version string, i.e., "<major>(.<minor>(.<patch>))".
+#! - DESCRIPTION          Package description, used for packing.
+#! - PACKAGE_VENDOR       The vendor of this package, used for packaging.
 #!                        Defaults to "SBIA Group at University of Pennsylvania".
-#!   WELCOME_FILE         Welcome file used for installer.
-#!   README_FILE          Readme file. Defaults to PROJECT_SOURCE_DIR/README.
-#!   LICENSE_FILE         File containing copyright and license notices.
+#! - WELCOME_FILE         Welcome file used for installer.
+#! - README_FILE          Readme file. Defaults to PROJECT_SOURCE_DIR/README.
+#! - LICENSE_FILE         File containing copyright and license notices.
 #!                        Defaults to PROJECT_SOURCE_DIR/LICENSE.
-#!   REDIST_LICENSE_FILES Additional license files of other packages
+#! - REDIST_LICENSE_FILES Additional license files of other packages
 #!                        redistributed as part of this project.
 #!                        These licenses will be installed along with the
 #!                        project's LICENSE_FILE. By default, all files which

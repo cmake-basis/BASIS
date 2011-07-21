@@ -1,35 +1,35 @@
 ##############################################################################
-# \file  BasisSettings.cmake
-# \brief BASIS configuration and default CMake settings used by projects.
-#
-# This module defines global CMake constants and variables which are used
-# by the BASIS CMake functions and macros. Hence, these values can be used
-# to configure the behaviour of these functions to some extent without the
-# need to modify the functions themselves.
-#
-# Moreover, this file specifies the common CMake settings such as the build
-# configuration used by projects following BASIS.
-#
-# \attention Be careful when caching any of the variables. Usually, this
-#            file is included in the root CMake configuration file of the
-#            project. The variables set by this module should only be valid
-#            underneath this directory tree, but not propagate to the parent
-#            or a sibling.
-#
-# \note As this file also sets the CMake policies to be used, it has to
-#       be included using the NO_POLICY_SCOPE in order for these policies
-#       to take effect also in the including file and its subdirectories.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#! @file  Settings.cmake
+#! @brief BASIS configuration and default CMake settings used by projects.
+#!
+#! This module defines global CMake constants and variables which are used
+#! by the BASIS CMake functions and macros. Hence, these values can be used
+#! to configure the behaviour of these functions to some extent without the
+#! need to modify the functions themselves.
+#!
+#! Moreover, this file specifies the common CMake settings such as the build
+#! configuration used by projects following BASIS.
+#!
+#! @attention Be careful when caching any of the variables. Usually, this
+#!            file is included in the root CMake configuration file of the
+#!            project. The variables set by this module should only be valid
+#!            underneath this directory tree, but not propagate to the parent
+#!            or a sibling.
+#!
+#! @note As this file also sets the CMake policies to be used, it has to
+#!       be included using the NO_POLICY_SCOPE in order for these policies
+#!       to take effect also in the including file and its subdirectories.
+#!
+#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+#! See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 
 # get directory of this file
 #
-# \note This variable was just recently introduced in CMake, it is derived
+# Note: This variable was just recently introduced in CMake, it is derived
 #       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
@@ -74,16 +74,17 @@ find_package (Threads) # defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_I
 
 if (Threads_FOUND)
   if (CMAKE_USE_PTHREADS_INIT)
-    set(HAVE_PTHREAD 1)
-  else()
-    set(HAVE_PTHREAD 0)
-  endif()
+    set (HAVE_PTHREAD 1)
+  else  ()
+    set (HAVE_PTHREAD 0)
+  endif ()
 endif ()
 
 # ============================================================================
 # common options
 # ============================================================================
 
+#! @brief Enable/Disable verbose messages of BASIS functions.
 option (BASIS_VERBOSE "Whether BASIS functions should be verbose." "OFF")
 mark_as_advanced (BASIS_VERBOSE)
 
@@ -91,54 +92,59 @@ mark_as_advanced (BASIS_VERBOSE)
 # constants and global settings
 # ============================================================================
 
-# \brief List of names used for special purpose targets.
-#
-# Contains a list of target names that are used by the BASIS functions for
-# special purposes and are hence not to be used for project targets.
+#! @brief List of names used for special purpose targets.
+#!
+#! Contains a list of target names that are used by the BASIS functions for
+#! special purposes and are hence not to be used for project targets.
 set (BASIS_RESERVED_TARGET_NAMES "test" "uninstall" "doc" "changelog" "execname")
 
-# \brief Default components used when no component is specified.
-#
-# The default component a target of the given kind and its auxiliary files
-# are associated with if no component was specified, explicitly.
+#! @brief Default component used for library targets when no component is specified.
+#!
+#! The default component a library target and its auxiliary files
+#! are associated with if no component was specified, explicitly.
 set (BASIS_LIBRARY_COMPONENT "Development")
+
+#! @brief Default component used for executables when no component is specified.
+#!
+#! The default component an executable target and its auxiliary files
+#! are associated with if no component was specified, explicitly.
 set (BASIS_RUNTIME_COMPONENT "Runtime")
 
-# \brief Character used to separate namespace and target name to build target UID.
-#
-# This separator is used to construct a UID for a particular target.
-# For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>".
+#! @brief Character used to separate namespace and target name to build target UID.
+#!
+#! This separator is used to construct a UID for a particular target.
+#! For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>".
 set (BASIS_NAMESPACE_SEPARATOR "@")
 
-# \brief Character used to separate version and project name (e.g., in target UID).
-#
-# This separator is used to construct a UID for a particular target.
-# For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>@BASIS_VERSION_SEPARATOR@<version>".
-# Note that the version need not be included if only a single version of each
-# package is supposed to be installed on a target system.
+#! @brief Character used to separate version and project name (e.g., in target UID).
+#!
+#! This separator is used to construct a UID for a particular target.
+#! For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>@BASIS_VERSION_SEPARATOR@<version>".
+#! Note that the version need not be included if only a single version of each
+#! package is supposed to be installed on a target system.
 set (BASIS_VERSION_SEPARATOR "#")
 
-# \brief Prefix used for CMake package config files.
-#
-# This string is used as prefix for the names of the <project>Config.cmake
-# et al. files. For example, a value of "SBIA_", results in the CMake package
-# configuration file "SBIA_<project>Config.cmake".
+#! @brief Prefix used for CMake package config files.
+#!
+#! This string is used as prefix for the names of the <project>Config.cmake
+#! et al. files. For example, a value of "SBIA_", results in the CMake package
+#! configuration file "SBIA_<project>Config.cmake".
 set (BASIS_CONFIG_PREFIX "")
 
-# \brief Script used to execute a process in CMake script mode.
-#
-# In order to be able to assign a timeout to the execution of a custom command
-# and to add some error message parsing, this script is used by some build
-# rules to actually perform the build step. See for example, the build of
-# executables using the MATLAB Compiler.
+#! @brief Script used to execute a process in CMake script mode.
+#!
+#! In order to be able to assign a timeout to the execution of a custom command
+#! and to add some error message parsing, this script is used by some build
+#! rules to actually perform the build step. See for example, the build of
+#! executables using the MATLAB Compiler.
 set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmake")
 
-# \brief Default script configuration template.
-#
-# This is the default template used by basis_add_script () to configure the
-# script during the build step. If the file
-# PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
-# is set to its path by basis_project_initialize ().
+#! @brief Default script configuration template.
+#!
+#! This is the default template used by basis_add_script () to configure the
+#! script during the build step. If the file
+#! PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
+#! is set to its path by basis_project_initialize ().
 set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 
 # ============================================================================
@@ -174,7 +180,7 @@ set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
 # ----------------------------------------------------------------------------
 
 # ****************************************************************************
-# \brief Ensure certain requirements on build tree.
+#! @brief Ensure certain requirements on build tree.
 
 macro (buildtree_asserts)
   # root of build tree must not be root of source tree
@@ -189,7 +195,7 @@ macro (buildtree_asserts)
 endmacro ()
 
 # ****************************************************************************
-# \brief Ensure certain requirements on install tree.
+#! @brief Ensure certain requirements on install tree.
 
 macro (installtree_asserts)
   # prefix must be an absolute path
@@ -215,15 +221,15 @@ endmacro ()
 # ----------------------------------------------------------------------------
 
 # ****************************************************************************
-# \brief Instantiates the project directory structure.
-#
-# This macro is invoked after the CMake project () command to instantiate
-# the project directory structure, i.e., turn the directories into absolute
-# paths using the CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR.
-# Moreover, the occurences of @PROJECT_NAME@, @PROJECT_NAME_LOWER@,
-# @PROJECT_NAME_UPPER@, @PROJECT_VERSION@, @PROJECT_VERSION_MAJOR@,
-# @PROJECT_VERSION_MINOR@, and @PROJECT_VERSION_PATH@ are substituted by the
-# actual values corresponding to the project name and version.
+#! @brief Instantiates the project directory structure.
+#!
+#! This macro is invoked after the CMake project () command to instantiate
+#! the project directory structure, i.e., turn the directories into absolute
+#! paths using the CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR.
+#! Moreover, the occurences of \@PROJECT_NAME\@, \@PROJECT_NAME_LOWER\@,
+#! \@PROJECT_NAME_UPPER\@, \@PROJECT_VERSION\@, \@PROJECT_VERSION_MAJOR\@,
+#! \@PROJECT_VERSION_MINOR\@, and \@PROJECT_VERSION_PATH\@ are substituted by
+#! the actual values corresponding to the project name and version.
 
 macro (basis_initialize_directories)
   # source tree
@@ -277,7 +283,7 @@ endmacro ()
 # source tree
 # ----------------------------------------------------------------------------
 
-# \note The project template must follow this directory structure.
+# Note: The project template must follow this directory structure.
 #       Ideally, when changing the name of one of these directories,
 #       only the directory structure of the tempate needs to be updated.
 #       The BASIS CMake functions should not be required to change as they
