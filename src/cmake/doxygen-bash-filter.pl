@@ -52,8 +52,13 @@ foreach $my_fic (@listeFic)
   $methodAttribute = "";
 
 
+  # ignore first line
   while (<$in>)
   {
+    if ((/^#!\s*\/usr\/bin\/env\s+bash\s*/) || (/^#!\s*\/bin\/bash\s*/))
+    {
+      next;
+    }
     if (/(^\s*)(\#!)(.*)/)
     {
       $output=$output."$1///$3";
