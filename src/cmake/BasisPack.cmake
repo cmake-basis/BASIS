@@ -7,10 +7,10 @@
 #!
 #! Overwrite the package information set by this module either in a file
 #! Package.cmake or a file Package.cmake.in located in the directory
-#! specified by SOFTWARE_CONFIG_DIR. The latter is configured and copied to the
+#! specified by PROJECT_CONFIG_DIR. The latter is configured and copied to the
 #! binary tree before included by this module. Further, to enable a
 #! component-based installation, provide either a file Components.cmake or
-#! Components.cmake.in again in the directory specified by SOFTWARE_CONFIG_DIR.
+#! Components.cmake.in again in the directory specified by PROJECT_CONFIG_DIR.
 #! Also in this case, the latter is configured via CMake's configure_file()
 #! before use. This file is referred to as components definition (file).
 #!
@@ -155,12 +155,12 @@ set (
 # include project package information
 # ============================================================================
 
-if (EXISTS "${SOFTWARE_CONFIG_DIR}/Package.cmake.in")
-  configure_file ("${SOFTWARE_CONFIG_DIR}/Package.cmake.in"
+if (EXISTS "${PROJECT_CONFIG_DIR}/Package.cmake.in")
+  configure_file ("${PROJECT_CONFIG_DIR}/Package.cmake.in"
                   "${PROJECT_BINARY_DIR}/Package.cmake" @ONLY)
   include ("${PROJECT_BINARY_DIR}/Package.cmake")
-elseif (EXISTS "${SOFTWARE_CONFIG_DIR}/Package.cmake")
-  include ("${SOFTWARE_CONFIG_DIR}/Package.cmake")
+elseif (EXISTS "${PROJECT_CONFIG_DIR}/Package.cmake")
+  include ("${PROJECT_CONFIG_DIR}/Package.cmake")
 endif ()
 
 # ============================================================================
@@ -279,11 +279,11 @@ endfunction ()
 # include components definition
 # ----------------------------------------------------------------------------
 
-if (EXISTS "${SOFTWARE_CONFIG_DIR}/Components.cmake.in")
-  configure_file ("${SOFTWARE_CONFIG_DIR}/Components.cmake.in"
+if (EXISTS "${PROJECT_CONFIG_DIR}/Components.cmake.in")
+  configure_file ("${PROJECT_CONFIG_DIR}/Components.cmake.in"
                   "${PROJECT_BINARY_DIR}/Components.cmake" @ONLY)
   include ("${PROJECT_BINARY_DIR}/Components.cmake")
-elseif (EXISTS "${SOFTWARE_CONFIG_DIR}/Components.cmake")
-  include ("${SOFTWARE_CONFIG_DIR}/Components.cmake")
+elseif (EXISTS "${PROJECT_CONFIG_DIR}/Components.cmake")
+  include ("${PROJECT_CONFIG_DIR}/Components.cmake")
 endif ()
 
