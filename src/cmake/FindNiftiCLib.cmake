@@ -1,5 +1,5 @@
 ##############################################################################
-#! @file  FindNiftCLib.cmake
+#! @file  FindNiftiCLib.cmake
 #! @brief Find nifticlib package.
 #!
 #! Input variables:
