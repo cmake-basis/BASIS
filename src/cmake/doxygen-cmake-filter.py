@@ -203,6 +203,13 @@ if __name__ == "__main__":
                         previousBlock = 'option'
                         sys.stdout.write ("\n")
                     continue
+            if line != '':
+                if previousBlock == 'comment':
+                    # prevent comments that are not associated with any
+                    # processed block to be merged with subsequent comments
+                    sys.stdout.write ("class COMMENT_DUMPED_BY_DOXYGEN_FILTER;\n")
+                    sys.stdout.write ("\n")
+                previousBlock = ''
     # close input file
     f.close ()
     # done
