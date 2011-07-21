@@ -72,9 +72,13 @@ set (
   BASIS_DOXYGEN_FILTER_PATTERNS
     "*.cmake=${BASIS_DOXYGEN_FILTER_CMAKE}"
     "*.cmake.in=${BASIS_DOXYGEN_FILTER_CMAKE}"
+    "*.ctest=${BASIS_DOXYGEN_FILTER_CMAKE}"
+    "*.ctest.in=${BASIS_DOXYGEN_FILTER_CMAKE}"
     "CMakeLists.txt=${BASIS_DOXYGEN_FILTER_CMAKE}"
     "*.sh=${BASIS_DOXYGEN_FILTER_BASH}"
+    "*.sh.in=${BASIS_DOXYGEN_FILTER_BASH}"
     "*.m=${BASIS_DOXYGEN_FILTER_MATLAB}"
+    "*.m.in=${BASIS_DOXYGEN_FILTER_MATLAB}"
 )
 
 #! @brief Default Doxygen configuration.

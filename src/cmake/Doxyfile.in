@@ -604,7 +604,8 @@ FILE_PATTERNS          = *.c        \
                          *.mm       \
                          *.f90      \
                          *.sh       \
-                         *.cmake
+                         *.cmake    \
+                         *.ctest
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
