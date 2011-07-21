@@ -84,8 +84,8 @@ mark_as_advanced (BASIS_UPDATE_AUTO)
 # required modules
 # ============================================================================
 
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisCommonTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisSubversionTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/SubversionTools.cmake")
 
 # ============================================================================
 # required commands
