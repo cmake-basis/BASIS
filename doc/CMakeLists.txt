@@ -34,6 +34,11 @@ basis_add_doc (ChangeLog GENERATOR svn2cl)
 basis_add_doc (
   API 
   GENERATOR Doxygen
+  INPUT            "${BINARY_CODE_DIR}"
+                   "${PROJECT_CODE_DIR}"
+                   "${BINARY_INCLUDE_DIR}"
+                   "${PROJECT_INCLUDE_DIR}"
+                   "${PROJECT_CODE_DIR}/cmake/ScriptConfig.cmake.in"
   EXCLUDE_PATTERNS "*/tclap/*"
                    "*/gmock/*"
                    "*/gtest/*"
