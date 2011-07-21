@@ -5,7 +5,7 @@
 #! @brief Test execution command.
 #!
 #! This shell script runs the tests of a BASIS project. It is a wrapper for
-#! a CTest script. In particular, the testing master basistest-master uses
+#! a CTest script. In particular, the testing master basistest-master.sh uses
 #! this script by default in order to run a test.
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
