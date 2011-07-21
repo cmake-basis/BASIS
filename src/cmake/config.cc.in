@@ -25,7 +25,7 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // project attributes
 // ---------------------------------------------------------------------------
 
-const std::string cProjectName ("@PROJECT_NAME@")
+const std::string cProjectName ("@PROJECT_NAME@");
 const std::string cVersion     ("@PROJECT_VERSION@");
 
 const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
@@ -38,7 +38,7 @@ const unsigned int cRevision     = @PROJECT_REVISION@;
 // ---------------------------------------------------------------------------
 
 // build tree
-const std::string cBuildRoot ("@BUILD_ROOT_PATH_CONFIG@")
+const std::string cBuildRoot ("@BUILD_ROOT_PATH_CONFIG@");
 
 const std::string cRuntimeBuildPath ("@RUNTIME_BUILD_PATH_CONFIG@");
 const std::string cLibexecBuildPath ("@LIBEXEC_BUILD_PATH_CONFIG@");
