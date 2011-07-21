@@ -1,5 +1,14 @@
 #! /usr/bin/env python
 
+##
+# @file  doxygen-cmake-filter.py
+# @brief Doxygen filter for CMake and CTest scripts.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
 import sys
 import re
 
