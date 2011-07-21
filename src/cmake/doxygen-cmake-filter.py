@@ -17,7 +17,7 @@ if __name__ == "__main__":
     # compile regular expressions
     reInclude       = re.compile (r"include\s*\((?P<module>.+)\)\s*$")
     reFunctionStart = re.compile (r"function\s*\((?P<name>\w+)(?P<args>.*)\)\s*$")
-    reFunctionEnd   = re.compile (r"endfunction\s\(.*\)\s*$")
+    reFunctionEnd   = re.compile (r"endfunction\s*\(.*\)\s*$")
     reMacroStart    = re.compile (r"macro\s*\((?P<name>\w+)(?P<args>.*)\)\s*$")
     reMacroEnd      = re.compile (r"endmacro\s*\(.*\)\s*$")
     reSetStart      = re.compile (r"set\s*\((?P<name>\w*)|set\s*$")
@@ -155,10 +155,10 @@ if __name__ == "__main__":
                     for i in range (0, len (argv)):
                         if i > 0:
                             sys.stdout.write (", ")
-                        sys.stdout.write ("arg " + argv [i])
+                        sys.stdout.write ("in " + argv [i])
                     if len (argv) > 0:
                         sys.stdout.write (", ")
-                    sys.stdout.write ("arg ARGN")
+                    sys.stdout.write ("in ARGN")
                     sys.stdout.write (");\n")
                     currentBlock = 'function'
                     continue
@@ -175,10 +175,10 @@ if __name__ == "__main__":
                     for i in range (0, len (argv)):
                         if i > 0:
                             sys.stdout.write (", ")
-                        sys.stdout.write ("arg " + argv [i])
+                        sys.stdout.write ("in " + argv [i])
                     if len (argv) > 0:
                         sys.stdout.write (", ")
-                    sys.stdout.write ("arg ARGN")
+                    sys.stdout.write ("in ARGN")
                     sys.stdout.write (");\n")
                     currentBlock = 'macro'
                     continue

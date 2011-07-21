@@ -780,9 +780,9 @@ endfunction ()
 #! @brief Create symbolic links to main executables.
 #!
 #! This function creates for each main executable a symbolic link directly
-#! under CMAKE_INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string and the
-#! software is installed on a UNIX-based system, i.e., one which supports the
-#! creation of symbolic links.
+#! in the directory INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string
+#! and the software is installed on a UNIX-based system, i.e., one which
+#! supports the creation of symbolic links.
 
 function (basis_install_links)
   if (NOT UNIX)
@@ -821,13 +821,13 @@ endfunction ()
 # ****************************************************************************
 #! @brief Add uninstall target.
 #!
+#! @author Pau Garcia i Quiles, modified by the SBIA Group
+#! @sa     http://www.cmake.org/pipermail/cmake/2007-May/014221.html
+#!
 #! Unix version works with any SUS-compliant operating system, as it needs
 #! only Bourne Shell features Win32 version works with any Windows which
 #! supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
 #! NT 3.x too).
-#!
-#! @author Pau Garcia i Quiles, modified by the SBIA Group
-#! @sa     http://www.cmake.org/pipermail/cmake/2007-May/014221.html
 
 function (basis_add_uninstall)
   if (WIN32)

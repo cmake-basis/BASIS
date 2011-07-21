@@ -1,3 +1,14 @@
+##############################################################################
+#! @file  ExternalData.cmake
+#! @brief Manage data files stored outside the source tree.
+#!
+#!
+#! Copyright 2010-2011 Kitware, Inc. All rights reserved.
+#! File modified by the SBIA Group.
+#!
+#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
 # - Manage data files stored outside source tree
 # Use this module to unambiguously reference data files stored outside the
 # source tree and fetch them at build time from arbitrary local and remote
@@ -127,10 +138,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
+# ****************************************************************************
+#! @brief TODO
+#!
+#! @param [in] target Name of the test.
+
 function(ExternalData_add_test target)
   ExternalData_expand_arguments("${target}" testArgs ${ARGN})
   add_test(${testArgs})
 endfunction()
+
+# ****************************************************************************
+#! @brief TODO
+#!
+#! @param [in] target Name of the external data target.
 
 function(ExternalData_add_target target)
   if(NOT ExternalData_URL_TEMPLATES)
@@ -200,6 +221,12 @@ function(ExternalData_add_target target)
   # Custom target to drive all update commands.
   add_custom_target(${target} ALL DEPENDS ${files})
 endfunction()
+
+# ****************************************************************************
+#! @brief Replace DATA{} references with real arguments.
+#!
+#! @param [in]  target     Name of the external data target.
+#! @param [out] outArgsVar List of expanded arguments.
 
 function(ExternalData_expand_arguments target outArgsVar)
   # Replace DATA{} references with real arguments.
