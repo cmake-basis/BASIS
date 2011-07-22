@@ -423,7 +423,7 @@ bool IsSymbolicLink (const std::string &path);
  * @brief Read value of symbolic link.
  *
  * @param [in]  link  Path of symbolic link.
- * @param [out] vlaue Value of symbolic link.
+ * @param [out] value Value of symbolic link.
  *
  * @return Whether the given path is a symbolic link and its value could be
  *         read and returned successfully.
