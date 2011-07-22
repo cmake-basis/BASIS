@@ -130,10 +130,10 @@ function (basis_set_if_empty VAR)
 endfunction ()
 
 # ****************************************************************************
-#! @brief Set value of variable used in <project>Config.cmake of install tree.
+#! @brief Set value of variable used in \<project\>Config.cmake of install tree.
 #!
 #! This function sets the value of a variable VAR to
-#! "\${CMAKE_CURRENT_LIST_DIR}/<path>", where <path> is the relative path
+#! "\${CMAKE_CURRENT_LIST_DIR}/\<path\>", where \<path\> is the relative path
 #! to the file or directory specified by INSTALL_PATH relative to
 #! INSTALL_CONFIG_DIR.
 #!

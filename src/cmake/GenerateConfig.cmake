@@ -2,22 +2,22 @@
 #! @file  GenerateConfig.cmake
 #! @brief Generates package configuration files.
 #!
-#! This CMake script configures the <package>Config.cmake et al. files,
+#! This CMake script configures the \<package\>Config.cmake et al. files,
 #! once for the build tree and once for the install tree. Variables with a
 #! _CONFIG suffix are replaced in the default template file by either the
 #! value for the build or the install tree, respectively.
 #!
-#! If present, this script includes the PROJECT_CONFIG_DIR/ConfigBuild.cmake
-#! and/or PROJECT_CONFIG_DIR/ConfigInstall.cmake file before configuring the
-#! Config.cmake.in template. If a file PROJECT_CONFIG_DIR/Config.cmake.in
+#! If present, this script includes the @c PROJECT_CONFIG_DIR/ConfigBuild.cmake
+#! and/or @c PROJECT_CONFIG_DIR/ConfigInstall.cmake file before configuring the
+#! Config.cmake.in template. If a file @c PROJECT_CONFIG_DIR/Config.cmake.in
 #! exists, it is used as template. Otherwise, the default template file is used.
 #!
-#! Similarly, if the file PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
-#! it is used as template for the <package>ConfigVersion.cmake file. The same
+#! Similarly, if the file @c PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
+#! it is used as template for the \<package\>ConfigVersion.cmake file. The same
 #! applies to Use.cmake.in.
 #!
-#! The variable PACKAGE_NAME is set to the name of the project prefixed by the
-#! value of BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
+#! The variable @c PACKAGE_NAME is set to the name of the project prefixed by the
+#! value of @c BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
 #! to find this software package.
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.

@@ -99,6 +99,9 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 #! In any case can the documentation be build by building the @c doc target.
 #!
 #! @param [in] ARGN Not used.
+#!
+#! @returns Adds the custom target @c doc and the option @c BUILD_DOCUMENTATION
+#!          if either of these does not exist yet.
 
 function (basis_add_doc_target)
   if (NOT TARGET doc)
@@ -130,6 +133,9 @@ endfunction ()
 #! In any case can the ChangeLog be build by building the @c changelog target.
 #!
 #! @param [in] ARGN Not used.
+#!
+#! @returns Adds the custom target @c changelog and the option
+#!          @c BUILD_CHANGELOG if either of these does not exist yet.
 
 function (basis_add_changelog_target)
   if (NOT TARGET changelog)
@@ -300,6 +306,10 @@ endfunction ()
 #!   COMPONENT dev
 #! )
 #! @endcode
+#!
+#! @returns Adds a custom target @p TARGET_NAME for the generation of the
+#!          documentation or configures the given file in case of the @c None
+#!          generator.
 
 function (basis_add_doc TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
@@ -527,7 +537,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
     # svn2cl command arguments
-    # \todo parse arguments
+    # TODO parse arguments
     set (SVN2CL_PATH             "${PROJECT_SOURCE_DIR}")
     set (SVN2CL_OUTPUT           "${PROJECT_BINARY_DIR}/${TARGET_NAME}")
     set (SVN2CL_AUTHORS          "${PROJECT_AUTHORS_FILE}")
