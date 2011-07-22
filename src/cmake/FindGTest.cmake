@@ -49,7 +49,7 @@
 #!   </tr>
 #!   <tr>
 #!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b GTest_MAIN_LIBRARY</td>
+#!         @b GTest_main_LIBRARY</td>
 #!     <td>Path of @c gtest_main library (optional).</td>
 #!   </tr>
 #!   <tr>
@@ -114,7 +114,7 @@ if (GTest_DIR)
   )
 
   find_library (
-    GTest_MAIN_LIBRARY
+    GTest_main_LIBRARY
       NAMES         gtest_main
       HINTS         "${GTest_DIR}"
       PATH_SUFFIXES "lib"
@@ -139,7 +139,7 @@ else ()
   )
 
   find_library (
-    GTest_MAIN_LIBRARY
+    GTest_main_LIBRARY
       NAMES gtest_main
       HINTS ENV LD_LIBRARY_PATH
       DOC   "Link library for Google Test's automatic main () definition (gtest_main)."
@@ -149,7 +149,7 @@ endif ()
 
 mark_as_advanced (GTest_INCLUDE_DIR)
 mark_as_advanced (GTest_LIBRARY)
-mark_as_advanced (GTest_MAIN_LIBRARY)
+mark_as_advanced (GTest_main_LIBRARY)
 
 # ----------------------------------------------------------------------------
 # add prerequisites
@@ -159,8 +159,8 @@ set (GTest_LIBRARIES)
 if (GTest_LIBRARY)
   list (APPEND GTest_LIBRARIES "${GTest_LIBRARY}")
 endif ()
-if (GTest_MAIN_LIBRARY)
-  list (APPEND GTest_LIBRARIES "${GTest_MAIN_LIBRARY}")
+if (GTest_main_LIBRARY)
+  list (APPEND GTest_LIBRARIES "${GTest_main_LIBRARY}")
 endif ()
 
 # ----------------------------------------------------------------------------
