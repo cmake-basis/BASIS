@@ -3,11 +3,11 @@
  * @brief Main include file for BASIS C++ unit tests.
  *
  * This file should be included by implementations of unit tests.
- * Note that currently, we are simply using Google Test and Google Mock.
- * Likely, this will not change in the future. However, to be prepared,
- * we use this header file. The implementation of the functions and macros
- * provided by the underlying testing frameworks could then potentially
- * be replaced by own implementations.
+ * Note that currently we are simply using Google Test and Google Mock.
+ * Likely, this will not change soon. However, we use this header file
+ * to be prepared for this case. The implementation of the functions
+ * and macros provided by the underlying testing frameworks could then
+ * potentially be replaced by own implementations.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

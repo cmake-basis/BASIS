@@ -2,6 +2,9 @@
  * @file  basis.h
  * @brief Main include file of BASIS C++ utilities.
  *
+ * This header file includes all the other public headers that declare the
+ * functions and classes useful for software built on top of BASIS.
+ *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
