@@ -57,7 +57,6 @@ if __name__ == "__main__":
                 sys.stdout.write ("///" + comment + "\n")
                 continue
             else:
-                sys.stdout.write ("\n")
                 previousBlock = currentBlock
                 currentBlock = ''
                 # continue processing of this (yet unhandled) line
@@ -65,25 +64,25 @@ if __name__ == "__main__":
         if currentBlock == 'function':
             m = reFunctionEnd.match (line)
             if m is not None:
-                sys.stdout.write ("\n")
                 previousBlock = currentBlock
                 currentBlock = ''
+            sys.stdout.write ("\n")
             continue
         # inside macro definition
         if currentBlock == 'macro':
             m = reMacroEnd.match (line)
             if m is not None:
-                sys.stdout.write ("\n")
                 previousBlock = currentBlock
                 currentBlock = ''
+            sys.stdout.write ("\n")
             continue
         # inside brackets of multi-line set() command
         if currentBlock == 'set':
             m = reSetEnd.match (line)
             if m is not None:
-                sys.stdout.write ("\n")
                 previousBlock = currentBlock
                 currentBlock = ''
+            sys.stdout.write ("\n")
             continue
         if currentBlock == 'set-no-name':
             m = reSetVarName.match (line)
@@ -93,17 +92,18 @@ if __name__ == "__main__":
                 currentBlock = 'set'
                 m = reSetEnd.match (line)
                 if m is not None:
-                    sys.stdout.write ("\n")
                     previousBlock = currentBlock
                     currentBlock = ''
+            else:
+                sys.stdout.wirte ("\n")
             continue
         # inside brackets of multi-line options command
         if currentBlock == 'option':
             m = reOptionEnd.match (line)
             if m is not None:
-                sys.stdout.write ("\n")
                 previousBlock = currentBlock
                 currentBlock = ''
+            sys.stdout.write ("\n")
             continue
         if currentBlock == 'option-no-name':
             m = reOptionName.match (line)
@@ -113,9 +113,10 @@ if __name__ == "__main__":
                 currentBlock = 'option'
                 m = reOptionEnd.match (line)
                 if m is not None:
-                    sys.stdout.write ("\n")
                     previousBlock = currentBlock
                     currentBlock = ''
+            else:
+                sys.stdout.write ("\n")
             continue
         # look for new comment block or block following a comment
         if currentBlock == '':
@@ -131,6 +132,7 @@ if __name__ == "__main__":
             m = reIfClauseStart.match (line)
             if m is not None:
                 ifClauseDepth = ifClauseDepth + 1
+                sys.stdout.write ("\n")
                 continue
             # leave if-clause
             if ifClauseDepth > 0:
@@ -140,6 +142,8 @@ if __name__ == "__main__":
                     if commentDepth > ifClauseDepth:
                         previousBlock = ''
                         currentBlock  = ''
+                    sys.stdout.write ("\n")
+                    continue
             # Doxygen comment
             m = reCommentLine.match (line)
             if m is not None:
@@ -199,6 +203,7 @@ if __name__ == "__main__":
                     name = m.group ('name')
                     if name == '':
                         currentBlock = 'set-no-name'
+                        sys.stdout.write ("\n")
                         continue
                     sys.stdout.write (name + ";\n")
                     m = reSetEnd.match (line)
@@ -206,7 +211,6 @@ if __name__ == "__main__":
                         currentBlock = 'set'
                     else:
                         previousBlock = 'set'
-                        sys.stdout.write ("\n")
                     continue
                 # option
                 m = reOptionStart.match (line)
@@ -214,6 +218,7 @@ if __name__ == "__main__":
                     name = m.group ('name')
                     if name == '':
                         currentBlock = 'option-no-name'
+                        sys.stdout.write ("\n")
                         continue
                     sys.stdout.write ("option " + name + ";\n")
                     m = reOptionEnd.match (line)
@@ -221,15 +226,19 @@ if __name__ == "__main__":
                         currentBlock = 'option'
                     else:
                         previousBlock = 'option'
-                        sys.stdout.write ("\n")
                     continue
             if line != '':
                 if previousBlock == 'comment':
                     # prevent comments that are not associated with any
                     # processed block to be merged with subsequent comments
                     sys.stdout.write ("class COMMENT_DUMPED_BY_DOXYGEN_FILTER;\n")
+                else:
                     sys.stdout.write ("\n")
                 previousBlock = ''
+            else:
+                sys.stdout.write ("\n")
+        else:
+            sys.stdout.write ("\n")
     # close input file
     f.close ()
     # done
