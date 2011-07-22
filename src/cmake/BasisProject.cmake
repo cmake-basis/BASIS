@@ -13,8 +13,9 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeModules CMakeAPI
 ##############################################################################
-
 
 # get directory of this file
 #
@@ -70,6 +71,9 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 # ============================================================================
 # initialize/finalize major components
 # ============================================================================
+
+#! @addtogroup CMakeAPI
+#! @{
 
 # ****************************************************************************
 #! @brief Initialize project, calls CMake's project() command.
@@ -546,6 +550,8 @@ macro (basis_project_finalize)
   include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
 endmacro ()
 
+#! @}
+
 # ============================================================================
 # auxiliary source files
 # ============================================================================
@@ -601,6 +607,8 @@ endmacro ()
 #! @param [in]  ARGN           Not used.
 #!
 #! @returns Sets the variables specified by the @c [out] parameters.
+#!
+#! @ingroup CMakeUtilities
 
 function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (SOURCES_OUT        "")
@@ -689,6 +697,9 @@ endfunction ()
 # set/get any property
 # ============================================================================
 
+#! @addtogroup CMakeAPI
+#! @{
+
 # ****************************************************************************
 #! @brief Replaces CMake's set_property() command.
 #!
@@ -737,6 +748,8 @@ function (basis_get_property VAR SCOPE ELEMENT)
   set ("${VAR}" "${VALUE}" PARENT_SCOPE)
 endfunction ()
 
+#! @}
+
 # ============================================================================
 # mapping of build target name to executable file
 # ============================================================================
@@ -757,6 +770,8 @@ endfunction ()
 #! @param [in] ARGN Not used.
 #!
 #! @returns Configures the file @p BINARY_CODE_DIR/stdaux.cc in-place if it exists.
+#!
+#! @ingroup CMakeUtilities
 
 function (basis_configure_ExecutableTargetInfo)
   file (RELATIVE_PATH SRC "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
@@ -819,6 +834,9 @@ endfunction ()
 # ============================================================================
 # installation
 # ============================================================================
+
+#! @addtogroup CMakeUtilities
+#! @{
 
 # ****************************************************************************
 #! @brief Add installation command for creation of a symbolic link.
@@ -962,3 +980,4 @@ function (basis_add_uninstall)
   endif ()
 endfunction ()
 
+#! @}

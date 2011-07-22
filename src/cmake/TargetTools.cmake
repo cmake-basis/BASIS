@@ -6,6 +6,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 if (__BASIS_TARGETTOOLS_INCLUDED)
@@ -22,6 +24,9 @@ endif ()
 #       to maintain compatibility with older CMake versions.
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
+
+#! @addtogroup CMakeAPI
+#! @{
 
 # ============================================================================
 # properties
@@ -1239,6 +1244,8 @@ endfunction ()
 #!
 #! @returns Adds custom target(s) to actually build the script target
 #!          @p TARGET_UID added by basis_add_script().
+#!
+#! @ingroup CMakeUtilities
 
 function (basis_add_script_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
@@ -1551,6 +1558,8 @@ endmacro ()
 #! @returns Adds custom targets that actually build the executables and
 #!          libraries for which custom build targets where added by
 #!          basis_add_executable(), basis_add_library(), and basis_add_script().
+#!
+#! @ingroup CMakeUtilities
 
 function (basis_add_custom_finalize)
   foreach (TARGET_UID ${BASIS_TARGETS})

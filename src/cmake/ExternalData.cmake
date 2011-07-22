@@ -7,6 +7,8 @@
 #! File modified by the SBIA Group.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 # - Manage data files stored outside source tree

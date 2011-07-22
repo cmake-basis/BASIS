@@ -28,8 +28,9 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeModules
 ##############################################################################
-
 
 # get directory of this file
 #
@@ -137,6 +138,9 @@ endif ()
 # source package
 # ============================================================================
 
+#! @brief Patterns to be ignored when creating source package.
+#!
+#! @ingroup CMakeAPI
 set (
   CPACK_SOURCE_IGNORE_FILES
     "${CPACK_SOURCE_IGNORE_FILES}"
@@ -175,6 +179,9 @@ include (CPack)
 # ----------------------------------------------------------------------------
 # utilities
 # ----------------------------------------------------------------------------
+
+#! @addtogroup CMakeAPI
+#! @{
 
 # ****************************************************************************
 #! @brief Add component group.
@@ -273,6 +280,8 @@ endfunction ()
 function (basis_configure_downloads)
   cpack_configure_downloads (${ARGN})
 endfunction ()
+
+#! @}
 
 # ----------------------------------------------------------------------------
 # include components definition

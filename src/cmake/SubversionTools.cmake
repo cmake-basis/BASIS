@@ -6,6 +6,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 if (__BASIS_SUBVERSIONTOOLS_INCLUDED)
@@ -37,6 +39,9 @@ else ()
   mark_as_advanced (BASIS_CMD_SVN)
 endif ()
 
+#! @addtogroup CMakeUtilities
+#! @{
+
 # ============================================================================
 # retrieve SVN information
 # ============================================================================
@@ -51,6 +56,9 @@ endif ()
 #! @param [out] REV  The revision number of URL. If URL is not under revision
 #!                   control or BASIS_CMD_SVN is invalid, "0" is returned.
 #! @param [in]  ARGN Not used.
+#!
+#! @returns Sets @p REV to the revision of the working copy/repository
+#!          at URL @p URL.
 
 function (basis_svn_get_revision URL REV)
   set (OUT "0")
@@ -90,6 +98,9 @@ endfunction ()
 #!                   under Subversion control or BASIS_CMD_SVN is invalid,
 #!                   "0" is returned.
 #! @param [in]  ARGN Not used.
+#!
+#! @returns Sets @p REV to revision number at which the working copy/repository
+#!          specified by the URL @p URL was last modified.
 
 function (basis_svn_get_last_changed_revision URL REV)
   set (OUT "0")
@@ -130,6 +141,8 @@ endfunction ()
 #!                     empty string is returned. An empty string is also
 #!                     returned when BASIS_CMD_SVN is invalid.
 #! @param [in]  ARGN   Not used.
+#!
+#! @returns Sets @p STATUS to the output of the <tt>svn info</tt> command.
 
 function (basis_svn_status URL STATUS)
   if (BASIS_CMD_SVN)
@@ -150,3 +163,4 @@ function (basis_svn_status URL STATUS)
   endif ()
 endfunction ()
 
+#! @}

@@ -6,6 +6,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 if (__BASIS_COMMONTOOLS_INCLUDED)
@@ -23,6 +25,9 @@ endif ()
 get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 
+#! @addtogroup CMakeUtilities
+#! @{
+
 # ============================================================================
 # common commands
 # ============================================================================
@@ -39,7 +44,14 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 #! @brief Convenience macro useful to find other BASIS projects.
 #!
 #! @param [in] PACKAGE Package/project name.
-#! @param [in] ARGN    Other arguments as accepted by CMake's find_package ().
+#! @param [in] ARGN    Other arguments as accepted by CMake's find_package().
+#!
+#! @returns The package specific variables are either set by the invoked
+#!          CMake Find module or the package's CMake configuration file.
+#!
+#! @retval \<package\>_FOUND Whether the given package was found.
+#!
+#! @ingroup CMakeAPI
 
 macro (find_basis_package PACKAGE)
   find_package ("${BASIS_CONFIG_PREFIX}${PACKAGE}" ${ARGN})
@@ -58,6 +70,11 @@ endmacro ()
 #! be the extension.
 #!
 #! @param [in,out] ARGN Arguments as accepted by get_filename_component().
+#!
+#! @returns Sets the variable named by the first argument to the requested
+#!          component of the given file path.
+#!
+#! @ingroup CMakeAPI
 
 function (get_filename_component)
   _get_filename_component (${ARGN})
@@ -87,6 +104,8 @@ endfunction ()
 #! @param [out] MINOR   Minor version number if given or 0.
 #! @param [out] PATCH   Patch number if given or 0.
 #! @param [in]  ARGN    Not used.
+#!
+#! @returns See @c [out] parameters.
 
 function (basis_version_numbers VERSION MAJOR MINOR PATCH)
   string (REGEX MATCHALL "[0-9]+" VERSION_PARTS "${VERSION}")
@@ -120,8 +139,10 @@ endfunction ()
 # ****************************************************************************
 #! @brief Set value of variable only if variable is not set already.
 #!
-#! @param [in] VAR  Name of variable.
-#! @param [in] ARGN Arguments to set() command excluding variable name.
+#! @param [out] VAR  Name of variable.
+#! @param [in]  ARGN Arguments to set() command excluding variable name.
+#!
+#! @returns Sets @p VAR if it's value was not valid before.
 
 function (basis_set_if_empty VAR)
   if (NOT ${VAR})
@@ -137,10 +158,14 @@ endfunction ()
 #! to the file or directory specified by INSTALL_PATH relative to
 #! INSTALL_CONFIG_DIR.
 #!
-#! @param [in] VAR  Name of variable. Used in template of
-#!                  \<package\>Config.cmake as \@VAR\@.
-#! @param [in] PATH Path of variable relative to CMAKE_INSTALL_PREFIX.
-#! @param [in] ARGN Not used.
+#! @param [out] VAR  Name of variable. Used in template of
+#!                   \<package\>Config.cmake as \@VAR\@.
+#! @param [in]  PATH Path of variable relative to CMAKE_INSTALL_PREFIX.
+#! @param [in]  ARGN Not used.
+#!
+#! @returns Sets @p VAR to the determined relative path.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_set_config_path VAR PATH)
   file (
@@ -171,6 +196,8 @@ endfunction ()
 #! @param [out] FUNC The generated basis_set_script_path() function definition.
 #! @param [in]  ARGN Not used.
 #!
+#! @returns Sets @p FUNC to the definition of the function basis_set_script_path().
+#!
 #! @par Parameters of function basis_set_script_path():
 #! <table border="0">
 #!   <tr>
@@ -191,6 +218,8 @@ endfunction ()
 #!         the build and install tree version of the script.</td>
 #!   </tr>
 #! </table>
+#!
+#! @ingroup CMakeAPI
 
 macro (basis_set_script_path_definition FUNC)
   set (${FUNC} "function (basis_set_script_path VAR PATH)
@@ -234,6 +263,10 @@ endmacro ()
 #!
 #! @param [out] STR  Output string.
 #! @param [in]  ARGN Input list.
+#!
+#! @returns Sets @p STR to the resulting string.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_list_to_string STR)
   set (OUT)
@@ -251,6 +284,10 @@ endfunction ()
 #!                    Each element which contains the delimiter as substring
 #!                    is surrounded by double quotes (") in the output string.
 #! @param [in]  ARGN  Input list.
+#!
+#! @returns Sets @p STR to the resulting string.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_list_to_delimited_string STR DELIM)
   set (OUT)
@@ -270,7 +307,7 @@ endfunction ()
 # ****************************************************************************
 #! @brief Splits a string at space characters into a list.
 #!
-#! @TODO Probably this can be done in a better way...
+#! @todo Probably this can be done in a better way...
 #!       Difficulty is, that string (REPLACE) does always replace all
 #!       occurrences. Therefore, we need a regular expression which matches
 #!       the entire string. More sophisticated regular expressions should do
@@ -279,6 +316,10 @@ endfunction ()
 #! @param [out] LST  Output list.
 #! @param [in]  STR  Input string.
 #! @param [in]  ARGN Not used.
+#!
+#! @returns Sets @p LST to the resulting CMake list.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_string_to_list LST STR)
   set (TMP "${STR}")
@@ -336,6 +377,10 @@ endfunction ()
 #! @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 #! @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #! @param [in]  ARGN        Not used.
+#!
+#! @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_target_uid TARGET_UID TARGET_NAME)
   if (NOT IS_SUBPROJECT OR TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
@@ -353,6 +398,8 @@ endfunction ()
 #! @param [out] TARGET_NAME Target name used as argument to BASIS functions.
 #! @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
 #! @param [in]  ARGN        Not used.
+#!
+#! @returns Sets @p TARGET_NAME to the name of the build target with UID @p TARGET_UID.
 
 function (basis_target_name TARGET_NAME TARGET_UID)
   string (REGEX REPLACE "^.*${BASIS_NAMESPACE_SEPARATOR}" "" TMP "${TARGET_UID}")
@@ -366,6 +413,8 @@ endfunction ()
 #!
 #! @param [in] TARGET_NAME Desired target name.
 #! @param [in] ARGN        Not used.
+#!
+#! @returns Nothing.
 
 function (basis_check_target_name TARGET_NAME)
   # reserved target name ?
@@ -418,6 +467,10 @@ endfunction ()
 #! @param [out] TEST_UID  "Global" test name, i.e., actual CTest test name.
 #! @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
 #! @param [in]  ARGN      Not used.
+#!
+#! @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_test_uid TEST_UID TEST_NAME)
   if (NOT IS_SUBPROJECT OR TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
@@ -435,6 +488,8 @@ endfunction ()
 #! @param [out] TEST_NAME Test name used as argument to BASIS functions.
 #! @param [in]  TEST_UID  "Global" test name, i.e., actual CTest test name.
 #! @param [in]  ARGN      Not used.
+#!
+#! @returns Sets @p TEST_NAME to the name of the test with UID @p TEST_UID.
 
 function (basis_test_name TEST_NAME TEST_UID)
   string (REGEX REPLACE "^.*${BASIS_NAMESPACE_SEPARATOR}" "" TMP "${TEST_UID}")
@@ -448,6 +503,8 @@ endfunction ()
 #!
 #! @param [in] TEST_NAME Desired test name.
 #! @param [in] ARGN      Not used.
+#!
+#! @returns Nothing.
 
 function (basis_check_test_name TEST_NAME)
   list (FIND BASIS_RESERVED_TEST_NAMES "${TEST_NAME}" IDX)
@@ -466,3 +523,4 @@ function (basis_check_test_name TEST_NAME)
   endif ()
 endfunction ()
 
+#! @}

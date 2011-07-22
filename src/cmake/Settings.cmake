@@ -24,6 +24,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 
@@ -84,13 +86,21 @@ endif ()
 # common options
 # ============================================================================
 
+#! @addtogroup CMakeAPI
+#! @{
+
 #! @brief Enable/Disable verbose messages of BASIS functions.
 option (BASIS_VERBOSE "Whether BASIS functions should be verbose." "OFF")
 mark_as_advanced (BASIS_VERBOSE)
 
+#! @}
+
 # ============================================================================
 # constants and global settings
 # ============================================================================
+
+#! @addtogroup CMakeUtilities
+#! @{
 
 #! @brief List of names used for special purpose targets.
 #!
@@ -174,9 +184,14 @@ set (BASIS_CACHED_EXPORTS_DOC "All exported targets.")
 #! @brief Cached UIDs of exported build targets.
 set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
 
+#! @}
+
 # ============================================================================
 # project directory structure
 # ============================================================================
+
+#! @addtogroup CMakeUtilities
+#! @{
 
 # ----------------------------------------------------------------------------
 # assertions
@@ -186,6 +201,8 @@ set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
 #! @brief Ensure certain requirements on build tree.
 #!
 #! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 macro (buildtree_asserts)
   # root of build tree must not be root of source tree
@@ -203,6 +220,8 @@ endmacro ()
 #! @brief Ensure certain requirements on install tree.
 #!
 #! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 macro (installtree_asserts)
   # prefix must be an absolute path
@@ -239,6 +258,8 @@ endmacro ()
 #! the actual values corresponding to the project name and version.
 #!
 #! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 macro (basis_initialize_directories)
   # source tree
@@ -287,6 +308,11 @@ macro (basis_initialize_directories)
   buildtree_asserts ()
   installtree_asserts ()
 endmacro ()
+
+#! @}
+
+#! @addtogroup CMakeAPI
+#! @{
 
 # ----------------------------------------------------------------------------
 # source tree
@@ -570,3 +596,4 @@ set (CMAKE_EXE_LINKER_FLAGS_COVERAGE    "-fprofile-arcs -ftest-coverage")
 set (CMAKE_MODULE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 set (CMAKE_SHARED_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 
+#! @}

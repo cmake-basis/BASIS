@@ -3,30 +3,31 @@
 # ATTENTION: DO NOT use the tokens used by the file update anywhere within
 #            this file. Write < basis-custom > instead, for example.
 
-"""
-@file  updatefile.py
-@brief Update file from template file while preserving custom sections.
-
-This script is used by the BasisUpdate CMake module. This module is used to
-update files of a project instantiated from a particular revision of the
-BASIS project template during the configure step of CMake. This way,
-projects pull the changes of the compatible template automatically.
-Sections in the original file which are enclosed by the tokens
-< basis-custom > and </ basis-custom > or < basis-license > and
-</ basis-license > (without trailing spaces) are preserved while all other
-content is replaced by the template file. The customized sections are
-inserted into the template in the order they appear in the original file
-and the template file. If more custom sections are present in the original
-file than in the template file, these custom sections are appended at the
-end of the resulting file.
-
-See the documentation of BasisUpdate.cmake for further details.
-
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-"""
+##
+# @file  updatefile.py
+# @brief Update file from template file while preserving custom sections.
+#
+# This script is used by the BasisUpdate.cmake module. This module is used to
+# update files of a project instantiated from a particular revision of the
+# BASIS project template during the configure step of CMake. This way,
+# projects pull the changes of the compatible template automatically.
+# Sections in the original file which are enclosed by the tokens
+# \<basis-custom\> and \</basis-custom\> or \<basis-license\> and
+# \</basis-license\> (without trailing spaces) are preserved while all other
+# content is replaced by the template file. The customized sections are
+# inserted into the template in the order they appear in the original file
+# and the template file. If more custom sections are present in the original
+# file than in the template file, these custom sections are appended at the
+# end of the resulting file.
+#
+# See the documentation of BasisUpdate.cmake for further details.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeHelpers
 
 # modules
 import os

@@ -1,6 +1,8 @@
 /*!
  * @file  test_main.cc
  * @brief Implementation of main() function for GMock based test drivers.
+ *
+ * @ingroup CMakeHelpers
  */
 
 // Copyright 2008, Google Inc.

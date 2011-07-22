@@ -1,6 +1,6 @@
 ##############################################################################
-#! \file  ExecuteProcess.cmake
-#! \brief Execute process using CMake script mode.
+#! @file  ExecuteProcess.cmake
+#! @brief Execute process using CMake script mode.
 #!
 #! This CMake script can be used as argument for the -P option of cmake, when
 #! another command shall be executed by CMake, for example, as custom build
@@ -52,7 +52,6 @@
 #! is replaced. By default, it is set to ';'.
 #!
 #! Example:
-#!
 #! @code
 #! cmake -DCOMMAND='ls -l' -DWORKING_DIRECTORY='/' -DTIMEOUT=60
 #!       -P SbiaExecuteProcess.cmake
@@ -62,6 +61,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeUtilities
 ##############################################################################
 
 # parse arguments

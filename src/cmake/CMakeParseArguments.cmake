@@ -66,6 +66,8 @@
 #! E.g. my_install(TARGETS foo DESTINATION OPTIONAL) would result in
 #! MY_INSTALL_DESTINATION set to "OPTIONAL", but MY_INSTALL_DESTINATION would
 #! be empty and MY_INSTALL_OPTIONAL would be set to TRUE therefor.
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 #=============================================================================
@@ -129,6 +131,11 @@ set(__CMAKE_PARSE_ARGUMENTS_INCLUDED TRUE)
 #! @param [in] _singleArgNames Names of parameters with single arguments.
 #! @param [in] _multiArgNames  Names of parameters with multiple arguments.
 #! @param [in] ARGN            Not used.
+#!
+#! @returns Sets the variables of the parsed arguments named after the option
+#!          name prefixed by @p prefix.
+#!
+#! @ingroup CMakeUtilities
 
 function(CMAKE_PARSE_ARGUMENTS prefix _optionNames _singleArgNames _multiArgNames)
   # first set all result variables to empty/FALSE

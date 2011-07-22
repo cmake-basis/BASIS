@@ -6,6 +6,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 if (__BASIS_DOCTOOLS_INCLUDED)
@@ -30,15 +32,26 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # The following options are only enabled when at least one doc or changelog
 # target were added. Otherwise, there is nothing to build.
 
+#! @addtogroup CMakeAPI
+#! @{
+
 #! @brief Enable/Disable build of documentation target as part of ALL.
+#!
+#! This option is only available when the project adds at least one
+#! documentation target using the function basis_add_doc().
 if (NOT DEFINED BUILD_DOCUMENTATION)
   set (BUILD_DOCUMENTATION)
 endif ()
 
 #! @brief Enable/Disable build of changelog target as part of ALL.
+#!
+#! This option is only available when the project adds at least one
+#! ChangeLog target using the function basis_add_doc().
 if (NOT DEFINED BUILD_CHANGELOG)
   set (BUILD_CHANGELOG)
 endif ()
+
+#! @}
 
 # ============================================================================
 # used programs
@@ -59,6 +72,9 @@ mark_as_advanced (BASIS_CMD_SVN2CL)
 # ============================================================================
 # settings
 # ============================================================================
+
+#! @addtogroup CMakeUtilities
+#! @{
 
 #! @brief Doxygen filter used to process CMake scripts.
 set (BASIS_DOXYGEN_FILTER_CMAKE "${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
@@ -84,9 +100,14 @@ set (
 #! @brief Default Doxygen configuration.
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
+#! @}
+
 # ============================================================================
 # helper
 # ============================================================================
+
+#! @addtogroup CMakeUtilities
+#! @{
 
 # ****************************************************************************
 #! @brief Add a custom @c doc target along with a build switch.
@@ -155,6 +176,8 @@ function (basis_add_changelog_target)
     endif ()
   endif ()
 endfunction ()
+
+#! @}
 
 # ============================================================================
 # adding / generating documentation
@@ -310,6 +333,8 @@ endfunction ()
 #! @returns Adds a custom target @p TARGET_NAME for the generation of the
 #!          documentation or configures the given file in case of the @c None
 #!          generator.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_add_doc TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")

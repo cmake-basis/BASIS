@@ -9,6 +9,8 @@
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ *
+ * @ingroup CppUtilities
  */
 
 #pragma once
@@ -18,6 +20,9 @@
 
 #include <string>
 
+
+/// @addtogroup CppUtilities
+/// @{
 
 // ===========================================================================
 // system
@@ -338,6 +343,9 @@ extern const std::string cLibraryPath;
  * @sa GetDataDirectory()
  */
 extern const std::string cDataPath;
+
+
+/// @}
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

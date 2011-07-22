@@ -24,6 +24,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeTools
 ##############################################################################
 
 
@@ -42,6 +44,9 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # Attention: This has to be done before configuring any files such that these
 #            variables can be used by the template files.
 
+#! @addtogroup CMakeUtilities
+#! @{
+
 #! @brief Name of the package.
 set (PACKAGE_NAME "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}")
 #! @brief Name of the CMake package configuration file.
@@ -50,6 +55,8 @@ set (CONFIG_FILE "${PACKAGE_NAME}Config.cmake")
 set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
 #! @brief Name of the CMake package use file.
 set (USE_FILE "${PACKAGE_NAME}Use.cmake")
+
+#! @}
 
 # ============================================================================
 # install exports

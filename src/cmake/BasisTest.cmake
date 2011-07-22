@@ -6,6 +6,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeModules
 ##############################################################################
 
 
@@ -78,6 +80,9 @@ endif ()
 # ============================================================================
 # utilities
 # ============================================================================
+
+#! @addtogroup CMakeAPI
+#! @{
 
 # ****************************************************************************
 #! @brief Replaces CMake's set_tests_properties() command.
@@ -156,7 +161,9 @@ endfunction ()
 #!         @b SOURCES file1 [file2 ...]</td>
 #!     <td>The source files of the unit test. If this list contains a
 #!         file named either "*-main.*" or "*_main.*", the default
-#!         implementation of the main() function is not included.</td>
+#!         implementation of the main() function is not included.
+#!         Otherwise, the default implementation of the main() function,
+#!         i.e., the file test_main.cc of BASIS is added to this list.</td>
 #!   </tr>
 #!   <tr>
 #!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
@@ -318,3 +325,4 @@ function (basis_add_tests_of_default_options TARGET_NAME)
   endif ()
 endfunction ()
 
+#! @}

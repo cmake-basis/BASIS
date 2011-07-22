@@ -51,6 +51,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup CMakeModules CMakeAPI
 ##############################################################################
 
 if (__BASIS_UPDATE_INCLUDED)
@@ -72,6 +74,9 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # options
 # ============================================================================
 
+#! @addtogroup CMakeAPI
+#! @{
+
 #! @brief Enable/Disable update of files.
 option (BASIS_UPDATE "Whether the automatic file update is enabled" "ON")
 #! @brief Enable/Disable automatic non-interactive update of files.
@@ -79,6 +84,8 @@ option (BASIS_UPDATE_AUTO "Whether files may be updated automatically without co
 
 mark_as_advanced (BASIS_UPDATE)
 mark_as_advanced (BASIS_UPDATE_AUTO)
+
+#! @}
 
 # ============================================================================
 # required modules
@@ -125,6 +132,8 @@ set (BASIS_UPDATE_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/updatefile.py")
 #! @sa basis_update()
 #! @sa basis_update_finalize()
 #! @sa basis_update_files()
+#!
+#! @ingroup CMakeAPI
 
 function (basis_update_initialize)
   # initialize only if not done already
@@ -236,6 +245,10 @@ endfunction ()
 #! @sa basis_update_finalize()
 #!
 #! @param [in] FILENAME Name of project file in current source directory.
+#!
+#! @returns Nothing.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_update FILENAME)
   if (NOT BASIS_UPDATE)
@@ -360,6 +373,12 @@ endfunction ()
 #! @sa basis_update()
 #! @sa basis_update_initialize()
 #! @sa basis_update_finalize()
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
+#!
+#! @ingroup CMakeAPI
 
 function (basis_update_finalize)
   if (NOT BASIS_UPDATE)
@@ -493,6 +512,9 @@ endfunction ()
 # ============================================================================
 # helpers
 # ============================================================================
+
+#! @addtogroup CMakeUtilities
+#! @{
 
 # ----------------------------------------------------------------------------
 # common helpers
@@ -762,3 +784,4 @@ function (basis_update_files)
   endif ()
 endfunction ()
 
+#! @}
