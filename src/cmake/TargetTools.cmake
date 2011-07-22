@@ -419,7 +419,7 @@ endfunction ()
 #!   </tr>
 #!   <tr>
 #!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b LIBEXEC<td>
+#!         @b LIBEXEC</td>
 #!     <td>Specifies that the built executable is an auxiliary executable
 #!         which is only called by other executable.</td>
 #!   </tr>
@@ -621,12 +621,12 @@ endfunction ()
 #!   </tr>
 #!   <tr>
 #!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!     <td>@b STATIC|@b SHARED|@b MODULE|@b MEX|@b LIBMEX</td>
+#!         <b>STATIC</b>|<b>SHARED</b>|<b>MODULE</b>|<b>MEX</b>|<b>LIBMEX</b></td>
 #!     <td>Type of the library.</td>
 #!   </tr>
 #!   <tr>
 #!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!     <td>@b EXTERNAL</td>
+#!         @b EXTERNAL</td>
 #!     <td>Whether the library target is an external library, i.e., the project
 #!         version does not apply.</td>
 #!   </tr>
@@ -1010,7 +1010,7 @@ endfunction ()
 #!   </tr>
 #!   <tr>
 #!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!      <td>@b COMPONENT name</td>
+#!          @b COMPONENT name</td>
 #!      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
 #!   </tr>
 #!   <tr>
@@ -1023,7 +1023,7 @@ endfunction ()
 #!   </tr>
 #!   <tr>
 #!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!      <td>@b LIBEXEC</td>
+#!          @b LIBEXEC</td>
 #!      <td>Specifies that the script is an auxiliary executable called
 #!          by other executables only.</td>
 #!   </tr>
@@ -1047,7 +1047,7 @@ endfunction ()
 #!   </tr>
 #!   <tr>
 #!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!      <td>@b MODULE</td>
+#!          @b MODULE</td>
 #!      <td>Specifies that the script is a module file which is included by
 #!          other scripts. In particular, this is an alias for @p NOEXEC and
 #!          @p KEEPEXT and can be used, for example, for Python modules
@@ -1554,6 +1554,8 @@ endmacro ()
 #! @sa basis_add_script_finalize()
 #! @sa basis_add_mcc_target_finalize()
 #! @sa basis_add_mex_target_finalize()
+#!
+#! @param [in] ARGN Not used.
 #!
 #! @returns Adds custom targets that actually build the executables and
 #!          libraries for which custom build targets where added by

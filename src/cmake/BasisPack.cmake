@@ -194,6 +194,8 @@ include (CPack)
 #!
 #! @param [in] GRPNAME Name of the component group.
 #! @param [in] ARGN    Further arguments passed to cpack_add_component_group().
+#!
+#! @returns Adds the component group @p GRPNAME.
 
 function (basis_add_component_group GRPNAME)
   set (OPTION_NAME)
@@ -231,6 +233,8 @@ endfunction ()
 #!
 #! @param [in] COMPNAME Name of the component.
 #! @param [in] ARGN     Further arguments passed to cpack_add_component().
+#!
+#! @returns Adds the component named @p COMPNAME.
 
 function (basis_add_component COMPNAME)
   set (OPTION_NAME)
@@ -266,6 +270,10 @@ endfunction ()
 #!
 #! @sa CPack.cmake
 #! @sa cpack_add_install_type ()
+#!
+#! @param [in] ARGN Arguments for cpack_add_install_type().
+#!
+#! @returns Adds a pre-configured installation type.
 
 function (basis_add_install_type)
   cpack_add_install_type (${ARGN})
@@ -276,6 +284,10 @@ endfunction ()
 #!
 #! @sa CPack.cmake
 #! @sa cpack_configure_downloads()
+#!
+#! @param [in] ARGN Arguments for cpack_configure_downloads().
+#!
+#! @returns Nothing.
 
 function (basis_configure_downloads)
   cpack_configure_downloads (${ARGN})

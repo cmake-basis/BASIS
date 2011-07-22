@@ -133,6 +133,11 @@ set (BASIS_UPDATE_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/updatefile.py")
 #! @sa basis_update_finalize()
 #! @sa basis_update_files()
 #!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Sets @c BASIS_UPDATE_INITIALIZED to indicate the the automatic
+#!          file update feature has been initialized.
+#!
 #! @ingroup CMakeAPI
 
 function (basis_update_initialize)
@@ -245,6 +250,7 @@ endfunction ()
 #! @sa basis_update_finalize()
 #!
 #! @param [in] FILENAME Name of project file in current source directory.
+#! @param [in] ARGN     Not used.
 #!
 #! @returns Nothing.
 #!
@@ -521,16 +527,19 @@ endfunction ()
 # ----------------------------------------------------------------------------
 
 # ****************************************************************************
-#! @brief Returns name of file update option.
+#! @brief Get name of file update option.
 #!
 #! The CMake variable name returned by this function is used as file update
 #! option which enables the user to select which files should be udpated.
 #!
 #! @sa basis_update_finalize()
-#! @s basis_update_files()
+#! @sa basis_update_files()
 #!
 #! @param [in]  REL         Path of project file relative to project source directory.
 #! @param [out] OPTION_NAME Name of file update option.
+#! @param [in]  ARGN        Not used.
+#!
+#! @returns Sets @p OPTION_NAME to the name of the CMake option variable.
 
 function (basis_update_option REL OPTION_NAME)
   set (TMP "${REL}")
@@ -544,6 +553,9 @@ endfunction ()
 #! @param [in]  REL      Path of project file relative to project source directory.
 #! @param [out] TEMPLATE Absolute path of cached template file in binary tree
 #!                       of project.
+#! @param [in]  ARGN     Not used.
+#!
+#! @returns Sets @p TEMPLATE to the full path of the updated template file.
 
 function (basis_update_cached_template REL TEMPLATE)
   # URL of template file
@@ -584,6 +596,8 @@ endfunction ()
 #! @param [in] REL  Path of the project file whose template copies shall be
 #!                  removed relative to the project's source directory.
 #! @param [in] ARGN Absolute paths of cached template files to preserve.
+#!
+#! @returns Nothing.
 
 function (basis_update_clear REL)
   # collect all cached template files
@@ -606,6 +620,10 @@ endfunction ()
 #! @param [in]  REL      Path of project/template file relative to project source tree.
 #! @param [in]  TEMPLATE Absolute path of cached template file in binary tree of project.
 #! @param [out] RETVAL   Boolean variable which indicates success or failure.
+#! @param [in]  ARGN     Not used.
+#!
+#! @returns Sets @p RETVAL either to 1 or 0 whether or not the update was
+#!          successful or not, respectively.
 
 function (basis_update_template REL TEMPLATE RETVAL)
 
@@ -672,6 +690,10 @@ endfunction ()
 #!
 #! @sa basis_update_initialize()
 #! @sa basis_update_finalize()
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 function (basis_update_files)
   if (NOT BASIS_UPDATE)

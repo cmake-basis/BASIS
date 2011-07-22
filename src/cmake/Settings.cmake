@@ -123,22 +123,22 @@ set (BASIS_RUNTIME_COMPONENT "Runtime")
 #! @brief Character used to separate namespace and target name to build target UID.
 #!
 #! This separator is used to construct a UID for a particular target.
-#! For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>".
+#! For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".
 set (BASIS_NAMESPACE_SEPARATOR "@")
 
 #! @brief Character used to separate version and project name (e.g., in target UID).
 #!
 #! This separator is used to construct a UID for a particular target.
-#! For example, "<project>@BASIS_NAMESPACE_SEPARATOR@<target>@BASIS_VERSION_SEPARATOR@<version>".
+#! For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>\@BASIS_VERSION_SEPARATOR\@\<version\>".
 #! Note that the version need not be included if only a single version of each
 #! package is supposed to be installed on a target system.
 set (BASIS_VERSION_SEPARATOR "#")
 
 #! @brief Prefix used for CMake package config files.
 #!
-#! This string is used as prefix for the names of the <project>Config.cmake
+#! This string is used as prefix for the names of the \<Package\>Config.cmake
 #! et al. files. For example, a value of "SBIA_", results in the CMake package
-#! configuration file "SBIA_<project>Config.cmake".
+#! configuration file "SBIA_\<Package\>Config.cmake".
 set (BASIS_CONFIG_PREFIX "")
 
 #! @brief Script used to execute a process in CMake script mode.
@@ -151,10 +151,10 @@ set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmak
 
 #! @brief Default script configuration template.
 #!
-#! This is the default template used by basis_add_script () to configure the
+#! This is the default template used by basis_add_script() to configure the
 #! script during the build step. If the file
-#! PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
-#! is set to its path by basis_project_initialize ().
+#! @c PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
+#! is set to its path by basis_project_initialize().
 set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 
 # ============================================================================
@@ -169,17 +169,17 @@ set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 #       time. The guard directive at the beginning of this file protects
 #       these variables to be overwritten each time this module is included.
 
-#! @brief Documentation string for BASIS_CACHED_INCLUDE_DIRECTORIES.
+#! @brief Documentation string for @c BASIS_CACHED_INCLUDE_DIRECTORIES.
 set (BASIS_CACHED_INCLUDE_DIRECTORIES_DOC "All include directories.")
 #! @brief Cached include directories added across subdirectories.
 set (BASIS_CACHED_INCLUDE_DIRECTORIES "" CACHE INTERNAL "${BASIS_CACHED_INCLUDE_DIRECTORIES_DOC}" FORCE)
 
-#! @brief Documentation string for BASIS_TARGETS.
+#! @brief Documentation string for @c BASIS_TARGETS.
 set (BASIS_TARGETS_DOC "Names of all targets.")
 #! @brief Cached UIDs of all build targets.
 set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
 
-#! @brief Documentation string for BASIS_CACHED_EXPORTS.
+#! @brief Documentation string for @c BASIS_CACHED_EXPORTS.
 set (BASIS_CACHED_EXPORTS_DOC "All exported targets.")
 #! @brief Cached UIDs of exported build targets.
 set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
