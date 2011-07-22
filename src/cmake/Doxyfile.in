@@ -114,10 +114,12 @@ FULL_PATH_NAMES        = YES
 # If left blank the directory from which doxygen is run is used as the 
 # path to strip.
 
-STRIP_FROM_PATH        = "@PROJECT_INCLUDE_DIR@"
-STRIP_FROM_PATH       += "@PROJECT_CODE_DIR@"
-STRIP_FROM_PATH       += "@BINARY_INCLUDE_DIR@"
-STRIP_FROM_PATH       += "@BINARY_CODE_DIR@"
+STRIP_FROM_PATH        = "@PROJECT_SOURCE_DIR@"
+STRIP_FROM_PATH       += "@PROJECT_BINARY_DIR@"
+#STRIP_FROM_PATH       += "@PROJECT_INCLUDE_DIR@"
+#STRIP_FROM_PATH       += "@PROJECT_CODE_DIR@"
+#STRIP_FROM_PATH       += "@BINARY_INCLUDE_DIR@"
+#STRIP_FROM_PATH       += "@BINARY_CODE_DIR@"
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of 
 # the path mentioned in the documentation of a class, which tells 
