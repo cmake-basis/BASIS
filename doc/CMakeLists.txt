@@ -39,6 +39,7 @@ basis_add_doc (
                    "${BINARY_INCLUDE_DIR}"
                    "${PROJECT_INCLUDE_DIR}"
                    "${PROJECT_CODE_DIR}/cmake/ScriptConfig.cmake.in"
+                   "${CMAKE_CURRENT_SOURCE_DIR}/DoxygenPages.h"
   EXCLUDE_PATTERNS "*/tclap/*"
                    "*/gmock/*"
                    "*/gtest/*"
