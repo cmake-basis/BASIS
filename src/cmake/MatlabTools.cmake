@@ -118,6 +118,7 @@ mark_as_advanced (BASIS_CMD_MEX)
 #!
 #! @param [out] VERSION Value returned by the "version" command of MATLAB or
 #!                      an empty string if execution of MATLAB failed.
+#! @param [in]  ARGN    Not used.
 
 function (basis_get_full_matlab_version VERSION)
   set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
@@ -157,12 +158,13 @@ endfunction ()
 # ****************************************************************************
 #! @brief Determine version of MATLAB installation.
 #!
-#! @param [out] ARGV0 Version of the MATLAB installation, i.e., "7.9.0",
-#!                    for example, or an empty string if execution of MATLAB failed.
-#!                    If no output variable name is specified, the variable
-#!                    MATLAB_VERSION is added to the cache if not present yet.
-#!                    Note that if no output variable is given and MATLAB_VERSION
-#!                    is already set, nothing is done.
+#! @param [out] ARGN The first argument ARGV0 is set to the version of the
+#!                   MATLAB installation, i.e., "7.9.0", for example, or an
+#!                   empty string if execution of MATLAB failed.
+#!                   If no output variable name is specified, the variable
+#!                   MATLAB_VERSION is added to the cache if not present yet.
+#!                   Note that if no output variable is given and MATLAB_VERSION
+#!                   is already set, nothing is done.
 
 function (basis_get_matlab_version)
   if (ARGC GREATER 1)
@@ -188,12 +190,13 @@ endfunction ()
 # ****************************************************************************
 #! @brief Determine release version of MATLAB installation.
 #!
-#! @param [out] ARGV0 Release version of the MATLAB installation, i.e.,
-#!                    "R2009b", for example, or an empty string if execution
-#!                    of MATLAB failed. If no output variable name is specified,
-#!                    the variable MATLAB_RELEASE is added to the cache if not
-#!                    present yet. Note that if no output variable is given and
-#!                    MATLAB_RELEASE is already set, nothing is done.
+#! @param [out] ARGN The first argument ARGV0 is set to the release version of
+#!                   the MATLAB installation, i.e., "R2009b", for example,
+#!                   or an empty string if execution of MATLAB failed.
+#!                   If no output variable name is specified, the variable
+#!                   MATLAB_RELEASE is added to the cache if not present yet.
+#!                   Note that if no output variable is given and MATLAB_RELEASE
+#!                   is already set, nothing is done.
 
 function (basis_get_matlab_release)
   if (ARGC GREATER 1)
@@ -219,13 +222,13 @@ endfunction ()
 # ****************************************************************************
 #! @brief Determine extension of MEX-files for this architecture.
 #!
-#! @param [out] EXT The extension of MEX-files (excluding '.'). If the CMake
-#!                  variable MEX_EXT is set, its value is returned. Otherwise,
-#!                  this function tries to determine it from the system
-#!                  information. If the extension could not be determined,
-#!                  an empty string is returned.
-#!                  If this argument is not given, the extension is cached
-#1                  as the MEX_EXT variable.
+#! @param [out] ARGN The first argument ARGV0 is set to the extension of
+#!                   MEX-files (excluding '.'). If the CMake variable MEX_EXT
+#!                   is set, its value is returned. Otherwise, this function
+#!                   tries to determine it from the system information.
+#!                   If the extension could not be determined, an empty string
+#!                   is returned. If no argument is given, the extension is
+#!                   cached as the variable MEX_EXT.
 
 function (basis_mexext)
   # default return value
@@ -290,11 +293,13 @@ function (basis_mexext)
 endfunction ()
 
 # ****************************************************************************
-#! @brief This function writes a MATLAB M-file with addpath () statements.
+#! @brief This function writes a MATLAB M-file with addpath() statements.
 #!
 #! This function writes the MATLAB M-file addpaths.m into the root directory
-#! of the build tree which contains an addpath () statement for each
-#! directory that was added via basis_include_directories ().
+#! of the build tree which contains an addpath() statement for each
+#! directory that was added via basis_include_directories().
+#!
+#! @param [in] ARGN Not used.
 
 function (basis_create_addpaths_mfile)
   set (MFILE "${CMAKE_CURRENT_BINARY_DIR}/Add${PROJECT_NAME}Paths.m")
@@ -317,7 +322,7 @@ endfunction ()
 #! Thus, it is recommended to use this function instead.
 #!
 #! An install command for the added library target is added by this function
-#! as well. The MEX-file will be installed as part of the RUNTIME_COMPONENT
+#! as well. The MEX-file will be installed as part of the @p COMPONENT
 #! in the directory INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR
 #! on Windows.
 #!
@@ -332,9 +337,16 @@ endfunction ()
 #!
 #! @param [in] TARGET_NAME Name of the target.
 #! @param [in] ARGN        Remaining arguments such as in particular the
-#!                         input source files.
-#!
-#! - COMPONENT   Name of the component. Defaults to BASIS_LIBRARY_COMPONENT.
+#!                         input source files. The following arguments
+#!                         are parsed:
+#! @par
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b COMPONENT name</td>
+#!     <td>Name of the component. Default: @c BASIS_LIBRARY_COMPONENT.</td>
+#!   </tr>
+#! </table>
 
 function (basis_add_mex_target TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
@@ -410,7 +422,7 @@ function (basis_add_mex_target TARGET_NAME)
 endfunction ()
 
 # ****************************************************************************
-#! @brief Finalizes addition of MEX target.
+#! @brief Finalize addition of MEX target.
 #!
 #! This function uses the properties of the custom MEX-file target added by
 #! basis_add_mex_target() to create the custom build command and adds this
@@ -421,6 +433,7 @@ endfunction ()
 #! @param [in] TARGET_UID "Global" target name. If this function is used
 #!                        within the same project as basis_add_mex_target(),
 #!                        the "local" target name may be given alternatively.
+#! @param [in] ARGN       Not used.
 
 function (basis_add_mex_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
@@ -698,10 +711,10 @@ endfunction ()
 #!
 #! An install command for the added executable or library target is added by
 #! this function as well. The executable will be installed as part of the
-#! RUNTIME_COMPONENT in the directory INSTALL_RUNTIME_DIR. The runtime
-#! library will be installed as part of the RUNTIME_COMPONENT in the directory
+#! @p RUNTIME_COMPONENT in the directory INSTALL_RUNTIME_DIR. The runtime
+#! library will be installed as part of the @p RUNTIME_COMPONENT in the directory
 #! INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR on Windows.
-#! Static/import libraries will be installed as part of the LIBRARY_COMPONENT
+#! Static/import libraries will be installed as part of the @p LIBRARY_COMPONENT
 #! in the directory INSTALL_ARCHIVE_DIR.
 #!
 #! @note The custom build command is not added yet by this function.
@@ -716,20 +729,46 @@ endfunction ()
 #!
 #! @param [in] TARGET_NAME Name of the target.
 #! @param [in] ARGN        Remaining arguments such as in particular the
-#!                         input source files.
-#!
-#! - TYPE                Type of the target. Either EXECUTABLE (default) or LIBRARY.
-#! - COMPONENT           Name of the component. Defaults to
-#!                       BASIS_RUNTIME_COMPONENT if TYPE is EXECUTABLE or
-#!                       BASIS_LIBRARY_COMPONENT, otherwise.
-#! - RUNTIME_COMPONENT   Name of runtime component. Defaults to COMPONENT
-#!                       if specified or BASIS_RUNTIME_COMPONENT, otherwise.
-#! - LIBRARY_COMPONENT   Name of library component. Defaults to COMPONENT
-#!                       if specified or BASIS_LIBRARY_COMPONENT, otherwise.
-#! - LIBEXEC             Specifies that the built executable is an auxiliary
-#!                       executable called by other executables only.
-#! - TEST                Specifies that the built executable is a test executable.
-#!                       If LIBEXEC is given as well, it will be ignored.
+#!                         input source files. The following arguments are
+#!                         parsed:
+#! @par
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b TYPE type</td>
+#!     <td>Type of the target. Either @c EXECUTABLE (default) or @c LIBRARY.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b COMPONENT name</td>
+#!     <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT if
+#!         @p TYPE is @c EXECUTABLE or @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b RUNTIME_COMPONENT name</td>
+#!     <td>Name of runtime component. Default: @p COMPONENT if specified or
+#!         @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b LIBRARY_COMPONENT name</td>
+#!     <td>Name of library component. Default: @p COMPONENT if specified or
+#!         @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b LIBEXEC</td>
+#!     <td>Specifies that the built executable is an auxiliary executable
+#!         called by other executables only.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b TEST</td>
+#!     <td>Specifies that the built executable is a test executable.
+#!         If LIBEXEC is given as well, it will be ignored.</td>
+#!   </tr>
+#! </table>
 
 
 function (basis_add_mcc_target TARGET_NAME)
@@ -879,7 +918,7 @@ function (basis_add_mcc_target TARGET_NAME)
 endfunction ()
 
 # ****************************************************************************
-#! @brief Finalizes addition of MATLAB Compiler target.
+#! @brief Finalize addition of MATLAB Compiler target.
 #!
 #! This function uses the properties of the custom MATLAB Compiler target
 #! added by basis_add_mcc_target() to create the custom build command and
@@ -890,6 +929,7 @@ endfunction ()
 #! @param [in] TARGET_UID "Global" target name. If this function is used
 #!                        within the same project as basis_add_mcc_target(),
 #!                        the "local" target name may be given alternatively.
+#! @param [in] ARGN       Not used.
 
 function (basis_add_mcc_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name

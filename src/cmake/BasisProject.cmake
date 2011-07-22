@@ -4,7 +4,10 @@
 #!
 #! This is the main module that is included by BASIS projects. Most of the other
 #! BASIS CMake modules are included by this main module and hence do not need
-#! to be included separately.
+#! to be included separately. In particular, all CMake modules which are part
+#! of BASIS and whose name does not include the prefix "Basis" are not
+#! supposed to be included directly by a project that makes use of BASIS.
+#! Only the modules with the prefix "Basis" should be included directly.
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -75,70 +78,104 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 #! configuration file. Further, the macro basis_project_finalize() has to be
 #! called at the end of the file.
 #!
+#! @par Project version:
 #! The version number consists of three components: the major version number,
 #! the minor version number, and the patch number. The format of the version
 #! string is "<major>.<minor>.<patch>", where the minor version number and
 #! patch number default to 0 if not given. Only digits are allowed except of
 #! the two separating dots.
-#!
+#! @n
 #! - A change of the major version number indicates changes of the softwares
 #!   API (and ABI) and/or its behavior and/or the change or addition of major
 #!   features.
-#!
 #! - A change of the minor version number indicates changes that are not only
 #!   bug fixes and no major changes. Hence, changes of the API but not the ABI.
-#!
 #! - A change of the patch number indicates changes only related to bug fixes
 #!   which did not change the softwares API. It is the least important component
 #!   of the version number.
 #!
-#! The default settings set by Settings.cmake can be overwritten by the
-#! file Settings.cmake in the PROJECT_CONFIG_DIR. This file is included by
-#! this macro after the project was initialized and before dependencies on
-#! other packages were resolved.
+#! @par Build settings:
+#! The default settings set by the Settings.cmake file of BASIS can be
+#! overwritten in the file Settings.cmake in the PROJECT_CONFIG_DIR. This file
+#! is included by this macro after the project was initialized and before
+#! dependencies on other packages were resolved.
 #!
+#! @par Dependencies:
 #! Dependencies on other packages should be resolved via find_package() or
-#! find_sbia_package() commands in the Depends.cmake file which as well has to
+#! find_basis_package() commands in the Depends.cmake file which as well has to
 #! be located in PROJECT_CONFIG_DIR (note that this variable may be modified
 #! within the Settings.cmake file). The Depends.cmake file is included by this
 #! macro if present after the inclusion of the Settings.cmake file.
 #!
-#! Each BASIS project further has to have a README(.txt) file in the root
+#! @par Default documentation:
+#! Each BASIS project further has to have a README(.txt) file in the top
 #! directory of the software component. This file is the root documentation
 #! file which refers the user to the further documentation files in PROJECT_DOC_DIR.
 #! A different name for the readme file can be set in the Settings.cmake file.
+#! This is, however, not recommended.
+#! The same applies to the COPYING(.txt) file with the copyright and license
+#! notices which must be present in the top directory of the source tree as well.
 #!
-#! A COPYING(.txt) file with the copyright and license notices must be present
-#! in the root directory of the source tree. The name of this file can be
-#! changed in the Settings.cmake file.
-#!
+#! @par Miscellaneous
 #! As the BasisTest.cmake module has to be included after the project()
-#! command was used, this module is not included by the CMake use file of
-#! BASIS. Instead, it is included by this macro.
+#! command was used, it is not included by the CMake BASIS package use file.
+#! Instead, it is included by this macro.
 #!
 #! @sa basis_project_finalize()
 #!
-#! @param [in] ARGVN This list is parsed for the following arguments.
-#!                   Moreover, any of these arguments can be specified
-#!                   in the file PROJECT_CONFIG_DIR/Settings.cmake
-#!                   instead with the prefix PROJECT_*, e.g.,
-#!                   "set (PROJECT_VERSION 1.0)".
-#!
-#! - NAME                 The name of the project.
-#! - VERSION              Project version string, i.e., "<major>(.<minor>(.<patch>))".
-#! - DESCRIPTION          Package description, used for packing.
-#! - PACKAGE_VENDOR       The vendor of this package, used for packaging.
-#!                        Defaults to "SBIA Group at University of Pennsylvania".
-#! - WELCOME_FILE         Welcome file used for installer.
-#! - README_FILE          Readme file. Defaults to PROJECT_SOURCE_DIR/README.
-#! - LICENSE_FILE         File containing copyright and license notices.
-#!                        Defaults to PROJECT_SOURCE_DIR/LICENSE.
-#! - REDIST_LICENSE_FILES Additional license files of other packages
-#!                        redistributed as part of this project.
-#!                        These licenses will be installed along with the
-#!                        project's LICENSE_FILE. By default, all files which
-#!                        match the regular expression
-#!                        "^PROJECT_SOURCE_DIR/LICENSE-.+" are considered.
+#! @param [in] ARGN This list is parsed for the following arguments.
+#!                  Moreover, any of these arguments can be specified
+#!                  in the file PROJECT_CONFIG_DIR/Settings.cmake
+#!                  instead with the prefix PROJECT_*, e.g.,
+#!                  "set (PROJECT_VERSION 1.0)".
+#! @par
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NAME name</td>
+#!     <td>The name of the project.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b VERSION major[.minor[.patch]]</td>
+#!     <td>Project version string. Defaults to "1.0.0"</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b DESCRIPTION desc</td>
+#!     <td>Package description, used for packing.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b PACKAGE_VENDOR name</td>
+#!     <td>The vendor of this package, used for packaging.
+#!         Defaults to "SBIA Group at University of Pennsylvania".</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b WELCOME_FILE file</td>
+#!     <td>Welcome file used for installer.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b README_FILE file</td>
+#!     <td>Readme file. Defaults to PROJECT_SOURCE_DIR/README.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b LICENSE_FILE file</td>
+#!     <td>File containing copyright and license notices.
+#!         Defaults to PROJECT_SOURCE_DIR/LICENSE.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b REDIST_LICENSE_FILES file1 [file2 ...]</td>
+#!     <td>Additional license files of other packages redistributed as part
+#!         of this project. These licenses will be installed along with the
+#!         project's LICENSE_FILE. By default, all files which match the
+#!         regular expression "^PROJECT_SOURCE_DIR/COPYING-.+" are considered.</td>
+#!   </tr>
+#! </table>
 #!
 #! @note The DESCRIPTION and PACKAGE_VENDOR arguments can be lists of strings
 #!       which are concatenated to one string.
@@ -452,6 +489,8 @@ endmacro ()
 #! the default script of BASIS.
 #!
 #! @sa basis_project_initialize()
+#!
+#! @param [in] ARGN Not used.
 
 macro (basis_project_finalize)
   # if project uses MATLAB
@@ -498,25 +537,40 @@ endmacro ()
 #! This function configures the following default auxiliary source files
 #! which can be used by the projects which are making use of BASIS.
 #!
-#!   - config.h    This file is intended to be included by all source files.
-#!                 Hence, other projects will indirectly include this file when
-#!                 they use a library of this project. Therefore, it is
-#!                 important to avoid potential name conflicts.
-#!
-#!   - config.cc   Definition of constants declared in config.h file.
-#!                 In particular, the paths of the installation directories
-#!                 relative to the executables are defined by this file.
-#!                 These constants are used by the auxiliary functions
-#!                 implemented in stdaux.h.
-#!
-#!   - stdaux.h    Auxiliary functions such as functions to get absolute path
-#!                 to the subdirectories of the installation.
-#!
-#!   - stdaux.cc   Definition of auxiliary functions declared in stdaux.h.
-#!                 This source file in particular contains the constructor
-#!                 code which is configured during the finalization of the
-#!                 project's build configuration which maps the build target
-#!                 names to executable file paths.
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b config.h</td>
+#!     <td>This file is intended to be included by all source files.
+#!         Hence, other projects will indirectly include this file when
+#!         they use a library of this project. Therefore, it is
+#!         important to avoid potential name conflicts.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b config.cc</td>
+#!     <td>Definition of constants declared in config.h file.
+#!         In particular, the paths of the installation directories
+#!         relative to the executables are defined by this file.
+#!         These constants are used by the auxiliary functions
+#!         implemented in stdaux.h.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b stdaux.h</td>
+#!     <td>Auxiliary functions such as functions to get absolute path
+#!         to the subdirectories of the installation.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b stdaux.cc</td>
+#!     <td>Definition of auxiliary functions declared in stdaux.h.
+#!         This source file in particular contains the constructor
+#!         code which is configured during the finalization of the
+#!         project's build configuration which maps the build target
+#!         names to executable file paths.</td>
+#!   </tr>
+#! </table>
 #!
 #! @note If there exists a *.in file of the corresponding source file in the
 #!       PROJECT_CONFIG_DIR, it will be used as template. Otherwise, the
@@ -525,6 +579,7 @@ endmacro ()
 #! @param [out] SOURCES        Configured auxiliary source files.
 #! @param [out] HEADERS        Configured auxiliary header files.
 #! @param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
+#! @param [in]  ARGN           Not used.
 
 function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (SOURCES_OUT        "")
@@ -615,6 +670,8 @@ endfunction ()
 
 # ****************************************************************************
 #! @brief Replaces CMake's set_property() command.
+#!
+#! @param [in] ARGN Arguments as accepted by set_property().
 
 function (basis_set_property SCOPE)
   if (SCOPE MATCHES "^TARGET$|^TEST$")
@@ -638,6 +695,8 @@ endfunction ()
 
 # ****************************************************************************
 #! @brief Replaces CMake's get_property() command.
+#!
+#! @param [in] ARGN Arguments as accepted by get_property().
 
 function (basis_get_property VAR SCOPE ELEMENT)
   if (SCOPE STREQUAL "TARGET")
@@ -665,6 +724,8 @@ endfunction ()
 #! called by the finalization routine.
 #!
 #! @sa ExecutableTargetInfo
+#!
+#! @param [in] ARGN Not used.
 
 function (basis_configure_ExecutableTargetInfo)
   if (BASIS_VERBOSE)
@@ -726,8 +787,9 @@ endfunction ()
 # ****************************************************************************
 #! @brief Install symbolic link.
 #!
-#! @param [in] OLD The value of the symbolic link.
-#! @param [in] NEW The name of the symbolic link.
+#! @param [in] OLD  The value of the symbolic link.
+#! @param [in] NEW  The name of the symbolic link.
+#! @param [in] ARGN Not used.
 
 function (basis_install_link OLD NEW)
   set (CMD_IN
@@ -783,6 +845,8 @@ endfunction ()
 #! in the directory INSTALL_PREFIX/bin if INSTALL_SINFIX is not an empty string
 #! and the software is installed on a UNIX-based system, i.e., one which
 #! supports the creation of symbolic links.
+#!
+#! @param [in] ARGN Not used.
 
 function (basis_install_links)
   if (NOT UNIX)
@@ -828,6 +892,8 @@ endfunction ()
 #! only Bourne Shell features Win32 version works with any Windows which
 #! supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
 #! NT 3.x too).
+#!
+#! @param [in] ARGN Not used.
 
 function (basis_add_uninstall)
   if (WIN32)

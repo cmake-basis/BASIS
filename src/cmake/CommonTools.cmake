@@ -56,6 +56,8 @@ endmacro ()
 #! after the first period (.) [including the period] as extension. However,
 #! only the component following the last period (.) should be considered to
 #! be the extension.
+#!
+#! @param [in,out] ARGN Arguments as accepted by get_filename_component().
 
 function (get_filename_component)
   _get_filename_component (${ARGN})
@@ -84,6 +86,7 @@ endfunction ()
 #! @param [out] MAJOR   Major version number if given or 0.
 #! @param [out] MINOR   Minor version number if given or 0.
 #! @param [out] PATCH   Patch number if given or 0.
+#! @param [in]  ARGN    Not used.
 
 function (basis_version_numbers VERSION MAJOR MINOR PATCH)
   string (REGEX MATCHALL "[0-9]+" VERSION_PARTS "${VERSION}")
@@ -118,7 +121,7 @@ endfunction ()
 #! @brief Set value of variable only if variable is not set already.
 #!
 #! @param [in] VAR  Name of variable.
-#! @param [in] ARGN Arguments to CMake's set() command excluding variable name.
+#! @param [in] ARGN Arguments to set() command excluding variable name.
 
 function (basis_set_if_empty VAR)
   if (NOT ${VAR})
@@ -135,8 +138,9 @@ endfunction ()
 #! INSTALL_CONFIG_DIR.
 #!
 #! @param [in] VAR  Name of variable. Used in template of
-#!                  <project>Config.cmake as \@VAR\@.
+#!                  \<package\>Config.cmake as \@VAR\@.
 #! @param [in] PATH Path of variable relative to CMAKE_INSTALL_PREFIX.
+#! @param [in] ARGN Not used.
 
 function (basis_set_config_path VAR PATH)
   file (
@@ -150,7 +154,7 @@ function (basis_set_config_path VAR PATH)
 endfunction ()
  
 # ****************************************************************************
-#! @brief Generates the definition of the basis_set_script_path() function.
+#! @brief Generate definition of the basis_set_script_path() function.
 #!
 #! This macro generates the definition of the basis_set_script_path()
 #! function, the definition of which is evaluated during the build step of
@@ -164,15 +168,29 @@ endfunction ()
 #! can be passed as well. If a relative path is given as this argument, it is
 #! made absolute by prefixing it with CMAKE_INSTALL_PREFIX instead.
 #!
-#! Parameters of generated basis_set_script_path() function:
-#!
-#! - VAR  Name of the variable.
-#! - PATH Path to directory or file.
-#! - ARG3 Path to directory or file inside install tree.
-#!        If this argument is not given, PATH is used for both
-#!        the build and install tree version of the script.
-#!
 #! @param [out] FUNC The generated basis_set_script_path() function definition.
+#! @param [in]  ARGN Not used.
+#!
+#! @par Parameters of function basis_set_script_path():
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b VAR</td>
+#!     <td>Name of the variable.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b PATH</td>
+#!     <td>Path to directory or file.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b ARG3</td>
+#!     <td>Path to directory or file inside install tree.
+#!         If this argument is not given, PATH is used for both
+#!         the build and install tree version of the script.</td>
+#!   </tr>
+#! </table>
 
 macro (basis_set_script_path_definition FUNC)
   set (${FUNC} "function (basis_set_script_path VAR PATH)
@@ -208,6 +226,12 @@ endmacro ()
 # ****************************************************************************
 #! @brief Concatenates all list elements into a single string.
 #!
+#! The list elements are concatenated without any delimiter in between.
+#! Use basis_list_to_delimited_string() to specify a delimiter such as a
+#! whitespace character or comma (,) as delimiter.
+#!
+#! @sa basis_list_to_delimited_string()
+#!
 #! @param [out] STR  Output string.
 #! @param [in]  ARGN Input list.
 
@@ -220,10 +244,10 @@ function (basis_list_to_string STR)
 endfunction ()
 
 # ****************************************************************************
-#! @brief Concatenates all list elements into a single string.
+#! @brief Concatenates all list elements into a single delimited string.
 #!
 #! @param [out] STR   Output string.
-#! @param [in]  DELIM Delimiter to use to separate list elements.
+#! @param [in]  DELIM Delimiter used to separate list elements.
 #!                    Each element which contains the delimiter as substring
 #!                    is surrounded by double quotes (") in the output string.
 #! @param [in]  ARGN  Input list.
@@ -252,8 +276,9 @@ endfunction ()
 #!       the entire string. More sophisticated regular expressions should do
 #!       a better job, though.
 #!
-#! @param [out] LST Output list.
-#! @param [in]  STR Input string.
+#! @param [out] LST  Output list.
+#! @param [in]  STR  Input string.
+#! @param [in]  ARGN Not used.
 
 function (basis_string_to_list LST STR)
   set (TMP "${STR}")
@@ -310,6 +335,7 @@ endfunction ()
 #!
 #! @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 #! @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
+#! @param [in]  ARGN        Not used.
 
 function (basis_target_uid TARGET_UID TARGET_NAME)
   if (NOT IS_SUBPROJECT OR TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
@@ -326,6 +352,7 @@ endfunction ()
 #!
 #! @param [out] TARGET_NAME Target name used as argument to BASIS functions.
 #! @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
+#! @param [in]  ARGN        Not used.
 
 function (basis_target_name TARGET_NAME TARGET_UID)
   string (REGEX REPLACE "^.*${BASIS_NAMESPACE_SEPARATOR}" "" TMP "${TARGET_UID}")
@@ -338,6 +365,7 @@ endfunction ()
 #! Displays fatal error message when target name is invalid.
 #!
 #! @param [in] TARGET_NAME Desired target name.
+#! @param [in] ARGN        Not used.
 
 function (basis_check_target_name TARGET_NAME)
   # reserved target name ?
@@ -389,6 +417,7 @@ endfunction ()
 #!
 #! @param [out] TEST_UID  "Global" test name, i.e., actual CTest test name.
 #! @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
+#! @param [in]  ARGN      Not used.
 
 function (basis_test_uid TEST_UID TEST_NAME)
   if (NOT IS_SUBPROJECT OR TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
@@ -405,6 +434,7 @@ endfunction ()
 #!
 #! @param [out] TEST_NAME Test name used as argument to BASIS functions.
 #! @param [in]  TEST_UID  "Global" test name, i.e., actual CTest test name.
+#! @param [in]  ARGN      Not used.
 
 function (basis_test_name TEST_NAME TEST_UID)
   string (REGEX REPLACE "^.*${BASIS_NAMESPACE_SEPARATOR}" "" TMP "${TEST_UID}")
@@ -417,6 +447,7 @@ endfunction ()
 #! Displays fatal error message when test name is invalid.
 #!
 #! @param [in] TEST_NAME Desired test name.
+#! @param [in] ARGN      Not used.
 
 function (basis_check_test_name TEST_NAME)
   list (FIND BASIS_RESERVED_TEST_NAMES "${TEST_NAME}" IDX)

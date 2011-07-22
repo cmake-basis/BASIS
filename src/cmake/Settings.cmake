@@ -184,6 +184,8 @@ set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
 
 # ****************************************************************************
 #! @brief Ensure certain requirements on build tree.
+#!
+#! @param [in] ARGN Not used.
 
 macro (buildtree_asserts)
   # root of build tree must not be root of source tree
@@ -199,6 +201,8 @@ endmacro ()
 
 # ****************************************************************************
 #! @brief Ensure certain requirements on install tree.
+#!
+#! @param [in] ARGN Not used.
 
 macro (installtree_asserts)
   # prefix must be an absolute path
@@ -224,15 +228,17 @@ endmacro ()
 # ----------------------------------------------------------------------------
 
 # ****************************************************************************
-#! @brief Instantiates the project directory structure.
+#! @brief Instantiate project directory structure.
 #!
-#! This macro is invoked after the CMake project () command to instantiate
+#! This macro is invoked after the CMake project() command to instantiate
 #! the project directory structure, i.e., turn the directories into absolute
 #! paths using the CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR.
 #! Moreover, the occurences of \@PROJECT_NAME\@, \@PROJECT_NAME_LOWER\@,
 #! \@PROJECT_NAME_UPPER\@, \@PROJECT_VERSION\@, \@PROJECT_VERSION_MAJOR\@,
 #! \@PROJECT_VERSION_MINOR\@, and \@PROJECT_VERSION_PATH\@ are substituted by
 #! the actual values corresponding to the project name and version.
+#!
+#! @param [in] ARGN Not used.
 
 macro (basis_initialize_directories)
   # source tree
