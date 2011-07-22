@@ -89,7 +89,16 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 # ============================================================================
 
 # ****************************************************************************
-#! @brief Add a custom 'doc' target along with a build switch.
+#! @brief Add a custom @c doc target along with a build switch.
+#!
+#! This helper function is used by basis_add_doc() to add the custom @c doc
+#! target which is optionally build when the @c ALL target is build.
+#! Therefore, the @c BUILD_DOCUMENTATION option switch is added if this
+#! variable is not yet defined which is by default off. The user can then
+#! choose to build the documentation when the @c ALL target is build.
+#! In any case can the documentation be build by building the @c doc target.
+#!
+#! @param [in] ARGN Not used.
 
 function (basis_add_doc_target)
   if (NOT TARGET doc)
@@ -111,7 +120,16 @@ function (basis_add_doc_target)
 endfunction ()
 
 # ****************************************************************************
-#! @brief Add a custom 'changelog' target along with a build switch.
+#! @brief Add a custom @c changelog target along with a build switch.
+#!
+#! This helper function is used by basis_add_doc() to add the custom
+#! @c changelog target which is optionally build when the @c ALL target is
+#! build. Therefore, the @c BUILD_CHANGELOG option switch is added if this
+#! variable is not yet defined which is by default off. The user can then
+#! choose to build the ChangeLog when the @c ALL target is build.
+#! In any case can the ChangeLog be build by building the @c changelog target.
+#!
+#! @param [in] ARGN Not used.
 
 function (basis_add_changelog_target)
   if (NOT TARGET changelog)
@@ -145,37 +163,115 @@ endfunction ()
 #! or PDF documents can be added as well using this function. A component
 #! as part of which this documentation shall be installed can be specified.
 #!
-#! The documentation files are installed in/as INSTALL_DOC_DIR/TARGET_NAME as
-#! part of the component specified by the COMPONENT option.
+#! @param [in] TARGET_NAME Name of the documentation target or file.
+#! @param [in] ARGN        List of arguments. The valid arguments are:
+#! @par
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b COMPONENT name</td>
+#!     <td>Name of the component this documentation belongs to.
+#!         Defaults to @c BASIS_LIBRARY_COMPONENT for documentation generated
+#!         from in-source comments and @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATOR generator</td>
+#!     <td>Documentation generator, where the case of the generator name is
+#!         ignored, i.e., @c Doxygen, @c DOXYGEN, @c doxYgen are all valid
+#!         arguments which select the @c Doxygen generator. The parameters for the
+#!         different supported generators are documented below.
+#!         The default generator is @c None. The @c None generator simply installs
+#!         the document with the filename @c TARGET_NAME and has no own options.</td>
+#!   </tr>
+#! </table>
 #!
+#! @par Generator: None
+#! @n
+#! The documentation files are installed in/as <tt>INSTALL_DOC_DIR/TARGET_NAME</tt>
+#! as part of the component specified by the @c COMPONENT option.
+#! @n@n
 #! Example:
-#!
 #! @code
 #! basis_add_doc (UserManual.pdf)
 #! basis_add_doc (DeveloperManual.docx COMPONENT dev)
 #! basis_add_doc (SourceManual.html    COMPONENT src)
 #! @endcode
 #!
-#! @param [in] TARGET_NAME Name of the documentation target or file.
-#! @param [in] ARGN        Further options which are given as pairs
-#!                         "OPTION_NAME <OPTION_VALUE>".
-#!
-#! Common options:
-#!
-#! - COMPONENT Name of the component this documentation belongs to.
-#!             Defaults to BASIS_LIBRARY_COMPONENT for documentation generated
-#!             from in-source comments and BASIS_RUNTIME_COMPONENT, otherwise.
-#! - GENERATOR Documentation generator, where the case of the generator name is
-#!             ignored, i.e., "Doxygen", "DOXYGEN", "doxYgen" are all valid
-#!             arguments which select the DOXYGEN generator. The arguments for the
-#!             the different supported generators are documented below.
-#!             The default generator is "NONE". The NONE generator simply installs
-#!             the document with the filename TARGET_NAME and has no own options.
-#!
-#! Generator: DOXYGEN
-#! 
+#! @par Generator: Doxygen
+#! @n
+#! Uses the <a href="http://www.stack.nl/~dimitri/doxygen/index.html">Doxygen</a> tool
+#! to generate the documentation from in-source code comments.
+#! @n@n
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b DOXYFILE file</td>
+#!     <td>Name of the template Doxyfile.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b PROJECT_NAME name</td>
+#!     <td>Value for Doxygen's @c PROJECT_NAME tag which is used to
+#!         specify the project name.@n
+#!         Default: @c PROJECT_NAME.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b PROJECT_NUMBER version</td>
+#!     <td>Value for Doxygen's @c PROJECT_NUMBER tag which is used
+#!         to specify the project version number.@n
+#!         Default: @c PROJECT_VERSION.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b INPUT path1 [path2 ...]</td>
+#!     <td>Value for Doxygen's @c INPUT tag which is used to specify input
+#!         directories/files.@n
+#!         Default: @c PROJECT_CODE_DIR    @c BINARY_CODE_DIR
+#!                  @c PROJECT_INCLUDE_DIR @c BINARY_INCLUDE_DIR.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b FILTER_PATTERNS pattern1 [pattern2 ...]</td>
+#!     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
+#!         specify filters on a per file pattern basis.@n
+#!         Default: @c BASIS_DOXYGEN_FILTER_PATTERNS.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b EXCLUDE_PATTERNS pattern1 [pattern2 ...]</td>
+#!     <td>Additional patterns used for Doxygen's @c EXCLUDE_PATTERNS tag
+#!         which can be used to specify files and/or directories that
+#!         should be excluded from the INPUT source files.@n
+#!         Default: No exclude patterns.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b OUTPUT_DIRECTORY dir</td>
+#!     <td>Value for Doxygen's @c OUTPUT_DIRECTORY tag which can be used to
+#!         specify the output directory.@n
+#!         Default: <tt>CMAKE_CURRENT_BINARY_DIR/TARGET_NAME</tt>.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_HTML</td>
+#!     <td>If given, Doxygen's @c GENERATE_HTML tag is set to YES, otherwise NO.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_LATEX</td>
+#!     <td>If given, Doxygen's @c GENERATE_LATEX tag is set to YES, otherwise NO.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_RTF</td>
+#!     <td>If given, Doxygen's @c GENERATE_RTF tag is set to YES, otherwise NO.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_MAN</td>
+#!     <td>If given, Doxygen's @c GENERATE_MAN tag is set to YES, otherwise NO.</td>
+#!   </tr>
+#! </table>
+#! @n
+#! See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
+#! documentation of the Doxygen tags.
+#! @n@n
 #! Example:
-#!
 #! @code
 #! basis_add_doc (
 #!   API
@@ -187,40 +283,16 @@ endfunction ()
 #! )
 #! @endcode
 #!
-#! Options of DOXYGEN generator:
-#!
-#! @sa http://www.stack.nl/~dimitri/doxygen/config.html
-#!
-#! - DOXYFILE         Name of the template Doxyfile.
-#! - PROJECT_NAME     Value for Doxygen's PROJECT_NAME tag which is used
-#!                    to specify the project name.
-#!                    Default: PROJECT_NAME.
-#! - PROJECT_NUMBER   Value for Doxygen's PROJECT_NUMBER tag which is used
-#!                    to specify the project version number.
-#!                    Default: PROJECT_VERSION.
-#! - INPUT            Value for Doxygen's INPUT tag which is used to
-#!                    specify input directories/files.
-#!                    Default: PROJECT_CODE_DIR BINARY_CODE_DIR
-#!                             PROJECT_INCLUDE_DIR BINARY_INCLUDE_DIR.
-#! - FILTER_PATTERNS  Value for Doxygen's FILTER_PATTERNS tag which
-#!                    can be used to specify filters on a per file
-#!                    pattern basis. Defaults to BASIS_DOXYGEN_FILTER_PATTERNS.
-#! - EXCLUDE_PATTERNS Additional patterns used for Doxygen's EXCLUDE_PATTERNS tag
-#!                    which can be used to specify files and/or directories that
-#!                    should be excluded from the INPUT source files.
-#!                    Default: None
-#! - OUTPUT_DIRECTORY Value for Doxygen's OUTPUT_DIRECTORY tag which
-#!                    can be used to specify the output directory.
-#!                    Default: CMAKE_CURRENT_BINARY_DIR/TARGET_NAME.
-#! - GENERATE_HTML    If given, Doxygen's GENERATE_HTML tag is set to YES, otherwise NO.
-#! - GENERATE_LATEX   If given, Doxygen's GENERATE_LATEX tag is set to YES, otherwise NO.
-#! - GENERATE_RTF     If given, Doxygen's GENERATE_RTF tag is set to YES, otherwise NO.
-#! - GENERATE_MAN     If given, Doxygen's GENERATE_MAN tag is set to YES, otherwise NO.
-#!
-#! Generator: SVN2CL
-#!
+#! @par Generator: svn2cl
+#! @n
+#! Uses the <a href="http://arthurdejong.org/svn2cl/"><tt>svn2cl</tt></a> command-line
+#! tool to generate a ChangeLog from the Subversion log. Herefore, the project
+#! source tree must be a Subversion working copy and access to the Subversion
+#! repository is required. Note that generating the ChangeLog from the Subversion
+#! log is timely expensive and may require user interaction in order to provide
+#! the credentials to the Subversion repository.
+#! @n@n
 #! Example:
-#!
 #! @code
 #! basis_add_doc (
 #!   ChangeLog
