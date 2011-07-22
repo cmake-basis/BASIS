@@ -165,16 +165,17 @@ std::string GetWorkingDirectory ();
  * or is a directory path.
  *
  * Examples:
- *
- * path                     | root   | dir           | fname       | ext
- * -------------------------+--------+---------------+-------------+--------
- * "/usr/bin"               | "/"    | "usr/"        | "bin"       | ""
- * "/home/user/info.txt     | "/"    | "home/user/"  | "info"      | ".txt"
- * "word.doc"               | "./"   | ""            | "word"      | ".doc"
- * "../word.doc"            | "./"   | "../"         | "word"      | ".doc"
- * "C:/WINDOWS/regedit.exe" | "C:/"  | "WINDOWS/"    | "regedit"   | ".exe"
- * "d:\data"                | "D:/"  | ""            | "data"      | ""
- * "/usr/local/"            | "/"    | "usr/local/"  | ""          | ""
+@verbatim
+   path                     | root   | dir           | fname       | ext
+   -------------------------+--------+---------------+-------------+--------
+   "/usr/bin"               | "/"    | "usr/"        | "bin"       | ""
+   "/home/user/info.txt     | "/"    | "home/user/"  | "info"      | ".txt"
+   "word.doc"               | "./"   | ""            | "word"      | ".doc"
+   "../word.doc"            | "./"   | "../"         | "word"      | ".doc"
+   "C:/WINDOWS/regedit.exe" | "C:/"  | "WINDOWS/"    | "regedit"   | ".exe"
+   "d:\data"                | "D:/"  | ""            | "data"      | ""
+   "/usr/local/"            | "/"    | "usr/local/"  | ""          | ""
+@endverbatim
  *
  * On Windows, if the path starts with a slash (/) without leading drive letter
  * followed by a colon (:), the returned root component is set to "C:/".
