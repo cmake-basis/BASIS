@@ -2,24 +2,57 @@
 #! @file  FindGMock.cmake
 #! @brief Find Google Mock package.
 #!
-#! Input variables:
+#! @par Input variables:
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMock_DIR</td>
+#!     <td>The Google Mock package files are searched under the specified
+#!         root directory. If they are not found there, the default search
+#!         paths are considered. This variable can also be set as environment
+#!         variable.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMOCK_DIR</td>
+#!     <td>Alternative environment variable for @p GMock_DIR.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMock_SHARED_LIBRARIES</td>
+#!     <td>Forces this module to search for shared libraries.
+#!         Otherwise, static libraries are preferred.</td>
+#!   </tr>
+#! </table>
 #!
-#! - GMock_DIR                The Google Mock package files are searched under
-#!                            the specified root directory. If they are not found
-#!                            there, the default search paths are considered.
-#!                            This variable can also be set as environment variable.
-#! - GMOCK_DIR                Alternative environment variable for GMock_DIR.
-#! - GMock_SHARED_LIBRARIES   Forces this module to search for shared libraries.
-#!                            Otherwise, static libraries are preferred.
-#!
-#! Sets the following CMake variables:
-#!
-#! - GMock_FOUND          Whether the package was found and the following CMake
-#!                        variables are valid.
-#! - GMock_INCLUDE_DIR    Package include directories.
-#! - GMock_INCLUDES       Include directories including prerequisite libraries.
-#! - GMock_LIBRARY        Package libraries.
-#! - GMock_LIBRARIES      Package ibraries and prerequisite libraries.
+#! @par Output variables:
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMock_FOUND</td>
+#!     <td>Whether the package was found and the following CMake variables are valid.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMock_INCLUDE_DIR</td>
+#!     <td>Package include directories.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMock_INCLUDES</td>
+#!     <td>Include directories including prerequisite libraries.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMock_LIBRARY</td>
+#!     <td>Package libraries.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b GMock_LIBRARIES</td>
+#!     <td>Package ibraries and prerequisite libraries.</td>
+#!   </tr>
+#! </table>
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

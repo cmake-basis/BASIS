@@ -2,26 +2,67 @@
 #! @file  FindNiftiCLib.cmake
 #! @brief Find nifticlib package.
 #!
-#! Input variables:
+#! @par Input variables:
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_DIR</td>
+#!     <td>The nifticlib package files are searched under the specified root
+#!         directory. If they are not found there, the default search paths
+#!         are considered. This variable can also be set as environment variable.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NIFTICLIB_DIR</td>
+#!     <td>Alternative environment variable for @p NiftiCLib_DIR.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_USE_STATIC_LIB</td>
+#!     <td>Forces this module to search for the static library. Otherwise,
+#!         the shared library is preferred.</td>
+#!   </tr>
+#! </table>
 #!
-#! - NiftiCLib_DIR            The nifticlib package files are searched under the
-#!                            specified root directory. If they are not found
-#!                            there, the default search paths are considered.
-#!                            This variable can also be set as environment variable.
-#! - NIFTICLIB_DIR            Alternative environment variable for NiftiCLib_DIR.
-#! - NiftiCLib_USE_STATIC_LIB Forces this module to search for the static
-#!                            library. Otherwise, the shared library is preferred.
-#!
-#! Sets the following CMake variables:
-#!
-#! - NiftiCLib_FOUND        Whether the nifticlib package was found and the
-#!                          following CMake variables are valid.
-#! - NiftiCLib_INCLUDE_DIR  Cached include directory/ies.
-#! - NiftiCLib_INCLUDE_DIRS Alias for NiftiCLib_INCLUDE_DIR (not cached).
-#! - NiftiCLib_INCLUDES     Alias for NiftiCLib_INCLUDE_DIR (not cached).
-#! - NiftiCLib_LIB          Path of niftiio library.
-#! - NiftiCLib_LIBRARY      Alias for NiftiCLib_LIB (not cached).
-#! - NiftiCLib_LIBRARIES    Path of niftiio library and prerequisite libraries.
+#! @par Output variables:
+#! <table border="0">
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_FOUND</td>
+#!     <td>Whether the nifticlib package was found and the following CMake
+#!         variables are valid.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_INCLUDE_DIR</td>
+#!     <td>Cached include directory/ies.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_INCLUDE_DIRS</td>
+#!     <td>Alias for @p NiftiCLib_INCLUDE_DIR (not cached).</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_INCLUDES</td>
+#!     <td>Alias for @p NiftiCLib_INCLUDE_DIR (not cached).</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_LIB</td>
+#!     <td>Path of @c niftiio library.</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_LIBRARY</td>
+#!     <td>Alias for @p NiftiCLib_LIB (not cached).</td>
+#!   </tr>
+#!   <tr>
+#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#!         @b NiftiCLib_LIBRARIES</td>
+#!     <td>Path of @c niftiio library and prerequisite libraries.</td>
+#!   </tr>
+#! </table>
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
