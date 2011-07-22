@@ -20,6 +20,10 @@
 
 # ****************************************************************************
 #! @brief Print usage section of usage information and help screen.
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 function (print_usage_section)
   message ("
@@ -32,8 +36,12 @@ endfunction ()
 
 # ****************************************************************************
 #! @brief Print options section of usage information and help screen.
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
-function (print_options_section)
+function (print_options)
   message ("
 Required options:
   project=<project>   Name of the BASIS project to test.
@@ -64,8 +72,12 @@ endfunction ()
 
 # ****************************************************************************
 #! @brief Print contact section of usage information and help screen.
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
-function (print_contact_section)
+function (print_contact)
   message ("
 Contact:
   SBIA Group <sbia-software at uphs.upenn.edu>")
@@ -73,6 +85,10 @@ endfunction ()
 
 # ****************************************************************************
 #! @brief Print help screen.
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 function (print_help)
   message ("CTest script basistest.ctest (BASIS)")
@@ -104,7 +120,7 @@ Dashboard models:
  
   Attention: For each model, only one test process may be running for each
              project on each site at one time.")
-  print_options_section ()
+  print_options ()
   message ("
 Example:
   ctest -V -S basistest.ctest,project=BASIS,model=Experimental,coverage,memcheck
@@ -113,21 +129,29 @@ Example:
     BASIS itself, including coverage analysis and memory checks.
     The -V option of ctest enables more verbose output of CTest.
     Even more verbose output can be requested using -VV.")
-  print_contact_section ()
+  print_contact ()
 endfunction ()
 
 # ****************************************************************************
 #! @brief Print usage information.
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 function (print_usage)
   message ("CTest script basistest.ctest (BASIS)")
   print_usage_section ()
-  print_options_section ()
-  print_contact_section ()
+  print_options ()
+  print_contact ()
 endfunction ()
 
 # ****************************************************************************
 #! @brief Print version information.
+#!
+#! @param [in] ARGN Not used.
+#!
+#! @returns Nothing.
 
 function (print_version)
   set (VERSION_INFO "version @VERSION@")
@@ -407,7 +431,10 @@ if (SUBMIT_RESULTS)
 
   #! @brief Read value from CMake cache.
   #!
-  #! @param [inout] VAR Name of CMake variable.
+  #! @param [in, out] VAR  Name of CMake variable.
+  #! @param [in]      ARGN Not used.
+  #!
+  #! @returns Sets @p VAR to the value of the cached variable @p VAR.
   function (read_cmake_cache_value VAR)
     file (STRINGS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" ENTRY REGEX "${VAR}:.*=(.*)")
     string (REGEX REPLACE "${VAR}:.*=(.*)" "\\1" VALUE "${ENTRY}")

@@ -48,8 +48,8 @@
  */
 
 /*!
- * @defgroup CMakeTools CMake Tools
- * @brief    CMake tools included and used by the main CMake modules.
+ * @defgroup CMakeTools Auxiliary CMake Modules
+ * @brief    Auxiliary CMake modules included and used by the main modules.
  *
  * @ingroup CMakeModules
  */
