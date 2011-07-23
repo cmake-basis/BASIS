@@ -9,7 +9,7 @@
 #! specified.
 #!
 #! The arguments of the execute_process() command have to specified via
-#! the -D option on the command line of cmake before the -P <this script>
+#! the -D option on the command line of cmake before the -P \<this script\>
 #! option is given. The name of the CMake variables must be equal the
 #! name of the arguments to the execute_process() command.
 #!

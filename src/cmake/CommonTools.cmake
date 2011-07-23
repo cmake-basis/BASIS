@@ -49,7 +49,7 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 #! @returns The package specific variables are either set by the invoked
 #!          CMake Find module or the package's CMake configuration file.
 #!
-#! @retval \<package\>_FOUND Whether the given package was found.
+#! @retval <PACKAGE>_FOUND Whether the given package was found.
 #!
 #! @ingroup CMakeAPI
 

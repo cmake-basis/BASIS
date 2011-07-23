@@ -51,17 +51,27 @@ foreach $my_fic (@listeFic)
 
   $methodAttribute = "";
 
+  @params = ();
 
   # ignore first line
   while (<$in>)
   {
     if ((/^#!\s*\/usr\/bin\/env\s+bash\s*/) || (/^#!\s*\/bin\/bash\s*/))
     {
+      $output=$output."\n";
       next;
     }
     if (/(^\s*)(\#!)(.*)/)
     {
       $output=$output."$1///$3";
+      if (/[\@\\]param\s*\[.*\]\s+(\w+)/)
+      {
+        push (@params, $1);
+      }
+    }
+    if (not /^\s*function\s*\w+|^\s*$|^\s*\#!/)
+    {
+        @params = ();
     }
     if (($listeProperties == 1) && (/(^\s*end\s*)/))
     {
@@ -152,8 +162,20 @@ foreach $my_fic (@listeFic)
       {
         $arguments = "";
       }
+      if ($arguments == "" and scalar (@params) > 0)
+      {
+        for ($i = 0; $i < scalar (@params); $i++)
+        {
+          if ($i > 0)
+          {
+            $arguments = $arguments.", ";
+          }
+          $arguments = $arguments."in ".$params[$i];
+        }
+      }
       $ligne = "$methodAttribute $functionKeyWord $functionName($arguments);"; 
       $output=$output.$ligne;
+      @params = ();
     }
     # Signature of functions in abstract methods
     elsif ((/^\s*([\] \w\d,_\[]+=)?\s*([.\w\d_-]+)\s*\(?([\w\d\s,~]*)\)?(\#?.*)/) & ($inAbstractMethodBlock == 1) )
