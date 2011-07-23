@@ -43,6 +43,11 @@ C++ depending on third-party libraries used by this implementation, for
 example. Therefore, in order to be able to build a BASIS project,
 the BASIS package has to be installed. Note, however, that BASIS is not
 required during the runtime, i.e., for executing the software.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ===========================================================================
@@ -54,6 +59,11 @@ required during the runtime, i.e., for executing the software.
 @page BuildSystemStandard Build System Standard
 
 @todo This page has to be written yet.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
@@ -61,6 +71,11 @@ required during the runtime, i.e., for executing the software.
 @page ProjectTemplate Software Development Project Template
 
 @todo This page has to be written yet.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ===========================================================================
@@ -79,6 +94,11 @@ required during the runtime, i.e., for executing the software.
 The BASIS package in particular provides CMake implementations which
 standardize the build system and support the developer of a project in
 setting up a software development project.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
@@ -89,6 +109,11 @@ setting up a software development project.
 The variables, functions, and macros listed here are intended to be used
 by the developer of a software development project based on BASIS in their
 project specific CMake implementation and the CMakeLists.txt files.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 @ingroup CMakeModules
 */
@@ -103,6 +128,11 @@ packages which are commonly used at SBIA but do not provide a CMake
 package configuration file (\<Package\>Config.cmake or \<package\>-config.cmake)
 such that CMake cannot find the package by default in config-mode.
 
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
 @ingroup CMakeModules
 */
 
@@ -110,6 +140,11 @@ such that CMake cannot find the package by default in config-mode.
 /*!
 @defgroup CMakeTools Auxiliary CMake Modules
 @brief    Auxiliary CMake modules included and used by the main modules.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 @ingroup CMakeModules
 */
@@ -119,25 +154,105 @@ such that CMake cannot find the package by default in config-mode.
 @defgroup CMakeUtilities CMake Utilities
 @brief    Utility implementations used by the CMake modules.
 
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
 @ingroup CMakeModules
 */
 
 // ***************************************************************************
 /*!
-@defgroup CMakeHelpers  Non-CMake Utilities and Template Files
-@brief    Auxiliary non-CMake implementations and input files used by the CMake modules.
+@defgroup CMakeHelpers  Non-CMake Utilities
+@brief    Auxiliary non-CMake implementations used by the CMake modules.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup CMakeModules
+*/
+
+// ***************************************************************************
+/*!
+@defgroup CMakeTemplates Template Files
+@brief    Template files used as input to configure_file() command.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 @ingroup CMakeModules
 */
 
 // ---------------------------------------------------------------------------
-// C++ Utilities
+// Utilities
 // ---------------------------------------------------------------------------
+
+// ***************************************************************************
+/*!
+@defgroup Utilities Utilities
+@brief    Auxiliary implementations in different programming languages.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+*/
 
 // ***************************************************************************
 /*!
 @defgroup CppUtilities C++ Utilities
-@brief    Auxiliary implementations for use in C++ implementations.
+@brief    Auxiliary implementations for use in C++ source code.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup  Utilities
+*/
+
+// ***************************************************************************
+/*!
+@defgroup BASHUtilities BASH Utilities
+@brief    Auxiliary implementations for use in BASH scripts.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup  Utilities
+*/
+
+// ***************************************************************************
+/*!
+@defgroup PythonUtilities Python Utilities
+@brief    Auxiliary implementations for use in Python scripts.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup  Utilities
+*/
+
+// ***************************************************************************
+/*!
+@defgroup PerlUtilities Perl Utilities
+@brief    Auxiliary implementations for use in Perl scripts.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup  Utilities
 */
 
 // ---------------------------------------------------------------------------
@@ -156,4 +271,9 @@ some utility command-line tools. In particular, the project management tool
 which is used to create and/or modify BASIS projects, and tools for the
 automated testing of the software of a BASIS project. These tools are
 summarized in this module.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */

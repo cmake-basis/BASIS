@@ -46,9 +46,12 @@ set (
     "cmake/updatefile.py"
     "cmake/runmcc.m"
     "cmake/Doxyfile.in"
+    "cmake/doxygen-filter.pl"
     "cmake/doxygen-cmake-filter.py"
-    "cmake/doxygen-bash-filter.pl"
+    "cmake/doxygen-bash-filter.py"
     "cmake/doxygen-matlab-filter.pl"
+    "cmake/doxygen-python-filter.py"
+    "cmake/doxygen-javascript-filter.pl"
     "cmake/config.h.in"
     "cmake/config.cc.in"
     "cmake/stdaux.h.in"
@@ -73,6 +76,14 @@ set (
 install (
   FILES       ${CMAKE_MODULES} ${CMAKE_FIND_MODULES} ${CMAKE_MODULES_AUXILIARY_FILES}
   DESTINATION "${INSTALL_MODULES_DIR}"
+)
+
+install (
+  DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/DoxyGen"
+  DESTINATION "${INSTALL_MODULES_DIR}"
+  PATTERN     ".svn" EXCLUDE
+  PATTERN     ".git" EXCLUDE
+  PATTERN     "*~"   EXCLUDE
 )
 
 # ============================================================================
