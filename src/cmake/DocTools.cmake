@@ -79,7 +79,7 @@ mark_as_advanced (BASIS_CMD_SVN2CL)
 #! @brief Doxygen filter used to process CMake scripts.
 set (BASIS_DOXYGEN_FILTER_CMAKE "${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
 #! @brief Doxygen filter used to process BASH scripts.
-set (BASIS_DOXYGEN_FILTER_BASH "${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.pl")
+set (BASIS_DOXYGEN_FILTER_BASH "${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.py")
 #! @brief Doxygen filter used to process MATLAB scripts.
 set (BASIS_DOXYGEN_FILTER_MATLAB "${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
 

@@ -42,7 +42,7 @@ if __name__ == "__main__":
     reIfClauseStart = re.compile (r"if\s*\(")
     reIfClauseEnd   = re.compile (r"else\s*\(|elseif\s*\(|endif\s*\(")
 
-    # parse line-by-line in output pseudo C++ code to stdout
+    # parse line-by-line and output pseudo C++ code to stdout
     ifClauseDepth = 0     # current depth of if-clauses
     commentDepth  = 0     # if-clause depth where comment was encountered
     previousBlock = ''    # name of previous CMake code block
