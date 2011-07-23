@@ -2,9 +2,9 @@
 #! @file  BasisPack.cmake
 #! @brief CPack configuration. Include this module instead of CPack.
 #!
-#! This module implements the packaging of BASIS projects.
-#!
 #! @note This module is included by basis_project_finalize().
+#!
+#! This module implements the packaging of BASIS projects.
 #!
 #! Overwrite the package information set by this module either in a file
 #! Package.cmake or a file Package.cmake.in located in the directory
