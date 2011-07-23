@@ -66,8 +66,23 @@ find_program (
     NAMES svn2cl
     DOC   "The command line tool svn2cl."
 )
-
 mark_as_advanced (BASIS_CMD_SVN2CL)
+
+#! @brief The Python interpreter.
+find_program (
+  BASIS_CMD_PYTHON
+    NAMES python
+    DOC   "The Python interpreter."
+)
+mark_as_advanced (BASIS_CMD_PYTHON)
+
+#! @brief The Perl interpreter.
+find_program (
+  BASIS_CMD_PERL
+    NAMES perl
+    DOC   "The Perl interpreter."
+)
+mark_as_advanced (BASIS_CMD_PERL)
 
 # ============================================================================
 # settings
@@ -76,25 +91,35 @@ mark_as_advanced (BASIS_CMD_SVN2CL)
 #! @addtogroup CMakeUtilities
 #! @{
 
+#! @brief Default Doxygen input filter.
+set (BASIS_DOXYGEN_INPUT_FILTER "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
+
+#! @brief Doxygen filter used to process Python scripts.
+set (BASIS_DOXYGEN_FILTER_PYTHON "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-python-filter.py -f")
+#! @brief Doxygen filter used to process Perl scripts.
+set (BASIS_DOXYGEN_FILTER_PERL "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
+#! @brief Doxygen filter used to process JavaScript files.
+set (BASIS_DOXYGEN_FILTER_JAVASCRIPT "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
 #! @brief Doxygen filter used to process CMake scripts.
-set (BASIS_DOXYGEN_FILTER_CMAKE "${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
+set (BASIS_DOXYGEN_FILTER_CMAKE "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
 #! @brief Doxygen filter used to process BASH scripts.
-set (BASIS_DOXYGEN_FILTER_BASH "${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.py")
+set (BASIS_DOXYGEN_FILTER_BASH "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.py")
 #! @brief Doxygen filter used to process MATLAB scripts.
-set (BASIS_DOXYGEN_FILTER_MATLAB "${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
+set (BASIS_DOXYGEN_FILTER_MATLAB "${BASIS_CMD_PERL} ${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
 
 #! @brief Default Doxygen filter patterns.
 set (
   BASIS_DOXYGEN_FILTER_PATTERNS
-    "*.cmake=${BASIS_DOXYGEN_FILTER_CMAKE}"
-    "*.cmake.in=${BASIS_DOXYGEN_FILTER_CMAKE}"
-    "*.ctest=${BASIS_DOXYGEN_FILTER_CMAKE}"
-    "*.ctest.in=${BASIS_DOXYGEN_FILTER_CMAKE}"
-    "CMakeLists.txt=${BASIS_DOXYGEN_FILTER_CMAKE}"
-    "*.sh=${BASIS_DOXYGEN_FILTER_BASH}"
-    "*.sh.in=${BASIS_DOXYGEN_FILTER_BASH}"
-    "*.m=${BASIS_DOXYGEN_FILTER_MATLAB}"
-    "*.m.in=${BASIS_DOXYGEN_FILTER_MATLAB}"
+    "*.cmake=\\\"${BASIS_DOXYGEN_FILTER_CMAKE}\\\""
+    "*.cmake.in=\\\"${BASIS_DOXYGEN_FILTER_CMAKE}\\\""
+    "*.ctest=\\\"${BASIS_DOXYGEN_FILTER_CMAKE}\\\""
+    "*.ctest.in=\\\"${BASIS_DOXYGEN_FILTER_CMAKE}\\\""
+    "CMakeLists.txt=\\\"${BASIS_DOXYGEN_FILTER_CMAKE}\\\""
+    "*.sh=\\\"${BASIS_DOXYGEN_FILTER_BASH}\\\""
+    "*.sh.in=\\\"${BASIS_DOXYGEN_FILTER_BASH}\\\""
+    "*.m=\\\"${BASIS_DOXYGEN_FILTER_MATLAB}\\\""
+    "*.m.in=\\\"${BASIS_DOXYGEN_FILTER_MATLAB}\\\""
+    "*.py=" # TODO Python filer disabled because it does not work properly
 )
 
 #! @brief Default Doxygen configuration.
@@ -232,67 +257,69 @@ endfunction ()
 #! @n@n
 #! <table border="0">
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b DOXYFILE file</td>
+#!     @tp @b DOXYFILE file @endtp
 #!     <td>Name of the template Doxyfile.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b PROJECT_NAME name</td>
+#!     @tp @b PROJECT_NAME name @endtp
 #!     <td>Value for Doxygen's @c PROJECT_NAME tag which is used to
 #!         specify the project name.@n
 #!         Default: @c PROJECT_NAME.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b PROJECT_NUMBER version</td>
+#!     @tp @b PROJECT_NUMBER version @endtp
 #!     <td>Value for Doxygen's @c PROJECT_NUMBER tag which is used
 #!         to specify the project version number.@n
 #!         Default: @c PROJECT_VERSION.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b INPUT path1 [path2 ...]</td>
+#!     @tp @b INPUT path1 [path2 ...] @endtp
 #!     <td>Value for Doxygen's @c INPUT tag which is used to specify input
 #!         directories/files.@n
 #!         Default: @c PROJECT_CODE_DIR    @c BINARY_CODE_DIR
 #!                  @c PROJECT_INCLUDE_DIR @c BINARY_INCLUDE_DIR.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b FILTER_PATTERNS pattern1 [pattern2 ...]</td>
+#!     @tp @b INPUT_FILTER @endtp
+#!     <td>
+#!       Value for Doxygen's @c INPUT_FILTER tag which can be used to
+#!       specify a default filter for all input files. Set to either one of
+#!       @c None, @c NONE, or @c none to use no input filter.@n
+#!       Default: @c BASIS_DOXYGEN_INPUT_FILTER.
+#!     </td>
+#!   <tr>
+#!     @tp @b FILTER_PATTERNS pattern1 [pattern2 ...]</td> @endtp
 #!     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
 #!         specify filters on a per file pattern basis.@n
 #!         Default: @c BASIS_DOXYGEN_FILTER_PATTERNS.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b EXCLUDE_PATTERNS pattern1 [pattern2 ...]</td>
+#!     @tp @b EXCLUDE_PATTERNS pattern1 [pattern2 ...] @endtp
 #!     <td>Additional patterns used for Doxygen's @c EXCLUDE_PATTERNS tag
 #!         which can be used to specify files and/or directories that
 #!         should be excluded from the INPUT source files.@n
 #!         Default: No exclude patterns.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b OUTPUT_DIRECTORY dir</td>
+#!     @tp @b OUTPUT_DIRECTORY dir @endtp
 #!     <td>Value for Doxygen's @c OUTPUT_DIRECTORY tag which can be used to
 #!         specify the output directory.@n
 #!         Default: <tt>CMAKE_CURRENT_BINARY_DIR/TARGET_NAME</tt>.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_HTML</td>
+#!     @tp @b GENERATE_HTML @endtp
 #!     <td>If given, Doxygen's @c GENERATE_HTML tag is set to YES, otherwise NO.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_LATEX</td>
+#!     @tp @b GENERATE_LATEX @endtp
 #!     <td>If given, Doxygen's @c GENERATE_LATEX tag is set to YES, otherwise NO.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_RTF</td>
+#!     @tp @b GENERATE_RTF @endtp
 #!     <td>If given, Doxygen's @c GENERATE_RTF tag is set to YES, otherwise NO.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATE_MAN</td>
+#!     @tp @b GENERATE_MAN @endtp
 #!     <td>If given, Doxygen's @c GENERATE_MAN tag is set to YES, otherwise NO.</td>
 #!   </tr>
 #! </table>
@@ -428,7 +455,7 @@ function (basis_add_doc TARGET_NAME)
       DOXYGEN
         "GENERATE_HTML;GENERATE_LATEX;GENERATE_RTF;GENERATE_MAN"
         "DOXYFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY"
-        "INPUT;FILTER_PATTERNS;EXCLUDE_PATTERNS"
+        "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS"
         ${ARGN_UNPARSED_ARGUMENTS}
     )
  
@@ -455,6 +482,12 @@ function (basis_add_doc TARGET_NAME)
       )
     endif ()
     basis_list_to_delimited_string (DOXYGEN_INPUT " " ${DOXYGEN_INPUT})
+    if (NOT DOXYGEN_INPUT_FILTER)
+      set (DOXYGEN_INPUT_FILTER "${BASIS_DOXYGEN_INPUT_FILTER}")
+    endif ()
+    if (DOXYGEN_INPUT_FILTER MATCHES "^(None|NONE|none)$")
+      set (DOXYGEN_INPUT_FILTER)
+    endif ()
     if (NOT DOXYGEN_FILTER_PATTERNS)
       set (DOXYGEN_FILTER_PATTERNS "${BASIS_DOXYGEN_FILTER_PATTERNS}")
     endif ()
@@ -493,7 +526,11 @@ function (basis_add_doc TARGET_NAME)
     configure_file ("${DOXYGEN_DOXYFILE}" "${DOXYFILE}" @ONLY)
 
     # add target
-    add_custom_target (${TARGET_UID} COMMAND "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}")
+    add_custom_target (
+      ${TARGET_UID}
+      COMMAND "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}"
+      WORKING_DIRECTORY "${BASIS_MODULE_DIR}"
+    )
 
     # cleanup on "make clean"
     set_property (

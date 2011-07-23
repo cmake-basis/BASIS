@@ -1,5 +1,15 @@
 #! /usr/bin/env perl
 
+## @file  doxygen-matlab-filter.pl
+#  @brief Doxygen filter for MATLAB scripts.
+#
+# This is the Doxygen filter implementation of Fabrice which is available
+# on MATLAB Central.
+#
+# @sa http://www.mathworks.com/matlabcentral/fileexchange/25925-using-doxygen-with-matlab
+#
+# @ingroup CMakeHelpers
+
 if ($#ARGV != 0)
 {
   die "Argument must contain filename $#ARGV"

@@ -15,9 +15,9 @@
 #! Example:
 #! @code
 #! if (BUILD_INSTALL_SCRIPT)
-#!   set (BIN_DIR "@CMAKE_INSTALL_PREFIX@/bin")
+#!   set (BIN_DIR "@INSTALL_BIN_DIR@")
 #! else ()
-#!   set (BIN_DIR "\@CMAKE_RUNTIME_OUTPUT_DIRECTORY\@")
+#!   set (BIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
 #! endif ()
 #! @endcode
 #!
@@ -31,19 +31,20 @@
 #! Example:
 #! @code
 #! #! /usr/bin/env bash
-#! progDir=`dirname $0`
-#! dataDir=$progDir/\@ETC_DIR\@
+#! @BASH_FUNCTION_get_executable_directory@
+#! exec_dir=$(get_executable_directory)
+#! data_dir=$exec_dir/@DATA_DIR@
 #! @endcode
 #!
-#! where ETC_DIR is the relative path determined during the script configuration.
+#! where DATA_DIR is the relative path determined during the script configuration.
 #! See documentation of basis_set_script_path_definition() for a convenience
 #! function which can be used just for that. This function generates the
 #! definition of a function which is prepended to this script configuration.
-#! Use this function as follows within this file.
+#! Use this function as follows within the script configuration file.
 #!
 #! Example:
 #! @code
-#! basis_set_script_path (ETC_DIR "\@PROJECT_ETC_DIR\@" "\@INSTALL_ETC_DIR\@")
+#! basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 #! @endcode
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -51,7 +52,7 @@
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #!
-#! @ingroup CMakeHelpers
+#! @ingroup CMakeTemplates
 ##############################################################################
 
 # ============================================================================
@@ -82,11 +83,25 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 # BASH
 # ----------------------------------------------------------------------------
 
+#! @addtogroup BASHUtilities
+#! @{
+
+#! @brief Definition of get_executable_directory() function.
+#!
+#! Example:
+#! @code
+#! @BASH_FUNCTION_get_executable_directory@
+#! exec_dir=$(get_executable_directory)
+#! @endcode
+#!
+#! @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 set (BASH_FUNCTION_get_executable_directory "
 # ****************************************************************************
-# \\brief Get real directory of executable.
-#
-# \\see http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+#! @brief Get real directory of executable.
+#!
+#! @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+#!
+#! @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
 get_executable_directory ()
 {
     # get the absolute path of the executable
@@ -108,9 +123,18 @@ get_executable_directory ()
 "
 )
 
+#! @brief Definition of get_executable_name() function.
+#!
+#! Example:
+#! @code
+#! @BASH_FUNCTION_get_executable_name@
+#! exec_name=$(get_executable_name)
+#! @endcode
 set (BASH_FUNCTION_get_executable_name "
 # ****************************************************************************
-# \\brief Get name of executable.
+#! @brief Get name of executable.
+#!
+#! @returns Prints name of BASH script to @c STDOUT.
 get_executable_name ()
 {
     echo \${0##*/}
@@ -118,9 +142,18 @@ get_executable_name ()
 "
 )
 
+#! @brief Definition of print_version() function with default copyright.
+#!
+#! Example:
+#! @code
+#! @BASH_FUNCTION_print_version@
+#! print_version
+#! @endcode
 set (BASH_FUNCTION_print_version "
 # ****************************************************************************
-# \\brief Print version information.
+#! @brief Print version information.
+#!
+#! @returns Nothing.
 print_version ()
 {
     echo -n \"$(get_executable_name) (BASIS) version @PROJECT_VERSION@\"
@@ -136,9 +169,18 @@ EOF-COPYRIGHT
 "
 )
 
+#! @brief Definition of print_contact() function with default contact.
+#!
+#! Example:
+#! @code
+#! @BASH_FUNCTION_print_contact@
+#! print_contact
+#! @endcode
 set (BASH_FUNCTION_print_contact "
 # ****************************************************************************
-# \\brief Print contact information.
+#! @brief Print contact information.
+#!
+#! @returns Nothing.
 print_contact ()
 {
     echo \"Contact:\"
@@ -147,10 +189,22 @@ print_contact ()
 "
 )
 
+#! @}
+
 # ----------------------------------------------------------------------------
 # Python
 # ----------------------------------------------------------------------------
 
+#! @addtogroup PythonUtilities
+#! @{
+
+#! @brief Definition of get_executable_directory() function.
+#!
+#! Example:
+#! @code
+#! @PYTHON_FUNCTION_get_executable_directory@
+#! exec_dir = get_executable_directory ()
+#! @endcode
 set (PYTHON_FUNCTION_get_executable_directory "
 # ****************************************************************************
 def get_executable_directory ():
@@ -161,6 +215,13 @@ def get_executable_directory ():
 "
 )
 
+#! @brief Definition of get_executable_name() function.
+#!
+#! Example:
+#! @code
+#! @PYTHON_FUNCTION_get_executable_name@
+#! exec_name = get_executable_name ()
+#! @endcode
 set (PYTHON_FUNCTION_get_executable_name "
 # ****************************************************************************
 def get_executable_name ():
@@ -171,10 +232,22 @@ def get_executable_name ():
 "
 )
 
+#! @}
+
 # ----------------------------------------------------------------------------
 # Perl
 # ----------------------------------------------------------------------------
 
+#! @addtogroup PerlUtilities
+#! @{
+
+#! @brief Definition of get_executable_directory() function.
+#!
+#! Example:
+#! @code
+#! @PERL_FUNCTION_get_executable_directory@
+#! exec_dir = get_executable_directory ()
+#! @endcode
 set (PERL_FUNCTION_get_executable_directory "
 # ****************************************************************************
 sub get_executable_directory
@@ -186,6 +259,13 @@ sub get_executable_directory
 "
 )
 
+#! @brief Definition of get_executable_name() function.
+#!
+#! Example:
+#! @code
+#! @PERL_FUNCTION_get_executable_name@
+#! exec_name = get_executable_name ()
+#! @endcode
 set (PERL_FUNCTION_get_executable_name "
 # ****************************************************************************
 sub get_executable_name
@@ -196,3 +276,4 @@ sub get_executable_name
 "
 )
 
+#! @}

@@ -180,7 +180,8 @@ TAB_SIZE               = 4
 # will result in a user-defined paragraph with heading "Side Effects:". 
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = 
+ALIASES                = "tp=<td style=\"white-space:nowrap; vertical-align:top; padding-right:1em\">"
+ALIASES               += "endtp=</td>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C 
 # sources only. Doxygen will then generate output that is more tailored for C. 
@@ -679,7 +680,7 @@ IMAGE_PATH             =
 # If FILTER_PATTERNS is specified, this tag will be 
 # ignored.
 
-INPUT_FILTER           = 
+INPUT_FILTER           = "@DOXYGEN_INPUT_FILTER@"
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern 
 # basis. 

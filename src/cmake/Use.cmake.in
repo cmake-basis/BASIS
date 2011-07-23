@@ -12,7 +12,7 @@
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #!
-#! @ingroup CMakeHelpers
+#! @ingroup CMakeTemplates
 ##############################################################################
 
 if (__@PACKAGE_NAME@_USE_FILE_INCLUDED)
