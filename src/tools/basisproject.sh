@@ -2,12 +2,14 @@
 
 ##############################################################################
 #! @file  basisproject.sh
-#! @brief Project management tool, create and/or modify BASIS project.
+#! @brief Project management tool used to create and/or modify a BASIS project.
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup Tools
 ##############################################################################
  
 # ============================================================================
@@ -42,6 +44,8 @@ cache=".basis/cache"
 
 # ****************************************************************************
 #! @brief Print options.
+#!
+#! @returns Nothing.
 
 function print_options
 {
@@ -129,6 +133,8 @@ function print_options
 
 # ****************************************************************************
 #! @brief Print usage information.
+#!
+#! @returns Nothing.
 
 function print_usage
 {
@@ -144,6 +150,8 @@ function print_usage
 
 # ****************************************************************************
 #! @brief Print help.
+#!
+#! @returns Nothing.
 
 function print_help
 {
@@ -213,20 +221,22 @@ function print_help
 
 # ****************************************************************************
 #! @brief Make path absolute.
-#
-# This function returns the absolute path via command substitution, i.e.,
-# use it as follows:
-#
-# @code
-# abspath=$(make_absolute $relpath)
-# @endcode
-#
-# @param [in]  1      The (relative) path of a file or directory
-#                     (does not need to exist yet).
-# @param [out] stdout Prints the absolute path of the specified file or
-#                     directory to STDOUT.
-#
-# @return 0 on success and 1 on failure.
+#!
+#! This function returns the absolute path via command substitution, i.e.,
+#! use it as follows:
+#!
+#! @code
+#! abspath=$(make_absolute $relpath)
+#! @endcode
+#!
+#! @param [in] path The (relative) path of a file or directory
+#!                  (does not need to exist yet).
+#!
+#! @returns Prints the absolute path of the specified file or directory to
+#!          @c STDOUT via @c echo.
+#!
+#! @retval 0 Success.
+#! @retval 1 Failure.
 
 function make_absolute
 {
@@ -245,6 +255,8 @@ function make_absolute
 
 # ****************************************************************************
 #! @brief Extract project name from existing project.
+#!
+#! @returns Extracted project name via @c echo.
 
 function get_project_name
 {
@@ -694,8 +706,10 @@ fi
 #!
 #! Only the named directory or file is added or modified.
 #!
-#! @param [in] 1 The path of the directory or file relative to the template
-#!               or project root, respectively.
+#! @param [in] path The path of the directory or file relative to the template
+#!                  or project root, respectively.
+#!
+#! @returns Nothing.
 
 function add
 {
@@ -860,7 +874,9 @@ function add
 # ****************************************************************************
 #! @brief Delete file or empty directory.
 #!
-#! @param [in] 1 Path relative to template or project root, respectively.
+#! @param [in] path Path relative to template or project root, respectively.
+#!
+#! @returns Nothing.
 
 function del
 {
@@ -921,9 +937,11 @@ function del
 # ****************************************************************************
 #! @brief Add or delete file depending on option given.
 #!
-#! @param [in] 1 Switch option. If > 0, the file is added or updated.
-#!               If < 0, the file is deleted. Otherwise, nothing is done.
-#! @param [in] 2 File path relative to tempate or project root, respectively.
+#! @param [in] switch Switch option. If > 0, the file is added or updated.
+#!                    If < 0, the file is deleted. Otherwise, nothing is done.
+#! @param [in] path   File path relative to tempate or project root, respectively.
+#!
+#! @returns Nothing.
 
 function addordel
 {
@@ -1018,14 +1036,16 @@ fi
 # ****************************************************************************
 #! @brief Append find_package() commands to CMake configuration file.
 #!
-#! @param [in] 1 The path to the CMake configuration file.
-#! @param [in] 2 The name of the package.
-#! @param [in] 3 Whether this package is required.
-#! @param [in] 4 Whether to use uppercase only prefix for variables.
-#! @param [in] 5 Whether this package provides a <name>Use.cmake file.
-#! @param [in] 6 Prefix to use for package variables. Defaults to package name.
+#! @param [in] path            The path to the CMake configuration file.
+#! @param [in] package         The name of the package.
+#! @param [in] required        Whether this package is required.
+#! @param [in] uppercasePrefix Whether to use uppercase only prefix for variables.
+#! @param [in] useFile         Whether this package provides a \<name\>Use.cmake file.
+#! @param [in] prefix          Prefix to use for package variables. Defaults to package name.
+#!
+#! @returns Nothing.
 
-function find_package
+function add_find_package
 {
     local file=$1
     local package=$2
@@ -1107,17 +1127,17 @@ if [ $package_num -gt 0 ]; then
             # and <pkg>_VARIABLE variable names
             # -> package provides <PKG>_USE_FILE
             ITK)
-                find_package $depends_file_path $pkg $required 0 1
+                add_find_package $depends_file_path $pkg $required 0 1
                 ;;
             # use package name for find_package ()
             # and <PKG>_VARIABLE variable names
             Matlab)
-                find_package $depends_file_path $pkg $required 1 0
+                add_find_package $depends_file_path $pkg $required 1 0
                 ;;
             # default, use package name for both find_package ()
             # and <pkg>_VARIABLE variable names
             *)
-                find_package $depends_file_path $pkg $required 0 0
+                add_find_package $depends_file_path $pkg $required 0 0
                 ;;
         esac
 
@@ -1133,6 +1153,8 @@ fi
 
 # ****************************************************************************
 #! @brief Clean temporary files.
+#!
+#! @returns Nothing.
 
 function clean_temp_files
 {
@@ -1148,6 +1170,8 @@ function clean_temp_files
 
 # ****************************************************************************
 #! @brief Remove hidden copies of template files.
+#!
+#! @returns Nothing.
 
 function clean_hidden_files
 {

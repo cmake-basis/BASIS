@@ -19,6 +19,8 @@
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup Tools
 ##############################################################################
 
 # ============================================================================
@@ -31,33 +33,37 @@
 # settings
 # ============================================================================
 
-# directory of this executable
+#! @brief Directory of this executable.
 exec_dir=$(get_executable_directory)
 
-# whether to use SGE or not
+#! @brief Whether to use SGE or not.
 sge=1
 
-# SGE queue; set to '' to not specify any
+#! @brief SGE queue; set to '' to not specify any.
 queue='tesla'
 
-# mail address for SGE notifications; set to '' to disable notifications
+#! @brief Mail address for SGE notifications; set to '' to disable notifications.
 mail=''
 
-# output file for test log; used for -o and -e option of qsub
+#! @brief Output file for test log; used for -o and -e option of qsub.
 log='/sbia/home/swtest/var/log/basistest.$JOB_ID.log'
 
-# configuration file; configure the automated tests here, see basistestd -h
+#! @brief Configuration file; configure the automated tests here, see <tt>basistestd -h</td>.
 conf='/sbia/home/swtest/etc/basistest.conf'
 
-# schedule file; note that this file is created/updated by the testing daemon
+#! @brief Schedule file; note that this file is created/updated by the testing daemon.
 schedule='/sbia/home/swtest/var/run/basistest.schedule'
 
-# CTest script; has to be given with full path because SGE copies the slave
-# script which looks for the CTest script relative to its own location
+#! @brief CTest script.
+#!
+#! Has to be given with full path because SGE copies the slave script which
+#! looks for the CTest script relative to its own location.
 ctest="$exec_dir/@MODULES_DIR@/basistest.ctest"
 
-# test execution command
+#! @brief Testing master script.
 master="$exec_dir/basistest-master"
+
+#! @brief Test execution command.
 slave="$exec_dir/basistest-slave -V -S $ctest"
 
 # ============================================================================

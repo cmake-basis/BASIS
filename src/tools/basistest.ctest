@@ -2,16 +2,17 @@
 #! @file  basistest.ctest
 #! @brief CTest script used to test BASIS projects.
 #!
-#! Usage:
-#!   ctest -S basistest.ctest[,option[=value]*
-#!
-#! Options:
-#!   help   Prints help and exits.
+#! To display the help of this CTest script, run:
+#! @code
+#! ctest -S basistest.ctest,help
+#! @endcode
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 #! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#!
+#! @ingroup Tools
 ##############################################################################
 
 # ============================================================================
