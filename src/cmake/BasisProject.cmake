@@ -14,7 +14,7 @@
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #!
-#! @ingroup CMakeModules CMakeAPI
+#! @ingroup CMakeAPI
 ##############################################################################
 
 # get directory of this file

@@ -4,6 +4,8 @@
 #!
 #! This module implements the packaging of BASIS projects.
 #!
+#! @note This module is included by basis_project_finalize().
+#!
 #! Overwrite the package information set by this module either in a file
 #! Package.cmake or a file Package.cmake.in located in the directory
 #! specified by PROJECT_CONFIG_DIR. The latter is configured and copied to the
@@ -29,7 +31,7 @@
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #!
-#! @ingroup CMakeModules
+#! @ingroup CMakeAPI
 ##############################################################################
 
 # get directory of this file

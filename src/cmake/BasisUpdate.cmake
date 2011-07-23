@@ -52,7 +52,7 @@
 #!
 #! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #!
-#! @ingroup CMakeModules CMakeAPI
+#! @ingroup CMakeAPI
 ##############################################################################
 
 if (__BASIS_UPDATE_INCLUDED)
