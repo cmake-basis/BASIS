@@ -33,7 +33,7 @@
 #! the error expressions, a fatal error message is displayed causing CMake to
 #! return the exit code 1.
 #!
-#! Setting VERBOSE to true, enables verbose output messages.
+#! Setting VERBOSE to true enables verbose output messages.
 #!
 #! When the input argument LOG_ARGS evaluates to true, the values of COMMAND,
 #! WORKING_DIRECTORY, and TIMEOUT are added to the top of the output files
@@ -46,7 +46,7 @@
 #! arguments given by ARGS follow after the ones read from the ARGS_FILE.
 #! All occurences of the string 'ARGS' in the COMMAND are replaced by these
 #! arguments. If no such string is present, the arguments are simply passed
-#! to the execute_process () command as its ARGS argument.
+#! to the execute_process() command as its ARGS argument.
 #! The argument ARGS_SEPARATOR specifies the separator used to separate the
 #! arguments given by ARGS and ARGS_FILE when the 'ARGS' string in COMMAND
 #! is replaced. By default, it is set to ';'.
@@ -54,7 +54,7 @@
 #! Example:
 #! @code
 #! cmake -DCOMMAND='ls -l' -DWORKING_DIRECTORY='/' -DTIMEOUT=60
-#!       -P SbiaExecuteProcess.cmake
+#!       -P ExecuteProcess.cmake
 #! @endcode
 #!
 #! Copyright (c) 2011 University of Pennsylvania. All rights reserved.

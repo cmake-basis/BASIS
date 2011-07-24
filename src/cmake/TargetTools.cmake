@@ -370,28 +370,28 @@ endfunction ()
 #! This function adds an executable target.
 #!
 #! An install command for the added executable target is added by this function
-#! as well. The executable will be installed as part of the component COMPONENT
-#! in the directory INSTALL_RUNTIME_DIR or INSTALL_LIBEXEC_DIR if the option
-#! LIBEXEC is given.
+#! as well. The executable will be installed as part of the component @p COMPONENT
+#! in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
+#! @p LIBEXEC is given.
 #!
-#! Besides adding usual executable targets build by the set C/CXX language
-#! compiler, this function inspects the list of source files given and detects
-#! whether this list contains sources which need to be build using a different
-#! compiler. In particular, it supports the following languages:
+#! Besides adding usual executable targets build by the set <tt>C/CXX</tt>
+#! language compiler, this function inspects the list of source files given and
+#! detects whether this list contains sources which need to be build using a
+#! different compiler. In particular, it supports the following languages:
 #!
 #! <table border="0">
 #!   <tr>
-#!     <td>@b CXX</td>
+#!     @tp @b CXX @endtp
 #!     <td>The default behavior, adding an executable target build from C/C++
 #!         source code. The target is added via CMake's add_executable() command.</td>
 #!   </tr>
 #!   <tr>
-#!     <td>@b MATLAB</td>
+#!     @tp @b MATLAB @endtp
 #!     <td>Standalone application build from MATLAB sources using the
 #!         MATLAB Compiler (mcc). This language option is used when the list
 #!         of source files contains one or more *.m files. A custom target is
 #!         added which depends on custom command(s) that build the executable.</td>
-#!         <br /><br />
+#!         @n@n
 #!         Attention: The *.m file with the entry point/main function of the
 #!                    executable has to be given before any other *.m file.
 #!   </tr>
@@ -405,26 +405,22 @@ endfunction ()
 #! @par
 #! <table border="0">
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b COMPONENT name</td>
+#!     @tp @b COMPONENT name @endtp
 #!     <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b LANGUAGE lang</td>
+#!     @tp @b LANGUAGE lang @endtp
 #!     <td>Source code language. By default determined from the extensions of
-#!         of the given source files, where CXX is assumed if no other
-#!         language is detected.</td>
+#!         the given source files, where CXX is assumed if no other language is
+#!         detected.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b LIBEXEC</td>
+#!     @tp @b LIBEXEC @endtp
 #!     <td>Specifies that the built executable is an auxiliary executable
 #!         which is only called by other executable.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b TEST</td>
+#!     @tp @b TEST @endtp
 #!     <td>Specifies that the built executable is a test executable used
 #!         with basis_add_test(). If also @p LIBEXEC is given, it is ignored.</td>
 #!   </tr>
@@ -926,8 +922,8 @@ endfunction ()
 #!
 #! This function adds a script target to the project, where during the build
 #! step the script is configured via configure_file() and copied to the
-#! directory specified by OUTPUT_DIRECTORY. During installation, the script
-#! built for the install tree is copied to the specified DESTINATION.
+#! directory specified by @p OUTPUT_DIRECTORY. During installation, the script
+#! built for the install tree is copied to the specified @p DESTINATION.
 #!
 #! If the script name ends in ".in", the ".in" suffix is removed from the
 #! output name. Further, all occurrences of ".in." anywhere within the script
@@ -949,7 +945,7 @@ endfunction ()
 #! file. The specified script configuration file is loaded during the build of
 #! the script prior to the configure_file() command. As paths may be different
 #! for scripts that are used directly from the build tree and scripts that are
-#! copied into the install tree, the variable BUILD_INSTALL_SCRIPT is 1 when the
+#! copied into the install tree, the variable @c BUILD_INSTALL_SCRIPT is 1 when the
 #! script is build for the install tree and 0 otherwise. This variable can be
 #! used within the script configuration file to set the value of the CMake
 #! variables used within the script differently for either case.
@@ -961,7 +957,7 @@ endfunction ()
 #!
 #! Script1Config.cmake
 #! @code
-#! basis_set_script_path (ETC_DIR "@PROJECT_ETC_DIR@" "@INSTALL_ETC_DIR@")
+#! basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 #! @endcode
 #!
 #! See documentation of basis_set_script_path_definition() and ScriptConfig.cmake
@@ -971,12 +967,12 @@ endfunction ()
 #! required to setup the actual custom build command as properties of this target.
 #! The custom build command itself is added by basis_add_script_finalize(), which
 #! is supposed to be called once at the end of the root CMakeLists.txt file of the
-#! (super-)project. This way properties such as the OUTPUT_NAME can still be modified
+#! sub-/superproject. This way properties such as the @c OUTPUT_NAME can still be modified
 #! after adding the script target.
 #!
 #! If a custom script configuration file is used, the variable
 #! \@BASIS_SCRIPT_CONFIG\@ can be used within this custom script configuration file
-#! to include the default configuration of the BASIS_SCRIPT_CONFIG_FILE.
+#! to include the default configuration of the @c BASIS_SCRIPT_CONFIG_FILE.
 #!
 #! @sa basis_add_script_finalize()
 #!
@@ -990,45 +986,38 @@ endfunction ()
 #! @par
 #! <table border="0">
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b SCRIPT file</td>
+#!      @tp @b SCRIPT file @endtp
 #!      <td>Script file path relative to current source directory.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b OUTPUT_DIRECTORY dir</td>
+#!      @tp @b OUTPUT_DIRECTORY dir @endtp
 #!      <td>The output directory for the configured script in the
 #!          build tree. Default: @c CMAKE_RUNTIME_OUTPUT_DIRECTORY.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b DESTINATION dir</td>
+#!      @tp @b DESTINATION dir @endtp
 #!      <td>The installation directory relative to @c INSTALL_PREFIX.
 #!          Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if
 #!                   the @p LIBEXEC option is given.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b COMPONENT name</td>
+#!      @tp @b COMPONENT name @endtp
 #!      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b CONFIG file</td>
+#!      @tp @b CONFIG file @endtp
 #!      <td>Script configuration file. Default: @c DEFAULT_SCRIPT_CONFIG_FILE
 #!          if this variable is set. If "NONE", "None", or "none" is given,
 #!          the script is copied only. Otherwise, a script configuration
 #!          consisting of the single line "\@BASIS_SCRIPT_CONFIG\@" is used.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b LIBEXEC</td>
+#!      @tp @b LIBEXEC @endtp
 #!      <td>Specifies that the script is an auxiliary executable called
 #!          by other executables only.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b NOEXEC</td>
+#!      @tp @b NOEXEC @endtp
 #!      <td>Specifies that the script cannot be "executed" directly,
 #!          but always requires some kind of interpreter. Note that
 #!          with this option, the meaning of "script" can be even more
@@ -1038,15 +1027,13 @@ endfunction ()
 #!          If the option @p LIBEXEC is given, this option is ignored.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b KEEPEXT</td>
+#!      @tp @b KEEPEXT @endtp
 #!      <td>If this option is given, it forces this function to keep
 #!          the scripts file name extension even if a sha-bang
 #!          directive is given on Unix-based systems.</td>
 #!   </tr>
 #!   <tr>
-#!      <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!          @b MODULE</td>
+#!      @tp @b MODULE @endtp
 #!      <td>Specifies that the script is a module file which is included by
 #!          other scripts. In particular, this is an alias for @p NOEXEC and
 #!          @p KEEPEXT and can be used, for example, for Python modules

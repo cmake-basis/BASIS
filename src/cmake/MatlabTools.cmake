@@ -746,23 +746,23 @@ endfunction ()
 #! @brief Add MATLAB Compiler target.
 #!
 #! This function is used to add an executable or library target which is built
-#! using the MATLAB Compilier (MCC). It is invoked by basis_add_executable()
+#! using the MATLAB Compiler (MCC). It is invoked by basis_add_executable()
 #! or basis_add_library(), respectively, when at least one M-file is given
 #! as source file. Thus, it is recommended to use these functions instead.
 #!
 #! An install command for the added executable or library target is added by
 #! this function as well. The executable will be installed as part of the
-#! @p RUNTIME_COMPONENT in the directory INSTALL_RUNTIME_DIR. The runtime
+#! @p RUNTIME_COMPONENT in the directory @c INSTALL_RUNTIME_DIR. The runtime
 #! library will be installed as part of the @p RUNTIME_COMPONENT in the directory
-#! INSTALL_LIBRARY_DIR on UNIX systems and INSTALL_RUNTIME_DIR on Windows.
+#! @c INSTALL_LIBRARY_DIR on UNIX systems and @c INSTALL_RUNTIME_DIR on Windows.
 #! Static/import libraries will be installed as part of the @p LIBRARY_COMPONENT
-#! in the directory INSTALL_ARCHIVE_DIR.
+#! in the directory @c INSTALL_ARCHIVE_DIR.
 #!
 #! @note The custom build command is not added yet by this function.
 #!       Only a custom target which stores all the information required to
 #!       setup this build command is added. The custom command is added
 #!       by either basis_project_finalize() or basis_superproject_finalize().
-#!       This way, the properties such as the OUTPUT_NAME of the custom
+#!       This way, the properties such as the @c OUTPUT_NAME of the custom
 #!       target can be still modified.
 #!
 #! @sa basis_add_executable()
@@ -775,44 +775,38 @@ endfunction ()
 #! @par
 #! <table border="0">
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b TYPE type</td>
+#!     @tp @b TYPE type @endtp
 #!     <td>Type of the target. Either @c EXECUTABLE (default) or @c LIBRARY.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b COMPONENT name</td>
+#!     @tp @b COMPONENT name @endtp
 #!     <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT if
 #!         @p TYPE is @c EXECUTABLE or @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b RUNTIME_COMPONENT name</td>
+#!     @tp @b RUNTIME_COMPONENT name @endtp
 #!     <td>Name of runtime component. Default: @p COMPONENT if specified or
 #!         @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b LIBRARY_COMPONENT name</td>
+#!     @tp @b LIBRARY_COMPONENT name @endtp
 #!     <td>Name of library component. Default: @p COMPONENT if specified or
 #!         @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b LIBEXEC</td>
+#!     @tp @b LIBEXEC @endtp
 #!     <td>Specifies that the built executable is an auxiliary executable
 #!         called by other executables only.</td>
 #!   </tr>
 #!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b TEST</td>
+#!     @tp @b TEST @endtp
 #!     <td>Specifies that the built executable is a test executable.
 #!         If LIBEXEC is given as well, it will be ignored.</td>
 #!   </tr>
 #! </table>
 #!
-#! @returns Adds custom target which builds either an executable or a
-#!          shared library using the MATLAB Compiler.
+#! @returns Adds custom target which builds depending on the @p TYPE argument
+#!          either an executable or a shared library using the MATLAB Compiler.
 #!
 #! @ingroup CMakeUtilities
 
