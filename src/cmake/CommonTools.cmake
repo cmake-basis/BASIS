@@ -103,7 +103,6 @@ endfunction ()
 #! @param [out] MAJOR   Major version number if given or 0.
 #! @param [out] MINOR   Minor version number if given or 0.
 #! @param [out] PATCH   Patch number if given or 0.
-#! @param [in]  ARGN    Not used.
 #!
 #! @returns See @c [out] parameters.
 
@@ -161,7 +160,6 @@ endfunction ()
 #! @param [out] VAR  Name of variable. Used in template of
 #!                   \<package\>Config.cmake as \@VAR\@.
 #! @param [in]  PATH Path of variable relative to CMAKE_INSTALL_PREFIX.
-#! @param [in]  ARGN Not used.
 #!
 #! @returns Sets @p VAR to the determined relative path.
 #!
@@ -194,7 +192,6 @@ endfunction ()
 #! made absolute by prefixing it with CMAKE_INSTALL_PREFIX instead.
 #!
 #! @param [out] FUNC The generated basis_set_script_path() function definition.
-#! @param [in]  ARGN Not used.
 #!
 #! @returns Sets @p FUNC to the definition of the function basis_set_script_path().
 #!
@@ -315,7 +312,6 @@ endfunction ()
 #!
 #! @param [out] LST  Output list.
 #! @param [in]  STR  Input string.
-#! @param [in]  ARGN Not used.
 #!
 #! @returns Sets @p LST to the resulting CMake list.
 #!
@@ -376,7 +372,6 @@ endfunction ()
 #!
 #! @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 #! @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
-#! @param [in]  ARGN        Not used.
 #!
 #! @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
 #!
@@ -397,7 +392,6 @@ endfunction ()
 #!
 #! @param [out] TARGET_NAME Target name used as argument to BASIS functions.
 #! @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
-#! @param [in]  ARGN        Not used.
 #!
 #! @returns Sets @p TARGET_NAME to the name of the build target with UID @p TARGET_UID.
 
@@ -412,7 +406,6 @@ endfunction ()
 #! Displays fatal error message when target name is invalid.
 #!
 #! @param [in] TARGET_NAME Desired target name.
-#! @param [in] ARGN        Not used.
 #!
 #! @returns Nothing.
 
@@ -466,7 +459,6 @@ endfunction ()
 #!
 #! @param [out] TEST_UID  "Global" test name, i.e., actual CTest test name.
 #! @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
-#! @param [in]  ARGN      Not used.
 #!
 #! @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
 #!
@@ -487,7 +479,6 @@ endfunction ()
 #!
 #! @param [out] TEST_NAME Test name used as argument to BASIS functions.
 #! @param [in]  TEST_UID  "Global" test name, i.e., actual CTest test name.
-#! @param [in]  ARGN      Not used.
 #!
 #! @returns Sets @p TEST_NAME to the name of the test with UID @p TEST_UID.
 
@@ -502,7 +493,6 @@ endfunction ()
 #! Displays fatal error message when test name is invalid.
 #!
 #! @param [in] TEST_NAME Desired test name.
-#! @param [in] ARGN      Not used.
 #!
 #! @returns Nothing.
 

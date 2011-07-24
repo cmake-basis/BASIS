@@ -130,7 +130,6 @@ set(__CMAKE_PARSE_ARGUMENTS_INCLUDED TRUE)
 #! @param [in] _optionNames    Names of option parameters, i.e., parameters with no arguments.
 #! @param [in] _singleArgNames Names of parameters with single arguments.
 #! @param [in] _multiArgNames  Names of parameters with multiple arguments.
-#! @param [in] ARGN            Not used.
 #!
 #! @returns Sets the variables of the parsed arguments named after the option
 #!          name prefixed by @p prefix.

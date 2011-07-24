@@ -130,7 +130,6 @@ mark_as_advanced (BASIS_CMD_MEX)
 #!
 #! @param [out] VERSION Value returned by the "version" command of MATLAB or
 #!                      an empty string if execution of MATLAB failed.
-#! @param [in]  ARGN    Not used.
 #!
 #! @returns Sets the variable named by @p VERSION to the full MATLAB version.
 #!
@@ -330,8 +329,6 @@ endfunction ()
 #! of the build tree which contains an addpath() statement for each
 #! directory that was added via basis_include_directories().
 #!
-#! @param [in] ARGN Not used.
-#!
 #! @returns Creates file Add\<Project\>Paths.m in the current binary directory.
 #!
 #! @ingroup CMakeUtilities
@@ -472,7 +469,6 @@ endfunction ()
 #! @param [in] TARGET_UID "Global" target name. If this function is used
 #!                        within the same project as basis_add_mex_target(),
 #!                        the "local" target name may be given alternatively.
-#! @param [in] ARGN       Not used.
 #!
 #! @returns Adds custom targets corresponding to the custom target added by
 #!          basis_add_mex_target() which actually perform the invocation of
@@ -978,7 +974,6 @@ endfunction ()
 #! @param [in] TARGET_UID "Global" target name. If this function is used
 #!                        within the same project as basis_add_mcc_target(),
 #!                        the "local" target name may be given alternatively.
-#! @param [in] ARGN       Not used.
 #!
 #! @returns Adds custom target(s) which actually performs the invocation
 #!          of the MATLAB Compiler using the values of the properties of

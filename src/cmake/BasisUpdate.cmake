@@ -133,8 +133,6 @@ set (BASIS_UPDATE_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/updatefile.py")
 #! @sa basis_update_finalize()
 #! @sa basis_update_files()
 #!
-#! @param [in] ARGN Not used.
-#!
 #! @returns Sets @c BASIS_UPDATE_INITIALIZED to indicate the the automatic
 #!          file update feature has been initialized.
 #!
@@ -250,7 +248,6 @@ endfunction ()
 #! @sa basis_update_finalize()
 #!
 #! @param [in] FILENAME Name of project file in current source directory.
-#! @param [in] ARGN     Not used.
 #!
 #! @returns Nothing.
 #!
@@ -379,8 +376,6 @@ endfunction ()
 #! @sa basis_update()
 #! @sa basis_update_initialize()
 #! @sa basis_update_finalize()
-#!
-#! @param [in] ARGN Not used.
 #!
 #! @returns Nothing.
 #!
@@ -537,7 +532,6 @@ endfunction ()
 #!
 #! @param [in]  REL         Path of project file relative to project source directory.
 #! @param [out] OPTION_NAME Name of file update option.
-#! @param [in]  ARGN        Not used.
 #!
 #! @returns Sets @p OPTION_NAME to the name of the CMake option variable.
 
@@ -553,7 +547,6 @@ endfunction ()
 #! @param [in]  REL      Path of project file relative to project source directory.
 #! @param [out] TEMPLATE Absolute path of cached template file in binary tree
 #!                       of project.
-#! @param [in]  ARGN     Not used.
 #!
 #! @returns Sets @p TEMPLATE to the full path of the updated template file.
 
@@ -620,7 +613,6 @@ endfunction ()
 #! @param [in]  REL      Path of project/template file relative to project source tree.
 #! @param [in]  TEMPLATE Absolute path of cached template file in binary tree of project.
 #! @param [out] RETVAL   Boolean variable which indicates success or failure.
-#! @param [in]  ARGN     Not used.
 #!
 #! @returns Sets @p RETVAL either to 1 or 0 whether or not the update was
 #!          successful or not, respectively.
@@ -690,8 +682,6 @@ endfunction ()
 #!
 #! @sa basis_update_initialize()
 #! @sa basis_update_finalize()
-#!
-#! @param [in] ARGN Not used.
 #!
 #! @returns Nothing.
 

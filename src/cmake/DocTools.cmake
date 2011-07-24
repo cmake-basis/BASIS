@@ -144,8 +144,6 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 #! choose to build the documentation when the @c ALL target is build.
 #! In any case can the documentation be build by building the @c doc target.
 #!
-#! @param [in] ARGN Not used.
-#!
 #! @returns Adds the custom target @c doc and the option @c BUILD_DOCUMENTATION
 #!          if either of these does not exist yet.
 
@@ -177,8 +175,6 @@ endfunction ()
 #! variable is not yet defined which is by default off. The user can then
 #! choose to build the ChangeLog when the @c ALL target is build.
 #! In any case can the ChangeLog be build by building the @c changelog target.
-#!
-#! @param [in] ARGN Not used.
 #!
 #! @returns Adds the custom target @c changelog and the option
 #!          @c BUILD_CHANGELOG if either of these does not exist yet.

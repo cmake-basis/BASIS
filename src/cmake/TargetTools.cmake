@@ -86,7 +86,6 @@ endfunction ()
 #!
 #! @param [out] VAR         Path of build target output file.
 #! @param [in]  TARGET_NAME Name of build target.
-#! @param [in]  ARGN        Not used.
 #!
 #! @returns Path of output file similar to @c LOCATION property of CMake targets.
 
@@ -1240,7 +1239,6 @@ endfunction ()
 #! @param [in] TARGET_UID "Global" target name. If this function is used
 #!                        within the same project as basis_add_script(),
 #!                        the "local" target name may be given alternatively.
-#! @param [in] ARGN       Not used.
 #!
 #! @returns Adds custom target(s) to actually build the script target
 #!          @p TARGET_UID added by basis_add_script().
@@ -1554,8 +1552,6 @@ endmacro ()
 #! @sa basis_add_script_finalize()
 #! @sa basis_add_mcc_target_finalize()
 #! @sa basis_add_mex_target_finalize()
-#!
-#! @param [in] ARGN Not used.
 #!
 #! @returns Adds custom targets that actually build the executables and
 #!          libraries for which custom build targets where added by

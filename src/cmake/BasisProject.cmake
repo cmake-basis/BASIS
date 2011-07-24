@@ -509,8 +509,6 @@ endmacro ()
 #!
 #! @sa basis_project_initialize()
 #!
-#! @param [in] ARGN Not used.
-#!
 #! @returns Finalizes addition of custom build targets, i.e., adds the
 #!          custom targets which actually perform the build of these targets.
 #!          See basis_add_custom_finalize() function.
@@ -604,7 +602,6 @@ endmacro ()
 #! @param [out] SOURCES        Configured auxiliary source files.
 #! @param [out] HEADERS        Configured auxiliary header files.
 #! @param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
-#! @param [in]  ARGN           Not used.
 #!
 #! @returns Sets the variables specified by the @c [out] parameters.
 #!
@@ -767,8 +764,6 @@ endfunction ()
 #!
 #! @sa ExecutableTargetInfo
 #!
-#! @param [in] ARGN Not used.
-#!
 #! @returns Configures the file @p BINARY_CODE_DIR/stdaux.cc in-place if it exists.
 #!
 #! @ingroup CMakeUtilities
@@ -843,7 +838,6 @@ endfunction ()
 #!
 #! @param [in] OLD  The value of the symbolic link.
 #! @param [in] NEW  The name of the symbolic link.
-#! @param [in] ARGN Not used.
 #!
 #! @returns Adds installation command for creating the symbolic link @p NEW.
 
@@ -902,8 +896,6 @@ endfunction ()
 #! string and the software is installed on a Unix-based system, i.e., one which
 #! supports the creation of symbolic links.
 #!
-#! @param [in] ARGN Not used.
-#!
 #! @returns Adds installation command for creation of symbolic links in the
 #!          installation tree.
 
@@ -951,8 +943,6 @@ endfunction ()
 #! only Bourne Shell features Win32 version works with any Windows which
 #! supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
 #! NT 3.x too).
-#!
-#! @param [in] ARGN Not used.
 #!
 #! @returns Adds the custom target @c uninstall.
 

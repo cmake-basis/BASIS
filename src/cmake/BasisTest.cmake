@@ -244,7 +244,6 @@ endfunction ()
 #! </table>
 #!
 #! @param [in] TARGET_NAME Name of executable or script target.
-#! @param [in] ARGN        Not used.
 #!
 #! @returns Adds tests for the default options of the specified executable.
 

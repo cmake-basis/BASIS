@@ -39,6 +39,7 @@ if __name__ == "__main__":
     reOptionEnd     = re.compile (r".*\)\s*$")
     reArgs          = re.compile (r"\W+")
     reCommentLine   = re.compile (r"#!(?P<comment>.*)")
+    reOptParamDoc   = re.compile (r"[\@\\]param\s*(\[[inout,\s]+\])?\s+(?P<param>ARG(N|V[0..9]))")
     reIfClauseStart = re.compile (r"if\s*\(")
     reIfClauseEnd   = re.compile (r"else\s*\(|elseif\s*\(|endif\s*\(")
 
@@ -47,6 +48,7 @@ if __name__ == "__main__":
     commentDepth  = 0     # if-clause depth where comment was encountered
     previousBlock = ''    # name of previous CMake code block
     currentBlock  = ''    # name of current CMake code block
+    optParams     = []    # documented optional function/macro parameters
     for line in f:
         line = line.strip ()
         # next comment line,
@@ -55,6 +57,9 @@ if __name__ == "__main__":
             if m is not None:
                 comment = m.group ('comment')
                 sys.stdout.write ("///" + comment + "\n")
+                m = reOptParamDoc.search (line)
+                if m is not None:
+                    optParams.append (m.group ('param'))
                 continue
             else:
                 previousBlock = currentBlock
@@ -151,6 +156,9 @@ if __name__ == "__main__":
                 sys.stdout.write ("///" + comment + "\n")
                 currentBlock = 'comment'
                 commentDepth = ifClauseDepth
+                m = reOptParamDoc.search (line)
+                if m is not None:
+                    optParams.append (m.group ('param'))
                 continue
             # if previous block was a Doxygen comment process
             # supported following blocks such as variable setting
@@ -171,11 +179,13 @@ if __name__ == "__main__":
                         if i > 0:
                             sys.stdout.write (", ")
                         sys.stdout.write ("in " + argv [i])
-                    if len (argv) > 0:
-                        sys.stdout.write (", ")
-                    sys.stdout.write ("in ARGN")
+                    for i in range (0, len (optParams)):
+                        if i > 0 or len (argv) > 0:
+                            sys.stdout.write (", ")
+                        sys.stdout.write ("in " + optParams [i])
                     sys.stdout.write (");\n")
                     currentBlock = 'function'
+                    optParams = []
                     continue
                 # macro
                 m = reMacroStart.match (line)
@@ -191,11 +201,13 @@ if __name__ == "__main__":
                         if i > 0:
                             sys.stdout.write (", ")
                         sys.stdout.write ("in " + argv [i])
-                    if len (argv) > 0:
-                        sys.stdout.write (", ")
-                    sys.stdout.write ("in ARGN")
+                    for i in range (0, len (optParams)):
+                        if i > 0 or len (argv) > 0:
+                            sys.stdout.write (", ")
+                        sys.stdout.write ("in " + optParams [i])
                     sys.stdout.write (");\n")
                     currentBlock = 'macro'
+                    optParams = []
                     continue
                 # setting of global variable/constant
                 m = reSetStart.match (line)

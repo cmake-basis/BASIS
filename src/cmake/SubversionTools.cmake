@@ -55,7 +55,6 @@ endif ()
 #!                   local path.
 #! @param [out] REV  The revision number of URL. If URL is not under revision
 #!                   control or BASIS_CMD_SVN is invalid, "0" is returned.
-#! @param [in]  ARGN Not used.
 #!
 #! @returns Sets @p REV to the revision of the working copy/repository
 #!          at URL @p URL.
@@ -97,7 +96,6 @@ endfunction ()
 #! @param [out] REV  Revision number when URL was last modified. If URL is not
 #!                   under Subversion control or BASIS_CMD_SVN is invalid,
 #!                   "0" is returned.
-#! @param [in]  ARGN Not used.
 #!
 #! @returns Sets @p REV to revision number at which the working copy/repository
 #!          specified by the URL @p URL was last modified.
@@ -140,7 +138,6 @@ endfunction ()
 #!                     If the local directory or file is unmodified, an
 #!                     empty string is returned. An empty string is also
 #!                     returned when BASIS_CMD_SVN is invalid.
-#! @param [in]  ARGN   Not used.
 #!
 #! @returns Sets @p STATUS to the output of the <tt>svn info</tt> command.
 
