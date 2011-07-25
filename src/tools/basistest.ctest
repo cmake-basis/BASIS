@@ -446,10 +446,10 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # copy documentation to web server
 
-  if (HTTPDOCS AND EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api")
+  if (HTTPDOCS AND EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
     file (
-      INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api"
-      DESTINATION "${HTTPDOCS}"
+      INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html/"
+      DESTINATION "${HTTPDOCS}/api"
     )
   endif ()
 
