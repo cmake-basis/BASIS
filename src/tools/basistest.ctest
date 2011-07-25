@@ -63,11 +63,11 @@ Options:
                       No memory checks are performed by default.
   coverage            Perform coverage analysis. Requires gcov.
                       No coverage analysis is performed by default.
-  httpdocs[=<path>]   If specified, the API documentation is build
+  doxygen[=<path>]    If specified, the API documentation is build
                       and the built HTML documentation copied to the
-                      specified directory. If no directory is given, the
-                      default web server location at SBIA is used, i.e.,
-                      \"/sbia/web/software/<project>/<branch>\".
+                      specified directory. If this option is given without
+                      argument, the default web server location at SBIA is used,
+                      i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
   force-build         Force build even if no files were updated.
   force-test          Force test even if no files were updated.
   force               Alias for options force-build and force-test.
@@ -213,11 +213,10 @@ set (WITH_COVERAGE 0) # whether to perform coverage analysis
 #set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "config/valgrind.sup")
 
 # ----------------------------------------------------------------------------
-# online documentation
+# installation directories
 
-# web server top directory of project documentation
-# if no directory is specified, the documentation is not built and installed
-set (HTTPDOCS)
+# output directory for built Doxygen documentation
+set (INSTALL_DOXYGEN_DIR)
 
 # ============================================================================
 # options
@@ -274,11 +273,11 @@ foreach (ARG ${ARGV})
       set_bool_option (WITH_COVERAGE)
     elseif (${OPTION} STREQUAL "tmpbin")
       set_bool_option (TMPBIN)
-    elseif (${OPTION} STREQUAL "httpdocs")
+    elseif (${OPTION} STREQUAL "doxygen")
       if (VALUE)
-        set_option (HTTPDOCS)
+        set_option (INSTALL_DOXYGEN_DIR)
       else ()
-        set (HTTPDOCS "/sbia/web/software/\@CTEST_PROJECT_NAME\@/\@CTEST_SVN_BRANCH\@")
+        set (INSTALL_DOXYGEN_DIR "/sbia/web/software/doxygen/\@CTEST_PROJECT_NAME\@/\@CTEST_SVN_BRANCH\@")
       endif ()
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
@@ -360,7 +359,7 @@ set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
 set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
 set (CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-${CMAKE_SYSTEM_NAME}/${CTEST_SVN_BRANCH}")
 
-string (CONFIGURE "${HTTPDOCS}" HTTPDOCS)
+string (CONFIGURE "${INSTALL_DOXYGEN_DIR}" INSTALL_DOXYGEN_DIR)
 
 # ----------------------------------------------------------------------------
 # memory check suppressions file
@@ -388,7 +387,7 @@ set (CTEST_UPDATE_COMMAND "${CTEST_SVN_COMMAND}")
 set (CTEST_CONFIGURE_COMMAND "\"${CMAKE_COMMAND}\"")
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DCMAKE_BUILD_TYPE:STRING=${CTEST_BUILD_CONFIGURATION}")
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_TESTING:BOOL=ON")
-if (HTTPDOCS)
+if (INSTALL_DOXYGEN_DIR)
   set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=ON")
 else ()
   set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=OFF")
@@ -444,12 +443,11 @@ if (FORCE_BUILD OR UPDATED_FILES)
   ctest_build ()
 
   # --------------------------------------------------------------------------
-  # copy documentation to web server
-
-  if (HTTPDOCS AND EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
+  # install documentation
+  if (INSTALL_DOXYGEN_DIR AND EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
     file (
       INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html/"
-      DESTINATION "${HTTPDOCS}/api"
+      DESTINATION "${INSTALL_DOXYGEN_DIR}"
     )
   endif ()
 
