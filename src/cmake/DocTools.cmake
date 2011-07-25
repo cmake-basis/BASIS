@@ -17,20 +17,9 @@ else ()
 endif ()
 
 
-# get directory of this file
-#
-# Note: This variable was just recently introduced in CMake, it is derived
-#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
-#       to maintain compatibility with older CMake versions.
-get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-
-
 # ============================================================================
 # options
 # ============================================================================
-
-# The following options are only enabled when at least one doc or changelog
-# target were added. Otherwise, there is nothing to build.
 
 ## @addtogroup CMakeAPI
 #  @{

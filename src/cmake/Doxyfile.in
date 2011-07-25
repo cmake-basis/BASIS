@@ -182,6 +182,8 @@ TAB_SIZE               = 4
 
 ALIASES                = "tp=<td style=\"white-space:nowrap; vertical-align:top; padding-right:1em\">"
 ALIASES               += "endtp=</td>"
+ALIASES               += "api=<a href=\"http://en.wikipedia.org/wiki/Application_programming_interface\">API</a>"
+ALIASES               += "abi=<a href=\"http://en.wikipedia.org/wiki/Application_binary_interface\">ABI</a>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C 
 # sources only. Doxygen will then generate output that is more tailored for C. 

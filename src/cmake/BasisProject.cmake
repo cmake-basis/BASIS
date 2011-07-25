@@ -17,19 +17,11 @@
 # @ingroup CMakeAPI
 ##############################################################################
 
-# get directory of this file
-#
-# \note This variable was just recently introduced in CMake, it is derived
-#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
-#       to maintain compatibility with older CMake versions.
-get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-
-
 # ============================================================================
 # CMake version and policies
 # ============================================================================
 
-cmake_minimum_required (VERSION 2.8.2)
+cmake_minimum_required (VERSION 2.8.4)
 
 # Add policies introduced with CMake versions newer than the one specified
 # above. These policies would otherwise trigger a policy not set warning by
@@ -49,13 +41,6 @@ endif ()
 
 # append CMake module path of BASIS to CMAKE_MODULE_PATH
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}")
-
-# The CMakeParseArguments.cmake CMake module was added to CMake since version
-# 2.8.4 which just recenlty was released when the following macros and
-# functions were first implemented. In order to support also previous CMake
-# versions, a copy of the CMakeParseArguments.cmake module was added to the
-# BASIS Core CMake modules.
-include ("${CMAKE_CURRENT_LIST_DIR}/CMakeParseArguments.cmake")
 
 # The ExternalData.cmake module is yet only part of ITK.
 include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
@@ -90,31 +75,31 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 # the two separating dots.
 # @n
 # - A change of the major version number indicates changes of the softwares
-#   API (and ABI) and/or its behavior and/or the change or addition of major
+#   @api (and @abi) and/or its behavior and/or the change or addition of major
 #   features.
 # - A change of the minor version number indicates changes that are not only
-#   bug fixes and no major changes. Hence, changes of the API but not the ABI.
+#   bug fixes and no major changes. Hence, changes of the @api but not the @abi.
 # - A change of the patch number indicates changes only related to bug fixes
-#   which did not change the softwares API. It is the least important component
+#   which did not change the softwares @api. It is the least important component
 #   of the version number.
 #
 # @par Build settings:
 # The default settings set by the Settings.cmake file of BASIS can be
-# overwritten in the file Settings.cmake in the PROJECT_CONFIG_DIR. This file
+# overwritten in the file Settings.cmake in the @c PROJECT_CONFIG_DIR. This file
 # is included by this macro after the project was initialized and before
 # dependencies on other packages were resolved.
 #
 # @par Dependencies:
 # Dependencies on other packages should be resolved via find_package() or
 # find_basis_package() commands in the Depends.cmake file which as well has to
-# be located in PROJECT_CONFIG_DIR (note that this variable may be modified
+# be located in @c PROJECT_CONFIG_DIR (note that this variable may be modified
 # within the Settings.cmake file). The Depends.cmake file is included by this
 # macro if present after the inclusion of the Settings.cmake file.
 #
 # @par Default documentation:
 # Each BASIS project further has to have a README(.txt) file in the top
 # directory of the software component. This file is the root documentation
-# file which refers the user to the further documentation files in PROJECT_DOC_DIR.
+# file which refers the user to the further documentation files in @c PROJECT_DOC_DIR.
 # A different name for the readme file can be set in the Settings.cmake file.
 # This is, however, not recommended.
 # The same applies to the COPYING(.txt) file with the copyright and license
@@ -129,7 +114,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 #
 # @param [in] ARGN This list is parsed for the following arguments.
 #                  Moreover, any of these arguments can be specified
-#                  in the file PROJECT_CONFIG_DIR/Settings.cmake
+#                  in the file @c PROJECT_CONFIG_DIR/Settings.cmake
 #                  instead with the prefix PROJECT_, e.g.,
 #                  "set (PROJECT_VERSION 1.0)".
 # @par

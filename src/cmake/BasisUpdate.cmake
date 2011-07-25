@@ -22,14 +22,14 @@
 #
 # The automatic file update feature is only enabled when
 #
-# 1. The option BASIS_UPDATE, which is added by this module, is enabled.
+# 1. The option @c BASIS_UPDATE, which is added by this module, is enabled.
 #
-# 2. BASIS_TEMPLATE_URL is a valid URL to the local root directory or
+# 2. @c BASIS_TEMPLATE_URL is a valid URL to the local root directory or
 #    repository root directory of the BASIS project template, respectively,
 #    Note that local directories must be prefixed by "file://".
 #
 # 3. The Python interpreter "python" was found and thus the variable
-#    BASIS_CMD_PYTHON is set.
+#    @c BASIS_CMD_PYTHON is set.
 #
 # 4. The script used to merge the content of the template with the existing
 #    project files has to be in the same directory as this CMake module.
@@ -38,13 +38,13 @@
 #    a valid Subversion working copy. This is required to ensure that changes
 #    applied during the automatic file udpate can be reverted.
 #
-# When this module is included, it adds the advanced option BASIS_UPDATE_AUTO
-# which is ON by default. If BASIS_UPDATE_AUTO is ON, files are updated
+# When this module is included, it adds the advanced option @c BASIS_UPDATE_AUTO
+# which is @c ON by default. If @c BASIS_UPDATE_AUTO is @c ON, files are updated
 # automatically without interacting with the user to get confirmation for file
 # update. If a project file contains local modifications or is not under
 # revision control, the udpate will not be performed automatically in any case.
 # Moreover, files which are listed with their path relative to the project
-# source directory in BASIS_UPDATE_EXCLUDE are excluded from the automatic file
+# source directory in @c BASIS_UPDATE_EXCLUDE are excluded from the automatic file
 # update.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -60,14 +60,6 @@ if (__BASIS_UPDATE_INCLUDED)
 else ()
   set (__BASIS_UPDATE_INCLUDED TRUE)
 endif ()
-
-
-# get directory of this file
-#
-# Note: This variable was just recently introduced in CMake, it is derived
-#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
-#       to maintain compatibility with older CMake versions.
-get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 
 # ============================================================================

@@ -28,7 +28,7 @@
 # - PACKAGE_VERSION_COMPATIBLE  True if version is compatible.
 # - PACKAGE_VERSION_UNSUITABLE  True if unsuitable as any version.
 #
-# \sa http://www.cmake.org/Wiki/CMake_2.6_Notes
+# @sa http://www.cmake.org/Wiki/CMake_2.6_Notes
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
