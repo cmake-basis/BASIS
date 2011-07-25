@@ -20,9 +20,6 @@
 /**
 @mainpage
 
-@authors Andreas Schuh
-@sa https://sbia-wiki.uphs.upenn.edu/wiki/index.php/BASIS
-
 This is the main page of the automatically generated API documentation of
 the Build system And Software Implementation Standard (BASIS) project.
 The BASIS project was started early in 2011 in order to improve and
@@ -48,6 +45,12 @@ Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+
+@section Links
+
+- <a href="https://sbia-wiki.uphs.upenn.edu/wiki/index.php/BASIS">Project Wiki</a> - The main Wiki page.
+- <a href="https://sbia-portal.uphs.upenn.edu/cdash/index.php?project=BASIS">Dashboard</a> - The CDash testing dashboard.
 */
 
 // ===========================================================================
@@ -120,13 +123,21 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 // ***************************************************************************
 /**
-@defgroup CMakeFindModules Find Package Modules
-@brief    CMake Find modules used by find_package() command.
+@defgroup CMakeUtilities CMake Utilities
+@brief    Utility implementations used by the CMake modules.
 
-The BASIS package provides CMake Find module implementations for third-party
-packages which are commonly used at SBIA but do not provide a CMake
-package configuration file (\<Package\>Config.cmake or \<package\>-config.cmake)
-such that CMake cannot find the package by default in config-mode.
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup CMakeModules
+*/
+
+// ***************************************************************************
+/**
+@defgroup CMakeHelpers  Non-CMake Utilities
+@brief    Auxiliary non-CMake implementations used by the CMake modules.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -151,21 +162,13 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 // ***************************************************************************
 /**
-@defgroup CMakeUtilities CMake Utilities
-@brief    Utility implementations used by the CMake modules.
+@defgroup CMakeFindModules Find Package Modules
+@brief    CMake Find modules used by find_package() command.
 
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-
-@ingroup CMakeModules
-*/
-
-// ***************************************************************************
-/**
-@defgroup CMakeHelpers  Non-CMake Utilities
-@brief    Auxiliary non-CMake implementations used by the CMake modules.
+The BASIS package provides CMake Find module implementations for third-party
+packages which are commonly used at SBIA but do not provide a CMake
+package configuration file (\<Package\>Config.cmake or \<package\>-config.cmake)
+such that CMake cannot find the package by default in config-mode.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
