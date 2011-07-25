@@ -17,7 +17,16 @@
 # CMake version
 # ============================================================================
 
-cmake_minimum_required (VERSION 2.8.2)
+# Note: There is a bug in CMake version 2.8.2 which prevents the following
+#       command to execute correctly:
+#
+#         cmake "-DCOMMAND=CFLAGS=-Wall [...]" -P ExecuteProcess.cmake
+#
+#       because of the occurrence of an equal sign (=) within the value
+#       assigned to variable COMMAND. This bug was apparently fixed in
+#       CMake version 2.8.4. A command such as the one above is required to
+#       build MEX-files using the MEX script and MATLAB Compiler targets.
+cmake_minimum_required (VERSION 2.8.4)
 
 # ============================================================================
 # initialize
