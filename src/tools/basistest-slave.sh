@@ -52,11 +52,11 @@ Required options:
 
 Options:
   -b [ --branch ]    The branch to be tested, e.g., "tags/1.0.0".
-                     Defaults to "trunk".
+                     Default: "trunk".
   -m [ --model ]     The name of the dashboard model, i.e., either "Nightly",
-                     "Continuous", or "Experimental". Defaults to "Nightly".
+                     "Continuous", or "Experimental". Default: "Experimental".
   -S [ --script ]    CTest script which performs the testing.
-                     Defaults to the "basistest.ctest" script of BASIS.
+                     Default: basistest.ctest script of BASIS.
   -a [ --args ]      Additional arguments for the CTest script.
   -v [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]      Print help and exit.
@@ -119,11 +119,11 @@ function print_usage
 # CTest script
 ctest_script="$exec_dir/@BASISTEST_CTEST_SCRIPT_DIR@/basistest.ctest"
 
-project=''      # name of the BASIS project
-branch='trunk'  # the branch to test
-model='Nightly' # the dashboard model
-args=''         # additional CTest script arguments
-verbosity=0     # verbosity of output messages
+project=''           # name of the BASIS project
+branch='trunk'       # the branch to test
+model='Experimental' # the dashboard model
+args=''              # additional CTest script arguments
+verbosity=0          # verbosity of output messages
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -184,6 +184,7 @@ while [ $# -gt 0 ]; do
             print_usage
             echo
             echo "Invalid option $1!" 1>&2
+            exit 1
             ;;
     esac
     shift

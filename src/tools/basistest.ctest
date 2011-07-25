@@ -50,15 +50,15 @@ Required options:
 Options:
   model=<model>       Name of the dashboard model, i.e., one of
                       \"Nightly\", \"Continuous\", and \"Experimental\".
-                      Defaults to \"Nightly\".
+                      Default: \"Experimental\".
   srcdir=<path>       Base path of the source directory.
-                      Defaults to \"${HOME}/comp_space/testing\".
+                      Default: \"${HOME}/comp_space/testing\".
   bindir=<path>       Base path of the binary directory.
                       Defaults to the base path of the source directory.
   url=<url>           Base URL of the project's SVN repository.
-                      Defaults to \"https://sbia-svn/projects/<project>\".
+                      Default: \"https://sbia-svn/projects/<project>\".
   branch=<name>       Name of the SVN branch to test, e.g., \"tags/1.0.0\".
-                      Defaults to \"trunk\".
+                      Default: \"trunk\".
   memcheck            Perform memory check. Requires valgrind.
                       No memory checks are performed by default.
   coverage            Perform coverage analysis. Requires gcov.
@@ -194,7 +194,7 @@ endfunction ()
 # general
 set (CTEST_SOURCE_DIRECTORY "$ENV{HOME}/comp_space/testing")
 set (CTEST_BINARY_DIRECTORY "")
-set (CTEST_MODEL            "Nightly")
+set (CTEST_MODEL            "Experimental")
 
 # ----------------------------------------------------------------------------
 # project attributes
