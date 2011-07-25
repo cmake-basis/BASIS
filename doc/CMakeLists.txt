@@ -32,8 +32,8 @@ basis_add_doc (ChangeLog GENERATOR svn2cl)
 # See basis_add_doc()
 
 basis_add_doc (
-  API 
-  GENERATOR Doxygen
+  api
+  GENERATOR        Doxygen
   INPUT            "${BINARY_CODE_DIR}"
                    "${PROJECT_CODE_DIR}"
                    "${BINARY_INCLUDE_DIR}"
