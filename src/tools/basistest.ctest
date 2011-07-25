@@ -207,6 +207,13 @@ set (WITH_COVERAGE 0) # whether to perform coverage analysis
 
 #set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "config/valgrind.sup")
 
+# ----------------------------------------------------------------------------
+# online documentation
+set (UPDATE_HTTP_DOCS 0) # whether to update the online documentation
+
+# web server top directory of project documentation
+set (HTTP_DOCS_DIR "/sbia/web/software/\@CTEST_PROJECT_NAME\@/\@CTEST_SVN_BRANCH\@")
+
 # ============================================================================
 # options
 # ============================================================================
@@ -262,6 +269,8 @@ foreach (ARG ${ARGV})
       set_bool_option (WITH_COVERAGE)
     elseif (${OPTION} STREQUAL "tmpbin")
       set_bool_option (TMPBIN)
+    elseif (${OPTION} STREQUAL "httpdoc")
+      set_bool_option (UPDATE_HTTP_DOCS)
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
       set_bool_option (FORCE_TEST)
@@ -342,6 +351,8 @@ set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
 set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
 set (CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-${CMAKE_SYSTEM_NAME}/${CTEST_SVN_BRANCH}")
 
+string (CONFIGURE "${HTTP_DOCS_DIR}" HTTP_DOCS_DIR)
+
 # ----------------------------------------------------------------------------
 # memory check suppressions file
 if (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE AND NOT IS_ABSOLUTE "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
@@ -368,7 +379,11 @@ set (CTEST_UPDATE_COMMAND "${CTEST_SVN_COMMAND}")
 set (CTEST_CONFIGURE_COMMAND "\"${CMAKE_COMMAND}\"")
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DCMAKE_BUILD_TYPE:STRING=${CTEST_BUILD_CONFIGURATION}")
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_TESTING:BOOL=ON")
-set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=OFF")
+if (UPDATE_HTTP_DOCS)
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=ON")
+else ()
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=OFF")
+endif ()
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-G${CTEST_CMAKE_GENERATOR}\"")
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
 
@@ -422,7 +437,11 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # copy documentation to web server
 
-  if (UPDATE_WEB_DOC)
+  if (UPDATE_HTTP_DOCS AND EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api")
+    file (
+      INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api"
+      DESTINATION "${HTTP_DOCS_DIR}"
+    )
   endif ()
 
   # perform tests only if required
