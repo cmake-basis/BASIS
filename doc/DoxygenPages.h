@@ -76,7 +76,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 /**
-@page Links Links
+@page Links Related Links
 
 - <a href="https://sbia-wiki.uphs.upenn.edu/wiki/index.php/BASIS">Project Wiki</a> - The main Wiki page.
 - <a href="https://sbia-portal.uphs.upenn.edu/cdash/index.php?project=BASIS">Dashboard</a> - The CDash testing dashboard.
