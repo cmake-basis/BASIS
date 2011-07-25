@@ -1,14 +1,14 @@
 ##############################################################################
-#! @file  ExternalData.cmake
-#! @brief Manage data files stored outside the source tree.
-#!
-#!
-#! Copyright 2010-2011 Kitware, Inc. All rights reserved.
-#! File modified by the SBIA Group.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeTools
+# @file  ExternalData.cmake
+# @brief Manage data files stored outside the source tree.
+#
+#
+# Copyright 2010-2011 Kitware, Inc. All rights reserved.
+# File modified by the SBIA Group.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeTools
 ##############################################################################
 
 # - Manage data files stored outside source tree
@@ -140,20 +140,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-# ****************************************************************************
-#! @brief TODO
-#!
-#! @param [in] target Name of the test.
+##############################################################################
+# @brief @todo Document function.
+#
+# @param [in] target Name of the test.
 
 function(ExternalData_add_test target)
   ExternalData_expand_arguments("${target}" testArgs ${ARGN})
   add_test(${testArgs})
 endfunction()
 
-# ****************************************************************************
-#! @brief TODO
-#!
-#! @param [in] target Name of the external data target.
+##############################################################################
+# @brief @todo Document funtion.
+#
+# @param [in] target Name of the external data target.
 
 function(ExternalData_add_target target)
   if(NOT ExternalData_URL_TEMPLATES)
@@ -224,11 +224,11 @@ function(ExternalData_add_target target)
   add_custom_target(${target} ALL DEPENDS ${files})
 endfunction()
 
-# ****************************************************************************
-#! @brief Replace DATA{} references with real arguments.
-#!
-#! @param [in]  target     Name of the external data target.
-#! @param [out] outArgsVar List of expanded arguments.
+##############################################################################
+# @brief Replace DATA{} references with real arguments.
+#
+# @param [in]  target     Name of the external data target.
+# @param [out] outArgsVar List of expanded arguments.
 
 function(ExternalData_expand_arguments target outArgsVar)
   # Replace DATA{} references with real arguments.

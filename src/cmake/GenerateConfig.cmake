@@ -1,31 +1,31 @@
 ##############################################################################
-#! @file  GenerateConfig.cmake
-#! @brief Generates package configuration files.
-#!
-#! This CMake script configures the \<package\>Config.cmake et al. files,
-#! once for the build tree and once for the install tree. Variables with a
-#! _CONFIG suffix are replaced in the default template file by either the
-#! value for the build or the install tree, respectively.
-#!
-#! If present, this script includes the @c PROJECT_CONFIG_DIR/ConfigBuild.cmake
-#! and/or @c PROJECT_CONFIG_DIR/ConfigInstall.cmake file before configuring the
-#! Config.cmake.in template. If a file @c PROJECT_CONFIG_DIR/Config.cmake.in
-#! exists, it is used as template. Otherwise, the default template file is used.
-#!
-#! Similarly, if the file @c PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
-#! it is used as template for the \<package\>ConfigVersion.cmake file. The same
-#! applies to Use.cmake.in.
-#!
-#! The variable @c PACKAGE_NAME is set to the name of the project prefixed by the
-#! value of @c BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
-#! to find this software package.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeTools
+# @file  GenerateConfig.cmake
+# @brief Generates package configuration files.
+#
+# This CMake script configures the \<package\>Config.cmake et al. files,
+# once for the build tree and once for the install tree. Variables with a
+# _CONFIG suffix are replaced in the default template file by either the
+# value for the build or the install tree, respectively.
+#
+# If present, this script includes the @c PROJECT_CONFIG_DIR/ConfigBuild.cmake
+# and/or @c PROJECT_CONFIG_DIR/ConfigInstall.cmake file before configuring the
+# Config.cmake.in template. If a file @c PROJECT_CONFIG_DIR/Config.cmake.in
+# exists, it is used as template. Otherwise, the default template file is used.
+#
+# Similarly, if the file @c PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
+# it is used as template for the \<package\>ConfigVersion.cmake file. The same
+# applies to Use.cmake.in.
+#
+# The variable @c PACKAGE_NAME is set to the name of the project prefixed by the
+# value of @c BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
+# to find this software package.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeTools
 ##############################################################################
 
 
@@ -44,19 +44,19 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # Attention: This has to be done before configuring any files such that these
 #            variables can be used by the template files.
 
-#! @addtogroup CMakeUtilities
-#! @{
+## @addtogroup CMakeUtilities
+#  @{
 
-#! @brief Name of the package.
+## @brief Name of the package.
 set (PACKAGE_NAME "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}")
-#! @brief Name of the CMake package configuration file.
+## @brief Name of the CMake package configuration file.
 set (CONFIG_FILE "${PACKAGE_NAME}Config.cmake")
-#! @brief Name of the CMake package version file.
+## @brief Name of the CMake package version file.
 set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
-#! @brief Name of the CMake package use file.
+## @brief Name of the CMake package use file.
 set (USE_FILE "${PACKAGE_NAME}Use.cmake")
 
-#! @}
+## @}
 
 # ============================================================================
 # install exports

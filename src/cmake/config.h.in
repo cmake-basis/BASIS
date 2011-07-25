@@ -1,4 +1,4 @@
-/*!
+/**
  * @file  config.h
  * @brief Default include file with project configuration.
  *
@@ -28,42 +28,32 @@
 // system
 // ===========================================================================
 
-/*!
- * @def   LINUX
- * @brief Whether the sources are compiled on a Linux system.
- */
+/// @def   LINUX
+/// @brief Whether the sources are compiled on a Linux system.
 #ifndef LINUX
 #  define LINUX (defined (linux) || defined (__linux))
 #endif
 
-/*!
- * @def   WINDOWS
- * @brief Whether the sources are compiled on a Windows system.
- */
+/// @def   WINDOWS
+/// @brief Whether the sources are compiled on a Windows system.
 #ifndef WINDOWS
 #  define WINDOWS (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
 #endif
 
-/*!
- * @def   MACOS
- * @brief Whether the sources are compiled on a Mac OS system.
- */
+/// @def   MACOS
+/// @brief Whether the sources are compiled on a Mac OS system.
 #ifndef MACOS
 #  define MACOS (defined (__APPLE__) || defined (__OSX__))
 #endif
 
-/*!
- * @def   UNIX
- * @brief Whether the sources are compiled on a Unix-based system.
- */
+/// @def   UNIX
+/// @brief Whether the sources are compiled on a Unix-based system.
 #ifndef UNIX
 #  define UNIX (!WINDOWS)
 #endif
 
-/*!
- * @def   HAVE_LONG_LONG
- * @brief Whether the long long type is supported by the compiler.
- */
+/// @def   HAVE_LONG_LONG
+/// @brief Whether the long long type is supported by the compiler.
 #ifdef HAVE_LONG_LONG
 #  if HAVE_LONG_LONG != @HAVE_LONG_LONG@
 #    error "Macro HAVE_LONG_LONG was previously defined with different value!"
@@ -72,10 +62,8 @@
 #  define HAVE_LONG_LONG @HAVE_LONG_LONG@
 #endif
 
-/*!
- * @def HAVE_SSTREAM
- * @brief Whether the ANSI string stream classes are available.
- */
+/// @def HAVE_SSTREAM
+/// @brief Whether the ANSI string stream classes are available.
 #ifdef HAVE_SSTREAM
 #  if HAVE_SSTREAM != @HAVE_SSTREAM@
 #    error "Macro HAVE_SSTREAM was previously defined with different value!"
@@ -84,7 +72,7 @@
 #  define HAVE_SSTREAM @HAVE_SSTREAM@
 #endif
 
-/*!
+/**
  * @def   HAVE_STRSTREAM
  * @brief Whether the obsolete string stream classes are available.
  *
@@ -96,10 +84,8 @@
 #endif
 #define HAVE_STRSTREAM 0
 
-/*!
- * @def HAVE_PTHREAD
- * @brief Whether the pthread library is available.
- */
+/// @def HAVE_PTHREAD
+/// @brief Whether the pthread library is available.
 #ifdef HAVE_PTHREAD
 #  if HAVE_PTHREAD != @HAVE_PTHREAD@
 #    error "Macro HAVE_PTHREAD was previously defined with different value!"
@@ -108,7 +94,7 @@
 #  define HAVE_PTHREAD @HAVE_PTHREAD@
 #endif
 
-/*!
+/**
  * @def HAVE_TR1_TUPLE
  * @brief Whether the tr1/tuple header file is available.
  *
@@ -128,7 +114,7 @@
 // namespace
 // ===========================================================================
 
-/*!
+/**
  * @brief Full project own namespace identifier.
  *
  * This macro should preferably be used when referring to the project own
@@ -140,7 +126,7 @@
 #define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE \
     ::sbia::@PROJECT_NAME_LOWER@
 
-/*!
+/**
  * @brief Macro used to enter project own namespace.
  *
  * Example: 
@@ -155,7 +141,7 @@
 #define SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN \
     namespace sbia { namespace @PROJECT_NAME_LOWER@ {
 
-/*!
+/**
  * @brief Macro used to exit project own namespace.
  *
  * Example: 
@@ -180,32 +166,22 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // project attributes
 // ---------------------------------------------------------------------------
 
-/*!
- * @brief The project name.
- */
+/// @brief The project name.
 extern const std::string cProjectName;
 
-/*!
- * @brief The major version number.
- */ 
+/// @brief The major version number.
 extern const unsigned int cVersionMajor;
 
-/*!
- * @brief The minor version number.
- */
+/// @brief The minor version number.
 extern const unsigned int cVersionMinor;
 
-/*!
- * @brief The patch number.
- */
+/// @brief The patch number.
 extern const unsigned int cVersionPatch;
 
-/*!
- * @brief The version string given as "<major>.<minor>.<patch>".
- */
+/// @brief The version string given as "<major>.<minor>.<patch>".
 extern const std::string cVersion;
 
-/*!
+/**
  * @brief The Subversion revision number of the project.
  *
  * Note that the revision number is not known when the software is built
@@ -224,7 +200,7 @@ extern const unsigned int cRevision;
 // build tree
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/*!
+/**
  * @brief Absolute path of top directory of build tree.
  *
  * This constant is set to the absolute path of the top directory of the build
@@ -236,28 +212,28 @@ extern const unsigned int cRevision;
  */
 extern const std::string cBuildRoot;
 
-/*!
+/**
  * @brief Absolute path to runtime executables in build tree.
  *
  * @sa GetRuntimeDirectory()
  */
 extern const std::string cRuntimeBuildPath;
 
-/*!
+/**
  * @brief Absolute path to auxiliary executables in build tree.
  *
  * @sa GetLibexecDirectory()
  */
 extern const std::string cLibexecBuildPath;
 
-/*!
+/**
  * @brief Absolute path to modules and shared libraries in build tree.
  *
  * @sa GetLibraryDirectory()
  */
 extern const std::string cLibraryBuildPath;
 
-/*!
+/**
  * @brief Absolute path to auxiliary data files in build tree.
  *
  * @sa GetDataDirectory()
@@ -268,7 +244,7 @@ extern const std::string cDataBuildPath;
 // installation
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/*!
+/**
  * @brief Path prefix used by runtime executables.
  *
  * This path prefix is used by runtime executables as prefix for any of the
@@ -286,7 +262,7 @@ extern const std::string cDataBuildPath;
  */
 extern const std::string cRuntimePathPrefix;
 
-/*!
+/**
  * @brief Path prefix used by auxiliary executables.
  *
  * This path prefix is used by auxiliary executables as prefix for any of the
@@ -304,7 +280,7 @@ extern const std::string cRuntimePathPrefix;
  */
 extern const std::string cLibexecPathPrefix;
 
-/*!
+/**
  * @brief Path to runtime executables relative to executable directory.
  *
  * @sa cRuntimePathPrefix
@@ -314,7 +290,7 @@ extern const std::string cLibexecPathPrefix;
  */
 extern const std::string cRuntimePath;
 
-/*!
+/**
  * @brief Path to auxiliary executables relative to executable directory.
  *
  * @sa cRuntimePathPrefix
@@ -324,7 +300,7 @@ extern const std::string cRuntimePath;
  */
 extern const std::string cLibexecPath;
 
-/*!
+/**
  * @brief Path to modules and shared libraries relative to executable directory.
  *
  * @sa cRuntimePathPrefix
@@ -334,7 +310,7 @@ extern const std::string cLibexecPath;
  */
 extern const std::string cLibraryPath;
 
-/*!
+/**
  * @brief Path to shared data relative to executable path prefix.
  *
  * @sa cRuntimePathPrefix

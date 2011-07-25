@@ -30,7 +30,8 @@ if __name__ == "__main__":
     reInclude       = re.compile (r"source\s+[\"']?(?P<module>.+)[\"']?$")
     reFunctionStart = re.compile (r"function\s*(?P<name>\w+)\s*{?")
     reFunctionEnd   = re.compile (r"}$")
-    reCommentLine   = re.compile (r"#!(?P<comment>.*)$")
+    reCommentStart  = re.compile (r"##+(?P<comment>.*)$")
+    reCommentLine   = re.compile (r"#+(?P<comment>.*)$")
     reParamDoc      = re.compile (r"[\@\\]param\s+(\[\s*(in|out|in\s*,\s*out|out\s*,\s*in)\s*\]|\s*)\s+(?P<param>\w+)")
     reIfClauseStart = re.compile (r"if\s*\[")
     reIfClauseEnd   = re.compile (r"else[\s$]|elif\s*\[|;?fi$")
@@ -96,7 +97,7 @@ if __name__ == "__main__":
                     sys.stdout.write ("\n")
                     continue
             # Doxygen comment
-            m = reCommentLine.match (line)
+            m = reCommentStart.match (line)
             if m is not None:
                 comment = m.group ('comment')
                 sys.stdout.write ("///" + comment + "\n")

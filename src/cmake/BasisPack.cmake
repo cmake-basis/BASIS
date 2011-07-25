@@ -1,37 +1,37 @@
 ##############################################################################
-#! @file  BasisPack.cmake
-#! @brief CPack configuration. Include this module instead of CPack.
-#!
-#! @note This module is included by basis_project_finalize().
-#!
-#! This module implements the packaging of BASIS projects.
-#!
-#! Overwrite the package information set by this module either in a file
-#! Package.cmake or a file Package.cmake.in located in the directory
-#! specified by PROJECT_CONFIG_DIR. The latter is configured and copied to the
-#! binary tree before included by this module. Further, to enable a
-#! component-based installation, provide either a file Components.cmake or
-#! Components.cmake.in again in the directory specified by PROJECT_CONFIG_DIR.
-#! Also in this case, the latter is configured via CMake's configure_file()
-#! before use. This file is referred to as components definition (file).
-#!
-#! Components can be added in the components definition using the command
-#! basis_add_component(). Several components can be grouped together and a
-#! group description be added using the command basis_add_component_group().
-#! Different pre-configured install types which define a certain selection of
-#! components to install can be added using basis_add_install_type().
-#! Note that all these BASIS functions are wrappers around the corresponding
-#! CPack functions.
-#!
-#! @sa CPack.cmake
-#! @sa http://www.vtk.org/Wiki/CMake:Component_Install_With_CPack#Component-Based_Installers_with_CPack
-#!
-#! Copyright (c) 2011 Univeristy of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeAPI
+# @file  BasisPack.cmake
+# @brief CPack configuration. Include this module instead of CPack.
+#
+# @note This module is included by basis_project_finalize().
+#
+# This module implements the packaging of BASIS projects.
+#
+# Overwrite the package information set by this module either in a file
+# Package.cmake or a file Package.cmake.in located in the directory
+# specified by PROJECT_CONFIG_DIR. The latter is configured and copied to the
+# binary tree before included by this module. Further, to enable a
+# component-based installation, provide either a file Components.cmake or
+# Components.cmake.in again in the directory specified by PROJECT_CONFIG_DIR.
+# Also in this case, the latter is configured via CMake's configure_file()
+# before use. This file is referred to as components definition (file).
+#
+# Components can be added in the components definition using the command
+# basis_add_component(). Several components can be grouped together and a
+# group description be added using the command basis_add_component_group().
+# Different pre-configured install types which define a certain selection of
+# components to install can be added using basis_add_install_type().
+# Note that all these BASIS functions are wrappers around the corresponding
+# CPack functions.
+#
+# @sa CPack.cmake
+# @sa http://www.vtk.org/Wiki/CMake:Component_Install_With_CPack#Component-Based_Installers_with_CPack
+#
+# Copyright (c) 2011 Univeristy of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeAPI
 ##############################################################################
 
 # get directory of this file
@@ -116,9 +116,9 @@ set (CPACK_SOURCE_TOPLEVEL_TAG      "${CPACK_SYSTEM_NAME}-source")
 set (CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME_LOWER}-${PROJECT_VERSION}-source")
 
 # ----------------------------------------------------------------------------
-#! @todo The proper values for the following options still need to be
-#!       figured. For the moment, just ignore these settings. NSIS might
-#!       anyways not be supported in the near future.
+# @todo The proper values for the following options still need to be
+#       figured. For the moment, just ignore these settings. NSIS might
+#       anyways not be supported in the near future.
 # ----------------------------------------------------------------------------
 
 if (WIN32 AND NOT UNIX)
@@ -140,9 +140,8 @@ endif ()
 # source package
 # ============================================================================
 
-#! @brief Patterns to be ignored when creating source package.
-#!
-#! @ingroup CMakeAPI
+## @brief Patterns to be ignored when creating source package.
+# @ingroup CMakeAPI
 set (
   CPACK_SOURCE_IGNORE_FILES
     "${CPACK_SOURCE_IGNORE_FILES}"
@@ -182,22 +181,22 @@ include (CPack)
 # utilities
 # ----------------------------------------------------------------------------
 
-#! @addtogroup CMakeAPI
-#! @{
+## @addtogroup CMakeAPI
+#  @{
 
-# ****************************************************************************
-#! @brief Add component group.
-#!
-#! @attention This functionality is not yet entirely implemented.
-#! @todo Come up and implement components concept which fits into superproject concept.
-#!
-#! @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
-#! @sa cpack_add_component_group()
-#!
-#! @param [in] GRPNAME Name of the component group.
-#! @param [in] ARGN    Further arguments passed to cpack_add_component_group().
-#!
-#! @returns Adds the component group @p GRPNAME.
+##############################################################################
+# @brief Add component group.
+#
+# @attention This functionality is not yet entirely implemented.
+# @todo Come up and implement components concept which fits into superproject concept.
+#
+# @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
+# @sa cpack_add_component_group()
+#
+# @param [in] GRPNAME Name of the component group.
+# @param [in] ARGN    Further arguments passed to cpack_add_component_group().
+#
+# @returns Adds the component group @p GRPNAME.
 
 function (basis_add_component_group GRPNAME)
   set (OPTION_NAME)
@@ -224,19 +223,19 @@ function (basis_add_component_group GRPNAME)
   endif ()
 endfunction ()
 
-# ****************************************************************************
-#! @brief Add component.
-#!
-#! @attention This functionality is not yet entirely implemented.
-#! @todo Come up and implement components concept which fits into superproject concept.
-#!
-#! @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
-#! @sa cpack_add_component()
-#!
-#! @param [in] COMPNAME Name of the component.
-#! @param [in] ARGN     Further arguments passed to cpack_add_component().
-#!
-#! @returns Adds the component named @p COMPNAME.
+##############################################################################
+# @brief Add component.
+#
+# @attention This functionality is not yet entirely implemented.
+# @todo Come up and implement components concept which fits into superproject concept.
+#
+# @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
+# @sa cpack_add_component()
+#
+# @param [in] COMPNAME Name of the component.
+# @param [in] ARGN     Further arguments passed to cpack_add_component().
+#
+# @returns Adds the component named @p COMPNAME.
 
 function (basis_add_component COMPNAME)
   set (OPTION_NAME)
@@ -267,35 +266,35 @@ function (basis_add_component COMPNAME)
   endif ()
 endfunction ()
 
-# ****************************************************************************
-#! @brief Add pre-configured install type.
-#!
-#! @sa CPack.cmake
-#! @sa cpack_add_install_type ()
-#!
-#! @param [in] ARGN Arguments for cpack_add_install_type().
-#!
-#! @returns Adds a pre-configured installation type.
+##############################################################################
+# @brief Add pre-configured install type.
+#
+# @sa CPack.cmake
+# @sa cpack_add_install_type ()
+#
+# @param [in] ARGN Arguments for cpack_add_install_type().
+#
+# @returns Adds a pre-configured installation type.
 
 function (basis_add_install_type)
   cpack_add_install_type (${ARGN})
 endfunction ()
 
-# ****************************************************************************
-#! @brief Configure installation-time downloads of selected components.
-#!
-#! @sa CPack.cmake
-#! @sa cpack_configure_downloads()
-#!
-#! @param [in] ARGN Arguments for cpack_configure_downloads().
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Configure installation-time downloads of selected components.
+#
+# @sa CPack.cmake
+# @sa cpack_configure_downloads()
+#
+# @param [in] ARGN Arguments for cpack_configure_downloads().
+#
+# @returns Nothing.
 
 function (basis_configure_downloads)
   cpack_configure_downloads (${ARGN})
 endfunction ()
 
-#! @}
+## @}
 
 # ----------------------------------------------------------------------------
 # include components definition

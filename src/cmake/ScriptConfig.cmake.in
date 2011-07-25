@@ -1,58 +1,58 @@
 ##############################################################################
-#! @file  ScriptConfig.cmake.in
-#! @brief Default script configuration.
-#!
-#! @note The file ScriptConfig.cmake.in is configured and used by BASIS to
-#!       generate CMake build scripts used to "build" script files.
-#!
-#! This CMake file defines CMake variables which can be used within scripts.
-#! If the project structure differs for the build tree and the install tree,
-#! the CMake variables used within the script can be set depending on the
-#! value of the variable BUILD_INSTALL_SCRIPT. This variable evaluates to true,
-#! when the script is build, i.e., configured, for the installation tree and
-#! to false, otherwise.
-#!
-#! Example:
-#! @code
-#! if (BUILD_INSTALL_SCRIPT)
-#!   set (BIN_DIR "@INSTALL_BIN_DIR@")
-#! else ()
-#!   set (BIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
-#! endif ()
-#! @endcode
-#!
-#! Avoid the use of absolute paths, however! Instead, use the variable
-#! SCRIPT_DIR which is set to the directory of the script file to make these
-#! paths relative to the directory of the script file. The relative paths
-#! determined by the script configuration script shall be used in the script.
-#! Therefore, the script has to determine its directory at runtime. This can
-#! usually easily be done by extracting the path component from the first argument.
-#!
-#! Example:
-#! @code
-#! #! /usr/bin/env bash
-#! @BASH_FUNCTION_get_executable_directory@
-#! exec_dir=$(get_executable_directory)
-#! data_dir=$exec_dir/@DATA_DIR@
-#! @endcode
-#!
-#! where DATA_DIR is the relative path determined during the script configuration.
-#! See documentation of basis_set_script_path_definition() for a convenience
-#! function which can be used just for that. This function generates the
-#! definition of a function which is prepended to this script configuration.
-#! Use this function as follows within the script configuration file.
-#!
-#! Example:
-#! @code
-#! basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
-#! @endcode
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeTemplates
+# @file  ScriptConfig.cmake.in
+# @brief Default script configuration.
+#
+# @note The file ScriptConfig.cmake.in is configured and used by BASIS to
+#       generate CMake build scripts used to "build" script files.
+#
+# This CMake file defines CMake variables which can be used within scripts.
+# If the project structure differs for the build tree and the install tree,
+# the CMake variables used within the script can be set depending on the
+# value of the variable BUILD_INSTALL_SCRIPT. This variable evaluates to true,
+# when the script is build, i.e., configured, for the installation tree and
+# to false, otherwise.
+#
+# Example:
+# @code
+# if (BUILD_INSTALL_SCRIPT)
+#   set (BIN_DIR "@INSTALL_BIN_DIR@")
+# else ()
+#   set (BIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
+# endif ()
+# @endcode
+#
+# Avoid the use of absolute paths, however! Instead, use the variable
+# SCRIPT_DIR which is set to the directory of the script file to make these
+# paths relative to the directory of the script file. The relative paths
+# determined by the script configuration script shall be used in the script.
+# Therefore, the script has to determine its directory at runtime. This can
+# usually easily be done by extracting the path component from the first argument.
+#
+# Example:
+# @code
+# # /usr/bin/env bash
+# @BASH_FUNCTION_get_executable_directory@
+# exec_dir=$(get_executable_directory)
+# data_dir=$exec_dir/@DATA_DIR@
+# @endcode
+#
+# where DATA_DIR is the relative path determined during the script configuration.
+# See documentation of basis_set_script_path_definition() for a convenience
+# function which can be used just for that. This function generates the
+# definition of a function which is prepended to this script configuration.
+# Use this function as follows within the script configuration file.
+#
+# Example:
+# @code
+# basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
+# @endcode
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeTemplates
 ##############################################################################
 
 # ============================================================================
@@ -83,25 +83,26 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 # BASH
 # ----------------------------------------------------------------------------
 
-#! @addtogroup BASHUtilities
-#! @{
+## @addtogroup BASHUtilities
+#  @{
 
-#! @brief Definition of get_executable_directory() function.
-#!
-#! Example:
-#! @code
-#! @BASH_FUNCTION_get_executable_directory@
-#! exec_dir=$(get_executable_directory)
-#! @endcode
-#!
-#! @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+##############################################################################
+# @brief Definition of get_executable_directory() function.
+#
+# Example:
+# @code
+# @BASH_FUNCTION_get_executable_directory@
+# exec_dir=$(get_executable_directory)
+# @endcode
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 set (BASH_FUNCTION_get_executable_directory "
-# ****************************************************************************
-#! @brief Get real directory of executable.
-#!
-#! @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-#!
-#! @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
+##############################################################################
+# @brief Get real directory of executable.
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+#
+# @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
 get_executable_directory ()
 {
     # get the absolute path of the executable
@@ -123,18 +124,19 @@ get_executable_directory ()
 "
 )
 
-#! @brief Definition of get_executable_name() function.
-#!
-#! Example:
-#! @code
-#! @BASH_FUNCTION_get_executable_name@
-#! exec_name=$(get_executable_name)
-#! @endcode
+##############################################################################
+# @brief Definition of get_executable_name() function.
+#
+# Example:
+# @code
+# @BASH_FUNCTION_get_executable_name@
+# exec_name=$(get_executable_name)
+# @endcode
 set (BASH_FUNCTION_get_executable_name "
-# ****************************************************************************
-#! @brief Get name of executable.
-#!
-#! @returns Prints name of BASH script to @c STDOUT.
+##############################################################################
+# @brief Get name of executable.
+#
+# @returns Prints name of BASH script to @c STDOUT.
 get_executable_name ()
 {
     echo \${0##*/}
@@ -142,18 +144,19 @@ get_executable_name ()
 "
 )
 
-#! @brief Definition of print_version() function with default copyright.
-#!
-#! Example:
-#! @code
-#! @BASH_FUNCTION_print_version@
-#! print_version
-#! @endcode
+##############################################################################
+# @brief Definition of print_version() function with default copyright.
+#
+# Example:
+# @code
+# @BASH_FUNCTION_print_version@
+# print_version
+# @endcode
 set (BASH_FUNCTION_print_version "
-# ****************************************************************************
-#! @brief Print version information.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print version information.
+#
+# @returns Nothing.
 print_version ()
 {
     echo -n \"$(get_executable_name) (BASIS) version @PROJECT_VERSION@\"
@@ -169,18 +172,19 @@ EOF-COPYRIGHT
 "
 )
 
-#! @brief Definition of print_contact() function with default contact.
-#!
-#! Example:
-#! @code
-#! @BASH_FUNCTION_print_contact@
-#! print_contact
-#! @endcode
+##############################################################################
+# @brief Definition of print_contact() function with default contact.
+#
+# Example:
+# @code
+# @BASH_FUNCTION_print_contact@
+# print_contact
+# @endcode
 set (BASH_FUNCTION_print_contact "
-# ****************************************************************************
-#! @brief Print contact information.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print contact information.
+#
+# @returns Nothing.
 print_contact ()
 {
     echo \"Contact:\"
@@ -189,22 +193,23 @@ print_contact ()
 "
 )
 
-#! @}
+## @}
 
 # ----------------------------------------------------------------------------
 # Python
 # ----------------------------------------------------------------------------
 
-#! @addtogroup PythonUtilities
-#! @{
+## @addtogroup PythonUtilities
+#  @{
 
-#! @brief Definition of get_executable_directory() function.
-#!
-#! Example:
-#! @code
-#! @PYTHON_FUNCTION_get_executable_directory@
-#! exec_dir = get_executable_directory ()
-#! @endcode
+##############################################################################
+# @brief Definition of get_executable_directory() function.
+#
+# Example:
+# @code
+# @PYTHON_FUNCTION_get_executable_directory@
+# exec_dir = get_executable_directory ()
+# @endcode
 set (PYTHON_FUNCTION_get_executable_directory "
 # ****************************************************************************
 def get_executable_directory ():
@@ -215,13 +220,14 @@ def get_executable_directory ():
 "
 )
 
-#! @brief Definition of get_executable_name() function.
-#!
-#! Example:
-#! @code
-#! @PYTHON_FUNCTION_get_executable_name@
-#! exec_name = get_executable_name ()
-#! @endcode
+##############################################################################
+# @brief Definition of get_executable_name() function.
+#
+# Example:
+# @code
+# @PYTHON_FUNCTION_get_executable_name@
+# exec_name = get_executable_name ()
+# @endcode
 set (PYTHON_FUNCTION_get_executable_name "
 # ****************************************************************************
 def get_executable_name ():
@@ -232,22 +238,23 @@ def get_executable_name ():
 "
 )
 
-#! @}
+## @}
 
 # ----------------------------------------------------------------------------
 # Perl
 # ----------------------------------------------------------------------------
 
-#! @addtogroup PerlUtilities
-#! @{
+## @addtogroup PerlUtilities
+#  @{
 
-#! @brief Definition of get_executable_directory() function.
-#!
-#! Example:
-#! @code
-#! @PERL_FUNCTION_get_executable_directory@
-#! exec_dir = get_executable_directory ()
-#! @endcode
+##############################################################################
+# @brief Definition of get_executable_directory() function.
+#
+# Example:
+# @code
+# @PERL_FUNCTION_get_executable_directory@
+# exec_dir = get_executable_directory ()
+# @endcode
 set (PERL_FUNCTION_get_executable_directory "
 # ****************************************************************************
 sub get_executable_directory
@@ -259,13 +266,14 @@ sub get_executable_directory
 "
 )
 
-#! @brief Definition of get_executable_name() function.
-#!
-#! Example:
-#! @code
-#! @PERL_FUNCTION_get_executable_name@
-#! exec_name = get_executable_name ()
-#! @endcode
+##############################################################################
+# @brief Definition of get_executable_name() function.
+#
+# Example:
+# @code
+# @PERL_FUNCTION_get_executable_name@
+# exec_name = get_executable_name ()
+# @endcode
 set (PERL_FUNCTION_get_executable_name "
 # ****************************************************************************
 sub get_executable_name
@@ -276,4 +284,4 @@ sub get_executable_name
 "
 )
 
-#! @}
+## @}

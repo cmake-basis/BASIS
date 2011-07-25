@@ -1,4 +1,4 @@
-/*!
+/**
  * @file  test_main.cc
  * @brief Implementation of main() function for GMock based test drivers.
  *
@@ -38,6 +38,14 @@
 
 #include <iostream>
 #include <sbia/basis/test.h>
+
+/**
+ * @fn    main
+ * @brief Default implementation of main() function of Google Mock based unit test drivers.
+ *
+ * @returns Exit status.
+ * @retval 0 On success.
+ */
 
 // MS C++ compiler/linker has a bug on Windows (not on Windows CE), which
 // causes a link error when _tmain is defined in a static library and UNICODE

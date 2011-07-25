@@ -38,7 +38,8 @@ if __name__ == "__main__":
     reOptionName    = re.compile (r"(?P<name>\w+)")
     reOptionEnd     = re.compile (r".*\)\s*$")
     reArgs          = re.compile (r"\W+")
-    reCommentLine   = re.compile (r"#!(?P<comment>.*)")
+    reCommentStart  = re.compile (r"##+(?P<comment>.*)")
+    reCommentLine   = re.compile (r"#+(?P<comment>.*)")
     reOptParamDoc   = re.compile (r"[\@\\]param\s*(\[[inout,\s]+\])?\s+(?P<param>ARG(N|V[0..9]))")
     reIfClauseStart = re.compile (r"if\s*\(")
     reIfClauseEnd   = re.compile (r"else\s*\(|elseif\s*\(|endif\s*\(")
@@ -150,7 +151,7 @@ if __name__ == "__main__":
                     sys.stdout.write ("\n")
                     continue
             # Doxygen comment
-            m = reCommentLine.match (line)
+            m = reCommentStart.match (line)
             if m is not None:
                 comment = m.group ('comment')
                 sys.stdout.write ("///" + comment + "\n")

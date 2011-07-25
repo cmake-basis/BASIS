@@ -1,15 +1,15 @@
 ##############################################################################
-#! @file  BasisTest.cmake
-#! @brief CTest configuration. Include this module instead of CTest.
-#!
-#! @note This module is included by basis_project_initialize().
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeAPI
+# @file  BasisTest.cmake
+# @brief CTest configuration. Include this module instead of CTest.
+#
+# @note This module is included by basis_project_initialize().
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeAPI
 ##############################################################################
 
 
@@ -83,17 +83,17 @@ endif ()
 # utilities
 # ============================================================================
 
-#! @addtogroup CMakeAPI
-#! @{
+## @addtogroup CMakeAPI
+#  @{
 
-# ****************************************************************************
-#! @brief Replaces CMake's set_tests_properties() command.
-#!
-#! @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property
-#!
-#! @param [in] ARGN Arguments for set_tests_property().
-#!
-#! @returns Sets the given properties of the specified test.
+##############################################################################
+# @brief Replaces CMake's set_tests_properties() command.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property
+#
+# @param [in] ARGN Arguments for set_tests_property().
+#
+# @returns Sets the given properties of the specified test.
 
 function (basis_set_tests_properties)
   set (UIDS)
@@ -107,16 +107,16 @@ function (basis_set_tests_properties)
   set_tests_properties (${UIDS} ${ARGN})
 endfunction ()
 
-# ****************************************************************************
-#! @brief Replaces CMake's get_test_property() command.
-#!
-#! @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property
-#!
-#! @param [out] VAR       Property value.
-#! @param [in]  TEST_NAME Name of test.
-#! @param [in]  ARGN      Remaining arguments of get_test_property().
-#!
-#! @returns Sets @p VAR to the value of the requested property.
+##############################################################################
+# @brief Replaces CMake's get_test_property() command.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property
+#
+# @param [out] VAR       Property value.
+# @param [in]  TEST_NAME Name of test.
+# @param [in]  ARGN      Remaining arguments of get_test_property().
+#
+# @returns Sets @p VAR to the value of the requested property.
 
 function (basis_get_test_property VAR TEST_NAME)
   basis_test_uid (TEST_UID "${TEST_NAME}")
@@ -124,15 +124,15 @@ function (basis_get_test_property VAR TEST_NAME)
   set (${VAR} "${VALUE}" PARENT_SCOPE)
 endfunction ()
 
-# ****************************************************************************
-#! @brief Add test.
-#!
-#! @todo Make use of ExternalData module to fetch remote test data.
-#!
-#! @param [in] TEST_NAME Name of the test.
-#! @param [in] ARGN      Parameters passed to add_test() (excluding test name).
-#!
-#! @returns Adds CTest test.
+##############################################################################
+# @brief Add test.
+#
+# @todo Make use of ExternalData module to fetch remote test data.
+#
+# @param [in] TEST_NAME Name of the test.
+# @param [in] ARGN      Parameters passed to add_test() (excluding test name).
+#
+# @returns Adds CTest test.
 
 function (basis_add_test TEST_NAME)
   basis_check_test_name ("${TEST_NAME}")
@@ -145,42 +145,42 @@ function (basis_add_test TEST_NAME)
   message (STATUS "Adding test ${TEST_UID}... - done")
 endfunction ()
 
-# ****************************************************************************
-#! @brief Add unit test.
-#!
-#! @param [in] TEST_NAME Name of the test.
-#! @param [in] ARGN      The following parameters are parsed:
-#! @par
-#! <table border="0">
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b LANGUAGE lang</td>
-#!     <td>The programming language in which both the module and unit test
-#!         are implemented. Defaults to CXX (i.e., C++).</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b SOURCES file1 [file2 ...]</td>
-#!     <td>The source files of the unit test. If this list contains a
-#!         file named either "*-main.*" or "*_main.*", the default
-#!         implementation of the main() function is not included.
-#!         Otherwise, the default implementation of the main() function,
-#!         i.e., the file test_main.cc of BASIS is added to this list.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b LINK_DEPENDS file1|target1 [file2|target2 ...]</td>
-#!     <td>Link dependencies.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b ARGS arg1 [arg2 ...]</td>
-#!     <td>Arguments passed to basis_add_test().</td>
-#!   </tr>
-#! </table>
-#!
-#! @returns Adds build target for the test executable and a CTest test
-#!          target which runs the built executable.
+##############################################################################
+# @brief Add unit test.
+#
+# @param [in] TEST_NAME Name of the test.
+# @param [in] ARGN      The following parameters are parsed:
+# @par
+# <table border="0">
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b LANGUAGE lang</td>
+#     <td>The programming language in which both the module and unit test
+#         are implemented. Defaults to CXX (i.e., C++).</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b SOURCES file1 [file2 ...]</td>
+#     <td>The source files of the unit test. If this list contains a
+#         file named either "*-main.*" or "*_main.*", the default
+#         implementation of the main() function is not included.
+#         Otherwise, the default implementation of the main() function,
+#         i.e., the file test_main.cc of BASIS is added to this list.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b LINK_DEPENDS file1|target1 [file2|target2 ...]</td>
+#     <td>Link dependencies.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b ARGS arg1 [arg2 ...]</td>
+#     <td>Arguments passed to basis_add_test().</td>
+#   </tr>
+# </table>
+#
+# @returns Adds build target for the test executable and a CTest test
+#          target which runs the built executable.
 
 function (basis_add_unit_test TEST_NAME)
   # parse arguments
@@ -214,38 +214,38 @@ function (basis_add_unit_test TEST_NAME)
   basis_add_test ("${TEST_NAME}" "${DIR}/${TEST_NAME}" ${ARGN_ARGS})
 endfunction ()
 
-# ****************************************************************************
-#! @brief Add tests of default options for given executable.
-#!
-#! @par Default options:
-#! <table border="0">
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         <b>-u [ --usage ]</b></td>
-#!     <td>Usage information. The output has to match the regular expression
-#!         "[Uu]sage:\n\s*\<executable name\>", where \<executable name\>
-#!         is the name of the tested executable.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         <b>-h [ --help ]</b></td>
-#!     <td>Help screen. Simply tests if the option is accepted.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         <b>-V [ --version ]</b></td>
-#!     <td>Version information. Output has to include the project version string.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         <b>-v [ --verbose ]</b></td>
-#!     <td>Increase verbosity of output messages. Simply tests if the option is accepted.</td>
-#!   </tr>
-#! </table>
-#!
-#! @param [in] TARGET_NAME Name of executable or script target.
-#!
-#! @returns Adds tests for the default options of the specified executable.
+##############################################################################
+# @brief Add tests of default options for given executable.
+#
+# @par Default options:
+# <table border="0">
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         <b>-u [ --usage ]</b></td>
+#     <td>Usage information. The output has to match the regular expression
+#         "[Uu]sage:\n\s*\<executable name\>", where \<executable name\>
+#         is the name of the tested executable.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         <b>-h [ --help ]</b></td>
+#     <td>Help screen. Simply tests if the option is accepted.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         <b>-V [ --version ]</b></td>
+#     <td>Version information. Output has to include the project version string.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         <b>-v [ --verbose ]</b></td>
+#     <td>Increase verbosity of output messages. Simply tests if the option is accepted.</td>
+#   </tr>
+# </table>
+#
+# @param [in] TARGET_NAME Name of executable or script target.
+#
+# @returns Adds tests for the default options of the specified executable.
 
 function (basis_add_tests_of_default_options TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -326,4 +326,4 @@ function (basis_add_tests_of_default_options TARGET_NAME)
   endif ()
 endfunction ()
 
-#! @}
+## @}

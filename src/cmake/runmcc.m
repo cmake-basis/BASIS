@@ -1,26 +1,26 @@
-%! @file  runmcc.m
-%! @brief Used to invoke MATLAB Compiler in MATLAB mode.
-%!
-%! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-%! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-%!
-%! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-%!
-%! @ingroup CMakeHelpers
+%% @file  runmcc.m
+%% @brief Used to invoke MATLAB Compiler in MATLAB mode.
+%%
+%% Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+%% See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+%%
+%% Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+%%
+%% @ingroup CMakeHelpers
 
-%! @brief Invoke the MATLAB Compiler and optionally exit MATLAB when finished.
-%!
-%! Invokes the MATLAB Compiler with the arguments given by varargin. See the
-%! documentation of the MATLAB Compiler mcc for a summary of the arguments.
-%! Further, when the option -q is given, this function quits the MATLAB
-%! interpreter when the MATLAB Compiler is finished.
-%!
-%! @param [in] varargin Arguments to MATLAB Compiler and option -q if
-%!                      MATLAB interpreter should be quit when finished.
-%!
-%! @returns Nothing.
-%!
-%! @ingroup CMakeHelpers
+%% @brief Invoke the MATLAB Compiler and optionally exit MATLAB when finished.
+%%
+%% Invokes the MATLAB Compiler with the arguments given by varargin. See the
+%% documentation of the MATLAB Compiler mcc for a summary of the arguments.
+%% Further, when the option -q is given, this function quits the MATLAB
+%% interpreter when the MATLAB Compiler is finished.
+%%
+%% @param [in] varargin Arguments to MATLAB Compiler and option -q if
+%%                      MATLAB interpreter should be quit when finished.
+%%
+%% @returns Nothing.
+%%
+%% @ingroup CMakeHelpers
 
 function runmcc (varargin)
 % runmcc (varargin)  Invokes the MATLAB Compiler with the arguments

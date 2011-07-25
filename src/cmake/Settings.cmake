@@ -1,31 +1,31 @@
 ##############################################################################
-#! @file  Settings.cmake
-#! @brief BASIS configuration and default CMake settings used by projects.
-#!
-#! This module defines global CMake constants and variables which are used
-#! by the BASIS CMake functions and macros. Hence, these values can be used
-#! to configure the behaviour of these functions to some extent without the
-#! need to modify the functions themselves.
-#!
-#! Moreover, this file specifies the common CMake settings such as the build
-#! configuration used by projects following BASIS.
-#!
-#! @attention Be careful when caching any of the variables. Usually, this
-#!            file is included in the root CMake configuration file of the
-#!            project. The variables set by this module should only be valid
-#!            underneath this directory tree, but not propagate to the parent
-#!            or a sibling.
-#!
-#! @note As this file also sets the CMake policies to be used, it has to
-#!       be included using the NO_POLICY_SCOPE in order for these policies
-#!       to take effect also in the including file and its subdirectories.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeTools
+# @file  Settings.cmake
+# @brief BASIS configuration and default CMake settings used by projects.
+#
+# This module defines global CMake constants and variables which are used
+# by the BASIS CMake functions and macros. Hence, these values can be used
+# to configure the behaviour of these functions to some extent without the
+# need to modify the functions themselves.
+#
+# Moreover, this file specifies the common CMake settings such as the build
+# configuration used by projects following BASIS.
+#
+# @attention Be careful when caching any of the variables. Usually, this
+#            file is included in the root CMake configuration file of the
+#            project. The variables set by this module should only be valid
+#            underneath this directory tree, but not propagate to the parent
+#            or a sibling.
+#
+# @note As this file also sets the CMake policies to be used, it has to
+#       be included using the NO_POLICY_SCOPE in order for these policies
+#       to take effect also in the including file and its subdirectories.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeTools
 ##############################################################################
 
 
@@ -86,75 +86,75 @@ endif ()
 # common options
 # ============================================================================
 
-#! @addtogroup CMakeAPI
-#! @{
+## @addtogroup CMakeAPI
+#  @{
 
-#! @brief Enable/Disable verbose messages of BASIS functions.
+## @brief Enable/Disable verbose messages of BASIS functions.
 option (BASIS_VERBOSE "Whether BASIS functions should be verbose." "OFF")
 mark_as_advanced (BASIS_VERBOSE)
 
-#! @}
+## @}
 
 # ============================================================================
 # constants and global settings
 # ============================================================================
 
-#! @addtogroup CMakeUtilities
-#! @{
+## @addtogroup CMakeUtilities
+#  @{
 
-#! @brief List of names used for special purpose targets.
-#!
-#! Contains a list of target names that are used by the BASIS functions for
-#! special purposes and are hence not to be used for project targets.
+## @brief List of names used for special purpose targets.
+#
+# Contains a list of target names that are used by the BASIS functions for
+# special purposes and are hence not to be used for project targets.
 set (BASIS_RESERVED_TARGET_NAMES "test" "uninstall" "doc" "changelog" "execname")
 
-#! @brief Default component used for library targets when no component is specified.
-#!
-#! The default component a library target and its auxiliary files
-#! are associated with if no component was specified, explicitly.
+## @brief Default component used for library targets when no component is specified.
+#
+# The default component a library target and its auxiliary files
+# are associated with if no component was specified, explicitly.
 set (BASIS_LIBRARY_COMPONENT "Development")
 
-#! @brief Default component used for executables when no component is specified.
-#!
-#! The default component an executable target and its auxiliary files
-#! are associated with if no component was specified, explicitly.
+## @brief Default component used for executables when no component is specified.
+#
+# The default component an executable target and its auxiliary files
+# are associated with if no component was specified, explicitly.
 set (BASIS_RUNTIME_COMPONENT "Runtime")
 
-#! @brief Character used to separate namespace and target name to build target UID.
-#!
-#! This separator is used to construct a UID for a particular target.
-#! For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".
+## @brief Character used to separate namespace and target name to build target UID.
+#
+# This separator is used to construct a UID for a particular target.
+# For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".
 set (BASIS_NAMESPACE_SEPARATOR "@")
 
-#! @brief Character used to separate version and project name (e.g., in target UID).
-#!
-#! This separator is used to construct a UID for a particular target.
-#! For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>\@BASIS_VERSION_SEPARATOR\@\<version\>".
-#! Note that the version need not be included if only a single version of each
-#! package is supposed to be installed on a target system.
+## @brief Character used to separate version and project name (e.g., in target UID).
+#
+# This separator is used to construct a UID for a particular target.
+# For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>\@BASIS_VERSION_SEPARATOR\@\<version\>".
+# Note that the version need not be included if only a single version of each
+# package is supposed to be installed on a target system.
 set (BASIS_VERSION_SEPARATOR "#")
 
-#! @brief Prefix used for CMake package config files.
-#!
-#! This string is used as prefix for the names of the \<Package\>Config.cmake
-#! et al. files. For example, a value of "SBIA_", results in the CMake package
-#! configuration file "SBIA_\<Package\>Config.cmake".
+## @brief Prefix used for CMake package config files.
+#
+# This string is used as prefix for the names of the \<Package\>Config.cmake
+# et al. files. For example, a value of "SBIA_", results in the CMake package
+# configuration file "SBIA_\<Package\>Config.cmake".
 set (BASIS_CONFIG_PREFIX "")
 
-#! @brief Script used to execute a process in CMake script mode.
-#!
-#! In order to be able to assign a timeout to the execution of a custom command
-#! and to add some error message parsing, this script is used by some build
-#! rules to actually perform the build step. See for example, the build of
-#! executables using the MATLAB Compiler.
+## @brief Script used to execute a process in CMake script mode.
+#
+# In order to be able to assign a timeout to the execution of a custom command
+# and to add some error message parsing, this script is used by some build
+# rules to actually perform the build step. See for example, the build of
+# executables using the MATLAB Compiler.
 set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmake")
 
-#! @brief Default script configuration template.
-#!
-#! This is the default template used by basis_add_script() to configure the
-#! script during the build step. If the file
-#! @c PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
-#! is set to its path by basis_project_initialize().
+## @brief Default script configuration template.
+#
+# This is the default template used by basis_add_script() to configure the
+# script during the build step. If the file
+# @c PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
+# is set to its path by basis_project_initialize().
 set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 
 # ============================================================================
@@ -169,40 +169,40 @@ set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 #       time. The guard directive at the beginning of this file protects
 #       these variables to be overwritten each time this module is included.
 
-#! @brief Documentation string for @c BASIS_CACHED_INCLUDE_DIRECTORIES.
+## @brief Documentation string for @c BASIS_CACHED_INCLUDE_DIRECTORIES.
 set (BASIS_CACHED_INCLUDE_DIRECTORIES_DOC "All include directories.")
-#! @brief Cached include directories added across subdirectories.
+## @brief Cached include directories added across subdirectories.
 set (BASIS_CACHED_INCLUDE_DIRECTORIES "" CACHE INTERNAL "${BASIS_CACHED_INCLUDE_DIRECTORIES_DOC}" FORCE)
 
-#! @brief Documentation string for @c BASIS_TARGETS.
+## @brief Documentation string for @c BASIS_TARGETS.
 set (BASIS_TARGETS_DOC "Names of all targets.")
-#! @brief Cached UIDs of all build targets.
+## @brief Cached UIDs of all build targets.
 set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
 
-#! @brief Documentation string for @c BASIS_CACHED_EXPORTS.
+## @brief Documentation string for @c BASIS_CACHED_EXPORTS.
 set (BASIS_CACHED_EXPORTS_DOC "All exported targets.")
-#! @brief Cached UIDs of exported build targets.
+## @brief Cached UIDs of exported build targets.
 set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
 
-#! @}
+## @}
 
 # ============================================================================
 # project directory structure
 # ============================================================================
 
-#! @addtogroup CMakeUtilities
-#! @{
+## @addtogroup CMakeUtilities
+#  @{
 
 # ----------------------------------------------------------------------------
 # assertions
 # ----------------------------------------------------------------------------
 
-# ****************************************************************************
-#! @brief Ensure certain requirements on build tree.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Ensure certain requirements on build tree.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 macro (buildtree_asserts)
   # root of build tree must not be root of source tree
@@ -216,12 +216,12 @@ macro (buildtree_asserts)
   endif()
 endmacro ()
 
-# ****************************************************************************
-#! @brief Ensure certain requirements on install tree.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Ensure certain requirements on install tree.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 macro (installtree_asserts)
   # prefix must be an absolute path
@@ -246,20 +246,20 @@ endmacro ()
 # instantiation for specific project
 # ----------------------------------------------------------------------------
 
-# ****************************************************************************
-#! @brief Instantiate project directory structure.
-#!
-#! This macro is invoked after the CMake project() command to instantiate
-#! the project directory structure, i.e., turn the directories into absolute
-#! paths using the CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR.
-#! Moreover, the occurences of \@PROJECT_NAME\@, \@PROJECT_NAME_LOWER\@,
-#! \@PROJECT_NAME_UPPER\@, \@PROJECT_VERSION\@, \@PROJECT_VERSION_MAJOR\@,
-#! \@PROJECT_VERSION_MINOR\@, and \@PROJECT_VERSION_PATH\@ are substituted by
-#! the actual values corresponding to the project name and version.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Instantiate project directory structure.
+#
+# This macro is invoked after the CMake project() command to instantiate
+# the project directory structure, i.e., turn the directories into absolute
+# paths using the CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR.
+# Moreover, the occurences of \@PROJECT_NAME\@, \@PROJECT_NAME_LOWER\@,
+# \@PROJECT_NAME_UPPER\@, \@PROJECT_VERSION\@, \@PROJECT_VERSION_MAJOR\@,
+# \@PROJECT_VERSION_MINOR\@, and \@PROJECT_VERSION_PATH\@ are substituted by
+# the actual values corresponding to the project name and version.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 macro (basis_initialize_directories)
   # source tree
@@ -309,10 +309,10 @@ macro (basis_initialize_directories)
   installtree_asserts ()
 endmacro ()
 
-#! @}
+## @}
 
-#! @addtogroup CMakeAPI
-#! @{
+## @addtogroup CMakeAPI
+#  @{
 
 # ----------------------------------------------------------------------------
 # source tree
@@ -324,28 +324,28 @@ endmacro ()
 #       The BASIS CMake functions should not be required to change as they
 #       are supposed to use these variables instead of the actual names.
 
-#! @brief Absolute path of directory of project sources in source tree.
+## @brief Absolute path of directory of project sources in source tree.
 set (PROJECT_CODE_DIR "@PROJECT_SOURCE_DIR@/src")
-#! @brief Absolute path of directory of BASIS project configuration in source tree.
+## @brief Absolute path of directory of BASIS project configuration in source tree.
 set (PROJECT_CONFIG_DIR "@PROJECT_SOURCE_DIR@/config")
-#! @brief Absolute path of directory of auxiliary data in source tree.
+## @brief Absolute path of directory of auxiliary data in source tree.
 set (PROJECT_DATA_DIR "@PROJECT_SOURCE_DIR@/data")
-#! @brief Absolute path of directory of documentation files in source tree.
+## @brief Absolute path of directory of documentation files in source tree.
 set (PROJECT_DOC_DIR "@PROJECT_SOURCE_DIR@/doc")
-#! @brief Absolute path of directory of example in source tree.
+## @brief Absolute path of directory of example in source tree.
 set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
-#! @brief Absolute path of diretory of public header files in source tree.
+## @brief Absolute path of diretory of public header files in source tree.
 set (PROJECT_INCLUDE_DIR "@PROJECT_SOURCE_DIR@/include")
-#! @brief Absolute path of directory of testing tree in source tree.
+## @brief Absolute path of directory of testing tree in source tree.
 set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 
 # ----------------------------------------------------------------------------
 # testing tree
 # ----------------------------------------------------------------------------
 
-#! @brief Absolute path of output directory for tests.
+## @brief Absolute path of output directory for tests.
 set (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary/output")
-#! @brief Absolute path of output directory for built test executables.
+## @brief Absolute path of output directory for built test executables.
 set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 
 # ----------------------------------------------------------------------------
@@ -354,11 +354,11 @@ set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 
 # These directory paths will be made absolute by the initialization functions.
 
-#! @brief Absolute path of output directory for built runtime executables.
+## @brief Absolute path of output directory for built runtime executables.
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
-#! @brief Absolute path of output directory for built shared libraries and modules.
+## @brief Absolute path of output directory for built shared libraries and modules.
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
-#! @brief Absolute path of output directory for built static libraries.
+## @brief Absolute path of output directory for built static libraries.
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 
 # ----------------------------------------------------------------------------
@@ -378,54 +378,54 @@ string (
     "${CMAKE_INSTALL_PREFIX}"
 )
 
-#! @brief Installation prefix.
+## @brief Installation prefix.
 set (
   INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
   CACHE PATH "Installation directories prefix."
 )
 
-#! @brief Installation sinfix.
+## @brief Installation sinfix.
 set (
   INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@"
   CACHE PATH "Installation directories suffix (or infix, respectively)."
 )
 
-#! @brief Enable/Disable the use of the INSTALL_SINFIX also for the
-#!        installation directory for public header files.
+## @brief Enable/Disable the use of the @c INSTALL_SINFIX also for the
+#         installation directory for public header files.
 option (INSTALL_SINFIX_FOR_INCLUDES "Whether to append INSTALL_SINFIX to installation directory of header files as well." OFF)
 mark_as_advanced (INSTALL_SINFIX_FOR_INCLUDES)
 
-#! @brief Enable/Disable installation of symbolic links on Unix-based systems.
+## @brief Enable/Disable installation of symbolic links on Unix-based systems.
 if (UNIX)
   option (INSTALL_LINKS "Whether to create (symbolic) links." ON)
 endif ()
 
-#! @brief Path of installation directory for runtime executables and shared
-#!        libraries on Windows relative to INSTALL_PREFIX.
+## @brief Path of installation directory for runtime executables and shared
+#         libraries on Windows relative to @c INSTALL_PREFIX.
 set (INSTALL_RUNTIME_DIR "bin")
 
-#! @brief Path of installation directory for auxiliary executables
-#!        relative to INSTALL_PREFIX.
+## @brief Path of installation directory for auxiliary executables
+#         relative to @c INSTALL_PREFIX.
 if (WIN32)
   set (INSTALL_LIBEXEC_DIR "bin")
 else ()
   set (INSTALL_LIBEXEC_DIR "lib")
 endif ()
 
-#! @brief Path of installation directory for shared libraries on Unix-based
-#!        systems and module libraries relative to INSTALL_PREFIX.
+## @brief Path of installation directory for shared libraries on Unix-based
+#         systems and module libraries relative to @c INSTALL_PREFIX.
 set (INSTALL_LIBRARY_DIR "lib")
 
-#! @brief Path of installation directory for static and import libraries
-#!        relative to INSTALL_PREFIX.
+## @brief Path of installation directory for static and import libraries
+#         relative to @c INSTALL_PREFIX.
 set (INSTALL_ARCHIVE_DIR "lib")
 
-#! @brief Path of installation directory for public header files
-#!        relative to INSTALL_PREFIX.
+## @brief Path of installation directory for public header files
+#         relative to @c INSTALL_PREFIX.
 set (INSTALL_INCLUDE_DIR "include")
 
-#! @brief Path of installation directory for shared data files
-#!        relative to INSTALL_PREFIX.
+## @brief Path of installation directory for shared data files
+#         relative to @c INSTALL_PREFIX.
 set (INSTALL_SHARE_DIR "share")
 
 if (INSTALL_SINFIX)
@@ -438,32 +438,32 @@ if (INSTALL_SINFIX)
   endforeach ()
 endif ()
 
-#! @brief Path of installation directory for CMake package configuration
-#!        files relative to INSTALL_PREFIX.
+## @brief Path of installation directory for CMake package configuration
+#         files relative to @c INSTALL_PREFIX.
 if (WIN32)
   set (INSTALL_CONFIG_DIR "cmake")
 else ()
   set (INSTALL_CONFIG_DIR "${INSTALL_LIBRARY_DIR}/cmake")
 endif ()
 
-#! @brief Path of installation directory for documentation files
-#!        relative to INSTALL_PREFIX.
+## @brief Path of installation directory for documentation files
+#         relative to @c INSTALL_PREFIX.
 if (WIN32)
   set (INSTALL_DOC_DIR "doc")
 else ()
   set (INSTALL_DOC_DIR "${INSTALL_SHARE_DIR}/doc")
 endif ()
 
-#! @brief Path of installation directory for example files
-#!        relative to INSTALL_PREFIX.
+## @brief Path of installation directory for example files
+#         relative to @c INSTALL_PREFIX.
 if (WIN32)
   set (INSTALL_EXAMPLE_DIR "example")
 else ()
   set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example")
 endif ()
 
-#! @brief Path of installation directory for man pages
-#!        relative to INSTALL_PREFIX.
+## @brief Path of installation directory for man pages
+#         relative to @c INSTALL_PREFIX.
 if (WIN32)
   set (INSTALL_MAN_DIR "man")
 else ()
@@ -481,7 +481,7 @@ endif ()
 # build configuration(s)
 # ============================================================================
 
-#! @brief List of all available/supported build configurations.
+## @brief List of all available/supported build configurations.
 set (
   CMAKE_CONFIGURATION_TYPES
     "Debug"
@@ -490,10 +490,10 @@ set (
   CACHE STRING "Build configurations." FORCE
 )
 
-#! @brief List of debug configurations.
-#!
-#! Used by the target_link_libraries() CMake command, for example,
-#! to determine whether to link to the optimized or debug libraries.
+## @brief List of debug configurations.
+#
+# Used by the target_link_libraries() CMake command, for example,
+# to determine whether to link to the optimized or debug libraries.
 set (DEBUG_CONFIGURATIONS "Debug")
 
 mark_as_advanced (CMAKE_CONFIGURATION_TYPES)
@@ -503,7 +503,7 @@ if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$|^Coverage$|^Release$")
   set (CMAKE_BUILD_TYPE "Release")
 endif ()
 
-#! @brief Current build configuration for GNU Make Makefiles generator.
+## @brief Current build configuration for GNU Make Makefiles generator.
 set (
   CMAKE_BUILD_TYPE
     "${CMAKE_BUILD_TYPE}"
@@ -596,4 +596,4 @@ set (CMAKE_EXE_LINKER_FLAGS_COVERAGE    "-fprofile-arcs -ftest-coverage")
 set (CMAKE_MODULE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 set (CMAKE_SHARED_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 
-#! @}
+## @}

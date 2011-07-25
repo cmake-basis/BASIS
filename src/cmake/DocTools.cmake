@@ -1,13 +1,13 @@
 ##############################################################################
-#! @file  DocTools.cmake
-#! @brief Tools related to gnerating or adding software documentation.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeTools
+# @file  DocTools.cmake
+# @brief Tools related to gnerating or adding software documentation.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeTools
 ##############################################################################
 
 if (__BASIS_DOCTOOLS_INCLUDED)
@@ -32,26 +32,26 @@ get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH
 # The following options are only enabled when at least one doc or changelog
 # target were added. Otherwise, there is nothing to build.
 
-#! @addtogroup CMakeAPI
-#! @{
+## @addtogroup CMakeAPI
+#  @{
 
-#! @brief Enable/Disable build of documentation target as part of ALL.
-#!
-#! This option is only available when the project adds at least one
-#! documentation target using the function basis_add_doc().
+## @brief Enable/Disable build of documentation target as part of ALL.
+#
+# This option is only available when the project adds at least one
+# documentation target using the function basis_add_doc().
 if (NOT DEFINED BUILD_DOCUMENTATION)
   set (BUILD_DOCUMENTATION)
 endif ()
 
-#! @brief Enable/Disable build of changelog target as part of ALL.
-#!
-#! This option is only available when the project adds at least one
-#! ChangeLog target using the function basis_add_doc().
+## @brief Enable/Disable build of changelog target as part of ALL.
+#
+# This option is only available when the project adds at least one
+# ChangeLog target using the function basis_add_doc().
 if (NOT DEFINED BUILD_CHANGELOG)
   set (BUILD_CHANGELOG)
 endif ()
 
-#! @}
+## @}
 
 # ============================================================================
 # used programs
@@ -60,7 +60,7 @@ endif ()
 # Doxygen - API documentation
 find_package (Doxygen)
 
-#! @brief Command svn2cl which is used to generate a ChangeLog from the Subversion log.
+## @brief Command svn2cl which is used to generate a ChangeLog from the Subversion log.
 find_program (
   BASIS_CMD_SVN2CL
     NAMES svn2cl
@@ -68,7 +68,7 @@ find_program (
 )
 mark_as_advanced (BASIS_CMD_SVN2CL)
 
-#! @brief The Python interpreter.
+## @brief The Python interpreter.
 find_program (
   BASIS_CMD_PYTHON
     NAMES python
@@ -76,7 +76,7 @@ find_program (
 )
 mark_as_advanced (BASIS_CMD_PYTHON)
 
-#! @brief The Perl interpreter.
+## @brief The Perl interpreter.
 find_program (
   BASIS_CMD_PERL
     NAMES perl
@@ -88,26 +88,26 @@ mark_as_advanced (BASIS_CMD_PERL)
 # settings
 # ============================================================================
 
-#! @addtogroup CMakeUtilities
-#! @{
+## @addtogroup CMakeUtilities
+#  @{
 
-#! @brief Default Doxygen input filter.
+## @brief Default Doxygen input filter.
 set (BASIS_DOXYGEN_INPUT_FILTER "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
 
-#! @brief Doxygen filter used to process Python scripts.
+## @brief Doxygen filter used to process Python scripts.
 set (BASIS_DOXYGEN_FILTER_PYTHON "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-python-filter.py -f")
-#! @brief Doxygen filter used to process Perl scripts.
+## @brief Doxygen filter used to process Perl scripts.
 set (BASIS_DOXYGEN_FILTER_PERL "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
-#! @brief Doxygen filter used to process JavaScript files.
+## @brief Doxygen filter used to process JavaScript files.
 set (BASIS_DOXYGEN_FILTER_JAVASCRIPT "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
-#! @brief Doxygen filter used to process CMake scripts.
+## @brief Doxygen filter used to process CMake scripts.
 set (BASIS_DOXYGEN_FILTER_CMAKE "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
-#! @brief Doxygen filter used to process BASH scripts.
+## @brief Doxygen filter used to process BASH scripts.
 set (BASIS_DOXYGEN_FILTER_BASH "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.py")
-#! @brief Doxygen filter used to process MATLAB scripts.
+## @brief Doxygen filter used to process MATLAB scripts.
 set (BASIS_DOXYGEN_FILTER_MATLAB "${BASIS_CMD_PERL} ${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
 
-#! @brief Default Doxygen filter patterns.
+## @brief Default Doxygen filter patterns.
 set (
   BASIS_DOXYGEN_FILTER_PATTERNS
     "*.cmake=\\\"${BASIS_DOXYGEN_FILTER_CMAKE}\\\""
@@ -122,30 +122,30 @@ set (
     "*.py=" # TODO Python filer disabled because it does not work properly
 )
 
-#! @brief Default Doxygen configuration.
+## @brief Default Doxygen configuration.
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
-#! @}
+## @}
 
 # ============================================================================
 # helper
 # ============================================================================
 
-#! @addtogroup CMakeUtilities
-#! @{
+## @addtogroup CMakeUtilities
+#  @{
 
-# ****************************************************************************
-#! @brief Add a custom @c doc target along with a build switch.
-#!
-#! This helper function is used by basis_add_doc() to add the custom @c doc
-#! target which is optionally build when the @c ALL target is build.
-#! Therefore, the @c BUILD_DOCUMENTATION option switch is added if this
-#! variable is not yet defined which is by default off. The user can then
-#! choose to build the documentation when the @c ALL target is build.
-#! In any case can the documentation be build by building the @c doc target.
-#!
-#! @returns Adds the custom target @c doc and the option @c BUILD_DOCUMENTATION
-#!          if either of these does not exist yet.
+##############################################################################
+# @brief Add a custom @c doc target along with a build switch.
+#
+# This helper function is used by basis_add_doc() to add the custom @c doc
+# target which is optionally build when the @c ALL target is build.
+# Therefore, the @c BUILD_DOCUMENTATION option switch is added if this
+# variable is not yet defined which is by default off. The user can then
+# choose to build the documentation when the @c ALL target is build.
+# In any case can the documentation be build by building the @c doc target.
+#
+# @returns Adds the custom target @c doc and the option @c BUILD_DOCUMENTATION
+#          if either of these does not exist yet.
 
 function (basis_add_doc_target)
   if (NOT TARGET doc)
@@ -166,18 +166,18 @@ function (basis_add_doc_target)
   endif ()
 endfunction ()
 
-# ****************************************************************************
-#! @brief Add a custom @c changelog target along with a build switch.
-#!
-#! This helper function is used by basis_add_doc() to add the custom
-#! @c changelog target which is optionally build when the @c ALL target is
-#! build. Therefore, the @c BUILD_CHANGELOG option switch is added if this
-#! variable is not yet defined which is by default off. The user can then
-#! choose to build the ChangeLog when the @c ALL target is build.
-#! In any case can the ChangeLog be build by building the @c changelog target.
-#!
-#! @returns Adds the custom target @c changelog and the option
-#!          @c BUILD_CHANGELOG if either of these does not exist yet.
+##############################################################################
+# @brief Add a custom @c changelog target along with a build switch.
+#
+# This helper function is used by basis_add_doc() to add the custom
+# @c changelog target which is optionally build when the @c ALL target is
+# build. Therefore, the @c BUILD_CHANGELOG option switch is added if this
+# variable is not yet defined which is by default off. The user can then
+# choose to build the ChangeLog when the @c ALL target is build.
+# In any case can the ChangeLog be build by building the @c changelog target.
+#
+# @returns Adds the custom target @c changelog and the option
+#          @c BUILD_CHANGELOG if either of these does not exist yet.
 
 function (basis_add_changelog_target)
   if (NOT TARGET changelog)
@@ -198,166 +198,166 @@ function (basis_add_changelog_target)
   endif ()
 endfunction ()
 
-#! @}
+## @}
 
 # ============================================================================
 # adding / generating documentation
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Add documentation target.
-#!
-#! This function is especially used to add a custom target to the "doc" target
-#! which is used to generate documentation from input files such as in
-#! particular source code files. Other documentation files such as HTML, Word,
-#! or PDF documents can be added as well using this function. A component
-#! as part of which this documentation shall be installed can be specified.
-#!
-#! @param [in] TARGET_NAME Name of the documentation target or file.
-#! @param [in] ARGN        List of arguments. The valid arguments are:
-#! @par
-#! <table border="0">
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b COMPONENT name</td>
-#!     <td>Name of the component this documentation belongs to.
-#!         Defaults to @c BASIS_LIBRARY_COMPONENT for documentation generated
-#!         from in-source comments and @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATOR generator</td>
-#!     <td>Documentation generator, where the case of the generator name is
-#!         ignored, i.e., @c Doxygen, @c DOXYGEN, @c doxYgen are all valid
-#!         arguments which select the @c Doxygen generator. The parameters for the
-#!         different supported generators are documented below.
-#!         The default generator is @c None. The @c None generator simply installs
-#!         the document with the filename @c TARGET_NAME and has no own options.</td>
-#!   </tr>
-#! </table>
-#!
-#! @par Generator: None
-#! @n
-#! The documentation files are installed in/as <tt>INSTALL_DOC_DIR/TARGET_NAME</tt>
-#! as part of the component specified by the @c COMPONENT option.
-#! @n@n
-#! Example:
-#! @code
-#! basis_add_doc (UserManual.pdf)
-#! basis_add_doc (DeveloperManual.docx COMPONENT dev)
-#! basis_add_doc (SourceManual.html    COMPONENT src)
-#! @endcode
-#!
-#! @par Generator: Doxygen
-#! @n
-#! Uses the <a href="http://www.stack.nl/~dimitri/doxygen/index.html">Doxygen</a> tool
-#! to generate the documentation from in-source code comments.
-#! @n@n
-#! <table border="0">
-#!   <tr>
-#!     @tp @b DOXYFILE file @endtp
-#!     <td>Name of the template Doxyfile.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b PROJECT_NAME name @endtp
-#!     <td>Value for Doxygen's @c PROJECT_NAME tag which is used to
-#!         specify the project name.@n
-#!         Default: @c PROJECT_NAME.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b PROJECT_NUMBER version @endtp
-#!     <td>Value for Doxygen's @c PROJECT_NUMBER tag which is used
-#!         to specify the project version number.@n
-#!         Default: @c PROJECT_VERSION.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b INPUT path1 [path2 ...] @endtp
-#!     <td>Value for Doxygen's @c INPUT tag which is used to specify input
-#!         directories/files.@n
-#!         Default: @c PROJECT_CODE_DIR    @c BINARY_CODE_DIR
-#!                  @c PROJECT_INCLUDE_DIR @c BINARY_INCLUDE_DIR.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b INPUT_FILTER @endtp
-#!     <td>
-#!       Value for Doxygen's @c INPUT_FILTER tag which can be used to
-#!       specify a default filter for all input files. Set to either one of
-#!       @c None, @c NONE, or @c none to use no input filter.@n
-#!       Default: @c BASIS_DOXYGEN_INPUT_FILTER.
-#!     </td>
-#!   <tr>
-#!     @tp @b FILTER_PATTERNS pattern1 [pattern2 ...]</td> @endtp
-#!     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
-#!         specify filters on a per file pattern basis.@n
-#!         Default: @c BASIS_DOXYGEN_FILTER_PATTERNS.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b EXCLUDE_PATTERNS pattern1 [pattern2 ...] @endtp
-#!     <td>Additional patterns used for Doxygen's @c EXCLUDE_PATTERNS tag
-#!         which can be used to specify files and/or directories that
-#!         should be excluded from the INPUT source files.@n
-#!         Default: No exclude patterns.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b OUTPUT_DIRECTORY dir @endtp
-#!     <td>Value for Doxygen's @c OUTPUT_DIRECTORY tag which can be used to
-#!         specify the output directory.@n
-#!         Default: <tt>CMAKE_CURRENT_BINARY_DIR/TARGET_NAME</tt>.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b GENERATE_HTML @endtp
-#!     <td>If given, Doxygen's @c GENERATE_HTML tag is set to YES, otherwise NO.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b GENERATE_LATEX @endtp
-#!     <td>If given, Doxygen's @c GENERATE_LATEX tag is set to YES, otherwise NO.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b GENERATE_RTF @endtp
-#!     <td>If given, Doxygen's @c GENERATE_RTF tag is set to YES, otherwise NO.</td>
-#!   </tr>
-#!   <tr>
-#!     @tp @b GENERATE_MAN @endtp
-#!     <td>If given, Doxygen's @c GENERATE_MAN tag is set to YES, otherwise NO.</td>
-#!   </tr>
-#! </table>
-#! @n
-#! See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
-#! documentation of the Doxygen tags.
-#! @n@n
-#! Example:
-#! @code
-#! basis_add_doc (
-#!   API
-#!   GENERATOR Doxygen
-#!     DOXYFILE        "Doxyfile.in"
-#!     PROJECT_NAME    "${PROJECT_NAME}"
-#!     PROJECT_VERSION "${PROJECT_VERSION}"
-#!   COMPONENT dev
-#! )
-#! @endcode
-#!
-#! @par Generator: svn2cl
-#! @n
-#! Uses the <a href="http://arthurdejong.org/svn2cl/"><tt>svn2cl</tt></a> command-line
-#! tool to generate a ChangeLog from the Subversion log. Herefore, the project
-#! source tree must be a Subversion working copy and access to the Subversion
-#! repository is required. Note that generating the ChangeLog from the Subversion
-#! log is timely expensive and may require user interaction in order to provide
-#! the credentials to the Subversion repository.
-#! @n@n
-#! Example:
-#! @code
-#! basis_add_doc (
-#!   ChangeLog
-#!   GENERATOR svn2cl
-#!   COMPONENT dev
-#! )
-#! @endcode
-#!
-#! @returns Adds a custom target @p TARGET_NAME for the generation of the
-#!          documentation or configures the given file in case of the @c None
-#!          generator.
-#!
-#! @ingroup CMakeAPI
+##############################################################################
+# @brief Add documentation target.
+#
+# This function is especially used to add a custom target to the "doc" target
+# which is used to generate documentation from input files such as in
+# particular source code files. Other documentation files such as HTML, Word,
+# or PDF documents can be added as well using this function. A component
+# as part of which this documentation shall be installed can be specified.
+#
+# @param [in] TARGET_NAME Name of the documentation target or file.
+# @param [in] ARGN        List of arguments. The valid arguments are:
+# @par
+# <table border="0">
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b COMPONENT name</td>
+#     <td>Name of the component this documentation belongs to.
+#         Defaults to @c BASIS_LIBRARY_COMPONENT for documentation generated
+#         from in-source comments and @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATOR generator</td>
+#     <td>Documentation generator, where the case of the generator name is
+#         ignored, i.e., @c Doxygen, @c DOXYGEN, @c doxYgen are all valid
+#         arguments which select the @c Doxygen generator. The parameters for the
+#         different supported generators are documented below.
+#         The default generator is @c None. The @c None generator simply installs
+#         the document with the filename @c TARGET_NAME and has no own options.</td>
+#   </tr>
+# </table>
+#
+# @par Generator: None
+# @n
+# The documentation files are installed in/as <tt>INSTALL_DOC_DIR/TARGET_NAME</tt>
+# as part of the component specified by the @c COMPONENT option.
+# @n@n
+# Example:
+# @code
+# basis_add_doc (UserManual.pdf)
+# basis_add_doc (DeveloperManual.docx COMPONENT dev)
+# basis_add_doc (SourceManual.html    COMPONENT src)
+# @endcode
+#
+# @par Generator: Doxygen
+# @n
+# Uses the <a href="http://www.stack.nl/~dimitri/doxygen/index.html">Doxygen</a> tool
+# to generate the documentation from in-source code comments.
+# @n@n
+# <table border="0">
+#   <tr>
+#     @tp @b DOXYFILE file @endtp
+#     <td>Name of the template Doxyfile.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PROJECT_NAME name @endtp
+#     <td>Value for Doxygen's @c PROJECT_NAME tag which is used to
+#         specify the project name.@n
+#         Default: @c PROJECT_NAME.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PROJECT_NUMBER version @endtp
+#     <td>Value for Doxygen's @c PROJECT_NUMBER tag which is used
+#         to specify the project version number.@n
+#         Default: @c PROJECT_VERSION.</td>
+#   </tr>
+#   <tr>
+#     @tp @b INPUT path1 [path2 ...] @endtp
+#     <td>Value for Doxygen's @c INPUT tag which is used to specify input
+#         directories/files.@n
+#         Default: @c PROJECT_CODE_DIR    @c BINARY_CODE_DIR
+#                  @c PROJECT_INCLUDE_DIR @c BINARY_INCLUDE_DIR.</td>
+#   </tr>
+#   <tr>
+#     @tp @b INPUT_FILTER @endtp
+#     <td>
+#       Value for Doxygen's @c INPUT_FILTER tag which can be used to
+#       specify a default filter for all input files. Set to either one of
+#       @c None, @c NONE, or @c none to use no input filter.@n
+#       Default: @c BASIS_DOXYGEN_INPUT_FILTER.
+#     </td>
+#   <tr>
+#     @tp @b FILTER_PATTERNS pattern1 [pattern2 ...]</td> @endtp
+#     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
+#         specify filters on a per file pattern basis.@n
+#         Default: @c BASIS_DOXYGEN_FILTER_PATTERNS.</td>
+#   </tr>
+#   <tr>
+#     @tp @b EXCLUDE_PATTERNS pattern1 [pattern2 ...] @endtp
+#     <td>Additional patterns used for Doxygen's @c EXCLUDE_PATTERNS tag
+#         which can be used to specify files and/or directories that
+#         should be excluded from the INPUT source files.@n
+#         Default: No exclude patterns.</td>
+#   </tr>
+#   <tr>
+#     @tp @b OUTPUT_DIRECTORY dir @endtp
+#     <td>Value for Doxygen's @c OUTPUT_DIRECTORY tag which can be used to
+#         specify the output directory.@n
+#         Default: <tt>CMAKE_CURRENT_BINARY_DIR/TARGET_NAME</tt>.</td>
+#   </tr>
+#   <tr>
+#     @tp @b GENERATE_HTML @endtp
+#     <td>If given, Doxygen's @c GENERATE_HTML tag is set to YES, otherwise NO.</td>
+#   </tr>
+#   <tr>
+#     @tp @b GENERATE_LATEX @endtp
+#     <td>If given, Doxygen's @c GENERATE_LATEX tag is set to YES, otherwise NO.</td>
+#   </tr>
+#   <tr>
+#     @tp @b GENERATE_RTF @endtp
+#     <td>If given, Doxygen's @c GENERATE_RTF tag is set to YES, otherwise NO.</td>
+#   </tr>
+#   <tr>
+#     @tp @b GENERATE_MAN @endtp
+#     <td>If given, Doxygen's @c GENERATE_MAN tag is set to YES, otherwise NO.</td>
+#   </tr>
+# </table>
+# @n
+# See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
+# documentation of the Doxygen tags.
+# @n@n
+# Example:
+# @code
+# basis_add_doc (
+#   API
+#   GENERATOR Doxygen
+#     DOXYFILE        "Doxyfile.in"
+#     PROJECT_NAME    "${PROJECT_NAME}"
+#     PROJECT_VERSION "${PROJECT_VERSION}"
+#   COMPONENT dev
+# )
+# @endcode
+#
+# @par Generator: svn2cl
+# @n
+# Uses the <a href="http://arthurdejong.org/svn2cl/"><tt>svn2cl</tt></a> command-line
+# tool to generate a ChangeLog from the Subversion log. Herefore, the project
+# source tree must be a Subversion working copy and access to the Subversion
+# repository is required. Note that generating the ChangeLog from the Subversion
+# log is timely expensive and may require user interaction in order to provide
+# the credentials to the Subversion repository.
+# @n@n
+# Example:
+# @code
+# basis_add_doc (
+#   ChangeLog
+#   GENERATOR svn2cl
+#   COMPONENT dev
+# )
+# @endcode
+#
+# @returns Adds a custom target @p TARGET_NAME for the generation of the
+#          documentation or configures the given file in case of the @c None
+#          generator.
+#
+# @ingroup CMakeAPI
 
 function (basis_add_doc TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")

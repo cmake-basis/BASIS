@@ -1,68 +1,68 @@
 ##############################################################################
-#! @file  ExecuteProcess.cmake
-#! @brief Execute process using CMake script mode.
-#!
-#! This CMake script can be used as argument for the -P option of cmake, when
-#! another command shall be executed by CMake, for example, as custom build
-#! command. The advantage of using this script is that all options of the
-#! CMake command execute_process() can be used, i.e., a timeout can be
-#! specified.
-#!
-#! The arguments of the execute_process() command have to specified via
-#! the -D option on the command line of cmake before the -P \<this script\>
-#! option is given. The name of the CMake variables must be equal the
-#! name of the arguments to the execute_process() command.
-#!
-#! @sa http://www.cmake.org/cmake/help/cmake2.6docs.html#command:execute_process
-#!
-#! Arguments of execute_process() which are considered:
-#!
-#! - COMMAND
-#! - WORKING_DIRECTORY
-#! - TIMEOUT
-#! - OUTPUT_FILE
-#! - ERROR_FILE
-#! - OUTPUT_QUIET
-#! - ERROR_QUIET
-#! - OUTPUT_STRIP_TRAILING_WHITESPACE
-#! - ERROR_STRIP_TRAILING_WHITESPACE
-#!
-#! Additionally, matching expressions (separated by ';') to identify error messages
-#! in the output streams stdout and stderr can be specified by the input argument
-#! ERROR_EXPRESSION. When the output of the executed command matches one of
-#! the error expressions, a fatal error message is displayed causing CMake to
-#! return the exit code 1.
-#!
-#! Setting VERBOSE to true enables verbose output messages.
-#!
-#! When the input argument LOG_ARGS evaluates to true, the values of COMMAND,
-#! WORKING_DIRECTORY, and TIMEOUT are added to the top of the output files
-#! specified by OUTPUT_FILE and ERROR_FILE.
-#!
-#! The arguments ARGS and ARGS_FILE can be used to specify (additional) command
-#! arguments. The content of the text file ARGS_FILE is read when it this file
-#! exists. Separate lines of this file are considered single arguments.
-#! The arguments specified by ARGS and ARGS_FILE are concatenated where the
-#! arguments given by ARGS follow after the ones read from the ARGS_FILE.
-#! All occurences of the string 'ARGS' in the COMMAND are replaced by these
-#! arguments. If no such string is present, the arguments are simply passed
-#! to the execute_process() command as its ARGS argument.
-#! The argument ARGS_SEPARATOR specifies the separator used to separate the
-#! arguments given by ARGS and ARGS_FILE when the 'ARGS' string in COMMAND
-#! is replaced. By default, it is set to ';'.
-#!
-#! Example:
-#! @code
-#! cmake -DCOMMAND='ls -l' -DWORKING_DIRECTORY='/' -DTIMEOUT=60
-#!       -P ExecuteProcess.cmake
-#! @endcode
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeUtilities
+# @file  ExecuteProcess.cmake
+# @brief Execute process using CMake script mode.
+#
+# This CMake script can be used as argument for the -P option of cmake, when
+# another command shall be executed by CMake, for example, as custom build
+# command. The advantage of using this script is that all options of the
+# CMake command execute_process() can be used, i.e., a timeout can be
+# specified.
+#
+# The arguments of the execute_process() command have to specified via
+# the -D option on the command line of cmake before the -P \<this script\>
+# option is given. The name of the CMake variables must be equal the
+# name of the arguments to the execute_process() command.
+#
+# @sa http://www.cmake.org/cmake/help/cmake2.6docs.html#command:execute_process
+#
+# Arguments of execute_process() which are considered:
+#
+# - COMMAND
+# - WORKING_DIRECTORY
+# - TIMEOUT
+# - OUTPUT_FILE
+# - ERROR_FILE
+# - OUTPUT_QUIET
+# - ERROR_QUIET
+# - OUTPUT_STRIP_TRAILING_WHITESPACE
+# - ERROR_STRIP_TRAILING_WHITESPACE
+#
+# Additionally, matching expressions (separated by ';') to identify error messages
+# in the output streams stdout and stderr can be specified by the input argument
+# ERROR_EXPRESSION. When the output of the executed command matches one of
+# the error expressions, a fatal error message is displayed causing CMake to
+# return the exit code 1.
+#
+# Setting VERBOSE to true enables verbose output messages.
+#
+# When the input argument LOG_ARGS evaluates to true, the values of COMMAND,
+# WORKING_DIRECTORY, and TIMEOUT are added to the top of the output files
+# specified by OUTPUT_FILE and ERROR_FILE.
+#
+# The arguments ARGS and ARGS_FILE can be used to specify (additional) command
+# arguments. The content of the text file ARGS_FILE is read when it this file
+# exists. Separate lines of this file are considered single arguments.
+# The arguments specified by ARGS and ARGS_FILE are concatenated where the
+# arguments given by ARGS follow after the ones read from the ARGS_FILE.
+# All occurences of the string 'ARGS' in the COMMAND are replaced by these
+# arguments. If no such string is present, the arguments are simply passed
+# to the execute_process() command as its ARGS argument.
+# The argument ARGS_SEPARATOR specifies the separator used to separate the
+# arguments given by ARGS and ARGS_FILE when the 'ARGS' string in COMMAND
+# is replaced. By default, it is set to ';'.
+#
+# Example:
+# @code
+# cmake -DCOMMAND='ls -l' -DWORKING_DIRECTORY='/' -DTIMEOUT=60
+#       -P ExecuteProcess.cmake
+# @endcode
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeUtilities
 ##############################################################################
 
 # parse arguments
