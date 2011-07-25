@@ -63,6 +63,11 @@ Options:
                       No memory checks are performed by default.
   coverage            Perform coverage analysis. Requires gcov.
                       No coverage analysis is performed by default.
+  httpdocs[=<path>]   If specified, the API documentation is build
+                      and the built HTML documentation copied to the
+                      specified directory. If no directory is given, the
+                      default web server location at SBIA is used, i.e.,
+                      \"/sbia/web/software/<project>/<branch>\".
   force-build         Force build even if no files were updated.
   force-test          Force test even if no files were updated.
   force               Alias for options force-build and force-test.
@@ -209,10 +214,10 @@ set (WITH_COVERAGE 0) # whether to perform coverage analysis
 
 # ----------------------------------------------------------------------------
 # online documentation
-set (UPDATE_HTTP_DOCS 0) # whether to update the online documentation
 
 # web server top directory of project documentation
-set (HTTP_DOCS_DIR "/sbia/web/software/\@CTEST_PROJECT_NAME\@/\@CTEST_SVN_BRANCH\@")
+# if no directory is specified, the documentation is not built and installed
+set (HTTPDOCS)
 
 # ============================================================================
 # options
@@ -269,8 +274,12 @@ foreach (ARG ${ARGV})
       set_bool_option (WITH_COVERAGE)
     elseif (${OPTION} STREQUAL "tmpbin")
       set_bool_option (TMPBIN)
-    elseif (${OPTION} STREQUAL "httpdoc")
-      set_bool_option (UPDATE_HTTP_DOCS)
+    elseif (${OPTION} STREQUAL "httpdocs")
+      if (VALUE)
+        set_option (HTTPDOCS)
+      else ()
+        set (HTTPDOCS "/sbia/web/software/\@CTEST_PROJECT_NAME\@/\@CTEST_SVN_BRANCH\@")
+      endif ()
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
       set_bool_option (FORCE_TEST)
@@ -351,7 +360,7 @@ set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
 set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
 set (CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-${CMAKE_SYSTEM_NAME}/${CTEST_SVN_BRANCH}")
 
-string (CONFIGURE "${HTTP_DOCS_DIR}" HTTP_DOCS_DIR)
+string (CONFIGURE "${HTTPDOCS}" HTTPDOCS)
 
 # ----------------------------------------------------------------------------
 # memory check suppressions file
@@ -437,10 +446,10 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # copy documentation to web server
 
-  if (UPDATE_HTTP_DOCS AND EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api")
+  if (HTTPDOCS AND EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api")
     file (
       INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api"
-      DESTINATION "${HTTP_DOCS_DIR}"
+      DESTINATION "${HTTPDOCS}"
     )
   endif ()
 
