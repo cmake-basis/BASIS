@@ -45,12 +45,6 @@ Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-
-
-@section Links
-
-- <a href="https://sbia-wiki.uphs.upenn.edu/wiki/index.php/BASIS">Project Wiki</a> - The main Wiki page.
-- <a href="https://sbia-portal.uphs.upenn.edu/cdash/index.php?project=BASIS">Dashboard</a> - The CDash testing dashboard.
 */
 
 // ===========================================================================
@@ -74,6 +68,18 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 @page ProjectTemplate Software Project Template
 
 @todo This page has to be written yet.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+*/
+
+/**
+@page Links Links
+
+- <a href="https://sbia-wiki.uphs.upenn.edu/wiki/index.php/BASIS">Project Wiki</a> - The main Wiki page.
+- <a href="https://sbia-portal.uphs.upenn.edu/cdash/index.php?project=BASIS">Dashboard</a> - The CDash testing dashboard.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
