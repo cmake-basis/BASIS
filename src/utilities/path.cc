@@ -1,4 +1,4 @@
-/*!
+/**
  * @file  path.cc
  * @brief Basic file path manipulation and related system functions.
  *

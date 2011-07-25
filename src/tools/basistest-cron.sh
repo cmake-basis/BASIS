@@ -1,26 +1,26 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-#! @file  basistest-cron.sh
-#! @brief Script intended to be run as cron job to perform automated testing.
-#!
-#! This script sets up the environment for the actual master script which
-#! handles the automated testing. Further, it uses qsub to submit testing jobs
-#! to the configured SGE queue, with the SGE options as set in this script.
-#!
-#! Edit this script to change the settings of the automated testing.
-#! The default settings are the ones used for the cron job running on the
-#! cluster of our lab as the 'swtest' user.
-#!
-#! The configuration of automated tests is done in the configuration file
-#! for the basistest-master.sh. See value of conf variable below.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup Tools
+# @file  basistest-cron.sh
+# @brief Script intended to be run as cron job to perform automated testing.
+#
+# This script sets up the environment for the actual master script which
+# handles the automated testing. Further, it uses qsub to submit testing jobs
+# to the configured SGE queue, with the SGE options as set in this script.
+#
+# Edit this script to change the settings of the automated testing.
+# The default settings are the ones used for the cron job running on the
+# cluster of our lab as the 'swtest' user.
+#
+# The configuration of automated tests is done in the configuration file
+# for the basistest-master.sh. See value of conf variable below.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup Tools
 ##############################################################################
 
 # ============================================================================
@@ -33,37 +33,37 @@
 # settings
 # ============================================================================
 
-#! @brief Directory of this executable.
+## @brief Directory of this executable.
 exec_dir=$(get_executable_directory)
 
-#! @brief Whether to use SGE or not.
+## @brief Whether to use SGE or not.
 sge=1
 
-#! @brief SGE queue; set to '' to not specify any.
+## @brief SGE queue; set to '' to not specify any.
 queue='tesla'
 
-#! @brief Mail address for SGE notifications; set to '' to disable notifications.
+## @brief Mail address for SGE notifications; set to '' to disable notifications.
 mail=''
 
-#! @brief Output file for test log; used for -o and -e option of qsub.
+## @brief Output file for test log; used for -o and -e option of qsub.
 log='/sbia/home/swtest/var/log/basistest.$JOB_ID.log'
 
-#! @brief Configuration file; configure the automated tests here, see <tt>basistestd -h</td>.
+## @brief Configuration file; configure the automated tests here, see <tt>basistestd -h</td>.
 conf='/sbia/home/swtest/etc/basistest.conf'
 
-#! @brief Schedule file; note that this file is created/updated by the testing daemon.
+## @brief Schedule file; note that this file is created/updated by the testing daemon.
 schedule='/sbia/home/swtest/var/run/basistest.schedule'
 
-#! @brief CTest script.
-#!
-#! Has to be given with full path because SGE copies the slave script which
-#! looks for the CTest script relative to its own location.
+## @brief CTest script.
+#
+# Has to be given with full path because SGE copies the slave script which
+# looks for the CTest script relative to its own location.
 ctest="$exec_dir/@MODULES_DIR@/basistest.ctest"
 
-#! @brief Testing master script.
+## @brief Testing master script.
 master="$exec_dir/basistest-master"
 
-#! @brief Test execution command.
+## @brief Test execution command.
 slave="$exec_dir/basistest-slave -V -S $ctest"
 
 # ============================================================================

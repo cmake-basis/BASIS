@@ -1,11 +1,11 @@
 ##############################################################################
-#! @file  CTestConfig.cmake
-#! @brief Dashboard configuration file.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# @file  CTestConfig.cmake
+# @brief Dashboard configuration file.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # set CTest/CDash project name
@@ -26,7 +26,7 @@ set (CTEST_NIGHTLY_START_TIME "00:00:00 EST")
 
 # dashboard submission to SBIA CDash server
 #
-# \note By default, CTest does not support HTTPS as submission method.
+# Note: By default, CTest does not support HTTPS as submission method.
 #       In order to enable it, CTest (and hence CMake) has to be build
 #       manually with the option CMAKE_USE_OPENSSL enabled.
 set (CTEST_DROP_METHOD     "http")
@@ -36,6 +36,6 @@ set (CTEST_DROP_SITE_CDASH TRUE)
 
 # launchers
 #
-# \see CTest.cmake
+# See documentation of CTest.cmake module.
 set (CTEST_USE_LAUNCHERS 0)
 

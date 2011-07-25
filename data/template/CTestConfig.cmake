@@ -36,6 +36,6 @@ set (CTEST_DROP_SITE_CDASH TRUE)
 
 # launchers
 #
-# See CTest.cmake
+# See CTest.cmake module.
 set (CTEST_USE_LAUNCHERS 0)
 

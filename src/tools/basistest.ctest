@@ -1,30 +1,30 @@
 ##############################################################################
-#! @file  basistest.ctest
-#! @brief CTest script used to test BASIS projects.
-#!
-#! To display the help of this CTest script, run:
-#! @code
-#! ctest -S basistest.ctest,help
-#! @endcode
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup Tools
+# @file  basistest.ctest
+# @brief CTest script used to test BASIS projects.
+#
+# To display the help of this CTest script, run:
+# @code
+# ctest -S basistest.ctest,help
+# @endcode
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup Tools
 ##############################################################################
 
 # ============================================================================
 # help
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Print usage section of usage information and help screen.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print usage section of usage information and help screen.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 function (print_usage_section)
   message ("
@@ -35,12 +35,12 @@ Usage:
         if the value is enclosed by quotation marks.")
 endfunction ()
 
-# ****************************************************************************
-#! @brief Print options section of usage information and help screen.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print options section of usage information and help screen.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 function (print_options)
   message ("
@@ -71,12 +71,12 @@ Options:
   version             Prints version information and exits.")
 endfunction ()
 
-# ****************************************************************************
-#! @brief Print contact section of usage information and help screen.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print contact section of usage information and help screen.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 function (print_contact)
   message ("
@@ -84,12 +84,12 @@ Contact:
   SBIA Group <sbia-software at uphs.upenn.edu>")
 endfunction ()
 
-# ****************************************************************************
-#! @brief Print help screen.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print help screen.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 function (print_help)
   message ("CTest script basistest.ctest (BASIS)")
@@ -133,12 +133,12 @@ Example:
   print_contact ()
 endfunction ()
 
-# ****************************************************************************
-#! @brief Print usage information.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print usage information.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 function (print_usage)
   message ("CTest script basistest.ctest (BASIS)")
@@ -147,12 +147,12 @@ function (print_usage)
   print_contact ()
 endfunction ()
 
-# ****************************************************************************
-#! @brief Print version information.
-#!
-#! @param [in] ARGN Not used.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print version information.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
 
 function (print_version)
   set (VERSION_INFO "version @VERSION@")
@@ -162,6 +162,23 @@ function (print_version)
   message ("CTest script basistest.ctest (BASIS) ${VERSION_INFO}")
   message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
   message ("See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.")
+endfunction ()
+
+# ============================================================================
+# helpers
+# ============================================================================
+
+##############################################################################
+# @brief Read value from CMake cache.
+#
+# @param [in, out] VAR  Name of CMake variable.
+# @param [in]      ARGN Not used.
+#
+# @returns Sets @p VAR to the value of the cached variable @p VAR.
+function (read_cmake_cache_value VAR)
+  file (STRINGS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" ENTRY REGEX "${VAR}:.*=(.*)")
+  string (REGEX REPLACE "${VAR}:.*=(.*)" "\\1" VALUE "${ENTRY}")
+  set (${VAR} "${VALUE}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
@@ -316,7 +333,7 @@ site_name (CTEST_SITE)
 # remove ".local" or ".uphs.upenn.edu" suffix from site name
 string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" CTEST_SITE "${CTEST_SITE}")
 
-# \note The build name given in the .xml files will be replaced by this script
+# Note: The build name given in the .xml files will be replaced by this script
 #       before the submission once the used compiler could be determined.
 set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
 
@@ -402,6 +419,12 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # build project
   ctest_build ()
 
+  # --------------------------------------------------------------------------
+  # copy documentation to web server
+
+  if (UPDATE_WEB_DOC)
+  endif ()
+
   # perform tests only if required
   if (FORCE_TEST OR UPDATED_FILES)
 
@@ -430,18 +453,6 @@ if (SUBMIT_RESULTS)
   # --------------------------------------------------------------------------
   # adjust build name
 
-  #! @brief Read value from CMake cache.
-  #!
-  #! @param [in, out] VAR  Name of CMake variable.
-  #! @param [in]      ARGN Not used.
-  #!
-  #! @returns Sets @p VAR to the value of the cached variable @p VAR.
-  function (read_cmake_cache_value VAR)
-    file (STRINGS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" ENTRY REGEX "${VAR}:.*=(.*)")
-    string (REGEX REPLACE "${VAR}:.*=(.*)" "\\1" VALUE "${ENTRY}")
-    set (${VAR} "${VALUE}" PARENT_SCOPE)
-  endfunction ()
-
   # get compiler name
   if (WIN32)
     set (NAME_COMPONENT "NAME_WE")
@@ -468,7 +479,7 @@ if (SUBMIT_RESULTS)
     endif ()
   endif ()
 
-  # desired build name
+  # assemble desired build name
   set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${COMPILER_NAME}")
 
   # replace intermediate build name

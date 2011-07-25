@@ -1,19 +1,19 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-#! @file  basistest-slave.sh
-#! @brief Test execution command.
-#!
-#! This shell script runs the tests of a BASIS project. It is a wrapper for
-#! a CTest script. In particular, the testing master basistest-master.sh uses
-#! this script by default in order to run a test.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup Tools
+# @file  basistest-slave.sh
+# @brief Test execution command.
+#
+# This shell script runs the tests of a BASIS project. It is a wrapper for
+# a CTest script. In particular, the testing master basistest-master.sh uses
+# this script by default in order to run a test.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup Tools
 ##############################################################################
 
 # ============================================================================
@@ -39,8 +39,10 @@ exec_revision='@REVISION@'
 # help/version
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Print documentation of options.
+##############################################################################
+# @brief Print documentation of options.
+#
+# @returns Nothing.
 
 function print_options
 {
@@ -63,8 +65,10 @@ Options:
 EOF-OPTIONS
 }
 
-# ****************************************************************************
-#! @brief Print help.
+##############################################################################
+# @brief Print help.
+#
+# @returns Nothing.
 
 function print_help
 {
@@ -91,8 +95,10 @@ EOF-EXAMPLES
     print_contact
 }
 
-# ****************************************************************************
-#! @brief Print usage (i.e., only usage and options).
+##############################################################################
+# @brief Print usage (i.e., only usage and options).
+#
+# @returns Nothing.
 
 function print_usage
 {

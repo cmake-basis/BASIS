@@ -1,22 +1,22 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-#! @file  basistest-master.sh
-#! @brief Test master which can be run as a cron job.
-#!
-#! This shell script is supposed to be scheduled as cron job, where possibly
-#! the basistest-cron.sh script is in fact used as cron job command without
-#! arguments where all the settings for the cron job are fixed within this
-#! latter script. On execution, this master script parses the configuration
-#! file and executes the configured tests using by default the
-#! basistest-slave.sh script.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup Tools
+# @file  basistest-master.sh
+# @brief Test master which can be run as a cron job.
+#
+# This shell script is supposed to be scheduled as cron job, where possibly
+# the basistest-cron.sh script is in fact used as cron job command without
+# arguments where all the settings for the cron job are fixed within this
+# latter script. On execution, this master script parses the configuration
+# file and executes the configured tests using by default the
+# basistest-slave.sh script.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup Tools
 ##############################################################################
 
 # ============================================================================
@@ -46,10 +46,10 @@ schedule_file='/var/run/basistest.schedule'
 # help/version
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Print documentation of options.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print documentation of options.
+#
+# @returns Nothing.
 
 function print_options
 {
@@ -68,10 +68,10 @@ Options:
 EOF-OPTIONS
 }
 
-# ****************************************************************************
-#! @brief Print help.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print help.
+#
+# @returns Nothing.
 
 function print_help
 {
@@ -154,10 +154,10 @@ EOF-EXAMPLES
     print_contact
 }
 
-# ****************************************************************************
-#! @brief Print usage (i.e., only usage and options).
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print usage (i.e., only usage and options).
+#
+# @returns Nothing.
 
 function print_usage
 {
@@ -175,17 +175,17 @@ function print_usage
 # helpers
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Runs a test given the arguments in the configuration file.
-#!
-#! @param [in] project Name of the project to test.
-#! @param [in] branch  Name of the branch to test.
-#! @param [in] model   Name of the Dashboard model.
-#!
-#! @returns Whether the execution of the test was successful.
-#!
-#! @retval 0 On success.
-#! @retval 1 On failure.
+##############################################################################
+# @brief Runs a test given the arguments in the configuration file.
+#
+# @param [in] project Name of the project to test.
+# @param [in] branch  Name of the branch to test.
+# @param [in] model   Name of the Dashboard model.
+#
+# @returns Whether the execution of the test was successful.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 
 function run_test
 {
@@ -208,12 +208,12 @@ function run_test
     return 0
 }
 
-# ****************************************************************************
-#! @brief Convert date to timestamp.
-#!
-#! @param [in] date Date.
-#!
-#! @returns Prints timestamp corresponding to given date to @c STDOUT.
+##############################################################################
+# @brief Convert date to timestamp.
+#
+# @param [in] date Date.
+#
+# @returns Prints timestamp corresponding to given date to @c STDOUT.
 
 function date2stamp
 {
@@ -224,12 +224,12 @@ function date2stamp
     fi
 }
 
-# ****************************************************************************
-#! @brief Convert timestamp to date.
-#!
-#! @param [in] stamp Timestamp.
-#!
-#! @return Prints date corresponding to given timestamp to @c STDOUT.
+##############################################################################
+# @brief Convert timestamp to date.
+#
+# @param [in] stamp Timestamp.
+#
+# @return Prints date corresponding to given timestamp to @c STDOUT.
 
 function stamp2date
 {
@@ -240,16 +240,16 @@ function stamp2date
     fi
 }
 
-# ****************************************************************************
-#! @brief Adds a certain time interval to a given date.
-#!
-#! @param [in] unit     Unit of the time interval. Either one of -s, -m, -h, or -d.
-#!                      Defaults to number of days.
-#! @param [in] date     The date to which the time interval is added.
-#! @param [in] interval The time interval given in the specified units.
-#!
-#! @returns Prints the date which is @p interval time units after the given
-#!          date to @c STDOUT.
+##############################################################################
+# @brief Adds a certain time interval to a given date.
+#
+# @param [in] unit     Unit of the time interval. Either one of -s, -m, -h, or -d.
+#                      Defaults to number of days.
+# @param [in] date     The date to which the time interval is added.
+# @param [in] interval The time interval given in the specified units.
+#
+# @returns Prints the date which is @p interval time units after the given
+#          date to @c STDOUT.
 
 function date_add
 {
@@ -266,16 +266,16 @@ function date_add
     echo $(stamp2date "$addSec")
 }
 
-# ****************************************************************************
-#! @brief Computes the time interval between two given dates.
-#!
-#! @param [in] unit  Unit of the time interval. Either one of -s, -m, -h, or -d.
-#!                   Defaults to number of days.
-#! @param [in] date1 The first date.
-#! @param [in] date2 The second date.
-#!
-#! @return Prints time interval, i.e., an absolute value, in the given units
-#!         to @c STDOUT.
+##############################################################################
+# @brief Computes the time interval between two given dates.
+#
+# @param [in] unit  Unit of the time interval. Either one of -s, -m, -h, or -d.
+#                   Defaults to number of days.
+# @param [in] date1 The first date.
+# @param [in] date2 The second date.
+#
+# @return Prints time interval, i.e., an absolute value, in the given units
+#         to @c STDOUT.
 
 function date_diff
 {
@@ -292,10 +292,10 @@ function date_diff
     echo $((interval / sec))
 }
 
-# ****************************************************************************
-#! @brief Get next scheduled date of a given test.
-#!
-#! @returns Prints date to @c STDOUT.
+##############################################################################
+# @brief Get next scheduled date of a given test.
+#
+# @returns Prints date to @c STDOUT.
 
 function schedule_date
 {
@@ -318,16 +318,16 @@ function schedule_date
     echo "$retval"
 }
 
-# ***************************************************************************
-#! @brief Add entry to test schedule.
-#!
-#! @param [in] date    The date at which the test should be run next.
-#! @param [in] time    The time at which the test should be run next.
-#! @param [in] project Name of the project.
-#! @param [in] branch  Name of the branch.
-#! @param [in] model   Name of the model.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Add entry to test schedule.
+#
+# @param [in] date    The date at which the test should be run next.
+# @param [in] time    The time at which the test should be run next.
+# @param [in] project Name of the project.
+# @param [in] branch  Name of the branch.
+# @param [in] model   Name of the model.
+#
+# @returns Nothing.
 
 function schedule_test
 {

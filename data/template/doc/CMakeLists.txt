@@ -1,18 +1,18 @@
 ##############################################################################
-#! @file  CMakeLists.txt
-#! @brief Build configuration of software documentation.
-#!
-#! This build configuration builds and/or installs the documentation of the
-#! software package. The documentation can be divided into user documentation
-#! (user manual) and developer documentation (developer manual). For
-#! developers, the documentation of the API is of particular interest,
-#! where developers who are responsible for maintaining the software
-#! may be provided with even more detailed documentation of the implementation.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# @file  CMakeLists.txt
+# @brief Build configuration of software documentation.
+#
+# This build configuration builds and/or installs the documentation of the
+# software package. The documentation can be divided into user documentation
+# (user manual) and developer documentation (developer manual). For
+# developers, the documentation of the API is of particular interest,
+# where developers who are responsible for maintaining the software
+# may be provided with even more detailed documentation of the implementation.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================

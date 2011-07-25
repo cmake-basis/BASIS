@@ -1,13 +1,13 @@
 ##############################################################################
-#! @file  Use.cmake
-#! @brief CMake package configuration use file of @PACKAGE_NAME@.
-#!
-#! If this CMake module was already included before, it will do nothing.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# @file  Use.cmake
+# @brief CMake package configuration use file of @PACKAGE_NAME@.
+#
+# If this CMake module was already included before, it will do nothing.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 if (__@PACKAGE_NAME@_USE_FILE_INCLUDED)

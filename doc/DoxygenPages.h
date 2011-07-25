@@ -1,4 +1,4 @@
-/*!
+/**
  * @file  DoxygenPages.h
  * @brief Documentation of main page, other pages, and modules.
  *
@@ -17,7 +17,7 @@
 // ===========================================================================
 
 // ***************************************************************************
-/*!
+/**
 @mainpage
 
 @authors Andreas Schuh
@@ -34,8 +34,8 @@ cross-platform, open-source build system. The previously known
 <a href="https://sbia-svn.uphs.upenn.edu/projects/Development_Project_Templates/CMakeProjectTemplate/">CMake Project Template</a>
 was entirely reworked and became a major component of BASIS.
 In fact, the BASIS project evolved from this initial project template
-and greatly improved it. See @ref TemplateSection "below" for a
-description of the template.
+and greatly improved it. See page @ref ProjectTemplate
+"Software Project Template" for a description of the template.
 
 Projects following the standard include the BASIS modules and are hence
 dependent on the BASIS package, similarly to a software implemented in
@@ -55,7 +55,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 // ===========================================================================
 
 // ***************************************************************************
-/*!
+/**
 @page BuildSystemStandard Build System Standard
 
 @todo This page has to be written yet.
@@ -67,8 +67,8 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
-@page ProjectTemplate Software Development Project Template
+/**
+@page ProjectTemplate Software Project Template
 
 @todo This page has to be written yet.
 
@@ -87,7 +87,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 // ---------------------------------------------------------------------------
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CMakeModules CMake Modules
 @brief    CMake Modules.
 
@@ -102,7 +102,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CMakeAPI Public CMake Interface
 @brief    Public interface of CMake modules.
 
@@ -119,7 +119,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CMakeFindModules Find Package Modules
 @brief    CMake Find modules used by find_package() command.
 
@@ -137,7 +137,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CMakeTools Auxiliary CMake Modules
 @brief    Auxiliary CMake modules included and used by the main modules.
 
@@ -150,7 +150,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CMakeUtilities CMake Utilities
 @brief    Utility implementations used by the CMake modules.
 
@@ -163,7 +163,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CMakeHelpers  Non-CMake Utilities
 @brief    Auxiliary non-CMake implementations used by the CMake modules.
 
@@ -176,7 +176,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CMakeTemplates Template Files
 @brief    Template files used as input to configure_file() command.
 
@@ -193,7 +193,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 // ---------------------------------------------------------------------------
 
 // ***************************************************************************
-/*!
+/**
 @defgroup Utilities Utilities
 @brief    Auxiliary implementations in different programming languages.
 
@@ -204,7 +204,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup CppUtilities C++ Utilities
 @brief    Auxiliary implementations for use in C++ source code.
 
@@ -217,7 +217,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup BASHUtilities BASH Utilities
 @brief    Auxiliary implementations for use in BASH scripts.
 
@@ -230,7 +230,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup PythonUtilities Python Utilities
 @brief    Auxiliary implementations for use in Python scripts.
 
@@ -243,7 +243,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 // ***************************************************************************
-/*!
+/**
 @defgroup PerlUtilities Perl Utilities
 @brief    Auxiliary implementations for use in Perl scripts.
 
@@ -260,7 +260,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 // ---------------------------------------------------------------------------
 
 // ***************************************************************************
-/*!
+/**
 @defgroup Tools Command-line Tools
 @brief    Basic command-line tools.
 

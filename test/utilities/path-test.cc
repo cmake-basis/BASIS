@@ -1,4 +1,4 @@
-/*!
+/**
  * @file  path-test.cc
  * @brief Implements unit test for path.cc module.
  *

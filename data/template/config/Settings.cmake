@@ -1,24 +1,24 @@
 ##############################################################################
-#! @file  Settings.cmake
-#! @brief General project build configuration.
-#!
-#! This file can be used to overwrite the BASIS build configuration as defined
-#! by the BasisSettings module and to add project specific settings.
-#!
-#! This file is included by basis_project_initialize() if found in the
-#! PROJECT_CONFIG_DIR directory.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# @file  Settings.cmake
+# @brief General project build configuration.
+#
+# This file can be used to overwrite the BASIS build configuration as defined
+# by the Settings.cmake module of BASIS and to add project specific settings.
+#
+# This file is included by basis_project_initialize() if found in the
+# @c PROJECT_CONFIG_DIR directory.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
 # options
 # ============================================================================
 
-# add options here using the option () command
+# add options here using the option() command
 #
 # See http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:option
 
@@ -43,6 +43,6 @@
 # Example:
 #   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 #
-# See BasisSettings.cmake
+# See Settings.cmake module of BASIS.
 
 

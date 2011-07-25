@@ -1,15 +1,15 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-#! @file  basisproject.sh
-#! @brief Project management tool used to create and/or modify a BASIS project.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup Tools
+# @file  basisproject.sh
+# @brief Project management tool used to create and/or modify a BASIS project.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup Tools
 ##############################################################################
  
 # ============================================================================
@@ -25,14 +25,15 @@
 # settings
 # ============================================================================
 
-# executable information
+## @brief Name of this executable.
 exec_name=$(get_executable_name)
+## @brief Canonical path of directory where executable is located.
 exec_dir=$(get_executable_directory)
 
-# name of CMake configuration file used to resolve dependencies
+## @brief Name of CMake configuration file used to resolve dependencies.
 depends_file='Depends.cmake'
 
-# project configuration file relative to project root directory
+## @brief Project configuration file relative to project root directory.
 #
 # This file stores the latest configuration used to create or modify the
 # project using this command-line tool.
@@ -42,10 +43,10 @@ cache=".basis/cache"
 # usage / help / version
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Print options.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print options.
+#
+# @returns Nothing.
 
 function print_options
 {
@@ -131,10 +132,10 @@ function print_options
     echo "  -V [ --version ]           Displays version information and exits."
 }
 
-# ****************************************************************************
-#! @brief Print usage information.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print usage information.
+#
+# @returns Nothing.
 
 function print_usage
 {
@@ -148,10 +149,10 @@ function print_usage
     print_contact
 }
 
-# ****************************************************************************
-#! @brief Print help.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Print help.
+#
+# @returns Nothing.
 
 function print_help
 {
@@ -219,24 +220,24 @@ function print_help
 # helpers
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Make path absolute.
-#!
-#! This function returns the absolute path via command substitution, i.e.,
-#! use it as follows:
-#!
-#! @code
-#! abspath=$(make_absolute $relpath)
-#! @endcode
-#!
-#! @param [in] path The (relative) path of a file or directory
-#!                  (does not need to exist yet).
-#!
-#! @returns Prints the absolute path of the specified file or directory to
-#!          @c STDOUT via @c echo.
-#!
-#! @retval 0 Success.
-#! @retval 1 Failure.
+##############################################################################
+# @brief Make path absolute.
+#
+# This function returns the absolute path via command substitution, i.e.,
+# use it as follows:
+#
+# @code
+# abspath=$(make_absolute $relpath)
+# @endcode
+#
+# @param [in] path The (relative) path of a file or directory
+#                  (does not need to exist yet).
+#
+# @returns Prints the absolute path of the specified file or directory to
+#          @c STDOUT via @c echo.
+#
+# @retval 0 Success.
+# @retval 1 Failure.
 
 function make_absolute
 {
@@ -253,10 +254,10 @@ function make_absolute
     return 0
 }
 
-# ****************************************************************************
-#! @brief Extract project name from existing project.
-#!
-#! @returns Extracted project name via @c echo.
+##############################################################################
+# @brief Extract project name from existing project.
+#
+# @returns Extracted project name via @c echo.
 
 function get_project_name
 {
@@ -701,15 +702,15 @@ else
     if [ $tests   -eq 0 ]; then tests=1; fi
 fi
 
-# ****************************************************************************
-#! @brief Add or modify project directory or file.
-#!
-#! Only the named directory or file is added or modified.
-#!
-#! @param [in] path The path of the directory or file relative to the template
-#!                  or project root, respectively.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Add or modify project directory or file.
+#
+# Only the named directory or file is added or modified.
+#
+# @param [in] path The path of the directory or file relative to the template
+#                  or project root, respectively.
+#
+# @returns Nothing.
 
 function add
 {
@@ -871,12 +872,12 @@ function add
     return 0
 }
 
-# ****************************************************************************
-#! @brief Delete file or empty directory.
-#!
-#! @param [in] path Path relative to template or project root, respectively.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Delete file or empty directory.
+#
+# @param [in] path Path relative to template or project root, respectively.
+#
+# @returns Nothing.
 
 function del
 {
@@ -934,14 +935,14 @@ function del
     return 0
 }
 
-# ****************************************************************************
-#! @brief Add or delete file depending on option given.
-#!
-#! @param [in] switch Switch option. If > 0, the file is added or updated.
-#!                    If < 0, the file is deleted. Otherwise, nothing is done.
-#! @param [in] path   File path relative to tempate or project root, respectively.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Add or delete file depending on option given.
+#
+# @param [in] switch Switch option. If > 0, the file is added or updated.
+#                    If < 0, the file is deleted. Otherwise, nothing is done.
+# @param [in] path   File path relative to tempate or project root, respectively.
+#
+# @returns Nothing.
 
 function addordel
 {
@@ -1033,17 +1034,17 @@ else
     echo "$msg... - done"
 fi
 
-# ****************************************************************************
-#! @brief Append find_package() commands to CMake configuration file.
-#!
-#! @param [in] path            The path to the CMake configuration file.
-#! @param [in] package         The name of the package.
-#! @param [in] required        Whether this package is required.
-#! @param [in] uppercasePrefix Whether to use uppercase only prefix for variables.
-#! @param [in] useFile         Whether this package provides a \<name\>Use.cmake file.
-#! @param [in] prefix          Prefix to use for package variables. Defaults to package name.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Append find_package() commands to CMake configuration file.
+#
+# @param [in] path            The path to the CMake configuration file.
+# @param [in] package         The name of the package.
+# @param [in] required        Whether this package is required.
+# @param [in] uppercasePrefix Whether to use uppercase only prefix for variables.
+# @param [in] useFile         Whether this package provides a \<name\>Use.cmake file.
+# @param [in] prefix          Prefix to use for package variables. Defaults to package name.
+#
+# @returns Nothing.
 
 function add_find_package
 {
@@ -1151,10 +1152,10 @@ fi
 # clean up
 # ============================================================================
 
-# ****************************************************************************
-#! @brief Clean temporary files.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Clean temporary files.
+#
+# @returns Nothing.
 
 function clean_temp_files
 {
@@ -1168,10 +1169,10 @@ function clean_temp_files
     done
 }
 
-# ****************************************************************************
-#! @brief Remove hidden copies of template files.
-#!
-#! @returns Nothing.
+##############################################################################
+# @brief Remove hidden copies of template files.
+#
+# @returns Nothing.
 
 function clean_hidden_files
 {

@@ -1,19 +1,19 @@
 ##############################################################################
-#! @file  CMakeLists.txt
-#! @brief Build configuration to example projects.
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# @file  CMakeLists.txt
+# @brief Build configuration to example projects.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
 # helpers
 # ============================================================================
 
-# ****************************************************************************
-# \brief Creates an example project from the specified source files.
+##############################################################################
+# @brief Creates an example project from the specified source files.
 #
 # This helper function is used to instantiate example projects from the BASIS
 # project template during the build of the BASIS package itself.
