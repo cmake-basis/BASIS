@@ -1,135 +1,135 @@
 ##############################################################################
-#! @file  FindMOSEK.cmake
-#! @brief Find MOSEK (http://www.mosek.com) package.
-#!
-#! @par Input variables:
-#! <table border="0">
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_DIR</td>
-#!     <td>The MOSEK package files are searched under the specified root
-#!         directory. If they are not found there, the default search paths
-#!         are considered. This variable can also be set as environment variable.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_NO_OMP</td>
-#!     <td>Whether to use the link libraries build without OpenMP, i.e.,
-#!         multi-threading, enabled. By default, the multi-threaded libraries
-#!         are used.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_MATLAB</td>
-#!     <td>Whether the MATLAB components of the MOSEK packages should be found.
-#!         Defaults to 1, if @c MATLAB_FOUND evaluates to true and 0 otherwise.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_JAVA</td>
-#!     <td>Whether the Java components of the MOSEK package should be found.
-#!         Defaults to 0.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_PYTHON</td>
-#!     <td>Whether the Python components of the MOSEK package should be found.
-#!         Defaults to 0.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_TOOLS_SUFFIX</td>
-#!     <td>Platform specific path suffix for tools, i.e., "tools/platform/linux64x86"
-#!         on 64-bit Linux systems. If not specified, this module determines the
-#!         right suffix depending on the CMake system variables.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MATLAB_RELEASE</td>
-#!     <td>Release of MATLAB installation. Set to the 'Release' return value of
-#!         the "ver ('MATLAB')" command of MATLAB without brackets. If this
-#!         variable is not set and the basis_get_matlab_release() command is
-#!         available, it is invoked to determine the release version automatically.
-#!         Otherwise, the release version defaults to "R2009b".</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MEX_EXT</td>
-#!     <td>The extension of MEX-files. If this variable is not set and the
-#!         basis_mexext() command is available, it is invoked to determine the
-#!         extension automatically. Otherwise, the MEX extension defaults to "mexa64".</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b PYTHON_VERSION</td>
-#!     <td>Version of Python installation. Set to first two or three return values of
-#!         "sys.version_info" separated by a period (.). If this variable is not set
-#!         and the basis_get_python_version() command is available, it is invoked to
-#!         determine the version automatically. Otherwise, the Python version
-#!         defaults to 2.6.</td>
-#!   </tr>
-#! </table>
-#!
-#! @par Output variables:
-#! <table border="0">
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_FOUND</td>
-#!     <td>Whether the package was found and the following CMake variables are valid.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_INCLUDE_DIR</td>
-#!     <td>Package include directories.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_INCLUDES</td>
-#!     <td>Include directories including prerequisite libraries (non-cached).</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_LIBRARY</td>
-#!     <td>Package libraries.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_LIBRARIES</td>
-#!     <td>Package libraries and prerequisite libraries (non-cached).</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_mosekopt_MEX</td>
-#!     <td>Package mosekopt MEX-file.</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_MEX_FILES</td>
-#!     <td>List of MEX-files (non-cached).</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_mosek_JAR</td>
-#!     <td>Package mosek Java library (.jar file).</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_CLASSPATH</td>
-#!     <td>List of Java package libraries and prerequisite libraries (non-cached).</td>
-#!   </tr>
-#!   <tr>
-#!     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#!         @b MOSEK_PYTHONPATH</td>
-#!     <td>Path to Python modules of this package.</td>
-#!   </tr>
-#! </table>
-#!
-#! Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-#! See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#!
-#! Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#!
-#! @ingroup CMakeFindModules
+# @file  FindMOSEK.cmake
+# @brief Find MOSEK (http://www.mosek.com) package.
+#
+# @par Input variables:
+# <table border="0">
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_DIR</td>
+#     <td>The MOSEK package files are searched under the specified root
+#         directory. If they are not found there, the default search paths
+#         are considered. This variable can also be set as environment variable.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_NO_OMP</td>
+#     <td>Whether to use the link libraries build without OpenMP, i.e.,
+#         multi-threading, enabled. By default, the multi-threaded libraries
+#         are used.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_MATLAB</td>
+#     <td>Whether the MATLAB components of the MOSEK packages should be found.
+#         Defaults to 1, if @c MATLAB_FOUND evaluates to true and 0 otherwise.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_JAVA</td>
+#     <td>Whether the Java components of the MOSEK package should be found.
+#         Defaults to 0.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_PYTHON</td>
+#     <td>Whether the Python components of the MOSEK package should be found.
+#         Defaults to 0.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_TOOLS_SUFFIX</td>
+#     <td>Platform specific path suffix for tools, i.e., "tools/platform/linux64x86"
+#         on 64-bit Linux systems. If not specified, this module determines the
+#         right suffix depending on the CMake system variables.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MATLAB_RELEASE</td>
+#     <td>Release of MATLAB installation. Set to the 'Release' return value of
+#         the "ver ('MATLAB')" command of MATLAB without brackets. If this
+#         variable is not set and the basis_get_matlab_release() command is
+#         available, it is invoked to determine the release version automatically.
+#         Otherwise, the release version defaults to "R2009b".</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MEX_EXT</td>
+#     <td>The extension of MEX-files. If this variable is not set and the
+#         basis_mexext() command is available, it is invoked to determine the
+#         extension automatically. Otherwise, the MEX extension defaults to "mexa64".</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b PYTHON_VERSION</td>
+#     <td>Version of Python installation. Set to first two or three return values of
+#         "sys.version_info" separated by a period (.). If this variable is not set
+#         and the basis_get_python_version() command is available, it is invoked to
+#         determine the version automatically. Otherwise, the Python version
+#         defaults to 2.6.</td>
+#   </tr>
+# </table>
+#
+# @par Output variables:
+# <table border="0">
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_FOUND</td>
+#     <td>Whether the package was found and the following CMake variables are valid.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_INCLUDE_DIR</td>
+#     <td>Package include directories.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_INCLUDES</td>
+#     <td>Include directories including prerequisite libraries (non-cached).</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_LIBRARY</td>
+#     <td>Package libraries.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_LIBRARIES</td>
+#     <td>Package libraries and prerequisite libraries (non-cached).</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_mosekopt_MEX</td>
+#     <td>Package mosekopt MEX-file.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_MEX_FILES</td>
+#     <td>List of MEX-files (non-cached).</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_mosek_JAR</td>
+#     <td>Package mosek Java library (.jar file).</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_CLASSPATH</td>
+#     <td>List of Java package libraries and prerequisite libraries (non-cached).</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b MOSEK_PYTHONPATH</td>
+#     <td>Path to Python modules of this package.</td>
+#   </tr>
+# </table>
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeFindModules
 ##############################################################################
 
 # ----------------------------------------------------------------------------
