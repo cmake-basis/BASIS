@@ -26,15 +26,6 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-
-# get directory of this file
-#
-# Note: This variable was just recently introduced in CMake, it is derived
-#       here from the already earlier added variable CMAKE_CURRENT_LIST_FILE
-#       to maintain compatibility with older CMake versions.
-get_filename_component (CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-
-
 # ============================================================================
 # names of output files
 # ============================================================================

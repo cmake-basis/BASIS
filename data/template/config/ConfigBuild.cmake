@@ -16,5 +16,5 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-set (ETC_DIR_CONFIG "${PROJECT_ETC_DIR}")
+set (DATA_DIR_CONFIG "${PROJECT_DATA_DIR}")
 

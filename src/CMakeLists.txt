@@ -20,7 +20,6 @@ set (
     "cmake/BasisProject.cmake"
     "cmake/BasisTest.cmake"
     "cmake/BasisUpdate.cmake"
-    "cmake/CMakeParseArguments.cmake"
     "cmake/CommonTools.cmake"
     "cmake/DocTools.cmake"
     "cmake/ExternalData.cmake"

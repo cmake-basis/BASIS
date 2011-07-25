@@ -16,5 +16,5 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_set_config_path (ETC_DIR_CONFIG "${INSTALL_ETC_DIR}")
+basis_set_config_path (DATA_DIR_CONFIG "${INSTALL_DATA_DIR}")
 
