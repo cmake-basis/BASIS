@@ -64,7 +64,7 @@ ctest="$exec_dir/@MODULES_DIR@/basistest.ctest"
 master="$exec_dir/basistest-master"
 
 ## @brief Test execution command.
-slave="$exec_dir/basistest-slave -V -S $ctest"
+slave="$exec_dir/basistest-slave -v -S $ctest"
 
 # ============================================================================
 # main

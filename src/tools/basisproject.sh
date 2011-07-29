@@ -139,7 +139,7 @@ function print_options
 
 function print_usage
 {
-    echo "$exec_name (BASIS)"
+    echo "$exec_name (@NAME@)"
     echo
     echo "Usage:"
 	echo "  $exec_name [options] <project name>"
@@ -156,7 +156,7 @@ function print_usage
 
 function print_help
 {
-    echo "$exec_name (BASIS)"
+    echo "$exec_name (@NAME@)"
     echo
     echo "Usage:"
 	echo "  $exec_name [options] <project name>"
@@ -339,7 +339,7 @@ do
 			;;
 
 		-V|--version)
-			print_version
+			print_version "basisproject"
 			exit 0
 			;;
 

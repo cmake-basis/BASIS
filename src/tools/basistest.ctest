@@ -97,7 +97,7 @@ endfunction ()
 # @returns Nothing.
 
 function (print_help)
-  message ("CTest script basistest.ctest (BASIS)")
+  message ("CTest script basistest.ctest (@NAME@)")
   print_usage_section ()
   message ("
 Description:

@@ -72,7 +72,7 @@ EOF-OPTIONS
 
 function print_help
 {
-    echo "$exec_name (BASIS)"
+    echo "$exec_name (@NAME@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -102,7 +102,7 @@ EOF-EXAMPLES
 
 function print_usage
 {
-    echo "$exec_name (BASIS)"
+    echo "$exec_name (@NAME@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -174,9 +174,9 @@ while [ $# -gt 0 ]; do
             ;;
 
         # standard options
-		-h|--help)    print_help;    exit 0; ;;
-		-u|--usage)   print_usage;   exit 0; ;;
-        -V|--version) print_version; exit 0; ;;
+		-h|--help)    print_help; exit 0; ;;
+		-u|--usage)   print_usage; exit 0; ;;
+        -V|--version) print_version "basistest-slave"; exit 0; ;;
         -v|--verbose) ((verbosity++)); ;;
 
         # invalid option
