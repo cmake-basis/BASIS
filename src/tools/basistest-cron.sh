@@ -41,12 +41,13 @@ sge=1
 
 ## @brief SGE queue; set to '' to not specify any.
 queue='tesla'
+#queue='centos5'
 
 ## @brief Mail address for SGE notifications; set to '' to disable notifications.
 mail=''
 
 ## @brief Output file for test log; used for -o and -e option of qsub.
-log='/sbia/home/swtest/var/log/basistest.$JOB_ID.log'
+log='/sbia/home/swtest/var/log/basistest-$JOB_ID.log'
 
 ## @brief Configuration file; configure the automated tests here, see <tt>basistestd -h</td>.
 conf='/sbia/home/swtest/etc/basistest.conf'
@@ -78,7 +79,7 @@ if [ $sge -ne 0 ]; then
     submit='qsub -S /bin/bash -cwd'
     if [ ! -z "$queue" ]; then submit="$submit -l $queue"; fi
     if [ ! -z "$mail" ]; then submit="$submit -M $mail -m b -m e -m a"; fi
-    if [ ! -z "$log" ]; then submit="$submit -o $log -e $log"; fi
+    if [ ! -z "$log" ]; then submit="$submit -o $log -j y"; fi
     slave="$submit $slave"
 fi
 

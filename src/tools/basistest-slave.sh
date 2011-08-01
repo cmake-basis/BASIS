@@ -202,6 +202,9 @@ fi
 # main
 # ============================================================================
 
+echo "$exec_name running on host `hostname`"
+echo
+
 # see if ctest can be found
 which ctest &> /dev/null
 if [ $? -ne 0 ]; then
