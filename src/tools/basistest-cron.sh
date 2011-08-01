@@ -49,6 +49,9 @@ mail=''
 ## @brief Output file for test log; used for -o and -e option of qsub.
 log='/sbia/home/swtest/var/log/basistest-$JOB_ID.log'
 
+## @brief Maximum number of days for which log files should be kept.
+maxLogMTime=7
+
 ## @brief Configuration file; configure the automated tests here, see <tt>basistestd -h</td>.
 conf='/sbia/home/swtest/etc/basistest.conf'
 
@@ -87,7 +90,7 @@ fi
 if [ ! -z "$log" ]; then
     pattern=${log//\$JOB_ID/\*}
     if [[ "$pattern" =~ "^/sbia/home/swtest/var/" ]]; then
-        find "$pattern" -mtime '+7' -delete
+        find "$pattern" -mtime "+$maxLogMTime" -delete
     else
         echo "WARNING: Attempting to delete old log files from directory other than /sbia/home/swtest/var/." 1>&2
         echo "WARNING: Skipping removal of any files. Update basistest-cron.sh to account for changed location of log files!" 1>&2
