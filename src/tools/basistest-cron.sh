@@ -83,5 +83,16 @@ if [ $sge -ne 0 ]; then
     slave="$submit $slave"
 fi
 
+# remove log files that are older than 1 week
+if [ ! -z "$log" ]; then
+    pattern=${log//\$JOB_ID/\*}
+    if [[ "$pattern" =~ "^/sbia/home/swtest/var/" ]]; then
+        find "$pattern" -mtime '+7' -delete
+    else
+        echo "WARNING: Attempting to delete old log files from directory other than /sbia/home/swtest/var/." 1>&2
+        echo "WARNING: Skipping removal of any files. Update basistest-cron.sh to account for changed location of log files!" 1>&2
+    fi
+fi
+
 # run actual testing master
 exec $master -c "$conf" -s "$schedule" -t "$slave"
