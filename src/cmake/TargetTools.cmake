@@ -791,7 +791,7 @@ function (basis_add_library TARGET_NAME)
       set_target_properties (
         ${TARGET_UID}
         PROPERTIES
-          BASIS_TYPE "MEX_FILE"
+          BASIS_TYPE "LIBMEX"
       )
 
       target_link_libraries (${TARGET_UID} ${MATLAB_LIBRARIES})
@@ -1543,7 +1543,7 @@ function (basis_add_custom_finalize)
     get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
     if (BASIS_TYPE MATCHES "SCRIPT")
       basis_add_script_finalize (${TARGET_UID})
-    elseif (BASIS_TYPE MATCHES "MEX")
+    elseif (BASIS_TYPE MATCHES "MEX" AND NOT "${BASIS_TYPE}" STREQUAL "LIBMEX")
       basis_add_mex_target_finalize (${TARGET_UID})
     elseif (BASIS_TYPE MATCHES "MCC")
       basis_add_mcc_target_finalize (${TARGET_UID})
