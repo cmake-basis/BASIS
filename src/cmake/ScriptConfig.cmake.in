@@ -106,7 +106,7 @@ set (BASH_FUNCTION_get_executable_directory "
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 #
 # @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
-get_executable_directory ()
+function get_executable_directory
 {
     # get the absolute path of the executable
     local path=$(cd -P -- \"$(dirname -- \"$0\")\" && pwd -P) && path=$path/$(basename -- \"$0\")
@@ -140,7 +140,7 @@ set (BASH_FUNCTION_get_executable_name "
 # @brief Get name of executable.
 #
 # @returns Prints name of BASH script to @c STDOUT.
-get_executable_name ()
+function get_executable_name
 {
     echo \${0##*/}
 }
@@ -164,7 +164,7 @@ set (BASH_FUNCTION_print_version "
 #             argument or similar!
 #
 # @returns Nothing.
-print_version ()
+function print_version
 {
     if [ $# -eq 0 ]; then
         name=$(get_executable_name)
@@ -197,7 +197,7 @@ set (BASH_FUNCTION_print_contact "
 # @brief Print contact information.
 #
 # @returns Nothing.
-print_contact ()
+function print_contact
 {
     echo \"Contact:\"
     echo \"  SBIA Group <sbia-software at uphs.upenn.edu>\"
