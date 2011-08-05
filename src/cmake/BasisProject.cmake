@@ -281,7 +281,7 @@ macro (basis_project_initialize)
   endif ()
 
   # start CMake project
-  project ("${PROJECT_NAME}" CXX)
+  project ("${PROJECT_NAME}")
 
   set (CMAKE_PROJECT_NAME "${PROJECT_NAME}") # variable used by CPack
 
