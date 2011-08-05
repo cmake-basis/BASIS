@@ -55,8 +55,10 @@ endif ()
 # ----------------------------------------------------------------------------
 # build tree related configuration
 
-include ("${CMAKE_CURRENT_LIST_DIR}/ConfigBuild.cmake")
-include ("${PROJECT_CONFIG_DIR}/ConfigBuild.cmake" OPTIONAL)
+set (BUILD_CONFIG_SETTINGS 1)
+
+include ("${CMAKE_CURRENT_LIST_DIR}/ConfigSettings.cmake")
+include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
 if (INCLUDE_DIR_CONFIG)
   list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
@@ -74,8 +76,10 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 # ----------------------------------------------------------------------------
 # install tree related configuration
 
-include ("${CMAKE_CURRENT_LIST_DIR}/ConfigInstall.cmake")
-include ("${PROJECT_CONFIG_DIR}/ConfigInstall.cmake" OPTIONAL)
+set (BUILD_CONFIG_SETTINGS 0)
+
+include ("${CMAKE_CURRENT_LIST_DIR}/ConfigSettings.cmake")
+include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
 if (INCLUDE_DIR_CONFIG)
   list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
