@@ -1,6 +1,6 @@
 ##############################################################################
-# @file  ConfigInstall.cmake
-# @brief Sets variables used in CMake package configuration for install tree.
+# @file  ConfigSettings.cmake
+# @brief Sets variables used in CMake package configuration file.
 #
 # It is suggested to use _CONFIG as suffix for variable names that are to be
 # substituted in the Config.cmake.in template file in order to distinguish
@@ -14,6 +14,20 @@
 # @ingroup CMakeTools
 ##############################################################################
 
+# ============================================================================
+# build tree configuration settings
+# ============================================================================
+
+if (BUILD_CONFIG_SETTINGS)
+  ## @brief Include directories of package configuration of build tree.
+  set (INCLUDE_DIR_CONFIG "${BINARY_CODE_DIR}" "${PROJECT_CODE_DIR}")
+
+  return ()
+endif ()
+
+# ============================================================================
+# installation configuration settings
+# ============================================================================
+
 ## @brief Include directories of package configuration of installation.
 basis_set_config_path (INCLUDE_DIR_CONFIG "${INSTALL_INCLUDE_DIR}")
-
