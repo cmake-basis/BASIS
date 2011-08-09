@@ -169,6 +169,12 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 /// @brief The project name.
 extern const std::string cProjectName;
 
+/// @brief The project name in lowercase only.
+extern const std::string cProjectNameLower;
+
+/// @brief The project name in uppercase only.
+extern const std::string cProjectNameUpper;
+
 /// @brief The major version number.
 extern const unsigned int cVersionMajor;
 

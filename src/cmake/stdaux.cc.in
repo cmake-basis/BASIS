@@ -149,8 +149,8 @@ ExecutableTargetInfo
 {
     string uid;
     const bool isSubproject = @IS_SUBPROJECT_CONFIG@;
-    if (!isSubproject && targetName.find ("@BASIS_NAMESPACE_SEPARATOR@") == string::npos) {
-        uid = cProjectName + "@BASIS_NAMESPACE_SEPARATOR@" + targetName;
+    if (!isSubproject && targetName.find ("::") == string::npos) {
+        uid = cProjectNameLower + "::" + targetName;
     } else {
         uid = targetName;
     }

@@ -17,7 +17,7 @@
 #            or a sibling.
 #
 # @note As this file also sets the CMake policies to be used, it has to
-#       be included using the NO_POLICY_SCOPE in order for these policies
+#       be included using the @c NO_POLICY_SCOPE in order for these policies
 #       to take effect also in the including file and its subdirectories.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -111,7 +111,7 @@ set (BASIS_LIBRARY_COMPONENT "Development")
 # are associated with if no component was specified, explicitly.
 set (BASIS_RUNTIME_COMPONENT "Runtime")
 
-## @brief Character used to separate namespace and target name to build target UID.
+## @brief Character used to separate namespace and target name in target UID.
 #
 # This separator is used to construct a UID for a particular target.
 # For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".

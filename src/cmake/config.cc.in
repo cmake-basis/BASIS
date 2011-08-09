@@ -27,8 +27,10 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // project attributes
 // ---------------------------------------------------------------------------
 
-const std::string cProjectName ("@PROJECT_NAME@");
-const std::string cVersion     ("@PROJECT_VERSION@");
+const std::string cProjectName      ("@PROJECT_NAME@");
+const std::string cProjectNameLower ("@PROJECT_NAME_LOWER@");
+const std::string cProjectNameUpper ("@PROJECT_NAME_UPPER@");
+const std::string cVersion          ("@PROJECT_VERSION@");
 
 const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
 const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
