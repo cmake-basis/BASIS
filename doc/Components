@@ -16,6 +16,8 @@
 INTRODUCTION
 ============
 
+  TODO/OBSOLETE: This document has to be revised!
+
   This document defines the different components used to modularize the content
   of each software project. At the directory level, a project is split into three
   major components: the software, example, and testing component.

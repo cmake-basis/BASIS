@@ -1,0 +1,177 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software at uphs.upenn.edu
+
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+  See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+INTRODUCTION
+============
+
+  This document discusses and describes the conventions for calling other
+  executables from within an executable. The calling conventions address the
+  question whether to use relative or absolute file paths when calling
+  other executables and introduce a name mapping from build target names
+  to actual executable file names. These calling conventions are, however,
+  hidden to the developer through automatically generated utility functions
+  for each supported programming language. See section "IMPLEMENTATION BY
+  SUPPORTED LANGUAGE" for details on the specific implementation of the
+  calling conventions for each supported language.
+
+
+
+RELATIVE VS. ABSOLUTE EXECUTABLE FILE PATHS
+===========================================
+
+  Relative paths such as only the exectuble file name require a proper setting
+  of the PATH environment variable. If more than one version of a particular
+  software package should be installed or in case of name conflicts with other
+  packages, this is not trivial and it may not be guaranteed that the correct
+  executable is executed. Absolute executable file paths, on the other side,
+  restrict the relocatability and thus distribution of pre-build binary packages.
+  Therefore, BASIS proposes and implements the following convention on how
+  absolute paths of (auxiliary) executables is determined at runtime by taking
+  the absolute path of the directory of the calling executable into consideration.
+
+  Main executables in "<prefix>/bin/" call utility executables relative to their
+  own directory. For example, a BASH script called "main" that executes a utility
+  script "util" in "<prefix>/lib/<project>/" would do so as demonstrated in the
+  following example code:
+
+    # will be substituted by the function get_executable_directory()
+    @BASH_FUNCTION_get_executable_directory@
+
+    # get absolute path of directory of auxiliary executables
+    exec_dir=$(get_executable_directory)
+    libexec_dir=${exec_dir}/@LIBEXEC_DIR@
+
+    # call utility executable in libexec directory
+    ${libexec_dir}/util
+
+  where LIBEXEC_DIR is set in the default ScriptConfig.cmake.in configuration file
+  to either the output directory of auxiliary executables in the build tree relative
+  to directory of the script built for the build tree or to the path of the
+  installed auxiliary executables relative to the location of the installed
+  script. Note that in case of script files, two versions are "build" by BASIS,
+  one that is working directly inside the build tree and one which is installed
+  to the installation tree. In case of compiled executables such as in particular
+  programs built from C++ source code files, a different, but similar approach is
+  used to avoid the build of two different binary executables files. Here, the
+  executable determines at runtime whether it is executed from within the build
+  tree or not and uses the appropriate path depending on this.
+
+  If an executable in the "bin" directory wants to execute another executable in
+  the same directory, it simply does it as follows:
+
+    # call other main executable
+    ${exec_dir}/othermain
+
+
+
+EXECUTABLE FILE PATHS VS. BUILD TARGET NAMES
+============================================
+
+  In order to be independent of the actual names of the executable files--which
+  may vary depending on the operating system (e.g., with or without file name
+  extension for script files) and the context in which a project was built
+  (see document Super- and Subprojects)--executables should not be called by their
+  respective file name, but their (BASIS/CMake) build target name.
+
+  It is in the responsibility of the BASIS auxiliary functions to properly map this
+  project specific and (presumably) constant build target name to the absolute
+  file path of the built (and installed) executable file. This gives BASIS the
+  ability to modify the executable name during the configuration step of the
+  project, for example, to prepand them with a unique project-specific prefix,
+  in order to ensure uniquness of the executable file name. Moreover, if an
+  executable should be renamed, this can be done simply through the build
+  configuration and does then not require a modification of the source code files
+  which make use of this executable.
+
+
+
+IMPLEMENTATION BY SUPPORTED LANGUAGE
+====================================
+
+  C++
+  ---
+
+  For C++ programs, the BASIS C++ utilities library provides the function
+  GetExecutableFile() which maps a build target name to the absolute path of
+  the executable file to be executed. This function makes use of the static
+  instance of the class sbia::<project>::ExecutableTargetInfo whose constructor
+  is automatically generated during the configuration of a project. This
+  constructor initializes the data structures required for the mapping of
+  target names to absolute file paths.
+
+
+  Python
+  ------
+
+  TODO
+
+
+  Perl
+  ----
+
+  TODO
+
+
+  BASH
+  ----
+
+  For BASH scripts, the approach is slightly different. Here, a BASH script
+  is generated during the configuration which contains the definition of
+  aliases, where the target name is used as an alias for the actual executable
+  file. This file has to be sourced in BASH scripts. The target names can then
+  be simply used as aliases for the actual executables. Aliases for full
+  qualified build target names, i.e., target names prefixed by the project name
+  the respective build target belongs to, follow the convention
+  <project>__<Target>, where <project> is the project name in lowercase only and
+  <Target> the case sensitive build target name used by the respective project.
+  Moreover, for the target of the current project itself, aliases without the
+  project name prefix are defined.
+ 
+  Note that this approach requires the option expand_aliases to be set via
+  "shopt -s expand_aliases" which is done by the sourced BASH script.
+  A "shopt -u expand_aliases" disables the expansion of alises and hence should
+  not be used in BASH scripts which execute other executables using this
+  build target name to executable file mapping mechanism.
+
+
+
+UNSUPPORTED LANGUAGES
+=====================
+
+  In the following, languages for which the calling conventions are not implemented
+  are listed. Reasons for not supporting these languages regarding the execution
+  of other executables are given for each such programming language. Support for
+  all other programming languages which are not supported yet and not listed here
+  may be added in future releases of BASIS. Please file a feature request on the
+  SBIA Wiki page of BASIS if you need support for a yet unsupported language.
+
+
+  MATLAB
+  ------
+
+  See [1] for a documentation of external interfaces MathWorks provides for the
+  development of applications in MATLAB. None of these interfaces includes the
+  direct execution of other executables using something like a system call.
+  There are better ways to execute code written in C++ or Java from MATLAB code.
+  If you would need to execute a BASH or Python script from MATLAB, you need to
+  rethink the design of your software.
+
+
+
+REFERENCES
+==========
+
+  [1] http://www.mathworks.com/help/techdoc/matlab_external/bp_kqh7.html
+

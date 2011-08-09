@@ -1,0 +1,36 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software at uphs.upenn.edu
+
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+  See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+INTRODUCTION
+============
+
+  This design document details the design and implementation of the
+  superproject/subproject concept and corresponding project organization.
+  A superproject can also be viewed as the actual modularized project, where
+  each subproject is one module of this superproject which may depend on other
+  modules of the same superproject or external projects (also referred to as
+  packages). Note that an external project in this context can be another
+  super- or subproject implementing the same superproject/subproject concept
+  as discussed herein, i.e., software developed at SBIA based on BASIS.
+  To some extent, this concept of modularization was similarly implemented by
+  the developers of the ITK 4 [1]. In fact, the ITK 4 project was a great
+  ressource on several aspects which were implemented as part of BASIS.
+
+
+
+REFERENCES
+==========
+
+  [1] http://www.vtk.org/Wiki/ITK_Release_4/Modularization
