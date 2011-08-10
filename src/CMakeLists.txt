@@ -50,11 +50,6 @@ set (
     "cmake/doxygen-matlab-filter.pl"
     "cmake/doxygen-python-filter.py"
     "cmake/doxygen-javascript-filter.pl"
-    "cmake/config.h.in"
-    "cmake/config.cc.in"
-    "cmake/stdaux.h.in"
-    "cmake/stdaux.cc.in"
-    "cmake/test_main.cc"
 )
 
 # ----------------------------------------------------------------------------
@@ -87,6 +82,21 @@ install (
 # ============================================================================
 # C++ utilities
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# utilities template files
+set (CPP_UTILITIES_FILES
+  "utilities/config.h.in"
+  "utilities/config.cc.in"
+  "utilities/stdaux.h.in"
+  "utilities/stdaux.cc.in"
+  "utilities/test_main.cc"
+)
+
+install (
+  FILES       ${CPP_UTILITIES_FILES}
+  DESTINATION "${INSTALL_UTILITIES_DIR}"
+)
 
 # ----------------------------------------------------------------------------
 # basic utilities
