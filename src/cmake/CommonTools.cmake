@@ -17,16 +17,21 @@ else ()
 endif ()
 
 
-## @addtogroup CMakeUtilities
-#  @{
-
 # ============================================================================
 # common commands
 # ============================================================================
 
+## @addtogroup CMakeUtilities
+#  @{
+
 ## @brief The Python interpreter.
 find_program (BASIS_CMD_PYTHON NAMES python DOC "The Python interpreter (python).")
 mark_as_advanced (BASIS_CMD_PYTHON)
+
+# @}
+
+## @addtogroup CMakeAPI
+#  @{
 
 # ============================================================================
 # find BASIS projects
@@ -42,8 +47,6 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 #          CMake Find module or the package's CMake configuration file.
 #
 # @retval <PACKAGE>_FOUND Whether the given package was found.
-#
-# @ingroup CMakeAPI
 
 macro (find_basis_package PACKAGE)
   find_package ("${BASIS_CONFIG_PREFIX}${PACKAGE}" ${ARGN})
@@ -65,8 +68,6 @@ endmacro ()
 #
 # @returns Sets the variable named by the first argument to the requested
 #          component of the given file path.
-#
-# @ingroup CMakeAPI
 
 function (get_filename_component)
   _get_filename_component (${ARGN})
@@ -154,8 +155,6 @@ endfunction ()
 # @param [in]  PATH Path of variable relative to CMAKE_INSTALL_PREFIX.
 #
 # @returns Sets @p VAR to the determined relative path.
-#
-# @ingroup CMakeAPI
 
 function (basis_set_config_path VAR PATH)
   file (
@@ -207,8 +206,6 @@ endfunction ()
 #         the build and install tree version of the script.</td>
 #   </tr>
 # </table>
-#
-# @ingroup CMakeAPI
 
 macro (basis_set_script_path_definition FUNC)
   set (${FUNC} "function (basis_set_script_path VAR PATH)
@@ -238,6 +235,58 @@ endfunction ()")
 endmacro ()
 
 # ============================================================================
+# set/get any property
+# ============================================================================
+
+##############################################################################
+# @brief Replaces CMake's set_property() command.
+#
+# @param [in] SCOPE The argument for the @p SCOPE parameter of set_property().
+# @param [in] ARGN  Arguments as accepted by set_property().
+#
+# @returns Sets the specified property.
+
+function (basis_set_property SCOPE)
+  if (SCOPE MATCHES "^TARGET$|^TEST$")
+    set (IDX 0)
+    foreach (ARG ${ARGN})
+      if (ARG MATCHES "^APPEND$|^PROPERTY$")
+        break ()
+      endif ()
+      if (SCOPE STREQUAL "TEST")
+        basis_test_uid (UID "${ARG}")
+      else ()
+        basis_target_uid (UID "${ARG}")
+      endif ()
+      list (REMOVE_AT ARGN ${IDX})
+      list (INSERT ARGN ${IDX} "${UID}")
+      math (EXPR IDX "${IDX} + 1")
+    endforeach ()
+  endif ()
+  set_property (${ARGN})
+endfunction ()
+
+##############################################################################
+# @brief Replaces CMake's get_property() command.
+#
+# @param [out] VAR     Property value.
+# @param [in]  SCOPE   The argument for the @p SCOPE argument of get_property().
+# @param [in]  ELEMENT The argument for the @p ELEMENT argument of get_property().
+# @param [in]  ARGN    Arguments as accepted by get_property().
+#
+# @returns Sets @p VAR to the value of the requested property.
+
+function (basis_get_property VAR SCOPE ELEMENT)
+  if (SCOPE STREQUAL "TARGET")
+    basis_target_uid (ELEMENT "${ELEMENT}")
+  elseif (SCOPE STREQUAL "TEST")
+    basis_test_uid (ELEMENT "${ELEMENT}")
+  endif ()
+  get_property (VALUE ${SCOPE} ${ELEMENT} ${ARGN})
+  set ("${VAR}" "${VALUE}" PARENT_SCOPE)
+endfunction ()
+
+# ============================================================================
 # list / string manipulations
 # ============================================================================
 
@@ -254,8 +303,6 @@ endmacro ()
 # @param [in]  ARGN Input list.
 #
 # @returns Sets @p STR to the resulting string.
-#
-# @ingroup CMakeAPI
 
 function (basis_list_to_string STR)
   set (OUT)
@@ -275,8 +322,6 @@ endfunction ()
 # @param [in]  ARGN  Input list.
 #
 # @returns Sets @p STR to the resulting string.
-#
-# @ingroup CMakeAPI
 
 function (basis_list_to_delimited_string STR DELIM)
   set (OUT)
@@ -306,8 +351,6 @@ endfunction ()
 # @param [in]  STR  Input string.
 #
 # @returns Sets @p LST to the resulting CMake list.
-#
-# @ingroup CMakeAPI
 
 function (basis_string_to_list LST STR)
   set (TMP "${STR}")
@@ -366,8 +409,6 @@ endfunction ()
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
-#
-# @ingroup CMakeAPI
 
 function (basis_target_uid TARGET_UID TARGET_NAME)
   if (NOT IS_SUBPROJECT OR TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
@@ -400,6 +441,8 @@ endfunction ()
 # @param [in] TARGET_NAME Desired target name.
 #
 # @returns Nothing.
+#
+# @ingroup CMakeUtilities
 
 function (basis_check_target_name TARGET_NAME)
   # reserved target name ?
@@ -453,8 +496,6 @@ endfunction ()
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
-#
-# @ingroup CMakeAPI
 
 function (basis_test_uid TEST_UID TEST_NAME)
   if (NOT IS_SUBPROJECT OR TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
@@ -487,6 +528,8 @@ endfunction ()
 # @param [in] TEST_NAME Desired test name.
 #
 # @returns Nothing.
+#
+# @ingroup CMakeUtilities
 
 function (basis_check_test_name TEST_NAME)
   list (FIND BASIS_RESERVED_TEST_NAMES "${TEST_NAME}" IDX)
