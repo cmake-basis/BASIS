@@ -73,7 +73,7 @@ set (REVISION      "@PROJECT_REVISION@")
 # ============================================================================
 
 basis_set_script_path (RUNTIME_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_RUNTIME_DIR@")
-basis_set_script_path (LIBEXEC_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_LIBEXEC_DIR@")
+basis_set_script_path (LIBEXEC_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_LIBEXEC_DIR@")
 basis_set_script_path (LIBRARY_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_LIBRARY_DIR@")
 basis_set_script_path (ARCHIVE_DIR "@CMAKE_ARCHIVE_OUTPUT_DIRECTORY@" "@INSTALL_ARCHIVE_DIR@")
 basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_SHARE_DIR@")
