@@ -25,23 +25,8 @@ if (BUILD_CONFIG_SETTINGS)
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
     # libraries
-    basis_get_target_property (OUTPUT_NAME "basis_utils" OUTPUT_NAME)
-    basis_get_target_property (PREFIX      "basis_utils" PREFIX)
-    basis_get_target_property (SUFFIX      "basis_utils" SUFFIX)
-
-    if (OUTPUT_NAME)
-      set (UTILS_LIBRARY_CONFIG "${OUTPUT_NAME}")
-    else ()
-      set (UTILS_LIBRARY_CONFIG "basis_utils")
-    endif ()
-    if (PREFIX)
-      set (UTILS_LIBRARY_CONFIG "${PREFIX}${UTILS_LIBRARY_CONFIG}")
-    endif ()
-    if (SUFFIX)
-      set (UTILS_LIBRARY_CONFIG "${UTILS_LIBRARY_CONFIG}${SUFFIX}")
-    endif ()
-
-    set (UTILS_LIBRARY_CONFIG "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/lib/${UTILS_LIBRARY_CONFIG}")
+    basis_get_target_location (UTILS_LIBRARY_CONFIG basis_utils)
+    basis_get_target_location (TEST_LIBRARY_CONFIG  basis_test)
 
     # URL of project template
     set (TEMPLATE_URL_CONFIG "${PROJECT_ETC_DIR}/template")
@@ -55,6 +40,20 @@ endif ()
 
 # CMake module path
 basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_MODULES_DIR}")
+
+# libraries
+file (
+  RELATIVE_PATH LIB_DIR
+    "${INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
+    "${INSTALL_PREFIX}/${INSTALL_ARCHIVE_DIR}"
+)
+string (REGEX REPLACE "/$" "" LIB_DIR "${LIB_DIR}")
+
+basis_get_target_location (UTILS_LIBRARY_CONFIG basis_utils NAME)
+set (UTILS_LIBRARY_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${LIB_DIR}/${UTILS_LIBRARY_CONFIG}")
+
+basis_get_target_location (TEST_LIBRARY_CONFIG basis_test NAME)
+set (TEST_LIBRARY_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${LIB_DIR}/${TEST_LIBRARY_CONFIG}")
 
 # URL of project template
 basis_set_config_path (TEMPLATE_URL_CONFIG "${INSTALL_TEMPLATE_DIR}")

@@ -27,7 +27,8 @@ set (@PACKAGE_NAME@_TEST_LIBRARY  "@TEST_LIBRARY_CONFIG@")
 
 set (
   @PACKAGE_NAME@_LIBRARIES
-    @PACKAGE_NAME@_UTILS_LIBRARY
+    ${@PACKAGE_NAME@_UTILS_LIBRARY}
+    ${@PACKAGE_NAME@_TEST_LIBRARY}
 )
 
 # absolute path of project use file which is included by other projects

@@ -31,7 +31,7 @@ basis_add_doc (ChangeLog GENERATOR svn2cl)
 #
 # See basis_add_doc()
 
-basis_add_doc (API GENERATOR Doxygen)
+basis_add_doc (api GENERATOR Doxygen)
 
 # ============================================================================
 # manuals
