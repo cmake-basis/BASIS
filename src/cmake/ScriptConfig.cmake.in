@@ -59,9 +59,9 @@
 # project attributes
 # ============================================================================
 
-set (NAME          "@PROJECT_NAME@")
-set (NAME_UPPER    "@PROJECT_NAME_UPPER@")
-set (NAME_LOWER    "@PROJECT_NAME_LOWER@")
+set (PROJECT       "@PROJECT_NAME@")
+set (PROJECT_UPPER "@PROJECT_NAME_UPPER@")
+set (PROJECT_LOWER "@PROJECT_NAME_LOWER@")
 set (VERSION       "@PROJECT_VERSION@")
 set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
 set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
