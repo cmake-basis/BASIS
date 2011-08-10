@@ -86,7 +86,7 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 # BASH
 # ----------------------------------------------------------------------------
 
-## @addtogroup BASHUtilities
+## @addtogroup BashUtilities
 #  @{
 
 ##############################################################################
