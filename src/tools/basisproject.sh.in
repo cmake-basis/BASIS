@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basisproject.sh.in
+# @file  basisproject.sh
 # @brief Project management tool used to create and/or modify a BASIS project.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.

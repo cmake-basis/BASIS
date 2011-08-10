@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-slave.sh.in
+# @file  basistest-slave.sh
 # @brief Test execution command.
 #
 # This shell script runs the tests of a BASIS project. It is a wrapper for
@@ -72,7 +72,7 @@ EOF-OPTIONS
 
 function print_help
 {
-    echo "$exec_name (@NAME@)"
+    echo "@NAME@ (@PROJECT@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -102,7 +102,7 @@ EOF-EXAMPLES
 
 function print_usage
 {
-    echo "$exec_name (@NAME@)"
+    echo "@NAME@ (@PROJECT@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -176,7 +176,7 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_usage; exit 0; ;;
-        -V|--version) print_version "basistest-slave"; exit 0; ;;
+        -V|--version) print_version "@NAME@"; exit 0; ;;
         -v|--verbose) ((verbosity++)); ;;
 
         # invalid option

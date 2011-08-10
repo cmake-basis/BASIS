@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-master.sh.in
+# @file  basistest-master.sh
 # @brief Test master which can be run as a cron job.
 #
 # This shell script is supposed to be scheduled as cron job, where possibly
@@ -75,7 +75,7 @@ EOF-OPTIONS
 
 function print_help
 {
-    echo "$exec_name (@NAME@)"
+    echo "@NAME@ (@PROJECT@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -161,7 +161,7 @@ EOF-EXAMPLES
 
 function print_usage
 {
-    echo "$exec_name (@NAME@)"
+    echo "@NAME@ (@PROJECT@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -377,7 +377,7 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_usage; exit 0; ;;
-        -V|--version) print_version "basistest-master"; exit 0; ;;
+        -V|--version) print_version "@NAME@"; exit 0; ;;
         -v|--verbose) ((verbosity++)); ;;
 
         # invalid option

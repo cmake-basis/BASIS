@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-cron.sh.in
+# @file  basistest-cron.sh
 # @brief Script intended to be run as cron job to perform automated testing.
 #
 # This script sets up the environment for the actual master script which

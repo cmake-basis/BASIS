@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  basistest.ctest.in
+# @file  basistest.ctest
 # @brief CTest script used to test BASIS projects.
 #
 # To display the help of this CTest script, run:
@@ -29,7 +29,7 @@
 function (print_usage_section)
   message ("
 Usage:
-  ctest [ctest options] -S basistest.ctest[,option[=value]]*
+  ctest [ctest options] -S @NAME@[,option[=value]]*
 
   Note: No commas or equality signs are allowed inside of option values even
         if the value is enclosed by quotation marks.")
@@ -97,7 +97,7 @@ endfunction ()
 # @returns Nothing.
 
 function (print_help)
-  message ("CTest script basistest.ctest (@NAME@)")
+  message ("CTest script @NAME@ (@PROJECT@)")
   print_usage_section ()
   message ("
 Description:
@@ -146,7 +146,7 @@ endfunction ()
 # @returns Nothing.
 
 function (print_usage)
-  message ("CTest script basistest.ctest (BASIS)")
+  message ("CTest script @NAME@ (@PROJECT@)")
   print_usage_section ()
   print_options ()
   print_contact ()
@@ -164,7 +164,7 @@ function (print_version)
   if (@REVISION@ GREATER 0) # revision > 0
     set (VERSION_INFO "${VERSION_INFO} (revision @REVISION@)")
   endif ()
-  message ("CTest script basistest.ctest (BASIS) ${VERSION_INFO}")
+  message ("CTest script @NAME@ (@PROJECT@) ${VERSION_INFO}")
   message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
   message ("See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.")
 endfunction ()
@@ -453,7 +453,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
         INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/"
         DESTINATION "${INSTALL_DOXYGEN_DIR}"
       )
-    else if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html/index.html")
+    elseif (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html/index.html")
       file (
         INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html/"
         DESTINATION "${INSTALL_DOXYGEN_DIR}"
