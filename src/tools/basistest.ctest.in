@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  basistest.ctest
+# @file  basistest.ctest.in
 # @brief CTest script used to test BASIS projects.
 #
 # To display the help of this CTest script, run:

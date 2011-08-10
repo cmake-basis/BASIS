@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-svn.sh
+# @file  basistest-svn.sh.in
 # @brief Wrapper script for Subversion svn command.
 #
 # This script is used as wrapper for the svn command to enable automated

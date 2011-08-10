@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-master.sh
+# @file  basistest-master.sh.in
 # @brief Test master which can be run as a cron job.
 #
 # This shell script is supposed to be scheduled as cron job, where possibly

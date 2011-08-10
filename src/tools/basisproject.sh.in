@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basisproject.sh
+# @file  basisproject.sh.in
 # @brief Project management tool used to create and/or modify a BASIS project.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -139,7 +139,7 @@ function print_options
 
 function print_usage
 {
-    echo "$exec_name (@NAME@)"
+    echo "@NAME@ (@PROJECT@)"
     echo
     echo "Usage:"
 	echo "  $exec_name [options] <project name>"
@@ -156,7 +156,7 @@ function print_usage
 
 function print_help
 {
-    echo "$exec_name (@NAME@)"
+    echo "@NAME@ (@PROJECT@)"
     echo
     echo "Usage:"
 	echo "  $exec_name [options] <project name>"
@@ -339,7 +339,7 @@ do
 			;;
 
 		-V|--version)
-			print_version "basisproject"
+			print_version "@NAME@"
 			exit 0
 			;;
 

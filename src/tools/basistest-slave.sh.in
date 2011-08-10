@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-slave.sh
+# @file  basistest-slave.sh.in
 # @brief Test execution command.
 #
 # This shell script runs the tests of a BASIS project. It is a wrapper for
