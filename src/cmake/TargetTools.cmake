@@ -78,6 +78,9 @@ endfunction ()
 #
 # @param [out] VAR         Path of build target output file.
 # @param [in]  TARGET_NAME Name of build target.
+# @param [in]  ARGV2       Which file name component of the @c LOCATION
+#                          property to return. See get_filename_component().
+#                          By default, the entire absolute path is returned.
 #
 # @returns Path of output file similar to @c LOCATION property of CMake targets.
 
@@ -111,6 +114,10 @@ function (basis_get_target_location VAR TARGET_NAME)
       set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
     else ()
       get_target_property (LOCATION "${TARGET_UID}" "LOCATION")
+    endif ()
+
+    if (ARGV2)
+      get_filename_component (LOCATION "${LOCATION}" "${ARGV2}")
     endif ()
   else ()
     set (LOCATION "NOTFOUND")
