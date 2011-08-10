@@ -38,8 +38,9 @@ set (TEMPLATE_VERSION "0.0.0")
 
 # the following variables would be set by the BASISConfig.cmake file if
 # this would be a project which uses BASIS; in fact, this *is* BASIS, though
-set (BASIS_MODULE_PATH  "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
-set (BASIS_TEST_LIBRARY "basis_test")
+set (BASIS_MODULE_PATH    "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
+set (BASIS_UTILITIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities")
+set (BASIS_TEST_LIBRARY   "basis_test")
 
 # include BASIS policies, settings, macros, and functions
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)

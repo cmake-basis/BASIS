@@ -40,3 +40,14 @@ set (
 mark_as_advanced (INSTALL_MODULES_DIR)
 string (CONFIGURE "${INSTALL_MODULES_DIR}" INSTALL_MODULES_DIR @ONLY)
 
+# installation directory of utilities template files
+set (
+  INSTALL_UTILITIES_DIR
+    "\@INSTALL_SHARE_DIR\@/utilities"
+  CACHE PATH
+    "Installation directory of utilities template files (relative to INSTALL_PREFIX)."
+)
+
+mark_as_advanced (INSTALL_UTILITIES_DIR)
+string (CONFIGURE "${INSTALL_UTILITIES_DIR}" INSTALL_UTILITIES_DIR @ONLY)
+

@@ -227,7 +227,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 // ***************************************************************************
 /**
-@defgroup BASHUtilities BASH Utilities
+@defgroup BashUtilities BASH Utilities
 @brief    Auxiliary implementations for use in BASH scripts.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
