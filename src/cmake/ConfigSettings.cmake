@@ -20,7 +20,7 @@
 
 if (BUILD_CONFIG_SETTINGS)
   ## @brief Include directories of package configuration of build tree.
-  set (INCLUDE_DIR_CONFIG "${BINARY_CODE_DIR}" "${PROJECT_CODE_DIR}")
+  set (INCLUDE_DIR_CONFIG "${PROJECT_INCLUDE_DIR}")
 
   return ()
 endif ()
