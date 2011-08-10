@@ -112,7 +112,7 @@ set (BASH_FUNCTION_get_executable_directory "
 function get_executable_directory
 {
     # get the absolute path of the executable
-    local path=$(cd -P -- \"$(dirname -- \"$BASH_SCRIPT\")\" && pwd -P) && path=$path/$(basename -- \"$BASH_SCRIPT\")
+    local path=$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P) && path=$path/$(basename -- \"$BASH_SOURCE\")
 
     # resolve symbolic links
     while [ -h $path ]; do

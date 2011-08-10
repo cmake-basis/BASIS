@@ -246,7 +246,7 @@ function (basis_add_stdaux_bash_script)
       if (C)
         set (C "${C}\n")
       endif ()
-      set (C "${C}alias ${ALIAS}=\\\"\$stdaux_dir/${EXEC_DIR}/${EXEC_NAME}\\\"")
+      set (C "${C}alias ${ALIAS}=$(to_absolute_path \\\"\$stdaux_dir/${EXEC_DIR}/${EXEC_NAME}\\\")")
     endif ()
   endforeach ()
 
