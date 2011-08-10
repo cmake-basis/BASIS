@@ -10,6 +10,13 @@
 # @ingroup CMakeUtilities
 ##############################################################################
 
+## @addtogroup CMakeUtilities
+#  @{
+
+# ============================================================================
+# C++
+# ============================================================================
+
 ##############################################################################
 # @brief Configure auxiliary C++ source files.
 #
@@ -60,8 +67,6 @@
 # @param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
 #
 # @returns Sets the variables specified by the @c [out] parameters.
-#
-# @ingroup CMakeUtilities
 
 function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (SOURCES_OUT        "")
@@ -154,8 +159,6 @@ endfunction ()
 # @sa ExecutableTargetInfo
 #
 # @returns Configures the file @p BINARY_CODE_DIR/stdaux.cc in-place if it exists.
-#
-# @ingroup CMakeUtilities
 
 function (basis_configure_ExecutableTargetInfo)
   file (RELATIVE_PATH SRC "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
@@ -215,3 +218,8 @@ function (basis_configure_ExecutableTargetInfo)
   endif ()
 endfunction ()
 
+# ============================================================================
+# BASH
+# ============================================================================
+
+## @}

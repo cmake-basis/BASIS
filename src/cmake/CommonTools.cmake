@@ -28,7 +28,7 @@ endif ()
 find_program (BASIS_CMD_PYTHON NAMES python DOC "The Python interpreter (python).")
 mark_as_advanced (BASIS_CMD_PYTHON)
 
-# @}
+## @}
 
 ## @addtogroup CMakeAPI
 #  @{
