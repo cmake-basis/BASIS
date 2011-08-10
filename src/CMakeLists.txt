@@ -24,10 +24,12 @@ set (
     "cmake/DocTools.cmake"
     "cmake/ExternalData.cmake"
     "cmake/ExternalData_config.cmake.in"
+    "cmake/InstallationTools.cmake"
     "cmake/MatlabTools.cmake"
     "cmake/Settings.cmake"
     "cmake/SubversionTools.cmake"
     "cmake/TargetTools.cmake"
+    "cmake/UtilitiesTools.cmake"
 )
 
 # ----------------------------------------------------------------------------
@@ -93,10 +95,7 @@ set (CPP_UTILITIES_FILES
   "utilities/test_main.cc"
 )
 
-install (
-  FILES       ${CPP_UTILITIES_FILES}
-  DESTINATION "${INSTALL_UTILITIES_DIR}"
-)
+install (FILES ${CPP_UTILITIES_FILES} DESTINATION "${INSTALL_UTILITIES_DIR}")
 
 # ----------------------------------------------------------------------------
 # basic utilities
