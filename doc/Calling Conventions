@@ -31,20 +31,20 @@ INTRODUCTION
 RELATIVE VS. ABSOLUTE EXECUTABLE FILE PATHS
 ===========================================
 
-  Relative paths such as only the exectuble file name require a proper setting
+  Relative paths such as only the executable file name require a proper setting
   of the PATH environment variable. If more than one version of a particular
   software package should be installed or in case of name conflicts with other
   packages, this is not trivial and it may not be guaranteed that the correct
   executable is executed. Absolute executable file paths, on the other side,
   restrict the relocatability and thus distribution of pre-build binary packages.
   Therefore, BASIS proposes and implements the following convention on how
-  absolute paths of (auxiliary) executables is determined at runtime by taking
+  absolute paths of (auxiliary) executables are determined at runtime by taking
   the absolute path of the directory of the calling executable into consideration.
 
-  Main executables in "<prefix>/bin/" call utility executables relative to their
-  own directory. For example, a BASH script called "main" that executes a utility
-  script "util" in "<prefix>/lib/<project>/" would do so as demonstrated in the
-  following example code:
+  Main executables in "<prefix>/bin/<sinfix>/" call utility executables relative
+  to their own directory. For example, a BASH script called "main" that executes
+  a utility script "util" in "<prefix>/lib/<sinfix>/" would do so as demonstrated
+  in the following example code:
 
     # will be substituted by the function get_executable_directory()
     @BASH_FUNCTION_get_executable_directory@
@@ -56,33 +56,33 @@ RELATIVE VS. ABSOLUTE EXECUTABLE FILE PATHS
     # call utility executable in libexec directory
     ${libexec_dir}/util
 
-  where LIBEXEC_DIR is set in the default ScriptConfig.cmake.in configuration file
+  where LIBEXEC_DIR is set in the BASIS ScriptConfig.cmake.in configuration file
   to either the output directory of auxiliary executables in the build tree relative
-  to directory of the script built for the build tree or to the path of the
+  to the directory of the script built for the build tree or to the path of the
   installed auxiliary executables relative to the location of the installed
-  script. Note that in case of script files, two versions are "build" by BASIS,
-  one that is working directly inside the build tree and one which is installed
-  to the installation tree. In case of compiled executables such as in particular
-  programs built from C++ source code files, a different, but similar approach is
-  used to avoid the build of two different binary executables files. Here, the
+  script. Note that in case of script files, two versions are build by BASIS,
+  one that is working directly inside the build tree and one which is copied to
+  the installation tree. In case of compiled executables, such as in particular
+  programs built from C++ source code files, a different but similar approach is
+  used to avoid the build of two different binary executable files. Here, the
   executable determines at runtime whether it is executed from within the build
   tree or not and uses the appropriate path depending on this.
 
-  If an executable in the "bin" directory wants to execute another executable in
-  the same directory, it simply does it as follows:
+  If an executable in one directory wants to execute another executable in the same
+  directory, it can simply do so as follows:
 
     # call other main executable
     ${exec_dir}/othermain
 
 
 
-EXECUTABLE FILE PATHS VS. BUILD TARGET NAMES
-============================================
+EXECUTABLE FILE VS. BUILD TARGET NAMES
+======================================
 
   In order to be independent of the actual names of the executable files--which
   may vary depending on the operating system (e.g., with or without file name
-  extension for script files) and the context in which a project was built
-  (see document Super- and Subprojects)--executables should not be called by their
+  extension in case of script files) and the context in which a project was built
+  (see Super- and Subprojects document)--executables should not be called by their
   respective file name, but their (BASIS/CMake) build target name.
 
   It is in the responsibility of the BASIS auxiliary functions to properly map this
@@ -90,10 +90,109 @@ EXECUTABLE FILE PATHS VS. BUILD TARGET NAMES
   file path of the built (and installed) executable file. This gives BASIS the
   ability to modify the executable name during the configuration step of the
   project, for example, to prepand them with a unique project-specific prefix,
-  in order to ensure uniquness of the executable file name. Moreover, if an
+  in order to ensure uniqueness of the executable file name. Moreover, if an
   executable should be renamed, this can be done simply through the build
-  configuration and does then not require a modification of the source code files
+  configuration and does not require a modification of the source code files
   which make use of this executable.
+
+
+
+EXECUTABLE AND LIBRARY SEARCH PATHS
+===================================
+
+  All considered operating systems--or more specifically the used shell and dynamic
+  loader--provide certain ways to configure the search paths for executable files
+  and shared libraries which are dynamically loaded on demand. The details on how
+  these search paths can be configured are summarized next including the pros and
+  cons of each method to manipulate these search paths. Following these
+  considerations, the solution aimed at by BASIS is detailed.
+
+
+  Unix-based Systems
+  ------------------
+
+  On Unix-based systems (including in particular all variants of Linux and
+  Mac OS X) executables are searched in directories specified by the PATH
+  environment variable. Shared libraries, on the other side, are first
+  searched in the directories specified by the LD_LIBRARY_PATH environment
+  variable, then in the directories given by the RPATH which is set within
+  the binary files at compile time, and last the directories specified in
+  the /etc/ld.so.conf system configuration file.
+
+  The most flexible method which can also easily be applied by a user is
+  setting the LD_LIBRARY_PATH environment variable. It is, however, not always
+  trivial or possible to set this search path in a way such that all used and
+  installed software works correctly. There are many discussions on why this
+  method of setting the search path is considered evil among the Unix community
+  (see for example [1]). The second option, to set the RPATH seems to be the
+  most secure way to set the search path at compile time. This, however, only
+  for shared libraries which are distributed and installed with the software
+  because only in this case can we make use of the $ORIGIN variable in the
+  search path to make it relative to the location of the binary file.
+  Otherwise, it is either required that the software is being compiled
+  directly on the target system or the paths to the used shared libraries
+  on the target system must match the paths of the system on which the
+  executable was built. Hence, using the RPATH can complicate or restrict
+  the relocatability of a software. Furthermore, unfortunately is the
+  LD_LIBRARY_PATH considered before the RPATH and hence any user setting
+  of the LD_LIBRARY_PATH can still lead to the loading of the wrong shared
+  library. The system configuration /etc/ld.so.conf is not an option for
+  setting the search paths for each individual software. This search path
+  should only be set to a limited number of standard system search paths
+  as changes affect all users. Furthermore, directories on network drives
+  may not be included in this configuration file as they will not be
+  available during the first moments of the systems start-up. Finally, only
+  an administrator can modify this configuration file.
+
+  The anticipated method to ensure that the correct executables and shared
+  libraries are found by the system for Unix-based systems is as follows.
+  As described in the previous sections, executables which are part of the
+  same software package are called by the full absolute path and hence no
+  search path needs to be considered. To guarantee that shared libraries
+  installed as part of the software package are considered first, the
+  directory to which these libraries where installed is prepended to the
+  LD_LIBRARY_PATH prior to the execution of any other executable.
+  Furthermore, the RPATH of binary executable files is set using the $ORIGIN
+  variable to the installation directory of the package's shared libraries.
+  This ensures that also for the execution of the main executable, the
+  package's own shared libraries are considered first. To not restrict the
+  administrator of the target system on where other external packages
+  need to be installed, no precaution is taken to ensure that executables
+  and shared libraries of these packages are found and loaded properly.
+  This is in the responsibility of the administrator of the target system.
+  However, by including most external packages into the distributed binary
+  package, these become part of the software package and thus above methods
+  apply. Note that the inclusion of the runtime requirements should be done
+  during the packaging of the software and thus these packages should still
+  not be integrated into the project's source tree.
+
+  Mac OS X bundles differ from the default Unix-like way of installing
+  software [2]. Here, an information property list file (Info.plist) is used
+  to specify for each bundle separately the specific properties including
+  the location of frameworks, i.e., private share libraries (shared libraries
+  distributed with the bundle). Most shared libraries required by the software
+  will be included in the bundle.
+
+
+  Windows
+  -------
+
+  On Windows systems, executable files are first searched in the current
+  working directory. Then, the directories specified by the PATH environment
+  variable are considered as search path for executable files where the extensions
+  ".exe", ".com", ".bat", and ".cmd" are considered by default and need not be
+  included in the name of the executable that is to be executed. Shared libraries,
+  on the other side, are first searched in the directory where the using module
+  is located, then in the current working directory, the Windows system directory
+  (e.g., C:\WINDOWS\system32\), and then the Windows installation directory
+  (e.g., C:\WINDOWS). Finally, the directories specified by the PATH environment
+  variable are searched for the shared libraries.
+
+  As described in the previous sections, executables which are part of the
+  software package are called by the full absolute path and hence no search path
+  is considered. Further, shared libraries belonging to the software package are
+  installed in the same directory as the executables and hence will be considered
+  by the operating system before any other shared libraries.
 
 
 
@@ -105,7 +204,7 @@ IMPLEMENTATION BY SUPPORTED LANGUAGE
 
   For C++ programs, the BASIS C++ utilities library provides the function
   GetExecutableFile() which maps a build target name to the absolute path of
-  the executable file to be executed. This function makes use of the static
+  the executable file built by this target. This function makes use of the static
   instance of the class sbia::<project>::ExecutableTargetInfo whose constructor
   is automatically generated during the configuration of a project. This
   constructor initializes the data structures required for the mapping of
@@ -143,7 +242,7 @@ IMPLEMENTATION BY SUPPORTED LANGUAGE
   "shopt -s expand_aliases" which is done by the sourced BASH script.
   A "shopt -u expand_aliases" disables the expansion of alises and hence should
   not be used in BASH scripts which execute other executables using this
-  build target name to executable file mapping mechanism.
+  build target name to executable file path mapping mechanism.
 
 
 
@@ -161,7 +260,7 @@ UNSUPPORTED LANGUAGES
   MATLAB
   ------
 
-  See [1] for a documentation of external interfaces MathWorks provides for the
+  See [3] for a documentation of external interfaces MathWorks provides for the
   development of applications in MATLAB. None of these interfaces includes the
   direct execution of other executables using something like a system call.
   There are better ways to execute code written in C++ or Java from MATLAB code.
@@ -173,5 +272,7 @@ UNSUPPORTED LANGUAGES
 REFERENCES
 ==========
 
-  [1] http://www.mathworks.com/help/techdoc/matlab_external/bp_kqh7.html
+  [1] http://xahlee.org/UnixResource_dir/_/ldpath.html
+  [2] http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
+  [3] http://www.mathworks.com/help/techdoc/matlab_external/bp_kqh7.html
 
