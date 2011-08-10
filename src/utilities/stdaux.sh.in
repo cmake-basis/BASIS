@@ -13,62 +13,6 @@
 ##############################################################################
 
 # ============================================================================
-# module directory
-# ============================================================================
-
-##############################################################################
-# @brief Get real directory of executable.
-#
-# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-# @sa get_bash_script_directory()
-#
-# @returns Prints canonical path of directory in which executable BASH script
-#          is located to @c STDOUT.
-get_executable_directory ()
-{
-    # get the absolute path of the executable
-    local path=$(cd -P -- "$(dirname -- "$0")" && pwd -P) && path=$path/$(basename -- "$0")
-
-    # resolve symbolic links
-    while [ -h $path ]; do
-        # 1) change to directory of the symbolic link
-        # 2) change to directory where the symbolic link points to
-        # 3) get the current working directory
-        # 4) append the basename
-        local linkdir=$(dirname -- "$path")
-        local symlink=$(readlink $path)
-        path=$(cd $linkdir && cd $(dirname -- "$symlink") && pwd)/$(basename -- "$symlink")
-    done
-
-    echo `cd -P \`dirname $path\`; pwd -P`
-}
-
-##############################################################################
-# @brief Get real directory of BASH script (even if sourced).
-#
-# @sa http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
-#
-# @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
-get_bash_script_directory ()
-{
-    # get the absolute path of the executable
-    local path=$(cd -P -- "$(dirname -- "$BASH_SOURCE")" && pwd -P) && path=$path/$(basename -- "$BASH_SOURCE")
-
-    # resolve symbolic links
-    while [ -h $path ]; do
-        # 1) change to directory of the symbolic link
-        # 2) change to directory where the symbolic link points to
-        # 3) get the current working directory
-        # 4) append the basename
-        local linkdir=$(dirname -- "$path")
-        local symlink=$(readlink $path)
-        path=$(cd $linkdir && cd $(dirname -- "$symlink") && pwd)/$(basename -- "$symlink")
-    done
-
-    echo `cd -P \`dirname $path\`; pwd -P`
-}
-
-# ============================================================================
 # version / help
 # ============================================================================
 
@@ -123,7 +67,7 @@ print_contact ()
 # ============================================================================
 
 # get directory of this BASH module
-stdaux_dir=$(get_bash_script_directory)
+stdaux_dir=$(get_executable_directory)
 
 # define aliases of build target names to executable file paths
 @EXECUTABLE_ALIASES@
