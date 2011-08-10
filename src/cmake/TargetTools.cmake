@@ -1019,7 +1019,14 @@ endfunction ()
 #      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
 #   </tr>
 #   <tr>
-#      @tp @b CONFIG file @endtp
+#      @tp @b CONFIG config @endtp
+#      <td>Script configuration. This option can be used instead of the option
+#          @p CONFIG_FILE, where the content of such script configuration
+#          is given directly as string argument. By default, the @p CONFIG_FILE
+#          option is used.</td>
+#   </tr>
+#   <tr>
+#      @tp @b CONFIG_FILE file @endtp
 #      <td>Script configuration file. Default: @c DEFAULT_SCRIPT_CONFIG_FILE
 #          if this variable is set. If "NONE", "None", or "none" is given,
 #          the script is copied only. Otherwise, a script configuration
@@ -1064,7 +1071,7 @@ function (basis_add_script TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
       "LIBEXEC;NOEXEC;KEEPEXT;MODULE"
-      "SCRIPT;CONFIG;COMPONENT;OUTPUT_DIRECTORY;DESTINATION"
+      "SCRIPT;CONFIG;CONFIG_FILE;COMPONENT;OUTPUT_DIRECTORY;DESTINATION"
       ""
     ${ARGN}
   )
@@ -1094,8 +1101,11 @@ function (basis_add_script TARGET_NAME)
     message (FATAL_ERROR "basis_add_script (${TARGET_NAME}: Destination must be a relative path")
   endif ()
 
-  if (NOT ARGN_CONFIG AND DEFAULT_SCRIPT_CONFIG_FILE)
-    set (ARGN_CONFIG "${DEFAULT_SCRIPT_CONFIG_FILE}")
+  if (ARGN_CONFIG AND ARGN_CONFIG_FILE)
+    message (FATAL_ERROR "basis_add_script (${TARGET_NAME}: Use either option CONFIG or CONFIG_FILE")
+  endif ()
+  if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE AND DEFAULT_SCRIPT_CONFIG_FILE)
+    set (ARGN_CONFIG_FILE "${DEFAULT_SCRIPT_CONFIG_FILE}")
   endif ()
 
   if (ARGN_MODULE)
@@ -1179,18 +1189,21 @@ function (basis_add_script TARGET_NAME)
   set (INSTALL_DIR "${ARGN_DESTINATION}")
   set (SCRIPT_CONFIG)
 
-  if (NOT ARGN_CONFIG MATCHES "^NONE$|^None$|^none$")
+  if (ARGN_CONFIG)
+    set (SCRIPT_CONFIG "${ARGN_CONFIG}")
+  endif ()
+  if (NOT ARGN_CONFIG_FILE MATCHES "^NONE$|^None$|^none$")
     if (BASIS_SCRIPT_CONFIG_FILE)
       file (READ "${BASIS_SCRIPT_CONFIG_FILE}" BASIS_SCRIPT_CONFIG)
     else ()
       set (BASIS_SCRIPT_CONFIG)
     endif ()
 
-    if (ARGN_CONFIG)
-      if (NOT EXISTS "${ARGN_CONFIG}")
-        message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG}\" does not exist. It is required to build the script ${TARGET_UID}.")
+    if (ARGN_CONFIG_FILE)
+      if (NOT EXISTS "${ARGN_CONFIG_FILE}")
+        message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG_FILE}\" does not exist. It is required to build the script ${TARGET_UID}.")
       endif ()
-      file (READ "${ARGN_CONFIG}" SCRIPT_CONFIG)
+      file (READ "${ARGN_CONFIG_FILE}" SCRIPT_CONFIG)
     else ()
       set (SCRIPT_CONFIG "@BASIS_SCRIPT_CONFIG@")
     endif ()
