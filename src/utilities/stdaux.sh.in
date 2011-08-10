@@ -63,6 +63,37 @@ print_contact ()
 }
 
 # ============================================================================
+# paths
+# ============================================================================
+
+##############################################################################
+# @brief Make relative path absolute.
+#
+# @todo Implement this function without the use of cd such that non-existent
+#       paths can be simplified as well.
+#
+# @param [in] path Absolute or relative path.
+# @param [in] base Base path used for relative paths.
+#
+# @returns Prints simplified absolute path to @c STDOUT.
+to_absolute_path ()
+{
+    local path=$1
+    if [ -n "$2" ]; then
+        local base=$2
+    else
+        local base=$(pwd)
+    fi
+    local dir=$(dirname "$path")
+
+    if [ -d "$base" -a -d "$dir" ]; then
+        echo "$(cd $base; cd $dir; pwd)/$(basename $path)"
+    else
+        echo $path
+    fi
+}
+
+# ============================================================================
 # main
 # ============================================================================
 
