@@ -793,7 +793,7 @@ GENERATE_HTML          = @DOXYGEN_GENERATE_HTML@
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
 # put in front of it. If left blank `html' will be used as the default path.
 
-HTML_OUTPUT            = html
+HTML_OUTPUT            = @DOXYGEN_HTML_OUTPUT@
 
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for 
 # each generated HTML page (for example: .htm,.php,.asp). If it is left blank 
@@ -1010,7 +1010,7 @@ GENERATE_LATEX         = @DOXYGEN_GENERATE_LATEX@
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
 # put in front of it. If left blank `latex' will be used as the default path.
 
-LATEX_OUTPUT           = latex
+LATEX_OUTPUT           = @DOXYGEN_LATEX_OUTPUT@
 
 # The LATEX_CMD_NAME tag can be used to specify the LaTeX command name to be 
 # invoked. If left blank `latex' will be used as the default command name.
@@ -1091,7 +1091,7 @@ GENERATE_RTF           = @DOXYGEN_GENERATE_RTF@
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
 # put in front of it. If left blank `rtf' will be used as the default path.
 
-RTF_OUTPUT             = rtf
+RTF_OUTPUT             = @DOXYGEN_RTF_OUTPUT@
 
 # If the COMPACT_RTF tag is set to YES Doxygen generates more compact 
 # RTF documents. This may be useful for small projects and may help to 
@@ -1132,7 +1132,7 @@ GENERATE_MAN           = @DOXYGEN_GENERATE_MAN@
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
 # put in front of it. If left blank `man' will be used as the default path.
 
-MAN_OUTPUT             = man
+MAN_OUTPUT             = @DOXYGEN_MAN_OUTPUT@
 
 # The MAN_EXTENSION tag determines the extension that is added to 
 # the generated man pages (default is the subroutine's section .3)

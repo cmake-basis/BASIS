@@ -288,7 +288,8 @@ endfunction ()
 #   <tr>
 #     @tp @b OUTPUT_DIRECTORY dir @endtp
 #     <td>Value for Doxygen's @c OUTPUT_DIRECTORY tag which can be used to
-#         specify the output directory.@n
+#         specify the output directory. The output files are written to
+#         subdirectories named "html", "latex", "rtf", and "man".@n
 #         Default: <tt>CMAKE_CURRENT_BINARY_DIR/TARGET_NAME</tt>.</td>
 #   </tr>
 #   <tr>
@@ -482,22 +483,29 @@ function (basis_add_doc TARGET_NAME)
     endif ()
     basis_list_to_delimited_string (DOXYGEN_EXCLUDE_PATTERNS " " ${DOXYGEN_EXCLUDE_PATTERNS})
     if (NOT DOXYGEN_OUTPUT_DIRECTORY)
-      set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}")
+      set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}")
     endif ()
 
-    set (GENERATE_DEFAULT 1)
+    set (NUMBER_OF_OUTPUTS 0)
     foreach (FMT HTML LATEX RTF MAN)
       set (VAR DOXYGEN_GENERATE_${FMT})
       if (${VAR})
         set (${VAR} "YES")
-        set (GENERATE_DEFAULT 0)
+        math (EXPR NUMBER_OF_OUTPUTS "${NUMBER_OF_OUTPUTS} + 1")
       else ()
         set (${VAR} "NO")
       endif ()
     endforeach ()
-    if (GENERATE_DEFAULT)
+    if (NUMBER_OF_OUTPUTS EQUAL 0)
       set (DOXYGEN_GENERATE_HTML "YES")
+      set (NUMBER_OF_OUTPUTS 1)
     endif ()
+
+    # set output paths relative to DOXYGEN_OUTPUT_DIRECTORY
+    set (DOXYGEN_HTML_OUTPUT  "html")
+    set (DOXYGEN_LATEX_OUTPUT "latex")
+    set (DOXYGEN_RTF_OUTPUT   "rtf")
+    set (DOXYGEN_MAN_OUTPUT   "man")
 
     # click & jump in emacs and Visual Studio
     if (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
