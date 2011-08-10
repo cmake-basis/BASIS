@@ -361,6 +361,12 @@ endfunction ()
 #
 # This function adds an executable target.
 #
+# By default, the BASIS C++ utilities library is added as link dependency of
+# the added executable target. If none of the BASIS C++ utilities are used
+# by the executable, the option NO_BASIS_UTILITIES can be given. Note, however,
+# that the utilities library is a static library and thus the linker would not
+# include any of the BASIS utilities object code in the binary executable.
+#
 # An install command for the added executable target is added by this function
 # as well. The executable will be installed as part of the component @p COMPONENT
 # in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
@@ -416,6 +422,10 @@ endfunction ()
 #     <td>Specifies that the built executable is a test executable used
 #         with basis_add_test(). If also @p LIBEXEC is given, it is ignored.</td>
 #   </tr>
+#    <tr>
+#     @tp @b NO_BASIS_UTILITIES @endtp
+#     <td>Do not add the BASIS C++ utilities as link dependency.</td>
+#   </tr>
 # </table>
 #
 # @returns Adds an executable build target. In case of a MATLAB Compiler
@@ -427,7 +437,7 @@ function (basis_add_executable TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC;TEST" "COMPONENT;LANGUAGE" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (ARGN "LIBEXEC;TEST" "COMPONENT;LANGUAGE" "NO_BASIS_UTILITIES" ${ARGN})
 
   # if no component is specified, use default
   if (NOT ARGN_COMPONENT)
@@ -505,6 +515,11 @@ function (basis_add_executable TARGET_NAME)
         PROPERTIES
           COMPILE_DEFINITIONS "LIBEXEC"
       )
+    endif ()
+
+    # add default link dependencies
+    if (NOT ARGN_NO_BASIS_UTILITIES)
+      target_link_libraries (${TARGET_UID} ${BASIS_UTILS_LIBRARY})
     endif ()
 
     # target version information
