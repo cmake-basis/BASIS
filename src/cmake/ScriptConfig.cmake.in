@@ -82,6 +82,80 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 # utility implementations
 # ============================================================================
 
+## @addtogroup BashUtilities
+#  @{
+
+# Attention: The get_executable_directory() function is required by a BASH
+#            script to determine where the stdaux.sh file is located. All
+#            other utility functions should be implemented in this file.
+
+##############################################################################
+# @brief Definition of get_executable_directory() function.
+#
+# Example:
+# @code
+# #! /usr/bin/env bash
+#
+# @BASH_FUNCTION_get_executable_directory@
+#
+# exec_dir=$(get_executable_directory)
+# @endcode
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+set (BASH_FUNCTION_get_executable_directory "
+##############################################################################
+# @brief Get real directory of executable.
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+#
+# @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
+function get_executable_directory
+{
+    # get the absolute path of the executable
+    local path=$(cd -P -- \"$(dirname -- \"$BASH_SCRIPT\")\" && pwd -P) && path=$path/$(basename -- \"$BASH_SCRIPT\")
+
+    # resolve symbolic links
+    while [ -h $path ]; do
+        # 1) change to directory of the symbolic link
+        # 2) change to directory where the symbolic link points to
+        # 3) get the current working directory
+        # 4) append the basename
+        local linkdir=$(dirname -- \"$path\")
+        local symlink=$(readlink $path)
+        path=$(cd $linkdir && cd $(dirname -- \"$symlink\") && pwd)/$(basename -- \"$symlink\")
+    done
+
+    echo `cd -P \\`dirname $path\\`; pwd -P`
+}
+"
+)
+
+##############################################################################
+# @brief Common BASH code to be used at the top of each BASH script.
+#
+# At first, the definiton of the get_executable_directory() is inserted.
+# Then the standard auxiliary module stdaux.sh is sourced.
+#
+# Example:
+# @code
+# #! /usr/bin/env bash
+#
+# @BASIS_BASH_UTILITIES@
+#
+# exec_dir=$(get_executable_directory)
+# exec_name=$(get_executable_name)
+# @endcode
+#
+# @sa stdaux.sh
+# @sa BASH_FUNCTION_get_executable_directory
+set (BASIS_BASH_UTILITIES "
+${BASH_FUNCTION_get_executable_directory}
+source \"$(get_executable_directory)\${LIBEXEC_DIR}\stdaux.sh\"
+"
+)
+
+## @}
+
 # ----------------------------------------------------------------------------
 # Python
 # ----------------------------------------------------------------------------
