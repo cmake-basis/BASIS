@@ -150,7 +150,7 @@ function get_executable_directory
 # @sa BASH_FUNCTION_get_executable_directory
 set (BASIS_BASH_UTILITIES "
 ${BASH_FUNCTION_get_executable_directory}
-source \"$(get_executable_directory)\${LIBEXEC_DIR}\stdaux.sh\"
+source \"$(get_executable_directory)/${LIBEXEC_DIR}/stdaux.sh\"
 "
 )
 
