@@ -1019,18 +1019,18 @@ endfunction ()
 #      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
 #   </tr>
 #   <tr>
+#      @tp @b CONFIG_FILE file @endtp
+#      <td>Script configuration file. Default: @c DEFAULT_SCRIPT_CONFIG_FILE
+#          if this variable is set. If "NONE", "None", or "none" is given,
+#          the script is copied only. Otherwise, a script configuration
+#          consisting of the single line "@BASIS_SCRIPT_CONFIG@" is used.</td>
+#   </tr>
+#   <tr>
 #      @tp @b CONFIG config @endtp
 #      <td>Script configuration. This option can be used instead of the option
 #          @p CONFIG_FILE, where the content of such script configuration
 #          is given directly as string argument. By default, the @p CONFIG_FILE
 #          option is used.</td>
-#   </tr>
-#   <tr>
-#      @tp @b CONFIG_FILE file @endtp
-#      <td>Script configuration file. Default: @c DEFAULT_SCRIPT_CONFIG_FILE
-#          if this variable is set. If "NONE", "None", or "none" is given,
-#          the script is copied only. Otherwise, a script configuration
-#          consisting of the single line "\@BASIS_SCRIPT_CONFIG\@" is used.</td>
 #   </tr>
 #   <tr>
 #      @tp @b LIBEXEC @endtp
@@ -1058,7 +1058,8 @@ endfunction ()
 #      <td>Specifies that the script is a module file which is included by
 #          other scripts. In particular, this is an alias for @p NOEXEC and
 #          @p KEEPEXT and can be used, for example, for Python modules
-#          that are to be imported by other Python scripts.</td>
+#          that are to be imported only by other Python scripts and BASH scripts
+#          that are to be sourced only by other BASH scripts.</td>
 #   </tr>
 # </table>
 #
