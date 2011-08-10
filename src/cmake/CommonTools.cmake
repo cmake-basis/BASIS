@@ -61,8 +61,8 @@ endmacro ()
 #
 # The get_filename_component() command of CMake returns the entire portion
 # after the first period (.) [including the period] as extension. However,
-# only the component following the last period (.) should be considered to
-# be the extension.
+# only the component following the last period (.) [including the period]
+# should be considered to be the extension.
 #
 # @param [in,out] ARGN Arguments as accepted by get_filename_component().
 #
