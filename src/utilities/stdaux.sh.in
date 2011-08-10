@@ -1,0 +1,133 @@
+#! /usr/bin/env bash
+
+##############################################################################
+# @file  stdaux.sh
+# @brief Standard auxiliary functions and aliases for BASH.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BashUtilities
+##############################################################################
+
+# ============================================================================
+# module directory
+# ============================================================================
+
+##############################################################################
+# @brief Get real directory of executable.
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+# @sa get_bash_script_directory()
+#
+# @returns Prints canonical path of directory in which executable BASH script
+#          is located to @c STDOUT.
+get_executable_directory ()
+{
+    # get the absolute path of the executable
+    local path=$(cd -P -- "$(dirname -- "$0")" && pwd -P) && path=$path/$(basename -- "$0")
+
+    # resolve symbolic links
+    while [ -h $path ]; do
+        # 1) change to directory of the symbolic link
+        # 2) change to directory where the symbolic link points to
+        # 3) get the current working directory
+        # 4) append the basename
+        local linkdir=$(dirname -- "$path")
+        local symlink=$(readlink $path)
+        path=$(cd $linkdir && cd $(dirname -- "$symlink") && pwd)/$(basename -- "$symlink")
+    done
+
+    echo `cd -P \`dirname $path\`; pwd -P`
+}
+
+##############################################################################
+# @brief Get real directory of BASH script (even if sourced).
+#
+# @sa http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+#
+# @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
+get_bash_script_directory ()
+{
+    # get the absolute path of the executable
+    local path=$(cd -P -- "$(dirname -- "$BASH_SOURCE")" && pwd -P) && path=$path/$(basename -- "$BASH_SOURCE")
+
+    # resolve symbolic links
+    while [ -h $path ]; do
+        # 1) change to directory of the symbolic link
+        # 2) change to directory where the symbolic link points to
+        # 3) get the current working directory
+        # 4) append the basename
+        local linkdir=$(dirname -- "$path")
+        local symlink=$(readlink $path)
+        path=$(cd $linkdir && cd $(dirname -- "$symlink") && pwd)/$(basename -- "$symlink")
+    done
+
+    echo `cd -P \`dirname $path\`; pwd -P`
+}
+
+# ============================================================================
+# version / help
+# ============================================================================
+
+##############################################################################
+# @brief Get name of executable.
+#
+# @returns Prints name of BASH script to @c STDOUT.
+get_executable_name ()
+{
+    echo ${0##*/}
+}
+
+##############################################################################
+# @brief Print version information.
+#
+# @param name Name of program. Give a constant expression here, @b not the
+#             name of the executable as extracted from the first command-line
+#             argument or similar! By default, the executable name is extracted
+#             from the first command-line argument. This is @b not recommended.
+#
+# @returns Nothing.
+print_version ()
+{
+    if [ $# -eq 0 ]; then
+        local name=$(get_executable_name)
+    else
+        local name=$1
+    fi
+    echo -n "$name (@PROJECT@) version @VERSION@"
+    if [ @REVISION@ -gt 0 ]; then
+        echo -n " (revision @REVISION@)"
+    fi
+    echo
+    cat - << EOF-COPYRIGHT
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+EOF-COPYRIGHT
+}
+
+##############################################################################
+# @brief Print contact information.
+#
+# @returns Nothing.
+print_contact ()
+{
+    echo "Contact:"
+    echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
+}
+
+# ============================================================================
+# main
+# ============================================================================
+
+# get directory of this BASH module
+stdaux_dir=$(get_bash_script_directory)
+
+# define aliases of build target names to executable file paths
+@EXECUTABLE_ALIASES@
+
+# enable expansion of aliases also in non-interactive shells
+shopt -s expand_aliases
+

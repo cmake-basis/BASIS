@@ -25,7 +25,7 @@ if (BUILD_CONFIG_SETTINGS)
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
     # path to utilities template files
-    set (UTILITIES_PATH_CONFIG "${PROJECT_CODE_DIR}/utilities")
+    set (UTILITIES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities")
 
     # libraries
     basis_get_target_location (UTILS_LIBRARY_CONFIG basis_utils)
@@ -45,7 +45,7 @@ endif ()
 basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_MODULES_DIR}")
 
 # path to utilities template files
-basis_set_config_path (UTILITIES_PATH_CONFIG "${INSTALL_UTILITIES_DIR}")
+basis_set_config_path (UTILITIES_DIR_CONFIG "${INSTALL_UTILITIES_DIR}")
 
 # libraries
 file (

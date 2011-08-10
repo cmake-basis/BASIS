@@ -12,7 +12,7 @@
 get_filename_component (@PACKAGE_NAME@_MODULE_PATH "@MODULE_PATH_CONFIG@" ABSOLUTE)
 
 # absolute path to utilities template files
-get_filename_component (@PACKAGE_NAME@_UTILITIES_PATH "@UTILITIES_PATH_CONFIG@" ABSOLUTE)
+get_filename_component (@PACKAGE_NAME@_UTILITIES_DIR "@UTILITIES_DIR_CONFIG@" ABSOLUTE)
 
 # absolute path to project template
 get_filename_component (@PACKAGE_NAME@_TEMPLATE_URL "@TEMPLATE_URL_CONFIG@" ABSOLUTE)
