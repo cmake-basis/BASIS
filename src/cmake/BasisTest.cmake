@@ -192,7 +192,7 @@ function (basis_add_unit_test TEST_NAME)
   # build test
   if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
     if (DEFAULT_MAIN)
-      list (APPEND ARGN_SOURCES "${BASIS_UTILITIES_PATH}/test_main.cc")
+      list (APPEND ARGN_SOURCES "${BASIS_UTILITIES_DIR}/test_main.cc")
     endif ()
     basis_add_executable ("${TEST_NAME}" TEST ${ARGN_SOURCES})
     basis_target_link_libraries (${TEST_NAME} "${BASIS_TEST_LIBRARY}" ${ARGN_LINK_DEPENDS})

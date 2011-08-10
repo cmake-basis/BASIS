@@ -108,7 +108,7 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   foreach (SOURCE ${SOURCES_NAMES})
     set (TEMPLATE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}.in")
     if (NOT EXISTS "${TEMPLATE}")
-      set (TEMPLATE "${BASIS_UTILITIES_PATH}/${SOURCE}.in")
+      set (TEMPLATE "${BASIS_UTILITIES_DIR}/${SOURCE}.in")
     endif ()
     set  (SOURCE_OUT "${BINARY_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}")
     configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
@@ -128,7 +128,7 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   foreach (SOURCE ${SOURCES_NAMES})
     set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}")
     if (NOT EXISTS "${TEMPLATE}")
-      set (TEMPLATE "${BASIS_UTILITIES_PATH}/${SOURCE}.in")
+      set (TEMPLATE "${BASIS_UTILITIES_DIR}/${SOURCE}.in")
     endif ()
     set  (SOURCE_OUT "${BINARY_CODE_DIR}/${SOURCE}")
     configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
@@ -161,8 +161,7 @@ endfunction ()
 # @returns Configures the file @p BINARY_CODE_DIR/stdaux.cc in-place if it exists.
 
 function (basis_configure_ExecutableTargetInfo)
-  file (RELATIVE_PATH SRC "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
-  set (SOURCE_FILE "${PROJECT_BINARY_DIR}/${SRC}/stdaux.cc")
+  set (SOURCE_FILE "${BINARY_CODE_DIR}/stdaux.cc")
 
   if (NOT EXISTS "${SOURCE_FILE}")
     return ()
@@ -179,18 +178,10 @@ function (basis_configure_ExecutableTargetInfo)
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
  
     if (BASIS_TYPE MATCHES "EXEC|SCRIPT" AND NOT BASIS_TYPE MATCHES "NOEXEC")
-      get_target_property (RUNTIME_OUTPUT_NAME "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
-      get_target_property (OUTPUT_NAME         "${TARGET_UID}" "OUTPUT_NAME")
-      get_target_property (BUILD_DIR           "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
- 
-      if (RUNTIME_OUTPUT_NAME)
-        set (EXEC_NAME "${RUNTIME_OUTPUT_NAME}")
-      elseif (OUTPUT_NAME)
-        set (EXEC_NAME "${OUTPUT_NAME}")
-      else ()
-        set (EXEC_NAME "${TARGET_UID}")
-      endif ()
- 
+      basis_get_target_location (LOCATION "${TARGET_UID}")
+      get_filename_component (BUILD_DIR "${LOCATION}" PATH)
+      get_filename_component (EXEC_NAME "${LOCATION}" NAME)
+
       if (BASIS_TYPE MATCHES "LIBEXEC")
         set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
       else ()
@@ -221,5 +212,50 @@ endfunction ()
 # ============================================================================
 # BASH
 # ============================================================================
+
+##############################################################################
+# @brief Add stdaux.sh BASH module.
+#
+# This function adds the stdaux.sh BASH module. This module in particular
+# defines aliases for executable build targets. Hence, it has to be called
+# during the finalization of the build configuration.
+#
+# @sa basis_project_finalize()
+
+function (basis_add_stdaux_bash_script)
+  set (SCRIPT_FILE "${BASIS_UTILITIES_DIR}/stdaux.sh.in")
+
+  # generate definition of init_executable_aliases()
+  set (C)
+  foreach (TARGET_UID ${BASIS_TARGETS})
+    get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
+ 
+    if (BASIS_TYPE MATCHES "EXEC|SCRIPT" AND NOT BASIS_TYPE MATCHES "NOEXEC")
+      basis_get_target_location (LOCATION "${TARGET_UID}")
+      get_filename_component (BUILD_DIR "${LOCATION}" PATH)
+      get_filename_component (EXEC_NAME "${LOCATION}" NAME)
+ 
+      if (BASIS_TYPE MATCHES "LIBEXEC")
+        set (EXEC_DIR "\${LIBEXEC_DIR}")
+      else ()
+        set (EXEC_DIR "\${RUNTIME_DIR}")
+      endif ()
+
+      string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
+
+      if (C)
+        set (C "${C}\n")
+      endif ()
+      set (C "${C}alias ${ALIAS}=\\\"\$stdaux_dir/${EXEC_DIR}/${EXEC_NAME}\\\"")
+    endif ()
+  endforeach ()
+
+  # script configuration
+  set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
+  set (CONFIG "${CONFIG}set (EXECUTABLE_ALIASES \"${C}\")\n")
+
+  # add BASH module
+  basis_add_script (${SCRIPT_FILE} MODULE CONFIG "${CONFIG}")
+endfunction ()
 
 ## @}

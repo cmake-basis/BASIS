@@ -88,33 +88,38 @@ function (basis_get_target_location VAR TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET "${TARGET_UID}")
     get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
-    if (BASIS_TYPE MATCHES "MCC|^MEX$")
-      if (BASIS_TYPE MATCHES "^MCC_LIBRARY$|^MEX$")
+
+    if (BASIS_TYPE MATCHES "LIBRARY|MEX")
+      if (BASIS_TYPE MATCHES "STATIC")
+        get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_OUTPUT_DIRECTORY")
+        get_target_property (FNAME     "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
+      else ()
         get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_OUTPUT_DIRECTORY")
-      else ()
-        get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
+        get_target_property (FNAME     "${TARGET_UID}" "LIBRARY_OUTPUT_NAME")
       endif ()
-      get_target_property (FNAME  "${TARGET_UID}" "OUTPUT_NAME")
-      get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
-      get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
-
-      set (TARGET_FILE)
-      if (FNAME)
-        set (TARGET_FILE "${FNAME}")
-      else ()
-        set (TARGET_FILE "${TARGET_NAME}")
-      endif ()
-      if (PREFIX)
-        set (TARGET_FILE "${PREFIX}${TARGET_FILE}")
-      endif ()
-      if (SUFFIX)
-        set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
-      endif ()
-
-      set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
     else ()
-      get_target_property (LOCATION "${TARGET_UID}" "LOCATION")
+      get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
+      get_target_property (FNAME     "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
     endif ()
+    if (NOT FNAME)
+      get_target_property (FNAME "${TARGET_UID}" "OUTPUT_NAME")
+    endif ()
+    get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
+    get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
+
+    if (FNAME)
+      set (TARGET_FILE "${FNAME}")
+    else ()
+      set (TARGET_FILE "${TARGET_NAME}")
+    endif ()
+    if (PREFIX)
+      set (TARGET_FILE "${PREFIX}${TARGET_FILE}")
+    endif ()
+    if (SUFFIX)
+      set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
+    endif ()
+
+    set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
 
     if (ARGV2)
       get_filename_component (LOCATION "${LOCATION}" "${ARGV2}")
@@ -507,7 +512,7 @@ function (basis_add_executable TARGET_NAME)
     elseif (ARGN_LIBEXEC)
       set (TYPE "LIBEXEC")
     else ()
-      set (TYPE "EXEC")
+      set (TYPE "EXECUTABLE")
     endif ()
 
     set_target_properties (
@@ -520,7 +525,8 @@ function (basis_add_executable TARGET_NAME)
       set_target_properties (
         ${TARGET_UID}
         PROPERTIES
-          COMPILE_DEFINITIONS "LIBEXEC"
+          COMPILE_DEFINITIONS      "LIBEXEC"
+          RUNTIME_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
       )
     endif ()
 
@@ -810,12 +816,6 @@ function (basis_add_library TARGET_NAME)
       # add library target
       add_library (${TARGET_UID} SHARED ${ARGN_UNPARSED_ARGUMENTS})
 
-      set_target_properties (
-        ${TARGET_UID}
-        PROPERTIES
-          BASIS_TYPE "LIBMEX"
-      )
-
       target_link_libraries (${TARGET_UID} ${MATLAB_LIBRARIES})
 
       # compiler flags and definitions specific to MEX-file build
@@ -859,17 +859,18 @@ function (basis_add_library TARGET_NAME)
 
       add_library (${TARGET_UID} ${ARGN_TYPE} ${ARGN_UNPARSED_ARGUMENTS})
 
-      set_target_properties (
-        ${TARGET_UID}
-        PROPERTIES
-          BASIS_TYPE "LIBRARY"
-      )
-
+      
     endif ()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # common
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        BASIS_TYPE "${ARGN_TYPE}_LIBRARY"
+    )
 
     # target version information
     # Note:      On UNIX-based systems this only creates annoying files with the
@@ -1020,22 +1021,19 @@ endfunction ()
 #   </tr>
 #   <tr>
 #      @tp @b CONFIG_FILE file @endtp
-#      <td>Script configuration file. Default: @c DEFAULT_SCRIPT_CONFIG_FILE
-#          if this variable is set. If "NONE", "None", or "none" is given,
-#          the script is copied only. Otherwise, a script configuration
-#          consisting of the single line "@BASIS_SCRIPT_CONFIG@" is used.</td>
+#      <td>Script configuration file. If "NONE", "None", or "none" is given,
+#          the script is copied only. Otherwise, the @p CONFIG option is used.</td>
 #   </tr>
 #   <tr>
 #      @tp @b CONFIG config @endtp
 #      <td>Script configuration. This option can be used instead of the option
 #          @p CONFIG_FILE, where the content of such script configuration
-#          is given directly as string argument. By default, the @p CONFIG_FILE
-#          option is used.</td>
+#          is given directly as string argument. Default: "@BASIS_SCRIPT_CONFIG@"</td>
 #   </tr>
 #   <tr>
 #      @tp @b LIBEXEC @endtp
-#      <td>Specifies that the script is an auxiliary executable called
-#          by other executables only.</td>
+#      <td>Specifies that the script is an auxiliary executable or script which is
+#          called or included by other executables only.</td>
 #   </tr>
 #   <tr>
 #      @tp @b NOEXEC @endtp
@@ -1056,8 +1054,8 @@ endfunction ()
 #   <tr>
 #      @tp @b MODULE @endtp
 #      <td>Specifies that the script is a module file which is included by
-#          other scripts. In particular, this is an alias for @p NOEXEC and
-#          @p KEEPEXT and can be used, for example, for Python modules
+#          other scripts. In particular, this is an alias for @p LIBEXEC,
+#          @p NOEXEC and @p KEEPEXT and can be used, for example, for Python modules
 #          that are to be imported only by other Python scripts and BASH scripts
 #          that are to be sourced only by other BASH scripts.</td>
 #   </tr>
@@ -1077,6 +1075,12 @@ function (basis_add_script TARGET_NAME)
     ${ARGN}
   )
 
+  if (ARGN_MODULE)
+    set (ARGN_LIBEXEC 1)
+    set (ARGN_KEEPEXT 1)
+    set (ARGN_NOEXEC  1)
+  endif ()
+
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
   endif ()
@@ -1084,13 +1088,23 @@ function (basis_add_script TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
-  if (NOT ARGN_OUTPUT_DIRECTORY)
-    set (ARGN_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+  if (ARGN_OUTPUT_DIRECTORY)
+    if (NOT IS_ABSOLUTE "${ARGN_OUTPUT_DIRECTORY}")
+      set (ARGN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${ARGN_OUTPUT_DIRECTORY}")
+    endif ()
+  else ()
+    if (ARGN_LIBEXEC)
+      set (ARGN_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    else ()
+      set (ARGN_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    endif ()
   endif ()
-  if (NOT IS_ABSOLUTE "${ARGN_OUTPUT_DIRECTORY}")
-    set (ARGN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${ARGN_OUTPUT_DIRECTORY}")
-  endif ()
-  if (NOT ARGN_DESTINATION)
+
+  if (ARGN_DESTINATION)
+    if (IS_ABSOLUTE "${ARGN_DESTINATION}")
+      file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
+    endif ()
+  else ()
     if (ARGN_LIBEXEC)
       set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
     else ()
@@ -1105,17 +1119,8 @@ function (basis_add_script TARGET_NAME)
   if (ARGN_CONFIG AND ARGN_CONFIG_FILE)
     message (FATAL_ERROR "basis_add_script (${TARGET_NAME}: Use either option CONFIG or CONFIG_FILE")
   endif ()
-  if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE AND DEFAULT_SCRIPT_CONFIG_FILE)
-    set (ARGN_CONFIG_FILE "${DEFAULT_SCRIPT_CONFIG_FILE}")
-  endif ()
-
-  if (ARGN_MODULE)
-    set (ARGN_KEEPEXT 1)
-    set (ARGN_NOEXEC  1)
-  endif ()
-
-  if (ARGN_LIBEXEC)
-    set (ARGN_NOEXEC 0)
+  if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE)
+    set (ARGN_CONFIG "\@BASIS_SCRIPT_CONFIG\@")
   endif ()
 
   if (ARGN_UNPARSED_ARGUMENTS)
@@ -1201,8 +1206,6 @@ function (basis_add_script TARGET_NAME)
         message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG_FILE}\" does not exist. It is required to build the script ${TARGET_UID}.")
       endif ()
       file (READ "${ARGN_CONFIG_FILE}" SCRIPT_CONFIG)
-    else ()
-      set (SCRIPT_CONFIG "@BASIS_SCRIPT_CONFIG@")
     endif ()
     while (SCRIPT_CONFIG MATCHES "@[a-zA-Z0-9_-]+@")
       string (CONFIGURE "${SCRIPT_CONFIG}" SCRIPT_CONFIG @ONLY)
@@ -1599,7 +1602,7 @@ function (basis_add_custom_finalize)
     get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
     if (BASIS_TYPE MATCHES "SCRIPT")
       basis_add_script_finalize (${TARGET_UID})
-    elseif (BASIS_TYPE MATCHES "MEX" AND NOT "${BASIS_TYPE}" STREQUAL "LIBMEX")
+    elseif (BASIS_TYPE MATCHES "^MEX$")
       basis_add_mex_target_finalize (${TARGET_UID})
     elseif (BASIS_TYPE MATCHES "MCC")
       basis_add_mcc_target_finalize (${TARGET_UID})

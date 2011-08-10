@@ -508,16 +508,12 @@ macro (basis_project_finalize)
     basis_create_addpaths_mfile ()
   endif ()
 
-  # finalize addition of custom targets
-  #
-  # Note: Should be done for each (sub-)project as the finalize functions
-  #       might make use of the PROJECT_* variables.
-  basis_add_custom_finalize ()
-
   # finalize (super-)project
   if (NOT IS_SUBPROJECT)
     # configure constructor of ExecutableTargetInfo
     basis_configure_ExecutableTargetInfo ()
+    # add standard BASH utilities
+    basis_add_stdaux_bash_script ()
     # add uninstall target
     basis_add_uninstall ()
 
@@ -525,6 +521,12 @@ macro (basis_project_finalize)
       basis_install_links ()
     endif ()
   endif ()
+
+  # finalize addition of custom targets
+  #
+  # Note: Should be done for each (sub-)project as the finalize functions
+  #       might make use of the PROJECT_* variables.
+  basis_add_custom_finalize ()
 
   # generate configuration files
   if (EXISTS "${PROJECT_CONFIG_DIR}/GenerateConfig.cmake")
