@@ -28,11 +28,11 @@ if __name__ == "__main__":
     # compile regular expressions
     reShaBang       = re.compile (r"#!\s*/usr/bin/env\s+bash$|#!\s*/bin/bash$")
     reInclude       = re.compile (r"source\s+[\"']?(?P<module>.+)[\"']?$")
-    reFunctionStart = re.compile (r"function\s*(?P<name>\w+)\s*{?")
+    reFunctionStart = re.compile (r"function\s*(?P<name1>\w+)\s*{?|(?P<name2>\w+)\s*\(\s*\)\s*{?\s*$")
     reFunctionEnd   = re.compile (r"}$")
     reCommentStart  = re.compile (r"##+(?P<comment>.*)$")
     reCommentLine   = re.compile (r"#+(?P<comment>.*)$")
-    reParamDoc      = re.compile (r"[\@\\]param\s+(\[\s*(in|out|in\s*,\s*out|out\s*,\s*in)\s*\]|\s*)\s+(?P<param>\w+)")
+    reParamDoc      = re.compile (r"[\@\\]param\s*(\[\s*(in|out|in\s*,\s*out|out\s*,\s*in)\s*\]|\s*)\s+(?P<param>\w+)")
     reIfClauseStart = re.compile (r"if\s*\[")
     reIfClauseEnd   = re.compile (r"else[\s$]|elif\s*\[|;?fi$")
 
@@ -78,6 +78,8 @@ if __name__ == "__main__":
             if m is not None:
                 module = m.group ('module')
                 module = module.replace ("\"", "")
+                module = module.replace ("$(get_executable_directory)/", "")
+                module = module.replace ("$exec_dir/", "")
                 sys.stdout.write ("#include \"" + module + "\"\n")
                 continue
             # enter if-clause
@@ -116,7 +118,9 @@ if __name__ == "__main__":
                 # function
                 m = reFunctionStart.match (line)
                 if m is not None:
-                    name = m.group ('name')
+                    name = m.group ('name1')
+                    if not name:
+                        name = m.group ('name2')
                     sys.stdout.write ("function " + name + " (")
                     for i in range (0, len (params)):
                         if i > 0:
