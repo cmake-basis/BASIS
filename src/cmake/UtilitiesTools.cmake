@@ -246,7 +246,7 @@ function (basis_add_stdaux_bash_script)
       if (C)
         set (C "${C}\n")
       endif ()
-      set (C "${C}alias ${ALIAS}=$(to_absolute_path \\\"\$stdaux_dir/${EXEC_DIR}/${EXEC_NAME}\\\")")
+      set (C "${C}alias '${ALIAS}'=$(to_absolute_path \\\"${EXEC_DIR}/${EXEC_NAME}\\\" \$stdaux_dir)")
     endif ()
   endforeach ()
 
@@ -255,7 +255,12 @@ function (basis_add_stdaux_bash_script)
   set (CONFIG "${CONFIG}set (EXECUTABLE_ALIASES \"${C}\")\n")
 
   # add BASH module
-  basis_add_script (${SCRIPT_FILE} MODULE CONFIG "${CONFIG}")
+  basis_add_script (
+    ${SCRIPT_FILE}
+    MODULE
+      BINARY_DIRECTORY "${BINARY_CODE_DIR}"
+      CONFIG "${CONFIG}"
+  )
 endfunction ()
 
 ## @}
