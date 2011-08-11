@@ -12,6 +12,9 @@
 # @ingroup BashUtilities
 ##############################################################################
 
+## @addtogroup BashUtilities
+#  @{
+
 # ============================================================================
 # version / help
 # ============================================================================
@@ -28,10 +31,10 @@ get_executable_name ()
 ##############################################################################
 # @brief Print version information.
 #
-# @param name Name of program. Give a constant expression here, @b not the
-#             name of the executable as extracted from the first command-line
-#             argument or similar! By default, the executable name is extracted
-#             from the first command-line argument. This is @b not recommended.
+# @param [in] name Name of program. Give a constant expression here, @b not the
+#                  name of the executable as extracted from the first command-line
+#                  argument or similar! By default, the executable name is extracted
+#                  from the first command-line argument. This is @b not recommended.
 #
 # @returns Nothing.
 print_version ()
@@ -97,7 +100,7 @@ to_absolute_path ()
 # main
 # ============================================================================
 
-# get directory of this BASH module
+## @brief Absolute path of directory of stdaux.sh BASH module
 stdaux_dir=$(get_executable_directory)
 
 # define aliases of build target names to executable file paths
@@ -106,3 +109,4 @@ stdaux_dir=$(get_executable_directory)
 # enable expansion of aliases also in non-interactive shells
 shopt -s expand_aliases
 
+## @}

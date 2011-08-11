@@ -39,14 +39,6 @@
 #include <iostream>
 #include <sbia/basis/test.h>
 
-/**
- * @fn    main
- * @brief Default implementation of main() function of Google Mock based unit test drivers.
- *
- * @returns Exit status.
- * @retval 0 On success.
- */
-
 // MS C++ compiler/linker has a bug on Windows (not on Windows CE), which
 // causes a link error when _tmain is defined in a static library and UNICODE
 // is enabled. For this reason instead of _tmain, main function is used on
@@ -55,8 +47,20 @@
 #if GTEST_OS_WINDOWS_MOBILE
 # include <tchar.h>  // NOLINT
 
+/**
+ * @brief Default implementation of _tmain() function of Google Mock based unit test drivers.
+ *
+ * @returns Exit status.
+ * @retval 0 On success.
+ */
 int _tmain(int argc, TCHAR** argv) {
 #else
+/**
+ * @brief Default implementation of main() function of Google Mock based unit test drivers.
+ *
+ * @returns Exit status.
+ * @retval 0 On success.
+ */
 int main(int argc, char** argv) {
 #endif  // GTEST_OS_WINDOWS_MOBILE
   // Since Google Mock depends on Google Test, InitGoogleMock() is
