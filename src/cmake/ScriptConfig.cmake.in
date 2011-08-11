@@ -95,9 +95,7 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 # Example:
 # @code
 # #! /usr/bin/env bash
-#
 # @BASH_FUNCTION_get_executable_directory@
-#
 # exec_dir=$(get_executable_directory)
 # @endcode
 #
@@ -106,10 +104,15 @@ set (BASH_FUNCTION_get_executable_directory "
 ##############################################################################
 # @brief Get real directory of executable.
 #
+# @note This function was substituted by BASIS for the string
+#       @BASH_FUNCTION_get_executable_directory@ or @BASIS_BASH_UTILITIES@.
+#       Its implementation can be found in the default script configuration
+#       file of BASIS.
+#
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 #
 # @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
-function get_executable_directory
+get_executable_directory ()
 {
     # get the absolute path of the executable
     local path=$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P) && path=$path/$(basename -- \"$BASH_SOURCE\")
@@ -139,9 +142,7 @@ function get_executable_directory
 # Example:
 # @code
 # #! /usr/bin/env bash
-#
 # @BASIS_BASH_UTILITIES@
-#
 # exec_dir=$(get_executable_directory)
 # exec_name=$(get_executable_name)
 # @endcode
