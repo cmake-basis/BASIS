@@ -90,20 +90,32 @@ function (basis_install_links)
 
   # main executables
   foreach (TARGET_UID ${BASIS_TARGETS})
-    get_target_property (BASIS_TYPE  ${TARGET_UID} "BASIS_TYPE")
+    get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
 
     if (BASIS_TYPE MATCHES "^EXEC$|^MCC_EXEC$|^SCRIPT$")
-      get_target_property (OUTPUT_NAME ${TARGET_UID} "OUTPUT_NAME")
+      get_target_property (SYMLINK_NAME ${TARGET_UID} "SYMLINK_NAME")
+      if (NOT "${SYMLINK_NAME}" STREQUAL "NONE")
+        get_target_property (SYMLINK_PREFIX ${TARGET_UID} "SYMLINK_PREFIX")
+        get_target_property (SYMLINK_SUFFIX ${TARGET_UID} "SYMLINK_SUFFIX")
+        get_target_property (INSTALL_DIR    ${TARGET_UID} "RUNTIME_INSTALL_DIRECTORY")
 
-      if (NOT OUTPUT_NAME)
-        basis_target_name (OUTPUT_NAME ${TARGET_UID})
+        basis_get_target_location (OUTPUT_NAME ${TARGET_UID} NAME)
+
+        if (NOT SYMLINK_NAME)
+          set (SYMLINK_NAME "${OUTPUT_NAME}")
+        endif ()
+        if (SYMLINK_PREFIX)
+          set (SYMLINK_NAME "${SYMLINK_PREFIX}${SYMLINK_NAME}")
+        endif ()
+        if (SYMLINK_SUFFIX)
+          set (SYMLINK_NAME "${SYMLINK_NAME}${SYMLINK_SUFFIX}")
+        endif ()
+
+        basis_install_link (
+          "${INSTALL_DIR}/${OUTPUT_NAME}"
+          "bin/${SYMLINK_NAME}"
+        )
       endif ()
-      get_target_property (INSTALL_DIR ${TARGET_UID} "RUNTIME_INSTALL_DIRECTORY")
-
-      basis_install_link (
-        "${INSTALL_DIR}/${OUTPUT_NAME}"
-        "bin/${OUTPUT_NAME}"
-      )
     endif ()
   endforeach ()
 
