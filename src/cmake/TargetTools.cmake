@@ -641,6 +641,12 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
+#         @b INTERNAL</td>
+#     <td>Whether the library target is an internal library, i.e., only
+#         shared libraries are installed but not static or import libraries.</td>
+#   </tr>
+#   <tr>
+#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
 #         @b EXTERNAL</td>
 #     <td>Whether the library target is an external library, i.e., the project
 #         version does not apply.</td>
@@ -658,7 +664,7 @@ function (basis_add_library TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "STATIC;SHARED;MODULE;MEX;LIBMEX;EXTERNAL"
+      "STATIC;SHARED;MODULE;MEX;LIBMEX;EXTERNAL;INTERNAL"
       "COMPONENT;LIBRARY_COMPONENT;RUNTIME_COMPONENT;LANGUAGE"
       ""
     ${ARGN}
@@ -690,6 +696,10 @@ function (basis_add_library TARGET_NAME)
   endif ()
   if (NOT ARGN_RUNTIME_COMPONENT)
     set (ARGN_RUNTIME_COMPONENT "Unspecified")
+  endif ()
+
+  if (ARGN_INTERNAL AND ARGN_EXTERNAL)
+    message (FATAL_ERROR "basis_add_library (${TARGET_UID}): Library can either be internal or external, not both!")
   endif ()
 
   # if the language is not explicitly selected, determine it from the
@@ -769,7 +779,7 @@ function (basis_add_library TARGET_NAME)
 
     basis_add_mcc_target (
       ${TARGET_NAME}
-      TYPE              "LIBRARY"
+      TYPE "LIBRARY"
       RUNTIME_COMPONENT "${ARGN_RUNTIME_COMPONENT}"
       LIBRARY_COMPONENT "${ARGN_LIBRARY_COMPONENT}"
       ${ARGN_UNPARSED_ARGUMENTS}
@@ -782,7 +792,7 @@ function (basis_add_library TARGET_NAME)
   elseif (ARGN_TYPE STREQUAL "MEX")
  
     basis_add_mex_target (
-      ${TARGET_NAME}
+      ${TARGET_NAME} ${FLAGS}
       COMPONENT ${ARGN_LIBRARY_COMPONENT}
       ${ARGN_UNPARSED_ARGUMENTS}
     )
@@ -859,7 +869,6 @@ function (basis_add_library TARGET_NAME)
 
       add_library (${TARGET_UID} ${ARGN_TYPE} ${ARGN_UNPARSED_ARGUMENTS})
 
-      
     endif ()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -895,14 +904,21 @@ function (basis_add_library TARGET_NAME)
       RUNTIME
         DESTINATION "${INSTALL_RUNTIME_DIR}"
         COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
-      LIBRARY
-        DESTINATION "${INSTALL_LIBRARY_DIR}"
-        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
-      ARCHIVE
-        DESTINATION "${INSTALL_ARCHIVE_DIR}"
-        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
     )
 
+    if (NOT ARGN_INTERNAL)
+        install (
+          TARGETS ${TARGET_UID}
+          EXPORT  "${PROJECT_NAME}"
+          LIBRARY
+            DESTINATION "${INSTALL_LIBRARY_DIR}"
+            COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
+          ARCHIVE
+            DESTINATION "${INSTALL_ARCHIVE_DIR}"
+            COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
+        )
+    endif ()
+ 
     set (
       BASIS_CACHED_EXPORTS "${BASIS_CACHED_EXPORTS};${TARGET_UID}"
       CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE
