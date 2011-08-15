@@ -24,6 +24,9 @@ endif ()
 # include directories
 set (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 
+# libraries directory
+set (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
+
 # libraries
 set (@PACKAGE_NAME@_UTILS_LIBRARY "@UTILS_LIBRARY_CONFIG@")
 set (@PACKAGE_NAME@_TEST_LIBRARY  "@TEST_LIBRARY_CONFIG@")
