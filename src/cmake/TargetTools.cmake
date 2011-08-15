@@ -89,37 +89,43 @@ function (basis_get_target_location VAR TARGET_NAME)
   if (TARGET "${TARGET_UID}")
     get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
 
-    if (BASIS_TYPE MATCHES "LIBRARY|MEX")
-      if (BASIS_TYPE MATCHES "STATIC")
-        get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_OUTPUT_DIRECTORY")
-        get_target_property (FNAME     "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
+    # non-custom targets
+    if (BASIS_TYPE MATCHES "^(STATIC|SHARED|MODULE)_LIBRARY$|^EXECUTABLE$|^LIBEXEC$|^TEST$")
+      get_target_property (LOCATION ${TARGET_UID} "LOCATION")
+    # custom BASIS targets
+    else ()
+      if (BASIS_TYPE MATCHES "LIBRARY|MEX")
+        if (BASIS_TYPE MATCHES "STATIC")
+          get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_OUTPUT_DIRECTORY")
+          get_target_property (FNAME     "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
+        else ()
+          get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_OUTPUT_DIRECTORY")
+          get_target_property (FNAME     "${TARGET_UID}" "LIBRARY_OUTPUT_NAME")
+        endif ()
       else ()
-        get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_OUTPUT_DIRECTORY")
-        get_target_property (FNAME     "${TARGET_UID}" "LIBRARY_OUTPUT_NAME")
+        get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
+        get_target_property (FNAME     "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
       endif ()
-    else ()
-      get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
-      get_target_property (FNAME     "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
-    endif ()
-    if (NOT FNAME)
-      get_target_property (FNAME "${TARGET_UID}" "OUTPUT_NAME")
-    endif ()
-    get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
-    get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
+      if (NOT FNAME)
+        get_target_property (FNAME "${TARGET_UID}" "OUTPUT_NAME")
+      endif ()
+      get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
+      get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
 
-    if (FNAME)
-      set (TARGET_FILE "${FNAME}")
-    else ()
-      set (TARGET_FILE "${TARGET_NAME}")
-    endif ()
-    if (PREFIX)
-      set (TARGET_FILE "${PREFIX}${TARGET_FILE}")
-    endif ()
-    if (SUFFIX)
-      set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
-    endif ()
+      if (FNAME)
+        set (TARGET_FILE "${FNAME}")
+      else ()
+        set (TARGET_FILE "${TARGET_NAME}")
+      endif ()
+      if (PREFIX)
+        set (TARGET_FILE "${PREFIX}${TARGET_FILE}")
+      endif ()
+      if (SUFFIX)
+        set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
+      endif ()
 
-    set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
+      set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
+    endif ()
 
     if (ARGV2)
       get_filename_component (LOCATION "${LOCATION}" "${ARGV2}")
@@ -1031,7 +1037,8 @@ endfunction ()
 #      @tp @b DESTINATION dir @endtp
 #      <td>The installation directory relative to @c INSTALL_PREFIX.
 #          Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if
-#                   the @p LIBEXEC option is given.</td>
+#                   the @p LIBEXEC option is given or @c INSTALL_LIBRARY_DIR
+#                   if the @p MODULE option is given.</td>
 #   </tr>
 #   <tr>
 #      @tp @b COMPONENT name @endtp
@@ -1049,17 +1056,14 @@ endfunction ()
 #   <tr>
 #      @tp @b CONFIG_FILE file @endtp
 #      <td>Script configuration file. If "NONE", "None", or "none" is given,
-#          the script is copied only. Otherwise, the @p CONFIG option is used.</td>
+#          the script is copied only. Defaults to the file
+#          PROJECT_CONFIG_DIR/ScriptConfig.cmake.in if it exists. Otherwise,
+#          @p CONFIG is used only.</td>
 #   </tr>
 #   <tr>
 #     @tp @b COPYONLY @endtp
 #     <td>Specifies that the script file shall be copied only. If given, the options
 #         @p CONFIG and @p CONFIG_FILE are ignored.
-#   </tr>
-#   <tr>
-#      @tp @b LIBEXEC @endtp
-#      <td>Specifies that the script is an auxiliary executable or script which is
-#          called or included by other executables only.</td>
 #   </tr>
 #   <tr>
 #      @tp @b NOEXEC @endtp
@@ -1068,8 +1072,7 @@ endfunction ()
 #          with this option, the meaning of "script" can be even more
 #          general. Any text file, which is processed by a program
 #          to perform certain tasks, i.e., a configuration file
-#          can be considered as "script" in this sense.
-#          If the option @p LIBEXEC is given, this option is ignored.</td>
+#          can be considered as "script" in this sense.</td>
 #   </tr>
 #   <tr>
 #      @tp @b KEEPEXT @endtp
@@ -1078,12 +1081,17 @@ endfunction ()
 #          directive is given on Unix-based systems.</td>
 #   </tr>
 #   <tr>
+#      @tp @b LIBEXEC @endtp
+#      <td>Specifies that the script is an auxiliary executable or script which is
+#          called by other executables only.</td>
+#   </tr>
+#   <tr>
 #      @tp @b MODULE @endtp
 #      <td>Specifies that the script is a module file which is included by
-#          other scripts. In particular, this is an alias for @p LIBEXEC,
-#          @p NOEXEC and @p KEEPEXT and can be used, for example, for Python modules
-#          that are to be imported only by other Python scripts and BASH scripts
-#          that are to be sourced only by other BASH scripts.</td>
+#          other scripts. Implies @p NOEXEC and @p KEEPEXT and can be used,
+#          for example, for Python modules that are to be imported only by other
+#          Python scripts and BASH scripts that are to be sourced only by other
+#          BASH scripts.</td>
 #   </tr>
 # </table>
 #
@@ -1126,7 +1134,9 @@ function (basis_add_script TARGET_NAME)
       get_filename_component (ARGN_OUTPUT_DIRECTORY "${ARGN_OUTPUT_DIRECTORY}" ABSOLUTE)
     endif ()
   else ()
-    if (ARGN_LIBEXEC)
+    if (ARGN_MODULE)
+      set (ARGN_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    elseif (ARGN_LIBEXEC)
       set (ARGN_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
     else ()
       set (ARGN_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
@@ -1138,7 +1148,9 @@ function (basis_add_script TARGET_NAME)
       file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
     endif ()
   else ()
-    if (ARGN_LIBEXEC)
+    if (ARGN_MODULE)
+      set (ARGN_DESTINATION "${INSTALL_LIBRARY_DIR}")
+    elseif (ARGN_LIBEXEC)
       set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
     else ()
       set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
@@ -1150,7 +1162,11 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE)
-    set (ARGN_CONFIG "\@BASIS_SCRIPT_CONFIG\@")
+    if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
+      set (ARGN_CONFIG_FILE "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
+    else ()
+      set (ARGN_CONFIG "\@BASIS_SCRIPT_CONFIG\@")
+    endif ()
   endif ()
 
   if (ARGN_UNPARSED_ARGUMENTS)
