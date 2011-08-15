@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  ConfigBuild.cmake
+# @file  ConfigSettings.cmake
 # @brief Sets variables used in CMake package configuration of build tree.
 #
 # It is suggested to use _CONFIG as suffix for variable names that are to be
