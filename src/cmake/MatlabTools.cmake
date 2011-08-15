@@ -914,7 +914,7 @@ function (basis_add_mcc_target TARGET_NAME)
     else ()
       set (RUNTIME_INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
       set (RUNTIME_OUTPUT_DIR  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-      set (TYPE                "MCC_EXEC")
+      set (TYPE                "MCC_EXECUTABLE")
     endif ()
   endif ()
 
@@ -1015,7 +1015,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
 
-  if (NOT BASIS_TYPE MATCHES "^MCC_EXEC$|^MCC_LIBEXEC$|^MCC_TEST$|^MCC_LIBRARY$")
+  if (NOT BASIS_TYPE MATCHES "^MCC_EXECUTABLE$|^MCC_LIBEXEC$|^MCC_TEST$|^MCC_LIBRARY$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 

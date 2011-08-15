@@ -92,7 +92,7 @@ function (basis_install_links)
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
 
-    if (BASIS_TYPE MATCHES "^EXEC$|^MCC_EXEC$|^SCRIPT$")
+    if (BASIS_TYPE MATCHES "^EXECUTABLE$|^MCC_EXECUTABLE$|^SCRIPT$")
       get_target_property (SYMLINK_NAME ${TARGET_UID} "SYMLINK_NAME")
       if (NOT "${SYMLINK_NAME}" STREQUAL "NONE")
         get_target_property (SYMLINK_PREFIX ${TARGET_UID} "SYMLINK_PREFIX")
