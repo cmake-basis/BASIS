@@ -223,8 +223,6 @@ endfunction ()
 # @sa basis_project_finalize()
 
 function (basis_add_stdaux_bash_script)
-  set (SCRIPT_FILE "${BASIS_UTILITIES_DIR}/stdaux.sh.in")
-
   # generate definition of init_executable_aliases()
   set (C)
   foreach (TARGET_UID ${BASIS_TARGETS})
@@ -254,9 +252,11 @@ function (basis_add_stdaux_bash_script)
   set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
   set (CONFIG "${CONFIG}set (EXECUTABLE_ALIASES \"${C}\")\n")
 
-  # add BASH module
+  # add BASH modules
+  basis_add_script ("${BASIS_UTILITIES_DIR}/shflags.sh" MODULE COPYONLY)
+
   basis_add_script (
-    ${SCRIPT_FILE}
+    "${BASIS_UTILITIES_DIR}/stdaux.sh.in"
     MODULE
       BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       CONFIG "${CONFIG}"
