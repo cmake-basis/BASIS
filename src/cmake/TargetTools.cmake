@@ -1348,13 +1348,12 @@ function (basis_add_script_finalize TARGET_UID)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
 
+  set (INSTALL_NAME "${OUTPUT_NAME}")
   if (NOT KEEPEXT AND UNIX)
     file (STRINGS "${SCRIPT_FILE}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
     if (SHABANG STREQUAL "#!")
       get_filename_component (INSTALL_NAME "${OUTPUT_NAME}" NAME_WE)
     endif ()
-  else ()
-    set (INSTALL_NAME "${OUTPUT_NAME}")
   endif ()
 
   # create build script
