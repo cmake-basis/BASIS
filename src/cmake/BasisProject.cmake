@@ -328,10 +328,6 @@ macro (basis_project_initialize)
   set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})
 
   # include project specific settings
-  if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
-    set (DEFAULT_SCRIPT_CONFIG_FILE "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
-  endif ()
-
   include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
 
   # enable testing
