@@ -163,6 +163,7 @@ function (basis_set_config_path VAR PATH)
       "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
       "${CMAKE_INSTALL_PREFIX}/${PATH}"
   )
+  string (REGEX REPLACE "/$" "" ${VAR} "${${VAR}}")
 
   set (${VAR} "\${CMAKE_CURRENT_LIST_DIR}/${${VAR}}" PARENT_SCOPE)
 endfunction ()
