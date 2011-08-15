@@ -18,11 +18,12 @@
 #define SBIA_BASIS_H_
 
 
+// command-line parsing
 #include "tclap/CmdLine.h"
 
-#include "basis/config.h"
+// basics
+#include "basis/exceptions.h"
 #include "basis/path.h"
-
 
 
 #endif // SBIA_BASIS_H_
