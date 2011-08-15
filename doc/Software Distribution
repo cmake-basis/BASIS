@@ -1,0 +1,131 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/software/
+  Email: sbia-software at uphs.upenn.edu
+
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+  See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+INTRODUCTION
+============
+
+  This design document details the concept of packaging software developed at
+  SBIA as it shall be implemented as part of BASIS in order to ease and
+  standardize the way our software is distributed. A more practical description
+  on how to package software using the tools BASIS provides, is given in the
+  corresponding How-To guide.
+
+
+
+BUILD DEPENDENCIES VS RUNTIME REQUIREMENTS
+==========================================
+
+  Most software projects will (and should) make use of existing tools and
+  libraries which have profen to do the right thing. We can distinguish
+  between two kinds of dependencies: build dependencies and runtime
+  requirements. A build dependency is, for example, a binary C++ library
+  and corresponding header files. A runtime requirement can be a shared
+  library as well as an external command-line tool called by one or more
+  of the programs of a software project. Build dependencies need to be
+  available during build time but may not be required when a software is
+  already built and installed. Runtime requirements, on the other side,
+  are not needed for building the software but have to be available on the
+  target system such that a software can be executed on it. Note that a build
+  dependency may also be a runtime requirement. This is in particular the case
+  for shared, i.e., dynamically loaded, libraries (note that on Windows,
+  the import library is the build dependency and only the DLL is required at
+  runtime). In the remainder, we may refer to both build dependencies and
+  runtime requirements as prerequisits of a certain source or binary
+  distribution package, respectively.
+
+
+
+SOURCE PACKAGES
+===============
+
+  A source package contains all the source code and configuration files as well
+  as other supporting files needed to build the software on a target system.
+  As mentioned in the previous section, it is therefore required that the build
+  dependencies are installed on the target system as well already or that the
+  build dependencies are distributed together with the project's files and build
+  (and installed) during the build of the software itself.
+  
+  To separate the files belonging to one of our own projects from those belonging
+  to another project or those which were externally written, we do not include
+  those build dependencies in the version controlled source tree of our projects.
+  Further, this reduces the number of copies of source code files and hence
+  facilitates the maintenance of the different software projects. For example,
+  consider two projects that both make use of the same library. If a copy of this
+  library is part of each project, each project needs to be touched if a newer
+  version of that library should be used. Further, when bundling these two
+  projects together (see Super- and Subprojects document) the resulting source
+  package would include two copies of the library even though one would suffice.
+  Moreover, the size of the source package may grow dramatically.
+  On the other side, including build dependencies in a project with proper build
+  configuration guarantees that the software can be build without the need of
+  manually installing all build dependencies separately.
+  
+  For these reasons, an automated source package generation tool is anticipated
+  which creates a source package that includes not only the project files, but
+  also the files required to built the libraries and tools this project depends
+  on. For each project, we may thus provide two source packages, one containing
+  only the project's files and another one that includes all (possibly with
+  exceptions, though, to limit the size of the distribution package) build
+  dependencies (source packages, not binaries). To distinguish, we call the
+  first source package and the latter source bundle.
+
+  The build configuration process of a source bundle should allow the user to
+  choose for each build dependency to either use an already installed version
+  or the one distributed along with the project files. Moreover, the build
+  configuration of the source distribution package shall be implemented such
+  that it automatically downloads a copy of the missing build dependencies if an
+  internet connection exists. Alternatively, pre-downloaded source packages of
+  the build dependencies should be used if available. I.e.,
+
+
+  Source Package
+  --------------
+
+    - Includes source code and build configuration files as well as other
+      supporting files of a software project excluding the build dependencies.
+
+    - For each build dependency:
+
+      + If already installed, use installed version.
+
+      + Otherwise, use either a pre-downloaded source package (an archive file)
+        or download the source package from the internet and build it as part
+        of the software's build process (see ExternalProject.cmake module).
+
+
+  Source Bundle
+  -------------
+
+    - Includes not only the source package itself, but source packages of selected
+      build dependencies as well. Note that in regards to bundle size and
+      maintenance efforts, we do not want in all cases to include all build
+      dependencies. For example, we might not want to redistribute ITK or VTK.
+
+    - Provide option to use either the bundled source package of a build dependency
+      or the files that are already installed on the target system.
+
+    - Generated automatically during the packaging process as implemented by BASIS.
+
+    - Note that runtime requirements which are no build dependenices may be
+      included in such bundle as well. This shall be supported by BASIS, too.
+      To reduce the maintenance burden regarding the build and installation of
+      externally developed packages, however, it has to be decided for each
+      runtime requirement separately if it actually shall be included with a
+      bundle or not. For example, we might not want to redistribute FSL or AFNI.
+
+    - It is also important that we have the legal right to redistribute the
+      prerequisite packages along with our software. An externally developed
+      package that does not grant us such right may not be included in any bundle.
+
