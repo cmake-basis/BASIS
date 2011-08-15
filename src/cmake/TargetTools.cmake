@@ -1038,15 +1038,23 @@ endfunction ()
 #      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
 #   </tr>
 #   <tr>
+#      @tp @b CONFIG config @endtp
+#      <td>Script configuration given directly as string argument. This
+#          string is appended to the content of the script configuration file
+#          as specified by @p CONFIG_FILE if this option is given. The string
+#          "@BASIS_SCRIPT_CONFIG@" in the script configuration is replaced by
+#          the content of the default script configuration file.
+#          Default: "@BASIS_SCRIPT_CONFIG@"</td>
+#   </tr>
+#   <tr>
 #      @tp @b CONFIG_FILE file @endtp
 #      <td>Script configuration file. If "NONE", "None", or "none" is given,
 #          the script is copied only. Otherwise, the @p CONFIG option is used.</td>
 #   </tr>
 #   <tr>
-#      @tp @b CONFIG config @endtp
-#      <td>Script configuration. This option can be used instead of the option
-#          @p CONFIG_FILE, where the content of such script configuration
-#          is given directly as string argument. Default: "@BASIS_SCRIPT_CONFIG@"</td>
+#     @tp @b COPYONLY @endtp
+#     <td>Specifies that the script file shall be copied only. If given, the options
+#         @p CONFIG and @p CONFIG_FILE are ignored.
 #   </tr>
 #   <tr>
 #      @tp @b LIBEXEC @endtp
@@ -1087,7 +1095,7 @@ function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;NOEXEC;KEEPEXT;MODULE"
+      "LIBEXEC;NOEXEC;KEEPEXT;MODULE;COPYONLY"
       "SCRIPT;CONFIG;CONFIG_FILE;COMPONENT;BINARY_DIRECTORY;OUTPUT_DIRECTORY;DESTINATION"
       ""
     ${ARGN}
@@ -1141,9 +1149,6 @@ function (basis_add_script TARGET_NAME)
     message (FATAL_ERROR "basis_add_script (${TARGET_NAME}: Destination must be a relative path")
   endif ()
 
-  if (ARGN_CONFIG AND ARGN_CONFIG_FILE)
-    message (FATAL_ERROR "basis_add_script (${TARGET_NAME}: Use either option CONFIG or CONFIG_FILE")
-  endif ()
   if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE)
     set (ARGN_CONFIG "\@BASIS_SCRIPT_CONFIG\@")
   endif ()
@@ -1198,9 +1203,13 @@ function (basis_add_script TARGET_NAME)
   string (REGEX REPLACE "\\.in$"          ""    SCRIPT_NAME "${SCRIPT_NAME}")
   string (REGEX REPLACE "\\.in\(\\..*\)$" "\\1" SCRIPT_NAME "${SCRIPT_NAME}")
 
-  # split name in target output name and suffix
-  get_filename_component (OUTPUT_NAME "${SCRIPT_NAME}" NAME_WE)
-  get_filename_component (SUFFIX      "${SCRIPT_NAME}" EXT)
+  set (OUTPUT_NAME "${SCRIPT_NAME}")
+  if (NOT ARGN_KEEPEXT AND UNIX)
+    file (STRINGS "${ARGN_SCRIPT}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
+    if (SHABANG STREQUAL "#!")
+      get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
+    endif ()
+  endif ()
 
   # auxiliary executable?
   if (ARGN_LIBEXEC)
@@ -1216,22 +1225,23 @@ function (basis_add_script TARGET_NAME)
   set (INSTALL_DIR "${ARGN_DESTINATION}")
   set (SCRIPT_CONFIG)
 
-  if (ARGN_CONFIG)
-    set (SCRIPT_CONFIG "${ARGN_CONFIG}")
-  endif ()
-  if (NOT ARGN_CONFIG_FILE MATCHES "^NONE$|^None$|^none$")
-    if (BASIS_SCRIPT_CONFIG_FILE)
-      file (READ "${BASIS_SCRIPT_CONFIG_FILE}" BASIS_SCRIPT_CONFIG)
-    else ()
-      set (BASIS_SCRIPT_CONFIG)
-    endif ()
-
+  if (NOT ARGN_COPYONLY)
     if (ARGN_CONFIG_FILE)
       if (NOT EXISTS "${ARGN_CONFIG_FILE}")
         message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG_FILE}\" does not exist. It is required to build the script ${TARGET_UID}.")
       endif ()
       file (READ "${ARGN_CONFIG_FILE}" SCRIPT_CONFIG)
     endif ()
+    if (ARGN_CONFIG)
+      set (SCRIPT_CONFIG "${SCRIPT_CONFIG}\n\n${ARGN_CONFIG}")
+    endif ()
+
+    if (SCRIPT_CONFIG MATCHES "@BASIS_SCRIPT_CONFIG@" AND EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
+      file (READ "${BASIS_SCRIPT_CONFIG_FILE}" BASIS_SCRIPT_CONFIG)
+    else ()
+      set (BASIS_SCRIPT_CONFIG)
+    endif ()
+
     while (SCRIPT_CONFIG MATCHES "@[a-zA-Z0-9_-]+@")
       string (CONFIGURE "${SCRIPT_CONFIG}" SCRIPT_CONFIG @ONLY)
     endwhile ()
@@ -1252,8 +1262,8 @@ function (basis_add_script TARGET_NAME)
       RUNTIME_OUTPUT_DIRECTORY  "${ARGN_OUTPUT_DIRECTORY}"
       RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
       OUTPUT_NAME               "${OUTPUT_NAME}"
-      SUFFIX                    "${SUFFIX}"
-      KEEPEXT                   "${ARGN_KEEPEXT}"
+      PREFIX                    ""
+      SUFFIX                    ""
       COMPILE_DEFINITIONS       "${SCRIPT_CONFIG}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
   )
@@ -1316,7 +1326,6 @@ function (basis_add_script_finalize TARGET_UID)
       "PREFIX"
       "OUTPUT_NAME"
       "SUFFIX"
-      "KEEPEXT"
       "VERSION"
       "SOVERSION"
       "SOURCES"
@@ -1340,20 +1349,20 @@ function (basis_add_script_finalize TARGET_UID)
   # extract script file from SOURCES
   list (GET SOURCES 1 SCRIPT_FILE)
 
+  # get script name without ".in"
+  get_filename_component (SCRIPT_NAME "${SCRIPT_FILE}" NAME)
+  string (REGEX REPLACE "\\.in$"          ""    SCRIPT_NAME "${SCRIPT_NAME}")
+  string (REGEX REPLACE "\\.in\(\\..*\)$" "\\1" SCRIPT_NAME "${SCRIPT_NAME}")
+
   # output name
   if (NOT OUTPUT_NAME)
     set (OUTPUT_NAME "${TARGET_NAME}")
   endif ()
+  if (PREFIX)
+    set (OUTPUT_NAME "${PREFIX}${OUTPUT_NAME}")
+  endif ()
   if (SUFFIX)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
-  endif ()
-
-  set (INSTALL_NAME "${OUTPUT_NAME}")
-  if (NOT KEEPEXT AND UNIX)
-    file (STRINGS "${SCRIPT_FILE}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
-    if (SHABANG STREQUAL "#!")
-      get_filename_component (INSTALL_NAME "${OUTPUT_NAME}" NAME_WE)
-    endif ()
   endif ()
 
   # create build script
@@ -1364,8 +1373,8 @@ function (basis_add_script_finalize TARGET_UID)
   #       extension is optionally removed.
   set (BUILD_DIR       "${BINARY_DIRECTORY}/CMakeFiles/${TARGET_UID}.dir")
   set (BUILD_SCRIPT    "${BUILD_DIR}/build.cmake")
-  set (CONFIGURED_FILE "${BINARY_DIRECTORY}/${OUTPUT_NAME}")
-  set (OUTPUT_FILE     "${RUNTIME_OUTPUT_DIRECTORY}/${INSTALL_NAME}")
+  set (CONFIGURED_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
+  set (OUTPUT_FILE     "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   set (INSTALL_FILE    "${SCRIPT_FILE}")
   set (OUTPUT_FILES    "${CONFIGURED_FILE};${OUTPUT_FILE}")
 
@@ -1375,7 +1384,7 @@ function (basis_add_script_finalize TARGET_UID)
     basis_set_script_path_definition (FUNCTIONS)
     string (CONFIGURE "${FUNCTIONS}" FUNCTIONS @ONLY)
 
-    set (INSTALL_FILE "${BUILD_DIR}/${INSTALL_NAME}")
+    set (INSTALL_FILE "${BUILD_DIR}/${OUTPUT_NAME}")
     list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
 
     string (REPLACE "\r" "" COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}")
@@ -1383,7 +1392,7 @@ function (basis_add_script_finalize TARGET_UID)
     set (BUILD_COMMANDS "${BUILD_COMMANDS}${FUNCTIONS}\n\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}set (BUILD_INSTALL_SCRIPT 0)\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${RUNTIME_OUTPUT_DIRECTORY}\")\n")
-    set (BUILD_COMMANDS "${BUILD_COMMANDS}set (NAME \"${INSTALL_NAME}\")\n")
+    set (BUILD_COMMANDS "${BUILD_COMMANDS}set (NAME \"${OUTPUT_NAME}\")\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}${COMPILE_DEFINITIONS}\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${CONFIGURED_FILE}\" @ONLY)\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${CONFIGURED_FILE}\" \"${OUTPUT_FILE}\" COPYONLY)\n")
@@ -1394,7 +1403,7 @@ function (basis_add_script_finalize TARGET_UID)
     endif ()
     set (BUILD_COMMANDS "${BUILD_COMMANDS}\nset (BUILD_INSTALL_SCRIPT 1)\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${CMAKE_INSTALL_PREFIX}/${RUNTIME_INSTALL_DIRECTORY}\")\n")
-    set (BUILD_COMMANDS "${BUILD_COMMANDS}set (NAME \"${INSTALL_NAME}\")\n")
+    set (BUILD_COMMANDS "${BUILD_COMMANDS}set (NAME \"${OUTPUT_NAME}\")\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}${COMPILE_DEFINITIONS}\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${INSTALL_FILE}\" @ONLY)\n")
   else ()
@@ -1465,7 +1474,7 @@ endif ()"
 
   install (
     ${WHAT}     "${INSTALL_FILE}"
-    RENAME      "${INSTALL_NAME}"
+    RENAME      "${OUTPUT_NAME}"
     DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
     COMPONENT   "${RUNTIME_COMPONENT}"
   )
