@@ -898,13 +898,15 @@ function (basis_add_library TARGET_NAME)
     endif ()
 
     # install library
-    install (
-      TARGETS ${TARGET_UID}
-      EXPORT  "${PROJECT_NAME}"
-      RUNTIME
-        DESTINATION "${INSTALL_RUNTIME_DIR}"
-        COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
-    )
+    if (NOT ARGN_STATIC)
+        install (
+          TARGETS ${TARGET_UID}
+          EXPORT  "${PROJECT_NAME}"
+          RUNTIME
+            DESTINATION "${INSTALL_RUNTIME_DIR}"
+            COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
+        )
+    endif ()
 
     if (NOT ARGN_INTERNAL)
         install (
