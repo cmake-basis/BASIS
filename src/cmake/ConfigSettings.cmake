@@ -22,6 +22,9 @@ if (BUILD_CONFIG_SETTINGS)
   ## @brief Include directories of package configuration of build tree.
   set (INCLUDE_DIR_CONFIG "${PROJECT_INCLUDE_DIR}")
 
+  ## @brief Libraries directories of package configuration of build tree.
+  set (LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
   return ()
 endif ()
 
@@ -31,3 +34,6 @@ endif ()
 
 ## @brief Include directories of package configuration of installation.
 basis_set_config_path (INCLUDE_DIR_CONFIG "${INSTALL_INCLUDE_DIR}")
+
+## @brief Libraries directories of package configuration of installation.
+basis_set_config_path (LIBRARY_DIR_CONFIG "${INSTALL_LIBRARY_DIR}")
