@@ -72,6 +72,9 @@ print_contact ()
 ##############################################################################
 # @brief Make relative path absolute.
 #
+# @attention The directory referred to by the directory part of the path
+#            must exist.
+#
 # @todo Implement this function without the use of cd such that non-existent
 #       paths can be simplified as well.
 #
@@ -102,6 +105,9 @@ to_absolute_path ()
 
 ## @brief Absolute path of directory of stdaux.sh BASH module
 stdaux_dir=$(get_executable_directory)
+
+# include command-line flags module
+source "${stdaux_dir}/shflags.sh"
 
 # define aliases of build target names to executable file paths
 @EXECUTABLE_ALIASES@

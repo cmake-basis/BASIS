@@ -86,7 +86,7 @@ install (
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# utilities template files
+# template files
 set (CPP_UTILITIES_FILES
   "utilities/config.h.in"
   "utilities/config.cc.in"
@@ -98,7 +98,7 @@ set (CPP_UTILITIES_FILES
 install (FILES ${CPP_UTILITIES_FILES} DESTINATION "${INSTALL_UTILITIES_DIR}")
 
 # ----------------------------------------------------------------------------
-# basic utilities
+# utilities
 basis_add_library (
   basis_utils STATIC
     "utilities/path.cc" # utility path functions
@@ -119,6 +119,19 @@ if (NOT HAVE_TR1_TUPLE)
 endif ()
 
 basis_add_library (basis_test STATIC "utilities/gmock-gtest-all.cc")
+
+# ============================================================================
+# BASH utilities
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# template files
+set (BASH_UTILITIES_FILES
+  "utilities/stdaux.sh.in"
+  "utilities/shflags.sh"
+)
+
+install (FILES ${BASH_UTILITIES_FILES} DESTINATION "${INSTALL_UTILITIES_DIR}")
 
 # ============================================================================
 # tools
