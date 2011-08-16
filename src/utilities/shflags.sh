@@ -1053,54 +1053,22 @@ flags_help()
     fi
     flags_helpStrLen_=`expr -- "${flags_helpStr_}" : '.*'`
     flags_columns_=`_flags_columns`
-    if [ ${flags_helpStrLen_} -lt ${flags_columns_} ]; then
-      echo "${flags_helpStr_}"
-    else
+    if [ ${flags_helpStrLen_} -gt ${flags_columns_} ]; then
       flags_helpStr_="${flags_help_} ${flags_defaultStr_}"
       # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
       # because it doesn't like empty strings when used in this manner.
       flags_emptyStr_="`echo \"x${flags_flagStr_}x\" \
-          |awk '{printf "%"length($0)-2"s", ""}'`"
+          |awk '{printf "%"length($0)+3"s", ""}'`"
       flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
       # split long help text on multiple lines
-      flags_specialChar_=$(echo -e "\xE2\x99\xA0")
-      while [ "$flags_helpStr_" != "${flags_helpStr_/  /}" ]; do
-        flags_helpStr_=${flags_helpStr_/  /${flags_specialChar_} }
-      done
-      flags_lineStr_=''
-      flags_first_=${FLAGS_TRUE}
-      for flags_wordStr_ in ${flags_helpStr_}; do
-        flags_lineStrTmp_="${flags_lineStr_}${flags_wordStr_} "
-        flags_numSpecial_=0
-        flags_tmp_=${flags_lineStrTmp_}
-        while [ "${flags_tmp_}" != "${flags_tmp_/${flags_specialChar_}/}" ]; do
-          flags_tmp_=${flags_tmp_/${flags_specialChar_}/}
-          flags_numSpecial_=`expr -- "${flags_numSpecial_}" + 1`
-        done
-        flags_lineStrLen_=`expr -- "${flags_lineStrTmp_}" : '.*'`
-        flags_lineStrLen_=`expr -- "${flags_lineStrLen_}" + "${flags_emptyStrLen_}" + 5 - 2 '*' "${flags_numSpecial_}"`
-        if [ ${flags_lineStrLen_} -ge ${flags_columns_} ]; then
-          flags_lineStr_="${flags_lineStr_//${flags_specialChar_}/ }"
-          if [ ${flags_first_} -eq ${FLAGS_TRUE} ]; then
-            echo "  ${flags_flagStr_}   ${flags_lineStr_}"
-            flags_first_=${FLAGS_FALSE}
-          else
-            echo "  ${flags_emptyStr_}   ${flags_lineStr_}"
-          fi
-          flags_lineStr_="${flags_wordStr_} "
-        else
-          flags_lineStr_="${flags_lineStrTmp_}"
-        fi
-      done
-      flags_lineStr_="${flags_lineStr_//${flags_specialChar_}/ }"
-      echo "  ${flags_emptyStr_}   ${flags_lineStr_}"
+      flags_helpStr_="$(echo "${flags_emptyStr_}${flags_helpStr_}" | fmt -l 0 -${flags_columns_})"
+      flags_helpStr_="  ${flags_flagStr_}   ${flags_helpStr_:${flags_emptyStrLen_}}"
     fi
+    echo "${flags_helpStr_}"
 
     unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
         flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
-        flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_ \
-        flags_numSpaces_ flags_spaces_ flags_specialChar_ flags_first_ flags_lineStrTmp_ \
-        flags_lineStr_ flags_lineStrLen_ flags_numSpecial_ flags_tmp_
+        flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_
   else
     if [ -n "${FLAGS_HELP:-}" ]; then
       echo "${FLAGS_HELP}"
