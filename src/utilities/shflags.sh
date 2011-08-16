@@ -1053,17 +1053,15 @@ flags_help()
     fi
     flags_helpStrLen_=`expr -- "${flags_helpStr_}" : '.*'`
     flags_columns_=`_flags_columns`
-    if [ ${flags_helpStrLen_} -gt ${flags_columns_} ]; then
-      flags_helpStr_="${flags_help_} ${flags_defaultStr_}"
-      # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
-      # because it doesn't like empty strings when used in this manner.
-      flags_emptyStr_="`echo \"x${flags_flagStr_}x\" \
-          |awk '{printf "%"length($0)+3"s", ""}'`"
-      flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
-      # split long help text on multiple lines
-      flags_helpStr_="$(echo "${flags_emptyStr_}${flags_helpStr_}" | fmt -l 0 -${flags_columns_})"
-      flags_helpStr_="  ${flags_flagStr_}   ${flags_helpStr_:${flags_emptyStrLen_}}"
-    fi
+    flags_helpStr_="${flags_help_} ${flags_defaultStr_}"
+    # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
+    # because it doesn't like empty strings when used in this manner.
+    flags_emptyStr_="`echo \"x${flags_flagStr_}x\" \
+        |awk '{printf "%"length($0)+3"s", ""}'`"
+    flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
+    # split long help text on multiple lines
+    flags_helpStr_="$(echo "${flags_emptyStr_}${flags_helpStr_}" | fmt -s -l 0 -${flags_columns_})"
+    flags_helpStr_="  ${flags_flagStr_}   ${flags_helpStr_:${flags_emptyStrLen_}}"
     echo "${flags_helpStr_}"
 
     unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
