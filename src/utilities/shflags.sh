@@ -1100,7 +1100,7 @@ flags_help()
         flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
         flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_ \
         flags_numSpaces_ flags_spaces_ flags_specialChar_ flags_first_ flags_lineStrTmp_ \
-        flags_lineStr_ flags_lineStrLen_ flags_numSpecial_
+        flags_lineStr_ flags_lineStrLen_ flags_numSpecial_ flags_tmp_
   else
     if [ -n "${FLAGS_HELP:-}" ]; then
       echo "${FLAGS_HELP}"
