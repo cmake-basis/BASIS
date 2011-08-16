@@ -1031,10 +1031,8 @@ flags_help()
     flags_flagStrLen_=`expr -- "${flags_flagStr_}" : '.*'`
     flags_numSpaces_=`expr -- 5 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
     [ ${flags_numSpaces_} -ge 0 ] || flags_numSpaces_=0
-    while [ ${flags_numSpaces_} -gt 0 ]; do
-      flags_flagStr_="${flags_flagStr_} "
-      flags_numSpaces_=`expr -- "${flags_numSpaces_}" - 1`
-    done
+    flags_spaces_=`eval "printf ' %.0s' {0..${flags_numSpaces_}}"`
+    flags_flagStr_="${flags_flagStr_}${flags_spaces_}"
 
     case ${flags_type_} in
       ${__FLAGS_TYPE_BOOLEAN})
@@ -1079,7 +1077,7 @@ flags_help()
     unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ \
         flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
         flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_ \
-        flags_numSpaces_
+        flags_numSpaces_ flags_spaces_
   else
     if [ -n "${FLAGS_HELP:-}" ]; then
       echo "${FLAGS_HELP}" >&2
@@ -1092,7 +1090,7 @@ flags_help()
     flags_maxNameLen_=0
     for flags_name_ in ${__flags_longNames}; do
       flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
-      # + 4 for boolean flags because of the '[no]' prefix
+      # +4 for boolean flags because of the '[no]' prefix
       flags_usName_=`_flags_underscoreName ${flags_name_}`
       flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
       if [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ]; then
