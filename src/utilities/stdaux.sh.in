@@ -16,8 +16,18 @@
 #  @{
 
 # ============================================================================
+# constants
+# ============================================================================
+
+## @brief Absolute path of directory of stdaux.sh BASH module
+declare -r stdaux_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
+
+# ============================================================================
 # version / help
 # ============================================================================
+
+# include command-line flags module
+source "${stdaux_dir}/shflags.sh"
 
 ##############################################################################
 # @brief Get name of executable.
@@ -102,12 +112,6 @@ to_absolute_path ()
 # ============================================================================
 # main
 # ============================================================================
-
-## @brief Absolute path of directory of stdaux.sh BASH module
-stdaux_dir=$(get_executable_directory)
-
-# include command-line flags module
-source "${stdaux_dir}/shflags.sh"
 
 # define aliases of build target names to executable file paths
 @EXECUTABLE_ALIASES@
