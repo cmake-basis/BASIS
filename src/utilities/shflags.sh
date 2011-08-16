@@ -1071,7 +1071,12 @@ flags_help()
       flags_first_=${FLAGS_TRUE}
       for flags_wordStr_ in ${flags_helpStr_}; do
         flags_lineStrTmp_="${flags_lineStr_}${flags_wordStr_} "
-        flags_numSpecial_=`echo ${flags_lineStrTmp_} | grep -o "${flags_specialChar_}" | wc -l | sed s/\ //g`
+        flags_numSpecial_=0
+        flags_tmp_=${flags_lineStrTmp_}
+        while [ "${flags_tmp_}" != "${flags_tmp_/${flags_specialChar_}/}" ]; do
+          flags_tmp_=${flags_tmp_/${flags_specialChar_}/}
+          flags_numSpecial_=`expr -- "${flags_numSpecial_}" + 1`
+        done
         flags_lineStrLen_=`expr -- "${flags_lineStrTmp_}" : '.*'`
         flags_lineStrLen_=`expr -- "${flags_lineStrLen_}" + "${flags_emptyStrLen_}" + 5 - 2 '*' "${flags_numSpecial_}"`
         if [ ${flags_lineStrLen_} -ge ${flags_columns_} ]; then
@@ -1091,10 +1096,11 @@ flags_help()
       echo "  ${flags_emptyStr_}   ${flags_lineStr_}"
     fi
 
-    unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ \
+    unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
         flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
         flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_ \
-        flags_numSpaces_ flags_spaces_
+        flags_numSpaces_ flags_spaces_ flags_specialChar_ flags_first_ flags_lineStrTmp_ \
+        flags_lineStr_ flags_lineStrLen_ flags_numSpecial_
   else
     if [ -n "${FLAGS_HELP:-}" ]; then
       echo "${FLAGS_HELP}"
