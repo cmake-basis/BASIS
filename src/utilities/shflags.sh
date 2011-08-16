@@ -181,6 +181,7 @@ __FLAGS_TYPE_FLOAT=2
 __FLAGS_TYPE_INTEGER=3
 __FLAGS_TYPE_UNSIGNED_INTEGER=4
 __FLAGS_TYPE_STRING=5
+__FLAGS_TYPE_COUNTER=6
 
 # set the constants readonly
 __flags_constants=`set |awk -F= '/^FLAGS_/ || /^__FLAGS_/ {print $1}'`
@@ -328,7 +329,7 @@ _flags_define()
         fi
         ;;
 
-      ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+      ${__FLAGS_TYPE_UNSIGNED_INTEGER}|${__FLAGS_TYPE_COUNTER})
         if _flags_validateUnsignedInteger "${_flags_default_}"; then
           :
         else
@@ -413,7 +414,8 @@ _flags_genOptStr()
         if [ "${_flags_shortName_}" != "${__FLAGS_NULL}" ]; then
           _flags_opts_="${_flags_opts_}${_flags_shortName_}"
           # getopt needs a trailing ':' to indicate a required argument
-          [ ${_flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} ] && \
+          [ ${_flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} -a \
+            ${_flags_type_} -ne ${__FLAGS_TYPE_COUNTER} ] && \
               _flags_opts_="${_flags_opts_}:"
         fi
         ;;
@@ -421,7 +423,8 @@ _flags_genOptStr()
       ${__FLAGS_OPTSTR_LONG})
         _flags_opts_="${_flags_opts_:+${_flags_opts_},}${_flags_name_}"
         # getopt needs a trailing ':' to indicate a required argument
-        [ ${_flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} ] && \
+        [ ${_flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} -a \
+          ${_flags_type_} -ne ${__FLAGS_TYPE_COUNTER} ] && \
             _flags_opts_="${_flags_opts_}:"
         ;;
     esac
@@ -616,8 +619,8 @@ _flags_validateUnsignedInteger()
   _flags_uint_=$1
 
   flags_return=${FLAGS_TRUE}
-  _flags_test_=`expr -- "${_flags_int_}" : '\([0-9][0-9]*\)'`
-  [ "${_flags_test_}" != "${_flags_int_}" ] && flags_return=${FLAGS_FALSE}
+  _flags_test_=`expr -- "${_flags_uint_}" : '\([0-9][0-9]*\)'`
+  [ "${_flags_test_}" != "${_flags_uint_}" ] && flags_return=${FLAGS_FALSE}
 
   unset _flags_uint_ _flags_test_
   return ${flags_return}
@@ -832,6 +835,12 @@ _flags_parseGetopt()
       ${__FLAGS_TYPE_STRING})
         eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
         ;;
+
+      ${__FLAGS_TYPE_COUNTER})
+        eval "_flags_val_=\${FLAGS_${_flags_usName_}}"
+        _flags_val_=`expr "${_flags_val_}" + 1`
+        eval "FLAGS_${_flags_usName_}=${_flags_val_}"
+        ;;
     esac
 
     # handle special case help flag
@@ -844,9 +853,38 @@ _flags_parseGetopt()
       fi
     fi
 
-    # shift the option and non-boolean arguements out.
+    # handle special case helpxml flag
+    if [ "${_flags_usName_}" = 'helpxml' ]; then
+      if [ ${FLAGS_helpxml} -eq ${FLAGS_TRUE} ]; then
+        flags_helpxml
+        flags_error='help requested'
+        flags_return=${FLAGS_TRUE}
+        break
+      fi
+    fi
+
+    # handle special case usage flag
+    if [ "${_flags_usName_}" = 'usage'     -a ${FLAGS_usage}     -eq ${FLAGS_TRUE} ] || \
+       [ "${_flags_usName_}" = 'helpshort' -a ${FLAGS_helpshort} -eq ${FLAGS_TRUE} ]; then
+      flags_helpshort
+      flags_error='help requested'
+      flags_return=${FLAGS_TRUE}
+      break
+    fi
+
+    # handle special case version flag
+    if [ "${_flags_usName_}" = 'version' ]; then
+      if [ ${FLAGS_version} -eq ${FLAGS_TRUE} ]; then
+        flags_error='version requested'
+        flags_return=${FLAGS_TRUE}
+        break
+      fi
+    fi
+
+    # shift the option and non-boolean arguments out.
     shift
-    [ ${_flags_type_} != ${__FLAGS_TYPE_BOOLEAN} ] && shift
+    [ ${_flags_type_} != ${__FLAGS_TYPE_BOOLEAN} -a \
+      ${_flags_type_} != ${__FLAGS_TYPE_COUNTER} ] && shift
   done
 
   # give user back non-flag arguments
@@ -891,6 +929,7 @@ DEFINE_int()              { _flags_define ${__FLAGS_TYPE_INTEGER} "$@"; }
 DEFINE_unsigned_integer() { _flags_define ${__FLAGS_TYPE_UNSIGNED_INTEGER} "$@"; }
 DEFINE_uint()             { _flags_define ${__FLAGS_TYPE_UNSIGNED_INTEGER} "$@"; }
 DEFINE_string()           { _flags_define ${__FLAGS_TYPE_STRING} "$@"; }
+DEFINE_counter()          { _flags_define ${__FLAGS_TYPE_COUNTER} "$@"; }
 
 # Parse the flags.
 #
@@ -900,9 +939,20 @@ DEFINE_string()           { _flags_define ${__FLAGS_TYPE_STRING} "$@"; }
 #   integer: success of operation, or error
 FLAGS()
 {
-  # define a standard 'help' flag if one isn't already defined
+  # define standard flags if not already defined
   [ -z "${__flags_help_type:-}" ] && \
-      DEFINE_boolean 'help' false 'Show this help and exit.' 'h'
+      DEFINE_boolean 'help' false 'Show help and exit.' 'h'
+  [ -z "${__flags_helpshort_type:-}" ] && \
+      DEFINE_boolean 'helpshort' false 'Show usage information and exit.'
+  [ -z "${__flags_helpxml_type:-}" ] && \
+      DEFINE_boolean 'helpxml' false 'Output help in XML format and exit.'
+  [ -z "${__flags_usage_type:-}" ] && \
+      DEFINE_boolean 'usage' false 'Alias for --helpshort.' 'u'
+  [ -z "${__flags_version_type:-}" ] && \
+      DEFINE_boolean 'version' false 'Show version and exit.' 'V'
+  [ -z "${__flags_verbose_type:-}" ] && \
+      DEFINE_counter 'verbose' 0 'Increase verbosity of output messages.\
+                                  Can be given multiple times.' 'v'
 
   # parse options
   if [ $# -gt 0 ]; then
@@ -985,153 +1035,382 @@ flags_getoptIsStd()
   test ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_STD}
 }
 
-# This is effectively a 'usage()' function. It prints usage information and
-# exits the program with ${FLAGS_FALSE} if it is ever found in the command line
-# arguments. Note this function can be overridden so other apps can define
-# their own --help flag, replacing this one, if they want.
+# Print help for named flag
 #
 # Args:
-#   flags_name_: string: (optional) long name of flag whose help should be
-#                        printed. If this argument is not given, the help of
-#                        all defined flags is printed.
+#   flags_name_: string: long name of flag
+#   flags_maxNameLen: integer: (optional) maximum length of long flag names
+#                              used to align help texts (default: 0)
+#   flags_showDefault: boolean: (optional) whether to display default value (default: true)
+# Returns:
+#   integer: success of operation (always returns true)
+flags_helpflag()
+{
+  flags_name_=$1
+  flags_maxNameLen=${2:-0}
+  flags_showDefault_=${3:-${FLAGS_TRUE}}
+  flags_flagStr_=''
+  flags_boolStr_=''
+  flags_usName_=`_flags_underscoreName ${flags_name_}`
+
+  flags_default_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_DEFAULT}`
+  flags_help_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_HELP}`
+  flags_short_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_SHORT}`
+  flags_type_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+
+  [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
+      flags_flagStr_="-${flags_short_}"
+
+  if [ ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ]; then
+    [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
+        flags_flagStr_="${flags_flagStr_},"
+    # add [no] to long boolean flag names, except the 'help', 'usage', and 'version' flags
+    [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} \
+      -a "${flags_usName_}" != 'help' \
+      -a "${flags_usName_}" != 'helpshort' \
+      -a "${flags_usName_}" != 'helpxml' \
+      -a "${flags_usName_}" != 'usage' \
+      -a "${flags_usName_}" != 'version' ] && \
+        flags_boolStr_='[no]'
+    flags_flagStr_="${flags_flagStr_}--${flags_boolStr_}${flags_name_}"
+  fi
+  flags_flagStrLen_=`expr -- "${flags_flagStr_}" : '.*'`
+  flags_numSpaces_=`expr -- 5 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
+  [ ${flags_numSpaces_} -ge 0 ] || flags_numSpaces_=0
+  flags_spaces_=`eval "printf ' %.0s' {0..${flags_numSpaces_}}"`
+  flags_flagStr_="${flags_flagStr_}${flags_spaces_}"
+
+  case ${flags_type_} in
+    ${__FLAGS_TYPE_BOOLEAN})
+      if [ ${flags_default_} -eq ${FLAGS_TRUE} ]; then
+        flags_defaultStr_='true'
+      else
+        flags_defaultStr_='false'
+      fi
+      ;;
+    ${__FLAGS_TYPE_STRING}) flags_defaultStr_="'${flags_default_}'" ;;
+    *) flags_defaultStr_=${flags_default_} ;;
+  esac
+  flags_defaultStr_="(default: ${flags_defaultStr_})"
+
+  flags_helpStr_="  ${flags_flagStr_}   ${flags_help_}"
+  if [ ${flags_showDefault_} -eq ${FLAGS_TRUE} ]; then
+    flags_helpStr_="${flags_helpStr_} ${flags_defaultStr_}"
+  fi
+  if [ ${flags_showDefault_} -eq ${FLAGS_TRUE} ]; then
+    flags_helpStr_="${flags_help_} ${flags_defaultStr_}"
+  else
+    flags_helpStr_="${flags_help_}"
+  fi
+  flags_helpStrLen_=`expr -- "${flags_helpStr_}" : '.*'`
+  flags_columns_=`_flags_columns`
+  # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
+  # because it doesn't like empty strings when used in this manner.
+  flags_emptyStr_="`echo \"x${flags_flagStr_}x\" \
+      |awk '{printf "%"length($0)+3"s", ""}'`"
+  flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
+  # split long help text on multiple lines
+  flags_helpStr_="$(echo "${flags_emptyStr_}${flags_helpStr_}" | fmt -s -l 0 -${flags_columns_})"
+  flags_helpStr_="  ${flags_flagStr_}   ${flags_helpStr_:${flags_emptyStrLen_}}"
+  echo "${flags_helpStr_}"
+
+  unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
+      flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
+      flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_
+
+  return ${FLAGS_TRUE}
+}
+
+# Print help of all flags.
+#
+# This function is used by flags_help() and flags_helpshort().
+#
+# Args:
+#  none
+# Returns:
+#   integer: success of operation (always returns true)
+flags_helpflags()
+{
+  flags_requiredFlags_=' '
+  flags_optionalFlags_=' '
+  flags_standardFlags_=' '
+  flags_maxNameLen_=0
+  for flags_name_ in ${__flags_longNames}; do
+    flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
+    # +4 for boolean flags because of the '[no]' prefix
+    flags_usName_=`_flags_underscoreName ${flags_name_}`
+    flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+    if [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ]; then
+      flags_nameStrLen_=`expr -- "${flags_nameStrLen}" + 4`
+    fi
+    # update maximum length of flag name
+    if [ ${flags_nameStrLen_} -gt ${flags_maxNameLen_} ]; then
+      flags_maxNameLen_=${flags_nameStrLen_}
+    fi
+  done
+  for flags_name_ in ${__flags_longNames}; do
+    flags_usName_=`_flags_underscoreName ${flags_name_}`
+    flags_required_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_REQUIRED}`
+    if [ ${flags_required_} = ${FLAGS_TRUE} ]; then
+      flags_requiredFlags_="${flags_requiredFlags_}${flags_name_} "
+    else
+      if [ "${flags_usName_}" = 'help' \
+          -o "${flags_usName_}" = 'helpshort' \
+          -o "${flags_usName_}" = 'helpxml' \
+          -o "${flags_usName_}" = 'usage' \
+          -o "${flags_usName_}" = 'version' \
+          -o "${flags_usName_}" = 'verbose' ]; then
+        flags_standardFlags_="${flags_standardFlags_}${flags_name_} "
+      else
+        flags_optionalFlags_="${flags_optionalFlags_}${flags_name_} "
+      fi
+    fi
+  done
+  if [ -n "${flags_requiredFlags_}" ]; then
+    echo
+    echo 'Required options:'
+    for flags_name_ in ${flags_requiredFlags_}; do
+      flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
+    done
+  fi
+  if [ -n "${flags_optionalFlags_}" ]; then
+    echo
+    echo 'Default options:'
+    for flags_name_ in ${flags_optionalFlags_}; do
+      flags_helpflag ${flags_name_} ${flags_maxNameLen_}
+    done
+  fi
+  if [ -n "${flags_standardFlags_}" ]; then
+    echo
+    echo 'Standard options:'
+    for flags_name_ in ${flags_standardFlags_}; do
+      flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
+    done
+  fi
+
+  unset flags_name_ flags_nameStrLen_ flags_usName_ flags_required_ flags_requiredFlags_ \
+      flags_optionalFlags_ flags_standardFlags_ flags_maxNameLen_
+
+  return ${FLAGS_TRUE}
+}
+
+# Prints usage as in synopsis section of man pages.
+flags_usage()
+{
+  flags_requiredFlags_=' '
+  flags_optionalFlags_=' '
+  flags_standardFlags_=' '
+  for flags_name_ in ${__flags_longNames}; do
+    flags_usName_=`_flags_underscoreName ${flags_name_}`
+    flags_required_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_REQUIRED}`
+    if [ ${flags_required_} = ${FLAGS_TRUE} ]; then
+      flags_requiredFlags_="${flags_requiredFlags_}${flags_name_} "
+    else
+      if [ "${flags_usName_}" = 'help' \
+          -o "${flags_usName_}" = 'helpshort' \
+          -o "${flags_usName_}" = 'helpxml' \
+          -o "${flags_usName_}" = 'usage' \
+          -o "${flags_usName_}" = 'version' \
+          -o "${flags_usName_}" = 'verbose' ]; then
+        flags_standardFlags_="${flags_standardFlags_}${flags_name_} "
+      else
+        flags_optionalFlags_="${flags_optionalFlags_}${flags_name_} "
+      fi
+    fi
+  done
+
+  flags_executable_="${FLAGS_PARENT:-${0##*/}}"
+  flags_usage_="${flags_executable_}"
+  if [ -n "${flags_requiredFlags_}" ]; then
+    for flags_name_ in ${flags_requiredFlags_}; do
+      flags_usName_=`_flags_underscoreName ${flags_name_}`
+      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+      case ${flags_type_} in
+        ${__FLAGS_TYPE_BOOLEAN})
+          flags_usage_="${flags_usage_} --[no]${flags_name_}"
+          ;;
+
+        ${__FLAGS_TYPE_FLOAT})
+          flags_usage_="${flags_usage_} --${flags_name_}=<float>"
+          ;;
+
+        ${__FLAGS_TYPE_INTEGER})
+          flags_usage_="${flags_usage_} --${flags_name_}=<int>"
+          ;;
+
+        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+          flags_usage_="${flags_usage_} --${flags_name_}=<uint>"
+          ;;
+
+        ${__FLAGS_TYPE_STRING})
+          flags_usage_="${flags_usage_} --${flags_name_}=<string>"
+          ;;
+
+        ${__FLAGS_TYPE_COUNTER})
+          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
+          ;;
+
+        *)
+          flags_usage_="${flags_usage_} --${flags_name_}=<value>"
+          ;;
+      esac
+    done
+  fi
+  if [ -n "${flags_optionalFlags_}" ]; then
+    for flags_name_ in ${flags_optionalFlags_}; do
+      flags_usName_=`_flags_underscoreName ${flags_name_}`
+      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+      case ${flags_type_} in
+        ${__FLAGS_TYPE_BOOLEAN})
+          flags_usage_="${flags_usage_} [--[no]${flags_name_}]"
+          ;;
+
+        ${__FLAGS_TYPE_FLOAT})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<float>]"
+          ;;
+
+        ${__FLAGS_TYPE_INTEGER})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<int>]"
+          ;;
+
+        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<uint>]"
+          ;;
+
+        ${__FLAGS_TYPE_STRING})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<string>]"
+          ;;
+
+        ${__FLAGS_TYPE_COUNTER})
+          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
+          ;;
+
+        *)
+          flags_usage_="${flags_usage_} [--${flags_name_}=<value>]"
+          ;;
+      esac
+    done
+    if [ -n "${flags_standardFlags_}" ]; then
+      for flags_name_ in ${flags_standardFlags_}; do
+        flags_usName_=`_flags_underscoreName ${flags_name_}`
+        flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+        case ${flags_type_} in
+          ${__FLAGS_TYPE_BOOLEAN})
+            flags_usage_="${flags_usage_} [--${flags_name_}]"
+            ;;
+
+          ${__FLAGS_TYPE_COUNTER})
+            flags_usage_="${flags_usage_} [--${flags_name_} ...]"
+            ;;
+        esac
+      done
+    fi
+  fi
+
+  flags_usage_="${flags_usage_} args"
+  flags_usage_="$(echo "  ${flags_usage_}" | fmt -s -l 0 -$(_flags_columns))"
+
+  echo "Name:"
+  echo -n "  ${flags_executable_}"
+  if [ -n "${FLAGS_DESCRIPTION}" ]; then
+    flags_brief_=${FLAGS_DESCRIPTION%%.*}
+    flags_brief_="$(echo "${flags_brief_}" | sed 's/^\ *//g' | tr '\n' ' ')"
+    flags_brief_="$(echo "        ${flags_brief_}" | fmt -s -l 0 -$(_flags_columns))"
+    echo -n " -- ${flags_brief_:8}"
+  fi
+  echo
+  echo
+  echo "Usage:"
+  echo "${flags_usage_}"
+
+  unset flags_name_ flags_executable_ flags_usage_ flags_brief_ flags_usName_ \
+      flags_required_ flags_type_ flags_optionalFlags_ flags_requiredFlags_ \
+      flags_standardFlags_
+
+  return ${FLAGS_TRUE}
+}
+
+# This is effectively a 'usage()' function. It prints a usage information on
+# how to use the program and the available flags. Note this function can be
+# overridden so other apps can define their own short help output,
+# replacing this one, if they want.
+#
+# Args:
+#   none
+# Returns:
+#   integer: success of operation (always returns true)
+flags_helpshort()
+{
+  # head / usage
+  if [ -n "${FLAGS_HELP:-}" ]; then
+    echo "${FLAGS_HELP}"
+  else
+    flags_usage
+  fi
+  # flags
+  flags_helpflags
+ 
+  return ${FLAGS_TRUE}
+}
+
+# This is effectively a 'help()' function. It prints a program description together
+# with usage information and example command-lines on how to use the program.
+# Note this function can be overridden so other apps can define their own help
+# output, replacing this one, if they want.
+#
+# Args:
+#  none
 # Returns:
 #   integer: success of operation (always returns true)
 flags_help()
 {
-  # print only help of named flag when argument is given
-  if [ $# -gt 0 ]; then
-    flags_name_=$1
-    flags_maxNameLen=${2:-0}
-    flags_showDefault_=${3:-${FLAGS_TRUE}}
-    flags_flagStr_=''
-    flags_boolStr_=''
-    flags_usName_=`_flags_underscoreName ${flags_name_}`
-
-    flags_default_=`_flags_getFlagInfo \
-        "${flags_usName_}" ${__FLAGS_INFO_DEFAULT}`
-    flags_help_=`_flags_getFlagInfo \
-        "${flags_usName_}" ${__FLAGS_INFO_HELP}`
-    flags_short_=`_flags_getFlagInfo \
-        "${flags_usName_}" ${__FLAGS_INFO_SHORT}`
-    flags_type_=`_flags_getFlagInfo \
-        "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-
-    [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
-        flags_flagStr_="-${flags_short_}"
-
-    if [ ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ]; then
-      [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
-          flags_flagStr_="${flags_flagStr_},"
-      # add [no] to long boolean flag names, except the 'help' and 'version' flags
-      [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} \
-        -a "${flags_usName_}" != 'help' -a "${flags_usName_}" != 'version' ] && \
-          flags_boolStr_='[no]'
-      flags_flagStr_="${flags_flagStr_}--${flags_boolStr_}${flags_name_}"
-    fi
-    flags_flagStrLen_=`expr -- "${flags_flagStr_}" : '.*'`
-    flags_numSpaces_=`expr -- 5 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
-    [ ${flags_numSpaces_} -ge 0 ] || flags_numSpaces_=0
-    flags_spaces_=`eval "printf ' %.0s' {0..${flags_numSpaces_}}"`
-    flags_flagStr_="${flags_flagStr_}${flags_spaces_}"
-
-    case ${flags_type_} in
-      ${__FLAGS_TYPE_BOOLEAN})
-        if [ ${flags_default_} -eq ${FLAGS_TRUE} ]; then
-          flags_defaultStr_='true'
-        else
-          flags_defaultStr_='false'
-        fi
-        ;;
-      ${__FLAGS_TYPE_STRING}) flags_defaultStr_="'${flags_default_}'" ;;
-      *) flags_defaultStr_=${flags_default_} ;;
-    esac
-    flags_defaultStr_="(default: ${flags_defaultStr_})"
-
-    flags_helpStr_="  ${flags_flagStr_}   ${flags_help_}"
-    if [ ${flags_showDefault_} -eq ${FLAGS_TRUE} ]; then
-      flags_helpStr_="${flags_helpStr_} ${flags_defaultStr_}"
-    fi
-    flags_helpStrLen_=`expr -- "${flags_helpStr_}" : '.*'`
-    flags_columns_=`_flags_columns`
-    flags_helpStr_="${flags_help_} ${flags_defaultStr_}"
-    # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
-    # because it doesn't like empty strings when used in this manner.
-    flags_emptyStr_="`echo \"x${flags_flagStr_}x\" \
-        |awk '{printf "%"length($0)+3"s", ""}'`"
-    flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
-    # split long help text on multiple lines
-    flags_helpStr_="$(echo "${flags_emptyStr_}${flags_helpStr_}" | fmt -s -l 0 -${flags_columns_})"
-    flags_helpStr_="  ${flags_flagStr_}   ${flags_helpStr_:${flags_emptyStrLen_}}"
-    echo "${flags_helpStr_}"
-
-    unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
-        flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
-        flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_
+  # head / usage
+  if [ -n "${FLAGS_HELP:-}" ]; then
+    echo "${FLAGS_HELP}"
   else
-    if [ -n "${FLAGS_HELP:-}" ]; then
-      echo "${FLAGS_HELP}"
-    else
-      echo "USAGE: ${FLAGS_PARENT:-${0##*/}} [options] args"
-    fi
-    flags_requiredFlags_=' '
-    flags_optionalFlags_=' '
-    flags_standardFlags_=' '
-    flags_maxNameLen_=0
-    for flags_name_ in ${__flags_longNames}; do
-      flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
-      # +4 for boolean flags because of the '[no]' prefix
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      if [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ]; then
-        flags_nameStrLen_=`expr -- "${flags_nameStrLen}" + 4`
-      fi
-      # update maximum length of flag name
-      if [ ${flags_nameStrLen_} -gt ${flags_maxNameLen_} ]; then
-        flags_maxNameLen_=${flags_nameStrLen_}
-      fi
-    done
-    for flags_name_ in ${__flags_longNames}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_required_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_REQUIRED}`
-      if [ ${flags_required_} = ${FLAGS_TRUE} ]; then
-        flags_requiredFlags_="${flags_requiredFlags_}${flags_name_} "
-      else
-        if [ "${flags_usName_}" = 'help' \
-            -o "${flags_usName_}" = 'version' \
-            -o "${flags_usName_}" = 'usage' \
-            -o "${flags_usName_}" = 'verbose' ]; then
-          flags_standardFlags_="${flags_standardFlags_}${flags_name_} "
-        else
-          flags_optionalFlags_="${flags_optionalFlags_}${flags_name_} "
-        fi
-      fi
-    done
-    if [ -n "${flags_requiredFlags_}" ]; then
-      echo
-      echo 'Required options:'
-      for flags_name_ in ${flags_requiredFlags_}; do
-        flags_help ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
-      done
-    fi
-    if [ -n "${flags_optionalFlags_}" ]; then
-      echo
-      echo 'Default options:'
-      for flags_name_ in ${flags_optionalFlags_}; do
-        flags_help ${flags_name_} ${flags_maxNameLen_}
-      done
-    fi
-    if [ -n "${flags_standardFlags_}" ]; then
-      echo
-      echo 'Standard options:'
-      for flags_name_ in ${flags_standardFlags_}; do
-        flags_help ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
-      done
-    fi
-
-    unset flags_name_ flags_nameStrLen_ flags_usName_ flags_required_ flags_requiredFlags_ \
-        flags_optionalFlags_ flags_standardFlags_ flags_maxNameLen_
+    flags_usage
   fi
+  # description
+  if [ -n "${FLAGS_DESCRIPTION:-}" ]; then
+    echo
+    echo "Description:"
+    flags_fmtStr_=$(echo "${FLAGS_DESCRIPTION}"\
+        |sed 's/^\ *//g'|awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/:NEWLINE:$//g;s/:NEWLINE:/:NEWLINE:  /g;s/:NEWLINE:/\\n/g')
+    flags_fmtStr_="$(echo -e "  ${flags_fmtStr_}" | fmt -s -l 0 -$(_flags_columns))"
+    echo "${flags_fmtStr_}"
+  fi
+  # flags
+  flags_helpflags # attention: unsets flags_columns_
+  # contact
+  if [ -n "${FLAGS_CONTACT:-}" ]; then
+    echo
+    echo "Contact:"
+    flags_fmtStr_=$(echo "${FLAGS_CONTACT}"\
+        |sed 's/^\ *//g'|awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/:NEWLINE:$//g;s/:NEWLINE:/:NEWLINE:  /g;s/:NEWLINE:/\\n/g')
+    flags_fmtStr_="$(echo "  ${flags_fmtStr_}" | fmt -s -l 0 -$(_flags_columns))"
+    echo "${flags_fmtStr_}"
+  fi
+ 
+  unset flags_fmtStr_
 
+  return ${FLAGS_TRUE}
+}
+
+# This function outputs the help in XML format.
+#
+# Args:
+#   none
+# Returns:
+#   integer: success of operation (always returns true)
+flags_helpxml()
+{
+  echo "TODO"
   return ${FLAGS_TRUE}
 }
 
