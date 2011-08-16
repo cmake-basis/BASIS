@@ -1054,24 +1054,41 @@ flags_help()
     flags_helpStrLen_=`expr -- "${flags_helpStr_}" : '.*'`
     flags_columns_=`_flags_columns`
     if [ ${flags_helpStrLen_} -lt ${flags_columns_} ]; then
-      echo "${flags_helpStr_}" >&2
+      echo "${flags_helpStr_}"
     else
-      echo "  ${flags_flagStr_}   ${flags_help_}" >&2
+      flags_helpStr_="${flags_help_} ${flags_defaultStr_}"
       # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
       # because it doesn't like empty strings when used in this manner.
       flags_emptyStr_="`echo \"x${flags_flagStr_}x\" \
           |awk '{printf "%"length($0)-2"s", ""}'`"
-      flags_helpStr_="  ${flags_emptyStr_}  ${flags_defaultStr_}"
-      flags_helpStrLen_=`expr -- "${flags_helpStr_}" : '.*'`
-      if [ ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_STD} \
-          -o ${flags_helpStrLen_} -lt ${flags_columns_} ]; then
-        # indented to match help string
-        echo "${flags_helpStr_}" >&2
-      else
-        # indented four from left to allow for longer defaults as long flag
-        # names might be used too, making things too long
-        echo "    ${flags_defaultStr_}" >&2
-      fi
+      flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
+      # split long help text on multiple lines
+      flags_specialChar_=$(echo -e "\xE2\x99\xA0")
+      while [ "$flags_helpStr_" != "${flags_helpStr_/  /}" ]; do
+        flags_helpStr_=${flags_helpStr_/  /${flags_specialChar_} }
+      done
+      flags_lineStr_=''
+      flags_first_=${FLAGS_TRUE}
+      for flags_wordStr_ in ${flags_helpStr_}; do
+        flags_lineStrTmp_="${flags_lineStr_}${flags_wordStr_} "
+        flags_numSpecial_=`echo ${flags_lineStrTmp_} | grep -o "${flags_specialChar_}" | wc -l | sed s/\ //g`
+        flags_lineStrLen_=`expr -- "${flags_lineStrTmp_}" : '.*'`
+        flags_lineStrLen_=`expr -- "${flags_lineStrLen_}" + "${flags_emptyStrLen_}" + 5 - 2 '*' "${flags_numSpecial_}"`
+        if [ ${flags_lineStrLen_} -ge ${flags_columns_} ]; then
+          flags_lineStr_="${flags_lineStr_//${flags_specialChar_}/ }"
+          if [ ${flags_first_} -eq ${FLAGS_TRUE} ]; then
+            echo "  ${flags_flagStr_}   ${flags_lineStr_}"
+            flags_first_=${FLAGS_FALSE}
+          else
+            echo "  ${flags_emptyStr_}   ${flags_lineStr_}"
+          fi
+          flags_lineStr_="${flags_wordStr_} "
+        else
+          flags_lineStr_="${flags_lineStrTmp_}"
+        fi
+      done
+      flags_lineStr_="${flags_lineStr_//${flags_specialChar_}/ }"
+      echo "  ${flags_emptyStr_}   ${flags_lineStr_}"
     fi
 
     unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ \
@@ -1080,9 +1097,9 @@ flags_help()
         flags_numSpaces_ flags_spaces_
   else
     if [ -n "${FLAGS_HELP:-}" ]; then
-      echo "${FLAGS_HELP}" >&2
+      echo "${FLAGS_HELP}"
     else
-      echo "USAGE: ${FLAGS_PARENT:-${0##*/}} [options] args" >&2
+      echo "USAGE: ${FLAGS_PARENT:-${0##*/}} [options] args"
     fi
     flags_requiredFlags_=' '
     flags_optionalFlags_=' '
@@ -1118,22 +1135,22 @@ flags_help()
       fi
     done
     if [ -n "${flags_requiredFlags_}" ]; then
-      echo >&2
-      echo 'Required options:' >&2
+      echo
+      echo 'Required options:'
       for flags_name_ in ${flags_requiredFlags_}; do
         flags_help ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
       done
     fi
     if [ -n "${flags_optionalFlags_}" ]; then
-      echo >&2
-      echo 'Default options:' >&2
+      echo
+      echo 'Default options:'
       for flags_name_ in ${flags_optionalFlags_}; do
         flags_help ${flags_name_} ${flags_maxNameLen_}
       done
     fi
     if [ -n "${flags_standardFlags_}" ]; then
-      echo >&2
-      echo 'Standard options:' >&2
+      echo
+      echo 'Standard options:'
       for flags_name_ in ${flags_standardFlags_}; do
         flags_help ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
       done
