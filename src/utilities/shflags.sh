@@ -8,10 +8,7 @@
 # @sa http://code.google.com/p/shflags/
 #
 # @note The shFlags implementation by Kate Ward (revision 147) has been
-#       modified by Andreas Schuh. In particular, for each flag it can be
-#       specified whether it has to be given on the command-line.
-#       Therefore, the _flags_define() and flags_help() functions have been
-#       modified. Additionally, a new type for unsigned integers was added.
+#       considerably modified by Andreas Schuh.
 #
 # This module implements something like the google-gflags library available
 # from http://code.google.com/p/google-gflags/.
@@ -93,7 +90,10 @@
 #
 # - Lists of strings are space separated, and a null value is the '~' char.
 #
-# Copyright 2008 Kate Ward. All Rights Reserved.
+# Copyright 2008 Kate Ward.
+# Copyright 2011 University of Pennsylvania.
+# All Rights Reserved.
+#
 # Released under the LGPL (GNU Lesser General Public License)
 #
 # @ingroup BashUtilities
