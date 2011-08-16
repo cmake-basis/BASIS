@@ -902,7 +902,7 @@ FLAGS()
 {
   # define a standard 'help' flag if one isn't already defined
   [ -z "${__flags_help_type:-}" ] && \
-      DEFINE_boolean 'help' false 'Show this help and exit' 'h'
+      DEFINE_boolean 'help' false 'Show this help and exit.' 'h'
 
   # parse options
   if [ $# -gt 0 ]; then
