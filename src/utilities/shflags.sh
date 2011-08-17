@@ -311,7 +311,7 @@ _flags_define()
             false|f|1) _flags_default_=${FLAGS_FALSE} ;;
           esac
         else
-          flags_error="invalid default flag value '${_flags_default_}'"
+          flags_error="${_flags_name_}: invalid default flag value '${_flags_default_}'"
           _flags_return_=${FLAGS_ERROR}
         fi
         ;;
@@ -320,7 +320,7 @@ _flags_define()
         if _flags_validateFloat "${_flags_default_}"; then
           :
         else
-          flags_error="invalid default flag value '${_flags_default_}'"
+          flags_error="${_flags_name_}: invalid default flag value '${_flags_default_}'"
           _flags_return_=${FLAGS_ERROR}
         fi
         ;;
@@ -329,7 +329,7 @@ _flags_define()
         if _flags_validateInteger "${_flags_default_}"; then
           :
         else
-          flags_error="invalid default flag value '${_flags_default_}'"
+          flags_error="${_flags_name_}: invalid default flag value '${_flags_default_}'"
           _flags_return_=${FLAGS_ERROR}
         fi
         ;;
@@ -338,7 +338,7 @@ _flags_define()
         if _flags_validateUnsignedInteger "${_flags_default_}"; then
           :
         else
-          flags_error="invalid default flag value '${_flags_default_}'"
+          flags_error="${_flags_name_}: invalid default flag value '${_flags_default_}'"
           _flags_return_=${FLAGS_ERROR}
         fi
         ;;
@@ -346,7 +346,7 @@ _flags_define()
       ${__FLAGS_TYPE_STRING}) ;;  # everything in shell is a valid string
 
       *)
-        flags_error="unrecognized flag type '${_flags_type_}'"
+        flags_error="${_flags_name_}: unrecognized flag type '${_flags_type_}'"
         _flags_return_=${FLAGS_ERROR}
         ;;
     esac
@@ -395,15 +395,26 @@ _flags_define()
   return ${flags_return}
 }
 
-# Underscore a flag name by replacing dashes with underscores.
+# Underscore a flag or category name by replacing dashes and whitespaces with underscores.
 #
 # Args:
-#   unnamed: string: log flag name
+#   unnamed: string: long flag or category name
 # Output:
 #   string: underscored name
 _flags_underscoreName()
 {
   echo $1 | sed 's/[ -]/_/g'
+}
+
+# Escape < and & in string for use in XML output.
+#
+# Args:
+#   unnamed: string: some string
+# Output:
+#   string: xml-escaped string
+_flags_xmlText()
+{
+  echo -e "$1" | sed 's/\&/\&amp;/g;s/</\&lt;/g'
 }
 
 # Return valid getopt options using currently defined list of long options.
@@ -826,7 +837,7 @@ _flags_parseGetopt()
         if _flags_validateFloat "${_flags_arg_}"; then
           eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
         else
-          flags_error="invalid float value (${_flags_arg_})"
+          flags_error="${_flags_name_}: invalid float value (${_flags_arg_})"
           flags_return=${FLAGS_ERROR}
           break
         fi
@@ -836,7 +847,7 @@ _flags_parseGetopt()
         if _flags_validateInteger "${_flags_arg_}"; then
           eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
         else
-          flags_error="invalid integer value (${_flags_arg_})"
+          flags_error="${_flags_name_}: invalid integer value (${_flags_arg_})"
           flags_return=${FLAGS_ERROR}
           break
         fi
@@ -846,7 +857,7 @@ _flags_parseGetopt()
         if _flags_validateUnsignedInteger "${_flags_arg_}"; then
           eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
         else
-          flags_error="invalid unsigned integer value (${_flags_arg_})"
+          flags_error="${_flags_name_}: invalid unsigned integer value (${_flags_arg_})"
           flags_return=${FLAGS_ERROR}
           break
         fi
@@ -895,6 +906,7 @@ _flags_parseGetopt()
     # handle special case version flag
     if [ "${_flags_usName_}" = 'version' ]; then
       if [ ${FLAGS_version} -eq ${FLAGS_TRUE} ]; then
+        flags_version
         flags_error='version requested'
         flags_return=${FLAGS_TRUE}
         break
@@ -1103,7 +1115,7 @@ flags_helpflag()
   flags_flagStrLen_=`expr -- "${flags_flagStr_}" : '.*'`
   flags_numSpaces_=`expr -- 5 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
   [ ${flags_numSpaces_} -ge 0 ] || flags_numSpaces_=0
-  flags_spaces_=`eval "printf ' %.0s' {0..${flags_numSpaces_}}"`
+  flags_spaces_=`printf %${flags_numSpaces_}s`
   flags_flagStr_="${flags_flagStr_}${flags_spaces_}"
 
   case ${flags_type_} in
@@ -1433,6 +1445,88 @@ flags_help()
   return ${FLAGS_TRUE}
 }
 
+# This function outputs the help of named flag in XML format
+#
+# Args:
+#   flags_name_: string: long name of flag
+#   indentation: integer: (optional) indentation
+# Returns:
+#   integer: success of operation (always returns true)
+flags_helpflagxml()
+{
+  # get flag attributes
+  flags_name_=$1
+  flags_indentation_=${2:-0}
+  flags_usName_=`_flags_underscoreName ${flags_name_}`
+
+  eval "flags_current_=\${FLAGS_${flags_usName_}}"
+  flags_default_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_DEFAULT}`
+  flags_help_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_HELP}`
+  flags_short_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_SHORT}`
+  flags_type_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+  flags_category_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
+
+  # re-format strings
+  flags_help_=$(echo "${flags_help_}"|sed 's/^\ *//g'|tr '\n' ' '|sed 's/^\ *//g;s/\ *$//g')
+
+  [ "${flags_short_}"    = "${__FLAGS_NULL}" ] && flags_short_=''
+  [ "${flags_category_}" = "${__FLAGS_NULL}" ] && flags_category_=''
+
+  # convert boolean value
+  if [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ]; then
+    if [ ${flags_current_} -eq ${FLAGS_TRUE} ]; then
+      flags_current_='true'
+    else
+      flags_current_='false'
+    fi
+    if [ ${flags_default_} -eq ${FLAGS_TRUE} ]; then
+      flags_default_='true'
+    else
+      flags_default_='false'
+    fi
+  fi
+
+  # convert type
+  case "${flags_type_}" in
+    ${__FLAGS_TYPE_BOOLEAN})          flags_type_='bool'; ;;
+    ${__FLAGS_TYPE_FLOAT})            flags_type_='double'; ;;
+    ${__FLAGS_TYPE_INTEGER})          flags_type_='int'; ;;
+    ${__FLAGS_TYPE_UNSIGNED_INTEGER}) flags_type_='uint'; ;;
+    ${__FLAGS_TYPE_COUNTER})          flags_type_='int'; ;;
+    *)                                flags_type_='string'; ;;
+  esac
+
+  # xml-escape values
+  flags_short_=`_flags_xmlText "${flags_short_}"`
+  flags_category_=`_flags_xmlText "${flags_category_}"`
+  flags_help_=`_flags_xmlText "${flags_help_}"`
+  flags_current_=`_flags_xmlText "${flags_current_}"`
+  flags_default_=`_flags_xmlText "${flags_default_}"`
+
+  # indentation
+  flags_emptyStr_=`printf %${flags_indentation_}s`
+
+  # output XML tags
+  echo "${flags_emptyStr_}<option id=\"${flags_usName_}\">"
+  echo "${flags_emptyStr_}    <name>${flags_name_}</name>"
+  echo "${flags_emptyStr_}    <flag>${flags_short_}</flag>"
+  echo "${flags_emptyStr_}    <type>${flags_type_}</type>"
+  echo "${flags_emptyStr_}    <category>${flags_category_}</category>"
+  echo "${flags_emptyStr_}    <help>${flags_help_}</help>"
+  echo "${flags_emptyStr_}    <current>${flags_current_}</current>"
+  echo "${flags_emptyStr_}    <default>${flags_default_}</default>"
+  echo "${flags_emptyStr_}</option>"
+
+  unset flags_current_ flags_default_ flags_name_ flags_usName_ \
+      flags_short_ flags_type_ flags_help_ flags_indentation_ \
+      flags_emptyStr_
+}
+
 # This function outputs the help in XML format.
 #
 # Args:
@@ -1441,8 +1535,68 @@ flags_help()
 #   integer: success of operation (always returns true)
 flags_helpxml()
 {
-  echo "TODO"
+  # get (re-formated) help strings
+  flags_executable_=${0##*/}
+  flags_command_=${HELP_COMMAND:-${flags_executable_}}
+  flags_version_=${HELP_VERSION:-'unknown'}
+  flags_copyright_=$(echo "${HELP_COPYRIGHT}"\
+        |awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/^\ *:NEWLINE://g;s/:NEWLINE:\ *$//g;s/:NEWLINE:/\\n/g')
+  flags_contact_=$(echo "${HELP_CONTACT}"\
+        |awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/^\ *:NEWLINE://g;s/:NEWLINE:$//g;s/:NEWLINE:/\\n/g')
+  flags_description_=$(echo "${HELP_DESCRIPTION}"\
+        |awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/^\ *:NEWLINE://g;s/:NEWLINE:\ *$//g;s/:NEWLINE:/\\n/g')
+
+  # xml-escape values
+  flags_executable_=`_flags_xmlText "${flags_executable_}"`
+  flags_command_=`_flags_xmlText "${flags_command_}"`
+  flags_version_=`_flags_xmlText "${flags_version_}"`
+  flags_copyright_=`_flags_xmlText "${flags_copyright_}"`
+  flags_contact_=`_flags_xmlText "${flags_contact_}"`
+  flags_description_=`_flags_xmlText "${flags_description_}"`
+
+  # output XML tags
+  echo "<?xml version=\"1.0\"?>"
+  echo "<executable id=\"${flags_command_}\">"
+  echo "    <name>${flags_executable_}</name>"
+  echo "    <version>${flags_version_}</version>"
+  echo "    <copyright>${flags_copyright_}</copyright>"
+  echo "    <contact>${flags_contact_}</contact>"
+  echo "    <description>${flags_description_}</description>"
+  echo "    <options>"
+  for flags_name_ in ${__flags_longNames}; do
+    flags_helpflagxml ${flags_name_} 8
+  done
+  echo "    </options>"
+  echo "</executable>"
+
+  # clean up
+  unset flags_executable_ flags_command_ flags_version_ \
+      flags_name_ flags_description_ flags_copyright_ flags_contact_
+
   return ${FLAGS_TRUE}
+}
+
+# This function outputs the version and copyright.
+#
+# Args:
+#   none
+# Returns:
+#   integer: success of operation (always returns true)
+flags_version()
+{
+  flags_command_=${HELP_COMMAND:-$0##*/}
+  flags_version_=${HELP_VERSION:-'unknown'}
+  echo "${flags_command_} version ${flags_version_}"
+  if [ -n "${HELP_COPYRIGHT}" ]; then
+    flags_copyright_=$(echo "${HELP_COPYRIGHT}"\
+        |awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/^\ *:NEWLINE://g;s/:NEWLINE:\ *$//g;s/:NEWLINE:/\\n/g')
+    echo -e "${flags_copyright_}"
+  fi
+  unset flags_command_ flags_version_ flags_copyright_
 }
 
 # Reset shflags back to an uninitialized state.
