@@ -403,7 +403,7 @@ _flags_define()
 #   string: underscored name
 _flags_underscoreName()
 {
-  echo $1 |tr '-' '_'
+  echo $1 | sed 's/[ -]/_/g'
 }
 
 # Return valid getopt options using currently defined list of long options.
@@ -962,16 +962,16 @@ FLAGS()
   # define standard flags if not already defined
   [ -z "${__flags_help_type:-}" ] && \
       DEFINE_boolean 'help' false 'Show help and exit.' 'h'
-  [ -z "${__flags_helpshort_type:-}" ] && \
-      DEFINE_boolean 'helpshort' false 'Show usage information and exit.'
   [ -z "${__flags_helpxml_type:-}" ] && \
       DEFINE_boolean 'helpxml' false 'Output help in XML format and exit.'
+  [ -z "${__flags_helpshort_type:-}" ] && \
+      DEFINE_boolean 'helpshort' false 'Show usage information and exit.'
   [ -z "${__flags_usage_type:-}" ] && \
-      DEFINE_boolean 'usage' false 'Alias for --helpshort.' 'u'
+      DEFINE_boolean 'usage' false 'Show usage information and exit.' 'u'
   [ -z "${__flags_version_type:-}" ] && \
       DEFINE_boolean 'version' false 'Show version and exit.' 'V'
   [ -z "${__flags_verbose_type:-}" ] && \
-      DEFINE_counter 'verbose' 0 'Increase verbosity of output messages.\
+      DEFINE_counter 'verbose' 0 'Increase verbosity of output messages.
                                   Can be given multiple times.' 'v'
 
   # parse options
@@ -1082,6 +1082,8 @@ flags_helpflag()
   flags_type_=`_flags_getFlagInfo \
       "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
 
+  flags_help_=$(echo "${flags_help_}"|sed 's/^\ *//g'|tr '\n' ' ')
+
   [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
       flags_flagStr_="-${flags_short_}"
 
@@ -1134,7 +1136,7 @@ flags_helpflag()
       |awk '{printf "%"length($0)+6"s", ""}'`"
   flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
   # split long help text on multiple lines
-  flags_helpStr_="$(echo "${flags_emptyStr_}${flags_helpStr_}" | fmt -s -l 0 -${flags_columns_})"
+  flags_helpStr_="$(echo "${flags_emptyStr_}${flags_helpStr_}" | fmt -l 0 -${flags_columns_})"
   flags_helpStr_="     ${flags_flagStr_}   ${flags_helpStr_:${flags_emptyStrLen_}}"
   echo "${flags_helpStr_}"
 
@@ -1156,14 +1158,20 @@ flags_helpflag()
 flags_helpflags()
 {
   echo "OPTIONS"
-  # determine maximum length of long flag name
-  # required for alignment of help texts
+  # get lists of flags belonging to same category and
+  # maximum length of long names required for alignment of help
   flags_maxNameLen_=0
+  flags_otherFlags_=' '
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_${flags_usCategory_}Flags_=' '"
+  done
   for flags_name_ in ${__flags_longNames}; do
     flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
-    # +4 for boolean flags because of the '[no]' prefix
     flags_usName_=`_flags_underscoreName ${flags_name_}`
+    # length + 4 for boolean flags because of the '[no]' prefix
     flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+    flags_usName_=`_flags_underscoreName ${flags_name_}`
     if [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ]; then
       flags_nameStrLen_=`expr -- "${flags_nameStrLen}" + 4`
     fi
@@ -1171,75 +1179,58 @@ flags_helpflags()
     if [ ${flags_nameStrLen_} -gt ${flags_maxNameLen_} ]; then
       flags_maxNameLen_=${flags_nameStrLen_}
     fi
-  done
-  # output help of required flags first
-  flags_names_=' '
-  for flags_name_ in ${__flags_longNames}; do
-    flags_usName_=`_flags_underscoreName ${flags_name_}`
+    # append flag to list for its category
     flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
-    if [ "${flags_category_}" = 'required' ]; then
-      flags_names_="${flags_names_}${flags_name_} "
+    if [ "${flags_category_}" = "${__FLAGS_NULL}" ]; then
+      flags_otherFlags_="${flags_otherFlags_}${flags_name_} "
+    else
+      flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_}${flags_name_}\""
     fi
   done
-  if [ -n "${flags_names_}" ]; then
+  # output help of required flags
+  if [ -n "${flags_requiredFlags_}" ]; then
     echo "     The required options are as follows:"
     echo
-    for flags_name_ in ${flags_names_}; do
+    for flags_name_ in ${flags_requiredFlags_}; do
       flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
     done
     echo
   fi
-  # output help of other flags ordered by category
-  for flags_categoryName_ in "${__flags_categoryNames[@]}"; do
-    if [ "${flags_categoryName_}" = 'required' ]; then
+  # output help of non-required flags
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    if [ "${flags_category_}" = 'required' ]; then
       continue
     fi
-    flags_names_=' '
-    for flags_name_ in ${__flags_longNames}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
-      if [ "${flags_category_}" = "${flags_categoryName_}" ]; then
-        flags_names_="${flags_names_}${flags_name_} "
-      fi
-    done
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_names_=\"\${flags_${flags_usCategory_}Flags_}\""
     if [ -n "${flags_names_}" ]; then
-      echo "     The ${flags_categoryName_} options are as follows:"
+      echo "     The ${flags_category_} options are as follows:"
       echo
-      flags_args_="${flags_maxNameLen_}"
-      if [ "${flags_categoryName_/[Rr]equired/}" != "${flags_categoryName_}" ]; then
-        flags_args_="${flags_args_} ${FLAGS_FALSE}"
-      else
-        flags_args_="${flags_args_} ${FLAGS_TRUE}"
-      fi
       for flags_name_ in ${flags_names_}; do
-        flags_helpflag ${flags_name_} ${flags_args_}
+        flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_TRUE}
       done
       echo
     fi
   done
-  # output help of flags without explicit category
-  flags_names_=' '
-  for flags_name_ in ${__flags_longNames}; do
-    flags_usName_=`_flags_underscoreName ${flags_name_}`
-    flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
-    if [ "${flags_category_}" = "${__FLAGS_NULL}" ]; then
-      flags_names_="${flags_names_}${flags_name_} "
-    fi
-  done
-  if [ -n "${flags_names_}" ]; then
-    if [ ${#__flags_categoryNames[@]} -gt 0 ]; then
-      echo "     The further available options are as follows:"
-      echo
-    fi
-    for flags_name_ in ${flags_names_}; do
-      flags_helpflag ${flags_name_} ${flags_maxNameLen_}
+  # output help of remaining flags
+  if [ -n "${flags_otherFlags_}" ]; then
+    echo "     The further available options are as follows:"
+    echo
+    for flags_name_ in ${flags_otherFlags_}; do
+      flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_TRUE}
     done
     echo
   fi
 
-  unset flags_name_ flags_nameStrLen_ flags_usName_ \
-      flags_maxNameLen_ flags_category_ flags_names_ flags_args_
-
+  # clean up
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "unset flags_${flags_usCategory_}Flags_"
+  done
+  unset flags_maxNameLen_ flags_name_ flags_nameStrLen_ flags_type_ \
+      flags_otherFlags flags_category_ flags_usCategory_
+ 
   return ${FLAGS_TRUE}
 }
 
@@ -1248,7 +1239,6 @@ flags_usage()
 {
   flags_requiredFlags_=' '
   flags_optionalFlags_=' '
-  flags_standardFlags_=' '
   for flags_name_ in ${__flags_longNames}; do
     flags_usName_=`_flags_underscoreName ${flags_name_}`
     flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
@@ -1261,7 +1251,7 @@ flags_usage()
           -o "${flags_usName_}" = 'usage' \
           -o "${flags_usName_}" = 'version' \
           -o "${flags_usName_}" = 'verbose' ]; then
-        flags_standardFlags_="${flags_standardFlags_}${flags_name_} "
+        :
       else
         flags_optionalFlags_="${flags_optionalFlags_}${flags_name_} "
       fi
@@ -1269,6 +1259,41 @@ flags_usage()
   done
 
   flags_usage_=''
+  if [ -n "${flags_optionalFlags_}" ]; then
+    for flags_name_ in ${flags_optionalFlags_}; do
+      flags_usName_=`_flags_underscoreName ${flags_name_}`
+      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+      case ${flags_type_} in
+        ${__FLAGS_TYPE_BOOLEAN})
+          flags_usage_="${flags_usage_} [--[no]${flags_name_}]"
+          ;;
+
+        ${__FLAGS_TYPE_FLOAT})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<float>]"
+          ;;
+
+        ${__FLAGS_TYPE_INTEGER})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<int>]"
+          ;;
+
+        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<uint>]"
+          ;;
+
+        ${__FLAGS_TYPE_STRING})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<string>]"
+          ;;
+
+        ${__FLAGS_TYPE_COUNTER})
+          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
+          ;;
+
+        *)
+          flags_usage_="${flags_usage_} [--${flags_name_}=<value>]"
+          ;;
+      esac
+    done
+  fi
   if [ -n "${flags_requiredFlags_}" ]; then
     for flags_name_ in ${flags_requiredFlags_}; do
       flags_usName_=`_flags_underscoreName ${flags_name_}`
@@ -1304,76 +1329,32 @@ flags_usage()
       esac
     done
   fi
-  if [ -n "${flags_optionalFlags_}" ]; then
-    for flags_name_ in ${flags_optionalFlags_}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      case ${flags_type_} in
-        ${__FLAGS_TYPE_BOOLEAN})
-          flags_usage_="${flags_usage_} [--[no]${flags_name_}]"
-          ;;
 
-        ${__FLAGS_TYPE_FLOAT})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<float>]"
-          ;;
-
-        ${__FLAGS_TYPE_INTEGER})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<int>]"
-          ;;
-
-        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<uint>]"
-          ;;
-
-        ${__FLAGS_TYPE_STRING})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<string>]"
-          ;;
-
-        ${__FLAGS_TYPE_COUNTER})
-          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
-          ;;
-
-        *)
-          flags_usage_="${flags_usage_} [--${flags_name_}=<value>]"
-          ;;
-      esac
-    done
-    if [ -n "${flags_standardFlags_}" ]; then
-      for flags_name_ in ${flags_standardFlags_}; do
-        flags_usName_=`_flags_underscoreName ${flags_name_}`
-        flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-        case ${flags_type_} in
-          ${__FLAGS_TYPE_BOOLEAN})
-            flags_usage_="${flags_usage_} [--${flags_name_}]"
-            ;;
-
-          ${__FLAGS_TYPE_COUNTER})
-            flags_usage_="${flags_usage_} [--${flags_name_} ...]"
-            ;;
-        esac
-      done
-    fi
-  fi
-
-  flags_command_=${FLAGS_COMMAND:-${0##*/}}
+  flags_command_=${HELP_COMMAND:-${0##*/}}
   flags_executable_="${0##*/}"
 
+  # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
+  # because it doesn't like empty strings when used in this manner.
+  flags_emptyStr_="`echo \"x${flags_executable_}x\" \
+      |awk '{printf "%"length($0)+3"s", ""}'`"
+  flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
+
   flags_usage_="${flags_usage_} args"
-  flags_usage_="$(echo "            ${flags_usage_}" | fmt -s -l 0 -$(_flags_columns))"
-  flags_usage_="     ${flags_executable_}${flags_usage_:12}"
+  flags_usage_="$(echo "${flags_emptyStr_}${flags_usage_}" | fmt -l 0 -$(_flags_columns))"
+  flags_usage_="     ${flags_executable_}${flags_usage_:${flags_emptyStrLen_}}"
 
   echo "NAME"
   echo -n "     ${flags_command_}"
   # use first sentence of description as brief description similar to Doxygen
-  if [ -n "${FLAGS_DESCRIPTION}" ]; then
-    flags_brief_=${FLAGS_DESCRIPTION%%.*}
-    flags_brief_="$(echo "${flags_brief_}" | sed 's/^\ *//g' | tr '\n' ' ')"
+  if [ -n "${HELP_DESCRIPTION}" ]; then
+    flags_brief_=${HELP_DESCRIPTION%%.*}
+    flags_brief_="$(echo "${flags_brief_}"|sed 's/^\ *//g;s/\ *$//g'|tr '\n' ' ')"
     # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
     # because it doesn't like empty strings when used in this manner.
     flags_emptyStr_="`echo \"x${flags_command_}x\" \
         |awk '{printf "%"length($0)+7"s", ""}'`"
     flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
-    flags_brief_="$(echo "${flags_emptyStr_}${flags_brief_}" | fmt -s -l 0 -$(_flags_columns))"
+    flags_brief_="$(echo "${flags_emptyStr_}${flags_brief_}" | fmt -l 0 -$(_flags_columns))"
     echo -n " -- ${flags_brief_:${flags_emptyStrLen_}}"
   fi
   echo
@@ -1424,26 +1405,27 @@ flags_help()
   echo
   flags_usage
   # description
-  if [ -n "${FLAGS_DESCRIPTION:-}" ]; then
+  if [ -n "${HELP_DESCRIPTION:-}" ]; then
     echo
     echo "DESCRIPTION"
-    flags_fmtStr_=$(echo "${FLAGS_DESCRIPTION}"\
-        |sed 's/^\ *//g'|awk '{printf "%s:NEWLINE:",$0}'\
-        |sed 's/:NEWLINE:$//g;s/:NEWLINE:/:NEWLINE:     /g;s/:NEWLINE:/\\n/g')
-    flags_fmtStr_="$(echo -e "     ${flags_fmtStr_}" | fmt -s -l 0 -$(_flags_columns))"
+    flags_fmtStr_=$(echo "${HELP_DESCRIPTION}"\
+        |awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/^\ *:NEWLINE://g;s/:NEWLINE:\ *$//g;s/:NEWLINE:/:NEWLINE:     /g;s/:NEWLINE:/\\n/g')
+    flags_fmtStr_="$(echo -e "     ${flags_fmtStr_}" | fmt -l 0 -$(_flags_columns))"
     echo "${flags_fmtStr_}"
   fi
   # flags
   echo
   flags_helpflags # attention: unsets flags_columns_
   # contact
-  if [ -n "${FLAGS_CONTACT:-}" ]; then
+  if [ -n "${HELP_CONTACT:-}" ]; then
     echo "CONTACT"
-    flags_fmtStr_=$(echo "${FLAGS_CONTACT}"\
-        |sed 's/^\ *//g'|awk '{printf "%s:NEWLINE:",$0}'\
-        |sed 's/:NEWLINE:$//g;s/:NEWLINE:/:NEWLINE:     /g;s/:NEWLINE:/\\n/g')
-    flags_fmtStr_="$(echo "     ${flags_fmtStr_}" | fmt -s -l 0 -$(_flags_columns))"
+    flags_fmtStr_=$(echo "${HELP_CONTACT}"\
+        |awk '{printf "%s:NEWLINE:",$0}'\
+        |sed 's/^\ *:NEWLINE://g;s/:NEWLINE:$//g;s/:NEWLINE:/:NEWLINE:     /g;s/:NEWLINE:/\\n/g')
+    flags_fmtStr_="$(echo "     ${flags_fmtStr_}" | fmt -l 0 -$(_flags_columns))"
     echo "${flags_fmtStr_}"
+    echo
   fi
  
   unset flags_fmtStr_
