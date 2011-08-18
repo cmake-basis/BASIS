@@ -1716,7 +1716,7 @@ flags_helpman_name()
     flags_brief_="${flags_command_} -- ${flags_brief_}"
     flags_columns_=`_flags_columns`
     flags_columns_=`expr -- "${flags_columns_}" - 24`
-    [ ${flags_columns_} -lt 80 ] flags_columns_=80
+    [ ${flags_columns_} -lt 80 ] && flags_columns_=80
     if [ `expr -- "${flags_brief_}" : '.*'` -gt ${flags_columns_} ]; then
       flags_brief_="${flags_brief_:0:${flags_columns_}}"
       flags_brief_="${flags_brief_% *}..."
