@@ -8,7 +8,8 @@
 # @sa http://code.google.com/p/shflags/
 #
 # @note The shFlags implementation by Kate Ward (revision 147) has been
-#       considerably modified by Andreas Schuh.
+#       considerably modified by Andreas Schuh as part of the BASIS project
+#       to fit the needs of the SBIA Group at The University of Pennsylvania.
 #
 # This module implements something like the google-gflags library available
 # from http://code.google.com/p/google-gflags/.
@@ -105,6 +106,10 @@
 
 FLAGS_VERSION='1.0.4pre-sbia'
 
+# ============================================================================
+# variables
+# ============================================================================
+
 # a user can set the path to a different getopt command by overriding this
 # variable in their script
 FLAGS_GETOPT_CMD=${FLAGS_GETOPT_CMD:-getopt}
@@ -132,9 +137,9 @@ if [ -n "${ZSH_VERSION:-}" ]; then
   fi
 fi
 
-#
+# ----------------------------------------------------------------------------
 # constants
-#
+# ----------------------------------------------------------------------------
 
 # reserved flag names
 __FLAGS_RESERVED_LIST=' ARGC ARGV ERROR FALSE GETOPT_CMD HELP PARENT TRUE '
@@ -190,7 +195,6 @@ __flags_constants=`set |awk -F= '/^FLAGS_/ || /^__FLAGS_/ {print $1}'`
 for __flags_const in ${__flags_constants}; do
   # skip certain flags
   case ${__flags_const} in
-    FLAGS_HELP) continue ;;
     FLAGS_PARENT) continue ;;
   esac
   # set flag readonly
@@ -205,25 +209,26 @@ for __flags_const in ${__flags_constants}; do
 done
 unset __flags_const __flags_constants
 
-#
+# ----------------------------------------------------------------------------
 # internal variables
-#
+# ----------------------------------------------------------------------------
 
 # space separated lists
-__flags_boolNames=' '  # boolean flag names
-__flags_longNames=' '  # long flag names
-__flags_shortNames=' '  # short flag names
+__flags_boolNames=' '    # boolean flag names
+__flags_longNames=' '    # long flag names
+__flags_shortNames=' '   # short flag names
 __flags_definedNames=' ' # defined flag names (used for validation)
 
 # arrays
 __flags_categoryNames=() # flag category names
 
-__flags_columns=''  # screen width in columns
-__flags_opts=''  # temporary storage for parsed getopt flags
+# others
+__flags_columns='' # determined screen width in columns
+__flags_opts=''    # temporary storage for parsed getopt flags
 
-#------------------------------------------------------------------------------
+# ============================================================================
 # private functions
-#
+# ============================================================================
 
 # Define a flag.
 #
@@ -234,6 +239,7 @@ __flags_opts=''  # temporary storage for parsed getopt flags
 #   __flags_<flag_name>_help - the help string
 #   __flags_<flag_name>_short - the single letter alias
 #   __flags_<flag_name>_type - the type of flag (one of __FLAGS_TYPE_*)
+#   __flags_<flag_name>_category - the category of the flag
 #
 # Args:
 #   _flags_type: integer: internal type of flag (__FLAGS_TYPE_*)
@@ -241,7 +247,7 @@ __flags_opts=''  # temporary storage for parsed getopt flags
 #   _flags_default: default flag value
 #   _flags_help: string: help string
 #   _flags_short: string: (optional) short flag name
-#   _flags_required: bool: (optional) wether flag is required on command-line
+#   _flags_category: string: (optional) category name this flags belongs to
 # Returns:
 #   integer: success of operation, or error
 _flags_define()
@@ -395,27 +401,6 @@ _flags_define()
   return ${flags_return}
 }
 
-# Underscore a flag or category name by replacing dashes and whitespaces with underscores.
-#
-# Args:
-#   unnamed: string: long flag or category name
-# Output:
-#   string: underscored name
-_flags_underscoreName()
-{
-  echo $1 | sed 's/[ -]/_/g'
-}
-
-# Escape < and & in string for use in XML output.
-#
-# Args:
-#   unnamed: string: some string
-# Output:
-#   string: xml-escaped string
-_flags_xmlText()
-{
-  echo -e "$1" | sed 's/\&/\&amp;/g;s/</\&lt;/g'
-}
 
 # Return valid getopt options using currently defined list of long options.
 #
@@ -515,29 +500,41 @@ _flags_getFlagInfo()
   return ${flags_return}
 }
 
-# Check for presense of item in a list.
-#
-# Passed a string (e.g. 'abc'), this function will determine if the string is
-# present in the list of strings (e.g.  ' foo bar abc ').
+# ----------------------------------------------------------------------------
+# helpers
+# ----------------------------------------------------------------------------
+
+# Underscore a flag or category name by replacing dashes and whitespaces with underscores.
 #
 # Args:
-#   _flags_str_: string: string to search for in a list of strings
-#   unnamed: list: list of strings
-# Returns:
-#   boolean: true if item is in the list
-_flags_itemInList() {
-  _flags_str_=$1
-  shift
+#   unnamed: string: long flag or category name
+# Output:
+#   string: underscored name
+_flags_underscoreName()
+{
+  echo $1 | sed 's/[ -]/_/g'
+}
 
-  echo " ${*:-} " |grep " ${_flags_str_} " >/dev/null
-  if [ $? -eq 0 ]; then
-    flags_return=${FLAGS_TRUE}
-  else
-    flags_return=${FLAGS_FALSE}
-  fi
+# Escape string for use in XML output.
+#
+# Args:
+#   unnamed: string: some string
+# Output:
+#   string: xml-escaped string
+_flags_xmlText()
+{
+  echo -e "$1" | sed 's/\&/\&amp;/g;s/</\&lt;/g'
+}
 
-  unset _flags_str_
-  return ${flags_return}
+# Escape string for use in man page output.
+#
+# Args:
+#   unnamed: string: some string
+# Output:
+#   string: man page-escaped string
+_flags_manText()
+{
+  echo -e "$1" | sed 's/\\/\\\\/g;s/-/\\-/g'
 }
 
 # Returns the width of the current screen.
@@ -561,6 +558,47 @@ _flags_columns()
   fi
   echo ${__flags_columns}
 }
+
+# Check for presense of item in a list.
+#
+# Passed a string (e.g. 'abc'), this function will determine if the string is
+# present in the list of strings (e.g.  ' foo bar abc ').
+#
+# Args:
+#   _flags_str_: string: string to search for in a list of strings
+#   unnamed: list: list of strings
+# Returns:
+#   boolean: true if item is in the list
+_flags_itemInList()
+{
+  _flags_str_=$1
+  shift
+
+  echo " ${*:-} " |grep " ${_flags_str_} " >/dev/null
+  if [ $? -eq 0 ]; then
+    flags_return=${FLAGS_TRUE}
+  else
+    flags_return=${FLAGS_FALSE}
+  fi
+
+  unset _flags_str_
+  return ${flags_return}
+}
+
+# Sort space separated list.
+#
+# Args:
+#   @: list: space separated list of strings
+# Output:
+#   list: sorted space separated list of strings
+_flags_sortList()
+{
+  echo "$@" | tr ' ' '\n' | sort | tr '\n' ' '
+}
+
+# ----------------------------------------------------------------------------
+# validators
+# ----------------------------------------------------------------------------
 
 # Validate a boolean.
 #
@@ -656,6 +694,10 @@ _flags_validateUnsignedInteger()
   unset _flags_uint_ _flags_test_
   return ${flags_return}
 }
+
+# ----------------------------------------------------------------------------
+# helpers for command-line parsing
+# ----------------------------------------------------------------------------
 
 # Parse command-line options using the standard getopt.
 #
@@ -884,6 +926,52 @@ _flags_parseGetopt()
       fi
     fi
 
+    # handle special case helpman flag
+    if [ "${_flags_usName_}" = 'helpman' ]; then
+      if [ ${FLAGS_helpman} -eq ${FLAGS_TRUE} ]; then
+        # if man should not be executed directory,
+        # print generated man page to STDOUT instead
+        if [ -n "${FLAGS_execman}" ] && [ ${FLAGS_execman} -eq ${FLAGS_FALSE} ]; then
+          flags_helpman
+          flags_error='help requested'
+          flags_return=${FLAGS_TRUE}
+          break
+        fi
+        # save generated man page to temporary file
+        flags_manFile_="`mktemp -t \"${0##*/}.1\"`"
+        if [ $? -ne 0 ]; then
+          flags_error='failed to create temporary man page file name'
+          flags_return=${FLAGS_ERROR}
+          break
+        fi
+        flags_man_="`flags_helpman`"
+        if [ $? -ne ${FLAGS_TRUE} ]; then
+          flags_error='failed to generate temporary man page file'
+          flags_return=${FLAGS_ERROR}
+          break
+        fi
+        echo "${flags_man_}" > "${flags_manFile_}"
+        if [ $? -ne ${FLAGS_TRUE} ]; then
+          flags_error='failed to write temporary man page file'
+          flags_return=${FLAGS_ERROR}
+          break
+        fi
+        # execute man to view the man page
+        man "${flags_manFile_}"
+        if [ $? -ne ${FLAGS_TRUE} ]; then
+          flags_error='failed to execute man to view generated man page'
+          flags_return=${FLAGS_ERROR}
+        fi
+        # remove temporary man page file
+        rm -f "${flags_manFile_}"
+        if [ ${flags_return} -ne ${FLAGS_ERROR} -a $? -ne ${FLAGS_TRUE} ]; then
+          flags_error='failed to execute man to view generated man page'
+          flags_return=${FLAGS_ERROR}
+        fi
+        break
+      fi
+    fi
+
     # handle special case helpxml flag
     if [ "${_flags_usName_}" = 'helpxml' ]; then
       if [ ${FLAGS_helpxml} -eq ${FLAGS_TRUE} ]; then
@@ -895,12 +983,13 @@ _flags_parseGetopt()
     fi
 
     # handle special case usage flag
-    if [ "${_flags_usName_}" = 'usage'     -a ${FLAGS_usage}     -eq ${FLAGS_TRUE} ] || \
-       [ "${_flags_usName_}" = 'helpshort' -a ${FLAGS_helpshort} -eq ${FLAGS_TRUE} ]; then
-      flags_helpshort
-      flags_error='help requested'
-      flags_return=${FLAGS_TRUE}
-      break
+    if [ "${_flags_usName_}" = 'helpshort' ]; then
+      if [ ${FLAGS_helpshort} -eq ${FLAGS_TRUE} ]; then
+        flags_helpshort
+        flags_error='help requested'
+        flags_return=${FLAGS_TRUE}
+        break
+      fi
     fi
 
     # handle special case version flag
@@ -931,11 +1020,13 @@ _flags_parseGetopt()
   return ${flags_return}
 }
 
-
-
-#------------------------------------------------------------------------------
+# ============================================================================
 # public functions
-#
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# flag definition
+# ----------------------------------------------------------------------------
 
 # A basic boolean flag. Boolean flags do not take any arguments, and their
 # value is either 1 (false) or 0 (true). For long flags, the false value is
@@ -963,6 +1054,10 @@ DEFINE_uint()             { _flags_define ${__FLAGS_TYPE_UNSIGNED_INTEGER} "$@";
 DEFINE_string()           { _flags_define ${__FLAGS_TYPE_STRING} "$@"; }
 DEFINE_counter()          { _flags_define ${__FLAGS_TYPE_COUNTER} "$@"; }
 
+# ----------------------------------------------------------------------------
+# command-line parsing
+# ----------------------------------------------------------------------------
+
 # Parse the flags.
 #
 # Args:
@@ -973,18 +1068,25 @@ FLAGS()
 {
   # define standard flags if not already defined
   [ -z "${__flags_help_type:-}" ] && \
-      DEFINE_boolean 'help' false 'Show help and exit.' 'h'
-  [ -z "${__flags_helpxml_type:-}" ] && \
-      DEFINE_boolean 'helpxml' false 'Output help in XML format and exit.'
-  [ -z "${__flags_helpshort_type:-}" ] && \
-      DEFINE_boolean 'helpshort' false 'Show usage information and exit.'
-  [ -z "${__flags_usage_type:-}" ] && \
-      DEFINE_boolean 'usage' false 'Show usage information and exit.' 'u'
+      DEFINE_boolean 'help' false 'Show help and exit.' 'h' 'help'
+  [ -z "${__flags_helpman_type:-}" -a ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ] && \
+      DEFINE_boolean 'helpman' false 'Show help in man page format and exit.
+                                      If --execman is true, a temporary man page file is written
+                                      and displayed using man. Otherwise, if --noexecman was given
+                                      before, the generated man page is printed to stdout instead.' \
+          "${__FLAGS_NULL}" 'help'
+  [ -z "${__flags_execman_type:-}" -a ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ] && \
+      DEFINE_boolean 'execman' true 'Execute man to view generated man page. See --helpman.' \
+          "${__FLAGS_NULL}" 'help'
+  [ -z "${__flags_helpxml_type:-}" -a ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ] && \
+      DEFINE_boolean 'helpxml' false 'Output help in XML format and exit.' "${__FLAGS_NULL}" 'help'
+  [ -z "${__flags_helpshort_type:-}" -a ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ] && \
+      DEFINE_boolean 'helpshort' false 'Show usage information and exit.' "${__FLAGS_NULL}" 'help'
   [ -z "${__flags_version_type:-}" ] && \
-      DEFINE_boolean 'version' false 'Show version and exit.' 'V'
+      DEFINE_boolean 'version' false 'Show version and exit.' "${__FLAGS_NULL}" 'help'
   [ -z "${__flags_verbose_type:-}" ] && \
       DEFINE_counter 'verbose' 0 'Increase verbosity of output messages.
-                                  Can be given multiple times.' 'v'
+                                  Can be given multiple times.' 'v' 'help'
 
   # parse options
   if [ $# -gt 0 ]; then
@@ -1008,6 +1110,10 @@ FLAGS()
   [ ${flags_return} -eq ${FLAGS_ERROR} ] && _flags_fatal "${flags_error}"
   return ${flags_return}
 }
+
+# ----------------------------------------------------------------------------
+# getopt information
+# ----------------------------------------------------------------------------
 
 # This is a helper function for determining the 'getopt' version for platforms
 # where the detection isn't working. It simply outputs debug information that
@@ -1067,6 +1173,137 @@ flags_getoptIsStd()
   test ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_STD}
 }
 
+# ----------------------------------------------------------------------------
+# help and usage information
+# ----------------------------------------------------------------------------
+
+# Prints usage as in synopsis section of man pages.
+flags_usage()
+{
+  flags_requiredFlags_=' '
+  flags_optionalFlags_=' '
+  for flags_name_ in ${__flags_longNames}; do
+    flags_usName_=`_flags_underscoreName ${flags_name_}`
+    flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
+    if [ "${flags_category_}" = 'required' ]; then
+      flags_requiredFlags_="${flags_requiredFlags_}${flags_name_} "
+    elif [ "${flags_category_}" != 'help' ]; then
+      flags_optionalFlags_="${flags_optionalFlags_}${flags_name_} "
+    fi
+  done
+
+  flags_usage_=''
+  if [ -n "${flags_optionalFlags_}" ]; then
+    for flags_name_ in ${flags_optionalFlags_}; do
+      flags_usName_=`_flags_underscoreName ${flags_name_}`
+      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+      case ${flags_type_} in
+        ${__FLAGS_TYPE_BOOLEAN})
+          flags_usage_="${flags_usage_} [--[no]${flags_name_}]"
+          ;;
+
+        ${__FLAGS_TYPE_FLOAT})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<float>]"
+          ;;
+
+        ${__FLAGS_TYPE_INTEGER})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<int>]"
+          ;;
+
+        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<uint>]"
+          ;;
+
+        ${__FLAGS_TYPE_STRING})
+          flags_usage_="${flags_usage_} [--${flags_name_}=<string>]"
+          ;;
+
+        ${__FLAGS_TYPE_COUNTER})
+          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
+          ;;
+
+        *)
+          flags_usage_="${flags_usage_} [--${flags_name_}=<value>]"
+          ;;
+      esac
+    done
+  fi
+  if [ -n "${flags_requiredFlags_}" ]; then
+    for flags_name_ in ${flags_requiredFlags_}; do
+      flags_usName_=`_flags_underscoreName ${flags_name_}`
+      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+      case ${flags_type_} in
+        ${__FLAGS_TYPE_BOOLEAN})
+          flags_usage_="${flags_usage_} --[no]${flags_name_}"
+          ;;
+
+        ${__FLAGS_TYPE_FLOAT})
+          flags_usage_="${flags_usage_} --${flags_name_}=<float>"
+          ;;
+
+        ${__FLAGS_TYPE_INTEGER})
+          flags_usage_="${flags_usage_} --${flags_name_}=<int>"
+          ;;
+
+        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+          flags_usage_="${flags_usage_} --${flags_name_}=<uint>"
+          ;;
+
+        ${__FLAGS_TYPE_STRING})
+          flags_usage_="${flags_usage_} --${flags_name_}=<string>"
+          ;;
+
+        ${__FLAGS_TYPE_COUNTER})
+          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
+          ;;
+
+        *)
+          flags_usage_="${flags_usage_} --${flags_name_}=<value>"
+          ;;
+      esac
+    done
+  fi
+
+  flags_command_=${HELP_COMMAND:-${0##*/}}
+  flags_executable_="${FLAGS_PARENT:-${0##*/}}"
+
+  # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
+  # because it doesn't like empty strings when used in this manner.
+  flags_emptyStr_="`echo \"x${flags_executable_}x\" \
+      |awk '{printf "%"length($0)+3"s", ""}'`"
+  flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
+
+  flags_usage_="${flags_usage_} args"
+  flags_usage_="$(echo "${flags_emptyStr_}${flags_usage_}" | fmt -l 0 -$(_flags_columns))"
+  flags_usage_="     ${flags_executable_}${flags_usage_:${flags_emptyStrLen_}}"
+
+  echo "NAME"
+  # use first sentence of description as brief description similar to Doxygen
+  if [ -n "${HELP_DESCRIPTION}" ]; then
+    flags_brief_=${HELP_DESCRIPTION%%.*}
+    flags_brief_="$(echo "${flags_brief_}"|sed 's/^\ *//g;s/\ *$//g'|tr '\n' ' ')"
+    flags_brief_="     ${flags_command_} -- ${flags_brief_}"
+    flags_columns_=`_flags_columns`
+    flags_columns_=`expr -- "${flags_columns_}" - 3`
+    if [ `expr -- "${flags_brief_}" : '.*'` -gt ${flags_columns_} ]; then
+      flags_brief_="${flags_brief_:0:${flags_columns_}}"
+      flags_brief_="${flags_brief_% *}..."
+    fi
+    echo "${flags_brief_}"
+  else
+    echo "     ${flags_command_}"
+  fi
+  echo
+  echo "SYNOPSIS"
+  echo "${flags_usage_}"
+
+  unset flags_name_ flags_command_ flags_usage_ flags_brief_ flags_usName_ \
+      flags_executable_ flags_type_ flags_optionalFlags_ flags_requiredFlags_ \
+      flags_standardFlags_ flags_emptyStr_ flags_emptyStrLen_ flags_columns_
+
+  return ${FLAGS_TRUE}
+}
+
 # Print help for named flag
 #
 # Args:
@@ -1093,27 +1330,24 @@ flags_helpflag()
       "${flags_usName_}" ${__FLAGS_INFO_SHORT}`
   flags_type_=`_flags_getFlagInfo \
       "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+  flags_category_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
 
   flags_help_=$(echo "${flags_help_}"|sed 's/^\ *//g'|tr '\n' ' ')
 
-  [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
-      flags_flagStr_="-${flags_short_}"
-
   if [ ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ]; then
-    [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
-        flags_flagStr_="${flags_flagStr_},"
-    # add [no] to long boolean flag names, except the 'help', 'usage', and 'version' flags
-    [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} \
-      -a "${flags_usName_}" != 'help' \
-      -a "${flags_usName_}" != 'helpshort' \
-      -a "${flags_usName_}" != 'helpxml' \
-      -a "${flags_usName_}" != 'usage' \
-      -a "${flags_usName_}" != 'version' ] && \
+    # add [no] to long boolean flag names, except the 'help' flags
+    [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ] && \
         flags_boolStr_='[no]'
+    # long flag name
     flags_flagStr_="${flags_flagStr_}--${flags_boolStr_}${flags_name_}"
   fi
+  # short flag name
+  [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
+      flags_flagStr_="${flags_flagStr_}, -${flags_short_}"
+  # fill with spaces for alignment of help texts
   flags_flagStrLen_=`expr -- "${flags_flagStr_}" : '.*'`
-  flags_numSpaces_=`expr -- 5 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
+  flags_numSpaces_=`expr -- 6 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
   [ ${flags_numSpaces_} -ge 0 ] || flags_numSpaces_=0
   flags_spaces_=`printf %${flags_numSpaces_}s`
   flags_flagStr_="${flags_flagStr_}${flags_spaces_}"
@@ -1197,9 +1431,15 @@ flags_helpflags()
       flags_otherFlags_="${flags_otherFlags_}${flags_name_} "
     else
       flags_usCategory_=`_flags_underscoreName ${flags_category_}`
-      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_}${flags_name_}\""
+      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_}${flags_name_} \""
     fi
   done
+  # sort lists
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_${flags_usCategory_}Flags_=\`_flags_sortList \"\${flags_${flags_usCategory_}Flags_}\"\`"
+  done
+  flags_otherFlags_=`_flags_sortList "${flags_otherFlags_}"`
   # output help of required flags
   if [ -n "${flags_requiredFlags_}" ]; then
     echo "     The required options are as follows:"
@@ -1209,9 +1449,10 @@ flags_helpflags()
     done
     echo
   fi
-  # output help of non-required flags
+  # output help of non-required and non-help flags
   for flags_category_ in "${__flags_categoryNames[@]}"; do
-    if [ "${flags_category_}" = 'required' ]; then
+    if [ "${flags_category_}" = 'required' -o \
+         "${flags_category_}" = 'help' ]; then
       continue
     fi
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
@@ -1225,12 +1466,21 @@ flags_helpflags()
       echo
     fi
   done
-  # output help of remaining flags
+  # output help of remaining non-help flags
   if [ -n "${flags_otherFlags_}" ]; then
-    echo "     The further available options are as follows:"
+    echo "     The available options are as follows:"
     echo
     for flags_name_ in ${flags_otherFlags_}; do
       flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_TRUE}
+    done
+    echo
+  fi
+  # output help of help flags
+  if [ -n "${flags_helpFlags_}" ]; then
+    echo "     The help options are as follows:"
+    echo
+    for flags_name_ in ${flags_helpFlags_}; do
+      flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
     done
     echo
   fi
@@ -1243,141 +1493,6 @@ flags_helpflags()
   unset flags_maxNameLen_ flags_name_ flags_nameStrLen_ flags_type_ \
       flags_otherFlags flags_category_ flags_usCategory_
  
-  return ${FLAGS_TRUE}
-}
-
-# Prints usage as in synopsis section of man pages.
-flags_usage()
-{
-  flags_requiredFlags_=' '
-  flags_optionalFlags_=' '
-  for flags_name_ in ${__flags_longNames}; do
-    flags_usName_=`_flags_underscoreName ${flags_name_}`
-    flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
-    if [ "${flags_category_}" = 'required' ]; then
-      flags_requiredFlags_="${flags_requiredFlags_}${flags_name_} "
-    else
-      if [ "${flags_usName_}" = 'help' \
-          -o "${flags_usName_}" = 'helpshort' \
-          -o "${flags_usName_}" = 'helpxml' \
-          -o "${flags_usName_}" = 'usage' \
-          -o "${flags_usName_}" = 'version' \
-          -o "${flags_usName_}" = 'verbose' ]; then
-        :
-      else
-        flags_optionalFlags_="${flags_optionalFlags_}${flags_name_} "
-      fi
-    fi
-  done
-
-  flags_usage_=''
-  if [ -n "${flags_optionalFlags_}" ]; then
-    for flags_name_ in ${flags_optionalFlags_}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      case ${flags_type_} in
-        ${__FLAGS_TYPE_BOOLEAN})
-          flags_usage_="${flags_usage_} [--[no]${flags_name_}]"
-          ;;
-
-        ${__FLAGS_TYPE_FLOAT})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<float>]"
-          ;;
-
-        ${__FLAGS_TYPE_INTEGER})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<int>]"
-          ;;
-
-        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<uint>]"
-          ;;
-
-        ${__FLAGS_TYPE_STRING})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<string>]"
-          ;;
-
-        ${__FLAGS_TYPE_COUNTER})
-          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
-          ;;
-
-        *)
-          flags_usage_="${flags_usage_} [--${flags_name_}=<value>]"
-          ;;
-      esac
-    done
-  fi
-  if [ -n "${flags_requiredFlags_}" ]; then
-    for flags_name_ in ${flags_requiredFlags_}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      case ${flags_type_} in
-        ${__FLAGS_TYPE_BOOLEAN})
-          flags_usage_="${flags_usage_} --[no]${flags_name_}"
-          ;;
-
-        ${__FLAGS_TYPE_FLOAT})
-          flags_usage_="${flags_usage_} --${flags_name_}=<float>"
-          ;;
-
-        ${__FLAGS_TYPE_INTEGER})
-          flags_usage_="${flags_usage_} --${flags_name_}=<int>"
-          ;;
-
-        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-          flags_usage_="${flags_usage_} --${flags_name_}=<uint>"
-          ;;
-
-        ${__FLAGS_TYPE_STRING})
-          flags_usage_="${flags_usage_} --${flags_name_}=<string>"
-          ;;
-
-        ${__FLAGS_TYPE_COUNTER})
-          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
-          ;;
-
-        *)
-          flags_usage_="${flags_usage_} --${flags_name_}=<value>"
-          ;;
-      esac
-    done
-  fi
-
-  flags_command_=${HELP_COMMAND:-${0##*/}}
-  flags_executable_="${0##*/}"
-
-  # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
-  # because it doesn't like empty strings when used in this manner.
-  flags_emptyStr_="`echo \"x${flags_executable_}x\" \
-      |awk '{printf "%"length($0)+3"s", ""}'`"
-  flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
-
-  flags_usage_="${flags_usage_} args"
-  flags_usage_="$(echo "${flags_emptyStr_}${flags_usage_}" | fmt -l 0 -$(_flags_columns))"
-  flags_usage_="     ${flags_executable_}${flags_usage_:${flags_emptyStrLen_}}"
-
-  echo "NAME"
-  echo -n "     ${flags_command_}"
-  # use first sentence of description as brief description similar to Doxygen
-  if [ -n "${HELP_DESCRIPTION}" ]; then
-    flags_brief_=${HELP_DESCRIPTION%%.*}
-    flags_brief_="$(echo "${flags_brief_}"|sed 's/^\ *//g;s/\ *$//g'|tr '\n' ' ')"
-    # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
-    # because it doesn't like empty strings when used in this manner.
-    flags_emptyStr_="`echo \"x${flags_command_}x\" \
-        |awk '{printf "%"length($0)+7"s", ""}'`"
-    flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
-    flags_brief_="$(echo "${flags_emptyStr_}${flags_brief_}" | fmt -l 0 -$(_flags_columns))"
-    echo -n " -- ${flags_brief_:${flags_emptyStrLen_}}"
-  fi
-  echo
-  echo
-  echo "SYNOPSIS"
-  echo "${flags_usage_}"
-
-  unset flags_name_ flags_command_ flags_usage_ flags_brief_ flags_usName_ \
-      flags_executable_ flags_type_ flags_optionalFlags_ flags_requiredFlags_ \
-      flags_standardFlags_ flags_emptyStr_ flags_emptyStrLen_
-
   return ${FLAGS_TRUE}
 }
 
@@ -1444,6 +1559,10 @@ flags_help()
 
   return ${FLAGS_TRUE}
 }
+
+# ----------------------------------------------------------------------------
+# XML help
+# ----------------------------------------------------------------------------
 
 # This function outputs the help of named flag in XML format
 #
@@ -1536,7 +1655,7 @@ flags_helpflagxml()
 flags_helpxml()
 {
   # get (re-formated) help strings
-  flags_executable_=${0##*/}
+  flags_executable_=${FLAGS_PARENT:-${0##*/}}
   flags_command_=${HELP_COMMAND:-${flags_executable_}}
   flags_version_=${HELP_VERSION:-'unknown'}
   flags_copyright_=$(echo "${HELP_COPYRIGHT}"\
@@ -1579,6 +1698,362 @@ flags_helpxml()
   return ${FLAGS_TRUE}
 }
 
+# ----------------------------------------------------------------------------
+# man page
+# ----------------------------------------------------------------------------
+
+# Prints NAME section of man page.
+flags_helpman_name()
+{
+  flags_command_=${HELP_COMMAND:-${0##*/}}
+  flags_command_=`_flags_manText "${flags_command_}"`
+
+  echo ".SH NAME"
+  # use first sentence of description as brief description similar to Doxygen
+  if [ -n "${HELP_DESCRIPTION}" ]; then
+    flags_brief_=${HELP_DESCRIPTION%%.*}
+    flags_brief_="$(echo "${flags_brief_}"|sed 's/^\ *//g;s/\ *$//g'|tr '\n' ' ')"
+    flags_brief_="${flags_command_} -- ${flags_brief_}"
+    flags_columns_=`_flags_columns`
+    flags_columns_=`expr -- "${flags_columns_}" - 24`
+    [ ${flags_columns_} -lt 80 ] flags_columns_=80
+    if [ `expr -- "${flags_brief_}" : '.*'` -gt ${flags_columns_} ]; then
+      flags_brief_="${flags_brief_:0:${flags_columns_}}"
+      flags_brief_="${flags_brief_% *}..."
+    fi
+    flags_brief_=`_flags_manText "${flags_brief_}"`
+    echo "${flags_brief_}"
+  else
+    echo "${flags_command_}"
+  fi
+
+  unset flags_command_ flags_brief_ flags_columns_
+
+  return ${FLAGS_TRUE}
+}
+
+# Prints SYNOPSIS section of man page.
+flags_helpman_synopsis()
+{
+  flags_executable_="${FLAGS_PARENT:-${0##*/}}"
+
+  echo ".SH SYNOPSIS"
+  echo "\fB${flags_executable_}\fR"
+
+  flags_requiredFlags_=' '
+  flags_optionalFlags_=' '
+  for flags_name_ in ${__flags_longNames}; do
+    flags_usName_=`_flags_underscoreName ${flags_name_}`
+    flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
+    if [ "${flags_category_}" = 'required' ]; then
+      flags_requiredFlags_="${flags_requiredFlags_}${flags_name_} "
+    elif [ "${flags_category_}" != 'help' ]; then
+      flags_optionalFlags_="${flags_optionalFlags_}${flags_name_} "
+    fi
+  done
+
+  flags_requiredFlags_=`_flags_sortList "${flags_requiredFlags_}"`
+  flags_optionalFlags_=`_flags_sortList "${flags_optionalFlags_}"`
+
+  if [ -n "${flags_optionalFlags_}" ]; then
+    for flags_name_ in ${flags_optionalFlags_}; do
+      flags_usName_=`_flags_underscoreName ${flags_name_}`
+      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+      case ${flags_type_} in
+        ${__FLAGS_TYPE_BOOLEAN})
+          echo "[\fB--[no]${flags_name_}\fR]"
+          ;;
+
+        ${__FLAGS_TYPE_FLOAT})
+          echo "[\fB--${flags_name_}=\fR\fIfloat\fR]"
+          ;;
+
+        ${__FLAGS_TYPE_INTEGER})
+          echo "[\fB--${flags_name_}=\fR\fIint\fR]"
+          ;;
+
+        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+          echo "[\fB--${flags_name_}\fR=\fIuint\fR]"
+          ;;
+
+        ${__FLAGS_TYPE_STRING})
+          echo "[\fB--${flags_name_}\fR=\fIstring\fR]"
+          ;;
+
+        ${__FLAGS_TYPE_COUNTER})
+          echo "[\fB--${flags_name_}\fR...]"
+          ;;
+
+        *)
+          echo "[\fB--${flags_name_}\fR=\fIvalue\fR]"
+          ;;
+      esac
+    done
+  fi
+  if [ -n "${flags_requiredFlags_}" ]; then
+    for flags_name_ in ${flags_requiredFlags_}; do
+      flags_usName_=`_flags_underscoreName ${flags_name_}`
+      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+      case ${flags_type_} in
+        ${__FLAGS_TYPE_BOOLEAN})
+          echo "\fB--[no]${flags_name_}\fR"
+          ;;
+
+        ${__FLAGS_TYPE_FLOAT})
+          echo "\fB--${flags_name_}=\fR\fIfloat\fR"
+          ;;
+
+        ${__FLAGS_TYPE_INTEGER})
+          echo "\fB--${flags_name_}=\fR\fIint\fR"
+          ;;
+
+        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
+          echo "\fB--${flags_name_}\fR=\fIuint\fR"
+          ;;
+
+        ${__FLAGS_TYPE_STRING})
+          echo "\fB--${flags_name_}\fR=\fIstring\fR"
+          ;;
+
+        ${__FLAGS_TYPE_COUNTER})
+          echo "\fB--${flags_name_}\fR..."
+          ;;
+
+        *)
+          echo "\fB--${flags_name_}\fR=\fIvalue\fR"
+          ;;
+      esac
+    done
+  fi
+  echo "[args]"
+
+  unset flags_executable_ flags_name_ flags_usName_ flags_type_ \
+      flags_optionalFlags_ flags_requiredFlags_
+
+  return ${FLAGS_TRUE}
+}
+
+# Prints DESCRIPTION section of man page.
+flags_helpman_description()
+{
+  if [ -n "${HELP_DESCRIPTION}" ]; then
+    echo ".SH DESCRIPTION"
+    flags_description_="${HELP_DESCRIPTION:-'No description available.'}"
+    flags_description_=`_flags_manText "${flags_description_}"`
+    echo "${flags_description_}"
+
+    unset flags_description_
+  fi
+}
+
+# Prints OPTIONS section entry of man page of named flag.
+flags_helpman_flag()
+{
+  flags_name_=$1
+  flags_showDefault_=${2:-${FLAGS_TRUE}}
+  flags_flagStr_=''
+  flags_boolStr_=''
+  flags_usName_=`_flags_underscoreName ${flags_name_}`
+
+  flags_default_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_DEFAULT}`
+  flags_help_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_HELP}`
+  flags_short_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_SHORT}`
+  flags_type_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
+  flags_category_=`_flags_getFlagInfo \
+      "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
+
+  flags_help_=$(echo "${flags_help_}"|sed 's/^\ *//g'|tr '\n' ' ')
+
+  if [ ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ]; then
+    # add [no] to long boolean flag names, except the 'help' flags
+    [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ] && \
+        flags_boolStr_='[no]'
+    # long flag name
+    flags_flagStr_="\fB${flags_flagStr_}--${flags_boolStr_}${flags_name_}"
+  fi
+  # short flag name
+  [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
+      flags_flagStr_="${flags_flagStr_}, -${flags_short_}"
+  flags_flagStr_="${flags_flagStr_}\fR"
+  # default value
+  case ${flags_type_} in
+    ${__FLAGS_TYPE_BOOLEAN})
+      if [ ${flags_default_} -eq ${FLAGS_TRUE} ]; then
+        flags_defaultStr_='true'
+      else
+        flags_defaultStr_='false'
+      fi
+      ;;
+    ${__FLAGS_TYPE_STRING}) flags_defaultStr_="'${flags_default_}'" ;;
+    *) flags_defaultStr_=${flags_default_} ;;
+  esac
+
+  if [ ${flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} -a \
+       ${flags_type_} -ne ${__FLAGS_TYPE_COUNTER} ]; then
+    case "${flags_type_}" in
+      ${__FLAGS_TYPE_BOOLEAN})          flags_typeStr_='bool'; ;;
+      ${__FLAGS_TYPE_FLOAT})            flags_typeStr_='double'; ;;
+      ${__FLAGS_TYPE_INTEGER})          flags_typeStr_='int'; ;;
+      ${__FLAGS_TYPE_UNSIGNED_INTEGER}) flags_typeStr_='uint'; ;;
+      ${__FLAGS_TYPE_COUNTER})          flags_typeStr_='count'; ;;
+      *)                                flags_typeStr_='string'; ;;
+    esac
+    flags_flagStr_="${flags_flagStr_} \fI${flags_typeStr_}\fR"
+  fi
+
+  if [ ${flags_showDefault_} -eq ${FLAGS_TRUE} ]; then
+    flags_defaultStr_=" (default:\ ${flags_defaultStr_//\ /\\ })"
+  else
+    flags_defaultStr_=''
+  fi
+
+  echo ".TP 8"
+  echo "${flags_flagStr_}"
+  echo "${flags_help_}${flags_defaultStr_}"
+
+  unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
+      flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
+      flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_
+
+  return ${FLAGS_TRUE}
+}
+
+# Prints OPTIONS section of man page.
+flags_helpman_flags()
+{
+  echo ".SH OPTIONS"
+  # get lists of flags belonging to same category
+  flags_otherFlags_=' '
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_${flags_usCategory_}Flags_=' '"
+  done
+  for flags_name_ in ${__flags_longNames}; do
+    flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
+    flags_usName_=`_flags_underscoreName ${flags_name_}`
+    flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
+    if [ "${flags_category_}" = "${__FLAGS_NULL}" ]; then
+      flags_otherFlags_="${flags_otherFlags_}${flags_name_} "
+    else
+      flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_}${flags_name_} \""
+    fi
+  done
+  # sort lists
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_${flags_usCategory_}Flags_=\`_flags_sortList \"\${flags_${flags_usCategory_}Flags_}\"\`"
+  done
+  flags_otherFlags_=`_flags_sortList "${flags_otherFlags_}"`
+  # output help of required flags
+  if [ -n "${flags_requiredFlags_}" ]; then
+    echo ".P"
+    echo "\fBThe required options are as follows:\fR"
+    for flags_name_ in ${flags_requiredFlags_}; do
+      flags_helpman_flag ${flags_name_} ${FLAGS_FALSE}
+    done
+  fi
+  # output help of non-required and non-help flags
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    if [ "${flags_category_}" = 'required' -o \
+         "${flags_category_}" = 'help' ]; then
+      continue
+    fi
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_names_=\"\${flags_${flags_usCategory_}Flags_}\""
+    if [ -n "${flags_names_}" ]; then
+      echo ".P"
+      echo "\fBThe ${flags_category_} options are as follows:\fR"
+      for flags_name_ in ${flags_names_}; do
+        flags_helpman_flag ${flags_name_}
+      done
+    fi
+  done
+  # output help of remaining non-help flags
+  if [ -n "${flags_otherFlags_}" ]; then
+    echo ".P"
+    echo "\fBThe available options are as follows:\fR"
+    for flags_name_ in ${flags_otherFlags_}; do
+      flags_helpman_flag ${flags_name_}
+    done
+  fi
+  # output help of help flags
+  if [ -n "${flags_helpFlags_}" ]; then
+    echo ".P"
+    echo "\fBThe help options are as follows:\fR"
+    for flags_name_ in ${flags_helpFlags_}; do
+      flags_helpman_flag ${flags_name_} ${FLAGS_FALSE}
+    done
+  fi
+
+  # clean up
+  for flags_category_ in "${__flags_categoryNames[@]}"; do
+    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "unset flags_${flags_usCategory_}Flags_"
+  done
+  unset flags_maxNameLen_ flags_name_ flags_nameStrLen_ flags_type_ \
+      flags_otherFlags flags_category_ flags_usCategory_
+}
+
+# Prints COPYRIGHT section of man page.
+flags_helpman_copyright()
+{
+  if [ -n "${HELP_COPYRIGHT}" ]; then
+    echo ".SH COPYRIGHT"
+    flags_copyright_="${HELP_COPYRIGHT}"
+    flags_copyright_=`echo "${flags_copyright_}"|awk '{printf "%s\n.br\n",$0}'`
+    flags_copyright_=`_flags_manText "${flags_copyright_}"`
+    echo "${flags_copyright_}"
+
+    unset flags_copyright_
+  fi
+}
+
+# Prints CONTACT section of man page.
+flags_helpman_contact()
+{
+  if [ -n "${HELP_CONTACT}" ]; then
+    echo ".SH CONTACT"
+    flags_contact_="${HELP_CONTACT}"
+    flags_contact_=`_flags_manText "${flags_contact_}"`
+    echo "${flags_contact_}"
+
+    unset flags_contact_
+  fi
+}
+
+# This function outputs the help in man page format.
+#
+# Args:
+#   none
+# Returns:
+#   integer: success of operation (always returns true)
+flags_helpman()
+{
+  flags_command_=${FLAGS_PARENT:-${0##*/}}
+  flags_command_=`_flags_manText "${flags_command_}"`
+
+  echo ".TH \"${flags_command_}\" 1 `date '+%e\ %B\ %G'`"
+  flags_helpman_name
+  flags_helpman_synopsis
+  flags_helpman_description
+  flags_helpman_flags
+  flags_helpman_copyright
+  flags_helpman_contact
+
+  unset flags_command_
+
+  return ${FLAGS_TRUE}
+}
+
+# ----------------------------------------------------------------------------
+# version information
+# ----------------------------------------------------------------------------
+
 # This function outputs the version and copyright.
 #
 # Args:
@@ -1598,6 +2073,10 @@ flags_version()
   fi
   unset flags_command_ flags_version_ flags_copyright_
 }
+
+# ----------------------------------------------------------------------------
+# reset
+# ----------------------------------------------------------------------------
 
 # Reset shflags back to an uninitialized state.
 #
