@@ -1070,10 +1070,10 @@ FLAGS()
   [ -z "${__flags_help_type:-}" ] && \
       DEFINE_boolean 'help' false 'Show help and exit.' 'h' 'help'
   [ -z "${__flags_helpman_type:-}" -a ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ] && \
-      DEFINE_boolean 'helpman' false 'Show help in man page format and exit.
-                                      If --execman is true, a temporary man page file is written
-                                      and displayed using man. Otherwise, if --noexecman was given
-                                      before, the generated man page is printed to stdout instead.' \
+      DEFINE_boolean 'helpman' false 'Show help as man page and exit. If --execman is true (the default),
+                                      a temporary man page file is written and displayed using man.
+                                      Otherwise, if --noexecman was given before, the generated man
+                                      page is printed to stdout instead.' \
           "${__FLAGS_NULL}" 'help'
   [ -z "${__flags_execman_type:-}" -a ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ] && \
       DEFINE_boolean 'execman' true 'Execute man to view generated man page. See --helpman.' \
