@@ -1956,18 +1956,17 @@ flags_helpxml()
 
   # output XML tags
   echo "<?xml version=\"1.0\"?>"
-  echo "<executable id=\"${flags_command_}\">"
-  echo "    <name>${flags_executable_}</name>"
-  echo "    <version>${flags_version_}</version>"
-  echo "    <copyright>${flags_copyright_}</copyright>"
-  echo "    <contact>${flags_contact_}</contact>"
-  echo "    <description>${flags_description_}</description>"
-  echo "    <options>"
+  echo "<AllFlags>"
+  echo "  <name>${flags_command_}</name>"
+  echo "  <program>${flags_executable_}</program>"
+  echo "  <version>${flags_version_}</version>"
+  echo "  <copyright>${flags_copyright_}</copyright>"
+  echo "  <contact>${flags_contact_}</contact>"
+  echo "  <usage>${flags_description_}</usage>"
   for flags_name_ in ${__flags_longNames}; do
-    flags_helpflagxml ${flags_name_} 8
+    flags_helpflagxml ${flags_name_} 2
   done
-  echo "    </options>"
-  echo "</executable>"
+  echo "</AllFlags>"
 
   # clean up
   unset flags_executable_ flags_command_ flags_version_ \
