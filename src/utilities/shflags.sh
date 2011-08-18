@@ -186,9 +186,13 @@ __FLAGS_TYPE_NONE=0
 __FLAGS_TYPE_BOOLEAN=1
 __FLAGS_TYPE_FLOAT=2
 __FLAGS_TYPE_INTEGER=3
-__FLAGS_TYPE_UNSIGNED_INTEGER=4
-__FLAGS_TYPE_STRING=5
-__FLAGS_TYPE_COUNTER=6
+__FLAGS_TYPE_STRING=4
+
+# flag multi-types, offset MUST be 128
+__FLAGS_TYPE_MULTI_BOOLEAN=`expr "${__FLAGS_TYPE_BOOLEAN}" + 128`
+__FLAGS_TYPE_MULTI_FLOAT=`expr   "${__FLAGS_TYPE_FLOAT}"   + 128`
+__FLAGS_TYPE_MULTI_INTEGER=`expr "${__FLAGS_TYPE_INTEGER}" + 128`
+__FLAGS_TYPE_MULTI_STRING=`expr  "${__FLAGS_TYPE_STRING}"  + 128`
 
 # set the constants readonly
 __flags_constants=`set |awk -F= '/^FLAGS_/ || /^__FLAGS_/ {print $1}'`
@@ -230,6 +234,7 @@ __flags_opts=''    # temporary storage for parsed getopt flags
 # private functions
 # ============================================================================
 
+##############################################################################
 # Define a flag.
 #
 # Calling this function will define the following info variables for the
@@ -259,12 +264,12 @@ _flags_define()
     return ${flags_return}
   fi
 
-  _flags_type_=$1
-  _flags_name_=$2
-  _flags_default_=$3
-  _flags_help_=$4
-  _flags_short_=${5:-${__FLAGS_NULL}}
-  _flags_category_=${6:-${__FLAGS_NULL}}
+  _flags_type_="$1"
+  _flags_name_="$2"
+  _flags_default_="$3"
+  _flags_help_="$4"
+  _flags_short_="${5:-${__FLAGS_NULL}}"
+  _flags_category_="${6:-${__FLAGS_NULL}}"
 
   _flags_return_=${FLAGS_TRUE}
   _flags_usName_=`_flags_underscoreName ${_flags_name_}`
@@ -305,6 +310,19 @@ _flags_define()
     fi
   fi
 
+  # convert array given as string such as "'a 1' 'b 2' 'c' 'd 4'" to array
+  # ('a 1' 'b 2' 'c' 'd 4') and get type of values for multi-flags
+  if [ ${_flags_type_} -gt 128 -a ${_flags_type_} -ne ${__FLAGS_TYPE_MULTI_BOOLEAN} ]; then
+    _flags_valueType_=`expr "${_flags_type_}" - 128`
+    eval "_flags_default_=(${_flags_default_})"
+  else
+    if [ ${#_flags_default_[@]} -ne 1 ]; then
+      flags_error="${_flags_name_}: invalid default flag value '${_flags_default_}'"
+      _flags_return_=${FLAGS_ERROR}
+    fi
+    _flags_valueType_=${_flags_type_}
+  fi
+
   # handle default value. note, on several occasions the 'if' portion of an
   # if/then/else contains just a ':' which does nothing. a binary reversal via
   # '!' is not done because it does not work on all shells.
@@ -322,16 +340,7 @@ _flags_define()
         fi
         ;;
 
-      ${__FLAGS_TYPE_FLOAT})
-        if _flags_validateFloat "${_flags_default_}"; then
-          :
-        else
-          flags_error="${_flags_name_}: invalid default flag value '${_flags_default_}'"
-          _flags_return_=${FLAGS_ERROR}
-        fi
-        ;;
-
-      ${__FLAGS_TYPE_INTEGER})
+      ${__FLAGS_TYPE_MULTI_BOOLEAN})
         if _flags_validateInteger "${_flags_default_}"; then
           :
         else
@@ -340,29 +349,49 @@ _flags_define()
         fi
         ;;
 
-      ${__FLAGS_TYPE_UNSIGNED_INTEGER}|${__FLAGS_TYPE_COUNTER})
-        if _flags_validateUnsignedInteger "${_flags_default_}"; then
-          :
-        else
-          flags_error="${_flags_name_}: invalid default flag value '${_flags_default_}'"
-          _flags_return_=${FLAGS_ERROR}
-        fi
-        ;;
-
-      ${__FLAGS_TYPE_STRING}) ;;  # everything in shell is a valid string
-
       *)
-        flags_error="${_flags_name_}: unrecognized flag type '${_flags_type_}'"
-        _flags_return_=${FLAGS_ERROR}
+        for _flags_defaultValue_ in "${_flags_default_[@]}"; do
+          case ${_flags_valueType_} in
+            ${__FLAGS_TYPE_FLOAT})
+              if _flags_validateFloat "${_flags_defaultValue_}"; then
+                :
+              else
+                flags_error="${_flags_name_}: invalid default flag value '${_flags_defaultValue_}'"
+                _flags_return_=${FLAGS_ERROR}
+              fi
+              ;;
+
+            ${__FLAGS_TYPE_INTEGER})
+              if _flags_validateInteger "${_flags_defaultValue_}"; then
+                :
+              else
+                flags_error="${_flags_name_}: invalid default flag value '${_flags_defaultValue_}'"
+                _flags_return_=${FLAGS_ERROR}
+              fi
+              ;;
+
+            ${__FLAGS_TYPE_STRING}) ;;  # everything in shell is a valid string
+
+            *)
+              flags_error="${_flags_name_}: unrecognized flag type '${_flags_type_}'"
+              _flags_return_=${FLAGS_ERROR}
+              ;;
+          esac
+        done
         ;;
     esac
   fi
 
   if [ ${_flags_return_} -eq ${FLAGS_TRUE} ]; then
     # store flag information
-    eval "FLAGS_${_flags_usName_}='${_flags_default_}'"
+    if [ ${_flags_type_} -gt 128 ]; then
+      eval "FLAGS_${_flags_usName_}=(\"\${_flags_default_[@]}\")"
+      eval "__flags_${_flags_usName_}_${__FLAGS_INFO_DEFAULT}=(\"\${_flags_default_[@]}\")"
+    else
+      eval "FLAGS_${_flags_usName_}='${_flags_default_}'"
+      eval "__flags_${_flags_usName_}_${__FLAGS_INFO_DEFAULT}='${_flags_default_}'"
+    fi
     eval "__flags_${_flags_usName_}_${__FLAGS_INFO_TYPE}=${_flags_type_}"
-    eval "__flags_${_flags_usName_}_${__FLAGS_INFO_DEFAULT}=\"${_flags_default_}\""
     eval "__flags_${_flags_usName_}_${__FLAGS_INFO_HELP}=\"${_flags_help_}\""
     eval "__flags_${_flags_usName_}_${__FLAGS_INFO_SHORT}='${_flags_short_}'"
     eval "__flags_${_flags_usName_}_${__FLAGS_INFO_CATEGORY}='${_flags_category_}'"
@@ -370,7 +399,8 @@ _flags_define()
     # append flag names to name lists
     __flags_shortNames="${__flags_shortNames}${_flags_short_} "
     __flags_longNames="${__flags_longNames}${_flags_name_} "
-    [ ${_flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ] && \
+    [ ${_flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} -o \
+      ${_flags_type_} -eq ${__FLAGS_TYPE_MULTI_BOOLEAN} ] && \
         __flags_boolNames="${__flags_boolNames}no${_flags_name_} "
 
     # append flag names to defined names for later validation checks
@@ -401,7 +431,7 @@ _flags_define()
   return ${flags_return}
 }
 
-
+##############################################################################
 # Return valid getopt options using currently defined list of long options.
 #
 # This function builds a proper getopt option string for short (and long)
@@ -431,7 +461,7 @@ _flags_genOptStr()
           _flags_opts_="${_flags_opts_}${_flags_shortName_}"
           # getopt needs a trailing ':' to indicate a required argument
           [ ${_flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} -a \
-            ${_flags_type_} -ne ${__FLAGS_TYPE_COUNTER} ] && \
+            ${_flags_type_} -ne ${__FLAGS_TYPE_MULTI_BOOLEAN} ] && \
               _flags_opts_="${_flags_opts_}:"
         fi
         ;;
@@ -440,7 +470,7 @@ _flags_genOptStr()
         _flags_opts_="${_flags_opts_:+${_flags_opts_},}${_flags_name_}"
         # getopt needs a trailing ':' to indicate a required argument
         [ ${_flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} -a \
-          ${_flags_type_} -ne ${__FLAGS_TYPE_COUNTER} ] && \
+          ${_flags_type_} -ne ${__FLAGS_TYPE_MULTI_BOOLEAN} ] && \
             _flags_opts_="${_flags_opts_}:"
         ;;
     esac
@@ -452,6 +482,7 @@ _flags_genOptStr()
   return ${FLAGS_TRUE}
 }
 
+##############################################################################
 # Returns flag details based on a flag name and flag info.
 #
 # Args:
@@ -485,7 +516,7 @@ _flags_getFlagInfo()
     _flags_typeVar_="__flags_${_flags_gFI_usName_}_${__FLAGS_INFO_TYPE}"
     _flags_strToEval_="_flags_typeValue_=\"\${${_flags_typeVar_}:-}\""
     eval "${_flags_strToEval_}"
-    if [ "${_flags_typeValue_}" = "${__FLAGS_TYPE_STRING}" ]; then
+    if [ "${_flags_typeValue_}" = "${__FLAGS_TYPE_STRING}" -o "${_flags_typeValue_}" -gt 128 ]; then
       flags_return=${FLAGS_TRUE}
     else
       flags_return=${FLAGS_ERROR}
@@ -500,10 +531,65 @@ _flags_getFlagInfo()
   return ${flags_return}
 }
 
+##############################################################################
+# Returns flag value based on a flag name.
+#
+# Args:
+#   unnamed: string: underscored flag name
+#   unnamed: string: name of the output variable
+# Output:
+#   sets the variable named by the second argument to the current value,
+#   which is an array in case of a multi-flag.
+# Returns:
+#   integer: one of FLAGS_{TRUE|FALSE|ERROR}
+_flags_getFlagValue()
+{
+  _flags_gFV_usName_=$1
+  _flags_gFV_type_=`_flags_getFlagInfo ${_flags_gFV_usName_} ${__FLAGS_INFO_TYPE}`
+
+  if [ ${_flags_gFV_type_} -gt 128 ]; then
+    eval "$2=(\"\${FLAGS_${_flags_gFV_usName_}[@]}\")"
+  else
+    eval "$2=\"\${FLAGS_${_flags_gFV_usName_}:-}\""
+  fi
+
+  unset _flags_gFV_usName_ _flags_gFV_type_
+
+  return ${FLAGS_TRUE}
+}
+
+##############################################################################
+# Returns flag default value based on a flag name.
+#
+# Args:
+#   unnamed: string: underscored flag name
+#   unnamed: string: name of the output variable
+# Output:
+#   sets the variable named by the second argument to the default value,
+#   which is an array in case of a multi-flag.
+# Returns:
+#   integer: one of FLAGS_{TRUE|FALSE|ERROR}
+_flags_getFlagDefault()
+{
+  _flags_gFD_usName_=$1
+  _flags_gFD_type_=`_flags_getFlagInfo ${_flags_gFD_usName_} ${__FLAGS_INFO_TYPE}`
+
+  if [ ${_flags_gFD_type_} -gt 128 ]; then
+    eval "$2=(\"\${__flags_${_flags_gFD_usName_}_${__FLAGS_INFO_DEFAULT}[@]}\")"
+  else
+    eval "$2=\"\${__flags_${_flags_gFD_usName_}_${__FLAGS_INFO_DEFAULT}:-}\""
+  fi
+
+  unset _flags_gFD_usName_ _flags_gFD_type_
+
+  return ${FLAGS_TRUE}
+}
+
 # ----------------------------------------------------------------------------
 # helpers
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # Underscore a flag or category name by replacing dashes and whitespaces with underscores.
 #
 # Args:
@@ -515,28 +601,7 @@ _flags_underscoreName()
   echo $1 | sed 's/[ -]/_/g'
 }
 
-# Escape string for use in XML output.
-#
-# Args:
-#   unnamed: string: some string
-# Output:
-#   string: xml-escaped string
-_flags_xmlText()
-{
-  echo -e "$1" | sed 's/\&/\&amp;/g;s/</\&lt;/g'
-}
-
-# Escape string for use in man page output.
-#
-# Args:
-#   unnamed: string: some string
-# Output:
-#   string: man page-escaped string
-_flags_manText()
-{
-  echo -e "$1" | sed 's/\\/\\\\/g;s/-/\\-/g'
-}
-
+##############################################################################
 # Returns the width of the current screen.
 #
 # Output:
@@ -559,6 +624,7 @@ _flags_columns()
   echo ${__flags_columns}
 }
 
+##############################################################################
 # Check for presense of item in a list.
 #
 # Passed a string (e.g. 'abc'), this function will determine if the string is
@@ -585,6 +651,7 @@ _flags_itemInList()
   return ${flags_return}
 }
 
+##############################################################################
 # Sort space separated list.
 #
 # Args:
@@ -600,6 +667,7 @@ _flags_sortList()
 # validators
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # Validate a boolean.
 #
 # Args:
@@ -621,6 +689,7 @@ _flags_validateBoolean()
   return ${flags_return}
 }
 
+##############################################################################
 # Validate a float.
 #
 # Args:
@@ -652,6 +721,7 @@ _flags_validateFloat()
   return ${flags_return}
 }
 
+##############################################################################
 # Validate an integer.
 #
 # Args:
@@ -677,6 +747,7 @@ _flags_validateInteger()
   return ${flags_return}
 }
 
+##############################################################################
 # Validate an unsigned integer.
 #
 # Args:
@@ -699,6 +770,7 @@ _flags_validateUnsignedInteger()
 # helpers for command-line parsing
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # Parse command-line options using the standard getopt.
 #
 # Note: the flag options are passed around in the global __flags_opts so that
@@ -738,6 +810,7 @@ _flags_getoptStandard()
   return ${flags_return}
 }
 
+##############################################################################
 # Parse command-line options using the enhanced getopt.
 #
 # Note: the flag options are passed around in the global __flags_opts so that
@@ -770,6 +843,7 @@ _flags_getoptEnhanced()
   return ${flags_return}
 }
 
+##############################################################################
 # Dynamically parse a getopt result and set appropriate variables.
 #
 # This function does the actual conversion of getopt output and runs it through
@@ -806,7 +880,6 @@ _flags_parseGetopt()
   while true; do
     _flags_opt_=$1
     _flags_arg_=${2:-}
-    _flags_type_=${__FLAGS_TYPE_NONE}
     _flags_name_=''
 
     # determine long flag name
@@ -822,7 +895,6 @@ _flags_parseGetopt()
           # check for negated long boolean version
           if _flags_itemInList "${_flags_opt_}" ${__flags_boolNames}; then
             _flags_name_=`expr -- "${_flags_opt_}" : 'no\(.*\)'`
-            _flags_type_=${__FLAGS_TYPE_BOOLEAN}
             _flags_arg_=${__FLAGS_NULL}
           fi
         fi
@@ -852,67 +924,70 @@ _flags_parseGetopt()
 
     # set new flag value
     _flags_usName_=`_flags_underscoreName ${_flags_name_}`
-    [ ${_flags_type_} -eq ${__FLAGS_TYPE_NONE} ] && \
-        _flags_type_=`_flags_getFlagInfo \
-            "${_flags_usName_}" ${__FLAGS_INFO_TYPE}`
+    _flags_type_=`_flags_getFlagInfo "${_flags_usName_}" ${__FLAGS_INFO_TYPE}`
+
     case ${_flags_type_} in
-      ${__FLAGS_TYPE_BOOLEAN})
-        if [ ${_flags_len_} -eq ${__FLAGS_LEN_LONG} ]; then
-          if [ "${_flags_arg_}" != "${__FLAGS_NULL}" ]; then
-            eval "FLAGS_${_flags_usName_}=${FLAGS_TRUE}"
-          else
-            eval "FLAGS_${_flags_usName_}=${FLAGS_FALSE}"
-          fi
-        else
-          _flags_strToEval_="_flags_val_=\
-\${__flags_${_flags_usName_}_${__FLAGS_INFO_DEFAULT}}"
-          eval "${_flags_strToEval_}"
-          if [ ${_flags_val_} -eq ${FLAGS_FALSE} ]; then
-            eval "FLAGS_${_flags_usName_}=${FLAGS_TRUE}"
-          else
-            eval "FLAGS_${_flags_usName_}=${FLAGS_FALSE}"
-          fi
-        fi
-        ;;
-
-      ${__FLAGS_TYPE_FLOAT})
-        if _flags_validateFloat "${_flags_arg_}"; then
-          eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
-        else
-          flags_error="${_flags_name_}: invalid float value (${_flags_arg_})"
-          flags_return=${FLAGS_ERROR}
-          break
-        fi
-        ;;
-
-      ${__FLAGS_TYPE_INTEGER})
-        if _flags_validateInteger "${_flags_arg_}"; then
-          eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
-        else
-          flags_error="${_flags_name_}: invalid integer value (${_flags_arg_})"
-          flags_return=${FLAGS_ERROR}
-          break
-        fi
-        ;;
-
-      ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-        if _flags_validateUnsignedInteger "${_flags_arg_}"; then
-          eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
-        else
-          flags_error="${_flags_name_}: invalid unsigned integer value (${_flags_arg_})"
-          flags_return=${FLAGS_ERROR}
-          break
-        fi
-        ;;
-
-      ${__FLAGS_TYPE_STRING})
-        eval "FLAGS_${_flags_usName_}='${_flags_arg_}'"
-        ;;
-
-      ${__FLAGS_TYPE_COUNTER})
+      ${__FLAGS_TYPE_MULTI_BOOLEAN})
         eval "_flags_val_=\${FLAGS_${_flags_usName_}}"
-        _flags_val_=`expr "${_flags_val_}" + 1`
+        if [ ${_flags_len_} -eq ${__FLAGS_LEN_SHORT} -o \
+             "${_flags_arg_}" != "${__FLAGS_NULL}" ]; then
+          _flags_val_=`expr "${_flags_val_}" + 1`
+        else
+          _flags_val_=`expr "${_flags_val_}" - 1`
+        fi
         eval "FLAGS_${_flags_usName_}=${_flags_val_}"
+        ;;
+
+      *)
+        if [ ${_flags_type_} -ge 128 ]; then
+          eval "_flags_idx_=\${#FLAGS_${_flags_usName_}[@]}"
+          _flags_type_=`expr "${_flags_type_}" - 128`
+        else
+          _flags_idx_=0
+        fi
+        case ${_flags_type_} in
+          ${__FLAGS_TYPE_BOOLEAN})
+            if [ ${_flags_len_} -eq ${__FLAGS_LEN_LONG} ]; then
+              if [ "${_flags_arg_}" != "${__FLAGS_NULL}" ]; then
+                eval "FLAGS_${_flags_usName_}[${_flags_idx_}]=${FLAGS_TRUE}"
+              else
+                eval "FLAGS_${_flags_usName_}[${_flags_idx_}]=${FLAGS_FALSE}"
+              fi
+            else
+              _flags_strToEval_="_flags_val_=\${__flags_${_flags_usName_}_${__FLAGS_INFO_DEFAULT}}"
+              eval "${_flags_strToEval_}"
+              if [ ${_flags_val_} -eq ${FLAGS_FALSE} ]; then
+                eval "FLAGS_${_flags_usName_}[${_flags_idx_}]=${FLAGS_TRUE}"
+              else
+                eval "FLAGS_${_flags_usName_}[${_flags_idx_}]=${FLAGS_FALSE}"
+              fi
+            fi
+            ;;
+
+          ${__FLAGS_TYPE_FLOAT})
+            if _flags_validateFloat "${_flags_arg_}"; then
+              eval "FLAGS_${_flags_usName_}[${_flags_idx_}]='${_flags_arg_}'"
+            else
+              flags_error="${_flags_name_}: invalid float value (${_flags_arg_})"
+              flags_return=${FLAGS_ERROR}
+              break
+            fi
+            ;;
+
+          ${__FLAGS_TYPE_INTEGER})
+            if _flags_validateInteger "${_flags_arg_}"; then
+              eval "FLAGS_${_flags_usName_}[${_flags_idx_}]='${_flags_arg_}'"
+            else
+              flags_error="${_flags_name_}: invalid integer value (${_flags_arg_})"
+              flags_return=${FLAGS_ERROR}
+              break
+            fi
+            ;;
+
+          ${__FLAGS_TYPE_STRING})
+            eval "FLAGS_${_flags_usName_}[${_flags_idx_}]='${_flags_arg_}'"
+            ;;
+        esac
         ;;
     esac
 
@@ -1005,7 +1080,7 @@ _flags_parseGetopt()
     # shift the option and non-boolean arguments out.
     shift
     [ ${_flags_type_} != ${__FLAGS_TYPE_BOOLEAN} -a \
-      ${_flags_type_} != ${__FLAGS_TYPE_COUNTER} ] && shift
+      ${_flags_type_} != ${__FLAGS_TYPE_MULTI_BOOLEAN} ] && shift
   done
 
   # give user back non-flag arguments
@@ -1018,6 +1093,253 @@ _flags_parseGetopt()
   unset _flags_arg_ _flags_len_ _flags_name_ _flags_opt_ _flags_pos_ \
       _flags_strToEval_ _flags_type_ _flags_usName_ _flags_val_
   return ${flags_return}
+}
+
+# ----------------------------------------------------------------------------
+# helpers for help output
+# ----------------------------------------------------------------------------
+
+##############################################################################
+# Convert type ID to type string.
+#
+# Args:
+#   _flags_type_: integer: type ID
+# Outputs:
+#   string: type string
+_flags_typeStr()
+{
+  _flags_tS_type_=$1
+
+  # type ID's of multi-flags have an offset of 128 (8th bit set)
+  if [ ${_flags_tS_type_} -gt 128 ]; then
+    _flags_tS_type_=`expr "${_flags_type__}" - 128`
+    echo -n 'multi '
+  fi
+
+  # type string of value type
+  case "${_flags_tS_type_}" in
+    ${__FLAGS_TYPE_BOOLEAN}) echo -n 'bool'; ;;
+    ${__FLAGS_TYPE_FLOAT})   echo -n 'float'; ;;
+    ${__FLAGS_TYPE_INTEGER}) echo -n 'int'; ;;
+    ${__FLAGS_TYPE_STRING})  echo -n 'string'; ;;
+    *)                       echo -n 'unknown'; ;;
+  esac
+
+  unset _flags_tS_type_
+}
+
+##############################################################################
+# Convert current value to string for help output.
+_flags_currentStr()
+{
+  _flags_name__=$1
+
+  # get flag info
+  _flags_usName__=`_flags_underscoreName ${_flags_name__}`
+  _flags_type__=`_flags_getFlagInfo "${_flags_usName__}" ${__FLAGS_INFO_TYPE}`
+  _flags_getFlagValue "${_flags_usName__}" '_flags_current__'
+
+  _flags_multi__=${FLAGS_FALSE}
+  if [ ${_flags_type__} -eq ${__FLAGS_TYPE_MULTI_BOOLEAN} ]; then
+    _flags_valueType__=${__FLAGS_TYPE_INTEGER}
+  elif [ ${_flags_type__} -gt 128 ]; then
+    _flags_valueType__=`expr "${_flags_type__}" - 128`
+    _flags_multi__=${FLAGS_TRUE}
+    echo -n '['
+  else
+    _flags_valueType__=${_flags_type__}
+  fi
+
+  _flags_separator__='' # set at end of first iteration
+  for _flags_value__ in "${_flags_current__[@]}"; do
+    echo -n "${_flags_separator__}"
+    case ${_flags_valueType__} in
+      ${__FLAGS_TYPE_BOOLEAN})
+        if [ ${_flags_value__} -eq ${FLAGS_TRUE} ]; then
+          echo -n 'true'
+        else
+          echo -n 'false'
+        fi
+        ;;
+
+      ${__FLAGS_TYPE_STRING})
+        echo -n "'${_flags_value__}'"
+        ;;
+
+      *)
+        echo -n ${_flags_value__}
+        ;;
+    esac
+    _flags_separator__=' '
+  done
+
+  if [ ${_flags_multi__} -eq ${FLAGS_TRUE} ]; then
+    echo -n ']'
+  fi
+
+  unset _flags_name__ _flags_usName__ _flags_current__ _flags_type__ \
+      _flags_valueType__ _flags_value__ _flags_multi__ _flags_separator__
+}
+
+##############################################################################
+# Convert default value to string for help output.
+_flags_defaultStr()
+{
+  _flags_dS_name_=$1
+
+  # get flag info
+  _flags_dS_usName_=`_flags_underscoreName ${_flags_dS_name_}`
+  _flags_dS_type_=`_flags_getFlagInfo "${_flags_dS_usName_}" ${__FLAGS_INFO_TYPE}`
+  _flags_getFlagDefault "${_flags_dS_usName_}" '_flags_dS_default_'
+
+  _flags_dS_multi_=${FLAGS_FALSE}
+  if [ ${_flags_dS_type_} -eq ${__FLAGS_TYPE_MULTI_BOOLEAN} ]; then
+    _flags_dS_valueType_=${__FLAGS_TYPE_INTEGER}
+  elif [ ${_flags_dS_type_} -gt 128 ]; then
+    _flags_dS_valueType_=`expr "${_flags_dS_type_}" - 128`
+    _flags_dS_multi_=${FLAGS_TRUE}
+    echo -n '['
+  else
+    _flags_dS_valueType_=${_flags_dS_type_}
+  fi
+
+  _flags_dS_separator_='' # set at end of first iteration
+  for _flags_dS_value_ in "${_flags_dS_default_[@]}"; do
+    echo -n "${_flags_dS_separator_}"
+    case ${_flags_dS_valueType_} in
+      ${__FLAGS_TYPE_BOOLEAN})
+        if [ ${_flags_dS_value_} -eq ${FLAGS_TRUE} ]; then
+          echo -n 'true'
+        else
+          echo -n 'false'
+        fi
+        ;;
+
+      ${__FLAGS_TYPE_STRING})
+        echo -n "'${_flags_dS_value_}'"
+        ;;
+
+      *)
+        echo -n ${_flags_dS_value_}
+        ;;
+    esac
+    _flags_dS_separator_=' '
+  done
+
+  if [ ${_flags_dS_multi_} -eq ${FLAGS_TRUE} ]; then
+    echo -n ']'
+  fi
+
+  unset _flags_dS_name_ _flags_dS_usName_ _flags_dS_default_ _flags_dS_type_ \
+      _flags_dS_valueType_ _flags_dS_value_ _flags_dS_multi_ _flags_dS_separator_
+}
+
+##############################################################################
+# Escape string for use in XML output.
+#
+# Args:
+#   unnamed: string: some string
+# Output:
+#   string: xml-escaped string
+_flags_xmlText()
+{
+  echo -e "$1" | sed 's/\&/\&amp;/g;s/</\&lt;/g'
+}
+
+##############################################################################
+# Escape string for use in man page output.
+#
+# Args:
+#   unnamed: string: some string
+# Output:
+#   string: man page-escaped string
+_flags_manText()
+{
+  echo -e "$1" | sed 's/\\/\\\\/g;s/-/\\-/g'
+}
+
+##############################################################################
+# Output short usage of named flag.
+#
+# Args:
+#   _flags_name_: string: long flag name
+# Outputs:
+#  string: usage of flag, e.g., "--someflag=<int>"
+_flags_flagusage()
+{
+  _flags_name_=$1
+
+  # get type of flag
+  _flags_usName_=`_flags_underscoreName ${_flags_name_}`
+  _flags_type_=`_flags_getFlagInfo "${_flags_usName_}" ${__FLAGS_INFO_TYPE}`
+
+  # type ID's of multi-flags have an offset of 128 (8th bit set)
+  if [ ${_flags_type_} -ge 128 ]; then
+    _flags_multi_=${FLAGS_TRUE}
+    _flags_type_=`expr "${_flags_type_}" - 128`
+  else
+    _flags_multi_=${FLAGS_FALSE}
+  fi
+
+  # value type
+  case ${_flags_type_} in
+    ${__FLAGS_TYPE_BOOLEAN})
+      echo -n "--[no]${_flags_name_}"
+      ;;
+
+    *)
+      echo -n "--${_flags_name_}=<`_flags_typeStr ${_flags_type_}`>"
+      ;;
+  esac
+
+  # append '...' if it's a multi-flag
+  if [ ${_flags_multi_} -eq ${FLAGS_TRUE} ]; then
+    echo -n '...'
+  fi
+
+  unset _flags_name_ _flags_usName_ _flags_type_ _flags_multi_
+}
+
+##############################################################################
+# Output short usage of named flag in man page format.
+#
+# Args:
+#   _flags_name_: string: long flag name
+# Outputs:
+#  string: usage of flag, e.g., "--someflag=<int>"
+_flags_helpman_flagusage()
+{
+  _flags_name_=$1
+
+  # get type of flag
+  _flags_usName_=`_flags_underscoreName ${_flags_name_}`
+  _flags_type_=`_flags_getFlagInfo "${_flags_usName_}" ${__FLAGS_INFO_TYPE}`
+
+  # type ID's of multi-flags have an offset of 128 (8th bit set)
+  if [ ${_flags_type_} -ge 128 ]; then
+    _flags_multi_=${FLAGS_TRUE}
+    _flags_type_=`expr "${_flags_type_}" - 128`
+  else
+    _flags_multi_=${FLAGS_FALSE}
+  fi
+
+  # value type
+  case ${_flags_type_} in
+    ${__FLAGS_TYPE_BOOLEAN})
+      echo -n "\fB--[no]${_flags_name_}\fR"
+      ;;
+
+    *)
+      echo -n "\fB--${_flags_name_}\fR=<\fI`_flags_typeStr ${_flags_type_}`\fR>"
+      ;;
+  esac
+
+  # append '...' if it's a multi-flag
+  if [ ${_flags_multi_} -eq ${FLAGS_TRUE} ]; then
+    echo -n '...'
+  fi
+
+  unset _flags_name_ _flags_usName_ _flags_type_ _flags_multi_
 }
 
 # ============================================================================
@@ -1045,19 +1367,32 @@ DEFINE_boolean() { _flags_define ${__FLAGS_TYPE_BOOLEAN} "$@"; }
 DEFINE_bool()    { _flags_define ${__FLAGS_TYPE_BOOLEAN} "$@"; }
 
 # Other basic flags.
-DEFINE_float()            { _flags_define ${__FLAGS_TYPE_FLOAT} "$@"; }
-DEFINE_double()           { _flags_define ${__FLAGS_TYPE_FLOAT} "$@"; }
-DEFINE_integer()          { _flags_define ${__FLAGS_TYPE_INTEGER} "$@"; }
-DEFINE_int()              { _flags_define ${__FLAGS_TYPE_INTEGER} "$@"; }
-DEFINE_unsigned_integer() { _flags_define ${__FLAGS_TYPE_UNSIGNED_INTEGER} "$@"; }
-DEFINE_uint()             { _flags_define ${__FLAGS_TYPE_UNSIGNED_INTEGER} "$@"; }
-DEFINE_string()           { _flags_define ${__FLAGS_TYPE_STRING} "$@"; }
-DEFINE_counter()          { _flags_define ${__FLAGS_TYPE_COUNTER} "$@"; }
+DEFINE_float()   { _flags_define ${__FLAGS_TYPE_FLOAT}   "$@"; }
+DEFINE_integer() { _flags_define ${__FLAGS_TYPE_INTEGER} "$@"; }
+DEFINE_int()     { _flags_define ${__FLAGS_TYPE_INTEGER} "$@"; }
+DEFINE_string()  { _flags_define ${__FLAGS_TYPE_STRING}  "$@"; }
+
+# A multi boolean flag. Such flag can be given multiple times and instead of
+# representing a list of boolean values, this flag's value is a counter which
+# is incremented for every boolean flag value that is 'true' and decremented
+# otherwise. Note that the value of the counter may hence also be negative.
+#
+# An example use case of this flag is the --verbose flag. The more often this
+# flag was given, the more verbose the output messages should be.
+DEFINE_multi_boolean() { _flags_define ${__FLAGS_TYPE_MULTI_BOOLEAN} "$@"; }
+DEFINE_multi_bool()    { _flags_define ${__FLAGS_TYPE_MULTI_BOOLEAN} "$@"; }
+
+# Other multi-flags, i.e., flags that may be given multiple times
+DEFINE_multi_float()   { _flags_define ${__FLAGS_TYPE_MULTI_FLOAT}   "$@"; }
+DEFINE_multi_integer() { _flags_define ${__FLAGS_TYPE_MULTI_INTEGER} "$@"; }
+DEFINE_multi_int()     { _flags_define ${__FLAGS_TYPE_MULTI_INTEGER} "$@"; }
+DEFINE_multi_string()  { _flags_define ${__FLAGS_TYPE_MULTI_STRING}  "$@"; }
 
 # ----------------------------------------------------------------------------
 # command-line parsing
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # Parse the flags.
 #
 # Args:
@@ -1085,8 +1420,8 @@ FLAGS()
   [ -z "${__flags_version_type:-}" ] && \
       DEFINE_boolean 'version' false 'Show version and exit.' "${__FLAGS_NULL}" 'help'
   [ -z "${__flags_verbose_type:-}" ] && \
-      DEFINE_counter 'verbose' 0 'Increase verbosity of output messages.
-                                  Can be given multiple times.' 'v' 'help'
+      DEFINE_multi_boolean 'verbose' 0 'Increase verbosity of output messages.
+                                        Can be given multiple times.' 'v' 'help'
 
   # parse options
   if [ $# -gt 0 ]; then
@@ -1115,6 +1450,7 @@ FLAGS()
 # getopt information
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # This is a helper function for determining the 'getopt' version for platforms
 # where the detection isn't working. It simply outputs debug information that
 # can be included in a bug report.
@@ -1149,6 +1485,7 @@ flags_getoptInfo()
   unset _flags_getoptReturn
 }
 
+##############################################################################
 # Returns whether the detected getopt version is the enhanced version.
 #
 # Args:
@@ -1162,6 +1499,7 @@ flags_getoptIsEnh()
   test ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH}
 }
 
+##############################################################################
 # Returns whether the detected getopt version is the standard version.
 #
 # Args:
@@ -1177,6 +1515,7 @@ flags_getoptIsStd()
 # help and usage information
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # Prints usage as in synopsis section of man pages.
 flags_usage()
 {
@@ -1192,90 +1531,21 @@ flags_usage()
     fi
   done
 
+  flags_command_=${HELP_COMMAND:-${0##*/}}       # actual command name (constant)
+  flags_executable_="${FLAGS_PARENT:-${0##*/}}"  # name of executable (may differ)
+
   flags_usage_=''
   if [ -n "${flags_optionalFlags_}" ]; then
     for flags_name_ in ${flags_optionalFlags_}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      case ${flags_type_} in
-        ${__FLAGS_TYPE_BOOLEAN})
-          flags_usage_="${flags_usage_} [--[no]${flags_name_}]"
-          ;;
-
-        ${__FLAGS_TYPE_FLOAT})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<float>]"
-          ;;
-
-        ${__FLAGS_TYPE_INTEGER})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<int>]"
-          ;;
-
-        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<uint>]"
-          ;;
-
-        ${__FLAGS_TYPE_STRING})
-          flags_usage_="${flags_usage_} [--${flags_name_}=<string>]"
-          ;;
-
-        ${__FLAGS_TYPE_COUNTER})
-          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
-          ;;
-
-        *)
-          flags_usage_="${flags_usage_} [--${flags_name_}=<value>]"
-          ;;
-      esac
+      flags_usage_="${flags_usage_} [`_flags_flagusage ${flags_name_}`]"
     done
   fi
   if [ -n "${flags_requiredFlags_}" ]; then
     for flags_name_ in ${flags_requiredFlags_}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      case ${flags_type_} in
-        ${__FLAGS_TYPE_BOOLEAN})
-          flags_usage_="${flags_usage_} --[no]${flags_name_}"
-          ;;
-
-        ${__FLAGS_TYPE_FLOAT})
-          flags_usage_="${flags_usage_} --${flags_name_}=<float>"
-          ;;
-
-        ${__FLAGS_TYPE_INTEGER})
-          flags_usage_="${flags_usage_} --${flags_name_}=<int>"
-          ;;
-
-        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-          flags_usage_="${flags_usage_} --${flags_name_}=<uint>"
-          ;;
-
-        ${__FLAGS_TYPE_STRING})
-          flags_usage_="${flags_usage_} --${flags_name_}=<string>"
-          ;;
-
-        ${__FLAGS_TYPE_COUNTER})
-          flags_usage_="${flags_usage_} [--${flags_name_} ...]"
-          ;;
-
-        *)
-          flags_usage_="${flags_usage_} --${flags_name_}=<value>"
-          ;;
-      esac
+      flags_usage_="${flags_usage_} `_flags_flagusage ${flags_name_}`"
     done
   fi
-
-  flags_command_=${HELP_COMMAND:-${0##*/}}
-  flags_executable_="${FLAGS_PARENT:-${0##*/}}"
-
-  # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
-  # because it doesn't like empty strings when used in this manner.
-  flags_emptyStr_="`echo \"x${flags_executable_}x\" \
-      |awk '{printf "%"length($0)+3"s", ""}'`"
-  flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
-
-  flags_usage_="${flags_usage_} args"
-  flags_usage_="$(echo "${flags_emptyStr_}${flags_usage_}" | fmt -l 0 -$(_flags_columns))"
-  flags_usage_="     ${flags_executable_}${flags_usage_:${flags_emptyStrLen_}}"
+  flags_usage_="${flags_usage_} [args]"
 
   echo "NAME"
   # use first sentence of description as brief description similar to Doxygen
@@ -1295,6 +1565,13 @@ flags_usage()
   fi
   echo
   echo "SYNOPSIS"
+  # note: the silliness with the x's is purely for ksh93 on Ubuntu 6.06
+  # because it doesn't like empty strings when used in this manner.
+  flags_emptyStr_="`echo \"x${flags_executable_}x\" \
+      |awk '{printf "%"length($0)+3"s", ""}'`"
+  flags_emptyStrLen_=`expr -- "${flags_emptyStr_}" : '.*'`
+  flags_usage_="$(echo "${flags_emptyStr_}${flags_usage_}" | fmt -l 0 -$(_flags_columns))"
+  flags_usage_="     ${flags_executable_}${flags_usage_:${flags_emptyStrLen_}}"
   echo "${flags_usage_}"
 
   unset flags_name_ flags_command_ flags_usage_ flags_brief_ flags_usName_ \
@@ -1304,7 +1581,8 @@ flags_usage()
   return ${FLAGS_TRUE}
 }
 
-# Print help for named flag
+##############################################################################
+# Print help for named flag.
 #
 # Args:
 #   flags_name_: string: long name of flag
@@ -1322,8 +1600,6 @@ flags_helpflag()
   flags_boolStr_=''
   flags_usName_=`_flags_underscoreName ${flags_name_}`
 
-  flags_default_=`_flags_getFlagInfo \
-      "${flags_usName_}" ${__FLAGS_INFO_DEFAULT}`
   flags_help_=`_flags_getFlagInfo \
       "${flags_usName_}" ${__FLAGS_INFO_HELP}`
   flags_short_=`_flags_getFlagInfo \
@@ -1351,20 +1627,9 @@ flags_helpflag()
   [ ${flags_numSpaces_} -ge 0 ] || flags_numSpaces_=0
   flags_spaces_=`printf %${flags_numSpaces_}s`
   flags_flagStr_="${flags_flagStr_}${flags_spaces_}"
-
-  case ${flags_type_} in
-    ${__FLAGS_TYPE_BOOLEAN})
-      if [ ${flags_default_} -eq ${FLAGS_TRUE} ]; then
-        flags_defaultStr_='true'
-      else
-        flags_defaultStr_='false'
-      fi
-      ;;
-    ${__FLAGS_TYPE_STRING}) flags_defaultStr_="'${flags_default_}'" ;;
-    *) flags_defaultStr_=${flags_default_} ;;
-  esac
-  flags_defaultStr_="(default: ${flags_defaultStr_})"
-
+  # default value
+  flags_defaultStr_="(default: `_flags_defaultStr ${flags_name_}`)"
+  # help text
   flags_helpStr_="  ${flags_flagStr_}   ${flags_help_}"
   if [ ${flags_showDefault_} -eq ${FLAGS_TRUE} ]; then
     flags_helpStr_="${flags_helpStr_} ${flags_defaultStr_}"
@@ -1386,45 +1651,53 @@ flags_helpflag()
   flags_helpStr_="     ${flags_flagStr_}   ${flags_helpStr_:${flags_emptyStrLen_}}"
   echo "${flags_helpStr_}"
 
-  unset flags_boolStr_ flags_default_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
+  unset flags_boolStr_ flags_defaultStr_ flags_emptyStr_ flags_emptyStrLen_ \
       flags_flagStr_ flags_help_ flags_helpStr flags_helpStrLen flags_name_ \
       flags_columns_ flags_short_ flags_type_ flags_usName_ flags_flagStrLen_
 
   return ${FLAGS_TRUE}
 }
 
+##############################################################################
 # Print help of all flags.
 #
 # This function is used by flags_help() and flags_helpshort().
 #
 # Args:
-#  none
+#   flags_helpshort_: bool: display only short help of options, leaving out
+#                           less important options
 # Returns:
 #   integer: success of operation (always returns true)
 flags_helpflags()
 {
+  flags_helpshort_=${1:-${FLAGS_FALSE}}
+
   echo "OPTIONS"
-  # get lists of flags belonging to same category and
-  # maximum length of long names required for alignment of help
+
+  # reset (all) categories
   flags_maxNameLen_=0
   flags_otherFlags_=' '
   for flags_category_ in "${__flags_categoryNames[@]}"; do
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
     eval "flags_${flags_usCategory_}Flags_=' '"
   done
+
+  # get lists of flags belonging to each category and
+  # maximum length of long names required for alignment of help
   for flags_name_ in ${__flags_longNames}; do
-    flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
     flags_usName_=`_flags_underscoreName ${flags_name_}`
+
+    # update maximum length of flag name
+    flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
     # length + 4 for boolean flags because of the '[no]' prefix
     flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-    flags_usName_=`_flags_underscoreName ${flags_name_}`
     if [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ]; then
       flags_nameStrLen_=`expr -- "${flags_nameStrLen}" + 4`
     fi
-    # update maximum length of flag name
     if [ ${flags_nameStrLen_} -gt ${flags_maxNameLen_} ]; then
       flags_maxNameLen_=${flags_nameStrLen_}
     fi
+
     # append flag to list for its category
     flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
     if [ "${flags_category_}" = "${__FLAGS_NULL}" ]; then
@@ -1434,12 +1707,29 @@ flags_helpflags()
       eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_}${flags_name_} \""
     fi
   done
+
+  # select subset of categories to display
+  if [ ${flags_helpshort_} -eq ${FLAGS_TRUE} ]; then
+    flags_categories_=()
+    for flags_category_ in "${__flags_categoryNames[@]}"; do
+      if [ "${flags_category_}" = 'help' ]; then
+        flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+        eval "unset flags_${flags_usCategory_}Flags_"
+        continue
+      fi
+      flags_categories_[${#flags_categories_[@]}]="${flags_category_}"
+    done
+  else
+    flags_categories_=("${__flags_categoryNames[@]}")
+  fi
+
   # sort lists
-  for flags_category_ in "${__flags_categoryNames[@]}"; do
+  for flags_category_ in "${flags_categories_[@]}"; do
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
     eval "flags_${flags_usCategory_}Flags_=\`_flags_sortList \"\${flags_${flags_usCategory_}Flags_}\"\`"
   done
   flags_otherFlags_=`_flags_sortList "${flags_otherFlags_}"`
+
   # output help of required flags
   if [ -n "${flags_requiredFlags_}" ]; then
     echo "     The required options are as follows:"
@@ -1449,8 +1739,9 @@ flags_helpflags()
     done
     echo
   fi
+
   # output help of non-required and non-help flags
-  for flags_category_ in "${__flags_categoryNames[@]}"; do
+  for flags_category_ in "${flags_categories_[@]}"; do
     if [ "${flags_category_}" = 'required' -o \
          "${flags_category_}" = 'help' ]; then
       continue
@@ -1466,6 +1757,7 @@ flags_helpflags()
       echo
     fi
   done
+
   # output help of remaining non-help flags
   if [ -n "${flags_otherFlags_}" ]; then
     echo "     The available options are as follows:"
@@ -1475,6 +1767,7 @@ flags_helpflags()
     done
     echo
   fi
+
   # output help of help flags
   if [ -n "${flags_helpFlags_}" ]; then
     echo "     The help options are as follows:"
@@ -1486,16 +1779,17 @@ flags_helpflags()
   fi
 
   # clean up
-  for flags_category_ in "${__flags_categoryNames[@]}"; do
+  for flags_category_ in "${flags_categories_[@]}"; do
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
     eval "unset flags_${flags_usCategory_}Flags_"
   done
   unset flags_maxNameLen_ flags_name_ flags_nameStrLen_ flags_type_ \
-      flags_otherFlags flags_category_ flags_usCategory_
+      flags_otherFlags flags_categories_ flags_category_ flags_usCategory_
  
   return ${FLAGS_TRUE}
 }
 
+##############################################################################
 # This is effectively a 'usage()' function. It prints a usage information on
 # how to use the program and the available flags. Note this function can be
 # overridden so other apps can define their own short help output,
@@ -1512,11 +1806,12 @@ flags_helpshort()
   flags_usage
   echo
   # flags
-  flags_helpflags
+  flags_helpflags ${FLAGS_TRUE}
  
   return ${FLAGS_TRUE}
 }
 
+##############################################################################
 # This is effectively a 'help()' function. It prints a program description together
 # with usage information and example command-lines on how to use the program.
 # Note this function can be overridden so other apps can define their own help
@@ -1543,7 +1838,7 @@ flags_help()
   fi
   # flags
   echo
-  flags_helpflags # attention: unsets flags_columns_
+  flags_helpflags ${FLAGS_FALSE} # attention: unsets flags_columns_
   # contact
   if [ -n "${HELP_CONTACT:-}" ]; then
     echo "CONTACT"
@@ -1564,6 +1859,7 @@ flags_help()
 # XML help
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # This function outputs the help of named flag in XML format
 #
 # Args:
@@ -1578,9 +1874,6 @@ flags_helpflagxml()
   flags_indentation_=${2:-0}
   flags_usName_=`_flags_underscoreName ${flags_name_}`
 
-  eval "flags_current_=\${FLAGS_${flags_usName_}}"
-  flags_default_=`_flags_getFlagInfo \
-      "${flags_usName_}" ${__FLAGS_INFO_DEFAULT}`
   flags_help_=`_flags_getFlagInfo \
       "${flags_usName_}" ${__FLAGS_INFO_HELP}`
   flags_short_=`_flags_getFlagInfo \
@@ -1596,29 +1889,12 @@ flags_helpflagxml()
   [ "${flags_short_}"    = "${__FLAGS_NULL}" ] && flags_short_=''
   [ "${flags_category_}" = "${__FLAGS_NULL}" ] && flags_category_=''
 
-  # convert boolean value
-  if [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ]; then
-    if [ ${flags_current_} -eq ${FLAGS_TRUE} ]; then
-      flags_current_='true'
-    else
-      flags_current_='false'
-    fi
-    if [ ${flags_default_} -eq ${FLAGS_TRUE} ]; then
-      flags_default_='true'
-    else
-      flags_default_='false'
-    fi
-  fi
+  # current and default value
+  flags_current_=`_flags_currentStr ${flags_usName_}`
+  flags_default_=`_flags_defaultStr ${flags_usName_}`
 
   # convert type
-  case "${flags_type_}" in
-    ${__FLAGS_TYPE_BOOLEAN})          flags_type_='bool'; ;;
-    ${__FLAGS_TYPE_FLOAT})            flags_type_='double'; ;;
-    ${__FLAGS_TYPE_INTEGER})          flags_type_='int'; ;;
-    ${__FLAGS_TYPE_UNSIGNED_INTEGER}) flags_type_='uint'; ;;
-    ${__FLAGS_TYPE_COUNTER})          flags_type_='int'; ;;
-    *)                                flags_type_='string'; ;;
-  esac
+  flags_type_=`_flags_typeStr ${flags_type_}`
 
   # xml-escape values
   flags_short_=`_flags_xmlText "${flags_short_}"`
@@ -1626,26 +1902,28 @@ flags_helpflagxml()
   flags_help_=`_flags_xmlText "${flags_help_}"`
   flags_current_=`_flags_xmlText "${flags_current_}"`
   flags_default_=`_flags_xmlText "${flags_default_}"`
+  flags_type_=`_flags_xmlText "${flags_type_}"`
 
   # indentation
   flags_emptyStr_=`printf %${flags_indentation_}s`
 
   # output XML tags
-  echo "${flags_emptyStr_}<option id=\"${flags_usName_}\">"
-  echo "${flags_emptyStr_}    <name>${flags_name_}</name>"
-  echo "${flags_emptyStr_}    <flag>${flags_short_}</flag>"
-  echo "${flags_emptyStr_}    <type>${flags_type_}</type>"
+  echo "${flags_emptyStr_}<flag>"
   echo "${flags_emptyStr_}    <category>${flags_category_}</category>"
-  echo "${flags_emptyStr_}    <help>${flags_help_}</help>"
-  echo "${flags_emptyStr_}    <current>${flags_current_}</current>"
+  echo "${flags_emptyStr_}    <name>${flags_name_}</name>"
+  echo "${flags_emptyStr_}    <short_name>${flags_short_}</short_name>"
+  echo "${flags_emptyStr_}    <meaning>${flags_help_}</meaning>"
   echo "${flags_emptyStr_}    <default>${flags_default_}</default>"
-  echo "${flags_emptyStr_}</option>"
+  echo "${flags_emptyStr_}    <current>${flags_current_}</current>"
+  echo "${flags_emptyStr_}    <type>${flags_type_}</type>"
+  echo "${flags_emptyStr_}</flag>"
 
   unset flags_current_ flags_default_ flags_name_ flags_usName_ \
       flags_short_ flags_type_ flags_help_ flags_indentation_ \
       flags_emptyStr_
 }
 
+##############################################################################
 # This function outputs the help in XML format.
 #
 # Args:
@@ -1702,6 +1980,7 @@ flags_helpxml()
 # man page
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # Prints NAME section of man page.
 flags_helpman_name()
 {
@@ -1732,6 +2011,7 @@ flags_helpman_name()
   return ${FLAGS_TRUE}
 }
 
+##############################################################################
 # Prints SYNOPSIS section of man page.
 flags_helpman_synopsis()
 {
@@ -1757,72 +2037,12 @@ flags_helpman_synopsis()
 
   if [ -n "${flags_optionalFlags_}" ]; then
     for flags_name_ in ${flags_optionalFlags_}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      case ${flags_type_} in
-        ${__FLAGS_TYPE_BOOLEAN})
-          echo "[\fB--[no]${flags_name_}\fR]"
-          ;;
-
-        ${__FLAGS_TYPE_FLOAT})
-          echo "[\fB--${flags_name_}=\fR\fIfloat\fR]"
-          ;;
-
-        ${__FLAGS_TYPE_INTEGER})
-          echo "[\fB--${flags_name_}=\fR\fIint\fR]"
-          ;;
-
-        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-          echo "[\fB--${flags_name_}\fR=\fIuint\fR]"
-          ;;
-
-        ${__FLAGS_TYPE_STRING})
-          echo "[\fB--${flags_name_}\fR=\fIstring\fR]"
-          ;;
-
-        ${__FLAGS_TYPE_COUNTER})
-          echo "[\fB--${flags_name_}\fR...]"
-          ;;
-
-        *)
-          echo "[\fB--${flags_name_}\fR=\fIvalue\fR]"
-          ;;
-      esac
+      echo "[\fB`_flags_helpman_flagusage ${flags_name_}`\fR]"
     done
   fi
   if [ -n "${flags_requiredFlags_}" ]; then
     for flags_name_ in ${flags_requiredFlags_}; do
-      flags_usName_=`_flags_underscoreName ${flags_name_}`
-      flags_type_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_TYPE}`
-      case ${flags_type_} in
-        ${__FLAGS_TYPE_BOOLEAN})
-          echo "\fB--[no]${flags_name_}\fR"
-          ;;
-
-        ${__FLAGS_TYPE_FLOAT})
-          echo "\fB--${flags_name_}=\fR\fIfloat\fR"
-          ;;
-
-        ${__FLAGS_TYPE_INTEGER})
-          echo "\fB--${flags_name_}=\fR\fIint\fR"
-          ;;
-
-        ${__FLAGS_TYPE_UNSIGNED_INTEGER})
-          echo "\fB--${flags_name_}\fR=\fIuint\fR"
-          ;;
-
-        ${__FLAGS_TYPE_STRING})
-          echo "\fB--${flags_name_}\fR=\fIstring\fR"
-          ;;
-
-        ${__FLAGS_TYPE_COUNTER})
-          echo "\fB--${flags_name_}\fR..."
-          ;;
-
-        *)
-          echo "\fB--${flags_name_}\fR=\fIvalue\fR"
-          ;;
-      esac
+      echo "\fB`_flags_helpman_flagusage ${flags_name_}`\fR"
     done
   fi
   echo "[args]"
@@ -1833,6 +2053,7 @@ flags_helpman_synopsis()
   return ${FLAGS_TRUE}
 }
 
+##############################################################################
 # Prints DESCRIPTION section of man page.
 flags_helpman_description()
 {
@@ -1846,6 +2067,7 @@ flags_helpman_description()
   fi
 }
 
+##############################################################################
 # Prints OPTIONS section entry of man page of named flag.
 flags_helpman_flag()
 {
@@ -1855,8 +2077,7 @@ flags_helpman_flag()
   flags_boolStr_=''
   flags_usName_=`_flags_underscoreName ${flags_name_}`
 
-  flags_default_=`_flags_getFlagInfo \
-      "${flags_usName_}" ${__FLAGS_INFO_DEFAULT}`
+  _flags_getFlagDefault "${flags_usName_}" 'flags_default_'
   flags_help_=`_flags_getFlagInfo \
       "${flags_usName_}" ${__FLAGS_INFO_HELP}`
   flags_short_=`_flags_getFlagInfo \
@@ -1868,6 +2089,11 @@ flags_helpman_flag()
 
   flags_help_=$(echo "${flags_help_}"|sed 's/^\ *//g'|tr '\n' ' ')
 
+  # adjust type ID for multi-flags
+  if [ ${flags_type_} -gt 128 ]; then
+    flags_type_=`expr "${flags_type_}" - 128`
+  fi
+  # flag name
   if [ ${__FLAGS_GETOPT_VERS} -eq ${__FLAGS_GETOPT_VERS_ENH} ]; then
     # add [no] to long boolean flag names, except the 'help' flags
     [ ${flags_type_} -eq ${__FLAGS_TYPE_BOOLEAN} ] && \
@@ -1875,37 +2101,17 @@ flags_helpman_flag()
     # long flag name
     flags_flagStr_="\fB${flags_flagStr_}--${flags_boolStr_}${flags_name_}"
   fi
-  # short flag name
   [ "${flags_short_}" != "${__FLAGS_NULL}" ] && \
+      # short flag name
       flags_flagStr_="${flags_flagStr_}, -${flags_short_}"
   flags_flagStr_="${flags_flagStr_}\fR"
-  # default value
-  case ${flags_type_} in
-    ${__FLAGS_TYPE_BOOLEAN})
-      if [ ${flags_default_} -eq ${FLAGS_TRUE} ]; then
-        flags_defaultStr_='true'
-      else
-        flags_defaultStr_='false'
-      fi
-      ;;
-    ${__FLAGS_TYPE_STRING}) flags_defaultStr_="'${flags_default_}'" ;;
-    *) flags_defaultStr_=${flags_default_} ;;
-  esac
-
-  if [ ${flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} -a \
-       ${flags_type_} -ne ${__FLAGS_TYPE_COUNTER} ]; then
-    case "${flags_type_}" in
-      ${__FLAGS_TYPE_BOOLEAN})          flags_typeStr_='bool'; ;;
-      ${__FLAGS_TYPE_FLOAT})            flags_typeStr_='double'; ;;
-      ${__FLAGS_TYPE_INTEGER})          flags_typeStr_='int'; ;;
-      ${__FLAGS_TYPE_UNSIGNED_INTEGER}) flags_typeStr_='uint'; ;;
-      ${__FLAGS_TYPE_COUNTER})          flags_typeStr_='count'; ;;
-      *)                                flags_typeStr_='string'; ;;
-    esac
-    flags_flagStr_="${flags_flagStr_} \fI${flags_typeStr_}\fR"
+  # argument
+  if [ ${flags_type_} -ne ${__FLAGS_TYPE_BOOLEAN} ]; then
+    flags_flagStr_="${flags_flagStr_} \fI`_flags_typeStr ${flags_type_}`\fR"
   fi
-
+  # default value
   if [ ${flags_showDefault_} -eq ${FLAGS_TRUE} ]; then
+    flags_defaultStr_=`_flags_defaultStr "${flags_usName_}"`
     flags_defaultStr_=" (default:\ ${flags_defaultStr_//\ /\\ })"
   else
     flags_defaultStr_=''
@@ -1922,6 +2128,7 @@ flags_helpman_flag()
   return ${FLAGS_TRUE}
 }
 
+##############################################################################
 # Prints OPTIONS section of man page.
 flags_helpman_flags()
 {
@@ -1999,6 +2206,7 @@ flags_helpman_flags()
       flags_otherFlags flags_category_ flags_usCategory_
 }
 
+##############################################################################
 # Prints COPYRIGHT section of man page.
 flags_helpman_copyright()
 {
@@ -2013,6 +2221,7 @@ flags_helpman_copyright()
   fi
 }
 
+##############################################################################
 # Prints CONTACT section of man page.
 flags_helpman_contact()
 {
@@ -2026,6 +2235,7 @@ flags_helpman_contact()
   fi
 }
 
+##############################################################################
 # This function outputs the help in man page format.
 #
 # Args:
@@ -2054,6 +2264,7 @@ flags_helpman()
 # version information
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # This function outputs the version and copyright.
 #
 # Args:
@@ -2078,6 +2289,7 @@ flags_version()
 # reset
 # ----------------------------------------------------------------------------
 
+##############################################################################
 # Reset shflags back to an uninitialized state.
 #
 # Args:
