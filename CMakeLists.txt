@@ -38,12 +38,14 @@ set (TEMPLATE_VERSION "0.0.0")
 
 # the following variables would be set by the BASISConfig.cmake file if
 # this would be a project which uses BASIS; in fact, this *is* BASIS, though
-set (BASIS_MODULE_PATH   "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
-set (BASIS_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set (BASIS_LIBRARY_DIR   "${CMAKE_CURRENT_BINARY_DIR}/lib")
-set (BASIS_UTILITIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities")
-set (BASIS_UTILS_LIBRARY "basis_utils")
-set (BASIS_TEST_LIBRARY  "basis_test")
+set (BASIS_MODULE_PATH          "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
+set (BASIS_INCLUDE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set (BASIS_LIBRARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/lib")
+set (BASIS_CXX_TEMPLATES_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")
+set (BASIS_BASH_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash")
+set (BASIS_UTILS_LIBRARY        "basis_utils")
+set (BASIS_TEST_LIBRARY         "basis_test")
+set (BASIS_TEST_MAIN_LIBRARY    "basis_test_main")
 
 set (BASIS_DOXYGEN_INPUT_FILTER      "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-filter.pl")
 set (BASIS_DOXYGEN_FILTER_PYTHON     "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-python-filter.py -f")

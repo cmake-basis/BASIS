@@ -21,7 +21,7 @@
 # installation directory of project template files
 set (
   INSTALL_TEMPLATE_DIR
-    "\@INSTALL_SHARE_DIR\@/template"
+    "\@INSTALL_SHARE_DIR\@/project"
   CACHE PATH
     "Installation directory of project template (relative to INSTALL_PREFIX)."
 )
@@ -40,14 +40,23 @@ set (
 mark_as_advanced (INSTALL_MODULES_DIR)
 string (CONFIGURE "${INSTALL_MODULES_DIR}" INSTALL_MODULES_DIR @ONLY)
 
-# installation directory of utilities template files
+# installation directory of template files
 set (
-  INSTALL_UTILITIES_DIR
-    "\@INSTALL_SHARE_DIR\@/utilities"
+  INSTALL_CXX_TEMPLATES_DIR
+    "\@INSTALL_SHARE_DIR\@/templates"
   CACHE PATH
-    "Installation directory of utilities template files (relative to INSTALL_PREFIX)."
+    "Installation directory of C++ template files (relative to INSTALL_PREFIX)."
 )
 
-mark_as_advanced (INSTALL_UTILITIES_DIR)
-string (CONFIGURE "${INSTALL_UTILITIES_DIR}" INSTALL_UTILITIES_DIR @ONLY)
+mark_as_advanced (INSTALL_CXX_TEMPLATES_DIR)
+string (CONFIGURE "${INSTALL_CXX_TEMPLATES_DIR}" INSTALL_CXX_TEMPLATES_DIR @ONLY)
 
+set (
+  INSTALL_BASH_TEMPLATES_DIR
+    "\@INSTALL_SHARE_DIR\@/templates"
+  CACHE PATH
+    "Installation directory of BASH template files (relative to INSTALL_PREFIX)."
+)
+
+mark_as_advanced (INSTALL_BASH_TEMPLATES_DIR)
+string (CONFIGURE "${INSTALL_BASH_TEMPLATES_DIR}" INSTALL_BASH_TEMPLATES_DIR @ONLY)

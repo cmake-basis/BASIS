@@ -17,14 +17,14 @@ install (
     "stdaux.h.in"
     "stdaux.cc.in"
   DESTINATION
-    "${INSTALL_CPP_UTILITIES_DIR}"
+    "${INSTALL_CXX_TEMPLATES_DIR}"
 )
 
 # ----------------------------------------------------------------------------
 # utilities
 basis_add_library (
   basis_utils STATIC
-    "utilities/path.cc" # utility path functions
+    "path.cc" # utility path functions
 )
 
 # ----------------------------------------------------------------------------
@@ -41,6 +41,5 @@ if (NOT HAVE_TR1_TUPLE)
   basis_add_definitions ("-DGTEST_USE_OWN_TR1_TUPLE=1")
 endif ()
 
-basis_add_library (basis_test STATIC "gmock-gtest-all.cc")
-
-install (FILES "test_main.cc" DESTINATION "${INSTALL_CPP_UTILITIES_DIR}")
+basis_add_library (basis_test      STATIC "gmock-gtest-all.cc")
+basis_add_library (basis_test_main STATIC "test_main.cc")

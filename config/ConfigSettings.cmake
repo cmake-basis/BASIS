@@ -24,12 +24,14 @@ if (BUILD_CONFIG_SETTINGS)
     # CMake module path
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
-    # path to utilities template files
-    set (UTILITIES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities")
+    # path to templates files
+    set (CXX_TEMPLATES_DIR_CONFIG  "${PROJECT_CODE_DIR}/utilities/cxx")
+    set (BASH_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/bash")
 
     # libraries
-    basis_get_target_location (UTILS_LIBRARY_CONFIG basis_utils)
-    basis_get_target_location (TEST_LIBRARY_CONFIG  basis_test)
+    basis_get_target_location (UTILS_LIBRARY_CONFIG     basis_utils)
+    basis_get_target_location (TEST_LIBRARY_CONFIG      basis_test)
+    basis_get_target_location (TEST_MAIN_LIBRARY_CONFIG basis_test_main)
 
     # URL of project template
     set (TEMPLATE_URL_CONFIG "${PROJECT_ETC_DIR}/template")
@@ -44,8 +46,9 @@ endif ()
 # CMake module path
 basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_MODULES_DIR}")
 
-# path to utilities template files
-basis_set_config_path (UTILITIES_DIR_CONFIG "${INSTALL_UTILITIES_DIR}")
+# path to templates files
+basis_set_config_path (CXX_TEMPLATES_DIR_CONFIG  "${INSTALL_CXX_TEMPLATES_DIR}")
+basis_set_config_path (BASH_TEMPLATES_DIR_CONFIG "${INSTALL_BASH_TEMPLATES_DIR}")
 
 # libraries
 file (
@@ -60,6 +63,9 @@ set (UTILS_LIBRARY_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${LIB_DIR}/${UTILS_LIBRARY
 
 basis_get_target_location (TEST_LIBRARY_CONFIG basis_test NAME)
 set (TEST_LIBRARY_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${LIB_DIR}/${TEST_LIBRARY_CONFIG}")
+
+basis_get_target_location (TEST_MAIN_LIBRARY_CONFIG basis_test_main NAME)
+set (TEST_MAIN_LIBRARY_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${LIB_DIR}/${TEST_MAIN_LIBRARY_CONFIG}")
 
 # URL of project template
 basis_set_config_path (TEMPLATE_URL_CONFIG "${INSTALL_TEMPLATE_DIR}")
