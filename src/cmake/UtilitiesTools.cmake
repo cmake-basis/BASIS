@@ -233,7 +233,7 @@ function (basis_add_stdaux_bash_script)
       get_filename_component (BUILD_DIR "${LOCATION}" PATH)
       get_filename_component (EXEC_NAME "${LOCATION}" NAME)
  
-      if (BASIS_TYPE MATCHES "LIBEXEC")
+      if (BASIS_TYPE MATCHES "LIB")
         set (EXEC_DIR "\${LIBEXEC_DIR}")
       else ()
         set (EXEC_DIR "\${RUNTIME_DIR}")
