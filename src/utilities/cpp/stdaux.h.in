@@ -31,11 +31,22 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // executable information
 // ===========================================================================
 
-/// @brief Print version information including the default copyright notice.
-void PrintVersion ();
+/// @brief Print version information including copyright notice.
+///
+/// @param [in] name      Program name. Defaults to GetExecutableName() if NULL.
+/// @param [in] copyright Copyright and license notices. Defaults to the
+///                       official SBIA license if NULL is given. If an empty
+///                       string is provided, i.e., copyright = "", only the
+///                       version information itself is output. Otherwise, the
+///                       given copyright string is printed followed by a
+///                       newline.
+void PrintVersion (const char *name = NULL, const char *copyright = NULL);
 
-/// @brief Print default contact information.
-void PrintContact ();
+/// @brief Print contact information.
+///
+/// @param [in] contact Name of the contact. Defaults to
+///                     "SBIA Group <sbia-software at uphs.upenn.edu>" if NULL.
+void PrintContact (const char *contact = NULL);
 
 // ===========================================================================
 // installation directories
@@ -53,20 +64,22 @@ bool ExecutingInBuildTree ();
  *
  * This function returns the absolute path of the installation prefix path.
  * If the installation was not moved after a "make install", the returned
- * directory corresponds to the INSTALL_PREFIX CMake variable as specified
- * during the build of the executable file. Note, however, that even when
- * the installation tree was moved after the configuration and build of the
- * software, the correct path is returned as long as the relative directory
- * structure of the installation tree is maintained. This is because the path
- * is determined relative to the directory of the executable, knowning in
- * which path this executable should be located relative to the INSTALL_PREFIX.
+ * directory corresponds to the value of the INSTALL_PREFIX CMake variable
+ * as specified during the build of the executable file. Note, however,
+ * that even when the installation tree was moved after the configuration
+ * and build of the software, the correct path is returned as long as the
+ * relative directory structure of the installation tree is maintained.
+ * This is because the path is determined relative to the directory of the
+ * executable itself, knowning in which path this executable is located
+ * relative to the INSTALL_PREFIX.
  *
  * @note If the executable is executed from within the build tree, the
  *       returned path will not be correct. Therefore, only use this
  *       function when ExecutingInBuildTree() returns false. Otherwise,
  *       the configured absolute paths which are valid for the build tree
  *       have to be used. Note that the build tree is not supposed to be
- *       relocatable in any case.
+ *       relocatable in any case as it is only a temporary directory tree
+ *       and CMake requires it to be not moved anywhere else.
  *
  * @return Absolute path of top directory of installation tree.
  */
@@ -120,15 +133,16 @@ std::string GetDataDirectory ();
  * developer as soon as the target is added to a CMakeLists.txt file, while
  * the name of the actual executable file is not known a priori as it is set
  * by the BASIS CMake functions during the configure step. Thus, the developer
- * should not rely on a particular name of the executable, but on the name of
- * the corresponding build target.
+ * should not rely on a particular name of the executable file. Instead, they
+ * can rely on the name of the corresponding build target which was chosen by
+ * themselves when adding the target to the build configuration.
  *
  * In order to get the actual file path of the built executable file, the
  * function GetExecutableFile() is provided by this module. This function
- * uses the static instance of this class in order to map the given build
- * target name to the name of the built and optionally installed executable.
- * The code which initializes the required maps is generated automatically
- * during the configuration of the build system by BASIS.
+ * uses the static singleton instance of this class in order to map the given
+ * build target name to the name of the built and optionally installed
+ * executable. The code which initializes the required maps is generated
+ * automatically during the configuration of the build system by BASIS.
  *
  * @note This class is not intended to be subclassed.
  *
@@ -149,7 +163,7 @@ private:
     // construction / destruction
     // -----------------------------------------------------------------------
 
-public:
+private:
 
     /**
      * @brief Constructor.
@@ -173,7 +187,7 @@ public:
      *
      * @return Static instance of this class.
      */
-    const ExecutableTargetInfo &GetInstance () const
+    static const ExecutableTargetInfo &GetInstance () const
     {
         return _instance;
     }
