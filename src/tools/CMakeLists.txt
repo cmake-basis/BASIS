@@ -21,6 +21,18 @@ basis_add_script (doxygen-javascript-filter.pl LIBEXEC)
 basis_add_script (doxygen-matlab-filter.pl     LIBEXEC)
 basis_add_script (doxygen-python-filter.py     LIBEXEC)
 
+foreach (DoxyGenModule Filter.pm PerlFilter.pm SQLFilter.pm VBFilter.pm)
+  basis_script_target_name (TARGET_NAME "DoxyGen/${DoxyGenModule}")
+  basis_add_script (${TARGET_NAME} SCRIPT "DoxyGen/${DoxyGenModule}" MODULE)
+  basis_set_target_properties (
+    ${TARGET_NAME}
+    PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/DoxyGen"
+      RUNTIME_INSTALL_DIRECTORY "${INSTALL_LIBEXEC_DIR}/DoxyGen"
+  )
+  set (TARGET_NAME)
+endforeach ()
+
 # ----------------------------------------------------------------------------
 # automated testing
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
