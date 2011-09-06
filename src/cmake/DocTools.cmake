@@ -80,22 +80,6 @@ mark_as_advanced (BASIS_CMD_PERL)
 ## @addtogroup CMakeUtilities
 #  @{
 
-## @brief Default Doxygen input filter.
-set (BASIS_DOXYGEN_INPUT_FILTER "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
-
-## @brief Doxygen filter used to process Python scripts.
-set (BASIS_DOXYGEN_FILTER_PYTHON "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-python-filter.py -f")
-## @brief Doxygen filter used to process Perl scripts.
-set (BASIS_DOXYGEN_FILTER_PERL "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
-## @brief Doxygen filter used to process JavaScript files.
-set (BASIS_DOXYGEN_FILTER_JAVASCRIPT "${BASIS_CMD_PERL} '-I${CMAKE_CURRENT_LIST_DIR}' ${CMAKE_CURRENT_LIST_DIR}/doxygen-filter.pl")
-## @brief Doxygen filter used to process CMake scripts.
-set (BASIS_DOXYGEN_FILTER_CMAKE "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-cmake-filter.py")
-## @brief Doxygen filter used to process BASH scripts.
-set (BASIS_DOXYGEN_FILTER_BASH "${BASIS_CMD_PYTHON} ${CMAKE_CURRENT_LIST_DIR}/doxygen-bash-filter.py")
-## @brief Doxygen filter used to process MATLAB scripts.
-set (BASIS_DOXYGEN_FILTER_MATLAB "${BASIS_CMD_PERL} ${CMAKE_CURRENT_LIST_DIR}/doxygen-matlab-filter.pl")
-
 ## @brief Default Doxygen filter patterns.
 set (
   BASIS_DOXYGEN_FILTER_PATTERNS

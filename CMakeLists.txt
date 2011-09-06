@@ -45,6 +45,14 @@ set (BASIS_UTILITIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities")
 set (BASIS_UTILS_LIBRARY "basis_utils")
 set (BASIS_TEST_LIBRARY  "basis_test")
 
+set (BASIS_DOXYGEN_INPUT_FILTER      "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-filter.pl")
+set (BASIS_DOXYGEN_FILTER_PYTHON     "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-python-filter.py -f")
+set (BASIS_DOXYGEN_FILTER_PERL       "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-filter.pl")
+set (BASIS_DOXYGEN_FILTER_JAVASCRIPT "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-filter.pl")
+set (BASIS_DOXYGEN_FILTER_CMAKE      "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-cmake-filter.py")
+set (BASIS_DOXYGEN_FILTER_BASH       "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-bash-filter.py")
+set (BASIS_DOXYGEN_FILTER_MATLAB     "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-matlab-filter.pl")
+
 # include BASIS policies, settings, macros, and functions
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
