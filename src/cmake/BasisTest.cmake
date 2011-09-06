@@ -154,9 +154,9 @@ endfunction ()
 #         @b SOURCES file1 [file2 ...]</td>
 #     <td>The source files of the unit test. If this list contains a
 #         file named either "*-main.*" or "*_main.*", the default
-#         implementation of the main() function is not included.
-#         Otherwise, the default implementation of the main() function,
-#         i.e., the file test_main.cc of BASIS is added to this list.</td>
+#         implementation of the main() function is not used.
+#         Otherwise, the executable is linked to the default implementation of
+#         the main() function, i.e., the static library basis_test_main.</td>
 #   </tr>
 #   <tr>
 #     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
@@ -191,11 +191,11 @@ function (basis_add_unit_test TEST_NAME)
 
   # build test
   if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
-    if (DEFAULT_MAIN)
-      list (APPEND ARGN_SOURCES "${BASIS_UTILITIES_DIR}/test_main.cc")
-    endif ()
     basis_add_executable ("${TEST_NAME}" TEST ${ARGN_SOURCES})
     basis_target_link_libraries (${TEST_NAME} "${BASIS_TEST_LIBRARY}" ${ARGN_LINK_DEPENDS})
+    if (DEFAULT_MAIN)
+      basis_target_link_libraries (${TEST_NAME} "${BASIS_TEST_MAIN_LIBRARY}")
+    endif ()
   else ()
     message (FATAL_ERROR "Invalid unit test language: \"${ARGN_LANGUAGE}\".")
   endif ()

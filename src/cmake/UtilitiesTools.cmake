@@ -108,7 +108,7 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   foreach (SOURCE ${SOURCES_NAMES})
     set (TEMPLATE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}.in")
     if (NOT EXISTS "${TEMPLATE}")
-      set (TEMPLATE "${BASIS_UTILITIES_DIR}/${SOURCE}.in")
+      set (TEMPLATE "${BASIS_CXX_TEMPLATES_DIR}/${SOURCE}.in")
     endif ()
     set  (SOURCE_OUT "${BINARY_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}/${SOURCE}")
     configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
@@ -128,7 +128,7 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   foreach (SOURCE ${SOURCES_NAMES})
     set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}")
     if (NOT EXISTS "${TEMPLATE}")
-      set (TEMPLATE "${BASIS_UTILITIES_DIR}/${SOURCE}.in")
+      set (TEMPLATE "${BASIS_CXX_TEMPLATES_DIR}/${SOURCE}.in")
     endif ()
     set  (SOURCE_OUT "${BINARY_CODE_DIR}/${SOURCE}")
     configure_file ("${TEMPLATE}" "${SOURCE_OUT}" @ONLY)
@@ -253,10 +253,8 @@ function (basis_add_stdaux_bash_script)
   set (CONFIG "${CONFIG}set (EXECUTABLE_ALIASES \"${C}\")\n")
 
   # add BASH modules
-  basis_add_script ("${BASIS_UTILITIES_DIR}/shflags.sh" MODULE COPYONLY)
-
   basis_add_script (
-    "${BASIS_UTILITIES_DIR}/stdaux.sh.in"
+    "${BASIS_BASH_TEMPLATES_DIR}/stdaux.sh.in"
     MODULE
       BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       CONFIG "${CONFIG}"
