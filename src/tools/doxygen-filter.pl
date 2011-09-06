@@ -50,10 +50,13 @@ use strict;
 
 use Cwd qw(realpath);
 use File::Basename;
+use Getopt::Long;
+
+use FindBin;
+use lib "$FindBin::Bin";
 use DoxyGen::PerlFilter;
 use DoxyGen::SQLFilter;
 use DoxyGen::VBFilter;
-use Getopt::Long;
 
 my $exec_dir = dirname (realpath ($0));
 
