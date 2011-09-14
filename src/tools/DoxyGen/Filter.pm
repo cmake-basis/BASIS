@@ -50,7 +50,7 @@ package DoxyGen::Filter;
 use warnings;
 use strict;
 
-## @cmethod object new($outfh)
+## @method object new($outfh)
 # create a filter object.
 # @param outfh optional output filehandle; defaults to STDOUT
 # @return filter object

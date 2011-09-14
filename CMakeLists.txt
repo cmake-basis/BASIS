@@ -43,19 +43,14 @@ set (BASIS_INCLUDE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set (BASIS_LIBRARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set (BASIS_CXX_TEMPLATES_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")
 set (BASIS_BASH_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash")
-set (BASIS_UTILS_LIBRARY        "basis_utils")
-set (BASIS_TEST_LIBRARY         "basis_test")
-set (BASIS_TEST_MAIN_LIBRARY    "basis_test_main")
-
-set (BASIS_DOXYGEN_INPUT_FILTER      "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-filter.pl")
-set (BASIS_DOXYGEN_FILTER_PYTHON     "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-python-filter.py -f")
-set (BASIS_DOXYGEN_FILTER_PERL       "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-filter.pl")
-set (BASIS_DOXYGEN_FILTER_JAVASCRIPT "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-filter.pl")
-set (BASIS_DOXYGEN_FILTER_CMAKE      "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-cmake-filter.py")
-set (BASIS_DOXYGEN_FILTER_BASH       "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-bash-filter.py")
-set (BASIS_DOXYGEN_FILTER_MATLAB     "${CMAKE_CURRENT_LIST_DIR}/src/tools/doxygen-matlab-filter.pl")
 
 # include BASIS policies, settings, macros, and functions
+#
+# Attention: The DocTools module needs to be included after the
+#            Doxygen filter executable targets are known.
+#            Hence, exclude this module here and include it later
+#            manually. This only has to be done by BASIS itself.
+set (__BASIS_DOCTOOLS_INCLUDED 1)
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # initialize project
@@ -80,6 +75,11 @@ endif ()
 if (EXISTS "${PROJECT_DATA_DIR}")
   add_subdirectory ("${PROJECT_DATA_DIR}")
 endif ()
+
+# Include previously skipped DocTools module.
+# Only BASIS has to do this. See comment above.
+set (__BASIS_DOCTOOLS_INCLUDED 0)
+include ("${BASIS_MODULE_PATH}/DocTools.cmake")
 
 # package documentation
 if (EXISTS "${PROJECT_DOC_DIR}")

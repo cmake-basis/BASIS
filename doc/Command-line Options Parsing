@@ -1,0 +1,145 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software at uphs.upenn.edu
+
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+  See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+INTRODUCTION
+============
+
+  This document details the requirements on and describes the design of the
+  command-line parsing libraries which are part of BASIS, one library for each
+  major programming language used in software projects at our lab and hence
+  supported by BASIS. As parsing the command-line options is a very common task,
+  several open source solutions for this problem exist already, such as in
+  particular the getopt functions which are part of the GNU C Library [1].
+  The getopt functions are however rather low-level functions and not per se
+  available on Windows. For example, there is no support for the automatic
+  generation of a nicely formatted help output, a major requirement on a
+  option parsing library that shall take off most of the burden for this matter
+  from the developer of a command-line tool. After all, each of the available
+  libraries has its pros and cons. Moreover, a higher-level implementation
+  (which is hence easier to use than getopt) with similar look and feel across
+  programming languages is hard to find. Indeed, only Google's open source
+  gflags projects appear to meet this latter requirement at least for the
+  currently most popular programming languages. Here command-line options are
+  referred to as flags and unless getopt and most other option parsing libraries,
+  Google's solution to this problem implements a so-called distributed
+  flag-definition policy. Though an interesting approach, this feature is of
+  minor importance for us. On the other side, however, a library that follows
+  this policy can be used in both ways, the traditional one where all options
+  are defined in the main module and the Google way, where options are defined
+  across modules. Hence, it provides more flexibility than libraries that
+  require the options to be defined in the main module only.
+
+  At first, a summary of available option parsing libraries for the programming
+  languages of interest is given. Afterwards the requirements on such library
+  as desired for the software development at SBIA are detailed.
+
+
+
+THIRDPARTY LIBRARIES
+====================
+
+  C++
+  ---
+
+  * getopt [1]
+  * Boost.Program_options [2]
+  * popt [3]
+  * Argtable [4]
+  * TCLAP [5]
+  * gflags [6]
+  * GLib [7]
+  * Options [8]
+  * AnyOption [9]
+
+
+  Python
+  ------
+
+  * getopt [10]
+  * optparse [11]
+  * argparse [12]
+  * gflags [13]
+
+
+  Perl
+  ----
+
+  * Getopt::Std [14]
+  * Getopt::Long [15]
+
+
+  BASH
+  ----
+
+  * getopts (builtin) [16]
+  * GNU getopt [1]
+  * shFlags (gflags port) [17]
+
+
+
+REQUIREMENTS
+============
+
+  * Easy to use. For most cases, a single source code line should be sufficient
+    to define a command-line option.
+
+  * Automatic generation of nicely formatted help output from option descriptions.
+
+  * Ability to group/categorize options in help output.
+
+  * Ability to mark options as required, i.e., to specify that these options
+    have to be given at the command-line. Whether an option is required or not
+    may be finally specified by the main module even if the option was defined
+    by a submodule.
+
+  * A short help screen displays only the help of required and so-called key options.
+    Therefore, it is required that certain options can be marked as being key
+    options. Whether an option is key or not, may be finally specified by the
+    main module even if the option was defined by a submodule.
+
+  Minor important requirements:
+
+  * Similar look and feel across programming languages.
+
+  * Support for distributed options definitions, i.e., global options registry.
+
+  * In case of distributed options, use option groups as namespaces for options.
+    An option can be matched either by "--<name>" or "--<group>-<name>". If more than
+    one group defines an option of name <name>, only the latter will be matched.
+    Short option names must be unique in any case.
+
+
+
+REFERENCES
+==========
+
+   [1] http://www.gnu.org/s/hello/manual/libc/Getopt.html
+   [2] http://www.boost.org/doc/libs/1_47_0/doc/html/program_options.html
+   [3] http://freshmeat.net/projects/popt
+   [4] http://argtable.sourceforge.net/
+   [5] http://tclap.sourceforge.net/
+   [6] http://code.google.com/p/google-gflags/
+   [7] http://developer.gnome.org/glib/2.28/glib-Commandline-option-parser.html
+   [8] http://www.cmcrossroads.com/bradapp/ftp/src/libs/C++/Options.html
+   [9] http://www.hackorama.com/anyoption/
+  [10] http://docs.python.org/library/getopt.html
+  [11] http://docs.python.org/library/optparse.html
+  [12] http://docs.python.org/library/argparse.html
+  [13] http://code.google.com/p/python-gflags/
+  [14] http://perldoc.perl.org/Getopt/Std.html
+  [15] http://perldoc.perl.org/Getopt/Long.html
+  [16] http://www.manpagez.com/man/1/getopt/
+  [17] http://code.google.com/p/shflags/
+

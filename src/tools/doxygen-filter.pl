@@ -48,18 +48,18 @@
 use warnings;
 use strict;
 
-use Cwd qw(realpath);
-use File::Basename;
-use Getopt::Long;
-
 use FindBin;
 use lib "$FindBin::Bin";
 use DoxyGen::PerlFilter;
 use DoxyGen::SQLFilter;
 use DoxyGen::VBFilter;
 
+use Cwd qw(realpath);
+use File::Basename;
+
 my $exec_dir = dirname (realpath ($0));
 
+use Getopt::Long;
 $Getopt::Long::ignorecase = 0;  
 my $verbose;
 my $help;

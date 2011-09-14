@@ -23,3 +23,8 @@ include ("${@PACKAGE_NAME@_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 # include directories
 basis_include_directories ("${@PACKAGE_NAME@_INCLUDE_DIR}")
 
+# import build targets
+if (NOT NO_@PACKAGE_NAME@_IMPORTS)
+  include ("${@PACKAGE_NAME@_EXPORTS_FILE}")
+  include ("${@PACKAGE_NAME@_CUSTOM_EXPORTS_FILE}")
+endif ()
