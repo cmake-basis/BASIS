@@ -175,9 +175,8 @@ function (basis_configure_ExecutableTargetInfo)
   set (C) # constructor body
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
-    get_target_property (NOEXEC     "${TARGET_UID}" "NOEXEC")
  
-    if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$" AND NOT NOEXEC)
+    if (BASIS_TYPE MATCHES "EXECUTABLE")
       basis_get_target_location (LOCATION "${TARGET_UID}")
       get_filename_component (BUILD_DIR "${LOCATION}" PATH)
       get_filename_component (EXEC_NAME "${LOCATION}" NAME)
@@ -227,9 +226,8 @@ function (basis_add_stdaux_perl_module)
   set (C)
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
-    get_target_property (NOEXEC     "${TARGET_UID}" "NOEXEC")
  
-    if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$" AND NOT NOEXEC)
+    if (BASIS_TYPE MATCHES "EXECUTABLE")
       basis_get_target_location (LOCATION "${TARGET_UID}")
       get_filename_component (BUILD_DIR "${LOCATION}" PATH)
       get_filename_component (EXEC_NAME "${LOCATION}" NAME)
@@ -282,9 +280,8 @@ function (basis_add_stdaux_bash_script)
   set (C) # for installation
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
-    get_target_property (NOEXEC     "${TARGET_UID}" "NOEXEC")
  
-    if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$" AND NOT NOEXEC)
+    if (BASIS_TYPE MATCHES "EXECUTABLE")
       # get location of executable file
       basis_get_target_location (LOCATION "${TARGET_UID}")
       get_filename_component (BUILD_DIR "${LOCATION}" PATH)

@@ -275,7 +275,7 @@ function (basis_target_link_libraries TARGET_NAME)
   endforeach ()
 
   # MATLAB Compiler or MEX target
-  if (BASIS_TYPE MATCHES "^MCC_|^MEX$")
+  if (BASIS_TYPE MATCHES "MCC|MEX")
     get_target_property (DEPENDS ${TARGET_UID} "LINK_DEPENDS")
 
     if (NOT DEPENDS)
@@ -285,7 +285,7 @@ function (basis_target_link_libraries TARGET_NAME)
  
     # pull implicit dependencies (e.g., ITK uses this)
     # note that MCC does itself a dependency check
-    if (NOT BASIS_TYPE MATCHES "^MCC_")
+    if (NOT BASIS_TYPE MATCHES "MCC")
       set (DEPENDENCY_ADDED 1)
       while (DEPENDENCY_ADDED)
         set (DEPENDENCY_ADDED 0)
@@ -1012,15 +1012,6 @@ endfunction ()
 #         @p CONFIG and @p CONFIG_FILE are ignored.
 #   </tr>
 #   <tr>
-#      @tp @b NOEXEC @endtp
-#      <td>Specifies that the script cannot be "executed" directly,
-#          but always requires some kind of interpreter. Note that
-#          with this option, the meaning of "script" can be even more
-#          general. Any text file, which is processed by a program
-#          to perform certain tasks, i.e., a configuration file
-#          can be considered as "script" in this sense.</td>
-#   </tr>
-#   <tr>
 #      @tp @b KEEPEXT @endtp
 #      <td>If this option is given, it forces this function to keep
 #          the scripts file name extension even if a sha-bang
@@ -1034,10 +1025,14 @@ endfunction ()
 #   <tr>
 #      @tp @b MODULE @endtp
 #      <td>Specifies that the script is a module file which is included by
-#          other scripts. Implies @p NOEXEC, @p LIBEXEC (regarding destination),
-#          and @p KEEPEXT. It can be used, for example, for Python modules that
-#          are to be imported only by other Python scripts and BASH scripts that
-#          are to be sourced only by other BASH scripts.</td>
+#          other scripts. Implies @p LIBEXEC (regarding destination), and @p KEEPEXT.
+#          It can be used, for example, for Python modules that are to be imported
+#          only by other Python scripts and BASH scripts that are to be sourced only
+#          by other BASH scripts.
+#
+#          Note that this option can also be used to for arbitrary text files
+#          which are used as input to a program, not only actual modules written
+#          in a scripting language.</td>
 #   </tr>
 #   <tr>
 #     @tp @b NO_EXPORT @endtp
@@ -1053,7 +1048,7 @@ function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;NOEXEC;KEEPEXT;MODULE;COPYONLY;NO_EXPORT"
+      "LIBEXEC;KEEPEXT;MODULE;COPYONLY;NO_EXPORT"
       "SCRIPT;CONFIG;CONFIG_FILE;COMPONENT;BINARY_DIRECTORY;OUTPUT_DIRECTORY;DESTINATION"
       ""
     ${ARGN}
@@ -1062,7 +1057,6 @@ function (basis_add_script TARGET_NAME)
   if (ARGN_MODULE)
     set (ARGN_LIBEXEC 1)
     set (ARGN_KEEPEXT 1)
-    set (ARGN_NOEXEC  1)
   endif ()
 
   if (NOT ARGN_COMPONENT)
@@ -1204,7 +1198,7 @@ function (basis_add_script TARGET_NAME)
   if (ARGN_MODULE)
     set (TYPE "MODULE_SCRIPT")
   else ()
-    set (TYPE "SCRIPT")
+    set (TYPE "EXECUTABLE_SCRIPT")
   endif ()
 
   set_target_properties (
@@ -1226,12 +1220,6 @@ function (basis_add_script TARGET_NAME)
     set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
   else ()
     set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
-  endif ()
-
-  if (ARGN_NOEXEC)
-    set_target_properties (${TARGET_UID} PROPERTIES NOEXEC 1)
-  else ()
-    set_target_properties (${TARGET_UID} PROPERTIES NOEXEC 0)
   endif ()
 
   # add target to list of targets
@@ -1305,7 +1293,6 @@ function (basis_add_script_finalize TARGET_UID)
       "COMPILE_DEFINITIONS"
       "RUNTIME_COMPONENT"
       "LIBEXEC"
-      "NOEXEC"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -1313,8 +1300,14 @@ function (basis_add_script_finalize TARGET_UID)
   endforeach ()
 
   # check target type
-  if (NOT BASIS_TYPE MATCHES "^SCRIPT$|^MODULE_SCRIPT$")
+  if (NOT BASIS_TYPE MATCHES "^EXECUTABLE_SCRIPT$|^MODULE_SCRIPT$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
+  endif ()
+
+  if (BASIS_TYPE MATCHES "^MODULE_SCRIPT$")
+    set (NOEXEC 1)
+  else ()
+    set (NOEXEC 0)
   endif ()
 
   # build directory (note that CMake returns basename of build directory as first element of SOURCES list)
@@ -1612,11 +1605,11 @@ function (basis_add_custom_finalize)
     get_target_property (IMPORTED   ${TARGET_UID} "IMPORTED")
     if (NOT IMPORTED)
       get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
-      if (BASIS_TYPE MATCHES "SCRIPT$")
+      if (BASIS_TYPE MATCHES "SCRIPT")
         basis_add_script_finalize (${TARGET_UID})
-      elseif (BASIS_TYPE MATCHES "^MEX$")
+      elseif (BASIS_TYPE MATCHES "MEX")
         basis_add_mex_target_finalize (${TARGET_UID})
-      elseif (BASIS_TYPE MATCHES "^MCC_")
+      elseif (BASIS_TYPE MATCHES "MCC")
         basis_add_mcc_target_finalize (${TARGET_UID})
       endif ()
     endif ()
@@ -1728,10 +1721,9 @@ function (basis_export_targets)
       foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
         set (C "${C}\n# Create import target ${T}\n")
         get_target_property (BASIS_TYPE ${T} "BASIS_TYPE")
-        if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$")
+        if (BASIS_TYPE MATCHES "EXECUTABLE")
           set (C "${C}add_executable (${T} IMPORTED)\n")
-        elseif (BASIS_TYPE MATCHES "LIBRARY$|^MODULE_SCRIPT$|^MEX$")
-          get_target_property (TYPE "${T}" "BASIS_TYPE")
+        elseif (BASIS_TYPE MATCHES "LIBRARY|MODULE_SCRIPT|MEX")
           string (REGEX REPLACE "_LIBRARY" "" TYPE "${BASIS_TYPE}")
           if (TYPE MATCHES "MEX|MCC")
             set (TYPE "SHARED")
@@ -1740,8 +1732,9 @@ function (basis_export_targets)
           endif ()
           set (C "${C}add_library (${T} ${TYPE} IMPORTED)\n")
         else ()
-          set (C "${C}# WARNING: basis_export_targets(): Unknown target type")
+          message (FATAL_ERROR "Cannot export target ${T} of type ${BASIS_TYPE}! Use NO_EXPORT option.")
         endif ()
+        set (C "${C}set_target_properties (${T} PROPERTIES BASIS_TYPE \"${BASIS_TYPE}\")\n")
       endforeach ()
     endmacro ()
 
@@ -1752,21 +1745,13 @@ function (basis_export_targets)
         foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
           set (C "${C}\n# Import target \"${T}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${T} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
+          set (C "${C}set_target_properties (${T} PROPERTIES\n")
           basis_get_target_location (LOCATION ${T})
-          if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$")
-            set (C "${C}set_target_properties (${T} PROPERTIES\n")
-            set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"${LOCATION}\"\n")
-            set (C "${C}  )\n")
-          elseif (BASIS_TYPE MATCHES "LIBRARY$|^MEX$")
-            set (C "${C}set_target_properties (${T} PROPERTIES\n")
+          set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"${LOCATION}\"\n")
+          if (BASIS_TYPE MATCHES "LIBRARY|MEX")
             set (C "${C}  IMPORTED_LINK_INTERFACE_LANGUAGES_${CONFIG_UPPER} \"CXX\"\n")
-            set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"${LOCATION}\"\n")
-            set (C "${C}  )\n")
-          elseif (BASIS_TYPE MATCHES "^MODULE_SCRIPT$")
-            set (C "${C}set_target_properties (${T} PROPERTIES\n")
-            set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"${LOCATION}\"\n")
-            set (C "${C}  )\n")
           endif ()
+          set (C "${C}  )\n")
         endforeach ()
       endforeach ()
     endmacro ()
@@ -1777,21 +1762,13 @@ function (basis_export_targets)
         foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
           set (C "${C}\n# Import target \"${T}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${T} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
+          set (C "${C}set_target_properties (${T} PROPERTIES\n")
           basis_get_target_location (LOCATION ${T} POST_INSTALL_RELATIVE)
-          if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$")
-            set (C "${C}set_target_properties (${T} PROPERTIES\n")
-            set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_INSTALL_PREFIX}/${LOCATION}\"\n")
-            set (C "${C}  )\n")
-          elseif (BASIS_TYPE MATCHES "LIBRARY$|^MEX$")
-            set (C "${C}set_target_properties (${T} PROPERTIES\n")
+          set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_INSTALL_PREFIX}/${LOCATION}\"\n")
+          if (BASIS_TYPE MATCHES "LIBRARY|MEX")
             set (C "${C}  IMPORTED_LINK_INTERFACE_LANGUAGES_${CONFIG_UPPER} \"CXX\"\n")
-            set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_INSTALL_PREFIX}/${LOCATION}\"\n")
-            set (C "${C}  )\n")
-          elseif (BASIS_TYPE MATCHES "^MODULE_SCRIPT$")
-            set (C "${C}set_target_properties (${T} PROPERTIES\n")
-            set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_INSTALL_PREFIX}/${LOCATION}\"\n")
-            set (C "${C}  )\n")
           endif ()
+          set (C "${C}  )\n")
         endforeach ()
       endforeach ()
     endmacro ()

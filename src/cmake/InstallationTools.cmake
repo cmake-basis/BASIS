@@ -95,13 +95,9 @@ function (basis_install_links)
     if (NOT IMPORTED)
       get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
       get_target_property (LIBEXEC    ${TARGET_UID} "LIBEXEC")
-      get_target_property (NOEXEC     ${TARGET_UID} "NOEXEC")
       get_target_property (TEST       ${TARGET_UID} "TEST")
 
-      if (
-        BASIS_TYPE MATCHES "^EXECUTABLE$|^MCC_EXECUTABLE$|^SCRIPT$"
-        AND NOT LIBEXEC AND NOT NOEXEC AND NOT TEST
-      )
+      if (BASIS_TYPE MATCHES "EXECUTABLE" AND NOT LIBEXEC AND NOT TEST)
         get_target_property (SYMLINK_NAME ${TARGET_UID} "SYMLINK_NAME")
         if (NOT "${SYMLINK_NAME}" STREQUAL "NONE")
           get_target_property (SYMLINK_PREFIX ${TARGET_UID} "SYMLINK_PREFIX")
