@@ -285,6 +285,7 @@ function (basis_add_stdaux_bash_script)
     get_target_property (NOEXEC     "${TARGET_UID}" "NOEXEC")
  
     if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$" AND NOT NOEXEC)
+      # get location of executable file
       basis_get_target_location (LOCATION "${TARGET_UID}")
       get_filename_component (BUILD_DIR "${LOCATION}" PATH)
       get_filename_component (EXEC_NAME "${LOCATION}" NAME)
@@ -296,6 +297,7 @@ function (basis_add_stdaux_bash_script)
         set (EXEC_DIR "\${RUNTIME_DIR}")
       endif ()
 
+      # add full-qualified alias
       string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
       if (B)
@@ -306,6 +308,14 @@ function (basis_add_stdaux_bash_script)
       endif ()
       set (B "${B}alias '${ALIAS}'=\\\"${LOCATION}\\\"")
       set (C "${C}alias '${ALIAS}'=$(to_absolute_path \\\"${EXEC_DIR}/${EXEC_NAME}\\\" \$stdaux_dir)")
+
+      # add also alias without project name if target belongs to this project
+      string (REGEX REPLACE "::.*" "" NS "${ALIAS}")
+      if ("${NS}" STREQUAL "${PROJECT_NAME_LOWER}")
+        basis_target_name (TARGET_NAME "${TARGET_UID}")
+        set (B "${B}\nalias '${TARGET_NAME}'='${ALIAS}'")
+        set (C "${C}\nalias '${TARGET_NAME}'='${ALIAS}'")
+      endif ()
     endif ()
   endforeach ()
 
