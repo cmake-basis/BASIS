@@ -117,13 +117,6 @@ if( $ext eq "sql" ) {
     print STDERR "treating file as CMake\n" if( $verbose );
     exec("$exec_dir/doxygen-cmake-filter.py", @ARGV)
     or print STDERR "doxygen-cmake-filter.py not installed?\n";
-} elsif( $ext eq "pas" ) {
-    print STDERR "treating file as Pascal\n" if( $verbose );
-    exec( "pas2dox", @ARGV )
-    or print STDERR "pas2dox not installed? - see http://sourceforge.net/projects/pas2dox/\n";
-} elsif( grep( $ext =~ /^$_$/i, "vb", "vbs" ) ) {
-    print STDERR "treating file as Visual Basic\n" if( $verbose );
-    $filter = DoxyGen::VBFilter->new(\*STDOUT);
 }
 
 if( $filter ) {
