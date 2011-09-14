@@ -609,6 +609,10 @@ function (basis_get_target_location VAR TARGET_NAME)
             get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${CONFIG}")
           endforeach ()
         endif ()
+        # 4. Make path relative to INSTALL_PREFIX if POST_INSTALL_PREFIX given
+        if ("${ARGV2}" STREQUAL "POST_INSTALL_PREFIX")
+          file (RELATIVE_PATH LOCATION "${INSTALL_PREFIX}" "${LOCATION}")
+        endif ()
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # non-imported custom targets
       else ()
@@ -656,7 +660,7 @@ function (basis_get_target_location VAR TARGET_NAME)
           set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
         endif ()
 
-        if (ARGV2 STREQUAL "POST_INSTALL")
+        if ("${ARGV2}" STREQUAL "POST_INSTALL")
           set (DIRECTORY "${INSTALL_PREFIX}/${DIRECTORY}")
         endif ()
 
