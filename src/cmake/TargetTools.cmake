@@ -329,7 +329,7 @@ function (add_executable TARGET_NAME)
   _add_executable (${TARGET_NAME} ${ARGN})
   set (
     BASIS_TARGETS "${BASIS_TARGETS};${TARGET_NAME}"
-    CACHE STRING "${BASIS_TARGETS_DOC}" FORCE
+    CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
   )
 endfunction ()
 
@@ -347,7 +347,7 @@ function (add_library TARGET_NAME)
   _add_library (${TARGET_NAME} ${ARGN})
   set (
     BASIS_TARGETS "${BASIS_TARGETS};${TARGET_NAME}"
-    CACHE STRING "${BASIS_TARGETS_DOC}" FORCE
+    CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
   )
 endfunction ()
 
