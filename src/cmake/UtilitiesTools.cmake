@@ -178,12 +178,11 @@ function (basis_configure_ExecutableTargetInfo)
  
     if (TYPE MATCHES "EXECUTABLE")
       basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}")
-      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL_RELATIVE)
 
       get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
       get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
       get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
-      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}" "${INSTALL_DIR}")
 
       string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
@@ -226,12 +225,11 @@ function (basis_add_stdaux_perl_module)
  
     if (TYPE MATCHES "EXECUTABLE")
       basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}")
-      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL_RELATIVE)
 
       get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
       get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
       get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
-      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}" "${INSTALL_DIR}")
 
       # TODO
       message (WARNING "basis_add_stdaux_perl_module() not implemented yet!")
@@ -274,12 +272,11 @@ function (basis_add_stdaux_bash_script)
     if (TYPE MATCHES "EXECUTABLE")
       # get location of executable file
       basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}")
-      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL_RELATIVE)
 
       get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
       get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
       get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
-      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}" "${INSTALL_DIR}")
 
       # add fully-qualified alias
       string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
