@@ -25,8 +25,11 @@ if (BUILD_CONFIG_SETTINGS)
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
     # path to templates files
-    set (CXX_TEMPLATES_DIR_CONFIG  "${PROJECT_CODE_DIR}/utilities/cxx")
-    set (BASH_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/bash")
+    foreach (L CXX Python Perl BASH)
+      string (TOUPPER "${L}" U)
+      string (TOLOWER "${L}" L)
+      set (${U}_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/${L}")
+    endforeach ()
 
     # libraries
     basis_get_target_location (UTILS_LIBRARY_CONFIG     basis_utils)
@@ -47,8 +50,10 @@ endif ()
 basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_MODULES_DIR}")
 
 # path to templates files
-basis_set_config_path (CXX_TEMPLATES_DIR_CONFIG  "${INSTALL_CXX_TEMPLATES_DIR}")
-basis_set_config_path (BASH_TEMPLATES_DIR_CONFIG "${INSTALL_BASH_TEMPLATES_DIR}")
+foreach (L CXX Python Perl BASH)
+  string (TOUPPER "${L}" U)
+  basis_set_config_path (${U}_TEMPLATES_DIR_CONFIG  "${INSTALL_${U}_TEMPLATES_DIR}")
+endforeach ()
 
 # libraries
 file (

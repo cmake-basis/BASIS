@@ -8,13 +8,19 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# absolute path to CMake modules
+## @brief Absolute path to CMake modules.
 get_filename_component (@PACKAGE_NAME@_MODULE_PATH "@MODULE_PATH_CONFIG@" ABSOLUTE)
 
-# absolute path to utilities files
-get_filename_component (@PACKAGE_NAME@_CXX_TEMPLATES_DIR "@CXX_TEMPLATES_DIR_CONFIG@"    ABSOLUTE)
+## @brief Absolute path to C++ utilities files.
+get_filename_component (@PACKAGE_NAME@_CXX_TEMPLATES_DIR  "@CXX_TEMPLATES_DIR_CONFIG@"  ABSOLUTE)
+## @brief Absolute path to Python utilities files.
+get_filename_component (@PACKAGE_NAME@_PYTHON_TEMPLATES_DIR "@PYTHON_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+## @brief Absolute path to Perl utilities files.
+get_filename_component (@PACKAGE_NAME@_PERL_TEMPLATES_DIR "@PERL_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+## @brief Absolute path to BASH utilities files.
+get_filename_component (@PACKAGE_NAME@_BASH_TEMPLATES_DIR "@BASH_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
 
-# absolute path to project template
+## @ brief Absolute path to project template.
 get_filename_component (@PACKAGE_NAME@_TEMPLATE_URL "@TEMPLATE_URL_CONFIG@" ABSOLUTE)
 
 if (NOT @PACKAGE_NAME@_TEMPLATE_URL MATCHES "^file://|^http://|^https://")
