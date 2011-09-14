@@ -153,12 +153,9 @@ string
 ExecutableTargetInfo
 ::GetTargetUID (const string &targetName) const
 {
-    string uid;
-    const bool isSubproject = @IS_SUBPROJECT_CONFIG@;
-    if (!isSubproject && targetName.find ("::") == string::npos) {
+    string uid (targetName);
+    if (_execNames.find (uid) == _execNames.end () && targetName.find ("::") == string::npos) {
         uid = cProjectNameLower + "::" + targetName;
-    } else {
-        uid = targetName;
     }
     return uid;
 }
