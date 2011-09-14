@@ -184,6 +184,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 # @retval PROJECT_REVISION       Revision number of Subversion controlled source tree
 #                                or 0 if the source tree is not revision controlled.
 # @retval PROJECT_*_DIR          Configured and absolute paths of project source tree.
+# @retval PACKAGE_NAME           The name used as prefix for <Pkg>Config.cmake et al. files.
 # @retval BINARY_*_DIR           Absolute paths of directories in binary tree
 #                                corresponding to the @c PROJECT_*_DIR directories.
 # @retval INSTALL_*_DIR          Configured paths of installation relative to INSTALL_PREFIX.
@@ -288,6 +289,7 @@ macro (basis_project_initialize)
   project ("${PROJECT_NAME}")
 
   set (CMAKE_PROJECT_NAME "${PROJECT_NAME}") # variable used by CPack
+  set (PACKAGE_NAME       "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}")
 
   # convert project name to upper and lower case only, respectively
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)

@@ -38,36 +38,27 @@
 ## @addtogroup CMakeUtilities
 #  @{
 
-## @brief Name of the package.
-set (PACKAGE_NAME "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}")
 ## @brief Name of the CMake package configuration file.
 set (CONFIG_FILE "${PACKAGE_NAME}Config.cmake")
 ## @brief Name of the CMake package version file.
 set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
 ## @brief Name of the CMake package use file.
-set (USE_FILE "${PACKAGE_NAME}Use.cmake")
+set (USE_FILE     "${PACKAGE_NAME}Use.cmake")
+## @brief Name of the CMake target exports file.
+set (EXPORTS_FILE "${PACKAGE_NAME}Exports.cmake")
+## @brief Name of the CMake target exports file for custom targets.
+set (CUSTOM_EXPORTS_FILE "${PACKAGE_NAME}CustomExports.cmake")
 
 ## @}
 
 # ============================================================================
-# install exports
+# export build targets
 # ============================================================================
 
-if (BASIS_CACHED_EXPORTS)
-  install (
-    EXPORT      "${PROJECT_NAME}"
-    DESTINATION "${INSTALL_CONFIG_DIR}"
-    FILE        "${PACKAGE_NAME}Exports.cmake"
-    COMPONENT   "${BASIS_RUNTIME_COMPONENT}"
-  )
-
-  install (
-    EXPORT      "${PROJECT_NAME}"
-    DESTINATION "${INSTALL_CONFIG_DIR}"
-    FILE        "${PACKAGE_NAME}Exports.cmake"
-    COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-  )
-endif ()
+basis_export_targets (
+  FILE        "${EXPORTS_FILE}"
+  CUSTOM_FILE "${CUSTOM_EXPORTS_FILE}"
+)
 
 # ============================================================================
 # project configuration file

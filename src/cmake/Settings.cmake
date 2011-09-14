@@ -97,7 +97,16 @@ mark_as_advanced (BASIS_VERBOSE)
 #
 # Contains a list of target names that are used by the BASIS functions for
 # special purposes and are hence not to be used for project targets.
-set (BASIS_RESERVED_TARGET_NAMES "test" "uninstall" "doc" "changelog" "execname")
+set (BASIS_RESERVED_TARGET_NAMES
+  "test"
+  "uninstall"
+  "doc"
+  "changelog"
+  "package"
+  "package_source"
+  "bundle"
+  "bundle_source"
+)
 
 ## @brief Default component used for library targets when no component is specified.
 #
@@ -115,15 +124,23 @@ set (BASIS_RUNTIME_COMPONENT "Runtime")
 #
 # This separator is used to construct a UID for a particular target.
 # For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".
+# Note that the separator must only contain characters that are valid in
+# a file path as only these characters can be used for CMake target names.
+# Also the use of '#' in target names must be avoided.
+#
+# Note: For the mapping of target names to executable files, this separator
+#       may for each language be replaced by a more suitable string.
+#       For example, it is replaced by "::" for C++. See UtilitiesTools.cmake.
 set (BASIS_NAMESPACE_SEPARATOR "@")
 
 ## @brief Character used to separate version and project name (e.g., in target UID).
 #
 # This separator is used to construct a UID for a particular target.
-# For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>\@BASIS_VERSION_SEPARATOR\@\<version\>".
+# For example, "\<Project\>\@BASIS_VERSION_SEPARATOR\@\<version\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".
 # Note that the version need not be included if only a single version of each
-# package is supposed to be installed on a target system.
-set (BASIS_VERSION_SEPARATOR "#")
+# package is supposed to be installed on a target system. The same rules as for
+# @c BASIS_NAMESPACE_SEPARATOR regarding character selection apply.
+set (BASIS_VERSION_SEPARATOR "-")
 
 ## @brief Prefix used for CMake package config files.
 #
@@ -170,10 +187,15 @@ set (BASIS_TARGETS_DOC "Names of all targets.")
 ## @brief Cached UIDs of all build targets.
 set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
 
-## @brief Documentation string for @c BASIS_CACHED_EXPORTS.
-set (BASIS_CACHED_EXPORTS_DOC "All exported targets.")
-## @brief Cached UIDs of exported build targets.
-set (BASIS_CACHED_EXPORTS "" CACHE INTERNAL "${BASIS_CACHED_EXPORTS_DOC}" FORCE)
+## @brief Documentation string for @c BASIS_EXPORT_TARGETS.
+set (BASIS_EXPORT_TARGETS_DOC "All non-custom export targets.")
+## @brief Cached UIDs of exported non-custom build targets.
+set (BASIS_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_EXPORT_TARGETS_DOC}" FORCE)
+
+## @brief Documentation string for @c BASIS_CUSTOM_EXPORT_TARGETS.
+set (BASIS_CUSTOM_EXPORT_TARGETS_DOC "All custom export targets.")
+## @brief Cached UIDs of exported custom build targets.
+set (BASIS_CUSTOM_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGETS_DOC}" FORCE)
 
 ## @}
 

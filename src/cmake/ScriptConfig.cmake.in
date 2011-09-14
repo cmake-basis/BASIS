@@ -175,7 +175,7 @@ source \"$(get_executable_directory)/${LIBEXEC_DIR}/stdaux.sh\"
 set (PYTHON_FUNCTION_get_executable_directory "
 # ****************************************************************************
 def get_executable_directory ():
-    \"\"\"Get real directory of executable.\"\"\"
+    \"Get real directory of executable.\"
     import sys
     import os
     return os.path.realpath (os.path.dirname (sys.argv [0]))

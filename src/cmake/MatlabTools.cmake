@@ -420,7 +420,6 @@ function (basis_add_mex_target TARGET_NAME)
   set_target_properties (
     ${TARGET_UID}
     PROPERTIES
-      TYPE                      "LIBRARY"
       BASIS_TYPE                "MEX"
       PREFIX                    ""
       SUFFIX                    ".${MEXEXT}"
@@ -488,7 +487,6 @@ function (basis_add_mex_target_finalize TARGET_UID)
 
   set (
     PROPERTIES
-      "TYPE"
       "BASIS_TYPE"
       "SOURCE_DIRECTORY"
       "BINARY_DIRECTORY"
@@ -618,7 +616,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   # assemble MEX switches
   set (MEX_ARGS)
 
-  list (APPEND MEX_ARGS "CC=${CC}"   "CFLAGS=${CFLAGS}")         # C compiler and flags
+  list (APPEND MEX_ARGS "CC=${CC}" "CFLAGS=${CFLAGS}")         # C compiler and flags
   if (CLIBS)
     list (APPEND MEX_ARGS "CLIBS=${CLIBS}")                      # C link libraries
   endif ()
@@ -666,9 +664,9 @@ function (basis_add_mex_target_finalize TARGET_UID)
   list (APPEND MEX_ARGS ${SOURCES})                              # source files
 
   # build command for invocation of MEX script
-  set (BUILD_CMD      "${BASIS_CMD_MEX}" ${MEX_ARGS})
-  set (BUILD_LOG      "${BUILD_DIR}/mexBuild.log")
-  set (BUILD_OUTPUT   "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+  set (BUILD_CMD    "${BASIS_CMD_MEX}" ${MEX_ARGS})
+  set (BUILD_LOG    "${BUILD_DIR}/mexBuild.log")
+  set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
 
   # relative paths used for comments of commands
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME}")
@@ -903,25 +901,22 @@ function (basis_add_mcc_target TARGET_NAME)
   if (ARGN_TYPE STREQUAL "LIBRARY")
     set (TYPE "MCC_LIBRARY")
   else ()
+    set (TYPE "MCC_EXECUTABLE")
     if (ARGN_TEST)
       set (RUNTIME_INSTALL_DIR "")
       set (RUNTIME_OUTPUT_DIR  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-      set (TYPE                "MCC_TEST")
     elseif (ARGN_LIBEXEC)
       set (RUNTIME_INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
       set (RUNTIME_OUTPUT_DIR  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-      set (TPYE                "MCC_LIBEXEC")
     else ()
       set (RUNTIME_INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
       set (RUNTIME_OUTPUT_DIR  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-      set (TYPE                "MCC_EXECUTABLE")
     endif ()
   endif ()
 
   set_target_properties (
     ${TARGET_UID}
     PROPERTIES
-      TYPE                      "${ARGN_TYPE}"
       BASIS_TYPE                "${TYPE}"
       VERSION                   "${PROJECT_VERSION}"
       SOVERSION                 "${PROJECT_SOVERSION}"
@@ -937,6 +932,18 @@ function (basis_add_mcc_target TARGET_NAME)
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
   )
+
+  if (ARGN_LIBEXEC)
+    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
+  else ()
+    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
+  endif ()
+
+  if (ARGN_TEST)
+    set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
+  else ()
+    set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
+  endif ()
 
   # add target to list of targets
   set (
@@ -990,7 +997,6 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
   set (
     PROPERTIES
-      "TYPE"
       "BASIS_TYPE"
       "SOURCE_DIRECTORY"
       "BINARY_DIRECTORY"
@@ -1009,18 +1015,18 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       "LINK_DEPENDS"
       "RUNTIME_COMPONENT"
       "LIBRARY_COMPONENT"
+      "LIBEXEC"
+      "TEST"
   )
 
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
 
-  if (NOT BASIS_TYPE MATCHES "^MCC_EXECUTABLE$|^MCC_LIBEXEC$|^MCC_TEST$|^MCC_LIBRARY$")
+  if (NOT BASIS_TYPE MATCHES "^MCC_$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
-  # TODO The TYPE property seemed to be set to "UTILITY" by CMake.
-  #      Check if this is true or if there is a bug in BASIS.
   if ("${BASIS_TYPE}" STREQUAL "MCC_LIBRARY")
     set (TYPE "LIBRARY")
   else ()
@@ -1101,10 +1107,10 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   #list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries, e.g. MEX-files
 
   # build command for invocation of MATLAB Compiler in standalone mode
-  set (BUILD_CMD      "${BASIS_CMD_MCC}" ${MCC_ARGS})
-  set (BUILD_LOG      "${BUILD_DIR}/mccBuild.log")
-  set (WORKING_DIR    "${SOURCE_DIRECTORY}")
-  set (MATLAB_MODE    OFF)
+  set (BUILD_CMD   "${BASIS_CMD_MCC}" ${MCC_ARGS})
+  set (BUILD_LOG   "${BUILD_DIR}/mccBuild.log")
+  set (WORKING_DIR "${SOURCE_DIRECTORY}")
+  set (MATLAB_MODE OFF)
 
   # build command for invocation of MATLAB Compiler in MATLAB mode
   if (BASIS_MCC_MATLAB_MODE)
@@ -1230,8 +1236,8 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   if (TYPE STREQUAL "LIBRARY")
     # TODO
   else ()
-    if (BASIS_TYPE STREQUAL "MCC_TEST")
-      # TODO Install selected test executables
+    if (TEST)
+      # TODO Install (selected?) test executables
     else ()
       install (
         PROGRAMS    ${BUILD_OUTPUT}

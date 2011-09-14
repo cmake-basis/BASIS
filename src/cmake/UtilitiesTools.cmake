@@ -14,7 +14,7 @@
 #  @{
 
 # ============================================================================
-# C++
+# C++ utilities
 # ============================================================================
 
 ##############################################################################
@@ -151,7 +151,7 @@ endfunction ()
 # The previously configured source file stdaux.cc (such that it can be used
 # within add_executable() statements), is configured a second time by this
 # function in order to add the missing implementation of the ExecutableTargetInfo
-# constructor. Therefore, the BASIS_TARGETS variable and the target properties
+# constructor. Therefore, the @c BASIS_TARGETS variable and the target properties
 # of these targets are used. Note that only during the finalization of the
 # build configuration all build targets are known. Hence, this function is
 # called by the finalization routine.
@@ -172,29 +172,30 @@ function (basis_configure_ExecutableTargetInfo)
   endif ()
 
   # generate source code
-  set (C)
-  set (N 0)
+  set (C) # constructor body
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
+    get_target_property (NOEXEC     "${TARGET_UID}" "NOEXEC")
  
-    if (BASIS_TYPE MATCHES "EXEC|SCRIPT" AND NOT BASIS_TYPE MATCHES "NOEXEC")
+    if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$" AND NOT NOEXEC)
       basis_get_target_location (LOCATION "${TARGET_UID}")
       get_filename_component (BUILD_DIR "${LOCATION}" PATH)
       get_filename_component (EXEC_NAME "${LOCATION}" NAME)
 
-      if (BASIS_TYPE MATCHES "LIBEXEC")
+      get_target_property (LIBEXEC "${TARGET_UID}" "LIBEXEC")
+      if (LIBEXEC)
         set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
       else ()
         set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
       endif ()
 
+      string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
+
       set (C "${C}\n")
       set (C "${C}    // ${TARGET_UID}\n")
-      set (C "${C}    _execNames   [\"${TARGET_UID}\"] = \"${EXEC_NAME}\";\n")
-      set (C "${C}    _buildDirs   [\"${TARGET_UID}\"] = \"${BUILD_DIR}\";\n")
-      set (C "${C}    _installDirs [\"${TARGET_UID}\"] = \"${INSTALL_DIR}\";\n")
-
-      math (EXPR N "${N} + 1")
+      set (C "${C}    _execNames   [\"${ALIAS}\"] = \"${EXEC_NAME}\";\n")
+      set (C "${C}    _buildDirs   [\"${ALIAS}\"] = \"${BUILD_DIR}\";\n")
+      set (C "${C}    _installDirs [\"${ALIAS}\"] = \"${INSTALL_DIR}\";\n")
     endif ()
   endforeach ()
 
@@ -204,42 +205,41 @@ function (basis_configure_ExecutableTargetInfo)
   configure_file ("${SOURCE_FILE}" "${SOURCE_FILE}" @ONLY)
 
   if (BASIS_VERBOSE)
-    message (STATUS "Added ${N} entries to ExecutableTargetInfo maps")
     message (STATUS "Configuring constructor of ExecutableTargetInfo... - done")
   endif ()
 endfunction ()
 
 # ============================================================================
-# BASH
+# Perl utilities
 # ============================================================================
 
 ##############################################################################
-# @brief Add stdaux.sh BASH module.
+# @brief Add StdAux.pm module.
 #
-# This function adds the stdaux.sh BASH module. This module in particular
-# defines aliases for executable build targets. Hence, it has to be called
-# during the finalization of the build configuration.
+# This function adds the StdAux.pm module for Perl. This module in particular
+# defines a mapping from build target names to executable file paths.
+# Hence, it has to be called during the finalization of the build configuration.
 #
 # @sa basis_project_finalize()
 
-function (basis_add_stdaux_bash_script)
-  # generate definition of init_executable_aliases()
+function (basis_add_stdaux_perl_module)
+  # generate definition of get_executable_file()
   set (C)
   foreach (TARGET_UID ${BASIS_TARGETS})
     get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
+    get_target_property (NOEXEC     "${TARGET_UID}" "NOEXEC")
  
-    if (BASIS_TYPE MATCHES "EXEC|SCRIPT" AND NOT BASIS_TYPE MATCHES "NOEXEC")
+    if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$" AND NOT NOEXEC)
       basis_get_target_location (LOCATION "${TARGET_UID}")
       get_filename_component (BUILD_DIR "${LOCATION}" PATH)
       get_filename_component (EXEC_NAME "${LOCATION}" NAME)
  
-      if (BASIS_TYPE MATCHES "LIB")
+      get_target_property (LIBEXEC "${TARGET_UID}" "LIBEXEC")
+      if (LIBEXEC)
         set (EXEC_DIR "\${LIBEXEC_DIR}")
       else ()
         set (EXEC_DIR "\${RUNTIME_DIR}")
       endif ()
-
-      string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
       if (C)
         set (C "${C}\n")
@@ -252,12 +252,75 @@ function (basis_add_stdaux_bash_script)
   set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
   set (CONFIG "${CONFIG}set (EXECUTABLE_ALIASES \"${C}\")\n")
 
-  # add BASH modules
+  # add module
+  basis_add_script (
+    "${BASIS_PERL_TEMPLATES_DIR}/StdAux.pm.in"
+    MODULE
+      BINARY_DIRECTORY "${BINARY_CODE_DIR}"
+      CONFIG           "${CONFIG}"
+  )
+endfunction ()
+
+# ============================================================================
+# BASH utilities
+# ============================================================================
+
+##############################################################################
+# @brief Add stdaux.sh module.
+#
+# This function adds the stdaux.sh module for BASH. This module in particular
+# defines aliases for executable build targets. Hence, it has to be called
+# during the finalization of the build configuration.
+#
+# @sa basis_project_finalize()
+
+function (basis_add_stdaux_bash_script)
+  # generate definition of aliases
+  set (B) # for build tree
+  set (C) # for installation
+  foreach (TARGET_UID ${BASIS_TARGETS})
+    get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
+    get_target_property (NOEXEC     "${TARGET_UID}" "NOEXEC")
+ 
+    if (BASIS_TYPE MATCHES "EXECUTABLE$|^SCRIPT$" AND NOT NOEXEC)
+      basis_get_target_location (LOCATION "${TARGET_UID}")
+      get_filename_component (BUILD_DIR "${LOCATION}" PATH)
+      get_filename_component (EXEC_NAME "${LOCATION}" NAME)
+ 
+      get_target_property (LIBEXEC "${TARGET_UID}" "LIBEXEC")
+      if (LIBEXEC)
+        set (EXEC_DIR "\${LIBEXEC_DIR}")
+      else ()
+        set (EXEC_DIR "\${RUNTIME_DIR}")
+      endif ()
+
+      string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${ALIAS}")
+
+      if (B)
+        set (B "${B}\n")
+      endif ()
+      if (C)
+        set (C "${C}\n")
+      endif ()
+      set (B "${B}alias '${ALIAS}'=\\\"${LOCATION}\\\"")
+      set (C "${C}alias '${ALIAS}'=$(to_absolute_path \\\"${EXEC_DIR}/${EXEC_NAME}\\\" \$stdaux_dir)")
+    endif ()
+  endforeach ()
+
+  # script configuration
+  set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
+  set (CONFIG "${CONFIG}if (BUILD_INSTALL_SCRIPT)\n")
+  set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${C}\")\n")
+  set (CONFIG "${CONFIG}else ()\n")
+  set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${B}\")\n")
+  set (CONFIG "${CONFIG}endif ()\n")
+
+  # add module
   basis_add_script (
     "${BASIS_BASH_TEMPLATES_DIR}/stdaux.sh.in"
     MODULE
       BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-      CONFIG "${CONFIG}"
+      CONFIG           "${CONFIG}"
   )
 endfunction ()
 
