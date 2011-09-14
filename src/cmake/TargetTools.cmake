@@ -312,6 +312,30 @@ function (basis_target_link_libraries TARGET_NAME)
 endfunction ()
 
 # ============================================================================
+# target type
+# ============================================================================
+
+##############################################################################
+# @brief Get type name of target.
+#
+# @param [out] TYPE        The target's type name or NOTFOUND.
+# @param [in]  TARGET_NAME The name of the target.
+
+function (basis_target_type TYPE TARGET_NAME)
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  if (TARGET ${TARGET_UID})
+    get_target_property (TYPE_OUT ${TARGET_UID} "BASIS_TYPE")
+    if (NOT TYPE_OUT)
+      # in particular imported targets may not have a BASIS_TYPE property
+      get_target_property (TYPE_OUT ${TARGET_UID} "TYPE")
+    endif ()
+  else ()
+    message (FATAL_ERROR "basis_target_type(): Unknown target ${TARGET_NAME}!")
+  endif ()
+  set ("${TYPE}" "${TYPE_OUT}" PARENT_SCOPE)
+endfunction ()
+
+# ============================================================================
 # add targets
 # ============================================================================
 

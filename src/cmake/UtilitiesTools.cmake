@@ -174,19 +174,16 @@ function (basis_configure_ExecutableTargetInfo)
   # generate source code
   set (C) # constructor body
   foreach (TARGET_UID ${BASIS_TARGETS})
-    get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
+    basis_target_type (TYPE ${TARGET_UID})
  
-    if (BASIS_TYPE MATCHES "EXECUTABLE")
-      basis_get_target_location (LOCATION "${TARGET_UID}")
-      get_filename_component (BUILD_DIR "${LOCATION}" PATH)
-      get_filename_component (EXEC_NAME "${LOCATION}" NAME)
+    if (TYPE MATCHES "EXECUTABLE")
+      basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}")
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
 
-      get_target_property (LIBEXEC "${TARGET_UID}" "LIBEXEC")
-      if (LIBEXEC)
-        set (INSTALL_DIR "${INSTALL_LIBEXEC_DIR}")
-      else ()
-        set (INSTALL_DIR "${INSTALL_RUNTIME_DIR}")
-      endif ()
+      get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
+      get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
+      get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}" "${INSTALL_DIR}")
 
       string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
@@ -225,26 +222,19 @@ function (basis_add_stdaux_perl_module)
   # generate definition of get_executable_file()
   set (C)
   foreach (TARGET_UID ${BASIS_TARGETS})
-    get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
+    basis_target_type (TYPE "${TARGET_UID}")
  
-    if (BASIS_TYPE MATCHES "EXECUTABLE")
-      basis_get_target_location (LOCATION "${TARGET_UID}")
-      get_filename_component (BUILD_DIR "${LOCATION}" PATH)
-      get_filename_component (EXEC_NAME "${LOCATION}" NAME)
- 
-      get_target_property (LIBEXEC "${TARGET_UID}" "LIBEXEC")
-      if (LIBEXEC)
-        set (EXEC_DIR "\${LIBEXEC_DIR}")
-      else ()
-        set (EXEC_DIR "\${RUNTIME_DIR}")
-      endif ()
+    if (TYPE MATCHES "EXECUTABLE")
+      basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}")
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
 
-      set (ALIAS "${TARGET_UID}")
+      get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
+      get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
+      get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}" "${INSTALL_DIR}")
 
-      if (C)
-        set (C "${C}\n")
-      endif ()
-      set (C "${C}alias '${ALIAS}'=$(to_absolute_path \\\"${EXEC_DIR}/${EXEC_NAME}\\\" \$stdaux_dir)")
+      # TODO
+      message (WARNING "basis_add_stdaux_perl_module() not implemented yet!")
     endif ()
   endforeach ()
 
@@ -279,22 +269,19 @@ function (basis_add_stdaux_bash_script)
   set (B) # for build tree
   set (C) # for installation
   foreach (TARGET_UID ${BASIS_TARGETS})
-    get_target_property (BASIS_TYPE "${TARGET_UID}" "BASIS_TYPE")
+    basis_target_type (TYPE "${TARGET_UID}")
  
-    if (BASIS_TYPE MATCHES "EXECUTABLE")
+    if (TYPE MATCHES "EXECUTABLE")
       # get location of executable file
-      basis_get_target_location (LOCATION "${TARGET_UID}")
-      get_filename_component (BUILD_DIR "${LOCATION}" PATH)
-      get_filename_component (EXEC_NAME "${LOCATION}" NAME)
- 
-      get_target_property (LIBEXEC "${TARGET_UID}" "LIBEXEC")
-      if (LIBEXEC)
-        set (EXEC_DIR "\${LIBEXEC_DIR}")
-      else ()
-        set (EXEC_DIR "\${RUNTIME_DIR}")
-      endif ()
+      basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}")
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
 
-      # add full-qualified alias
+      get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
+      get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
+      get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}" "${INSTALL_DIR}")
+
+      # add fully-qualified alias
       string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
       if (B)
