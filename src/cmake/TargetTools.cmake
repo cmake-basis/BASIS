@@ -316,6 +316,42 @@ endfunction ()
 # ============================================================================
 
 ##############################################################################
+# @brief CMake's add_executable(), overwritten only to be able to store also
+#        imported build targets declared in exports files in BASIS_TARGETS.
+#
+# Use basis_add_executable() instead where possible!
+#
+# @sa basis_add_executable()
+#
+# @ingroup CMakeUtilities
+
+function (add_executable TARGET_NAME)
+  _add_executable (${TARGET_NAME} ${ARGN})
+  set (
+    BASIS_TARGETS "${BASIS_TARGETS};${TARGET_NAME}"
+    CACHE STRING "${BASIS_TARGETS_DOC}" FORCE
+  )
+endfunction ()
+
+##############################################################################
+# @brief CMake's add_library(), overwritten only to be able to store also
+#        imported build targets declared in exports files in BASIS_TARGETS.
+#
+# Use basis_add_library() instead where possible!
+#
+# @sa basis_add_library()
+#
+# @ingroup CMakeUtilities
+
+function (add_library TARGET_NAME)
+  _add_library (${TARGET_NAME} ${ARGN})
+  set (
+    BASIS_TARGETS "${BASIS_TARGETS};${TARGET_NAME}"
+    CACHE STRING "${BASIS_TARGETS_DOC}" FORCE
+  )
+endfunction ()
+
+##############################################################################
 # @brief Replacement for CMake's add_executable() command.
 #
 # This function adds an executable target.
@@ -536,12 +572,6 @@ function (basis_add_executable TARGET_NAME)
           RUNTIME_INSTALL_DIRECTORY "${INSTALL_DIR}"
       )
     endif ()
-
-    # add target to list of targets
-    set (
-      BASIS_TARGETS "${BASIS_TARGETS};${TARGET_UID}"
-      CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
-    )
 
     message (STATUS "Adding executable ${TARGET_UID}... - done")
 
@@ -836,12 +866,6 @@ function (basis_add_library TARGET_NAME)
         )
     endif ()
  
-    # add target to list of targets
-    set (
-      BASIS_TARGETS "${BASIS_TARGETS};${TARGET_UID}"
-      CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
-    )
-
   endif ()
 
   # done
