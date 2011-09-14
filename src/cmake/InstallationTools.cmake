@@ -90,37 +90,41 @@ function (basis_install_links)
 
   # main executables
   foreach (TARGET_UID ${BASIS_TARGETS})
-    get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
-    get_target_property (LIBEXEC    ${TARGET_UID} "LIBEXEC")
-    get_target_property (NOEXEC     ${TARGET_UID} "NOEXEC")
-    get_target_property (TEST       ${TARGET_UID} "TEST")
+    get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
 
-    if (
-      BASIS_TYPE MATCHES "^EXECUTABLE$|^MCC_EXECUTABLE$|^SCRIPT$"
-      AND NOT LIBEXEC AND NOT NOEXEC AND NOT TEST
-    )
-      get_target_property (SYMLINK_NAME ${TARGET_UID} "SYMLINK_NAME")
-      if (NOT "${SYMLINK_NAME}" STREQUAL "NONE")
-        get_target_property (SYMLINK_PREFIX ${TARGET_UID} "SYMLINK_PREFIX")
-        get_target_property (SYMLINK_SUFFIX ${TARGET_UID} "SYMLINK_SUFFIX")
-        get_target_property (INSTALL_DIR    ${TARGET_UID} "RUNTIME_INSTALL_DIRECTORY")
+    if (NOT IMPORTED)
+      get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
+      get_target_property (LIBEXEC    ${TARGET_UID} "LIBEXEC")
+      get_target_property (NOEXEC     ${TARGET_UID} "NOEXEC")
+      get_target_property (TEST       ${TARGET_UID} "TEST")
 
-        basis_get_target_location (OUTPUT_NAME ${TARGET_UID} NAME)
+      if (
+        BASIS_TYPE MATCHES "^EXECUTABLE$|^MCC_EXECUTABLE$|^SCRIPT$"
+        AND NOT LIBEXEC AND NOT NOEXEC AND NOT TEST
+      )
+        get_target_property (SYMLINK_NAME ${TARGET_UID} "SYMLINK_NAME")
+        if (NOT "${SYMLINK_NAME}" STREQUAL "NONE")
+          get_target_property (SYMLINK_PREFIX ${TARGET_UID} "SYMLINK_PREFIX")
+          get_target_property (SYMLINK_SUFFIX ${TARGET_UID} "SYMLINK_SUFFIX")
+          get_target_property (INSTALL_DIR    ${TARGET_UID} "RUNTIME_INSTALL_DIRECTORY")
 
-        if (NOT SYMLINK_NAME)
-          set (SYMLINK_NAME "${OUTPUT_NAME}")
+          basis_get_target_location (OUTPUT_NAME ${TARGET_UID} NAME)
+
+          if (NOT SYMLINK_NAME)
+            set (SYMLINK_NAME "${OUTPUT_NAME}")
+          endif ()
+          if (SYMLINK_PREFIX)
+            set (SYMLINK_NAME "${SYMLINK_PREFIX}${SYMLINK_NAME}")
+          endif ()
+          if (SYMLINK_SUFFIX)
+            set (SYMLINK_NAME "${SYMLINK_NAME}${SYMLINK_SUFFIX}")
+          endif ()
+
+          basis_install_link (
+            "${INSTALL_DIR}/${OUTPUT_NAME}"
+            "bin/${SYMLINK_NAME}"
+          )
         endif ()
-        if (SYMLINK_PREFIX)
-          set (SYMLINK_NAME "${SYMLINK_PREFIX}${SYMLINK_NAME}")
-        endif ()
-        if (SYMLINK_SUFFIX)
-          set (SYMLINK_NAME "${SYMLINK_NAME}${SYMLINK_SUFFIX}")
-        endif ()
-
-        basis_install_link (
-          "${INSTALL_DIR}/${OUTPUT_NAME}"
-          "bin/${SYMLINK_NAME}"
-        )
       endif ()
     endif ()
   endforeach ()
