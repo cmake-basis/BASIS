@@ -9,7 +9,7 @@
 ##############################################################################
 
 # install project template
-install (
+basis_install (
   DIRECTORY   template/
   DESTINATION "${INSTALL_TEMPLATE_DIR}"
   PATTERN     .svn EXCLUDE

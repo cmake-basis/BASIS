@@ -10,12 +10,7 @@
 
 # ----------------------------------------------------------------------------
 # template files
-install (
-  FILES
-    stdaux.sh.in
-  DESTINATION
-    "${INSTALL_BASH_TEMPLATES_DIR}"
-)
+basis_install (FILES stdaux.sh.in DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}")
 
 # ----------------------------------------------------------------------------
 # utilities

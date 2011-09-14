@@ -17,7 +17,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-install (
+basis_install (
   DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}/
   DESTINATION "${INSTALL_SHARE_DIR}"
   PATTERN     CMakeLists.txt EXCLUDE

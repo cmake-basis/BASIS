@@ -10,7 +10,7 @@
 
 # ----------------------------------------------------------------------------
 # template files
-install (
+basis_install (
   FILES
     "config.h.in"
     "config.cc.in"
