@@ -241,6 +241,8 @@ function (basis_add_stdaux_perl_module)
         set (EXEC_DIR "\${RUNTIME_DIR}")
       endif ()
 
+      set (ALIAS "${TARGET_UID}")
+
       if (C)
         set (C "${C}\n")
       endif ()
@@ -294,7 +296,7 @@ function (basis_add_stdaux_bash_script)
         set (EXEC_DIR "\${RUNTIME_DIR}")
       endif ()
 
-      string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${ALIAS}")
+      string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
       if (B)
         set (B "${B}\n")
