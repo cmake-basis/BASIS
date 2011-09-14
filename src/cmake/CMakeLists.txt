@@ -58,7 +58,7 @@ set (
 
 # ----------------------------------------------------------------------------
 # install files
-install (
+basis_install (
   FILES       ${CMAKE_MODULES} ${CMAKE_FIND_MODULES} ${CMAKE_MODULES_AUXILIARY_FILES}
   DESTINATION "${INSTALL_MODULES_DIR}"
 )
