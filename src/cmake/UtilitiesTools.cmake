@@ -97,7 +97,7 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
     set (IS_SUBPROJECT_CONFIG "false")
   endif ()
 
-  set (EXECUTABLE_TARGET_INFO_CONFIG "\@EXECUTABLE_TARGET_INFO_CONFIG\@")
+  set (EXECUTABLE_TARGET_INFO "\@EXECUTABLE_TARGET_INFO\@")
 
   # configure public auxiliary header files
   set (
@@ -196,7 +196,7 @@ function (basis_configure_ExecutableTargetInfo)
   endforeach ()
 
   # configure source file
-  set (EXECUTABLE_TARGET_INFO_CONFIG "${C}")
+  set (EXECUTABLE_TARGET_INFO "${C}")
 
   configure_file ("${SOURCE_FILE}" "${SOURCE_FILE}" @ONLY)
 
@@ -317,7 +317,7 @@ function (basis_add_stdaux_bash_script)
 
   # add module
   basis_add_script (
-    "${BASIS_BASH_TEMPLATES_DIR}/stdaux.sh.in"
+    "${BASIS_BASH_TEMPLATES_DIR}/StdAux.sh.in"
     MODULE
       BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       CONFIG           "${CONFIG}"

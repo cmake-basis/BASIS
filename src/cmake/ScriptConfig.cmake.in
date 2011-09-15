@@ -59,14 +59,14 @@
 # project attributes
 # ============================================================================
 
-set (PROJECT       "@PROJECT_NAME@")
-set (PROJECT_UPPER "@PROJECT_NAME_UPPER@")
-set (PROJECT_LOWER "@PROJECT_NAME_LOWER@")
-set (VERSION       "@PROJECT_VERSION@")
-set (VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
-set (VERSION_MINOR "@PROJECT_VERSION_MINOR@")
-set (VERSION_PATCH "@PROJECT_VERSION_PATCH@")
-set (REVISION      "@PROJECT_REVISION@")
+set (PROJECT_NAME          "@PROJECT_NAME@")
+set (PROJECT_NAME_UPPER    "@PROJECT_NAME_UPPER@")
+set (PROJECT_NAME_LOWER    "@PROJECT_NAME_LOWER@")
+set (PROJECT_VERSION       "@PROJECT_VERSION@")
+set (PROJECT_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+set (PROJECT_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+set (PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
+set (PROJECT_REVISION      "@PROJECT_REVISION@")
 
 # ============================================================================
 # directories
@@ -85,9 +85,11 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 ## @addtogroup BashUtilities
 #  @{
 
-# Attention: The get_executable_directory() function is required by a BASH
-#            script to determine where the stdaux.sh file is located. All
-#            other utility functions should be implemented in this file.
+# Attention: This get_executable_directory() function is required by a
+#            BASH script to determine where the StdAux.sh file is located.
+#            In particular, it finds its way into a particular BASH script
+#            via the @BASIS_BASH_UTILITIES@ variable at the top of this script.
+#            All other utility functions should be implemented in StdAux.sh.
 
 ##############################################################################
 # @brief Definition of get_executable_directory() function.
@@ -136,9 +138,6 @@ get_executable_directory ()
 ##############################################################################
 # @brief Common BASH code to be used at the top of each BASH script.
 #
-# At first, the definiton of the get_executable_directory() is inserted.
-# Then the standard auxiliary module stdaux.sh is sourced.
-#
 # Example:
 # @code
 # #! /usr/bin/env bash
@@ -151,7 +150,7 @@ get_executable_directory ()
 # @sa BASH_FUNCTION_get_executable_directory
 set (BASIS_BASH_UTILITIES "
 ${BASH_FUNCTION_get_executable_directory}
-source \"$(get_executable_directory)/${LIBEXEC_DIR}/stdaux.sh\"
+source \"$(get_executable_directory)/${LIBRARY_DIR}/StdAux.sh\"
 "
 )
 
