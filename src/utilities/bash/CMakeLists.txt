@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  CMakeLists.txt
-# @brief Build configuration of bash utilities.
+# @brief Build configuration of BASH utilities.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -10,8 +10,8 @@
 
 # ----------------------------------------------------------------------------
 # template files
-basis_install (FILES stdaux.sh.in DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}")
+basis_install (FILES StdAux.sh.in DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}")
 
 # ----------------------------------------------------------------------------
 # utilities
-basis_add_script (shflags.sh MODULE)
+basis_add_script (Flags.sh MODULE) # command-line parsing library
