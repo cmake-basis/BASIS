@@ -31,21 +31,25 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // executable information
 // ===========================================================================
 
-/// @brief Print version information including copyright notice.
-///
-/// @param [in] name      Program name. Defaults to GetExecutableName() if NULL.
-/// @param [in] copyright Copyright and license notices. Defaults to the
-///                       official SBIA license if NULL is given. If an empty
-///                       string is provided, i.e., copyright = "", only the
-///                       version information itself is output. Otherwise, the
-///                       given copyright string is printed followed by a
-///                       newline.
+/**
+ * @brief Print version information including copyright notice.
+ *
+ * @param [in] name      Program name. Defaults to GetExecutableName().
+ * @param [in] copyright Copyright and license notices. Defaults to the
+ *                       official SBIA license. If an empty string is provided,
+ *                       i.e., copyright = "", only the version information
+ *                       itself is output. Otherwise, the version information
+ *                       is followed by a newline and the given copyright
+ *                       string. The output ends in a newline in any case.
+ */
 void PrintVersion (const char *name = NULL, const char *copyright = NULL);
 
-/// @brief Print contact information.
-///
-/// @param [in] contact Name of the contact. Defaults to
-///                     "SBIA Group <sbia-software at uphs.upenn.edu>" if NULL.
+/**
+ * @brief Print contact information.
+ *
+ * @param [in] contact Name of the contact. Defaults to
+ *                     "SBIA Group <sbia-software at uphs.upenn.edu>".
+ */
 void PrintContact (const char *contact = NULL);
 
 // ===========================================================================
@@ -183,7 +187,7 @@ private:
 public:
 
     /**
-     * @brief Get static instance
+     * @brief Get static instance of this module.
      *
      * @return Static instance of this class.
      */
@@ -198,56 +202,57 @@ public:
      * In order to be able to distinguish build targets with identical name
      * but which are built as part of different BASIS projects, the UID of
      * a build target is composed of the build target name as given as
-     * argument to the basis_add_* target CMake functions and the project
-     * name. If the specified build target name is not a valid build target
-     * UID yet, this method will use the cProjectName constant to compose
-     * such UID for the given target name, assuming that the caller refers
+     * argument to the basis_add_* CMake functions and a namespace identifier
+     * (i.e., the project name in lowercase letters). If the specified build
+     * target name is neither known by this module nor a build target UID yet,
+     * this method prepends the namespace identifier corresponding to the
+     * project this module was built from, assuming that the caller refers
      * to another target within the same project.
      *
-     * @param [in] targetName Name/UID of build target.
+     * @param [in] target Name/UID of build target.
      *
-     * @return UID of build target.
+     * @returns UID of build target.
      */
-    std::string GetTargetUID (const std::string &targetName) const;
+    std::string GetTargetUID (const std::string &target) const;
 
     /**
      * @brief Determine whether a given build target is known.
      *
-     * @param [in] targetName Name/UID of build target.
+     * @param [in] target Name/UID of build target.
      *
-     * @return Whether the given build target is known by this instance.
+     * @returns Whether the given build target is known by this module.
      */
-    bool IsKnownTarget (const std::string &targetName) const;
+    bool IsKnownTarget (const std::string &target) const;
 
     /**
      * @brief Get name of executable file without path.
      *
-     * @param [in] targetName Name/UID of build target.
+     * @param [in] target Name/UID of build target.
      *
      * @return Name of built executable file without path.
      */
-    std::string GetExecutableName (const std::string &targetName) const;
+    std::string GetExecutableName (const std::string &target) const;
 
     /**
      * @brief Get absolute path of output directory of executable in build tree.
      *
-     * @param [in] targetName Name of build target.
+     * @param [in] target Name/UID of build target.
      *
      * @return Absolute path of build tree directory where built executable is
      *         located or an empty string if build target is not known.
      */
-    std::string GetBuildDirectory (const std::string &targetName) const;
+    std::string GetBuildDirectory (const std::string &target) const;
 
     /**
      * @brief Get absolute path of directory where built executable is installed.
      *
-     * @param [in] targetName Name of build target.
+     * @param [in] target Name/UID of build target.
      *
      * @return Absolute path of executable's installation directory or
      *         an empty string if build target is not known.
      */
-    std::string GetInstallationDirectory (const std::string &targetName) const;
- 
+    std::string GetInstallationDirectory (const std::string &target) const;
+
     // -----------------------------------------------------------------------
     // unsupported methods
     // -----------------------------------------------------------------------
@@ -300,16 +305,19 @@ private:
  * the specified build target.
  *
  * @sa ExecutableTargetInfo
+ * @sa GetExecutablePath()
  *
- * @param [in] targetName Name of build target.
+ * @param [in] target Name/UID of build target. If an empty string is given as
+ *                    argument, the path to the calling executable is returned.
  *
  * @return Absolute path of executable file or an empty string if the build
  *         target is not known.
  */
-std::string GetExecutableFile (const std::string &targetName);
+std::string GetExecutableFile (const std::string &target = std::string ());
 
 
 /// @}
+// Doxygen group CppUtilities
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

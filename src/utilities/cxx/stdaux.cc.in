@@ -133,7 +133,7 @@ string GetDataDirectory ()
 ExecutableTargetInfo
 ::ExecutableTargetInfo ()
 {
-    @EXECUTABLE_TARGET_INFO_CONFIG@
+    @EXECUTABLE_TARGET_INFO@
 }
 
 // ***************************************************************************
@@ -149,29 +149,28 @@ ExecutableTargetInfo
 // ***************************************************************************
 string
 ExecutableTargetInfo
-::GetTargetUID (const string &targetName) const
+::GetTargetUID (const string &target) const
 {
-    string uid (targetName);
-    if (_execNames.find (uid) == _execNames.end () && targetName.find ("::") == string::npos) {
-        uid = cProjectNameLower + "::" + targetName;
+    if (_execNames.find (target) == _execNames.end () && target.find ("::") == string::npos) {
+        return cProjectNameLower + "::" + target;
     }
-    return uid;
+    return target;
 }
 
 // ***************************************************************************
 bool
 ExecutableTargetInfo
-::IsKnownTarget (const string &targetName) const
+::IsKnownTarget (const string &target) const
 {
-    return _execNames.find (GetTargetUID (targetName)) != _execNames.end ();
+    return _execNames.find (GetTargetUID (target)) != _execNames.end ();
 }
 
 // ***************************************************************************
 string
 ExecutableTargetInfo
-::GetExecutableName (const string &targetName) const
+::GetExecutableName (const string &target) const
 {
-    string uid = GetTargetUID (targetName);
+    string uid = GetTargetUID (target);
     MapIterator it = _execNames.find (uid);
     if (it == _execNames.end ()) return "";
     return it->second;
@@ -180,9 +179,9 @@ ExecutableTargetInfo
 // ***************************************************************************
 string
 ExecutableTargetInfo
-::GetBuildDirectory (const string &targetName) const
+::GetBuildDirectory (const string &target) const
 {
-    string uid = GetTargetUID (targetName);
+    string uid = GetTargetUID (target);
     MapIterator it = _buildDirs.find (uid);
     if (it == _buildDirs.end ()) return "";
     return it->second;
@@ -191,9 +190,9 @@ ExecutableTargetInfo
 // ***************************************************************************
 string
 ExecutableTargetInfo
-::GetInstallationDirectory (const string &targetName) const
+::GetInstallationDirectory (const string &target) const
 {
-    string uid = GetTargetUID (targetName);
+    string uid = GetTargetUID (target);
     MapIterator it = _installDirs.find (uid);
     if (it == _installDirs.end ()) return "";
     return JoinPaths (GetInstallationPrefix (), it->second);
@@ -204,19 +203,19 @@ ExecutableTargetInfo
 // ===========================================================================
 
 // ***************************************************************************
-string GetExecutableFile (const string &targetName)
+string GetExecutableFile (const string &target)
 {
     // get executable target information instance
     const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
     // get name of executable and check if target name is known
-    string execName = info.GetExecutableName (targetName);
+    string execName = info.GetExecutableName (target);
     // is this target known?
     if (execName.empty ()) return "";
     // prepend either build tree directory or installation directory
     if (ExecutingInBuildTree ()) {
-        return JoinPaths (info.GetBuildDirectory (targetName), execName);
+        return JoinPaths (info.GetBuildDirectory (target), execName);
     } else {
-        return JoinPaths (info.GetInstallationDirectory (targetName), execName);
+        return JoinPaths (info.GetInstallationDirectory (target), execName);
     }
 }
 

@@ -41,8 +41,7 @@ cache=".basis/cache"
 # @brief Print options.
 #
 # @returns Nothing.
-
-function print_options
+print_options ()
 {
     echo "Required Options:"
     echo "  <project name>             Name of the new project."
@@ -130,10 +129,9 @@ function print_options
 # @brief Print usage information.
 #
 # @returns Nothing.
-
-function print_usage
+print_usage ()
 {
-    echo "@NAME@ (@PROJECT@)"
+    echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
 	echo "  $exec_name [options] <project name>"
@@ -147,17 +145,16 @@ function print_usage
 # @brief Print help.
 #
 # @returns Nothing.
-
-function print_help
+print_help ()
 {
-    echo "@NAME@ (@PROJECT@)"
+    echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
 	echo "  $exec_name [options] <project name>"
 	echo
 	echo "Description:"
     echo "  This command-line tool can be used to create a new BASIS project from the"
-    echo "  template version @VERSION_MAJOR@.@VERSION_MINOR@ or to modify or upgrade an already existing project."
+    echo "  template version @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ or to modify or upgrade an already existing project."
     echo
     echo "  Depending on the grade of customization or optional inclusion of template"
     echo "  components, different subsets of the fully featured project template can be"
@@ -232,8 +229,7 @@ function print_help
 #
 # @retval 0 Success.
 # @retval 1 Failure.
-
-function make_absolute
+make_absolute ()
 {
     local path="$1"
 
@@ -252,8 +248,7 @@ function make_absolute
 # @brief Extract project name from existing project.
 #
 # @returns Extracted project name via @c echo.
-
-function get_project_name
+get_project_name ()
 {
     local active=0
     local name=''
@@ -705,8 +700,7 @@ fi
 #                  or project root, respectively.
 #
 # @returns Nothing.
-
-function add
+add ()
 {
     local path="$1"
 
@@ -872,8 +866,7 @@ function add
 # @param [in] path Path relative to template or project root, respectively.
 #
 # @returns Nothing.
-
-function del
+del ()
 {
     local path=$1
 
@@ -937,8 +930,7 @@ function del
 # @param [in] path   File path relative to tempate or project root, respectively.
 #
 # @returns Nothing.
-
-function addordel
+addordel ()
 {
     local switch=$1
     local path=$2
@@ -952,11 +944,8 @@ function addordel
     return 0
 }
 
-
-
 # ----------------------------------------------------------------------------
 # modify project files
-
 if [ $mode -eq 1 ]; then
     msg="Modifying project"
 else
@@ -1038,8 +1027,7 @@ fi
 # @param [in] prefix          Prefix to use for package variables. Defaults to package name.
 #
 # @returns Nothing.
-
-function add_find_package
+add_find_package ()
 {
     local file=$1
     local package=$2
@@ -1098,7 +1086,6 @@ function add_find_package
 
 # ----------------------------------------------------------------------------
 # modify dependencies
-
 if [ $package_num -gt 0 ]; then
     echo
     echo "Adding dependencies..."
@@ -1149,8 +1136,7 @@ fi
 # @brief Clean temporary files.
 #
 # @returns Nothing.
-
-function clean_temp_files
+clean_temp_files ()
 {
     # *.template
     for file in $(find "$root" -type f -name '*.template'); do
@@ -1166,8 +1152,7 @@ function clean_temp_files
 # @brief Remove hidden copies of template files.
 #
 # @returns Nothing.
-
-function clean_hidden_files
+clean_hidden_files ()
 {
     # .basis
     for dir in $(find "$root" -type d -name '.basis'); do
@@ -1211,4 +1196,3 @@ else
 fi
 
 exit $retval
-

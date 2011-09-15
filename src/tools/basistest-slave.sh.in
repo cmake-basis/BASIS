@@ -25,8 +25,6 @@
 # executable information
 exec_name=$(get_executable_name)
 exec_dir=$(get_executable_directory)
-exec_version='@VERSION@'
-exec_revision='@REVISION@'
 
 # ============================================================================
 # help/version
@@ -36,8 +34,7 @@ exec_revision='@REVISION@'
 # @brief Print documentation of options.
 #
 # @returns Nothing.
-
-function print_options
+print_options ()
 {
     cat - << EOF-OPTIONS
 Required options:
@@ -62,10 +59,9 @@ EOF-OPTIONS
 # @brief Print help.
 #
 # @returns Nothing.
-
-function print_help
+print_help ()
 {
-    echo "@NAME@ (@PROJECT@)"
+    echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -92,10 +88,9 @@ EOF-EXAMPLES
 # @brief Print usage (i.e., only usage and options).
 #
 # @returns Nothing.
-
-function print_usage
+print_usage ()
 {
-    echo "@NAME@ (@PROJECT@)"
+    echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"

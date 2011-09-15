@@ -43,8 +43,7 @@ schedule_file='/var/run/basistest.schedule'
 # @brief Print documentation of options.
 #
 # @returns Nothing.
-
-function print_options
+print_options ()
 {
     cat - << EOF-OPTIONS
 Options:
@@ -65,10 +64,9 @@ EOF-OPTIONS
 # @brief Print help.
 #
 # @returns Nothing.
-
-function print_help
+print_help ()
 {
-    echo "@NAME@ (@PROJECT@)"
+    echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -151,10 +149,9 @@ EOF-EXAMPLES
 # @brief Print usage (i.e., only usage and options).
 #
 # @returns Nothing.
-
-function print_usage
+print_usage ()
 {
-    echo "@NAME@ (@PROJECT@)"
+    echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
     echo "  $exec_name [options]"
@@ -179,8 +176,7 @@ function print_usage
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-
-function run_test
+run_test ()
 {
     cmd="$test_cmd"
     if [ $verbosity -gt 1 ]; then cmd="$cmd --verbose"; fi
@@ -207,8 +203,7 @@ function run_test
 # @param [in] date Date.
 #
 # @returns Prints timestamp corresponding to given date to @c STDOUT.
-
-function date2stamp
+date2stamp ()
 {
     if [ $(uname) == 'Darwin' ]; then
         date -j -f '%Y-%m-%d %T' "$1" +%s
@@ -223,8 +218,7 @@ function date2stamp
 # @param [in] stamp Timestamp.
 #
 # @return Prints date corresponding to given timestamp to @c STDOUT.
-
-function stamp2date
+stamp2date ()
 {
     if [ $(uname) == 'Darwin' ]; then
       date -j -r $1 '+%Y-%m-%d %T'
@@ -243,8 +237,7 @@ function stamp2date
 #
 # @returns Prints the date which is @p interval time units after the given
 #          date to @c STDOUT.
-
-function date_add
+date_add ()
 {
     case $1 in
         -s) sec=1;      shift;;
@@ -269,8 +262,7 @@ function date_add
 #
 # @return Prints time interval, i.e., an absolute value, in the given units
 #         to @c STDOUT.
-
-function date_diff
+date_diff ()
 {
     case $1 in
         -s) sec=1;      shift;;
@@ -289,8 +281,7 @@ function date_diff
 # @brief Get next scheduled date of a given test.
 #
 # @returns Prints date to @c STDOUT.
-
-function schedule_date
+schedule_date ()
 {
     local retval=$(date '+%Y-%m-%d %T')
     idx=0
@@ -321,8 +312,7 @@ function schedule_date
 # @param [in] model   Name of the model.
 #
 # @returns Nothing.
-
-function schedule_test
+schedule_test ()
 {
     idx=${#new_schedule[@]}
     new_schedule[$idx]="$1 $2 $3 $4 $5"

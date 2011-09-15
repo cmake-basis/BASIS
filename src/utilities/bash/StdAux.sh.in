@@ -2,7 +2,7 @@
 
 ##############################################################################
 # @file  stdaux.sh
-# @brief Standard auxiliary functions and aliases for BASH.
+# @brief Standard auxiliary functions for BASH.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -13,8 +13,8 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_@PROJECT_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
-_@PROJECT_UPPER@_STDAUX_INCLUDED=1
+[ "${_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
+_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 
 ## @addtogroup BashUtilities
 #  @{
@@ -23,15 +23,15 @@ _@PROJECT_UPPER@_STDAUX_INCLUDED=1
 # constants
 # ============================================================================
 
-## @brief Absolute path of directory of stdaux.sh BASH module
+## @brief Absolute path of directory of StdAux.sh module
 declare -r stdaux_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
 
 # ============================================================================
 # version / help
 # ============================================================================
 
-# include command-line flags module
-source "${stdaux_dir}/shflags.sh"
+# include command-line parsing library
+source "${stdaux_dir}/Flags.sh"
 
 ##############################################################################
 # @brief Get name of executable.
@@ -57,15 +57,16 @@ get_executable_name ()
 print_version ()
 {
     local name=${1:-$(get_executable_name)}
-    local copyright=$2
+    local copyright=${2:-}
     if [ -z "${copyright}" ]; then
         copyright="Copyright (c) 2011 University of Pennsylvania. \
 All rights reserved.\n\
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
     fi
-    echo -n "${name} (@PROJECT@) version @VERSION@"
-    if [ @REVISION@ -gt 0 ]; then
-        echo -n " (revision @REVISION@)"
+    echo -n "${name} (@PROJECT_NAME@) version @PROJECT_VERSION@"
+    if [ @PROJECT_REVISION@ -gt 0 ] # project revision > 0
+    then
+        echo -n " (revision @PROJECT_REVISION@)"
     fi
     echo
     echo -e "${copyright}"
@@ -75,7 +76,7 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
 # @brief Print contact information.
 #
 # @param [in] contact Contact name. Defaults to
-#                     "SBIA Group <sbia-software at uphs.upenn.edu>"
+#                     "SBIA Group <sbia-software at uphs.upenn.edu>".
 #
 # @returns Nothing.
 print_contact ()
@@ -95,8 +96,7 @@ print_contact ()
 ##############################################################################
 # @brief Make relative path absolute.
 #
-# @attention The directory referred to by the directory part of the path
-#            must exist.
+# @attention The directory referred to by the directory part of the path must exist.
 #
 # @todo Implement this function without the use of cd such that non-existent
 #       paths can be simplified as well.
