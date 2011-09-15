@@ -688,7 +688,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       endif ()
 
       if ("${PART}" STREQUAL "POST_INSTALL")
-        if (IS_RELATIVE "${DIRECTORY}")
+        if (NOT IS_ABSOLUTE "${DIRECTORY}")
           set (DIRECTORY "${INSTALL_PREFIX}/${DIRECTORY}")
         endif ()
       elseif ("${PART}" STREQUAL "POST_INSTALL_RELATIVE")
