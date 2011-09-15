@@ -1633,19 +1633,24 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_get_soname SONAME OBJFILE)
+  # get absolute path of object file
   basis_target_uid (TARGET_UID ${OBJFILE})
   if (TARGET TARGET_UID)
     basis_get_target_location (OBJFILE ${TARGET_UID} ABSOLUTE)
   else ()
-    set (OBJFILE "${OBJ}")
+    get_filename_component (OBJFILE "${OBJFILE}" ABSOLUTE)
   endif ()
+  # usually CMake did this already
+  find_program (CMAKE_OBJDUMP NAMES objdump DOC "The objdump command")
+  # run objdump and extract soname
   execute_process (
-    COMMAND objdump -p "${OBJFILE}"
+    COMMAND ${CMAKE_OBJDUMP} -p "${OBJFILE}"
     COMMAND sed -n "-e's/^[[:space:]]*SONAME[[:space:]]*//p'"
     RESULT_VARIABLE STATUS
     OUTPUT_VARIABLE SONAME_OUT
     ERROR_QUIET
   )
+  # return
   if (STATUS EQUAL 0)
     set (${SONAME} "${SONAME_OUT}" PARENT_SCOPE)
   else ()
