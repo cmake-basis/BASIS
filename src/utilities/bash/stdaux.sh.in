@@ -12,6 +12,10 @@
 # @ingroup BashUtilities
 ##############################################################################
 
+# return if already loaded
+[ "${_@PROJECT_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
+_@PROJECT_UPPER@_STDAUX_INCLUDED=1
+
 ## @addtogroup BashUtilities
 #  @{
 
