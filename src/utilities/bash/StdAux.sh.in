@@ -24,23 +24,18 @@ _@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 # ============================================================================
 
 ## @brief Absolute path of directory of StdAux.sh module
-declare -r stdaux_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
+readonly stdaux_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
+
+# ============================================================================
+# modules
+# ============================================================================
+
+source "${stdaux_dir}/Flags.sh"                # command-line parsing library
+source "${stdaux_dir}/ExecutableTargetInfo.sh" # info about executable targets
 
 # ============================================================================
 # version / help
 # ============================================================================
-
-# include command-line parsing library
-source "${stdaux_dir}/Flags.sh"
-
-##############################################################################
-# @brief Get name of executable.
-#
-# @returns Prints name of BASH script to @c STDOUT.
-get_executable_name ()
-{
-    echo ${0##*/}
-}
 
 ##############################################################################
 # @brief Print version information.
@@ -48,7 +43,7 @@ get_executable_name ()
 # @param [in] name      Name of program. Give a constant expression here,
 #                       @b not the name of the executable as extracted from
 #                       the first command-line argument or similar! By default,
-#                       the executable name is extracted from the first
+#                       however, the executable name is extracted from the first
 #                       command-line argument. This is @b not recommended.
 # @param [in] copyright Copyright and license notice. Defaults to official
 #                       SBIA software license.
@@ -75,8 +70,9 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
 ##############################################################################
 # @brief Print contact information.
 #
-# @param [in] contact Contact name. Defaults to
-#                     "SBIA Group <sbia-software at uphs.upenn.edu>".
+# @param [in] contact Contact name. Defaults to official software contact.
+#                     Generally, it is @b not advised to use a contact different
+#                     from the official one.
 #
 # @returns Nothing.
 print_contact ()
@@ -123,7 +119,7 @@ to_absolute_path ()
 }
 
 # ============================================================================
-# main
+# aliases
 # ============================================================================
 
 # define aliases of build target names to executable file paths
@@ -132,4 +128,7 @@ to_absolute_path ()
 # enable expansion of aliases also in non-interactive shells
 shopt -s expand_aliases
 
+
 ## @}
+# Doxygen group BashUtilities
+

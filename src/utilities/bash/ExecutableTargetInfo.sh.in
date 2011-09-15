@@ -1,0 +1,165 @@
+#! /usr/bin/env bash
+
+##############################################################################
+# @file  ExecutableTargetInfo.sh
+# @brief Provides information about the executables built by BASIS.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BashUtilities
+##############################################################################
+
+# return if already loaded
+[ "${_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_INCLUDED:-0}" -eq 1 ] && return 0
+_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_INCLUDED=1
+
+
+# ============================================================================
+# constants
+# ============================================================================
+
+## @brief Default namespace used to convert target name to target UID.
+readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
+
+# ============================================================================
+# public functions
+# ============================================================================
+
+## @addtogroup BashUtilities
+#  @{
+
+
+##############################################################################
+# @brief Get UID of build target.
+#
+# @param [in] target Name/UID of build target.
+#
+# @returns UID of build target.
+get_target_uid ()
+{
+    local target=$(_executabletargetinfo_sanitize $1)
+    if [ -z $(_executabletargetinfo_get ${target} NAME) ] && [[ "${target//__/}" == "${target}" ]]; then
+        echo -n "${__EXECUTABLETARGETINFO_namespace}__${target}"
+    else
+        echo -n "${target}"
+    fi
+}
+
+##############################################################################
+# @brief Get name of executable file.
+#
+# @param [in] target Name/UID of build target. If no argument is given,
+#                    the name of the calling executable is returned instead.
+#
+# @returns The name of the executable.
+get_executable_name ()
+{
+    # if called without arguments, return name of calling executable
+    if [ $# -eq 0 ]; then
+        echo ${0##*/}
+    # otherwise, lookup name of executable corresponding to this build target
+    else
+        basename "$(_executabletargetinfo_get $(get_target_uid $1) LOCATION)"
+    fi
+}
+
+##############################################################################
+# @brief Get directory of executable file.
+#
+# @param [in] target Name/UID of build target. If no argument is given,
+#                    the directory where the file of the calling executable
+#                    is located is returned.
+#
+# @returns The directory part of the executable file path.
+get_executable_directory ()
+{
+    # if called without arguments, return directory of calling executable
+    if [ $# -eq 0 ]; then
+        _get_executable_directory
+    # otherwise, lookup name of executable corresponding to this build target
+    else
+        dirname "$(_executabletargetinfo_get $(get_target_uid $1) LOCATION)"
+    fi
+}
+
+##############################################################################
+# @brief Get canonical path of executable file.
+#
+# @param [in] target Name/UID of build target. If no argument is given,
+#                    the file path of the calling executable is returned.
+#
+# @returns The canonical file path of the executable.
+get_executable_path ()
+{
+    # if called without arguments, return path of calling executable
+    if [ $# -eq 0 ]; then
+        echo "$(get_executable_directory)/$(get_executable_name)"
+    # otherwise, lookup name of executable corresponding to this build target
+    else
+        _executabletargetinfo_get $(get_target_uid $1) LOCATION
+    fi
+}
+
+## @}
+# Doxygen group BashUtilities
+
+# ============================================================================
+# private helpers
+# ============================================================================
+
+##############################################################################
+# @brief Sanitize string for use in variable name.
+#
+# @param [in] str String to be sanitized.
+#
+# @returns Sanitized string that can be used as variable name.
+_executabletargetinfo_sanitize ()
+{
+    local $str=$1
+    echo -n "$str" | tr -s [:space:] '_' | tr -C [:alpha:] '_'
+}
+
+##############################################################################
+# @brief Add (key, value) pair to executable target info "hash".
+#
+# @note The meaning of @p name and @p key can be exchanged if desired.
+#       If so, this has to be done consistently, however.
+#
+# @sa _executabletargetinfo_get()
+#
+# @param [in] name  Name of the hash table.
+# @param [in] key   Hash key.
+# @param [in] value Value associated with the given hash key.
+#
+# @returns Sets a readonly variable that represents the (key, value) entry.
+_executabletargetinfo_add ()
+{
+    eval readonly '__EXECUTABLETARGETINFO_'"$1"'_'"$2"='$3'
+}
+
+##############################################################################
+# @brief Get value from executable target info "hash".
+#
+# @note The meaning of @p name and @p key can be exchanged if desired.
+#       If so, this has to be done consistently, however.
+#
+# @sa _executabletargetinfo_add()
+#
+# @param [in] name Name of the hash table.
+# @param [in] key  Hash key.
+#
+# @returns Value stored under the given key in the hash table or an empty
+#          string if the hash table does not exist or the key is unknown.
+_executabletargetinfo_get ()
+{
+    eval echo -n '${__EXECUTABLETARGETINFO_'"$1"'_'"$2"'}'
+}
+
+# ============================================================================
+# initialization
+# ============================================================================
+
+@EXECUTABLE_TARGET_INFO@
