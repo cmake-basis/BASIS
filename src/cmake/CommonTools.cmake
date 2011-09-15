@@ -552,6 +552,26 @@ endfunction ()
 # ============================================================================
 
 ##############################################################################
+# @brief Get type name of target.
+#
+# @param [out] TYPE        The target's type name or NOTFOUND.
+# @param [in]  TARGET_NAME The name of the target.
+
+function (basis_target_type TYPE TARGET_NAME)
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  if (TARGET ${TARGET_UID})
+    get_target_property (TYPE_OUT ${TARGET_UID} "BASIS_TYPE")
+    if (NOT TYPE_OUT)
+      # in particular imported targets may not have a BASIS_TYPE property
+      get_target_property (TYPE_OUT ${TARGET_UID} "TYPE")
+    endif ()
+  else ()
+    message (FATAL_ERROR "basis_target_type(): Unknown target ${TARGET_NAME}!")
+  endif ()
+  set ("${TYPE}" "${TYPE_OUT}" PARENT_SCOPE)
+endfunction ()
+
+##############################################################################
 # @brief Get location of build target output file.
 #
 # This convenience function can be used to get the full path of the output
@@ -563,9 +583,8 @@ endfunction ()
 #
 # @param [out] VAR         Path of build target output file.
 # @param [in]  TARGET_NAME Name of build target.
-# @param [in]  ARGV2       Which file name component of the @c LOCATION
+# @param [in]  PART        Which file name component of the @c LOCATION
 #                          property to return. See get_filename_component().
-#                          By default, the entire absolute path is returned.
 #                          If POST_INSTALL_RELATIVE is given as argument,
 #                          @p VAR is set to the path of the installed file
 #                          relative to the installation prefix. Similarly,
@@ -574,106 +593,124 @@ endfunction ()
 #
 # @returns Path of output file similar to @c LOCATION property of CMake targets.
 
-function (basis_get_target_location VAR TARGET_NAME)
+function (basis_get_target_location VAR TARGET_NAME PART)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET "${TARGET_UID}")
-    get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
+    basis_target_type (TYPE "${TARGET_UID}")
+    get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
+
     # ------------------------------------------------------------------------
-    # non-custom targets
-    if (BASIS_TYPE MATCHES "^(STATIC|SHARED|MODULE)_LIBRARY$|^EXECUTABLE$")
-      get_target_property (LOCATION ${TARGET_UID} "LOCATION")
+    # imported custom targets
+    #
+    # Note: This might not be required though as even custom executable
+    #       and library targets can be imported using CMake's
+    #       add_executable(<NAME> IMPORTED) and add_library(<NAME> <TYPE> IMPORTED)
+    #       commands. Such executable can, for example, also be a BASH
+    #       script built by basis_add_script().
+
+    if (IMPORTED)
+      # 1. Try IMPORTED_LOCATION_<CMAKE_BUILD_TYPE>
+      string (TOUPPER "${CMAKE_BUILD_TYPE}" CONFIG)
+      get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${CONFIG}")
+      # 2. Try IMPORTED_LOCATION
+      if (NOT LOCATION)
+        get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION")
+      endif ()
+      # 3. Try any of the IMPORTED_LOCATION_<CONFIG> where <CONFIG> in list of
+      #    BASIS supported configurations
+      if (NOT LOCATION)
+        foreach (CONFIG ${CMAKE_BUILD_CONFIGURATIONS})
+          get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${CONFIG}")
+        endforeach ()
+      endif ()
+      # 4. Make path relative to INSTALL_PREFIX if POST_INSTALL_PREFIX given
+      if ("${ARGV2}" STREQUAL "POST_INSTALL_RELATIVE")
+        file (RELATIVE_PATH LOCATION "${INSTALL_PREFIX}" "${LOCATION}")
+      endif ()
+
     # ------------------------------------------------------------------------
-    # custom targets
+    # non-imported custom targets
+
     else ()
-      get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
+
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # imported custom targets
-      #
-      # Note: This might not be required though as even custom executable
-      #       and library targets can be imported using CMake's
-      #       add_executable(<NAME> IMPORTED) and add_library(<NAME> <TYPE> IMPORTED)
-      #       commands. Such executable can, for example, also be a BASH
-      #       script built by basis_add_script().
-      if (IMPORTED)
-        # 1. Try IMPORTED_LOCATION_<CMAKE_BUILD_TYPE>
-        string (TOUPPER "${CMAKE_BUILD_TYPE}" CONFIG)
-        get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${CONFIG}")
-        # 2. Try IMPORTED_LOCATION
-        if (NOT LOCATION)
-          get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION")
+      # libraries
+
+      if (TYPE MATCHES "LIBRARY|MEX")
+
+        if (TYPE MATCHES "STATIC")
+          if (PART MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
+            get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_INSTALL_DIRECTORY")
+          endif ()
+          if (NOT DIRECTORY)
+            get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_OUTPUT_DIRECTORY")
+          endif ()
+          get_target_property (FNAME     "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
+        else ()
+          if (PART MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
+            get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_INSTALL_DIRECTORY")
+          endif ()
+          if (NOT DIRECTORY)
+            get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_OUTPUT_DIRECTORY")
+          endif ()
+          get_target_property (FNAME "${TARGET_UID}" "LIBRARY_OUTPUT_NAME")
         endif ()
-        # 3. Try any of the IMPORTED_LOCATION_<CONFIG> where <CONFIG> in list of
-        #    BASIS supported configurations
-        if (NOT LOCATION)
-          foreach (CONFIG ${CMAKE_BUILD_CONFIGURATIONS})
-            get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${CONFIG}")
-          endforeach ()
-        endif ()
-        # 4. Make path relative to INSTALL_PREFIX if POST_INSTALL_PREFIX given
-        if ("${ARGV2}" STREQUAL "POST_INSTALL_PREFIX")
-          file (RELATIVE_PATH LOCATION "${INSTALL_PREFIX}" "${LOCATION}")
-        endif ()
+
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # non-imported custom targets
+      # executables
+
       else ()
-        # libraries
-        if (BASIS_TYPE MATCHES "LIBRARY|MEX")
-          if (BASIS_TYPE MATCHES "STATIC")
-            if (ARGV2 MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
-              get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_INSTALL_DIRECTORY")
-            else ()
-              get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_OUTPUT_DIRECTORY")
-            endif ()
-            get_target_property (FNAME     "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
-          else ()
-            if (ARGV2 MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
-              get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_INSTALL_DIRECTORY")
-            else ()
-              get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_OUTPUT_DIRECTORY")
-            endif ()
-            get_target_property (FNAME     "${TARGET_UID}" "LIBRARY_OUTPUT_NAME")
-          endif ()
-        # executables
-        else ()
-          if (ARGV2 MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
-            get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_INSTALL_DIRECTORY")
-          else ()
-            get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
-          endif ()
-          get_target_property (FNAME     "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
-        endif ()
-        if (NOT FNAME)
-          get_target_property (FNAME "${TARGET_UID}" "OUTPUT_NAME")
-        endif ()
-        get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
-        get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
 
-        if (FNAME)
-          set (TARGET_FILE "${FNAME}")
-        else ()
-          set (TARGET_FILE "${TARGET_NAME}")
+        if (PART MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
+          get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_INSTALL_DIRECTORY")
         endif ()
-        if (PREFIX)
-          set (TARGET_FILE "${PREFIX}${TARGET_FILE}")
+        if (NOT DIRECTORY)
+          get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
         endif ()
-        if (SUFFIX)
-          set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
-        endif ()
+        get_target_property (FNAME "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
+      endif ()
+      if (NOT FNAME)
+        get_target_property (FNAME "${TARGET_UID}" "OUTPUT_NAME")
+      endif ()
+      get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
+      get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
 
-        if ("${ARGV2}" STREQUAL "POST_INSTALL")
+      if (FNAME)
+        set (TARGET_FILE "${FNAME}")
+      else ()
+        set (TARGET_FILE "${TARGET_NAME}")
+      endif ()
+      if (PREFIX)
+        set (TARGET_FILE "${PREFIX}${TARGET_FILE}")
+      endif ()
+      if (SUFFIX)
+        set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
+      endif ()
+
+      if ("${PART}" STREQUAL "POST_INSTALL")
+        if (IS_RELATIVE "${DIRECTORY}")
           set (DIRECTORY "${INSTALL_PREFIX}/${DIRECTORY}")
         endif ()
-
-        set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
+      elseif ("${PART}" STREQUAL "POST_INSTALL_RELATIVE")
+        if (IS_ABSOLUTE "${DIRECTORY}")
+          file (RELATIVE_PATH DIRECTORY "${INSTALL_PREFIX}" "${DIRECTORY}")
+        endif ()
       endif ()
+
+      set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
+
     endif ()
 
-    if (ARGV2 AND NOT ARGV2 MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
-      get_filename_component (LOCATION "${LOCATION}" "${ARGV2}")
+    # get filename component
+    if (NOT PART MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
+      get_filename_component (LOCATION "${LOCATION}" "${PART}")
     endif ()
+
   else ()
-    set (LOCATION "NOTFOUND")
+    message (FATAL_ERROR "basis_get_target_location(): Unknown target ${TARGET_UID}")
   endif ()
+
+  # return
   set ("${VAR}" "${LOCATION}" PARENT_SCOPE)
 endfunction ()
 

@@ -312,30 +312,6 @@ function (basis_target_link_libraries TARGET_NAME)
 endfunction ()
 
 # ============================================================================
-# target type
-# ============================================================================
-
-##############################################################################
-# @brief Get type name of target.
-#
-# @param [out] TYPE        The target's type name or NOTFOUND.
-# @param [in]  TARGET_NAME The name of the target.
-
-function (basis_target_type TYPE TARGET_NAME)
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-  if (TARGET ${TARGET_UID})
-    get_target_property (TYPE_OUT ${TARGET_UID} "BASIS_TYPE")
-    if (NOT TYPE_OUT)
-      # in particular imported targets may not have a BASIS_TYPE property
-      get_target_property (TYPE_OUT ${TARGET_UID} "TYPE")
-    endif ()
-  else ()
-    message (FATAL_ERROR "basis_target_type(): Unknown target ${TARGET_NAME}!")
-  endif ()
-  set ("${TYPE}" "${TYPE_OUT}" PARENT_SCOPE)
-endfunction ()
-
-# ============================================================================
 # add targets
 # ============================================================================
 
@@ -1659,7 +1635,7 @@ endfunction ()
 function (basis_get_soname SONAME OBJFILE)
   basis_target_uid (TARGET_UID ${OBJFILE})
   if (TARGET TARGET_UID)
-    basis_get_target_location (OBJFILE ${TARGET_UID})
+    basis_get_target_location (OBJFILE ${TARGET_UID} ABSOLUTE)
   else ()
     set (OBJFILE "${OBJ}")
   endif ()
@@ -1740,6 +1716,16 @@ function (basis_export_targets)
       set (C "${C}set (CMAKE_IMPORT_FILE_VERSION 1)\n")
     endmacro ()
 
+    # compute installation prefix relative to INSTALL_CONFIG_DIR
+    macro (prefix)
+      set (C "${C}\n# Compute the installation prefix relative to this file.\n")
+      set (C "${C}get_filename_component (_IMPORT_PREFIX \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)\n")
+      string (REGEX REPLACE "[/\\]" ";" DIRS "${INSTALL_CONFIG_DIR}")
+      foreach (D ${DIRS})
+        set (C "${C}get_filename_component (_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)\n")
+      endforeach ()
+    endmacro ()
+
     # create import targets
     macro (import_targets)
       foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
@@ -1770,7 +1756,7 @@ function (basis_export_targets)
           set (C "${C}\n# Import target \"${T}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${T} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${T} PROPERTIES\n")
-          basis_get_target_location (LOCATION ${T})
+          basis_get_target_location (LOCATION ${T} ABSOLUTE)
           set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"${LOCATION}\"\n")
           if (BASIS_TYPE MATCHES "LIBRARY|MEX")
             set (C "${C}  IMPORTED_LINK_INTERFACE_LANGUAGES_${CONFIG_UPPER} \"CXX\"\n")
@@ -1788,7 +1774,7 @@ function (basis_export_targets)
           set (C "${C}set_property (TARGET ${T} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${T} PROPERTIES\n")
           basis_get_target_location (LOCATION ${T} POST_INSTALL_RELATIVE)
-          set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_INSTALL_PREFIX}/${LOCATION}\"\n")
+          set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_IMPORT_PREFIX}/${LOCATION}\"\n")
           if (BASIS_TYPE MATCHES "LIBRARY|MEX")
             set (C "${C}  IMPORTED_LINK_INTERFACE_LANGUAGES_${CONFIG_UPPER} \"CXX\"\n")
           endif ()
@@ -1810,13 +1796,6 @@ function (basis_export_targets)
     # for the build tree. Therefore, we have to include the custom exports
     # file our selves in the use file.
 
-    # HACK: For some reason, ARGV2 when used inside of basis_get_target_location()
-    #       is set to the ARGV2 value of this function. This is probably a bug
-    #       in CMake. However, I could not come up with a test that actually
-    #       reproduces this error in a simpler use case. Thus, no bug report
-    #       has been submitted.
-    set (ARGV2)
-
     # write exports for build tree
     header ()
     import_targets ()
@@ -1827,6 +1806,7 @@ function (basis_export_targets)
 
     # write exports for installation
     header ()
+    prefix ()
     import_targets ()
     install_properties ()
     footer ()

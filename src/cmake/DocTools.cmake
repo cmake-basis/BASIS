@@ -80,28 +80,6 @@ mark_as_advanced (BASIS_CMD_PERL)
 ## @addtogroup CMakeUtilities
 #  @{
 
-basis_get_target_location (BASIS_DOXYGEN_CMAKE_FILTER      "basis@doxygen-cmake-filter.py")
-basis_get_target_location (BASIS_DOXYGEN_PYTHON_FILTER     "basis@doxygen-python-filter.py")
-basis_get_target_location (BASIS_DOXYGEN_BASH_FILTER       "basis@doxygen-bash-filter.py")
-basis_get_target_location (BASIS_DOXYGEN_JAVASCRIPT_FILTER "basis@doxygen-javascript-filter.pl")
-basis_get_target_location (BASIS_DOXYGEN_PERL_FILTER       "basis@doxygen-filter.pl")
-basis_get_target_location (BASIS_DOXYGEN_MATLAB_FILTER     "basis@doxygen-matlab-filter.pl")
-
-## @brief Default Doxygen filter patterns.
-set (
-  BASIS_DOXYGEN_FILTER_PATTERNS
-    "*.cmake=\"${BASIS_DOXYGEN_CMAKE_FILTER}\""
-    "*.cmake.in=\"${BASIS_DOXYGEN_CMAKE_FILTER}\""
-    "*.ctest=\"${BASIS_DOXYGEN_CMAKE_FILTER}\""
-    "*.ctest.in=\"${BASIS_DOXYGEN_CMAKE_FILTER}\""
-    "CMakeLists.txt=\"${BASIS_DOXYGEN_CMAKE_FILTER}\""
-    "*.sh=\"${BASIS_DOXYGEN_BASH_FILTER}\""
-    "*.sh.in=\"${BASIS_DOXYGEN_BASH_FILTER}\""
-    "*.m=\"${BASIS_DOXYGEN_MATLAB_FILTER}\""
-    "*.m.in=\"${BASIS_DOXYGEN_MATLAB_FILTER}\""
-    "*.py=" # TODO Python filer disabled because it does not work properly
-)
-
 ## @brief Default Doxygen configuration.
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
@@ -176,6 +154,35 @@ function (basis_add_changelog_target)
       add_custom_target (changelog)
     endif ()
   endif ()
+endfunction ()
+
+##############################################################################
+# @brief Get default Doxygen filter patterns.
+#
+# @param [out] FILTER_PATTERNS List of default Doxygen filter patterns.
+
+function (basis_default_doxygen_filters FILTER_PATTERNS)
+  basis_get_target_location (CMAKE_FILTER      "basis@doxygen-cmake-filter.py"      ABSOLUTE)
+  basis_get_target_location (PYTHON_FILTER     "basis@doxygen-python-filter.py"     ABSOLUTE)
+  basis_get_target_location (PERL_FILTER       "basis@doxygen-filter.pl"            ABSOLUTE)
+  basis_get_target_location (BASH_FILTER       "basis@doxygen-bash-filter.py"       ABSOLUTE)
+  basis_get_target_location (JAVASCRIPT_FILTER "basis@doxygen-javascript-filter.pl" ABSOLUTE)
+  basis_get_target_location (MATLAB_FILTER     "basis@doxygen-matlab-filter.pl"     ABSOLUTE)
+
+  ## @brief Default Doxygen filter patterns.
+  set (
+    BASIS_DOXYGEN_FILTER_PATTERNS
+      "*.cmake=\"${CMAKE_FILTER}\""
+      "*.cmake.in=\"${CMAKE_FILTER}\""
+      "*.ctest=\"${CMAKE_FILTER}\""
+      "*.ctest.in=\"${CMAKE_FILTER}\""
+      "CMakeLists.txt=\"${CMAKE_FILTER}\""
+      "*.sh=\"${BASH_FILTER}\""
+      "*.sh.in=\"${BASH_FILTER}\""
+      "*.m=\"${MATLAB_FILTER}\""
+      "*.m.in=\"${MATLAB_FILTER}\""
+      "*.py=" # TODO Python filer disabled because it does not work properly
+  )
 endfunction ()
 
 ## @}
@@ -466,7 +473,7 @@ function (basis_add_doc TARGET_NAME)
       set (DOXYGEN_INPUT_FILTER)
     endif ()
     if (NOT DOXYGEN_FILTER_PATTERNS)
-      set (DOXYGEN_FILTER_PATTERNS "${BASIS_DOXYGEN_FILTER_PATTERNS}")
+      basis_default_doxygen_filters (DOXYGEN_FILTER_PATTERNS)
     endif ()
     basis_list_to_delimited_string (DOXYGEN_FILTER_PATTERNS " " ${DOXYGEN_FILTER_PATTERNS})
     if (NOT DOXYGEN_EXCLUDE_PATTERNS)
