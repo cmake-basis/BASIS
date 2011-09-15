@@ -226,11 +226,14 @@ function (basis_add_stdaux_perl_module)
  
     if (TYPE MATCHES "EXECUTABLE")
       basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}" ABSOLUTE)
-      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL_RELATIVE)
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
 
-      get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
-      get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
+      get_filename_component (EXEC_NAME   "${INSTALL_LOCATION}" NAME)
       get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}" "${INSTALL_DIR}")
+      if (NOT INSTALL_DIR)
+        set (INSTALL_DIR ".")
+      endif ()
 
       # TODO
       message (WARNING "basis_add_stdaux_perl_module() not implemented yet!")
@@ -265,48 +268,51 @@ endfunction ()
 
 function (basis_add_stdaux_bash_script)
   # generate definition of aliases
-  set (B) # for build tree
-  set (C) # for installation
+  set (B)  # for build tree
+  set (C)  # for installation
+  set (BB) # for build tree (follows B)
+  set (CC) # for installation (follows C)
   foreach (TARGET_UID ${BASIS_TARGETS})
     basis_target_type (TYPE "${TARGET_UID}")
  
     if (TYPE MATCHES "EXECUTABLE")
       # get location of executable file
       basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}" ABSOLUTE)
-      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL_RELATIVE)
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
 
-      get_filename_component (BUILD_DIR   "${BUILD_LOCATION}" PATH)
-      get_filename_component (EXEC_NAME   "${BUILD_LOCATION}" NAME)
+      get_filename_component (EXEC_NAME   "${INSTALL_LOCATION}" NAME)
       get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+      file (RELATIVE_PATH INSTALL_DIR "${INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}" "${INSTALL_DIR}")
+      if (NOT INSTALL_DIR)
+        set (INSTALL_DIR ".")
+      endif ()
 
       # add fully-qualified alias
       string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
-      if (B)
-        set (B "${B}\n")
-      endif ()
-      if (C)
-        set (C "${C}\n")
-      endif ()
-      set (B "${B}alias '${ALIAS}'=\\\"${LOCATION}\\\"")
-      set (C "${C}alias '${ALIAS}'=$(to_absolute_path \\\"${EXEC_DIR}/${EXEC_NAME}\\\" \$stdaux_dir)")
+      set (B "${B}\nalias '${ALIAS}'=\\\"${BUILD_LOCATION}\\\"")
+      set (C "${C}\nalias '${ALIAS}'=$(to_absolute_path \\\"${INSTALL_DIR}/${EXEC_NAME}\\\" \$stdaux_dir)")
 
       # add also alias without project name if target belongs to this project
       string (REGEX REPLACE "::.*" "" NS "${ALIAS}")
       if ("${NS}" STREQUAL "${PROJECT_NAME_LOWER}")
         basis_target_name (TARGET_NAME "${TARGET_UID}")
-        set (B "${B}\nalias '${TARGET_NAME}'='${ALIAS}'")
-        set (C "${C}\nalias '${TARGET_NAME}'='${ALIAS}'")
+        set (BB "${BB}\nalias '${TARGET_NAME}'='${ALIAS}'")
+        set (CC "${CC}\nalias '${TARGET_NAME}'='${ALIAS}'")
       endif ()
     endif ()
   endforeach ()
+  string (STRIP "${C}"  C)
+  string (STRIP "${CC}" CC)
+  string (STRIP "${B}"  B)
+  string (STRIP "${BB}" BB)
 
   # script configuration
   set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
   set (CONFIG "${CONFIG}if (BUILD_INSTALL_SCRIPT)\n")
-  set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${C}\")\n")
+  set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${C}\n\n# define short aliases for this project's targets\n${CC}\")\n")
   set (CONFIG "${CONFIG}else ()\n")
-  set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${B}\")\n")
+  set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${B}\n\n# define short aliases for this project's targets\n${BB}\")\n")
   set (CONFIG "${CONFIG}endif ()\n")
 
   # add module
