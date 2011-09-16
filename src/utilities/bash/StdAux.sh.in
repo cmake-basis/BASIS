@@ -90,6 +90,10 @@ print_contact ()
 # aliases
 # ============================================================================
 
+if [ -z "${basis_enable_target_aliases}" ] || [ ${basis_enable_target_aliases} -eq 0 ]; then
+    return
+fi
+
 # define aliases of build target names to executable file paths
 @EXECUTABLE_ALIASES@
 

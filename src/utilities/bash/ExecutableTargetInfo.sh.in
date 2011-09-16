@@ -96,6 +96,9 @@ get_executable_path ()
         realpath $0
     # otherwise, lookup name of executable corresponding to this build target
     else
+        # initialize module on demand, only when called first
+        _executabletargetinfo_initialize
+        # retrieve information about executable file location
         local uid=$(get_target_uid "$1")
         local path=$(_executabletargetinfo_get ${uid} 'LOCATION')
         _executabletargetinfo_to_absolute_path ${path} ${__EXECUTABLETARGETINFO_dir}
@@ -180,9 +183,22 @@ _executabletargetinfo_to_absolute_path ()
     fi
 }
 
-# ============================================================================
-# initialization
-# ============================================================================
+##############################################################################
+# @brief Initialize executable target information.
+#
+# This function initializes the structures of information about the executable
+# build targets. If this function is executed another time, it does nothing
+# because the structures are initialized already. In order to reduce the start
+# time of applications that do not make use of this module, the initialization
+# is only performed on demand.
+#
+# @sa get_executable_path()
+#
+# @returns Nothing.
+_executabletargetinfo_initialize ()
+{
+    [ -n "${__EXECUTABLETARGETINFO_initialized}" ] && return 0
+    __EXECUTABLETARGETINFO_initialized=1
 
-# add mappings from build target names to executable file paths relative to module
-@EXECUTABLE_TARGET_INFO@
+    @EXECUTABLE_TARGET_INFO@
+}
