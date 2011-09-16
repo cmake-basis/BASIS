@@ -252,8 +252,8 @@ function (basis_configure_ExecutableTargetInfo)
 
       if (BASH)
         # hash entry
-        set (SH_B "${SH_B}\n_executabletargetinfo_add '${ALIAS}' LOCATION '${BUILD_LOCATION}'")
-        set (SH_I "${SH_I}\n_executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2MOD}'")
+        set (SH_B "${SH_B}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${BUILD_LOCATION}'")
+        set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2MOD}'")
 
         # alias
         set (SH_A "${SH_A}\nalias '${ALIAS}'=$(get_executable_path '${ALIAS}')")
