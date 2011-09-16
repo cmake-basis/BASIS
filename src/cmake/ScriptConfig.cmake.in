@@ -68,6 +68,19 @@ set (PROJECT_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
 set (PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
 set (PROJECT_REVISION      "@PROJECT_REVISION@")
 
+# project version in a format that can be used with $VERSION variable in Perl
+set (PROJECT_VERSION_PERL "${PROJECT_VERSION_MAJOR}")
+if (PROJECT_VERSION_MAJOR LESS 10)
+  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}.0${PROJECT_VERSION_MINOR}")
+else ()
+  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}.${PROJECT_VERSION_MINOR}")
+endif ()
+if (PROJECT_VERSION_PATCH LESS 10)
+  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}_0${PROJECT_VERSION_PATCH}")
+else ()
+  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}_${PROJECT_VERSION_PATCH}")
+endif ()
+
 # ============================================================================
 # directories
 # ============================================================================
@@ -236,11 +249,9 @@ set (BASIS_PERL_UTILITIES "
 use strict;
 use warnings;
 
-use FindBin ();
-FindBin::again ();
-use lib \"$FindBin::Bin/${LIBRARY_DIR}\";
+use File::Basename;
+use lib dirname (__FILE__) . \"/${LIBRARY_DIR}\";
 
 use StdAux;
-use ExecutableTargetInfo;
 "
 )
