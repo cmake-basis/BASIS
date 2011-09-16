@@ -64,9 +64,7 @@ use File::Spec     qw(rel2abs)
 my $_namespace = '@PROJECT_NAME_LOWER@';
 
 ## @brief Maps build target names to executable file paths relative to module.
-my %_location = (
-    @EXECUTABLE_TARGET_INFO@
-);
+my $_location = undef;
 
 # ============================================================================
 # public functions
@@ -88,6 +86,10 @@ my %_location = (
 sub get_target_uid
 {
     my $target = $_[0];
+    # initialize module if not done yet - this is only done here because
+    # whenever information is looked up about an executable target, this
+    # function is invoked first
+    if (not $_location) initialize ();
     # do nothing if target name is known
     if (exists $_location{$target}) return $target;
     # do nothing if target name is fully-qualified
@@ -147,6 +149,28 @@ sub get_executable_path
     } else {
         return File::Spec->rel2abs ($_location{get_target_uid ($_[0])}, dirname (__FILE__));
     }
+}
+
+# ============================================================================
+# protected/private functions
+# ============================================================================
+
+##############################################################################
+# @brief Initialize executable target information.
+#
+# This function initializes the structures of information about the executable
+# build targets. In order to reduce the start-up time of applications that do
+# not make use of this module, the initialization is only performed on demand.
+#
+# The initialization is done in get_target_uid() as this function is always
+# called first before any lookup of information.
+#
+# @returns Nothing.
+sub initialize
+{
+    $_location = {
+    @EXECUTABLE_TARGET_INFO@
+    };
 }
 
 

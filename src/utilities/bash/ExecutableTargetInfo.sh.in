@@ -44,6 +44,13 @@ readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
 get_target_uid ()
 {
     local target=$(_executabletargetinfo_sanitize "$1")
+    # initialize module if not done yet - this is only done here because
+    # whenever information is looked up about an executable target, this
+    # function is invoked first
+    if [ -z "${__EXECUTABLETARGETINFO_initialized}" ]; then
+        _executabletargetinfo_initialize
+    fi
+    # convert target name to target UID
     if [ -z $(_executabletargetinfo_get ${target} LOCATION) ] && [[ "${target//__/}" == "${target}" ]]; then
         echo -n "${__EXECUTABLETARGETINFO_namespace}__${target}"
     else
@@ -96,9 +103,6 @@ get_executable_path ()
         realpath $0
     # otherwise, lookup name of executable corresponding to this build target
     else
-        # initialize module on demand, only when called first
-        _executabletargetinfo_initialize
-        # retrieve information about executable file location
         local uid=$(get_target_uid "$1")
         local path=$(_executabletargetinfo_get ${uid} 'LOCATION')
         _executabletargetinfo_to_absolute_path ${path} ${__EXECUTABLETARGETINFO_dir}
@@ -192,13 +196,12 @@ _executabletargetinfo_to_absolute_path ()
 # time of applications that do not make use of this module, the initialization
 # is only performed on demand.
 #
-# @sa get_executable_path()
+# The initialization is done in get_target_uid() as this function is always
+# called first before any lookup of information.
 #
 # @returns Nothing.
 _executabletargetinfo_initialize ()
 {
-    [ -n "${__EXECUTABLETARGETINFO_initialized}" ] && return 0
-    __EXECUTABLETARGETINFO_initialized=1
-
     @EXECUTABLE_TARGET_INFO@
+    __EXECUTABLETARGETINFO_initialized=1
 }
