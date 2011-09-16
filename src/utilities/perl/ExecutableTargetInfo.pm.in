@@ -16,12 +16,36 @@ use warnings;
 # exports
 # ============================================================================
 
-our (@ISA, @EXPORT, @EXPORT_OK);
 BEGIN {
-    require Exporter;
-    @ISA=qw(Exporter);
-    @EXPORT=(get_executable_name get_executable_directory get_executable_path);
-    @EXPORT_OK=(get_target_uid is_known_target);
+    use Exporter ();
+
+    our $VERSION = @PROJECT_VERSION_PERL@;
+    our @ISA     = qw (Exporter);
+    our @EXPORT  = qw ();
+
+    our @EXPORT_OK = qw (
+        get_executable_name
+        get_executable_directory
+        get_executable_path
+        get_target_uid
+        is_known_target
+    );
+
+    our @EXPORT_TAGS = (
+        default => qw (
+            get_executable_name
+            get_executable_directory
+            get_executable_path
+        )
+
+        everything => qw (
+            get_executable_name
+            get_executable_directory
+            get_executable_path
+            get_target_uid
+            is_known_target
+        )
+    )
 }
 
 # ============================================================================
