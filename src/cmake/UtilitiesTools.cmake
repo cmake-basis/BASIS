@@ -243,8 +243,14 @@ function (basis_configure_ExecutableTargetInfo)
       # Perl
 
       if (PERL)
-        set (PL_B "${PL_B}\n    '${ALIAS}' => '${BUILD_LOCATION}'")
-        set (PL_I "${PL_I}\n    '${ALIAS}' => '${INSTALL_LOCATION_REL2MOD}'")
+        if (PL_B)
+          set (PL_B "${PL_B},\n")
+        endif ()
+        set (PL_B "${PL_B}    '${ALIAS}' => '${BUILD_LOCATION}'")
+        if (PL_I)
+          set (PL_I "${PL_I},\n")
+        endif ()
+        set (PL_I "${PL_I}    '${ALIAS}' => '${INSTALL_LOCATION_REL2MOD}'")
       endif ()
 
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
