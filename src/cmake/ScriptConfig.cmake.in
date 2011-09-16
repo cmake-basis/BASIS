@@ -66,6 +66,10 @@
 string (TOUPPER "${NAME}" NAME_UPPER)
 string (TOLOWER "${NAME}" NAME_LOWER)
 
+string (REGEX REPLACE "[^a-zA-Z0-9]" "_" NAMESPACE "${NAME}")
+string (TOUPPER "${NAMESPACE}" NAMESPACE_UPPER)
+string (TOLOWER "${NAMESPACE}" NAMESPACE_LOWER)
+
 # ============================================================================
 # project attributes
 # ============================================================================
@@ -204,8 +208,8 @@ realpath ()
 
 set (BASIS_BASH_UTILITIES "
 ${BASIS_BASH_FUNCTION_realpath}
-readonly __${NAME_UPPER}_dir=${BASIS_BASH___DIR__}
-source \"$(realpath \${__${NAME_UPPER}_dir})/${LIBRARY_DIR}/StdAux.sh\"
+readonly __${NAMESPACE_UPPER}_dir=${BASIS_BASH___DIR__}
+source \"$(realpath \${__${NAMESPACE_UPPER}_dir})/${LIBRARY_DIR}/StdAux.sh\"
 "
 )
 
