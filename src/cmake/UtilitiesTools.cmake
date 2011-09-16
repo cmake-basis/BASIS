@@ -291,7 +291,7 @@ function (basis_configure_ExecutableTargetInfo)
   if (CXX)
     # configure source file
     set (EXECUTABLE_TARGET_INFO "${CC}")
-    configure_file ("${BINARY_CODE_DIR}/StdAux.cc" "${BINARY_CODE_DIR}/StdAux.cc" @ONLY)
+    configure_file ("${BINARY_CODE_DIR}/stdaux.cc" "${BINARY_CODE_DIR}/stdaux.cc" @ONLY)
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
