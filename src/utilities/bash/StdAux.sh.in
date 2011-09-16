@@ -25,7 +25,7 @@ __SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 # ============================================================================
 
 ## @brief Absolute path of directory of StdAux.sh module
-readonly __STDAUX_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
+readonly __STDAUX_dir=@BASIS_BASH___DIR__@
 
 # ============================================================================
 # modules

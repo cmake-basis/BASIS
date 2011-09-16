@@ -22,7 +22,7 @@ __SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_INCLUDED=1
 # ============================================================================
 
 ## @brief Canonical path of directory containing ExecutableTargetInfo module
-readonly __EXECUTABLETARGETINFO_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
+readonly __EXECUTABLETARGETINFO_dir=@BASIS_BASH___DIR__@
 
 ## @brief Default namespace used to convert target name to target UID.
 readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
@@ -43,8 +43,8 @@ readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
 # @returns UID of build target.
 get_target_uid ()
 {
-    local target=$(_executabletargetinfo_sanitize $1)
-    if [ -z $(_executabletargetinfo_get ${target} NAME) ] && [[ "${target//__/}" == "${target}" ]]; then
+    local target=$(_executabletargetinfo_sanitize "$1")
+    if [ -z $(_executabletargetinfo_get ${target} LOCATION) ] && [[ "${target//__/}" == "${target}" ]]; then
         echo -n "${__EXECUTABLETARGETINFO_namespace}__${target}"
     else
         echo -n "${target}"
@@ -79,13 +79,7 @@ get_executable_name ()
 # @returns The directory part of the executable file path.
 get_executable_directory ()
 {
-    # if called without arguments, return directory of calling executable
-    if [ $# -eq 0 ]; then
-        _get_executable_directory
-    # otherwise, lookup name of executable corresponding to this build target
-    else
-        dirname "$(get_executable_path $1)"
-    fi
+    dirname "$(get_executable_path $1)"
 }
 
 ##############################################################################
@@ -99,11 +93,12 @@ get_executable_path ()
 {
     # if called without arguments, return path of calling executable
     if [ $# -eq 0 ]; then
-        echo "$(get_executable_directory)/$(get_executable_name)"
+        realpath $0
     # otherwise, lookup name of executable corresponding to this build target
     else
-        local path=$(_executabletargetinfo_get $(get_target_uid $1) 'LOCATION')
-        _executabletargetinfo_to_absolute_path "${path}" "${_EXECUTABLETARGETINFO_dir}"
+        local uid=$(get_target_uid "$1")
+        local path=$(_executabletargetinfo_get ${uid} 'LOCATION')
+        _executabletargetinfo_to_absolute_path ${path} ${__EXECUTABLETARGETINFO_dir}
     fi
 }
 
@@ -123,8 +118,7 @@ get_executable_path ()
 # @returns Sanitized string that can be used as variable name.
 _executabletargetinfo_sanitize ()
 {
-    local $str=$1
-    echo -n "$str" | tr -s [:space:] '_' | tr -C [:alpha:] '_'
+    echo -n "$1" | tr [:space:] '_' | tr -C [:alpha:] '_'
 }
 
 ##############################################################################
@@ -139,8 +133,8 @@ _executabletargetinfo_sanitize ()
 # @returns Sets a readonly variable that represents the (key, value) entry.
 _executabletargetinfo_add ()
 {
-    local key=$(_executabletargetinfo_sanitize $1)
-    local name=$(_executabletargetinfo_sanitize $2)
+    local key=$(_executabletargetinfo_sanitize "$1")
+    local name=$(_executabletargetinfo_sanitize "$2")
     eval readonly '__EXECUTABLETARGETINFO_'"${name}"'_'"${key}"='$3'
 }
 
@@ -156,8 +150,8 @@ _executabletargetinfo_add ()
 #          string if the hash table does not exist or the key is unknown.
 _executabletargetinfo_get ()
 {
-    local key=$(_executabletargetinfo_sanitize $1)
-    local name=$(_executabletargetinfo_sanitize $2)
+    local key=$(_executabletargetinfo_sanitize "$1")
+    local name=$(_executabletargetinfo_sanitize "$2")
     eval echo -n '${__EXECUTABLETARGETINFO_'"${name}"'_'"${key}"'}'
 }
 
@@ -176,17 +170,13 @@ _executabletargetinfo_get ()
 _executabletargetinfo_to_absolute_path ()
 {
     local path=$1
-    if [ -n "$2" ]; then
-        local base=$2
-    else
-        local base=$(pwd)
-    fi
-    local dir=$(dirname "${path}")
+    local base=${2:-$(pwd)}
+    local dir=$(dirname ${path})
 
     if [ -d "${base}" -a -d "${dir}" ]; then
-        echo "$(cd ${base}; cd ${dir}; pwd)/$(basename ${path})"
+        echo -n $(cd ${base}; cd ${dir}; pwd)/$(basename ${path})
     else
-        echo ${path}
+        echo -n ${path}
     fi
 }
 
