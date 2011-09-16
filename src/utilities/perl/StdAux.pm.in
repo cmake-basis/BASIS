@@ -16,43 +16,38 @@ use warnings;
 # exports
 # ============================================================================
 
+our ($VERSION, @ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS);
+
 BEGIN {
     use Exporter ();
 
-    our $VERSION = @PROJECT_VERSION_PERL@;
-    our @ISA     = qw (Exporter);
-    our @EXPORT  = qw ();
+    $VERSION = @PROJECT_VERSION_PERL@;
+    @ISA     = qw (Exporter);
 
-    our @EXPORT_OK = qw (
-        get_executable_name
-        get_executable_directory
-        get_executable_path
-        is_known_target
-        get_target_uid
-    );
-
-    our @EXPORT_TAGS = (
-        default => qw (
+    %EXPORT_TAGS = (
+        default => [qw (
             get_executable_name
             get_executable_directory
             get_executable_path
-        )
+        )],
 
-        everything => qw (
+        everything => [qw (
             get_executable_name
             get_executable_directory
             get_executable_path
             is_known_target
             get_target_uid
-        )
+        )]
     );
+
+    Exporter::export_ok_tags ('everything');
 }
 
 # ============================================================================
 # modules
 # ============================================================================
 
-use ExecutableTargetInfo qw(everything);
+use ExecutableTargetInfo qw(:everything);
 
 # ============================================================================
 # version / help
