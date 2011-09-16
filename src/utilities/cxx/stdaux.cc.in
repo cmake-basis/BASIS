@@ -14,6 +14,8 @@
  */
 
 
+#include <iostream>
+
 #include <sbia/basis/path.h>
 
 #include "config.h"
@@ -62,10 +64,8 @@ void PrintContact (const char *contact)
 // ***************************************************************************
 bool ExecutingInBuildTree ()
 {
-    // get directory of executable if not specified
-    execDir = GetExecutableDirectory ();
-    // make path relative to top directory of build tree
-    string relPath = ToRelativePath (cBuildRoot, execDir);
+    // get executable path relative to top directory of build tree
+    string relPath = ToRelativePath (cBuildRoot, GetExecutableDirectory ());
     // return whether executable directory is inside the build tree or not
     return !(relPath == "" || relPath == "." ||
             (relPath.substr (0, 2) == ".." && (relPath.size () == 2 || relPath [2] == '/')));
@@ -75,9 +75,9 @@ bool ExecutingInBuildTree ()
 string GetInstallationPrefix ()
 {
 #ifdef LIBEXEC
-    return JoinPaths (GetExecutableDirectory (), cLibexecPrefix);
+    return JoinPaths (GetExecutableDirectory (), cLibexecPathPrefix);
 #else
-    return JoinPaths (GetExecutableDirectory (), cRuntimePrefix);
+    return JoinPaths (GetExecutableDirectory (), cRuntimePathPrefix);
 #endif
 }
 
@@ -124,6 +124,12 @@ string GetDataDirectory ()
 // ===========================================================================
 // information about executable targets
 // ===========================================================================
+
+// ---------------------------------------------------------------------------
+// static members
+// ---------------------------------------------------------------------------
+
+ExecutableTargetInfo ExecutableTargetInfo::_instance;
 
 // ---------------------------------------------------------------------------
 // construction / destruction
@@ -203,7 +209,7 @@ ExecutableTargetInfo
 // ===========================================================================
 
 // ***************************************************************************
-string GetExecutableFile (const string &target)
+string GetExecutablePath (const string &target)
 {
     // get executable target information instance
     const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
@@ -221,4 +227,3 @@ string GetExecutableFile (const string &target)
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
-

@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  stdaux.sh
+# @file  StdAux.sh
 # @brief Standard auxiliary functions for BASH.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -13,25 +13,26 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
-_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
+[ "${__SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
+__SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 
 ## @addtogroup BashUtilities
 #  @{
+
 
 # ============================================================================
 # constants
 # ============================================================================
 
 ## @brief Absolute path of directory of StdAux.sh module
-readonly stdaux_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
+readonly __STDAUX_dir=$(cd `dirname ${BASH_SOURCE}` && pwd -P)
 
 # ============================================================================
 # modules
 # ============================================================================
 
-source "${stdaux_dir}/Flags.sh"                # command-line parsing library
-source "${stdaux_dir}/ExecutableTargetInfo.sh" # info about executable targets
+source "${__STDAUX_dir}/Flags.sh"                # command-line parsing library
+source "${__STDAUX_dir}/ExecutableTargetInfo.sh" # info about executable targets
 
 # ============================================================================
 # version / help
@@ -82,39 +83,6 @@ print_contact ()
         echo -e "  $1"
     else
         echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
-    fi
-}
-
-# ============================================================================
-# paths
-# ============================================================================
-
-##############################################################################
-# @brief Make relative path absolute.
-#
-# @attention The directory referred to by the directory part of the path must exist.
-#
-# @todo Implement this function without the use of cd such that non-existent
-#       paths can be simplified as well.
-#
-# @param [in] path Absolute or relative path.
-# @param [in] base Base path used for relative paths.
-#
-# @returns Prints simplified absolute path to @c STDOUT.
-to_absolute_path ()
-{
-    local path=$1
-    if [ -n "$2" ]; then
-        local base=$2
-    else
-        local base=$(pwd)
-    fi
-    local dir=$(dirname "${path}")
-
-    if [ -d "${base}" -a -d "${dir}" ]; then
-        echo "$(cd ${base}; cd ${dir}; pwd)/$(basename ${path})"
-    else
-        echo ${path}
     fi
 }
 

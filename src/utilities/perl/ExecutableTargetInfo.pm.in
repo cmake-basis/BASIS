@@ -1,0 +1,129 @@
+##############################################################################
+# @file  ExecutableTargetInfo.pm
+# @brief Provides information about executables built by BASIS.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+package ExecutableTargetInfo;
+
+use strict;
+use warnings;
+
+# ============================================================================
+# exports
+# ============================================================================
+
+our (@ISA, @EXPORT, @EXPORT_OK);
+BEGIN {
+    require Exporter;
+    @ISA=qw(Exporter);
+    @EXPORT=(get_executable_name get_executable_directory get_executable_path);
+    @EXPORT_OK=(get_target_uid is_known_target);
+}
+
+# ============================================================================
+# modules
+# ============================================================================
+
+use Cwd            qw(realpath);
+use File::Basename qw(dirname basename)
+use File::Spec     qw(rel2abs)
+
+# ============================================================================
+# private data
+# ============================================================================
+
+## @brief Default namespace used to make build target names fully-qualified.
+my $_namespace = '@PROJECT_NAME_LOWER@';
+
+## @brief Maps build target names to executable file paths relative to module.
+my %_location = (
+    @EXECUTABLE_TARGET_INFO@
+);
+
+# ============================================================================
+# public functions
+# ============================================================================
+
+##############################################################################
+# @brief Get fully-qualified build target name.
+#
+# This function prepends the default namespace of used for targets build as
+# part of the project this module belongs to if the given target name is yet
+# neither known nor fully-qualified, i.e., in the form <namespace>::<target>.
+#
+# @note This function does not check whether the returned fully-qualified
+#       target name is known to this class.
+#
+# @param [in] targe Name of build target.
+#
+# @returns Fully-qualified build target name.
+sub get_target_uid
+{
+    my $target = $_[0];
+    # do nothing if target name is known
+    if (exists $_location{$target}) return $target;
+    # do nothing if target name is fully-qualified
+    if ($target =~ /::/) return $target;
+    # otherwise, prepend default namespace name
+    return $_namespace . '::' . $target
+}
+
+##############################################################################
+# @brief Determine whether a given target is known.
+#
+# @param [in] target Name/UID of build target.
+#
+# @returns Whether the given build target is known by this module.
+sub is_known_target
+{
+    my $target = get_target_uid ($_[0]);
+    exists $_location{$target}
+}
+
+##############################################################################
+# @brief Get name part of executable file path.
+#
+# @param [in] target Name/UID of build target.
+#
+# @returns Name part of executable file path.
+sub get_executable_name
+{
+    my $path = get_executable_path (@_);
+    exists $path or return undef;
+    return basename ($location);
+}
+
+##############################################################################
+# @brief Get directory part of executable file path.
+#
+# @param [in] target Name/UID of build target.
+#
+# @returns Directory part of executable file path.
+sub get_executable_directory
+{
+    my $path = get_executable_path (@_);
+    exists $path or return undef;
+    return dirname ($location);
+}
+
+##############################################################################
+# @brief Get absolute file path of executable.
+#
+# @param [in] target Name/UID of build target.
+#
+# @returns Absolute file path of executable.
+sub get_executable_path
+{
+    if (@_ == 0) {
+        return realpath ($0);
+    } else {
+        return File::Spec->rel2abs ($_location{get_target_uid ($_[0])}, dirname (__FILE__));
+    }
+}
+
+
+1; # indicate success of module loading

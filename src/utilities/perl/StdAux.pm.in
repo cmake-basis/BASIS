@@ -1,0 +1,39 @@
+##############################################################################
+# @file  StdAux.pm
+# @brief Standard auxiliary functions.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+package StdAux;
+
+use strict;
+use warnings;
+
+# ============================================================================
+# exports
+# ============================================================================
+
+our (@ISA, @EXPORT, @EXPORT_OK);
+BEGIN {
+    require Exporter;
+    @ISA=qw(Exporter);
+    @EXPORT=();
+    @EXPORT_OK=();
+}
+
+# ============================================================================
+# modules
+# ============================================================================
+
+
+# ============================================================================
+# version / help
+# ============================================================================
+
+# TODO
+
+
+1; # indicate success of module loading

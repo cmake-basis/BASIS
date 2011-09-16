@@ -19,6 +19,7 @@
 
 
 #include <string>
+#include <map>
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
@@ -26,6 +27,7 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 /// @addtogroup CppUtilities
 /// @{
+
 
 // ===========================================================================
 // executable information
@@ -191,7 +193,7 @@ public:
      *
      * @return Static instance of this class.
      */
-    static const ExecutableTargetInfo &GetInstance () const
+    static const ExecutableTargetInfo &GetInstance ()
     {
         return _instance;
     }
@@ -297,23 +299,24 @@ private:
 // ===========================================================================
 
 /**
- * @brief Get absolute path of executable file given the build target name.
+ * @brief Get canoncial path of executable file.
  *
  * This function uses the static instance of the class ExecutableTargetInfo
  * in order to obtain the required information to be able to determine the
  * absolute path of the executable file which was built and/or installed as
  * the specified build target.
  *
- * @sa ExecutableTargetInfo
- * @sa GetExecutablePath()
+ * @note The BASIS path module provides a function also named GetExecutablePath()
+ *       which can be used to get the canonical path of the calling executable.
  *
- * @param [in] target Name/UID of build target. If an empty string is given as
- *                    argument, the path to the calling executable is returned.
+ * @sa ExecutableTargetInfo
+ *
+ * @param [in] target Name/UID of build target.
  *
  * @return Absolute path of executable file or an empty string if the build
  *         target is not known.
  */
-std::string GetExecutableFile (const std::string &target = std::string ());
+std::string GetExecutablePath (const std::string &target);
 
 
 /// @}

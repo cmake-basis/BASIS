@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  CMakeLists.txt
-# @brief Build configuration of BASH utilities.
+# @brief Build configuration of Perl utilities.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -12,8 +12,8 @@
 # template files
 basis_install (
   FILES
-    StdAux.sh.in               # main utilities module
-    ExecutableTargetInfo.sh.in # information about executable targets
+    StdAux.pm.in               # main utilities module
+    ExecutableTargetInfo.pm.in # information about executable targets
   DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}"
 )
 

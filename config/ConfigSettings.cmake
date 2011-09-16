@@ -25,9 +25,8 @@ if (BUILD_CONFIG_SETTINGS)
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
     # path to templates files
-    foreach (L CXX Python Perl BASH)
-      string (TOUPPER "${L}" U)
-      string (TOLOWER "${L}" L)
+    foreach (U CXX PYTHON PERL BASH)
+      string (TOLOWER "${U}" L)
       set (${U}_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/${L}")
     endforeach ()
 
@@ -45,8 +44,7 @@ endif ()
 basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_MODULES_DIR}")
 
 # path to templates files
-foreach (L CXX Python Perl BASH)
-  string (TOUPPER "${L}" U)
+foreach (U CXX PYTHON PERL BASH)
   basis_set_config_path (${U}_TEMPLATES_DIR_CONFIG  "${INSTALL_${U}_TEMPLATES_DIR}")
 endforeach ()
 
