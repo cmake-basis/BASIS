@@ -153,9 +153,8 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   basis_get_target_location (JAVASCRIPT_FILTER "basis@doxygen-javascript-filter.pl" ABSOLUTE)
   basis_get_target_location (MATLAB_FILTER     "basis@doxygen-matlab-filter.pl"     ABSOLUTE)
 
-  ## @brief Default Doxygen filter patterns.
   set (
-    BASIS_DOXYGEN_FILTER_PATTERNS
+    ${FILTER_PATTERNS}
       "*.cmake=\"${CMAKE_FILTER}\""
       "*.cmake.in=\"${CMAKE_FILTER}\""
       "*.ctest=\"${CMAKE_FILTER}\""
@@ -166,6 +165,7 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
       "*.m=\"${MATLAB_FILTER}\""
       "*.m.in=\"${MATLAB_FILTER}\""
       "*.py=" # TODO Python filer disabled because it does not work properly
+    PARENT_SCOPE
   )
 endfunction ()
 
@@ -451,7 +451,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
     basis_list_to_delimited_string (DOXYGEN_INPUT " " ${DOXYGEN_INPUT})
     if (NOT DOXYGEN_INPUT_FILTER)
-      set (DOXYGEN_INPUT_FILTER "${BASIS_DOXYGEN_INPUT_FILTER}")
+      basis_get_target_location (DOXYGEN_INPUT_FILTER "basis@doxygen-filter.pl" ABSOLUTE)
     endif ()
     if (DOXYGEN_INPUT_FILTER MATCHES "^(None|NONE|none)$")
       set (DOXYGEN_INPUT_FILTER)
