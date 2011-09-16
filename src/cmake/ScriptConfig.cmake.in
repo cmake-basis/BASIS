@@ -56,6 +56,17 @@
 ##############################################################################
 
 # ============================================================================
+# script attributes
+# ============================================================================
+
+# Note: The NAME variable is set inside the build script prior to the inclusion
+#       of the configured script configuration. This is done by the function
+#       basis_add_script_finalize().
+
+string (TOUPPER "${NAME}" NAME_UPPER)
+string (TOLOWER "${NAME}" NAME_LOWER)
+
+# ============================================================================
 # project attributes
 # ============================================================================
 
@@ -95,12 +106,31 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 # utility implementations
 # ============================================================================
 
-# Attention: This get_executable_directory() function is required by a
-#            BASH script to determine where the StdAux.sh file is located.
-#            In particular, it finds its way into a particular BASH script
-#            via the @BASIS_BASH_UTILITIES@ variable at the top of this script.
-#            All other utility functions should be implemented in StdAux.sh.
+# Note: Most of the utility implemenations should go into the StdAux.sh module.
+#       Only code that has to be substituted within each BASH script itself,
+#       should go here.
 
+##############################################################################
+# @brief Absolute path of current BASH file.
+#
+# @note Does not resolve symbolic links.
+#
+# Example:
+# @code
+# readonly __MYMODULE=@BASIS_BASH___FILE__@
+# @endcode
+set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
+
+##############################################################################
+# @brief Absolute path of directory of current BASH file.
+#
+# @note Does not resolve symbolic links.
+#
+# Example:
+# @code
+# readonly __MYMODULE_dir=@BASIS_BASH___DIR__@
+# @endcode
+set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
 
 ##############################################################################
 # @brief Definition of _get_executable_directory() function.
@@ -121,35 +151,37 @@ basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_
 #
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 
-set (BASH_FUNCTION__get_executable_directory "
+set (BASIS_BASH_FUNCTION_realpath "
 ##############################################################################
-# @brief Get real directory of executable.
+# @brief Get real path of given file or directory.
 #
-# @note This function was substituted by BASIS for the string
-#       @BASH_FUNCTION_get_executable_directory@ or @BASIS_BASH_UTILITIES@.
-#       Its implementation can be found in the default script configuration
-#       file of BASIS.
+# @note This function was substituted by BASIS for the string @BASIS_BASH_UTILITIES@
+#       of @BASIS_BASH_realpath@. Its implementation can be found in the
+#       default script configuration file provided by BASIS.
 #
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 #
-# @returns Prints canonical path of directory in which BASH script is located to @c STDOUT.
-get_executable_directory ()
+# @params [in] path File or directory path.
+#
+# @returns Canonical path.
+realpath ()
 {
-    # get the absolute path of the executable
-    local path=$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P) && path=$path/$(basename -- \"$BASH_SOURCE\")
+    local path=$1
 
-    # resolve symbolic links
-    while [ -h $path ]; do
+    local linkdir=''
+    local symlink=''
+
+    while [ -h \${path} ]; do
         # 1) change to directory of the symbolic link
         # 2) change to directory where the symbolic link points to
         # 3) get the current working directory
         # 4) append the basename
-        local linkdir=$(dirname -- \"$path\")
-        local symlink=$(readlink $path)
-        path=$(cd $linkdir && cd $(dirname -- \"$symlink\") && pwd)/$(basename -- \"$symlink\")
+        linkdir=$(dirname -- \"\${path}\")
+        symlink=$(readlink \${path})
+        path=$(cd \"\${linkdir}\" && cd $(dirname -- \"\${symlink}\") && pwd)/$(basename -- \"\${symlink}\")
     done
 
-    echo `cd -P \\`dirname $path\\`; pwd -P`
+    echo -n \"$(cd -P -- \"$(dirname \"\${path}\")\" && pwd -P)/$(basename -- \"\${path}\")\"
 }
 "
 )
@@ -165,14 +197,15 @@ get_executable_directory ()
 # exec_name=$(get_executable_name)
 # @endcode
 #
-# @sa stdaux.sh
-# @sa BASH_FUNCTION__get_executable_directory
+# @sa StdAux.sh
+# @sa BASH_FUNCTION_realpath
 #
 # @ingroup BashUtilities
 
 set (BASIS_BASH_UTILITIES "
-${BASH_FUNCTION__get_executable_directory}
-source \"$(_get_executable_directory)/${LIBRARY_DIR}/StdAux.sh\"
+${BASIS_BASH_FUNCTION_realpath}
+readonly __${NAME_UPPER}_dir=${BASIS_BASH___DIR__}
+source \"$(realpath \${__${NAME_UPPER}_dir})/${LIBRARY_DIR}/StdAux.sh\"
 "
 )
 

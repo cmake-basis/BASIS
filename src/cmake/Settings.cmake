@@ -497,11 +497,13 @@ if (WIN32 AND INSTALL_SINFIX)
   endforeach ()
 endif ()
 
+# TODO Figure out how to deal with Perl modules and where to install them.
 set (
   BASIS_PERLLIB
     "lib/perl${PERL_VERSION_MAJOR}/${PERL_VERSION}"
-  CACHE PATH "Installation directory for Perl modules."
+#  CACHE PATH "Installation directory for Perl modules."
 )
+#mark_as_advanced (BASIS_PERLLIB)
 
 # ============================================================================
 # build configuration(s)
