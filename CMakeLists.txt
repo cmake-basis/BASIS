@@ -42,6 +42,8 @@ set (BASIS_MODULE_PATH          "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
 set (BASIS_INCLUDE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set (BASIS_LIBRARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set (BASIS_CXX_TEMPLATES_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")
+set (BASIS_PYTHON_TEMPLATES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/python")
+set (BASIS_PERL_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/perl")
 set (BASIS_BASH_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash")
 
 # include BASIS policies, settings, macros, and functions
@@ -54,6 +56,7 @@ basis_project_initialize (
   DESCRIPTION "This package implements and supports the development of"
               " software which follows the SBIA Build system And Software"
               " Implementation Standard (BASIS)."
+  LANGUAGES   CXX Perl Python BASH
 )
 
 # ============================================================================

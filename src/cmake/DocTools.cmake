@@ -57,22 +57,6 @@ find_program (
 )
 mark_as_advanced (BASIS_CMD_SVN2CL)
 
-## @brief The Python interpreter.
-find_program (
-  BASIS_CMD_PYTHON
-    NAMES python
-    DOC   "The Python interpreter."
-)
-mark_as_advanced (BASIS_CMD_PYTHON)
-
-## @brief The Perl interpreter.
-find_program (
-  BASIS_CMD_PERL
-    NAMES perl
-    DOC   "The Perl interpreter."
-)
-mark_as_advanced (BASIS_CMD_PERL)
-
 # ============================================================================
 # settings
 # ============================================================================

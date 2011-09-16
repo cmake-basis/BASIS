@@ -64,6 +64,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 ## @addtogroup CMakeAPI
 #  @{
 
+
 ##############################################################################
 # @brief Initialize project, calls CMake's project() command.
 #
@@ -124,50 +125,47 @@ include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 # @par
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NAME name</td>
+#     @tp @b NAME name @endtp
 #     <td>The name of the project.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b VERSION major[.minor[.patch]]</td>
+#     @tp @b VERSION major[.minor[.patch]] @endtp
 #     <td>Project version string. Defaults to "1.0.0"</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b DESCRIPTION description</td>
+#     @tp @b DESCRIPTION description @endtp
 #     <td>Package description, used for packing. If multiple arguments are given,
 #         they are concatenated using one space character as delimiter.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b PACKAGE_VENDOR name</td>
+#     @tp @b LANGUAGES @endtp
+#     <td>Lists the programming languages used by this project such that
+#         corresponding BASIS utilities are available.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PACKAGE_VENDOR name @endtp
 #     <td>The vendor of this package, used for packaging. If multiple arguments
 #         are given, they are concatenated using one space character as delimiter.
 #         Default: "SBIA Group at University of Pennsylvania".</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b WELCOME_FILE file</td>
+#     @tp @b WELCOME_FILE file @endtp
 #     <td>Welcome file used for installer.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b README_FILE file</td>
+#     @tp @b README_FILE file @endtp
 #     <td>Readme file. Default: @c PROJECT_SOURCE_DIR/README.txt.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b LICENSE_FILE file</td>
+#     @tp @b LICENSE_FILE file @endtp
 #     <td>File containing copyright and license notices.
 #         Default: @c PROJECT_SOURCE_DIR/COPYING.txt.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b REDIST_LICENSE_FILES file1 [file2 ...]</td>
+#     @tp @b REDIST_LICENSE_FILES file1 [file2 ...] @endtp
 #     <td>Additional license files of other packages redistributed as part
 #         of this project. These licenses will be installed along with the
-#         project's LICENSE_FILE. Default: All files which match the
+#         project's @p LICENSE_FILE. Default: All files which match the
 #         regular expression "^PROJECT_SOURCE_DIR/COPYING-.+" are considered.</td>
 #   </tr>
 # </table>
@@ -212,7 +210,7 @@ macro (basis_project_initialize)
     PROJECT
       ""
       "NAME;VERSION;AUTHORS_FILE;README_FILE;INSTALL_FILE;LICENSE_FILE"
-      "DESCRIPTION;PACKAGE_VENDOR;REDIST_LICENSE_FILES"
+      "DESCRIPTION;LANGUAGES;PACKAGE_VENDOR;REDIST_LICENSE_FILES"
     ${ARGN}
   )
 
@@ -321,6 +319,27 @@ macro (basis_project_initialize)
     else ()
     message (STATUS "  Revision  = n/a")
     endif ()
+  endif ()
+
+  # programming languages used by this project
+  # TODO determine this automatically
+  foreach (L ${PROJECT_LANGUAGES})
+    string (TOUPPER "${L}" U)
+    set (BASIS_PROJECT_USES_${U} 1)
+  endforeach ()
+  set (L)
+  set (U)
+
+  if (BASIS_PROJECT_USES_PERL)
+    find_package (Perl     REQUIRED)
+    find_package (PerlLibs REQUIRED)
+
+    basis_version_numbers (
+      ${PERL_VERSION}
+        PERL_VERSION_MAJOR
+        PERL_VERSION_MINOR
+        PERL_VERSION_PATCH
+    )
   endif ()
 
   # instantiate project directory structure
@@ -479,45 +498,53 @@ macro (basis_project_initialize)
   set (INSTALL_EXT)
   set (LICENSE_EXT)
 
+  
+
   # configure default auxiliary source files
-  basis_configure_auxiliary_sources (
-    DEFAULT_SOURCES
-    DEFAULT_HEADERS
-    DEFAULT_PUBLIC_HEADERS
-  )
+  # TODO do this only when these source files are used the first time
+  if (BASIS_PROJECT_USES_CXX)
+    basis_configure_auxiliary_sources (
+      DEFAULT_SOURCES
+      DEFAULT_HEADERS
+      DEFAULT_PUBLIC_HEADERS
+    )
 
-  set (DEFAULT_INCLUDE_DIRS)
-  foreach (SOURCE ${DEFAULT_HEADERS})
-    get_filename_component (TMP "${SOURCE}" PATH)
-    list (APPEND DEFAULT_INCLUDE_DIRS "${TMP}")
-    set (TMP)
-  endforeach ()
-  set (SOURCE)
-  if (DEFAULT_INCLUDE_DIRS)
-    list (REMOVE_DUPLICATES DEFAULT_INCLUDE_DIRS)
-  endif ()
-  if (DEFAULT_INCLUDE_DIRS)
-    basis_include_directories (BEFORE ${DEFAULT_INCLUDE_DIRS})
-  endif ()
+    set (DEFAULT_INCLUDE_DIRS)
+    foreach (SOURCE ${DEFAULT_HEADERS})
+      get_filename_component (TMP "${SOURCE}" PATH)
+      list (APPEND DEFAULT_INCLUDE_DIRS "${TMP}")
+      set (TMP)
+    endforeach ()
+    set (SOURCE)
+    if (DEFAULT_INCLUDE_DIRS)
+      list (REMOVE_DUPLICATES DEFAULT_INCLUDE_DIRS)
+    endif ()
+    if (DEFAULT_INCLUDE_DIRS)
+      basis_include_directories (BEFORE ${DEFAULT_INCLUDE_DIRS})
+    endif ()
 
-  if (DEFAULT_SOURCES)
-    source_group ("Default" FILES ${DEFAULT_SOURCES} ${DEFAULT_HEADERS})
+    if (DEFAULT_SOURCES)
+      source_group ("Default" FILES ${DEFAULT_SOURCES} ${DEFAULT_HEADERS})
+    endif ()
   endif ()
 
   # install public headers
-  install (
-    DIRECTORY   "${PROJECT_INCLUDE_DIR}/"
-    DESTINATION "${INSTALL_INCLUDE_DIR}"
-    OPTIONAL
-    PATTERN     ".svn" EXCLUDE
-    PATTERN     ".git" EXCLUDE
-  )
+  # TODO do this only if the project installs a C++ library
+  if (BASIS_PROJECT_USES_CXX)
+    install (
+      DIRECTORY   "${PROJECT_INCLUDE_DIR}/"
+      DESTINATION "${INSTALL_INCLUDE_DIR}"
+      OPTIONAL
+      PATTERN     ".svn" EXCLUDE
+      PATTERN     ".git" EXCLUDE
+    )
 
-  install (
-    FILES       ${DEFAULT_PUBLIC_HEADERS}
-    DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
-    COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-  )
+    install (
+      FILES       ${DEFAULT_PUBLIC_HEADERS}
+      DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
+      COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
+    )
+  endif ()
 endmacro ()
 
 ##############################################################################
@@ -538,16 +565,14 @@ endmacro ()
 
 macro (basis_project_finalize)
   # if project uses MATLAB
-  if (MATLAB_FOUND)
+  if (BASIS_PROJECT_USES_MATLAB)
     basis_create_addpaths_mfile ()
   endif ()
 
   # finalize (super-)project
   if (NOT IS_SUBPROJECT)
-    # configure constructor of ExecutableTargetInfo
+    # configure ExecutableTargetInfo modules
     basis_configure_ExecutableTargetInfo ()
-    # add standard BASH utilities
-    basis_add_stdaux_bash_script ()
     # add uninstall target
     basis_add_uninstall ()
 
@@ -573,4 +598,6 @@ macro (basis_project_finalize)
   include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
 endmacro ()
 
+
 ## @}
+# Doxygen group CMakeAPI

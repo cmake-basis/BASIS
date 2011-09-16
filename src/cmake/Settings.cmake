@@ -29,6 +29,12 @@
 ##############################################################################
 
 # ============================================================================
+# modules
+# ============================================================================
+
+find_package (PerlLibs QUIET)
+
+# ============================================================================
 # system checks
 # ============================================================================
 
@@ -196,6 +202,7 @@ set (BASIS_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_EXPORT_TARGETS_DOC}" FORCE)
 set (BASIS_CUSTOM_EXPORT_TARGETS_DOC "All custom export targets.")
 ## @brief Cached UIDs of exported custom build targets.
 set (BASIS_CUSTOM_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGETS_DOC}" FORCE)
+
 
 ## @}
 
@@ -489,6 +496,12 @@ if (WIN32 AND INSTALL_SINFIX)
     set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
   endforeach ()
 endif ()
+
+set (
+  BASIS_PERLLIB
+    "lib/perl${PERL_VERSION_MAJOR}/${PERL_VERSION}"
+  CACHE PATH "Installation directory for Perl modules."
+)
 
 # ============================================================================
 # build configuration(s)

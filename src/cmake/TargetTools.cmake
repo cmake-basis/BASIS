@@ -445,6 +445,8 @@ function (basis_add_executable TARGET_NAME)
     ${ARGN}
   )
 
+  set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
+
   # if no component is specified, use default
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
@@ -475,31 +477,46 @@ function (basis_add_executable TARGET_NAME)
   if (ARGN_LANGUAGE STREQUAL "MATLAB")
 
     if (ARGN_TEST)
-      set (EXECOPT "TEST")
+      set (OPTS "TEST")
     elseif (ARGN_LIBEXEC)
-      set (EXECOPT "LIBEXEC")
+      set (OPTS "LIBEXEC")
     else ()
-      set (EXECOPT "")
+      set (OPTS "")
     endif ()
 
     basis_add_mcc_target (
-      ${TARGET_NAME}
-      TYPE      "EXECUTABLE"
-      COMPONENT "${ARGN_COMPONENT}"
-      ${EXECOPT}
-      ${ARGN_UNPARSED_ARGUMENTS}
+      ${TARGET_NAME} ${OPT}
+        TYPE      "EXECUTABLE"
+        COMPONENT "${ARGN_COMPONENT}"
+        ${SOURCES}
     )
 
   # --------------------------------------------------------------------------
-  # other (just wrap add_executable () by default)
+  # other (just wrap add_executable() by default)
   # --------------------------------------------------------------------------
 
   else ()
 
     message (STATUS "Adding executable ${TARGET_UID}...")
 
+    # add standard auxiliary sources
+    if (NOT ARGN_NO_BASIS_UTILITIES)
+      if (EXISTS "${BINARY_CODE_DIR}/config.cc")
+        # config.cc
+        if (NOT SOURCES MATCHES "config\\.cc")
+          list (APPEND SOURCES "${BINARY_CODE_DIR}/config.cc")
+        endif ()
+        # stdaux.cc - depends on config.cc
+        if (EXISTS "${BINARY_CODE_DIR}/stdaux.cc")
+          if (NOT SOURCES MATCHES "stdaux\\.cc")
+            list (APPEND SOURCES "${BINARY_CODE_DIR}/stdaux.cc")
+          endif ()
+        endif ()
+      endif ()
+    endif ()
+
     # add executable target
-    add_executable (${TARGET_UID} ${ARGN_UNPARSED_ARGUMENTS})
+    add_executable (${TARGET_UID} ${SOURCES})
 
     set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE  "EXECUTABLE")
     set_target_properties (${TARGET_UID} PROPERTIES OUTPUT_NAME "${TARGET_NAME}")
@@ -682,6 +699,8 @@ function (basis_add_library TARGET_NAME)
     ${ARGN}
   )
 
+  set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
+
   if (NOT ARGN_LIBRARY_COMPONENT AND ARGN_COMPONENT)
     set (ARGN_LIBRARY_COMPONENT "${ARGN_COMPONENT}")
   endif ()
@@ -796,7 +815,7 @@ function (basis_add_library TARGET_NAME)
       list (APPEND OPTS "NO_EXPORT")
     endif ()
 
-    basis_add_mcc_target (${TARGET_NAME} ${OPTS} ${ARGN_UNPARSED_ARGUMENTS})
+    basis_add_mcc_target (${TARGET_NAME} ${OPTS} ${SOURCES})
 
   # --------------------------------------------------------------------------
   # MEX
@@ -810,7 +829,7 @@ function (basis_add_library TARGET_NAME)
       list (APPEND OPTS "NO_EXPORT")
     endif ()
 
-    basis_add_mex_target (${TARGET_NAME} ${OPTS} ${ARGN_UNPARSED_ARGUMENTS})
+    basis_add_mex_target (${TARGET_NAME} ${OPTS} ${SOURCES})
 
   # --------------------------------------------------------------------------
   # C/C++
@@ -818,7 +837,7 @@ function (basis_add_library TARGET_NAME)
 
   else ()
 
-    add_library (${TARGET_UID} ${ARGN_TYPE} ${ARGN_UNPARSED_ARGUMENTS})
+    add_library (${TARGET_UID} ${ARGN_TYPE} ${SOURCES})
 
     set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE  "${ARGN_TYPE}_LIBRARY")
     set_target_properties (${TARGET_UID} PROPERTIES OUTPUT_NAME "${TARGET_NAME}")
@@ -958,6 +977,11 @@ endfunction ()
 # If a custom script configuration file is used, the variable
 # \@BASIS_SCRIPT_CONFIG\@ can be used within this custom script configuration file
 # to include the default configuration of the @c BASIS_SCRIPT_CONFIG_FILE.
+#
+# @todo Install Perl modules (@b not scripts) to common directory, i.e.,
+#       @c INSTALL_PREFIX /lib/perl5/<version>/, for example.
+#       Consider further to install Perl modules into system default location.
+#       For example, PERL_PRIVLIB directory as determined by FindPerlLibs module.
 #
 # @sa basis_add_script_finalize()
 #
