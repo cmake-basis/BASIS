@@ -57,12 +57,13 @@ my $exec_dir = dirname (realpath ($0));
 $Getopt::Long::ignorecase = 0;  
 my $verbose;
 my $help;
-unless( GetOptions( "verbose" => \$verbose, "v" => \$verbose,
-	  "help" => \$help, "h" => \$help ) && $ARGV[0] ) {
+
+unless (GetOptions( "verbose" => \$verbose, "v" => \$verbose,
+	  "help" => \$help, "h" => \$help ) && $ARGV[0]) {
     $help = 1;
 }
 
-if( $help ) {
+if ($help) {
     my $prog = $0;
     $prog =~ s#.*/##;
     print STDERR <<END;
@@ -75,48 +76,51 @@ END
     exit 1;
 }
 
-open( FILE, "<$ARGV[0]" );
+open (FILE, "<$ARGV[0]");
 my $filehead = "";
-for( my $line=0; ($line<3) && ($_ = <FILE>); $line++ ) {
+for (my $line = 0; ($line < 3) && ($_ = <FILE>); $line++) {
     $filehead .= $_;
 }
 close FILE;
 
-my $ext = "";
-if( $ARGV[0] =~ /\.([a-z]+)$/i ) {
-    $ext = lc($1);
+my $ext = '';
+if ($ARGV[0] =~ /\.([a-z]+)$/i) {
+    $ext = lc ($1);
 }
 
 my $filter;
+
+# SQL
 if( $ext eq "sql" ) {
-    print STDERR "treating file as SQL\n" if( $verbose );
-    $filter = DoxyGen::SQLFilter->new(\*STDOUT);
-} elsif( grep( $_ eq $ext, "pl", "pm", "perl" )
-	|| $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/ ) {
-    print STDERR "treating file as Perl\n" if( $verbose );
-    $filter = DoxyGen::PerlFilter->new(\*STDOUT);
-} elsif( $ext eq "js" ) {
-    print STDERR "treating file as JavaScript\n" if( $verbose );
-    exec (StdAux::get_executable_path ('doxygen-javascript-filter.pl'), @ARGV) or exec( "js2doxy", @ARGV ) or exec( "js2doxypl", @ARGV )
-    or print STDERR "js2doxy not installed? - see http://jsunit.berlios.de/internal.html\n";
-} elsif( $ext eq "py" || $filehead =~ /^#!\s*(\/usr\/bin\/python|\/bin\/python|\/usr\/bin\/env\s+python)/ ) {
-    print STDERR "treating file as Python\n" if( $verbose );
-    exec (StdAux::get_executable_path ('doxygen-python-filter.py'), @ARGV)
-    or print STDERR "doxygen-bash-filter.py not installed?\n";
-} elsif( $ext eq "sh" || $filehead =~ /^#!\s*(\/usr\/bin\/bash|\/bin\/bash|\/usr\/bin\/env\s+bash)/ ) {
-    print STDERR "treating file as BASH\n" if( $verbose );
-    exec (StdAux::get_executable_path ('doxygen-bash-filter.py'), @ARGV)
-    or print STDERR "doxygen-bash-filter.py not installed?\n";
-} elsif( $ext eq "cmake" or $ext eq "ctest" ) {
-    print STDERR "treating file as CMake\n" if( $verbose );
-    exec (StdAux::get_executable_path ('doxygen-cmake-filter.py'), @ARGV)
-    or print STDERR "doxygen-cmake-filter.py not installed?\n";
+    print STDERR "treating file as SQL\n" if ($verbose);
+    $filter = DoxyGen::SQLFilter->new (\*STDOUT);
+# Perl
+} elsif (grep ($_ eq $ext, "pl", "pm", "perl") || $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/) {
+    print STDERR "treating file as Perl\n" if ($verbose);
+    $filter = DoxyGen::PerlFilter->new (\*STDOUT);
+# JavaScript
+} elsif ($ext eq "js") {
+    print STDERR "Treating file as JavaScript\n" if ($verbose);
+    exec (StdAux::get_executable_path ('doxygen-javascript-filter.pl'), @ARGV)
+        or exec ("js2doxy", @ARGV)
+        or exec ("js2doxypl", @ARGV);
+# Python
+} elsif ($ext eq "py" || $filehead =~ /^#!\s*(\/usr\/bin\/python|\/bin\/python|\/usr\/bin\/env\s+python)/) {
+    print STDERR "Treating file as Python\n" if ($verbose);
+    exec (StdAux::get_executable_path ('doxygen-python-filter.py'), @ARGV);
+# BASH
+} elsif ($ext eq "sh" || $filehead =~ /^#!\s*(\/usr\/bin\/bash|\/bin\/bash|\/usr\/bin\/env\s+bash)/) {
+    print STDERR "Treating file as BASH\n" if ($verbose);
+    exec (StdAux::get_executable_path ('doxygen-bash-filter.py'), @ARGV);
+# CMake
+} elsif ($ext eq "cmake" or $ext eq "ctest") {
+    print STDERR "Treating file as CMake\n" if ($verbose);
+    exec (StdAux::get_executable_path ('doxygen-cmake-filter.py'), @ARGV);
 }
 
-if( $filter ) {
-    $filter->filter($ARGV[0]);
-}
-else {
-    print STDERR "passing file through\n" if( $verbose );
+if ($filter) {
+    $filter->filter ($ARGV [0]);
+} else {
+    print STDERR "passing file through\n" if ($verbose);
     print <>;
 }
