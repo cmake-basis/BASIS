@@ -383,15 +383,6 @@ if [ ! -f "$conf_file" ]; then
     exit 1
 fi
 
-# check existence of test command
-which $test_cmd &> /dev/null
-if [ $? -ne 0 ]; then
-    echo "Could not find test command $test_cmd" 1>&2
-    exit 1
-fi
-
-
-
 # parse existing test schedule
 schedule=()
 new_schedule=()
