@@ -208,8 +208,8 @@ realpath ()
 
 set (BASIS_BASH_UTILITIES "
 ${BASIS_BASH_FUNCTION_realpath}
-readonly __${NAMESPACE_UPPER}_dir=${BASIS_BASH___DIR__}
-source \"$(realpath \${__${NAMESPACE_UPPER}_dir})/${LIBRARY_DIR}/StdAux.sh\"
+readonly __${NAMESPACE_UPPER}_dir=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
+source \"\${__${NAMESPACE_UPPER}_dir}/${LIBRARY_DIR}/StdAux.sh\"
 "
 )
 
