@@ -1006,12 +1006,12 @@ _flags_parseGetopt()
     # handle special case helpman flag
     if [ "${_flags_usName_}" = 'helpman' ]; then
       if [ ${FLAGS_helpman} -eq ${FLAGS_TRUE} ]; then
-        # if man should not be executed directory,
+        flags_error='help requested'
+        flags_return=${FLAGS_TRUE}
+        # if man should not be executed dirtly,
         # print generated man page to STDOUT instead
         if [ -n "${FLAGS_execman}" ] && [ ${FLAGS_execman} -eq ${FLAGS_FALSE} ]; then
           flags_helpman
-          flags_error='help requested'
-          flags_return=${FLAGS_TRUE}
           break
         fi
         # save generated man page to temporary file
