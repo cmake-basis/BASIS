@@ -165,7 +165,7 @@ set (BASIS_BASH_FUNCTION_realpath "
 #
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 #
-# @params [in] path File or directory path.
+# @param [in] path File or directory path.
 #
 # @returns Canonical path.
 realpath ()
