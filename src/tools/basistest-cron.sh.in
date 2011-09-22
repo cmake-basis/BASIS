@@ -36,8 +36,7 @@ exec_dir=$(get_executable_directory)
 sge=1
 
 ## @brief SGE queue; set to '' to not specify any.
-queue='tesla'
-#queue='centos5'
+queue='centos5'
 
 ## @brief Mail address for SGE notifications; set to '' to disable notifications.
 mail=''
