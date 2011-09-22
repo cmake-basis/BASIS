@@ -786,7 +786,7 @@ add ()
             cat "$root/$path" \
                 | sed "s/ReplaceByProjectName/$name/g" \
                 | sed "s/ReplaceByProjectDescription/$description/g" \
-                | sed "s/ReplaceByTemplateVersion/$version/g" \
+                | sed "s/ReplaceByTemplateVersion/@PROJECT_VERSION@/g" \
               > "$root/$path.temp"
             if [ -f "$root/$path.temp" ]; then
                 diff "$root/$path" "$root/$path.temp" &> /dev/null
