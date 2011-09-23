@@ -9,5 +9,8 @@
 ##############################################################################
 
 add_subdirectory (cxx)    # C++ utilities
+add_subdirectory (java)   # Java utilities
 add_subdirectory (python) # Python utilities
+add_subdirectory (perl)   # Perl utilities
 add_subdirectory (bash)   # BASH utilities
+add_subdirectory (matlab) # MATLAB utilities
