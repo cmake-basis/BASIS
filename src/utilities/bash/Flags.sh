@@ -1680,10 +1680,10 @@ flags_helpflags()
 
   # reset (all) categories
   flags_maxNameLen_=0
-  flags_otherFlags_=' '
+  flags_otherFlags_=''
   for flags_category_ in "${__flags_categoryNames[@]}"; do
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
-    eval "flags_${flags_usCategory_}Flags_=' '"
+    eval "flags_${flags_usCategory_}Flags_=''"
   done
 
   # get lists of flags belonging to each category and
@@ -1705,10 +1705,10 @@ flags_helpflags()
     # append flag to list for its category
     flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
     if [ "${flags_category_}" = "${__FLAGS_NULL}" ]; then
-      flags_otherFlags_="${flags_otherFlags_}${flags_name_} "
+      flags_otherFlags_="${flags_otherFlags_} ${flags_name_}"
     else
       flags_usCategory_=`_flags_underscoreName ${flags_category_}`
-      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_}${flags_name_} \""
+      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_} ${flags_name_}\""
     fi
   done
 
@@ -1727,17 +1727,11 @@ flags_helpflags()
     flags_categories_=("${__flags_categoryNames[@]}")
   fi
 
-  # sort lists
-  for flags_category_ in "${flags_categories_[@]}"; do
-    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
-    eval "flags_${flags_usCategory_}Flags_=\`_flags_sortList \"\${flags_${flags_usCategory_}Flags_}\"\`"
-  done
-  flags_otherFlags_=`_flags_sortList "${flags_otherFlags_}"`
-
   # output help of required flags
   if [ -n "${flags_requiredFlags_}" ]; then
     echo "     The required options are as follows:"
     echo
+    flags_requiredFlags_=`_flags_sortList "${flags_requiredFlags_}"`
     for flags_name_ in ${flags_requiredFlags_}; do
       flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_FALSE}
     done
@@ -1751,6 +1745,7 @@ flags_helpflags()
       continue
     fi
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_${flags_usCategory_}Flags_=\`_flags_sortList \"\${flags_${flags_usCategory_}Flags_}\"\`"
     eval "flags_names_=\"\${flags_${flags_usCategory_}Flags_}\""
     if [ -n "${flags_names_}" ]; then
       echo "     The ${flags_category_} options are as follows:"
@@ -1766,6 +1761,7 @@ flags_helpflags()
   if [ -n "${flags_otherFlags_}" ]; then
     echo "     The available options are as follows:"
     echo
+    flags_otherFlags_=`_flags_sortList "${flags_otherFlags_}"`
     for flags_name_ in ${flags_otherFlags_}; do
       flags_helpflag ${flags_name_} ${flags_maxNameLen_} ${FLAGS_TRUE}
     done
@@ -2137,32 +2133,27 @@ flags_helpman_flags()
 {
   echo ".SH OPTIONS"
   # get lists of flags belonging to same category
-  flags_otherFlags_=' '
+  flags_otherFlags_=''
   for flags_category_ in "${__flags_categoryNames[@]}"; do
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
-    eval "flags_${flags_usCategory_}Flags_=' '"
+    eval "flags_${flags_usCategory_}Flags_=''"
   done
   for flags_name_ in ${__flags_longNames}; do
     flags_nameStrLen_=`expr -- "${flags_name_}" : '.*'`
     flags_usName_=`_flags_underscoreName ${flags_name_}`
     flags_category_=`_flags_getFlagInfo "${flags_usName_}" ${__FLAGS_INFO_CATEGORY}`
     if [ "${flags_category_}" = "${__FLAGS_NULL}" ]; then
-      flags_otherFlags_="${flags_otherFlags_}${flags_name_} "
+      flags_otherFlags_="${flags_otherFlags_} ${flags_name_}"
     else
       flags_usCategory_=`_flags_underscoreName ${flags_category_}`
-      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_}${flags_name_} \""
+      eval "flags_${flags_usCategory_}Flags_=\"\${flags_${flags_usCategory_}Flags_} ${flags_name_}\""
     fi
   done
-  # sort lists
-  for flags_category_ in "${__flags_categoryNames[@]}"; do
-    flags_usCategory_=`_flags_underscoreName ${flags_category_}`
-    eval "flags_${flags_usCategory_}Flags_=\`_flags_sortList \"\${flags_${flags_usCategory_}Flags_}\"\`"
-  done
-  flags_otherFlags_=`_flags_sortList "${flags_otherFlags_}"`
   # output help of required flags
   if [ -n "${flags_requiredFlags_}" ]; then
     echo ".P"
     echo "\fBThe required options are as follows:\fR"
+    flags_requiredFlags_=`_flags_sortList "${flags_requiredFlags_}"`
     for flags_name_ in ${flags_requiredFlags_}; do
       flags_helpman_flag ${flags_name_} ${FLAGS_FALSE}
     done
@@ -2174,6 +2165,7 @@ flags_helpman_flags()
       continue
     fi
     flags_usCategory_=`_flags_underscoreName ${flags_category_}`
+    eval "flags_${flags_usCategory_}Flags_=\`_flags_sortList \"\${flags_${flags_usCategory_}Flags_}\"\`"
     eval "flags_names_=\"\${flags_${flags_usCategory_}Flags_}\""
     if [ -n "${flags_names_}" ]; then
       echo ".P"
@@ -2187,6 +2179,7 @@ flags_helpman_flags()
   if [ -n "${flags_otherFlags_}" ]; then
     echo ".P"
     echo "\fBThe available options are as follows:\fR"
+    flags_otherFlags_=`_flags_sortList "${flags_otherFlags_}"`
     for flags_name_ in ${flags_otherFlags_}; do
       flags_helpman_flag ${flags_name_}
     done
