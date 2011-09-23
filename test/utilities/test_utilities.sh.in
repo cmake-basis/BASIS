@@ -42,9 +42,10 @@ run ()
         echo "\$> $@"
     fi
     "$@"
-    if [ $? -ne 0 ] ; then
-        local errcode=$?
+    local errcode=$?
+    if [ ${errcode} -ne 0 ] ; then
         echo "Failed to run command $@" 1>&2
+        echo "Error code: ${errcode}"
         exit ${errcode}
     fi
 }
