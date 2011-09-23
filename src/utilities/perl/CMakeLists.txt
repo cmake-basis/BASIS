@@ -17,6 +17,3 @@ basis_install (
   DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}"
 )
 
-# ----------------------------------------------------------------------------
-# utilities
-basis_add_script (Flags.sh MODULE) # command-line parsing library

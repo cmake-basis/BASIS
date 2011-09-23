@@ -1445,6 +1445,8 @@ FLAGS()
   fi
 
   [ ${flags_return} -eq ${FLAGS_ERROR} ] && _flags_fatal "${flags_error}"
+  [[ ${flags_error} = 'help requested'    ]] && exit 0
+  [[ ${flags_error} = 'version requested' ]] && exit 0
   return ${flags_return}
 }
 

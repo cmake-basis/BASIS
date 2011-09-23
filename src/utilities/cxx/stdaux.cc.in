@@ -17,8 +17,8 @@
 #include <iostream>
 
 #include <sbia/basis/path.h>
+#include "ExecutableTargetInfo.h"
 
-#include "config.h"
 #include "stdaux.h"
 
 
@@ -29,7 +29,7 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 
 // ===========================================================================
-// executable information
+// version / contact
 // ===========================================================================
 
 // ***************************************************************************
@@ -122,94 +122,11 @@ string GetDataDirectory ()
 }
 
 // ===========================================================================
-// information about executable targets
-// ===========================================================================
-
-// ---------------------------------------------------------------------------
-// static members
-// ---------------------------------------------------------------------------
-
-ExecutableTargetInfo ExecutableTargetInfo::_instance;
-
-// ---------------------------------------------------------------------------
-// construction / destruction
-// ---------------------------------------------------------------------------
-
-// ***************************************************************************
-ExecutableTargetInfo
-::ExecutableTargetInfo ()
-{
-    @EXECUTABLE_TARGET_INFO@
-}
-
-// ***************************************************************************
-ExecutableTargetInfo
-::~ExecutableTargetInfo ()
-{
-}
-
-// ---------------------------------------------------------------------------
-// public interface
-// ---------------------------------------------------------------------------
-
-// ***************************************************************************
-string
-ExecutableTargetInfo
-::GetTargetUID (const string &target) const
-{
-    if (_execNames.find (target) == _execNames.end () && target.find ("::") == string::npos) {
-        return cProjectNameLower + "::" + target;
-    }
-    return target;
-}
-
-// ***************************************************************************
-bool
-ExecutableTargetInfo
-::IsKnownTarget (const string &target) const
-{
-    return _execNames.find (GetTargetUID (target)) != _execNames.end ();
-}
-
-// ***************************************************************************
-string
-ExecutableTargetInfo
-::GetExecutableName (const string &target) const
-{
-    string uid = GetTargetUID (target);
-    MapIterator it = _execNames.find (uid);
-    if (it == _execNames.end ()) return "";
-    return it->second;
-}
-
-// ***************************************************************************
-string
-ExecutableTargetInfo
-::GetBuildDirectory (const string &target) const
-{
-    string uid = GetTargetUID (target);
-    MapIterator it = _buildDirs.find (uid);
-    if (it == _buildDirs.end ()) return "";
-    return it->second;
-}
-
-// ***************************************************************************
-string
-ExecutableTargetInfo
-::GetInstallationDirectory (const string &target) const
-{
-    string uid = GetTargetUID (target);
-    MapIterator it = _installDirs.find (uid);
-    if (it == _installDirs.end ()) return "";
-    return JoinPaths (GetInstallationPrefix (), it->second);
-}
-
-// ===========================================================================
-// mapping of build target name to executable file path
+// executable file path of other build targets
 // ===========================================================================
 
 // ***************************************************************************
-string GetExecutablePath (const string &target)
+string GetExecutablePath (const char *target)
 {
     // get executable target information instance
     const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();

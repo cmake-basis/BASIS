@@ -31,5 +31,5 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
 
 # ----------------------------------------------------------------------------
 # basic utilities
-basis_add_unit_test (test_path SOURCES "utilities/path-test.cc")
-
+basis_add_test ("utilities/test_path.cc" UNITTEST)
+basis_add_test ("utilities/test_utilities.sh")

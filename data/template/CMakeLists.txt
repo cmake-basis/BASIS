@@ -18,8 +18,8 @@ cmake_minimum_required (VERSION 2.8.4)
 # initialize
 # ============================================================================
 
-# use invalid template version to indicate that this project is not
-# instantiated from a template as this package provides the template
+# the version of the template this project was instantiated from
+# this information might be used by BASIS to maintain backwards compatibility
 set (TEMPLATE_VERSION "ReplaceByTemplateVersion")
 
 # find BASIS package

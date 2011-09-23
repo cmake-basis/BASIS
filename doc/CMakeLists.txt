@@ -38,12 +38,17 @@ basis_add_doc (
                    "${PROJECT_CODE_DIR}"
                    "${BINARY_INCLUDE_DIR}"
                    "${PROJECT_INCLUDE_DIR}"
+                   # additional templates provided by BASIS
                    "${PROJECT_CODE_DIR}/cmake/ScriptConfig.cmake.in"
+                   # additional Doxygen pages including main page
                    "${CMAKE_CURRENT_SOURCE_DIR}/DoxygenPages.h"
-  EXCLUDE_PATTERNS "*/tclap/*"
-                   "*/gmock/*"
-                   "*/gtest/*"
-                   "*/gmock-gtest-all.cc"
+  EXCLUDE_PATTERNS # external libraries packaged with BASIS
+                   "*/tclap/*"            # TCLAP
+                   "*/gmock/*"            # Google Mock
+                   "*/gtest/*"            # Google Test
+                   "*/argh/*"             # Python Argh
+                   "*/gmock-gtest-all.cc" # Google Mock and Test
+                   # files in binary source tree
                    "cmake_install.cmake"
                    "CTestTestfile.cmake"
 )

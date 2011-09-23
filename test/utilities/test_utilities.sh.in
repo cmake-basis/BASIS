@@ -1,0 +1,66 @@
+#! /usr/bin/env bash
+
+##############################################################################
+# @file  utilities-test.sh
+# @brief Test BASIS utilities.
+#
+# This test first builds the test project which is based on BASIS and then
+# triggers the execution of the separate test cases which are built as part
+# of this test project.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+@BASIS_BASH_UTILITIES@
+
+# ============================================================================
+# constants
+# ============================================================================
+
+source_dir='@TESTING_DIR@/projects/utilities-test'
+binary_dir='@TESTING_OUTPUT_DIR@/utilities-test-build'
+
+# ============================================================================
+# options
+# ============================================================================
+
+FLAGS "$@" || exit $?
+
+# ============================================================================
+# helpers
+# ============================================================================
+
+##############################################################################
+# @brief Run command with arguments and exit on failure.
+run ()
+{
+    if [ ${FLAGS_verbose} -gt 0 ]; then
+        echo "\$> $@"
+    fi
+    "$@"
+    if [ $? != 0 ] ; then
+        local errcode=$?
+        echo "Failed to run command $@" 1>&2
+        exit ${errcode}
+    fi
+}
+
+# ============================================================================
+# build
+# ============================================================================
+
+if [ -d ${binary_dir} ]; then
+    run rm -rf "${binary_dir}"
+fi
+run mkdir -p "${binary_dir}"
+run cd "${binary_dir}"
+run cmake "${source_dir}"
+run make
+
+# ============================================================================
+# tests
+# ============================================================================
+

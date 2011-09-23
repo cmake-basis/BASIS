@@ -23,7 +23,7 @@ basis_add_script (doxygen-python-filter.py     LIBEXEC)
 
 foreach (DoxyGenModule Filter.pm PerlFilter.pm SQLFilter.pm VBFilter.pm)
   basis_script_target_name (TARGET_NAME "DoxyGen/${DoxyGenModule}")
-  basis_add_script (${TARGET_NAME} SCRIPT "DoxyGen/${DoxyGenModule}" MODULE)
+  basis_add_script (${TARGET_NAME} MODULE "DoxyGen/${DoxyGenModule}")
   basis_set_target_properties (
     ${TARGET_NAME}
     PROPERTIES
