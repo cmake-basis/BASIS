@@ -1294,8 +1294,11 @@ function (basis_add_script TARGET_NAME)
     message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Script cannot be MODULE and TEST executable at the same time!")
   endif ()
 
-  if (ARGN_MODULE OR ARGN_TEST)
+  if (ARGN_MODULE)
     set (ARGN_LIBEXEC 1)
+  elseif (ARGN_TEST)
+    set (ARGN_LIBEXEC   1)
+    set (ARGN_NO_EXPORT 1)
   endif ()
 
   if (NOT ARGN_COMPONENT)
@@ -1781,18 +1784,20 @@ function (basis_export_targets)
 
   # --------------------------------------------------------------------------
   # export non-custom targets
-  export (
-    TARGETS   ${BASIS_EXPORT_TARGETS}
-    FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
-  )
-  foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
-    install (
-      EXPORT      "${PROJECT_NAME}"
-      DESTINATION "${INSTALL_CONFIG_DIR}"
-      FILE        "${ARGN_FILE}"
-      COMPONENT   "${COMPONENT}"
+  if (BASIS_EXPORT_TARGETS)
+    export (
+      TARGETS   ${BASIS_EXPORT_TARGETS}
+      FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
     )
-  endforeach ()
+    foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
+      install (
+        EXPORT      "${PROJECT_NAME}"
+        DESTINATION "${INSTALL_CONFIG_DIR}"
+        FILE        "${ARGN_FILE}"
+        COMPONENT   "${COMPONENT}"
+      )
+    endforeach ()
+  endif ()
 
   # --------------------------------------------------------------------------
   # export custom targets
