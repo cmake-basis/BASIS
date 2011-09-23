@@ -72,3 +72,6 @@ basis_set_script_path (
     "@CMAKE_LIBEXEC_OUTPUT_DIRECTORY@"
     "@INSTALL_MODULES_DIR@"
 )
+
+# directory of BASIS used by tests to build test projects
+set (TESTING_BASIS_DIR "@PROJECT_BINARY_DIR@")

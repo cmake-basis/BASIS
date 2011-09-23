@@ -20,6 +20,7 @@
 # constants
 # ============================================================================
 
+basis_dir='@TESTING_BASIS_DIR@'
 source_dir='@TESTING_DIR@/ressources/test_utilities'
 binary_dir='@TESTING_OUTPUT_DIR@/test_utilities-build'
 
@@ -57,7 +58,7 @@ if [ -d ${binary_dir} ]; then
 fi
 run mkdir -p "${binary_dir}"
 run cd "${binary_dir}"
-run cmake "${source_dir}"
+run cmake "-DBASIS_DIR=${basis_dir}" "${source_dir}"
 run make
 
 # ============================================================================
