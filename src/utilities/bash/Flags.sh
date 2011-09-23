@@ -1627,7 +1627,7 @@ flags_helpflag()
       flags_flagStr_="${flags_flagStr_}, -${flags_short_}"
   # fill with spaces for alignment of help texts
   flags_flagStrLen_=`expr -- "${flags_flagStr_}" : '.*'`
-  flags_numSpaces_=`expr -- 6 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
+  flags_numSpaces_=`expr -- 12 + "${flags_maxNameLen_}" - "${flags_flagStrLen_}"`
   [ ${flags_numSpaces_} -ge 0 ] || flags_numSpaces_=0
   flags_spaces_=`printf %${flags_numSpaces_}s`
   flags_flagStr_="${flags_flagStr_}${flags_spaces_}"
