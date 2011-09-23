@@ -227,8 +227,10 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 // ***************************************************************************
 /**
-@defgroup BashUtilities BASH Utilities
-@brief    Auxiliary implementations for use in BASH scripts.
+@defgroup JavaUtilities Java Utilities
+@brief    Auxiliary implementations for use in Java source code.
+
+@todo The Java utilities are not implemented yet.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -255,6 +257,38 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 /**
 @defgroup PerlUtilities Perl Utilities
 @brief    Auxiliary implementations for use in Perl scripts.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup  Utilities
+*/
+
+// ***************************************************************************
+/**
+@defgroup BashUtilities BASH Utilities
+@brief    Auxiliary implementations for use in BASH scripts.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup  Utilities
+*/
+
+// ***************************************************************************
+/**
+@defgroup MatlabUtilities MATLAB Utilities
+@brief    Auxiliary implementations for use in MATLAB scripts.
+
+@todo The MATLAB utilities are not implemented yet. Note, however, that
+      for certain utilities provided for other programming languages there
+      is no use in MATLAB. For example, the ExecutableTargetInfo module is
+      not required as MATLAB does not allow the execution of an executable
+      from within MATLAB scripts.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
