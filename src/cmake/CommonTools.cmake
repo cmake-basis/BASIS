@@ -452,8 +452,8 @@ function (basis_check_target_name TARGET_NAME)
     message (FATAL_ERROR "Target name \"${TARGET_NAME}\" is reserved and cannot be used.")
   endif ()
 
-  if (TARGET_NAME MATCHES "\\+$")
-    message (FATAL_ERROR "Target names may not end with + as these special"
+  if (TARGET_NAME MATCHES "\\+$|\\-$")
+    message (FATAL_ERROR "Target names may not end with + or - as these special"
                          " targets are used internally by the BASIS CMake functions.")
   endif ()
 
@@ -550,6 +550,70 @@ endfunction ()
 # ============================================================================
 # common target tools
 # ============================================================================
+
+##############################################################################
+# @brief Detect programming language of given source code files.
+#
+# This function determines the programming language in which the given source
+# code files are written. If no common programming language could be determined,
+# "AMBIGUOUS" is returned. If none of the following programming languages
+# could be determined, "UNKNOWN" is returned: CXX (i.e., C++), JAVA,
+# JAVASCRIPT, PYTHON, PERL, BASH, MATLAB.
+#
+# @param [out] LANGUAGE Detected programming language.
+# @param [in]  ARGN     List of source code files.
+#
+# @ingroup CMakeUtilities
+
+function (basis_get_source_language LANGUAGE)
+  set (LANGUAGE_OUT)
+  # iterate over source files
+  foreach (SOURCE_FILE ${ARGN})
+    # C++
+    if (SOURCE_FILE MATCHES "\\.c$|\\.cc$|\\.cpp$|\\.cxx$")
+      set (LANG "CXX")
+    # Java
+    elseif (SOURCE_FILE MATCHES "\\.java$|\\.java.in$")
+      set (LANG "JAVA")
+    # JavaScript
+    elseif (SOURCE_FILE MATCHES "\\.js$|\\.js.in$")
+      set (LANG "JAVASCRIPT")
+    # Python
+    elseif (SOURCE_FILE MATCHES "\\.py$|\\.py.in$")
+      set (LANG "PYTHON")
+    # Perl
+    elseif (SOURCE_FILE MATCHES "\\.pl$|\\.pl.in$")
+      set (LANG "PERL")
+    # BASH
+    elseif (SOURCE_FILE MATCHES "\\.sh$|\\.sh.in$")
+      set (LANG "BASH")
+    # MATLAB
+    elseif (SOURCE_FILE MATCHES "\\.m$")
+      set (LANG "MATLAB")
+    # unknown
+    else ()
+      set (LANGUAGE_OUT "UNKNOWN")
+      break ()
+    endif ()
+    # detect ambiguity
+    if (LANGUAGE_OUT AND NOT "${LANG}" STREQUAL "${LANGUAGE_OUT}")
+      if (LANGUAGE_OUT STREQUAL "CXX" AND LANG STREQUAL "MATLAB")
+        # MATLAB Compiler can handle this...
+      elseif (LANGUAGE_OUT STREQUAL "MATLAB" AND LANG STREQUAL "CXX")
+        # language stays MATLAB
+        set (LANG "MATLAB")
+      else ()
+        # ambiguity
+        set (LANGUAGE_OUT "AMBIGUOUS")
+        break ()
+      endif ()
+    endif ()
+    # update current language
+    set (LANGUAGE_OUT "${LANG}")
+  endforeach ()
+  # return
+  set (${LANGUAGE} "${LANGUAGE_OUT}" PARENT_SCOPE)
+endfunction ()
 
 ##############################################################################
 # @brief Get type name of target.

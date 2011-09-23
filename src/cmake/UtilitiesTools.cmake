@@ -7,7 +7,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup CMakeUtilities
+# @ingroup CMakeTools
 ##############################################################################
 
 ## @addtogroup CMakeUtilities
@@ -122,6 +122,8 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (
     SOURCES_NAMES
       "config.cc"
+      "ExecutableTargetInfo.h"
+      "ExecutableTargetInfo.cc"
       "stdaux.h"
       "stdaux.cc"
   )
@@ -297,7 +299,7 @@ function (basis_configure_ExecutableTargetInfo)
   if (CXX)
     # configure source file
     set (EXECUTABLE_TARGET_INFO "${CC}")
-    configure_file ("${BINARY_CODE_DIR}/stdaux.cc" "${BINARY_CODE_DIR}/stdaux.cc" @ONLY)
+    configure_file ("${BINARY_CODE_DIR}/ExecutableTargetInfo.cc" "${BINARY_CODE_DIR}/ExecutableTargetInfo.cc" @ONLY)
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -320,19 +322,13 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}endif ()\n")
 
     # add module
-    basis_add_script (
-    "${BASIS_PERL_TEMPLATES_DIR}/StdAux.pm"
-      MODULE
-        BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        CONFIG           "${CONFIG}"
-    )
+    basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/StdAux.pm" MODULE CONFIG "${CONFIG}")
+    basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/StdAux.pm")
+    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
 
-    basis_add_script (
-      "${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm"
-      MODULE
-        BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        CONFIG           "${CONFIG}"
-    )
+    basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm" MODULE CONFIG "${CONFIG}")
+    basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm")
+    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,19 +346,13 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}endif ()\n")
 
     # add module
-    basis_add_script (
-      "${BASIS_BASH_TEMPLATES_DIR}/StdAux.sh"
-      MODULE
-        BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        CONFIG           "${CONFIG}"
-    )
+    basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/StdAux.sh" MODULE CONFIG "${CONFIG}")
+    basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/StdAux.sh")
+    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
 
-    basis_add_script (
-      "${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh"
-      MODULE
-        BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        CONFIG           "${CONFIG}"
-    )
+    basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh" MODULE CONFIG "${CONFIG}")
+    basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh")
+    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
   endif ()
 
   # --------------------------------------------------------------------------

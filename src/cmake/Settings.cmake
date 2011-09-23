@@ -297,6 +297,7 @@ macro (basis_initialize_directories)
   foreach (P RUNTIME LIBRARY ARCHIVE)
     set (VAR CMAKE_${P}_OUTPUT_DIRECTORY)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
+    set (BINARY_${P}_DIR "${${VAR}}")
   endforeach ()
 
   # testing tree

@@ -100,11 +100,18 @@ endif ()
 # directories
 # ============================================================================
 
-basis_set_script_path (RUNTIME_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@" "@INSTALL_RUNTIME_DIR@")
-basis_set_script_path (LIBEXEC_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_LIBEXEC_DIR@")
-basis_set_script_path (LIBRARY_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@" "@INSTALL_LIBRARY_DIR@")
-basis_set_script_path (ARCHIVE_DIR "@CMAKE_ARCHIVE_OUTPUT_DIRECTORY@" "@INSTALL_ARCHIVE_DIR@")
-basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"               "@INSTALL_SHARE_DIR@")
+basis_set_script_path (RUNTIME_DIR "@BINARY_RUNTIME_DIR@" "@INSTALL_RUNTIME_DIR@")
+basis_set_script_path (LIBEXEC_DIR "@BINARY_LIBRARY_DIR@" "@INSTALL_LIBEXEC_DIR@")
+basis_set_script_path (LIBRARY_DIR "@BINARY_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
+basis_set_script_path (ARCHIVE_DIR "@BINARY_ARCHIVE_DIR@" "@INSTALL_ARCHIVE_DIR@")
+basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"   "@INSTALL_SHARE_DIR@")
+
+# ============================================================================
+# testing - only to be used within test implementations
+# ============================================================================
+
+set (TESTING_DIR        "@PROJECT_TESTING_DIR@")
+set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
 
 # ============================================================================
 # utility implementations
@@ -207,6 +214,11 @@ realpath ()
 # @ingroup BashUtilities
 
 set (BASIS_BASH_UTILITIES "
+# constants used by the Flags.sh module
+HELP_COMMAND='${NAME}'
+HELP_VERSION='${PROJECT_VERSION}'
+HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
+
 ${BASIS_BASH_FUNCTION_realpath}
 readonly __${NAMESPACE_UPPER}_dir=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
 source \"\${__${NAMESPACE_UPPER}_dir}/${LIBRARY_DIR}/StdAux.sh\"

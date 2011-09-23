@@ -121,115 +121,129 @@ endfunction ()
 # @todo Make use of ExternalData module to fetch remote test data.
 #
 # @param [in] TEST_NAME Name of the test.
-# @param [in] ARGN      Parameters passed to add_test() (excluding test name).
-#
-# @returns Adds CTest test.
-
-function (basis_add_test TEST_NAME)
-  basis_check_test_name ("${TEST_NAME}")
-  basis_test_uid (TEST_UID "${TEST_NAME}")
-
-  message (STATUS "Adding test ${TEST_UID}...")
-
-  add_test (${TEST_UID} ${ARGN})
-
-  message (STATUS "Adding test ${TEST_UID}... - done")
-endfunction ()
-
-##############################################################################
-# @brief Add unit test.
-#
-# @param [in] TEST_NAME Name of the test.
 # @param [in] ARGN      The following parameters are parsed:
 # @par
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b LANGUAGE lang</td>
-#     <td>The programming language in which both the module and unit test
-#         are implemented. Defaults to CXX (i.e., C++).</td>
+#     @tp @b LANGUAGE lang @endtp
+#     <td>The programming language in which the test is implemented.
+#         It is determined automatically from the given input source code
+#         files if not specified explicitly. Otherwise, if the programming
+#         language could not be determined, it is assumed that the given
+#         input file is already the test executable itself.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b SOURCES file1 [file2 ...]</td>
+#     @tp @b SOURCES file1 [file2 ...] @endtp
 #     <td>The source files of the unit test. If this list contains a
 #         file named either "*-main.*" or "*_main.*", the default
 #         implementation of the main() function is not used.
 #         Otherwise, the executable is linked to the default implementation of
-#         the main() function, i.e., the static library basis_test_main.</td>
+#         the main() function, i.e., the static library basis_test_main.
+#         If this option is omitted, the @p TARGET_NAME argument is assumed
+#         to be the name of the C++ file with the test implementation.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b LINK_DEPENDS file1|target1 [file2|target2 ...]</td>
+#     @tp @b LINK_DEPENDS file1|target1 [file2|target2 ...] @endtp
 #     <td>Link dependencies.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b ARGS arg1 [arg2 ...]</td>
-#     <td>Arguments passed to basis_add_test().</td>
+#     @tp @b ARGS arg1 [arg2 ...] @endtp
+#     <td>Arguments passed on to CMake's add_test().</td>
 #   </tr>
 # </table>
 #
-# @returns Adds build target for the test executable and a CTest test
-#          target which runs the built executable.
+# @returns Adds CTest test.
 
-function (basis_add_unit_test TEST_NAME)
+function (basis_add_test TEST_NAME)
+  # --------------------------------------------------------------------------
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "LANGUAGE" "SOURCES;LINK_DEPENDS;ARGS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+    "UNITTEST;NO_DEFAULT_MAIN"
+    "LANGUAGE;WORKING_DIRECTORY"
+    "CONFIGURATIONS;SOURCES;LINK_DEPENDS;COMMAND;ARGS"
+    ${ARGN}
+  )
 
-  if (NOT ARGN_LANGUAGE)
-    set (ARGN_LANGUAGE "CXX")
-  endif ()
-  string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
-
-  set (DEFAULT_MAIN "1")
-  foreach (SOURCE ${ARGN_SOURCES})
-    if (SOURCE MATCHES "-main\\.|_main\\.")
-      set (DEFAULT_MAIN "0")
-    endif ()
-  endforeach ()
-
-  # build test
-  if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
-    basis_add_executable ("${TEST_NAME}" TEST ${ARGN_SOURCES})
-    basis_target_link_libraries (${TEST_NAME} "basis${BASIS_NAMESPACE_SEPARATOR}unittest" ${ARGN_LINK_DEPENDS})
-    if (DEFAULT_MAIN)
-      basis_target_link_libraries (${TEST_NAME} "basis${BASIS_NAMESPACE_SEPARATOR}unittest-main")
-    endif ()
-  else ()
-    message (FATAL_ERROR "Invalid unit test language: \"${ARGN_LANGUAGE}\".")
+  # --------------------------------------------------------------------------
+  # test name
+  if (NOT ARGN_COMMAND AND NOT ARGN_SOURCES)
+    get_filename_component (ARGN_SOURCES "${TEST_NAME}" ABSOLUTE)
+    string (REGEX REPLACE "\\.in$" "" TEST_NAME "${TEST_NAME}")
+    get_filename_component (TEST_NAME "${TEST_NAME}" NAME_WE)
   endif ()
 
+  basis_check_test_name ("${TEST_NAME}")
+  basis_test_uid (TEST_UID "${TEST_NAME}")
+
+  # --------------------------------------------------------------------------
+  # build test executable
+  if (ARGN_SOURCES)
+    if (ARGN_UNITTEST)
+      list (APPEND ARGN_LINK_DEPENDS "basis${BASIS_NAMESPACE_SEPARATOR}test-all")
+      if (NOT ARGN_NO_DEFAULT_MAIN)
+        foreach (SOURCE ${ARGN_SOURCES})
+          if (SOURCE MATCHES "-main\\.|_main\\.")
+            set (ARGN_NO_DEFAULT_MAIN 1)
+            break ()
+          endif ()
+        endforeach ()
+      endif ()
+      if (NOT ARGN_NO_DEFAULT_MAIN)
+        list (APPEND ARGN_LINK_DEPENDS "basis${BASIS_NAMESPACE_SEPARATOR}test-main")
+      endif ()
+    endif ()
+
+    basis_add_executable (${TEST_NAME} TEST ${ARGN_SOURCES})
+    basis_target_link_libraries (${TEST_NAME} ${ARGN_LINK_DEPENDS})
+
+    if (ARGN_COMMAND)
+      basis_set_target_properties (${TEST_NAME} PROPERTIES OUTPUT_NAME ${ARGN_COMMAND})
+    endif ()
+    basis_get_target_location (ARGN_COMMAND "${TEST_NAME}" ABSOLUTE)
+  endif ()
+
+  # --------------------------------------------------------------------------
   # add test
-  basis_get_target_property (DIR "${TEST_NAME}" RUNTIME_OUTPUT_DIRECTORY) 
-  basis_add_test ("${TEST_NAME}" "${DIR}/${TEST_NAME}" ${ARGN_ARGS})
+  message (STATUS "Adding test ${TEST_UID}...")
+
+  set (OPTS)
+  if (ARGN_WORKING_DIRECTORY)
+    list (APPEND OPTS "WORKING_DIRECTORY" "${ARGN_WORKING_DIRECTORY}")
+  endif ()
+  if (ARGN_CONFIGURATIONS)
+    list (APPEND OPTS "CONFIGURATIONS")
+    foreach (CONFIG ${ARGN_CONFIGURATIONS})
+      list (APPEND OPTS "${CONFIG}")
+    endforeach ()
+  endif ()
+
+  add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
+
+  message (STATUS "Adding test ${TEST_UID}... - done")
 endfunction ()
 
-##############################################################################
+#############################################################################
 # @brief Add tests of default options for given executable.
 #
 # @par Default options:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         <b>-u [ --usage ]</b></td>
+#     @tp <b>-u [ --usage ]</b> @endtp
 #     <td>Usage information. The output has to match the regular expression
 #         "[Uu]sage:\n\s*\<executable name\>", where \<executable name\>
 #         is the name of the tested executable.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         <b>-h [ --help ]</b></td>
+#     @tp <b>-h [ --help ]</b> @endtp
 #     <td>Help screen. Simply tests if the option is accepted.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         <b>-V [ --version ]</b></td>
+#     @tp <b>-V [ --version ]</b> @endtp
 #     <td>Version information. Output has to include the project version string.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         <b>-v [ --verbose ]</b></td>
+#     @tp <b>-v [ --verbose ]</b> @endtp
 #     <td>Increase verbosity of output messages. Simply tests if the option is accepted.</td>
 #   </tr>
 # </table>

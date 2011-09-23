@@ -7,7 +7,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup CMakeUtilities
+# @ingroup CMakeTools
 ##############################################################################
 
 ## @addtogroup CMakeUtilities
