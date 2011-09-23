@@ -24,8 +24,8 @@ if (BUILD_CONFIG_SETTINGS)
     # CMake module path
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
-    # path to templates files
-    foreach (U CXX PYTHON PERL BASH)
+    # paths to utilities templates files
+    foreach (U CXX JAVA PYTHON PERL BASH MATLAB)
       string (TOLOWER "${U}" L)
       set (${U}_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/${L}")
     endforeach ()
@@ -43,9 +43,9 @@ endif ()
 # CMake module path
 basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_MODULES_DIR}")
 
-# path to templates files
-foreach (U CXX PYTHON PERL BASH)
-  basis_set_config_path (${U}_TEMPLATES_DIR_CONFIG  "${INSTALL_${U}_TEMPLATES_DIR}")
+# paths to utilities templates files
+foreach (U CXX JAVA PYTHON PERL BASH MATLAB)
+  basis_set_config_path (${U}_TEMPLATES_DIR_CONFIG "${INSTALL_${U}_TEMPLATES_DIR}")
 endforeach ()
 
 # URL of project template

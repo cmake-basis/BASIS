@@ -14,6 +14,6 @@ basis_install (
   FILES
     StdAux.pm.in               # main utilities module
     ExecutableTargetInfo.pm.in # information about executable targets
-  DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}"
+  DESTINATION "${INSTALL_PERL_TEMPLATES_DIR}"
 )
 

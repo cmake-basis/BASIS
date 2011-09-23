@@ -18,45 +18,17 @@
 # directories
 # ============================================================================
 
-# installation directory of project template files
-set (
-  INSTALL_TEMPLATE_DIR
-    "\@INSTALL_SHARE_DIR\@/project"
-  CACHE PATH
-    "Installation directory of project template (relative to INSTALL_PREFIX)."
-)
-
-mark_as_advanced (INSTALL_TEMPLATE_DIR)
-string (CONFIGURE "${INSTALL_TEMPLATE_DIR}" INSTALL_TEMPLATE_DIR @ONLY)
-
 # installation directory of CMake modules
-set (
-  INSTALL_MODULES_DIR
-    "\@INSTALL_SHARE_DIR\@/modules"
-  CACHE PATH
-    "Installation directory of CMake modules (relative to INSTALL_PREFIX)."
-)
+set (INSTALL_MODULES_DIR "${INSTALL_SHARE_DIR}/modules")
 
-mark_as_advanced (INSTALL_MODULES_DIR)
-string (CONFIGURE "${INSTALL_MODULES_DIR}" INSTALL_MODULES_DIR @ONLY)
+# installation directory of utilities template files
+set (INSTALL_CXX_TEMPLATES_DIR    "${INSTALL_SHARE_DIR}/templates/src")
+set (INSTALL_JAVA_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/templates/src")
+set (INSTALL_PYTHON_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/templates/src")
+set (INSTALL_PERL_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/templates/src")
+set (INSTALL_BASH_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/templates/src")
+set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/templates/src")
 
-# installation directory of template files
-set (
-  INSTALL_CXX_TEMPLATES_DIR
-    "\@INSTALL_SHARE_DIR\@/templates"
-  CACHE PATH
-    "Installation directory of C++ template files (relative to INSTALL_PREFIX)."
-)
+# installation directory of project template files
+set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates/project")
 
-mark_as_advanced (INSTALL_CXX_TEMPLATES_DIR)
-string (CONFIGURE "${INSTALL_CXX_TEMPLATES_DIR}" INSTALL_CXX_TEMPLATES_DIR @ONLY)
-
-set (
-  INSTALL_BASH_TEMPLATES_DIR
-    "\@INSTALL_SHARE_DIR\@/templates"
-  CACHE PATH
-    "Installation directory of BASH template files (relative to INSTALL_PREFIX)."
-)
-
-mark_as_advanced (INSTALL_BASH_TEMPLATES_DIR)
-string (CONFIGURE "${INSTALL_BASH_TEMPLATES_DIR}" INSTALL_BASH_TEMPLATES_DIR @ONLY)

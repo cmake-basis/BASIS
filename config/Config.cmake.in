@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  Config.cmake.in
+# @file  @PACKAGE_NAME@Config.cmake
 # @brief CMake package configuration file of BASIS.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -13,12 +13,16 @@ get_filename_component (@PACKAGE_NAME@_MODULE_PATH "@MODULE_PATH_CONFIG@" ABSOLU
 
 ## @brief Absolute path to C++ utilities files.
 get_filename_component (@PACKAGE_NAME@_CXX_TEMPLATES_DIR  "@CXX_TEMPLATES_DIR_CONFIG@"  ABSOLUTE)
+## @brief Absolute path to Java utilities files.
+get_filename_component (@PACKAGE_NAME@_JAVA_TEMPLATES_DIR "@JAVA_TEMPLATES_DIR_CONFIG@"  ABSOLUTE)
 ## @brief Absolute path to Python utilities files.
 get_filename_component (@PACKAGE_NAME@_PYTHON_TEMPLATES_DIR "@PYTHON_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
 ## @brief Absolute path to Perl utilities files.
 get_filename_component (@PACKAGE_NAME@_PERL_TEMPLATES_DIR "@PERL_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
 ## @brief Absolute path to BASH utilities files.
 get_filename_component (@PACKAGE_NAME@_BASH_TEMPLATES_DIR "@BASH_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+## @brief Absolute path to MATLAB utilities files.
+get_filename_component (@PACKAGE_NAME@_MATLAB_TEMPLATES_DIR "@MATLAB_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
 
 ## @ brief Absolute path to project template.
 get_filename_component (@PACKAGE_NAME@_TEMPLATE_URL "@TEMPLATE_URL_CONFIG@" ABSOLUTE)
@@ -34,13 +38,13 @@ set (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 set (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
 
 # libraries
-set (@PACKAGE_NAME@_UTILITIES_LIBRARY     "basis@utils")
-set (@PACKAGE_NAME@_UNITTEST_LIBRARY      "basis@unittest")
-set (@PACKAGE_NAME@_UNITTEST_MAIN_LIBRARY "basis@unittest-main")
+set (@PACKAGE_NAME@_UTILITIES_LIBRARY "basis@utils")
+set (@PACKAGE_NAME@_TEST_LIBRARY      "basis@test-all")
+set (@PACKAGE_NAME@_TEST_MAIN_LIBRARY "basis@test-main")
 
 set (@PACKAGE_NAME@_LIBRARIES
   ${@PACKAGE_NAME@_UTILITIES_LIBRARY}
-  ${@PACKAGE_NAME@_UNITTEST_LIBRARY}
+  ${@PACKAGE_NAME@_TEST_LIBRARY}
 )
 
 ## @brief Absolute path of project use file which is included by other projects.

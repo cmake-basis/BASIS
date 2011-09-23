@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  Use.cmake
+# @file  @PACKAGE_NAME@Use.cmake
 # @brief CMake package configuration use file of @PACKAGE_NAME@.
 #
 # If this CMake module was already included before, it will do nothing.

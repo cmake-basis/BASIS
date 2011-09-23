@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  ScriptConfig.cmake
+# @file  ScriptConfig.cmake.in
 # @brief Default script configuration.
 #
 # This CMake file defines CMake variables which can be used within scripts.
@@ -69,6 +69,6 @@ basis_set_script_path (
 
 basis_set_script_path (
   BASISTEST_CTEST_SCRIPT_DIR
-    "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
+    "@CMAKE_LIBEXEC_OUTPUT_DIRECTORY@"
     "@INSTALL_MODULES_DIR@"
 )
