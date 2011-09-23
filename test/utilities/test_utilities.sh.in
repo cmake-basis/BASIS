@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  utilities-test.sh
+# @file  test_utilities.sh
 # @brief Test BASIS utilities.
 #
 # This test first builds the test project which is based on BASIS and then
@@ -20,8 +20,8 @@
 # constants
 # ============================================================================
 
-source_dir='@TESTING_DIR@/projects/utilities-test'
-binary_dir='@TESTING_OUTPUT_DIR@/utilities-test-build'
+source_dir='@TESTING_DIR@/ressources/test_utilities'
+binary_dir='@TESTING_OUTPUT_DIR@/test_utilities-build'
 
 # ============================================================================
 # options
