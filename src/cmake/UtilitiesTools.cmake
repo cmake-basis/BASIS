@@ -256,70 +256,80 @@ function (basis_configure_ExecutableTargetInfo)
       basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}" ABSOLUTE)
       basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL_RELATIVE)
 
-      # installation directory relative to installed modules
-      file (
-        RELATIVE_PATH INSTALL_LOCATION_REL2MOD
-          "${INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}"
-          "${INSTALL_PREFIX}/${INSTALL_LOCATION}"
-      )
-      if (NOT INSTALL_DIR)
-        set (INSTALL_DIR ".")
+      if (NOT BUILD_LOCATION)
+        message (WARNING "Failed to determine build location of ${TARGET_UID}")
+      endif ()
+      if (NOT INSTALL_LOCATION)
+        message (WARNING "Failed to determine installation location of ${TARGET_UID}")
       endif ()
 
-      string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
+      if (BUILD_LOCATION AND INSTALL_LOCATION)
 
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # C++
-
-      if (CXX)
-        get_filename_component (EXEC_NAME   "${BUILD_LOCATION}"   NAME)
-        get_filename_component (BUILD_DIR   "${BUILD_LOCATION}"   PATH)
-        get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
-
-        set (CC "${CC}\n")
-        set (CC "${CC}\n    // ${TARGET_UID}")
-        set (CC "${CC}\n    _execNames   [\"${ALIAS}\"] = \"${EXEC_NAME}\";")
-        set (CC "${CC}\n    _buildDirs   [\"${ALIAS}\"] = \"${BUILD_DIR}\";")
-        set (CC "${CC}\n    _installDirs [\"${ALIAS}\"] = \"${INSTALL_LOCATION}\";")
-      endif ()
-
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # Python
-
-      if (PYTHON)
-        # TODO
-      endif ()
-
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # Perl
-
-      if (PERL)
-        if (PL_B)
-          set (PL_B "${PL_B},\n")
+        # installation directory relative to installed modules
+        file (
+          RELATIVE_PATH INSTALL_LOCATION_REL2MOD
+            "${INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}"
+            "${INSTALL_PREFIX}/${INSTALL_LOCATION}"
+        )
+        if (NOT INSTALL_DIR)
+          set (INSTALL_DIR ".")
         endif ()
-        set (PL_B "${PL_B}    '${ALIAS}' => '${BUILD_LOCATION}'")
-        if (PL_I)
-          set (PL_I "${PL_I},\n")
+
+        string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # C++
+
+        if (CXX)
+          get_filename_component (EXEC_NAME   "${BUILD_LOCATION}"   NAME)
+          get_filename_component (BUILD_DIR   "${BUILD_LOCATION}"   PATH)
+          get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+
+          set (CC "${CC}\n")
+          set (CC "${CC}\n    // ${TARGET_UID}")
+          set (CC "${CC}\n    _execNames   [\"${ALIAS}\"] = \"${EXEC_NAME}\";")
+          set (CC "${CC}\n    _buildDirs   [\"${ALIAS}\"] = \"${BUILD_DIR}\";")
+          set (CC "${CC}\n    _installDirs [\"${ALIAS}\"] = \"${INSTALL_LOCATION}\";")
         endif ()
-        set (PL_I "${PL_I}    '${ALIAS}' => '${INSTALL_LOCATION_REL2MOD}'")
-      endif ()
 
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # BASH
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Python
 
-      if (BASH)
-        # hash entry
-        set (SH_B "${SH_B}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${BUILD_LOCATION}'")
-        set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2MOD}'")
+        if (PYTHON)
+          # TODO
+        endif ()
 
-        # alias
-        set (SH_A "${SH_A}\nalias '${ALIAS}'=$(get_executable_path '${ALIAS}')")
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Perl
 
-        # short alias (if target belongs to this project)
-        string (REGEX REPLACE "::.*" "" NS "${ALIAS}")
-        if ("${NS}" STREQUAL "${PROJECT_NAME_LOWER}")
-          basis_target_name (TARGET_NAME "${TARGET_UID}")
-          set (SH_S "${SH_S}\nalias '${TARGET_NAME}'='${ALIAS}'")
+        if (PERL)
+          if (PL_B)
+            set (PL_B "${PL_B},\n")
+          endif ()
+          set (PL_B "${PL_B}    '${ALIAS}' => '${BUILD_LOCATION}'")
+          if (PL_I)
+            set (PL_I "${PL_I},\n")
+          endif ()
+          set (PL_I "${PL_I}    '${ALIAS}' => '${INSTALL_LOCATION_REL2MOD}'")
+        endif ()
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # BASH
+
+        if (BASH)
+          # hash entry
+          set (SH_B "${SH_B}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${BUILD_LOCATION}'")
+          set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2MOD}'")
+
+          # alias
+          set (SH_A "${SH_A}\nalias '${ALIAS}'=$(get_executable_path '${ALIAS}')")
+
+          # short alias (if target belongs to this project)
+          string (REGEX REPLACE "::.*" "" NS "${ALIAS}")
+          if ("${NS}" STREQUAL "${PROJECT_NAME_LOWER}")
+            basis_target_name (TARGET_NAME "${TARGET_UID}")
+            set (SH_S "${SH_S}\nalias '${TARGET_NAME}'='${ALIAS}'")
+          endif ()
         endif ()
       endif ()
 

@@ -688,7 +688,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
         endforeach ()
       endif ()
       # 4. Make path relative to INSTALL_PREFIX if POST_INSTALL_PREFIX given
-      if ("${ARGV2}" STREQUAL "POST_INSTALL_RELATIVE")
+      if (LOCATION AND "${ARGV2}" STREQUAL "POST_INSTALL_RELATIVE")
         file (RELATIVE_PATH LOCATION "${INSTALL_PREFIX}" "${LOCATION}")
       endif ()
 
