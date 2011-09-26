@@ -178,12 +178,12 @@ SOURCE TREE
   Common Files
   ------------
 
-  - AUTHORS                Lists names of people who actively contributed to
+  - AUTHORS.txt            Lists names of people who actively contributed to
                            the software package. The contributions of other
                            kind shall be acknowledged in the readme file.
-  - COPYING                Copyright notice and license notice.
-  - README                 Root documentation file (readme file).
-  - INSTALL                Build and installation instructions.
+  - COPYING.txt            Copyright notice and license notice.
+  - README.txt             Root documentation file (readme file).
+  - INSTALL.txt            Build and installation instructions.
 
   - CMakeLists.txt         Build configuration files.
   - CTestConfig.cmake      Dashboard configuration file.
@@ -211,7 +211,7 @@ BUILD TREE
       + LIBRARY_OUTPUT_DIRECTORY        + lib/
       + ARCHIVE_OUTPUT_DIRECTORY        + lib/
       + TESTING_RUNTIME_DIR             + Testing/bin/
-      + TESTING_OUTPUT_DIR              + Testing/Temporary/output
+      + TESTING_OUTPUT_DIR              + Testing/Temporary/
 
 
   Description

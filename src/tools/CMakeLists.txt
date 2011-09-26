@@ -27,8 +27,8 @@ foreach (DoxyGenModule Filter.pm PerlFilter.pm SQLFilter.pm VBFilter.pm)
   basis_set_target_properties (
     ${TARGET_NAME}
     PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/DoxyGen"
-      RUNTIME_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}/DoxyGen"
+      LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/DoxyGen"
+      LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}/DoxyGen"
   )
   set (TARGET_NAME)
 endforeach ()
