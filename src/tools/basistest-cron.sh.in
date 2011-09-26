@@ -57,7 +57,7 @@ schedule='/sbia/home/swtest/var/run/basistest.schedule'
 #
 # Has to be given with full path because SGE copies the slave script which
 # looks for the CTest script relative to its own location.
-ctest="$exec_dir/@MODULES_DIR@/basistest.ctest"
+ctest="$exec_dir/@MODULES_DIR@/basistest.ctest,shared-srcdir"
 
 ## @brief Testing master script.
 master="$exec_dir/basistest-master"

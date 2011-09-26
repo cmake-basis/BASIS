@@ -68,6 +68,8 @@ Options:
                       specified directory. If this option is given without
                       argument, the default web server location at SBIA is used,
                       i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
+  shared-srcdir       Specify that each test site should use the same copy of
+                      the sources. By default, each test site uses its own copy.
   force-build         Force build even if no files were updated.
   force-test          Force test even if no files were updated.
   force               Alias for options force-build and force-test.
@@ -195,6 +197,7 @@ endfunction ()
 set (CTEST_SOURCE_DIRECTORY "$ENV{HOME}/comp_space/testing")
 set (CTEST_BINARY_DIRECTORY "")
 set (CTEST_MODEL            "Experimental")
+set (SHARED_SOURCE          0)
 
 # ----------------------------------------------------------------------------
 # project attributes
@@ -279,6 +282,14 @@ foreach (ARG ${ARGV})
       else ()
         set (INSTALL_DOXYGEN_DIR "/sbia/web/software/doxygen/\@CTEST_PROJECT_NAME_LOWER\@/\@CTEST_SVN_BRANCH\@")
       endif ()
+    elseif (${OPTION} STREQUAL "shared-srcdir")
+      set_bool_option (SHARED_SOURCE)
+    elseif (${OPTION} STREQUAL "noshared-srcdir")
+      if (VALUE)
+        set (FAILURE 1)
+      else ()
+        set (SHARED_SOURCE 0)
+      endif ()
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
       set_bool_option (FORCE_TEST)
@@ -359,7 +370,11 @@ set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
 
 # ----------------------------------------------------------------------------
 # directories
-set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
+if (SHARED_SOURCE)
+  set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_MODEL}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
+else ()
+  set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
+endif ()
 set (CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-${CMAKE_SYSTEM_NAME}/${CTEST_SVN_BRANCH}")
 
 string (CONFIGURE "${INSTALL_DOXYGEN_DIR}" INSTALL_DOXYGEN_DIR)
