@@ -171,6 +171,7 @@ print_usage ()
 # @param [in] project Name of the project to test.
 # @param [in] branch  Name of the branch to test.
 # @param [in] model   Name of the Dashboard model.
+# @param [in] options Additional options for the CTest script.
 #
 # @returns Whether the execution of the test was successful.
 #
@@ -182,7 +183,7 @@ run_test ()
     if [ $verbosity -gt 1 ]; then cmd="$cmd --verbose"; fi
     if [ $verbosity -gt 2 ]; then cmd="$cmd --verbose"; fi
     cmd="$cmd --project $1 --branch $2 --model $3"
-    if [ ! -z "$options" ]; then cmd="$cmd --args $options"; fi
+    if [ ! -z "$4" ]; then cmd="$cmd --args $4"; fi
     if [ $verbosity -gt 0 ]; then
         echo "Run $cmd"
     fi
