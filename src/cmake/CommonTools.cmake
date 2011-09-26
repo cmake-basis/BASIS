@@ -85,6 +85,15 @@ function (get_filename_component)
   set (${VAR} "${${VAR}}" PARENT_SCOPE)
 endfunction ()
 
+##############################################################################
+# @brief Alias for the overwritten get_filename_component() function.
+#
+# @sa get_filename_component()
+
+macro (basis_get_filename_component)
+  get_filename_component (${ARGN})
+endmacro ()
+
 # ============================================================================
 # version
 # ============================================================================

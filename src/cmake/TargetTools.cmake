@@ -1127,9 +1127,9 @@ function (basis_script_target_name TARGET_NAME SCRIPT_FILE)
   # remove ".in" suffix from file name
   string (REGEX REPLACE "\\.in$" "" SCRIPT_FILE "${SCRIPT_FILE}")
   # use file basename as target name
-  get_filename_component (TARGET_NAME "${SCRIPT_FILE}" NAME)
+  get_filename_component (TARGET_NAME_OUT "${SCRIPT_FILE}" NAME)
   # return
-  set (TARGET_NAME "${TARGET_NAME}" PARENT_SCOPE)
+  set (${TARGET_NAME} "${TARGET_NAME_OUT}" PARENT_SCOPE)
 endfunction ()
 
 ##############################################################################
@@ -1220,7 +1220,8 @@ endfunction ()
 #   </tr>
 #   <tr>
 #      @tp @b COMPONENT name @endtp
-#      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
+#      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT for
+#          executable scripts or @c BASIS_LIBRARY_COMPONENT for modules.</td>
 #   </tr>
 #   <tr>
 #      @tp @b CONFIG config @endtp
@@ -1281,10 +1282,6 @@ function (basis_add_script TARGET_NAME)
     ${ARGN}
   )
 
-  if (ARGN_TEST)
-    set (ARGN_LIBEXEC 0)
-  endif ()
-
   list (LENGTH ARGN_UNPARSED_ARGUMENTS LEN)
   if (LEN EQUAL 0)
     set (ARGN_SCRIPT)
@@ -1299,18 +1296,21 @@ function (basis_add_script TARGET_NAME)
     basis_script_target_name (TARGET_NAME "${ARGN_SCRIPT}")
   endif ()
 
-  if (ARGN_MODULE AND ARGN_TEST)
-    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Script cannot be MODULE and TEST executable at the same time!")
+  if (ARGN_MODULE AND ARGN_LIBEXEC)
+    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Script cannot be MODULE and LIBEXEC at the same time!")
   endif ()
 
-  if (ARGN_MODULE)
-    set (ARGN_LIBEXEC 1)
-  elseif (ARGN_TEST)
+  if (ARGN_TEST)
+    set (ARGN_LIBEXEC   0)
     set (ARGN_NO_EXPORT 1)
   endif ()
 
   if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+    if (ARGN_MODULE)
+      set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+    else ()
+      set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+    endif ()
   endif ()
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "Unspecified")
@@ -1387,12 +1387,17 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   # output directory
-  if (ARGN_MODULE)
+  if (ARGN_TEST)
+    if (ARGN_MODULE)
+      set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
+    else ()
+      set (OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
+    endif ()
+  elseif (ARGN_MODULE)
     set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
   elseif (ARGN_LIBEXEC)
     set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
   elseif (ARGN_TEST)
-    set (OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
   else ()
     set (OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
   endif ()
@@ -1441,12 +1446,15 @@ function (basis_add_script TARGET_NAME)
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
+      LIBRARY_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
       RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
+      LIBRARY_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
       OUTPUT_NAME               "${OUTPUT_NAME}"
       PREFIX                    ""
       SUFFIX                    ""
       COMPILE_DEFINITIONS       "${SCRIPT_CONFIG}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
+      LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
   )
 
   if (ARGN_LIBEXEC)
@@ -1521,6 +1529,8 @@ function (basis_add_script_finalize TARGET_UID)
       "BINARY_DIRECTORY"
       "RUNTIME_OUTPUT_DIRECTORY"
       "RUNTIME_INSTALL_DIRECTORY"
+      "LIBRARY_OUTPUT_DIRECTORY"
+      "LIBRARY_INSTALL_DIRECTORY"
       "PREFIX"
       "OUTPUT_NAME"
       "SUFFIX"
@@ -1529,6 +1539,7 @@ function (basis_add_script_finalize TARGET_UID)
       "SOURCES"
       "COMPILE_DEFINITIONS"
       "RUNTIME_COMPONENT"
+      "LIBRARY_COMPONENT"
       "LIBEXEC"
       "TEST"
   )
@@ -1543,9 +1554,9 @@ function (basis_add_script_finalize TARGET_UID)
   endif ()
 
   if (BASIS_TYPE MATCHES "^MODULE_SCRIPT$")
-    set (NOEXEC 1)
+    set (MODULE 1)
   else ()
-    set (NOEXEC 0)
+    set (MODULE 0)
   endif ()
 
   # build directory (note that CMake returns basename of build directory as first element of SOURCES list)
@@ -1580,7 +1591,11 @@ function (basis_add_script_finalize TARGET_UID)
   #       If a documentation is generated automatically from the sources, the
   #       latter, i.e., the script which will be installed is used as input file.
   set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
-  set (OUTPUT_FILE  "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+  if (MODULE)
+    set (OUTPUT_FILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+  else ()
+    set (OUTPUT_FILE "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+  endif ()
   set (INSTALL_FILE "${SCRIPT_FILE}")
   set (OUTPUT_FILES "${OUTPUT_FILE}")
 
@@ -1599,25 +1614,34 @@ function (basis_add_script_finalize TARGET_UID)
 
     set (BUILD_COMMANDS "${BUILD_COMMANDS}${FUNCTIONS}\n\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}set (BUILD_INSTALL_SCRIPT 0)\n")
-    set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${RUNTIME_OUTPUT_DIRECTORY}\")\n")
+    if (MODULE)
+      set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${LIBRARY_OUTPUT_DIRECTORY}\")\n")
+    else ()
+      set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${RUNTIME_OUTPUT_DIRECTORY}\")\n")
+    endif ()
     set (BUILD_COMMANDS "${BUILD_COMMANDS}set (NAME \"${OUTPUT_NAME}\")\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}${COMPILE_DEFINITIONS}\n")
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${OUTPUT_FILE}\" @ONLY)\n")
-    if (NOT NOEXEC)
+    if (NOT MODULE)
       set (BUILD_COMMANDS "${BUILD_COMMANDS}\nif (UNIX)\n")
       set (BUILD_COMMANDS "${BUILD_COMMANDS}  execute_process (COMMAND chmod +x \"${OUTPUT_FILE}\")\n")
       set (BUILD_COMMANDS "${BUILD_COMMANDS}endif ()\n")
     endif ()
-    if (RUNTIME_INSTALL_DIRECTORY)
+    if (MODULE)
+      set (INSTALL_DIR "${LIBRARY_INSTALL_DIRECTORY}")
+    else ()
+      set (INSTALL_DIR "${RUNTIME_INSTALL_DIRECTORY}")
+    endif ()
+    if (INSTALL_DIR)
       set (BUILD_COMMANDS "${BUILD_COMMANDS}\nset (BUILD_INSTALL_SCRIPT 1)\n")
-      set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${CMAKE_INSTALL_PREFIX}/${RUNTIME_INSTALL_DIRECTORY}\")\n")
+      set (BUILD_COMMANDS "${BUILD_COMMANDS}set (SCRIPT_DIR \"${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR}\")\n")
       set (BUILD_COMMANDS "${BUILD_COMMANDS}set (NAME \"${OUTPUT_NAME}\")\n")
       set (BUILD_COMMANDS "${BUILD_COMMANDS}${COMPILE_DEFINITIONS}\n")
       set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${INSTALL_FILE}\" @ONLY)\n")
     endif ()
   else ()
     set (BUILD_COMMANDS "${BUILD_COMMANDS}configure_file (\"${SCRIPT_FILE}\" \"${OUTPUT_FILE}\" COPYONLY)\n")
-    if (NOT NOEXEC)
+    if (NOT MODULE)
       set (BUILD_COMMANDS "${BUILD_COMMANDS}\nif (UNIX)\n")
       set (BUILD_COMMANDS "${BUILD_COMMANDS}  execute_process (COMMAND chmod +x \"${OUTPUT_FILE}\")\n")
       set (BUILD_COMMANDS "${BUILD_COMMANDS}endif ()\n")
@@ -1676,18 +1700,22 @@ endif ()"
 
   # install script
   if (RUNTIME_INSTALL_DIRECTORY)
-    if (NOEXEC)
-      set (WHAT "FILES")
+    if (MODULE)
+      install (
+        FILES       "${INSTALL_FILE}"
+        RENAME      "${OUTPUT_NAME}"
+        DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
+        COMPONENT   "${LIBRARY_COMPONENT}"
+      )
     else ()
-      set (WHAT "PROGRAMS")
+      install (
+        PROGRAMS    "${INSTALL_FILE}"
+        RENAME      "${OUTPUT_NAME}"
+        DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
+        COMPONENT   "${RUNTIME_COMPONENT}"
+      )
     endif ()
 
-    install (
-      ${WHAT}     "${INSTALL_FILE}"
-      RENAME      "${OUTPUT_NAME}"
-      DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
-      COMPONENT   "${RUNTIME_COMPONENT}"
-    )
   endif ()
 
   message (STATUS "Adding build command for script ${TARGET_UID}... - done")

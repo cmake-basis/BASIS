@@ -301,7 +301,7 @@ macro (basis_initialize_directories)
   endforeach ()
 
   # testing tree
-  foreach (P RUNTIME OUTPUT)
+  foreach (P RUNTIME LIBRARY OUTPUT)
     set (VAR TESTING_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
@@ -368,6 +368,8 @@ set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 set (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary")
 ## @brief Absolute path of output directory for built test executables.
 set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
+## @brief Absolute path of output directory for testing libraries.
+set (TESTING_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
 
 # ----------------------------------------------------------------------------
 # build tree
