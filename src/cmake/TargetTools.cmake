@@ -444,17 +444,20 @@ function (basis_add_executable TARGET_NAME)
 
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "LIBEXEC;TEST;MODULE;NO_BASIS_UTILITIES;NO_EXPORT"
+      "LIBEXEC;TEST;MODULE;WITH_PATH;NO_BASIS_UTILITIES;NO_EXPORT"
       "DESTINATION;COMPONENT;CONFIG;CONFIG_FILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
-    if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS")
-      message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually.")
-    elseif (ARGN_LANGUAGE STREQUAL "UNKNOWN")
-      message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually.")
+    if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS" OR ARGN_LANGUAGE STREQUAL "UNKNOWN")
+      message ("basis_add_executable(${TARGET_UID}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
+      if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS")
+        message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+      elseif (ARGN_LANGUAGE STREQUAL "UNKNOWN")
+        message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+      endif ()
     endif ()
   endif ()
   string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
@@ -587,17 +590,20 @@ function (basis_add_library TARGET_NAME)
 
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "STATIC;SHARED;MODULE;MEX;NO_EXPORT"
+      "STATIC;SHARED;MODULE;MEX;TEST;WITH_PATH;NO_EXPORT"
       "DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
-    if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS")
-      message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually.")
-    elseif (ARGN_LANGUAGE STREQUAL "UNKNOWN")
-      message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually.")
+    if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS" OR ARGN_LANGUAGE STREQUAL "UNKNOWN")
+      message ("basis_add_library(${TARGET_UID}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
+      if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS")
+        message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+      elseif (ARGN_LANGUAGE STREQUAL "UNKNOWN")
+        message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+      endif ()
     endif ()
   endif ()
   string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
@@ -1276,7 +1282,7 @@ function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;TEST;MODULE;NO_EXPORT"
+      "LIBEXEC;TEST;MODULE;WITH_PATH;NO_EXPORT"
       "CONFIG;CONFIG_FILE;COMPONENT;DESTINATION"
       ""
     ${ARGN}
@@ -1294,6 +1300,13 @@ function (basis_add_script TARGET_NAME)
   if (NOT ARGN_SCRIPT)
     set (ARGN_SCRIPT "${TARGET_NAME}")
     basis_script_target_name (TARGET_NAME "${ARGN_SCRIPT}")
+  endif ()
+
+  if (ARGN_WITH_PATH)
+    get_filename_component (SCRIPT_PATH "${ARGN_SCRIPT}" PATH)
+    if (IS_ABSOLUTE "${SCRIPT_PATH}")
+      file (RELATIVE_PATH SCRIPT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${SCRIPT_PATH}")
+    endif ()
   endif ()
 
   if (ARGN_MODULE AND ARGN_LIBEXEC)
@@ -1329,6 +1342,9 @@ function (basis_add_script TARGET_NAME)
       set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
     else ()
       set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
+    endif ()
+    if (ARGN_DESTINATION AND SCRIPT_PATH AND ARGN_WITH_PATH)
+      set (ARGN_DESTINATION "${ARGN_DESTINATION}/${SCRIPT_PATH}")
     endif ()
   endif ()
 
@@ -1397,9 +1413,11 @@ function (basis_add_script TARGET_NAME)
     set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
   elseif (ARGN_LIBEXEC)
     set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-  elseif (ARGN_TEST)
   else ()
     set (OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+  endif ()
+  if (SCRIPT_PATH AND ARGN_WITH_PATH)
+    set (OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${SCRIPT_PATH}")
   endif ()
 
   # script configuration (only if script file name ends in ".in")
