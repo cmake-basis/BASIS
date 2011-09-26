@@ -1,0 +1,58 @@
+#! /usr/bin/env perl
+
+##############################################################################
+# @file  test_ExecutableTargetInfo.pl
+# @brief Tests for the ExecutableTargetInfo module.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+use Test::More tests => 3;
+
+
+@BASIS_PERL_UTILITIES@
+
+
+# ============================================================================
+# tests
+# ============================================================================
+
+##############################################################################
+# @brief Test Basis::get_executable_name().
+sub test_get_executable_name
+{
+    # name of this executable
+    like (
+        Basis::get_executable_name (),
+        qr/^test_ExecutableTargetInfo(\.pl)?$/,
+        "name of this executable"
+    );
+
+    # name of executable built by some target
+    like (
+        Basis::get_executable_name ('basis::basisproject.sh'),
+        qr/^basisproject(\.sh)?$/,
+        "name of basis::basisproject.sh target"
+    );
+}
+
+##############################################################################
+# @brief Test Basis::get_executable_directory().
+sub test_get_executable_directory
+{
+    like (
+        Basis::get_executable_directory (),
+        qr/\/Testing\/Temporary\/test_utilities-build\/Testing\/bin/,
+        "directory of this executable"
+    );
+}
+
+# ============================================================================
+# main
+# ============================================================================
+
+test_get_executable_name ();
+test_get_executable_directory ();
+

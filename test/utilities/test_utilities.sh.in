@@ -154,7 +154,7 @@ cleanup ()
 # ============================================================================
 
 create
-add_test 'test_ExecutableTargetInfo.t.in'
+add_test 'test_ExecutableTargetInfo.pl.in'
 build
 run cd "${binary_dir}"
 if [ ${FLAGS_verbose} -gt 1 ]; then
