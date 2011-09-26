@@ -571,6 +571,8 @@ macro (basis_project_finalize)
 
   # finalize (super-)project
   if (NOT IS_SUBPROJECT)
+    # configure auxiliary modules
+    basis_configure_auxiliary_modules ()
     # configure ExecutableTargetInfo modules
     basis_configure_ExecutableTargetInfo ()
     # add uninstall target

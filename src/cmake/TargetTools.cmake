@@ -840,7 +840,7 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add default link dependencies
   if (NOT ARGN_NO_BASIS_UTILITIES)
-    target_link_libraries (${TARGET_UID} "basis${BASIS_NAMESPACE_SEPARATOR}utils" ${STDAUX})
+    target_link_libraries (${TARGET_UID} "basis${BASIS_NAMESPACE_SEPARATOR}utilities" ${STDAUX})
   endif ()
 
   # target version information

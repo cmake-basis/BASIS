@@ -70,6 +70,10 @@
 # @returns Sets the variables specified by the @c [out] parameters.
 
 function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
+  if (BASIS_VERBOSE)
+    message (STATUS "Configuring auxiliary sources...")
+  endif ()
+
   set (SOURCES_OUT        "")
   set (HEADERS_OUT        "")
   set (PUBLIC_HEADERS_OUT "")
@@ -126,10 +130,11 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
       "ExecutableTargetInfo.cc"
       "stdaux.h"
       "stdaux.cc"
+      "basis.h"
   )
 
   foreach (SOURCE ${SOURCES_NAMES})
-    set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}")
+    set (TEMPLATE "${PROJECT_CODE_DIR}/${SOURCE}.in")
     if (NOT EXISTS "${TEMPLATE}")
       set (TEMPLATE "${BASIS_CXX_TEMPLATES_DIR}/${SOURCE}.in")
     endif ()
@@ -146,6 +151,44 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   set (${SOURCES}        "${SOURCES_OUT}"        PARENT_SCOPE)
   set (${HEADERS}        "${HEADERS_OUT}"        PARENT_SCOPE)
   set (${PUBLIC_HEADERS} "${PUBLIC_HEADERS_OUT}" PARENT_SCOPE)
+
+  if (BASIS_VERBOSE)
+    message (STATUS "Configuring auxiliary sources... - done")
+  endif ()
+endfunction ()
+
+##############################################################################
+# @brief Configure auxiliary modules for scripting languages.
+
+function (basis_configure_auxiliary_modules)
+
+  if (BASIS_VERBOSE)
+    message (STATUS "Configuring auxiliary modules...")
+  endif ()
+
+  if (BASIS_PROJECT_USES_PYTHON)
+    # TODO
+  endif ()
+
+  if (BASIS_PROJECT_USES_PERL)
+    foreach (MODULE StdAux)
+      basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm" MODULE)
+      basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm")
+      basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
+    endforeach ()
+  endif ()
+
+  if (BASIS_PROJECT_USES_BASH)
+    foreach (MODULE Core StdAux Flags Basis)
+      basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh" MODULE)
+      basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh")
+      basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
+    endforeach ()
+  endif ()
+
+  if (BASIS_VERBOSE)
+    message (STATUS "Configuring auxiliary modules... - done")
+  endif ()
 endfunction ()
 
 ##############################################################################
@@ -322,10 +365,6 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}endif ()\n")
 
     # add module
-    basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/StdAux.pm" MODULE CONFIG "${CONFIG}")
-    basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/StdAux.pm")
-    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
-
     basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm" MODULE CONFIG "${CONFIG}")
     basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm")
     basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
@@ -346,10 +385,6 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}endif ()\n")
 
     # add module
-    basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/StdAux.sh" MODULE CONFIG "${CONFIG}")
-    basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/StdAux.sh")
-    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
-
     basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh" MODULE CONFIG "${CONFIG}")
     basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh")
     basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
@@ -358,7 +393,7 @@ function (basis_configure_ExecutableTargetInfo)
   # --------------------------------------------------------------------------
   # done
   if (BASIS_VERBOSE)
-    message (STATUS "Configuring constructor of ExecutableTargetInfo... - done")
+    message (STATUS "Configuring ExecutableTargetInfo... - done")
   endif ()
 endfunction ()
 
