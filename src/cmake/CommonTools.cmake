@@ -582,19 +582,19 @@ function (basis_get_source_language LANGUAGE)
     if (SOURCE_FILE MATCHES "\\.c$|\\.cc$|\\.cpp$|\\.cxx$")
       set (LANG "CXX")
     # Java
-    elseif (SOURCE_FILE MATCHES "\\.java$|\\.java.in$")
+    elseif (SOURCE_FILE MATCHES "\\.java$|\\.java\\.in$")
       set (LANG "JAVA")
     # JavaScript
-    elseif (SOURCE_FILE MATCHES "\\.js$|\\.js.in$")
+    elseif (SOURCE_FILE MATCHES "\\.js$|\\.js\\.in$")
       set (LANG "JAVASCRIPT")
     # Python
-    elseif (SOURCE_FILE MATCHES "\\.py$|\\.py.in$")
+    elseif (SOURCE_FILE MATCHES "\\.py$|\\.py\\.in$")
       set (LANG "PYTHON")
     # Perl
-    elseif (SOURCE_FILE MATCHES "\\.pl$|\\.pl.in$|\\.t$|\\.t.in$")
+    elseif (SOURCE_FILE MATCHES "\\.pl$|\\.pl\\.in$|\\.pm$|\\.pm\\.in$|\\.t$|\\.t\\.in$")
       set (LANG "PERL")
     # BASH
-    elseif (SOURCE_FILE MATCHES "\\.sh$|\\.sh.in$")
+    elseif (SOURCE_FILE MATCHES "\\.sh$|\\.sh\\.in$")
       set (LANG "BASH")
     # MATLAB
     elseif (SOURCE_FILE MATCHES "\\.m$")
