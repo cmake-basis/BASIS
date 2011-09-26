@@ -22,6 +22,7 @@ source_dir='@TESTING_OUTPUT_DIR@/test_basisproject-source'
 binary_dir='@TESTING_OUTPUT_DIR@/test_basisproject-build'
 
 get_executable_path basisproject_path 'basis::basisproject.sh'
+[ -z "${basisproject_path}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
 
 # ============================================================================
 # options
@@ -159,11 +160,10 @@ cleanup ()
 test_minimal_empty_project ()
 {
     echo "------------------------------------------------------------------------------"
-    echo "test_minimal_empty_project():"
+    echo "test_minimal_empty_project:"
     echo
     create --minimal
     build
-    cleanup
     echo
     echo "SUCCESS"
 }
@@ -173,11 +173,10 @@ test_minimal_empty_project ()
 test_standard_empty_project ()
 {
     echo "------------------------------------------------------------------------------"
-    echo "test_standard_empty_project():"
+    echo "test_standard_empty_project:"
     echo
     create --standard
     build
-    cleanup
     echo
     echo "SUCCESS"
 }
@@ -187,11 +186,10 @@ test_standard_empty_project ()
 test_full_empty_project ()
 {
     echo "------------------------------------------------------------------------------"
-    echo "test_full_empty_project():"
+    echo "test_full_empty_project:"
     echo
     create --full
     build
-    cleanup
     echo
     echo "SUCCESS"
 }
@@ -201,12 +199,11 @@ test_full_empty_project ()
 test_minimal_to_standard_empty_project ()
 {
     echo "------------------------------------------------------------------------------"
-    echo "test_minimal_to_standard_empty_project():"
+    echo "test_minimal_to_standard_empty_project:"
     echo
     create --minimal
     update --standard
     build
-    cleanup
     echo
     echo "SUCCESS"
 }
@@ -216,12 +213,11 @@ test_minimal_to_standard_empty_project ()
 test_minimal_to_full_empty_project ()
 {
     echo "------------------------------------------------------------------------------"
-    echo "test_minimal_to_full_empty_project():"
+    echo "test_minimal_to_full_empty_project:"
     echo
     create --minimal
     update --full
     build
-    cleanup
     echo
     echo "SUCCESS"
 }
@@ -231,13 +227,39 @@ test_minimal_to_full_empty_project ()
 test_full_to_minimal_empty_project ()
 {
     echo "------------------------------------------------------------------------------"
-    echo "test_full_to_minimal_empty_project():"
+    echo "test_full_to_minimal_empty_project:"
     echo
     create --full
     update_error --minimal # fails because CTestConfig.cmake was modified during creation
     update --minimal --force
     build
-    cleanup
+    echo
+    echo "SUCCESS"
+}
+
+##############################################################################
+# @brief Test configuration of used languages.
+test_configuration_of_language_support ()
+{
+    local line
+
+    echo "------------------------------------------------------------------------------"
+    echo "test_configuration_of_language_support:"
+    echo
+    create --minimal --language CXX
+    line="$(grep 'LANGUAGES' "${source_dir}/CMakeLists.txt")"
+    if [[ "${line}" != '  LANGUAGES   CXX #AddLanguageHere' ]]; then
+        echo
+        echo "FAILED"
+        exit 1
+    fi
+    update --language python --language Perl
+    line="$(grep 'LANGUAGES' "${source_dir}/CMakeLists.txt")"
+    if [[ "${line}" != '  LANGUAGES   CXX python Perl #AddLanguageHere' ]]; then
+        echo
+        echo "FAILED"
+        exit 1
+    fi
     echo
     echo "SUCCESS"
 }
@@ -251,7 +273,7 @@ test_full_to_minimal_empty_project ()
 test_required_arguments ()
 {
     echo "------------------------------------------------------------------------------"
-    echo "test_required_arguments():"
+    echo "test_required_arguments:"
     echo
     runerr "${basisproject_path}"
     runerr "${basisproject_path}" --name 'TestProject'
@@ -273,6 +295,10 @@ test_full_empty_project
 test_minimal_to_standard_empty_project
 test_minimal_to_full_empty_project
 test_full_to_minimal_empty_project
+test_configuration_of_language_support
 
 # negative tests
 test_required_arguments
+
+# clean up
+cleanup

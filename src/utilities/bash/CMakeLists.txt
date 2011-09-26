@@ -17,6 +17,6 @@ basis_install (
     ExecutableTargetInfo.sh.in # information about executable targets
     Flags.sh                   # command-line parsing library
     Basis.sh.in                # main module to be sourced
-  DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}"
+  DESTINATION
+    "${INSTALL_BASH_TEMPLATES_DIR}"
 )
-

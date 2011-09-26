@@ -86,6 +86,9 @@ print_options ()
     echo "  --[no]example              Whether to include support of example."
     echo "  --[no]test                 Whether to include support for testing."
     echo
+    echo "  --lang <arg>               Programming language used by this project."
+    echo "                             The currently supported languages are:"
+    echo "                             CXX (C/C++), PYTHON, PERL, BASH, and MATLAB."
     echo "  --use <arg>                Name of external package used by this project."
     echo "  --optuse <arg>             Name of external package optionally used by this project."
     echo
@@ -175,12 +178,13 @@ print_help ()
 	print_options
     echo
     echo "Examples:"
-	echo "  $exec_name ProjectName --description \"Novel image analysis method.\""
+	echo "  $exec_name ProjectName --description \"Novel image analysis method.\" --language CXX"
     echo "    Create a new project named 'ProjectName' under the current working"
-    echo "    directory using the default project template."
+    echo "    directory using the default project template. Further, enable support for the"
+    echo "    C/C++ programming language."
     echo
-	echo "  $exec_name ProjectName --description \"Novel image analysis method.\" --use VTK"
-    echo "    Create new project with dependency on the package 'VTK'."
+	echo "  $exec_name ProjectName --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
+    echo "    Create new project using C/C++ and Python with dependency on the package 'VTK'."
     echo
     echo "  $exec_name --root path/to/existing/project --tests --conf-tests"
     echo "    Add full testing support to existing project."
@@ -270,6 +274,8 @@ root=""              # root directory of new project (defaults to `pwd`/$name)
 name=""              # name of the project to create
 description=""       # project description
 verbosity=0          # verbosity level of output messages
+languages=()         # programming languages
+languages_num=0      # length of array languages
 package_names=()     # names of packages the new project depends on
 package_required=()  # whether the package at the same index in package_names
                      # is required or optional
@@ -381,6 +387,17 @@ do
 
         --force)
             force=1
+            ;;
+
+        --language)
+            shift
+            if [ $# -gt 0 ]; then
+                languages[$languages_num]="$1"
+                ((languages_num++))
+            else
+                echo "Option --language requires an argument!" 1>&2
+                exit 1
+            fi
             ;;
 
         --use)
@@ -675,6 +692,28 @@ else
 fi
 
 ##############################################################################
+# @brief Alter template file.
+alter ()
+{
+    cat "$1" \
+        | sed "s/ReplaceByProjectName/$name/g" \
+        | sed "s/ReplaceByProjectDescription/$description/g" \
+        | sed "s/ReplaceByTemplateVersion/@PROJECT_VERSION@/g" \
+        > "$2"
+}
+
+##############################################################################
+# @brief Alter languages.
+alter_languages ()
+{
+    for language in "${languages[@]}"; do
+        # attention: the -i option of sed differs for Darwin and Linux version
+        sed "s/#AddLanguageHere/$language #AddLanguageHere/g" "$2" > "$2.temp"
+        mv "$2.temp" "$2"
+    done
+}
+
+##############################################################################
 # @brief Add or modify project directory or file.
 #
 # Only the named directory or file is added or modified.
@@ -766,11 +805,8 @@ add ()
                 fi
             fi
             # alter project file, e.g., substitute for project name
-            cat "$root/$path" \
-                | sed "s/ReplaceByProjectName/$name/g" \
-                | sed "s/ReplaceByProjectDescription/$description/g" \
-                | sed "s/ReplaceByTemplateVersion/@PROJECT_VERSION@/g" \
-              > "$root/$path.temp"
+            alter           "$root/$path"      "$root/$path.temp"
+            alter_languages "$root/$path.temp" "$root/$path.temp"
             if [ -f "$root/$path.temp" ]; then
                 diff "$root/$path" "$root/$path.temp" &> /dev/null
                 if [ $? -ne 0 ]; then
@@ -793,6 +829,8 @@ add ()
                 cp "$template/$path" "$dir/$base.template" &> /dev/null
                 return 1
             fi
+            # alter languages
+            alter_languages "$root/$path.update" "$root/$path.update"
             # check if anything has changed at all
             diff "$root/$path" "$root/$path.update" &> /dev/null
             if [ $? -ne 0 ]; then

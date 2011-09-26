@@ -48,16 +48,10 @@ print_version ()
     local name=${1:-${0##*/}}
     local copyright=${2:-}
     if [ -z "${copyright}" ]; then
-        copyright="Copyright (c) 2011 University of Pennsylvania. \
-All rights reserved.\n\
+        copyright="Copyright (c) University of Pennsylvania. All rights reserved.\n\
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
     fi
-    echo -n "${name} (@PROJECT_NAME@) version @PROJECT_VERSION@"
-    if [ @PROJECT_REVISION@ -gt 0 ] # project revision > 0
-    then
-        echo -n " (revision @PROJECT_REVISION@)"
-    fi
-    echo
+    echo "${name} (@PROJECT_NAME@) version @PROJECT_VERSION_AND_REVISION@"
     echo -e "${copyright}"
 }
 

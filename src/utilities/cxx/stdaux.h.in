@@ -35,17 +35,17 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // ===========================================================================
 
 /**
- * @brief Print version information including copyright notice.
+ * @brief Print version information.
  *
- * @param [in] name      Program name. Defaults to GetExecutableName().
- * @param [in] copyright Copyright and license notices. Defaults to the
- *                       official SBIA license. If an empty string is provided,
- *                       i.e., copyright = "", only the version information
- *                       itself is output. Otherwise, the version information
- *                       is followed by a newline and the given copyright
- *                       string. The output ends in a newline in any case.
+ * @param [in] name      Program name.
+ * @param [in] copyright Copyright notice. Defaults to University of Pennsylvania
+ *                       without year if NULL. If an empty string is given,
+ *                       i.e., copyright = "", no copyright notice is written.
+ * @param [in] license   License notice. Defaults to official software license
+ *                       used at SBIA if NULL. If an empty string is given,
+ *                       i.e., license = "", no license notice is written.
  */
-void PrintVersion (const char *name = NULL, const char *copyright = NULL);
+void PrintVersion (const char *name, const char *copyright = NULL, const char *license = NULL);
 
 /**
  * @brief Print contact information.

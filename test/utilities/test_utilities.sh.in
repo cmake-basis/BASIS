@@ -25,6 +25,11 @@ ressources_dir='@TESTING_DIR@/ressources/test_utilities'
 source_dir='@TESTING_OUTPUT_DIR@/test_utilities-source'
 binary_dir='@TESTING_OUTPUT_DIR@/test_utilities-build'
 
+get_executable_path basisproject_path 'basis::basisproject.sh'
+[ -z "${basisproject_path}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
+
+readonly cwd="$(pwd)"
+
 # ============================================================================
 # options
 # ============================================================================
@@ -75,6 +80,41 @@ runerr ()
 }
 
 ##############################################################################
+# @brief Creates a project using the basisproject command-line tool.
+create ()
+{
+    echo "Creating test project..."
+    [ -d "${source_dir}" ] && run rm -rf "${source_dir}"
+    run "${basisproject_path}" --name 'TestUtilities' \
+        --description "A project used to test the BASIS utilities." \
+        --root "${source_dir}" \
+        --language CXX \
+        --language Java \
+        --language Python \
+        --language Perl \
+        --language BASH \
+        --language MATLAB
+    echo "Creating test project... - done"
+}
+
+##############################################################################
+# @brief Tries to build a project created by basisproject.
+build ()
+{
+    echo "Configuring test project..."
+    [ -d "${binary_dir}" ] && run rm -rf "${binary_dir}"
+    run mkdir -p "${binary_dir}"
+    run cd "${binary_dir}"
+    run cmake "-DBASIS_DIR=${basis_dir}" "${source_dir}"
+    echo "Configuring test project... - done"
+    echo "Building test project..."
+    run make
+    echo "Building test project... - done"
+
+    run cd "${cwd}"
+}
+
+##############################################################################
 # @brief Copy file from ressources directory to project source tree.
 #
 # @param [in] file   File path relative to top directory of ressources tree.
@@ -93,33 +133,12 @@ copy ()
 }
 
 ##############################################################################
-# @brief Creates a project using the basisproject command-line tool.
-create ()
+# @brief Add test to test project.
+add_test ()
 {
-    echo "Creating test project..."
-    [ -d "${source_dir}" ] && run rm -rf "${source_dir}"
-    run "${basisproject_path}" --name 'TestUtilities' --description "A project used to test the BASIS utilities." --root "${source_dir}" "$@"
-    echo "Creating test project... - done"
-}
-
-##############################################################################
-# @brief Tries to build a project created by basisproject.
-build ()
-{
-    local cwd="$(pwd)"
-    readonly cwd
-
-    echo "Configuring test project..."
-    [ -d "${binary_dir}" ] && run rm -rf "${binary_dir}"
-    run mkdir -p "${binary_dir}"
-    run cd "${binary_dir}"
-    run cmake "-DBASIS_DIR=${basis_dir}" "${source_dir}"
-    echo "Configuring test project... - done"
-    echo "Building test project..."
-    run make
-    echo "Building test project... - done"
-
-    run cd "${cwd}"
+    local impl=$1
+    copy ${impl} 'test'
+    echo "basis_add_test (\"${impl}\")" >> "${source_dir}/test/CMakeLists.txt"
 }
 
 ##############################################################################
@@ -131,18 +150,20 @@ cleanup ()
 }
 
 # ============================================================================
-# tests
-# ============================================================================
-
-# ============================================================================
 # main
 # ============================================================================
 
-# build tests
 create
+add_test 'test_ExecutableTargetInfo.t.in'
 build
-
-# run tests
-
-# clean up
-cleanup
+run cd "${binary_dir}"
+if [ ${FLAGS_verbose} -gt 1 ]; then
+    run ctest -V -V
+elif [ ${FLAGS_verbose} -gt 0 ]; then
+    run ctest -V
+else
+    run ctest
+fi
+cd "${cwd}"
+#cleanup
+exit 0
