@@ -122,6 +122,8 @@ set (TESTING_RUNTIME_DIR "@TESTING_RUNTIME_DIR@")
 set (TESTING_LIBRARY_DIR "@TESTING_LIBRARY_DIR@")
 set (TESTING_OUTPUT_DIR  "@TESTING_OUTPUT_DIR@")
 
+set (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
+
 # ============================================================================
 # utility implementations
 # ============================================================================
