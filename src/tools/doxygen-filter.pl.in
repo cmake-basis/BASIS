@@ -52,8 +52,6 @@ use DoxyGen::SQLFilter;
 use DoxyGen::VBFilter;
 use Getopt::Long;
 
-my $exec_dir = dirname (realpath ($0));
-
 $Getopt::Long::ignorecase = 0;  
 my $verbose;
 my $help;
@@ -101,21 +99,21 @@ if( $ext eq "sql" ) {
 # JavaScript
 } elsif ($ext eq "js") {
     print STDERR "Treating file as JavaScript\n" if ($verbose);
-    exec (StdAux::get_executable_path ('doxygen-javascript-filter.pl'), @ARGV)
+    exec (Basis::get_executable_path ('doxygen-javascript-filter.pl'), @ARGV)
         or exec ("js2doxy", @ARGV)
         or exec ("js2doxypl", @ARGV);
 # Python
 } elsif ($ext eq "py" || $filehead =~ /^#!\s*(\/usr\/bin\/python|\/bin\/python|\/usr\/bin\/env\s+python)/) {
     print STDERR "Treating file as Python\n" if ($verbose);
-    exec (StdAux::get_executable_path ('doxygen-python-filter.py'), @ARGV);
+    exec (Basis::get_executable_path ('doxygen-python-filter.py'), @ARGV);
 # BASH
 } elsif ($ext eq "sh" || $filehead =~ /^#!\s*(\/usr\/bin\/bash|\/bin\/bash|\/usr\/bin\/env\s+bash)/) {
     print STDERR "Treating file as BASH\n" if ($verbose);
-    exec (StdAux::get_executable_path ('doxygen-bash-filter.py'), @ARGV);
+    exec (Basis::get_executable_path ('doxygen-bash-filter.py'), @ARGV);
 # CMake
 } elsif ($ext eq "cmake" or $ext eq "ctest") {
     print STDERR "Treating file as CMake\n" if ($verbose);
-    exec (StdAux::get_executable_path ('doxygen-cmake-filter.py'), @ARGV);
+    exec (Basis::get_executable_path ('doxygen-cmake-filter.py'), @ARGV);
 }
 
 if ($filter) {
