@@ -56,10 +56,10 @@ endif ()
 # ============================================================================
 
 ## @brief Directory of header files.
-set (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
+get_filename_component (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@" ABSOLUTE)
 
 ## @brief Directory of libraries.
-set (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
+get_filename_component (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@" ABSOLUTE)
 
 ## @brief Utilities library.
 set (@PACKAGE_NAME@_UTILITIES_LIBRARY "basis@utilities")
