@@ -49,7 +49,6 @@
 use Cwd qw(realpath);
 use DoxyGen::PerlFilter;
 use DoxyGen::SQLFilter;
-use DoxyGen::VBFilter;
 use Getopt::Long;
 
 $Getopt::Long::ignorecase = 0;  

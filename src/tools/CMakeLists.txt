@@ -10,34 +10,26 @@
 
 # ----------------------------------------------------------------------------
 # project management
-basis_add_script (basisproject.sh)
+basis_add_executable (basisproject.sh)
 
 # ----------------------------------------------------------------------------
 # doxygen filters
-basis_add_script (doxygen-filter.pl            LIBEXEC)
-basis_add_script (doxygen-bash-filter.py       LIBEXEC)
-basis_add_script (doxygen-cmake-filter.py      LIBEXEC)
-basis_add_script (doxygen-javascript-filter.pl LIBEXEC)
-basis_add_script (doxygen-matlab-filter.pl     LIBEXEC)
-basis_add_script (doxygen-python-filter.py     LIBEXEC)
+basis_add_executable (doxygen-filter.pl            LIBEXEC)
+basis_add_executable (doxygen-bash-filter.py       LIBEXEC)
+basis_add_executable (doxygen-cmake-filter.py      LIBEXEC)
+basis_add_executable (doxygen-javascript-filter.pl LIBEXEC)
+basis_add_executable (doxygen-matlab-filter.pl     LIBEXEC)
+basis_add_executable (doxygen-python-filter.py     LIBEXEC)
 
-foreach (DoxyGenModule Filter.pm PerlFilter.pm SQLFilter.pm VBFilter.pm)
-  basis_script_target_name (TARGET_NAME "DoxyGen/${DoxyGenModule}")
-  basis_add_script (${TARGET_NAME} MODULE "DoxyGen/${DoxyGenModule}")
-  basis_set_target_properties (
-    ${TARGET_NAME}
-    PROPERTIES
-      LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/DoxyGen"
-      LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}/DoxyGen"
-  )
-  set (TARGET_NAME)
-endforeach ()
+basis_add_library ("DoxyGen/Filter.pm" WITH_PATH)
+basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
+basis_add_library ("DoxyGen/SQLFilter.pm" WITH_PATH)
 
 # ----------------------------------------------------------------------------
 # automated testing
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
-basis_add_script (basistest-svn.sh)
-basis_add_script (basistest-slave.sh)
-basis_add_script (basistest-master.sh)
-basis_add_script (basistest-cron.sh)
+basis_add_executable (basistest-svn.sh)
+basis_add_executable (basistest-slave.sh)
+basis_add_executable (basistest-master.sh)
+basis_add_executable (basistest-cron.sh)
