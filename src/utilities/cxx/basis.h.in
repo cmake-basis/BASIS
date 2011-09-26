@@ -1,0 +1,32 @@
+/*!
+ * @file  basis.h
+ * @brief BASIS utilities for C++.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ *
+ * @ingroup CppUtilities
+ */
+
+#pragma once
+#ifndef SBIA_@PROJECT_NAME_UPPER@_BASIS_H_
+#define SBIA_@PROJECT_NAME_UPPER@_BASIS_H_
+
+
+// command-line parsing
+#include <sbia/tclap/CmdLine.h>
+
+// basis utilities library
+#include <sbia/basis/exceptions.h>
+#include <sbia/basis/path.h>
+
+// project-specific utilities
+#include "config.h"
+#include "ExecutableTargetInfo.h"
+#include "stdaux.h"
+
+
+#endif // SBIA_@PROJECT_NAME_UPPER@_BASIS_H_
+

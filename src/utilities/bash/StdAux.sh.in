@@ -24,15 +24,8 @@ __SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 # constants
 # ============================================================================
 
-## @brief Absolute path of directory of StdAux.sh module
+## @brief Absolute directory path of StdAux.sh module.
 readonly __STDAUX_dir=@BASIS_BASH___DIR__@
-
-# ============================================================================
-# modules
-# ============================================================================
-
-source "${__STDAUX_dir}/Flags.sh"                # command-line parsing library
-source "${__STDAUX_dir}/ExecutableTargetInfo.sh" # info about executable targets
 
 # ============================================================================
 # version / help
@@ -52,7 +45,7 @@ source "${__STDAUX_dir}/ExecutableTargetInfo.sh" # info about executable targets
 # @returns Nothing.
 print_version ()
 {
-    local name=${1:-$(get_executable_name)}
+    local name=${1:-${0##*/}}
     local copyright=${2:-}
     if [ -z "${copyright}" ]; then
         copyright="Copyright (c) 2011 University of Pennsylvania. \
@@ -85,20 +78,6 @@ print_contact ()
         echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
     fi
 }
-
-# ============================================================================
-# aliases
-# ============================================================================
-
-if [ -z "${basis_enable_target_aliases}" ] || [ ${basis_enable_target_aliases} -eq 0 ]; then
-    return
-fi
-
-# define aliases of build target names to executable file paths
-@EXECUTABLE_ALIASES@
-
-# enable expansion of aliases also in non-interactive shells
-shopt -s expand_aliases
 
 
 ## @}

@@ -18,6 +18,7 @@ basis_install (
     "ExecutableTargetInfo.cc.in"
     "stdaux.h.in"                # standard auxiliary functions
     "stdaux.cc.in"
+    "basis.h.in"                 # main include file
   DESTINATION
     "${INSTALL_CXX_TEMPLATES_DIR}"
 )
@@ -25,11 +26,11 @@ basis_install (
 # ----------------------------------------------------------------------------
 # utilities
 basis_add_library (
-  utils STATIC
+  utilities STATIC
     "path.cc" # utility path functions
 )
 
-basis_set_target_properties (utils PROPERTIES OUTPUT_NAME "basis-utils")
+basis_set_target_properties (utilities PROPERTIES OUTPUT_NAME "basis-utilities")
 
 # ----------------------------------------------------------------------------
 # unit testing

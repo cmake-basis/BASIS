@@ -12,11 +12,11 @@
 # template files
 basis_install (
   FILES
-    StdAux.sh.in               # main utilities module
+    Core.sh                    # core utilities
+    StdAux.sh.in               # higher-level utilities
     ExecutableTargetInfo.sh.in # information about executable targets
+    Flags.sh                   # command-line parsing library
+    Basis.sh.in                # main module to be sourced
   DESTINATION "${INSTALL_BASH_TEMPLATES_DIR}"
 )
 
-# ----------------------------------------------------------------------------
-# utilities
-basis_add_script (Flags.sh MODULE) # command-line parsing library

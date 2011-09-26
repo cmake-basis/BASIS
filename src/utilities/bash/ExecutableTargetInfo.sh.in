@@ -21,11 +21,17 @@ __SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_INCLUDED=1
 # constants
 # ============================================================================
 
-## @brief Canonical path of directory containing ExecutableTargetInfo module
+## @brief Absolute directory path of ExecutableTargetInfo.sh module.
 readonly __EXECUTABLETARGETINFO_dir=@BASIS_BASH___DIR__@
 
 ## @brief Default namespace used to convert target name to target UID.
 readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
+
+# ============================================================================
+# modules
+# ============================================================================
+
+source "${__EXECUTABLETARGETINFO_dir}/Core.sh" # core utilities
 
 # ============================================================================
 # public functions
@@ -38,75 +44,127 @@ readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
 ##############################################################################
 # @brief Get UID of build target.
 #
-# @param [in] target Name/UID of build target.
+# @param [out] uid    UID of build target.
+# @param [in]  target Name/UID of build target.
 #
-# @returns UID of build target.
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 get_target_uid ()
 {
-    local target=$(_executabletargetinfo_sanitize "$1")
+    [ $# -eq 2 ] || return 1
+
+    local target="$2"
+
+    # sanitize input
+    _executabletargetinfo_sanitize target "${target}"
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
     if [ -z "${__EXECUTABLETARGETINFO_initialized}" ]; then
-        _executabletargetinfo_initialize
+        _executabletargetinfo_initialize || return 1
     fi
     # convert target name to target UID
-    if [ -z $(_executabletargetinfo_get ${target} LOCATION) ] && [[ "${target//__/}" == "${target}" ]]; then
-        echo -n "${__EXECUTABLETARGETINFO_namespace}__${target}"
-    else
-        echo -n "${target}"
+    local path && _executabletargetinfo_get path "${target}" LOCATION
+    if [ -z "${path}" ] && [[ "${target//__/}" == "${target}" ]]; then
+        target="${__EXECUTABLETARGETINFO_namespace}__${target}"
     fi
+
+    local "$1" && upvar $1 "${target}"
 }
 
 ##############################################################################
 # @brief Get name of executable file.
 #
-# @param [in] target Name/UID of build target. If no argument is given,
-#                    the name of the calling executable is returned instead.
+# @param [out] name   Name of the executable or an empty string if unknown.
+# @param [in]  target Name/UID of build target. If no argument is given,
+#                     the name of the calling executable is returned instead.
 #
-# @returns The name of the executable.
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 get_executable_name ()
 {
-    # if called without arguments, return name of calling executable
-    if [ $# -eq 0 ]; then
-        echo ${0##*/}
-    # otherwise, lookup name of executable corresponding to this build target
+    [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
+
+    local name
+
+    # if no target name given, get name of this executable
+    if [ $# -lt 2 ]; then
+        name="${0##*/}"
+    # otherwise, get name of executable built by named target
     else
-        basename "$(get_executable_path $1)"
+        local path && get_executable_path path "$2"
+        name="$(basename "${path}")"
     fi
+
+    local "$1" && upvar $1 "${name}"
 }
 
 ##############################################################################
 # @brief Get directory of executable file.
 #
-# @param [in] target Name/UID of build target. If no argument is given,
-#                    the directory where the file of the calling executable
-#                    is located is returned.
+# @param [out] dir    Absolute directory of executable file.
+# @param [in]  target Name/UID of build target. If no argument is given,
+#                     the directory where the file of the calling executable
+#                     is located is returned.
 #
-# @returns The directory part of the executable file path.
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 get_executable_directory ()
 {
-    dirname "$(get_executable_path $1)"
+    [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
+
+    local path
+
+    # if no target name given, get path of this executable
+    if [ $# -lt 2 ]; then
+        get_executable_path path
+    # otherwise, get path of executable of named target
+    else
+        get_executable_path path "$2"
+    fi
+    # get directory component of path
+    local dir="$(dirname "${path}")"
+
+    local "$1" && upvar $1 "${dir}"
 }
 
 ##############################################################################
-# @brief Get canonical path of executable file.
+# @brief Get absolute path of executable file.
 #
-# @param [in] target Name/UID of build target. If no argument is given,
-#                    the file path of the calling executable is returned.
+# @param [out] path   Absolute path of executable file.
+# @param [in]  target Name/UID of build target. If no argument is given,
+#                     the file path of the calling executable is returned.
 #
-# @returns The canonical file path of the executable.
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 get_executable_path ()
 {
-    # if called without arguments, return path of calling executable
-    if [ $# -eq 0 ]; then
-        realpath $0
-    # otherwise, lookup name of executable corresponding to this build target
+    [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
+
+    local path
+
+    # if no target name given, get path of this executable
+    if [ $# -lt 2 ]; then
+        path="$(realpath "$0")"
+    # otherwise, get path of executable built by named target
     else
-        local uid=$(get_target_uid "$1")
-        local path=$(_executabletargetinfo_get ${uid} 'LOCATION')
-        _executabletargetinfo_to_absolute_path ${path} ${__EXECUTABLETARGETINFO_dir}
+        # get UID of target
+        local uid && get_target_uid uid "$2"
+        # get path relative to this module
+        _executabletargetinfo_get path "${uid}" LOCATION
+        # make path absolute
+        _executabletargetinfo_to_absolute_path path "${path}" "${__EXECUTABLETARGETINFO_dir}"
     fi
+
+    local "$1" && upvar $1 "${path}"
 }
 
 
@@ -120,12 +178,16 @@ get_executable_path ()
 ##############################################################################
 # @brief Sanitize string for use in variable name.
 #
-# @param [in] str String to be sanitized.
+# @param [out] out Sanitized string.
+# @param [in]  str String to be sanitized.
 #
-# @returns Sanitized string that can be used as variable name.
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 _executabletargetinfo_sanitize ()
 {
-    echo -n "$1" | tr [:space:] '_' | tr -C [:alpha:] '_'
+    local "$1" && upvar $1 "$(echo -n "$2" | tr [:space:] '_' | tr -C [:alpha:] '_')"
 }
 
 ##############################################################################
@@ -140,9 +202,11 @@ _executabletargetinfo_sanitize ()
 # @returns Sets a readonly variable that represents the (key, value) entry.
 _executabletargetinfo_add ()
 {
-    local key=$(_executabletargetinfo_sanitize "$1")
-    local name=$(_executabletargetinfo_sanitize "$2")
-    eval readonly '__EXECUTABLETARGETINFO_'"${name}"'_'"${key}"='$3'
+    [ $# -eq 3 ] || return 1
+
+    local key  && _executabletargetinfo_sanitize key  "$1"
+    local name && _executabletargetinfo_sanitize name "$2"
+    eval "readonly __EXECUTABLETARGETINFO_${name}_${key}='$3'"
 }
 
 ##############################################################################
@@ -150,41 +214,55 @@ _executabletargetinfo_add ()
 #
 # @sa _executabletargetinfo_add()
 #
-# @param [in] key  Hash key.
-# @param [in] name Name of the hash table.
+# @param [out] value Value corresponding to given @p key
+#                    or an empty string if key is unknown.
+# @param [in]  key   Hash key.
+# @param [in]  name  Name of the hash table.
 #
-# @returns Value stored under the given key in the hash table or an empty
-#          string if the hash table does not exist or the key is unknown.
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 _executabletargetinfo_get ()
 {
-    local key=$(_executabletargetinfo_sanitize "$1")
-    local name=$(_executabletargetinfo_sanitize "$2")
-    eval echo -n '${__EXECUTABLETARGETINFO_'"${name}"'_'"${key}"'}'
+    [ $# -eq 3 ] || return 1
+
+    local key  && _executabletargetinfo_sanitize key  "$2"
+    local name && _executabletargetinfo_sanitize name "$3"
+    eval "local value=\${__EXECUTABLETARGETINFO_${name}_${key}}"
+
+    local "$1" && upvar $1 "${value}"
 }
 
 ##############################################################################
 # @brief Make relative path absolute.
 #
-# @attention The directory referred to by the directory part of the path must exist.
+# @attention The directory component of the path must be an existent directory.
 #
 # @todo Implement this function without the use of cd such that non-existent
 #       paths can be simplified as well.
 #
-# @param [in] path Absolute or relative path.
-# @param [in] base Base path used for relative paths.
+# @param [out] simplified Simplified @p path.
+# @param [in]  path       Absolute or relative path.
+# @param [in]  base       Base path used for relative paths.
 #
-# @returns Simplified absolute path.
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 _executabletargetinfo_to_absolute_path ()
 {
-    local path=$1
-    local base=${2:-$(pwd)}
-    local dir=$(dirname ${path})
+    [ $# -eq 2 ] || [ $# -eq 3 ] || return 1
+
+    local path="$2"
+    local base="$3"
+    local dir="$(dirname "${path}")"
 
     if [ -d "${base}" -a -d "${dir}" ]; then
-        echo -n $(cd ${base}; cd ${dir}; pwd)/$(basename ${path})
-    else
-        echo -n ${path}
+        path=$(cd ${base}; cd ${dir}; pwd)/$(basename ${path})
     fi
+
+    local "$1" && upvar $1 "${path}"
 }
 
 ##############################################################################
@@ -200,8 +278,29 @@ _executabletargetinfo_to_absolute_path ()
 # called first before any lookup of information.
 #
 # @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
 _executabletargetinfo_initialize ()
 {
+    [ $# -eq 0 ] || return 1
+
     @EXECUTABLE_TARGET_INFO@
+
     __EXECUTABLETARGETINFO_initialized=1
+    return 0
 }
+
+# ============================================================================
+# aliases (optional)
+# ============================================================================
+
+if [ -z "${basis_enable_target_aliases}" ] || [ ${basis_enable_target_aliases} -eq 0 ]; then
+    return
+fi
+
+# define aliases of build target names to executable file paths
+@EXECUTABLE_ALIASES@
+
+# enable expansion of aliases also in non-interactive shells
+shopt -s expand_aliases

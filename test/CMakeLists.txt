@@ -26,10 +26,8 @@ set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
 
 # ============================================================================
-# test utilities (C++)
+# subdirectories
 # ============================================================================
 
-# ----------------------------------------------------------------------------
-# basic utilities
-basis_add_test ("utilities/test_path.cc" UNITTEST)
-basis_add_test ("utilities/test_utilities.sh")
+add_subdirectory (tools)
+add_subdirectory (utilities)

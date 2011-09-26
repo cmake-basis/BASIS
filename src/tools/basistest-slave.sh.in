@@ -23,8 +23,8 @@
 # ============================================================================
 
 # executable information
-exec_name=$(get_executable_name)
-exec_dir=$(get_executable_directory)
+get_executable_directory exec_dir
+get_executable_name      exec_name
 
 # ============================================================================
 # help/version
