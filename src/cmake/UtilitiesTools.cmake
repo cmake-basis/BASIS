@@ -166,18 +166,24 @@ function (basis_configure_auxiliary_modules)
     message (STATUS "Configuring auxiliary modules...")
   endif ()
 
+  # --------------------------------------------------------------------------
+  # Python
   if (BASIS_PROJECT_USES_PYTHON)
     # TODO
   endif ()
 
+  # --------------------------------------------------------------------------
+  # Perl
   if (BASIS_PROJECT_USES_PERL)
-    foreach (MODULE StdAux)
+    foreach (MODULE StdAux Basis)
       basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm" MODULE)
       basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm")
       basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
     endforeach ()
   endif ()
 
+  # --------------------------------------------------------------------------
+  # BASH
   if (BASIS_PROJECT_USES_BASH)
     foreach (MODULE Core StdAux Flags Basis)
       basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh" MODULE)

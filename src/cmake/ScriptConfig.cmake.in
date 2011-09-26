@@ -83,6 +83,13 @@ set (PROJECT_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
 set (PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
 set (PROJECT_REVISION      "@PROJECT_REVISION@")
 
+# project version and (if applicable) revision
+if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
+  set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION} (revision ${PROJECT_REVISION})")
+else ()
+  set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION}")
+endif ()
+
 # project version in a format that can be used with $VERSION variable in Perl
 set (PROJECT_VERSION_PERL "${PROJECT_VERSION_MAJOR}")
 if (PROJECT_VERSION_MAJOR LESS 10)
@@ -117,9 +124,80 @@ set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
 # utility implementations
 # ============================================================================
 
-# Note: Most of the utility implemenations should go into the StdAux.sh module.
-#       Only code that has to be substituted within each BASH script itself,
-#       should go here.
+# ----------------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------------
+
+# TODO
+
+# @brief Definition of get_executable_directory() function.
+#
+# Example:
+# @code
+# @PYTHON_FUNCTION_get_executable_directory@
+# exec_dir = get_executable_directory ()
+# @endcode
+#
+# @ingroup PythonUtilities
+
+#set (PYTHON_FUNCTION_get_executable_directory "
+## ****************************************************************************
+#def get_executable_directory ():
+#    \"Get real directory of executable.\"
+#    import sys
+#    import os
+#    return os.path.realpath (os.path.dirname (sys.argv [0]))
+#"
+#)
+
+# @brief Definition of get_executable_name() function.
+#
+# Example:
+# @code
+# @PYTHON_FUNCTION_get_executable_name@
+# exec_name = get_executable_name ()
+# @endcode
+#
+# @ingroup PythonUtilities
+
+#set (PYTHON_FUNCTION_get_executable_name "
+## ****************************************************************************
+#def get_executable_name ():
+#    \"\"\"Get name of program without path.\"\"\"
+#    import sys
+#    import os
+#    return os.path.basename (sys.argv [0])
+#"
+#)
+
+# ----------------------------------------------------------------------------
+# Perl
+# ----------------------------------------------------------------------------
+
+##############################################################################
+# @brief Include BASIS utilities for Perl.
+#
+# Example:
+# @code
+# #! /usr/bin/env perl
+# @BASIS_PERL_UTILITIES@
+# ...
+# @endcode
+#
+# @ingroup PerlUtilities
+
+set (BASIS_PERL_UTILITIES "
+use File::Basename;
+use lib dirname (__FILE__) . \"/${LIBRARY_DIR}\";
+use lib dirname (__FILE__);
+
+use Basis;
+"
+)
+
+# ----------------------------------------------------------------------------
+# BASH
+# ----------------------------------------------------------------------------
 
 ##############################################################################
 # @brief Absolute path of current BASH file.
@@ -130,6 +208,8 @@ set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
 # @code
 # readonly __MYMODULE=@BASIS_BASH___FILE__@
 # @endcode
+#
+# @ingroup BashUtilities
 set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
 
 ##############################################################################
@@ -141,34 +221,36 @@ set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pw
 # @code
 # readonly __MYMODULE_dir=@BASIS_BASH___DIR__@
 # @endcode
+#
+# @ingroup BashUtilities
 set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
 
 ##############################################################################
-# @brief Definition of _get_executable_directory() function.
-#
-# @attention As the leading '_' indicates, this function is private and
-#            not intended for direct use. Instead, the ExecutableTargetInfo
-#            BASH module provides a more general get_executable_directory()
-#            function which internally makes use of this function.
-#            Hence, use get_executable_directory() from the
-#            ExecutableTargetInfo module instead.
+# @brief Definition of realpath() function.
 #
 # Example:
 # @code
 # #! /usr/bin/env bash
-# @BASH_FUNCTION__get_executable_directory@
-# exec_dir=$(_get_executable_directory)
+# @BASIS_BASH_FUNCTION_realpath@
+# exec_dir=$(realpath $0)
 # @endcode
 #
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-
+#
+# @ingroup BashUtilities
 set (BASIS_BASH_FUNCTION_realpath "
 ##############################################################################
 # @brief Get real path of given file or directory.
 #
-# @note This function was substituted by BASIS for the string \@BASIS_BASH_UTILITIES\@
-#       of \@BASIS_BASH_realpath\@. Its implementation can be found in the
-#       default script configuration file provided by BASIS.
+# @note This function was substituted by BASIS for the string
+#       \@BASIS_BASH_UTILITIES\@ or \@BASIS_BASH_realpath\@.
+#       Its implementation can be found in the default script configuration
+#       file provided by BASIS.
+#
+# Example:
+# @code
+# exec_dir=$(realpath $0)
+# @endcode
 #
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 #
@@ -198,110 +280,29 @@ realpath ()
 )
 
 ##############################################################################
-# @brief Common BASH code to be used at the top of each BASH script.
+# @brief Include BASIS utilities for BASH.
 #
 # Example:
 # @code
 # #! /usr/bin/env bash
 # @BASIS_BASH_UTILITIES@
-# exec_dir=$(get_executable_directory)
-# exec_name=$(get_executable_name)
+# get_executable_directory exec_dir
+# get_executable_name      exec_name
+#
+# echo "The executable ${exec_name} is located in ${exec_dir}."
 # @endcode
 #
-# @sa StdAux.sh
-# @sa BASH_FUNCTION_realpath
-#
 # @ingroup BashUtilities
-
 set (BASIS_BASH_UTILITIES "
 # constants used by the Flags.sh module
-HELP_COMMAND='${NAME}'
-HELP_VERSION='${PROJECT_VERSION}'
+HELP_COMMAND='${NAME} (${PROJECT_NAME})'
 HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
+HELP_VERSION='${PROJECT_VERSION_AND_REVISION}'
+HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 
 ${BASIS_BASH_FUNCTION_realpath}
 readonly __${NAMESPACE_UPPER}_dir=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
 source \"\${__${NAMESPACE_UPPER}_dir}/${LIBRARY_DIR}/Basis.sh\"
-"
-)
-
-# ----------------------------------------------------------------------------
-# Python
-# ----------------------------------------------------------------------------
-
-## @addtogroup PythonUtilities
-#  @{
-
-
-##############################################################################
-# @brief Definition of get_executable_directory() function.
-#
-# Example:
-# @code
-# @PYTHON_FUNCTION_get_executable_directory@
-# exec_dir = get_executable_directory ()
-# @endcode
-
-set (PYTHON_FUNCTION_get_executable_directory "
-# ****************************************************************************
-def get_executable_directory ():
-    \"Get real directory of executable.\"
-    import sys
-    import os
-    return os.path.realpath (os.path.dirname (sys.argv [0]))
-"
-)
-
-##############################################################################
-# @brief Definition of get_executable_name() function.
-#
-# Example:
-# @code
-# @PYTHON_FUNCTION_get_executable_name@
-# exec_name = get_executable_name ()
-# @endcode
-
-set (PYTHON_FUNCTION_get_executable_name "
-# ****************************************************************************
-def get_executable_name ():
-    \"\"\"Get name of program without path.\"\"\"
-    import sys
-    import os
-    return os.path.basename (sys.argv [0])
-"
-)
-
-
-## @}
-
-# ----------------------------------------------------------------------------
-# Perl
-# ----------------------------------------------------------------------------
-
-##############################################################################
-# @brief Common Perl code to be used at the top of each Perl script.
-#
-# Example:
-# @code
-# #! /usr/bin/env perl
-# @BASIS_PERL_UTILITIES@
-# my $exec_dir  = get_executable_directory ();
-# my $exec_name = get_executable_name ();
-# @endcode
-#
-# @sa StdAux.pm
-# @sa ExecutableTargetInfo.pm
-#
-# @ingroup PerlUtilities
-
-set (BASIS_PERL_UTILITIES "
-use strict;
-use warnings;
-
-use File::Basename;
-use lib dirname (__FILE__) . \"/${LIBRARY_DIR}\";
-use lib dirname (__FILE__);
-
-use StdAux;
 "
 )

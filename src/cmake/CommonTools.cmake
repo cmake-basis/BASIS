@@ -582,7 +582,7 @@ function (basis_get_source_language LANGUAGE)
     elseif (SOURCE_FILE MATCHES "\\.py$|\\.py.in$")
       set (LANG "PYTHON")
     # Perl
-    elseif (SOURCE_FILE MATCHES "\\.pl$|\\.pl.in$")
+    elseif (SOURCE_FILE MATCHES "\\.pl$|\\.pl.in$|\\.t$|\\.t.in$")
       set (LANG "PERL")
     # BASH
     elseif (SOURCE_FILE MATCHES "\\.sh$|\\.sh.in$")

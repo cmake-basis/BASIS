@@ -784,7 +784,7 @@ function (basis_add_executable_target TARGET_NAME)
     endif ()
   endif ()
 
-  # TEST implies LIBEXEC
+  # TEST implies non-LIBEXEC
   if (ARGN_TEST)
     set (ARGN_LIBEXEC 0)
   endif ()
@@ -833,7 +833,12 @@ function (basis_add_executable_target TARGET_NAME)
   endif ()
 
   if (ARGN_TEST)
-    set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
+    set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        TEST                      1
+        RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}"
+    )
   else ()
     set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
   endif ()
@@ -1240,7 +1245,7 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b TEST @endtp
-#     <td>Specifies that the script is a test executable. Implies @p LIBEXEC.</td>
+#     <td>Specifies that the script is a test executable.</td>
 #   </tr>
 #   <tr>
 #      @tp @b MODULE @endtp
@@ -1276,6 +1281,10 @@ function (basis_add_script TARGET_NAME)
     ${ARGN}
   )
 
+  if (ARGN_TEST)
+    set (ARGN_LIBEXEC 0)
+  endif ()
+
   list (LENGTH ARGN_UNPARSED_ARGUMENTS LEN)
   if (LEN EQUAL 0)
     set (ARGN_SCRIPT)
@@ -1297,7 +1306,6 @@ function (basis_add_script TARGET_NAME)
   if (ARGN_MODULE)
     set (ARGN_LIBEXEC 1)
   elseif (ARGN_TEST)
-    set (ARGN_LIBEXEC   1)
     set (ARGN_NO_EXPORT 1)
   endif ()
 
@@ -1383,6 +1391,8 @@ function (basis_add_script TARGET_NAME)
     set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
   elseif (ARGN_LIBEXEC)
     set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+  elseif (ARGN_TEST)
+    set (OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
   else ()
     set (OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
   endif ()

@@ -195,7 +195,9 @@ function (basis_add_test TEST_NAME)
     endif ()
 
     basis_add_executable (${TEST_NAME} TEST ${ARGN_SOURCES})
-    basis_target_link_libraries (${TEST_NAME} ${ARGN_LINK_DEPENDS})
+    if (ARGN_LINK_DEPENDS)
+      basis_target_link_libraries (${TEST_NAME} ${ARGN_LINK_DEPENDS})
+    endif ()
 
     if (ARGN_COMMAND)
       basis_set_target_properties (${TEST_NAME} PROPERTIES OUTPUT_NAME ${ARGN_COMMAND})

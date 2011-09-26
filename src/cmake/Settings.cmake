@@ -365,7 +365,7 @@ set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 # ----------------------------------------------------------------------------
 
 ## @brief Absolute path of output directory for tests.
-set (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary/output")
+set (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary")
 ## @brief Absolute path of output directory for built test executables.
 set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 
