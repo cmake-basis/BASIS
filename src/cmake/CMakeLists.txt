@@ -42,6 +42,7 @@ set (
     "updatefile.py"           # helper used by BasisUpdate.cmake module
     "runmcc.m"                # helper used by MatlabTools.cmake module
     "Doxyfile.in"             # default Doxygen configuration template
+    "SubversionUsers.txt"     # maps SVN users at SBIA to their real names
 )
 
 # ----------------------------------------------------------------------------
