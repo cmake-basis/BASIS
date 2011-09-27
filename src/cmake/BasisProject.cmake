@@ -359,7 +359,7 @@ macro (basis_project_initialize)
 
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
   basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
-  basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}")
+  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
 
   # authors, readme, install and license files
   get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME_WE)
@@ -504,27 +504,28 @@ macro (basis_project_initialize)
   # TODO do this only when these source files are used the first time
   if (BASIS_PROJECT_USES_CXX)
     basis_configure_auxiliary_sources (
-      DEFAULT_SOURCES
-      DEFAULT_HEADERS
-      DEFAULT_PUBLIC_HEADERS
+      BASIS_UTILITIES_SOURCES
+      BASIS_UTILITIES_HEADERS
+      BASIS_UTILITIES_PUBLIC_HEADERS
     )
 
-    set (DEFAULT_INCLUDE_DIRS)
-    foreach (SOURCE ${DEFAULT_HEADERS})
-      get_filename_component (TMP "${SOURCE}" PATH)
-      list (APPEND DEFAULT_INCLUDE_DIRS "${TMP}")
-      set (TMP)
+    set (BASIS_UTILITIES_INCLUDE_DIRS)
+    foreach (H ${BASIS_UTILITIES_HEADERS})
+      get_filename_component (D "${H}" PATH)
+      list (APPEND BASIS_UTILITIES_INCLUDE_DIRS "${D}")
     endforeach ()
-    set (SOURCE)
-    if (DEFAULT_INCLUDE_DIRS)
-      list (REMOVE_DUPLICATES DEFAULT_INCLUDE_DIRS)
+    if (BASIS_UTILITIES_INCLUDE_DIRS)
+      list (REMOVE_DUPLICATES BASIS_UTILITIES_INCLUDE_DIRS)
     endif ()
-    if (DEFAULT_INCLUDE_DIRS)
-      basis_include_directories (BEFORE ${DEFAULT_INCLUDE_DIRS})
+    if (BASIS_UTILITIES_INCLUDE_DIRS)
+      basis_include_directories (BEFORE ${BASIS_UTILITIES_INCLUDE_DIRS})
     endif ()
 
-    if (DEFAULT_SOURCES)
-      source_group ("Default" FILES ${DEFAULT_SOURCES} ${DEFAULT_HEADERS})
+    if (BASIS_UTILITIES_HEADERS)
+      source_group ("Default" FILES ${BASIS_UTILITIES_HEADERS})
+    endif ()
+    if (BASIS_UTILITIES_SOURCES)
+      source_group ("Default" FILES ${BASIS_UTILITIES_SOURCES})
     endif ()
   endif ()
 
@@ -540,7 +541,7 @@ macro (basis_project_initialize)
     )
 
     install (
-      FILES       ${DEFAULT_PUBLIC_HEADERS}
+      FILES       ${BASIS_UTILITIES_PUBLIC_HEADERS}
       DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
       COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
     )

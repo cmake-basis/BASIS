@@ -20,7 +20,7 @@
 
 if (BUILD_CONFIG_SETTINGS)
   ## @brief Include directories of package configuration of build tree.
-  set (INCLUDE_DIR_CONFIG "${PROJECT_INCLUDE_DIR}")
+  set (INCLUDE_DIR_CONFIG "${PROJECT_INCLUDE_DIR}" "${BINARY_INCLUDE_DIR}")
 
   ## @brief Libraries directories of package configuration of build tree.
   set (LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")

@@ -530,11 +530,11 @@ endfunction ()
 #
 # Example:
 # @code
-# basis_add_library (MyLib1 STATIC mylib.cc)
-# basis_add_library (MyLib2 STATIC mylib.cc COMPONENT dev)
+# basis_add_library (MyLib1 STATIC mylib.cxx)
+# basis_add_library (MyLib2 STATIC mylib.cxx COMPONENT dev)
 #
 # basis_add_library (
-#   MyLib3 SHARED mylib.cc
+#   MyLib3 SHARED mylib.cxx
 #   RUNTIME_COMPONENT bin
 #   LIBRARY_COMPONENT dev
 # )
@@ -799,21 +799,16 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add standard auxiliary library
   if (NOT ARGN_NO_BASIS_UTILITIES)
-    basis_target_uid (STDAUX stdaux)
-    if (NOT TARGET ${STDAUX})
-      basis_add_library (
-        stdaux
-        STATIC
-          "${BINARY_CODE_DIR}/config.cc"
-          "${BINARY_CODE_DIR}/stdaux.cc"
-          "${BINARY_CODE_DIR}/ExecutableTargetInfo.cc"
-      )
+    basis_target_uid (BASIS_UTILITIES_TARGET "basis-utilities-${PROJECT_NAME_LOWER}")
+    if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
+      basis_target_name (TARGET_NAME "${BASIS_UTILITIES_TARGET}")
+      basis_add_library (${TARGET_NAME} STATIC ${BASIS_UTILITIES_SOURCES})
 
       # make sure that this library is always output to the 'lib' directory
       # even if only test executables use it; see CMakeLists.txt in 'test'
       # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
       basis_set_target_properties (
-        stdaux
+        ${TARGET_NAME}
         PROPERTIES
           ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
       )
@@ -851,7 +846,11 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add default link dependencies
   if (NOT ARGN_NO_BASIS_UTILITIES)
-    target_link_libraries (${TARGET_UID} "basis${BASIS_NAMESPACE_SEPARATOR}utilities" ${STDAUX})
+    target_link_libraries (
+      ${TARGET_UID}
+        "basis${BASIS_NAMESPACE_SEPARATOR}utilities" # non-project specific
+        ${BASIS_UTILITIES_TARGET}                    # project specific
+    )
   endif ()
 
   # target version information

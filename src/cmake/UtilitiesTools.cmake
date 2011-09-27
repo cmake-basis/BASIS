@@ -26,16 +26,21 @@
 #
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b config.h</td>
+#     @tp @b basis.h @endtp
+#     <td>Main include file which includes all the header files of the
+#         BASIS utilities including both, non-project specific utilities
+#         which are installed as part of BASIS, and project specific
+#         utilities configured by this function.</td>
+#   </tr>
+#   <tr>
+#     @tp @b config.h @endtp
 #     <td>This file is intended to be included by all source files.
 #         Hence, other projects will indirectly include this file when
 #         they use a library of this project. Therefore, it is
 #         important to avoid potential name conflicts.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b config.cc</td>
+#     @tp @b config.cxx @endtp
 #     <td>Definition of constants declared in config.h file.
 #         In particular, the paths of the installation directories
 #         relative to the executables are defined by this file.
@@ -43,19 +48,25 @@
 #         implemented in stdaux.h.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b stdaux.h</td>
-#     <td>Auxiliary functions such as functions to get absolute path
+#     @tp @b stdaux.h @endtp
+#     <td>Declares auxiliary functions such as functions to get absolute path
 #         to the subdirectories of the installation.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b stdaux.cc</td>
-#     <td>Definition of auxiliary functions declared in stdaux.h.
-#         This source file in particular contains the constructor
-#         code which is configured during the finalization of the
-#         project's build configuration which maps the build target
-#         names to executable file paths.</td>
+#     @tp @b stdaux.cxx @endtp
+#     <td>Definition of auxiliary functions declared in stdaux.h.</td>
+#   </tr>
+#   <tr>
+#     @tp @b ExecutableTargetInfo.h @endtp
+#     <td>Declares ExecutableTargetInfo class which can be used at runtime
+#         to obtain information about an executable using the name of the
+#         corresponding BASIS/CMake build target.</td>
+#   </tr>
+#   <tr>
+#     @tp @b ExecutableTargetInfo.cxx @endtp
+#     <tr>Definition of ExecutableTargetInfo class. The constructor of
+#         this singleton class is created during the configuration step of
+#         CMake by the function basis_configure_ExecutableTargetInfo().</td>
 #   </tr>
 # </table>
 #
@@ -125,12 +136,12 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   # configure private auxiliary source files
   set (
     SOURCES_NAMES
-      "config.cc"
-      "ExecutableTargetInfo.h"
-      "ExecutableTargetInfo.cc"
-      "stdaux.h"
-      "stdaux.cc"
       "basis.h"
+      "config.cxx"
+      "stdaux.h"
+      "stdaux.cxx"
+      "ExecutableTargetInfo.h"
+      "ExecutableTargetInfo.cxx"
   )
 
   foreach (SOURCE ${SOURCES_NAMES})
@@ -356,9 +367,10 @@ function (basis_configure_ExecutableTargetInfo)
   # C++
 
   if (CXX)
-    # configure source file
+    # configure source file (pre-configured by basis_configure_auxiliary_sources())
+    set (TEMPLATE_FILE "${BINARY_CODE_DIR}/ExecutableTargetInfo.cxx")
     set (EXECUTABLE_TARGET_INFO "${CC}")
-    configure_file ("${BINARY_CODE_DIR}/ExecutableTargetInfo.cc" "${BINARY_CODE_DIR}/ExecutableTargetInfo.cc" @ONLY)
+    configure_file ("${TEMPLATE_FILE}" "${TEMPLATE_FILE}" @ONLY)
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -381,8 +393,9 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}endif ()\n")
 
     # add module
-    basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm" MODULE CONFIG "${CONFIG}")
-    basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm")
+    set (TEMPLATE_FILE "${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm")
+    basis_script_target_name (TARGET_NAME "${TEMPLATE_FILE}")
+    basis_add_script (${TARGET_NAME} "${TEMPLATE_FILE}" MODULE CONFIG "${CONFIG}")
     basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
   endif ()
 
@@ -401,8 +414,9 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}endif ()\n")
 
     # add module
-    basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh" MODULE CONFIG "${CONFIG}")
-    basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh")
+    set (TEMPLATE_FILE "${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh")
+    basis_script_target_name (TARGET_NAME "${TEMPLATE_FILE}")
+    basis_add_script (${TARGET_NAME} "${TEMPLATE_FILE}" MODULE CONFIG "${CONFIG}")
     basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
   endif ()
 
