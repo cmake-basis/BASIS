@@ -65,7 +65,7 @@ sub test_get_executable_name
     # name of executable built by some target
     like (Basis::get_executable_name ('basis::basisproject.sh'),
         qr/^basisproject(\.sh)?$/,
-        "name of basis::basisproject.sh target");
+        "name of basis::basisproject.sh executable");
 }
 
 ##############################################################################
@@ -79,7 +79,7 @@ sub test_get_executable_directory
     # directory of executable built by some target
     like (Basis::get_executable_directory ('basis::basisproject.sh'),
         qr/^\/.*\/bin(\/basis)?$/,
-        "directory of basis::basisproject.sh target");
+        "directory of basis::basisproject.sh executable");
 }
 
 ##############################################################################

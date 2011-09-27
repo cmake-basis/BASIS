@@ -35,4 +35,44 @@ TEST (ExecutableTargetInfo, GetInstance)
 TEST (ExecutableTargetInfo, GetTargetUID)
 {
     const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
+    EXPECT_STREQ ("testutilities::basisproject.sh", info.GetTargetUID ("basisproject.sh").c_str ())
+        << "this project's namespace prepended to known target";
+    EXPECT_STREQ ("testutilities::unknown", info.GetTargetUID ("unknown").c_str ())
+        << "this project's namespace prepended to unknown target";
+    EXPECT_STREQ ("basis::basisproject.sh", info.GetTargetUID ("basis::basisproject.sh").c_str ())
+        << "UID remains unchanged";
+    EXPECT_STREQ ("hammer::hammer", info.GetTargetUID ("hammer::hammer").c_str ())
+        << "UID remains unchanged";
+    EXPECT_STREQ ("::hello", info.GetTargetUID ("::hello").c_str ())
+        << "global namespace remains unchanged";
+    EXPECT_STREQ ("", info.GetTargetUID ("").c_str ())
+        << "empty string remains unchanged";
+}
+
+// ***************************************************************************
+// Tests IsKnownTarget().
+TEST (ExecutableTargetInfo, IsKnownTarget)
+{
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
+    EXPECT_FALSE (info.IsKnownTarget ("basisproject.sh"))
+        << "basisproject.sh not part of TestUtilities";
+    EXPECT_TRUE  (info.IsKnownTarget ("basis::basisproject.sh"))
+        << "basis::basisproject.sh is a known target";
+    EXPECT_FALSE (info.IsKnownTarget (""))
+        << "empty target string is unknown target";
+    EXPECT_FALSE (info.IsKnownTarget ("hammer::hammer"))
+        << "some unknown target";
+}
+
+// ***************************************************************************
+// Tests GetExecutableName().
+TEST (ExecutableTargetInfo, GetExecutableName)
+{
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
+#if WINDOWS
+    EXPECT_STREQ ("basisproject.sh", info.GetExecutableName ("basis::basisproject.sh").c_str ())
+#else
+    EXPECT_STREQ ("basisproject", info.GetExecutableName ("basis::basisproject.sh").c_str ())
+#endif
+        << "name of basis::basisproject.sh executable";
 }

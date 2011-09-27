@@ -58,6 +58,7 @@ string
 ExecutableTargetInfo
 ::GetTargetUID (const char *target) const
 {
+    if (target == NULL || *target == '\0') return "";
     if (_execNames.find (target) == _execNames.end () && strstr (target, "::") == NULL) {
         return cProjectNameLower + "::" + target;
     }
