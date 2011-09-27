@@ -18,7 +18,7 @@
 #include <sstream>   // used to compose exception messages
 #include <stdexcept> // use standard STL exceptions where possible
 
-#include "config.h"  // the BASIS configuration
+#include <sbia/basis/config.h>
 
 
 SBIA_BASIS_NAMESPACE_BEGIN

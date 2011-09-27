@@ -23,7 +23,7 @@
 #include <sbia/basis/path.h>
 
 // project-specific utilities
-#include "config.h"
+#include <sbia/@PROJECT_NAME_LOWER@/config.h>
 #include "ExecutableTargetInfo.h"
 #include "stdaux.h"
 

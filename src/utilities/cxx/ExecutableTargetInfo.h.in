@@ -21,6 +21,8 @@
 #include <string>
 #include <map>
 
+#include <sbia/@PROJECT_NAME_LOWER@/config.h>
+
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
@@ -199,7 +201,7 @@ private:
 // inline definitions
 // ===========================================================================
 
-const ExecutableTargetInfo&
+inline const ExecutableTargetInfo&
 ExecutableTargetInfo
 ::GetInstance ()
 {

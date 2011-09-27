@@ -8,5 +8,5 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_add_test (test_path.cc UNITTEST)
+basis_add_test (test_path.cxx UNITTEST)
 basis_add_test (test_utilities.sh)

@@ -1,5 +1,5 @@
 /**
- * @file  path.cc
+ * @file  path.cxx
  * @brief Basic file path manipulation and related system functions.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -11,25 +11,25 @@
  */
 
 
-#include "path.h"            // declarations and BASIS configuration
+#include <sbia/basis/path.h>       // declarations and BASIS configuration
 
-#include <stdlib.h>          // malloc & free, _splitpath_s (WINDOWS)
+#include <stdlib.h>                // malloc() & free(), _splitpath_s() (WINDOWS)
 
 #if WINDOWS
-#  include <direct.h>        // _getcwd
-#  include <windows.h>       // GetModuleFileName
+#  include <direct.h>              // _getcwd()
+#  include <windows.h>             // GetModuleFileName()
 #else
-#  include <unistd.h>        // getcwd
-#  include <sys/stat.h>      // lstat
+#  include <unistd.h>              // getcwd()
+#  include <sys/stat.h>            // lstat()
 #endif
 #if MACOS
-#  include <mach-o/dyld.h>   // _NSGetExecutablePath
+#  include <mach-o/dyld.h>         // _NSGetExecutablePath()
 #endif
 
-#include "exceptions.h"      // to throw exceptions
+#include <sbia/basis/exceptions.h> // to throw exceptions
 
 
-using namespace std; // this a .cc file, hence it is ok to do so
+using namespace std; // this a .cxx file, hence it is ok to do so
 
 
 SBIA_BASIS_NAMESPACE_BEGIN

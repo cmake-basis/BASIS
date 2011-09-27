@@ -32,7 +32,7 @@
 
 #include <string>
 
-#include "config.h"
+#include <sbia/basis/config.h>
 
 
 SBIA_BASIS_NAMESPACE_BEGIN

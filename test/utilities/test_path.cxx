@@ -11,8 +11,8 @@
 
 #include <stdexcept>
 
-#include <sbia/basis/test.h> // the unit testing framework
-#include <sbia/basis/path.h> // the testee's declaration
+#include <sbia/basis/test.h> // unit testing framework
+#include <sbia/basis/path.h> // testee
 
 #if UNIX
 #  include <stdlib.h> // the system () function is used to create symbolic links

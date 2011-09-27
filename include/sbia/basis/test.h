@@ -22,7 +22,7 @@
 #define SBIA_BASIS_TEST_H_
 
 
-#include "config.h"
+#include <sbia/basis/config.h>
 
 // let Google use their own tr1/tuple implementation if the compiler
 // does not support it; note that HAVE_TR1_TUPLE is set in config.h
@@ -45,8 +45,8 @@
 #  define GTEST_HAS_PTHREAD 0
 #endif
 
-#include "../gtest/gtest.h"
-#include "../gmock/gmock.h"
+#include <sbia/gtest/gtest.h>
+#include <sbia/gmock/gmock.h>
 
 
 #endif // SBIA_BASIS_TEST_H_

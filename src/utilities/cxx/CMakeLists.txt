@@ -13,11 +13,11 @@
 basis_install (
   FILES
     "config.h.in"                # build configuration and other macros
-    "config.cc.in"
+    "config.cxx.in"
     "ExecutableTargetInfo.h.in"  # information about executable build targets
-    "ExecutableTargetInfo.cc.in"
+    "ExecutableTargetInfo.cxx.in"
     "stdaux.h.in"                # standard auxiliary functions
-    "stdaux.cc.in"
+    "stdaux.cxx.in"
     "basis.h.in"                 # main include file
   DESTINATION
     "${INSTALL_CXX_TEMPLATES_DIR}"
@@ -27,7 +27,7 @@ basis_install (
 # utilities
 basis_add_library (
   utilities STATIC
-    "path.cc" # utility path functions
+    "path.cxx" # utility path functions
 )
 
 basis_set_target_properties (utilities PROPERTIES OUTPUT_NAME "basis-utilities")
@@ -46,8 +46,8 @@ if (NOT HAVE_TR1_TUPLE)
   basis_add_definitions ("-DGTEST_USE_OWN_TR1_TUPLE=1")
 endif ()
 
-basis_add_library (test-all  STATIC "gmock-gtest-all.cc")
-basis_add_library (test-main STATIC "test_main.cc")
+basis_add_library (test-all  STATIC "gmock-gtest-all.cxx")
+basis_add_library (test-main STATIC "test_main.cxx")
 
 basis_set_target_properties (test-all  PROPERTIES OUTPUT_NAME "basis-test")
 basis_set_target_properties (test-main PROPERTIES OUTPUT_NAME "basis-test-main")

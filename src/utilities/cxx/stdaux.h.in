@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "config.h"
+#include <sbia/@PROJECT_NAME_LOWER@/config.h>
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
