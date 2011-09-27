@@ -8,9 +8,9 @@
 # This CMake file defines CMake variables which can be used within scripts.
 # If the project structure differs for the build tree and the install tree,
 # the CMake variables used within the script can be set depending on the
-# value of the variable BUILD_INSTALL_SCRIPT. This variable evaluates to true,
-# when the script is build, i.e., configured, for the installation tree and
-# to false, otherwise.
+# value of the variable @c BUILD_INSTALL_SCRIPT. This variable evaluates to
+# true, when the script is build, i.e., configured, for the installation tree
+# and to false, otherwise.
 #
 # Example:
 # @code
@@ -27,20 +27,23 @@
 # determined by the script configuration script shall be used in the script.
 # Therefore, the script has to determine its directory at runtime. This can
 # usually easily be done by extracting the path component from the first argument.
+# To ease this task, BASIS provides utility functions for each supported
+# scripting language which can be used for that.
 #
-# Example:
+# Example for BASH:
 # @code
 # # /usr/bin/env bash
-# @BASH_FUNCTION_get_executable_directory@
-# exec_dir=$(get_executable_directory)
-# data_dir=$exec_dir/@DATA_DIR@
+# @BASIS_BASH_UTILITIES@
+# get_executable_directory exec_dir
+# [ $? -eq 0 ] || { echo 'Failed to get directory of this executable'; exit 1; }
+# data_dir="${exec_dir}/@DATA_DIR@"
 # @endcode
 #
-# where DATA_DIR is the relative path determined during the script configuration.
-# See documentation of basis_set_script_path_definition() for a convenience
-# function which can be used just for that. This function generates the
-# definition of a function which is prepended to this script configuration.
-# Use this function as follows within the script configuration file.
+# where @c DATA_DIR is the relative path determined during the script
+# configuration. See documentation of basis_set_script_path_definition()
+# for a convenience function which can be used just for that. This function
+# generates the definition of a function which is prepended to this script
+# configuration. Use this function as follows in the script configuration file.
 #
 # Example:
 # @code
