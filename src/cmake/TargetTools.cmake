@@ -1475,6 +1475,12 @@ function (basis_add_script TARGET_NAME)
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
   )
 
+  if (ARGN_TEST)
+    set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
+  else ()
+    set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
+  endif ()
+
   if (ARGN_LIBEXEC)
     set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
   else ()
