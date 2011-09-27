@@ -48,34 +48,37 @@ Required options:
   project=<project>   Name of the BASIS project to test.
 
 Options:
-  model=<model>       Name of the dashboard model, i.e., one of
-                      \"Nightly\", \"Continuous\", and \"Experimental\".
-                      Default: \"Experimental\".
-  srcdir=<path>       Base path of the source directory.
-                      Default: \"${HOME}/comp_space/testing\".
-  bindir=<path>       Base path of the binary directory.
-                      Defaults to the base path of the source directory.
-  url=<url>           Base URL of the project's SVN repository.
-                      Default: \"https://sbia-svn/projects/<project>\".
-  branch=<name>       Name of the SVN branch to test, e.g., \"tags/1.0.0\".
-                      Default: \"trunk\".
-  memcheck            Perform memory check. Requires valgrind.
-                      No memory checks are performed by default.
-  coverage            Perform coverage analysis. Requires gcov.
-                      No coverage analysis is performed by default.
-  doxygen[=<path>]    If specified, the API documentation is build
-                      and the built HTML documentation copied to the
-                      specified directory. If this option is given without
-                      argument, the default web server location at SBIA is used,
-                      i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
-  shared-srcdir       Specify that each test site should use the same copy of
-                      the sources. By default, each test site uses its own copy.
-  force-build         Force build even if no files were updated.
-  force-test          Force test even if no files were updated.
-  force               Alias for options force-build and force-test.
-  tmpbin              Delete binary directory on completion (also if not successful).
-  help                Prints help and exits without performing any test.
-  version             Prints version information and exits.")
+  model=<model>          Name of the dashboard model, i.e., one of
+                         \"Nightly\", \"Continuous\", and \"Experimental\".
+                         Default: \"Experimental\".
+  srcdir=<path>          Base path of the source directory.
+                         Default: \"${HOME}/comp_space/testing\".
+  bindir=<path>          Base path of the binary directory.
+                         Defaults to the base path of the source directory.
+  url=<url>              Base URL of the project's SVN repository.
+                         Default: \"https://sbia-svn/projects/<project>\".
+  branch=<name>          Name of the SVN branch to test, e.g., \"tags/1.0.0\".
+                         Default: \"trunk\".
+  memcheck               Perform memory check. Requires valgrind.
+                         No memory checks are performed by default.
+  coverage               Perform coverage analysis. Requires gcov.
+                         No coverage analysis is performed by default.
+  doxygen[=<path>]       If specified, the API documentation is build
+                         and the built HTML documentation copied to the
+                         specified directory. If this option is given without
+                         argument, the default web server location at SBIA is used,
+                         i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
+  shared-srcdir          Specify that each test site should use the same copy of
+                         the sources. By default, each test site uses its own copy.
+  common-site=<prefix>   Do not distinguish between different sites with a common
+                         prefix in the name. Useful when the test jobs are executed
+                         on a commonly configured cluster.
+  force-build            Force build even if no files were updated.
+  force-test             Force test even if no files were updated.
+  force                  Alias for options force-build and force-test.
+  tmpbin                 Delete binary directory on completion (also if not successful).
+  help                   Prints help and exits without performing any test.
+  version                Prints version information and exits.")
 endfunction ()
 
 ##############################################################################
@@ -198,6 +201,7 @@ set (CTEST_SOURCE_DIRECTORY "$ENV{HOME}/comp_space/testing")
 set (CTEST_BINARY_DIRECTORY "")
 set (CTEST_MODEL            "Experimental")
 set (SHARED_SOURCE          0)
+set (COMMON_SITE_PREFIXES)
 
 # ----------------------------------------------------------------------------
 # project attributes
@@ -236,6 +240,14 @@ endmacro ()
 macro (set_option VAR)
   if (VALUE)
     set (${VAR} "${VALUE}")
+  else ()
+    set (FAILURE 1)
+  endif ()
+endmacro ()
+
+macro (append_option VAR)
+  if (VALUE)
+    list (APPEND ${VAR} "${VALUE}")
   else ()
     set (FAILURE 1)
   endif ()
@@ -284,12 +296,8 @@ foreach (ARG ${ARGV})
       endif ()
     elseif (${OPTION} STREQUAL "shared-srcdir")
       set_bool_option (SHARED_SOURCE)
-    elseif (${OPTION} STREQUAL "noshared-srcdir")
-      if (VALUE)
-        set (FAILURE 1)
-      else ()
-        set (SHARED_SOURCE 0)
-      endif ()
+    elseif (${OPTION} STREQUAL "common-site")
+      append_option (COMMON_SITE_PREFIXES)
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
       set_bool_option (FORCE_TEST)
@@ -363,6 +371,16 @@ site_name (CTEST_SITE)
 
 # remove ".local" or ".uphs.upenn.edu" suffix from site name
 string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" CTEST_SITE "${CTEST_SITE}")
+
+# common site name
+if (COMMON_SITE_PREFIXES)
+  foreach (P ${COMMON_SITE_PREFIXES})
+    if (CTEST_SITE MATCHES "^${P}")
+      set (CTEST_SITE "${P}")
+      break ()
+    endif ()
+  endforeach ()
+endif ()
 
 # Note: The build name given in the .xml files will be replaced by this script
 #       before the submission once the used compiler could be determined.
