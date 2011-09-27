@@ -265,7 +265,7 @@ function (basis_configure_ExecutableTargetInfo)
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # get target properties
       basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}" ABSOLUTE)
-      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL_RELATIVE)
+      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
 
       if (NOT BUILD_LOCATION)
         message (WARNING "Failed to determine build location of ${TARGET_UID}")
@@ -280,7 +280,7 @@ function (basis_configure_ExecutableTargetInfo)
         file (
           RELATIVE_PATH INSTALL_LOCATION_REL2MOD
             "${INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}"
-            "${INSTALL_PREFIX}/${INSTALL_LOCATION}"
+            "${INSTALL_LOCATION}"
         )
         if (NOT INSTALL_DIR)
           set (INSTALL_DIR ".")
@@ -300,7 +300,7 @@ function (basis_configure_ExecutableTargetInfo)
           set (CC "${CC}\n    // ${TARGET_UID}")
           set (CC "${CC}\n    _execNames   [\"${ALIAS}\"] = \"${EXEC_NAME}\";")
           set (CC "${CC}\n    _buildDirs   [\"${ALIAS}\"] = \"${BUILD_DIR}\";")
-          set (CC "${CC}\n    _installDirs [\"${ALIAS}\"] = \"${INSTALL_LOCATION}\";")
+          set (CC "${CC}\n    _installDirs [\"${ALIAS}\"] = \"${INSTALL_DIR}\";")
         endif ()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

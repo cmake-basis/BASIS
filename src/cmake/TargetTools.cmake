@@ -379,6 +379,15 @@ endfunction ()
 #         source code. The target is added via CMake's add_executable() command.</td>
 #   </tr>
 #   <tr>
+#     @tp <b>PYTHON</b>|<b>PERL</b>|<b>BASH</b> @endtp
+#     <td>Executables written in one of the named scripting language are built by
+#         configuring and/or copying the script files to the build tree and
+#         installation tree, respectively. During the build step, certain strings
+#         of the form \@VARIABLE\@ are substituted by the values set during the
+#         configure step. How these CMake variables are set is specified by a
+#         so-called script configuration file, which itself is a CMake script.</td>
+#   </tr>
+#   <tr>
 #     @tp @b MATLAB @endtp
 #     <td>Standalone application build from MATLAB sources using the
 #         MATLAB Compiler (mcc). This language option is used when the list
