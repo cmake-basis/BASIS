@@ -17,6 +17,19 @@
 # ============================================================================
 
 ##############################################################################
+# @brief Sanitize string.
+#
+# This function failed before due to the GNU version of tr using -c instead of -C.
+test_sanitize ()
+{
+    local sane
+    _executabletargetinfo_sanitize sane 'basis::basisproject.sh'
+    assertEquals ':: and . replaced by _' 'basis__basisproject_sh' "${sane}"
+    _executabletargetinfo_sanitize sane 'basis@basisproject.sh'
+    assertEquals '@ and . replaced by _' 'basis_basisproject_sh' "${sane}"
+}
+
+##############################################################################
 # @brief Test get_target_uid().
 test_get_target_uid ()
 {
