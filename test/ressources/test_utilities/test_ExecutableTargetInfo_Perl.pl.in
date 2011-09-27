@@ -1,0 +1,108 @@
+#! /usr/bin/env perl
+
+##############################################################################
+# @file  test_ExecutableTargetInfo_Perl.pl
+# @brief Test ExecutableTargetInfo module for Perl.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+use Test::More tests => 17;
+
+
+@BASIS_PERL_UTILITIES@
+
+
+# ============================================================================
+# tests
+# ============================================================================
+
+##############################################################################
+# @brief Test Basis::get_target_uid().
+sub test_get_target_uid
+{
+    is (Basis::get_target_uid ('basisproject.sh'), 'testutilities::basisproject.sh',
+        'this project\'s namespace prepended to known target');
+    is (Basis::get_target_uid ('unknown'), 'testutilities::unknown',
+        'this project\'s namespace prepended to unknown target');
+    is (Basis::get_target_uid ('basis::basisproject.sh'), 'basis::basisproject.sh',
+        'UID remains unchanged');
+    is (Basis::get_target_uid ('hammer::hammer'), 'hammer::hammer',
+        'UID remains unchanged');
+    is (Basis::get_target_uid ('::hello'), '::hello',
+        'global namespace remains unchanged');
+    is (Basis::get_target_uid (''), '',
+        'empty string remains unchanged');
+}
+
+##############################################################################
+# @brief Test Basis::is_known_target().
+sub test_is_known_target
+{
+    ok (!Basis::is_known_target ('basisproject.sh'),
+        'basisproject.sh not part of TestUtilities');
+    ok (Basis::is_known_target ('basis::basisproject.sh'),
+        'basis::basisproject.sh is a known target');
+    ok (!Basis::is_known_target (undef),
+        'undefined argument is unknown target');
+    ok (!Basis::is_known_target (''),
+        'empty target string is unknown target');
+    ok (!Basis::is_known_target ('hammer::hammer'),
+        'some unknown target');
+}
+
+##############################################################################
+# @brief Test Basis::get_executable_name().
+sub test_get_executable_name
+{
+    # name of this executable
+    like (Basis::get_executable_name (),
+        qr/^test_ExecutableTargetInfo_Perl(\.pl)?$/,
+        "name of this executable");
+    # name of executable built by some target
+    like (Basis::get_executable_name ('basis::basisproject.sh'),
+        qr/^basisproject(\.sh)?$/,
+        "name of basis::basisproject.sh target");
+}
+
+##############################################################################
+# @brief Test Basis::get_executable_directory().
+sub test_get_executable_directory
+{
+    # directory of this executable
+    like (Basis::get_executable_directory (),
+        qr/\/Testing\/Temporary\/test_utilities-build\/Testing\/bin/,
+        "directory of this executable");
+    # directory of executable built by some target
+    like (Basis::get_executable_directory ('basis::basisproject.sh'),
+        qr/^\/.*\/bin(\/basis)?$/,
+        "directory of basis::basisproject.sh target");
+}
+
+##############################################################################
+# @brief Test Basis::get_executable_path().
+sub test_get_executable_path
+{
+    # path of this executable
+    is (Basis::get_executable_path (),
+        Basis::get_executable_directory () . '/' . Basis::get_executable_name (),
+        "path of this executable");
+    # path of executable built by some target
+    my $target = 'basis::basisproject.sh';
+    is (Basis::get_executable_path ($target),
+        Basis::get_executable_directory ($target) . '/' . Basis::get_executable_name ($target),
+        "path of $target executable");
+}
+
+# ============================================================================
+# main
+# ============================================================================
+
+test_get_target_uid ();
+test_is_known_target ();
+test_get_executable_name ();
+test_get_executable_directory ();
+test_get_executable_path ();

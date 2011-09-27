@@ -1,0 +1,120 @@
+#! /usr/bin/env bash
+
+##############################################################################
+# @file  test_ExecutableTargetInfo_BASH.sh.in
+# @brief Test ExecutableTargetInfo module for BASH.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+@BASIS_BASH_UTILITIES@
+
+# ============================================================================
+# tests
+# ============================================================================
+
+##############################################################################
+# @brief Test get_target_uid().
+test_get_target_uid ()
+{
+    local uid
+    # without namespace
+    get_target_uid uid 'basisproject.sh'
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'namespace prepended to known target' 'testutilities::basisproject.sh' "${uid}"
+    get_target_uid uid 'unknown'
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'namespace prepended to unknown target' 'testutilities::unknown' "${uid}"
+    # with namespace
+    get_target_uid uid 'basis::basisproject.sh'
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'UID remains unchanged' 'basis::basisproject.sh' "${uid}"
+    get_target_uid uid 'hammer::hammer'
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'UID remains unchanged' 'hammer::hammer' "${uid}"
+    # global namespace
+    get_target_uid uid '::hello'
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'global namespace remains unchanged' '::hello' "${uid}"
+    # empty string
+    get_target_uid uid ''
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'empty string remains unchanged' '' "${uid}"
+}
+
+##############################################################################
+# @brief Test is_known_target().
+test_is_known_target ()
+{
+    assertFalse 'basisproject.sh not part of TestUtilities' "is_known_target 'basisproject.sh'"
+    assertTrue  'basis::basisproject.sh is known target'    "is_known_target 'basis::basisproject.sh'"
+    assertFalse 'empty target string is unknown target'     "is_known_target ''"
+    assertFalse 'empty target string is unknown target'     "is_known_target"
+    assertFalse 'some unknown target'                       "is_known_target 'hammer::hammer'"
+}
+
+##############################################################################
+# @brief Test get_executable_name().
+test_get_executable_name ()
+{
+    local name
+    # name of this executable
+    get_executable_name name
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'name of this executable' 'test_ExecutableTargetInfo_BASH' "${name}"
+    # name of executable built by other target
+    get_executable_name name 'basis::basisproject.sh'
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'name of other executable' 'basisproject' "${name}"
+}
+
+##############################################################################
+# @brief Test get_executable_directory().
+test_get_executable_directory ()
+{
+    local dir
+    # directory of this executable
+    get_executable_directory dir
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'directory of this executable' 'bin' "${dir##*\/}"
+    # directory of executable built by other target
+    get_executable_directory dir 'basis::basisproject.sh'
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'directory of other executable' 'bin' "${dir##*\/}"
+}
+
+##############################################################################
+# @brief Test get_executable_path().
+test_get_executable_path ()
+{
+    local path
+    # path of this executable
+    get_executable_path      path
+    assertTrue "[ $? -eq 0 ]"
+    get_executable_name      name
+    assertTrue "[ $? -eq 0 ]"
+    get_executable_directory dir
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'path of this executable' "${dir}/${name}" "${path}"
+    # path of executable built by other target
+    local target='basis::basisproject.sh'
+    get_executable_path      path "${target}"
+    assertTrue "[ $? -eq 0 ]"
+    get_executable_name      name "${target}"
+    assertTrue "[ $? -eq 0 ]"
+    get_executable_directory dir  "${target}"
+    assertTrue "[ $? -eq 0 ]"
+    assertEquals 'path of this executable' "${dir}/${name}" "${path}"
+    # wrong number of arguments
+    get_executable_path
+    assertFalse "[ $? -eq 0 ]"
+}
+
+# ============================================================================
+# main
+# ============================================================================
+
+source "${__TEST_EXECUTABLETARGETINFO_BASH_dir}/@BASIS_LIBRARY_DIR@/ShUnit2.sh"

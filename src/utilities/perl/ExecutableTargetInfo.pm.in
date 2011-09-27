@@ -81,6 +81,9 @@ my $_location = undef;
 sub get_target_uid
 {
     my $target = $_[0];
+    # invalid argument checks
+    defined $target or return undef;
+    length ($target) > 0 or return '';
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
@@ -102,6 +105,7 @@ sub get_target_uid
 sub is_known_target
 {
     my $target = get_target_uid ($_[0]);
+    defined $target or return 0;
     exists $_location->{$target};
 }
 

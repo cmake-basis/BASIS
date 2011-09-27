@@ -55,6 +55,8 @@
 
 @BASIS_SCRIPT_CONFIG@
 
+set (BASIS_LIBRARY_DIR "${LIBRARY_DIR}")
+
 basis_set_script_path (
   TEMPLATE_DIR
     "@PROJECT_DATA_DIR@/template"

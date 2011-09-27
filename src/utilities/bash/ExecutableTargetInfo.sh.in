@@ -31,7 +31,7 @@ readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
 # modules
 # ============================================================================
 
-source "${__EXECUTABLETARGETINFO_dir}/Core.sh" # core utilities
+source "${__EXECUTABLETARGETINFO_dir}/@BASIS_LIBRARY_DIR@/Core.sh" # upvar()
 
 # ============================================================================
 # public functions
@@ -56,9 +56,8 @@ get_target_uid ()
     [ $# -eq 2 ] || return 1
 
     local target="$2"
-
-    # sanitize input
-    _executabletargetinfo_sanitize target "${target}"
+    # empty string as input remains unchanged
+    [ -z "${target}" ] && local "$1" && upvar $1 '' && return 0
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
@@ -67,11 +66,23 @@ get_target_uid ()
     fi
     # convert target name to target UID
     local path && _executabletargetinfo_get path "${target}" LOCATION
-    if [ -z "${path}" ] && [[ "${target//__/}" == "${target}" ]]; then
-        target="${__EXECUTABLETARGETINFO_namespace}__${target}"
+    if [ -z "${path}" ] && [[ "${target//::/}" == "${target}" ]]; then
+        target="${__EXECUTABLETARGETINFO_namespace}::${target}"
     fi
 
     local "$1" && upvar $1 "${target}"
+}
+
+##############################################################################
+# @brief Determine whether a given target is known.
+#
+# @param [in] target Name/UID of build target.
+#
+# @returns Whether the given build target is known by this module.
+is_known_target ()
+{
+    local path && _executabletargetinfo_get path "$1" LOCATION
+    [ -n "${path}" ]
 }
 
 ##############################################################################

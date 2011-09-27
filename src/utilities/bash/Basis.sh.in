@@ -28,8 +28,11 @@ readonly __BASIS_dir=@BASIS_BASH___DIR__@
 # modules
 # ============================================================================
 
-source "${__BASIS_dir}/Core.sh"                 # core utilities
+# non-project specific
+source "${__BASIS_dir}/@BASIS_LIBRARY_DIR@/Core.sh"  # core utilities
+source "${__BASIS_dir}/@BASIS_LIBRARY_DIR@/Flags.sh" # command-line parsing library
+
+# project specific
 source "${__BASIS_dir}/ExecutableTargetInfo.sh" # info about executable targets
 source "${__BASIS_dir}/StdAux.sh"               # standard higher-level utilities
-source "${__BASIS_dir}/Flags.sh"                # command-line parsing library
 

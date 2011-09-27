@@ -154,15 +154,14 @@ cleanup ()
 # ============================================================================
 
 create
-add_test 'test_ExecutableTargetInfo.pl.in'
+add_test 'test_ExecutableTargetInfo_Perl.pl.in'
+add_test 'test_ExecutableTargetInfo_BASH.sh.in'
 build
 run cd "${binary_dir}"
-if [ ${FLAGS_verbose} -gt 1 ]; then
+if [ ${FLAGS_verbose} -gt 0 ]; then
     run ctest -V -V
-elif [ ${FLAGS_verbose} -gt 0 ]; then
-    run ctest -V
 else
-    run ctest
+    run ctest -V
 fi
 cd "${cwd}"
 #cleanup
