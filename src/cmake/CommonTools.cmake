@@ -700,7 +700,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       # 4. Try any of the IMPORTED_LOCATION_<CONFIG> where <CONFIG> in list of
       #    BASIS supported configurations
       if (NOT LOCATION)
-        foreach (C ${CMAKE_BUILD_CONFIGURATIONS})
+        foreach (C ${CMAKE_CONFIGURATION_TYPES})
           string (TOUPPER "${C}" U)
           get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${U}")
           if (LOCATION)
