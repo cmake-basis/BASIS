@@ -684,8 +684,8 @@ function (basis_get_target_location VAR TARGET_NAME PART)
     if (IMPORTED)
 
       # 1. Try IMPORTED_LOCATION_<CMAKE_BUILD_TYPE>
-      string (TOUPPER "${CMAKE_BUILD_TYPE}" CONFIG)
-      get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${CONFIG}")
+      string (TOUPPER "${CMAKE_BUILD_TYPE}" U)
+      get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${U}")
 
       # 2. Try IMPORTED_LOCATION
       if (NOT LOCATION)
@@ -701,7 +701,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       #    BASIS supported configurations
       if (NOT LOCATION)
         foreach (C ${CMAKE_BUILD_CONFIGURATIONS})
-          string (TOUPPER "${C}" "${U}")
+          string (TOUPPER "${C}" U)
           get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${U}")
           if (LOCATION)
             break ()
