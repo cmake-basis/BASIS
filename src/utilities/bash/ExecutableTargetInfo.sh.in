@@ -108,7 +108,9 @@ get_executable_name ()
     # otherwise, get name of executable built by named target
     else
         local path && get_executable_path path "$2"
+        [ $# -eq 0 ] || return 1
         name="$(basename "${path}")"
+        [ $# -eq 0 ] || return 1
     fi
 
     local "$1" && upvar $1 "${name}"
@@ -139,6 +141,7 @@ get_executable_directory ()
     else
         get_executable_path path "$2"
     fi
+    [ $# -eq 0 ] || return 1
     # get directory component of path
     local dir="$(dirname "${path}")"
 
@@ -169,10 +172,13 @@ get_executable_path ()
     else
         # get UID of target
         local uid && get_target_uid uid "$2"
+        [ -n "${uid}" ] || return 1
         # get path relative to this module
         _executabletargetinfo_get path "${uid}" LOCATION
+        [ -n "${path}" ] || return 1
         # make path absolute
         _executabletargetinfo_to_absolute_path path "${path}" "${__EXECUTABLETARGETINFO_dir}"
+        [ $# -eq 0 ] || return 1
     fi
 
     local "$1" && upvar $1 "${path}"
@@ -274,6 +280,9 @@ _executabletargetinfo_to_absolute_path ()
 
     local path="$2"
     local base="$3"
+
+    [ -n "${path}" ] || return 1
+
     local dir="$(dirname "${path}")"
 
     if [ -d "${base}" -a -d "${dir}" ]; then
