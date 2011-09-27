@@ -19,7 +19,13 @@
 # ChangeLog
 # ============================================================================
 
-basis_add_doc (ChangeLog GENERATOR svn2cl)
+basis_add_doc (
+  ChangeLog
+  GENERATOR        svn2cl
+  LINELEN          79
+  BREAK_BEFORE_MSG 2
+  GROUP_BY_DAY SEPARATE_DAYLOGS INCLUDE_ACTIONS REPARAGRAPH
+)
 
 # ============================================================================
 # API documentation
