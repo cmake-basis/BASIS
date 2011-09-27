@@ -286,7 +286,10 @@ _executabletargetinfo_to_absolute_path ()
     local dir="$(dirname "${path}")"
 
     if [ -d "${base}" -a -d "${dir}" ]; then
-        path=$(cd ${base}; cd ${dir}; pwd)/$(basename ${path})
+        path="$(cd ${base}; cd ${dir}; pwd)"
+        [ $# -eq 0 ] || return 1
+        path="${path}/$(basename ${path})"
+        [ $# -eq 0 ] || return 1
     fi
 
     local "$1" && upvar $1 "${path}"
