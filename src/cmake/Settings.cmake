@@ -171,6 +171,13 @@ set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmak
 # is set to its path by basis_project_initialize().
 set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 
+## @brief File used by default as <tt>--authors</tt> file to <tt>svn2cl</tt>.
+#
+# This file lists all Subversion users at SBIA and is used by default for
+# the mapping of Subversion user names to real names during the generation
+# of changelogs.
+set (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
+
 # ============================================================================
 # cached variables
 # ============================================================================

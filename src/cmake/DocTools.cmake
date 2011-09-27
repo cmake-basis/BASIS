@@ -316,11 +316,72 @@ endfunction ()
 # log is timely expensive and may require user interaction in order to provide
 # the credentials to the Subversion repository.
 # @n@n
+# <table border="0">
+#   <tr>
+#     @tp @b AUTHORS authors @endtp
+#     <td>Authors file for svn2cl which maps SVN user names to real names.
+#         On each line, this files must have an entry such as
+#         <tt>schuha@UPHS.PENNHEALTH.PRV:Andreas Schuh</tt>.
+#         Default: @c BASIS_SVN_USERS_FILE, which is part of BASIS and lists all
+#         SVN users at SBIA.</td>
+#   </tr>
+#   <tr>
+#     @tp @b BREAK_BEFORE_MSG num @endtp
+#     <td>.</td>
+#   </tr>
+#   <tr>
+#     @tp @b GROUP_BY_DAY @endtp
+#     <td>Group changelog entries by day.</td>
+#   </tr>
+#   <tr>
+#     @tp @b INCLUDE_ACTIONS @endtp
+#     <td>Add [ADD], [DEL], and [CPY] tags to files.</td>
+#   </tr>
+#   <tr>
+#     @tp @b INCLUDE_REV @endtp
+#     <td>Include revision numbers.</td>
+#   </tr>
+#   <tr>
+#     @tp @b LINELEN num @endtp
+#     <td>.</td>
+#   </tr>
+#   <tr>
+#     @tp @b OUTPUT_NAME filename @endtp
+#     <td>.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PATH dir @endtp
+#     <td>Input directory path for <tt>svn log</tt>.</td>
+#   </tr>
+#   <tr>
+#     @tp @b REPARAGRAPH @endtp
+#     <td>Rewrap lines inside a paragraph.</td>
+#   </tr>
+#   <tr>
+#     @tp @b SEPARATE_DAYLOGS @endtp
+#     <td>Put a blank line between grouped by day entries.</td>
+#   </tr>
+#   <tr>
+#     @tp @b SVN_ARGS @endtp
+#     <td>Additional arguments for <tt>svn log</tt>.
+#         See <tt>svn2cl --help</tt> for a list of arguments that can be
+#         passed on to <tt>svn log</tt>.</td>
+#   </tr>
+# </table>
+# @n
+# See also <tt>svn2cl --help</tt> for a documentation of these options.
+# @n@n
 # Example:
 # @code
 # basis_add_doc (
 #   ChangeLog
 #   GENERATOR svn2cl
+#   LINELEN   80
+#   REPARAGRAPH
+#   AUTHORS   svnusers.txt
+#   GROUP_BY_DAY
+#   BREAK_BEFORE_MSG 1
+#   INCLUDE_ACTIONS
 #   COMPONENT dev
 # )
 # @endcode
@@ -573,18 +634,24 @@ function (basis_add_doc TARGET_NAME)
       return ()
     endif ()
 
-    # svn2cl command arguments
-    # TODO parse arguments
-    set (SVN2CL_PATH             "${PROJECT_SOURCE_DIR}")
-    set (SVN2CL_OUTPUT           "${PROJECT_BINARY_DIR}/${TARGET_NAME}")
-    set (SVN2CL_AUTHORS          "${PROJECT_AUTHORS_FILE}")
-    set (SVN2CL_LINELEN          79)
-    set (SVN2CL_REPARAGRAPH      0)
-    set (SVN2CL_INCLUDE_ACTIONS  1)
-    set (SVN2CL_INCLUDE_REV      1)
-    set (SVN2CL_BREAK_BEFORE_MSG 1)
-    set (SVN2CL_GROUP_BY_DAY     1)
+    # parse arguments
+    CMAKE_PARSE_ARGUMENTS (
+      SVN2CL
+        "INCLUDE_ACTIONS;INCLUDE_REV;REPARAGRAPH;GROUP_BY_DAY;SEPARATE_DAYLOGS"
+        "AUTHORS;BREAK_BEFORE_MSG;LINELEN;OUTPUT_NAME;PATH"
+        "SVN_ARGS"
+        ${ARGN_UNPARSED_ARGUMENTS}
+    )
 
+    if (SVN2CL_OUTPUT_NAME)
+      set (SVN2CL_OUTPUT "${PROJECT_BINARY_DIR}/${SVN2CL_OUTPUT_NAME}")
+    else ()
+      set (SVN2CL_OUTPUT "${PROJECT_BINARY_DIR}/${TARGET_NAME}")
+    endif ()
+
+    if (NOT SVN2CL_PATH)
+      set (SVN2CL_PATH "${PROJECT_SOURCE_DIR}")
+    endif ()
     set (SVN2CL_ARGS "--output=${SVN2CL_OUTPUT}")
     if (SVN2CL_LINELEN)
       list (APPEND SVN2CL_ARGS "--linelen=${SVN2CL_LINELEN}")
@@ -595,19 +662,25 @@ function (basis_add_doc TARGET_NAME)
     if (SVN2CL_INCLUDE_ACTIONS)
       list (APPEND SVN2CL_ARGS "--include-actions")
     endif ()
+    if (SVN2CL_INCLUDE_REV)
+      list (APPEND SVN2CL_ARGS "--include-rev")
+    endif ()
     if (SVN2CL_BREAK_BEFORE_MSG)
       list (APPEND SVN2CL_ARGS "--break-before-msg=${SVN2CL_BREAK_BEFORE_MSG}")
     endif ()
     if (SVN2CL_GROUP_BY_DAY)
       list (APPEND SVN2CL_ARGS "--group-by-day")
     endif ()
-
-    if (EXISTS "${SVN2CL_AUTHORS}")
+    if (SVN2CL_SEPARATE_DAY_LOGS)
+      list (APPEND SVN2CL_ARGS "--separate-daylogs")
+    endif ()
+    if (SVN2CL_AUTHORS)
       list (APPEND SVN2CL_ARGS "--authors=${SVN2CL_AUTHORS}")
-    elseif (EXISTS "${SVN2CL_AUTHORS}.xml")
-      list (APPEND SVN2CL_ARGS "--authors=${SVN2CL_AUTHORS}.xml")
-    elseif (EXISTS "${SVN2CL_AUTHORS}.txt")
-      list (APPEND SVN2CL_ARGS "--authors=${SVN2CL_AUTHORS}.txt")
+    elseif (EXISTS "${BASIS_SVN_USERS_FILE}")
+      list (APPEND SVN2CL_ARGS "--authors=${BASIS_SVN_USERS_FILE}")
+    endif ()
+    if (SVN2CL_SVN_ARGS)
+      list (APPEND SVN2CL_ARGS ${SVN2CL_SVN_ARGS})
     endif ()
 
     # add target
