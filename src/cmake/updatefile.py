@@ -26,8 +26,6 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#
-# @ingroup CMakeHelpers
 
 # modules
 import os
