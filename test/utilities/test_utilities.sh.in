@@ -138,7 +138,7 @@ add_test ()
 {
     local impl=$1
     copy ${impl} 'test'
-    echo "basis_add_test (\"${impl}\")" >> "${source_dir}/test/CMakeLists.txt"
+    echo "basis_add_test (\"${impl}\" $2)" >> "${source_dir}/test/CMakeLists.txt"
 }
 
 ##############################################################################
@@ -154,6 +154,7 @@ cleanup ()
 # ============================================================================
 
 create
+add_test 'test_ExecutableTargetInfo_Cxx.cxx' UNITTEST
 add_test 'test_ExecutableTargetInfo_Perl.pl.in'
 add_test 'test_ExecutableTargetInfo_BASH.sh.in'
 build
