@@ -198,7 +198,14 @@ get_executable_path ()
 # @retval 1 On failure.
 _executabletargetinfo_sanitize ()
 {
-    local "$1" && upvar $1 "$(echo -n "$2" | tr [:space:] '_' | tr -C [:alpha:] '_')"
+    [ $# -eq 2 ] || return 1
+    [ -z "$2" ] && upvar $1 ''
+    local sane="$(echo -n "$2" | tr [:space:] '_' | tr -c [:alpha:] '_')"
+    [ -n "${sane}" ] || {
+        echo "_executabletargetinfo_sanitize(): Failed to sanitize string" 1>&2
+        exit 1
+    }
+    local "$1" && upvar $1 "${sane}"
 }
 
 ##############################################################################
