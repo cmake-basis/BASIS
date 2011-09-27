@@ -801,14 +801,14 @@ function (basis_add_executable_target TARGET_NAME)
   if (NOT ARGN_NO_BASIS_UTILITIES)
     basis_target_uid (BASIS_UTILITIES_TARGET "basis-utilities-${PROJECT_NAME_LOWER}")
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
-      basis_target_name (TARGET_NAME "${BASIS_UTILITIES_TARGET}")
-      basis_add_library (${TARGET_NAME} STATIC ${BASIS_UTILITIES_SOURCES})
+      basis_target_name (T "${BASIS_UTILITIES_TARGET}")
+      basis_add_library (${T} STATIC ${BASIS_UTILITIES_SOURCES})
 
       # make sure that this library is always output to the 'lib' directory
       # even if only test executables use it; see CMakeLists.txt in 'test'
       # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
       basis_set_target_properties (
-        ${TARGET_NAME}
+        ${T}
         PROPERTIES
           ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
       )
