@@ -108,9 +108,9 @@ get_executable_name ()
     # otherwise, get name of executable built by named target
     else
         local path && get_executable_path path "$2"
-        [ $# -eq 0 ] || return 1
+        [ $? -eq 0 ] || return 1
         name="$(basename "${path}")"
-        [ $# -eq 0 ] || return 1
+        [ $? -eq 0 ] || return 1
     fi
 
     local "$1" && upvar $1 "${name}"
@@ -141,7 +141,7 @@ get_executable_directory ()
     else
         get_executable_path path "$2"
     fi
-    [ $# -eq 0 ] || return 1
+    [ $? -eq 0 ] || return 1
     # get directory component of path
     local dir="$(dirname "${path}")"
 
@@ -178,7 +178,7 @@ get_executable_path ()
         [ -n "${path}" ] || return 1
         # make path absolute
         _executabletargetinfo_to_absolute_path path "${path}" "${__EXECUTABLETARGETINFO_dir}"
-        [ $# -eq 0 ] || return 1
+        [ $? -eq 0 ] || return 1
     fi
 
     local "$1" && upvar $1 "${path}"
@@ -287,9 +287,9 @@ _executabletargetinfo_to_absolute_path ()
 
     if [ -d "${base}" -a -d "${dir}" ]; then
         path="$(cd ${base}; cd ${dir}; pwd)"
-        [ $# -eq 0 ] || return 1
+        [ $? -eq 0 ] || return 1
         path="${path}/$(basename ${path})"
-        [ $# -eq 0 ] || return 1
+        [ $? -eq 0 ] || return 1
     fi
 
     local "$1" && upvar $1 "${path}"
