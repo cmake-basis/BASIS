@@ -142,6 +142,16 @@ add_test ()
 }
 
 ##############################################################################
+# @brief Add executable to test project.
+add_executable ()
+{
+    local impl=$1
+    local target=${1%\.*}
+    copy ${impl} 'src'
+    echo "basis_add_executable (\"${target}\" \"${impl}\" $2)" >> "${source_dir}/src/CMakeLists.txt"
+}
+
+##############################################################################
 # @brief Cleanup source and binary tree.
 cleanup ()
 {
@@ -154,6 +164,7 @@ cleanup ()
 # ============================================================================
 
 create
+add_executable 'helloworld.cxx'
 add_test 'test_ExecutableTargetInfo_Cxx.cxx' UNITTEST
 add_test 'test_ExecutableTargetInfo_Perl.pl.in'
 add_test 'test_ExecutableTargetInfo_BASH.sh.in'
