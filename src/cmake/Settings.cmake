@@ -466,7 +466,7 @@ endif ()
 if (WIN32)
   set (INSTALL_CONFIG_DIR "cmake")
 else ()
-  set (INSTALL_CONFIG_DIR "${INSTALL_LIBRARY_DIR}/cmake")
+  set (INSTALL_CONFIG_DIR "lib/cmake")
 endif ()
 
 ## @brief Path of installation directory for documentation files
@@ -493,11 +493,14 @@ else ()
   set (INSTALL_MAN_DIR "${INSTALL_SHARE_DIR}/man")
 endif ()
 
-if (WIN32 AND INSTALL_SINFIX)
-  foreach (P CONFIG DOC EXAMPLE MAN)
-    set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
-  endforeach ()
+if (INSTALL_SINFIX)
+  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/${INSTALL_SINFIX}")
+  if (WIN32)
+    foreach (P DOC EXAMPLE MAN)
+      set (VAR "INSTALL_${P}_DIR")
+      set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+    endforeach ()
+  endif ()
 endif ()
 
 # TODO Figure out how to deal with Perl modules and where to install them.
