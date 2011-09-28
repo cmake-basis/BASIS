@@ -86,7 +86,9 @@ function create
 {
     echo "Creating test project..."
     [ -d "${SOURCE_DIR}" ] && run rm -rf "${SOURCE_DIR}"
-    run "${BASISPROJECT}" --name 'TestUtilities' \
+    # attention: changing the project name will affect the tests!
+    run "${BASISPROJECT}" \
+        --name 'UtilitiesTest' \
         --description "A project used to test the BASIS utilities." \
         --root "${SOURCE_DIR}" \
         --language CXX \

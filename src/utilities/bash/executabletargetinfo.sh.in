@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  executable_target_info.sh
+# @file  executabletargetinfo.sh
 # @brief Provides information about the executables built by BASIS.
 #
-# @note The executable_target_info.sh module is automatically created by
-#       BASIS from the template file executable_target_info.sh.in which is
+# @note The executabletargetinfo.sh module is automatically created by
+#       BASIS from the template file executabletargetinfo.sh.in which is
 #       part of the BASIS installation.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.

@@ -22,8 +22,8 @@
 # ============================================================================
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
 
 # ============================================================================
 # tests

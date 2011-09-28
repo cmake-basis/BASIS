@@ -68,13 +68,13 @@ Options:
                          specified directory. If this option is given without
                          argument, the default web server location at SBIA is used,
                          i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
-  shared_source          Specify that each test site should use the same copy of
+  shared-source          Specify that each test site should use the same copy of
                          the sources. By default, each test site uses its own copy.
-  common_site=<prefix>   Do not distinguish between different sites with a common
+  common-site=<prefix>   Do not distinguish between different sites with a common
                          prefix in the name. Useful when the test jobs are executed
                          on a commonly configured cluster.
-  force_build            Force build even if no files were updated.
-  force_test             Force test even if no files were updated.
+  force-build            Force build even if no files were updated.
+  force-test             Force test even if no files were updated.
   force                  Alias for options force-build and force-test.
   tmpbin                 Delete binary directory on completion (also if not successful).
   help                   Prints help and exits without performing any test.
@@ -294,16 +294,16 @@ foreach (ARG ${ARGV})
       else ()
         set (INSTALL_DOXYGEN_DIR "/sbia/web/software/doxygen/\@CTEST_PROJECT_NAME_LOWER\@/\@CTEST_SVN_BRANCH\@")
       endif ()
-    elseif (${OPTION} STREQUAL "shared_source")
+    elseif (${OPTION} STREQUAL "shared-source")
       set_bool_option (SHARED_SOURCE)
-    elseif (${OPTION} STREQUAL "common_site")
+    elseif (${OPTION} STREQUAL "common-site")
       append_option (COMMON_SITE_PREFIXES)
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
       set_bool_option (FORCE_TEST)
-    elseif (${OPTION} STREQUAL "force_build")
+    elseif (${OPTION} STREQUAL "force-build")
       set_bool_option (FORCE_BUILD)
-    elseif (${OPTION} STREQUAL "force_test")
+    elseif (${OPTION} STREQUAL "force-test")
       set_bool_option (FORCE_TEST)
     elseif (${OPTION} STREQUAL "version")
       print_version ()

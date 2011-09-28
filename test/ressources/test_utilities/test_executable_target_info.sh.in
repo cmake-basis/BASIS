@@ -37,10 +37,10 @@ test_get_target_uid ()
     # without namespace
     get_target_uid uid 'basisproject.sh'
     assertTrue 'return value is 0' "[ $? -eq 0 ]"
-    assertEquals 'namespace prepended to known target' 'testutilities::basisproject.sh' "${uid}"
+    assertEquals 'namespace prepended to known target' 'utilitiestest::basisproject.sh' "${uid}"
     get_target_uid uid 'unknown'
     assertTrue 'return value is 0' "[ $? -eq 0 ]"
-    assertEquals 'namespace prepended to unknown target' 'testutilities::unknown' "${uid}"
+    assertEquals 'namespace prepended to unknown target' 'utilitiestest::unknown' "${uid}"
     # with namespace
     get_target_uid uid 'basis::basisproject.sh'
     assertTrue 'return value is 0' "[ $? -eq 0 ]"
@@ -62,7 +62,7 @@ test_get_target_uid ()
 # @brief Test is_known_target().
 test_is_known_target ()
 {
-    assertFalse 'basisproject.sh not part of TestUtilities' "is_known_target 'basisproject.sh'"
+    assertFalse 'basisproject.sh not part of UtilitiesTest' "is_known_target 'basisproject.sh'"
     assertTrue  'basis::basisproject.sh is known target'    "is_known_target 'basis::basisproject.sh'"
     assertFalse 'empty target string is unknown target'     "is_known_target ''"
     assertFalse 'empty target string is unknown target'     "is_known_target"

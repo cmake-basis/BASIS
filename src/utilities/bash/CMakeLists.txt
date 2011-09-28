@@ -12,9 +12,9 @@
 # template files
 basis_install (
   FILES
-    stdaux.sh.in                 # higher-level utilities
-    executable_target_info.sh.in # information about executable targets
-    basis.sh.in                  # main module to be sourced
+    stdaux.sh.in               # higher-level utilities
+    executabletargetinfo.sh.in # information about executable targets
+    basis.sh.in                # main module to be sourced
   DESTINATION
     "${INSTALL_BASH_TEMPLATES_DIR}"
 )

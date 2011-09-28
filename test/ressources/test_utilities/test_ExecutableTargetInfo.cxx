@@ -12,7 +12,7 @@
 #include "ExecutableTargetInfo.h" // testee
 
 
-using namespace SBIA_TESTUTILITIES_NAMESPACE;
+using namespace SBIA_UTILITIESTEST_NAMESPACE;
 using namespace std;
 
 
@@ -35,11 +35,11 @@ TEST (ExecutableTargetInfo, GetInstance)
 TEST (ExecutableTargetInfo, GetTargetUID)
 {
     const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
-    EXPECT_STREQ ("testutilities::basisproject.sh", info.GetTargetUID ("basisproject.sh").c_str ())
+    EXPECT_STREQ ("utilitiestest::basisproject.sh", info.GetTargetUID ("basisproject.sh").c_str ())
         << "this project's namespace was not prepended to known target";
-    EXPECT_STREQ ("testutilities::unknown", info.GetTargetUID ("unknown").c_str ())
+    EXPECT_STREQ ("utilitiestest::unknown", info.GetTargetUID ("unknown").c_str ())
         << "this project's namespace was not prepended to unknown target";
-    EXPECT_STREQ (info.GetTargetUID ("helloworld").c_str (), info.GetTargetUID ("testutilities::helloworld").c_str ())
+    EXPECT_STREQ (info.GetTargetUID ("helloworld").c_str (), info.GetTargetUID ("utilitiestest::helloworld").c_str ())
         << "using either target name or target UID does not give the same for own executable";
     EXPECT_STREQ ("basis::basisproject.sh", info.GetTargetUID ("basis::basisproject.sh").c_str ())
         << "UID changed";
@@ -57,7 +57,7 @@ TEST (ExecutableTargetInfo, IsKnownTarget)
 {
     const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
     EXPECT_FALSE (info.IsKnownTarget ("basisproject.sh"))
-        << "basisproject.sh is part of TestUtilities though it should not";
+        << "basisproject.sh is part of UtilitiesTest though it should not";
     EXPECT_TRUE  (info.IsKnownTarget ("basis::basisproject.sh"))
         << "basis::basisproject.sh is not a known target";
     EXPECT_FALSE (info.IsKnownTarget (""))
@@ -120,9 +120,9 @@ TEST (ExecutableTargetInfo, GetInstallationDirectory)
     cout << "Installation directory of helloworld is '" << dir << "'" << endl;
     EXPECT_TRUE (dir != "") << "returned string is empty";
 #if WINDOWS
-    EXPECT_STREQ ("C:/Program Files/SBIA/bin/testutilities", dir.c_str ())
+    EXPECT_STREQ ("C:/Program Files/SBIA/bin/utilitiestest", dir.c_str ())
 #else
-    EXPECT_STREQ ("/usr/local/bin/testutilities", dir.c_str ())
+    EXPECT_STREQ ("/usr/local/bin/utilitiestest", dir.c_str ())
 #endif
         << "installation directory of helloworld is not the expected default";
     EXPECT_STRNE (dir.c_str (), info.GetBuildDirectory ("helloworld").c_str ())

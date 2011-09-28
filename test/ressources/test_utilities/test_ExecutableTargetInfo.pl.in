@@ -24,9 +24,9 @@ use Test::More tests => 17;
 # @brief Test Basis::get_target_uid().
 sub test_get_target_uid
 {
-    is (Basis::get_target_uid ('basisproject.sh'), 'testutilities::basisproject.sh',
+    is (Basis::get_target_uid ('basisproject.sh'), 'utilitiestest::basisproject.sh',
         'this project\'s namespace prepended to known target');
-    is (Basis::get_target_uid ('unknown'), 'testutilities::unknown',
+    is (Basis::get_target_uid ('unknown'), 'utilitiestest::unknown',
         'this project\'s namespace prepended to unknown target');
     is (Basis::get_target_uid ('basis::basisproject.sh'), 'basis::basisproject.sh',
         'UID remains unchanged');
@@ -43,7 +43,7 @@ sub test_get_target_uid
 sub test_is_known_target
 {
     ok (!Basis::is_known_target ('basisproject.sh'),
-        'basisproject.sh not part of TestUtilities');
+        'basisproject.sh not part of UtilitiesTest');
     ok (Basis::is_known_target ('basis::basisproject.sh'),
         'basis::basisproject.sh is a known target');
     ok (!Basis::is_known_target (undef),

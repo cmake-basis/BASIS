@@ -1,0 +1,103 @@
+##############################################################################
+# @file  executabletargetinfo.py
+# @brief Provides information about executables built by BASIS.
+#
+# @note The executable_target_info.py module is automatically created by
+#       BASIS from the template file executable_target_info.py.in which is
+#       part of the BASIS installation.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+# ============================================================================
+# modules
+# ============================================================================
+
+import os # use of os.path.basename and os.path.dirname
+
+# ============================================================================
+# global variables
+# ============================================================================
+
+_namespace = '@PROJECT_NAME_LOWER@'
+_locations = None
+
+# ============================================================================
+# public function
+# ============================================================================
+
+# ****************************************************************************
+def get_target_uid (target):
+    """Get UID of build target.
+    
+    The UID of a build target is its name prepended by a namespace identifier
+    which should be unique for each project.
+    
+    This function further initializes the dictionaries storing the information
+    about the executable targets upon the first invocation. Reason to do it
+    here is that every access to the dictionaries first calls this function
+    to get the UID of a build target. Moreover, also this function needs to
+    have the already initialized dictionaries to ensure that an already valid
+    target identifier is not modified.
+    
+    """
+    # initialize module if not done yet - this is only done here because
+    # whenever information is looked up about an executable target, this
+    # function is invoked first
+    if _locations is None:
+        _initialize ()
+    # handle invalid arguments
+    if target is None or target == "":
+        return None
+    # do nothing if target name is know
+    if target in _locations:
+        return target
+    # do nothing if target name is UID
+    if target.find (_namespace) > -1:
+        return target
+    # otherwise, prepend default namespace identifier
+    return '::'.join (_namespace, target)
+
+# ****************************************************************************
+def is_known_target (target):
+    """Determine whether a given build target is known by this module."""
+    return get_target_uid (target) in _locations
+
+# ****************************************************************************
+def get_executable_name (target=None):
+    """Get name of executable file built by given target. If no target is
+    specified, the name of this executable is returned."""
+    path = get_executable_path (target)
+    if path is None:
+        return None
+    return os.path.basename (path)
+
+# ****************************************************************************
+def get_executable_directory (target=None):
+    """Get directory of executable file built by given target. If no target is
+    specified, the directory of this executable is returned."""
+    path = get_executable_path (target)
+    if path is None:
+        return None
+    return os.path.dirname (path)
+
+# ****************************************************************************
+def get_executable_path (target=None):
+    """Get path of executable file built by given target. If no target is
+    specified, the path of this executable is returned."""
+    uid = get_target_uid (target)
+    if uid is None or uid not in _locations:
+        return None
+    return _locations [uid]
+
+# ============================================================================
+# private functions
+# ============================================================================
+
+def _initialize ():
+    """Initialize dictionaries with information about executable targets."""
+    _locations = {
+        @EXECUTABLE_TARGET_LOCATIONS@
+    }

@@ -34,6 +34,6 @@ source "${__BASIS_DIR}/@BASIS_LIBRARY_DIR@/core.sh"    # core utilities
 source "${__BASIS_DIR}/@BASIS_LIBRARY_DIR@/shflags.sh" # command-line parsing library
 
 # project specific
-source "${__BASIS_DIR}/executable_target_info.sh" # info about executable targets
-source "${__BASIS_DIR}/stdaux.sh"                 # standard higher-level utilities
+source "${__BASIS_DIR}/executabletargetinfo.sh" # info about executable targets
+source "${__BASIS_DIR}/stdaux.sh"               # standard higher-level utilities
 
