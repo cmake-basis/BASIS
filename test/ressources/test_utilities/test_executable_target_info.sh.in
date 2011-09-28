@@ -130,4 +130,4 @@ test_get_executable_path ()
 # main
 # ============================================================================
 
-source "${__@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shunit2.sh"
+source "${_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shunit2.sh"
