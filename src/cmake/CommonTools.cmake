@@ -152,32 +152,6 @@ function (basis_set_if_empty VAR)
 endfunction ()
 
 ##############################################################################
-# @brief Set value of variable used in \<project\>Config.cmake of install tree.
-#
-# This function sets the value of a variable VAR to
-# "\${CMAKE_CURRENT_LIST_DIR}/\<path\>", where \<path\> is the relative path
-# to the file or directory specified by INSTALL_PATH relative to
-# INSTALL_CONFIG_DIR.
-#
-# @param [out] VAR  Name of variable. Used in template of
-#                   \<package\>Config.cmake as \@VAR\@.
-# @param [in]  PATH Path of variable relative to CMAKE_INSTALL_PREFIX.
-#
-# @returns Sets @p VAR to the determined relative path.
-
-function (basis_set_config_path VAR PATH)
-  file (
-    RELATIVE_PATH
-      ${VAR}
-      "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
-      "${CMAKE_INSTALL_PREFIX}/${PATH}"
-  )
-  string (REGEX REPLACE "/$" "" ${VAR} "${${VAR}}")
-
-  set (${VAR} "\${CMAKE_CURRENT_LIST_DIR}/${${VAR}}" PARENT_SCOPE)
-endfunction ()
- 
-##############################################################################
 # @brief Generate definition of the basis_set_script_path() function.
 #
 # This macro generates the definition of the basis_set_script_path()

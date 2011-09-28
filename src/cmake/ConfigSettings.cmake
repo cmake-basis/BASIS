@@ -19,6 +19,10 @@
 # ============================================================================
 
 if (BUILD_CONFIG_SETTINGS)
+  
+  ## @brief Root of build tree.
+  set (INSTALL_PREFIX_CONFIG "${PROJECT_BINARY_DIR}")
+
   ## @brief Include directories of package configuration of build tree.
   set (INCLUDE_DIR_CONFIG "${PROJECT_INCLUDE_DIR}" "${BINARY_INCLUDE_DIR}")
 
@@ -32,8 +36,17 @@ endif ()
 # installation configuration settings
 # ============================================================================
 
+## @brief Installation prefix relative to location of configuration file.
+file (
+  RELATIVE_PATH
+    INSTALL_PREFIX_CONFIG
+    "${INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
+    "${INSTALL_PREFIX}"
+)
+set (INSTALL_PREFIX_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${INSTALL_PREFIX_CONFIG}")
+
 ## @brief Include directories of package configuration of installation.
-basis_set_config_path (INCLUDE_DIR_CONFIG "${INSTALL_INCLUDE_DIR}")
+set (INCLUDE_DIR_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}")
 
 ## @brief Libraries directories of package configuration of installation.
-basis_set_config_path (LIBRARY_DIR_CONFIG "${INSTALL_LIBRARY_DIR}")
+set (LIBRARY_DIR_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}")
