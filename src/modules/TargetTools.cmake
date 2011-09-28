@@ -813,6 +813,11 @@ function (basis_add_executable_target TARGET_NAME)
       basis_target_name (T "${BASIS_UTILITIES_TARGET}")
       basis_add_library (${T} STATIC ${BASIS_UTILITIES_SOURCES})
 
+      # define dependency on non-project specific utilities as the order in
+      # which static libraries are listed on the command-line for the linker
+      # matters; this will tell CMake to get the order right
+      basis_target_link_libraries (${T} basis${BASIS_NAMESPACE_SEPARATOR}utilities)
+
       basis_set_target_properties (
         ${T}
         PROPERTIES
