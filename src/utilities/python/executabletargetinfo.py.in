@@ -15,14 +15,16 @@
 # modules
 # ============================================================================
 
-import os # use of os.path.basename and os.path.dirname
+import os  # path functions
+import sys # argv[0]
 
 # ============================================================================
 # global variables
 # ============================================================================
 
-_namespace = '@PROJECT_NAME_LOWER@'
-_locations = None
+_module_dir = os.path.realpath (os.path.dirname (__file__))
+_namespace  = '@PROJECT_NAME_LOWER@'
+_locations  = None
 
 # ============================================================================
 # public function
@@ -43,6 +45,9 @@ def get_target_uid (target):
     target identifier is not modified.
     
     """
+    global _locations
+    global _namespace
+    
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
@@ -55,20 +60,25 @@ def get_target_uid (target):
     if target in _locations:
         return target
     # do nothing if target name is UID
-    if target.find (_namespace) > -1:
+    if target.find ('::') > -1:
         return target
     # otherwise, prepend default namespace identifier
-    return '::'.join (_namespace, target)
+    return '::'.join ([_namespace, target])
 
 # ****************************************************************************
 def is_known_target (target):
     """Determine whether a given build target is known by this module."""
+    global _locations
+    
     return get_target_uid (target) in _locations
 
 # ****************************************************************************
 def get_executable_name (target=None):
-    """Get name of executable file built by given target. If no target is
-    specified, the name of this executable is returned."""
+    """\
+    Get name of executable file built by given target. If no target is
+    specified, the name of this executable is returned.
+    
+    """
     path = get_executable_path (target)
     if path is None:
         return None
@@ -76,8 +86,11 @@ def get_executable_name (target=None):
 
 # ****************************************************************************
 def get_executable_directory (target=None):
-    """Get directory of executable file built by given target. If no target is
-    specified, the directory of this executable is returned."""
+    """\
+    Get directory of executable file built by given target. If no target is
+    specified, the directory of this executable is returned.
+    
+    """
     path = get_executable_path (target)
     if path is None:
         return None
@@ -85,12 +98,24 @@ def get_executable_directory (target=None):
 
 # ****************************************************************************
 def get_executable_path (target=None):
-    """Get path of executable file built by given target. If no target is
-    specified, the path of this executable is returned."""
-    uid = get_target_uid (target)
-    if uid is None or uid not in _locations:
-        return None
-    return _locations [uid]
+    """\
+    Get path of executable file built by given target. If no target is
+    specified, the path of this executable is returned.
+    
+    """
+    global _module_dir
+    global _locations
+    
+    path = None
+    if target is None:
+        path = os.path.realpath (os.path.dirname (sys.argv [0]))
+        if os.path.isdir (path):
+            path += "/<stdin>" # interactive shell
+    else:
+        uid = get_target_uid (target)
+        if uid is not None and uid in _locations:
+            path = os.path.normpath (os.path.join (_module_dir, _locations [uid]))
+    return path
 
 # ============================================================================
 # private functions
@@ -98,6 +123,6 @@ def get_executable_path (target=None):
 
 def _initialize ():
     """Initialize dictionaries with information about executable targets."""
-    _locations = {
-        @EXECUTABLE_TARGET_LOCATIONS@
-    }
+    global _locations
+    
+    @EXECUTABLE_TARGET_INFO@
