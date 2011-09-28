@@ -63,7 +63,7 @@ ctest="${exec_dir}/@MODULES_DIR@/basistest.ctest"
 master="${exec_dir}/basistest_master"
 
 ## @brief Test execution command.
-slave="${exec_dir}/basistest_slave -v -S ${ctest} --args shared_srcdir,common_site=sbia-c5,common_site=compute"
+slave="${exec_dir}/basistest_slave -v -S ${ctest} --args shared_source,common_site=sbia-c5,common_site=compute"
 
 # ============================================================================
 # main

@@ -68,7 +68,7 @@ Options:
                          specified directory. If this option is given without
                          argument, the default web server location at SBIA is used,
                          i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
-  shared_srcdir          Specify that each test site should use the same copy of
+  shared_source          Specify that each test site should use the same copy of
                          the sources. By default, each test site uses its own copy.
   common_site=<prefix>   Do not distinguish between different sites with a common
                          prefix in the name. Useful when the test jobs are executed
@@ -294,7 +294,7 @@ foreach (ARG ${ARGV})
       else ()
         set (INSTALL_DOXYGEN_DIR "/sbia/web/software/doxygen/\@CTEST_PROJECT_NAME_LOWER\@/\@CTEST_SVN_BRANCH\@")
       endif ()
-    elseif (${OPTION} STREQUAL "shared_srcdir")
+    elseif (${OPTION} STREQUAL "shared_source")
       set_bool_option (SHARED_SOURCE)
     elseif (${OPTION} STREQUAL "common_site")
       append_option (COMMON_SITE_PREFIXES)
