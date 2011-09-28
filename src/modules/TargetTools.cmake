@@ -816,7 +816,7 @@ function (basis_add_executable_target TARGET_NAME)
       basis_set_target_properties (
         ${T}
         PROPERTIES
-          OUTPUT_NAME "basisutilities_${PROJECT_NAME}"
+          OUTPUT_NAME "basisutilities_${PROJECT_NAME_LOWER}"
           # make sure that this library is always output to the 'lib' directory
           # even if only test executables use it; see CMakeLists.txt in 'test'
           # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
