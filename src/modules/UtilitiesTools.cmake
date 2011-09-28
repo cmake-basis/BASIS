@@ -257,6 +257,11 @@ function (basis_configure_ExecutableTargetInfo)
     set (CC "${CC}\n    // CMake function basis_configure_ExecutableTargetInfo()")
   endif ()
 
+  if (PYTHON)
+    set (PY_B "${PY_B}    _locations = {\n")
+    set (PY_I "${PY_I}    _locations = {\n")
+  endif ()
+
   foreach (TARGET_UID ${BASIS_TARGETS})
     basis_target_type   (TYPE ${TARGET_UID})
     get_target_property (TEST ${TARGET_UID} "TEST")
@@ -276,7 +281,6 @@ function (basis_configure_ExecutableTargetInfo)
 
       if (BUILD_LOCATION AND INSTALL_LOCATION)
 
-        # installation directory relative to installed modules
         file (
           RELATIVE_PATH INSTALL_LOCATION_REL2MOD
             "${INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}"
@@ -307,7 +311,8 @@ function (basis_configure_ExecutableTargetInfo)
         # Python
 
         if (PYTHON)
-          # TODO
+          set (PY_B "${PY_B}        '${ALIAS}' : '${BUILD_LOCATION}',\n")
+          set (PY_I "${PY_I}        '${ALIAS}' : '${INSTALL_LOCATION_REL2MOD}',\n")
         endif ()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -347,6 +352,9 @@ function (basis_configure_ExecutableTargetInfo)
     endif ()
   endforeach ()
 
+  set (PY_B "${PY_B}    }")
+  set (PY_I "${PY_I}    }")
+
   # --------------------------------------------------------------------------
   # remove unnecessary leading newlines
 
@@ -377,7 +385,19 @@ function (basis_configure_ExecutableTargetInfo)
   # Python
 
   if (PYTHON)
-    # TODO
+    # script configuration
+    set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
+    set (CONFIG "${CONFIG}if (BUILD_INSTALL_SCRIPT)\n")
+    set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${PY_I}\")\n")
+    set (CONFIG "${CONFIG}else ()\n")
+    set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${PY_B}\")\n")
+    set (CONFIG "${CONFIG}endif ()\n")
+
+    # add module
+    set (TEMPLATE_FILE "${BASIS_PYTHON_TEMPLATES_DIR}/executabletargetinfo.py")
+    basis_script_target_name (TARGET_NAME "${TEMPLATE_FILE}")
+    basis_add_script (${TARGET_NAME} "${TEMPLATE_FILE}" MODULE CONFIG "${CONFIG}")
+    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

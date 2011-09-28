@@ -310,7 +310,7 @@ HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 
 ${BASIS_BASH_FUNCTION_realpath}
-readonly __${NAMESPACE_UPPER}_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
-source \"\${__${NAMESPACE_UPPER}_DIR}/${LIBRARY_DIR}/basis.sh\"
+readonly _${NAMESPACE_UPPER}_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
+source \"\${_${NAMESPACE_UPPER}_DIR}/${LIBRARY_DIR}/basis.sh\"
 "
 )
