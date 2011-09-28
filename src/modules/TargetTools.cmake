@@ -1963,6 +1963,8 @@ function (basis_export_targets)
 
     # footer
     macro (footer)
+      set (C "${C}\n# Cleanup temporary variables.\n")
+      set (C "${C}set (_IMPORT_PREFIX)\n")
       set (C "${C}\n# Commands beyond this point should not need to know the version.\n")
       set (C "${C}set (CMAKE_IMPORT_FILE_VERSION)\n")
       set (C "${C}cmake_policy (POP)\n")
