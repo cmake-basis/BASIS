@@ -38,7 +38,7 @@ set (TEMPLATE_VERSION "0.0.0")
 
 # the following variables would be set by the BASISConfig.cmake file if
 # this would be a project which uses BASIS; in fact, this *is* BASIS, though
-set (BASIS_MODULE_PATH          "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
+set (BASIS_MODULE_PATH          "${CMAKE_CURRENT_SOURCE_DIR}/src/modules")
 set (BASIS_INCLUDE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set (BASIS_LIBRARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set (BASIS_CXX_TEMPLATES_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")

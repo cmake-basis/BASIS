@@ -30,7 +30,7 @@ if (BUILD_CONFIG_SETTINGS)
     )
 
     # CMake module path
-    set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
+    set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/modules")
 
     # paths to utilities templates files
     foreach (U CXX JAVA PYTHON PERL BASH MATLAB)

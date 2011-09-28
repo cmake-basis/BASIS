@@ -68,7 +68,7 @@ basis_set_script_path (
 
 basis_set_script_path (
   MODULES_DIR
-    "@PROJECT_CODE_DIR@/cmake"
+    "@PROJECT_CODE_DIR@/modules"
     "@INSTALL_MODULES_DIR@"
 )
 
