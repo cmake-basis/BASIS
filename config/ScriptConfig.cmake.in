@@ -80,3 +80,5 @@ basis_set_script_path (
 
 # directory of BASIS used by tests to build test projects
 set (TESTING_BASIS_DIR "@PROJECT_BINARY_DIR@")
+# build type used to build test projects
+set (TESTING_BUILD_TYPE "@CMAKE_BUILD_TYPE@")

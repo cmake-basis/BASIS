@@ -106,7 +106,7 @@ function build
     [ -d "${BUILD_DIR}" ] && run rm -rf "${BUILD_DIR}"
     run mkdir -p "${BUILD_DIR}"
     run cd "${BUILD_DIR}"
-    run cmake "-DBASIS_DIR=${BASIS_DIR}" "${SOURCE_DIR}"
+    run cmake "-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@" "-DBASIS_DIR=${BASIS_DIR}" "${SOURCE_DIR}"
     echo "Configuring test project... - done"
     echo "Building test project..."
     if [ ${FLAGS_verbose} -gt 0 ]; then
