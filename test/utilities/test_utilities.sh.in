@@ -109,7 +109,11 @@ function build
     run cmake "-DBASIS_DIR=${BASIS_DIR}" "${SOURCE_DIR}"
     echo "Configuring test project... - done"
     echo "Building test project..."
-    run make
+    if [ ${FLAGS_verbose} -gt 0 ]; then
+        run make 'VERBOSE=1'
+    else
+        run make
+    fi
     echo "Building test project... - done"
 
     run cd "${cwd}"
