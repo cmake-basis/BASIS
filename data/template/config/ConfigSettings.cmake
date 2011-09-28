@@ -30,5 +30,5 @@ endif ()
 # installation configuration settings
 # ============================================================================
 
-basis_set_config_path (DATA_DIR_CONFIG "${INSTALL_DATA_DIR}")
+set (DATA_DIR_CONFIG "${INSTALL_DATA_DIR}")
 

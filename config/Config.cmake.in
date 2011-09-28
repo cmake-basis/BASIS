@@ -12,6 +12,11 @@
 # general
 # ============================================================================
 
+## @brief Absolute path of installation prefix or root of build tree.
+set (@PACKAGE_NAME@_INSTALL_PREFIX "@INSTALL_PREFIX_CONFIG@")
+# simplify path, i.e., remove occurences of '/../' and '/./'
+get_filename_component (@PACKAGE_NAME@_INSTALL_PREFIX "${@PACKAGE_NAME@_INSTALL_PREFIX}" ABSOLUTE)
+
 ## @brief Absolute path of project use file which is included by other projects.
 set (@PACKAGE_NAME@_USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
 
@@ -20,31 +25,31 @@ set (@PACKAGE_NAME@_USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
 # ============================================================================
 
 ## @brief Absolute path to CMake modules.
-get_filename_component (@PACKAGE_NAME@_MODULE_PATH "@MODULE_PATH_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_MODULE_PATH "@MODULE_PATH_CONFIG@")
 
 # ============================================================================
 # utilities
 # ============================================================================
 
 ## @brief Absolute path to C++ utilities files.
-get_filename_component (@PACKAGE_NAME@_CXX_TEMPLATES_DIR "@CXX_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_CXX_TEMPLATES_DIR "@CXX_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to Java utilities files.
-get_filename_component (@PACKAGE_NAME@_JAVA_TEMPLATES_DIR "@JAVA_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_JAVA_TEMPLATES_DIR "@JAVA_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to Python utilities files.
-get_filename_component (@PACKAGE_NAME@_PYTHON_TEMPLATES_DIR "@PYTHON_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_PYTHON_TEMPLATES_DIR "@PYTHON_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to Perl utilities files.
-get_filename_component (@PACKAGE_NAME@_PERL_TEMPLATES_DIR "@PERL_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_PERL_TEMPLATES_DIR "@PERL_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to BASH utilities files.
-get_filename_component (@PACKAGE_NAME@_BASH_TEMPLATES_DIR "@BASH_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_BASH_TEMPLATES_DIR "@BASH_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to MATLAB utilities files.
-get_filename_component (@PACKAGE_NAME@_MATLAB_TEMPLATES_DIR "@MATLAB_TEMPLATES_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_MATLAB_TEMPLATES_DIR "@MATLAB_TEMPLATES_DIR_CONFIG@")
 
 # ============================================================================
 # project template
 # ============================================================================
 
 ## @ brief Absolute path to project template.
-get_filename_component (@PACKAGE_NAME@_TEMPLATE_URL "@TEMPLATE_URL_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_TEMPLATE_URL "@TEMPLATE_URL_CONFIG@")
 
 # ensure that project template URL is a valid URL
 if (NOT @PACKAGE_NAME@_TEMPLATE_URL MATCHES "^file://|^http://|^https://")
@@ -56,10 +61,10 @@ endif ()
 # ============================================================================
 
 ## @brief Directory of header files.
-get_filename_component (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 
 ## @brief Directory of libraries.
-get_filename_component (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@" ABSOLUTE)
+set (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
 
 ## @brief Utilities library.
 set (@PACKAGE_NAME@_UTILITIES_LIBRARY "basis@utilities")

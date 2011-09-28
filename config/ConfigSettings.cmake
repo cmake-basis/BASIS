@@ -21,6 +21,14 @@
 # ============================================================================
 
 if (BUILD_CONFIG_SETTINGS)
+    # Include directories of package configuration of build tree.
+    set (
+      INCLUDE_DIR_CONFIG
+        "${PROJECT_INCLUDE_DIR}"
+        "${BINARY_INCLUDE_DIR}"
+        "${PROJECT_INCLUDE_DIR}/sbia" # because of TCLAP
+    )
+
     # CMake module path
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
 
@@ -40,14 +48,25 @@ endif ()
 # installation configuration settings
 # ============================================================================
 
+# Include directories of package configuration of installation.
+#
+# Note: The 'sbia' subdirectory is added as include path because certain
+#       external libraries packaged with BASIS such as TCLAP include other
+#       header files via #include <tclap/file.h>.
+set (
+  INCLUDE_DIR_CONFIG
+    "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}"
+    "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}/sbia"
+)
+
 # CMake module path
-basis_set_config_path (MODULE_PATH_CONFIG "${INSTALL_MODULES_DIR}")
+set (MODULE_PATH_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_MODULES_DIR}")
 
 # paths to utilities templates files
 foreach (U CXX JAVA PYTHON PERL BASH MATLAB)
-  basis_set_config_path (${U}_TEMPLATES_DIR_CONFIG "${INSTALL_${U}_TEMPLATES_DIR}")
+  set (${U}_TEMPLATES_DIR_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_${U}_TEMPLATES_DIR}")
 endforeach ()
 
 # URL of project template
-basis_set_config_path (TEMPLATE_URL_CONFIG "${INSTALL_TEMPLATE_DIR}")
+set (TEMPLATE_URL_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_TEMPLATE_DIR}")
 
