@@ -8,6 +8,6 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-add_subdirectory (module)    # CMake modules
+add_subdirectory (modules)   # CMake modules
 add_subdirectory (utilities) # implementation utilities
 add_subdirectory (tools)     # command-line tools
