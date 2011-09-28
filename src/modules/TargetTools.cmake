@@ -808,17 +808,18 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add standard auxiliary library
   if (NOT ARGN_NO_BASIS_UTILITIES)
-    basis_target_uid (BASIS_UTILITIES_TARGET "basisutilities_${PROJECT_NAME_LOWER}")
+    basis_target_uid (BASIS_UTILITIES_TARGET "basisutilities")
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
       basis_target_name (T "${BASIS_UTILITIES_TARGET}")
       basis_add_library (${T} STATIC ${BASIS_UTILITIES_SOURCES})
 
-      # make sure that this library is always output to the 'lib' directory
-      # even if only test executables use it; see CMakeLists.txt in 'test'
-      # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
       basis_set_target_properties (
         ${T}
         PROPERTIES
+          OUTPUT_NAME "basisutilities_${PROJECT_NAME}"
+          # make sure that this library is always output to the 'lib' directory
+          # even if only test executables use it; see CMakeLists.txt in 'test'
+          # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
           ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
       )
     endif ()
