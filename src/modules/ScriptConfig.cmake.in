@@ -69,7 +69,8 @@
 string (TOUPPER "${NAME}" NAME_UPPER)
 string (TOLOWER "${NAME}" NAME_LOWER)
 
-string (REGEX REPLACE "[^a-zA-Z0-9]" "_" NAMESPACE "${NAME}")
+get_filename_component (NAMESPACE "${NAME}" NAME_WE)
+string (REGEX REPLACE "[^a-zA-Z0-9]" "_" NAMESPACE "${NAMESPACE}")
 string (TOUPPER "${NAMESPACE}" NAMESPACE_UPPER)
 string (TOLOWER "${NAMESPACE}" NAMESPACE_LOWER)
 
@@ -301,7 +302,7 @@ realpath ()
 #
 # @ingroup BashUtilities
 set (BASIS_BASH_UTILITIES "
-# constants used by the Flags.sh module
+# constants used by the shflags.sh module
 HELP_COMMAND='${NAME} (${PROJECT_NAME})'
 HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
 HELP_VERSION='${PROJECT_VERSION_AND_REVISION}'
@@ -309,7 +310,7 @@ HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 
 ${BASIS_BASH_FUNCTION_realpath}
-readonly __${NAMESPACE_UPPER}_dir=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
-source \"\${__${NAMESPACE_UPPER}_dir}/${LIBRARY_DIR}/Basis.sh\"
+readonly __${NAMESPACE_UPPER}_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
+source \"\${__${NAMESPACE_UPPER}_DIR}/${LIBRARY_DIR}/basis.sh\"
 "
 )

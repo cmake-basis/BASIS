@@ -196,7 +196,7 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # BASH
   if (BASIS_PROJECT_USES_BASH)
-    foreach (MODULE StdAux Basis)
+    foreach (MODULE stdaux basis)
       basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh" MODULE)
       basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh")
       basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
@@ -414,7 +414,7 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}endif ()\n")
 
     # add module
-    set (TEMPLATE_FILE "${BASIS_BASH_TEMPLATES_DIR}/ExecutableTargetInfo.sh")
+    set (TEMPLATE_FILE "${BASIS_BASH_TEMPLATES_DIR}/executable_target_info.sh")
     basis_script_target_name (TARGET_NAME "${TEMPLATE_FILE}")
     basis_add_script (${TARGET_NAME} "${TEMPLATE_FILE}" MODULE CONFIG "${CONFIG}")
     basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")

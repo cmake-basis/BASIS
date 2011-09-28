@@ -453,7 +453,7 @@ function (basis_add_executable TARGET_NAME)
 
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "LIBEXEC;TEST;MODULE;WITH_PATH;NO_BASIS_UTILITIES;NO_EXPORT"
+      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_BASIS_UTILITIES;NO_EXPORT"
       "DESTINATION;COMPONENT;CONFIG;CONFIG_FILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
@@ -808,7 +808,7 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add standard auxiliary library
   if (NOT ARGN_NO_BASIS_UTILITIES)
-    basis_target_uid (BASIS_UTILITIES_TARGET "basis-utilities-${PROJECT_NAME_LOWER}")
+    basis_target_uid (BASIS_UTILITIES_TARGET "basisutilities_${PROJECT_NAME_LOWER}")
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
       basis_target_name (T "${BASIS_UTILITIES_TARGET}")
       basis_add_library (${T} STATIC ${BASIS_UTILITIES_SOURCES})
@@ -1275,6 +1275,16 @@ endfunction ()
 #          in a scripting language.</td>
 #   </tr>
 #   <tr>
+#     @tp @b WITH_PATH @endtp
+#     <td>Preserve relative path of module. Required for example for
+#         Python and Perl packages where the directory hierarchy is important.</td>
+#   </tr>
+#   <tr>
+#     @tp @b WITH_EXT @endtp
+#     <td>Specify that the filename extension should be kept also in case of
+#         an executable script with a sha-bang directive built on Unix.</td>
+#   </tr>
+#   <tr>
 #     @tp @b NO_EXPORT @endtp
 #     <td>Do not export build target.</td>
 #   </tr>
@@ -1290,7 +1300,7 @@ function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;TEST;MODULE;WITH_PATH;NO_EXPORT"
+      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_EXPORT"
       "CONFIG;CONFIG_FILE;COMPONENT;DESTINATION"
       ""
     ${ARGN}
@@ -1402,8 +1412,9 @@ function (basis_add_script TARGET_NAME)
   get_filename_component (SCRIPT_NAME_IN "${ARGN_SCRIPT}" NAME)
   string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME_IN}")
 
+  # remove extension on Unix if sha-bang directive is present
   set (OUTPUT_NAME "${SCRIPT_NAME}")
-  if (NOT ARGN_MODULE AND UNIX)
+  if (NOT ARGN_MODULE AND NOT ARGN_WITH_EXT AND UNIX)
     file (STRINGS "${ARGN_SCRIPT}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
     if (SHABANG STREQUAL "#!")
       get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
