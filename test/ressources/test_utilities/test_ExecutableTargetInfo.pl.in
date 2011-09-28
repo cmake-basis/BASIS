@@ -10,7 +10,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-use Test::More tests => 17;
+use Test::More tests => 18;
 
 
 @BASIS_PERL_UTILITIES@
@@ -34,8 +34,10 @@ sub test_get_target_uid
         'UID remains unchanged');
     is (Basis::get_target_uid ('::hello'), '::hello',
         'global namespace remains unchanged');
-    is (Basis::get_target_uid (''), '',
-        'empty string remains unchanged');
+    is (Basis::get_target_uid (undef), undef,
+        'invalid argument results in undef as return value');
+    is (Basis::get_target_uid (''), undef,
+        'invalid argument results in undef as return value');
 }
 
 ##############################################################################
