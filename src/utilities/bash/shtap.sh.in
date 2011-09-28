@@ -310,7 +310,7 @@ function okx
 #
 # @param [in] result   Actual result.
 # @param [in] expected Expected result.
-function _equals
+function _shtap_equals
 {
     local result=${1:?}
     local expected=${2:?}
@@ -335,7 +335,7 @@ function _equals
 #
 # @retval 0 On match.
 # @retval 1 Otherwise.
-function _matches
+function _shtap_matches
 {
     local result=${1:?}
     local pattern=${2:?}
@@ -356,7 +356,7 @@ function _matches
 #
 # @param [in] result   Actual result.
 # @param [in] expected Expected result.
-_shtap_is_diag
+function _shtap_is_diag
 {
     local result=${1:?}
     local expected=${2:?}
