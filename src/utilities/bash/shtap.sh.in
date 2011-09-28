@@ -59,26 +59,38 @@
 #
 # plan_tests 7
 #
-# me=$USER
-# is $USER $me "I am myself"
-# like $HOME $me "My home is mine"
-# like "`id`" $me "My id matches myself"
-#
-# ls $HOME 1>&2
-# ok $? "ls $HOME"
-# # Same thing using okx shortcut
-# okx ls $HOME
-#
-# [[ "`id -u`" != "0" ]]
-# i_am_not_root=$?
-# skip $i_am_not_root "Must be root" ||
+# # test identity
 # {
-#     okx ls /root
+#     me=${USER}
+#     is ${USER} ${me} "I am myself"
+#     like ${HOME} ${me} "My home is mine"
+#     like "`id`" ${me} "My id matches myself"
 # }
 #
-# TODO="figure out how to become root..."
-# okx [ "$HOME" == "/root" ]
-# unset TODO
+# # test ls
+# {
+#     ls ${HOME} 1>&2
+#     ok $? "ls ${HOME}"
+#     # same thing using okx shortcut
+#     okx ls ${HOME}
+# }
+#
+# # test only for root
+# {
+#     [[ "`id -u`" != "0" ]]
+#     i_am_not_root=$?
+#     skip ${i_am_not_root} "Must be root" ||
+#     {
+#         okx ls /root
+#     }
+# }
+#
+# # test TODO
+# {
+#     TODO="figure out how to become root..."
+#     okx [ "$HOME" == "/root" ]
+#     unset TODO
+# }
 # @endcode
 #
 # Copyright (c) Patrick LeBoutillier.<br />
@@ -104,8 +116,6 @@ readonly _SHTAP_VERSION='1.02-sbia'
 readonly _SHTAP_FILENAME='@NAME@'
 
 readonly _SHTAP_BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
-
-readonly _SHTAP_PARENT="${SHTAP_PARENT:0}"
 
 TODO=
 
@@ -630,19 +640,23 @@ function _shtap_exit
 }
 
 # ============================================================================
-# run
+# main
 # ============================================================================
 
 ##############################################################################
-# @brief Execute all functions whith prefix 'test' in function name.
-function runtests
+# @brief Invoke all functions whose name have the prefix 'test'.
+#
+# @param [in] script Path of file which defines the test functions.
+#                    Defaults to $0 if not specified.
+function main
 {
+    local script=${1:-0}
     local regex='^[ 	]*(function )*test[A-Za-z0-9_]* *\(\)'
-    local tests=$(egrep "${regex}" "${_SHTAP_PARENT}" \
+    local tests=$(egrep "${regex}" "${script}" \
             | sed 's/^[^A-Za-z0-9_]*//;s/^function //;s/\([A-Za-z0-9_]*\).*/\1/g' \
             | xargs)
 
     for test_ in ${tests}; do
-        ${test_}
+        eval ${test_}
     done
 }
