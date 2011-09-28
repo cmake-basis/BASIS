@@ -91,12 +91,17 @@ args=()   # options of subcommand
 verbose=0 # verbosity of output messages
 
 if [ -n "$1" ]; then
-    if [[ $1 =~ ^(cron|master|slave|svn)$ ]]; then
+    # note: [[ "$1" =~ '^(...|...|...)$' ]] works on Linux but not Mac OS,
+    #       there the quotes on the right would need to be removed.
+    #       This however then does not work on Linux...
+    if [[ "$1" == 'cron'  ]] || [[ "$1" == 'master' ]] ||\
+       [[ "$1" == 'slave' ]] || [[ "$1" == 'svn' ]]; then
         cmd="$1"
         shift
     elif [ "$1" == "help" ]; then
         if [ -n "$2" ]; then
-            if [[ $2 =~ ^(cron|master|slave|svn)$ ]]; then
+            if [[ "$2" == 'cron'  ]] || [[ "$2" == 'master' ]] ||\
+               [[ "$2" == 'slave' ]] || [[ "$2" == 'svn' ]]; then
                 cmd="$2"
             else
                 echo "Unknown command: $2" 1>&2
