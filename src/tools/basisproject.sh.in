@@ -39,7 +39,7 @@ cache=".basis/cache"
 # @brief Print options.
 #
 # @returns Nothing.
-print_options ()
+function print_options
 {
     echo "Required Options:"
     echo "  --name, -n <Project>       Name of the new project."
@@ -116,7 +116,7 @@ print_options ()
 # @brief Print usage information.
 #
 # @returns Nothing.
-print_usage ()
+function print_usage
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
@@ -132,7 +132,7 @@ print_usage ()
 # @brief Print help.
 #
 # @returns Nothing.
-print_help ()
+function print_help
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
@@ -217,7 +217,7 @@ print_help ()
 #
 # @retval 0 Success.
 # @retval 1 Failure.
-make_absolute ()
+function make_absolute
 {
     local path="$1"
 
@@ -236,7 +236,7 @@ make_absolute ()
 # @brief Extract project name from existing project.
 #
 # @returns Extracted project name via @c echo.
-get_project_name ()
+function get_project_name
 {
     local active=0
     local name=''
@@ -693,7 +693,7 @@ fi
 
 ##############################################################################
 # @brief Alter template file.
-alter ()
+function alter
 {
     cat "$1" \
         | sed "s/ReplaceByProjectName/$name/g" \
@@ -704,7 +704,7 @@ alter ()
 
 ##############################################################################
 # @brief Alter languages.
-alter_languages ()
+function alter_languages
 {
     for language in "${languages[@]}"; do
         # attention: the -i option of sed differs for Darwin and Linux version
@@ -722,7 +722,7 @@ alter_languages ()
 #                  or project root, respectively.
 #
 # @returns Nothing.
-add ()
+function add
 {
     local path="$1"
 
@@ -887,7 +887,7 @@ add ()
 # @param [in] path Path relative to template or project root, respectively.
 #
 # @returns Nothing.
-del ()
+function del
 {
     local path=$1
 
@@ -951,7 +951,7 @@ del ()
 # @param [in] path   File path relative to tempate or project root, respectively.
 #
 # @returns Nothing.
-addordel ()
+function addordel
 {
     local switch=$1
     local path=$2
@@ -1048,7 +1048,7 @@ fi
 # @param [in] prefix          Prefix to use for package variables. Defaults to package name.
 #
 # @returns Nothing.
-add_find_package ()
+function add_find_package
 {
     local file=$1
     local package=$2
@@ -1157,7 +1157,7 @@ fi
 # @brief Clean temporary files.
 #
 # @returns Nothing.
-clean_temp_files ()
+function clean_temp_files
 {
     # *.template
     for file in $(find "$root" -type f -name '*.template'); do
@@ -1173,7 +1173,7 @@ clean_temp_files ()
 # @brief Remove hidden copies of template files.
 #
 # @returns Nothing.
-clean_hidden_files ()
+function clean_hidden_files
 {
     # .basis
     for dir in $(find "$root" -type d -name '.basis'); do

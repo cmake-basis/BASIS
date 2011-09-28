@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  Core.sh
+# @file  core.sh
 # @brief Core functions for BASH.
 #
 # This is the core module of the BASIS utilities for BASH. It implements
@@ -61,7 +61,7 @@ __SBIA_CORE_INCLUDED=1
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-upvar ()
+function upvar
 {
     if unset -v "$1"; then           # Unset & validate varname
         if (( $# == 2 )); then
@@ -85,7 +85,7 @@ upvar ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-upvars ()
+function upvars
 {
     if ! (( $# )); then
         echo "${FUNCNAME[0]}: usage: ${FUNCNAME[0]} [-v varname"\

@@ -1,0 +1,155 @@
+#! /usr/bin/env bash
+
+##
+# @file  basistest.sh
+# @brief Common wrapper for the basistest subcommands.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@BASIS_BASH_UTILITIES@
+
+# ============================================================================
+# constants
+# ============================================================================
+
+get_executable_name      EXEC_NAME && readonly EXEC_NAME
+get_executable_directory EXEC_DIR  && readonly EXEC_DIR
+
+# ============================================================================
+# help
+# ============================================================================
+
+##############################################################################
+## @brief Print help.
+function print_help
+{
+    echo "${EXEC_NAME} (@PROJECT_NAME@)"
+    echo
+    print_synopsis
+    echo
+    cat - << EOF-DESCRIPTION
+Description:
+  This executable is a wrapper for the basistest subcommands. The name of the
+  subcommand to execute must be given as first argument.
+EOF-DESCRIPTION
+    echo
+    print_options
+}
+
+##############################################################################
+## @brief Print usage information.
+function print_usage
+{
+    echo "${EXEC_NAME} (@PROJECT_NAME@)"
+    echo
+    print_synopsis
+    echo
+    print_options
+}
+
+##############################################################################
+## @brief Print synopsis, i.e., usage section.
+function print_synopsis
+{
+    cat - << EOF-SYNOPSIS
+Usage:
+  ${EXEC_NAME} <cmd> [options] [options of subcommand]
+  ${EXEC_NAME} help <cmd>
+  ${EXEC_NAME} [options]
+EOF-SYNOPSIS
+}
+
+##############################################################################
+## @brief Print options.
+function print_options
+{
+    cat - << EOF-OPTIONS
+Options:
+  <cmd>         Recognized subcommands are cron, master, slave, and svn.
+  --help, -h    Print help and exit
+  --helpshort   Print usage information and exit.
+EOF-OPTIONS
+}
+
+# ============================================================================
+# options
+# ============================================================================
+
+if [ $# -eq 0 ]; then
+    print_help
+    echo
+    echo "Contact:"
+    echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
+    exit 1
+fi
+
+cmd=''    # subcommand to run
+args=()   # options of subcommand
+verbose=0 # verbosity of output messages
+
+if [ -n "$1" ]; then
+    if [[ $1 =~ ^(cron|master|slave|svn)$ ]]; then
+        cmd="$1"
+        shift
+    elif [ "$1" == "help" ]; then
+        if [ -n "$2" ]; then
+            if [[ $2 =~ ^(cron|master|slave|svn)$ ]]; then
+                cmd="$2"
+            else
+                echo "Unknown command: $2" 1>&2
+                exit 1
+            fi
+        fi
+
+        exec basistest_${cmd} '--help'
+    fi
+fi
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+        # standard options
+        -h|--help)
+            print_help
+            echo
+            echo "Subcommand:"
+            echo -n "  "
+            exec basistest_${cmd} '--help'
+            ;;
+        --helpshort)
+            print_usage
+            echo
+            echo "Subcommand:"
+            echo -n "  "
+            exec basistest_${cmd} '--helpshort'
+            ;;
+        -v|--verbose)
+            (( verbosity ++ ))
+            args="${args} $1"
+            ;;
+        # otherwise, pass argument on to glistr-run
+        -*)
+            # option flag
+            args[${#args}]="$1"
+            shift
+            # option argument (if there is one; let subcommand check its arguments list)
+            if [ $# -gt 0 ]; then
+                args[${#args}]="$1"
+            fi
+            ;;
+        *)
+            args[${#args}]="$1"
+            ;;
+    esac
+    shift
+done
+
+[ -n "${cmd}" ] || { echo "Missing subcommand! See ${EXEC_NAME} --help."; exit 1; }
+
+# ============================================================================
+# main
+# ============================================================================
+
+exec "${EXEC_DIR}/basistest_${cmd}" "${args[@]}"

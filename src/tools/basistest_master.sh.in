@@ -1,15 +1,15 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-master.sh
+# @file  basistest_master.sh
 # @brief Test master which can be run as a cron job.
 #
 # This shell script is supposed to be scheduled as cron job, where possibly
-# the basistest-cron.sh script is in fact used as cron job command without
+# the basistest_cron.sh script is in fact used as cron job command without
 # arguments where all the settings for the cron job are fixed within this
 # latter script. On execution, this master script parses the configuration
 # file and executes the configured tests using by default the
-# basistest-slave.sh script.
+# basistest_slave.sh script.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -22,12 +22,15 @@
 @BASIS_BASH_UTILITIES@
 
 # ============================================================================
-# settings
+# constants
 # ============================================================================
 
-# executable information
-get_executable_directory exec_dir
-get_executable_name      exec_name
+get_executable_directory EXEC_DIR  && readonly EXEC_DIR
+get_executable_name      EXEC_NAME && readonly EXEC_NAME
+
+# ============================================================================
+# default settings
+# ============================================================================
 
 # absolute path of tests configuration file
 conf_file='/etc/basistest.conf'
@@ -43,15 +46,15 @@ schedule_file='/var/run/basistest.schedule'
 # @brief Print documentation of options.
 #
 # @returns Nothing.
-print_options ()
+function print_options
 {
     cat - << EOF-OPTIONS
 Options:
-  -c [ --conf ]       The test configuration file. Defaults to "$conf_file".
+  -c [ --conf ]       The test configuration file. Defaults to "${conf_file}".
   -t [ --testcmd ]    The test execution command. Defaults to the basistest
                       command in the same directory as this executable.
   -s [ --schedule ]   The test schedule file which is created and updated by
-                      this program. Defaults to "$schedule_file".
+                      this program. Defaults to "${schedule_file}".
   --dry               Dry run, i.e., do not actually invoke the test execution command.
   -v [ --verbose ]    Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]       Print help and exit.
@@ -64,17 +67,17 @@ EOF-OPTIONS
 # @brief Print help.
 #
 # @returns Nothing.
-print_help ()
+function print_help
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
-    echo "  $exec_name [options]"
+    echo "  ${EXEC_NAME} [options]"
     echo
     cat - << EOF-DESCRIPTION
 Description:
-  This so-called testing master script is executed by the basistest-cron command.
-  On each run, it reads in the configuration file given by the -c (--config) option
+  This so-called testing master script is executed by the basistest_cron command.
+  On each run, it reads in the configuration file given by the --config option
   line-by-line. Each line in the configuration file specifies one test job to be
   executed. See the next section for details on the format and content of such
   configuration file.
@@ -116,10 +119,9 @@ Configuration:
     * * 1 BASIS trunk Nightly coverage,memcheck
 
 Test execution:
-  By default, the "basistest-slave" command is invoked for each entry in
-  the configuration file. A custom test command can be set using the option
-  -t [ --testcmd ]. The provided command has to support the following
-  command line arguments.
+  By default, the basistest_slave command is invoked for each entry in the
+  configuration file. A custom test command can be set using the option --testcmd.
+  The provided command has to support the following command line arguments.
 
     --project <arg>   The name of the project as given in the configuration.
     --branch <arg>    The branch as given in the configuration.
@@ -134,7 +136,7 @@ EOF-DESCRIPTION
     echo
     cat - << EOF-EXAMPLES
 Examples:
-  $exec_name --conf /etc/basis/testd.conf --schedule /var/run/basis/testd
+  ${EXEC_NAME} --conf /etc/basis/testd.conf --schedule /var/run/basis/testd
 
     Runs this daemon with the configuration file "/etc/basis/testd.conf",
     where the test schedule "/var/run/basis/testd" is created (or updated).
@@ -149,12 +151,12 @@ EOF-EXAMPLES
 # @brief Print usage (i.e., only usage and options).
 #
 # @returns Nothing.
-print_usage ()
+function print_usage
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
-    echo "  $exec_name [options]"
+    echo "  ${EXEC_NAME} [options]"
     echo
     print_options
     echo
@@ -177,21 +179,21 @@ print_usage ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-run_test ()
+function run_test
 {
-    cmd="$test_cmd"
-    if [ $verbosity -gt 1 ]; then cmd="$cmd --verbose"; fi
-    if [ $verbosity -gt 2 ]; then cmd="$cmd --verbose"; fi
-    cmd="$cmd --project $1 --branch $2 --model $3"
-    if [ ! -z "$4" ]; then cmd="$cmd --args $4"; fi
-    if [ $verbosity -gt 0 ]; then
-        echo "Run $cmd"
+    cmd="${test_cmd}"
+    if [ ${verbose} -gt 1 ]; then cmd="${cmd} --verbose"; fi
+    if [ ${verbose} -gt 2 ]; then cmd="${cmd} --verbose"; fi
+    cmd="${cmd} --project $1 --branch $2 --model $3"
+    if [ ! -z "$4" ]; then cmd="${cmd} --args $4"; fi
+    if [ ${verbose} -gt 0 ]; then
+        echo "Run ${cmd}"
     fi
-    if [ $dry -eq 0 ]; then
-        if [ $verbosity -gt 0 ]; then
-            $cmd
+    if [ ${dry} -eq 0 ]; then
+        if [ ${verbose} -gt 0 ]; then
+            ${cmd}
         else
-            $cmd > /dev/null # avoid messages such as "Your job has been submitted"
+            ${cmd} > /dev/null # avoid messages such as "Your job has been submitted"
         fi
         return $?
     fi
@@ -204,7 +206,7 @@ run_test ()
 # @param [in] date Date.
 #
 # @returns Prints timestamp corresponding to given date to @c STDOUT.
-date2stamp ()
+function date2stamp
 {
     if [ $(uname) == 'Darwin' ]; then
         date -j -f '%Y-%m-%d %T' "$1" +%s
@@ -219,7 +221,7 @@ date2stamp ()
 # @param [in] stamp Timestamp.
 #
 # @return Prints date corresponding to given timestamp to @c STDOUT.
-stamp2date ()
+function stamp2date
 {
     if [ $(uname) == 'Darwin' ]; then
       date -j -r $1 '+%Y-%m-%d %T'
@@ -238,7 +240,7 @@ stamp2date ()
 #
 # @returns Prints the date which is @p interval time units after the given
 #          date to @c STDOUT.
-date_add ()
+function date_add
 {
     case $1 in
         -s) sec=1;      shift;;
@@ -249,8 +251,8 @@ date_add ()
     esac
     local dte1=$(date2stamp "$1")
     local interval=$2
-    local addSec=$((dte1 + interval * sec))
-    echo $(stamp2date "$addSec")
+    local add_sec=$((dte1 + interval * sec))
+    echo $(stamp2date "${add_sec}")
 }
 
 ##############################################################################
@@ -263,7 +265,7 @@ date_add ()
 #
 # @return Prints time interval, i.e., an absolute value, in the given units
 #         to @c STDOUT.
-date_diff ()
+function date_diff
 {
     case $1 in
         -s) sec=1;      shift;;
@@ -282,15 +284,15 @@ date_diff ()
 # @brief Get next scheduled date of a given test.
 #
 # @returns Prints date to @c STDOUT.
-schedule_date ()
+function schedule_date
 {
     local retval=$(date '+%Y-%m-%d %T')
     idx=0
     num=${#schedule[@]}
-    while [ $idx -lt $num ]; do
-        parts=(${schedule[$idx]})
+    while [ ${idx} -lt ${num} ]; do
+        parts=(${schedule[${idx}]})
         num=${#parts[@]}
-        if [ $num -lt 5 -o $num -gt 6 ]; then continue; fi
+        if [ ${num} -lt 5 -o ${num} -gt 6 ]; then continue; fi
         if [    "${parts[2]}" == "$1" \
              -a "${parts[3]}" == "$2" \
              -a "${parts[4]}" == "$3" \
@@ -300,7 +302,7 @@ schedule_date ()
         fi
         ((idx++))
     done
-    echo "$retval"
+    echo "${retval}"
 }
 
 ##############################################################################
@@ -313,19 +315,19 @@ schedule_date ()
 # @param [in] model   Name of the model.
 #
 # @returns Nothing.
-schedule_test ()
+function schedule_test
 {
     idx=${#new_schedule[@]}
-    new_schedule[$idx]="$1 $2 $3 $4 $5"
+    new_schedule[${idx}]="$1 $2 $3 $4 $5"
 }
 
 # ============================================================================
 # options
 # ============================================================================
 
-test_cmd="$exec_dir/basistest" # command used to run tests
-verbosity=0                    # verbosity of output messages
-dry=0                          # whether this is a dry testing run
+test_cmd="${EXEC_DIR}/basistest" # command used to run tests
+verbose=0                        # verbosity of output messages
+dry=0                            # whether this is a dry testing run
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -334,7 +336,7 @@ while [ $# -gt 0 ]; do
             if [ $# -gt 0 ]; then
                 conf_file=$1
             else
-                echo "Option -c [ --conf ] requires an argument!" 1>&2
+                echo "Option --conf requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -343,7 +345,7 @@ while [ $# -gt 0 ]; do
             if [ $# -gt 0 ]; then
                 test_cmd=$1
             else
-                echo "Option -t [ --test_cmd ] requires an argument!" 1>&2
+                echo "Option --testcmd requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -352,7 +354,7 @@ while [ $# -gt 0 ]; do
             if [ $# -gt 0 ]; then
                 schedule_file=$1
             else
-                echo "Option -s [ --schedule ] requires an argument!" 1>&2
+                echo "Option --schedule requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -362,7 +364,7 @@ while [ $# -gt 0 ]; do
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_usage; exit 0; ;;
         -V|--version) print_version "@NAME@"; exit 0; ;;
-        -v|--verbose) ((verbosity++)); ;;
+        -v|--verbose) (( verbosity++ )); ;;
 
         # invalid option
         *)
@@ -379,20 +381,20 @@ done
 # ============================================================================
 
 # check existence of configuration file
-if [ ! -f "$conf_file" ]; then
-    echo "Missing configuration file $conf_file" 1>&2
+if [ ! -f "${conf_file}" ]; then
+    echo "Missing configuration file \"${conf_file}\"" 1>&2
     exit 1
 fi
 
 # parse existing test schedule
 schedule=()
 new_schedule=()
-if [ -f "$schedule_file" ]; then
+if [ -f "${schedule_file}" ]; then
     idx=0
     while read line; do
-        schedule[$idx]=$line
+        schedule[${idx}]=${line}
         ((idx++))
-    done < $schedule_file
+    done < ${schedule_file}
 fi
 
 # variables set by readConfLine () which store the configuration for a
@@ -411,17 +413,17 @@ errors=0
 while read line; do
     ((linenumber++))
     # skip empty lines
-    if [ -z "$line" ]; then continue; fi
+    if [ -z "${line}" ]; then continue; fi
     # skip comments
-    if [[ "$line" =~ "^#" ]]; then continue; fi
+    if [[ "${line}" =~ "^#" ]]; then continue; fi
     # sanitize line
     line=${line//\*/x}
     # "parse" line
-    parts=($line)
+    parts=(${line})
     num=${#parts[@]}
-    if [ $num -lt 4 ]; then
-        echo "$conf_file:$linenumber: Invalid configuration, skipping test" 1>&2
-        ((errors++))
+    if [ ${num} -lt 4 ]; then
+        echo "${conf_file}:${linenumber}: Invalid configuration, skipping test" 1>&2
+        (( errors++ ))
         continue
     fi
     minutes=${parts[0]}
@@ -432,45 +434,45 @@ while read line; do
     model=${parts[5]}
     options=${parts[6]}
     # check arguments
-    if [ -z "$minutes" -o -z "$hours" -o -z "$days" ]; then
-        echo "$conf_file:$linenumber: Invalid configuration, skipping test" 1>&2
-        ((errors++))
+    if [ -z "${minutes}" -o -z "${hours}" -o -z "${days}" ]; then
+        echo "${conf_file}:${linenumber}: Invalid configuration, skipping test" 1>&2
+        (( errors++ ))
         continue
     fi
-    if [ "$minutes" == "x" ]; then minutes=0; fi
-    if [ "$hours"   == "x" ]; then hours=0;   fi
-    if [ "$days"    == "x" ]; then days=0;   fi
-    if [ $minutes -eq 0 -a $hours -eq 0 -a $days -eq 0 ]; then
-        echo "$conf_file:$linenumber: Invalid test interval, skipping test" 1>&2
-        ((errors++))
+    if [ "${minutes}" == "x" ]; then minutes=0; fi
+    if [ "${hours}"   == "x" ]; then hours=0;   fi
+    if [ "${days}"    == "x" ]; then days=0;   fi
+    if [ ${minutes} -eq 0 -a ${hours} -eq 0 -a ${days} -eq 0 ]; then
+        echo "${conf_file}:${linenumber}: Invalid test interval, skipping test" 1>&2
+        (( errors++ ))
         continue
     fi
-    if [ -z "$project" ]; then
-        echo "$conf_file:$linenumber: No project name given, skipping test" 1>&2
-        ((errors++))
+    if [ -z "${project}" ]; then
+        echo "${conf_file}:${linenumber}: No project name given, skipping test" 1>&2
+        (( errors++ ))
         continue
     fi
-    if [ -z "$branch" ]; then
+    if [ -z "${branch}" ]; then
         branch='trunk'
     fi
-    if [ -z "$model" ]; then
+    if [ -z "${model}" ]; then
         model='Nightly'
     fi
     # determine whether test is already due for execution
-    next_date=$(schedule_date $project $branch $model $options)
-    if [ $(date_diff -m "$(date '+%Y-%m-%d %T')" "$next_date") -gt 0 ]; then
-        if [ $verbosity -gt 0 ]; then
-            echo "Next $model test of $project ($branch) with options \"$options\" is scheduled for $next_date"
+    next_date=$(schedule_date ${project} ${branch} ${model} ${options})
+    if [ $(date_diff -m "$(date '+%Y-%m-%d %T')" "${next_date}") -gt 0 ]; then
+        if [ ${verbose} -gt 0 ]; then
+            echo "Next ${model} test of ${project} (${branch}) with options \"${options}\" is scheduled for ${next_date}"
         fi
         # skip test as it is not yet scheduled for execution
-        schedule_test "$next_date" "$project" "$branch" "$model" "$options"
+        schedule_test "${next_date}" "${project}" "${branch}" "${model}" "${options}"
         continue
     fi
     # run test
-    run_test $project $branch $model $options
+    run_test "${project}" "${branch}" "${model}" "${options}"
     if [ $? -ne 0 ]; then
-        echo "$conf_file:$linenumber: Failed to run test" 1>&2
-        ((errors++))
+        echo "${conf_file}:${linenumber}: Failed to run test" 1>&2
+        (( errors++ ))
         # do not retry failing test too often
         minutes=0
         hours=1
@@ -478,35 +480,32 @@ while read line; do
     fi
     # update time of next execution
     minutes=$((minutes + hours * 60 + days * 1440))
-    next_date=$(date_add -m "$(date '+%Y-%m-%d %T')" "$minutes")
-    schedule_test "$next_date" "$project" "$branch" "$model" "$options"
+    next_date=$(date_add -m "$(date '+%Y-%m-%d %T')" "${minutes}")
+    schedule_test "${next_date}" "${project}" "${branch}" "${model}" "${options}"
     if [ $? -ne 0 ]; then
-        echo "$conf_file:$linenumber: Failed to reschedule test" 1>&2
-        ((errors++))
+        echo "${conf_file}:${linenumber}: Failed to reschedule test" 1>&2
+        (( errors++ ))
     fi
-    if [ $verbosity -gt 0 ]; then
-        echo "Test will re-execute in $minutes minutes from now ($(date '+%Y-%m-%d %T')), i.e., not before $next_date"
+    if [ ${verbose} -gt 0 ]; then
+        echo "Test will re-execute in ${minutes} minutes from now ($(date '+%Y-%m-%d %T')), i.e., not before ${next_date}"
     fi
-done < "$conf_file"
+done < "${conf_file}"
 
 # write new schedule
-rm -f $schedule_file
+rm -f "${schedule_file}"
 idx=0
 num=${#new_schedule[@]}
-while [ $idx -lt $num ]; do
-    echo ${new_schedule[$idx]} >> $schedule_file
+while [ ${idx} -lt ${num} ]; do
+    echo ${new_schedule[${idx}]} >> "${schedule_file}"
     if [ $? -ne 0 ]; then
-        echo "Failed to write schedule to file $schedule_file!" 1&>2
+        echo "Failed to write schedule to file \"${schedule_file}\"!" 1&>2
         break
     fi
-    ((idx++))
+    (( idx++ ))
 done
-if [ -f $schedule_file ]; then
-    sort "$schedule_file" -o "$schedule_file"
+if [ -f "${schedule_file}" ]; then
+    sort "${schedule_file}" -o "${schedule_file}"
 fi
 
 # done
-if [ $errors -ne 0 ]; then
-    exit 1
-fi
-exit 0
+[ ${errors} -eq 0 ]

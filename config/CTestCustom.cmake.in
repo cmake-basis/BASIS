@@ -120,11 +120,11 @@ set (
 # exclude certain files from coverage analysis
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
-    "gmock-gtest-all"    # exclude Google Mock/Test files
+    "test.cxx" "test_main.cxx"   # exclude Google Mock/Test files
     "/gtest/"
     "/gmock/"
-    "/tclap/"            # exclude TCLAP library files
-    "/${TEST}/"          # exclude test implementations
+    "/tclap/"                    # exclude TCLAP library files
+    "/${TEST}/"                  # exclude test implementations
 )
 
 # specify additional files which should be considered

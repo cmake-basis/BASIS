@@ -69,9 +69,9 @@ set (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
 ## @brief Utilities library.
 set (@PACKAGE_NAME@_UTILITIES_LIBRARY "basis@utilities")
 ## @brief Unit testing library.
-set (@PACKAGE_NAME@_TEST_LIBRARY "basis@test-all")
+set (@PACKAGE_NAME@_TEST_LIBRARY "basis@testlib")
 ## @brief Implementation of unit test driver main() function.
-set (@PACKAGE_NAME@_TEST_MAIN_LIBRARY "basis@test-main")
+set (@PACKAGE_NAME@_TEST_MAIN_LIBRARY "basis@testmain")
 
 ## @brief Main libraries.
 set (@PACKAGE_NAME@_LIBRARIES

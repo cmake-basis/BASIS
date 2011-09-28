@@ -37,7 +37,7 @@ eval set -- "${FLAGS_ARGV}"
 
 ##############################################################################
 # @brief Run command with arguments and exit on failure.
-run ()
+function run
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
         echo "\$> $@"
@@ -56,7 +56,7 @@ run ()
 
 ##############################################################################
 # @brief Run command with arguments where error is expected.
-runerr ()
+function runerr
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
         echo "\$> $@"
@@ -83,7 +83,7 @@ runerr ()
 #                    name of the file given by @p file.
 #
 # @returns Nothing.
-copy ()
+function copy
 {
     local file=$1
     local prefix=${2:-'.'}
@@ -93,7 +93,7 @@ copy ()
 
 ##############################################################################
 # @brief Creates a project using the basisproject command-line tool.
-create ()
+function create
 {
     echo "Creating test project..."
     [ -d "${source_dir}" ] && run rm -rf "${source_dir}"
@@ -103,7 +103,7 @@ create ()
 
 ##############################################################################
 # @brief Update project.
-update ()
+function update
 {
     echo "Updating test project..."
     run "${basisproject_path}" --root "${source_dir}" "$@"
@@ -112,7 +112,7 @@ update ()
 
 ##############################################################################
 # @brief Update project with errors.
-update_error ()
+function update_error
 {
     echo "Updating test project (errors expected)..."
     runerr "${basisproject_path}" --root "${source_dir}" "$@"
@@ -121,7 +121,7 @@ update_error ()
 
 ##############################################################################
 # @brief Tries to build a project created by basisproject.
-build ()
+function build
 {
     local cwd="$(pwd)"
     readonly cwd
@@ -141,7 +141,7 @@ build ()
 
 ##############################################################################
 # @brief Cleanup source and binary tree.
-cleanup ()
+function cleanup
 {
     [ -d "${source_dir}" ] && run rm -rf "${source_dir}"
     [ -d "${binary_dir}" ] && run rm -rf "${binary_dir}"
@@ -157,7 +157,7 @@ cleanup ()
 
 ##############################################################################
 # @brief Test creation of project based on minimal configuration.
-test_minimal_empty_project ()
+function test_minimal_empty_project
 {
     echo "------------------------------------------------------------------------------"
     echo "test_minimal_empty_project:"
@@ -170,7 +170,7 @@ test_minimal_empty_project ()
 
 ##############################################################################
 # @brief Test creation of project based on standard configuration.
-test_standard_empty_project ()
+function test_standard_empty_project
 {
     echo "------------------------------------------------------------------------------"
     echo "test_standard_empty_project:"
@@ -183,7 +183,7 @@ test_standard_empty_project ()
 
 ##############################################################################
 # @brief Test creation of project based on full configuration.
-test_full_empty_project ()
+function test_full_empty_project
 {
     echo "------------------------------------------------------------------------------"
     echo "test_full_empty_project:"
@@ -196,7 +196,7 @@ test_full_empty_project ()
 
 ##############################################################################
 # @brief Update minimal to standard empty project.
-test_minimal_to_standard_empty_project ()
+function test_minimal_to_standard_empty_project
 {
     echo "------------------------------------------------------------------------------"
     echo "test_minimal_to_standard_empty_project:"
@@ -210,7 +210,7 @@ test_minimal_to_standard_empty_project ()
 
 ##############################################################################
 # @brief Update minimal to full empty project.
-test_minimal_to_full_empty_project ()
+function test_minimal_to_full_empty_project
 {
     echo "------------------------------------------------------------------------------"
     echo "test_minimal_to_full_empty_project:"
@@ -224,7 +224,7 @@ test_minimal_to_full_empty_project ()
 
 ##############################################################################
 # @brief Update full to minimal empty project.
-test_full_to_minimal_empty_project ()
+function test_full_to_minimal_empty_project
 {
     echo "------------------------------------------------------------------------------"
     echo "test_full_to_minimal_empty_project:"
@@ -239,7 +239,7 @@ test_full_to_minimal_empty_project ()
 
 ##############################################################################
 # @brief Test configuration of used languages.
-test_configuration_of_language_support ()
+function test_configuration_of_language_support
 {
     local line
 
@@ -270,7 +270,7 @@ test_configuration_of_language_support ()
 
 ##############################################################################
 # @brief Test error when required arguments are missing.
-test_required_arguments ()
+function test_required_arguments
 {
     echo "------------------------------------------------------------------------------"
     echo "test_required_arguments:"

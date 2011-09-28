@@ -1,6 +1,6 @@
 /**
- * @file  test_ExecutableTargetInfo_C++.cxx
- * @brief Test ExecutableTargetInfo module for C++.
+ * @file  test_ExecutableTargetInfo.cxx
+ * @brief Test ExecutableTargetInfo.cxx module.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

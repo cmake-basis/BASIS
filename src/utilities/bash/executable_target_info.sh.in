@@ -1,8 +1,12 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  ExecutableTargetInfo.sh
+# @file  executable_target_info.sh
 # @brief Provides information about the executables built by BASIS.
+#
+# @note The executable_target_info.sh module is automatically created by
+#       BASIS from the template file executable_target_info.sh.in which is
+#       part of the BASIS installation.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -22,16 +26,16 @@ __SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_INCLUDED=1
 # ============================================================================
 
 ## @brief Absolute directory path of ExecutableTargetInfo.sh module.
-readonly __EXECUTABLETARGETINFO_dir=@BASIS_BASH___DIR__@
+readonly __EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
 
 ## @brief Default namespace used to convert target name to target UID.
-readonly __EXECUTABLETARGETINFO_namespace='@PROJECT_NAME_LOWER@'
+readonly __EXECUTABLETARGETINFO_NAMESPACE='@PROJECT_NAME_LOWER@'
 
 # ============================================================================
 # modules
 # ============================================================================
 
-source "${__EXECUTABLETARGETINFO_dir}/@BASIS_LIBRARY_DIR@/Core.sh" # upvar()
+source "${__EXECUTABLETARGETINFO_DIR}/@BASIS_LIBRARY_DIR@/core.sh" # upvar()
 
 # ============================================================================
 # public functions
@@ -51,7 +55,7 @@ source "${__EXECUTABLETARGETINFO_dir}/@BASIS_LIBRARY_DIR@/Core.sh" # upvar()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-get_target_uid ()
+function get_target_uid
 {
     [ $# -eq 2 ] || return 1
 
@@ -61,13 +65,13 @@ get_target_uid ()
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
-    if [ -z "${__EXECUTABLETARGETINFO_initialized}" ]; then
+    if [ -z "${__EXECUTABLETARGETINFO_INITIALIZED}" ]; then
         _executabletargetinfo_initialize || return 1
     fi
     # convert target name to target UID
     local path && _executabletargetinfo_get path "${target}" LOCATION
     if [ -z "${path}" ] && [[ "${target//::/}" == "${target}" ]]; then
-        target="${__EXECUTABLETARGETINFO_namespace}::${target}"
+        target="${__EXECUTABLETARGETINFO_NAMESPACE}::${target}"
     fi
 
     local "$1" && upvar $1 "${target}"
@@ -79,7 +83,7 @@ get_target_uid ()
 # @param [in] target Name/UID of build target.
 #
 # @returns Whether the given build target is known by this module.
-is_known_target ()
+function is_known_target
 {
     local path && _executabletargetinfo_get path "$1" LOCATION
     [ -n "${path}" ]
@@ -96,7 +100,7 @@ is_known_target ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-get_executable_name ()
+function get_executable_name
 {
     [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
 
@@ -128,7 +132,7 @@ get_executable_name ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-get_executable_directory ()
+function get_executable_directory
 {
     [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
 
@@ -159,7 +163,7 @@ get_executable_directory ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-get_executable_path ()
+function get_executable_path
 {
     [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
 
@@ -202,7 +206,7 @@ get_executable_path ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-_executabletargetinfo_sanitize ()
+function _executabletargetinfo_sanitize
 {
     [ $# -eq 2 ] || return 1
     [ -z "$2" ] && upvar $1 ''
@@ -224,7 +228,7 @@ _executabletargetinfo_sanitize ()
 # @param [in] value Value associated with the given hash key.
 #
 # @returns Sets a readonly variable that represents the (key, value) entry.
-_executabletargetinfo_add ()
+function _executabletargetinfo_add
 {
     [ $# -eq 3 ] || return 1
 
@@ -247,7 +251,7 @@ _executabletargetinfo_add ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-_executabletargetinfo_get ()
+function _executabletargetinfo_get
 {
     [ $# -eq 3 ] || return 1
 
@@ -274,7 +278,7 @@ _executabletargetinfo_get ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-_executabletargetinfo_to_absolute_path ()
+function _executabletargetinfo_to_absolute_path
 {
     [ $# -eq 2 ] || [ $# -eq 3 ] || return 1
 
@@ -311,13 +315,13 @@ _executabletargetinfo_to_absolute_path ()
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-_executabletargetinfo_initialize ()
+function _executabletargetinfo_initialize
 {
     [ $# -eq 0 ] || return 1
 
     @EXECUTABLE_TARGET_INFO@
 
-    __EXECUTABLETARGETINFO_initialized=1
+    __EXECUTABLETARGETINFO_INITIALIZED=1
     return 0
 }
 
@@ -325,7 +329,7 @@ _executabletargetinfo_initialize ()
 # aliases (optional)
 # ============================================================================
 
-if [ -z "${basis_enable_target_aliases}" ] || [ ${basis_enable_target_aliases} -eq 0 ]; then
+if [ -z "${use_executable_target_aliases}" ] || [ ${use_executable_target_aliases} -eq 0 ]; then
     return
 fi
 

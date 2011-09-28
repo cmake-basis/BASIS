@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ##
-# @file  doxygen-python-filter.py
+# @file  doxyfilter_python.py
 # @brief Doxygen filter for Python scripts.
 #
 # This is the pythfilter.py implementation of Matthias Baas.

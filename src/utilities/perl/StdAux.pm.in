@@ -2,6 +2,9 @@
 # @file  StdAux.pm
 # @brief Standard auxiliary functions.
 #
+# @note The StdAux.pm module is automatically created by BASIS from the
+#       template file StdAux.pm.in which is part of the BASIS installation.
+#
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #

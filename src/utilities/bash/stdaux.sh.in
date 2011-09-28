@@ -1,8 +1,11 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  StdAux.sh
+# @file  stdaux.sh
 # @brief Standard auxiliary functions for BASH.
+#
+# @note The stdaux.sh module is automatically created by BASIS from the
+#       template file stdaux.sh.in which is part of the BASIS installation.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -21,13 +24,6 @@ __SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 
 
 # ============================================================================
-# constants
-# ============================================================================
-
-## @brief Absolute directory path of StdAux.sh module.
-readonly __STDAUX_dir=@BASIS_BASH___DIR__@
-
-# ============================================================================
 # version / help
 # ============================================================================
 
@@ -43,7 +39,7 @@ readonly __STDAUX_dir=@BASIS_BASH___DIR__@
 #                       SBIA software license.
 #
 # @returns Nothing.
-print_version ()
+function print_version
 {
     local name=${1:-${0##*/}}
     local copyright=${2:-}
@@ -63,7 +59,7 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
 #                     from the official one.
 #
 # @returns Nothing.
-print_contact ()
+function print_contact
 {
     echo "Contact:"
     if [ $# -gt 0 ]; then

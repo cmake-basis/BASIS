@@ -1,8 +1,9 @@
-#! /usr/bin/env bash
-
 ##############################################################################
-# @file  Basis.sh
+# @file  basis.sh
 # @brief BASIS utilities for BASH.
+#
+# @note The basis.sh module is automatically created by BASIS from the
+#       template file basis.sh.in which is part of the BASIS installation.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -22,17 +23,17 @@ __SBIA_@PROJECT_NAME_UPPER@_BASIS_INCLUDED=1
 # ============================================================================
 
 ## @brief Absolute directory path of Basis.sh module.
-readonly __BASIS_dir=@BASIS_BASH___DIR__@
+readonly __BASIS_DIR=@BASIS_BASH___DIR__@
 
 # ============================================================================
 # modules
 # ============================================================================
 
 # non-project specific
-source "${__BASIS_dir}/@BASIS_LIBRARY_DIR@/Core.sh"  # core utilities
-source "${__BASIS_dir}/@BASIS_LIBRARY_DIR@/Flags.sh" # command-line parsing library
+source "${__BASIS_DIR}/@BASIS_LIBRARY_DIR@/core.sh"    # core utilities
+source "${__BASIS_DIR}/@BASIS_LIBRARY_DIR@/shflags.sh" # command-line parsing library
 
 # project specific
-source "${__BASIS_dir}/ExecutableTargetInfo.sh" # info about executable targets
-source "${__BASIS_dir}/StdAux.sh"               # standard higher-level utilities
+source "${__BASIS_DIR}/executable_target_info.sh" # info about executable targets
+source "${__BASIS_DIR}/stdaux.sh"                 # standard higher-level utilities
 

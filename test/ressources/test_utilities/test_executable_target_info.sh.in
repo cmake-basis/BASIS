@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  test_ExecutableTargetInfo_BASH.sh.in
-# @brief Test ExecutableTargetInfo module for BASH.
+# @file  test_executable_target_info.sh
+# @brief Test executable_target_info.sh module.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -77,7 +77,7 @@ test_get_executable_name ()
     # name of this executable
     get_executable_name name
     assertTrue 'return value is 0' "[ $? -eq 0 ]"
-    assertEquals 'name of this executable' 'test_ExecutableTargetInfo_BASH' "${name}"
+    assertEquals 'name of this executable' 'test_executable_target_info.sh' "${name}"
     # name of executable built by other target
     get_executable_name name 'basis::basisproject.sh'
     assertTrue 'return value is 0' "[ $? -eq 0 ]"
@@ -130,4 +130,4 @@ test_get_executable_path ()
 # main
 # ============================================================================
 
-source "${__TEST_EXECUTABLETARGETINFO_BASH_dir}/@BASIS_LIBRARY_DIR@/ShUnit2.sh"
+source "${__@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shunit2.sh"

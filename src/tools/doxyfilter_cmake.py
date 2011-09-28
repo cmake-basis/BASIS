@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ##
-# @file  doxygen-cmake-filter.py
+# @file  doxyfilter_cmake.py
 # @brief Doxygen filter for CMake and CTest scripts.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.

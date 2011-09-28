@@ -20,13 +20,14 @@
 # constants
 # ============================================================================
 
-basis_dir='@TESTING_BASIS_DIR@'
-ressources_dir='@TESTING_DIR@/ressources/test_utilities'
-source_dir='@TESTING_OUTPUT_DIR@/test_utilities-source'
-binary_dir='@TESTING_OUTPUT_DIR@/test_utilities-build'
+readonly BASIS_DIR='@TESTING_BASIS_DIR@'
+readonly RESSOURCES_DIR='@TESTING_DIR@/ressources/test_utilities'
+readonly SOURCE_DIR='@TESTING_OUTPUT_DIR@/test_utilities-source'
+readonly BUILD_DIR='@TESTING_OUTPUT_DIR@/test_utilities-build'
 
-get_executable_path basisproject_path 'basis::basisproject.sh'
-[ -z "${basisproject_path}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
+get_executable_path BASISPROJECT 'basis::basisproject.sh'
+[ -z "${BASISPROJECT}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
+readonly BASISPROJECT
 
 readonly cwd="$(pwd)"
 
@@ -43,7 +44,7 @@ eval set -- "${FLAGS_ARGV}"
 
 ##############################################################################
 # @brief Run command with arguments and exit on failure.
-run ()
+function run
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
         echo "\$> $@"
@@ -62,7 +63,7 @@ run ()
 
 ##############################################################################
 # @brief Run command with arguments where error is expected.
-runerr ()
+function runerr
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
         echo "\$> $@"
@@ -81,13 +82,13 @@ runerr ()
 
 ##############################################################################
 # @brief Creates a project using the basisproject command-line tool.
-create ()
+function create
 {
     echo "Creating test project..."
-    [ -d "${source_dir}" ] && run rm -rf "${source_dir}"
-    run "${basisproject_path}" --name 'TestUtilities' \
+    [ -d "${SOURCE_DIR}" ] && run rm -rf "${SOURCE_DIR}"
+    run "${BASISPROJECT}" --name 'TestUtilities' \
         --description "A project used to test the BASIS utilities." \
-        --root "${source_dir}" \
+        --root "${SOURCE_DIR}" \
         --language CXX \
         --language Java \
         --language Python \
@@ -99,13 +100,13 @@ create ()
 
 ##############################################################################
 # @brief Tries to build a project created by basisproject.
-build ()
+function build
 {
     echo "Configuring test project..."
-    [ -d "${binary_dir}" ] && run rm -rf "${binary_dir}"
-    run mkdir -p "${binary_dir}"
-    run cd "${binary_dir}"
-    run cmake "-DBASIS_DIR=${basis_dir}" "${source_dir}"
+    [ -d "${BUILD_DIR}" ] && run rm -rf "${BUILD_DIR}"
+    run mkdir -p "${BUILD_DIR}"
+    run cd "${BUILD_DIR}"
+    run cmake "-DBASIS_DIR=${BASIS_DIR}" "${SOURCE_DIR}"
     echo "Configuring test project... - done"
     echo "Building test project..."
     run make
@@ -124,39 +125,40 @@ build ()
 #                    name of the file given by @p file.
 #
 # @returns Nothing.
-copy ()
+function copy
 {
     local file=$1
     local prefix=${2:-'.'}
     local name=${3:-"$(basename "$file")"}
-    run cp "${ressources_dir}/${file}" "${source_dir}/${prefix}/$(dirname "$file")/${name}"
+    run cp "${RESSOURCES_DIR}/${file}" "${SOURCE_DIR}/${prefix}/$(dirname "$file")/${name}"
 }
 
 ##############################################################################
 # @brief Add test to test project.
-add_test ()
+function add_test
 {
     local impl=$1
+    local target=${1%\.*}
     copy ${impl} 'test'
-    echo "basis_add_test (\"${impl}\" $2)" >> "${source_dir}/test/CMakeLists.txt"
+    echo "basis_add_test (\"${target}\" SOURCES \"${impl}\" $2)" >> "${SOURCE_DIR}/test/CMakeLists.txt"
 }
 
 ##############################################################################
 # @brief Add executable to test project.
-add_executable ()
+function add_executable
 {
     local impl=$1
     local target=${1%\.*}
     copy ${impl} 'src'
-    echo "basis_add_executable (\"${target}\" \"${impl}\" $2)" >> "${source_dir}/src/CMakeLists.txt"
+    echo "basis_add_executable (\"${target}\" \"${impl}\" $2)" >> "${SOURCE_DIR}/src/CMakeLists.txt"
 }
 
 ##############################################################################
 # @brief Cleanup source and binary tree.
-cleanup ()
+function cleanup
 {
-    [ -d "${source_dir}" ] && run rm -rf "${source_dir}"
-    [ -d "${binary_dir}" ] && run rm -rf "${binary_dir}"
+    [ -d "${SOURCE_DIR}" ] && run rm -rf "${SOURCE_DIR}"
+    [ -d "${BUILD_DIR}"  ] && run rm -rf "${BUILD_DIR}"
 }
 
 # ============================================================================
@@ -165,11 +167,11 @@ cleanup ()
 
 create
 add_executable 'helloworld.cxx'
-add_test 'test_ExecutableTargetInfo_Cxx.cxx' UNITTEST
-add_test 'test_ExecutableTargetInfo_Perl.pl.in'
-add_test 'test_ExecutableTargetInfo_BASH.sh.in'
+add_test 'test_ExecutableTargetInfo.cxx' UNITTEST
+add_test 'test_ExecutableTargetInfo.pl.in' WITH_EXT
+add_test 'test_executable_target_info.sh.in' WITH_EXT
 build
-run cd "${binary_dir}"
+run cd "${BUILD_DIR}"
 if [ ${FLAGS_verbose} -gt 0 ]; then
     run ctest -V -V
 else

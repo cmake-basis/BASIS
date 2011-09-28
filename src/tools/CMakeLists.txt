@@ -14,22 +14,23 @@ basis_add_executable (basisproject.sh)
 
 # ----------------------------------------------------------------------------
 # doxygen filters
-basis_add_executable (doxygen-filter.pl            LIBEXEC)
-basis_add_executable (doxygen-bash-filter.py       LIBEXEC)
-basis_add_executable (doxygen-cmake-filter.py      LIBEXEC)
-basis_add_executable (doxygen-javascript-filter.pl LIBEXEC)
-basis_add_executable (doxygen-matlab-filter.pl     LIBEXEC)
-basis_add_executable (doxygen-python-filter.py     LIBEXEC)
+basis_add_executable (doxyfilter.pl            LIBEXEC)
+basis_add_executable (doxyfilter_bash.py       LIBEXEC)
+basis_add_executable (doxyfilter_cmake.py      LIBEXEC)
+basis_add_executable (doxyfilter_javascript.pl LIBEXEC)
+basis_add_executable (doxyfilter_matlab.pl     LIBEXEC)
+basis_add_executable (doxyfilter_python.py     LIBEXEC)
 
-basis_add_library ("DoxyGen/Filter.pm" WITH_PATH)
+basis_add_library ("DoxyGen/Filter.pm"     WITH_PATH)
 basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
-basis_add_library ("DoxyGen/SQLFilter.pm" WITH_PATH)
+basis_add_library ("DoxyGen/SQLFilter.pm"  WITH_PATH)
 
 # ----------------------------------------------------------------------------
 # automated testing
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
-basis_add_executable (basistest-svn.sh)
-basis_add_executable (basistest-slave.sh)
-basis_add_executable (basistest-master.sh)
-basis_add_executable (basistest-cron.sh)
+basis_add_executable (basistest_svn.sh)    # wraps svn command
+basis_add_executable (basistest_slave.sh)  # executes test task
+basis_add_executable (basistest_master.sh) # executes scheduled tests
+basis_add_executable (basistest_cron.sh)   # test cron job
+basis_add_executable (basistest.sh)        # main wrapper

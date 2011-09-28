@@ -1,8 +1,8 @@
 #! /usr/bin/env perl
 
 ##############################################################################
-# @file  test_ExecutableTargetInfo_Perl.pl
-# @brief Test ExecutableTargetInfo module for Perl.
+# @file  test_ExecutableTargetInfo.pl
+# @brief Test ExecutableTargetInfo.pm module.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -60,7 +60,7 @@ sub test_get_executable_name
 {
     # name of this executable
     like (Basis::get_executable_name (),
-        qr/^test_ExecutableTargetInfo_Perl(\.pl)?$/,
+        qr/^test_ExecutableTargetInfo\.pl?$/,
         "name of this executable");
     # name of executable built by some target
     like (Basis::get_executable_name ('basis::basisproject.sh'),

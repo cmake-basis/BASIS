@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest-slave.sh
+# @file  basistest_slave.sh
 # @brief Test execution command.
 #
 # This shell script runs the tests of a BASIS project. It is a wrapper for
-# a CTest script. In particular, the testing master basistest-master.sh uses
+# a CTest script. In particular, the testing master basistest_master.sh uses
 # this script by default in order to run a test.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -19,12 +19,11 @@
 @BASIS_BASH_UTILITIES@
 
 # ============================================================================
-# settings
+# constants
 # ============================================================================
 
-# executable information
-get_executable_directory exec_dir
-get_executable_name      exec_name
+get_executable_directory EXEC_DIR  && readonly EXEC_DIR
+get_executable_name      EXEC_NAME && readonly EXEC_NAME
 
 # ============================================================================
 # help/version
@@ -34,7 +33,7 @@ get_executable_name      exec_name
 # @brief Print documentation of options.
 #
 # @returns Nothing.
-print_options ()
+function print_options
 {
     cat - << EOF-OPTIONS
 Required options:
@@ -59,12 +58,12 @@ EOF-OPTIONS
 # @brief Print help.
 #
 # @returns Nothing.
-print_help ()
+function print_help
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
-    echo "  $exec_name [options]"
+    echo "  ${EXEC_NAME} [options]"
     echo
     cat - << EOF-DESCRIPTION
 Description:
@@ -75,7 +74,7 @@ EOF-DESCRIPTION
     echo
     cat - << EOF-EXAMPLES
 Examples:
-  $exec_name -p BASIS -a coverage,memcheck
+  ${EXEC_NAME} -p BASIS -a coverage,memcheck
 
     Performs the testing of the project BASIS itself, including coverage
     analysis and memory checks.
@@ -88,12 +87,12 @@ EOF-EXAMPLES
 # @brief Print usage (i.e., only usage and options).
 #
 # @returns Nothing.
-print_usage ()
+function print_usage
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
     echo "Usage:"
-    echo "  $exec_name [options]"
+    echo "  ${EXEC_NAME} [options]"
     echo
     print_options
     echo
@@ -105,7 +104,7 @@ print_usage ()
 # ============================================================================
 
 # CTest script
-ctest_script="$exec_dir/@BASISTEST_CTEST_SCRIPT_DIR@/basistest.ctest"
+ctest_script="${EXEC_DIR}/@BASISTEST_CTEST_SCRIPT_DIR@/basistest.ctest"
 
 project=''           # name of the BASIS project
 branch='trunk'       # the branch to test
@@ -120,7 +119,7 @@ while [ $# -gt 0 ]; do
             if [ $# -gt 0 ]; then
                 project=$1
             else
-                echo "Option -c [ --conf ] requires an argument!" 1>&2
+                echo "Option --conf requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -129,7 +128,7 @@ while [ $# -gt 0 ]; do
             if [ $# -gt 0 ]; then
                 branch=$1
             else
-                echo "Option -b [ --branch ] requires an argument!" 1>&2
+                echo "Option --branch requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -138,7 +137,7 @@ while [ $# -gt 0 ]; do
             if [ $# -gt 0 ]; then
                 model=$1
             else
-                echo "Option -m [ --model ] requires an argument!" 1>&2
+                echo "Option --model requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -147,20 +146,20 @@ while [ $# -gt 0 ]; do
             if [ $# -gt 0 ]; then
                 ctest_script=$1
             else
-                echo "Option -S [ --script ] requires an argument!" 1>&2
+                echo "Option --script requires an argument!" 1>&2
                 exit 1
             fi
             ;;
         -a|--args)
             shift
             if [ $# -gt 0 ]; then
-                if [ -n "$args" ]; then
-                    args="$args,$1"
+                if [ -n "${args}" ]; then
+                    args="${args},$1"
                 else
                     args=$1
                 fi
             else
-                echo "Option -a [ --args ] requires an argument!" 1>&2
+                echo "Option --args requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -183,7 +182,7 @@ while [ $# -gt 0 ]; do
 done
 
 # check options
-if [ -z "$project" ]; then
+if [ -z "${project}" ]; then
     print_usage
     echo
     echo "No project specified!" 1>&2
@@ -194,7 +193,7 @@ fi
 # main
 # ============================================================================
 
-echo "$exec_name running on host `hostname`"
+echo "${EXEC_NAME} running on host $(hostname)"
 echo
 
 # see if ctest can be found
@@ -205,24 +204,24 @@ if [ $? -ne 0 ]; then
 fi
 
 # check existence of CTest script
-if [ ! -f "$ctest_script" ]; then
-    echo "Missing CTest script $ctest_script" 1>&2
+if [ ! -f "${ctest_script}" ]; then
+    echo "Missing CTest script ${ctest_script}" 1>&2
     exit 1
 fi
 
 # compose command
 cmd='ctest'
-if [ $verbosity -gt 1 ]; then
-    cmd="$cmd -VV"
-elif [ $verbosity -gt 0 ]; then
-    cmd="$cmd -V"
+if [ ${verbosity} -gt 1 ]; then
+    cmd="${cmd} -VV"
+elif [ ${verbosity} -gt 0 ]; then
+    cmd="${cmd} -V"
 fi
-cmd="$cmd -S $ctest_script,project=$project,branch=$branch,model=$model"
-if [ ! -z "$args" ]; then cmd="$cmd,$args"; fi
-cmd="$cmd"
+cmd="${cmd} -S ${ctest_script},project=${project},branch=${branch},model=${model}"
+if [ ! -z "${args}" ]; then cmd="${cmd},${args}"; fi
+cmd="${cmd}"
 
 # run test
-if [ $verbosity -gt 1 ]; then
-    echo "Exec $cmd"
+if [ ${verbosity} -gt 1 ]; then
+    echo "Exec ${cmd}"
 fi
-exec $cmd
+exec ${cmd}

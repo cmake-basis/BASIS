@@ -30,7 +30,7 @@ basis_add_library (
     "path.cxx" # utility path functions
 )
 
-basis_set_target_properties (utilities PROPERTIES OUTPUT_NAME "basis-utilities")
+basis_set_target_properties (utilities PROPERTIES OUTPUT_NAME "basisutilities")
 
 # ----------------------------------------------------------------------------
 # unit testing
@@ -46,8 +46,8 @@ if (NOT HAVE_TR1_TUPLE)
   basis_add_definitions ("-DGTEST_USE_OWN_TR1_TUPLE=1")
 endif ()
 
-basis_add_library (test-all  STATIC "gmock-gtest-all.cxx")
-basis_add_library (test-main STATIC "test_main.cxx")
+basis_add_library (testlib  STATIC "test.cxx")
+basis_add_library (testmain STATIC "test_main.cxx")
 
-basis_set_target_properties (test-all  PROPERTIES OUTPUT_NAME "basis-test")
-basis_set_target_properties (test-main PROPERTIES OUTPUT_NAME "basis-test-main")
+basis_set_target_properties (testlib  PROPERTIES OUTPUT_NAME "basistest")
+basis_set_target_properties (testmain PROPERTIES OUTPUT_NAME "basistest_main")

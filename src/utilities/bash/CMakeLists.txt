@@ -12,15 +12,15 @@
 # template files
 basis_install (
   FILES
-    StdAux.sh.in               # higher-level utilities
-    ExecutableTargetInfo.sh.in # information about executable targets
-    Basis.sh.in                # main module to be sourced
+    stdaux.sh.in                 # higher-level utilities
+    executable_target_info.sh.in # information about executable targets
+    basis.sh.in                  # main module to be sourced
   DESTINATION
     "${INSTALL_BASH_TEMPLATES_DIR}"
 )
 
 # ----------------------------------------------------------------------------
 # modules
-basis_add_library (Core.sh)    # core utilities
-basis_add_library (Flags.sh)   # command-line parsing library
-basis_add_library (ShUnit2.sh) # unit testing framework
+basis_add_library (core.sh)    # core utilities
+basis_add_library (shflags.sh) # command-line parsing library
+basis_add_library (shunit2.sh) # unit testing framework

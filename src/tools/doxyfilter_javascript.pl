@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 
-## @file  doxygen-javascript-filter.pl
+## @file  doxyfilter_javascript.pl
 #  @brief Doxygen filter for JavaScript files.
 #
 # This is a copy of the js2doxy command-line tool which is part of the

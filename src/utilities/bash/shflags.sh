@@ -1,13 +1,11 @@
 # vim:et:ft=sh:sts=2:sw=2
 
 ##############################################################################
-# @file   Flags.sh
+# @file   shflags.sh
 # @author Kate Ward <kate.ward at forestent.com>, Andreas Schuh
 # @brief  Advanced command-line flag library for Unix shell scripts.
 #
 # @sa http://code.google.com/p/shflags/
-#
-# @note The original file was named shflags.sh.
 #
 # @note The shFlags implementation by Kate Ward (revision 147) has been
 #       considerably modified by Andreas Schuh as part of the BASIS project

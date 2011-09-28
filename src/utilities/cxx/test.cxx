@@ -1,3 +1,6 @@
+// Original filename: gmock-gtest-all.cc
+// Copied from the open source distribution of Google's GMock library.
+
 // Copyright 2008, Google Inc.
 // All rights reserved.
 //
