@@ -109,7 +109,6 @@ TEST (ExecutableTargetInfo, GetInstallationDirectory)
     const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
 
     string dir;
-    size_t idx;
 
     dir = info.GetInstallationDirectory ("basis::basisproject.sh");
     cout << "Installation directory of basis::basisproject.sh is '" << dir << "'" << endl;
