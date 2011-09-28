@@ -53,7 +53,7 @@ basis_add_doc (
                    "*/gmock/*"            # Google Mock
                    "*/gtest/*"            # Google Test
                    "*/argh/*"             # Python Argh
-                   "*/gmock-gtest-all.cc" # Google Mock and Test
+                   "*/gmock-gtest-all.*"  # Google Mock and Test
                    # files in binary source tree
                    "cmake_install.cmake"
                    "CTestTestfile.cmake"
