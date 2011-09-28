@@ -1,0 +1,648 @@
+##############################################################################
+# @file  shtap.sh
+# @brief Unit testing framework for BASH based on the Test Anything Protocol.
+#
+# @author Patrick LeBoutillier <patl at cpan.org>
+#
+# @note This file is a copy of the tap-functions file which is part of the
+#       JTap project (http://svn.solucorp.qc.ca/repos/solucorp/JTap/trunk/).
+#       The original implementation has been modified by Andreas Schuh as
+#       part of the BASIS project at SBIA.
+#
+# Plan:
+# @code
+# plan_no_plan
+# plan_skip_all [REASON]
+# plan_tests NB_TESTS
+# @endcode
+#
+# Test:
+# @code
+# ok RESULT [NAME]
+# okx COMMAND
+# is RESULT EXPECTED [NAME]
+# isnt RESULT EXPECTED [NAME]
+# like RESULT PATTERN [NAME]
+# unlike RESULT PATTERN [NAME]
+# pass [NAME]
+# fail [NAME]
+# @endcode
+#
+# Skip:
+# @code
+# skip [CONDITION] [REASON] [NB_TESTS=1]
+#
+# skip $feature_not_present "feature not present" 2 ||
+# {
+#     is $a "a"
+#     is $b "b"
+# }
+# @endcode
+#
+# Specify TODO mode by setting the TODO variable:
+# @code
+# TODO="not implemented yet"
+# ok $result "some not implemented test"
+# unset TODO
+# @endcode
+#
+# Other:
+# @code
+# diag MSG
+# @endcode
+#
+# Example:
+# @code
+# #! /usr/bin/env bash
+#
+# source shtap.sh
+#
+# plan_tests 7
+#
+# me=$USER
+# is $USER $me "I am myself"
+# like $HOME $me "My home is mine"
+# like "`id`" $me "My id matches myself"
+#
+# ls $HOME 1>&2
+# ok $? "ls $HOME"
+# # Same thing using okx shortcut
+# okx ls $HOME
+#
+# [[ "`id -u`" != "0" ]]
+# i_am_not_root=$?
+# skip $i_am_not_root "Must be root" ||
+# {
+#     okx ls /root
+# }
+#
+# TODO="figure out how to become root..."
+# okx [ "$HOME" == "/root" ]
+# unset TODO
+# @endcode
+#
+# Copyright (c) Patrick LeBoutillier.<br />
+# Copyright (c) 2011 University of Pennsylvania.<br />
+# All rights reserved.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# @sa http://testanything.org/wiki/index.php/Tap-functions
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+readonly _SHTAP_VERSION='1.02-sbia'
+readonly _SHTAP_FILENAME='@NAME@'
+
+readonly _SHTAP_BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
+
+readonly _SHTAP_PARENT="${SHTAP_PARENT:0}"
+
+TODO=
+
+_shtap_plan_set=0
+_shtap_no_plan=0
+_shtap_skip_all=0
+_shtap_test_died=0
+_shtap_expected_tests=0 
+_shtap_executed_tests=0 
+_shtap_failed_tests=0
+
+# used to call _cleanup on shell exit
+trap _shtap_exit EXIT
+trap _shtap_exit INT
+trap _shtap_exit TERM
+
+# ============================================================================
+# plan
+# ============================================================================
+
+##############################################################################
+# @brief Choose not to plan number of tests in advance.
+function plan_no_plan
+{
+    [ ${_shtap_plan_set} -ne 0 ] && _shtap_die "You tried to plan twice!"
+
+    _shtap_plan_set=1
+    _shtap_no_plan=1
+
+    return 0
+}
+
+##############################################################################
+# @brief Plan to skip all tests.
+function plan_skip_all
+{
+    local reason=${1:-''}
+
+    [ ${_shtap_plan_set} -ne 0 ] && _shtap_die "You tried to plan twice!"
+
+    _shtap_print_plan 0 "Skip $reason"
+
+    _shtap_skip_all=1
+    _shtap_plan_set=1
+    _shtap_exit 0
+
+    return 0
+}
+
+##############################################################################
+# @brief Plan a certain number of tests and stick to it.
+function plan_tests
+{
+    local tests=${1:?}
+
+    [ ${_shtap_plan_set} -ne 0 ] && _shtap_die "You tried to plan twice!"
+    [ ${tests} -eq 0 ] && _shtap_die "You said to run 0 tests!  You've got to run something."
+
+    _shtap_print_plan ${tests}
+    _shtap_expected_tests=${tests}
+    _shtap_plan_set=1
+
+    return ${tests}
+}
+
+##############################################################################
+# @brief Print plan.
+function _shtap_print_plan
+{
+    local tests=${1:?}
+    local directive=${2:-''}
+
+    echo -n "1..${tests}"
+    [[ -n "${directive}" ]] && echo -n " # ${directive}"
+    echo
+}
+
+# ============================================================================
+# pass / fail
+# ============================================================================
+
+##############################################################################
+# @brief Pass in any case and print reason.
+function pass
+{
+    local name=$1
+    ok 0 "$name"
+}
+
+##############################################################################
+# @brief Fail in any case and print reason.
+function fail
+{
+    local name=$1
+    ok 1 "$name"
+}
+
+# ============================================================================
+# test
+# ============================================================================
+
+##############################################################################
+# @brief Evaluate test expression and fail if it does not evaluate to 0 or
+#        check return value of function.
+#
+# This is the workhorse method that actually prints the tests result.
+#
+# @param [in] expression Test expression or return value.
+# @param [in] name       Name of test.
+function ok
+{
+    local expression=${1:?}
+    local name=${2:-''}
+
+    [ ${_shtap_plan_set} -eq 0 ] && _shtap_die "You tried to run a test without a plan!  Gotta have a plan."
+
+    (( $_shtap_executed_tests ++ ))
+
+    if [ -n "${name}" ]; then
+        if _shtap_matches "${name}" "^[0-9]+$"; then
+            diag "    You named your test '${name}'.  You shouldn't use numbers for your test names."
+            diag "    Very confusing."
+        fi
+    fi
+
+    local match=`expr "${expression}" : '\([0-9]*\)'`
+    local result=0
+    if [ -z "${expression}" ]; then
+        result=1
+    elif [ -n "${match}" -a "${expression}" = "${match}" ]; then
+        [ ${expression} -ne 0 ] && result=1
+    else
+        ( eval ${expression} ) >/dev/null 2>&1
+        [ $? -ne 0 ] && result=1
+    fi
+
+    if [ ${result} -ne 0 ]; then
+        echo -n "not "
+        (( _shtap_failed_tests++ ))
+    fi
+    echo -n "ok ${_shtap_executed_tests}"
+
+    if [ -n "${name}" ]; then
+        local ename=${name//\#/\\#}
+        echo -n " - ${ename}"
+    fi
+
+    if [ -n "${TODO}" ]; then
+        echo -n " # TODO ${TODO}" ;
+        if [ ${result} -ne 0 ]; then
+            (( _shtap_failed_tests-- ))
+        fi
+    fi
+
+    echo
+    if [ ${result} -ne 0 ]; then
+        local file='_SHTAP_FILENAME'
+        local func=
+        local line=
+
+        local i=0
+        local bt=$(caller ${i})
+        while _shtap_matches "${bt}" "${_SHTAP_FILENAME}$"; do
+            (( i++ ))
+            bt=$(caller ${i})
+        done
+        local backtrace=
+        eval $(caller ${i} | (read line func file; echo "backtrace=\"${file}:${func}() at line ${line}.\""))
+
+        local t=
+        [ -n "${TODO}" ] && t="(TODO) "
+
+        if [ -n "${name}" ]; then
+            diag "  Failed ${t}test '${name}'"
+            diag "  in ${backtrace}"
+        else
+            diag "  Failed ${t}test in ${backtrace}"
+        fi
+    fi
+
+    return ${result}
+}
+
+##############################################################################
+# @brief Execute command and check return value.
+#
+# @param [in] command Command to run.
+function okx
+{
+    local command="$@"
+
+    local line=
+    diag "Output of '${command}':"
+    ${command} | while read line; do
+        diag "${line}"
+    done
+    ok ${PIPESTATUS[0]} "${command}"
+}
+
+##############################################################################
+# @brief Compare actual and expected result.
+#
+# @param [in] result   Actual result.
+# @param [in] expected Expected result.
+function _equals
+{
+    local result=${1:?}
+    local expected=${2:?}
+
+    if [[ "${result}" == "${expected}" ]] ; then
+        return 0
+    else 
+        return 1
+    fi
+}
+
+##############################################################################
+# @brief Compare actual result to expected pattern.
+#
+# @note Thanks to Aaron Kangas for the patch to allow regexp matching under
+#       BASH < 3.
+#
+# @param [in] result  Actual result.
+# @param [in] pattern Expected pattern.
+#
+# @returns Whether the actual result matches the pattern.
+#
+# @retval 0 On match.
+# @retval 1 Otherwise.
+function _matches
+{
+    local result=${1:?}
+    local pattern=${2:?}
+
+    if [ -z "${result}" ] || [ -z "${pattern}" ]; then
+        return 1
+    else
+        if [ ${_SHTAP_BASH_VERSION_MAJOR} -gt 2 ]; then
+            eval '[[ "$result" =~ "$pattern" ]]'
+        else
+            echo "${result}" | egrep -q "${pattern}"
+        fi
+    fi
+}
+
+##############################################################################
+# @brief Diagnostic message for is().
+#
+# @param [in] result   Actual result.
+# @param [in] expected Expected result.
+_shtap_is_diag
+{
+    local result=${1:?}
+    local expected=${2:?}
+
+    diag "         got: '${result}'" 
+    diag "    expected: '${expected}'"
+}
+
+##############################################################################
+# @brief Test whether a given result is equal to the expected result.
+#
+# @param [in] result   Actual result.
+# @param [in] expected Expected result.
+# @param [in] name     Optional name of test.
+#
+# @returns Whether the results are equal.
+#
+# @retval 0 On equality.
+# @retval 1 Otherwise.
+function is
+{
+    local result=${1:?}
+    local expected=${2:?}
+    local name=${3:-''}
+
+    _shtap_equals "${result}" "${expected}"
+    [ $? -eq 0 ]
+    ok $? "${name}"
+    local r=$?
+    [ ${r} -ne 0 ] && _shtap_is_diag "${result}" "${expected}"
+    return ${r}
+}
+
+##############################################################################
+# @brief Test whether a given result is not equal the expected result.
+#
+# @param [in] result   Actual result.
+# @param [in] expected Expected result.
+# @param [in] name     Optional name of test.
+#
+# @returns Whether the results were not equal.
+#
+# @retval 0 Otherwise.
+# @retval 1 On equality.
+function isnt
+{
+    local result=${1:?}
+    local expected=${2:?}
+    local name=${3:-''}
+
+    _equals "$result" "$expected"
+    (( $? != 0 ))
+    ok $? "$name"
+    local r=$?
+    (( r != 0 )) && _is_diag "$result" "$expected"
+    return $r 
+}
+
+##############################################################################
+# @brief Test whether a given result matches an expected pattern.
+#
+# @param [in] result  Actual result.
+# @param [in] pattern Expected pattern.
+# @param [in] name    Optional name of test.
+#
+# @returns Whether the result matched the pattern.
+#
+# @retval 0 On match.
+# @retval 1 Otherwise.
+function like
+{
+    local result=${1:?}
+    local pattern=${2:?}
+    local name=${3:-''}
+
+    _shtap_matches "${result}" "${pattern}"
+    [ $? -eq 0 ]
+    ok $? "${name}"
+    local r=$?
+    [ ${r} -ne 0 ] && diag "    '${result}' doesn't match '${pattern}'"
+    return ${r}
+}
+
+##############################################################################
+# @brief Test whether a given result does not match an expected pattern.
+#
+# @param [in] result  Actual result.
+# @param [in] pattern Expected pattern.
+# @param [in] name    Optional name of test.
+#
+# @returns Whether the result did not match the pattern.
+#
+# @retval 0 Otherwise.
+# @retval 1 On match.
+function unlike
+{
+    local result=${1:?}
+    local pattern=${2:?}
+    local name=${3:-''}
+
+    _shtap_matches "${result}" "${pattern}"
+    [ $? -ne 0 ]
+    ok $? "${name}"
+    local r=$?
+    [ ${r} -ne 0 ] && diag "    '${result}' matches '${pattern}'"
+    return ${r}
+}
+
+# ============================================================================
+# skip
+# ============================================================================
+
+##############################################################################
+# @brief Skip tests under a certain condition.
+#
+# @param [in] condition The condition for skipping the tests.
+#                       If 0, the tests are skipped, otherwise not.
+# @param [in] reason    An explanation for why skipping the tests.
+# @param [in] n         The number of tests which will be skipped.
+#
+# @returns Whether the tests were skipped.
+#
+# @retval 0 If tests are to be skipped.
+# @retval 1 Otherwise.
+function skip
+{
+    local condition=${1:?}
+    local reason=${2:-''}
+    local n=${3:-1}
+
+    if [ ${condition} -eq 0 ]; then
+        local i=
+        for (( i=0 ; i<$n ; i++ )); do
+            (( _shtap_executed_tests++ ))
+            echo "ok ${_shtap_executed_tests} # skip: ${reason}" 
+        done
+        return 0
+    else
+        return 1
+    fi
+}
+
+# ============================================================================
+# diagnostics
+# ============================================================================
+
+##############################################################################
+# @brief Print diagnostic message.
+#
+# @param [in] msg Diagnostic message.
+#
+# @returns Always 1.
+function diag
+{
+    local msg=${1:?}
+
+    if [ -n "${msg}" ]; then
+        echo "# ${msg}"
+    fi
+
+    return 1
+}
+
+# ============================================================================
+# termination
+# ============================================================================
+
+##############################################################################
+# @brief Bail out.
+#
+# @param [in] reason Reason for bailing out.
+#
+# @returns Nothing. Instead, exits the process with error code 255.
+function SHTAP_BAIL_OUT
+{
+    local reason=${1:-''}
+
+    echo "Bail out! ${reason}" >&2
+    _exit 255
+}
+
+##############################################################################
+# @brief Abort test execution.
+#
+# @param [in] reason Reason for aborting the test execution.
+#
+# @returns Nothing. Instead, exits the process with error code 255.
+function _shtap_die
+{
+    local reason=${1:-'<unspecified error>'}
+
+    echo "${reason}" >&2
+    _test_died=1
+    _exit 255
+}
+
+##############################################################################
+# @brief Cleaning up after execution of tests and see if plan was fulfilled.
+function _shtap_cleanup
+{
+    local rc=0 # return code
+
+    if [ ${_shtap_plan_set} -eq 0 ]; then
+        diag "Looks like your test died before it could output anything."
+        return ${rc}
+    fi
+
+    if [ ${_shtap_test_died} -ne 0 ]; then
+        diag "Looks like your test died just after ${_shtap_executed_tests}."
+        return ${rc}
+    fi
+
+    if [ ${_shtap_skip_all} -eq 0 -a ${_shtap_no_plan} -ne 0 ]; then
+        _shtap_print_plan ${_shtap_executed_tests}
+    fi
+
+    local s=
+    if [ ${_shtap_no_plan} -eq 0 -a ${_shtap_expected_tests} -lt ${_shtap_executed_tests} ]; then
+        s=''
+        [ ${_shtap_expected_tests} -gt 1 ] && s='s'
+        local extra=$(( _shtap_executed_tests - _shtap_expected_tests ))
+        diag "Looks like you planned ${_shtap_expected_tests} test${s} but ran ${extra} extra."
+        rc=-1 ;
+    fi
+
+    if [ ${_shtap_no_plan} -eq 0 -a ${_shtap_expected_tests} -gt ${_shtap_executed_tests} ]; then
+        s=''
+        [ ${_shtap_expected_tests} -gt 1 ] && s='s'
+        diag "Looks like you planned ${_shtap_expected_tests} test${s} but only ran ${_shtap_executed_tests}."
+    fi
+
+    if [ ${_shtap_failed_tests} -gt 0 ]; then
+        s=''
+        [ ${_shtap_failed_tests} -gt 1 ] && s='s'
+        diag "Looks like you failed ${_shtap_failed_tests} test${s} of ${_shtap_executed_tests}."
+    fi
+
+    return ${rc}
+}
+
+##############################################################################
+# @brief Calculate exit status indicating number of failed or extra tests.
+function _shtap_exit_status
+{
+    if [ ${_shtap_no_plan} -ne 0 -o ${_shtap_plan_set} -eq 0 ]; then
+        return ${_shtap_failed_tests}
+    fi
+
+    if [ ${_shtap_expected_tests} -lt ${_shtap_executed_tests} ]; then
+        return $(( _shtap_executed_tests - _shtap_expected_tests ))
+    fi
+
+    return $(( _shtap_failed_tests + ( _shtap_expected_tests - _shtap_executed_tests )))
+}
+
+##############################################################################
+# @brief Terminate execution of tests.
+function _shtap_exit
+{
+    local rc=${1:-''}
+    if [ -z "${rc}" ]; then
+        _shtap_exit_status
+        rc=$?
+    fi
+
+    _shtap_cleanup
+    local alt_rc=$?
+    [ ${alt_rc} -ne 0 ] && rc=${alt_rc}
+    trap - EXIT
+    exit ${rc}
+}
+
+# ============================================================================
+# run
+# ============================================================================
+
+##############################################################################
+# @brief Execute all functions whith prefix 'test' in function name.
+function runtests
+{
+    local regex='^[ 	]*(function )*test[A-Za-z0-9_]* *\(\)'
+    local tests=$(egrep "${regex}" "${_SHTAP_PARENT}" \
+            | sed 's/^[^A-Za-z0-9_]*//;s/^function //;s/\([A-Za-z0-9_]*\).*/\1/g' \
+            | xargs)
+
+    for test_ in ${tests}; do
+        ${test_}
+    done
+}
