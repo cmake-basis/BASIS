@@ -112,17 +112,15 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-_SHTAP_VERSION='1.02-sbia'
-_SHTAP_FILENAME='@NAME@'
+# return if already loaded
+[ -n "${SHTAP_VERSION:-}" ] && return 0
+readonly SHTAP_VERSION='1.02-sbia'
 
-_SHTAP_BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
-_SHTAP_BASH_VERSION_MINOR=${BASH_VERSION#*.}
-_SHTAP_BASH_VERSION_MINOR=${_SHTAP_BASH_VERSION_MINOR%%.*}
 
-readonly _SHTAP_VERSION
-readonly _SHTAP_FILENAME
-readonly _SHTAP_BASH_VERSION_MINOR
-readonly _SHTAP_BASH_VERSION_MAJOR
+readonly _SHTAP_DIR=@BASIS_BASH___DIR__@
+source "${_SHTAP_DIR}/@LIBRARY_DIR@/core.sh" # match()
+
+readonly _SHTAP_FILENAME='@NAME@'
 
 TODO=
 
@@ -134,7 +132,7 @@ _shtap_expected_tests=0
 _shtap_executed_tests=0 
 _shtap_failed_tests=0
 
-# used to call _cleanup on shell exit
+# used to call _cleanup() on shell exit
 trap _shtap_exit EXIT
 trap _shtap_exit INT
 trap _shtap_exit TERM
@@ -163,7 +161,7 @@ function plan_skip_all
 
     [ ${_shtap_plan_set} -ne 0 ] && _shtap_die "You tried to plan twice!"
 
-    _shtap_print_plan 0 "Skip $reason"
+    _shtap_print_plan 0 "Skip ${reason}"
 
     _shtap_skip_all=1
     _shtap_plan_set=1
@@ -209,7 +207,7 @@ function _shtap_print_plan
 function pass
 {
     local name=$1
-    ok 0 "$name"
+    ok 0 "${name}"
 }
 
 ##############################################################################
@@ -217,7 +215,7 @@ function pass
 function fail
 {
     local name=$1
-    ok 1 "$name"
+    ok 1 "${name}"
 }
 
 # ============================================================================
@@ -239,10 +237,10 @@ function ok
 
     [ ${_shtap_plan_set} -eq 0 ] && _shtap_die "You tried to run a test without a plan!  Gotta have a plan."
 
-    (( $_shtap_executed_tests ++ ))
+    (( _shtap_executed_tests++ ))
 
     if [ -n "${name}" ]; then
-        if _shtap_matches "${name}" "^[0-9]+$"; then
+        if match "${name}" "^[0-9]+$"; then
             diag "    You named your test '${name}'.  You shouldn't use numbers for your test names."
             diag "    Very confusing."
         fi
@@ -285,7 +283,7 @@ function ok
 
         local i=0
         local bt=$(caller ${i})
-        while _shtap_matches "${bt}" "${_SHTAP_FILENAME}$"; do
+        while match "${bt}" "${_SHTAP_FILENAME}$"; do
             (( i++ ))
             bt=$(caller ${i})
         done
@@ -336,47 +334,6 @@ function _shtap_equals
         return 0
     else 
         return 1
-    fi
-}
-
-##############################################################################
-# @brief Compare actual result to expected pattern.
-#
-# @note Thanks to Aaron Kangas for the patch to allow regexp matching under
-#       BASH < 3.
-#
-# @param [in] result  Actual result.
-# @param [in] pattern Expected pattern.
-#
-# @returns Whether the actual result matches the pattern.
-#
-# @retval 0 On match.
-# @retval 1 Otherwise.
-function _shtap_matches
-{
-    local result=${1:?}
-    local pattern=${2:?}
-
-    if [ -z "${result}" ] || [ -z "${pattern}" ]; then
-        return 1
-    else
-        if [ ${_SHTAP_BASH_VERSION_MAJOR} -gt 2 ]; then
-            # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
-            # throws an error when a regular expression with groups
-            # such as in '^(a|b|c)' is used. Here, quotes are required.
-            if [ ${_SHTAB_BASH_VERSION_MINOR} -eq 0 ]; then
-                [[ "${result}" =~ "${pattern}" ]]
-            # GNU bash, version 3.2.25(1)-release (x86_64-redhat-linux-gnu)
-            # works with either quotes or not. However, on Mac OS Snow Leopard,
-            # GNU bash, version 3.2.48(1)-release (x86_64-apple-darwin10.0)
-            # requires that no quotes are used. The quotes are otherwise
-            # considered to be part of the pattern.
-            else
-                [[ "${result}" =~ ${pattern} ]]
-            fi
-        else
-            echo "${result}" | egrep -q "${pattern}"
-        fi
     fi
 }
 
@@ -436,7 +393,7 @@ function isnt
     local expected=${2:?}
     local name=${3:-''}
 
-    _equals "${result}" "${expected}"
+    _shtap_equals "${result}" "${expected}"
     (( $? != 0 ))
     ok $? "${name}"
     local r=$?
@@ -461,7 +418,7 @@ function like
     local pattern=${2:?}
     local name=${3:-''}
 
-    _shtap_matches "${result}" "${pattern}"
+    match "${result}" "${pattern}"
     [ $? -eq 0 ]
     ok $? "${name}"
     local r=$?
@@ -486,7 +443,7 @@ function unlike
     local pattern=${2:?}
     local name=${3:-''}
 
-    _shtap_matches "${result}" "${pattern}"
+    match "${result}" "${pattern}"
     [ $? -ne 0 ]
     ok $? "${name}"
     local r=$?
@@ -564,7 +521,7 @@ function SHTAP_BAIL_OUT
     local reason=${1:-''}
 
     echo "Bail out! ${reason}" >&2
-    _exit 255
+    _shtap_exit 255
 }
 
 ##############################################################################
@@ -578,8 +535,8 @@ function _shtap_die
     local reason=${1:-'<unspecified error>'}
 
     echo "${reason}" >&2
-    _test_died=1
-    _exit 255
+    _shtap_test_died=1
+    _shtap_exit 255
 }
 
 ##############################################################################

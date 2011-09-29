@@ -1,0 +1,170 @@
+#! /usr/bin/env bash
+
+##############################################################################
+# @file  test_shtap.sh
+# @brief Test shtap.sh module.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+readonly _TEST_SHTAP_DIR=@BASIS_BASH___DIR__@
+
+source "${_TEST_SHTAP_DIR}/@BASIS_LIBRARY_DIR@/core.sh" || exit 1
+source "${_TEST_SHTAP_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh" || exit 1
+
+
+# ============================================================================
+# plan
+# ============================================================================
+
+plan_tests 25
+
+# ============================================================================
+# helper
+# ============================================================================
+
+function reset_shtap
+{
+    _shtap_plan_set=0
+    _shtap_no_plan=0
+    _shtap_skip_all=0
+    _shtap_test_died=0
+    _shtap_expected_tests=0 
+    _shtap_executed_tests=0 
+    _shtap_failed_tests=0
+}
+
+# ============================================================================
+# tests of fundamental functions
+# ============================================================================
+
+# At first, we test all the functions that we require to be able to use
+# the functions of the unit testing framework ourselves. Here you can see
+# how much more work such tests are...
+
+# ----------------------------------------------------------------------------
+# test diag() first as it is used to output diagnostic messages
+output=$( diag &> /dev/null; echo "CONTINUED" )
+result=$?
+
+[ ${result} -eq 1 ] || {
+    echo "not ok 1 - exit code of diag()"
+    echo "#         got: '${result}'"
+    echo "#    expected: '1'"
+    exit 1
+}
+echo "ok 1 - exit code of diag()"
+
+match "${output}" 'CONTINUED'
+[ $? -ne 0 ] || {
+    echo "not ok 2 - diag() without argument aborts test"
+    exit 1
+}
+echo "ok 2 - diag() without argument aborts test"
+
+output=$( diag 'testing diag()' )
+result=$?
+
+[ ${result} -eq 1 ] || {
+    echo "not ok 3 - exit code of diag()"
+    echo "#         got: '${result}'"
+    echo "#    expected: '1'"
+    exit 1
+}
+echo "ok 3 - exit code of diag()"
+
+[[ "${output}" == '# testing diag()' ]] || {
+    echo "not ok 4 - diag() with argument outputs diagnostic message"
+    echo "#         got: '${output}'"
+    echo "#    expected: '# testing diag()'"
+    exit 1
+}
+echo "ok 4 - diag() with argument outputs diagnostic message"
+
+
+# ----------------------------------------------------------------------------
+# test _shtap_die()
+output=$( _shtap_die 2>&1 )
+result=$?
+
+[ ${result} -eq 255 ] || {
+    echo "not ok 5 - exit code of _shtap_die()"
+    echo "#         got: '${result}'"
+    echo "#    expected: '255'"
+    exit 1
+}
+echo "ok 5 - exit code of _shtap_die()"
+
+output=$( _shtap_die "to see how you die" 2>&1 )
+result=$?
+
+[ ${result} -eq 255 ] || {
+    echo "not ok 6 - exit code of _shtap_die()"
+    echo "#         got: '${result}'"
+    echo "#    expected: '255'"
+    exit 1
+}
+echo "ok 6 - exit code of _shtap_die()"
+
+_shtap_executed_tests=6
+
+# ============================================================================
+# all other tests
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# test plan_no_plan()
+output=$( reset_shtap; plan_no_plan 2>&1 )
+result=$?
+
+is ${result} 0 'plan_no_plan()'
+ok "[ -z "${output}" ]" 'no plan printed'
+
+output=$( ( reset_shtap; plan_no_plan; plan_no_plan; echo "SUCCESS" ) 2>&1 )
+result=$?
+
+is ${result} 255 'plan_no_plan() exits with error code 255 on error'
+unlike "${output}" 'SUCCESS' 'plan_no_plan() aborts test when called twice'
+like "${output}" 'You tried to plan twice!' 'error message when plan changed'
+
+# ----------------------------------------------------------------------------
+# test plan_skip_all()
+output=$( ( reset_shtap; plan_skip_all; echo "CONTINUED" ) 2>&1 )
+result=$?
+
+is ${result} 0 'plan_skip_all() exits with error code 0'
+like "${output}" '1..0' 'plan_skip_all() prints plan with 0 tests'
+like "${output}" 'Skip $' "plan_skip_all() prints 'Skip' with no reason printed"
+unlike "${output}" 'CONTINUED' 'plan_skip_all() prematurely aborts testing'
+
+output=$( ( reset_shtap; plan_tests 1; plan_skip_all; echo "SUCCESS" ) 2>&1 )
+result=$?
+
+is ${result} 255 'plan_skip_all() exits with error code 255 when tests planned before'
+unlike "${output}" 'SUCCESS' 'plan_skip_all() aborts test when called after another plan'
+like "${output}" 'You tried to plan twice!' 'error message when plan changed'
+
+# ----------------------------------------------------------------------------
+# test plan_tests()
+output=$( ( reset_shtap; plan_tests; echo "CONTINUED" ) 2>&1 )
+result=$?
+
+is ${result} 1 'plan_tests() exits with error code 1 when given no argument'
+unlike "${output}" 'CONTINUED' 'plan_tests() aborts testing when given no argument'
+
+output=$( ( reset_shtap; plan_tests 0; echo "CONTINUED" ) 2>&1 )
+result=$?
+
+is ${result} 255 'plan_tests() exits with error code 255 when no tests planned'
+unlike "${output}" 'CONTINUED' 'plan_tests() aborts testing when no tests planned'
+
+output=$( ( reset_shtap; plan_tests 1; plan_tests 1; echo "SUCCESS" ) 2>&1 )
+result=$?
+
+is ${result} 255 'plan_tests() exits with error code 255 when tests planned before'
+unlike "${output}" 'SUCCESS' 'plan_tests() aborts test when called after another plan'
+like "${output}" 'You tried to plan twice!' 'error message when plan changed'
+

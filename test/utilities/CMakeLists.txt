@@ -8,5 +8,10 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
+# test project independent utilities
 basis_add_test (test_path.cxx UNITTEST)
+basis_add_test (test_core.sh  UNITTEST)
+basis_add_test (test_shtap.sh UNITTEST)
+
+# test project-specific utilities
 basis_add_test (test_utilities.sh)
