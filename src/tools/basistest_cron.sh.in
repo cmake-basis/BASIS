@@ -73,7 +73,7 @@ slave="${EXEC_DIR}/basistest_slave -v -S ${ctest} --args shared-source,common-si
 # ============================================================================
 
 # source environment settings of test user
-source /sbia/home/swtest/.bashrc
+source /sbia/home/swtest/.bashrc || exit 1
 
 # prepend test command by qsub command
 if [ ${sge} -ne 0 ]; then
