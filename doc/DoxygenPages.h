@@ -20,6 +20,8 @@
 /**
 @mainpage
 
+@section Introduction
+
 This is the main page of the automatically generated API documentation of
 the Build system And Software Implementation Standard (BASIS) project.
 The BASIS project was started early in 2011 in order to improve and
@@ -40,6 +42,11 @@ C++ depending on third-party libraries used by this implementation, for
 example. Therefore, in order to be able to build a BASIS project,
 the BASIS package has to be installed. Note, however, that BASIS is not
 required during the runtime, i.e., for executing the software.
+
+@section Links Related Links
+
+- <a href="https://sbia-wiki.uphs.upenn.edu/wiki/index.php/BASIS">Project Wiki</a> - The main Wiki page.
+- <a href="https://sbia-portal.uphs.upenn.edu/cdash/index.php?project=BASIS">Dashboard</a> - The CDash testing dashboard.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
