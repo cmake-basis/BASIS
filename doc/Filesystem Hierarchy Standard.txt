@@ -18,16 +18,15 @@ INTRODUCTION
 
   This document describes the filesystem hierarcy of projects following the
   Build system And Software Implementation Standard (BASIS). This standard
-  is in particular based on the Filesystem Hierarchy Standard of Linux
-  (http://www.linuxfoundation.org/en/FHS). The configuration of the installation
-  is further designed such that it is possible to account for the differences
-  in both Unix and Windows systems as well as the installation of multiple
-  versions of each package. Furthermore, the directory structure by default
-  integrates software developed at SBIA not only seamlessly into the target
-  system but also the various separately managed SBIA software packages with
-  each other. The latter is in particular employed by the superproject concept,
-  also referred to as super-build. The superproject concept is described in the
-  document "Super- And Subprojects.txt".
+  is in particular based on the Filesystem Hierarchy Standard of Linux [1].
+  The configuration of the installation is further designed such that it is
+  possible to account for the differences in both Unix and Windows systems as
+  well as the installation of multiple versions of each package. Furthermore,
+  the directory structure by default integrates software developed at SBIA not
+  only seamlessly into the target system but also the various separately managed
+  SBIA software packages with each other. The latter is in particular employed
+  by the superproject concept, also referred to as super-build. The superproject
+  concept is described in the document "Super- And Subprojects.txt".
 
   In this document, names of CMake variables defined by the BASIS modules are
   given. These are used within the CMake modules to refer to the particular
@@ -211,6 +210,7 @@ BUILD TREE
       + LIBRARY_OUTPUT_DIRECTORY        + lib/
       + ARCHIVE_OUTPUT_DIRECTORY        + lib/
       + TESTING_RUNTIME_DIR             + Testing/bin/
+      + TESTING_LIBRARY_DIR             + Testing/lib/
       + TESTING_OUTPUT_DIR              + Testing/Temporary/
 
 
@@ -221,6 +221,7 @@ BUILD TREE
   - LIBRARY_OUTPUT_DIRECTORY   Shared libraries (UNIX).
   - ARCHIVE_OUTPUT_DIRECTORY   Static libraries and import libraries (Windows).
   - TESTING_RUNTIME_DIR        Directory of test executables.
+  - TESTING_LIBRARY_DIR        Directory of libraries only used for testing.
   - TESTING_OUTPUT_DIR         Directory used for test results.
 
 
@@ -261,7 +262,7 @@ INSTALL TREE
   Based on above options, the installation directories are set as follows:
 
   - INSTALL_PREFIX                 - <prefix>/
-      + INSTALL_CONFIG_DIR             + lib/<sinfix>/cmake/ (UNIX) | cmake/ (Windows)
+      + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix> (UNIX) | cmake/ (Windows)
       + INSTALL_RUNTIME_DIR            + bin/<sinfix>/
       + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/ | bin/<sinfix>/ (Windows)
       + INSTALL_LIBRARY_DIR            + lib/<sinfix>/
@@ -275,7 +276,7 @@ INSTALL TREE
   Note that the include directory by intention always ends in "sbia/<project>",
   such that header files of a project have to be included as follows:
 
-    #include <sbia/<project>/some-header.h>
+    #include <sbia/<project>/SomeHeader.h>
 
   Hence, the include directory which is added to the search path has to be set
   to <prefix>/include/. 
@@ -322,3 +323,9 @@ INSTALL TREE
   - If INSTALL_MAN_DIR != "<prefix>/share/man" create symbolic links
     "<prefix>/share/man/man?/<name>.?" -> "INSTALL_MAN_DIR/man?/<name>.?".
 
+
+
+REFERENCES
+==========
+
+  [1] http://www.linuxfoundation.org/en/FHS
