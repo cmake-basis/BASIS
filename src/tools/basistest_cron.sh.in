@@ -29,7 +29,8 @@
 # constants
 # ============================================================================
 
-get_executable_directory EXEC_DIR && readonly EXEC_DIR
+get_executable_directory EXEC_DIR  && readonly EXEC_DIR
+get_executable_name      EXEC_NAME && readonly EXEC_NAME
 
 # ============================================================================
 # settings
@@ -71,6 +72,45 @@ slave="${EXEC_DIR}/basistest_slave -v -S ${ctest} --args shared-source,common-si
 # ============================================================================
 # main
 # ============================================================================
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            echo "@NAME@ (@PROJECT_NAME@)"
+            echo
+            echo "Usage:"
+            echo "  ${EXEC_NAME}"
+            echo
+            echo "Description:"
+            echo "  This command should be run regularly by a cron job. It contains"
+            echo "  all the fixed settings for the execution of the basistest master"
+            echo "  command, which is simply executed by this command."
+            echo
+            print_contact
+            exit 0
+            ;;
+
+        --helpshort)
+            echo "@NAME@ (@PROJECT_NAME@)"
+            echo
+            echo "Usage:"
+            echo "  ${EXEC_NAME}"
+            echo
+            print_contact
+            exit 0
+            ;;
+
+        --version)
+            print_version '@NAME@'
+            exit 0
+            ;;
+
+        *)
+            echo "Invalid argument $1! See ${EXEC_NAME} --help." 1>&2
+            exit 1
+            ;;
+    esac
+done
 
 # source environment settings of test user
 source /sbia/home/swtest/.bashrc || exit 1
