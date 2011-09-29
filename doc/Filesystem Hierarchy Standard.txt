@@ -328,4 +328,4 @@ INSTALL TREE
 REFERENCES
 ==========
 
-  [1] http://www.linuxfoundation.org/en/FHS
+  [1] http://proton.pathname.com/fhs/
