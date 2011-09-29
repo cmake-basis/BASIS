@@ -23,8 +23,7 @@ INTRODUCTION
   to actual executable file names. These calling conventions are, however,
   hidden to the developer through automatically generated utility functions
   for each supported programming language. See section "IMPLEMENTATION BY
-  SUPPORTED LANGUAGE" for details on the specific implementation of the
-  calling conventions for each supported language.
+  SUPPORTED LANGUAGE" for details on the specific implementations.
 
 
 
