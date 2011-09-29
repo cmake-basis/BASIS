@@ -14,8 +14,8 @@
 ##############################################################################
 
 # return if already loaded
-[ "${__SBIA_@PROJECT_NAME_UPPER@_BASIS_INCLUDED:-0}" -eq 1 ] && return 0
-__SBIA_@PROJECT_NAME_UPPER@_BASIS_INCLUDED=1
+[ "${_SBIA_@PROJECT_NAME_UPPER@_BASIS_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_@PROJECT_NAME_UPPER@_BASIS_INCLUDED=1
 
 
 # ============================================================================
@@ -23,17 +23,17 @@ __SBIA_@PROJECT_NAME_UPPER@_BASIS_INCLUDED=1
 # ============================================================================
 
 ## @brief Absolute directory path of Basis.sh module.
-readonly __BASIS_DIR=@BASIS_BASH___DIR__@
+readonly _BASIS_DIR=@BASIS_BASH___DIR__@
 
 # ============================================================================
 # modules
 # ============================================================================
 
 # non-project specific
-source "${__BASIS_DIR}/@BASIS_LIBRARY_DIR@/core.sh"    # core utilities
-source "${__BASIS_DIR}/@BASIS_LIBRARY_DIR@/shflags.sh" # command-line parsing library
+source "${_BASIS_DIR}/@BASIS_LIBRARY_DIR@/core.sh"    # core utilities
+source "${_BASIS_DIR}/@BASIS_LIBRARY_DIR@/shflags.sh" # command-line parsing library
 
 # project specific
-source "${__BASIS_DIR}/executabletargetinfo.sh" # info about executable targets
-source "${__BASIS_DIR}/stdaux.sh"               # standard higher-level utilities
+source "${_BASIS_DIR}/executabletargetinfo.sh" # info about executable targets
+source "${_BASIS_DIR}/stdaux.sh"               # standard higher-level utilities
 

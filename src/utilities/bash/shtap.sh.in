@@ -112,10 +112,17 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-readonly _SHTAP_VERSION='1.02-sbia'
-readonly _SHTAP_FILENAME='@NAME@'
+_SHTAP_VERSION='1.02-sbia'
+_SHTAP_FILENAME='@NAME@'
 
-readonly _SHTAP_BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
+_SHTAP_BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
+_SHTAP_BASH_VERSION_MINOR=${BASH_VERSION#*.}
+_SHTAP_BASH_VERSION_MINOR=${_SHTAP_BASH_VERSION_MINOR%%.*}
+
+readonly _SHTAP_VERSION
+readonly _SHTAP_FILENAME
+readonly _SHTAP_BASH_VERSION_MINOR
+readonly _SHTAP_BASH_VERSION_MAJOR
 
 TODO=
 
@@ -354,7 +361,19 @@ function _shtap_matches
         return 1
     else
         if [ ${_SHTAP_BASH_VERSION_MAJOR} -gt 2 ]; then
-            eval '[[ "$result" =~ "$pattern" ]]'
+            # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
+            # throws an error when a regular expression with groups
+            # such as in '^(a|b|c)' is used. Here, quotes are required.
+            if [ ${_SHTAB_BASH_VERSION_MINOR} -eq 0 ]; then
+                [[ "${result}" =~ "${pattern}" ]]
+            # GNU bash, version 3.2.25(1)-release (x86_64-redhat-linux-gnu)
+            # works with either quotes or not. However, on Mac OS Snow Leopard,
+            # GNU bash, version 3.2.48(1)-release (x86_64-apple-darwin10.0)
+            # requires that no quotes are used. The quotes are otherwise
+            # considered to be part of the pattern.
+            else
+                [[ "${result}" =~ ${pattern} ]]
+            fi
         else
             echo "${result}" | egrep -q "${pattern}"
         fi
@@ -417,12 +436,12 @@ function isnt
     local expected=${2:?}
     local name=${3:-''}
 
-    _equals "$result" "$expected"
+    _equals "${result}" "${expected}"
     (( $? != 0 ))
-    ok $? "$name"
+    ok $? "${name}"
     local r=$?
-    (( r != 0 )) && _is_diag "$result" "$expected"
-    return $r 
+    [ ${r} -ne 0 ] && _shtap_is_diag "${result}" "${expected}"
+    return ${r} 
 }
 
 ##############################################################################

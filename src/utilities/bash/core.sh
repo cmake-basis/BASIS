@@ -18,12 +18,75 @@
 ##############################################################################
 
 # return if already loaded
-[ "${__SBIA_CORE_INCLUDED:-0}" -eq 1 ] && return 0
-__SBIA_CORE_INCLUDED=1
+[ "${_SBIA_CORE_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_CORE_INCLUDED=1
+
 
 ## @addtogroup BashUtilities
 #  @{
 
+
+# ============================================================================
+# constants
+# ============================================================================
+
+BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
+BASH_VERSION_MINOR=${BASH_VERSION#*.}
+BASH_VERSION_MINOR=${BASH_VERSION_MINOR%%.*}
+
+readonly BASH_VERSION_MAJOR
+readonly BASH_VERSION_MINOR
+
+# ============================================================================
+# pattern matching
+# ============================================================================
+
+##############################################################################
+# @brief This function implements a more portable way to do pattern matching.
+#
+# Unfortunately, there are significant differences in the way patterns have
+# to be matched when using different shells. This function considers which
+# shell is used (at the moment only BASH), and uses the appropriate syntax
+# for the pattern matching.
+#
+# @param [in] value   The string to match against pattern.
+# @param [in] pattern The pattern to match.
+#
+# @returns Whether the given string matches the given pattern.
+#
+# @retval 0 On match.
+# @retval 1 Otherwise.
+function match
+{
+    [ $# -eq 2 ] || return 1
+
+    local value=$1
+    local pattern=$2
+
+    if [ -z "${value}" ]; then
+        [ -z "${pattern}" ]
+    elif [ -z "${pattern}" ]; then
+        [ -z "${value}" ]
+    else
+        if [ ${BASH_VERSION_MAJOR} -gt 2 ]; then
+            # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
+            # throws an error when a regular expression with groups
+            # such as in '^(a|b|c)' is used. Here, quotes are required.
+            if [ ${BASH_VERSION_MINOR} -eq 0 ]; then
+                [[ "${result}" =~ "${pattern}" ]]
+            # GNU bash, version 3.2.25(1)-release (x86_64-redhat-linux-gnu)
+            # works with either quotes or not. However, on Mac OS Snow Leopard,
+            # GNU bash, version 3.2.48(1)-release (x86_64-apple-darwin10.0)
+            # requires that no quotes are used. The quotes are otherwise
+            # considered to be part of the pattern.
+            else
+                [[ "${result}" =~ ${pattern} ]]
+            fi
+        else
+            echo "${result}" | egrep -q "${pattern}"
+        fi
+    fi
+}
 
 # ============================================================================
 # upvar(s)
