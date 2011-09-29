@@ -57,7 +57,7 @@ source "${_EXECUTABLETARGETINFO_DIR}/@BASIS_LIBRARY_DIR@/core.sh" # upvar()
 # @retval 1 On failure.
 function get_target_uid
 {
-    [ $# -eq 2 ] || return 1
+    [ -n "$1" ] && [ $# -eq 2 ] || return 1
 
     local target="$2"
     # empty string as input remains unchanged
@@ -85,6 +85,7 @@ function get_target_uid
 # @returns Whether the given build target is known by this module.
 function is_known_target
 {
+    [ -n "$1" ] || return 1
     local path && _executabletargetinfo_get path "$1" LOCATION
     [ -n "${path}" ]
 }
@@ -102,7 +103,7 @@ function is_known_target
 # @retval 1 On failure.
 function get_executable_name
 {
-    [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
+    [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
 
     local name
 
@@ -134,7 +135,7 @@ function get_executable_name
 # @retval 1 On failure.
 function get_executable_directory
 {
-    [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
+    [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
 
     local path
 
@@ -165,7 +166,7 @@ function get_executable_directory
 # @retval 1 On failure.
 function get_executable_path
 {
-    [ $# -eq 1 ] || [ $# -eq 2 ] || return 1
+    [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
 
     local path
 

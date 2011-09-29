@@ -20,7 +20,7 @@ source "${_TEST_SHTAP_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh" || exit 1
 # plan
 # ============================================================================
 
-plan_tests 25
+plan_tests 26
 
 # ============================================================================
 # helper
@@ -168,3 +168,6 @@ is ${result} 255 'plan_tests() exits with error code 255 when tests planned befo
 unlike "${output}" 'SUCCESS' 'plan_tests() aborts test when called after another plan'
 like "${output}" 'You tried to plan twice!' 'error message when plan changed'
 
+# ----------------------------------------------------------------------------
+# test is()
+is '' '' 'empty strings can be compared'

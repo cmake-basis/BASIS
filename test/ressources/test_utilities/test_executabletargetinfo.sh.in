@@ -1,0 +1,130 @@
+#! /usr/bin/env bash
+
+##############################################################################
+# @file  test_executable_target_info.sh
+# @brief Test executable_target_info.sh module.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+@BASIS_BASH_UTILITIES@
+
+source "${_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh"
+
+# ============================================================================
+# plan
+# ============================================================================
+
+plan_tests 36
+
+# ============================================================================
+# tests
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# test _executabletargetinfo_sanitize()
+#
+# This function failed before due to the GNU version of tr using -c instead of -C.
+
+_executabletargetinfo_sanitize sane 'basis::basisproject.sh'
+is "${sane}" 'basis__basisproject_sh' ':: and . replaced by _'
+_executabletargetinfo_sanitize sane 'basis@basisproject.sh'
+is "${sane}" 'basis_basisproject_sh' '@ and . replaced by _'
+
+# ----------------------------------------------------------------------------
+# test get_target_uid()
+
+# without namespace
+get_target_uid uid 'basisproject.sh'
+is $? 0 'return value is 0'
+is "${uid}" 'utilitiestest::basisproject.sh' 'namespace prepended to known target'
+get_target_uid uid 'unknown'
+is $? 0 'return value is 0'
+is "${uid}" 'utilitiestest::unknown' 'namespace prepended to unknown target'
+
+# with namespace
+get_target_uid uid 'basis::basisproject.sh'
+is $? 0 'return value is 0'
+is "${uid}" 'basis::basisproject.sh' 'UID remains unchanged'
+get_target_uid uid 'hammer::hammer'
+is $? 0 'return value is 0'
+is "${uid}" 'hammer::hammer' 'UID remains unchanged'
+
+# global namespace
+get_target_uid uid '::hello'
+is $? 0 'return value is 0'
+is "${uid}" '::hello' 'global namespace remains unchanged'
+
+# empty string
+get_target_uid uid ''
+is $? 0 'return value is 0'
+is "${uid}" '' 'empty string remains unchanged'
+
+# ----------------------------------------------------------------------------
+# test is_known_target()
+
+is_known_target 'basisproject.sh'
+isnt $? 0 'basisproject.sh not part of UtilitiesTest'
+is_known_target 'basis::basisproject.sh'
+is $? 0 'basis::basisproject.sh is known target'
+is_known_target ''
+isnt $? 0 'empty target string is unknown target'
+is_known_target
+isnt $? 0 'undefined target string is unknown target'
+is_known_target 'hammer::hammer'
+isnt $? 0 'some unknown target'
+
+# ----------------------------------------------------------------------------
+# test get_executable_name()
+
+# name of this executable
+get_executable_name name
+is $? 0 'return value is 0'
+is "${name}" 'test_executabletargetinfo.sh' 'name of this executable'
+
+# name of executable built by other target
+get_executable_name name 'basis::basisproject.sh'
+is $? 0 'return value is 0'
+like "${name}" 'basisproject(\.sh)?' 'name of other executable'
+
+# ----------------------------------------------------------------------------
+# test get_executable_directory()
+
+# directory of this executable
+get_executable_directory dir
+is $? 0 'return value is 0'
+like "${dir}" '/Testing/Temporary/test_utilities-build/Testing/bin' 'directory of this executable'
+
+# directory of executable built by other target
+get_executable_directory dir 'basis::basisproject.sh'
+is $? 0 'return value is 0'
+like "${dir}" '^/.*/bin(/basis)?$' 'directory of other executable'
+
+# ----------------------------------------------------------------------------
+# test get_executable_path()
+
+# path of this executable
+get_executable_path path
+is $? 0 'return value is 0'
+get_executable_directory dir
+is $? 0 'return value is 0'
+get_executable_name name
+is $? 0 'return value is 0'
+is "${path}" "${dir}/${name}" 'path of this executable'
+
+# path of executable built by other target
+target='basis::basisproject.sh'
+get_executable_path path "${target}"
+is $? 0 'return value is 0'
+get_executable_directory dir "${target}"
+is $? 0 'return value is 0'
+get_executable_name name "${target}"
+is $? 0 'return value is 0'
+is "${path}" "${dir}/${name}" "path of ${target}"
+
+# wrong number of arguments
+get_executable_path
+isnt $? 0 'return value is not 0'
