@@ -18,5 +18,5 @@ INTRODUCTION
 
   This document describes the packaging of BASIS projects.
 
-  \todo
+  TODO
 

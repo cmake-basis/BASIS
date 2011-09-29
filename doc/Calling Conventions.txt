@@ -211,38 +211,57 @@ IMPLEMENTATION BY SUPPORTED LANGUAGE
   target names to absolute file paths.
 
 
+  Java
+  ----
+
+  TODO
+
+
   Python
   ------
 
-  TODO
+  A Python module named executabletargetinfo.py stores the location of the
+  executables relative to its own path in a dictionary where the UIDs of the
+  corresponding build targets are used as keys. The functions
+  get_executable_name(), get_executable_directory(), and get_executable_path()
+  can be used to get the name, directory, or path, respectively, of the
+  executable file built by the specified target. If no target is specified,
+  the name, directory, or path of the calling executable itself is returned.
 
 
   Perl
   ----
 
-  TODO
+  The ExecutableTargetInfo.pm Perl module uses a hash reference to store the
+  locations of the executable files relative to the module itself. The
+  functions get_executable_name(), get_executable_directory(), and
+  get_executable_path() can be used to get the name, directory, or path,
+  respectively, of the executable file built by the specified target.
+  If no target is specified, the name, directory, or path of the calling
+  executable itself is returned.
 
 
   BASH
   ----
 
-  For BASH scripts, the approach is slightly different. Here, a BASH script
-  is generated during the configuration which contains the definition of
-  aliases, where the target name is used as an alias for the actual executable
-  file. This file has to be sourced in BASH scripts. The target names can then
-  be simply used as aliases for the actual executables. Aliases for full
-  qualified build target names, i.e., target names prefixed by the project name
-  the respective build target belongs to, follow the convention
-  <project>__<Target>, where <project> is the project name in lowercase only and
-  <Target> the case sensitive build target name used by the respective project.
-  Moreover, for the target of the current project itself, aliases without the
-  project name prefix are defined.
- 
-  Note that this approach requires the option expand_aliases to be set via
-  "shopt -s expand_aliases" which is done by the sourced BASH script.
+  For BASH, the module executabletargetinfo.sh immidates associative arrays
+  to store the location of the built executable files relative to this module.
+  The functions get_executable_name(), get_executable_directory(), and
+  get_executable_path() can be used to get the name, directory, or path,
+  respectively, of the executable file built by the specified target.
+  If no target is specified, the name, directory, or path of the calling
+  executable itself is returned.
+
+  Additionally, the executabletargetinfo.sh module can setup aliases named after
+  the UID of the build targets for the absolute file path of the corresponding
+  executables. The target names can then be simply used as aliases for the actual
+  executables. The initialization of the aliases is, however, at the moment
+  expensive and delays the load time of the executable which sources the
+  executabletargetinfo.sh module. Note further that this approach requires the
+  option expand_aliases to be set via "shopt -s expand_aliases" which is done by
+  the executabletargetinfo.sh module if aliases were enabled.
   A "shopt -u expand_aliases" disables the expansion of alises and hence should
-  not be used in BASH scripts which execute other executables using this
-  build target name to executable file path mapping mechanism.
+  not be used in BASH scripts which execute other executables using these aliases.
 
 
 

@@ -85,5 +85,4 @@ TEXT BLOCKS
 ENUMERATIONS
 ============
 
-  For enumerations the -, +, and * characters are used as bullet points.
-
+  Use -, +, and * characters as bullet points.

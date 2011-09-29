@@ -16,21 +16,21 @@
 INTRODUCTION
 ============
 
-  This document describes the directory structure of projects following the
-  Build system And Software Implementation Standard (BASIS). This directory
-  structure was based on the Filesystem Hierarchy Standard of Linux
+  This document describes the filesystem hierarcy of projects following the
+  Build system And Software Implementation Standard (BASIS). This standard
+  is in particular based on the Filesystem Hierarchy Standard of Linux
   (http://www.linuxfoundation.org/en/FHS). The configuration of the installation
-  was further designed such that it is possible to account for the differences
-  in both UNIX-based and Windows systems as well as the installation of multiple
+  is further designed such that it is possible to account for the differences
+  in both Unix and Windows systems as well as the installation of multiple
   versions of each package. Furthermore, the directory structure by default
   integrates software developed at SBIA not only seamlessly into the target
   system but also the various separately managed SBIA software packages with
   each other. The latter is in particular employed by the superproject concept,
   also referred to as super-build. The superproject concept is described in the
-  document Superprojects And Subprojects.
+  document "Super- And Subprojects.txt".
 
   In this document, names of CMake variables defined by the BASIS modules are
-  given, which are used within the modules to refer to the particular
+  given. These are used within the CMake modules to refer to the particular
   directories of a software project. These variables should be used either
   directly or indirectly where possible such that a change of the actual
   directory names does not require a modification of the software itself.
@@ -63,9 +63,9 @@ LEGEND
 REPOSITORY ORGANIZATION
 =======================
 
-  The URL of the project repository is "https://sbia-svn/projects/<project>".
+  The URL of the project repository is "https://sbia-svn/projects/<Project>".
   The top-level directories "trunk", "branches", and "tags" of the project named
-  <project> are located here. No other directories may be located next to these
+  <Project> are located here. No other directories may be located next to these
   three top-level directories.
 
   - trunk/                      The current development version of the project.

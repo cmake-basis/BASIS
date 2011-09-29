@@ -27,14 +27,19 @@ INTRODUCTION
 BRANCHING
 =========
 
-  \todo
+  Please have a look at the following web page:
 
   http://svnbook.red-bean.com/en/1.5/svn.branchmerge.basicmerging.html
+
+  TODO Explain purpose and meaning of branches and summarize most often
+       required commands here.
 
 
 
 SOFTWARE RELEASE
 ================
+
+  TODO This has to be revised.
 
   Whenever the software of a project is to be used by another project or user,
   the following steps have to be performed in order to create a new release
