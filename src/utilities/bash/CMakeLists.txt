@@ -24,4 +24,3 @@ basis_install (
 basis_add_library (core.sh)    # core utilities
 basis_add_library (shflags.sh) # command-line parsing library
 basis_add_library (shtap.sh)   # unit testing framework
-basis_add_library (shunit2.sh) # unit testing framework
