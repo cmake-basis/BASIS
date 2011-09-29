@@ -297,6 +297,7 @@ conf_script=0        # add/remove script configuration file
 conf_tests=0         # add/remove testing configuration file
 conf_use=0           # add/remove unit testing
 data=0               # add/remove auxiliary data files
+doc=0                # add/remove doc folder
 example=0            # add/remove example
 tests=0              # add/remove testing tree
  
@@ -436,6 +437,7 @@ do
             conf_tests=-1
             conf_use=-1
             data=-1
+            doc=-1
             example=-1
             tests=-1
             ;;
@@ -452,6 +454,7 @@ do
             conf_tests=-1
             conf_use=-1
             data=-1
+            doc=1
             example=1
             tests=1
             ;;
@@ -468,6 +471,7 @@ do
             conf_tests=1
             conf_use=1
             data=1
+            doc=1
             example=1
             tests=1
             ;;
@@ -683,6 +687,7 @@ if [ -f "$cache" ]; then
         if [ $conf_tests        -eq 0 ]; then conf_tests=$_conf_tests; fi
         if [ $conf_use          -eq 0 ]; then conf_use=$_conf_use; fi
         if [ $data              -eq 0 ]; then data=$_data; fi
+        if [ $doc               -eq 0 ]; then data=$_doc; fi
         if [ $example           -eq 0 ]; then example=$_example; fi
         if [ $tests             -eq 0 ]; then tests=$_tests; fi
     fi
@@ -980,7 +985,6 @@ add "README.txt"         || retval=1
 add "INSTALL.txt"        || retval=1
 add "COPYING.txt"        || retval=1
 add "CMakeLists.txt"     || retval=1
-add "doc/CMakeLists.txt" || retval=1
 add "src/CMakeLists.txt" || retval=1
 
 # additional configuration files
@@ -1006,6 +1010,9 @@ fi
 addordel $data "data/CMakeLists.txt" || retval=1
 addordel $data "data"                || retval=1
 
+# documentation
+addordel $doc "doc/CMakeLists.txt" || retval=1
+
 # testing tree
 addordel $tests "CTestConfig.cmake"   || retval=1
 addordel $tests "test/CMakeLists.txt" || retval=1
@@ -1027,6 +1034,7 @@ echo "_conf_script=$conf_script"             >> $cache
 echo "_conf_tests=$conf_tests"               >> $cache
 echo "_conf_use=$conf_use"                   >> $cache
 echo "_data=$data"                           >> $cache
+echo "_doc=$doc"                             >> $cache
 echo "_example=$example"                     >> $cache
 echo "_tests=$tests"                         >> $cache
 
