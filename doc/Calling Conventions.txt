@@ -203,7 +203,7 @@ IMPLEMENTATION BY SUPPORTED LANGUAGE
   ---
 
   For C++ programs, the BASIS C++ utilities library provides the function
-  GetExecutableFile() which maps a build target name to the absolute path of
+  GetExecutablePath() which maps a build target name to the absolute path of
   the executable file built by this target. This function makes use of the static
   instance of the class sbia::<project>::ExecutableTargetInfo whose constructor
   is automatically generated during the configuration of a project. This
