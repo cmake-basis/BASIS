@@ -1,0 +1,27 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   https://www.rad.upenn.edu/sbia/
+  Email: sbia-software at uphs.upenn.edu
+
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+  See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+INTRODUCTION
+============
+
+  TODO
+
+
+
+REFERENCES
+==========
+
+  [1] http://www.cmake.org/Wiki/ITK/Git/Develop/Data#ExternalData
+  [2] http://vtk.org/Wiki/ITK_Release_4/Testing_Data
