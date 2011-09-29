@@ -73,17 +73,17 @@ function match
             # throws an error when a regular expression with groups
             # such as in '^(a|b|c)' is used. Here, quotes are required.
             if [ ${BASH_VERSION_MINOR} -eq 0 ]; then
-                [[ "${result}" =~ "${pattern}" ]]
+                [[ "${value}" =~ "${pattern}" ]]
             # GNU bash, version 3.2.25(1)-release (x86_64-redhat-linux-gnu)
             # works with either quotes or not. However, on Mac OS Snow Leopard,
             # GNU bash, version 3.2.48(1)-release (x86_64-apple-darwin10.0)
             # requires that no quotes are used. The quotes are otherwise
             # considered to be part of the pattern.
             else
-                [[ "${result}" =~ ${pattern} ]]
+                [[ "${value}" =~ ${pattern} ]]
             fi
         else
-            echo "${result}" | egrep -q "${pattern}"
+            echo "${value}" | egrep -q "${pattern}"
         fi
     fi
 }
