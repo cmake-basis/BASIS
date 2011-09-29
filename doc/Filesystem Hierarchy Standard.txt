@@ -97,8 +97,8 @@ REPOSITORY ORGANIZATION
 
                                   $ svn export <url>/tags/<project>-<version>
 
-  See the How to Branch and Release document for details on how to create new
-  branches and the process of releasing a new version of a software project.
+  See the "How to Branch and Release.txt" document for details on how to create
+  new branches and the process of releasing a new version of a software project.
 
   Underneath the trunk and the release branches, a version of the entire source
   tree has to be found. Other branches underneath the branches/ directory may
@@ -126,22 +126,22 @@ SOURCE TREE
   testing and unit testing. It is important to note the difference of system
   tests and unit tests. Most often, only system tests will be performed due to
   the research character of the projects. These tests are usually implemented in
-  a scripting language such as BASH, Python, or Perl. System tests simply run
+  a scripting language such as Python, Perl, or BASH. System tests simply run
   the built executables with different test input data and compare the output to
   the expected results. Therefore, system tests can also be performed on a
   target system using the installed software where both the software and system
   tests are distributed as separate binary distribution packages. Unit tests,
-  on the other side, only test a single software module such as a C++ class.
-  The size of the  additional data required for unit tests shall be reasonably
-  small. Entire medical image data sets should only be required for system tests.
-  The unit tests are compiled into separate executable files called test drivers.
-  These executable files are not essential for the functioning of the software
-  and are solely build for the purpose of testing.
+  on the other side, only test a single software module such as a C++ class or
+  Python module, for example. The size of the  additional data required for unit
+  tests shall be reasonably small. Entire medical image data sets should only be
+  required for system tests. The unit tests are compiled into separate executable
+  files called test drivers. These executable files are not essential for the
+  functioning of the software and are solely build for the purpose of testing.
 
   As the testing as well as the example in the field of medical imaging often
   requires a huge amount of image data, these datasets are stored and managed
-  outside the source tree. Please refer to the How to Manage Data Outside the
-  Source Tree document for details on this topic.
+  outside the source tree. Please refer to the "How to Manage Data Outside the
+  Source Tree.txt" document for details on this topic.
 
 
   Filesystem Hierarchy
