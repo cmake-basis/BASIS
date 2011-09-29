@@ -1012,6 +1012,7 @@ addordel $data "data"                || retval=1
 
 # documentation
 addordel $doc "doc/CMakeLists.txt" || retval=1
+addordel $doc "doc"                || retval=1
 
 # testing tree
 addordel $tests "CTestConfig.cmake"   || retval=1
