@@ -34,13 +34,24 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 #  @{
 
 # ============================================================================
-# find BASIS projects
+# find other packages
 # ============================================================================
 
 ##############################################################################
-# @brief Convenience macro useful to find other BASIS projects.
+# @brief Replaces CMake's find_package() command.
 #
-# @param [in] PACKAGE Package/project name.
+# @param [in] PACKAGE Name of other package.
+# @param [in] ARGN    Optional arguments to find_package().
+#
+# @retval <PACKAGE>_FOUND Whether the given package was found.
+function (basis_find_package PACKAGE)
+    find_package (${PACKAGE} ${ARGN})
+endfunction ()
+
+##############################################################################
+# @brief Convenience macro useful to find other packages based on BASIS.
+#
+# @param [in] PACKAGE Name of other BASIS package.
 # @param [in] ARGN    Other arguments as accepted by CMake's find_package().
 #
 # @returns The package specific variables are either set by the invoked
