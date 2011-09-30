@@ -231,7 +231,7 @@ INSTALL TREE
 
   When installing the software package by building either the install target,
   extracting a binary distribution package, or running an installer of a binary
-  distribution package, the following directory strucure is used.
+  distribution package, the following directory structure is used.
 
 
   Options
