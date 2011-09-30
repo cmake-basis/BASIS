@@ -262,7 +262,7 @@ INSTALL TREE
   Based on above options, the installation directories are set as follows:
 
   - INSTALL_PREFIX                 - <prefix>/
-      + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix> (UNIX) | cmake/ (Windows)
+      + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix>/ (UNIX) | cmake/ (Windows)
       + INSTALL_RUNTIME_DIR            + bin/<sinfix>/
       + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/ | bin/<sinfix>/ (Windows)
       + INSTALL_LIBRARY_DIR            + lib/<sinfix>/
