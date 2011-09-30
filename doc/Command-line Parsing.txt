@@ -78,14 +78,16 @@ THIRDPARTY LIBRARIES
 
   * Getopt::Std [14]
   * Getopt::Long [15]
+  * Getopt::Tabular [16]
+  * Getopt::Declare [17]
 
 
   BASH
   ----
 
-  * getopts (builtin) [16]
+  * getopts (builtin) [18]
   * GNU getopt [1]
-  * shFlags (gflags port) [17]
+  * shFlags (gflags port) [19]
 
 
 
@@ -140,6 +142,8 @@ REFERENCES
   [13] http://code.google.com/p/python-gflags/
   [14] http://perldoc.perl.org/Getopt/Std.html
   [15] http://perldoc.perl.org/Getopt/Long.html
-  [16] http://www.manpagez.com/man/1/getopt/
-  [17] http://code.google.com/p/shflags/
+  [16] http://search.cpan.org/~gward/Getopt-Tabular-0.3/Tabular.pod
+  [17] http://search.cpan.org/~fangly/Getopt-Declare-1.14/lib/Getopt/Declare.pm
+  [18] http://www.manpagez.com/man/1/getopt/
+  [19] http://code.google.com/p/shflags/
 
