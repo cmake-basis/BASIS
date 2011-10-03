@@ -201,7 +201,6 @@ bool Subprocess::popen(const CommandLine& args,
         argv[args.size()] = NULL;
 
         if (env) {
-            // TODO: Reset environment first
             for (unsigned int i = 0; i < env->size(); ++ i) {
                 putenv(const_cast<char*>(env->at(i).c_str()));
             }
