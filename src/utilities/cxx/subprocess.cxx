@@ -84,11 +84,17 @@ Subprocess::~Subprocess ()
 #if WINDOWS
     if (info_.hProcess) {
         terminate();
+        if (stdin_) CloseHandle(stdin_);
+        if (stdout_) CloseHandle(stdout_);
+        if (stderr_) CloseHandle(stderr_);
         CloseHandle(info_.hProcess);
         CloseHandle(info_.hThread);
     }
 #else
     if (info_.pid != 0) kill();
+    if (stdin_  != -1) close(stdin_);
+    if (stdout_ != -1) close(stdout_);
+    if (stderr_ != -1) close(stderr_);
 #endif
 }
 
@@ -110,6 +116,9 @@ bool Subprocess::popen(const CommandLine& args,
     }
 
     ZeroMemory(info_, sizeof(info_));
+    if (stdin_) CloseHandle(stdin_);
+    if (stdout_) CloseHandle(stdout_);
+    if (stderr_) CloseHandle(stderr_);
     stdin_ = INVALID_HANDLE_VALUE;
     stdout_ = INVALID_HANDLE_VALUE;
     stderr_ = INVALID_HANDLE_VALUE;
@@ -124,6 +133,9 @@ bool Subprocess::popen(const CommandLine& args,
     }
 
     info_.pid = -1;
+    if (stdin_  != -1) close(stdin_);
+    if (stdout_ != -1) close(stdout_);
+    if (stderr_ != -1) close(stderr_);
     stdin_ = -1;
     stdout_ = -1;
     stderr_ = -1;
