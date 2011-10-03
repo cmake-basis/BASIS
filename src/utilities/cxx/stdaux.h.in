@@ -19,7 +19,9 @@
 
 
 #include <string>
+#include <vector>
 
+#include <sbia/basis/subprocess.h>
 #include <sbia/@PROJECT_NAME_LOWER@/config.h>
 
 
@@ -142,10 +144,10 @@ std::string get_data_directory();
  * @return Absolute path of executable file or an empty string if the build
  *         target is not known.
  */
-std::string get_executable_path(const char* target);
+std::string get_executable_path(const std::string& target);
 
 // ===========================================================================
-// subprocess execution
+// command execution
 // ===========================================================================
 
 /**
@@ -153,18 +155,38 @@ std::string get_executable_path(const char* target);
  *
  * This function is a replacement for system() on Unix and is furthermore
  * supposed to be platform independent. The first argument of the given
- * command-line string is mapped to an executable file using GetExecutablePath().
- * If this fails because the first argument is not a known build target name,
- * the given string is assumed to be already the name/path of an executable.
+ * command-line string is mapped to an executable file using
+ * get_executable_path(). If this fails because the first argument is not a
+ * known build target name, the given string is assumed to be already the
+ * name/path of an executable.
  *
- * @param [in] target    Name of build target or command.
- * @param [in] arguments Command arguments given as single string.
- *                       Use " in order to quote arguments which contain
- *                       whitespace characters.
+ * @param [in] cmd Command-line given as single string. Use " in order to quote
+ *                 arguments which contain whitespace characters. The first
+ *                 argument must be either a build target name or the actual
+ *                 command to execute.
  *
  * @returns Exit code of command or -1 if subprocess creation failed.
  */
-int execute_process(const char* target, const char* arguments);
+int execute_process(const std::string& cmd);
+
+/**
+ * @brief Execute command as subprocess.
+ *
+ * This function is a replacement for system() on Unix and is furthermore
+ * supposed to be platform independent. The first argument of the given
+ * command-line vector is mapped to an executable file using
+ * get_executable_path(). If this fails because the first argument is not a
+ * known build target, the command-line is executed unchanged. Otherwise,
+ * the input command-line is modified by replacing the first argument by the
+ * path of the actual executable file. Then the given command is executed
+ * using the Subprocess::call() method.
+ *
+ * @param [in] cmd Command-line given as vector of strings. The first argument
+ *                 can be either the name of a build target or an actual command.
+ *
+ * @returns Exit code of command or -1 if subprocess creation failed.
+ */
+int execute_process(SBIA_BASIS_NAMESPACE::Subprocess::CommandLine& cmd);
 
 
 /// @}

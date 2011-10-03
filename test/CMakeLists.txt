@@ -29,5 +29,6 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
 # subdirectories
 # ============================================================================
 
+add_subdirectory (ressources)
 add_subdirectory (tools)
 add_subdirectory (utilities)

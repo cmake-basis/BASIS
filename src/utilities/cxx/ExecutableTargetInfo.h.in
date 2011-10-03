@@ -96,6 +96,9 @@ public:
     /**
      * @brief Get static instance of this module.
      *
+     * @attention This method is not thread-safe!
+     * @todo Make it thread-safe using mutex locks.
+     *
      * @return Static instance of this class.
      */
     static const ExecutableTargetInfo& instance();
@@ -117,7 +120,7 @@ public:
      *
      * @returns UID of build target.
      */
-    std::string get_target_uid(const char* target) const;
+    std::string get_target_uid(const std::string& target) const;
 
     /**
      * @brief Determine whether a given build target is known.
@@ -126,7 +129,7 @@ public:
      *
      * @returns Whether the given build target is known by this module.
      */
-    bool is_known_target(const char* target) const;
+    bool is_known_target(const std::string& target) const;
 
     /**
      * @brief Get name of executable file without path.
@@ -135,7 +138,7 @@ public:
      *
      * @return Name of built executable file without path.
      */
-    std::string get_executable_name(const char* target) const;
+    std::string get_executable_name(const std::string& target) const;
 
     /**
      * @brief Get absolute path of output directory of executable in build tree.
@@ -145,7 +148,7 @@ public:
      * @return Absolute path of build tree directory where built executable is
      *         located or an empty string if build target is not known.
      */
-    std::string get_build_directory(const char* target) const;
+    std::string get_build_directory(const std::string& target) const;
 
     /**
      * @brief Get absolute path of directory where built executable is installed.
@@ -155,7 +158,7 @@ public:
      * @return Absolute path of executable's installation directory or
      *         an empty string if build target is not known.
      */
-    std::string get_installation_directory(const char* target) const;
+    std::string get_installation_directory(const std::string& target) const;
 
     // -----------------------------------------------------------------------
     // unsupported methods
@@ -195,18 +198,6 @@ private:
     static ExecutableTargetInfo* instance_;
 
 }; // class ExecutableTargetInfo
-
-
-// ===========================================================================
-// inline definitions
-// ===========================================================================
-
-inline const ExecutableTargetInfo& ExecutableTargetInfo::instance()
-{
-    // TODO make this thread-safe!
-    if (!instance_) instance_ = new ExecutableTargetInfo();
-    return *instance_;
-}
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

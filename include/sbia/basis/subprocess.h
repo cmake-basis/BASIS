@@ -30,32 +30,18 @@ SBIA_BASIS_NAMESPACE_BEGIN
 
 
 /**
- * @class SubProcess
+ * @class Subprocess
  * @brief Platform-independent interface to create and control a subprocess.
  */
-class SubProcess
+class Subprocess
 {
     // =======================================================================
-    // enumerations
-    // =======================================================================
-
-    /**
-     * @brief Modes of redirection for standard input/output buffers.
-     */
-    enum RedirectMode
-    {
-        RM_NONE,  ///< Do not redirect the input/output.
-        RM_PIPE,  ///< Use a pipe to redirect the input/output from/to the parent.
-        RM_STDOUT ///< Redirect stderr to stdout.
-    };
-
-    // =======================================================================
-    // typedefs
+    // types
     // =======================================================================
 
 public:
 
-    typedef std::vector<std::string> Arguments;
+    typedef std::vector<std::string> CommandLine;
     typedef std::vector<std::string> Environment;
 
 private:
@@ -78,54 +64,101 @@ private:
 #endif
 
     // =======================================================================
+    // constants
+    // =======================================================================
+
+public:
+
+    /**
+     * @brief Modes of redirection for standard input/output buffers.
+     */
+    enum RedirectMode
+    {
+        RM_NONE,  ///< Do not redirect the input/output.
+        RM_PIPE,  ///< Use a pipe to redirect the input/output from/to the parent.
+        RM_STDOUT ///< Redirect stderr to stdout.
+    };
+
+    // =======================================================================
     // construction / destruction
     // =======================================================================
 
 public:
 
     /**
-     * @brief Construct new subprocess instance.
-     *
-     * This method constructs a new subprocess instance. The process itself is,
-     * however, not yet executed after construction. In order to actually run
-     * the command, the Run() method has to be called on the just created
-     * subprocess instance.
-     *
-     * @sa Run()
-     *
-     * @param [in] cmd Command-line of subprocess. The first argument has to
-     *                 be the name/path of the command to be executed.
-     * @param [in] in  Mode used for redirection of stdin of subprocess.
-     *                 Can be either RM_NONE or RM_PIPE.
-     * @param [in] out Mode used for redirection of stdout of subprocess.
-     *                 Can be either RM_NONE or RM_PIPE.
-     * @param [in] err Mode used for redirection of stderr of subprocess.
-     *                 Can be either RM_NONE, RM_PIPE, or RM_STDOUT.
-     * @param [in] env Environment for the subprocess. If NULL is given, the
-     *                 environment of the parent process is used.
+     * @brief Default constructor.
      */
-    SubProcess(const Arguments&   cmd,
-               const RedirectMode in  = RM_NONE,
-               const RedirectMode out = RM_NONE,
-               const RedirectMode err = RM_NONE,
-               const Environment* env = NULL);
+    Subprocess();
 
     /**
      * @brief Terminate running subprocess and close all related handles.
      */
-    ~SubProcess();
+    ~Subprocess();
 
     // =======================================================================
     // process control
     // =======================================================================
 
     /**
-     * @brief Run subprocess.
+     * @brief Open new subprocess.
      *
-     * @returns Whether the subprocess was created successfully. If @p wait
-     *          is true, it also indicates whether Wait() was successful.
+     * This method creates the subprocess and returns immediately. In order to
+     * wait for the suprocess to finish, the wait() method has to be called
+     * explicitly.
+     *
+     * @param [in] args   Command-line of subprocess. The first argument has to
+     *                    be the name/path of the command to be executed.
+     * @param [in] stdin  Mode used for redirection of stdin of subprocess.
+     *                    Can be either RM_NONE or RM_PIPE.
+     * @param [in] stdout Mode used for redirection of stdout of subprocess.
+     *                    Can be either RM_NONE or RM_PIPE.
+     * @param [in] stderr Mode used for redirection of stderr of subprocess.
+     *                    Can be either RM_NONE, RM_PIPE, or RM_STDOUT.
+     * @param [in] env    Environment for the subprocess. If NULL is given, the
+     *                    environment of the parent process is used.
+     *
+     * @returns Whether the subprocess was created successfully.
      */
-    bool run(bool wait = true);
+    bool popen(const CommandLine& args,
+               const RedirectMode stdin  = RM_NONE,
+               const RedirectMode stdout = RM_NONE,
+               const RedirectMode stderr = RM_NONE,
+               const Environment* env    = NULL);
+
+    /**
+     * @brief Open new subprocess.
+     *
+     * This method creates the subprocess and returns immediately. In order to
+     * wait for the suprocess to finish, the wait() method has to be called
+     * explicitly.
+     *
+     * @param [in] cmd    Command-line given as single string.
+     *                    Arguments containing whitespace characters have to be
+     *                    quoted using ".
+     * @param [in] stdin  Mode used for redirection of stdin of subprocess.
+     *                    Can be either RM_NONE or RM_PIPE.
+     * @param [in] stdout Mode used for redirection of stdout of subprocess.
+     *                    Can be either RM_NONE or RM_PIPE.
+     * @param [in] stderr Mode used for redirection of stderr of subprocess.
+     *                    Can be either RM_NONE, RM_PIPE, or RM_STDOUT.
+     * @param [in] env    Environment for the subprocess. If NULL is given, the
+     *                    environment of the parent process is used.
+     */
+    bool popen(const std::string& cmd,
+               const RedirectMode stdin  = RM_NONE,
+               const RedirectMode stdout = RM_NONE,
+               const RedirectMode stderr = RM_NONE,
+               const Environment* env    = NULL);
+
+    /**
+     * @brief Check if subprocess terminated and update return code.
+     *
+     * This method returns immediately and does not wait for the subprocess to
+     * actually being terminated. For that purpuse, use wait() instead.
+     *
+     * @returns Whether the subprocess terminated.
+     */
+    bool poll() const;
 
     /**
      * @brief Wait for subprocess to terminate.
@@ -133,6 +166,15 @@ public:
      * This method also sets the exit code as returned by GetExitCode().
      */
     bool wait();
+
+    /**
+     * @brief Send signal to subprocess.
+     *
+     * On Windows, SIGTERM is an alias for terminate() and SIGKILL an alias for
+     * kill() which in turn is nothing else but a termination of the subprocess.
+     * All other signals are only sent to POSIX processes.
+     */
+    bool send_signal(int signal);
 
     /**
      * @brief Terminate subprocess.
@@ -151,17 +193,17 @@ public:
     bool kill();
 
     /**
-     * @returns Whether the subprocess terminated.
-     */
-    bool terminated() const;
-
-    /**
-     * @returns Wether the subprocess has been signaled.
+     * @returns Wether the subprocess has been signaled, i.e., terminated abnormally.
      */
     bool signaled() const;
 
     /**
-     * @returns Exit code of subprocess. Only valid if Terminated() is true.
+     * @returns ID of subprocess.
+     */
+    int pid() const;
+
+    /**
+     * @returns Exit code of subprocess. Only valid if terminated() is true.
      */
     int returncode() const;
 
@@ -172,58 +214,74 @@ public:
     /**
      * @brief Communicate with subprocess.
      *
-     * @note This method returns after the subprocess terminated and sets
-     *       the exit code as returned by GetExitCode().
+     * @note This method closes the pipes to the subprocess after all data
+     *       has been sent and received and returns after the subprocess
+     *       terminated. Therefore, the exit code is set upon return.
      *
-     * @param [in] stdIn  Data send to subprocess via pipe to stdin.
-     *                    If no pipe was setup during subprocess creation,
-     *                    this function does nothing and returns false.
-     * @param [in] stdOut Data read from stdout of subprocess. Can be an empty
-     *                    string if no pipe was created for stdout.
-     * @param [in] stdErr Data read from stderr of subprocess. Can be an empty
-     *                    string if no pipe was created for stderr.
+     * @param [in] in  Data send to subprocess via pipe to stdin.
+     *                 If no pipe was setup during subprocess creation,
+     *                 this function does nothing and returns false.
+     * @param [in] out Data read from stdout of subprocess. Can be an empty
+     *                 string if no pipe was created for stdout.
+     * @param [in] err Data read from stderr of subprocess. Can be an empty
+     *                 string if no pipe was created for stderr.
      *
      * @returns Whether the communication with the subprocess was successful.
      */
-    bool communicate(const char* stdin, std::string& stdout, std::string& stderr);
+    bool communicate(std::istream& in, std::ostream& out, std::ostream& err);
 
     /**
      * @brief Communicate with subprocess.
      *
-     * @note This method returns after the subprocess terminated and sets
-     *       the exit code as returned by GetExitCode().
+     * @note This method closes the pipes to the subprocess after all data
+     *       has been received and returns after the subprocess terminated.
+     *       Therefore, the exit code is set upon return.
      *
-     * @param [in] stdOut Data read from stdout of subprocess. Can be an empty
-     *                    string if no pipe was created for stdout.
-     * @param [in] stdErr Data read from stderr of subprocess. Can be an empty
-     *                    string if no pipe was created for stderr.
+     * @param [in] out Data read from stdout of subprocess. Can be an empty
+     *                 string if no pipe was created for stdout.
+     * @param [in] err Data read from stderr of subprocess. Can be an empty
+     *                 string if no pipe was created for stderr.
      *
      * @returns Whether the communication with the subprocess was successful.
      */
-    bool communicate(std::string& stdout, std::string& stderr);
+    bool communicate(std::ostream& out, std::ostream& err);
 
     /**
      * @brief Communicate with subprocess.
      *
-     * @note This method returns after the subprocess terminated and sets
-     *       the exit code as returned by GetExitCode().
+     * @note This method closes the pipes to the subprocess after all data
+     *       has been received and returns after the subprocess terminated.
+     *       Therefore, the exit code is set upon return.
      *
-     * @param [in] stdOut Data read from stdout of subprocess. Can be an empty
-     *                    string if no pipe was created for stdout.
+     * @param [in] out Data read from stdout of subprocess. Can be an empty
+     *                 string if no pipe was created for stdout.
      *
      * @returns Whether the communication with the subprocess was successful.
      */
-    bool communicate(std::string& stdout);
+    bool communicate(std::ostream& out);
 
     /**
      * @brief Write data to stdin of subprocess.
+     *
+     * @param [in] buf  Bytes to write.
+     * @param [in] nbuf Number of bytes from @p buf to write.
+     *
+     * @returns Number of bytes written or -1 on error.
      */
-    bool write();
+    int write(const void* buf, size_t nbuf);
 
     /**
-     * @brief Read data from stdout and/or stderr of subprocess.
+     * @brief Read data from stdout or stderr of subprocess.
+     *
+     * @param [out] buf  Allocated buffer to store read data to.
+     * @param [in]  nbuf Number of bytes to read from subprocess.
+     * @param [in]  err  If true and the redirection mode of stderr is RM_PIPE,
+     *                   the data is read from stderr of the subprocess.
+     *                   Otherwise, the data is read from stdout.
+     *
+     * @returns Number of bytes written or -1 on error.
      */
-    bool read(bool errors = false);
+    int read(void* buf, size_t nbuf, bool err = false);
 
     // =======================================================================
     // process execution
@@ -234,11 +292,38 @@ public:
     /**
      * @brief Execute command as subprocess.
      *
-     * This function is a replacement for system() on Unix and is furthermore
-     * supposed to be platform independent. The first argument of the given
-     * command-line string is mapped to an executable file using GetExecutablePath().
-     * If this fails because the first argument is not a known build target name,
-     * the given command is executed as given.
+     * This function is implemented in the same manner as system() on Unix.
+     * It simply creates a SubProcess instance, executes the subprocess and
+     * waits for its termination.
+     *
+     * Example:
+     * @code
+     * Subprocess::CommandLine cmd;
+     * cmd.push_back("ls");
+     * cmd.push_back("some directory");
+     * int status = Subprocess::call(cmd);
+     * @endcode
+     *
+     * @returns Exit code of subprocess or -1 on error.
+     */
+    static int call(const CommandLine& cmd);
+
+    /**
+     * @brief Execute command as subprocess.
+     *
+     * This function is implemented in the same manner as system() on Unix.
+     * It simply creates a SubProcess instance, executes the subprocess and
+     * waits for its termination.
+     *
+     * Example:
+     * @code
+     * int status = Subprocess::call("ls \"some directory\"");
+     * @endcode
+     *
+     * @param [in] cmd Command-line given as single string. Quote arguments
+     *                 containing whitespace characters using ".
+     *
+     * @returns Exit code of subprocess or -1 on error.
      */
     static int call(const std::string& cmd);
 
@@ -249,25 +334,18 @@ public:
 private:
 
     /**
-     * @brief Default constructor.
-     *
-     * @note Intentionally not implemented.
-     */
-    SubProcess();
-
-    /**
      * @brief Copy constructor.
      *
      * @note Intentionally not implemented.
      */
-    SubProcess(const SubProcess&);
+    Subprocess(const Subprocess&);
 
     /**
      * @brief Assignment operator.
      *
      * @note Intentionally not implemented.
      */
-    void operator= (const SubProcess&);
+    void operator=(const Subprocess&);
 
     // =======================================================================
     // members
@@ -275,18 +353,13 @@ private:
 
 private:
 
-    Arguments    args_;        ///< Command-line incl. command.
-    Environment* env_;         ///< Environment for subprocess or NULL.
-    Information  info_;        ///< Subprocess information.
-    RedirectMode stdin_mode_;  ///< Redirection mode used for stdin.
-    PipeHandle   stdin_;       ///< Used to write data to stdin of subprocess.
-    RedirectMode stdout_mode_; ///< Redireciton mode used for stdout.
-    PipeHandle   stdout_;      ///< Used to read data from stdout of subprocess.
-    RedirectMode stderr_mode_; ///< Redirection mode used for stderr.
-    PipeHandle   stderr_;      ///< Used to read data from stderr of subprocess.
-    mutable int  status_;      ///< Status of subprocess.
+    Information info_;   ///< Subprocess information.
+    PipeHandle  stdin_;  ///< Used to write data to stdin of subprocess.
+    PipeHandle  stdout_; ///< Used to read data from stdout of subprocess.
+    PipeHandle  stderr_; ///< Used to read data from stderr of subprocess.
+    mutable int status_; ///< Status of subprocess.
 
-}; // class SubProcess
+}; // class Subprocess
 
 
 SBIA_BASIS_NAMESPACE_END

@@ -51,24 +51,32 @@ ExecutableTargetInfo::~ExecutableTargetInfo()
 // public interface
 // ===========================================================================
 
-// ***************************************************************************
-string ExecutableTargetInfo::get_target_uid(const char* target) const
+// ---------------------------------------------------------------------------
+const ExecutableTargetInfo& ExecutableTargetInfo::instance()
 {
-    if (target == NULL || *target == '\0') return "";
-    if (exec_names_.find(target) == exec_names_.end() && strstr(target, "::") == NULL) {
+    // TODO make this thread-safe!
+    if (!instance_) instance_ = new ExecutableTargetInfo();
+    return *instance_;
+}
+
+// ***************************************************************************
+string ExecutableTargetInfo::get_target_uid(const string& target) const
+{
+    if (target.empty()) return "";
+    if (exec_names_.find(target) == exec_names_.end() && target.find("::") == string::npos) {
         return cProjectNameLower + "::" + target;
     }
     return target;
 }
 
 // ***************************************************************************
-bool ExecutableTargetInfo::is_known_target(const char* target) const
+bool ExecutableTargetInfo::is_known_target(const string& target) const
 {
     return exec_names_.find(get_target_uid(target)) != exec_names_.end();
 }
 
 // ***************************************************************************
-string ExecutableTargetInfo::get_executable_name(const char* target) const
+string ExecutableTargetInfo::get_executable_name(const string& target) const
 {
     string uid = get_target_uid(target);
     MapIterator it = exec_names_.find(uid);
@@ -77,7 +85,7 @@ string ExecutableTargetInfo::get_executable_name(const char* target) const
 }
 
 // ***************************************************************************
-string ExecutableTargetInfo::get_build_directory(const char* target) const
+string ExecutableTargetInfo::get_build_directory(const string& target) const
 {
     string uid = get_target_uid(target);
     MapIterator it = build_dirs_.find(uid);
@@ -86,7 +94,7 @@ string ExecutableTargetInfo::get_build_directory(const char* target) const
 }
 
 // ***************************************************************************
-string ExecutableTargetInfo::get_installation_directory(const char* target) const
+string ExecutableTargetInfo::get_installation_directory(const string& target) const
 {
     string uid = get_target_uid(target);
     MapIterator it = install_dirs_.find(uid);

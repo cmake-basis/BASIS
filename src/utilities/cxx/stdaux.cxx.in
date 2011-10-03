@@ -15,9 +15,9 @@
 
 
 #include <iostream>
+#include <cassert>
 
 #include <sbia/basis/path.h>
-#include <sbia/basis/subprocess.h>
 #include "ExecutableTargetInfo.h"
 #include "stdaux.h"
 
@@ -33,7 +33,7 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // version / contact
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 void print_version(const char* name, const char* copyright, const char* license)
 {
     if (name) cout << name;
@@ -53,7 +53,7 @@ void print_version(const char* name, const char* copyright, const char* license)
     }
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 void print_contact(const char* contact)
 {
     cout << "Contact:" << endl;
@@ -65,7 +65,7 @@ void print_contact(const char* contact)
 // installation directories
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 bool executing_in_build_tree()
 {
     // get executable path relative to top directory of build tree
@@ -75,7 +75,7 @@ bool executing_in_build_tree()
             (rel_path.substr(0, 2) == ".." && (rel_path.size() == 2 || rel_path[2] == '/')));
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_installation_prefix()
 {
 #ifdef LIBEXEC
@@ -85,7 +85,7 @@ string get_installation_prefix()
 #endif
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_runtime_directory()
 {
     if (executing_in_build_tree()) {
@@ -95,7 +95,7 @@ string get_runtime_directory()
     }
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_libexec_directory()
 {
     if (executing_in_build_tree()) {
@@ -105,7 +105,7 @@ string get_libexec_directory()
     }
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_library_directory()
 {
     if (executing_in_build_tree()) {
@@ -115,7 +115,7 @@ string get_library_directory()
     }
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_data_directory()
 {
     if (executing_in_build_tree()) {
@@ -129,8 +129,8 @@ string get_data_directory()
 // executable file path of other build targets
 // ===========================================================================
 
-// ***************************************************************************
-string get_executable_path(const char* target)
+// ---------------------------------------------------------------------------
+string get_executable_path(const std::string& target)
 {
     // get executable target information instance
     const ExecutableTargetInfo &info = ExecutableTargetInfo::instance();
@@ -150,13 +150,59 @@ string get_executable_path(const char* target)
 // subprocess execution
 // ===========================================================================
 
-int execute_process(const char* target, const char* arguments)
+// ---------------------------------------------------------------------------
+int execute_process(const string& cmd)
 {
-    string cmd = get_executable_path(target);
-    if (cmd.empty()) cmd = target;
-    cmd += " ";
-    cmd += arguments;
-    return SubProcess::call(cmd);
+    string cmdline;
+    string cmdname;
+    string cmdargs;
+
+    // extract first argument
+    const char whitespace[] = " \f\n\r\t\v";
+    for (string::size_type i = 0, j = 0; (j != string::npos) && (i < cmd.size()); i++) {
+        if (cmd[i] == '\"') {
+            j = i;
+            do {
+                j = cmd.find('\"', ++j);
+            } while (j != string::npos && cmd[j - 1] == '\\');
+            cmdname = cmd.substr(i + 1, j - i);
+            cmdargs = cmd.substr(j + 1);
+            break;
+        } else if (!isspace(cmd[i])) {
+            j = cmd.find_first_not_of(whitespace, i);
+            i = j - 1;
+        } else {
+            j = i;
+            do {
+                j = cmd.find_first_of(whitespace, ++j);
+            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
+            cmdname = cmd.substr(i, j - i);
+            cmdargs = cmd.substr(j);
+            break;
+        }
+        i++;
+    }
+
+    // map build target name to executable file path
+    cmdline = get_executable_path(cmdname);
+    if (cmdline.empty()) cmdline  = cmd;
+    else {
+        cmdline.insert(0, 1, '\"');
+        cmdline += "\" ";
+        cmdline += cmdargs;
+    }
+ 
+    // execute command
+    return Subprocess::call(cmdline);
+}
+
+// ---------------------------------------------------------------------------
+int execute_process(Subprocess::CommandLine& cmd)
+{
+    assert(cmd.size() > 0);
+    string tmp = get_executable_path(cmd[0].c_str());
+    if (!tmp.empty()) cmd[0] = tmp;
+    return Subprocess::call(cmd);
 }
 
 

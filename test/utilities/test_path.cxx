@@ -1,6 +1,6 @@
 /**
- * @file  path-test.cc
- * @brief Implements unit test for path.cc module.
+ * @file  test_path.cxx
+ * @brief Test of path.cxx module.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
