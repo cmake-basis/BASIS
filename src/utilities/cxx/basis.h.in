@@ -21,6 +21,7 @@
 // basis utilities library
 #include <sbia/basis/exceptions.h>
 #include <sbia/basis/path.h>
+#include <sbia/basis/subprocess.h>
 
 // project-specific utilities
 #include <sbia/@PROJECT_NAME_LOWER@/config.h>
