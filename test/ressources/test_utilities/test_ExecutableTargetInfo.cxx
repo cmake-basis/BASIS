@@ -17,78 +17,78 @@ using namespace std;
 
 
 // ***************************************************************************
-// Tests GetInstance().
-TEST (ExecutableTargetInfo, GetInstance)
+// Tests instance().
+TEST (ExecutableTargetInfo, instance)
 {
     // get singleton instance
     const ExecutableTargetInfo *info = NULL;
-    info = &ExecutableTargetInfo::GetInstance ();
+    info = &ExecutableTargetInfo::instance ();
     ASSERT_TRUE (info != NULL)
         << "Returned instance is NULL";
     // make sure that second call gives same instance
-    ASSERT_EQ (info, &ExecutableTargetInfo::GetInstance ())
+    ASSERT_EQ (info, &ExecutableTargetInfo::instance ())
         << "Second call returned another instance";
 }
 
 // ***************************************************************************
-// Tests GetTargetUID().
-TEST (ExecutableTargetInfo, GetTargetUID)
+// Tests get_target_uid().
+TEST (ExecutableTargetInfo, get_target_uid)
 {
-    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
-    EXPECT_STREQ ("utilitiestest::basisproject.sh", info.GetTargetUID ("basisproject.sh").c_str ())
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::instance ();
+    EXPECT_STREQ ("utilitiestest::basisproject.sh", info.get_target_uid ("basisproject.sh").c_str ())
         << "this project's namespace was not prepended to known target";
-    EXPECT_STREQ ("utilitiestest::unknown", info.GetTargetUID ("unknown").c_str ())
+    EXPECT_STREQ ("utilitiestest::unknown", info.get_target_uid ("unknown").c_str ())
         << "this project's namespace was not prepended to unknown target";
-    EXPECT_STREQ (info.GetTargetUID ("helloworld").c_str (), info.GetTargetUID ("utilitiestest::helloworld").c_str ())
+    EXPECT_STREQ (info.get_target_uid ("helloworld").c_str (), info.get_target_uid ("utilitiestest::helloworld").c_str ())
         << "using either target name or target UID does not give the same for own executable";
-    EXPECT_STREQ ("basis::basisproject.sh", info.GetTargetUID ("basis::basisproject.sh").c_str ())
+    EXPECT_STREQ ("basis::basisproject.sh", info.get_target_uid ("basis::basisproject.sh").c_str ())
         << "UID changed";
-    EXPECT_STREQ ("hammer::hammer", info.GetTargetUID ("hammer::hammer").c_str ())
+    EXPECT_STREQ ("hammer::hammer", info.get_target_uid ("hammer::hammer").c_str ())
         << "UID changed";
-    EXPECT_STREQ ("::hello", info.GetTargetUID ("::hello").c_str ())
+    EXPECT_STREQ ("::hello", info.get_target_uid ("::hello").c_str ())
         << "namespace prepended even though global namespace specified";
-    EXPECT_STREQ ("", info.GetTargetUID ("").c_str ())
+    EXPECT_STREQ ("", info.get_target_uid ("").c_str ())
         << "empty string resulted in non-empty string";
 }
 
 // ***************************************************************************
-// Tests IsKnownTarget().
-TEST (ExecutableTargetInfo, IsKnownTarget)
+// Tests is_known_target().
+TEST (ExecutableTargetInfo, is_known_target)
 {
-    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
-    EXPECT_FALSE (info.IsKnownTarget ("basisproject.sh"))
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::instance ();
+    EXPECT_FALSE (info.is_known_target ("basisproject.sh"))
         << "basisproject.sh is part of UtilitiesTest though it should not";
-    EXPECT_TRUE  (info.IsKnownTarget ("basis::basisproject.sh"))
+    EXPECT_TRUE  (info.is_known_target ("basis::basisproject.sh"))
         << "basis::basisproject.sh is not a known target";
-    EXPECT_FALSE (info.IsKnownTarget (""))
+    EXPECT_FALSE (info.is_known_target (""))
         << "empty target string is not identified as unknown target";
-    EXPECT_FALSE (info.IsKnownTarget ("hammer::hammer"))
+    EXPECT_FALSE (info.is_known_target ("hammer::hammer"))
         << "some unknown target";
 }
 
 // ***************************************************************************
-// Tests GetExecutableName().
-TEST (ExecutableTargetInfo, GetExecutableName)
+// Tests get_executable_name().
+TEST (ExecutableTargetInfo, get_executable_name)
 {
-    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::instance ();
 #if WINDOWS
-    EXPECT_STREQ ("basisproject.sh", info.GetExecutableName ("basis::basisproject.sh").c_str ())
+    EXPECT_STREQ ("basisproject.sh", info.get_executable_name ("basis::basisproject.sh").c_str ())
 #else
-    EXPECT_STREQ ("basisproject", info.GetExecutableName ("basis::basisproject.sh").c_str ())
+    EXPECT_STREQ ("basisproject", info.get_executable_name ("basis::basisproject.sh").c_str ())
 #endif
         << "name of basis::basisproject.sh executable is not basisproject(.sh)";
 }
 
 // ***************************************************************************
-// Tests GetBuildDirectory().
-TEST (ExecutableTargetInfo, GetBuildDirectory)
+// Tests get_build_directory().
+TEST (ExecutableTargetInfo, get_build_directory)
 {
-    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::instance ();
 
     string dir;
     size_t idx;
 
-    dir = info.GetBuildDirectory ("basis::basisproject.sh");
+    dir = info.get_build_directory ("basis::basisproject.sh");
     cout << "Build directory of basis::basisproject.sh is '" << dir << "'" << endl;
     EXPECT_TRUE (dir != "") << "returned string is empty";
     EXPECT_NE   (string::npos, idx = dir.rfind ("/"))
@@ -96,27 +96,27 @@ TEST (ExecutableTargetInfo, GetBuildDirectory)
     EXPECT_STREQ ("/bin", dir.substr (idx).c_str ())
         << "basis::basisproject.sh does not live in a 'bin' directory";
 
-    EXPECT_STREQ ("", info.GetBuildDirectory ("unknonw").c_str ())
+    EXPECT_STREQ ("", info.get_build_directory ("unknonw").c_str ())
         << "returned value is not an empty string for unknown targets";
-    EXPECT_STREQ ("", info.GetBuildDirectory ("").c_str ())
+    EXPECT_STREQ ("", info.get_build_directory ("").c_str ())
         << "returned value is not an empty string for '' target";
 }
 
 // ***************************************************************************
-// Tests GetInstallationDirectory().
-TEST (ExecutableTargetInfo, GetInstallationDirectory)
+// Tests get_installation_directory().
+TEST (ExecutableTargetInfo, get_installation_directory)
 {
-    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::instance ();
 
     string dir;
 
-    dir = info.GetInstallationDirectory ("basis::basisproject.sh");
+    dir = info.get_installation_directory ("basis::basisproject.sh");
     cout << "Installation directory of basis::basisproject.sh is '" << dir << "'" << endl;
     EXPECT_TRUE (dir != "") << "returned string is empty";
-    EXPECT_STREQ (dir.c_str (), info.GetBuildDirectory ("basis::basisproject.sh").c_str ())
+    EXPECT_STREQ (dir.c_str (), info.get_build_directory ("basis::basisproject.sh").c_str ())
         << "build and installation directory are not the same for external executable";
 
-    dir = info.GetInstallationDirectory ("helloworld");
+    dir = info.get_installation_directory ("helloworld");
     cout << "Installation directory of helloworld is '" << dir << "'" << endl;
     EXPECT_TRUE (dir != "") << "returned string is empty";
 #if WINDOWS
@@ -125,11 +125,11 @@ TEST (ExecutableTargetInfo, GetInstallationDirectory)
     EXPECT_STREQ ("/usr/local/bin/utilitiestest", dir.c_str ())
 #endif
         << "installation directory of helloworld is not the expected default";
-    EXPECT_STRNE (dir.c_str (), info.GetBuildDirectory ("helloworld").c_str ())
+    EXPECT_STRNE (dir.c_str (), info.get_build_directory ("helloworld").c_str ())
         << "build and installation directory are the same for own executable";
 
-    EXPECT_STREQ ("", info.GetInstallationDirectory ("unknown").c_str ())
+    EXPECT_STREQ ("", info.get_installation_directory ("unknown").c_str ())
         << "returned value is not an empty string for unknown targets";
-    EXPECT_STREQ ("", info.GetInstallationDirectory ("").c_str ())
+    EXPECT_STREQ ("", info.get_installation_directory ("").c_str ())
         << "returned value is not an empty string for '' target";
 }

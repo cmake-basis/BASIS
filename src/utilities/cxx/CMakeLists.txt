@@ -27,7 +27,8 @@ basis_install (
 # utilities
 basis_add_library (
   utilities STATIC
-    "path.cxx" # utility path functions
+    "path.cxx"       # utility path functions
+    "subprocess.cxx" # subprocess execution
 )
 
 basis_set_target_properties (utilities PROPERTIES OUTPUT_NAME "basisutilities")

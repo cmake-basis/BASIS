@@ -16,6 +16,9 @@
 #include <sbia/@PROJECT_NAME_LOWER@/config.h>
 
 
+using namespace std;
+
+
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 
@@ -27,10 +30,10 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // project attributes
 // ---------------------------------------------------------------------------
 
-const std::string cProjectName      ("@PROJECT_NAME@");
-const std::string cProjectNameLower ("@PROJECT_NAME_LOWER@");
-const std::string cProjectNameUpper ("@PROJECT_NAME_UPPER@");
-const std::string cVersion          ("@PROJECT_VERSION@");
+const string cProjectName      ("@PROJECT_NAME@");
+const string cProjectNameLower ("@PROJECT_NAME_LOWER@");
+const string cProjectNameUpper ("@PROJECT_NAME_UPPER@");
+const string cVersion          ("@PROJECT_VERSION@");
 
 const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
 const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
@@ -42,21 +45,21 @@ const unsigned int cRevision     = @PROJECT_REVISION@;
 // ---------------------------------------------------------------------------
 
 // build tree
-const std::string cBuildRoot ("@BUILD_ROOT_PATH_CONFIG@");
+const string cBuildRoot ("@BUILD_ROOT_PATH_CONFIG@");
 
-const std::string cRuntimeBuildPath ("@RUNTIME_BUILD_PATH_CONFIG@");
-const std::string cLibexecBuildPath ("@LIBEXEC_BUILD_PATH_CONFIG@");
-const std::string cLibraryBuildPath ("@LIBRARY_BUILD_PATH_CONFIG@");
-const std::string cDataBuildPath    ("@DATA_BUILD_PATH_CONFIG@");
+const string cRuntimeBuildPath ("@RUNTIME_BUILD_PATH_CONFIG@");
+const string cLibexecBuildPath ("@LIBEXEC_BUILD_PATH_CONFIG@");
+const string cLibraryBuildPath ("@LIBRARY_BUILD_PATH_CONFIG@");
+const string cDataBuildPath    ("@DATA_BUILD_PATH_CONFIG@");
 
 // install tree
-const std::string cRuntimePathPrefix ("@RUNTIME_PATH_PREFIX_CONFIG@");
-const std::string cLibexecPathPrefix ("@LIBEXEC_PATH_PREFIX_CONFIG@");
+const string cRuntimePathPrefix ("@RUNTIME_PATH_PREFIX_CONFIG@");
+const string cLibexecPathPrefix ("@LIBEXEC_PATH_PREFIX_CONFIG@");
 
-const std::string cRuntimePath ("@RUNTIME_PATH_CONFIG@");
-const std::string cLibexecPath ("@LIBEXEC_PATH_CONFIG@");
-const std::string cLibraryPath ("@LIBRARY_PATH_CONFIG@");
-const std::string cDataPath    ("@DATA_PATH_CONFIG@");
+const string cRuntimePath ("@RUNTIME_PATH_CONFIG@");
+const string cLibexecPath ("@LIBEXEC_PATH_CONFIG@");
+const string cLibraryPath ("@LIBRARY_PATH_CONFIG@");
+const string cDataPath    ("@DATA_PATH_CONFIG@");
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

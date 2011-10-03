@@ -17,8 +17,8 @@
 #include <iostream>
 
 #include <sbia/basis/path.h>
+#include <sbia/basis/subprocess.h>
 #include "ExecutableTargetInfo.h"
-
 #include "stdaux.h"
 
 
@@ -34,10 +34,10 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // ===========================================================================
 
 // ***************************************************************************
-void PrintVersion (const char *name, const char *copyright, const char *license)
+void print_version(const char* name, const char* copyright, const char* license)
 {
     if (name) cout << name;
-    else      cout << GetExecutableName ();
+    else      cout << get_executable_name();
     cout << " (" << cProjectName << ") version " << cVersion;
     if (cRevision > 0) cout << " (revision " << cRevision << ")";
     cout << endl;
@@ -54,7 +54,7 @@ void PrintVersion (const char *name, const char *copyright, const char *license)
 }
 
 // ***************************************************************************
-void PrintContact (const char *contact)
+void print_contact(const char* contact)
 {
     cout << "Contact:" << endl;
     if (contact) cout << "  " << contact << endl;
@@ -66,62 +66,62 @@ void PrintContact (const char *contact)
 // ===========================================================================
 
 // ***************************************************************************
-bool ExecutingInBuildTree ()
+bool executing_in_build_tree()
 {
     // get executable path relative to top directory of build tree
-    string relPath = ToRelativePath (cBuildRoot, GetExecutableDirectory ());
+    string rel_path = to_relative_path(cBuildRoot, get_executable_directory());
     // return whether executable directory is inside the build tree or not
-    return !(relPath == "" || relPath == "." ||
-            (relPath.substr (0, 2) == ".." && (relPath.size () == 2 || relPath [2] == '/')));
+    return !(rel_path == "" || rel_path == "." ||
+            (rel_path.substr(0, 2) == ".." && (rel_path.size() == 2 || rel_path[2] == '/')));
 }
 
 // ***************************************************************************
-string GetInstallationPrefix ()
+string get_installation_prefix()
 {
 #ifdef LIBEXEC
-    return JoinPaths (GetExecutableDirectory (), cLibexecPathPrefix);
+    return join_paths(get_executable_directory(), cLibexecPathPrefix);
 #else
-    return JoinPaths (GetExecutableDirectory (), cRuntimePathPrefix);
+    return join_paths(get_executable_directory(), cRuntimePathPrefix);
 #endif
 }
 
 // ***************************************************************************
-string GetRuntimeDirectory ()
+string get_runtime_directory()
 {
-    if (ExecutingInBuildTree ()) {
+    if (executing_in_build_tree()) {
         return cRuntimeBuildPath;
     } else {
-        return JoinPaths (GetInstallationPrefix (), cRuntimePath);
+        return join_paths(get_installation_prefix(), cRuntimePath);
     }
 }
 
 // ***************************************************************************
-string GetLibexecDirectory ()
+string get_libexec_directory()
 {
-    if (ExecutingInBuildTree ()) {
+    if (executing_in_build_tree()) {
         return cLibexecBuildPath;
     } else {
-        return JoinPaths (GetInstallationPrefix (), cLibexecPath);
+        return join_paths(get_installation_prefix(), cLibexecPath);
     }
 }
 
 // ***************************************************************************
-string GetLibraryDirectory ()
+string get_library_directory()
 {
-    if (ExecutingInBuildTree ()) {
+    if (executing_in_build_tree()) {
         return cLibraryBuildPath;
     } else {
-        return JoinPaths (GetInstallationPrefix (), cLibraryPath);
+        return join_paths(get_installation_prefix(), cLibraryPath);
     }
 }
 
 // ***************************************************************************
-string GetDataDirectory ()
+string get_data_directory()
 {
-    if (ExecutingInBuildTree ()) {
+    if (executing_in_build_tree()) {
         return cDataBuildPath;
     } else {
-        return JoinPaths (GetInstallationPrefix (), cDataPath);
+        return join_paths(get_installation_prefix(), cDataPath);
     }
 }
 
@@ -130,20 +130,33 @@ string GetDataDirectory ()
 // ===========================================================================
 
 // ***************************************************************************
-string GetExecutablePath (const char *target)
+string get_executable_path(const char* target)
 {
     // get executable target information instance
-    const ExecutableTargetInfo &info = ExecutableTargetInfo::GetInstance ();
+    const ExecutableTargetInfo &info = ExecutableTargetInfo::instance();
     // get name of executable and check if target name is known
-    string execName = info.GetExecutableName (target);
+    string exec_name = info.get_executable_name(target);
     // is this target known?
-    if (execName.empty ()) return "";
+    if (exec_name.empty()) return "";
     // prepend either build tree directory or installation directory
-    if (ExecutingInBuildTree ()) {
-        return JoinPaths (info.GetBuildDirectory (target), execName);
+    if (executing_in_build_tree()) {
+        return join_paths(info.get_build_directory(target), exec_name);
     } else {
-        return JoinPaths (info.GetInstallationDirectory (target), execName);
+        return join_paths(info.get_installation_directory(target), exec_name);
     }
+}
+
+// ===========================================================================
+// subprocess execution
+// ===========================================================================
+
+int execute_process(const char* target, const char* arguments)
+{
+    string cmd = get_executable_path(target);
+    if (cmd.empty()) cmd = target;
+    cmd += " ";
+    cmd += arguments;
+    return SubProcess::call(cmd);
 }
 
 

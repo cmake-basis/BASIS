@@ -15,7 +15,7 @@
 #include <sbia/basis/path.h> // testee
 
 #if UNIX
-#  include <stdlib.h> // the system () function is used to create symbolic links
+#  include <stdlib.h> // the system() function is used to create symbolic links
 #endif
 
 
@@ -29,143 +29,143 @@ using namespace std;
 
 // ***************************************************************************
 // Tests the validation of a path string
-TEST (Path, IsValidPath)
+TEST (Path, is_valid_path)
 {
     // test with valid Unix-style paths
-    EXPECT_TRUE (IsValidPath ("/"));
-    EXPECT_TRUE (IsValidPath ("/usr"));
-    EXPECT_TRUE (IsValidPath ("/usr/"));
-    EXPECT_TRUE (IsValidPath ("////../../usr/./"));
-    EXPECT_TRUE (IsValidPath ("."));
-    EXPECT_TRUE (IsValidPath (".."));
-    EXPECT_TRUE (IsValidPath ("./"));
+    EXPECT_TRUE (is_valid_path ("/"));
+    EXPECT_TRUE (is_valid_path ("/usr"));
+    EXPECT_TRUE (is_valid_path ("/usr/"));
+    EXPECT_TRUE (is_valid_path ("////../../usr/./"));
+    EXPECT_TRUE (is_valid_path ("."));
+    EXPECT_TRUE (is_valid_path (".."));
+    EXPECT_TRUE (is_valid_path ("./"));
 
     // test with valid Windows-style paths
-    EXPECT_TRUE (IsValidPath ("\\"));
-    EXPECT_TRUE (IsValidPath (".\\"));
-    EXPECT_TRUE (IsValidPath ("..\\"));
+    EXPECT_TRUE (is_valid_path ("\\"));
+    EXPECT_TRUE (is_valid_path (".\\"));
+    EXPECT_TRUE (is_valid_path ("..\\"));
 #if WINDOWS
     for (char letter = 'A'; letter <= 'Z'; ++ letter) {
         std::string path;
         path += letter;
         path += ":/";
-        EXPECT_TRUE (IsValidPath (path)) << "Path " << path << " should be valid on Windows";
+        EXPECT_TRUE (is_valid_path (path)) << "Path " << path << " should be valid on Windows";
     }
 #endif
-    EXPECT_TRUE (IsValidPath ("C:\\..\\"));
-    EXPECT_TRUE (IsValidPath ("C:\\WINDOWS"));
-    EXPECT_TRUE (IsValidPath ("C:\\WINDOWS\\"));
-    EXPECT_TRUE (IsValidPath ("C:\\WINDOWS\\.."));
-    EXPECT_TRUE (IsValidPath ("C:\\WINDOWS\\."));
+    EXPECT_TRUE (is_valid_path ("C:\\..\\"));
+    EXPECT_TRUE (is_valid_path ("C:\\WINDOWS"));
+    EXPECT_TRUE (is_valid_path ("C:\\WINDOWS\\"));
+    EXPECT_TRUE (is_valid_path ("C:\\WINDOWS\\.."));
+    EXPECT_TRUE (is_valid_path ("C:\\WINDOWS\\."));
 
     // test with valid mixed-style paths
-    EXPECT_TRUE (IsValidPath ("//\\/..\\../usr/./"));
-    EXPECT_TRUE (IsValidPath ("c:/"));
-    EXPECT_TRUE (IsValidPath ("c:/WINDOWS"));
-    EXPECT_TRUE (IsValidPath ("c:/WINDOWS\\"));
+    EXPECT_TRUE (is_valid_path ("//\\/..\\../usr/./"));
+    EXPECT_TRUE (is_valid_path ("c:/"));
+    EXPECT_TRUE (is_valid_path ("c:/WINDOWS"));
+    EXPECT_TRUE (is_valid_path ("c:/WINDOWS\\"));
 
     // test with invalid paths
-    EXPECT_FALSE (IsValidPath (""));
-    EXPECT_FALSE (IsValidPath (":"));
-    EXPECT_FALSE (IsValidPath ("::"));
-    EXPECT_FALSE (IsValidPath (":\\"));
-    EXPECT_FALSE (IsValidPath (":/"));
-    EXPECT_FALSE (IsValidPath ("1:/"));
+    EXPECT_FALSE (is_valid_path (""));
+    EXPECT_FALSE (is_valid_path (":"));
+    EXPECT_FALSE (is_valid_path ("::"));
+    EXPECT_FALSE (is_valid_path (":\\"));
+    EXPECT_FALSE (is_valid_path (":/"));
+    EXPECT_FALSE (is_valid_path ("1:/"));
 #if !WINDOWS
     for (char letter = 'A'; letter <= 'Z'; ++ letter) {
         if (letter == 'C') continue;
         std::string path;
         path += letter;
         path += ":/";
-        EXPECT_FALSE (IsValidPath (path)) << "Path " << path << " is invalid on Unix systems";
+        EXPECT_FALSE (is_valid_path (path)) << "Path " << path << " is invalid on Unix systems";
     }
 #endif
 }
 
 // ***************************************************************************
 // Tests the cleaning/simplifying of a path
-TEST (Path, CleanPath)
+TEST (Path, clean_path)
 {
     // test with (almost) already clean paths
-    EXPECT_STREQ ("/usr",          CleanPath ("/usr").c_str ());
-    EXPECT_STREQ ("/usr/",         CleanPath ("/usr/").c_str ());
-    EXPECT_STREQ ("/",             CleanPath ("/").c_str ());
-    EXPECT_STREQ ("C:/",           CleanPath ("C:/").c_str ());
-    EXPECT_STREQ ("C:\\",          CleanPath ("C:\\").c_str ());
-    EXPECT_STREQ ("../../",        CleanPath ("../../").c_str ());
-    EXPECT_STREQ ("../../../",     CleanPath ("../../../").c_str ());
-    EXPECT_STREQ ("../../../usr/", CleanPath ("../../../usr/local/../").c_str ());
-    EXPECT_STREQ (".",             CleanPath (".").c_str ());
-    EXPECT_STREQ ("./",            CleanPath ("./").c_str ());
-    EXPECT_STREQ ("./..",          CleanPath ("./..").c_str ());
+    EXPECT_STREQ ("/usr",          clean_path ("/usr").c_str ());
+    EXPECT_STREQ ("/usr/",         clean_path ("/usr/").c_str ());
+    EXPECT_STREQ ("/",             clean_path ("/").c_str ());
+    EXPECT_STREQ ("C:/",           clean_path ("C:/").c_str ());
+    EXPECT_STREQ ("C:\\",          clean_path ("C:\\").c_str ());
+    EXPECT_STREQ ("../../",        clean_path ("../../").c_str ());
+    EXPECT_STREQ ("../../../",     clean_path ("../../../").c_str ());
+    EXPECT_STREQ ("../../../usr/", clean_path ("../../../usr/local/../").c_str ());
+    EXPECT_STREQ (".",             clean_path (".").c_str ());
+    EXPECT_STREQ ("./",            clean_path ("./").c_str ());
+    EXPECT_STREQ ("./..",          clean_path ("./..").c_str ());
 
     // test some simple cases
-    EXPECT_STREQ ("/",          CleanPath ("/").c_str ());
-    EXPECT_STREQ ("/",          CleanPath ("/..").c_str ());
-    EXPECT_STREQ ("/",          CleanPath ("/../..").c_str ());
-    EXPECT_STREQ ("/",          CleanPath ("/../../.").c_str ());
-    EXPECT_STREQ ("/",          CleanPath ("/.././../.").c_str ());
-    EXPECT_STREQ ("\\",         CleanPath ("\\").c_str ());
-    EXPECT_STREQ ("\\",         CleanPath ("\\..\\..").c_str ());
-    EXPECT_STREQ ("\\",         CleanPath ("\\..\\..\\.").c_str ());
-    EXPECT_STREQ ("\\",         CleanPath ("\\..\\.\\..\\.").c_str ());
-    EXPECT_STREQ ("C:/",        CleanPath ("C:/").c_str ());
-    EXPECT_STREQ ("C:\\",       CleanPath ("C:\\").c_str ());
-    EXPECT_STREQ ("/usr/local", CleanPath ("/usr/local/.").c_str ());
-    EXPECT_STREQ ("/usr",       CleanPath ("/usr/local/..").c_str ());
+    EXPECT_STREQ ("/",          clean_path ("/").c_str ());
+    EXPECT_STREQ ("/",          clean_path ("/..").c_str ());
+    EXPECT_STREQ ("/",          clean_path ("/../..").c_str ());
+    EXPECT_STREQ ("/",          clean_path ("/../../.").c_str ());
+    EXPECT_STREQ ("/",          clean_path ("/.././../.").c_str ());
+    EXPECT_STREQ ("\\",         clean_path ("\\").c_str ());
+    EXPECT_STREQ ("\\",         clean_path ("\\..\\..").c_str ());
+    EXPECT_STREQ ("\\",         clean_path ("\\..\\..\\.").c_str ());
+    EXPECT_STREQ ("\\",         clean_path ("\\..\\.\\..\\.").c_str ());
+    EXPECT_STREQ ("C:/",        clean_path ("C:/").c_str ());
+    EXPECT_STREQ ("C:\\",       clean_path ("C:\\").c_str ());
+    EXPECT_STREQ ("/usr/local", clean_path ("/usr/local/.").c_str ());
+    EXPECT_STREQ ("/usr",       clean_path ("/usr/local/..").c_str ());
 
     // test some more complicated cases
-    EXPECT_STREQ ("/usr\\",           CleanPath ("/usr/local/.///./\\/\\/\\///\\\\\\///..\\\\.\\./").c_str ());
-    EXPECT_STREQ ("..\\../path\\sub", CleanPath ("..\\//../path\\/\\///./.\\sub").c_str ());
+    EXPECT_STREQ ("/usr\\",           clean_path ("/usr/local/.///./\\/\\/\\///\\\\\\///..\\\\.\\./").c_str ());
+    EXPECT_STREQ ("..\\../path\\sub", clean_path ("..\\//../path\\/\\///./.\\sub").c_str ());
 
     // test with invalid paths
-    EXPECT_THROW (CleanPath (""), invalid_argument);
+    EXPECT_THROW (clean_path (""), invalid_argument);
 }
 
 // ***************************************************************************
 // Tests the conversion of a path to Unix-style
-TEST (Path, ToUnixPath)
+TEST (Path, to_unix_path)
 {
-    EXPECT_STREQ ("/etc",       ToUnixPath ("\\usr/..\\etc").c_str ());
-    EXPECT_STREQ ("/etc/",     ToUnixPath ("\\usr/..\\etc\\").c_str ());
-    EXPECT_STREQ ("/usr/local", ToUnixPath ("/usr/././//\\\\/./\\.\\local/bin\\..").c_str ());
-    EXPECT_STREQ ("/WINDOWS",   ToUnixPath ("C:\\WINDOWS").c_str ());
-    EXPECT_STREQ ("/WINDOWS",   ToUnixPath ("C:\\WINDOWS", false).c_str ());
-    EXPECT_STREQ ("C:/WINDOWS", ToUnixPath ("C:\\WINDOWS", true).c_str ());
-    EXPECT_STREQ ("C:/WINDOWS", ToUnixPath ("c:\\WINDOWS", true).c_str ());
+    EXPECT_STREQ ("/etc",       to_unix_path ("\\usr/..\\etc").c_str ());
+    EXPECT_STREQ ("/etc/",      to_unix_path ("\\usr/..\\etc\\").c_str ());
+    EXPECT_STREQ ("/usr/local", to_unix_path ("/usr/././//\\\\/./\\.\\local/bin\\..").c_str ());
+    EXPECT_STREQ ("/WINDOWS",   to_unix_path ("C:\\WINDOWS").c_str ());
+    EXPECT_STREQ ("/WINDOWS",   to_unix_path ("C:\\WINDOWS", false).c_str ());
+    EXPECT_STREQ ("C:/WINDOWS", to_unix_path ("C:\\WINDOWS", true).c_str ());
+    EXPECT_STREQ ("C:/WINDOWS", to_unix_path ("c:\\WINDOWS", true).c_str ());
 
     // test with invalid paths
-    EXPECT_THROW (ToUnixPath (""),      invalid_argument);
-    EXPECT_THROW (ToUnixPath ("C::\\"), invalid_argument);
+    EXPECT_THROW (to_unix_path (""),      invalid_argument);
+    EXPECT_THROW (to_unix_path ("C::\\"), invalid_argument);
 #if !WINDOWS
-    EXPECT_THROW (ToUnixPath ("D:\\"),  invalid_argument);
+    EXPECT_THROW (to_unix_path ("D:\\"),  invalid_argument);
 #endif
 }
 
 // ***************************************************************************
 // Tests the conversion of a path to Windows-style
-TEST (Path, ToWindowsPath)
+TEST (Path, to_windows_path)
 {
-    EXPECT_STREQ ("C:\\WINDOWS",          ToWindowsPath ("/WINDOWS").c_str ());
-    EXPECT_STREQ ("C:\\WINDOWS",          ToWindowsPath ("C:\\WINDOWS").c_str ());
-    EXPECT_STREQ ("D:\\",                 ToWindowsPath ("D:\\").c_str ());
-    EXPECT_STREQ ("D:\\",                 ToWindowsPath ("D:/").c_str ());
-    EXPECT_STREQ ("C:\\Users\\andreas",   ToWindowsPath ("/Users/andreas").c_str ());
-    EXPECT_STREQ ("C:\\Users\\andreas\\", ToWindowsPath ("/Users/andreas/").c_str ());
+    EXPECT_STREQ ("C:\\WINDOWS",          to_windows_path ("/WINDOWS").c_str ());
+    EXPECT_STREQ ("C:\\WINDOWS",          to_windows_path ("C:\\WINDOWS").c_str ());
+    EXPECT_STREQ ("D:\\",                 to_windows_path ("D:\\").c_str ());
+    EXPECT_STREQ ("D:\\",                 to_windows_path ("D:/").c_str ());
+    EXPECT_STREQ ("C:\\Users\\andreas",   to_windows_path ("/Users/andreas").c_str ());
+    EXPECT_STREQ ("C:\\Users\\andreas\\", to_windows_path ("/Users/andreas/").c_str ());
 
     // test with invalid paths
-    EXPECT_THROW (ToWindowsPath (""),      invalid_argument);
-    EXPECT_THROW (ToWindowsPath ("C::\\"), invalid_argument);
+    EXPECT_THROW (to_windows_path (""),      invalid_argument);
+    EXPECT_THROW (to_windows_path ("C::\\"), invalid_argument);
 }
 
 // ***************************************************************************
 // Tests the conversion of a path to the native style of the used OS
-TEST (Path, ToNativePath)
+TEST (Path, to_native_path)
 {
 #if WINDOWS
-    EXPECT_STREQ ("C:\\tmp", ToNativePath ("/tmp").c_str ());
+    EXPECT_STREQ ("C:\\tmp", to_native_path ("/tmp").c_str ());
 #else
-    EXPECT_STREQ ("/tmp",    ToNativePath ("C:\\tmp").c_str ());
+    EXPECT_STREQ ("/tmp",    to_native_path ("C:\\tmp").c_str ());
 #endif
 }
 
@@ -175,17 +175,17 @@ TEST (Path, ToNativePath)
 
 // ***************************************************************************
 // Tests the retrieval of the current working directory
-TEST (Path, GetWorkingDirectory)
+TEST (Path, get_working_directory)
 {
     // get working directory
     string wd;
-    ASSERT_NO_THROW (wd = GetWorkingDirectory ());
+    ASSERT_NO_THROW (wd = get_working_directory ());
 
     // path may not be empty
     ASSERT_FALSE (wd.empty ()) << "Working directory may not be empty";
 
     // path should be absolute
-    EXPECT_FALSE (IsRelativePath (wd)) << "Working directory must be absolute";
+    EXPECT_FALSE (is_relative (wd)) << "Working directory must be absolute";
 
     // path should have only slashes, no backslashes
     EXPECT_EQ (string::npos, wd.find ('\\')) << "Working directory may only contain slashes (/) as path separators";
@@ -200,18 +200,18 @@ TEST (Path, GetWorkingDirectory)
 
 // ***************************************************************************
 // Tests the splitting of a path into its components
-TEST (Path, SplitPath)
+TEST (Path, split_path)
 {
     string root, dir, fname, ext;
 
     // test with empty string
-    EXPECT_THROW (SplitPath ("", &root, &dir, &fname, &ext), invalid_argument);
+    EXPECT_THROW (split_path ("", &root, &dir, &fname, &ext), invalid_argument);
 
     // test with NULL arguments only
-    EXPECT_NO_THROW (SplitPath ("/", NULL, NULL, NULL, NULL));
+    EXPECT_NO_THROW (split_path ("/", NULL, NULL, NULL, NULL));
 
     // test the paths given as example in the documentation
-    EXPECT_NO_THROW (SplitPath ("/usr/bin", &root, &dir, &fname, &ext));
+    EXPECT_NO_THROW (split_path ("/usr/bin", &root, &dir, &fname, &ext));
 #if WINDOWS
     EXPECT_STREQ ("C:/", root.c_str ());
 #else
@@ -221,7 +221,7 @@ TEST (Path, SplitPath)
     EXPECT_STREQ ("bin",  fname.c_str ());
     EXPECT_STREQ ("",     ext  .c_str ());
  
-    EXPECT_NO_THROW (SplitPath ("/home/user/info.txt", &root, &dir, &fname, &ext));
+    EXPECT_NO_THROW (split_path ("/home/user/info.txt", &root, &dir, &fname, &ext));
 #if WINDOWS
     EXPECT_STREQ ("C:/", root.c_str ());
 #else
@@ -231,19 +231,19 @@ TEST (Path, SplitPath)
     EXPECT_STREQ ("info",       fname.c_str ());
     EXPECT_STREQ (".txt",       ext  .c_str ());
 
-    EXPECT_NO_THROW (SplitPath ("word.doc", &root, &dir, &fname, &ext));
+    EXPECT_NO_THROW (split_path ("word.doc", &root, &dir, &fname, &ext));
     EXPECT_STREQ ("./",   root .c_str ());
     EXPECT_STREQ ("",     dir  .c_str ());
     EXPECT_STREQ ("word", fname.c_str ());
     EXPECT_STREQ (".doc", ext  .c_str ());
 
-    EXPECT_NO_THROW (SplitPath ("../word.doc", &root, &dir, &fname, &ext));
+    EXPECT_NO_THROW (split_path ("../word.doc", &root, &dir, &fname, &ext));
     EXPECT_STREQ ("./",   root .c_str ());
     EXPECT_STREQ ("../",  dir  .c_str ());
     EXPECT_STREQ ("word", fname.c_str ());
     EXPECT_STREQ (".doc", ext  .c_str ());
 
-    EXPECT_NO_THROW (SplitPath ("C:/WINDOWS/regedit.exe", &root, &dir, &fname, &ext));
+    EXPECT_NO_THROW (split_path ("C:/WINDOWS/regedit.exe", &root, &dir, &fname, &ext));
 #if WINDOWS
     EXPECT_STREQ ("C:/", root.c_str ());
 #else
@@ -254,16 +254,16 @@ TEST (Path, SplitPath)
     EXPECT_STREQ (".exe",     ext  .c_str ());
  
 #if WINDOWS
-    EXPECT_NO_THROW (SplitPath ("d:\\data", &root, &dir, &fname, &ext));
+    EXPECT_NO_THROW (split_path ("d:\\data", &root, &dir, &fname, &ext));
     EXPECT_STREQ ("D:/",  root.c_str ());
     EXPECT_STREQ ("",     dir .c_str ());
     EXPECT_STREQ ("data", fname.c_str ());
     EXPECT_STREQ ("",     ext  .c_str ());
 #else
-    EXPECT_THROW (SplitPath ("d:\\data", &root, &dir, &fname, &ext), invalid_argument);
+    EXPECT_THROW (split_path ("d:\\data", &root, &dir, &fname, &ext), invalid_argument);
 #endif
  
-    EXPECT_NO_THROW (SplitPath ("/usr/local/", &root, &dir, &fname, &ext));
+    EXPECT_NO_THROW (split_path ("/usr/local/", &root, &dir, &fname, &ext));
 #if WINDOWS
     EXPECT_STREQ ("C:/", root.c_str ());
 #else
@@ -276,128 +276,128 @@ TEST (Path, SplitPath)
 
 // ***************************************************************************
 // Tests the retrieval of the file root
-TEST (Path, GetFileRoot)
+TEST (Path, get_file_root)
 {
     // relative Unix-style path
-    EXPECT_STREQ ("./", GetFileRoot ("readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("./readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("../readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("dir/readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("../dir/readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("./dir/readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("./readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("../readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("dir/readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("../dir/readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("./dir/readme.txt").c_str ());
 
     // relative Windows-style path
-    EXPECT_STREQ ("./", GetFileRoot (".\\readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("..\\readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("dir\\readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot (".\\dir\\readme.txt").c_str ());
-    EXPECT_STREQ ("./", GetFileRoot ("..\\dir\\readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root (".\\readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("..\\readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("dir\\readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root (".\\dir\\readme.txt").c_str ());
+    EXPECT_STREQ ("./", get_file_root ("..\\dir\\readme.txt").c_str ());
 
     // absolute Unix-style path
 #if WINDOWS
-    EXPECT_STREQ ("C:/", GetFileRoot ("/").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("/.").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("/./").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("/..").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("/usr").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("/usr/").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("/usr/..").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("/usr/local").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/.").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/./").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/..").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/usr").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/usr/").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/usr/..").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("/usr/local").c_str ());
 #else
-    EXPECT_STREQ ("/", GetFileRoot ("/").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("/.").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("/./").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("/..").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("/usr").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("/usr/").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("/usr/..").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("/usr/local").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/.").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/./").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/..").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/usr").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/usr/").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/usr/..").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("/usr/local").c_str ());
 #endif
 
     // absolute Windows-style path
 #if WINDOWS
-    EXPECT_STREQ ("C:/", GetFileRoot ("\\").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("\\WINDOWS").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("\\WINDOWS\\").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("c:\\WINDOWS\\").c_str ());
-    EXPECT_STREQ ("C:/", GetFileRoot ("C:\\WINDOWS\\").c_str ());
-    EXPECT_STREQ ("D:/", GetFileRoot ("d:\\WINDOWS\\").c_str ());
-    EXPECT_STREQ ("A:/", GetFileRoot ("a:\\WINDOWS\\").c_str ());
-    EXPECT_STREQ ("Z:/", GetFileRoot ("z:\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("\\").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("\\WINDOWS").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("c:\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("C:/", get_file_root ("C:\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("D:/", get_file_root ("d:\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("A:/", get_file_root ("a:\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("Z:/", get_file_root ("z:\\WINDOWS\\").c_str ());
 #else
-    EXPECT_STREQ ("/", GetFileRoot ("\\").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("\\WINDOWS\\").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("c:\\WINDOWS\\").c_str ());
-    EXPECT_STREQ ("/", GetFileRoot ("C:\\WINDOWS\\").c_str ());
-    EXPECT_THROW (GetFileRoot ("d:\\WINDOWS\\"), invalid_argument);
-    EXPECT_THROW (GetFileRoot ("a:\\WINDOWS\\"), invalid_argument);
-    EXPECT_THROW (GetFileRoot ("z:\\WINDOWS\\"), invalid_argument);
+    EXPECT_STREQ ("/", get_file_root ("\\").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("\\WINDOWS").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("c:\\WINDOWS\\").c_str ());
+    EXPECT_STREQ ("/", get_file_root ("C:\\WINDOWS\\").c_str ());
+    EXPECT_THROW (get_file_root ("d:\\WINDOWS\\"), invalid_argument);
+    EXPECT_THROW (get_file_root ("a:\\WINDOWS\\"), invalid_argument);
+    EXPECT_THROW (get_file_root ("z:\\WINDOWS\\"), invalid_argument);
 #endif
 
     // test with invalid argument
-    EXPECT_THROW (GetFileRoot (""),      invalid_argument);
-    EXPECT_THROW (GetFileRoot ("C::/"),  invalid_argument);
-    EXPECT_THROW (GetFileRoot ("C::\\"), invalid_argument);
-    EXPECT_THROW (GetFileRoot (":/"),    invalid_argument);
-    EXPECT_THROW (GetFileRoot (":\\"),   invalid_argument);
-    EXPECT_THROW (GetFileRoot ("7:\\"),  invalid_argument);
+    EXPECT_THROW (get_file_root (""),      invalid_argument);
+    EXPECT_THROW (get_file_root ("C::/"),  invalid_argument);
+    EXPECT_THROW (get_file_root ("C::\\"), invalid_argument);
+    EXPECT_THROW (get_file_root (":/"),    invalid_argument);
+    EXPECT_THROW (get_file_root (":\\"),   invalid_argument);
+    EXPECT_THROW (get_file_root ("7:\\"),  invalid_argument);
 }
 
 // ***************************************************************************
-// Tests the retrieval of the directory component - see also SplitPath() test
-TEST (Path, GetFileDirectory)
+// Tests the retrieval of the directory component - see also split_path() test
+TEST (Path, get_file_directory)
 {
 #if WINDOWS
-	EXPECT_STREQ ("C:/etc", GetFileDirectory ("/etc/config").c_str ());
-	EXPECT_STREQ ("C:/etc", GetFileDirectory ("/etc/").c_str ());
-	EXPECT_STREQ ("C:/",    GetFileDirectory ("/etc").c_str ());
+	EXPECT_STREQ ("C:/etc", get_file_directory ("/etc/config").c_str ());
+	EXPECT_STREQ ("C:/etc", get_file_directory ("/etc/").c_str ());
+	EXPECT_STREQ ("C:/",    get_file_directory ("/etc").c_str ());
 #else
-    EXPECT_STREQ ("/etc", GetFileDirectory ("/etc/config").c_str ());
-    EXPECT_STREQ ("/etc", GetFileDirectory ("/etc/").c_str ());
-    EXPECT_STREQ ("/",    GetFileDirectory ("/etc").c_str ());
+    EXPECT_STREQ ("/etc", get_file_directory ("/etc/config").c_str ());
+    EXPECT_STREQ ("/etc", get_file_directory ("/etc/").c_str ());
+    EXPECT_STREQ ("/",    get_file_directory ("/etc").c_str ());
 #endif
-    EXPECT_STREQ ("./",   GetFileDirectory ("./CMakeLists.txt").c_str ());
-    EXPECT_STREQ ("../",  GetFileDirectory ("../CMakeLists.txt").c_str ());
+    EXPECT_STREQ ("./",   get_file_directory ("./CMakeLists.txt").c_str ());
+    EXPECT_STREQ ("../",  get_file_directory ("../CMakeLists.txt").c_str ());
 
     // test with invalid argument
-    EXPECT_THROW (GetFileDirectory (""), invalid_argument);
+    EXPECT_THROW (get_file_directory (""), invalid_argument);
 }
 
 // ***************************************************************************
-// Tests the retrieval of the file name component - see also SplitPath() test
-TEST (Path, GetFileName)
+// Tests the retrieval of the file name component - see also split_path() test
+TEST (Path, get_file_name)
 {
-    EXPECT_STREQ ("word.doc",      GetFileName ("/Users/andreas/word.doc").c_str ());
-    EXPECT_STREQ ("README",        GetFileName ("doc/README").c_str ());
-    EXPECT_STREQ ("Copyright.txt", GetFileName ("Copyright.txt").c_str ());
+    EXPECT_STREQ ("word.doc",      get_file_name ("/Users/andreas/word.doc").c_str ());
+    EXPECT_STREQ ("README",        get_file_name ("doc/README").c_str ());
+    EXPECT_STREQ ("Copyright.txt", get_file_name ("Copyright.txt").c_str ());
 
     // test with invalid argument
-    EXPECT_THROW (GetFileDirectory (""), invalid_argument);
+    EXPECT_THROW (get_file_directory (""), invalid_argument);
 }
 
 // ***************************************************************************
-// Tests the retrieval of the file name component - see also SplitPath() test
-TEST (Path, GetFileNameWithoutExtension)
+// Tests the retrieval of the file name component - see also split_path() test
+TEST (Path, get_file_name_without_extension)
 {
-    EXPECT_STREQ ("word",      GetFileNameWithoutExtension ("/Users/andreas/word.doc").c_str ());
-    EXPECT_STREQ ("README",    GetFileNameWithoutExtension ("doc/README").c_str ());
-    EXPECT_STREQ ("Copyright", GetFileNameWithoutExtension ("Copyright.txt").c_str ());
+    EXPECT_STREQ ("word",      get_file_name_without_extension ("/Users/andreas/word.doc").c_str ());
+    EXPECT_STREQ ("README",    get_file_name_without_extension ("doc/README").c_str ());
+    EXPECT_STREQ ("Copyright", get_file_name_without_extension ("Copyright.txt").c_str ());
 
     // test with invalid argument
-    EXPECT_THROW (GetFileNameWithoutExtension (""), invalid_argument);
+    EXPECT_THROW (get_file_name_without_extension (""), invalid_argument);
 }
 
 // ***************************************************************************
-// Tests the retrieval of the extension component - see also SplitPath() test
-TEST (Path, GetFileNameExtension)
+// Tests the retrieval of the extension component - see also split_path() test
+TEST (Path, get_file_name_extension)
 {
-    EXPECT_STREQ (".doc", GetFileNameExtension ("/Users/andreas/word.doc").c_str ());
-    EXPECT_STREQ ("",     GetFileNameExtension ("doc/README").c_str ());
-    EXPECT_STREQ (".txt", GetFileNameExtension ("Copyright.txt").c_str ());
+    EXPECT_STREQ (".doc", get_file_name_extension ("/Users/andreas/word.doc").c_str ());
+    EXPECT_STREQ ("",     get_file_name_extension ("doc/README").c_str ());
+    EXPECT_STREQ (".txt", get_file_name_extension ("Copyright.txt").c_str ());
 
     // test with invalid argument
-    EXPECT_THROW (GetFileNameExtension (""), invalid_argument);
+    EXPECT_THROW (get_file_name_extension (""), invalid_argument);
 }
 
 // ===========================================================================
@@ -406,120 +406,120 @@ TEST (Path, GetFileNameExtension)
 
 // ***************************************************************************
 // Tests the check whether a path is absolute or not
-TEST (Path, IsAbsolutePath)
+TEST (Path, is_absolute)
 {
     // test with Unix-style relative paths
-    EXPECT_FALSE (IsAbsolutePath ("readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("./readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("../readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("dir/readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("./dir/readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("../dir/readme.txt"));
+    EXPECT_FALSE (is_absolute ("readme.txt"));
+    EXPECT_FALSE (is_absolute ("./readme.txt"));
+    EXPECT_FALSE (is_absolute ("../readme.txt"));
+    EXPECT_FALSE (is_absolute ("dir/readme.txt"));
+    EXPECT_FALSE (is_absolute ("./dir/readme.txt"));
+    EXPECT_FALSE (is_absolute ("../dir/readme.txt"));
 
     // test with Unix-style absolute path
-    EXPECT_TRUE (IsAbsolutePath ("/usr"));
-    EXPECT_TRUE (IsAbsolutePath ("/usr/local"));
-    EXPECT_TRUE (IsAbsolutePath ("/."));
-    EXPECT_TRUE (IsAbsolutePath ("/.."));
+    EXPECT_TRUE (is_absolute ("/usr"));
+    EXPECT_TRUE (is_absolute ("/usr/local"));
+    EXPECT_TRUE (is_absolute ("/."));
+    EXPECT_TRUE (is_absolute ("/.."));
 
     // test with Windows-style relative path
-    EXPECT_FALSE (IsAbsolutePath (".\\readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("..\\readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("dir\\readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath (".\\dir\\readme.txt"));
-    EXPECT_FALSE (IsAbsolutePath ("..\\dir\\readme.txt"));
+    EXPECT_FALSE (is_absolute (".\\readme.txt"));
+    EXPECT_FALSE (is_absolute ("..\\readme.txt"));
+    EXPECT_FALSE (is_absolute ("dir\\readme.txt"));
+    EXPECT_FALSE (is_absolute (".\\dir\\readme.txt"));
+    EXPECT_FALSE (is_absolute ("..\\dir\\readme.txt"));
 
     // test with Windows-style absolute path
-    EXPECT_TRUE (IsAbsolutePath ("\\WINDOWS"));
-    EXPECT_TRUE (IsAbsolutePath ("c:\\WINDOWS"));
-    EXPECT_TRUE (IsAbsolutePath ("C:\\WINDOWS"));
-    EXPECT_TRUE (IsAbsolutePath ("C:\\"));
-    EXPECT_TRUE (IsAbsolutePath ("C:\\."));
+    EXPECT_TRUE (is_absolute ("\\WINDOWS"));
+    EXPECT_TRUE (is_absolute ("c:\\WINDOWS"));
+    EXPECT_TRUE (is_absolute ("C:\\WINDOWS"));
+    EXPECT_TRUE (is_absolute ("C:\\"));
+    EXPECT_TRUE (is_absolute ("C:\\."));
 }
 
 // ***************************************************************************
 // Tests the check whether a path is relative or not
-TEST (Path, IsRelativePath)
+TEST (Path, is_relative)
 {
     // test with Unix-style relative paths
-    EXPECT_TRUE (IsRelativePath ("readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("./readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("../readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("dir/readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("./dir/readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("../dir/readme.txt"));
+    EXPECT_TRUE (is_relative ("readme.txt"));
+    EXPECT_TRUE (is_relative ("./readme.txt"));
+    EXPECT_TRUE (is_relative ("../readme.txt"));
+    EXPECT_TRUE (is_relative ("dir/readme.txt"));
+    EXPECT_TRUE (is_relative ("./dir/readme.txt"));
+    EXPECT_TRUE (is_relative ("../dir/readme.txt"));
 
     // test with Unix-style absolute path
-    EXPECT_FALSE (IsRelativePath ("/usr"));
-    EXPECT_FALSE (IsRelativePath ("/usr/local"));
-    EXPECT_FALSE (IsRelativePath ("/."));
-    EXPECT_FALSE (IsRelativePath ("/.."));
+    EXPECT_FALSE (is_relative ("/usr"));
+    EXPECT_FALSE (is_relative ("/usr/local"));
+    EXPECT_FALSE (is_relative ("/."));
+    EXPECT_FALSE (is_relative ("/.."));
 
     // test with Windows-style relative path
-    EXPECT_TRUE (IsRelativePath (".\\readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("..\\readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("dir\\readme.txt"));
-    EXPECT_TRUE (IsRelativePath (".\\dir\\readme.txt"));
-    EXPECT_TRUE (IsRelativePath ("..\\dir\\readme.txt"));
+    EXPECT_TRUE (is_relative (".\\readme.txt"));
+    EXPECT_TRUE (is_relative ("..\\readme.txt"));
+    EXPECT_TRUE (is_relative ("dir\\readme.txt"));
+    EXPECT_TRUE (is_relative (".\\dir\\readme.txt"));
+    EXPECT_TRUE (is_relative ("..\\dir\\readme.txt"));
 
     // test with Windows-style absolute path
-    EXPECT_FALSE (IsRelativePath ("\\WINDOWS"));
-    EXPECT_FALSE (IsRelativePath ("c:\\WINDOWS"));
-    EXPECT_FALSE (IsRelativePath ("C:\\WINDOWS"));
-    EXPECT_FALSE (IsRelativePath ("C:\\"));
-    EXPECT_FALSE (IsRelativePath ("C:\\."));
+    EXPECT_FALSE (is_relative ("\\WINDOWS"));
+    EXPECT_FALSE (is_relative ("c:\\WINDOWS"));
+    EXPECT_FALSE (is_relative ("C:\\WINDOWS"));
+    EXPECT_FALSE (is_relative ("C:\\"));
+    EXPECT_FALSE (is_relative ("C:\\."));
 }
 
 // ***************************************************************************
 // Tests the conversion of a path to an absolute path
-TEST (Path, ToAbsolutePath)
+TEST (Path, to_absolute_path)
 {
 #if WINDOWS
-    EXPECT_STREQ ("C:/usr/local",  ToAbsolutePath ("/usr",   "local").c_str ());
-    EXPECT_STREQ ("C:/usr/local",  ToAbsolutePath ("/usr/",  "local").c_str ());
-    EXPECT_STREQ ("C:/usr/local/", ToAbsolutePath ("/usr/",  "local/").c_str ());
-    EXPECT_STREQ ("C:/usr/local/", ToAbsolutePath ("\\usr/", "local/").c_str ());
-    EXPECT_STREQ ("C:/tmp",        ToAbsolutePath ("/usr",   "/tmp").c_str ());
-    EXPECT_STREQ ("C:/tmp",        ToAbsolutePath ("/usr",   "\\tmp").c_str ());
-    EXPECT_STREQ ("C:/tmp/",       ToAbsolutePath ("/usr",   "/tmp/").c_str ());
-    EXPECT_STREQ ("C:/tmp/",       ToAbsolutePath ("/usr",   "/tmp\\").c_str ());
+    EXPECT_STREQ ("C:/usr/local",  to_absolute_path ("/usr",   "local").c_str ());
+    EXPECT_STREQ ("C:/usr/local",  to_absolute_path ("/usr/",  "local").c_str ());
+    EXPECT_STREQ ("C:/usr/local/", to_absolute_path ("/usr/",  "local/").c_str ());
+    EXPECT_STREQ ("C:/usr/local/", to_absolute_path ("\\usr/", "local/").c_str ());
+    EXPECT_STREQ ("C:/tmp",        to_absolute_path ("/usr",   "/tmp").c_str ());
+    EXPECT_STREQ ("C:/tmp",        to_absolute_path ("/usr",   "\\tmp").c_str ());
+    EXPECT_STREQ ("C:/tmp/",       to_absolute_path ("/usr",   "/tmp/").c_str ());
+    EXPECT_STREQ ("C:/tmp/",       to_absolute_path ("/usr",   "/tmp\\").c_str ());
 #else
-    EXPECT_STREQ ("/usr/local",  ToAbsolutePath ("/usr",   "local").c_str ());
-    EXPECT_STREQ ("/usr/local",  ToAbsolutePath ("/usr/",  "local").c_str ());
-    EXPECT_STREQ ("/usr/local/", ToAbsolutePath ("/usr/",  "local/").c_str ());
-    EXPECT_STREQ ("/usr/local/", ToAbsolutePath ("\\usr/", "local/").c_str ());
-    EXPECT_STREQ ("/tmp",        ToAbsolutePath ("/usr",   "/tmp").c_str ());
-    EXPECT_STREQ ("/tmp",        ToAbsolutePath ("/usr",   "\\tmp").c_str ());
-    EXPECT_STREQ ("/tmp/",       ToAbsolutePath ("/usr",   "/tmp/").c_str ());
-    EXPECT_STREQ ("/tmp/",       ToAbsolutePath ("/usr",   "/tmp\\").c_str ());
+    EXPECT_STREQ ("/usr/local",  to_absolute_path ("/usr",   "local").c_str ());
+    EXPECT_STREQ ("/usr/local",  to_absolute_path ("/usr/",  "local").c_str ());
+    EXPECT_STREQ ("/usr/local/", to_absolute_path ("/usr/",  "local/").c_str ());
+    EXPECT_STREQ ("/usr/local/", to_absolute_path ("\\usr/", "local/").c_str ());
+    EXPECT_STREQ ("/tmp",        to_absolute_path ("/usr",   "/tmp").c_str ());
+    EXPECT_STREQ ("/tmp",        to_absolute_path ("/usr",   "\\tmp").c_str ());
+    EXPECT_STREQ ("/tmp/",       to_absolute_path ("/usr",   "/tmp/").c_str ());
+    EXPECT_STREQ ("/tmp/",       to_absolute_path ("/usr",   "/tmp\\").c_str ());
 #endif
 
-    string wd = GetWorkingDirectory ();
+    string wd = get_working_directory ();
 
-    EXPECT_TRUE (ToAbsolutePath ("tmp") == ToAbsolutePath (wd, "tmp"));
+    EXPECT_TRUE (to_absolute_path ("tmp") == to_absolute_path (wd, "tmp"));
 
-    EXPECT_THROW (ToAbsolutePath (""), invalid_argument);
+    EXPECT_THROW (to_absolute_path (""), invalid_argument);
 }
 
 // ***************************************************************************
 // Tests the conversion of a path to a relative path
-TEST (Path, ToRelativePath)
+TEST (Path, to_relative_path)
 {
-    EXPECT_STREQ (".",             ToRelativePath ("/usr",        "/usr").c_str ());
-    EXPECT_STREQ ("..",            ToRelativePath ("/usr/local",  "/usr").c_str ());
-    EXPECT_STREQ ("..",            ToRelativePath ("/usr/local/", "/usr").c_str ());
-    EXPECT_STREQ ("../",           ToRelativePath ("/usr/local",  "/usr/").c_str ());
-    EXPECT_STREQ ("../config.txt", ToRelativePath ("/usr/local",  "/usr/config.txt").c_str ());
+    EXPECT_STREQ (".",             to_relative_path ("/usr",        "/usr").c_str ());
+    EXPECT_STREQ ("..",            to_relative_path ("/usr/local",  "/usr").c_str ());
+    EXPECT_STREQ ("..",            to_relative_path ("/usr/local/", "/usr").c_str ());
+    EXPECT_STREQ ("../",           to_relative_path ("/usr/local",  "/usr/").c_str ());
+    EXPECT_STREQ ("../config.txt", to_relative_path ("/usr/local",  "/usr/config.txt").c_str ());
 }
 
 // ***************************************************************************
 // Tests the joining of two paths.
-TEST (Path, JoinPaths)
+TEST (Path, join_paths)
 {
-    EXPECT_STREQ ("./usr",          JoinPaths (".", "usr").c_str ());
-    EXPECT_STREQ ("/etc",           JoinPaths ("/usr/local", "/etc").c_str ());
-    EXPECT_STREQ ("\\etc",          JoinPaths ("/usr/local", "\\etc").c_str ());
-    EXPECT_STREQ ("/usr/local/etc", JoinPaths ("/usr/local", "etc").c_str ());
+    EXPECT_STREQ ("./usr",          join_paths (".", "usr").c_str ());
+    EXPECT_STREQ ("/etc",           join_paths ("/usr/local", "/etc").c_str ());
+    EXPECT_STREQ ("\\etc",          join_paths ("/usr/local", "\\etc").c_str ());
+    EXPECT_STREQ ("/usr/local/etc", join_paths ("/usr/local", "etc").c_str ());
 }
 
 // ===========================================================================
@@ -528,12 +528,12 @@ TEST (Path, JoinPaths)
 
 // ***************************************************************************
 // Tests the check whether a given file is a symbolic link
-TEST (Path, IsSymbolicLink)
+TEST (Path, is_symlink)
 {
 #if WINDOWS
-    EXPECT_FALSE (IsSymbolicLink ("/proc/exe"));
+    EXPECT_FALSE (is_symlink ("/proc/exe"));
 #else
-    const string tmpDir = GetWorkingDirectory () + "/basis-path-test-IsSymbolicLink";
+    const string tmpDir = get_working_directory () + "/basis-path-test-is_symlink";
     string cmd, link, value;
  
     cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
@@ -542,12 +542,12 @@ TEST (Path, IsSymbolicLink)
     value = ".";
     cmd   = "ln -sn \""; cmd += value; cmd += "\" \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
-    EXPECT_TRUE (IsSymbolicLink (link)) << "Link: " << link;
+    EXPECT_TRUE (is_symlink (link)) << "Link: " << link;
     link  = tmpDir; link += "/nolink";
     value = "";
     cmd   = "touch \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
-    EXPECT_FALSE (IsSymbolicLink (link)) << "Link: " << link;
+    EXPECT_FALSE (is_symlink (link)) << "Link: " << link;
 
     cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0);
@@ -556,16 +556,16 @@ TEST (Path, IsSymbolicLink)
 
 // ***************************************************************************
 // Tests the reading of a symbolic link's value
-TEST (Path, ReadSymbolicLink)
+TEST (Path, read_symlink)
 {
     std::string value;
 #if WINDOWS
-    EXPECT_TRUE (ReadSymbolicLink ("/proc/exe", value));
+    EXPECT_TRUE (read_symlink ("/proc/exe", value));
     EXPECT_TRUE (value == "/proc/exe");
-    EXPECT_TRUE (ReadSymbolicLink ("/does/not/exist", value));
+    EXPECT_TRUE (read_symlink ("/does/not/exist", value));
     EXPECT_TRUE (value == "/does/not/exist");
 #else
-    const string tmpDir = GetWorkingDirectory () + "/basis-path-test-ReadSymbolicLink";
+    const string tmpDir = get_working_directory () + "/basis-path-test-read_symlink";
     string cmd, link;
  
     cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
@@ -576,30 +576,30 @@ TEST (Path, ReadSymbolicLink)
     cmd   = "ln -sn \""; cmd += value; cmd += "\" \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     value = "";
-    EXPECT_TRUE (ReadSymbolicLink (link, value)) << "Link: " << link;
+    EXPECT_TRUE (read_symlink (link, value)) << "Link: " << link;
     EXPECT_STREQ ("hello world", value.c_str ());
     link  = tmpDir; link += "/nolink";
     cmd   = "touch \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
-    EXPECT_FALSE (ReadSymbolicLink (link, value)) << "Link: " << link;
+    EXPECT_FALSE (read_symlink (link, value)) << "Link: " << link;
 
     cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
     ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
     EXPECT_TRUE (system (cmd.c_str ()) == 0);
 #endif
 
-    EXPECT_THROW (ReadSymbolicLink ("",     value), invalid_argument);
-    EXPECT_THROW (ReadSymbolicLink ("C::/", value), invalid_argument);
+    EXPECT_THROW (read_symlink ("",     value), invalid_argument);
+    EXPECT_THROW (read_symlink ("C::/", value), invalid_argument);
 }
 
 // ***************************************************************************
 // Tests the retrieval of an actual absolute path with symbolic links resolved
-TEST (Path, GetRealPath)
+TEST (Path, get_real_path)
 {
 #if WINDOWS
 #else
-    const string wd     = GetWorkingDirectory ();
-    const string tmpDir = wd + "/basis-path-test-GetRealPath";
+    const string wd     = get_working_directory ();
+    const string tmpDir = wd + "/basis-path-test-get_real_path";
     string cmd, link, value;
  
     cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
@@ -610,12 +610,12 @@ TEST (Path, GetRealPath)
     value = "..";
     cmd   = "ln -sn \""; cmd += value; cmd += "\" \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
-    EXPECT_NO_THROW (value = GetRealPath (link)) << "Link: " << link;
+    EXPECT_NO_THROW (value = get_real_path (link)) << "Link: " << link;
     EXPECT_STREQ (wd.c_str (), value.c_str ()) << "Link: " << link;
     link  = tmpDir; link += "/nolink";
     cmd   = "touch \""; cmd += link; cmd += "\"";
     EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
-    EXPECT_TRUE (GetRealPath (link) == link) << "Link: " << link;
+    EXPECT_TRUE (get_real_path (link) == link) << "Link: " << link;
 
     cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
     ASSERT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
@@ -629,30 +629,30 @@ TEST (Path, GetRealPath)
 
 // ***************************************************************************
 // Tests the retrieval of the current executable's path
-TEST (Path, GetExecutablePath)
+TEST (Path, get_executable_path)
 {
     string path;
-    EXPECT_NO_THROW (path = GetExecutablePath ());
+    EXPECT_NO_THROW (path = get_executable_path ());
     cout << path << endl;
-    EXPECT_STREQ ("test_path", GetFileNameWithoutExtension (path).c_str ());
+    EXPECT_STREQ ("test_path", get_file_name_without_extension (path).c_str ());
 }
 
 // ***************************************************************************
 // Tests the retrieval of the current executable's directory
-TEST (Path, GetExecutableDirectory)
+TEST (Path, get_executable_directory)
 {
     string path;
-    EXPECT_NO_THROW (path = GetExecutableDirectory ());
+    EXPECT_NO_THROW (path = get_executable_directory ());
     cout << path << endl;
-    EXPECT_TRUE (path == GetFileDirectory (GetExecutablePath ()));
+    EXPECT_TRUE (path == get_file_directory (get_executable_path ()));
 }
 
 // ***************************************************************************
 // Tests the retrieval of the current executable's name
-TEST (Path, GetExecutableName)
+TEST (Path, get_executable_name)
 {
     string name;
-    EXPECT_NO_THROW (name = GetExecutableName ());
+    EXPECT_NO_THROW (name = get_executable_name ());
     EXPECT_STREQ ("test_path", name.c_str ());
 }
 

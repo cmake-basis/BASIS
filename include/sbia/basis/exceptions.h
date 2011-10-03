@@ -1,4 +1,4 @@
-/*!
+/**
  * @file  exceptions.h
  * @brief Common exceptions and helper macros.
  *
@@ -24,13 +24,13 @@
 SBIA_BASIS_NAMESPACE_BEGIN
 
 
-/*!
+/**
  * @brief Throw exception with given message.
  *
  * Example:
  * @code
- * void Func (int i) {
- *     if (i < 0) BASIS_THROW (std::invalid_argument, "Argument i (= " << i << ") must be positive");
+ * void func(int i) {
+ *     if (i < 0) BASIS_THROW(std::invalid_argument, "Argument i (= " << i << ") must be positive");
  * }
  * @endcode
  *
@@ -40,11 +40,11 @@ SBIA_BASIS_NAMESPACE_BEGIN
  * @param [in] msg  The exception message. The given argument is streamed
  *                  into a std::ostringstream.
  */
-#define BASIS_THROW( type, msg ) \
+#define BASIS_THROW(type, msg) \
     { \
        std::ostringstream oss; \
        oss << msg; \
-       throw type (oss.str ()); \
+       throw type(oss.str()); \
     }
 
 

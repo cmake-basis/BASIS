@@ -52,26 +52,26 @@ const string cPathSeparatorStr ("/");
 // ===========================================================================
 
 // ***************************************************************************
-bool IsValidPath (const string &path, bool strict)
+bool is_valid_path(const string& path, bool strict)
 {
     // an empty string is clearly no valid path
-    if (path.empty ()) return false;
+    if (path.empty()) return false;
     // we do not allow a path to start with a colon (:) (also not on Unix!)
-    if (path [0] == ':') return false;
+    if (path[0] == ':') return false;
     // absolute Windows-style path with drive specification
-    if (path.size () > 1 && path [1] == ':') {
+    if (path.size() > 1 && path[1] == ':') {
         // first character must be a drive letter
-        if ((path [0] < 'a' || 'z' < path [0]) &&
-            (path [0] < 'A' || 'Z' < path [0])) return false;
+        if ((path[0] < 'a' || 'z' < path[0]) &&
+            (path[0] < 'A' || 'Z' < path[0])) return false;
         // absolute path must follow the drive specification
-        if (path.size () == 2) return false;
-        if (path [2] != '/' && path [2] != '\\') return false;
+        if (path.size() == 2) return false;
+        if (path[2] != '/' && path[2] != '\\') return false;
         if (strict) {
 #if !WINDOWS
             // on Unix systems, a drive specification is invalid
             // however, to be consistent, the drive C: is just ignored and
             // interpreted as root on Unix
-            if (path [0] != 'C' && path [0] != 'c') return false;
+            if (path[0] != 'C' && path[0] != 'c') return false;
 #endif
         }
     }
@@ -80,62 +80,62 @@ bool IsValidPath (const string &path, bool strict)
 }
 
 // ***************************************************************************
-string CleanPath (const string &path)
+string clean_path(const string& path)
 {
-    if (!IsValidPath (path, false)) {
-        BASIS_THROW (invalid_argument, "Invalid path: ''");
+    if (!is_valid_path(path, false)) {
+        BASIS_THROW(invalid_argument, "Invalid path: ''");
     }
 
-    string cleanedPath;
+    string cleaned_path;
 
     string::const_iterator prev;
     string::const_iterator curr;
     string::const_iterator next;
 
     // remove periods enclosed by slashes (or backslashes)
-    prev = path.begin ();
-    if (prev == path.end ()) return "";
+    prev = path.begin();
+    if (prev == path.end()) return "";
 
     curr = prev + 1;
-    next = ((curr == path.end ()) ? curr : (curr + 1));
+    next = ((curr == path.end()) ? curr : (curr + 1));
 
-    cleanedPath.reserve (path.size ());
-    cleanedPath.push_back (*prev);
-    while (curr != path.end ()) {
+    cleaned_path.reserve(path.size());
+    cleaned_path.push_back(*prev);
+    while (curr != path.end()) {
         if (*curr == '.' && (*prev == '/' || *prev == '\\')) {
-            if (next == path.end ()) {
+            if (next == path.end()) {
                 // remove the "/" that was added before b/c the
                 // final "/." should be removed together
-                cleanedPath.erase (cleanedPath.size () - 1);
+                cleaned_path.erase(cleaned_path.size() - 1);
             }
             else if (*next != '/' && *next != '\\') {
-                cleanedPath.push_back (*curr);
+                cleaned_path.push_back(*curr);
             }
         } else {
-            cleanedPath.push_back (*curr);
+            cleaned_path.push_back(*curr);
         }
 
-        ++ prev;
-        ++ curr;
-        if (next != path.end ()) ++ next;
+        prev++;
+        curr++;
+        if (next != path.end()) next++;
     }
 
     // remove duplicate slashes (and backslashes)
     string tmp;
-    cleanedPath.swap (tmp);
+    cleaned_path.swap(tmp);
 
-    prev = tmp.begin ();
+    prev = tmp.begin();
     curr = prev + 1;
 
-    cleanedPath.reserve (tmp.size ());
-    cleanedPath.push_back (*prev);
-    while (curr != tmp.end ()) {
+    cleaned_path.reserve(tmp.size());
+    cleaned_path.push_back(*prev);
+    while (curr != tmp.end()) {
         if ((*curr != '/' && *curr != '\\') || (*prev != '/' && *prev != '\\')) {
-            cleanedPath.push_back (*curr);
+            cleaned_path.push_back(*curr);
         }
 
-        ++ prev;
-        ++ curr;
+        prev++;
+        curr++;
     }
 
     // remove references to parent directories
@@ -143,8 +143,8 @@ string CleanPath (const string &path)
 
     // in case of relative paths like "../../*" we need to skip the first
     // parent directory references
-    while (skip + 3 <= cleanedPath.size ()) {
-        std::string sub = cleanedPath.substr (skip, 3);
+    while (skip + 3 <= cleaned_path.size()) {
+        string sub = cleaned_path.substr(skip, 3);
         if (sub != "../" && sub != "..\\") break;
         skip += 3;
     }
@@ -155,29 +155,29 @@ string CleanPath (const string &path)
                         // to the root directory given by "../../" or "/",
                         // for example.
     for (;;) {
-        pos = cleanedPath.find (ref, pos);
+        pos = cleaned_path.find(ref, pos);
         if (pos == string::npos) {
             if (ref == "\\..") break;
             // no occurrences of "/.." found, now clean up the ones of "\.."
             ref = "\\..";
             pos = skip;
-            pos = cleanedPath.find (ref, pos);
+            pos = cleaned_path.find(ref, pos);
             if (pos == string::npos) break;
         }
-        if (pos + 3 == cleanedPath.size ()
-                || cleanedPath [pos + 3] == '/'
-                || cleanedPath [pos + 3] == '\\') {
+        if (pos + 3 == cleaned_path.size()
+                || cleaned_path[pos + 3] == '/'
+                || cleaned_path[pos + 3] == '\\') {
             if (pos == 0) {
-                if (cleanedPath.size () == 3) cleanedPath.erase (1, 2);
-                else                          cleanedPath.erase (0, 3);
+                if (cleaned_path.size() == 3) cleaned_path.erase(1, 2);
+                else                          cleaned_path.erase(0, 3);
                 pos = skip;
             } else {
-                size_t start = cleanedPath.find_last_of ("/\\", pos - 1);
+                size_t start = cleaned_path.find_last_of("/\\", pos - 1);
                 if (start != string::npos) {
-                    cleanedPath.erase (start, pos - start + 3);
+                    cleaned_path.erase(start, pos - start + 3);
                     pos = start + 1;
-                } else if (cleanedPath [0] == '/' || cleanedPath [0] == '\\') {
-                    cleanedPath.erase (skip, pos + 3);
+                } else if (cleaned_path[0] == '/' || cleaned_path[0] == '\\') {
+                    cleaned_path.erase(skip, pos + 3);
                     pos = skip;
                 } else {
                     pos += 3;
@@ -188,77 +188,77 @@ string CleanPath (const string &path)
         }
     }
 
-    return cleanedPath;
+    return cleaned_path;
 }
 
 // ***************************************************************************
-string ToUnixPath (const string &path, bool drive)
+string to_unix_path(const string& path, bool drive)
 {
-    if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
+    if (!is_valid_path(path)) {
+        BASIS_THROW(invalid_argument, "Invalid path: '" << path << "'");
     }
 
-    string unixPath;
-    unixPath.reserve (path.size ());
+    string unix_path;
+    unix_path.reserve(path.size());
 
-    string::const_iterator in = path.begin ();
+    string::const_iterator in = path.begin();
 
     // optional drive specification
-	if (path.size () > 1 && path [1] == ':') {
+	if (path.size() > 1 && path[1] == ':') {
         if (drive) {
-            if ('a' <= path [0] && path [0] <= 'z') unixPath += 'A' + (path [0] - 'a');
-            else                                    unixPath += path [0];
-            unixPath += ":/";
+            if ('a' <= path[0] && path[0] <= 'z') unix_path += 'A' + (path[0] - 'a');
+            else                                  unix_path += path[0];
+            unix_path += ":/";
         }
         in += 2;
 	}
 
     // copy path while replacing backslashes by slashes
-    while (in != path.end ()) {
-        if (*in == '\\') unixPath.push_back ('/');
-        else             unixPath.push_back (*in);
-        ++ in;
+    while (in != path.end()) {
+        if (*in == '\\') unix_path.push_back('/');
+        else             unix_path.push_back(*in);
+        in++;
     }
 
-    return CleanPath (unixPath);
+    return clean_path(unix_path);
 }
 
 // ***************************************************************************
-string ToWindowsPath (const string &path)
+string to_windows_path(const string& path)
 {
-    if (!IsValidPath (path, false)) {
-        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
+    if (!is_valid_path(path, false)) {
+        BASIS_THROW(invalid_argument, "Invalid path: '" << path << "'");
     }
 
-    string windowsPath (path.size (), '\0');
+    string windows_path(path.size(), '\0');
 
     // copy path while replacing slashes by backslashes
-    string::const_iterator in  = path.begin ();
-    string::iterator       out = windowsPath.begin ();
+    string::const_iterator in  = path.begin();
+    string::iterator       out = windows_path.begin();
 
-    while (in != path.end ()) {
+    while (in != path.end()) {
         if (*in == '/') *out = '\\';
         else            *out = *in;
-        ++ in;
-        ++ out;
+        in++;
+        out++;
     }
 
     // prepend drive specification to absolute paths
-    if (windowsPath [0] == '\\') {
-        windowsPath.reserve (windowsPath.size () + 2);
-        windowsPath.insert  (0, "C:");
+    if (windows_path[0] == '\\') {
+        windows_path.reserve(windows_path.size() + 2);
+        windows_path.insert (0, "C:");
     }
 
-    return CleanPath (windowsPath);
+    return clean_path(windows_path);
 }
 
 // ***************************************************************************
-string ToNativePath (const string &path)
+string to_native_path(const string& path)
 {
 #if WINDOWS
-    return ToWindowsPath (path);
+    return to_windows_path(path);
 #else
-    return ToUnixPath (path);
+    return to_unix_path(path);
 #endif
 }
 
@@ -267,19 +267,19 @@ string ToNativePath (const string &path)
 // ===========================================================================
 
 // ***************************************************************************
-string GetWorkingDirectory ()
+string get_working_directory()
 {
     string wd;
 #if WINDOWS
-    char *buffer = _getcwd (NULL, 0);
+    char* buffer = _getcwd(NULL, 0);
 #else
-    char *buffer = getcwd (NULL, 0);
+    char* buffer = getcwd(NULL, 0);
 #endif
     if (buffer) {
         wd = buffer;
-        free (buffer);
+        free(buffer);
     }
-    if (!wd.empty ()) wd = ToUnixPath (wd, true);
+    if (!wd.empty()) wd = to_unix_path(wd, true);
     return wd;
 }
 
@@ -288,23 +288,19 @@ string GetWorkingDirectory ()
 // ===========================================================================
 
 // ***************************************************************************
-void SplitPath (const string &path,
-                string       *root,
-                string       *dir,
-                string       *fname,
-                string       *ext)
+void split_path(const string&path, string* root, string* dir, string* fname, string* ext)
 {
     // file root
-    if (root) *root = GetFileRoot (path);
-    // \note No need to validate path here if GetFileRoot () is executed.
-    //       Otherwise, it is necessary as ToUnixPath () is not as restrict.
-    else if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
+    if (root) *root = get_file_root(path);
+    // \note No need to validate path here if get_file_root() is executed.
+    //       Otherwise, it is necessary as to_unix_path() is not as restrict.
+    else if (!is_valid_path(path)) {
+        BASIS_THROW(invalid_argument, "Invalid path: '" << path << "'");
     }
     // convert path to clean Unix-style path
-    string unixPath = ToUnixPath (path);
+    string unix_path = to_unix_path(path);
     // get position of last slash
-    size_t last = unixPath.find_last_of ('/');
+    size_t last = unix_path.find_last_of('/');
     // file directory without root
     if (dir) {
         if (last == string::npos) {
@@ -312,15 +308,15 @@ void SplitPath (const string &path,
         } else {
             size_t start = 0;
 
-            if (unixPath [0] == '/') {
+            if (unix_path[0] == '/') {
                 start = 1;
-            } else if (unixPath.size () > 1 &&
-                       unixPath [0] == '.'  &&
-                       unixPath [1] == '/') {
+            } else if (unix_path.size() > 1 &&
+                       unix_path[0] == '.'  &&
+                       unix_path[1] == '/') {
                 start = 2;
             }
 
-            *dir = unixPath.substr (start, last - start + 1);
+            *dir = unix_path.substr(start, last - start + 1);
         }
     }
     // file name and extension
@@ -328,12 +324,12 @@ void SplitPath (const string &path,
         string name;
 
         if (last == string::npos) {
-            name = unixPath;
+            name = unix_path;
         } else {
-            name = unixPath.substr (last + 1);
+            name = unix_path.substr(last + 1);
         }
 
-        size_t pos = name.find_last_of ('.');
+        size_t pos = name.find_last_of('.');
 
         if (pos == string::npos) {
             if (fname) {
@@ -344,24 +340,24 @@ void SplitPath (const string &path,
             }
         } else {
             if (fname) {
-                *fname = name.substr (0, pos);
+                *fname = name.substr(0, pos);
             }
             if (ext) {
-                *ext = name.substr (pos);
+                *ext = name.substr(pos);
             }
         }
     }
 }
 
 // ***************************************************************************
-string GetFileRoot (const string &path)
+string get_file_root(const string& path)
 {
-    if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
+    if (!is_valid_path(path)) {
+        BASIS_THROW(invalid_argument, "Invalid path: '" << path << "'");
     }
 
     // absolute Unix-style input path
-    if (path [0] == '/' || path [0] == '\\') {
+    if (path[0] == '/' || path[0] == '\\') {
 #if WINDOWS
         return "C:/";
 #else
@@ -369,8 +365,8 @@ string GetFileRoot (const string &path)
 #endif
     }
     // absolute Windows-style input path
-    if (path.size () > 1 && path [1] == ':') {
-        char letter = path [0];
+    if (path.size() > 1 && path[1] == ':') {
+        char letter = path[0];
         if ('a' <= letter && letter <= 'z') {
             letter = 'A' + (letter - 'a');
         }
@@ -386,41 +382,41 @@ string GetFileRoot (const string &path)
 }
 
 // ***************************************************************************
-string GetFileDirectory (const string &path)
+string get_file_directory(const string& path)
 {
     string root;
     string dir;
-    SplitPath (path, &root, &dir, NULL, NULL);
+    split_path(path, &root, &dir, NULL, NULL);
     if (root == "./") {
-        if (dir.empty ()) return "./";
-        else              return dir;
+        if (dir.empty()) return "./";
+        else             return dir;
     } else {
-        return root + dir.substr (0, dir.size () - 1);
+        return root + dir.substr(0, dir.size() - 1);
     }
 }
 
 // ***************************************************************************
-string GetFileName (const string &path)
+string get_file_name(const string& path)
 {
     string fname;
     string ext;
-    SplitPath (path, NULL, NULL, &fname, &ext);
+    split_path(path, NULL, NULL, &fname, &ext);
     return fname + ext;
 }
 
 // ***************************************************************************
-string GetFileNameWithoutExtension (const string &path)
+string get_file_name_without_extension(const string& path)
 {
     string fname;
-    SplitPath (path, NULL, NULL, &fname, NULL);
+    split_path(path, NULL, NULL, &fname, NULL);
     return fname;
 }
 
 // ***************************************************************************
-string GetFileNameExtension (const string &path)
+string get_file_name_extension(const string& path)
 {
     string ext;
-    SplitPath (path, NULL, NULL, NULL, &ext);
+    split_path(path, NULL, NULL, NULL, &ext);
     return ext;
 }
 
@@ -429,83 +425,83 @@ string GetFileNameExtension (const string &path)
 // ===========================================================================
 
 // ***************************************************************************
-bool IsAbsolutePath (const string &path)
+bool is_absolute(const string& path)
 {
-    return GetFileRoot (path) != "./";
+    return get_file_root(path) != "./";
 }
 
 // ***************************************************************************
-bool IsRelativePath (const string &path)
+bool is_relative(const string& path)
 {
-    return GetFileRoot (path) == "./";
+    return get_file_root(path) == "./";
 }
 
 // ***************************************************************************
-string ToAbsolutePath (const string &path)
+string to_absolute_path(const string& path)
 {
-    return ToAbsolutePath (GetWorkingDirectory (), path);
+    return to_absolute_path(get_working_directory(), path);
 }
 
 // ***************************************************************************
-string ToAbsolutePath (const string &base, const string &path)
+string to_absolute_path(const string& base, const string& path)
 {
-    string absPath (path);
+    string abs_path(path);
     // make relative path absolute
-    if (IsRelativePath (absPath)) {
-        string absBase (base);
-        if (IsRelativePath (absBase)) {
-            absBase.insert (0, GetWorkingDirectory () + '/');
+    if (is_relative(abs_path)) {
+        string abs_base(base);
+        if (is_relative(abs_base)) {
+            abs_base.insert(0, get_working_directory() + '/');
         }
-        absPath.insert (0, absBase + '/');
+        abs_path.insert(0, abs_base + '/');
     }
     // convert to (clean) Unix-style path with drive specification
-    absPath = ToUnixPath (absPath, true);
+    abs_path = to_unix_path(abs_path, true);
     // on Windows, prepend drive letter followed by a colon (:)
 #if WINDOWS
-    if (absPath [0] == '/') absPath.insert (0, "C:");
+    if (abs_path[0] == '/') abs_path.insert(0, "C:");
 #endif
-    return absPath;
+    return abs_path;
 }
 
 // ***************************************************************************
-string ToRelativePath (const string &path)
+string to_relative_path(const string& path)
 {
-    string unixPath = ToUnixPath (path, true);
-    if (IsRelativePath (unixPath)) return CleanPath (unixPath);
-    return ToRelativePath (GetWorkingDirectory (), unixPath);
+    string unix_path = to_unix_path(path, true);
+    if (is_relative(unix_path)) return clean_path(unix_path);
+    return to_relative_path(get_working_directory(), unix_path);
 }
 
 // ***************************************************************************
-string ToRelativePath (const string &base, const string &path)
+string to_relative_path(const string& base, const string& path)
 {
-    string unixPath = ToUnixPath (path, true);
+    string unix_path = to_unix_path(path, true);
     // if relative path is given just return it cleaned
-    if (IsRelativePath (unixPath)) return CleanPath (path);
+    if (is_relative(unix_path)) return clean_path(path);
     // make base path absolute
-    string absBase = ToUnixPath (base, true);
-    if (IsRelativePath (absBase)) {
-        absBase.insert (0, GetWorkingDirectory () + '/');
+    string abs_base = to_unix_path(base, true);
+    if (is_relative(abs_base)) {
+        abs_base.insert(0, get_working_directory() + '/');
     }
     // path must have same root as base path; this check is intended for
     // Windows, where there is no relative path from one drive to another
-    if (GetFileRoot (absBase) != GetFileRoot (unixPath)) return "";
+    if (get_file_root(abs_base) != get_file_root(unix_path)) return "";
     // find start of first path component in which paths differ
-    string::const_iterator b   = absBase .begin ();
-    string::const_iterator p   = unixPath.begin ();
-    size_t                 pos = 0;
-    size_t                 i   = 0;
-    while (b != absBase.end () && p != unixPath.end () && *b == *p) {
+    string::const_iterator b = abs_base .begin();
+    string::const_iterator p = unix_path.begin();
+    size_t pos = 0;
+    size_t i = 0;
+    while (b != abs_base.end() && p != unix_path.end() && *b == *p) {
         if (*p == '/') pos = i;
-        ++ b; ++ p; ++ i;
+        b++; p++; i++;
     }
     // set pos to i (in this case, the size of one of the paths) if the end
     // of one path was reached, but the other path has a slash (or backslash)
     // at this position, this is required later below
-    if ((b != absBase .end () && (*b == '/' || *b == '\\')) ||
-        (p != unixPath.end () && (*p == '/' || *p == '\\'))) pos = i;
+    if ((b != abs_base .end() && (*b == '/' || *b == '\\')) ||
+        (p != unix_path.end() && (*p == '/' || *p == '\\'))) pos = i;
     // skip trailing slash of other path if end of one path reached
-    if (b == absBase .end () && p != unixPath.end () && *p == '/') ++ p;
-    if (p == unixPath.end () && b != absBase .end () && *b == '/') ++ b;
+    if (b == abs_base .end() && p != unix_path.end() && *p == '/') p++;
+    if (p == unix_path.end() && b != abs_base .end() && *b == '/') b++;
     // if paths are the same, just return a period (.)
     //
     // Thanks to the previous skipping of trailing slashes, this condition
@@ -516,36 +512,36 @@ string ToRelativePath (const string &base, const string &path)
     //    base := "/usr/bin"  path := "/usr/bin/"
     //    base := "/usr/bin/" path := "/usr/bin"
     //
-    // Note: The paths have been cleaned before by the ToUnixPath() function.
-    if (b == absBase.end () && p == unixPath.end ()) return ".";
+    // Note: The paths have been cleaned before by the to_unix_path() function.
+    if (b == abs_base.end() && p == unix_path.end()) return ".";
     // otherwise, pos is the index of the last slash for which both paths
     // were identical; hence, everything that comes after in the original
     // path is preserved and for each following component in the base path
     // a "../" is prepended to the relative path
-    string relPath;
-    if (absBase [absBase.size () - 1] != '/') {
+    string rel_path;
+    if (abs_base[abs_base.size() - 1] != '/') {
         // \attention This operation may invalidate the iterator b!
         //            Therefore, remember position of iterator and get a new one.
-        size_t pos = b - absBase.begin ();
-        absBase += '/';
-        b = absBase.begin () + pos;
+        size_t pos = b - abs_base.begin();
+        abs_base += '/';
+        b = abs_base.begin() + pos;
     }
-    while (b != absBase.end ()) {
+    while (b != abs_base.end()) {
         if (*b == '/') {
-            if (relPath.empty ()) relPath = "..";
-            else                  relPath += "/..";
+            if (rel_path.empty()) rel_path = "..";
+            else                  rel_path += "/..";
         }
-        ++ b;
+        b++;
     }
-    if (pos < unixPath.size ()) relPath += unixPath.substr (pos);
-    return relPath;
+    if (pos < unix_path.size()) rel_path += unix_path.substr(pos);
+    return rel_path;
 }
 
 // ***************************************************************************
-string JoinPaths (const string &base, const string &path)
+string join_paths(const string& base, const string& path)
 {
-    if (IsAbsolutePath (path)) return CleanPath (path);
-    else return CleanPath (base + '/' + path);
+    if (is_absolute(path)) return clean_path(path);
+    else return clean_path(base + '/' + path);
 }
 
 // ===========================================================================
@@ -553,79 +549,79 @@ string JoinPaths (const string &base, const string &path)
 // ===========================================================================
 
 // ***************************************************************************
-bool IsSymbolicLink (const string &path)
+bool is_symlink(const string& path)
 {
-    if (!IsValidPath (path)) {
-        BASIS_THROW (invalid_argument, "Invalid path: '" << path << "'");
+    if (!is_valid_path(path)) {
+        BASIS_THROW(invalid_argument, "Invalid path: '" << path << "'");
     }
 
 #if WINDOWS
     return false;
 #else
     struct stat info;
-    if (lstat (path.c_str (), &info) != 0) return false;
-    return S_ISLNK (info.st_mode);
+    if (lstat(path.c_str(), &info) != 0) return false;
+    return S_ISLNK(info.st_mode);
 #endif
 }
 
 // ***************************************************************************
-bool ReadSymbolicLink (const string &link, string &value)
+bool read_symlink(const string& link, string& value)
 {
-    if (!IsValidPath (link)) {
-        BASIS_THROW (invalid_argument, "Invalid path: '" << link << "'");
+    if (!is_valid_path(link)) {
+        BASIS_THROW(invalid_argument, "Invalid path: '" << link << "'");
     }
 
     bool ok = true;
 #if WINDOWS
     value = link;
 #else
-    char   *buffer = NULL;
-    char   *newbuf = NULL;
-    size_t  buflen = 256;
+    char* buffer = NULL;
+    char* newbuf = NULL;
+    size_t buflen = 256;
 
     for (;;) {
-        newbuf = (char *)realloc (buffer, buflen * sizeof (char));
+        newbuf = reinterpret_cast<char*>(realloc(buffer, buflen * sizeof(char)));
         if (!newbuf) {
             ok = false;
             break;
         }
         buffer = newbuf;
 
-        int n = readlink (link.c_str (), buffer, buflen);
+        int n = readlink(link.c_str(), buffer, buflen);
 
         if (n < 0) {
             ok = false;
             break;
-        } else if (static_cast<size_t> (n) < buflen) {
-            buffer [n] = '\0';
+        } else if (static_cast<size_t>(n) < buflen) {
+            buffer[n] = '\0';
             value = buffer;
             break;
         }
         buflen += 256;
     }
 
-    free (buffer);
+    free(buffer);
 #endif
     return ok;
 }
 
 // ***************************************************************************
-string GetRealPath (const string &path)
+string get_real_path(const string& path)
 {
     // make path just absolute if it is no symbolic link
-    if (!IsSymbolicLink (path)) {
-        return ToAbsolutePath (path);
+    if (!is_symlink(path)) {
+        return to_absolute_path(path);
     }
-    string currPath (path);
-    string nextPath;
+    string curr_path(path);
+    string next_path;
     // for safety reasons, restrict the depth of symbolic links followed
-    for (unsigned int i = 0; i < 100; ++ i) {
-        if (ReadSymbolicLink (currPath, nextPath)) {
-            nextPath = ToAbsolutePath (GetFileDirectory (currPath), nextPath);
-            if (!IsSymbolicLink (nextPath)) {
-                return nextPath;
+    for (unsigned int i = 0; i < 100; i++) {
+        if (read_symlink(curr_path, next_path)) {
+            next_path = to_absolute_path(get_file_directory(curr_path), next_path);
+            if (!is_symlink(next_path)) {
+                return next_path;
             }
-            currPath = nextPath;
+            curr_path = next_path;
         } else {
             // if real path could not be determined because of permissions
             // or invalid path, return the original path
@@ -635,7 +631,7 @@ string GetRealPath (const string &path)
     // if real path could not be determined with the given maximum number of
     // loop iterations (endless cycle?) or one of the symbolic links could
     // not be read, just return original path as clean absolute path
-    return ToAbsolutePath (path);
+    return to_absolute_path(path);
 }
 
 // ===========================================================================
@@ -643,22 +639,22 @@ string GetRealPath (const string &path)
 // ===========================================================================
 
 // ***************************************************************************
-string GetExecutablePath ()
+string get_executable_path()
 {
     string path;
 #if LINUX
-    path = GetRealPath ("/proc/self/exe");
+    path = get_real_path("/proc/self/exe");
 #elif WINDOWS
     LPTSTR buffer = NULL;
     LPTSTR newbuf = NULL;
-    DWORD  buflen = 256;
-    DWORD  retval = 0;
+    DWORD buflen = 256;
+    DWORD retval = 0;
 
     for (;;) {
-        newbuf = (LPTSTR)realloc (buffer, buflen * sizeof (TCHAR));
+        newbuf = static_cast<LPTSTR>(realloc(buffer, buflen * sizeof(TCHAR)));
         if (!newbuf) break;
 		buffer = newbuf;
-        retval = GetModuleFileName (NULL, buffer, buflen);
+        retval = GetModuleFileName(NULL, buffer, buflen);
         if (retval == 0 || retval < buflen) break;
         buflen += 256;
         retval = 0;
@@ -666,12 +662,12 @@ string GetExecutablePath ()
 
     if (retval > 0) {
 #  ifdef UNICODE
-        int n = WideCharToMultiByte (CP_UTF8, 0, buffer, -1, NULL, 0, NULL, NULL);
-        char *mbpath = (char *)malloc (n);
+        int n = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, NULL, 0, NULL, NULL);
+        char* mbpath = static_cast<char*>(malloc(n));
         if (mbpath) {
-            WideCharToMultiByte (CP_UTF8, 0, buffer, -1, mbpath, n, NULL, NULL);
+            WideCharToMultiByte(CP_UTF8, 0, buffer, -1, mbpath, n, NULL, NULL);
             path = mbpath;
-            free (mbpath);
+            free(mbpath);
         }
 #  else
         path = buffer;
@@ -680,54 +676,54 @@ string GetExecutablePath ()
 
     free (buffer);
 #elif MACOS
-    char    *buffer = NULL;
-    char    *newbuf = NULL;
+    char* buffer = NULL;
+    char* newbuf = NULL;
     uint32_t buflen = 256;
 
-    buffer = reinterpret_cast <char *> (malloc (buflen * sizeof (char)));
+    buffer = reinterpret_cast<char*>(malloc(buflen * sizeof(char)));
     if (buffer) {
-        if (_NSGetExecutablePath (buffer, &buflen) == 0) {
+        if (_NSGetExecutablePath(buffer, &buflen) == 0) {
             path = buffer;
         } else {
-            newbuf = reinterpret_cast <char *> (realloc (buffer, buflen * sizeof (char)));
+            newbuf = reinterpret_cast<char*>(realloc(buffer, buflen * sizeof(char)));
             if (newbuf)	{
 			    buffer = newbuf;
-                if (_NSGetExecutablePath (buffer, &buflen) == 0) {
+                if (_NSGetExecutablePath(buffer, &buflen) == 0) {
                     path = buffer;
                 }
             }
         }
     }
 
-    free (buffer);
+    free(buffer);
 #else
     // functionality not supported on this (unknown) platform
 #endif
-    return CleanPath (path);
+    return clean_path(path);
 }
 
 // ***************************************************************************
-string GetExecutableDirectory ()
+string get_executable_directory()
 {
-    string path = GetExecutablePath ();
-    return path.empty () ? "" : GetFileDirectory (path);
+    string path = get_executable_path();
+    return path.empty() ? "" : get_file_directory(path);
 }
 
 // ***************************************************************************
-string GetExecutableName ()
+string get_executable_name()
 {
-    string name = GetExecutablePath ();
-    if (name.empty ()) return "";
+    string name = get_executable_path();
+    if (name.empty()) return "";
 
 #if WINDOWS
-    string ext = GetFileNameExtension (name);
+    string ext = get_file_name_extension(name);
     if (ext == ".exe" || ext == ".com") {
-        name = GetFileNameWithoutExtension (name);
+        name = get_file_name_without_extension(name);
     } else {
-        name = GetFileName (name);
+        name = get_file_name(name);
     }
 #else
-    name = GetFileName (name);
+    name = get_file_name(name);
 #endif
 
     return name;
