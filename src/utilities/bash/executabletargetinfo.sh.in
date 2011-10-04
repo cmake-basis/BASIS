@@ -154,6 +154,15 @@ function get_executable_directory
 ##############################################################################
 # @brief Get absolute path of executable file.
 #
+# This function determines the absolute file path of an executable. If no
+# arguments are given, the absolute path of this executable is returned.
+# If the given argument is a known build target name, the absolute path
+# of the executable built by this target is returned. Otherwise, the named
+# command is searched in the system PATH and it's absolute path returned
+# if found. If the given argument is neither the name of a known build target
+# nor an executable found on the PATH, an empty string is returned and
+# the return value is 1.
+#
 # @param [out] path   Absolute path of executable file.
 # @param [in]  target Name/UID of build target. If no argument is given,
 #                     the file path of the calling executable is returned.
@@ -175,16 +184,23 @@ function get_executable_path
     else
         # get UID of target
         local uid && get_target_uid uid "$2"
-        [ -n "${uid}" ] || return 1
-        # get path relative to this module
-        _executabletargetinfo_get path "${uid}" LOCATION
-        [ -n "${path}" ] || return 1
-        # make path absolute
-        _executabletargetinfo_to_absolute_path path "${path}" "${__EXECUTABLETARGETINFO_dir}"
-        [ $? -eq 0 ] || return 1
+        if [ -n "${uid}" ]; then
+            # get path relative to this module
+            _executabletargetinfo_get path "${uid}" LOCATION
+            if [ -n "${path}" ]; then
+                # make path absolute
+                _executabletargetinfo_to_absolute_path path "${path}" "${__EXECUTABLETARGETINFO_dir}"
+                [ $? -eq 0 ] || return 1
+            else
+                path=`/usr/bin/which "$2" 2> /dev/null`
+            fi
+        else
+            path=`/usr/bin/which "$2" 2> /dev/null`
+        fi
     fi
 
     local "$1" && upvar $1 "${path}"
+    [ $? -eq 0 ] && [ -n "${path}" ]
 }
 
 

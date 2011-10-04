@@ -113,11 +113,15 @@ def get_executable_directory(target=None):
 # ****************************************************************************
 def get_executable_path(target=None):
     """
-    Get path of executable file built by given target. If no target is
-    specified, the path of this executable is returned. If the given name
-    is not a known target, the named command is searched in the directories
-    of the system PATH environment variable using a mechanism similiar to
-    the 'which' command on POSIX systems.
+    Get absolute path of executable file.
+    
+    This function determines the absolute file path of an executable. If no
+    arguments are given, the absolute path of this executable is returned.
+    If the given argument is a known build target name, the absolute path
+    of the executable built by this target is returned. Otherwise, the named
+    command is searched in the system PATH and it's absolute path returned
+    if found. If the given argument is neither the name of a known build target
+    nor an executable found on the PATH, undef is returned.
     
     """
     global _module_dir

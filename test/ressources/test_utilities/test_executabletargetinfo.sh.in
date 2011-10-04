@@ -18,7 +18,7 @@ source "${_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh"
 # plan
 # ============================================================================
 
-plan_tests 36
+plan_tests 40
 
 # ============================================================================
 # tests
@@ -124,6 +124,16 @@ is $? 0 'return value is 0'
 get_executable_name name "${target}"
 is $? 0 'return value is 0'
 is "${path}" "${dir}/${name}" "path of ${target}"
+
+# path of some system command
+get_executable_path path 'ls'
+is $? 0 'return value is 0'
+is "${path}" '/bin/ls' 'absolute path of ls command'
+
+# path of non-existend system command
+get_executable_path path 'some-certainly-non-existing-command'
+isnt $? 0 'return value is not 0'
+is "${path}" '' 'empty path returned for non-existend command'
 
 # wrong number of arguments
 get_executable_path
