@@ -29,6 +29,8 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 import os  # path functions
 import sys # argv[0]
 
+from sbia.basis.which import which, WhichError
+
 # ============================================================================
 # global variables
 # ============================================================================
@@ -112,7 +114,10 @@ def get_executable_directory(target=None):
 def get_executable_path(target=None):
     """
     Get path of executable file built by given target. If no target is
-    specified, the path of this executable is returned.
+    specified, the path of this executable is returned. If the given name
+    is not a known target, the named command is searched in the directories
+    of the system PATH environment variable using a mechanism similiar to
+    the 'which' command on POSIX systems.
     
     """
     global _module_dir
@@ -127,6 +132,12 @@ def get_executable_path(target=None):
         uid = get_target_uid(target)
         if uid is not None and uid in _locations:
             path = os.path.normpath(os.path.join(_module_dir, _locations[uid]))
+        else:
+            try:
+                path = which (target)
+            except WhichError:
+                pass
+    
     return path
 
 # ============================================================================

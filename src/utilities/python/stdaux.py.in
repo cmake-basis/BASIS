@@ -27,6 +27,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 import sys        # system-specific functionality
 import subprocess # execution of external command
+import shlex      # used to split() quoted command-line
 
 from .executabletargetinfo import get_executable_path
 
@@ -98,80 +99,87 @@ class SubprocessError(Exception):
         return self.message
 
 # ****************************************************************************
-def execute_process(args, verbosity=0, simulate=False, quiet=False, allow_fail=False):
+def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
     """
     Execute a command given as array with arguments as expected by subprocess.
     
-    @param [in] args       Command array. The array elements are converted to
-                           strings using the built-in str() function.
-    @param [in] verbosity  Verbosity of output messages.
-                           Does not affect verbosity of executed command.
-    @param [in] simulate   Whether to simulate command execution only.
+    @param [in] args       Command with arguments given either as single quoted
+                           string or array of command name and arguments.
+                           In the latter case, the array elements are converted
+                           to strings using the built-in str() function.
+                           Hence, any type which can be converted to a string
+                           can be used.
     @param [in] quiet      Turns off output of stdout of child process to
                            stdout of parent process.
+    @param [in] stdout     Whether to return the command output.
     @param [in] allow_fail If true, does not raise an exception if return
                            value is non-zero. Otherwise, a SubprocessError is
                            raised by this function.
+    @param [in] verbose    Verbosity of output messages.
+                           Does not affect verbosity of executed command.
+    @param [in] simulate   Whether to simulate command execution only.
     
-    @return Tuple containing exit code and command output.
+    @return Exit code of executed command. If @p stdout is True, a tuple
+            containing of exit code and command output as string is returned.
+    
+    @throws SubprocessError If command execution failed. This exception is not
+                            raised if the command executed with non-zero exit
+                            code but @p allow_fail set to True.
     
     """
-    # convert command arguments to strings
-    args = [str (i) for i in args]
-    # print command to be executed if verbose messages enabled
+    # convert args to list of strings
+    if type(args) is str:
+        args = shlex.split(args)
+    elif type(args) is list:
+        args = [str(i) for i in args]
+    else:
+        raise SubprocessError("execute_process(): Argument args must be either string or list")
+    # map build target name to executable file path
+    path = get_executable_path(args[0])
+    if not args[0]:
+        SubprocessError(args[0] + ': Either unknown build target or command not found')
+    args[0] = path
+    # some verbose output
     if verbosity > 0 or simulate:
-        sys.stdout.write(' '.join (args))
+        sys.stdout.write(' '.join(args))
         sys.stdout.write(" (simulated)\n")
-    # execute command 
+    # execute command
     status = 0
-    stdout = ''
+    output = ''
     if not simulate:
         try:
+            # open subprocess
             process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            # read stdout/stderr until EOF
             for line in process.stdout:
-                stdout = stdout + line
+                if stdout:
+                    output = output + line
                 if not quiet:
                     print line.rstrip()
                     sys.stdout.flush()
+            # wait until subprocess terminated and set exit code
             (out, err) = process.communicate()
+            # print possibly remaining content in stdout
             for line in out:
-                stdout = stdout + line
+                if stdout:
+                    output = output + line
                 if not quiet:
                     print line.rstrip()
                     sys.stdout.flush()
+            # get exit code
             status = process.returncode
         except OSError, e:
-            msg = "Subprocess \"" + ' '.join(args) + "\" caused an OSError\n\t" + e.message
-            sys.stderr.write(msg)
-            raise
+            raise SubprocessError(args[0] + ': ' + str(e))
         except Exception, e:
-            sys.stderr.write(e.message)
-            raise
+            msg  = "Exception while executing \"" + args[0] + "\"!\n"
+            msg += "\tArguments: " + ' '.join(['"' + i + '"' for i in args[1:]) + '\n'
+            msg += '\t' + str(e)
+            raise SubprocessError(msg)
     # if command failed, throw an exception
     if status != 0 and not allow_fail:
-        raise SubprocessError("Subprocess \"" + ' '.join(args) + "\" failed")
-    # otherwise, return tuple of exit code and command output
-    return (status, stdout)
-
-# ****************************************************************************
-def find_program(executable):
-    """
-    Find executable file using the /usr/bin/which command.
-    
-    @param [in] executable Name of executable file.
-    
-    @returns Path of executable as returned by the 'which' command or
-             None if the executable was not found.
-    
-    """
-    try:
-        (status, stdout) = execute_process(["/usr/bin/which", executable],
-                quiet=True, allow_fail=True)
-    except SubprocessError:
-        sys.stderr.write("/usr/bin/which command required!\n")
-        return None
-    if status == 0:
-        return stdout.strip()
+        raise SubprocessError("Subprocess " + ' '.join(['"' + i + '"' for i in args[1:]) + " failed")
+    # return
+    if stdout:
+        return (status, output)
     else:
-        return None
-
+        return status
