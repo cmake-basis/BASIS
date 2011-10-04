@@ -45,7 +45,7 @@
 # Filter from non-C++ syntax API docs to Doxygen-compatible syntax.
 # This class is meant to be used as a filter for the
 # <a href="http://www.doxygen.org/">Doxygen</a> documentation tool.
-package DoxyGen::Filter;
+package SBIA::BASIS::DoxyGen::Filter;
 
 use warnings;
 use strict;

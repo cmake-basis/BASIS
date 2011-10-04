@@ -56,7 +56,7 @@ basis_project_initialize (
   DESCRIPTION "This package implements and supports the development of"
               " software which follows the SBIA Build system And Software"
               " Implementation Standard (BASIS)."
-  LANGUAGES   CXX Perl Python BASH
+  LANGUAGES   CXX Python Perl BASH
 )
 
 # ============================================================================

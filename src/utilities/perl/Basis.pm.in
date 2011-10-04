@@ -10,7 +10,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-package Basis;
+package SBIA::@PROJECT_NAME@::Basis;
 
 use strict;
 use warnings;
@@ -50,8 +50,8 @@ BEGIN {
 # modules
 # ============================================================================
 
-use ExecutableTargetInfo qw(:everything);
-use StdAux               qw(:everything);
+use SBIA::@PROJECT_NAME@::ExecutableTargetInfo qw(:everything);
+use SBIA::@PROJECT_NAME@::StdAux               qw(:everything);
 
 
 1; # indicate success of module loading

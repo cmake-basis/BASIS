@@ -1,0 +1,177 @@
+##############################################################################
+# @file  stdaux.py
+# @brief Standard auxiliary functions.
+#
+# @note The stdaux.py module is automatically created by BASIS from the
+#       template file stdaux.py.in which is part of the BASIS installation.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+"""
+Standard utility functions.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+"""
+
+# ============================================================================
+# imports
+# ============================================================================
+
+import sys        # system-specific functionality
+import subprocess # execution of external command
+
+from .executabletargetinfo import get_executable_path
+
+# ============================================================================
+# version / contact
+# ============================================================================
+
+# ****************************************************************************
+def print_version(name, copyright=None, license=None):
+    """
+    Print version information including copyright and license notices.
+     
+    @param [in] name      Name of executable. Should not be set programmatically
+                          to the first argument to the __main__ module.
+    @param [in] copyright The copyright notice. If None, the official default
+                          copyright is used without year, which is not good.
+                          If an empty string is given, no copyright notice is
+                          printed.
+    @param [in] license   Information regarding licensing. If None, the official
+                          software license of SBIA is used. If an empty string
+                          is given, no license information is printed.
+    
+    """
+    # version
+    sys.stdout.write(name + " (@PROJECT_NAME@) version @PROJECT_VERSION_AND_REVISION@\n")
+    # copyright notice
+    if not copyright:
+        sys.stdout.write("Copyright (c) University of Pennsylvania. All rights reserved.")
+    elif copyright != "":
+        sys.stdout.write(copyright)
+    sys.stdout.write('\n')
+    # license information
+    if not license:
+        sys.stdout.write("See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.")
+    elif license != "":
+        sys.stdout.write(license)
+    sys.stdout.write('\n')
+
+# ****************************************************************************
+def print_contact(contact=None):
+    """
+    Print contact information.
+    
+    @param [in] contact Name of contact. If None, the default contact of SBIA
+                        is used, which is recommended.
+    
+    """
+    sys.stdout.write("Contact:\n")
+    if not contact:
+        sys.stdout.write("  SBIA Group <sbia-software at uphs.upenn.edu>")
+    else:
+        sys.stdout.write(contact)
+    sys.stdout.write('\n')
+
+# ============================================================================
+# process execution
+# ============================================================================
+
+# ****************************************************************************
+class SubprocessError(Exception):
+    """Exception thrown when command execution failed."""
+
+    def __init__(self, msg):
+        """Initialize exception, i.e., set message describing failure."""
+        self.message = msg
+
+    def __str__(self):
+        """Return string representation of exception message."""
+        return self.message
+
+# ****************************************************************************
+def execute_process(args, verbosity=0, simulate=False, quiet=False, allow_fail=False):
+    """
+    Execute a command given as array with arguments as expected by subprocess.
+    
+    @param [in] args       Command array. The array elements are converted to
+                           strings using the built-in str() function.
+    @param [in] verbosity  Verbosity of output messages.
+                           Does not affect verbosity of executed command.
+    @param [in] simulate   Whether to simulate command execution only.
+    @param [in] quiet      Turns off output of stdout of child process to
+                           stdout of parent process.
+    @param [in] allow_fail If true, does not raise an exception if return
+                           value is non-zero. Otherwise, a SubprocessError is
+                           raised by this function.
+    
+    @return Tuple containing exit code and command output.
+    
+    """
+    # convert command arguments to strings
+    args = [str (i) for i in args]
+    # print command to be executed if verbose messages enabled
+    if verbosity > 0 or simulate:
+        sys.stdout.write(' '.join (args))
+        sys.stdout.write(" (simulated)\n")
+    # execute command 
+    status = 0
+    stdout = ''
+    if not simulate:
+        try:
+            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            for line in process.stdout:
+                stdout = stdout + line
+                if not quiet:
+                    print line.rstrip()
+                    sys.stdout.flush()
+            (out, err) = process.communicate()
+            for line in out:
+                stdout = stdout + line
+                if not quiet:
+                    print line.rstrip()
+                    sys.stdout.flush()
+            status = process.returncode
+        except OSError, e:
+            msg = "Subprocess \"" + ' '.join(args) + "\" caused an OSError\n\t" + e.message
+            sys.stderr.write(msg)
+            raise
+        except Exception, e:
+            sys.stderr.write(e.message)
+            raise
+    # if command failed, throw an exception
+    if status != 0 and not allow_fail:
+        raise SubprocessError("Subprocess \"" + ' '.join(args) + "\" failed")
+    # otherwise, return tuple of exit code and command output
+    return (status, stdout)
+
+# ****************************************************************************
+def find_program(executable):
+    """
+    Find executable file using the /usr/bin/which command.
+    
+    @param [in] executable Name of executable file.
+    
+    @returns Path of executable as returned by the 'which' command or
+             None if the executable was not found.
+    
+    """
+    try:
+        (status, stdout) = execute_process(["/usr/bin/which", executable],
+                quiet=True, allow_fail=True)
+    except SubprocessError:
+        sys.stderr.write("/usr/bin/which command required!\n")
+        return None
+    if status == 0:
+        return stdout.strip()
+    else:
+        return None
+

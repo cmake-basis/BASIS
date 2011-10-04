@@ -2,8 +2,8 @@
 # @file  executabletargetinfo.py
 # @brief Provides information about executables built by BASIS.
 #
-# @note The executable_target_info.py module is automatically created by
-#       BASIS from the template file executable_target_info.py.in which is
+# @note The executabletargetinfo.py module is automatically created by
+#       BASIS from the template file executabletargetinfo.py.in which is
 #       part of the BASIS installation.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -11,6 +11,16 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
+
+"""
+Provides information about executables built by BASIS.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+"""
 
 # ============================================================================
 # modules
@@ -23,7 +33,7 @@ import sys # argv[0]
 # global variables
 # ============================================================================
 
-_module_dir = os.path.realpath (os.path.dirname (__file__))
+_module_dir = os.path.realpath(os.path.dirname(__file__))
 _namespace  = '@PROJECT_NAME_LOWER@'
 _locations  = None
 
@@ -32,8 +42,9 @@ _locations  = None
 # ============================================================================
 
 # ****************************************************************************
-def get_target_uid (target):
-    """Get UID of build target.
+def get_target_uid(target):
+    """
+    Get UID of build target.
     
     The UID of a build target is its name prepended by a namespace identifier
     which should be unique for each project.
@@ -53,7 +64,7 @@ def get_target_uid (target):
     # whenever information is looked up about an executable target, this
     # function is invoked first
     if _locations is None:
-        _initialize ()
+        _initialize()
     # handle invalid arguments
     if target is None or target == "":
         return None
@@ -61,45 +72,45 @@ def get_target_uid (target):
     if target in _locations:
         return target
     # do nothing if target name is UID
-    if target.find ('::') > -1:
+    if target.find('::') > -1:
         return target
     # otherwise, prepend default namespace identifier
-    return '::'.join ([_namespace, target])
+    return '::'.join([_namespace, target])
 
 # ****************************************************************************
-def is_known_target (target):
+def is_known_target(target):
     """Determine whether a given build target is known by this module."""
     global _locations
     
-    return get_target_uid (target) in _locations
+    return get_target_uid(target) in _locations
 
 # ****************************************************************************
-def get_executable_name (target=None):
-    """\
+def get_executable_name(target=None):
+    """
     Get name of executable file built by given target. If no target is
     specified, the name of this executable is returned.
     
     """
-    path = get_executable_path (target)
+    path = get_executable_path(target)
     if path is None:
         return None
-    return os.path.basename (path)
+    return os.path.basename(path)
 
 # ****************************************************************************
-def get_executable_directory (target=None):
-    """\
+def get_executable_directory(target=None):
+    """
     Get directory of executable file built by given target. If no target is
     specified, the directory of this executable is returned.
     
     """
-    path = get_executable_path (target)
+    path = get_executable_path(target)
     if path is None:
         return None
-    return os.path.dirname (path)
+    return os.path.dirname(path)
 
 # ****************************************************************************
-def get_executable_path (target=None):
-    """\
+def get_executable_path(target=None):
+    """
     Get path of executable file built by given target. If no target is
     specified, the path of this executable is returned.
     
@@ -109,20 +120,21 @@ def get_executable_path (target=None):
     
     path = None
     if target is None:
-        path = os.path.realpath (os.path.dirname (sys.argv [0]))
-        if os.path.isdir (path):
+        path = os.path.realpath(os.path.dirname(sys.argv [0]))
+        if os.path.isdir(path):
             path += "/<stdin>" # interactive shell
     else:
-        uid = get_target_uid (target)
+        uid = get_target_uid(target)
         if uid is not None and uid in _locations:
-            path = os.path.normpath (os.path.join (_module_dir, _locations [uid]))
+            path = os.path.normpath(os.path.join(_module_dir, _locations[uid]))
     return path
 
 # ============================================================================
 # private functions
 # ============================================================================
 
-def _initialize ():
+# ****************************************************************************
+def _initialize():
     """Initialize dictionaries with information about executable targets."""
     global _locations
     

@@ -1,0 +1,25 @@
+##############################################################################
+# @file  basis.py
+# @brief Main module of BASIS utilities for the @PROJECT_NAME@ package.
+#
+# @note The basis.py module is automatically created by BASIS from the
+#       template file basis.py.in which is part of the BASIS installation.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+"""
+Main module of BASIS utilities for the @PROJECT_NAME@ package.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+"""
+
+from .stdaux import *
+from .executabletargetinfo import *

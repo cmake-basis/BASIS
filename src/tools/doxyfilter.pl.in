@@ -47,8 +47,8 @@
 @BASIS_PERL_UTILITIES@
 
 use Cwd qw(realpath);
-use DoxyGen::PerlFilter;
-use DoxyGen::SQLFilter;
+use SBIA::BASIS::DoxyGen::PerlFilter;
+use SBIA::BASIS::DoxyGen::SQLFilter;
 use Getopt::Long;
 
 $Getopt::Long::ignorecase = 0;  

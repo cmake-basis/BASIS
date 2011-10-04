@@ -8,4 +8,13 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-
+# ----------------------------------------------------------------------------
+# template files
+basis_install (
+  FILES
+    "executabletargetinfo.py.in" # information about executable targets
+    "stdaux.py.in"               # standard auxiliary functions
+    "basis.py.in"                # main module
+  DESTINATION
+    "${INSTALL_PYTHON_TEMPLATES_DIR}"
+)

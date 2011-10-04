@@ -56,11 +56,11 @@
 # Filter from perl syntax API docs to Doxygen-compatible syntax.
 # This class is meant to be used as a filter for the
 # <a href="http://www.doxygen.org/">Doxygen</a> documentation tool.
-package DoxyGen::PerlFilter;
+package SBIA::BASIS::DoxyGen::PerlFilter;
 
 use warnings;
 use strict;
-use base qw(DoxyGen::Filter);
+use base qw(SBIA::BASIS::DoxyGen::Filter);
 my $id = __PACKAGE__;
 
 ## @method void filter($infh)
