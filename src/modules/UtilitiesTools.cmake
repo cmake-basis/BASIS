@@ -285,14 +285,16 @@ function (basis_configure_ExecutableTargetInfo)
 
       if (BUILD_LOCATION AND INSTALL_LOCATION)
 
-        file (
-          RELATIVE_PATH INSTALL_LOCATION_REL2MOD
-            "${INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}"
-            "${INSTALL_LOCATION}"
-        )
-        if (NOT INSTALL_DIR)
-          set (INSTALL_DIR ".")
-        endif ()
+        foreach (L LIBRARY PYTHON_LIBRARY PERL_LIBRARY)
+          file (
+            RELATIVE_PATH INSTALL_LOCATION_REL2${L}
+              "${INSTALL_PREFIX}/${INSTALL_${L}_DIR}"
+              "${INSTALL_LOCATION}"
+          )
+          if (NOT INSTALL_LOCATION_REL2${L})
+            set (INSTALL_LOCATION_REL2${L} ".")
+          endif ()
+        endforeach ()
 
         string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
 
@@ -316,7 +318,7 @@ function (basis_configure_ExecutableTargetInfo)
 
         if (PYTHON)
           set (PY_B "${PY_B}        '${ALIAS}' : '${BUILD_LOCATION}',\n")
-          set (PY_I "${PY_I}        '${ALIAS}' : '${INSTALL_LOCATION_REL2MOD}',\n")
+          set (PY_I "${PY_I}        '${ALIAS}' : '../../${INSTALL_LOCATION_REL2PYTHON_LIBRARY}',\n")
         endif ()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -330,7 +332,7 @@ function (basis_configure_ExecutableTargetInfo)
           if (PL_I)
             set (PL_I "${PL_I},\n")
           endif ()
-          set (PL_I "${PL_I}    '${ALIAS}' => '${INSTALL_LOCATION_REL2MOD}'")
+          set (PL_I "${PL_I}    '${ALIAS}' => '../../${INSTALL_LOCATION_REL2PERL_LIBRARY}'")
         endif ()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -339,7 +341,7 @@ function (basis_configure_ExecutableTargetInfo)
         if (BASH)
           # hash entry
           set (SH_B "${SH_B}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${BUILD_LOCATION}'")
-          set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2MOD}'")
+          set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
 
           # alias
           set (SH_A "${SH_A}\nalias '${ALIAS}'=$(get_executable_path '${ALIAS}')")
