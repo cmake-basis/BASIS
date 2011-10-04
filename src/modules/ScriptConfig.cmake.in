@@ -188,7 +188,9 @@ use File::Basename;
 use lib dirname (__FILE__) . \"/${LIBRARY_DIR}/perl5\";
 use lib dirname (__FILE__);
 
-use SBIA::${PROJECT_NAME}::Basis;
+package Basis;
+use SBIA::${PROJECT_NAME}::Basis qw(:everything);
+package main;
 "
 )
 
