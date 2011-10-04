@@ -174,14 +174,15 @@ function cleanup
 create
 add_executable 'helloworld.cxx'
 add_test 'test_ExecutableTargetInfo.cxx' UNITTEST
+add_test 'test_executabletargetinfo.py.in' WITH_EXT
 add_test 'test_ExecutableTargetInfo.pl.in' WITH_EXT
 add_test 'test_executabletargetinfo.sh.in' WITH_EXT
 build
 run cd "${BUILD_DIR}"
 if [ ${FLAGS_verbose} -gt 0 ]; then
-    run ctest -V -V
+    run ctest -V -V "$@"
 else
-    run ctest -V
+    run ctest -V "$@"
 fi
 cd "${cwd}"
 #cleanup

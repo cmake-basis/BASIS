@@ -129,7 +129,7 @@ def get_executable_path(target=None):
     
     path = None
     if target is None:
-        path = os.path.realpath(os.path.dirname(sys.argv [0]))
+        path = os.path.realpath(sys.argv [0])
         if os.path.isdir(path):
             path += "/<stdin>" # interactive shell
     else:

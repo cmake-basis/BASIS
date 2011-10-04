@@ -18,3 +18,7 @@ basis_install (
   DESTINATION
     "${INSTALL_PYTHON_TEMPLATES_DIR}"
 )
+
+# ----------------------------------------------------------------------------
+# Python modules
+basis_add_library (__init__.py MODULE) # package initialization

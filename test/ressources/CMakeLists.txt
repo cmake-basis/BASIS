@@ -8,4 +8,4 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-add_subdirectory (test_subprocess)
+basis_add_executable (dummy_command TEST dummy_command.cxx)

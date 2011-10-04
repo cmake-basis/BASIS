@@ -1,0 +1,90 @@
+#! /usr/bin/env python
+
+##############################################################################
+# @file  test_executabletargetinfo.py
+# @brief Test executabletargetinfo.py module.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+import unittest
+import re
+import os
+
+
+@BASIS_PYTHON_UTILITIES@
+
+
+# ============================================================================
+# tests
+# ============================================================================
+
+class TestExecutableTargetInfo(unittest.TestCase):
+    
+    def test_get_target_uid(self):
+        self.assertEquals (
+                basis.get_target_uid ('basisproject.sh'),
+                'utilitiestest::basisproject.sh')
+        self.assertEquals (
+                basis.get_target_uid ('unknown'),
+                'utilitiestest::unknown')
+        self.assertEquals (
+                basis.get_target_uid ('basis::basisproject.sh'),
+                'basis::basisproject.sh')
+        self.assertEquals (
+                basis.get_target_uid ('hammer::hammer'),
+                'hammer::hammer')
+        self.assertEquals (basis.get_target_uid ('::hello'), '::hello')
+        self.assertEquals (basis.get_target_uid (None), None)
+        self.assertEquals (basis.get_target_uid (''), None)
+    
+    def test_is_known_target(self):
+        self.assertFalse (basis.is_known_target ('basisproject.sh'))
+        self.assertTrue (basis.is_known_target ('basis::basisproject.sh'))
+        self.assertFalse (basis.is_known_target (None))
+        self.assertFalse (basis.is_known_target (''))
+        self.assertFalse (basis.is_known_target ('hammer::hammer'))
+    
+    def test_get_executable_name(self):
+        # name of this executable
+        self.assertEquals (basis.get_executable_name (), 'test_executabletargetinfo.py')
+        # name of executable built by some target
+        self.assertTrue (re.match (
+                    r"basisproject(\.sh)?",
+                    basis.get_executable_name ('basis::basisproject.sh'))) 
+    def test_get_executable_directory(self):
+        # directory of this executable
+        self.assertTrue (re.search (
+                    r"/Testing/Temporary/test_utilities-build/Testing/bin",
+                    basis.get_executable_directory ()))
+        # directory of executable built by some target
+        self.assertTrue (re.match (
+                    r"/.*/bin(/basis)?",
+                    basis.get_executable_directory ('basis::basisproject.sh')))
+
+    def test_get_executable_path(self):
+        # path of this executable
+        self.assertEquals (basis.get_executable_path (),
+                os.path.join (basis.get_executable_directory (), basis.get_executable_name ()))
+        # path of executable built by some target
+        target = 'basis::basisproject.sh'
+        self.assertEquals (basis.get_executable_path (target),
+                os.path.join (basis.get_executable_directory (target), basis.get_executable_name (target)))
+        # path of some system command
+        if (os.name != 'posix'):
+            target   = 'regedit'
+            expected = 'C:\\Windows\\regedit.exe'
+        else:
+            target = 'ls'
+            expected = '/bin/ls'
+        self.assertEquals (basis.get_executable_path (target), expected)
+
+# ============================================================================
+# main
+# ============================================================================
+
+if __name__ == '__main__':
+    unittest.main()

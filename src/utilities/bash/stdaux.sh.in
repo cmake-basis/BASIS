@@ -114,21 +114,25 @@ function execute_process
     local verbose="${3:-0}"
     local simulate="${4:-1}"
     local status=0
-    # extract command from command-line and map build target name to file
+    # extract command from command-line
     match "$args" "[ ]*('([^']|\\\')*'|\"([^\"]|\\\\\")*\"|[^ ]*)(.*)"
-    local exec_path && get_executable_path exec_path "${BASH_REMATCH[1]}"
-    if [ -n "${path}" ]; then
-        # note that the following match() call potentially
-        # overwrites the BASH_REMATCH[4] variable
-        args=${BASH_REMATCH[4]}
-        # if path contains a whitespace character...
-        if match "${exec_path}" '[ \t\n]'; then
-            # ...quote path with quotes inside path escaped
-            exec_path="\"`echo "${exec_path}" | sed "s/\"/\\\\\\\"/g"`\""
-        fi
-        # prepend command again
-        args="${exec_path}${args}"
+    [ $? -eq 0 ] || return 1
+    local command=${BASH_REMATCH[1]}
+    local arguments=${BASH_REMATCH[4]}
+    # map build target name to file
+    local exec_path && get_executable_path exec_path "${command}"
+    if [ -z "${exec_path}" ]; then
+        echo "${command}: Either unknown build target or command not found"
+        [ ${allow_fail} -eq 0 ] || exit 1
+        return 1
     fi
+    # if path contains a whitespace character...
+    if match "${exec_path}" '[ \t\n]'; then
+        # ...quote path with quotes inside path escaped
+        exec_path="\"`echo "${exec_path}" | sed "s/\"/\\\\\\\"/g"`\""
+    fi
+    # prepend absolute path of found executable
+    args="${exec_path}${arguments}"
     # some verbose output
     if [ ${verbose} -gt 0 -o ${simulate} -eq 0 ]; then
         echo -n "> ${args}"

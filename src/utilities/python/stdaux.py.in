@@ -75,9 +75,9 @@ def print_contact(contact=None):
                         is used, which is recommended.
     
     """
-    sys.stdout.write("Contact:\n")
+    sys.stdout.write("Contact:\n  ")
     if not contact:
-        sys.stdout.write("  SBIA Group <sbia-software at uphs.upenn.edu>")
+        sys.stdout.write("SBIA Group <sbia-software at uphs.upenn.edu>")
     else:
         sys.stdout.write(contact)
     sys.stdout.write('\n')
@@ -101,7 +101,7 @@ class SubprocessError(Exception):
 # ****************************************************************************
 def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
     """
-    Execute a command given as array with arguments as expected by subprocess.
+    Execute command as subprocess.
     
     @param [in] args       Command with arguments given either as single quoted
                            string or array of command name and arguments.
@@ -120,7 +120,7 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
     @param [in] simulate   Whether to simulate command execution only.
     
     @return Exit code of executed command. If @p stdout is True, a tuple
-            containing of exit code and command output as string is returned.
+            consisting of the exit code and command output is returned.
     
     @throws SubprocessError If command execution failed. This exception is not
                             raised if the command executed with non-zero exit
@@ -172,12 +172,12 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
             raise SubprocessError(args[0] + ': ' + str(e))
         except Exception, e:
             msg  = "Exception while executing \"" + args[0] + "\"!\n"
-            msg += "\tArguments: " + ' '.join(['"' + i + '"' for i in args[1:]) + '\n'
+            msg += "\tArguments: " + ' '.join(['"' + i + '"' for i in args[1:]]) + '\n'
             msg += '\t' + str(e)
             raise SubprocessError(msg)
     # if command failed, throw an exception
     if status != 0 and not allow_fail:
-        raise SubprocessError("Subprocess " + ' '.join(['"' + i + '"' for i in args[1:]) + " failed")
+        raise SubprocessError("Subprocess " + ' '.join(['"' + i + '"' for i in args[1:]]) + " failed")
     # return
     if stdout:
         return (status, output)
