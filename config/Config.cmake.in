@@ -79,6 +79,12 @@ set (@PACKAGE_NAME@_LIBRARIES
   ${@PACKAGE_NAME@_TEST_LIBRARY}
 )
 
+## @brief Search path for Python package.
+set (@PACKAGE_NAME@_PYTHON_LIBRARY_DIR "@PYTHON_LIBRARY_DIR_CONFIG@")
+
+## @brief Search path for Perl packages.
+set (@PACKAGE_NAME@_PERL_LIBRARY_DIR "@PERL_LIBRARY_DIR_CONFIG@")
+
 # ============================================================================
 # exports
 # ============================================================================

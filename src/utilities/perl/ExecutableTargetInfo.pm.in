@@ -55,6 +55,8 @@ use Cwd            qw(realpath);
 use File::Basename qw(dirname basename);
 use File::Spec     qw(rel2abs);
 
+use SBIA::BASIS::File::Which;
+
 # ============================================================================
 # private data
 # ============================================================================
@@ -142,6 +144,14 @@ sub get_executable_directory
 ##############################################################################
 # @brief Get absolute file path of executable.
 #
+# This function determines the absolute file path of an executable. If no
+# arguments are given, the absolute path of this executable is returned.
+# If the given argument is a known build target name, the absolute path
+# of the executable built by this target is returned. Otherwise, the named
+# command is searched in the system PATH and it's absolute path returned
+# if found. If the given argument is neither the name of a known build target
+# nor an executable found on the PATH, undef is returned.
+#
 # @param [in] target Name/UID of build target.
 #
 # @returns Absolute file path of executable.
@@ -155,6 +165,8 @@ sub get_executable_path
         $path = $_location->{$uid};
         if (defined $path) {
             $path = File::Spec->rel2abs ($path, dirname (__FILE__));
+        } else {
+            $path = which ($_[0])
         }
     }
     return $path;

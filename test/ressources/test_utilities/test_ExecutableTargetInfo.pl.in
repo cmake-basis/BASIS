@@ -10,7 +10,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 
 @BASIS_PERL_UTILITIES@
@@ -97,6 +97,15 @@ sub test_get_executable_path
     is (Basis::get_executable_path ($target),
         Basis::get_executable_directory ($target) . '/' . Basis::get_executable_name ($target),
         "path of $target executable");
+    # path of some system command
+    if ($^O =~ m/MSWin32/) {
+        $target   = 'regedit';
+        $expected = 'C:\\Windows\\regedit.exe';
+    } else {
+        $target = 'ls';
+        $expected = '/bin/ls';
+    }
+    is (Basis::get_executable_path ($target), $expected);
 }
 
 # ============================================================================

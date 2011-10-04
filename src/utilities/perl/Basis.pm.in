@@ -32,6 +32,7 @@ BEGIN {
             get_executable_name
             get_executable_directory
             get_executable_path
+            which
         )],
 
         everything => [qw (
@@ -40,6 +41,8 @@ BEGIN {
             get_executable_path
             is_known_target
             get_target_uid
+            which
+            where
         )]
     );
 
@@ -50,8 +53,9 @@ BEGIN {
 # modules
 # ============================================================================
 
+use SBIA::BASIS::File::Which qw(which);
 use SBIA::@PROJECT_NAME@::ExecutableTargetInfo qw(:everything);
-use SBIA::@PROJECT_NAME@::StdAux               qw(:everything);
+use SBIA::@PROJECT_NAME@::StdAux qw(:everything);
 
 
 1; # indicate success of module loading
