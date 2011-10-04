@@ -1718,6 +1718,14 @@ function (basis_add_script_finalize TARGET_UID)
       set (BUILD_COMMANDS "${BUILD_COMMANDS}endif ()\n")
     endif ()
   endif ()
+  # create __init__.py files in build tree Python package
+  if (MODULE AND BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python/.+")
+    set (D "${LIBRARY_OUTPUT_DIRECTORY}")
+    while (NOT D STREQUAL "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
+      set (BUILD_COMMANDS "${BUILD_COMMANDS}execute_process (COMMAND \"${CMAKE_COMMAND}\" -E touch \"${D}/__init__.py\")\n")
+      get_filename_component (D "${D}" PATH)
+    endwhile ()
+  endif ()
 
   # write build script only if it differs from previous build script
   #
@@ -1779,13 +1787,13 @@ endif ()"
         COMPONENT   "${LIBRARY_COMPONENT}"
       )
 
-      # create __init__.py files for Python
-      if (BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_INSTALL_DIRECTORY MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR}")
+      # create __init__.py files for Python package
+      if (BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_INSTALL_DIRECTORY MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR}/.+")
         set (C)
-        set (DIR "${LIBRARY_INSTALL_DIRECTORY}")
-        while (NOT DIR STREQUAL "${INSTALL_PYTHON_LIBRARY_DIR}")
-          set (C "${C}execute_process (COMMAND \"${CMAKE_COMMAND}\" -E touch \"${INSTALL_PREFIX}/${DIR}/__init__.py\")\n")
-          get_filename_component (DIR "${DIR}" PATH)
+        set (D "${LIBRARY_INSTALL_DIRECTORY}")
+        while (NOT D STREQUAL "${INSTALL_PYTHON_LIBRARY_DIR}")
+          set (C "${C}execute_process (COMMAND \"${CMAKE_COMMAND}\" -E touch \"${INSTALL_PREFIX}/${D}/__init__.py\")\n")
+          get_filename_component (D "${D}" PATH)
         endwhile ()
         install (CODE "${C}")
       endif ()
