@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  executabletargetinfo.sh
 # @brief Provides information about the executables built by BASIS.

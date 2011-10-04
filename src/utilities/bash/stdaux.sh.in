@@ -75,10 +75,37 @@ function print_contact
 ##############################################################################
 # @brief Execute command as subprocess.
 #
-# @todo Instead of first splitting a command-line string into an array and
-#       then creating a command-line string again, just extract the first
-#       argument, map it to the executable file path, and then prepend it
-#       to the remaining part of the original command-line.
+# See basis_array_to_quoted_string() for a function to convert a command-line
+# given as array of arguments into a quoted string that can be passed to
+# this function.
+#
+# Note that the output of the command is not redirected by this function.
+# In order to execute the command quietly, call this function as:
+# @code
+# execute_process 'ls /' &> /dev/null
+# @endcode
+# In order to store the command output in a variable including error messages
+# use it as follows:
+# @code
+# output=`execute_process 'ls /' 2>&1`
+# @endcode
+# Note that in this case, the option @p allow_fail has no effect as the
+# calling shell will never be terminated even if @p allow_fail is non-zero
+# and the command failed, thus invoking an exit(). This, however, only
+# exits the subshell. Checking the exit code $? is in this case recommended.
+#
+# @param [in] args       Command-line given as quoted string.
+# @param [in] allow_fail If 0, failing of the command does not result in
+#                        the current shell being terminated with exit code 1.
+# @param [in] verbose    Verbosity of output messages. A value greater than
+#                        zero enables verbose output of the command being
+#                        executed. This does not affect the verbosity of the
+#                        command itself.
+# @param [in] simulate   If 0, the command is not actually executed, but
+#                        the command-line only printed to stdout.
+#
+# @returns Exit code of subprocess. The output of the command is not redirected.
+#          Hence, in order to store the commands
 function execute_process
 {
     [ -n "$1" ] || return 1
@@ -86,54 +113,37 @@ function execute_process
     local allow_fail="${2:-1}"
     local verbose="${3:-0}"
     local simulate="${4:-1}"
-    local i=0
     local status=0
-    local arg=''
-    local cmd=''
-    # convert args to array of strings
-    if [ ${#args[@]} -eq 1 ]; then
-        # match arguments from left to right
-        while match "$args" "[ ]*('([^']|\\\')*'|\"([^\"]|\\\\\")*\"|[^ ]*)(.*)"; do
-            # matched argument including quotes
-            arg="${BASH_REMATCH[1]}"
-            # remove quotes
-            arg=`echo "${arg}" | sed "s/^['\"]//;s/['\"]$//"`
-            # replace quoted quotes within argument by quotes
-            arg=`echo "${arg}" | sed "s/[\\]\'/\'/g;s/[\\]\"/\"/g"`
-            # add to argument vector
-            argv[${#argv[@]}]="${arg}"
-            # continue with residual command-line
-            args="${BASH_REMATCH[4]}"
-        done
-        args=("${argv[@]}")
-        unset argv
+    # extract command from command-line and map build target name to file
+    match "$args" "[ ]*('([^']|\\\')*'|\"([^\"]|\\\\\")*\"|[^ ]*)(.*)"
+    local exec_path && get_executable_path exec_path "${BASH_REMATCH[1]}"
+    if [ -n "${path}" ]; then
+        # note that the following match() call potentially
+        # overwrites the BASH_REMATCH[4] variable
+        args=${BASH_REMATCH[4]}
+        # if path contains a whitespace character...
+        if match "${exec_path}" '[ \t\n]'; then
+            # ...quote path with quotes inside path escaped
+            exec_path="\"`echo "${exec_path}" | sed "s/\"/\\\\\\\"/g"`\""
+        fi
+        # prepend command again
+        args="${exec_path}${args}"
     fi
-    # map build target name to executable file path
-    local path && get_executable_path path "${args[0]}"
-    [ -n "${path}" ] && args[0]="${path}"
-    # create command-line string
-    i=0
-    while [ $i -lt ${#args[@]} ]; do
-        arg=`echo "${args[$i]}" | sed "s/\'/\\\'/g;s/\"/\\\\\\\"/g"`
-        cmd="${cmd} \"${arg}\""
-        (( i++ ))
-    done
     # some verbose output
     if [ ${verbose} -gt 0 -o ${simulate} -eq 0 ]; then
-        i=0
-        echo -n "> ${cmd}"
+        echo -n "> ${args}"
         [ ${simulate} -eq 0 ] && echo -n " (simulated)"
         echo
     fi
     # execute command
-    [ ${simulate} -ne 0 ] && eval "${evalstr}"
+    [ ${simulate} -eq 0 ] || eval "${args}"
     status=$?
     # if command failed, exit
     [ ${status} -eq 0 ] || {
-        echo "Subprocess ${evalstr} failed" 1>&2
+        echo "Subprocess ${args} failed" 1>&2
         exit 1
     }
-    # return
+    # return exit code
     return ${status}
 }
 

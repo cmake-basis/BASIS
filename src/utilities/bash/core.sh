@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  core.sh
 # @brief Core functions for BASH.
@@ -112,6 +110,10 @@ function match
 #     local "$1" && upvar $1 "Hello, World!"
 # }
 #
+# @todo Under some circumstances, the 'local "$1" &&' part of the
+#       usage example has to be skipped. It is not yet clear what
+#       the correct solution/usage really is...
+#
 # foo greeting
 # echo ${greeting}
 # @endcode
@@ -196,6 +198,87 @@ There is NO WARRANTY, to the extent permitted by law."
                 return 1 ;;
         esac
     done
+}
+
+# ============================================================================
+# quoted string <-> array
+# ============================================================================
+
+##############################################################################
+# @brief Build quoted string from array.
+#
+# As BASH does not support arrays as input arguments to a function, the
+# array to be converted to a quoted string has to be available in the
+# variable named basis_array before calling this function.
+#
+# Example:
+# @code
+# basis_array=('this' "isn't" a 'simple example of "a quoted"' 'string')
+# basis_array_to_quoted_string str
+# echo "${str}"
+# @endcode
+#
+# @param [out] var Name of result variable for quoted string.
+#
+# @returns Nothing.
+function basis_array_to_quoted_string
+{
+    local i=0
+    local str=''
+    local element=''
+    while [ $i -lt ${#basis_array[@]} ]; do
+        element=${basis_array[$i]}
+        # escape double quotes
+        element=`echo -n "${element}" | sed "s/\"/\\\\\\\\\"/g"`
+        # surround element by double quotes if it contains single quotes or whitespaces
+        match "${element}" "[' ]" && element="\"${element}\""
+        # append element
+        [ -n "${str}" ] && str="${str} "
+        str="${str}${element}"
+        (( i++ ))
+    done
+    local "$1" && upvar $1 "${str}"
+}
+
+##############################################################################
+# @brief Split (quoted) string.
+#
+# This function can be used to split a (quoted) string into its elements.
+#
+# Example:
+# @code
+# str="'this' 'isn\'t' a \"simple example of \\\"a quoted\\\"\" 'string'"
+# basis_split array "${str}"
+# echo ${#array[@]} # 5
+# echo "${array[3]}"  # simple example of "a quoted"
+# @endcode
+#
+# @param [out] var Result variable for array.
+# @param [in]  str Quoted string.
+#
+# @returns Nothing.
+function basis_split
+{
+    [ $# -eq 2 ] || return 1
+    local _basis_split_str=$2
+    # match arguments from left to right
+    while match "${_basis_split_str}" "[ ]*('([^']|\\\')*'|\"([^\"]|\\\\\")*\"|[^ ]*)(.*)"; do
+        # matched element including quotes
+        _basis_split_element="${BASH_REMATCH[1]}"
+        # remove quotes
+        _basis_split_element=`echo "${_basis_split_element}" | sed "s/^['\"]//;s/['\"]$//"`
+        # replace quoted quotes within argument by quotes
+        _basis_split_element=`echo "${_basis_split_element}" | sed "s/[\\]\'/\'/g;s/[\\]\"/\"/g"`
+        # add to resulting array
+        _basis_split_array[${#_basis_split_array[@]}]="${_basis_split_element}"
+        # continue with residual command-line
+        _basis_split_str="${BASH_REMATCH[4]}"
+    done
+    # return
+    # attention: using
+    #local "$1" && upvar $1 "${_basis_split_array[@]}"
+    # did not work
+    upvar $1 "${_basis_split_array[@]}"
 }
 
 
