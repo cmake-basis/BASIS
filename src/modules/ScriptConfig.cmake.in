@@ -161,6 +161,9 @@ def _basis_init_sys_path():
     sitelib_dir = os.path.join(module_dir, '${LIBRARY_DIR}/python')
     if sitelib_dir not in sys.path:
         sys.path.append(sitelib_dir)
+    sitelib_dir = '@BASIS_PYTHON_LIBRARY_DIR@'
+    if sitelib_dir not in sys.path:
+        sys.path.append(sitelib_dir)
 
 _basis_init_sys_path()
 from sbia.${PROJECT_NAME_LOWER} import basis
@@ -185,6 +188,7 @@ from sbia.${PROJECT_NAME_LOWER} import basis
 
 set (BASIS_PERL_UTILITIES "
 use File::Basename;
+use lib '@BASIS_PERL_LIBRARY_DIR@';
 use lib dirname (__FILE__) . \"/${LIBRARY_DIR}/perl5\";
 use lib dirname (__FILE__);
 

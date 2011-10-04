@@ -29,6 +29,12 @@ if (BUILD_CONFIG_SETTINGS)
   ## @brief Libraries directories of package configuration of build tree.
   set (LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
+  ## @brief Search path for Python package in build tree.
+  set (PYTHON_LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
+
+  ## @brief Search path for Perl packages in build tree.
+  set (PERL_LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
+
   return ()
 endif ()
 
@@ -50,3 +56,9 @@ set (INCLUDE_DIR_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_INCLUDE_DI
 
 ## @brief Libraries directories of package configuration of installation.
 set (LIBRARY_DIR_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}")
+
+## @brief Search path for installed Python package.
+set (PYTHON_LIBRARY_DIR_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_PYTHON_LIBRARY_DIR}")
+
+## @brief Search path for installed Perl packages.
+set (PERL_LIBRARY_DIR_CONFIG "\${${PACKAGE_NAME}_INSTALL_PREFIX}/${INSTALL_PERL_LIBRARY_DIR}")

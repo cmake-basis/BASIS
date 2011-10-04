@@ -36,6 +36,12 @@ set (@PACKAGE_NAME@_INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 ## @brief Directory of libraries.
 set (@PACKAGE_NAME@_LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
 
+## @brief Search path for Python package.
+set (@PACKAGE_NAME@_PYTHON_LIBRARY_DIR "@PYTHON_LIBRARY_DIR_CONFIG@")
+
+## @brief Search path for Perl packages.
+set (@PACKAGE_NAME@_PERL_LIBRARY_DIR "@PERL_LIBRARY_DIR_CONFIG@")
+
 # ============================================================================
 # exports
 # ============================================================================
