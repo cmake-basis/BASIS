@@ -13,6 +13,14 @@
 basis_add_executable (basisproject.sh)
 
 # ----------------------------------------------------------------------------
+# basic command-line tools
+basis_add_executable (which which.py)
+basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
+
+# add those which can also be used as modules also as library
+basis_add_library (which.py MODULE)
+
+# ----------------------------------------------------------------------------
 # doxygen filters
 basis_add_executable (doxyfilter.pl            LIBEXEC)
 basis_add_executable (doxyfilter_bash.py       LIBEXEC)
