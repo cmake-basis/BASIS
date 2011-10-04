@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  stdaux.sh
 # @brief Standard auxiliary functions for BASH.
@@ -25,7 +23,7 @@ _SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 
 
 # ============================================================================
-# version / help
+# version / contact
 # ============================================================================
 
 ##############################################################################
@@ -68,6 +66,75 @@ function print_contact
     else
         echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
     fi
+}
+
+# ============================================================================
+# process execution
+# ============================================================================
+
+##############################################################################
+# @brief Execute command as subprocess.
+#
+# @todo Instead of first splitting a command-line string into an array and
+#       then creating a command-line string again, just extract the first
+#       argument, map it to the executable file path, and then prepend it
+#       to the remaining part of the original command-line.
+function execute_process
+{
+    [ -n "$1" ] || return 1
+    local args="$1"
+    local allow_fail="${2:-1}"
+    local verbose="${3:-0}"
+    local simulate="${4:-1}"
+    local i=0
+    local status=0
+    local arg=''
+    local cmd=''
+    # convert args to array of strings
+    if [ ${#args[@]} -eq 1 ]; then
+        # match arguments from left to right
+        while match "$args" "[ ]*('([^']|\\\')*'|\"([^\"]|\\\\\")*\"|[^ ]*)(.*)"; do
+            # matched argument including quotes
+            arg="${BASH_REMATCH[1]}"
+            # remove quotes
+            arg=`echo "${arg}" | sed "s/^['\"]//;s/['\"]$//"`
+            # replace quoted quotes within argument by quotes
+            arg=`echo "${arg}" | sed "s/[\\]\'/\'/g;s/[\\]\"/\"/g"`
+            # add to argument vector
+            argv[${#argv[@]}]="${arg}"
+            # continue with residual command-line
+            args="${BASH_REMATCH[4]}"
+        done
+        args=("${argv[@]}")
+        unset argv
+    fi
+    # map build target name to executable file path
+    local path && get_executable_path path "${args[0]}"
+    [ -n "${path}" ] && args[0]="${path}"
+    # create command-line string
+    i=0
+    while [ $i -lt ${#args[@]} ]; do
+        arg=`echo "${args[$i]}" | sed "s/\'/\\\'/g;s/\"/\\\\\\\"/g"`
+        cmd="${cmd} \"${arg}\""
+        (( i++ ))
+    done
+    # some verbose output
+    if [ ${verbose} -gt 0 -o ${simulate} -eq 0 ]; then
+        i=0
+        echo -n "> ${cmd}"
+        [ ${simulate} -eq 0 ] && echo -n " (simulated)"
+        echo
+    fi
+    # execute command
+    [ ${simulate} -ne 0 ] && eval "${evalstr}"
+    status=$?
+    # if command failed, exit
+    [ ${status} -eq 0 ] || {
+        echo "Subprocess ${evalstr} failed" 1>&2
+        exit 1
+    }
+    # return
+    return ${status}
 }
 
 
