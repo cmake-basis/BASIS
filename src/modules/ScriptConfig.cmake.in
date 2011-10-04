@@ -136,47 +136,36 @@ basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
 # Python
 # ----------------------------------------------------------------------------
 
-# TODO
-
-# @brief Definition of get_executable_directory() function.
+##############################################################################
+# @brief Include BASIS utilities for Python.
+#
+# The substituted Python code appends the root directory of the build or
+# installed Python modules to the search path and then imports the 'basis'
+# module of this project. Note that every BASIS project has its own 'basis'
+# module, which belong to different packages, however.
 #
 # Example:
 # @code
-# @PYTHON_FUNCTION_get_executable_directory@
-# exec_dir = get_executable_directory ()
+# #! /usr/bin/env python
+# @BASIS_PYTHON_UTILITIES@
+# ...
 # @endcode
 #
 # @ingroup PythonUtilities
 
-#set (PYTHON_FUNCTION_get_executable_directory "
-## ****************************************************************************
-#def get_executable_directory ():
-#    \"Get real directory of executable.\"
-#    import sys
-#    import os
-#    return os.path.realpath (os.path.dirname (sys.argv [0]))
-#"
-#)
+set (BASIS_PYTHON_UTILITIES "
+def _basis_init_sys_path():
+    import os
+    import sys
+    module_dir  = os.path.realpath(os.path.dirname(__file__))
+    sitelib_dir = os.path.join(module_dir, '${LIBRARY_DIR}/python')
+    if sitelib_dir not in sys.path:
+        sys.path.append(sitelib_dir)
 
-# @brief Definition of get_executable_name() function.
-#
-# Example:
-# @code
-# @PYTHON_FUNCTION_get_executable_name@
-# exec_name = get_executable_name ()
-# @endcode
-#
-# @ingroup PythonUtilities
-
-#set (PYTHON_FUNCTION_get_executable_name "
-## ****************************************************************************
-#def get_executable_name ():
-#    \"\"\"Get name of program without path.\"\"\"
-#    import sys
-#    import os
-#    return os.path.basename (sys.argv [0])
-#"
-#)
+_basis_init_sys_path()
+from sbia.${PROJECT_NAME_LOWER} import basis
+"
+)
 
 # ----------------------------------------------------------------------------
 # Perl
@@ -196,10 +185,10 @@ basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
 
 set (BASIS_PERL_UTILITIES "
 use File::Basename;
-use lib dirname (__FILE__) . \"/${LIBRARY_DIR}\";
+use lib dirname (__FILE__) . \"/${LIBRARY_DIR}/perl5\";
 use lib dirname (__FILE__);
 
-use Basis;
+use SBIA::${PROJECT_NAME}::Basis;
 "
 )
 

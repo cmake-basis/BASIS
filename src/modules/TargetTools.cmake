@@ -1353,28 +1353,7 @@ function (basis_add_script TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
-  if (ARGN_DESTINATION)
-    if (IS_ABSOLUTE "${ARGN_DESTINATION}")
-      file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
-    endif ()
-  else ()
-    if (ARGN_TEST)
-      set (ARGN_DESTINATION)
-    elseif (ARGN_MODULE)
-      set (ARGN_DESTINATION "${INSTALL_LIBRARY_DIR}")
-    elseif (ARGN_LIBEXEC)
-      set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
-    else ()
-      set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
-    endif ()
-    if (ARGN_DESTINATION AND SCRIPT_PATH AND ARGN_WITH_PATH)
-      set (ARGN_DESTINATION "${ARGN_DESTINATION}/${SCRIPT_PATH}")
-    endif ()
-  endif ()
 
-  if (IS_ABSOLUTE "${ARGN_DESTINATION}")
-    message (FATAL_ERROR "basis_add_script (${TARGET_NAME}: Destination must be a relative path")
-  endif ()
 
   if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE)
     if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
@@ -1427,15 +1406,30 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
 
+  # get scripting language
+  basis_get_source_language (SCRIPT_LANGUAGE "${ARGN_SCRIPT}")
+
   # output directory
   if (ARGN_TEST)
     if (ARGN_MODULE)
-      set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
+      if (SCRIPT_LANGUAGE MATCHES "^PYTHON$")
+        set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}/python/sbia/${PROJECT_NAME_LOWER}")
+      elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
+        set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}/perl5/SBIA/${PROJECT_NAME}")
+      else ()
+        set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
+      endif ()
     else ()
       set (OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
     endif ()
   elseif (ARGN_MODULE)
-    set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    if (SCRIPT_LANGUAGE MATCHES "^PYTHON$")
+      set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python/sbia/${PROJECT_NAME_LOWER}")
+    elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
+      set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5/SBIA/${PROJECT_NAME}")
+    else ()
+      set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    endif ()
   elseif (ARGN_LIBEXEC)
     set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
   else ()
@@ -1443,6 +1437,32 @@ function (basis_add_script TARGET_NAME)
   endif ()
   if (SCRIPT_PATH AND ARGN_WITH_PATH)
     set (OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${SCRIPT_PATH}")
+  endif ()
+
+  # installation directory
+  if (ARGN_DESTINATION)
+    if (IS_ABSOLUTE "${ARGN_DESTINATION}")
+      file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
+    endif ()
+  else ()
+    if (ARGN_TEST)
+      set (ARGN_DESTINATION)
+    elseif (ARGN_MODULE)
+      if (SCRIPT_LANGUAGE MATCHES "^PYTHON$")
+        set (ARGN_DESTINATION "${INSTALL_PYTHON_LIBRARY_DIR}/sbia/${PROJECT_NAME_LOWER}")
+      elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
+        set (ARGN_DESTINATION "${INSTALL_PERL_LIBRARY_DIR}/SBIA/${PROJECT_NAME}")
+      else ()
+        set (ARGN_DESTINATION "${INSTALL_LIBRARY_DIR}")
+      endif ()
+    elseif (ARGN_LIBEXEC)
+      set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
+    else ()
+      set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
+    endif ()
+    if (ARGN_DESTINATION AND SCRIPT_PATH AND ARGN_WITH_PATH)
+      set (ARGN_DESTINATION "${ARGN_DESTINATION}/${SCRIPT_PATH}")
+    endif ()
   endif ()
 
   # script configuration (only if script file name ends in ".in")
@@ -1486,6 +1506,7 @@ function (basis_add_script TARGET_NAME)
     ${TARGET_UID}
     PROPERTIES
       BASIS_TYPE                "${TYPE}"
+      BASIS_LANGUAGE            "${SCRIPT_LANGUAGE}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
@@ -1574,6 +1595,7 @@ function (basis_add_script_finalize TARGET_UID)
   set (
     PROPERTIES
       "BASIS_TYPE"
+      "BASIS_LANGUAGE"
       "SOURCE_DIRECTORY"
       "BINARY_DIRECTORY"
       "RUNTIME_OUTPUT_DIRECTORY"
@@ -1748,15 +1770,28 @@ endif ()"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
 
   # install script
-  if (RUNTIME_INSTALL_DIRECTORY)
-    if (MODULE)
+  if (MODULE)
+    if (LIBRARY_INSTALL_DIRECTORY)
       install (
         FILES       "${INSTALL_FILE}"
         RENAME      "${OUTPUT_NAME}"
         DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
         COMPONENT   "${LIBRARY_COMPONENT}"
       )
-    else ()
+
+      # create __init__.py files for Python
+      if (BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_INSTALL_DIRECTORY MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR}")
+        set (C)
+        set (DIR "${LIBRARY_INSTALL_DIRECTORY}")
+        while (NOT DIR STREQUAL "${INSTALL_PYTHON_LIBRARY_DIR}")
+          set (C "${C}execute_process (COMMAND \"${CMAKE_COMMAND}\" -E touch \"${INSTALL_PREFIX}/${DIR}/__init__.py\")\n")
+          get_filename_component (DIR "${DIR}" PATH)
+        endwhile ()
+        install (CODE "${C}")
+      endif ()
+    endif ()
+  else ()
+    if (RUNTIME_INSTALL_DIRECTORY)
       install (
         PROGRAMS    "${INSTALL_FILE}"
         RENAME      "${OUTPUT_NAME}"
@@ -1764,7 +1799,6 @@ endif ()"
         COMPONENT   "${RUNTIME_COMPONENT}"
       )
     endif ()
-
   endif ()
 
   message (STATUS "Adding build command for script ${TARGET_UID}... - done")

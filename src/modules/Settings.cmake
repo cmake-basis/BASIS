@@ -32,7 +32,9 @@
 # modules
 # ============================================================================
 
-find_package (PerlLibs QUIET)
+# TODO
+#find_package (PythonInterp QUIET)
+#find_package (PerlLibs QUIET)
 
 # ============================================================================
 # system checks
@@ -420,15 +422,14 @@ set (
   CACHE PATH "Installation directories suffix (or infix, respectively)."
 )
 
-## @brief Enable/Disable the use of the @c INSTALL_SINFIX also for the
-#         installation directory for public header files.
-option (INSTALL_SINFIX_FOR_INCLUDES "Whether to append INSTALL_SINFIX to installation directory of header files as well." OFF)
-mark_as_advanced (INSTALL_SINFIX_FOR_INCLUDES)
-
 ## @brief Enable/Disable installation of symbolic links on Unix-based systems.
 if (UNIX)
   option (INSTALL_LINKS "Whether to create (symbolic) links." ON)
 endif ()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# executable
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## @brief Path of installation directory for runtime executables and shared
 #         libraries on Windows relative to @c INSTALL_PREFIX.
@@ -442,6 +443,26 @@ else ()
   set (INSTALL_LIBEXEC_DIR "lib")
 endif ()
 
+# prepend INSTALL_SINFIX
+if (INSTALL_SINFIX)
+  foreach (P RUNTIME LIBEXEC)
+    set (VAR "INSTALL_${P}_DIR")
+    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+  endforeach ()
+endif ()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+## @brief Path of installation directory for public header files
+#         relative to @c INSTALL_PREFIX.
+#
+# @note The include path is identical for each project. The directory
+#       structure under the @c PROJECT_INCLUDE_DIR is preserved when public
+#       header files are installed.
+set (INSTALL_INCLUDE_DIR "include")
+
 ## @brief Path of installation directory for shared libraries on Unix-based
 #         systems and module libraries relative to @c INSTALL_PREFIX.
 set (INSTALL_LIBRARY_DIR "lib")
@@ -450,23 +471,38 @@ set (INSTALL_LIBRARY_DIR "lib")
 #         relative to @c INSTALL_PREFIX.
 set (INSTALL_ARCHIVE_DIR "lib")
 
-## @brief Path of installation directory for public header files
-#         relative to @c INSTALL_PREFIX.
-set (INSTALL_INCLUDE_DIR "include")
-
-## @brief Path of installation directory for shared data files
-#         relative to @c INSTALL_PREFIX.
-set (INSTALL_SHARE_DIR "share")
-
+# prepend INSTALL_SINFIX
 if (INSTALL_SINFIX)
-  if (INSTALL_SINFIX_FOR_INCLUDES)
-    set (INSTALL_INCLUDE_DIR "${INSTALL_INCLUDE_DIR}/${INSTALL_SINFIX}")
-  endif ()
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE SHARE)
+  foreach (P LIBRARY ARCHIVE)
     set (VAR "INSTALL_${P}_DIR")
     set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
   endforeach ()
 endif ()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# script modules
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Similar to the public header files of C/C++ libraries, the modules written
+# in Python or Perl are installed with fixed relative directories which
+# correspond to the packages these modules belong to:
+#
+# Python: sbia.<project>
+# Perl:   SBIA::<Project>
+#
+# As here the project name is already part of the file path and has to
+# remain fixed, otherwise the modules would not know how to refer to each
+# other in the source  code, the INSTALL_SINFIX is not used here.
+
+## @brief Path of installation directory for Python modules relative to @c INSTALL_PREFIX.
+set (INSTALL_PYTHON_LIBRARY_DIR "lib/python")
+
+## @brief Path of installation directory for Perl modules relative to @c INSTALL_PREFIX.
+set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# build configuration
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## @brief Path of installation directory for CMake package configuration
 #         files relative to @c INSTALL_PREFIX.
@@ -475,6 +511,28 @@ if (WIN32)
 else ()
   set (INSTALL_CONFIG_DIR "lib/cmake")
 endif ()
+
+# prepend INSTALL_SINFIX
+if (INSTALL_SINFIX)
+  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/${INSTALL_SINFIX}")
+endif ()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# shared data
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+## @brief Path of installation directory for shared data files
+#         relative to @c INSTALL_PREFIX.
+set (INSTALL_SHARE_DIR "share")
+
+# prepend INSTALL_SINFIX
+if (INSTALL_SINFIX)
+  set (INSTALL_SHARE_DIR "${INSTALL_SHARE_DIR}/${INSTALL_SINFIX}")
+endif ()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# documentation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## @brief Path of installation directory for documentation files
 #         relative to @c INSTALL_PREFIX.
@@ -500,23 +558,13 @@ else ()
   set (INSTALL_MAN_DIR "${INSTALL_SHARE_DIR}/man")
 endif ()
 
-if (INSTALL_SINFIX)
-  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/${INSTALL_SINFIX}")
-  if (WIN32)
-    foreach (P DOC EXAMPLE MAN)
-      set (VAR "INSTALL_${P}_DIR")
-      set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
-    endforeach ()
-  endif ()
+# prepend INSTALL_SINFIX
+if (WIN32 AND INSTALL_SINFIX)
+  foreach (P DOC EXAMPLE MAN)
+    set (VAR "INSTALL_${P}_DIR")
+    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+  endforeach ()
 endif ()
-
-# TODO Figure out how to deal with Perl modules and where to install them.
-set (
-  BASIS_PERLLIB
-    "lib/perl${PERL_VERSION_MAJOR}/${PERL_VERSION}"
-#  CACHE PATH "Installation directory for Perl modules."
-)
-#mark_as_advanced (BASIS_PERLLIB)
 
 # ============================================================================
 # build configuration(s)

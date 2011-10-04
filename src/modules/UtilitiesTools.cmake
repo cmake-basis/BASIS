@@ -180,13 +180,17 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # Python
   if (BASIS_PROJECT_USES_PYTHON)
-    # TODO
+    foreach (MODULE basis stdaux)
+      basis_add_script ("${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py" MODULE)
+      basis_script_target_name (TARGET_NAME "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py")
+      basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
+    endforeach ()
   endif ()
 
   # --------------------------------------------------------------------------
   # Perl
   if (BASIS_PROJECT_USES_PERL)
-    foreach (MODULE StdAux Basis)
+    foreach (MODULE Basis StdAux)
       basis_add_script ("${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm" MODULE)
       basis_script_target_name (TARGET_NAME "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm")
       basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
@@ -196,7 +200,7 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # BASH
   if (BASIS_PROJECT_USES_BASH)
-    foreach (MODULE stdaux basis)
+    foreach (MODULE basis stdaux)
       basis_add_script ("${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh" MODULE)
       basis_script_target_name (TARGET_NAME "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh")
       basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}")
