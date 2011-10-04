@@ -19,3 +19,6 @@ basis_install (
     "${INSTALL_PERL_TEMPLATES_DIR}"
 )
 
+# ----------------------------------------------------------------------------
+# basic packages
+basis_add_library ("File/Which.pm" MODULE WITH_PATH)
