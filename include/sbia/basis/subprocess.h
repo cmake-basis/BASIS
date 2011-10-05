@@ -96,6 +96,29 @@ public:
     ~Subprocess();
 
     // =======================================================================
+    // helpers
+    // =======================================================================
+
+    /**
+     * @brief Split double quoted string into arguments.
+     *
+     * @param [in] cmd Double quoted string. Use '\' to escape double quotes
+     *                 within arguments.
+     *
+     * @returns Argument vector.
+     */
+    static CommandLine split(const std::string& cmd);
+
+    /**
+     * @brief Convert argument vector to double quoted string.
+     *
+     * @param [in] args Argument vector.
+     *
+     * @returns Double quoted string.
+     */
+    static std::string to_string(const CommandLine& args);
+
+    // =======================================================================
     // process control
     // =======================================================================
 
@@ -148,7 +171,10 @@ public:
                const RedirectMode stdin  = RM_NONE,
                const RedirectMode stdout = RM_NONE,
                const RedirectMode stderr = RM_NONE,
-               const Environment* env    = NULL);
+               const Environment* env    = NULL)
+    {
+        return popen(split(cmd), stdin, stdout, stderr, env);
+    }
 
     /**
      * @brief Check if subprocess terminated and update return code.
@@ -279,7 +305,7 @@ public:
      *                   the data is read from stderr of the subprocess.
      *                   Otherwise, the data is read from stdout.
      *
-     * @returns Number of bytes written or -1 on error.
+     * @returns Number of bytes read or -1 on error.
      */
     int read(void* buf, size_t nbuf, bool err = false);
 

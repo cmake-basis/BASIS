@@ -262,13 +262,13 @@ function basis_split
     [ $# -eq 2 ] || return 1
     local _basis_split_str=$2
     # match arguments from left to right
-    while match "${_basis_split_str}" "[ ]*('([^']|\\\')*'|\"([^\"]|\\\\\")*\"|[^ ]*)(.*)"; do
+    while match "${_basis_split_str}" "[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\")*[^\\]\"|[^ ]+)(.*)"; do
         # matched element including quotes
         _basis_split_element="${BASH_REMATCH[1]}"
         # remove quotes
         _basis_split_element=`echo "${_basis_split_element}" | sed "s/^['\"]//;s/['\"]$//"`
         # replace quoted quotes within argument by quotes
-        _basis_split_element=`echo "${_basis_split_element}" | sed "s/[\\]\'/\'/g;s/[\\]\"/\"/g"`
+        _basis_split_element=`echo "${_basis_split_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
         # add to resulting array
         _basis_split_array[${#_basis_split_array[@]}]="${_basis_split_element}"
         # continue with residual command-line

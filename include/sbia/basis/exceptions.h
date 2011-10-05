@@ -17,12 +17,17 @@
 
 #include <sstream>   // used to compose exception messages
 #include <stdexcept> // use standard STL exceptions where possible
+#include <string>    // used to store error messages
 
 #include <sbia/basis/config.h>
 
 
 SBIA_BASIS_NAMESPACE_BEGIN
 
+
+// ===========================================================================
+// convenience macros
+// ===========================================================================
 
 /**
  * @brief Throw exception with given message.
@@ -46,6 +51,24 @@ SBIA_BASIS_NAMESPACE_BEGIN
        oss << msg; \
        throw type(oss.str()); \
     }
+
+// ===========================================================================
+// exceptions
+// ===========================================================================
+
+/**
+ * @class SubprocessException
+ * @brief Exception type thrown by execute_process().
+ */
+class SubprocessException : public std::exception
+{
+public:
+    SubprocessException(const std::string& msg) : msg_(msg) {}
+    ~SubprocessException() throw () {}
+
+private:
+    std::string msg_; ///< Error message.
+}; // class SubprocessException
 
 
 SBIA_BASIS_NAMESPACE_END

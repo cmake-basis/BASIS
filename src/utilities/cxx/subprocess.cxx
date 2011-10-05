@@ -35,6 +35,7 @@ SBIA_BASIS_NAMESPACE_BEGIN
 // helpers
 // ===========================================================================
 
+// ---------------------------------------------------------------------------
 static const char* olds[] = {"\\b", "\\\"", "\\'", "\\\\", "\\a", "\\?"};
 static const char* news[] = {"\b",  "\"",   "\'",  "\\",   "\a",  "\?"};
 
@@ -56,6 +57,62 @@ struct ConvertSpecialChars
         return result;
     }
 }; // struct ConvertSpecialChars
+
+// ---------------------------------------------------------------------------
+Subprocess::CommandLine Subprocess::split(const string& cmd)
+{
+    CommandLine args;
+
+    const char whitespace[] = " \f\n\r\t\v";
+    for (string::size_type i = 0, j = 0; (j != string::npos) && (i < cmd.size()); i++) {
+        if (cmd[i] == '\"') {
+            j = i;
+            do {
+                j = cmd.find('\"', ++j);
+            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
+            if (j == string::npos) args.push_back(cmd.substr(i));
+            else args.push_back(cmd.substr(i + 1, j - i - 1));
+            i = j;
+        } else if (isspace(cmd[i])) {
+            j = cmd.find_first_not_of(whitespace, i);
+            i = j - 1;
+        } else {
+            j = i;
+            do {
+                j = cmd.find_first_of(whitespace, ++j);
+            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
+            args.push_back(cmd.substr(i, j - i));
+            i = j - 1;
+        }
+    }
+
+    for_each(args.begin(), args.end(), ConvertSpecialChars());
+
+    return args;
+}
+
+// ---------------------------------------------------------------------------
+string Subprocess::to_string(const CommandLine& args)
+{
+    string cmd;
+    string arg;
+    const char whitespace[] = " \f\n\r\t\v";
+    for (CommandLine::const_iterator i = args.begin(); i != args.end(); ++i) {
+        if (!cmd.empty()) cmd.push_back(' ');
+        if (i->find_first_of(whitespace) != string::npos) {
+            arg = *i;
+            string::size_type pos = arg.find('"');
+            while (pos != string::npos) {
+                arg.replace(pos, 1, "\\\"");
+                pos = arg.find('"', pos + 2);
+            }
+            cmd.append(arg);
+        } else {
+            cmd.append(arg);
+        }
+    }
+    return cmd;
+}
 
 // ===========================================================================
 // construction / destruction
@@ -241,46 +298,6 @@ bool Subprocess::popen(const CommandLine& args,
         return true;
     }
 #endif
-}
-
-// ---------------------------------------------------------------------------
-bool Subprocess::popen(const string&      cmd,
-                       const RedirectMode stdin,
-                       const RedirectMode stdout,
-                       const RedirectMode stderr,
-                       const Environment* env)
-{
-    CommandLine cmdline;
-
-    // parse command-line
-    const char whitespace[] = " \f\n\r\t\v";
-    for (string::size_type i = 0, j = 0; (j != string::npos) && (i < cmd.size()); i++) {
-        if (cmd[i] == '\"') {
-            j = i;
-            do {
-                j = cmd.find('\"', ++j);
-            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
-            if (j == string::npos) cmdline.push_back(cmd.substr(i));
-            else cmdline.push_back(cmd.substr(i + 1, j - i - 1));
-            i = j;
-        } else if (isspace(cmd[i])) {
-            j = cmd.find_first_not_of(whitespace, i);
-            i = j - 1;
-        } else {
-            j = i;
-            do {
-                j = cmd.find_first_of(whitespace, ++j);
-            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
-            cmdline.push_back(cmd.substr(i, j - i));
-            i = j - 1;
-        }
-    }
-
-    // replace special characters
-    for_each(cmdline.begin(), cmdline.end(), ConvertSpecialChars());
-
-    // create subprocess
-    return popen(cmdline, stdin, stdout, stderr, env);
 }
 
 // ---------------------------------------------------------------------------

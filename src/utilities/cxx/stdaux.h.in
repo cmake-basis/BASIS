@@ -21,7 +21,6 @@
 #include <string>
 #include <vector>
 
-#include <sbia/basis/subprocess.h>
 #include <sbia/@PROJECT_NAME_LOWER@/config.h>
 
 
@@ -154,39 +153,75 @@ std::string get_executable_path(const std::string& target);
  * @brief Execute command as subprocess.
  *
  * This function is a replacement for system() on Unix and is furthermore
- * supposed to be platform independent. The first argument of the given
- * command-line string is mapped to an executable file using
- * get_executable_path(). If this fails because the first argument is not a
- * known build target name, the given string is assumed to be already the
- * name/path of an executable.
+ * less platform dependent. The first argument of the given command-line string
+ * is mapped to an absolute executable file using get_executable_path() if the
+ * given first argument is a know build target name. Otherwise, the command-line
+ * is used unmodified.
  *
- * @param [in] cmd Command-line given as single string. Use " in order to quote
- *                 arguments which contain whitespace characters. The first
- *                 argument must be either a build target name or the actual
- *                 command to execute.
+ * @param [in]  args       Command-line given as double quoted string. The first
+ *                         argument has to be either a build target name or the
+ *                         name/path of the command to execute. Use '\' to escape
+ *                         double quotes inside arguments.
+ * @param [in]  quiet      Turns off output of stdout and stderr of child
+ *                         process to stdout of parent process.
+ * @param [out] stdout     Output stream where command output is written to.
+ * @param [in]  allow_fail If true, no exception is thrown if the exit code
+ *                         of the child process is non-zero. Otherwise,
+ *                         a SubprocessException object is thrown in that case.
+ * @param [in]  verbose    Verbosity of output messages. Does not affect
+ *                         verbosity of executed command.
+ * @param [in]  simulate   Whether to simulate command execution only.
  *
  * @returns Exit code of command or -1 if subprocess creation failed.
+ *
+ * @throws sbia::basis::SubprocessException If subprocess creation failed or
+ *                                          command returned a non-zero exit
+ *                                          code while @p allow_fail is false.
  */
-int execute_process(const std::string& cmd);
+int execute_process(const std::string& args,
+                    bool               quiet      = false,
+                    std::ostream*      stdout     = NULL,
+                    bool               allow_fail = false,
+                    int                verbose    = 0,
+                    bool               simulate   = false);
 
 /**
  * @brief Execute command as subprocess.
  *
  * This function is a replacement for system() on Unix and is furthermore
- * supposed to be platform independent. The first argument of the given
- * command-line vector is mapped to an executable file using
- * get_executable_path(). If this fails because the first argument is not a
- * known build target, the command-line is executed unchanged. Otherwise,
- * the input command-line is modified by replacing the first argument by the
- * path of the actual executable file. Then the given command is executed
- * using the Subprocess::call() method.
+ * less platform dependent. The first argument of the given command-line string
+ * is mapped to an absolute executable file using get_executable_path() if the
+ * given first argument is a know build target name. Otherwise, the command-line
+ * is used unmodified.
  *
- * @param [in] cmd Command-line given as vector of strings. The first argument
- *                 can be either the name of a build target or an actual command.
+ * @param [in,out] args       Command-line given as argument vector. The first
+ *                            argument has to be either a build target name or the
+ *                            name/path of the command to execute. Use '\' to escape
+ *                            double quotes inside arguments. Note that the first
+ *                            argument is replace by the corresponding executable
+ *                            file path.
+ * @param [in]     quiet      Turns off output of stdout and stderr of child
+ *                            process to stdout of parent process.
+ * @param [out]    stdout     Output stream where command output is written to.
+ * @param [in]     allow_fail If true, no exception is thrown if the exit code
+ *                            of the child process is non-zero. Otherwise,
+ *                            a SubprocessException object is thrown in that case.
+ * @param [in]     verbose    Verbosity of output messages. Does not affect
+ *                            verbosity of executed command.
+ * @param [in]     simulate   Whether to simulate command execution only.
  *
  * @returns Exit code of command or -1 if subprocess creation failed.
+ *
+ * @throws sbia::basis::SubprocessException If subprocess creation failed or
+ *                                          command returned a non-zero exit
+ *                                          code while @p allow_fail is false.
  */
-int execute_process(SBIA_BASIS_NAMESPACE::Subprocess::CommandLine& cmd);
+int execute_process(std::vector<std::string>& args,
+                    bool                      quiet      = false,
+                    std::ostream*             stdout     = NULL,
+                    bool                      allow_fail = false,
+                    int                       verbose    = 0,
+                    bool                      simulate   = false);
 
 
 /// @}

@@ -18,6 +18,8 @@
 #include <cassert>
 
 #include <sbia/basis/path.h>
+#include <sbia/basis/exceptions.h>
+#include <sbia/basis/subprocess.h>
 #include "ExecutableTargetInfo.h"
 #include "stdaux.h"
 
@@ -147,62 +149,65 @@ string get_executable_path(const std::string& target)
 }
 
 // ===========================================================================
-// subprocess execution
+// command execution
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-int execute_process(const string& cmd)
+int execute_process(const string& args, bool quiet, std::ostream* stdout,
+                    bool allow_fail, int verbose, bool simulate)
 {
-    string cmdline;
-    string cmdname;
-    string cmdargs;
-
-    // extract first argument
-    const char whitespace[] = " \f\n\r\t\v";
-    for (string::size_type i = 0, j = 0; (j != string::npos) && (i < cmd.size()); i++) {
-        if (cmd[i] == '\"') {
-            j = i;
-            do {
-                j = cmd.find('\"', ++j);
-            } while (j != string::npos && cmd[j - 1] == '\\');
-            cmdname = cmd.substr(i + 1, j - i);
-            cmdargs = cmd.substr(j + 1);
-            break;
-        } else if (!isspace(cmd[i])) {
-            j = cmd.find_first_not_of(whitespace, i);
-            i = j - 1;
-        } else {
-            j = i;
-            do {
-                j = cmd.find_first_of(whitespace, ++j);
-            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
-            cmdname = cmd.substr(i, j - i);
-            cmdargs = cmd.substr(j);
-            break;
-        }
-        i++;
-    }
-
-    // map build target name to executable file path
-    cmdline = get_executable_path(cmdname);
-    if (cmdline.empty()) cmdline  = cmd;
-    else {
-        cmdline.insert(0, 1, '\"');
-        cmdline += "\" ";
-        cmdline += cmdargs;
-    }
- 
-    // execute command
-    return Subprocess::call(cmdline);
+    vector<string> tmp = Subprocess::split(args);
+    return execute_process(tmp, quiet, stdout, allow_fail, verbose, simulate);
 }
 
 // ---------------------------------------------------------------------------
-int execute_process(Subprocess::CommandLine& cmd)
+int execute_process(vector<string>& args, bool quiet, std::ostream* stdout,
+                    bool allow_fail, int verbose, bool simulate)
 {
-    assert(cmd.size() > 0);
-    string tmp = get_executable_path(cmd[0].c_str());
-    if (!tmp.empty()) cmd[0] = tmp;
-    return Subprocess::call(cmd);
+    if (args.empty() || args[0].empty()) {
+        BASIS_THROW(SubprocessException, "execute_process(): No command specified");
+    }
+    // map build target name to executable file path
+    string exec_path = get_executable_path(args[0]);
+    // prepend absolute path of found executable
+    if (!exec_path.empty()) args[0] = exec_path;
+    // some verbose output
+    if (verbose > 0) {
+        printf("$> %s", Subprocess::to_string(args).c_str());
+        if (simulate) printf(" (simulated)");
+        printf("\n");
+    }
+    // execute command
+    int status = 0;
+    if (quiet && stdout == NULL) {
+        status = Subprocess::call(args);
+    } else {
+        Subprocess p;
+        char buf[1024];
+        int  n;
+        if (!p.popen(args, Subprocess::RM_NONE, Subprocess::RM_PIPE, Subprocess::RM_STDOUT)) {
+            BASIS_THROW(SubprocessException, "execute_process(): Failed to create subprocess");
+        }
+        while ((n = p.read(buf, 1023)) > 0) {
+            buf[n] = '\0';
+            if (!quiet) printf("%s", buf);
+            if (stdout) *stdout << buf;
+        }
+        if (!p.wait()) {
+            BASIS_THROW(SubprocessException, "execute_process(): Failed to wait for subprocess");
+        }
+        while ((n = p.read(buf, 1023)) > 0) {
+            buf[n] = '\0';
+            if (!quiet) printf("%s", buf);
+            if (stdout) *stdout << buf;
+        }
+        status = p.returncode();
+    }
+    // if command failed, throw an exception
+    if (status != 0 && !allow_fail) {
+        BASIS_THROW(SubprocessException, "Command " << Subprocess::to_string(args) << " failed");
+    }
+    return status;
 }
 
 
