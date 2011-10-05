@@ -1,0 +1,86 @@
+#! /usr/bin/env python
+
+##############################################################################
+# @file  test_stdaux.py
+# @brief Test stdaux.py module.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+import unittest
+import re
+import os
+
+
+@BASIS_PYTHON_UTILITIES@
+
+SubprocessError = basis.SubprocessError
+execute_process = basis.execute_process
+
+# ============================================================================
+# tests
+# ============================================================================
+
+# ****************************************************************************
+class TestProcessExecution(unittest.TestCase):
+    """Test standard utility functions for execution of subprocesses."""
+ 
+    # ************************************************************************
+    def test_invalid_use(self):
+        """Test exceptions when execute_process() is not used as intended."""
+        self.assertRaises(TypeError, execute_process)
+        self.assertRaises(SubprocessError, execute_process, '')
+        self.assertRaises(SubprocessError, execute_process, [])
+
+    # ************************************************************************
+    def test_return_type(self):
+        """Test type of return value of execute_process()."""
+        self.assertEquals(int, type(execute_process('basis::dummy_command')))
+        self.assertEquals(int, type(execute_process('basis::dummy_command', stdout=False)))
+        self.assertEquals(tuple, type(execute_process('basis::dummy_command', stdout=True)))
+ 
+    # ************************************************************************
+    def test_target_execution(self):
+        """Test execution of executable target."""
+        self.assertEquals(0, execute_process(['basis::dummy_command']))
+        self.assertEquals(
+                (0, 'Hello, BASIS!\n'),
+                execute_process(['basis::dummy_command', '--greet'],
+                        stdout=True, quiet=True))
+
+    # ************************************************************************
+    def test_allow_fail(self):
+        """Test allow_fail keyword argument of execute_process()."""
+        self.assertRaises(SubprocessError, execute_process, 'basis::dummy_command --exit 1')
+        self.assertRaises(SubprocessError, execute_process, 'basis::dummy_command --exit 1', allow_fail=False)
+        self.assertEquals(1, execute_process('basis::dummy_command --exit 1', allow_fail=True))
+
+    # ************************************************************************
+    def test_verbose(self):
+        """Test verbose keyword argument of execute_process()."""
+        (status, stdout) = execute_process('basis::dummy_command', verbose=True, quiet=True, stdout=True)
+        self.assertEquals(0, status)
+        self.assertEquals('', stdout)
+        (status, stdout) = execute_process('basis::dummy_command', verbose=2, quiet=True, stdout=True)
+        self.assertEquals(0, status)
+        self.assertEquals('', stdout)
+
+    # ************************************************************************
+    def test_command_execution(self):
+        """Test execution of some non-target command."""
+        if (os.name == 'posix'):
+            self.assertEquals(0, execute_process(['ls', '/'], quiet=True))
+            self.assertEquals(0, execute_process('ls /', quiet=True))
+        else:
+            self.assertEquals(0, execute_process(['dir', 'C:/'], quiet=True))
+            self.assertEquals(0, execute_process('dir C:/', quiet=True))
+
+# ============================================================================
+# main
+# ============================================================================
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,0 +1,73 @@
+#! /usr/bin/env bash
+
+##############################################################################
+# @file  test_stdaux.sh
+# @brief Test stdaux.sh module.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+@BASIS_BASH_UTILITIES@
+
+source "${_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh"
+
+# ============================================================================
+# plan
+# ============================================================================
+ 
+plan_tests 18;
+
+# ============================================================================
+# tests
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Test exceptions when execute_process() is not used as intended.
+execute_process
+isnt $? 0
+execute_process ''
+isnt $? 0
+
+# ----------------------------------------------------------------------------
+# Test execution of executable target.
+execute_process 'basis::dummy_command'
+is $? 0
+stdout=`execute_process 'basis::dummy_command --greet'`
+is $? 0
+match "$stdout" '^Hello, BASIS!'
+is $? 0
+
+# ----------------------------------------------------------------------------
+# Test allow_fail keyword argument of execute_process().
+stdout=`execute_process 'basis::dummy_command --exit 1'; echo 'CONTINUED'`
+isnt $? 0
+match "$stdout" 'CONTINUED'
+isnt $? 0
+stdout=`execute_process 'basis::dummy_command --exit 1' 1; echo 'CONTINUED'`
+isnt $? 0
+match "$stdout" 'CONTINUED'
+isnt $? 0
+stdout=`execute_process 'basis::dummy_command --exit 1' 0; echo 'CONTINUED'`
+is $? 0
+match "$stdout" 'CONTINUED'
+is $? 0
+
+# ----------------------------------------------------------------------------
+# Test verbose keyword argument of execute_process().
+stdout=`execute_process 'basis::dummy_command' 1 0`
+is $? 0
+is $stdout ''
+stdout=`execute_process 'basis::dummy_command' 1 1`
+is $? 0
+isnt $stdout ''
+match "$stdout" 'dummy_command'
+is $? 0
+
+# ----------------------------------------------------------------------------
+# Test execution of some non-target command.
+stdout=`execute_process 'ls / &> /dev/null'`
+is $? 0
+is $stdout ''

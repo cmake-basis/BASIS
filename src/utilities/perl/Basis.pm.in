@@ -29,20 +29,26 @@ BEGIN {
 
     %EXPORT_TAGS = (
         default => [qw (
+            which
             get_executable_name
             get_executable_directory
             get_executable_path
-            which
+            print_version
+            print_contact
+            execute_process
         )],
 
         everything => [qw (
+            which
+            where
             get_executable_name
             get_executable_directory
             get_executable_path
             is_known_target
             get_target_uid
-            which
-            where
+            print_version
+            print_contact
+            execute_process
         )]
     );
 

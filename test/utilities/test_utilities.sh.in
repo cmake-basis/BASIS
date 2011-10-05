@@ -177,6 +177,9 @@ add_test 'test_ExecutableTargetInfo.cxx' UNITTEST
 add_test 'test_executabletargetinfo.py.in' WITH_EXT
 add_test 'test_ExecutableTargetInfo.pl.in' WITH_EXT
 add_test 'test_executabletargetinfo.sh.in' WITH_EXT
+add_test 'test_stdaux.py.in' WITH_EXT
+add_test 'test_stdaux.pl.in' WITH_EXT
+add_test 'test_stdaux.sh.in' WITH_EXT
 build
 run cd "${BUILD_DIR}"
 if [ ${FLAGS_verbose} -gt 0 ]; then

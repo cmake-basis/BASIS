@@ -1,0 +1,82 @@
+#! /usr/bin/env perl
+
+##############################################################################
+# @file  test_stdaux.pl
+# @brief Test stdaux.pl module.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+use Test::More tests => 22;
+
+
+@BASIS_PERL_UTILITIES@
+
+
+# ============================================================================
+# tests
+# ============================================================================
+ 
+my @retval;
+my $retval;
+
+# ----------------------------------------------------------------------------
+# Test exceptions when execute_process() is not used as intended.
+eval { Basis::execute_process(); };
+isnt $@, '';
+eval { Basis::execute_process(''); };
+isnt $@, '';
+eval { Basis::execute_process([]); };
+isnt $@, '';
+eval { Basis::execute_process(['']); };
+isnt $@, '';
+
+# ----------------------------------------------------------------------------
+# Test type of return value of execute_process().
+eval { @retval = Basis::execute_process('basis::dummy_command'); };
+is $@, '';
+is scalar @retval, 1;
+eval { @retval = Basis::execute_process('basis::dummy_command', stdout => 0); };
+is $@, '';
+is scalar @retval, 1;
+eval { @retval = Basis::execute_process('basis::dummy_command', stdout => 1); };
+is $@, '';
+is scalar @retval, 2;
+
+# ----------------------------------------------------------------------------
+# Test execution of executable target.
+is Basis::execute_process(['basis::dummy_command']), 0;
+eval { @retval = Basis::execute_process(['basis::dummy_command', '--greet'], stdout => 1, quiet => 1); };
+is $retval[0], 0;
+like $retval[1], qr/^Hello, BASIS!\s*\n/;
+
+# ----------------------------------------------------------------------------
+# Test allow_fail keyword argument of execute_process().
+eval { Basis::execute_process('basis::dummy_command --exit 1'); };
+isnt $@, '';
+eval { Basis::execute_process('basis::dummy_command --exit 1', allow_fail => 0); };
+isnt $@, '';
+eval { Basis::execute_process('basis::dummy_command --exit 1', allow_fail => 1); };
+is $@, '';
+
+# ----------------------------------------------------------------------------
+# Test verbose keyword argument of execute_process().
+eval { @retval = Basis::execute_process('basis::dummy_command', verbose => 1, quiet => 1, stdout => 1); };
+is $retval[0], 0;
+is $retval[1], '';
+eval { @retval = Basis::execute_process('basis::dummy_command', verbose => 2, quiet => 1, stdout => 1); };
+is $retval[0], 0;
+is $retval[1], '';
+
+# ----------------------------------------------------------------------------
+# Test execution of some non-target command.
+if ($^O eq 'MSWin32') {
+    is Basis::execute_process(['dir', 'C:/'], quiet => 1), 0;
+    is Basis::execute_process('dir C:/', quiet => 1), 0;
+} else {
+    is Basis::execute_process(['ls', '/'], quiet => 1), 0;
+    is Basis::execute_process('ls /', quiet => 1), 0;
+}

@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
             cout << argv[0];
             exit(0);
         } else if (strcmp(argv[i], "--greet") == 0) {
-            cout << "Hello, World!" << endl;
+            cout << "Hello, BASIS!" << endl;
         } else if (strcmp(argv[i], "--warn") == 0) {
             cerr << "WARNING: Cannot greet in other languages!" << endl;
         } else if (strcmp(argv[i], "--exit") == 0) {

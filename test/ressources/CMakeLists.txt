@@ -8,4 +8,4 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_add_executable (dummy_command TEST dummy_command.cxx)
+basis_add_executable (dummy_command dummy_command.cxx)
