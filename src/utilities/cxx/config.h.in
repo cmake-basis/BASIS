@@ -164,7 +164,6 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 // ---------------------------------------------------------------------------
 // project attributes
-// ---------------------------------------------------------------------------
 
 /// @brief The project name.
 extern const std::string cProjectName;
@@ -199,12 +198,7 @@ extern const std::string cVersion;
 extern const unsigned int cRevision;
 
 // ---------------------------------------------------------------------------
-// paths
-// ---------------------------------------------------------------------------
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// build tree
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// paths - build tree
 
 /**
  * @brief Absolute path of top directory of build tree.
@@ -246,9 +240,8 @@ extern const std::string cLibraryBuildPath;
  */
 extern const std::string cDataBuildPath;
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// installation
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------
+// paths - installation
 
 /**
  * @brief Path prefix used by runtime executables.

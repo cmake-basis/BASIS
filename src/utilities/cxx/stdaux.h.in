@@ -158,10 +158,12 @@ std::string get_executable_path(const std::string& target);
  * given first argument is a know build target name. Otherwise, the command-line
  * is used unmodified.
  *
- * @param [in]  args       Command-line given as double quoted string. The first
- *                         argument has to be either a build target name or the
- *                         name/path of the command to execute. Use '\' to escape
- *                         double quotes inside arguments.
+ * @param [in] cmd         Command-line given as double quoted string. Arguments
+ *                         containing whitespaces have to be quoted using double
+ *                         quotes. Use a backslash (\) to escape double quotes
+ *                         inside an argument as well as to escape a backslash
+ *                         itself (required if backslash at end of double quoted
+ *                         argument, e.g., "this argument \\").
  * @param [in]  quiet      Turns off output of stdout and stderr of child
  *                         process to stdout of parent process.
  * @param [out] stdout     Output stream where command output is written to.
@@ -174,11 +176,10 @@ std::string get_executable_path(const std::string& target);
  *
  * @returns Exit code of command or -1 if subprocess creation failed.
  *
- * @throws sbia::basis::SubprocessException If subprocess creation failed or
- *                                          command returned a non-zero exit
- *                                          code while @p allow_fail is false.
+ * @throws SubprocessException If subprocess creation failed or command returned
+ *                             a non-zero exit code while @p allow_fail is false.
  */
-int execute_process(const std::string& args,
+int execute_process(const std::string& cmd,
                     bool               quiet      = false,
                     std::ostream*      stdout     = NULL,
                     bool               allow_fail = false,
@@ -196,10 +197,10 @@ int execute_process(const std::string& args,
  *
  * @param [in,out] args       Command-line given as argument vector. The first
  *                            argument has to be either a build target name or the
- *                            name/path of the command to execute. Use '\' to escape
- *                            double quotes inside arguments. Note that the first
- *                            argument is replace by the corresponding executable
- *                            file path.
+ *                            name/path of the command to execute. Note that as a
+ *                            side effect, the first argument of the input vector
+ *                            is replaced by the absolute path of the actual
+ *                            executable file if applicable.
  * @param [in]     quiet      Turns off output of stdout and stderr of child
  *                            process to stdout of parent process.
  * @param [out]    stdout     Output stream where command output is written to.
@@ -212,9 +213,8 @@ int execute_process(const std::string& args,
  *
  * @returns Exit code of command or -1 if subprocess creation failed.
  *
- * @throws sbia::basis::SubprocessException If subprocess creation failed or
- *                                          command returned a non-zero exit
- *                                          code while @p allow_fail is false.
+ * @throws SubprocessException If subprocess creation failed or command returned
+ *                             a non-zero exit code while @p allow_fail is false.
  */
 int execute_process(std::vector<std::string>& args,
                     bool                      quiet      = false,

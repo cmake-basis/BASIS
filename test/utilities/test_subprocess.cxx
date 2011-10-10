@@ -22,7 +22,105 @@ using namespace SBIA_BASIS_NAMESPACE;
 const string cCmd = get_executable_directory() + "/dummy_command";
 
 // ---------------------------------------------------------------------------
-TEST (Subprocess, Popen)
+TEST(Subprocess, Split)
+{
+    vector<string> args;
+
+    args = Subprocess::split("cmd");
+    ASSERT_EQ(1, args.size());
+    EXPECT_STREQ("cmd", args[0].c_str());
+
+    args = Subprocess::split("\"...");
+    ASSERT_EQ(1, args.size());
+    EXPECT_STREQ("\"...", args[0].c_str());
+
+    args = Subprocess::split("bar arg \"...");
+    ASSERT_EQ(3, args.size());
+    EXPECT_STREQ("bar", args[0].c_str());
+    EXPECT_STREQ("arg", args[1].c_str());
+    EXPECT_STREQ("\"...", args[2].c_str());
+
+    args = Subprocess::split("foo \"there is a double quote (\\\") inside the argument\" arg2");
+    ASSERT_EQ(3, args.size());
+    EXPECT_STREQ("foo", args[0].c_str());
+    EXPECT_STREQ("there is a double quote (\") inside the argument", args[1].c_str());
+    EXPECT_STREQ("arg2", args[2].c_str());
+
+    args = Subprocess::split("foo \"there is a backslash (\\) inside the argument\" arg2");
+    ASSERT_EQ(3, args.size());
+    EXPECT_STREQ("foo", args[0].c_str());
+    EXPECT_STREQ("there is a backslash (\\) inside the argument", args[1].c_str());
+    EXPECT_STREQ("arg2", args[2].c_str());
+
+    args = Subprocess::split("foo \"there is a backslash (\\\\) inside the argument\" arg2");
+    ASSERT_EQ(3, args.size());
+    EXPECT_STREQ("foo", args[0].c_str());
+    EXPECT_STREQ("there is a backslash (\\) inside the argument", args[1].c_str());
+    EXPECT_STREQ("arg2", args[2].c_str());
+
+    args = Subprocess::split("foo \"there is a backslash followed by a double quote (\\\\\\\") inside the argument\" arg2");
+    ASSERT_EQ(3, args.size());
+    EXPECT_STREQ("foo", args[0].c_str());
+    EXPECT_STREQ("there is a backslash followed by a double quote (\\\") inside the argument", args[1].c_str());
+    EXPECT_STREQ("arg2", args[2].c_str());
+
+    args = Subprocess::split("/bin/foo -la -x \"an argument\" \"\\a\\path with spaces\\\\\" last");
+    ASSERT_EQ(6, args.size());
+    EXPECT_STREQ("/bin/foo", args[0].c_str());
+    EXPECT_STREQ("-la", args[1].c_str());
+    EXPECT_STREQ("-x", args[2].c_str());
+    EXPECT_STREQ("an argument", args[3].c_str());
+    EXPECT_STREQ("\\a\\path with spaces\\", args[4].c_str());
+    EXPECT_STREQ("last", args[5].c_str());
+}
+
+// ---------------------------------------------------------------------------
+TEST(Subprocess, ToString)
+{
+    vector<string> args;
+
+    args.clear();
+    args.push_back("foo");
+    args.push_back("there is a double quote (\") inside the argument");
+    args.push_back("arg2");
+    EXPECT_STREQ("foo \"there is a double quote (\\\") inside the argument\" arg2",
+            Subprocess::to_string(args).c_str());
+
+    args.clear();
+    args.push_back("foo");
+    args.push_back("there is a backslash (\\) inside the argument");
+    args.push_back("arg2");
+    EXPECT_STREQ("foo \"there is a backslash (\\\\) inside the argument\" arg2",
+            Subprocess::to_string(args).c_str());
+
+    args.clear();
+    args.push_back("foo");
+    args.push_back("there are backslashes (\\\\) inside the argument");
+    args.push_back("arg2");
+    EXPECT_STREQ("foo \"there are backslashes (\\\\\\\\) inside the argument\" arg2",
+            Subprocess::to_string(args).c_str());
+
+    args.clear();
+    args.push_back("foo");
+    args.push_back("there is a backslash followed by a double quote (\\\") inside the argument");
+    args.push_back("arg2");
+    EXPECT_STREQ("foo \"there is a backslash followed by a double quote (\\\\\\\") inside the argument\" arg2",
+            Subprocess::to_string(args).c_str());
+
+    args.clear();
+    args.push_back("/bin/foo");
+    args.push_back("-la");
+    args.push_back("-x");
+    args.push_back("an argument");
+    args.push_back("\\a\\path with spaces\\");
+    args.push_back("last");
+    EXPECT_STREQ("/bin/foo -la -x \"an argument\" \"\\\\a\\\\path with spaces\\\\\" last",
+            Subprocess::to_string(args).c_str());
+
+}
+
+// ---------------------------------------------------------------------------
+TEST(Subprocess, Popen)
 {
     Subprocess p;
 
@@ -42,7 +140,7 @@ TEST (Subprocess, Popen)
 }
 
 // ---------------------------------------------------------------------------
-TEST (Subprocess, ReturnCode)
+TEST(Subprocess, ReturnCode)
 {
     Subprocess p;
 
@@ -60,7 +158,7 @@ TEST (Subprocess, ReturnCode)
 }
 
 // ---------------------------------------------------------------------------
-TEST (Subprocess, Terminate)
+TEST(Subprocess, Terminate)
 {
     Subprocess p;
     char buf[2];
@@ -76,13 +174,7 @@ TEST (Subprocess, Terminate)
 }
 
 // ---------------------------------------------------------------------------
-TEST (Subprocess, Call)
+TEST(Subprocess, Call)
 {
     EXPECT_EQ(0, Subprocess::call(cCmd));
-}
-
-// ---------------------------------------------------------------------------
-TEST (Subprocess, Communicate)
-{
-
 }

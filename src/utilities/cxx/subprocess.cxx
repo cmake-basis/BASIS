@@ -12,7 +12,9 @@
 #include <iostream>
 
 #include <cstdlib>
-#include <cassert>
+#include <cassert>   // assert
+#include <cstring>   // strlen
+#include <algorithm> // for_each
 
 #include <sbia/basis/config.h>
 
@@ -36,8 +38,11 @@ SBIA_BASIS_NAMESPACE_BEGIN
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-static const char* olds[] = {"\\b", "\\\"", "\\'", "\\\\", "\\a", "\\?"};
-static const char* news[] = {"\b",  "\"",   "\'",  "\\",   "\a",  "\?"};
+// Attention: Order matters! First, escaped backslashes are converted to
+//            the unused ASCII character 255 and finally these characters are
+//            replaced by single backslashes.
+static const char* olds[] = {"\\\\", "\\\"", "\xFF"};
+static const char* news[] = {"\xFF", "\"",   "\\"};
 
 /**
  * @brief Function object used to convert special characters in command-line
@@ -45,34 +50,52 @@ static const char* news[] = {"\b",  "\"",   "\'",  "\\",   "\a",  "\?"};
  */
 struct ConvertSpecialChars
 {
-    string operator ()(const string& str)
+    void operator ()(string& str)
     {
-        string result(str);
         string::size_type i;
-        for (unsigned int n = 0; n < 6; n++) {
-            while ((i = result.find(olds[n])) != string::npos) {
-                result.replace(i, strlen(olds[n]), news[n]);
+        for (unsigned int n = 0; n < 3; n++) {
+            while ((i = str.find(olds[n])) != string::npos) {
+                str.replace(i, strlen(olds[n]), news[n]);
             }
         }
-        return result;
     }
 }; // struct ConvertSpecialChars
 
 // ---------------------------------------------------------------------------
 Subprocess::CommandLine Subprocess::split(const string& cmd)
 {
-    CommandLine args;
-
     const char whitespace[] = " \f\n\r\t\v";
-    for (string::size_type i = 0, j = 0; (j != string::npos) && (i < cmd.size()); i++) {
+
+    CommandLine args;
+    string::size_type j;
+    string::size_type k;
+    unsigned int      n;
+
+    for (string::size_type i = 0; i < cmd.size(); i++) {
         if (cmd[i] == '\"') {
             j = i;
             do {
                 j = cmd.find('\"', ++j);
-            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
-            if (j == string::npos) args.push_back(cmd.substr(i));
-            else args.push_back(cmd.substr(i + 1, j - i - 1));
-            i = j;
+                if (j == string::npos) break;
+                // count number of backslashes to determine whether this
+                // double quote is escaped or not
+                k = j;
+                n = 0;
+                // Note: There is at least the leading double quote (").
+                //       Hence, k will always be > 0 here.
+                while (cmd[--k] == '\\') n++;
+                // continue while found double quote is escaped
+            } while (n % 2);
+            // if trailing double quote is missing, consider leading
+            // double quote to be part of argument which extends to the
+            // end of the entire string
+            if (j == string::npos) {
+                args.push_back(cmd.substr(i));
+                break;
+            } else {
+                args.push_back(cmd.substr(i + 1, j - i - 1));
+                i = j;
+            }
         } else if (isspace(cmd[i])) {
             j = cmd.find_first_not_of(whitespace, i);
             i = j - 1;
@@ -80,9 +103,26 @@ Subprocess::CommandLine Subprocess::split(const string& cmd)
             j = i;
             do {
                 j = cmd.find_first_of(whitespace, ++j);
-            } while ((j != string::npos) && (cmd[j - 1] == '\\'));
-            args.push_back(cmd.substr(i, j - i));
-            i = j - 1;
+                if (j == string::npos) break;
+                // count number of backslashes to determine whether this
+                // whitespace character is escaped or not
+                k = j;
+                n = 0;
+                if (cmd[j] == ' ') {
+                    // Note: The previous else block handles whitespaces
+                    //       in between arguments including leading whitespaces.
+                    //       Hence, k will always be > 0 here.
+                    while (cmd[--k] == '\\') n++;
+                }
+                // continue while found whitespace is escaped
+            } while (n % 2);
+            if (j == string::npos) {
+                args.push_back(cmd.substr(i));
+                break;
+            } else {
+                args.push_back(cmd.substr(i, j - i));
+                i = j - 1;
+            }
         }
     }
 
@@ -94,21 +134,28 @@ Subprocess::CommandLine Subprocess::split(const string& cmd)
 // ---------------------------------------------------------------------------
 string Subprocess::to_string(const CommandLine& args)
 {
+    const char whitespace[] = " \f\n\r\t\v";
+
     string cmd;
     string arg;
-    const char whitespace[] = " \f\n\r\t\v";
+    string::size_type j;
+
     for (CommandLine::const_iterator i = args.begin(); i != args.end(); ++i) {
         if (!cmd.empty()) cmd.push_back(' ');
         if (i->find_first_of(whitespace) != string::npos) {
             arg = *i;
-            string::size_type pos = arg.find('"');
-            while (pos != string::npos) {
-                arg.replace(pos, 1, "\\\"");
-                pos = arg.find('"', pos + 2);
+            // escape backslashes (\) and double quotes (")
+            j = arg.find_first_of("\\\"");
+            while (j != string::npos) {
+                arg.insert(j, 1, '\\');
+                j = arg.find_first_of("\\\"", j + 2);
             }
+            // surround argument by double quotes
+            cmd.push_back('\"');
             cmd.append(arg);
+            cmd.push_back('\"');
         } else {
-            cmd.append(arg);
+            cmd.append(*i);
         }
     }
     return cmd;

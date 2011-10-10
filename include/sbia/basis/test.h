@@ -1,4 +1,4 @@
-/*!
+/**
  * @file  test.h
  * @brief Main include file for C++ unit tests.
  *

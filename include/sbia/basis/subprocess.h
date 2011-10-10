@@ -35,10 +35,8 @@ SBIA_BASIS_NAMESPACE_BEGIN
  */
 class Subprocess
 {
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // types
-    // =======================================================================
-
 public:
 
     typedef std::vector<std::string> CommandLine;
@@ -63,10 +61,8 @@ private:
     };
 #endif
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // constants
-    // =======================================================================
-
 public:
 
     /**
@@ -79,10 +75,8 @@ public:
         RM_STDOUT ///< Redirect stderr to stdout.
     };
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // construction / destruction
-    // =======================================================================
-
 public:
 
     /**
@@ -95,9 +89,9 @@ public:
      */
     ~Subprocess();
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // helpers
-    // =======================================================================
+public:
 
     /**
      * @brief Split double quoted string into arguments.
@@ -118,9 +112,9 @@ public:
      */
     static std::string to_string(const CommandLine& args);
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // process control
-    // =======================================================================
+public:
 
     /**
      * @brief Open new subprocess.
@@ -155,9 +149,12 @@ public:
      * wait for the suprocess to finish, the wait() method has to be called
      * explicitly.
      *
-     * @param [in] cmd    Command-line given as single string.
-     *                    Arguments containing whitespace characters have to be
-     *                    quoted using ".
+     * @param [in] cmd    Command-line given as double quoted string. Arguments
+     *                    containing whitespaces have to be quoted using double
+     *                    quotes. Use a backslash (\) to escape double quotes
+     *                    inside an argument as well as to escape a backslash
+     *                    itself (required if backslash at end of double quoted
+     *                    argument, e.g., "this argument \\").
      * @param [in] stdin  Mode used for redirection of stdin of subprocess.
      *                    Can be either RM_NONE or RM_PIPE.
      * @param [in] stdout Mode used for redirection of stdout of subprocess.
@@ -233,9 +230,9 @@ public:
      */
     int returncode() const;
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // inter-process communication
-    // =======================================================================
+public:
 
     /**
      * @brief Communicate with subprocess.
@@ -309,10 +306,8 @@ public:
      */
     int read(void* buf, size_t nbuf, bool err = false);
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // process execution
-    // =======================================================================
-
 public:
 
     /**
@@ -353,10 +348,8 @@ public:
      */
     static int call(const std::string& cmd);
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // unsupported operations
-    // =======================================================================
-
 private:
 
     /**
@@ -373,10 +366,8 @@ private:
      */
     void operator=(const Subprocess&);
 
-    // =======================================================================
+    // -----------------------------------------------------------------------
     // members
-    // =======================================================================
-
 private:
 
     Information info_;   ///< Subprocess information.

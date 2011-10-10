@@ -27,7 +27,7 @@ using namespace std;
 // path representations
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the validation of a path string
 TEST (Path, is_valid_path)
 {
@@ -82,7 +82,7 @@ TEST (Path, is_valid_path)
 #endif
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the cleaning/simplifying of a path
 TEST (Path, clean_path)
 {
@@ -122,7 +122,7 @@ TEST (Path, clean_path)
     EXPECT_THROW (clean_path (""), invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the conversion of a path to Unix-style
 TEST (Path, to_unix_path)
 {
@@ -142,7 +142,7 @@ TEST (Path, to_unix_path)
 #endif
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the conversion of a path to Windows-style
 TEST (Path, to_windows_path)
 {
@@ -158,7 +158,7 @@ TEST (Path, to_windows_path)
     EXPECT_THROW (to_windows_path ("C::\\"), invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the conversion of a path to the native style of the used OS
 TEST (Path, to_native_path)
 {
@@ -173,7 +173,7 @@ TEST (Path, to_native_path)
 // working directory
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the current working directory
 TEST (Path, get_working_directory)
 {
@@ -198,7 +198,7 @@ TEST (Path, get_working_directory)
 // path components
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the splitting of a path into its components
 TEST (Path, split_path)
 {
@@ -274,7 +274,7 @@ TEST (Path, split_path)
     EXPECT_STREQ ("",           ext  .c_str ());
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the file root
 TEST (Path, get_file_root)
 {
@@ -344,7 +344,7 @@ TEST (Path, get_file_root)
     EXPECT_THROW (get_file_root ("7:\\"),  invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the directory component - see also split_path() test
 TEST (Path, get_file_directory)
 {
@@ -364,7 +364,7 @@ TEST (Path, get_file_directory)
     EXPECT_THROW (get_file_directory (""), invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the file name component - see also split_path() test
 TEST (Path, get_file_name)
 {
@@ -376,7 +376,7 @@ TEST (Path, get_file_name)
     EXPECT_THROW (get_file_directory (""), invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the file name component - see also split_path() test
 TEST (Path, get_file_name_without_extension)
 {
@@ -388,7 +388,7 @@ TEST (Path, get_file_name_without_extension)
     EXPECT_THROW (get_file_name_without_extension (""), invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the extension component - see also split_path() test
 TEST (Path, get_file_name_extension)
 {
@@ -404,7 +404,7 @@ TEST (Path, get_file_name_extension)
 // absolute / relative paths
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the check whether a path is absolute or not
 TEST (Path, is_absolute)
 {
@@ -437,7 +437,7 @@ TEST (Path, is_absolute)
     EXPECT_TRUE (is_absolute ("C:\\."));
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the check whether a path is relative or not
 TEST (Path, is_relative)
 {
@@ -470,7 +470,7 @@ TEST (Path, is_relative)
     EXPECT_FALSE (is_relative ("C:\\."));
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the conversion of a path to an absolute path
 TEST (Path, to_absolute_path)
 {
@@ -501,7 +501,7 @@ TEST (Path, to_absolute_path)
     EXPECT_THROW (to_absolute_path (""), invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the conversion of a path to a relative path
 TEST (Path, to_relative_path)
 {
@@ -512,7 +512,7 @@ TEST (Path, to_relative_path)
     EXPECT_STREQ ("../config.txt", to_relative_path ("/usr/local",  "/usr/config.txt").c_str ());
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the joining of two paths.
 TEST (Path, join_paths)
 {
@@ -526,7 +526,7 @@ TEST (Path, join_paths)
 // symbolic links
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the check whether a given file is a symbolic link
 TEST (Path, is_symlink)
 {
@@ -554,7 +554,7 @@ TEST (Path, is_symlink)
 #endif
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the reading of a symbolic link's value
 TEST (Path, read_symlink)
 {
@@ -592,7 +592,7 @@ TEST (Path, read_symlink)
     EXPECT_THROW (read_symlink ("C::/", value), invalid_argument);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of an actual absolute path with symbolic links resolved
 TEST (Path, get_real_path)
 {
@@ -627,7 +627,7 @@ TEST (Path, get_real_path)
 // executable file
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the current executable's path
 TEST (Path, get_executable_path)
 {
@@ -637,7 +637,7 @@ TEST (Path, get_executable_path)
     EXPECT_STREQ ("test_path", get_file_name_without_extension (path).c_str ());
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the current executable's directory
 TEST (Path, get_executable_directory)
 {
@@ -647,7 +647,7 @@ TEST (Path, get_executable_directory)
     EXPECT_TRUE (path == get_file_directory (get_executable_path ()));
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 // Tests the retrieval of the current executable's name
 TEST (Path, get_executable_name)
 {

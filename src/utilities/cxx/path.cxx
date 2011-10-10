@@ -51,7 +51,7 @@ const string cPathSeparatorStr ("/");
 // path representations
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 bool is_valid_path(const string& path, bool strict)
 {
     // an empty string is clearly no valid path
@@ -79,7 +79,7 @@ bool is_valid_path(const string& path, bool strict)
     return true;
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string clean_path(const string& path)
 {
     if (!is_valid_path(path, false)) {
@@ -191,7 +191,7 @@ string clean_path(const string& path)
     return cleaned_path;
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string to_unix_path(const string& path, bool drive)
 {
     if (!is_valid_path(path)) {
@@ -223,7 +223,7 @@ string to_unix_path(const string& path, bool drive)
     return clean_path(unix_path);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string to_windows_path(const string& path)
 {
     if (!is_valid_path(path, false)) {
@@ -252,7 +252,7 @@ string to_windows_path(const string& path)
     return clean_path(windows_path);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string to_native_path(const string& path)
 {
 #if WINDOWS
@@ -266,7 +266,7 @@ string to_native_path(const string& path)
 // working directory
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_working_directory()
 {
     string wd;
@@ -287,7 +287,7 @@ string get_working_directory()
 // path components
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 void split_path(const string&path, string* root, string* dir, string* fname, string* ext)
 {
     // file root
@@ -349,7 +349,7 @@ void split_path(const string&path, string* root, string* dir, string* fname, str
     }
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_file_root(const string& path)
 {
     if (!is_valid_path(path)) {
@@ -381,7 +381,7 @@ string get_file_root(const string& path)
     return "./";
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_file_directory(const string& path)
 {
     string root;
@@ -395,7 +395,7 @@ string get_file_directory(const string& path)
     }
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_file_name(const string& path)
 {
     string fname;
@@ -404,7 +404,7 @@ string get_file_name(const string& path)
     return fname + ext;
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_file_name_without_extension(const string& path)
 {
     string fname;
@@ -412,7 +412,7 @@ string get_file_name_without_extension(const string& path)
     return fname;
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_file_name_extension(const string& path)
 {
     string ext;
@@ -424,25 +424,25 @@ string get_file_name_extension(const string& path)
 // absolute / relative paths
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 bool is_absolute(const string& path)
 {
     return get_file_root(path) != "./";
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 bool is_relative(const string& path)
 {
     return get_file_root(path) == "./";
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string to_absolute_path(const string& path)
 {
     return to_absolute_path(get_working_directory(), path);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string to_absolute_path(const string& base, const string& path)
 {
     string abs_path(path);
@@ -463,7 +463,7 @@ string to_absolute_path(const string& base, const string& path)
     return abs_path;
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string to_relative_path(const string& path)
 {
     string unix_path = to_unix_path(path, true);
@@ -471,7 +471,7 @@ string to_relative_path(const string& path)
     return to_relative_path(get_working_directory(), unix_path);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string to_relative_path(const string& base, const string& path)
 {
     string unix_path = to_unix_path(path, true);
@@ -537,7 +537,7 @@ string to_relative_path(const string& base, const string& path)
     return rel_path;
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string join_paths(const string& base, const string& path)
 {
     if (is_absolute(path)) return clean_path(path);
@@ -548,7 +548,7 @@ string join_paths(const string& base, const string& path)
 // symbolic links
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 bool is_symlink(const string& path)
 {
     if (!is_valid_path(path)) {
@@ -564,7 +564,7 @@ bool is_symlink(const string& path)
 #endif
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 bool read_symlink(const string& link, string& value)
 {
     if (!is_valid_path(link)) {
@@ -605,7 +605,7 @@ bool read_symlink(const string& link, string& value)
     return ok;
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_real_path(const string& path)
 {
     // make path just absolute if it is no symbolic link
@@ -638,7 +638,7 @@ string get_real_path(const string& path)
 // executable file
 // ===========================================================================
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_executable_path()
 {
     string path;
@@ -702,14 +702,14 @@ string get_executable_path()
     return clean_path(path);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_executable_directory()
 {
     string path = get_executable_path();
     return path.empty() ? "" : get_file_directory(path);
 }
 
-// ***************************************************************************
+// ---------------------------------------------------------------------------
 string get_executable_name()
 {
     string name = get_executable_path();

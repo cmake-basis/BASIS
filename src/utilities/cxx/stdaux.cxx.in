@@ -153,11 +153,11 @@ string get_executable_path(const std::string& target)
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-int execute_process(const string& args, bool quiet, std::ostream* stdout,
+int execute_process(const string& cmd, bool quiet, std::ostream* stdout,
                     bool allow_fail, int verbose, bool simulate)
 {
-    vector<string> tmp = Subprocess::split(args);
-    return execute_process(tmp, quiet, stdout, allow_fail, verbose, simulate);
+    vector<string> args = Subprocess::split(cmd);
+    return execute_process(args, quiet, stdout, allow_fail, verbose, simulate);
 }
 
 // ---------------------------------------------------------------------------
