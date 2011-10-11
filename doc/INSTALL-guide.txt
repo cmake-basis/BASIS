@@ -19,7 +19,7 @@ INTRODUCTION
   This document describes the common procedure to build and install any
   software developed at and distributed by SBIA. In particular, software built
   on top of BASIS, a meta-project which defines the Build system And Software
-  Implementation Standard established in the summer of 2011.
+  Implementation Standard established in the fall of 2011.
   Please refer to the documentation of BASIS for details on this standard.
 
   If you obtained a binary distribution package for a supported platform,
