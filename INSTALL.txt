@@ -16,4 +16,35 @@
 INTRODUCTION
 ============
 
-  TODO
+  This document contains the build and installation instructions.
+
+  For general build and installation instructions which apply to any software
+  developed on top of the SBIA Build system And Software Implementation Standard
+  (BASIS), please refer to the INSTALL-basis document which can be found in the
+  doc/ directory of the BASIS installation.
+
+
+
+OBTAINING A COPY OF THE SOFTWARE
+================================
+
+  Please see corresponding section in the INSTALL-basis document.
+
+
+
+INSTALLING A BINARY DISTRIBUTION PACKAGE
+========================================
+
+  Please see corresponding section in the INSTALL-basis document.
+
+
+
+BUILDING THE SOFTWARE FROM SOURCES
+==================================
+
+  In the following, only the additional CMake settings available to configure
+  this software package are summarized. For step-by-step instructions on how
+  to use CMake and GNU Make to build and install the software, please refer to
+  the corresponding section in the INSTALL-basis document.
+
+  (No additional CMake settings provided by this package)

@@ -50,7 +50,7 @@ PACKAGE OVERVIEW
 LICENSING
 =========
 
-  See COPYING file in project root or 'doc' directory for details.
+  See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 
 
@@ -61,4 +61,3 @@ REFERENCES
       Line 2 of this first reference.
 
   [2] Reference 2
-
