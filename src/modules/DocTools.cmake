@@ -349,14 +349,15 @@ function (basis_add_doc TARGET_NAME)
 
   # default destination
   if (NOT ARGN_DESTINATION)
-    set (ARGN_DESTINATION "${INSTALL_DOC_DIR}")
-    if (ARGN_GENERATOR STREQUAL "DOXYGEN")
-      set (ARGN_DESTINATION "${ARGN_DESTINATION}/${TARGET_NAME_LOWER}")
+    if ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
+      set (ARGN_DESTINATION "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}")
+    else ()
+      set (ARGN_DESTINATION "${INSTALL_DOC_DIR}")
     endif ()
   endif ()
 
   # default component
-  if (ARGN_GENERATOR STREQUAL "DOXYGEN")
+  if ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
     if (NOT ARGN_COMPONENT)
       set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
     endif ()
