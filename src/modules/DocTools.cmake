@@ -24,20 +24,11 @@ endif ()
 ## @addtogroup CMakeAPI
 #  @{
 
-## @brief Enable/Disable build of documentation target as part of ALL.
+## @brief Option to enable/disable build/installation of documentation.
 #
-# This option is only available when the project adds at least one
-# documentation target using the function basis_add_doc().
-if (NOT DEFINED BUILD_DOCUMENTATION)
-  set (BUILD_DOCUMENTATION)
-endif ()
-
-## @brief Enable/Disable build of changelog target as part of ALL.
-#
-# This option is only available when the project adds at least one
-# ChangeLog target using the function basis_add_doc().
-if (NOT DEFINED BUILD_CHANGELOG)
-  set (BUILD_CHANGELOG)
+# This option is only available if the @c PROJECT_DOC_DIR directory exists.
+if (EXISTS "${PROJECT_DOC_DIR}")
+  option (BUILD_DOCUMENTATION "Whether to build/install the documentation." OFF)
 endif ()
 
 ## @}
@@ -75,70 +66,6 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
 ## @addtogroup CMakeUtilities
 #  @{
-
-##############################################################################
-# @brief Add a custom @c doc target along with a build switch.
-#
-# This helper function is used by basis_add_doc() to add the custom @c doc
-# target which is optionally build when the @c ALL target is build.
-# Therefore, the @c BUILD_DOCUMENTATION option switch is added if this
-# variable is not yet defined which is by default off. The user can then
-# choose to build the documentation when the @c ALL target is build.
-# In any case can the documentation be build by building the @c doc target.
-#
-# @returns Adds the custom target @c doc and the option @c BUILD_DOCUMENTATION
-#          if either of these does not exist yet.
-
-function (basis_add_doc_target)
-  if (NOT TARGET doc)
-    if (NOT DEFINED BUILD_DOCUMENTATION)
-      set (
-        BUILD_DOCUMENTATION "NO"
-        CACHE BOOL
-          "Whether to generate the (API) documentation as part of the ALL target."
-        FORCE
-      )
-      mark_as_advanced (BUILD_DOCUMENTATION)
-    endif ()
-    if (BUILD_DOCUMENTATION)
-      add_custom_target (doc ALL)
-    else ()
-      add_custom_target (doc)
-    endif ()
-  endif ()
-endfunction ()
-
-##############################################################################
-# @brief Add a custom @c changelog target along with a build switch.
-#
-# This helper function is used by basis_add_doc() to add the custom
-# @c changelog target which is optionally build when the @c ALL target is
-# build. Therefore, the @c BUILD_CHANGELOG option switch is added if this
-# variable is not yet defined which is by default off. The user can then
-# choose to build the ChangeLog when the @c ALL target is build.
-# In any case can the ChangeLog be build by building the @c changelog target.
-#
-# @returns Adds the custom target @c changelog and the option
-#          @c BUILD_CHANGELOG if either of these does not exist yet.
-
-function (basis_add_changelog_target)
-  if (NOT TARGET changelog)
-    if (NOT DEFINED BUILD_CHANGELOG)
-      set (
-        BUILD_CHANGELOG "NO"
-        CACHE BOOL
-          "Whether to generate the ChangeLog as part of the ALL target."
-        FORCE
-      )
-      mark_as_advanced (BUILD_CHANGELOG)
-    endif ()
-    if (BUILD_CHANGELOG)
-      add_custom_target (changelog ALL)
-    else ()
-      add_custom_target (changelog)
-    endif ()
-  endif ()
-endfunction ()
 
 ##############################################################################
 # @brief Get default Doxygen filter patterns.
@@ -189,19 +116,25 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b COMPONENT name</td>
+#     @tp @b COMPONENT @endtp
 #     <td>Name of the component this documentation belongs to.
 #         Defaults to @c BASIS_LIBRARY_COMPONENT for documentation generated
 #         from in-source comments and @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">@b GENERATOR generator</td>
+#     @tp @b GENERATOR generator @endtp
 #     <td>Documentation generator, where the case of the generator name is
 #         ignored, i.e., @c Doxygen, @c DOXYGEN, @c doxYgen are all valid
 #         arguments which select the @c Doxygen generator. The parameters for the
 #         different supported generators are documented below.
 #         The default generator is @c None. The @c None generator simply installs
 #         the document with the filename @c TARGET_NAME and has no own options.</td>
+#   </tr>
+#   <tr>
+#     @tp @b DESTINATION dir @endtp
+#     <td>Installation directory prefix. Defaults to @c INSTALL_DOC_DIR or
+#         <tt>INSTALL_DOC_DIR/<target></tt> in case of the Doxygen generator,
+#         where <tt><target></tt> is the @c TARGET_NAME in lowercase only.</td>
 #   </tr>
 # </table>
 #
@@ -396,19 +329,31 @@ function (basis_add_doc TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
+  # lower target name is used, for example, for default DESTINATION
+  string (TOLOWER "${TARGET_NAME}" TARGET_NAME_LOWER)
+
   # --------------------------------------------------------------------------
   # default common options
   # --------------------------------------------------------------------------
 
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "GENERATOR;COMPONENT" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (ARGN "" "GENERATOR;COMPONENT;DESTINATION" "" ${ARGN})
 
+  # default generator
   if (NOT ARGN_GENERATOR)
     set (ARGN_GENERATOR "NONE")
+  else ()
+    # generator name is case insensitive
+    string (TOUPPER "${ARGN_GENERATOR}" ARGN_GENERATOR)
   endif ()
 
-  # generator name is case insensitive
-  string (TOUPPER "${ARGN_GENERATOR}" ARGN_GENERATOR)
+  # default destination
+  if (NOT ARGN_DESTINATION)
+    set (ARGN_DESTINATION "${INSTALL_DOC_DIR}")
+    if (ARGN_GENERATOR STREQUAL "DOXYGEN")
+      set (ARGN_DESTINATION "${ARGN_DESTINATION}/${TARGET_NAME_LOWER}")
+    endif ()
+  endif ()
 
   # default component
   if (ARGN_GENERATOR STREQUAL "DOXYGEN")
@@ -436,7 +381,7 @@ function (basis_add_doc TARGET_NAME)
     if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
       install (
         DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
-        DESTINATION "${INSTALL_DOC_DIR}"
+        DESTINATION "${ARGN_DESTINATION}"
         COMPONENT   "${ARGN_COMPONENT}"
         PATTERN     ".svn" EXCLUDE
         PATTERN     ".git" EXCLUDE
@@ -446,7 +391,7 @@ function (basis_add_doc TARGET_NAME)
     else ()
       install (
         FILES       "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
-        DESTINATION "${INSTALL_DOC_DIR}"
+        DESTINATION "${ARGN_DESTINATION}"
         COMPONENT   "${ARGN_COMPONENT}"
       )
     endif ()
@@ -476,9 +421,6 @@ function (basis_add_doc TARGET_NAME)
       return ()
     endif ()
 
-    # lower target name is used by default for installation folder
-    string (TOLOWER "${TARGET_NAME}" TARGET_NAME_LOWER)
-
     # parse arguments
     CMAKE_PARSE_ARGUMENTS (
       DOXYGEN
@@ -499,7 +441,11 @@ function (basis_add_doc TARGET_NAME)
       set (DOXYGEN_PROJECT_NAME "${PROJECT_NAME}")
     endif ()
     if (NOT DOXYGEN_PROJECT_NUMBER)
-      set (DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
+      if (PROJECT_VERSION_MAJOR GREATER 0 OR PROJECT_VERSION_MINOR GREATER 0)
+        set (DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+      else ()
+        set (DOXYGEN_PROJECT_NUMBER "")
+      endif ()
     endif ()
     if (NOT DOXYGEN_INPUT)
       set (
@@ -580,14 +526,16 @@ function (basis_add_doc TARGET_NAME)
     )
 
     # add target as dependency to doc target
-    basis_add_doc_target ()
+    if (NOT TARGET doc)
+      add_custom_target(doc)
+    endif ()
 
     add_dependencies (doc ${TARGET_UID})
 
     # install documentation
     install (
       DIRECTORY       "${DOXYGEN_OUTPUT_DIRECTORY}/"
-      DESTINATION     "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}"
+      DESTINATION     "${ARGN_DESTINATION}"
       COMPONENT       "${ARGN_COMPONENT}"
       FILES_MATCHING
       PATTERN         html/*
@@ -610,18 +558,10 @@ function (basis_add_doc TARGET_NAME)
 
     message (STATUS "Adding documentation ${TARGET_UID}...")
 
-    if (BUILD_CHANGELOG)
-      set (ERRMSGTYP "")
-      set (ERRMSG    "failed")
-    else ()
-      set (ERRMSGTYP "STATUS")
-      set (ERRMSG    "skipped")
-    endif ()
-
     # svn2cl found?
     if (NOT BASIS_CMD_SVN2CL)
-      message (${ERRMSGTYP} "svn2cl not found. Skipping build of ${TARGET_UID}.")
-      message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
+      message (STATUS "svn2cl not found. Skipping build of ${TARGET_UID}.")
+      message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
       return ()
     endif ()
 
@@ -629,8 +569,8 @@ function (basis_add_doc TARGET_NAME)
     basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" REV)
 
     if (NOT REV)
-      message (${ERRMSGTYP} "Project is not under SVN control. Skipping build of ${TARGET_UID}.")
-      message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
+      message (STATUS "Project is not under SVN control. Skipping build of ${TARGET_UID}.")
+      message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
       return ()
     endif ()
 
@@ -695,14 +635,16 @@ function (basis_add_doc TARGET_NAME)
     set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${SVN2CL_OUTPUT}")
 
     # add target as dependency to changelog target
-    basis_add_changelog_target ()
+    if (NOT TARGET changelog)
+      add_custom_target(changelog)
+    endif ()
 
     add_dependencies (changelog ${TARGET_UID})
 
     # install documentation
     install (
       FILES       "${SVN2CL_OUTPUT}"
-      DESTINATION "${INSTALL_DOC_DIR}"
+      DESTINATION "${ARGN_DESTINATION}"
       COMPONENT   "${ARGN_COMPONENT}"
       OPTIONAL
     )

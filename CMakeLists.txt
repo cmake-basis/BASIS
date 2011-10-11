@@ -45,6 +45,8 @@ set (BASIS_CXX_TEMPLATES_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")
 set (BASIS_PYTHON_TEMPLATES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/python")
 set (BASIS_PERL_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/perl")
 set (BASIS_BASH_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash")
+set (BASIS_PYTHON_LIBRARY_DIR   "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
+set (BASIS_PERL_LIBRARY_DIR     "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
 
 # include BASIS policies, settings, macros, and functions
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
@@ -74,7 +76,7 @@ if (EXISTS "${PROJECT_DATA_DIR}")
 endif ()
 
 # package documentation
-if (EXISTS "${PROJECT_DOC_DIR}")
+if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
   add_subdirectory ("${PROJECT_DOC_DIR}")
 endif ()
 
