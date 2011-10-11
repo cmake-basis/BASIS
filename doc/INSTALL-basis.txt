@@ -34,6 +34,11 @@ INTRODUCTION
   terminal. The instructions given in this guide are based on BASH, in particular.
 
 
+  Attention: When this document has been modified, the corresponding publicly
+             available web page has to be modified accordingly! This web page
+             is referenced by each project and can be found at [1].
+
+
 
 OBTAINING A COPY OF THE SOFTWARE
 ================================
@@ -360,3 +365,9 @@ BUILDING THE SOFWARE FROM SOURCES
              build of the install target ("make install"). Directories will
              not be removed even when empty afterwards.
 
+
+
+REFERENCES
+==========
+
+  [1] https://www.rad.upenn.edu/sbia/software/installation.html
