@@ -13,14 +13,11 @@
  * @ingroup CppUtilities
  */
 
-
-#include <iostream>
-#include <cassert>
-
 #include <sbia/basis/path.h>
 #include <sbia/basis/exceptions.h>
 #include <sbia/basis/subprocess.h>
 #include "ExecutableTargetInfo.h"
+
 #include "stdaux.h"
 
 
@@ -132,10 +129,10 @@ string get_data_directory()
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-string get_executable_path(const std::string& target)
+string get_executable_path(const string& target)
 {
     // get executable target information instance
-    const ExecutableTargetInfo &info = ExecutableTargetInfo::instance();
+    const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
     // get name of executable and check if target name is known
     string exec_name = info.get_executable_name(target);
     // is this target known?
@@ -153,7 +150,7 @@ string get_executable_path(const std::string& target)
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-int execute_process(const string& cmd, bool quiet, std::ostream* stdout,
+int execute_process(const string& cmd, bool quiet, ostream* stdout,
                     bool allow_fail, int verbose, bool simulate)
 {
     vector<string> args = Subprocess::split(cmd);
@@ -161,7 +158,7 @@ int execute_process(const string& cmd, bool quiet, std::ostream* stdout,
 }
 
 // ---------------------------------------------------------------------------
-int execute_process(vector<string>& args, bool quiet, std::ostream* stdout,
+int execute_process(vector<string>& args, bool quiet, ostream* stdout,
                     bool allow_fail, int verbose, bool simulate)
 {
     if (args.empty() || args[0].empty()) {
