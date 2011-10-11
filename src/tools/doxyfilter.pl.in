@@ -90,11 +90,11 @@ my $filter;
 # SQL
 if( $ext eq "sql" ) {
     print STDERR "treating file as SQL\n" if ($verbose);
-    $filter = DoxyGen::SQLFilter->new (\*STDOUT);
+    $filter = SBIA::BASIS::DoxyGen::SQLFilter->new (\*STDOUT);
 # Perl
 } elsif (grep ($_ eq $ext, "pl", "pm", "perl") || $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/) {
     print STDERR "treating file as Perl\n" if ($verbose);
-    $filter = DoxyGen::PerlFilter->new (\*STDOUT);
+    $filter = SBIA::BASIS::DoxyGen::PerlFilter->new (\*STDOUT);
 # JavaScript
 } elsif ($ext eq "js") {
     print STDERR "Treating file as JavaScript\n" if ($verbose);
