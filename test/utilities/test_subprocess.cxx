@@ -27,45 +27,45 @@ TEST(Subprocess, Split)
     vector<string> args;
 
     args = Subprocess::split("cmd");
-    ASSERT_EQ(1, args.size());
+    ASSERT_EQ(1u, args.size());
     EXPECT_STREQ("cmd", args[0].c_str());
 
     args = Subprocess::split("\"...");
-    ASSERT_EQ(1, args.size());
+    ASSERT_EQ(1u, args.size());
     EXPECT_STREQ("\"...", args[0].c_str());
 
     args = Subprocess::split("bar arg \"...");
-    ASSERT_EQ(3, args.size());
+    ASSERT_EQ(3u, args.size());
     EXPECT_STREQ("bar", args[0].c_str());
     EXPECT_STREQ("arg", args[1].c_str());
     EXPECT_STREQ("\"...", args[2].c_str());
 
     args = Subprocess::split("foo \"there is a double quote (\\\") inside the argument\" arg2");
-    ASSERT_EQ(3, args.size());
+    ASSERT_EQ(3u, args.size());
     EXPECT_STREQ("foo", args[0].c_str());
     EXPECT_STREQ("there is a double quote (\") inside the argument", args[1].c_str());
     EXPECT_STREQ("arg2", args[2].c_str());
 
     args = Subprocess::split("foo \"there is a backslash (\\) inside the argument\" arg2");
-    ASSERT_EQ(3, args.size());
+    ASSERT_EQ(3u, args.size());
     EXPECT_STREQ("foo", args[0].c_str());
     EXPECT_STREQ("there is a backslash (\\) inside the argument", args[1].c_str());
     EXPECT_STREQ("arg2", args[2].c_str());
 
     args = Subprocess::split("foo \"there is a backslash (\\\\) inside the argument\" arg2");
-    ASSERT_EQ(3, args.size());
+    ASSERT_EQ(3u, args.size());
     EXPECT_STREQ("foo", args[0].c_str());
     EXPECT_STREQ("there is a backslash (\\) inside the argument", args[1].c_str());
     EXPECT_STREQ("arg2", args[2].c_str());
 
     args = Subprocess::split("foo \"there is a backslash followed by a double quote (\\\\\\\") inside the argument\" arg2");
-    ASSERT_EQ(3, args.size());
+    ASSERT_EQ(3u, args.size());
     EXPECT_STREQ("foo", args[0].c_str());
     EXPECT_STREQ("there is a backslash followed by a double quote (\\\") inside the argument", args[1].c_str());
     EXPECT_STREQ("arg2", args[2].c_str());
 
     args = Subprocess::split("/bin/foo -la -x \"an argument\" \"\\a\\path with spaces\\\\\" last");
-    ASSERT_EQ(6, args.size());
+    ASSERT_EQ(6u, args.size());
     EXPECT_STREQ("/bin/foo", args[0].c_str());
     EXPECT_STREQ("-la", args[1].c_str());
     EXPECT_STREQ("-x", args[2].c_str());
