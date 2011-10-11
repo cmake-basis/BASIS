@@ -76,5 +76,15 @@ basis_add_doc (
 #
 # See basis_add_doc()
 
-basis_add_doc (tclap)
+basis_add_doc ("Introduction.pptx") # BASIS introduction
+basis_add_doc ("INSTALL-basis.txt") # common installation instructions
 
+basis_add_doc ("standard") # documentation of standard
+basis_add_doc ("guides")   # how-to and style guides
+
+# ============================================================================
+# documentation of thirdparty libraries
+# ============================================================================
+
+basis_add_doc ("shunit2.html")
+basis_add_doc ("tclap")
