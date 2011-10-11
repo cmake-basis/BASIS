@@ -190,7 +190,7 @@ sub execute_process
     $args = $exec_path . $arguments;
     # some verbose output
     if ($options{'verbose'}) {
-        print "\$> ", $args;
+        print "\$ ", $args;
         $options{'simulate'} and print " (simulated)";
         print "\n";
     }

@@ -173,7 +173,7 @@ int execute_process(vector<string>& args, bool quiet, std::ostream* stdout,
     if (!exec_path.empty()) args[0] = exec_path;
     // some verbose output
     if (verbose > 0) {
-        printf("$> %s", Subprocess::to_string(args).c_str());
+        printf("$ %s", Subprocess::to_string(args).c_str());
         if (simulate) printf(" (simulated)");
         printf("\n");
     }
