@@ -20,8 +20,8 @@ INTRODUCTION
 
   For general build and installation instructions which apply to any software
   developed on top of the SBIA Build system And Software Implementation Standard
-  (BASIS), please refer to the INSTALL-basis document which can be found in the
-  doc/ directory of the BASIS installation.
+  (BASIS), please refer to the INSTALL-basis document which can be either found
+  in the doc/ directory of your BASIS installation or online at [1].
 
 
 
@@ -48,3 +48,10 @@ BUILDING THE SOFTWARE FROM SOURCES
   the corresponding section in the INSTALL-basis document.
 
   (No additional CMake settings provided by this package)
+
+
+
+REFERENCES
+==========
+
+  [1] https://www.rad.upenn.edu/sbia/software/installation.html
