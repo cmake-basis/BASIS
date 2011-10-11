@@ -8,8 +8,9 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <iostream>
-#include <cstdlib>
+#include <iostream> // cout, endl
+#include <cstdlib>  // exit, atoi
+#include <cstring>  // strcmp
 
 #include <sbia/basis/config.h>
 
