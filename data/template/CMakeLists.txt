@@ -55,7 +55,7 @@ if (EXISTS "${PROJECT_DATA_DIR}")
 endif ()
 
 # package documentation
-if (EXISTS "${PROJECT_DOC_DIR}")
+if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
   add_subdirectory ("${PROJECT_DOC_DIR}")
 endif ()
 

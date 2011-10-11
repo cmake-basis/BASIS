@@ -37,6 +37,12 @@ basis_add_doc (
 #
 # See basis_add_doc()
 
+set (
+  INSTALL_APIDOC_DIR ""
+  CACHE PATH "Installation directory of API documentation. Default is used when not set."
+)
+mark_as_advanced(INSTALL_APIDOC_DIR)
+
 basis_add_doc (
   api
   GENERATOR        Doxygen
@@ -58,6 +64,7 @@ basis_add_doc (
                    # files in binary source tree
                    "cmake_install.cmake"
                    "CTestTestfile.cmake"
+  DESTINATION      "${INSTALL_APIDOC_DIR}"
 )
 
 # ============================================================================

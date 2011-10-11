@@ -205,22 +205,33 @@ BUILDING THE SOFWARE FROM SOURCES
 
      The common CMake variables which configure the build and installation are:
 
-       BUILD_DOCUMENTATION Whether the documentation target should be built by
-                           default, too. If FALSE, the documentation, such as
-                           in particular the man pages and API documentation,
-                           can be built manually by building the "doc" target.
-       BUILD_EXAMPLE       Whether the examples should be built (if required)
-                           and/or installed.
-       BUILD_TESTING       Whether the testing tree should be built and system
-                           tests, i.e., tests that execute the installed programs
-                           and compare the outputs to the expected results should
-                           be installed.
-       BUILD_TYPE          Specify the build configuration to build. If not
-                           set, the "Release" configuration will be build.
-                           Valid values are "Release", "Debug", and "Coverage".
-       INSTALL_PREFIX      Prefix used for package installation (see Step 4).
-       INSTALL_SINFIX      Suffix/Infix used for package installation (see Step 4).
-       INSTALL_LINKS       Whether (symbolic) links should be created (see Step 4).
+     - BUILD_DOCUMENTATION   Whether build and installation instructions for the
+                             documentation should be added. If FALSe, the
+                             documentation in the doc/ directory is skipped.
+                             Otherwise, the documentation can be build by building
+                             the "doc" target.
+     - BUILD_EXAMPLE         Whether the examples should be built (if required)
+                             and/or installed.
+     - BUILD_TESTING         Whether the testing tree should be built and system
+                             tests, i.e., tests that execute the installed programs
+                             and compare the outputs to the expected results should
+                             be installed.
+     - CMAKE_BUILD_TYPE      Specify the build configuration to build. If not
+                             set, the "Release" configuration will be build.
+                             Valid values are "Release", "Debug", and "Coverage".
+     - INSTALL_LINKS         Whether (symbolic) links should be created (see Step 5).
+     - INSTALL_PREFIX        Prefix used for package installation (see Step 5).
+     - INSTALL_SINFIX        Suffix/Infix used for package installation (see Step 5).
+
+     Note that INSTALL_PREFIX is initialized by the value of CMAKE_INSTALL_PREFIX,
+     the default used by CMake to specify the installation prefix. Then, the
+     value of CMAKE_INSTALL_PREFIX is forced to be identical to INSTALL_PREFIX,
+     effectively renaming CMAKE_INSTALL_PREFIX to INSTALL_PREFIX.
+
+     The advanced CMake settings are:
+
+     - INSTAlL_APIDOC_DIR    Installation directory of the API documentation
+                             relative to the INSTALL_PREFIX.
 
      Please refer to the package specific build instructions given in the
      INSTALL file which is located in the root directory of the source tree
@@ -237,12 +248,38 @@ BUILDING THE SOFWARE FROM SOURCES
 
        $ make
 
-  4. Install the package (optional)
+  4. Build the documentation (optional)
+
+     In order to build the documentation, the BUILD_DOCUMENTATION variable
+     has to be set to TRUE. If not done before, this option can be enabled by
+     using the command:
+
+       $ cmake -D BUILD_DOCUMENTATION=TRUE ~/$pkg-build
+
+     The documentation is build by building the "doc" target, i.e.,
+
+       $ make doc
+
+     The advanced INSTALL_DOC_API_DIR CMake variable can be set to an absolute
+     path or a path relative to the INSTALL_PREFIX directory in order to modify
+     the installation directory for the API documentation which is generated
+     from the in-source comments. This can be useful, for example, to install
+     the documentation in the document directory of a web server.
+
+     If you have access to the SVN repository of the project, a changelog can
+     be generated from the SVN history by building the "changelog" target, i.e.,
+
+       $ make changelog
+
+     Note that this target is only available when the required svn2cl command
+     is installed on your system.
+
+  5. Install the package (optional)
 
      First, make sure that the CMake variables INSTALL_PREFIX and
      INSTALL_SINFIX are set properly by running CMake as follows:
 
-       $ cmake -DINSTALL_PREFIX=<prefix> -DINSTALL_SINFIX=<sinfix>
+       $ cmake -D "INSTALL_PREFIX=<prefix>" -D "INSTALL_SINFIX=<sinfix>" ~/$pkg-build
 
      This can be omitted if these variables were set already during
      the configuration of the build tree or if the default values
@@ -252,13 +289,13 @@ BUILDING THE SOFWARE FROM SOURCES
      variables which will be substituted by the corresponding
      package specific values.
 
-       @PROJECT_NAME@            The case-sensitive name of the software package.
-       @PROJECT_NAME_UPPER@      The name of the package in uppercase only.
-       @PROJECT_NAME_LOWER@      The name of the package in lowercase only.
-       @PROJECT_VERSION@         The package version.
-       @PROJECT_VERSION_MAJOR@   The major number of the package version.
-       @PROJECT_VERSION_MINOR@   The minor number of the package version.
-       @PROJECT_VERSION_PATCH@   The patch number of the package version.
+     - @PROJECT_NAME@            The case-sensitive name of the software package.
+     - @PROJECT_NAME_UPPER@      The name of the package in uppercase only.
+     - @PROJECT_NAME_LOWER@      The name of the package in lowercase only.
+     - @PROJECT_VERSION@         The package version.
+     - @PROJECT_VERSION_MAJOR@   The major number of the package version.
+     - @PROJECT_VERSION_MINOR@   The minor number of the package version.
+     - @PROJECT_VERSION_PATCH@   The patch number of the package version.
 
      After the package was configured successfully, the executables and
      auxiliary files can be installed using the command
@@ -271,17 +308,17 @@ BUILDING THE SOFWARE FROM SOURCES
  
      The package files are installed in the following locations:
 
-       <prefix>/bin/<sinfix>/              Main executable files.
-       <prefix>/etc/<sinfix>/              Package configuration files.
-       <prefix>/include/sbia/<package>/    Include files, where <prefix>/include/
+     - <prefix>/bin/<sinfix>/              Main executable files.
+     - <prefix>/etc/<sinfix>/              Package configuration files.
+     - <prefix>/include/sbia/<package>/    Include files, where <prefix>/include/
                                            is the directory that needs to be
                                            in the search path for include files.
-       <prefix>/lib/<sinfix>/              Libraries and auxiliary executables.
-       <prefix>/share/doc/<sinfix>         Package documentation files.
-       <prefix>/share/<sinfix>/example/    Files required to run example as
+     - <prefix>/lib/<sinfix>/              Libraries and auxiliary executables.
+     - <prefix>/share/doc/<sinfix>         Package documentation files.
+     - <prefix>/share/<sinfix>/example/    Files required to run example as
                                            described in the User Manual.
-       <prefix>/share/<sinfix>/man/man.1   Man pages of main executables.
-       <prefix>/share/<sinfix>/man/man.3   Man pages of library functions.
+     - <prefix>/share/<sinfix>/man/man.1   Man pages of main executables.
+     - <prefix>/share/<sinfix>/man/man.3   Man pages of library functions.
 
      where <prefix> is the value of INSTALL_PREFIX and <sinfix> the value
      of INSTALL_SINFIX. If more than one version of a software package
@@ -293,9 +330,9 @@ BUILDING THE SOFWARE FROM SOURCES
      set to TRUE (the default), the following (symbolic) links are created
      on UNIX-based systems:
 
-       <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
-       <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
-       <prefix>/share/man/man.3/<func>.3 -> <prefix>/share/<sinfix>/man/man.3/<func>.3
+     - <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
+     - <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
+     - <prefix>/share/man/man.3/<func>.3 -> <prefix>/share/<sinfix>/man/man.3/<func>.3
 
      Consider also the package specific installation instructions given in
      the INSTALL file of the respective package.
