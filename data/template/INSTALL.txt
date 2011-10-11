@@ -47,7 +47,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   to use CMake and GNU Make to build and install the software, please refer to
   the corresponding section in the INSTALL-basis document.
 
-  (No additional CMake settings provided by this package)
+  (no additional CMake settings provided by this package)
 
 
 
