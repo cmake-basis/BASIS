@@ -77,7 +77,6 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   basis_get_target_location (PYTHON_FILTER     "basis@doxyfilter_python.py"     ABSOLUTE)
   basis_get_target_location (PERL_FILTER       "basis@doxyfilter.pl"            ABSOLUTE)
   basis_get_target_location (BASH_FILTER       "basis@doxyfilter_bash.py"       ABSOLUTE)
-  basis_get_target_location (JAVASCRIPT_FILTER "basis@doxyfilter_javascript.pl" ABSOLUTE)
   basis_get_target_location (MATLAB_FILTER     "basis@doxyfilter_matlab.pl"     ABSOLUTE)
 
   set (
