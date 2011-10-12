@@ -22,16 +22,14 @@ basis_add_library (which.py MODULE)
 
 # ----------------------------------------------------------------------------
 # doxygen filters
-basis_add_executable (doxyfilter.pl            LIBEXEC)
-basis_add_executable (doxyfilter_bash.py       LIBEXEC)
-basis_add_executable (doxyfilter_cmake.py      LIBEXEC)
-basis_add_executable (doxyfilter_javascript.pl LIBEXEC)
-basis_add_executable (doxyfilter_matlab.pl     LIBEXEC)
-basis_add_executable (doxyfilter_python.py     LIBEXEC)
+basis_add_executable (doxyfilter.pl        LIBEXEC)
+basis_add_executable (doxyfilter_bash.py   LIBEXEC)
+basis_add_executable (doxyfilter_cmake.py  LIBEXEC)
+basis_add_executable (doxyfilter_matlab.pl LIBEXEC)
+basis_add_executable (doxyfilter_python.py LIBEXEC)
 
 basis_add_library ("DoxyGen/Filter.pm"     WITH_PATH)
 basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
-basis_add_library ("DoxyGen/SQLFilter.pm"  WITH_PATH)
 
 # ----------------------------------------------------------------------------
 # automated testing

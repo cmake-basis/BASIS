@@ -48,7 +48,6 @@
 
 use Cwd qw(realpath);
 use SBIA::BASIS::DoxyGen::PerlFilter;
-use SBIA::BASIS::DoxyGen::SQLFilter;
 use Getopt::Long;
 
 $Getopt::Long::ignorecase = 0;  
@@ -87,20 +86,10 @@ if ($ARGV[0] =~ /\.([a-z]+)$/i) {
 
 my $filter;
 
-# SQL
-if( $ext eq "sql" ) {
-    print STDERR "treating file as SQL\n" if ($verbose);
-    $filter = SBIA::BASIS::DoxyGen::SQLFilter->new (\*STDOUT);
 # Perl
-} elsif (grep ($_ eq $ext, "pl", "pm", "perl") || $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/) {
+if (grep ($_ eq $ext, "pl", "pm", "perl") || $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/) {
     print STDERR "treating file as Perl\n" if ($verbose);
     $filter = SBIA::BASIS::DoxyGen::PerlFilter->new (\*STDOUT);
-# JavaScript
-} elsif ($ext eq "js") {
-    print STDERR "Treating file as JavaScript\n" if ($verbose);
-    exec (Basis::get_executable_path ('doxyfilter_javascript.pl'), @ARGV)
-        or exec ("js2doxy", @ARGV)
-        or exec ("js2doxypl", @ARGV);
 # Python
 } elsif ($ext eq "py" || $filehead =~ /^#!\s*(\/usr\/bin\/python|\/bin\/python|\/usr\/bin\/env\s+python)/) {
     print STDERR "Treating file as Python\n" if ($verbose);
