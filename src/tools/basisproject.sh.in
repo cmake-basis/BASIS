@@ -559,6 +559,13 @@ do
             data=-1
             ;;
 
+        --doc)
+            doc=1
+            ;;
+        --nodoc)
+            doc=-1
+            ;;
+
         --example)
             example=1
             ;;
@@ -693,7 +700,7 @@ if [ -f "$cache" ]; then
         if [ $conf_tests        -eq 0 ]; then conf_tests=$_conf_tests; fi
         if [ $conf_use          -eq 0 ]; then conf_use=$_conf_use; fi
         if [ $data              -eq 0 ]; then data=$_data; fi
-        if [ $doc               -eq 0 ]; then data=$_doc; fi
+        if [ $doc               -eq 0 ]; then doc=$_doc; fi
         if [ $example           -eq 0 ]; then example=$_example; fi
         if [ $tests             -eq 0 ]; then tests=$_tests; fi
     fi
