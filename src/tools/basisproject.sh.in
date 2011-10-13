@@ -780,7 +780,8 @@ function add
  
     if [ -f "$template/$path" ]; then
         dir="`dirname $root/$path`"
-        dir="${dir#$root/}"
+        dir="${dir#$root}"
+        dir="${dir#/}"
     else
         dir="$path"
     fi
@@ -936,7 +937,16 @@ function del
             return 1
         fi
         # delete copy of template and '.basis' directory if then empty
+        local dir
+
+        dir="`dirname $root/$path`"
+        dir="${dir#$root}"
+        dir="${dir#/}"
+
         rm -f "$root/.basis/$path" &> /dev/null
+        if [[ $(ls "$root/.basis/$dir" 2>&1) == '' ]]; then
+            rm -rf "$root/.basis/$dir" # there might be hidden subdirectories from the RCS
+        fi
         if [[ $(ls "$root/.basis" 2>&1) == '' ]]; then
             rm -rf "$root/.basis" # there might be hidden subdirectories from the RCS
         fi
