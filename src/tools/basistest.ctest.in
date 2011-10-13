@@ -481,14 +481,9 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # install documentation
   if (INSTALL_DOXYGEN_DIR)
-    if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/index.html")
+    if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
       file (
-        INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/"
-        DESTINATION "${INSTALL_DOXYGEN_DIR}"
-      )
-    elseif (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html/index.html")
-      file (
-        INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html/"
+        INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html"
         DESTINATION "${INSTALL_DOXYGEN_DIR}"
       )
     endif ()
