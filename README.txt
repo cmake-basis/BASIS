@@ -101,7 +101,7 @@ COMPONENTS
   - BasisPack.cmake      Replacement for the CPack.cmake module of CMake.
 
   A comprehensive documentation of these modules and the functions and macros
-  defined by them is available as part of the BASIS API documentation [5].
+  defined by them is available as part of the BASIS API documentation [4].
 
 
   Tools
@@ -189,11 +189,11 @@ DOCUMENTATION
 
   The PowerPoint 2007 presentation named Introduction.pptx gives a more detailed
   and in parts visual introduction of the BASIS project. It can be found on the
-  SBIA Wiki [2,3] and the doc/ directory of the BASIS package.
+  SBIA Wiki [2] and the doc/ directory of the BASIS package.
 
   See the plain text documents in the doc/ directory for details on the standard
   regarding different aspects of the software development and furthermore the
-  how-to guides on the SBIA Wiki [1]. The API documentation of BASIS [4], on the
+  how-to guides on the SBIA Wiki [1]. The API documentation of BASIS [3], on the
   other side, is a great reference regarding the CMake implementations and
   utility functions.
 
@@ -204,6 +204,5 @@ REFERENCES
 
   [1] https://sbia-portal.uphs.upenn.edu/wiki/index.php/BASIS_How-To_Guides
   [2] https://sbia-portal.uphs.upenn.edu/wiki/index.php/BASIS
-  [3] https://sbia-portal.uphs.upenn.edu/wiki/index.php/BASIS_0.1
-  [4] https://www.rad.upenn.edu/sbia/software/doxygen/basis/tags/basis-0.1/index.html
-  [5] https://www.rad.upenn.edu/sbia/software/doxygen/basis/tags/basis-0.1/group__CMakeModules.html
+  [3] https://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/index.html
+  [4] https://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__CMakeModules.html

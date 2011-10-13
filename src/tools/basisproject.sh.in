@@ -178,12 +178,12 @@ function print_help
 	print_options
     echo
     echo "Examples:"
-	echo "  $exec_name ProjectName --description \"Novel image analysis method.\" --language CXX"
+	echo "  $exec_name --name ProjectName --description \"Novel image analysis method.\" --language CXX"
     echo "    Create a new project named 'ProjectName' under the current working"
     echo "    directory using the default project template. Further, enable support for the"
     echo "    C/C++ programming language."
     echo
-	echo "  $exec_name ProjectName --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
+	echo "  $exec_name --name ProjectName --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
     echo "    Create new project using C/C++ and Python with dependency on the package 'VTK'."
     echo
     echo "  $exec_name --root path/to/existing/project --tests --conf-tests"
@@ -262,6 +262,12 @@ function get_project_name
 # ============================================================================
 # options
 # ============================================================================
+
+# if called without arguments, print short help
+if [ $# -eq 0 ]; then
+    print_help
+    exit 1
+fi
 
 # ----------------------------------------------------------------------------
 # default options
@@ -1001,7 +1007,7 @@ addordel $conf_tests        "config/CTestCustom.cmake.in"   || retval=1
 addordel $conf_use          "config/Use.cmake.in"           || retval=1
 
 if [ -d "$root/config" ]; then
-    if [[ $(ls "$root/config") == '' ]]; then
+    if [[ $(ls "$root/config" 2>&1) == '' ]]; then
         rm -rf "$root/config" &> /dev/null
     fi
 fi
