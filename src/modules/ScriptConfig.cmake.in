@@ -117,6 +117,12 @@ basis_set_script_path (LIBRARY_DIR "@BINARY_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@
 basis_set_script_path (ARCHIVE_DIR "@BINARY_ARCHIVE_DIR@" "@INSTALL_ARCHIVE_DIR@")
 basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"   "@INSTALL_SHARE_DIR@")
 
+if ("${PROJECT_NAME}" STREQUAL "BASIS")
+  basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
+else ()
+  basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
+endif ()
+
 # ============================================================================
 # testing - only to be used within test implementations
 # ============================================================================
@@ -125,8 +131,6 @@ set (TESTING_DIR         "@PROJECT_TESTING_DIR@")
 set (TESTING_RUNTIME_DIR "@TESTING_RUNTIME_DIR@")
 set (TESTING_LIBRARY_DIR "@TESTING_LIBRARY_DIR@")
 set (TESTING_OUTPUT_DIR  "@TESTING_OUTPUT_DIR@")
-
-basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
 
 # ============================================================================
 # utility implementations
