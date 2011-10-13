@@ -777,27 +777,26 @@ function add
 
     # create (intermediate) directory
     local dir=''
-    local base=''
  
     if [ -f "$template/$path" ]; then
-        dir=`dirname $root/$path`
-        base=`basename $root/$path`
+        dir="`dirname $root/$path`"
+        dir="${dir#$root/}"
     else
-        dir="$root/$path"
+        dir="$path"
     fi
 
-    if [ ! -d "$dir" ]; then
-        mkdir -p "$dir"
+    if [ ! -d "$root/$dir" ]; then
+        mkdir -p "$root/$dir"
         if [ $? -ne 0 ]; then
-            echo "E $dir - failed to make directory"
+            echo "E $root/$dir - failed to make directory"
             return 1
         else
-            echo "A $dir"
+            echo "A $root/$dir"
         fi
     fi
 
     # add/update file
-    if [ ! -z "$base" ]; then
+    if [ -f "$template/$path" ]; then
         # project file does not exist yet
         if [ ! -f "$root/$path" ]; then
             # copy template and store copy of template required for update later
@@ -810,11 +809,11 @@ function add
                 echo "E $root/$path - failed to add file"
                 return 1
             else
-                mkdir -p "$dir/.basis"
+                mkdir -p "$root/.basis/$dir"
                 if [ $verbosity -gt 0 ]; then
-                    cp "$template/$path" "$dir/.basis/$base"
+                    cp "$template/$path" "$root/.basis/$path"
                 else
-                    cp "$template/$path" "$dir/.basis/$base" &> /dev/null
+                    cp "$template/$path" "$root/.basis/$path" &> /dev/null
                 fi
                 if [ $? -ne 0 ]; then
                     echo "W $root/$path - file added, but failed to copy template to '.basis' (will not be able to update file later)"
@@ -835,16 +834,16 @@ function add
                 fi
             fi
         # update project file if backup of template used for creation exists
-        elif [ -f "$dir/.basis/$base" ]; then
+        elif [ -f "$root/.basis/$path" ]; then
             # merge new template with project file using three-way diff
             if [ $verbosity -gt 0 ]; then
-                diff3 -m "$root/$path" "$dir/.basis/$base" "$template/$path" > "$root/$path.update"
+                diff3 -m "$root/$path" "$root/.basis/$path" "$template/$path" > "$root/$path.update"
             else
-                diff3 -m "$root/$path" "$dir/.basis/$base" "$template/$path" > "$root/$path.update" 2> /dev/null
+                diff3 -m "$root/$path" "$root/.basis/$path" "$template/$path" > "$root/$path.update" 2> /dev/null
             fi
             if [ $? -ne 0 ]; then
                 echo "W $root/$path - failed to merge changes"
-                cp "$template/$path" "$dir/$base.template" &> /dev/null
+                cp "$template/$path" "$root/$path.template" &> /dev/null
                 return 1
             fi
             # alter languages
@@ -855,9 +854,9 @@ function add
                 # backup current project file
                 if [ $backup -ne 0 ]; then
                     if [ $verbosity -gt 0 ]; then
-                        cp -f "$root/$path" "$dir/$base~"
+                        cp -f "$root/$path" "$root/$path~"
                     else
-                        cp -f "$root/$path" "$dir/$base~" &> /dev/null
+                        cp -f "$root/$path" "$root/$path~" &> /dev/null
                     fi
                     if [ $? -ne 0 ]; then
                         echo "S $root/$path - failed to backup file"
@@ -876,14 +875,14 @@ function add
                 fi
                 # replace hidden template file
                 if [ $verbosity -gt 0 ]; then
-                    cp -f "$template/$path" "$dir/.basis/$base"
+                    cp -f "$template/$path" "$root/.basis/$path"
                     if [ $? -ne 0 ]; then
                         echo "U $root/$path - updated file, but failed to update hidden template"
                     else
                         echo "U $root/$path"
                     fi
                 else
-                    cp -f "$template/$path" "$dir/.basis/$base" &> /dev/null
+                    cp -f "$template/$path" "$root/.basis/$path" &> /dev/null
                     echo "U $root/$path"
                 fi
             else
@@ -937,12 +936,9 @@ function del
             return 1
         fi
         # delete copy of template and '.basis' directory if then empty
-        local dir=`dirname $root/$path`
-        local base=`basename $root/$path`
-
-        rm -f "$dir/.basis/$base" &> /dev/null
-        if [[ $(ls "$dir/.basis" 2>&1) == '' ]]; then
-            rm -rf "$dir/.basis" # there might be hidden subdirectories from the RCS
+        rm -f "$root/.basis/$path" &> /dev/null
+        if [[ $(ls "$root/.basis" 2>&1) == '' ]]; then
+            rm -rf "$root/.basis" # there might be hidden subdirectories from the RCS
         fi
         # delete project file
         if [ $verbosity -gt 0 ]; then
