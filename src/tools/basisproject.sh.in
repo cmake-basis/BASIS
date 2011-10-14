@@ -355,7 +355,7 @@ function use_standard_template
     if [ $overwrite -eq 0 -o $conf_script -eq 0 ]; then conf_script=-1; fi
     if [ $overwrite -eq 0 -o $conf_tests -eq 0 ]; then conf_tests=-1; fi
     if [ $overwrite -eq 0 -o $conf_use -eq 0 ]; then conf_use=-1; fi
-    if [ $overwrite -eq 0 -o $conf_data -eq 0 ]; then data=-1; fi
+    if [ $overwrite -eq 0 -o $data -eq 0 ]; then data=-1; fi
     if [ $overwrite -eq 0 -o $doc -eq 0 ]; then doc=1; fi
     if [ $overwrite -eq 0 -o $example -eq 0 ]; then example=1; fi
     if [ $overwrite -eq 0 -o $include -eq 0 ]; then include=-1; fi
