@@ -86,5 +86,4 @@ basis_add_doc ("guides")   # how-to and style guides
 # documentation of thirdparty libraries
 # ============================================================================
 
-basis_add_doc ("shunit2.html")
 basis_add_doc ("tclap")
