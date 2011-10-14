@@ -152,12 +152,16 @@ BUILDING THE SOFWARE FROM SOURCES
 
     Ubuntu:   (pre-installed)
 
-  - CMake 2.8.2 or greater
+  - CMake 2.8.4 or greater
 
     Web:      http://www.cmake.org/
     Download: http://www.cmake.org/cmake/resources/software.html
 
     Ubuntu:   cmake, cmake-curses-gui
+
+    If your operating system such as certain Linux distributions do not
+    support CMake 2.8.4 or greater yet, you need to download a more recent
+    CMake version from the download page noted above and install it manually.
 
   - BASIS
 
