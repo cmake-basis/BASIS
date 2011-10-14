@@ -35,8 +35,8 @@ eval set -- "${FLAGS_ARGV}"
 # helpers
 # ============================================================================
 
-##############################################################################
-# @brief Run command with arguments and exit on failure.
+# ----------------------------------------------------------------------------
+## @brief Run command with arguments and exit on failure.
 function run
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
@@ -54,8 +54,8 @@ function run
     return 0
 }
 
-##############################################################################
-# @brief Run command with arguments where error is expected.
+# ----------------------------------------------------------------------------
+## @brief Run command with arguments where error is expected.
 function runerr
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
@@ -73,8 +73,8 @@ function runerr
     return 0
 }
 
-##############################################################################
-# @brief Copy file from ressources directory to project source tree.
+# ----------------------------------------------------------------------------
+## @brief Copy file from ressources directory to project source tree.
 #
 # @param [in] file   File path relative to top directory of ressources tree.
 # @param [in] prefix Path prefix relative to project source tree. Defaults
@@ -91,8 +91,8 @@ function copy
     run cp "${ressources_dir}/${file}" "${source_dir}/${prefix}/$(dirname "$file")/${name}"
 }
 
-##############################################################################
-# @brief Creates a project using the basisproject command-line tool.
+# ----------------------------------------------------------------------------
+## @brief Creates a project using the basisproject command-line tool.
 function create
 {
     echo "Creating test project..."
@@ -101,8 +101,8 @@ function create
     echo "Creating test project... - done"
 }
 
-##############################################################################
-# @brief Update project.
+# ----------------------------------------------------------------------------
+## @brief Update project.
 function update
 {
     echo "Updating test project..."
@@ -110,8 +110,8 @@ function update
     echo "Updating test project... - done"
 }
 
-##############################################################################
-# @brief Update project with errors.
+# ----------------------------------------------------------------------------
+## @brief Update project with errors.
 function update_error
 {
     echo "Updating test project (errors expected)..."
@@ -119,8 +119,8 @@ function update_error
     echo "Updating test project... - done"
 }
 
-##############################################################################
-# @brief Tries to build a project created by basisproject.
+# ----------------------------------------------------------------------------
+## @brief Tries to build a project created by basisproject.
 function build
 {
     local cwd="$(pwd)"
@@ -139,8 +139,8 @@ function build
     run cd "${cwd}"
 }
 
-##############################################################################
-# @brief Cleanup source and binary tree.
+# ----------------------------------------------------------------------------
+## @brief Cleanup source and binary tree.
 function cleanup
 {
     [ -d "${source_dir}" ] && run rm -rf "${source_dir}"
@@ -155,8 +155,8 @@ function cleanup
 # positive tests
 # ----------------------------------------------------------------------------
 
-##############################################################################
-# @brief Test creation of project based on minimal configuration.
+# ----------------------------------------------------------------------------
+## @brief Test creation of project based on minimal configuration.
 function test_minimal_empty_project
 {
     echo "------------------------------------------------------------------------------"
@@ -168,8 +168,8 @@ function test_minimal_empty_project
     echo "SUCCESS"
 }
 
-##############################################################################
-# @brief Test creation of project based on standard configuration.
+# ----------------------------------------------------------------------------
+## @brief Test creation of project based on standard configuration.
 function test_standard_empty_project
 {
     echo "------------------------------------------------------------------------------"
@@ -181,8 +181,8 @@ function test_standard_empty_project
     echo "SUCCESS"
 }
 
-##############################################################################
-# @brief Test creation of project based on full configuration.
+# ----------------------------------------------------------------------------
+## @brief Test creation of project based on full configuration.
 function test_full_empty_project
 {
     echo "------------------------------------------------------------------------------"
@@ -194,8 +194,8 @@ function test_full_empty_project
     echo "SUCCESS"
 }
 
-##############################################################################
-# @brief Update minimal to standard empty project.
+# ----------------------------------------------------------------------------
+## @brief Update minimal to standard empty project.
 function test_minimal_to_standard_empty_project
 {
     echo "------------------------------------------------------------------------------"
@@ -208,8 +208,8 @@ function test_minimal_to_standard_empty_project
     echo "SUCCESS"
 }
 
-##############################################################################
-# @brief Update minimal to full empty project.
+# ----------------------------------------------------------------------------
+## @brief Update minimal to full empty project.
 function test_minimal_to_full_empty_project
 {
     echo "------------------------------------------------------------------------------"
@@ -222,8 +222,8 @@ function test_minimal_to_full_empty_project
     echo "SUCCESS"
 }
 
-##############################################################################
-# @brief Update full to minimal empty project.
+# ----------------------------------------------------------------------------
+## @brief Update full to minimal empty project.
 function test_full_to_minimal_empty_project
 {
     echo "------------------------------------------------------------------------------"
@@ -237,8 +237,8 @@ function test_full_to_minimal_empty_project
     echo "SUCCESS"
 }
 
-##############################################################################
-# @brief Test configuration of used languages.
+# ----------------------------------------------------------------------------
+## @brief Test configuration of used languages.
 function test_configuration_of_language_support
 {
     local line
@@ -268,8 +268,8 @@ function test_configuration_of_language_support
 # negative tests
 # ----------------------------------------------------------------------------
 
-##############################################################################
-# @brief Test error when required arguments are missing.
+# ----------------------------------------------------------------------------
+## @brief Test error when required arguments are missing.
 function test_required_arguments
 {
     echo "------------------------------------------------------------------------------"

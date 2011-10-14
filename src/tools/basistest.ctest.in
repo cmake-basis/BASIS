@@ -19,8 +19,8 @@
 # help
 # ============================================================================
 
-##############################################################################
-# @brief Print usage section of usage information and help screen.
+# ----------------------------------------------------------------------------
+## @brief Print usage section of usage information and help screen.
 #
 # @param [in] ARGN Not used.
 #
@@ -35,8 +35,8 @@ Usage:
         if the value is enclosed by quotation marks.")
 endfunction ()
 
-##############################################################################
-# @brief Print options section of usage information and help screen.
+# ----------------------------------------------------------------------------
+## @brief Print options section of usage information and help screen.
 #
 # @param [in] ARGN Not used.
 #
@@ -81,8 +81,8 @@ Options:
   version                Prints version information and exits.")
 endfunction ()
 
-##############################################################################
-# @brief Print contact section of usage information and help screen.
+# ----------------------------------------------------------------------------
+## @brief Print contact section of usage information and help screen.
 #
 # @param [in] ARGN Not used.
 #
@@ -94,8 +94,8 @@ Contact:
   SBIA Group <sbia-software at uphs.upenn.edu>")
 endfunction ()
 
-##############################################################################
-# @brief Print help screen.
+# ----------------------------------------------------------------------------
+## @brief Print help screen.
 #
 # @param [in] ARGN Not used.
 #
@@ -143,8 +143,8 @@ Example:
   print_contact ()
 endfunction ()
 
-##############################################################################
-# @brief Print usage information.
+# ----------------------------------------------------------------------------
+## @brief Print usage information.
 #
 # @param [in] ARGN Not used.
 #
@@ -157,8 +157,8 @@ function (print_usage)
   print_contact ()
 endfunction ()
 
-##############################################################################
-# @brief Print version information.
+# ----------------------------------------------------------------------------
+## @brief Print version information.
 #
 # @param [in] ARGN Not used.
 #
@@ -178,8 +178,8 @@ endfunction ()
 # helpers
 # ============================================================================
 
-##############################################################################
-# @brief Read value from CMake cache.
+# ----------------------------------------------------------------------------
+## @brief Read value from CMake cache.
 #
 # @param [in, out] VAR  Name of CMake variable.
 # @param [in]      ARGN Not used.

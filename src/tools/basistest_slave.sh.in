@@ -29,8 +29,8 @@ get_executable_name      EXEC_NAME && readonly EXEC_NAME
 # help/version
 # ============================================================================
 
-##############################################################################
-# @brief Print documentation of options.
+# ----------------------------------------------------------------------------
+## @brief Print documentation of options.
 #
 # @returns Nothing.
 function print_options
@@ -54,8 +54,8 @@ Options:
 EOF-OPTIONS
 }
 
-##############################################################################
-# @brief Print help.
+# ----------------------------------------------------------------------------
+## @brief Print help.
 #
 # @returns Nothing.
 function print_help
@@ -83,8 +83,8 @@ EOF-EXAMPLES
     print_contact
 }
 
-##############################################################################
-# @brief Print usage (i.e., only usage and options).
+# ----------------------------------------------------------------------------
+## @brief Print usage (i.e., only usage and options).
 #
 # @returns Nothing.
 function print_usage

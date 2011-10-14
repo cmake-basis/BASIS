@@ -36,7 +36,7 @@ from .executabletargetinfo import get_executable_path
 # version / contact
 # ============================================================================
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def print_version(name, copyright=None, license=None):
     """
     Print version information including copyright and license notices.
@@ -67,7 +67,7 @@ def print_version(name, copyright=None, license=None):
         sys.stdout.write(license)
         sys.stdout.write('\n')
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def print_contact(contact=None):
     """
     Print contact information.
@@ -87,7 +87,7 @@ def print_contact(contact=None):
 # command execution
 # ============================================================================
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 class SubprocessError(Exception):
     """Exception thrown when command execution failed."""
 
@@ -99,7 +99,7 @@ class SubprocessError(Exception):
         """Return string representation of exception message."""
         return self.message
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
     """
     Execute command as subprocess.

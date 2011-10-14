@@ -141,8 +141,8 @@ trap _shtap_exit TERM
 # plan
 # ============================================================================
 
-##############################################################################
-# @brief Choose not to plan number of tests in advance.
+# ----------------------------------------------------------------------------
+## @brief Choose not to plan number of tests in advance.
 function plan_no_plan
 {
     [ ${_shtap_plan_set} -ne 0 ] && _shtap_die "You tried to plan twice!"
@@ -153,8 +153,8 @@ function plan_no_plan
     return 0
 }
 
-##############################################################################
-# @brief Plan to skip all tests.
+# ----------------------------------------------------------------------------
+## @brief Plan to skip all tests.
 function plan_skip_all
 {
     local reason=${1:-''}
@@ -170,8 +170,8 @@ function plan_skip_all
     return 0
 }
 
-##############################################################################
-# @brief Plan a certain number of tests and stick to it.
+# ----------------------------------------------------------------------------
+## @brief Plan a certain number of tests and stick to it.
 function plan_tests
 {
     local tests=${1:?}
@@ -186,8 +186,8 @@ function plan_tests
     return ${tests}
 }
 
-##############################################################################
-# @brief Print plan.
+# ----------------------------------------------------------------------------
+## @brief Print plan.
 function _shtap_print_plan
 {
     local tests=${1:?}
@@ -202,16 +202,16 @@ function _shtap_print_plan
 # pass / fail
 # ============================================================================
 
-##############################################################################
-# @brief Pass in any case and print reason.
+# ----------------------------------------------------------------------------
+## @brief Pass in any case and print reason.
 function pass
 {
     local name=$1
     ok 0 "${name}"
 }
 
-##############################################################################
-# @brief Fail in any case and print reason.
+# ----------------------------------------------------------------------------
+## @brief Fail in any case and print reason.
 function fail
 {
     local name=$1
@@ -222,9 +222,9 @@ function fail
 # test
 # ============================================================================
 
-##############################################################################
-# @brief Evaluate test expression and fail if it does not evaluate to 0 or
-#        check return value of function.
+# ----------------------------------------------------------------------------
+## @brief Evaluate test expression and fail if it does not evaluate to 0 or
+#         check return value of function.
 #
 # This is the workhorse method that actually prints the tests result.
 #
@@ -304,8 +304,8 @@ function ok
     return ${result}
 }
 
-##############################################################################
-# @brief Execute command and check return value.
+# ----------------------------------------------------------------------------
+## @brief Execute command and check return value.
 #
 # @param [in] command Command to run.
 function okx
@@ -320,8 +320,8 @@ function okx
     ok ${PIPESTATUS[0]} "${command}"
 }
 
-##############################################################################
-# @brief Compare actual and expected result.
+# ----------------------------------------------------------------------------
+## @brief Compare actual and expected result.
 #
 # @param [in] result   Actual result.
 # @param [in] expected Expected result.
@@ -337,8 +337,8 @@ function _shtap_equals
     fi
 }
 
-##############################################################################
-# @brief Diagnostic message for is().
+# ----------------------------------------------------------------------------
+## @brief Diagnostic message for is().
 #
 # @param [in] result   Actual result.
 # @param [in] expected Expected result.
@@ -351,8 +351,8 @@ function _shtap_is_diag
     diag "    expected: '${expected}'"
 }
 
-##############################################################################
-# @brief Test whether a given result is equal to the expected result.
+# ----------------------------------------------------------------------------
+## @brief Test whether a given result is equal to the expected result.
 #
 # @param [in] result   Actual result.
 # @param [in] expected Expected result.
@@ -376,8 +376,8 @@ function is
     return ${r}
 }
 
-##############################################################################
-# @brief Test whether a given result is not equal the expected result.
+# ----------------------------------------------------------------------------
+## @brief Test whether a given result is not equal the expected result.
 #
 # @param [in] result   Actual result.
 # @param [in] expected Expected result.
@@ -401,8 +401,8 @@ function isnt
     return ${r} 
 }
 
-##############################################################################
-# @brief Test whether a given result matches an expected pattern.
+# ----------------------------------------------------------------------------
+## @brief Test whether a given result matches an expected pattern.
 #
 # @param [in] result  Actual result.
 # @param [in] pattern Expected pattern.
@@ -426,8 +426,8 @@ function like
     return ${r}
 }
 
-##############################################################################
-# @brief Test whether a given result does not match an expected pattern.
+# ----------------------------------------------------------------------------
+## @brief Test whether a given result does not match an expected pattern.
 #
 # @param [in] result  Actual result.
 # @param [in] pattern Expected pattern.
@@ -455,8 +455,8 @@ function unlike
 # skip
 # ============================================================================
 
-##############################################################################
-# @brief Skip tests under a certain condition.
+# ----------------------------------------------------------------------------
+## @brief Skip tests under a certain condition.
 #
 # @param [in] condition The condition for skipping the tests.
 #                       If 0, the tests are skipped, otherwise not.
@@ -489,8 +489,8 @@ function skip
 # diagnostics
 # ============================================================================
 
-##############################################################################
-# @brief Print diagnostic message.
+# ----------------------------------------------------------------------------
+## @brief Print diagnostic message.
 #
 # @param [in] msg Diagnostic message.
 #
@@ -510,8 +510,8 @@ function diag
 # termination
 # ============================================================================
 
-##############################################################################
-# @brief Bail out.
+# ----------------------------------------------------------------------------
+## @brief Bail out.
 #
 # @param [in] reason Reason for bailing out.
 #
@@ -524,8 +524,8 @@ function SHTAP_BAIL_OUT
     _shtap_exit 255
 }
 
-##############################################################################
-# @brief Abort test execution.
+# ----------------------------------------------------------------------------
+## @brief Abort test execution.
 #
 # @param [in] reason Reason for aborting the test execution.
 #
@@ -539,8 +539,8 @@ function _shtap_die
     _shtap_exit 255
 }
 
-##############################################################################
-# @brief Cleaning up after execution of tests and see if plan was fulfilled.
+# ----------------------------------------------------------------------------
+## @brief Cleaning up after execution of tests and see if plan was fulfilled.
 function _shtap_cleanup
 {
     local rc=0 # return code
@@ -583,8 +583,8 @@ function _shtap_cleanup
     return ${rc}
 }
 
-##############################################################################
-# @brief Calculate exit status indicating number of failed or extra tests.
+# ----------------------------------------------------------------------------
+## @brief Calculate exit status indicating number of failed or extra tests.
 function _shtap_exit_status
 {
     if [ ${_shtap_no_plan} -ne 0 -o ${_shtap_plan_set} -eq 0 ]; then
@@ -598,8 +598,8 @@ function _shtap_exit_status
     return $(( _shtap_failed_tests + ( _shtap_expected_tests - _shtap_executed_tests )))
 }
 
-##############################################################################
-# @brief Terminate execution of tests.
+# ----------------------------------------------------------------------------
+## @brief Terminate execution of tests.
 function _shtap_exit
 {
     local rc=${1:-''}
@@ -614,4 +614,3 @@ function _shtap_exit
     trap - EXIT
     exit ${rc}
 }
-

@@ -39,8 +39,8 @@ readonly BASH_VERSION_MINOR
 # pattern matching
 # ============================================================================
 
-##############################################################################
-# @brief This function implements a more portable way to do pattern matching.
+# ----------------------------------------------------------------------------
+## @brief This function implements a more portable way to do pattern matching.
 #
 # Unfortunately, there are significant differences in the way patterns have
 # to be matched when using different shells. This function considers which
@@ -90,8 +90,8 @@ function match
 # upvar(s)
 # ============================================================================
 
-##############################################################################
-# @brief Assign variable one scope above the caller.
+# ----------------------------------------------------------------------------
+## @brief Assign variable one scope above the caller.
 #
 # This function can be used inside functions to return values by assigning
 # them to a variable in the scope of the caller.
@@ -137,8 +137,8 @@ function upvar
     fi
 }
 
-##############################################################################
-# @brief Assign variables one scope above the caller.
+# ----------------------------------------------------------------------------
+## @brief Assign variables one scope above the caller.
 #
 # @sa http://fvue.nl/wiki/Bash:_Passing_variables_by_reference
 #
@@ -204,8 +204,8 @@ There is NO WARRANTY, to the extent permitted by law."
 # quoted string <-> array
 # ============================================================================
 
-##############################################################################
-# @brief Build quoted string from array.
+# ----------------------------------------------------------------------------
+## @brief Build quoted string from array.
 #
 # As BASH does not support arrays as input arguments to a function, the
 # array to be converted to a quoted string has to be available in the
@@ -240,8 +240,8 @@ function basis_array_to_quoted_string
     local "$1" && upvar $1 "${str}"
 }
 
-##############################################################################
-# @brief Split (quoted) string.
+# ----------------------------------------------------------------------------
+## @brief Split (quoted) string.
 #
 # This function can be used to split a (quoted) string into its elements.
 #

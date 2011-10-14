@@ -26,8 +26,8 @@ _SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
 # version / contact
 # ============================================================================
 
-##############################################################################
-# @brief Print version information.
+# ----------------------------------------------------------------------------
+## @brief Print version information.
 #
 # @param [in] name      Name of program. Give a constant expression here,
 #                       @b not the name of the executable as extracted from
@@ -50,8 +50,8 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
     echo -e "${copyright}"
 }
 
-##############################################################################
-# @brief Print contact information.
+# ----------------------------------------------------------------------------
+## @brief Print contact information.
 #
 # @param [in] contact Contact name. Defaults to official software contact.
 #                     Generally, it is @b not advised to use a contact different
@@ -72,8 +72,8 @@ function print_contact
 # command execution
 # ============================================================================
 
-##############################################################################
-# @brief Execute command as subprocess.
+# ----------------------------------------------------------------------------
+## @brief Execute command as subprocess.
 #
 # See basis_array_to_quoted_string() for a function to convert a command-line
 # given as array of arguments into a quoted string that can be passed to
@@ -152,4 +152,3 @@ function execute_process
 
 ## @}
 # Doxygen group BashUtilities
-

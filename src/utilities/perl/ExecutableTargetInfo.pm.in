@@ -71,8 +71,8 @@ my $_location = undef;
 # public functions
 # ============================================================================
 
-##############################################################################
-# @brief Get UID of build target.
+# ----------------------------------------------------------------------------
+## @brief Get UID of build target.
 #
 # This function prepends the default namespace of used for targets build as
 # part of the project this module belongs to if the given target name is yet
@@ -102,8 +102,8 @@ sub get_target_uid
     return $_namespace . '::' . $target;
 }
 
-##############################################################################
-# @brief Determine whether a given target is known.
+# ----------------------------------------------------------------------------
+## @brief Determine whether a given target is known.
 #
 # @param [in] target Name/UID of build target.
 #
@@ -115,8 +115,8 @@ sub is_known_target
     exists $_location->{$target};
 }
 
-##############################################################################
-# @brief Get name part of executable file path.
+# ----------------------------------------------------------------------------
+## @brief Get name part of executable file path.
 #
 # @param [in] target Name/UID of build target.
 #
@@ -128,8 +128,8 @@ sub get_executable_name
     return basename ($path);
 }
 
-##############################################################################
-# @brief Get directory part of executable file path.
+# ----------------------------------------------------------------------------
+## @brief Get directory part of executable file path.
 #
 # @param [in] target Name/UID of build target.
 #
@@ -141,8 +141,8 @@ sub get_executable_directory
     return dirname ($path);
 }
 
-##############################################################################
-# @brief Get absolute path of executable file.
+# ----------------------------------------------------------------------------
+## @brief Get absolute path of executable file.
 #
 # This function determines the absolute file path of an executable. If no
 # arguments are given, the absolute path of this executable is returned.
@@ -176,8 +176,8 @@ sub get_executable_path
 # protected/private functions
 # ============================================================================
 
-##############################################################################
-# @brief Initialize executable target information.
+# ----------------------------------------------------------------------------
+## @brief Initialize executable target information.
 #
 # This function initializes the structures of information about the executable
 # build targets. In order to reduce the start-up time of applications that do

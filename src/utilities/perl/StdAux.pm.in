@@ -54,8 +54,8 @@ BEGIN {
 # version / contact
 # ============================================================================
 
-##############################################################################
-# @brief Print version information including copyright and license notices.
+# ----------------------------------------------------------------------------
+## @brief Print version information including copyright and license notices.
 #
 # @param [in] name      Name of executable. Should not be set programmatically
 #                       to the first argument of the main script.
@@ -85,8 +85,8 @@ sub print_version
     }
 }
 
-##############################################################################
-# @brief Print contact information.
+# ----------------------------------------------------------------------------
+## @brief Print contact information.
 #
 # @param [in] contact Name of contact. If undef, the default contact of SBIA
 #                     is used, which is recommended.
@@ -106,8 +106,8 @@ sub print_contact
 # command execution
 # ============================================================================
 
-##############################################################################
-# @brief Execute command as subprocess.
+# ----------------------------------------------------------------------------
+## @brief Execute command as subprocess.
 #
 # This command takes either an array reference reference or a string as first
 # argument. All other arguments are keyword arguments using hash notation.

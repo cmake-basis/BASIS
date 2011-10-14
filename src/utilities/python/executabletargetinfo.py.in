@@ -43,7 +43,7 @@ _locations  = None
 # public function
 # ============================================================================
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def get_target_uid(target):
     """
     Get UID of build target.
@@ -79,14 +79,14 @@ def get_target_uid(target):
     # otherwise, prepend default namespace identifier
     return '::'.join([_namespace, target])
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def is_known_target(target):
     """Determine whether a given build target is known by this module."""
     global _locations
     
     return get_target_uid(target) in _locations
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def get_executable_name(target=None):
     """
     Get name of executable file built by given target. If no target is
@@ -98,7 +98,7 @@ def get_executable_name(target=None):
         return None
     return os.path.basename(path)
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def get_executable_directory(target=None):
     """
     Get directory of executable file built by given target. If no target is
@@ -110,7 +110,7 @@ def get_executable_directory(target=None):
         return None
     return os.path.dirname(path)
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def get_executable_path(target=None):
     """
     Get absolute path of executable file.
@@ -148,7 +148,7 @@ def get_executable_path(target=None):
 # private functions
 # ============================================================================
 
-# ****************************************************************************
+# ----------------------------------------------------------------------------
 def _initialize():
     """Initialize dictionaries with information about executable targets."""
     global _locations

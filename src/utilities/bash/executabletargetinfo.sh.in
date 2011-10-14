@@ -43,8 +43,8 @@ source "${_EXECUTABLETARGETINFO_DIR}/@BASIS_LIBRARY_DIR@/core.sh" # upvar()
 #  @{
 
 
-##############################################################################
-# @brief Get UID of build target.
+# ----------------------------------------------------------------------------
+## @brief Get UID of build target.
 #
 # @param [out] uid    UID of build target.
 # @param [in]  target Name/UID of build target.
@@ -75,8 +75,8 @@ function get_target_uid
     local "$1" && upvar $1 "${target}"
 }
 
-##############################################################################
-# @brief Determine whether a given target is known.
+# ----------------------------------------------------------------------------
+## @brief Determine whether a given target is known.
 #
 # @param [in] target Name/UID of build target.
 #
@@ -88,8 +88,8 @@ function is_known_target
     [ -n "${path}" ]
 }
 
-##############################################################################
-# @brief Get name of executable file.
+# ----------------------------------------------------------------------------
+## @brief Get name of executable file.
 #
 # @param [out] name   Name of the executable or an empty string if unknown.
 # @param [in]  target Name/UID of build target. If no argument is given,
@@ -119,8 +119,8 @@ function get_executable_name
     local "$1" && upvar $1 "${name}"
 }
 
-##############################################################################
-# @brief Get directory of executable file.
+# ----------------------------------------------------------------------------
+## @brief Get directory of executable file.
 #
 # @param [out] dir    Absolute directory of executable file.
 # @param [in]  target Name/UID of build target. If no argument is given,
@@ -151,8 +151,8 @@ function get_executable_directory
     local "$1" && upvar $1 "${dir}"
 }
 
-##############################################################################
-# @brief Get absolute path of executable file.
+# ----------------------------------------------------------------------------
+## @brief Get absolute path of executable file.
 #
 # This function determines the absolute file path of an executable. If no
 # arguments are given, the absolute path of this executable is returned.
@@ -211,8 +211,8 @@ function get_executable_path
 # private helpers
 # ============================================================================
 
-##############################################################################
-# @brief Sanitize string for use in variable name.
+# ----------------------------------------------------------------------------
+## @brief Sanitize string for use in variable name.
 #
 # @param [out] out Sanitized string.
 # @param [in]  str String to be sanitized.
@@ -233,8 +233,8 @@ function _executabletargetinfo_sanitize
     local "$1" && upvar $1 "${sane}"
 }
 
-##############################################################################
-# @brief Add (key, value) pair to executable target info "hash".
+# ----------------------------------------------------------------------------
+## @brief Add (key, value) pair to executable target info "hash".
 #
 # @sa _executabletargetinfo_get()
 #
@@ -252,8 +252,8 @@ function _executabletargetinfo_add
     eval "readonly __EXECUTABLETARGETINFO_${name}_${key}='$3'"
 }
 
-##############################################################################
-# @brief Get value from executable target info "hash".
+# ----------------------------------------------------------------------------
+## @brief Get value from executable target info "hash".
 #
 # @sa _executabletargetinfo_add()
 #
@@ -277,8 +277,8 @@ function _executabletargetinfo_get
     local "$1" && upvar $1 "${value}"
 }
 
-##############################################################################
-# @brief Make relative path absolute.
+# ----------------------------------------------------------------------------
+## @brief Make relative path absolute.
 #
 # @attention The directory component of the path must be an existent directory.
 #
@@ -314,8 +314,8 @@ function _executabletargetinfo_to_absolute_path
     local "$1" && upvar $1 "${path}"
 }
 
-##############################################################################
-# @brief Initialize executable target information.
+# ----------------------------------------------------------------------------
+## @brief Initialize executable target information.
 #
 # This function initializes the structures of information about the executable
 # build targets. If this function is executed another time, it does nothing

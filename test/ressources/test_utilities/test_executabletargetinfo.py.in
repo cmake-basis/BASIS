@@ -24,6 +24,7 @@ import os
 
 class TestExecutableTargetInfo(unittest.TestCase):
     
+    # ------------------------------------------------------------------------
     def test_get_target_uid(self):
         self.assertEquals (
                 basis.get_target_uid ('basisproject.sh'),
@@ -41,6 +42,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         self.assertEquals (basis.get_target_uid (None), None)
         self.assertEquals (basis.get_target_uid (''), None)
     
+    # ------------------------------------------------------------------------
     def test_is_known_target(self):
         self.assertFalse (basis.is_known_target ('basisproject.sh'))
         self.assertTrue (basis.is_known_target ('basis::basisproject.sh'))
@@ -48,6 +50,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         self.assertFalse (basis.is_known_target (''))
         self.assertFalse (basis.is_known_target ('hammer::hammer'))
     
+    # ------------------------------------------------------------------------
     def test_get_executable_name(self):
         # name of this executable
         self.assertEquals (basis.get_executable_name (), 'test_executabletargetinfo.py')
@@ -55,6 +58,8 @@ class TestExecutableTargetInfo(unittest.TestCase):
         self.assertTrue (re.match (
                     r"basisproject(\.sh)?",
                     basis.get_executable_name ('basis::basisproject.sh'))) 
+    
+    # ------------------------------------------------------------------------
     def test_get_executable_directory(self):
         # directory of this executable
         self.assertTrue (re.search (
@@ -64,7 +69,8 @@ class TestExecutableTargetInfo(unittest.TestCase):
         self.assertTrue (re.match (
                     r"/.*/bin(/basis)?",
                     basis.get_executable_directory ('basis::basisproject.sh')))
-
+    
+    # ------------------------------------------------------------------------
     def test_get_executable_path(self):
         # path of this executable
         self.assertEquals (basis.get_executable_path (),

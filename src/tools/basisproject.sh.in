@@ -2,7 +2,7 @@
 
 ##############################################################################
 # @file  basisproject.sh
-# @brief Project management tool used to create and/or modify a BASIS project.
+# @brief Project tool used to create and/or modify a BASIS project.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -35,40 +35,44 @@ cache=".basis/cache"
 # usage / help / version
 # ============================================================================
 
-##############################################################################
-# @brief Print options.
+# ----------------------------------------------------------------------------
+## @brief Print options.
 #
 # @returns Nothing.
 function print_options
 {
     echo "Required Options:"
     echo "  --name, -n <Project>       Name of the new project."
-    echo "  --description, -d <arg>    Brief project description. Option not allowed when modifying"
-    echo "                             an existent project."
+    echo "  --description, -d <arg>    Brief project description."
     echo "  --root, -r <arg>           Specify root directory of new project or directory of"
-    echo "                             existing project. If the specified directory already exists"
-    echo "                             this program will modify this project. The project name and"
-    echo "                             description options must not be given in this case as these"
-    echo "                             attributes of a project cannot be modified any more."
+    echo "                             existing project. When creating a new project by giving"
+    echo "                             the --name and --description options, this option is optional"
+    echo "                             and a directory named after the project is created under the"
+    echo "                             current working directory by default. In order to modify an"
+    echo "                             existing project, this option is required and has to specify"
+    echo "                             the root directory of a previously created project. The --name"
+    echo "                             and --description options must not be given in this case."
+    echo
     echo "Template Options:"
     echo "  --minimal                  Choose minimal project template. Corresponds to not selecting any"
-    echo "                             of the additional template files."
-    echo "  --standard                 Choose standard project template. This is the default template used"
-    echo "                             if no other project template is chosen. Corresponds to:"
+    echo "                             of the additional template files. This is the default if no"
+    echo "                             specific project template is chosen."
+    echo "  --standard                 Choose standard project template. Corresponds to:"
     echo
+    echo "                               --conf-depends"
+    echo "                               --conf-settings"
+    echo "                               --doc"
     echo "                               --example"
-    echo "                               --system-tests"
     echo "                               --noconf-components"
-    echo "                               --noconf-depends"
     echo "                               --noconf-find"
     echo "                               --noconf-generate"
     echo "                               --noconf-package"
     echo "                               --noconf-script"
-    echo "                               --noconf-settings"
+    echo "                               --noconf-test"
     echo "                               --noconf-use"
     echo "                               --noconf-version"
     echo "                               --nodata"
-    echo "                               --nounit-tests"
+    echo "                               --test"
     echo
     echo "  --full                     Choose full project template. Corresponds to selecting all files."
     echo
@@ -86,11 +90,14 @@ function print_options
     echo "  --[no]example              Whether to include support of example."
     echo "  --[no]test                 Whether to include support for testing."
     echo
-    echo "  --lang <arg>               Programming language used by this project."
+    echo "  --language <arg>           Programming language used by this project."
     echo "                             The currently supported languages are:"
-    echo "                             CXX (C/C++), PYTHON, PERL, BASH, and MATLAB."
+    echo "                             CXX (C/C++), Python, Perl, BASH, and MATLAB."
+    echo "                             Note that the argument is case insensitive."
     echo "  --use <arg>                Name of external package used by this project."
+    echo "                             Note that the package name is case sensitive."
     echo "  --optuse <arg>             Name of external package optionally used by this project."
+    echo "                             Note that the package name is case sensitive."
     echo
     echo "Options:"
     echo "  --clean                    Remove backup and other temporary files left behind."
@@ -105,15 +112,16 @@ function print_options
     echo "                             it is copied to a file with extension '~' before."
     echo "                             The creation of these backup files is disabled by this option."
     echo "  --template, -t <arg>       Root directory of project template."
+    echo "                             Defaults to the project template of this BASIS installation."
     echo
     echo "  --verbose, -v              Increases verbosity of output messages. Can be given multiple times."
     echo "  --help, -h                 Displays help and exit."
     echo "  --helpshort                Displays usage information and exits."
-    echo "  --version, -V              Displays version information and exits."
+    echo "  --version                  Displays version information and exits."
 }
 
-##############################################################################
-# @brief Print usage information.
+# ----------------------------------------------------------------------------
+## @brief Print usage information.
 #
 # @returns Nothing.
 function print_usage
@@ -128,8 +136,8 @@ function print_usage
     print_contact
 }
 
-##############################################################################
-# @brief Print help.
+# ----------------------------------------------------------------------------
+## @brief Print help.
 #
 # @returns Nothing.
 function print_help
@@ -140,8 +148,9 @@ function print_help
 	echo "  $exec_name [options]"
 	echo
 	echo "Description:"
-    echo "  This command-line tool can be used to create a new BASIS project from the"
-    echo "  template version @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ or to modify or upgrade an already existing project."
+    echo "  This command-line tool, also referred to as project tool, can be used to"
+    echo "  create a new BASIS project from the template version @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ or to modify or"
+    echo "  upgrade an already existing project."
     echo
     echo "  Depending on the grade of customization or optional inclusion of template"
     echo "  components, different subsets of the fully featured project template can be"
@@ -172,24 +181,24 @@ function print_help
     echo "  package is not supported explicitly by BASIS, generic CMake statements to"
     echo "  find the package are added. Note that these may not work for this unsupported"
     echo "  package. In this case, the $depends_file file has to be edited manually."
-    echo "  Note that if an existing project is modified, the $depends_file file is added if"
-    echo "  not yet existent, ignoring the option --noconfig-depends."
+    echo "  Note that if an existing project is modified, the $depends_file file is added"
+    echo "  if not yet existent, ignoring the option --noconfig-depends."
     echo
 	print_options
     echo
     echo "Examples:"
-	echo "  $exec_name --name ProjectName --description \"Novel image analysis method.\" --language CXX"
+	echo "  $exec_name --name MyProject --description \"Novel image analysis method.\" --language CXX"
     echo "    Create a new project named 'ProjectName' under the current working"
     echo "    directory using the default project template. Further, enable support for the"
     echo "    C/C++ programming language."
     echo
-	echo "  $exec_name --name ProjectName --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
+	echo "  $exec_name --name MyProject --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
     echo "    Create new project using C/C++ and Python with dependency on the package 'VTK'."
     echo
-    echo "  $exec_name --root path/to/existing/project --tests --conf-tests"
+    echo "  $exec_name --root /path/to/existing/project --test --conf-test"
     echo "    Add full testing support to existing project."
     echo
-    echo "  $exec_name --root path/to/existing/porject --use ITK --optuse Matlab"
+    echo "  $exec_name --root /path/to/existing/porject --use ITK --optuse MATLAB"
     echo "    Add dependencies on ITK (mandatory) and MATLAB (optional) to existing project."
     echo
     print_contact
@@ -199,8 +208,8 @@ function print_help
 # helpers
 # ============================================================================
 
-##############################################################################
-# @brief Make path absolute.
+# ----------------------------------------------------------------------------
+## @brief Make path absolute.
 #
 # This function returns the absolute path via command substitution, i.e.,
 # use it as follows:
@@ -232,8 +241,8 @@ function make_absolute
     return 0
 }
 
-##############################################################################
-# @brief Extract project name from existing project.
+# ----------------------------------------------------------------------------
+## @brief Extract project name from existing project.
 #
 # @returns Extracted project name via @c echo.
 function get_project_name
@@ -307,6 +316,66 @@ doc=0                # add/remove doc folder
 example=0            # add/remove example
 tests=0              # add/remove testing tree
  
+# ----------------------------------------------------------------------------
+# select minimal project template
+function use_minimal_template
+{
+    conf_settings=-1
+    conf_depends=-1
+    conf_components=-1
+    conf_package=-1
+    conf_find=-1
+    conf_find_version=-1
+    conf_generate=-1
+    conf_script=-1
+    conf_tests=-1
+    conf_use=-1
+    data=-1
+    doc=-1
+    example=-1
+    tests=-1
+}
+
+# ----------------------------------------------------------------------------
+# select standard project template
+function use_standard_template
+{
+    conf_settings=1
+    conf_depends=1
+    conf_components=-1
+    conf_package=-1
+    conf_find=-1
+    conf_find_version=-1
+    conf_generate=-1
+    conf_script=-1
+    conf_tests=-1
+    conf_use=-1
+    data=-1
+    doc=1
+    example=1
+    tests=1
+}
+
+# ----------------------------------------------------------------------------
+# select full project template
+function use_full_template
+{
+    conf_settings=1
+    conf_depends=1
+    conf_components=1
+    conf_package=1
+    conf_find=1
+    conf_find_version=1
+    conf_generate=1
+    conf_script=1
+    conf_tests=1
+    conf_use=1
+    data=1
+    doc=1
+    example=1
+    tests=1
+}
+
 # ----------------------------------------------------------------------------
 # parse options
 # ----------------------------------------------------------------------------
@@ -432,54 +501,15 @@ do
             ;;
 
         --minimal)
-            conf_settings=-1
-            conf_depends=-1
-            conf_components=-1
-            conf_package=-1
-            conf_find=-1
-            conf_find_version=-1
-            conf_generate=-1
-            conf_script=-1
-            conf_tests=-1
-            conf_use=-1
-            data=-1
-            doc=-1
-            example=-1
-            tests=-1
+            use_minimal_template
             ;;
 
         --standard)
-            conf_settings=1
-            conf_depends=1
-            conf_components=-1
-            conf_package=-1
-            conf_find=-1
-            conf_find_version=-1
-            conf_generate=-1
-            conf_script=-1
-            conf_tests=-1
-            conf_use=-1
-            data=-1
-            doc=1
-            example=1
-            tests=1
+            use_standard_template
             ;;
 
         --full)
-            conf_settings=1
-            conf_depends=1
-            conf_components=1
-            conf_package=1
-            conf_find=1
-            conf_find_version=1
-            conf_generate=1
-            conf_script=1
-            conf_tests=1
-            conf_use=1
-            data=1
-            doc=1
-            example=1
-            tests=1
+            use_full_template
             ;;
 
         --conf-settings)
@@ -709,8 +739,8 @@ else
     if [ $tests   -eq 0 ]; then tests=1; fi
 fi
 
-##############################################################################
-# @brief Alter template file.
+# ----------------------------------------------------------------------------
+## @brief Alter template file.
 function alter
 {
     cat "$1" \
@@ -720,8 +750,8 @@ function alter
         > "$2"
 }
 
-##############################################################################
-# @brief Alter languages.
+# ----------------------------------------------------------------------------
+## @brief Alter languages.
 function alter_languages
 {
     for language in "${languages[@]}"; do
@@ -731,8 +761,8 @@ function alter_languages
     done
 }
 
-##############################################################################
-# @brief Add or modify project directory or file.
+# ----------------------------------------------------------------------------
+## @brief Add or modify project directory or file.
 #
 # Only the named directory or file is added or modified.
 #
@@ -899,8 +929,8 @@ function add
     return 0
 }
 
-##############################################################################
-# @brief Delete file or empty directory.
+# ----------------------------------------------------------------------------
+## @brief Delete file or empty directory.
 #
 # @param [in] path Path relative to template or project root, respectively.
 #
@@ -967,8 +997,8 @@ function del
     return 0
 }
 
-##############################################################################
-# @brief Add or delete file depending on option given.
+# ----------------------------------------------------------------------------
+## @brief Add or delete file depending on option given.
 #
 # @param [in] switch Switch option. If > 0, the file is added or updated.
 #                    If < 0, the file is deleted. Otherwise, nothing is done.
@@ -1027,20 +1057,20 @@ fi
 
 # software configuration data
 addordel $data "data/CMakeLists.txt" || retval=1
-addordel $data "data"                || retval=1
+addordel $data "data"                || retval=1 # for deletion of directory
 
 # documentation
 addordel $doc "doc/CMakeLists.txt" || retval=1
-addordel $doc "doc"                || retval=1
+addordel $doc "doc"                || retval=1 # for deletion of directory
 
 # testing tree
 addordel $tests "CTestConfig.cmake"   || retval=1
 addordel $tests "test/CMakeLists.txt" || retval=1
-addordel $tests "test"                || retval=1
+addordel $tests "test"                || retval=1 # for deletion of directory
 
 # example
 addordel $example "example/CMakeLists.txt" || retval=1
-addordel $example "example"                || retval=1
+addordel $example "example"                || retval=1 # for deletion of directory
 
 # write cache
 echo "_conf_settings=$conf_settings"         >  $cache
@@ -1065,15 +1095,15 @@ else
     echo "$msg... - done"
 fi
 
-##############################################################################
-# @brief Append find_package() commands to CMake configuration file.
+# ----------------------------------------------------------------------------
+## @brief Append find_package() commands to CMake configuration file.
 #
-# @param [in] path            The path to the CMake configuration file.
-# @param [in] package         The name of the package.
-# @param [in] required        Whether this package is required.
-# @param [in] uppercasePrefix Whether to use uppercase only prefix for variables.
-# @param [in] useFile         Whether this package provides a \<name\>Use.cmake file.
-# @param [in] prefix          Prefix to use for package variables. Defaults to package name.
+# @param [in] path             The path to the CMake configuration file.
+# @param [in] package          The name of the package.
+# @param [in] required         Whether this package is required.
+# @param [in] uppercase_prefix Whether to use uppercase only prefix for variables.
+# @param [in] use_file         Whether this package provides a \<name\>Use.cmake file.
+# @param [in] prefix           Prefix to use for package variables. Defaults to package name.
 #
 # @returns Nothing.
 function add_find_package
@@ -1082,7 +1112,7 @@ function add_find_package
     local package=$2
     local required=$3
     local uppercase_prefix=$4
-    local useFile=$5
+    local use_file=$5
     local prefix=$package
 
     if [ $# -gt 5 ]; then
@@ -1105,7 +1135,7 @@ function add_find_package
     fi
     echo >> $file
     echo "if (${prefix}_FOUND)" >> $file
-    if [ $useFile -ne 0 ]; then
+    if [ $use_file -ne 0 ]; then
     echo "  include (\${${prefix}_USE_FILE})" >> $file
     else
     echo "  if (${prefix}_INCLUDE_DIRS)" >> $file
@@ -1113,9 +1143,11 @@ function add_find_package
     echo "  elseif (${prefix}_INCLUDE_DIR)" >> $file
     echo "    include_directories (\${${prefix}_INCLUDE_DIR})" >> $file
     echo "  endif ()" >> $file
-    # \note According to an email on the CMake mailing list, it is not a good idea
-    #       to use link_directories () any more given that the arguments to
-    #       target_link_libraries () are absolute paths to the library files.
+    # Note: According to an email on the CMake mailing list, it is not a good idea
+    #       to use link_directories() any more given that the arguments to
+    #       target_link_libraries() are absolute paths to the library files.
+    #       Therefore, this code is commented and not used. It remains here as a
+    #       reminder only.
     #echo >> $file
     #echo "  if (${prefix}_LIBRARY_DIRS)" >> $file
     #echo "    link_directories (\${${prefix}_LIBRARY_DIRS})" >> $file
@@ -1181,8 +1213,8 @@ fi
 # clean up
 # ============================================================================
 
-##############################################################################
-# @brief Clean temporary files.
+# ----------------------------------------------------------------------------
+## @brief Clean temporary files.
 #
 # @returns Nothing.
 function clean_temp_files
@@ -1197,8 +1229,8 @@ function clean_temp_files
     done
 }
 
-##############################################################################
-# @brief Remove hidden copies of template files.
+# ----------------------------------------------------------------------------
+## @brief Remove hidden copies of template files.
 #
 # @returns Nothing.
 function clean_hidden_files

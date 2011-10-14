@@ -42,8 +42,8 @@ schedule_file='/var/run/basistest.schedule'
 # help/version
 # ============================================================================
 
-##############################################################################
-# @brief Print documentation of options.
+# ----------------------------------------------------------------------------
+## @brief Print documentation of options.
 #
 # @returns Nothing.
 function print_options
@@ -63,8 +63,8 @@ Options:
 EOF-OPTIONS
 }
 
-##############################################################################
-# @brief Print help.
+# ----------------------------------------------------------------------------
+## @brief Print help.
 #
 # @returns Nothing.
 function print_help
@@ -147,8 +147,8 @@ EOF-EXAMPLES
     print_contact
 }
 
-##############################################################################
-# @brief Print usage (i.e., only usage and options).
+# ----------------------------------------------------------------------------
+## @brief Print usage (i.e., only usage and options).
 #
 # @returns Nothing.
 function print_usage
@@ -167,8 +167,8 @@ function print_usage
 # helpers
 # ============================================================================
 
-##############################################################################
-# @brief Runs a test given the arguments in the configuration file.
+# ----------------------------------------------------------------------------
+## @brief Runs a test given the arguments in the configuration file.
 #
 # @param [in] project Name of the project to test.
 # @param [in] branch  Name of the branch to test.
@@ -200,8 +200,8 @@ function run_test
     return 0
 }
 
-##############################################################################
-# @brief Convert date to timestamp.
+# ----------------------------------------------------------------------------
+## @brief Convert date to timestamp.
 #
 # @param [in] date Date.
 #
@@ -215,8 +215,8 @@ function date2stamp
     fi
 }
 
-##############################################################################
-# @brief Convert timestamp to date.
+# ----------------------------------------------------------------------------
+## @brief Convert timestamp to date.
 #
 # @param [in] stamp Timestamp.
 #
@@ -230,8 +230,8 @@ function stamp2date
     fi
 }
 
-##############################################################################
-# @brief Adds a certain time interval to a given date.
+# ----------------------------------------------------------------------------
+## @brief Adds a certain time interval to a given date.
 #
 # @param [in] unit     Unit of the time interval. Either one of -s, -m, -h, or -d.
 #                      Defaults to number of days.
@@ -255,8 +255,8 @@ function date_add
     echo $(stamp2date "${add_sec}")
 }
 
-##############################################################################
-# @brief Computes the time interval between two given dates.
+# ----------------------------------------------------------------------------
+## @brief Computes the time interval between two given dates.
 #
 # @param [in] unit  Unit of the time interval. Either one of -s, -m, -h, or -d.
 #                   Defaults to number of days.
@@ -280,8 +280,8 @@ function date_diff
     echo $((interval / sec))
 }
 
-##############################################################################
-# @brief Get next scheduled date of a given test.
+# ----------------------------------------------------------------------------
+## @brief Get next scheduled date of a given test.
 #
 # @returns Prints date to @c STDOUT.
 function schedule_date
@@ -305,8 +305,8 @@ function schedule_date
     echo "${retval}"
 }
 
-##############################################################################
-# @brief Add entry to test schedule.
+# ----------------------------------------------------------------------------
+## @brief Add entry to test schedule.
 #
 # @param [in] date    The date at which the test should be run next.
 # @param [in] time    The time at which the test should be run next.

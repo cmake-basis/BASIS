@@ -42,8 +42,8 @@ eval set -- "${FLAGS_ARGV}"
 # helpers
 # ============================================================================
 
-##############################################################################
-# @brief Run command with arguments and exit on failure.
+# ----------------------------------------------------------------------------
+## @brief Run command with arguments and exit on failure.
 function run
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
@@ -61,8 +61,8 @@ function run
     return 0
 }
 
-##############################################################################
-# @brief Run command with arguments where error is expected.
+# ----------------------------------------------------------------------------
+## @brief Run command with arguments where error is expected.
 function runerr
 {
     if [ ${FLAGS_verbose} -gt 0 ]; then
@@ -80,8 +80,8 @@ function runerr
     return 0
 }
 
-##############################################################################
-# @brief Creates a project using the basisproject command-line tool.
+# ----------------------------------------------------------------------------
+## @brief Creates a project using the basisproject command-line tool.
 function create
 {
     echo "Creating test project..."
@@ -100,8 +100,8 @@ function create
     echo "Creating test project... - done"
 }
 
-##############################################################################
-# @brief Tries to build a project created by basisproject.
+# ----------------------------------------------------------------------------
+## @brief Tries to build a project created by basisproject.
 function build
 {
     echo "Configuring test project..."
@@ -121,8 +121,8 @@ function build
     run cd "${cwd}"
 }
 
-##############################################################################
-# @brief Copy file from ressources directory to project source tree.
+# ----------------------------------------------------------------------------
+## @brief Copy file from ressources directory to project source tree.
 #
 # @param [in] file   File path relative to top directory of ressources tree.
 # @param [in] prefix Path prefix relative to project source tree. Defaults
@@ -139,8 +139,8 @@ function copy
     run cp "${RESSOURCES_DIR}/${file}" "${SOURCE_DIR}/${prefix}/$(dirname "$file")/${name}"
 }
 
-##############################################################################
-# @brief Add test to test project.
+# ----------------------------------------------------------------------------
+## @brief Add test to test project.
 function add_test
 {
     local impl=$1
@@ -149,8 +149,8 @@ function add_test
     echo "basis_add_test (\"${target}\" SOURCES \"${impl}\" $2)" >> "${SOURCE_DIR}/test/CMakeLists.txt"
 }
 
-##############################################################################
-# @brief Add executable to test project.
+# ----------------------------------------------------------------------------
+## @brief Add executable to test project.
 function add_executable
 {
     local impl=$1
@@ -159,8 +159,8 @@ function add_executable
     echo "basis_add_executable (\"${target}\" \"${impl}\" $2)" >> "${SOURCE_DIR}/src/CMakeLists.txt"
 }
 
-##############################################################################
-# @brief Cleanup source and binary tree.
+# ----------------------------------------------------------------------------
+## @brief Cleanup source and binary tree.
 function cleanup
 {
     [ -d "${SOURCE_DIR}" ] && run rm -rf "${SOURCE_DIR}"
