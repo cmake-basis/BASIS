@@ -55,9 +55,9 @@ function print_options
     echo
     echo "Template Options:"
     echo "  --minimal                  Choose minimal project template. Corresponds to not selecting any"
-    echo "                             of the additional template files. This is the default if no"
-    echo "                             specific project template is chosen."
-    echo "  --standard                 Choose standard project template. Corresponds to:"
+    echo "                             of the additional template files."
+    echo "  --standard                 Choose standard project template. This is the default project template"
+    echo "                             if no template was selected explicitly. Corresponds to:"
     echo
     echo "                               --conf-depends"
     echo "                               --conf-settings"
@@ -88,6 +88,7 @@ function print_options
     echo "  --[no]conf-use             Whether to include custom <Project>Use.cmake file."
     echo "  --[no]data                 Whether to include support of auxiliary data files."
     echo "  --[no]example              Whether to include support of example."
+    echo "  --[no]include              Whetehr to include support of public header files."
     echo "  --[no]test                 Whether to include support for testing."
     echo
     echo "  --language <arg>           Programming language used by this project."
@@ -314,6 +315,7 @@ conf_use=0           # add/remove unit testing
 data=0               # add/remove auxiliary data files
 doc=0                # add/remove doc folder
 example=0            # add/remove example
+include=0            # add/remove public includes tree
 tests=0              # add/remove testing tree
  
 # ----------------------------------------------------------------------------
@@ -333,6 +335,7 @@ function use_minimal_template
     data=-1
     doc=-1
     example=-1
+    include=-1
     tests=-1
 }
 
@@ -340,20 +343,23 @@ function use_minimal_template
 # select standard project template
 function use_standard_template
 {
-    conf_settings=1
-    conf_depends=1
-    conf_components=-1
-    conf_package=-1
-    conf_find=-1
-    conf_find_version=-1
-    conf_generate=-1
-    conf_script=-1
-    conf_tests=-1
-    conf_use=-1
-    data=-1
-    doc=1
-    example=1
-    tests=1
+    local overwrite=${1:-0}
+
+    if [ $overwrite -eq 0 -o $conf_settings -eq 0 ]; then conf_settings=1; fi
+    if [ $overwrite -eq 0 -o $conf_depends -eq 0 ]; then conf_depends=1; fi
+    if [ $overwrite -eq 0 -o $conf_components -eq 0 ]; then conf_components=-1; fi
+    if [ $overwrite -eq 0 -o $conf_package -eq 0 ]; then conf_package=-1; fi
+    if [ $overwrite -eq 0 -o $conf_find -eq 0 ]; then conf_find=-1; fi
+    if [ $overwrite -eq 0 -o $conf_find_version -eq 0 ]; then conf_find_version=-1; fi
+    if [ $overwrite -eq 0 -o $conf_generate -eq 0 ]; then conf_generate=-1; fi
+    if [ $overwrite -eq 0 -o $conf_script -eq 0 ]; then conf_script=-1; fi
+    if [ $overwrite -eq 0 -o $conf_tests -eq 0 ]; then conf_tests=-1; fi
+    if [ $overwrite -eq 0 -o $conf_use -eq 0 ]; then conf_use=-1; fi
+    if [ $overwrite -eq 0 -o $conf_data -eq 0 ]; then data=-1; fi
+    if [ $overwrite -eq 0 -o $doc -eq 0 ]; then doc=1; fi
+    if [ $overwrite -eq 0 -o $example -eq 0 ]; then example=1; fi
+    if [ $overwrite -eq 0 -o $include -eq 0 ]; then include=-1; fi
+    if [ $overwrite -eq 0 -o $tests -eq 0 ]; then tests=1; fi
 }
 
 # ----------------------------------------------------------------------------
@@ -373,6 +379,7 @@ function use_full_template
     data=1
     doc=1
     example=1
+    include=1
     tests=1
 }
 
@@ -603,6 +610,13 @@ do
             example=-1
             ;;
 
+        --include)
+            include=1
+            ;;
+        --noinclude)
+            include=-1
+            ;;
+
         --test)
             tests=1
             ;;
@@ -705,6 +719,9 @@ fi
 # return value
 retval=0
 
+# name in lowercase only
+name_lower=`echo $name | awk '{print tolower($0)}'`
+
 # sanitize project description for use in regular expression
 description=${description//\//\\\/}
 description=${description//\\/\\\\}
@@ -732,11 +749,12 @@ if [ -f "$cache" ]; then
         if [ $data              -eq 0 ]; then data=$_data; fi
         if [ $doc               -eq 0 ]; then doc=$_doc; fi
         if [ $example           -eq 0 ]; then example=$_example; fi
+        if [ $include           -eq 0 ]; then include=$_include; fi
         if [ $tests             -eq 0 ]; then tests=$_tests; fi
     fi
 else
-    if [ $example -eq 0 ]; then example=1; fi
-    if [ $tests   -eq 0 ]; then tests=1; fi
+    # by default, use standard project template without overwriting user adjustments
+    use_standard_template 1
 fi
 
 # ----------------------------------------------------------------------------
@@ -766,23 +784,26 @@ function alter_languages
 #
 # Only the named directory or file is added or modified.
 #
-# @param [in] path The path of the directory or file relative to the template
-#                  or project root, respectively.
+# @param [in] path        The path of the directory or file relative to the template
+#                         or project root, respectively.
+# @param [in] path_is_dir Whether @p path is a directory path that does not have a
+#                         corresponding template file.
 #
 # @returns Nothing.
 function add
 {
     local path="$1"
+    local path_is_dir=${2:-1}
 
     # check existence of template
-    if [ ! -e $template/$path ]; then
+    if [ $path_is_dir -ne 0 ] && [ ! -e $template/$path ]; then
         echo "E $root/$path - template missing"
         return 1
     fi
 
     # handle case that path in project exists already
     if [ -e $root/$path ]; then
-        if [ -d $template/$path ]; then
+        if [ $path_is_dir -eq 0 -o -d $template/$path ]; then
             if [ ! -d $root/$path ]; then
                 # template is directory, but there is a file in the project
                 echo "E $root/$path - not a directory"
@@ -808,12 +829,12 @@ function add
     # create (intermediate) directory
     local dir=''
  
-    if [ -f "$template/$path" ]; then
+    if [ $path_is_dir -eq 0 -o -d "$template/$path" ]; then
+        dir="$path"
+    else
         dir="`dirname $root/$path`"
         dir="${dir#$root}"
         dir="${dir#/}"
-    else
-        dir="$path"
     fi
 
     if [ ! -d "$root/$dir" ]; then
@@ -932,15 +953,18 @@ function add
 # ----------------------------------------------------------------------------
 ## @brief Delete file or empty directory.
 #
-# @param [in] path Path relative to template or project root, respectively.
+# @param [in] path        Path relative to template or project root, respectively.
+# @param [in] path_is_dir Whether @p path is a directory path that does not have a
+#                         corresponding template file.
 #
 # @returns Nothing.
 function del
 {
     local path=$1
+    local path_is_dir=${2:-1}
 
     # check existence of template
-    if [ ! -e $template/$path ]; then
+    if [ $path_is_dir -ne 0 ] && [ ! -e $template/$path ]; then
         echo "E $root/$path - template missing"
         return 1
     fi
@@ -1009,11 +1033,12 @@ function addordel
 {
     local switch=$1
     local path=$2
+    local path_is_dir=${3:-1}
 
     if [ $switch -gt 0 ]; then
-        add $path || return 1
+        add $path $path_is_dir || return 1
     elif [ $switch -lt 0 ]; then
-        del $path || return 1
+        del $path $path_is_dir || return 1
     fi
 
     return 0
@@ -1057,20 +1082,25 @@ fi
 
 # software configuration data
 addordel $data "data/CMakeLists.txt" || retval=1
-addordel $data "data"                || retval=1 # for deletion of directory
+addordel $data "data" 0              || retval=1 # for deletion of directory
 
 # documentation
 addordel $doc "doc/CMakeLists.txt" || retval=1
-addordel $doc "doc"                || retval=1 # for deletion of directory
+addordel $doc "doc" 0              || retval=1 # for deletion of directory
+
+# public includes
+addordel $include "include/sbia/$name_lower" 0 || retval=1
+addordel $include "include/sbia"             0 || retval=1 # for deletion of directory
+addordel $include "include"                  0 || retval=1 # for deletion of directory
 
 # testing tree
 addordel $tests "CTestConfig.cmake"   || retval=1
 addordel $tests "test/CMakeLists.txt" || retval=1
-addordel $tests "test"                || retval=1 # for deletion of directory
+addordel $tests "test" 0              || retval=1 # for deletion of directory
 
 # example
 addordel $example "example/CMakeLists.txt" || retval=1
-addordel $example "example"                || retval=1 # for deletion of directory
+addordel $example "example" 0              || retval=1 # for deletion of directory
 
 # write cache
 echo "_conf_settings=$conf_settings"         >  $cache
@@ -1086,6 +1116,7 @@ echo "_conf_use=$conf_use"                   >> $cache
 echo "_data=$data"                           >> $cache
 echo "_doc=$doc"                             >> $cache
 echo "_example=$example"                     >> $cache
+echo "_include=$include"                     >> $cache
 echo "_tests=$tests"                         >> $cache
 
 # done
