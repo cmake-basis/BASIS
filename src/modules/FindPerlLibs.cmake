@@ -15,11 +15,19 @@
 # ----------------------------------------------------------------------------
 # use CMake's FindPerlLibs.cmake module
 set (CMAKE_MODULE_PATH_BACKUP "${CMAKE_MODULE_PATH}")
+set (PerlLIbs_FIND_REQUIRED_BACKUP "${PerlLibs_FIND_REQUIRED}")
+set (PerlLIbs_FIND_QUIETLY_BACKUP "${PerlLibs_FIND_QUIETLY}")
 set (CMAKE_MODULE_PATH)
+set (PerlLibs_FIND_REQUIRED FALSE)
+set (PerlLibs_FIND_QUIETLY  TRUE)
 
 find_package (PerlLibs)
 
 set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH_BACKUP}")
+set (PerlLIbs_FIND_REQUIRED "${PerlLibs_FIND_REQUIRED_BACKUP}")
+set (PerlLIbs_FIND_QUIETLY "${PerlLibs_FIND_QUIETLY_BACKUP}")
+set (PerlLibs_FIND_REQUIRED_BACKUP)
+set (PerlLibs_FIND_QUIETLY_BACKUP)
 set (CMAKE_MODULE_PATH_BACKUP)
 
 # ----------------------------------------------------------------------------
