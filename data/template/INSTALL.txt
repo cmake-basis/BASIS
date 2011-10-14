@@ -42,12 +42,29 @@ INSTALLING A BINARY DISTRIBUTION PACKAGE
 BUILDING THE SOFTWARE FROM SOURCES
 ==================================
 
-  In the following, only the additional CMake settings available to configure
-  this software package are summarized. For step-by-step instructions on how
-  to use CMake and GNU Make to build and install the software, please refer to
-  the corresponding section in the INSTALL-basis document.
+  In the following, only the additional build dependencies and CMake settings
+  available to configure this software package are summarized. For a list of
+  general build dependencies and step-by-step instructions on how to use CMake
+  and GNU Make to build and install the software, please refer to the
+  corresponding section in the INSTALL-basis [1] document.
 
-  (no additional CMake settings provided by this package)
+
+  Build Dependencies
+  ------------------
+
+  (no additional build dependencies required by this package)
+
+
+  CMake Options
+  -------------
+
+  (no additional CMake options considered by this package)
+
+
+  Advanced CMake Options
+  ----------------------
+
+  (no additional advanced CMake options considered by this package)
 
 
 
