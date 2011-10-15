@@ -34,10 +34,10 @@ INTRODUCTION
   hierarchy standard of BASIS is provided. This template is further accompanied by
   CMake modules which not only follow the filesystem hierarchy standard, but also
   implement the build system standard as well as the standard on testing and
-  packaging software developed at SBIA. Next, the BASIS package provides utility
-  functions for each supported programming language which implement certain
-  aspects of the software implementation standard such as, for example, the
-  Calling Conventions on how to execute subprocesses and the parsing of
+  packaging software developed at SBIA. The BASIS package provides moreover
+  utility functions for each supported programming language which implement
+  certain aspects of the software implementation standard such as, for example,
+  the calling conventions on how to execute subprocesses and the parsing of
   command-line arguments. Where possible, these utility implementations were
   adopted from other open source software projects and integrated with BASIS.
   For a more detailed overview of the BASIS package, see sections COMPONENTS
@@ -50,7 +50,7 @@ INTRODUCTION
   BASIS to ease this task as much as possible. See section DOCUMENTATION for
   a summary of the available documentation.
 
-  The BASIS package, when build and installed once on a target system on which
+  The BASIS package, when built and installed once on a target system on which
   other SBIA software is to be built, is used for the build of these dependent
   SBIA projects. Alternatively, if the package is not found, each SBIA project
   which is built on top of BASIS and implements the super-build feature,
@@ -59,7 +59,7 @@ INTRODUCTION
   [TODO: This feature is not yet implemented!]
 
   Another feature of BASIS is, that it not only eases the developement and
-  maintenance of separatly managed software projects, it also enables the fusion
+  maintenance of separatly managed software projects, but also enables the fusion
   of these more or less independently developed software packages into so-called
   superprojects following the super-build methodology which more recently gained
   more and more attraction in the CMake community. In this context, the separately
@@ -91,8 +91,8 @@ COMPONENTS
   built-in functions. For example, the function basis_add_executable() is used
   by SBIA projects as replacement for CMake's add_executable() command.
   The SBIA CMake functions are convenient to use, extend the functionality of
-  CMake's built-in functions and enable BASIS to impose its standard on the
-  configured build systems.
+  CMake's built-in functions, and enable BASIS to impose its standard on the
+  configured build system.
 
   The main CMake modules are:
 
@@ -115,7 +115,7 @@ COMPONENTS
                    of the project template or to upgrade to a newer BASIS
                    template.
   - basistest      Implements automated software tests.
-  - doxyfilter     Doxygen filters for the supported programming language.
+  - doxyfilter     Doxygen filters for the supported programming languages.
 
 
   Utilities
@@ -123,9 +123,9 @@ COMPONENTS
 
   For each supported programming language, BASIS provides a library of utility
   functions. Some of these utility functions are project independent and thus
-  build and installed as part of BASIS itself. Other utility implementations
+  built and installed as part of BASIS itself. Other utility implementations
   are project dependent. Therefore, the BASIS package provides only template
-  files which are customized and build during the configuration and build,
+  files which are customized and built during the configuration and build,
   respectively, of the particular BASIS project. This customization is done
   by the functions implemented by the UtilitiesTools.cmake module which is
   included and utilized by the main BasisProject.cmake module.
