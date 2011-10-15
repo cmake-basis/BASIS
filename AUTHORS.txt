@@ -39,5 +39,5 @@ CONTRIBUTORS
 
   - Dominique Belhachemi   In many discussions he helped to shape the common project
                            directory structure.
-  - Kayhan Batmanghelich   Tested and patiently debugged the built of executables
-                           from MATLAB sources and the built of MEX-files.
+  - Kayhan Batmanghelich   Tested and patiently debugged the build of executables
+                           from MATLAB sources and the build of MEX-files.
