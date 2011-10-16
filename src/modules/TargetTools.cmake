@@ -356,17 +356,6 @@ endfunction ()
 #
 # This function adds an executable target.
 #
-# By default, the BASIS C++ utilities library is added as link dependency of
-# the added executable target. If none of the BASIS C++ utilities are used
-# by the executable, the option NO_BASIS_UTILITIES can be given. Note, however,
-# that the utilities library is a static library and thus the linker would not
-# include any of the BASIS utilities object code in the binary executable.
-#
-# An install command for the added executable target is added by this function
-# as well. The executable will be installed as part of the component @p COMPONENT
-# in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
-# @p LIBEXEC is given.
-#
 # Besides adding usual executable targets build by the set <tt>C/CXX</tt>
 # language compiler, this function inspects the list of source files given and
 # detects whether this list contains sources which need to be build using a
@@ -398,6 +387,18 @@ endfunction ()
 #                    executable has to be given before any other *.m file.
 #   </tr>
 # </table>
+#
+# In case of CXX, the BASIS utilities library is added as link dependency of
+# the added executable target by default. If none of the BASIS C++ utilities
+# are used by the executable, the option NO_BASIS_UTILITIES can be given.
+# Note, however, that the utilities library is a static library and thus the
+# linker would not include any of the BASIS utilities object code in the binary
+# executable in that case anyway.
+#
+# An install command for the added executable target is added by this function
+# as well. The executable will be installed as part of the component @p COMPONENT
+# in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
+# @p LIBEXEC is given.
 #
 # @param [in] TARGET_NAME Name of the executable target.
 # @param [in] ARGN        This argument list is parsed and the following
@@ -498,11 +499,6 @@ endfunction ()
 #
 # This function adds a library target.
 #
-# An install command for the added library target is added by this function
-# as well. Runtime libraries are installed as part of the @p RUNTIME_COMPONENT
-# to the @p RUNTIME_DESTINATION. Library components are installed as part of
-# the @p LIBRARY_COMPONENT to the @p LIBRARY_DESTINATION.
-#
 # Besides adding usual library targets built from C/C++ source code files,
 # this function can also add custom build targets for libraries implemented
 # in other programming languages. It therefore tries to detect the programming
@@ -536,6 +532,11 @@ endfunction ()
 #   </tr>
 # </table>
 #
+# An install command for the added library target is added by this function
+# as well. Runtime libraries are installed as part of the @p RUNTIME_COMPONENT
+# to the @p RUNTIME_DESTINATION. Library components are installed as part of
+# the @p LIBRARY_COMPONENT to the @p LIBRARY_DESTINATION.
+#
 # Example:
 # @code
 # basis_add_library (MyLib1 STATIC mylib.cxx)
@@ -546,6 +547,10 @@ endfunction ()
 #   RUNTIME_COMPONENT bin
 #   LIBRARY_COMPONENT dev
 # )
+#
+# basis_add_library (MyMex MEX mymex.cxx)
+# basis_add_library (PythonModule MyModule.py.in)
+# basis_add_library (ShellModule MODULE MyModule.sh.in)
 # @endcode
 #
 # @param [in] TARGET_NAME Name of the library target.
