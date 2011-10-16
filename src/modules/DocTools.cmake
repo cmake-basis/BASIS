@@ -28,7 +28,7 @@ endif ()
 #
 # This option is only available if the @c PROJECT_DOC_DIR directory exists.
 if (EXISTS "${PROJECT_DOC_DIR}")
-  option (BUILD_DOCUMENTATION "Whether to build/install the documentation." OFF)
+  option (BUILD_DOCUMENTATION "Whether to build/install the documentation." ON)
 endif ()
 
 ## @}
