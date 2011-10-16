@@ -413,8 +413,7 @@ endfunction ()
 #   <tr>
 #     @tp @b LANGUAGE lang @endtp
 #     <td>Source code language. By default determined from the extensions of
-#         the given source files, where CXX is assumed if no other language is
-#         detected.</td>
+#         the given source files.</td>
 #   </tr>
 #   <tr>
 #     @tp @b LIBEXEC @endtp
@@ -437,9 +436,9 @@ endfunction ()
 #   </tr>
 # </table>
 #
-# @returns Adds an executable build target. In case of a MATLAB Compiler
-#          target, the function basis_add_custom_finalize() has to be
-#          invoked to actually add the custom target that builds the executable.
+# @returns Adds an executable build target. In case of an executable build from
+#          non-CXX source files, the function basis_add_custom_finalize() has to be
+#          invoked to actually add the custom target that builds it.
 
 function (basis_add_executable TARGET_NAME)
   basis_check_target_name (${TARGET_NAME})
@@ -1164,14 +1163,14 @@ endfunction ()
 # output name. Further, the extension of the script such as .sh or .py is
 # removed from the output filename during the installation if the project
 # is build on Unix-based systems and the script file contains a sha-bang
-# directive, i.e., the first two characters on the first line are "#" followed
-# by the path to the script language interpreter. In case of script modules,
-# the script file name extension is preserved, however.
+# directive, i.e., the first two characters on the first line are "#!"
+# followed by the path to the script language interpreter. In case of script
+# modules, the script file name extension is preserved, however.
 #
 # Example:
 # @code
 # basis_add_script (MyShellScript.sh.in)
-# basis_add_script (Script SCRIPT Script1.sh)
+# basis_add_script (Script Script1.sh)
 # @endcode
 #
 # Certain CMake variables within the script are replaced during the configure step.
@@ -1186,7 +1185,7 @@ endfunction ()
 #
 # Example:
 # @code
-# basis_add_script (Script1 SCRIPT Script1.sh CONFIG Script1Config.cmake)
+# basis_add_script (Script1.sh CONFIG Script1Config.cmake)
 # @endcode
 #
 # Script1Config.cmake
@@ -1214,8 +1213,9 @@ endfunction ()
 #       For example, PERL_PRIVLIB directory as determined by FindPerlLibs module.
 #
 # @note This function should not be used directly. Instead, the functions
-#       basis_add_executable() and basis_add_library() call this function if
-#       the (detected) programming language is a (supported) scripting language.
+#       basis_add_executable() and basis_add_library() should be used which in
+#       turn make use of this function if the (detected) programming language
+#       is a (supported) scripting language.
 #
 # @sa basis_add_executable()
 # @sa basis_add_library()
@@ -1224,9 +1224,8 @@ endfunction ()
 #
 # @param [in] TARGET_NAME Name of the target. Alternatively, the script file
 #                         path relative to the current source directory can be
-#                         given here. In this case, the basename of the script
-#                         file is used as target name and the SCRIPT option may
-#                         not be used.
+#                         given here directly. In this case, the basename of the
+#                         script file is used as target name.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted:
 # @par
@@ -1352,8 +1351,6 @@ function (basis_add_script TARGET_NAME)
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
-
-
 
   if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE)
     if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
