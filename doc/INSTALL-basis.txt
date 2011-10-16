@@ -230,7 +230,7 @@ BUILDING THE SOFWARE FROM SOURCES
                              Valid values are "Release", "Debug", and "Coverage".
      - INSTALL_LINKS         Whether (symbolic) links should be created (see Step 5).
      - INSTALL_PREFIX        Prefix used for package installation (see Step 5).
-     - INSTALL_SINFIX        Suffix/Infix used for package installation (see Step 5).
+     - INSTALL_SINFIX        Whether to use suffix/infix for installation (see Step 5).
 
      Note that INSTALL_PREFIX is initialized by the value of CMAKE_INSTALL_PREFIX,
      the default used by CMake to specify the installation prefix. Then, the
@@ -288,15 +288,13 @@ BUILDING THE SOFWARE FROM SOURCES
      First, make sure that the CMake variables INSTALL_PREFIX and
      INSTALL_SINFIX are set properly by running CMake as follows:
 
-       $ cmake -D "INSTALL_PREFIX=<prefix>" -D "INSTALL_SINFIX=<sinfix>" ~/$pkg-build
+       $ cmake -D "INSTALL_PREFIX=<prefix>" -D "INSTALL_SINFIX=ON|OFF" ~/$pkg-build
 
-     This can be omitted if these variables were set already during
-     the configuration of the build tree or if the default values
-     should be used. On Linux, INSTALL_PREFIX is by default set to
-     "/usr/local" and INSTALL_SINFIX to "<package>". Note that the
-     following strings can be used in the specification of these
-     variables which will be substituted by the corresponding
-     package specific values.
+     This can be omitted if these variables were set already during the
+     configuration of the build tree or if the default values should be used.
+     On Linux, INSTALL_PREFIX is by default set to "/usr/local". Note that the
+     following strings can be used in the specification of this variable which
+     will be substituted by the corresponding package specific values.
 
      - @PROJECT_NAME@            The case-sensitive name of the software package.
      - @PROJECT_NAME_UPPER@      The name of the package in uppercase only.
@@ -329,15 +327,15 @@ BUILDING THE SOFWARE FROM SOURCES
      - <prefix>/share/<sinfix>/man/man.1   Man pages of main executables.
      - <prefix>/share/<sinfix>/man/man.3   Man pages of library functions.
 
-     where <prefix> is the value of INSTALL_PREFIX and <sinfix> the value
-     of INSTALL_SINFIX. If more than one version of a software package
-     shall be installed, include the package version in the <prefix> by setting
-     INSTALL_PREFIX to "/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@",
+     where <prefix> is the value of INSTALL_PREFIX and <sinfix> is an empty
+     string if INSTALL_SINFIX is OFF and the package name in lowercase
+     otherwise (the default). If more than one version of a software
+     package shall be installed, include the package version in the <prefix>
+     by setting INSTALL_PREFIX to "/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@",
      for example.
 
-     Additionally, if <sinfix> is not an empty string and INSTALL_LINKS is
-     set to TRUE (the default), the following (symbolic) links are created
-     on UNIX-based systems:
+     Additionally, if INSTALL_SINFIX and INSTALL_LINKS are ON (the default),
+     the following (symbolic) links are created on UNIX-based systems:
 
      - <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
      - <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
