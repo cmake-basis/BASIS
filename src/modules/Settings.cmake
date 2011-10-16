@@ -180,6 +180,9 @@ set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 # of changelogs.
 set (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
 
+## @brief Installation sinfix.
+set (BASIS_INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@")
+
 # ============================================================================
 # cached variables
 # ============================================================================
@@ -317,7 +320,6 @@ macro (basis_initialize_directories)
 
   # install tree
   string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
-  string (CONFIGURE "${INSTALL_SINFIX}" INSTALL_SINFIX @ONLY)
 
   set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
 
@@ -416,11 +418,8 @@ set (
   CACHE PATH "Installation directories prefix."
 )
 
-## @brief Installation sinfix.
-set (
-  INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@"
-  CACHE PATH "Installation directories suffix (or infix, respectively)."
-)
+## @brief Whether to use project name as installation sinfix.
+option (INSTALL_SINFIX "Whether to use the project name as installation path suffix (or infix, respectively)." ON)
 
 ## @brief Enable/Disable installation of symbolic links on Unix-based systems.
 if (UNIX)
@@ -447,7 +446,7 @@ endif ()
 if (INSTALL_SINFIX)
   foreach (P RUNTIME LIBEXEC)
     set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+    set (${VAR} "${${VAR}}/${BASIS_INSTALL_SINFIX}")
   endforeach ()
 endif ()
 
@@ -475,7 +474,7 @@ set (INSTALL_ARCHIVE_DIR "lib")
 if (INSTALL_SINFIX)
   foreach (P LIBRARY ARCHIVE)
     set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+    set (${VAR} "${${VAR}}/${BASIS_INSTALL_SINFIX}")
   endforeach ()
 endif ()
 
@@ -514,7 +513,7 @@ endif ()
 
 # prepend INSTALL_SINFIX
 if (INSTALL_SINFIX)
-  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/${INSTALL_SINFIX}")
+  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/${BASIS_INSTALL_SINFIX}")
 endif ()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -527,7 +526,7 @@ set (INSTALL_SHARE_DIR "share")
 
 # prepend INSTALL_SINFIX
 if (INSTALL_SINFIX)
-  set (INSTALL_SHARE_DIR "${INSTALL_SHARE_DIR}/${INSTALL_SINFIX}")
+  set (INSTALL_SHARE_DIR "${INSTALL_SHARE_DIR}/${BASIS_INSTALL_SINFIX}")
 endif ()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -562,7 +561,7 @@ endif ()
 if (WIN32 AND INSTALL_SINFIX)
   foreach (P DOC EXAMPLE MAN)
     set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/${INSTALL_SINFIX}")
+    set (${VAR} "${${VAR}}/${BASIS_INSTALL_SINFIX}")
   endforeach ()
 endif ()
 

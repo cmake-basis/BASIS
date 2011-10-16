@@ -76,8 +76,8 @@ endfunction ()
 # @brief Adds installation command for creation of symbolic links.
 #
 # This function creates for each main executable a symbolic link directly
-# in the directory @c INSTALL_PREFIX/bin if @c INSTALL_SINFIX is not an empty
-# string and the software is installed on a Unix-based system, i.e., one which
+# in the directory @c INSTALL_PREFIX/bin if @c INSTALL_SINFIX is TRUE and the
+# software is installed on a Unix-based system, i.e., one which
 # supports the creation of symbolic links.
 #
 # @returns Adds installation command for creation of symbolic links in the
@@ -131,7 +131,7 @@ function (basis_install_links)
   #       but of the standard of certain distributions including Ubuntu.
   basis_install_link (
     "${INSTALL_DOC_DIR}"
-    "share/doc/${INSTALL_SINFIX}"
+    "share/doc/${BASIS_INSTALL_SINFIX}"
   )
 endfunction ()
 
