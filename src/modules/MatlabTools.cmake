@@ -1027,7 +1027,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
 
-  if (NOT BASIS_TYPE MATCHES "^MCC_$")
+  if (NOT BASIS_TYPE MATCHES "^MCC_")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
