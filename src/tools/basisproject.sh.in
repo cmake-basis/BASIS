@@ -1167,29 +1167,31 @@ function add_find_package
     echo >> $file
     echo "if (${prefix}_FOUND)" >> $file
     if [ $use_file -ne 0 ]; then
-    echo "  include (\${${prefix}_USE_FILE})" >> $file
+        echo "  include (\${${prefix}_USE_FILE})" >> $file
     else
-    echo "  if (${prefix}_INCLUDE_DIRS)" >> $file
-    echo "    basis_include_directories (\${${prefix}_INCLUDE_DIRS})" >> $file
-    echo "  elseif (${prefix}_INCLUDE_DIR)" >> $file
-    echo "    basis_include_directories (\${${prefix}_INCLUDE_DIR})" >> $file
-    echo "  endif ()" >> $file
-    # Note: According to an email on the CMake mailing list, it is not a good idea
-    #       to use link_directories() any more given that the arguments to
-    #       target_link_libraries() are absolute paths to the library files.
-    #       Therefore, this code is commented and not used. It remains here as a
-    #       reminder only.
-    #echo >> $file
-    #echo "  if (${prefix}_LIBRARY_DIRS)" >> $file
-    #echo "    link_directories (\${${prefix}_LIBRARY_DIRS})" >> $file
-    #echo "  elseif (${prefix}_LIBRARY_DIR)" >> $file
-    #echo "    link_directories (\${${prefix}_LIBRARY_DIR})" >> $file
-    #echo "  endif ()" >> $file
+        echo "  if (${prefix}_INCLUDE_DIRS)" >> $file
+        echo "    basis_include_directories (\${${prefix}_INCLUDE_DIRS})" >> $file
+        echo "  elseif (${prefix}_INCLUDES)" >> $file
+        echo "    basis_include_directories (\${${prefix}_INCLUDES})" >> $file
+        echo "  elseif (${prefix}_INCLUDE_DIR)" >> $file
+        echo "    basis_include_directories (\${${prefix}_INCLUDE_DIR})" >> $file
+        echo "  endif ()" >> $file
+        # Note: According to an email on the CMake mailing list, it is not a good idea
+        #       to use basis_link_directories() any more given that the arguments to
+        #       basis_target_link_libraries() are absolute paths to the library files.
+        #       Therefore, this code is commented and not used. It remains here as a
+        #       reminder only.
+        #echo >> $file
+        #echo "  if (${prefix}_LIBRARY_DIRS)" >> $file
+        #echo "    basis_link_directories (\${${prefix}_LIBRARY_DIRS})" >> $file
+        #echo "  elseif (${prefix}_LIBRARY_DIR)" >> $file
+        #echo "    basis_link_directories (\${${prefix}_LIBRARY_DIR})" >> $file
+        #echo "  endif ()" >> $file
     fi
     if [ $required -ne 0 ]; then
-    echo "else ()" >> $file
-    echo "  # raise fatal error in case Find${package}.cmake did not do it" >> $file
-    echo "  message (FATAL_ERROR \"Package ${package} not found.\")" >> $file
+        echo "else ()" >> $file
+        echo "  # raise fatal error in case Find${package}.cmake did not do it" >> $file
+        echo "  message (FATAL_ERROR \"Package ${package} not found.\")" >> $file
     fi
     echo "endif ()" >> $file
 
