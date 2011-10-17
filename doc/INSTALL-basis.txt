@@ -315,17 +315,19 @@ BUILDING THE SOFWARE FROM SOURCES
  
      The package files are installed in the following locations:
 
-     - <prefix>/bin/<sinfix>/              Main executable files.
-     - <prefix>/etc/<sinfix>/              Package configuration files.
-     - <prefix>/include/sbia/<package>/    Include files, where <prefix>/include/
-                                           is the directory that needs to be
-                                           in the search path for include files.
-     - <prefix>/lib/<sinfix>/              Libraries and auxiliary executables.
-     - <prefix>/share/doc/<sinfix>         Package documentation files.
-     - <prefix>/share/<sinfix>/example/    Files required to run example as
-                                           described in the User Manual.
-     - <prefix>/share/<sinfix>/man/man.1   Man pages of main executables.
-     - <prefix>/share/<sinfix>/man/man.3   Man pages of library functions.
+     - <prefix>/bin/<sinfix>/               Main executable files.
+     - <prefix>/etc/<sinfix>/               Package configuration files.
+     - <prefix>/include/sbia/<package>/     Include files, where <prefix>/include/
+                                            is the directory that needs to be
+                                            in the search path for include files.
+     - <prefix>/lib/<sinfix>/               Libraries and auxiliary executables.
+     - <prefix>/lib/python/sbia/<package>   Python modules.
+     - <prefix>/lib/perl5/SBIA/<Package>    Perl modules.
+     - <prefix>/share/<sinfix>/doc/         Package documentation files.
+     - <prefix>/share/<sinfix>/example/     Files required to run example as
+                                            described in the User Manual.
+     - <prefix>/share/<sinfix>/man/man.1    Man pages of main executables.
+     - <prefix>/share/<sinfix>/man/man.3    Man pages of library functions.
 
      where <prefix> is the value of INSTALL_PREFIX and <sinfix> is an empty
      string if INSTALL_SINFIX is OFF and the package name in lowercase
@@ -338,6 +340,7 @@ BUILDING THE SOFWARE FROM SOURCES
      the following (symbolic) links are created on UNIX-based systems:
 
      - <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
+     - <prefix>/share/doc/<sinfix>       -> <prefix>/share/<sinfix>/doc/
      - <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
      - <prefix>/share/man/man.3/<func>.3 -> <prefix>/share/<sinfix>/man/man.3/<func>.3
 
@@ -350,6 +353,54 @@ BUILDING THE SOFWARE FROM SOURCES
      object files and built executables should still be deleted by
 
        $ make clean
+
+  6. Setup your environment (optional)
+
+     In order to ease the execution of the main executable files, we suggest to
+     add either the path ~/$pkg-build/bin/ or <prefix>/bin/ and optionally
+     <prefix>/bin/<sinfix> to the search path for executable files, i.e., the
+     PATH environment variable. This is, however, generally no requirement for
+     the correct functioning of the software. For example,
+
+     $ export PATH="<prefix>/bin/:<prefix>/bin/<sinfix>/:${PATH}"
+
+     or
+
+     $ setenv PATH "<prefix>/bin/:<prefix>/bin/<sinfix>/:${PATH}"
+
+
+     To be able to use the Python modules of a SBIA software package in your
+     own Python scripts, you need to add the path <prefix>/python/ to the search
+     path for Python modules, e.g.,
+
+     $ export PYTHONPATH="${PYTHONPATH}:<prefix>/lib/python/"
+
+     or
+
+     $ setenv PYTHONPATH "${PYTHONPATH}:<prefix>/lib/python/"
+
+     or in your Python script
+
+     #! /usr/bin/env python
+     import sys
+     sys.path.append('<prefix>/lib/python/')
+     from sbia.<package> import <module>
+
+
+     To be able to use the Perl modules of a SBIA software package in your own
+     Perl scripts, you need to add the path <prefix>/perl5/ to the search path
+     for Perl modules, e.g.,
+
+     $ export PERL5LIB="${PERL5LIB}:<prefix>/lib/perl5/"
+
+     or
+
+     $ setenv PERL5LIB "${PERL5LIB}:<prefix>/lib/perl5/"
+
+     or in your Perl script
+
+     use lib '<prefix>/lib/perl5';
+     use SBIA::<Package>::<Module>;
 
 
   Makefile-based Deinstallation
