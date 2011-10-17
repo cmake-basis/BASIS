@@ -654,6 +654,7 @@ endfunction ()
 function (basis_get_target_location VAR TARGET_NAME PART)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET "${TARGET_UID}")
+    basis_target_name (TARGET_NAME "${TARGET_UID}")
     basis_target_type (TYPE "${TARGET_UID}")
     get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
 
