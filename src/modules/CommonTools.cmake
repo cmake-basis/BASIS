@@ -44,9 +44,9 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 # @param [in] ARGN    Optional arguments to find_package().
 #
 # @retval <PACKAGE>_FOUND Whether the given package was found.
-function (basis_find_package PACKAGE)
+macro (basis_find_package PACKAGE)
     find_package (${PACKAGE} ${ARGN})
-endfunction ()
+endmacro ()
 
 ##############################################################################
 # @brief Convenience macro useful to find other packages based on BASIS.
