@@ -28,14 +28,14 @@ INTRODUCTION
 OBTAINING A COPY OF THE SOFTWARE
 ================================
 
-  Please see corresponding section in the INSTALL-basis document.
+  Please see corresponding section in the INSTALL-basis document [1].
 
 
 
 INSTALLING A BINARY DISTRIBUTION PACKAGE
 ========================================
 
-  Please see corresponding section in the INSTALL-basis document.
+  Please see corresponding section in the INSTALL-basis document [1].
 
 
 
@@ -46,7 +46,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   available to configure this software package are summarized. For a list of
   general build dependencies and step-by-step instructions on how to use CMake
   and GNU Make to build and install the software, please refer to the
-  corresponding section in the INSTALL-basis [1] document.
+  corresponding section in the INSTALL-basis document [1].
 
 
   Build Dependencies
@@ -71,4 +71,5 @@ BUILDING THE SOFTWARE FROM SOURCES
 REFERENCES
 ==========
 
-  [1] https://www.rad.upenn.edu/sbia/software/installation.html
+  [1] Visit https://www.rad.upenn.edu/sbia/software/installation.html or see
+      INSTALL-basis.txt document in "doc/" directory of the BASIS installation.
