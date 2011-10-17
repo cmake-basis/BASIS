@@ -71,49 +71,6 @@ mark_as_advanced (BASIS_MEX_TIMEOUT)
 ## @}
 
 # ============================================================================
-# find programs
-# ============================================================================
-
-## @brief Script used to invoke the MATLAB Compiler in MATLAB mode.
-set (BASIS_SCRIPT_MCC "${CMAKE_CURRENT_LIST_DIR}/runmcc.m")
-
-## @brief The MATLAB interpreter.
-find_program (
-  BASIS_CMD_MATLAB
-    NAMES matlab
-    DOC "The MATLAB application (matlab)."
-)
-
-mark_as_advanced (BASIS_CMD_MATLAB)
-
-## @brief The MATLAB Compiler command-line tool.
-find_program (
-  BASIS_CMD_MCC
-    NAMES mcc
-    DOC "The MATLAB Compiler (mcc)."
-)
-
-mark_as_advanced (BASIS_CMD_MCC)
-
-## @brief The mexext script optionally used to determine platform specific extension of MEX-files.
-find_program (
-  BASIS_CMD_MEXEXT
-    NAMES mexext
-    DOC "The MEXEXT script of MATLAB (mexext)."
-)
-
-mark_as_advanced (BASIS_CMD_MEXEXT)
-
-## @brief The MEX script used to build MEX-files in native mode.
-find_program (
-  BASIS_CMD_MEX
-    NAMES mex
-    DOC "The MEX-file generator of MATLAB (mex)."
-)
-
-mark_as_advanced (BASIS_CMD_MEX)
-
-# ============================================================================
 # utilities
 # ============================================================================
 
@@ -128,10 +85,14 @@ mark_as_advanced (BASIS_CMD_MEX)
 # @ingroup CMakeUtilities
 
 function (basis_get_full_matlab_version VERSION)
+  if (NOT MATLAB_EXECUTABLE)
+    message (FATAL_ERROR "MATLAB_EXECUTABLE not found. Forgot to add basis_find_package(MATLAB) to Depends.cmake?")
+  endif ()
+
   set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
   # run matlab command to write return value of "version" command to text file
   if (NOT EXISTS "${OUTPUT_FILE}")
-    set (CMD "${BASIS_CMD_MATLAB}" "-nodesktop" "-nosplash")
+    set (CMD "${MATLAB_EXECUTABLE}" "-nodesktop" "-nosplash")
     if (WIN32)
       list (APPEND CMD "-automation")
     endif ()
@@ -257,9 +218,9 @@ function (basis_mexext)
   set (MEXEXT "${MEX_EXT}")
 
   # use MEXEXT if possible
-  if (NOT MEXEXT AND BASIS_CMD_MEXEXT)
+  if (NOT MEXEXT AND MATLAB_MEXEXT_EXECUTABLE)
     execute_process (
-      COMMAND         "${BASIS_CMD_MEXEXT}"
+      COMMAND         "${MATLAB_MEXEXT_EXECUTABLE}"
       RESULT_VARIABLE RETVAL
       OUTPUT_VARIABLE MEXEXT
       ERROR_QUIET
@@ -399,9 +360,9 @@ function (basis_add_mex_target TARGET_NAME)
   message (STATUS "Adding MEX-file ${TARGET_UID}...")
 
   # required commands available ?
-  if (NOT BASIS_CMD_MEX)
+  if (NOT MATLAB_MEX_EXECUTABLE)
     message (FATAL_ERROR "MATLAB MEX script (mex) not found. It is required to build target ${TARGET_UID}."
-                         "Set BASIS_CMD_MEX manually and try again.")
+                         "Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MEX_EXECUTABLE manually and try again.")
   endif ()
  
   # MEX flags
@@ -664,7 +625,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   list (APPEND MEX_ARGS ${SOURCES})                              # source files
 
   # build command for invocation of MEX script
-  set (BUILD_CMD    "${BASIS_CMD_MEX}" ${MEX_ARGS})
+  set (BUILD_CMD    "${MATLAB_MEX_EXECUTABLE}" ${MEX_ARGS})
   set (BUILD_LOG    "${BUILD_DIR}/mexBuild.log")
   set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
 
@@ -868,9 +829,9 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
 
   # required commands available ?
-  if (NOT BASIS_CMD_MCC)
+  if (NOT MATLAB_MCC_EXECUTABLE)
     message (FATAL_ERROR "MATLAB Compiler not found. It is required to build target ${TARGET_UID}."
-                         "Set BASIS_CMD_MCC manually and try again.")
+                         "Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MCC_EXECUTABLE manually and try again.")
   endif ()
  
   # MCC flags
@@ -1111,7 +1072,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   #list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries, e.g. MEX-files
 
   # build command for invocation of MATLAB Compiler in standalone mode
-  set (BUILD_CMD   "${BASIS_CMD_MCC}" ${MCC_ARGS})
+  set (BUILD_CMD   "${MATLAB_MCC_EXECUTABLE}" ${MCC_ARGS})
   set (BUILD_LOG   "${BUILD_DIR}/mccBuild.log")
   set (WORKING_DIR "${SOURCE_DIRECTORY}")
   set (MATLAB_MODE OFF)
@@ -1120,9 +1081,9 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   if (BASIS_MCC_MATLAB_MODE)
     set (MATLAB_MODE ON)
 
-    if (NOT BASIS_CMD_MATLAB)
-      message (WARNING "MATLAB not found. It is required to build target ${TARGET_UID} in MATLAB mode."
-                       " Set BASIS_CMD_MATLAB manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
+    if (NOT MATLAB_EXECUTABLE)
+      message (WARNING "MATLAB executable not found. It is required to build target ${TARGET_UID} in MATLAB mode."
+                       " Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_EXECUTABLE manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
                        " Will build target ${TARGET_UID} in standalone mode instead.")
       set (MATLAB_MODE OFF)
     endif ()
@@ -1138,12 +1099,12 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
       set (
         BUILD_CMD
-          "${BASIS_CMD_MATLAB}" # run MATLAB
-          "-nosplash"           # do not display splash screen on start up
-          "-nodesktop"          # run in command line mode
+          "${MATLAB_EXECUTABLE}" # run MATLAB
+          "-nosplash"            # do not display splash screen on start up
+          "-nodesktop"           # run in command line mode
           #"-nojvm"              # we do not need the Java Virtual Machine
-          "-r" "${MATLAB_CMD}"  # MATLAB command which invokes MATLAB Compiler
-      )
+          "-r" "${MATLAB_CMD}"   # MATLAB command which invokes MATLAB Compiler
+       )
     endif ()
   endif ()
 
