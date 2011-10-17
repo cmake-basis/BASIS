@@ -139,21 +139,28 @@ function (basis_include_directories)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "AFTER;BEFORE;SYSTEM" "" "" ${ARGN})
 
+  # make relative paths absolute
+  set (DIRS)
+  foreach (P ${ARGN_UNPARSED_ARGUMENTS})
+    get_filename_component (P "${P}" ABSOLUTE)
+    list (APPEND DIRS "${P}")
+  endforeach ()
+
   # current include directories
   if (BASIS_INCLUDE_DIRECTORIES)
     if (ARGN_BEFORE)
       set (
         BASIS_INCLUDE_DIRECTORIES
-          "${ARGN_UNPARSED_ARGUMENTS};${BASIS_INCLUDE_DIRECTORIES}"
+          "${DIRS};${BASIS_INCLUDE_DIRECTORIES}"
       )
     else ()
       set (
         BASIS_INCLUDE_DIRECTORIES
-          "${BASIS_INCLUDE_DIRECTORIES};${ARGN_UNPARSED_ARGUMENTS}"
+          "${BASIS_INCLUDE_DIRECTORIES};${DIRS}"
       )
     endif ()
   else ()
-    set (BASIS_INCLUDE_DIRECTORIES "${ARGN_UNPARSED_ARGUMENTS}")
+    set (BASIS_INCLUDE_DIRECTORIES "${DIRS}")
   endif ()
 
   if (BASIS_INCLUDE_DIRECTORIES)
@@ -166,10 +173,10 @@ function (basis_include_directories)
   if (BASIS_CACHED_INCLUDE_DIRECTORIES)
     set (
       BASIS_CACHED_INCLUDE_DIRECTORIES
-        "${BASIS_CACHED_INCLUDE_DIRECTORIES};${ARGN_UNPARSED_ARGUMENTS}"
+        "${BASIS_CACHED_INCLUDE_DIRECTORIES};${DIRS}"
     )
   else ()
-    set (BASIS_CACHED_INCLUDE_DIRECTORIES "${ARGN_UNPARSED_ARGUMENTS}")
+    set (BASIS_CACHED_INCLUDE_DIRECTORIES "${DIRS}")
   endif ()
 
   if (BASIS_CACHED_INCLUDE_DIRECTORIES)
@@ -209,14 +216,21 @@ function (basis_link_directories)
   # CMake's link_directories()
   _link_directories (${ARGN})
 
+  # make relative paths absolute
+  set (DIRS)
+  foreach (P ${ARGN})
+    get_filename_component (P "${P}" ABSOLUTE)
+    list (APPEND DIRS "${P}")
+  endforeach ()
+
   # current link directories
   if (BASIS_LINK_DIRECTORIES)
     set (
       BASIS_LINK_DIRECTORIES
-        "${BASIS_LINK_DIRECTORIES};${ARGN}"
+        "${BASIS_LINK_DIRECTORIES};${DIRS}"
     )
   else ()
-    set (BASIS_LINK_DIRECTORIES "${ARGN}")
+    set (BASIS_LINK_DIRECTORIES "${DIRS}")
   endif ()
 
   if (BASIS_LINK_DIRECTORIES)
