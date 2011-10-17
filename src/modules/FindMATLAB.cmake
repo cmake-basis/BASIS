@@ -38,6 +38,22 @@
 #         variables are valid.</td>
 #   </tr>
 #   <tr>
+#     @tp @b MATLAB_EXECUTABLE @tpend
+#     <td>The absolute path of the found matlab executable.</td>
+#   </tr>
+#   <tr>
+#     @tp @b MATLAB_MCC_EXECUTABLE @tpend
+#     <td>The absolute path of the found MATLAB Compiler (mcc) executable.</td>
+#   </tr>
+#   <tr>
+#     @tp @b MATLAB_MEX_EXECUTABLE @tpend
+#     <td>The absolute path of the found MEX script (mex) executable.</td>
+#   </tr>
+#   <tr>
+#     @tp @b MATLAB_MEXEXT_EXECUTABLE @tpend
+#     <td>The absolute path of the found mexext script executable.</td>
+#   </tr>
+#   <tr>
 #     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
 #         @b MATLAB_INCLUDE_DIR</td>
 #     <td>Package include directories.</td>
@@ -122,6 +138,71 @@ endif ()
 set (MATLAB_LIBRARY_NAMES "mex" "mx" "eng")
 
 # ----------------------------------------------------------------------------
+# find MATLAB executables
+if (MATLAB_DIR)
+  find_program (
+    MATLAB_EXECUTABLE
+      NAMES         matlab
+      HINTS         "${MATLAB_DIR}"
+      PATH_SUFFIXES "bin"
+      DOC           "The MATLAB application (matlab)."
+  )
+
+  find_program (
+    MATLAB_MCC_EXECUTABLE
+      NAMES         mcc
+      HINTS         "${MATLB_DIR}"
+      PATH_SUFFIXES "bin"
+      DOC           "The MATLAB Compiler (mcc)."
+  )
+
+  find_program (
+    MATLAB_MEX_EXECUTABLE
+      NAMES         mex
+      HINTS         "${MATLAB_DIR}"
+      PATH_SUFFIXES "bin"
+      DOC           "The MEX-file generator of MATLAB (mex)."
+  )
+
+  find_program (
+    MATLAB_MEXEXT_EXECUTABLE
+      NAMES         mexext
+      HINTS         "${MATLAB_DIR}"
+      PATH_SUFFIXES "bin"
+      DOC           "The MEXEXT script of MATLAB (mexext)."
+  )
+else ()
+  find_program (
+    MATLAB_EXECUTABLE
+      NAMES matlab
+      DOC "The MATLAB application (matlab)."
+  )
+
+  find_program (
+    MATLAB_MCC_EXECUTABLE
+      NAMES mcc
+      DOC "The MATLAB Compiler (mcc)."
+  )
+
+  find_program (
+    MATLAB_MEX_EXECUTABLE
+      NAMES mex
+      DOC "The MEX-file generator of MATLAB (mex)."
+  )
+
+  find_program (
+    MATLAB_MEXEXT_EXECUTABLE
+      NAMES mexext
+      DOC "The MEXEXT script of MATLAB (mexext)."
+  )
+endif ()
+
+mark_as_advanced (MATLAB_EXECUTABLE)
+mark_as_advanced (MATLAB_MCC_EXECUTABLE)
+mark_as_advanced (MATLAB_MEX_EXECUTABLE)
+mark_as_advanced (MATLAB_MEXEXT_EXECUTABLE)
+
+# ----------------------------------------------------------------------------
 # find paths/files
 if (MATLAB_DIR)
 
@@ -201,7 +282,7 @@ find_package_handle_standard_args (
 # MESSAGE
     DEFAULT_MSG
 # VARIABLES
+    MATLAB_EXECUTABLE
     MATLAB_INCLUDE_DIR
     ${MATLAB_LIBRARY_VARS}
 )
-
