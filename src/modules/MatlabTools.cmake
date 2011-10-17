@@ -362,7 +362,7 @@ function (basis_add_mex_target TARGET_NAME)
   # required commands available ?
   if (NOT MATLAB_MEX_EXECUTABLE)
     message (FATAL_ERROR "MATLAB MEX script (mex) not found. It is required to build target ${TARGET_UID}."
-                         "Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MEX_EXECUTABLE manually and try again.")
+                         " Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MEX_EXECUTABLE manually and try again.")
   endif ()
  
   # MEX flags
@@ -831,7 +831,7 @@ function (basis_add_mcc_target TARGET_NAME)
   # required commands available ?
   if (NOT MATLAB_MCC_EXECUTABLE)
     message (FATAL_ERROR "MATLAB Compiler not found. It is required to build target ${TARGET_UID}."
-                         "Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MCC_EXECUTABLE manually and try again.")
+                         " Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MCC_EXECUTABLE manually and try again.")
   endif ()
  
   # MCC flags
