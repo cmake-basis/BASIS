@@ -1160,9 +1160,9 @@ function add_find_package
     echo "# ----------------------------------------------------------------------------" >> $file
     echo >> $file
     if [ $required -ne 0 ]; then
-    echo "find_package (${package} REQUIRED)" >> $file
+    echo "basis_find_package (${package} REQUIRED)" >> $file
     else
-    echo "find_package (${package})" >> $file
+    echo "basis_find_package (${package})" >> $file
     fi
     echo >> $file
     echo "if (${prefix}_FOUND)" >> $file
@@ -1170,9 +1170,9 @@ function add_find_package
     echo "  include (\${${prefix}_USE_FILE})" >> $file
     else
     echo "  if (${prefix}_INCLUDE_DIRS)" >> $file
-    echo "    include_directories (\${${prefix}_INCLUDE_DIRS})" >> $file
+    echo "    basis_include_directories (\${${prefix}_INCLUDE_DIRS})" >> $file
     echo "  elseif (${prefix}_INCLUDE_DIR)" >> $file
-    echo "    include_directories (\${${prefix}_INCLUDE_DIR})" >> $file
+    echo "    basis_include_directories (\${${prefix}_INCLUDE_DIR})" >> $file
     echo "  endif ()" >> $file
     # Note: According to an email on the CMake mailing list, it is not a good idea
     #       to use link_directories() any more given that the arguments to
