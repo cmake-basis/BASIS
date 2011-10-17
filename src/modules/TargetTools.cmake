@@ -100,6 +100,19 @@ endfunction ()
 # ============================================================================
 
 ##############################################################################
+# @brief Overwrites CMake's include_directories() command.
+#
+# The include_directories() command has to be overwritten such that when
+# use files from other projects as for example ITK are included, we still
+# get to know the paths added by these external projects which do not know
+# about our own basis_include_directories() function.
+#
+# @param [in] ARGN All arguments are passed on to basis_include_directories().
+macro (include_directories)
+  basis_include_directories (${ARGN})
+endmacro ()
+
+##############################################################################
 # @brief Replaces CMake's include_directories() command.
 #
 # All arguments are passed on to CMake's include_directories() command.
@@ -121,7 +134,7 @@ endfunction ()
 
 function (basis_include_directories)
   # CMake's include_directories ()
-  include_directories (${ARGN})
+  _include_directories (${ARGN})
 
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "AFTER;BEFORE;SYSTEM" "" "" ${ARGN})
@@ -170,6 +183,19 @@ function (basis_include_directories)
 endfunction ()
 
 ##############################################################################
+# @brief Overwrites CMake's link_directories() command.
+#
+# The link_directories() command has to be overwritten such that when
+# use files from other projects as for example ITK are included, we still
+# get to know the paths added by these external projects which do not know
+# about our own basis_link_directories() function.
+#
+# @param [in] ARGN All arguments are passed on to basis_link_directories().
+macro (link_directories)
+  basis_link_directories (${ARGN})
+endmacro ()
+
+##############################################################################
 # @brief Replaces CMake's link_directories() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:link_directories
@@ -181,7 +207,7 @@ endfunction ()
 
 function (basis_link_directories)
   # CMake's link_directories()
-  link_directories (${ARGN})
+  _link_directories (${ARGN})
 
   # current link directories
   if (BASIS_LINK_DIRECTORIES)
