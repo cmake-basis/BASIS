@@ -21,6 +21,30 @@ endif ()
 #  @{
 
 # ============================================================================
+# target name
+# ============================================================================
+
+##############################################################################
+# @brief Derive target name from source file name.
+#
+# @param [out] TARGET_NAME Target name.
+# @param [in]  SOURCE_FILE Source file.
+# @param [in]  COMPONENT   Third argument to get_filename_component().
+#
+# @returns Target name derived from @p SOURCE_FILE.
+#
+# @ingroup CMakeUtilities
+
+function (basis_get_source_target_name TARGET_NAME SOURCE_FILE COMPONENT)
+  # remove ".in" suffix from file name
+  string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
+  # get filename component
+  get_filename_component (TARGET_NAME_OUT "${SOURCE_FILE}" ${COMPONENT})
+  # return
+  set (${TARGET_NAME} "${TARGET_NAME_OUT}" PARENT_SCOPE)
+endfunction ()
+
+# ============================================================================
 # properties
 # ============================================================================
 
@@ -440,7 +464,10 @@ endfunction ()
 # in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
 # @p LIBEXEC is given.
 #
-# @param [in] TARGET_NAME Name of the executable target.
+# @param [in] TARGET_NAME Name of the target. If the target is build from a
+#                         single source file, the file path of this source file
+#                         can be given as first argument. The build target name
+#                         is then derived from the name of the source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted, all other arguments are passed
 #                         on to add_executable() or the respective custom
@@ -482,9 +509,6 @@ endfunction ()
 #          invoked to actually add the custom target that builds it.
 
 function (basis_add_executable TARGET_NAME)
-  basis_check_target_name (${TARGET_NAME})
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-
   # --------------------------------------------------------------------------
   # determine language
   CMAKE_PARSE_ARGUMENTS (ARGN "" "LANGUAGE" "" ${ARGN})
@@ -498,6 +522,10 @@ function (basis_add_executable TARGET_NAME)
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
+
+    if (NOT TMP_UNPARSED_ARGUMENTS)
+      set (TMP_UNPARSED_ARGUMENTS "${TARGET_NAME}")
+    endif ()
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
     if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS" OR ARGN_LANGUAGE STREQUAL "UNKNOWN")
@@ -593,7 +621,10 @@ endfunction ()
 # basis_add_library (ShellModule MODULE MyModule.sh.in)
 # @endcode
 #
-# @param [in] TARGET_NAME Name of the library target.
+# @param [in] TARGET_NAME Name of the target. If the target is build from a
+#                         single source file, the file path of this source file
+#                         can be given as first argument. The build target name
+#                         is then derived from the name of the source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted:
 # @par
@@ -632,9 +663,6 @@ endfunction ()
 #          the addition of the build target(s).
 
 function (basis_add_library TARGET_NAME)
-  basis_check_target_name (${TARGET_NAME})
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-
   # --------------------------------------------------------------------------
   # determine language
   CMAKE_PARSE_ARGUMENTS (ARGN "" "LANGUAGE" "" ${ARGN})
@@ -644,10 +672,14 @@ function (basis_add_library TARGET_NAME)
     CMAKE_PARSE_ARGUMENTS (
       TMP
       "STATIC;SHARED;MODULE;MEX;TEST;WITH_PATH;NO_EXPORT"
-      "DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT"
+      "DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;CONFIG;CONFIG_SCRIPT"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
+
+    if (NOT TMP_UNPARSED_ARGUMENTS)
+      set (TMP_UNPARSED_ARGUMENTS "${TARGET_NAME}")
+    endif ()
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
     if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS" OR ARGN_LANGUAGE STREQUAL "UNKNOWN")
@@ -770,7 +802,10 @@ endfunction ()
 # @sa basis_add_executable()
 # @sa basis_install()
 #
-# @param [in] TARGET_NAME Name of executable target.
+# @param [in] TARGET_NAME Name of the target. If the target is build from a
+#                         single source file, the file path of this source file
+#                         can be given as first argument. The build target name
+#                         is then derived from the name of the source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted, all other arguments are
 #                         considered to be source code files and simply passed
@@ -815,9 +850,6 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_add_executable_target TARGET_NAME)
-  basis_check_target_name (${TARGET_NAME})
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
@@ -828,6 +860,15 @@ function (basis_add_executable_target TARGET_NAME)
   )
 
   set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
+
+  if (NOT SOURCES)
+    set (SOURCES "${TARGET_NAME}")
+    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
+  endif ()
+
+  # check target name
+  basis_check_target_name (${TARGET_NAME})
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # component
   if (NOT ARGN_COMPONENT)
@@ -973,7 +1014,10 @@ endfunction ()
 # @p LIBRARY_DESTINATION. The installation of each of the library components
 # can be omitted by giving "none" as argument for the destination parameters.
 #
-# @param [in] TARGET_NAME Name of the library target.
+# @param [in] TARGET_NAME Name of the target. If the target is build from a
+#                         single source file, the file path of this source file
+#                         can be given as first argument. The build target name
+#                         is then derived from the name of the source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted. All other arguments are
 #                         considered to be source code files and simply
@@ -1030,9 +1074,6 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_add_library_target TARGET_NAME)
-  basis_check_target_name (${TARGET_NAME})
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
@@ -1043,6 +1084,15 @@ function (basis_add_library_target TARGET_NAME)
   )
 
   set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
+
+  if (NOT SOURCES)
+    set (SOURCES "${TARGET_NAME}")
+    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME)
+  endif ()
+
+  # check target name
+  basis_check_target_name (${TARGET_NAME})
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # library type
   if (NOT ARGN_SHARED AND NOT ARGN_STATIC AND NOT ARGN_MODULE)
@@ -1175,28 +1225,6 @@ function (basis_add_library_target TARGET_NAME)
 endfunction ()
 
 ##############################################################################
-# @brief Get default target name for given script file.
-#
-# This function returns the target name as used by basis_add_script() if
-# no particular target name was specified.
-#
-# @param [out] TARGET_NAME Target name.
-# @param [in]  SCRIPT_FILE File name of script.
-#
-# @returns Default target name derived from script file path.
-#
-# @ingroup CMakeUtilities
-
-function (basis_script_target_name TARGET_NAME SCRIPT_FILE)
-  # remove ".in" suffix from file name
-  string (REGEX REPLACE "\\.in$" "" SCRIPT_FILE "${SCRIPT_FILE}")
-  # use file basename as target name
-  get_filename_component (TARGET_NAME_OUT "${SCRIPT_FILE}" NAME)
-  # return
-  set (${TARGET_NAME} "${TARGET_NAME_OUT}" PARENT_SCOPE)
-endfunction ()
-
-##############################################################################
 # @brief Add script target.
 #
 # This function adds a script target to the project, where during the build
@@ -1267,10 +1295,10 @@ endfunction ()
 # @sa basis_add_script_finalize()
 # @sa basis_add_custom_finalize()
 #
-# @param [in] TARGET_NAME Name of the target. Alternatively, the script file
-#                         path relative to the current source directory can be
-#                         given here directly. In this case, the basename of the
-#                         script file is used as target name.
+# @param [in] TARGET_NAME Name of the target. If the target is build from a
+#                         single source file, the file path of this source file
+#                         can be given as first argument. The build target name
+#                         is then derived from the name of the source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted:
 # @par
@@ -1367,7 +1395,11 @@ function (basis_add_script TARGET_NAME)
 
   if (NOT ARGN_SCRIPT)
     set (ARGN_SCRIPT "${TARGET_NAME}")
-    basis_script_target_name (TARGET_NAME "${ARGN_SCRIPT}")
+    if (ARGN_MODULE)
+      basis_get_source_target_name (TARGET_NAME "${ARGN_SCRIPT}" NAME)
+    else ()
+      basis_get_source_target_name (TARGET_NAME "${ARGN_SCRIPT}" NAME_WE)
+    endif ()
   endif ()
 
   if (ARGN_WITH_PATH)

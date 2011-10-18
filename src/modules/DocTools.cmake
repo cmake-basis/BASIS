@@ -73,11 +73,11 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 # @param [out] FILTER_PATTERNS List of default Doxygen filter patterns.
 
 function (basis_default_doxygen_filters FILTER_PATTERNS)
-  basis_get_target_location (CMAKE_FILTER      "basis@doxyfilter_cmake.py"      ABSOLUTE)
-  basis_get_target_location (PYTHON_FILTER     "basis@doxyfilter_python.py"     ABSOLUTE)
-  basis_get_target_location (PERL_FILTER       "basis@doxyfilter.pl"            ABSOLUTE)
-  basis_get_target_location (BASH_FILTER       "basis@doxyfilter_bash.py"       ABSOLUTE)
-  basis_get_target_location (MATLAB_FILTER     "basis@doxyfilter_matlab.pl"     ABSOLUTE)
+  basis_get_target_location (CMAKE_FILTER  "basis@doxyfilter_cmake"  ABSOLUTE)
+  basis_get_target_location (PYTHON_FILTER "basis@doxyfilter_python" ABSOLUTE)
+  basis_get_target_location (PERL_FILTER   "basis@doxyfilter"        ABSOLUTE)
+  basis_get_target_location (BASH_FILTER   "basis@doxyfilter_bash"   ABSOLUTE)
+  basis_get_target_location (MATLAB_FILTER "basis@doxyfilter_matlab" ABSOLUTE)
 
   set (
     ${FILTER_PATTERNS}
@@ -458,7 +458,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
     basis_list_to_delimited_string (DOXYGEN_INPUT " " ${DOXYGEN_INPUT})
     if (NOT DOXYGEN_INPUT_FILTER)
-      basis_get_target_location (DOXYGEN_INPUT_FILTER "basis@doxyfilter.pl" ABSOLUTE)
+      basis_get_target_location (DOXYGEN_INPUT_FILTER "basis@doxyfilter" ABSOLUTE)
     endif ()
     if (DOXYGEN_INPUT_FILTER MATCHES "^(None|NONE|none)$")
       set (DOXYGEN_INPUT_FILTER)

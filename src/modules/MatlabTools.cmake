@@ -320,9 +320,12 @@ endfunction ()
 #
 # @sa basis_add_library()
 #
-# @param [in] TARGET_NAME Name of the target.
+# @param [in] TARGET_NAME Name of the target. If the target is build from a
+#                         single source file, the file path of this source file
+#                         can be given as first argument. The build target name
+#                         is then derived from the name of the source file.
 # @param [in] ARGN        Remaining arguments such as in particular the
-#                         input source files. The following arguments
+#                         input source files. Moreover, the following arguments
 #                         are parsed:
 # @par
 # <table border="0">
@@ -338,9 +341,6 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_add_mex_target TARGET_NAME)
-  basis_check_target_name ("${TARGET_NAME}")
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
@@ -357,6 +357,20 @@ function (basis_add_mex_target TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
+  set (SOURCES)
+  if (NOT ARGN_UNPARSED_ARGUMENTS)
+    set (ARGN_UNPARSED_ARGUMENTS "${TARGET_NAME}")
+    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
+  endif ()
+  foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
+    get_filename_component (P "${SOURCE}" ABSOLUTE)
+    list (APPEND SOURCES "${P}")
+  endforeach ()
+
+  # check target name
+  basis_check_target_name ("${TARGET_NAME}")
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+
   message (STATUS "Adding MEX-file ${TARGET_UID}...")
 
   # required commands available ?
@@ -367,12 +381,6 @@ function (basis_add_mex_target TARGET_NAME)
  
   # MEX flags
   basis_mexext (MEXEXT)
-
-  set (SOURCES)
-  foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
-    get_filename_component (ABSPATH "${SOURCE}" ABSOLUTE)
-    list (APPEND SOURCES "${ABSPATH}")
-  endforeach ()
 
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
@@ -719,10 +727,13 @@ endfunction ()
 # @sa basis_add_executable()
 # @sa basis_add_library()
 #
-# @param [in] TARGET_NAME Name of the target.
+# @param [in] TARGET_NAME Name of the target. If the target is build from a
+#                         single source file, the file path of this source file
+#                         can be given as first argument. The build target name
+#                         is then derived from the name of the source file.
 # @param [in] ARGN        Remaining arguments such as in particular the
-#                         input source files. The following arguments are
-#                         parsed:
+#                         input source files. Moreover, the following arguments
+#                         are parsed:
 # @par
 # <table border="0">
 #   <tr>
@@ -762,9 +773,6 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_add_mcc_target TARGET_NAME)
-  basis_check_target_name ("${TARGET_NAME}")
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
@@ -820,6 +828,20 @@ function (basis_add_mcc_target TARGET_NAME)
     set (ARGN_RUNTIME_COMPONENT "Unspecified")
   endif ()
 
+  set (SOURCES)
+  if (NOT ARGN_UNPARSED_ARGUMENTS)
+    set (ARGN_UNPARSED_ARGUMETNS "${TARGET_NAME}")
+    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
+  endif ()
+  foreach (ARG ${ARGN_UNPARSED_ARGUMENTS})
+    get_filename_component (SOURCE "${ARG}" ABSOLUTE)
+    list (APPEND SOURCES "${SOURCE}")
+  endforeach ()
+
+  # check target name
+  basis_check_target_name ("${TARGET_NAME}")
+  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+
   if (ARGN_TYPE STREQUAL "LIBRARY")
     message (STATUS "Adding MATLAB library ${TARGET_UID}...")
     message (FATAL_ERROR "Build of MATLAB library from M-files not yet supported.")
@@ -842,22 +864,6 @@ function (basis_add_mcc_target TARGET_NAME)
     string (REPLACE " "      ";"      COMPILE_FLAGS "${COMPILE_FLAGS}")
     string (REPLACE "&nbsp;" " "      COMPILE_FLAGS "${COMPILE_FLAGS}")
   endif ()
-
-  # get list of target arguments
-  set (SOURCES)
-  set (LINK_DEPENDS)
-
-  foreach (ARG ${ARGN_UNPARSED_ARGUMENTS})
-    basis_target_uid (UID "${ARG}")
-    if (TARGET ${UID})
-      list (APPEND LINK_DEPENDS "${UID}")
-    else ()
-      if (NOT IS_ABSOLUTE)
-        set (ARG "${CMAKE_CURRENT_SOURCE_DIR}/${ARG}")
-      endif ()
-      list (APPEND SOURCES "${ARG}")
-    endif ()
-  endforeach ()
 
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
@@ -893,7 +899,7 @@ function (basis_add_mcc_target TARGET_NAME)
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
       INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
       COMPILE_FLAGS             "${COMPILE_FLAGS}"
-      LINK_DEPENDS              "${LINK_DEPENDS}"
+      LINK_DEPENDS              ""
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
   )
