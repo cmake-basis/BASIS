@@ -98,7 +98,7 @@ function print_options
     echo "                             Note that the argument is case insensitive."
     echo "  --use <arg>                Name of external package used by this project."
     echo "                             Note that the package name is case sensitive."
-    echo "  --optuse <arg>             Name of external package optionally used by this project."
+    echo "  --useopt <arg>             Name of external package optionally used by this project."
     echo "                             Note that the package name is case sensitive."
     echo
     echo "Other Options:"
@@ -199,7 +199,7 @@ function print_help
     echo "  $exec_name --root /path/to/existing/project --test --conf-test"
     echo "    Add full testing support to existing project."
     echo
-    echo "  $exec_name --root /path/to/existing/porject --use ITK --optuse MATLAB"
+    echo "  $exec_name --root /path/to/existing/porject --use ITK --useopt MATLAB"
     echo "    Add dependencies on ITK (mandatory) and MATLAB (optional) to existing project."
     echo
     print_contact
@@ -495,14 +495,14 @@ do
             fi
             ;;
 
-        --optuse)
+        --useopt|--optuse)
             shift
             if [ $# -gt 0 ]; then
                 package_names[$package_num]="$1"
                 package_required[$package_num]=0
                 ((package_num++))
             else
-                echo "Option --optuse requires an argument!" 1>&2
+                echo "Option --useopt requires an argument!" 1>&2
                 exit 1
             fi
             ;;
