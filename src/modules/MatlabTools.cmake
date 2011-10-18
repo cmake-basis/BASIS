@@ -642,12 +642,14 @@ function (basis_add_mex_target_finalize TARGET_UID)
   list (APPEND MEX_ARGS ${SOURCES})                              # source files
 
   # build command for invocation of MEX script
-  set (BUILD_CMD    "${MATLAB_MEX_EXECUTABLE}" ${MEX_ARGS})
-  set (BUILD_LOG    "${BUILD_DIR}/mexBuild.log")
-  set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+  set (BUILD_CMD     "${MATLAB_MEX_EXECUTABLE}" ${MEX_ARGS})
+  set (BUILD_LOG     "${BUILD_DIR}/mexBuild.log")
+  set (BUILD_OUTPUT  "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+  set (BUILD_OUTPUTS "${BUILD_OUTPUT}")
 
   if (MFILE)
     set (BUILD_MFILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.m")
+    list (APPEND BUILD_OUTPUTS "${BUILD_MFILE}")
   else ()
     set (BUILD_MFILE)
   endif ()
@@ -683,7 +685,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
     VERBATIM
   )
 
-  if (MFILE AND BUILD_MFILE)
+  if (BUILD_MFILE)
     add_custom_command (
       OUTPUT  "${BUILD_MFILE}"
       DEPENDS "${MFILE}"
@@ -695,7 +697,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   # add custom target
   add_custom_target (
     ${TARGET_UID}+
-    DEPENDS "${BUILD_OUTPUT}" "${BUILD_MFILE}"
+    DEPENDS ${BUILD_OUTPUTS}
     SOURCES ${SOURCES}
   )
 
@@ -707,14 +709,13 @@ function (basis_add_mex_target_finalize TARGET_UID)
     APPEND PROPERTY
       ADDITIONAL_MAKE_CLEAN_FILES
         "${BUILD_DIR}/${OUTPUT_NAME}"
-        "${BUILD_OUTPUT}"
-        "${BUILD_MFILE}"
+        "${BUILD_OUTPUTS}"
         "${BUILD_LOG}"
   )
 
   # install target
   install (
-    FILES       "${BUILD_OUTPUT}" "${BUILD_MFILE}"
+    FILES       ${BUILD_OUTPUTS}
     DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
     COMPONENT   "${LIBRARY_COMPONENT}"
   )
