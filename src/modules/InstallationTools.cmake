@@ -129,10 +129,12 @@ function (basis_install_links)
   # Note: Not all CPack generators preserve symbolic links to directories
   # Note: This is not part of the filesystem hierarchy standard of Linux,
   #       but of the standard of certain distributions including Ubuntu.
-  basis_install_link (
-    "${INSTALL_DOC_DIR}"
-    "share/doc/${BASIS_INSTALL_SINFIX}"
-  )
+  if (INSTALL_SINFIX AND BASIS_INSTALL_SINFIX)
+    basis_install_link (
+      "${INSTALL_DOC_DIR}"
+      "share/doc/${BASIS_INSTALL_SINFIX}"
+    )
+  endif ()
 endfunction ()
 
 # ============================================================================
