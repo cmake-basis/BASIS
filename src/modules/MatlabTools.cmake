@@ -646,6 +646,12 @@ function (basis_add_mex_target_finalize TARGET_UID)
   set (BUILD_LOG    "${BUILD_DIR}/mexBuild.log")
   set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
 
+  if (MFILE)
+    set (BUILD_MFILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.m")
+  else ()
+    set (BUILD_MFILE)
+  endif ()
+
   # relative paths used for comments of commands
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME}")
 
@@ -677,13 +683,18 @@ function (basis_add_mex_target_finalize TARGET_UID)
     VERBATIM
   )
 
-  # copy M-file with documentation to build directory
-  configure_file (${MFILE} "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.m" COPYONLY)
+  if (MFILE)
+    add_custom_command (
+      OUTPUT  "${BUILD_MFILE}"
+      DEPENDS "${MFILE}"
+      COMMAND "${CMAKE_COMMAND}" -E copy "${MFILE}" "${BUILD_MFILE}"
+      COMMENT "Copying M-file of MEX-file ${REL}..."
+  endif ()
 
   # add custom target
   add_custom_target (
     ${TARGET_UID}+
-    DEPENDS "${BUILD_OUTPUT}"
+    DEPENDS "${BUILD_OUTPUT}" "${BUILD_MFILE}"
     SOURCES ${SOURCES}
   )
 
@@ -696,24 +707,16 @@ function (basis_add_mex_target_finalize TARGET_UID)
       ADDITIONAL_MAKE_CLEAN_FILES
         "${BUILD_DIR}/${OUTPUT_NAME}"
         "${BUILD_OUTPUT}"
+        "${BUILD_MFILE}"
         "${BUILD_LOG}"
   )
 
   # install target
   install (
-    FILES       "${BUILD_OUTPUT}"
+    FILES       "${BUILD_OUTPUT}" "${BUILD_MFILE}"
     DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
     COMPONENT   "${LIBRARY_COMPONENT}"
   )
-
-  if (MFILE)
-    install (
-      FILES       "${MFILE}"
-      DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
-      COMPONENT   "${LIBRARY_COMPONENT}"
-      RENAME      "${OUTPUT_NAME_WE}.m"
-    )
-  endif ()
 
   message (STATUS "Adding build command for MEX-file ${TARGET_UID}... - done")
 endfunction ()
