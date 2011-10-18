@@ -712,6 +712,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
       DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
       COMPONENT   "${LIBRARY_COMPONENT}"
       RENAME      "${OUTPUT_NAME_WE}.m"
+    )
   endif ()
 
   message (STATUS "Adding build command for MEX-file ${TARGET_UID}... - done")
