@@ -21,7 +21,7 @@ ressources_dir='@TESTING_DIR@/ressources/test_basisproject'
 source_dir='@TESTING_OUTPUT_DIR@/test_basisproject-source'
 binary_dir='@TESTING_OUTPUT_DIR@/test_basisproject-build'
 
-get_executable_path basisproject_path 'basis::basisproject.sh'
+get_executable_path basisproject_path 'basis::basisproject'
 [ -z "${basisproject_path}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
 
 # ============================================================================

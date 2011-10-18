@@ -43,5 +43,5 @@ basis_add_executable (basistest.sh)        # main wrapper
 
 # do not install symbolic links for subcommands
 foreach (C cron master slave svn)
-  basis_set_target_properties (basistest_${C}.sh PROPERTIES SYMLINK_NAME "NONE")
+  basis_set_target_properties (basistest_${C} PROPERTIES SYMLINK_NAME "NONE")
 endforeach ()

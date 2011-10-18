@@ -27,14 +27,14 @@ class TestExecutableTargetInfo(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_get_target_uid(self):
         self.assertEquals (
-                basis.get_target_uid ('basisproject.sh'),
-                'utilitiestest::basisproject.sh')
+                basis.get_target_uid ('basisproject'),
+                'utilitiestest::basisproject')
         self.assertEquals (
                 basis.get_target_uid ('unknown'),
                 'utilitiestest::unknown')
         self.assertEquals (
-                basis.get_target_uid ('basis::basisproject.sh'),
-                'basis::basisproject.sh')
+                basis.get_target_uid ('basis::basisproject'),
+                'basis::basisproject')
         self.assertEquals (
                 basis.get_target_uid ('hammer::hammer'),
                 'hammer::hammer')
@@ -44,8 +44,8 @@ class TestExecutableTargetInfo(unittest.TestCase):
     
     # ------------------------------------------------------------------------
     def test_is_known_target(self):
-        self.assertFalse (basis.is_known_target ('basisproject.sh'))
-        self.assertTrue (basis.is_known_target ('basis::basisproject.sh'))
+        self.assertFalse (basis.is_known_target ('basisproject'))
+        self.assertTrue (basis.is_known_target ('basis::basisproject'))
         self.assertFalse (basis.is_known_target (None))
         self.assertFalse (basis.is_known_target (''))
         self.assertFalse (basis.is_known_target ('hammer::hammer'))
@@ -57,7 +57,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         # name of executable built by some target
         self.assertTrue (re.match (
                     r"basisproject(\.sh)?",
-                    basis.get_executable_name ('basis::basisproject.sh'))) 
+                    basis.get_executable_name ('basis::basisproject'))) 
     
     # ------------------------------------------------------------------------
     def test_get_executable_directory(self):
@@ -68,7 +68,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         # directory of executable built by some target
         self.assertTrue (re.match (
                     r"/.*/bin(/basis)?",
-                    basis.get_executable_directory ('basis::basisproject.sh')))
+                    basis.get_executable_directory ('basis::basisproject')))
     
     # ------------------------------------------------------------------------
     def test_get_executable_path(self):
@@ -76,7 +76,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         self.assertEquals (basis.get_executable_path (),
                 os.path.join (basis.get_executable_directory (), basis.get_executable_name ()))
         # path of executable built by some target
-        target = 'basis::basisproject.sh'
+        target = 'basis::basisproject'
         self.assertEquals (basis.get_executable_path (target),
                 os.path.join (basis.get_executable_directory (target), basis.get_executable_name (target)))
         # path of some system command

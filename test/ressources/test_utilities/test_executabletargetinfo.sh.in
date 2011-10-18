@@ -29,26 +29,26 @@ plan_tests 40
 #
 # This function failed before due to the GNU version of tr using -c instead of -C.
 
-_executabletargetinfo_sanitize sane 'basis::basisproject.sh'
-is "${sane}" 'basis__basisproject_sh' ':: and . replaced by _'
-_executabletargetinfo_sanitize sane 'basis@basisproject.sh'
-is "${sane}" 'basis_basisproject_sh' '@ and . replaced by _'
+_executabletargetinfo_sanitize sane 'basis::basisproject'
+is "${sane}" 'basis__basisproject' ':: and . replaced by _'
+_executabletargetinfo_sanitize sane 'basis@basisproject'
+is "${sane}" 'basis_basisproject' '@ and . replaced by _'
 
 # ----------------------------------------------------------------------------
 # test get_target_uid()
 
 # without namespace
-get_target_uid uid 'basisproject.sh'
+get_target_uid uid 'basisproject'
 is $? 0 'return value is 0'
-is "${uid}" 'utilitiestest::basisproject.sh' 'namespace prepended to known target'
+is "${uid}" 'utilitiestest::basisproject' 'namespace prepended to known target'
 get_target_uid uid 'unknown'
 is $? 0 'return value is 0'
 is "${uid}" 'utilitiestest::unknown' 'namespace prepended to unknown target'
 
 # with namespace
-get_target_uid uid 'basis::basisproject.sh'
+get_target_uid uid 'basis::basisproject'
 is $? 0 'return value is 0'
-is "${uid}" 'basis::basisproject.sh' 'UID remains unchanged'
+is "${uid}" 'basis::basisproject' 'UID remains unchanged'
 get_target_uid uid 'hammer::hammer'
 is $? 0 'return value is 0'
 is "${uid}" 'hammer::hammer' 'UID remains unchanged'
@@ -66,10 +66,10 @@ is "${uid}" '' 'empty string remains unchanged'
 # ----------------------------------------------------------------------------
 # test is_known_target()
 
-is_known_target 'basisproject.sh'
-isnt $? 0 'basisproject.sh not part of UtilitiesTest'
-is_known_target 'basis::basisproject.sh'
-is $? 0 'basis::basisproject.sh is known target'
+is_known_target 'basisproject'
+isnt $? 0 'basisproject not part of UtilitiesTest'
+is_known_target 'basis::basisproject'
+is $? 0 'basis::basisproject is known target'
 is_known_target ''
 isnt $? 0 'empty target string is unknown target'
 is_known_target
@@ -86,7 +86,7 @@ is $? 0 'return value is 0'
 is "${name}" 'test_executabletargetinfo.sh' 'name of this executable'
 
 # name of executable built by other target
-get_executable_name name 'basis::basisproject.sh'
+get_executable_name name 'basis::basisproject'
 is $? 0 'return value is 0'
 like "${name}" 'basisproject(\.sh)?' 'name of other executable'
 
@@ -99,7 +99,7 @@ is $? 0 'return value is 0'
 like "${dir}" '/Testing/Temporary/test_utilities-build/Testing/bin' 'directory of this executable'
 
 # directory of executable built by other target
-get_executable_directory dir 'basis::basisproject.sh'
+get_executable_directory dir 'basis::basisproject'
 is $? 0 'return value is 0'
 like "${dir}" '^/.*/bin(/basis)?$' 'directory of other executable'
 
@@ -116,7 +116,7 @@ is $? 0 'return value is 0'
 is "${path}" "${dir}/${name}" 'path of this executable'
 
 # path of executable built by other target
-target='basis::basisproject.sh'
+target='basis::basisproject'
 get_executable_path path "${target}"
 is $? 0 'return value is 0'
 get_executable_directory dir "${target}"

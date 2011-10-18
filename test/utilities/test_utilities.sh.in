@@ -25,7 +25,7 @@ readonly RESSOURCES_DIR='@TESTING_DIR@/ressources/test_utilities'
 readonly SOURCE_DIR='@TESTING_OUTPUT_DIR@/test_utilities-source'
 readonly BUILD_DIR='@TESTING_OUTPUT_DIR@/test_utilities-build'
 
-get_executable_path BASISPROJECT 'basis::basisproject.sh'
+get_executable_path BASISPROJECT 'basis::basisproject'
 [ -z "${BASISPROJECT}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
 readonly BASISPROJECT
 
