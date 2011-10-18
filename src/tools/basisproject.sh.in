@@ -91,6 +91,7 @@ function print_options
     echo "  --[no]include              Whetehr to include support of public header files."
     echo "  --[no]test                 Whether to include support for testing."
     echo
+    echo "Dependencies Options:"
     echo "  --language <arg>           Programming language used by this project."
     echo "                             The currently supported languages are:"
     echo "                             CXX (C/C++), Python, Perl, BASH, and MATLAB."
@@ -100,7 +101,7 @@ function print_options
     echo "  --optuse <arg>             Name of external package optionally used by this project."
     echo "                             Note that the package name is case sensitive."
     echo
-    echo "Options:"
+    echo "Other Options:"
     echo "  --clean                    Remove backup and other temporary files left behind."
     echo "  --clean-all                Remove not only backup and other temporary files, but also"
     echo "                             the hidden '.basis' directories with copies of the template files."
@@ -189,7 +190,7 @@ function print_help
     echo
     echo "Examples:"
 	echo "  $exec_name --name MyProject --description \"Novel image analysis method.\" --language CXX"
-    echo "    Create a new project named 'ProjectName' under the current working"
+    echo "    Create a new project named 'MyProject' under the current working"
     echo "    directory using the default project template. Further, enable support for the"
     echo "    C/C++ programming language."
     echo
@@ -232,7 +233,7 @@ function make_absolute
     local path="$1"
 
     if [ -z "$path" ]; then
-        echo "make_absolute (): Argument missing!" 1>&2
+        echo "make_absolute(): Argument missing!" 1>&2
         return 1
     else
         [ "${path/#\//}" != "$path" ] || path="$(pwd)/$path"
@@ -1218,19 +1219,19 @@ if [ $package_num -gt 0 ]; then
         required=${package_required[$idx]}
 
         case "$pkg" in
-            # use package name for both find_package ()
-            # and <pkg>_VARIABLE variable names
+            # use package name for both find_package()
+            # and <Pkg>_VARIABLE variable names
             # -> package provides <PKG>_USE_FILE
             ITK)
                 add_find_package $depends_file_path $pkg $required 0 1
                 ;;
-            # use package name for find_package ()
+            # use package name for find_package()
             # and <PKG>_VARIABLE variable names
             Matlab)
                 add_find_package $depends_file_path $pkg $required 1 0
                 ;;
-            # default, use package name for both find_package ()
-            # and <pkg>_VARIABLE variable names
+            # default, use package name for both find_package()
+            # and <Pkg>_VARIABLE variable names
             *)
                 add_find_package $depends_file_path $pkg $required 0 0
                 ;;
