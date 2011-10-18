@@ -683,12 +683,13 @@ function (basis_add_mex_target_finalize TARGET_UID)
     VERBATIM
   )
 
-  if (MFILE)
+  if (MFILE AND BUILD_MFILE)
     add_custom_command (
       OUTPUT  "${BUILD_MFILE}"
       DEPENDS "${MFILE}"
       COMMAND "${CMAKE_COMMAND}" -E copy "${MFILE}" "${BUILD_MFILE}"
       COMMENT "Copying M-file of MEX-file ${REL}..."
+    )
   endif ()
 
   # add custom target
