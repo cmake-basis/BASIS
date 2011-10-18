@@ -330,9 +330,12 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b COMPONENT name</td>
+#     @tp @b COMPONENT name @endtp
 #     <td>Name of the component. Default: @c BASIS_LIBRARY_COMPONENT.</td>
+#   </tr>
+#   <tr>
+#     @tp @b MFILE file @endtp
+#     <td>MATLAB source file with function prototype and documentation of MEX-file.</td>
 #   </tr>
 # </table>
 #
@@ -345,7 +348,7 @@ function (basis_add_mex_target TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
       ""
-      "COMPONENT"
+      "COMPONENT;MFILE"
       ""
     ${ARGN}
   )
@@ -355,6 +358,10 @@ function (basis_add_mex_target TARGET_NAME)
   endif ()
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "Unspecified")
+  endif ()
+
+  if (ARGN_MFILE)
+    get_filename_component (ARGN_MFILE "${ARGN_MFILE}" ABSOLUTE)
   endif ()
 
   set (SOURCES)
@@ -406,6 +413,7 @@ function (basis_add_mex_target TARGET_NAME)
       LINK_FLAGS                ""
       LINK_DEPENDS              ""
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
+      MFILE                     "${ARGN_MFILE}"
   )
 
   # add target to list of targets
@@ -475,6 +483,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
       "LINK_DEPENDS"
       "LINK_FLAGS"
       "LIBRARY_COMPONENT"
+      "MFILE"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -640,12 +649,12 @@ function (basis_add_mex_target_finalize TARGET_UID)
   # relative paths used for comments of commands
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME}")
 
-  # add custom command to build executable using MATLAB Compiler
+  # add custom command to build executable using MEX script
   add_custom_command (
     OUTPUT "${BUILD_OUTPUT}"
     # rebuild when input sources were modified
     DEPENDS ${DEPENDS}
-    # invoke MEX script, wrapping the command in CMake execute_process ()
+    # invoke MEX script, wrapping the command in CMake execute_process()
     # command allows for inspection of command output for error messages
     # and specification of timeout
     COMMAND "${CMAKE_COMMAND}"
@@ -667,6 +676,9 @@ function (basis_add_mex_target_finalize TARGET_UID)
     COMMENT "Building MEX-file ${REL}..."
     VERBATIM
   )
+
+  # copy M-file with documentation to build directory
+  configure_file (${MFILE} "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.m" COPYONLY)
 
   # add custom target
   add_custom_target (
@@ -693,6 +705,14 @@ function (basis_add_mex_target_finalize TARGET_UID)
     DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
     COMPONENT   "${LIBRARY_COMPONENT}"
   )
+
+  if (MFILE)
+    install (
+      FILES       "${MFILE}"
+      DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
+      COMPONENT   "${LIBRARY_COMPONENT}"
+      RENAME      "${OUTPUT_NAME_WE}.m"
+  endif ()
 
   message (STATUS "Adding build command for MEX-file ${TARGET_UID}... - done")
 endfunction ()
