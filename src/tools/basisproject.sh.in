@@ -637,6 +637,12 @@ do
     shift
 done
 
+# use by default C++ as programming language if none is specified
+if [ $languages_num -eq 0 ]; then
+    languages=('CXX')
+    languages_num=1
+fi
+
 # depends_file required if external packages should be found
 if [ $package_num -gt 0 ]; then
     conf_depends=1
