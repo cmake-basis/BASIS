@@ -105,7 +105,7 @@ function print_options
     echo "  --clean                    Remove backup and other temporary files left behind."
     echo "  --clean-all                Remove not only backup and other temporary files, but also"
     echo "                             the hidden '.basis' directories with copies of the template files."
-    echo "  --force                    Force deletion of modified template files."
+    echo "  --force                    Force deletion of modified template files and non-empty directories."
     echo "  --[no]update               Do not update existing files. Only add new files."
     echo "                             By default, in case of existing files, the project file is updated"
     echo "                             by merging changes of the possibly newer template and the existing file."
