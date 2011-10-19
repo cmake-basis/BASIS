@@ -1117,21 +1117,34 @@ addordel $example "example/CMakeLists.txt" || retval=1
 addordel $example "example" 0              || retval=1 # for deletion of directory
 
 # write cache
-echo "_conf_settings=$conf_settings"         >  $cache
-echo "_conf_depends=$conf_depends"           >> $cache
-echo "_conf_components=$conf_components"     >> $cache
-echo "_conf_package=$conf_package"           >> $cache
-echo "_conf_find=$conf_find"                 >> $cache
-echo "_conf_find_version=$conf_find_version" >> $cache
-echo "_conf_generate=$conf_generate"         >> $cache
-echo "_conf_script=$conf_script"             >> $cache
-echo "_conf_tests=$conf_tests"               >> $cache
-echo "_conf_use=$conf_use"                   >> $cache
-echo "_data=$data"                           >> $cache
-echo "_doc=$doc"                             >> $cache
-echo "_example=$example"                     >> $cache
-echo "_include=$include"                     >> $cache
-echo "_tests=$tests"                         >> $cache
+function write_to_cache
+{
+    local name=$1
+    eval local value=\$$name
+
+    if [ $value -eq 1 ]; then
+        echo "_$name=1" >> $cache
+    else
+        echo "_$name=0" >> $cache
+    fi
+}
+
+echo -n "" > $cache
+write_to_cache conf_settings
+write_to_cache conf_depends
+write_to_cache conf_components
+write_to_cache conf_package
+write_to_cache conf_find
+write_to_cache conf_find_version
+write_to_cache conf_generate
+write_to_cache conf_script
+write_to_cache conf_tests
+write_to_cache conf_use
+write_to_cache data
+write_to_cache doc
+write_to_cache example
+write_to_cache include
+write_to_cache tests
 
 # done
 if [ $retval -ne 0 ]; then
