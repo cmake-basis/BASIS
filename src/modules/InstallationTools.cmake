@@ -158,13 +158,13 @@ function (basis_add_uninstall)
   if (WIN32)
     add_custom_target (
       uninstall
-        \"FOR /F \"tokens=1* delims= \" %%f IN \(${CMAKE_BINARY_DIR}/install_manifest.txt"}\)\" DO \(
+        "FOR /F \"tokens=1* delims= \" %%f IN \(${CMAKE_BINARY_DIR}/install_manifest.txt\) DO \(
             IF EXIST %%f \(
-              del /q /f %%f"
+              del /q /f %%f
             \) ELSE \(
                echo Problem when removing %%f - Probable causes: File already removed or not enough permissions
              \)
-         \)
+         \)"
       VERBATIM
     )
   else ()

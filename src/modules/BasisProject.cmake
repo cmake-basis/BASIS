@@ -332,14 +332,16 @@ macro (basis_project_initialize)
 
   if (BASIS_PROJECT_USES_PERL)
     find_package (Perl     REQUIRED)
-    find_package (PerlLibs REQUIRED)
+    find_package (PerlLibs QUIET)
 
-    basis_version_numbers (
-      ${PERL_VERSION}
-        PERL_VERSION_MAJOR
-        PERL_VERSION_MINOR
-        PERL_VERSION_PATCH
-    )
+    if (PERL_VERSION)
+      basis_version_numbers (
+        ${PERL_VERSION}
+          PERL_VERSION_MAJOR
+          PERL_VERSION_MINOR
+          PERL_VERSION_PATCH
+      )
+    endif ()
   endif ()
 
   # instantiate project directory structure
