@@ -299,7 +299,7 @@ bool Subprocess::popen(const CommandLine& args,
             dup2(fdsout[1], 1);
             close(fdsout[1]);
         }
-        if (stderr == RM_STDOUT) {
+        if (rm_err == RM_STDOUT) {
             dup2(1, 2);
         } else if (fdserr[1] != -1) {
             dup2(fdserr[1], 2);
