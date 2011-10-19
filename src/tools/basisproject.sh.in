@@ -42,84 +42,84 @@ cache=".basis/cache"
 function print_options
 {
     echo "Required Options:"
-    echo "  --name, -n <Project>       Name of the new project."
-    echo "  --description, -d <arg>    Brief project description."
-    echo "  --root, -r <arg>           Specify root directory of new project or directory of"
-    echo "                             existing project. When creating a new project by giving"
-    echo "                             the --name and --description options, this option is optional"
-    echo "                             and a directory named after the project is created under the"
-    echo "                             current working directory by default. In order to modify an"
-    echo "                             existing project, this option is required and has to specify"
-    echo "                             the root directory of a previously created project. The --name"
-    echo "                             and --description options must not be given in this case."
+    echo "  --name, -n <Project>        Name of the new project."
+    echo "  --description, -d <arg>     Brief project description."
+    echo "  --root, -r <arg>            Specify root directory of new project or directory of"
+    echo "                              existing project. When creating a new project by giving"
+    echo "                              the --name and --description options, this option is optional"
+    echo "                              and a directory named after the project is created under the"
+    echo "                              current working directory by default. In order to modify an"
+    echo "                              existing project, this option is required and has to specify"
+    echo "                              the root directory of a previously created project. The --name"
+    echo "                              and --description options must not be given in this case."
     echo
     echo "Template Options:"
-    echo "  --minimal                  Choose minimal project template. Corresponds to not selecting any"
-    echo "                             of the additional template files."
-    echo "  --standard                 Choose standard project template. This is the default project template"
-    echo "                             if no template was selected explicitly. Corresponds to:"
+    echo "  --minimal                   Choose minimal project template. Corresponds to not selecting any"
+    echo "                              of the additional template files."
+    echo "  --standard                  Choose standard project template. This is the default project template"
+    echo "                              if no template was selected explicitly. Corresponds to:"
+    echo "                                --doc"
+    echo "                                --example"
+    echo "                                --noconfig"
+    echo "                                --nodata"
+    echo "                                --test"
+    echo "  --full                      Choose full project template. Corresponds to selecting all files."
     echo
-    echo "                               --conf-depends"
-    echo "                               --conf-settings"
-    echo "                               --doc"
-    echo "                               --example"
-    echo "                               --noconf-components"
-    echo "                               --noconf-find"
-    echo "                               --noconf-generate"
-    echo "                               --noconf-package"
-    echo "                               --noconf-script"
-    echo "                               --noconf-test"
-    echo "                               --noconf-use"
-    echo "                               --noconf-version"
-    echo "                               --nodata"
-    echo "                               --test"
-    echo
-    echo "  --full                     Choose full project template. Corresponds to selecting all files."
-    echo
-    echo "  --[no]conf-components      Whether to include custom Components.cmake file."
-    echo "  --[no]conf-depends         Whether to include custom Depends.cmake file."
-    echo "  --[no]conf-find            Whether to include custom <Project>Config.cmake file."
-    echo "  --[no]conf-find-version    Whether to include custom <Project>ConfigVersion.cmake file."
-    echo "  --[no]conf-generate        Whether to include custom GenerateConfig.cmake script."
-    echo "  --[no]conf-package         Whether to include custom Package.cmake file."
-    echo "  --[no]conf-script          Whether to include custom ScriptConfig.cmake.in file."
-    echo "  --[no]conf-settings        Whether to include custom Settings.cmake file."
-    echo "  --[no]conf-test            Whether to include custom CTestCustom.cmake file."
-    echo "  --[no]conf-use             Whether to include custom <Project>Use.cmake file."
-    echo "  --[no]data                 Whether to include support of auxiliary data files."
-    echo "  --[no]example              Whether to include support of example."
-    echo "  --[no]include              Whetehr to include support of public header files."
-    echo "  --[no]test                 Whether to include support for testing."
+    echo "  --[no]config                Whether to include all config/ files. Corresponds to:"
+    echo "                                --[no]config-components"
+    echo "                                --[no]config-depends"
+    echo "                                --[no]config-find"
+    echo "                                --[no]config-find-version"
+    echo "                                --[no]config-generate"
+    echo "                                --[no]config-package"
+    echo "                                --[no]config-script"
+    echo "                                --[no]config-settings"
+    echo "                                --[no]config-test"
+    echo "                                --[no]config-use"
+    echo "  --[no]config-components     Whether to include custom Components.cmake file."
+    echo "  --[no]config-depends        Whether to include custom Depends.cmake file."
+    echo "  --[no]config-find           Whether to include custom <Project>Config.cmake file."
+    echo "  --[no]config-find-version   Whether to include custom <Project>ConfigVersion.cmake file."
+    echo "  --[no]config-generate       Whether to include custom GenerateConfig.cmake script."
+    echo "  --[no]config-package        Whether to include custom Package.cmake file."
+    echo "  --[no]config-script         Whether to include custom ScriptConfig.cmake.in file."
+    echo "  --[no]config-settings       Whether to include custom Settings.cmake file."
+    echo "  --[no]config-test           Whether to include custom CTestCustom.cmake file."
+    echo "  --[no]config-use            Whether to include custom <Project>Use.cmake file."
+    echo "  --[no]data                  Whether to include support of auxiliary data files."
+    echo "  --[no]example               Whether to include support of example."
+    echo "  --[no]include               Whetehr to include support of public header files."
+    echo "  --[no]test                  Whether to include support for testing."
     echo
     echo "Dependencies Options:"
-    echo "  --language <arg>           Programming language used by this project."
-    echo "                             The currently supported languages are:"
-    echo "                             CXX (C/C++), Python, Perl, BASH, and MATLAB."
-    echo "                             Note that the argument is case insensitive."
-    echo "  --use <arg>                Name of external package used by this project."
-    echo "                             Note that the package name is case sensitive."
-    echo "  --useopt <arg>             Name of external package optionally used by this project."
-    echo "                             Note that the package name is case sensitive."
+    echo "  --language <arg>            Programming language used by this project."
+    echo "                              The currently supported languages are:"
+    echo "                              CXX (C/C++), Python, Perl, BASH, and MATLAB."
+    echo "                              Note that the argument is case insensitive."
+    echo "  --use <arg>                 Name of external package used by this project."
+    echo "                              Note that the package name is case sensitive."
+    echo "  --useopt <arg>              Name of external package optionally used by this project."
+    echo "                              Note that the package name is case sensitive."
     echo
     echo "Other Options:"
-    echo "  --clean                    Remove backup and other temporary files left behind."
-    echo "  --clean-all                Remove not only backup and other temporary files, but also"
-    echo "                             the hidden '.basis' directories with copies of the template files."
-    echo "  --force                    Force deletion of modified template files and non-empty directories."
-    echo "  --[no]update               Do not update existing files. Only add new files."
-    echo "                             By default, in case of existing files, the project file is updated"
-    echo "                             by merging changes of the possibly newer template and the existing file."
-    echo "  --[no]backup               Do not backup project files before updating them."
-    echo "                             By default, before any existing project file is modified,"
-    echo "                             it is copied to a file with extension '~' before."
-    echo "                             The creation of these backup files is disabled by this option."
-    echo "  --template, -t <arg>       Root directory of project template."
-    echo "                             Defaults to the project template of this BASIS installation."
+    echo "  --clean                     Remove backup and other temporary files left behind."
+    echo "  --clean-all                 Remove not only backup and other temporary files, but also"
+    echo "                              the hidden '.basis' directories with copies of the template files."
+    echo "  --force                     Force deletion of modified template files and non-empty directories."
+    echo "  --[no]update                Do not update existing files. Only add new files."
+    echo "                              By default, in case of existing files, the project file is updated"
+    echo "                              by merging changes of the possibly newer template and the existing file."
+    echo "  --[no]backup                Do not backup project files before updating them."
+    echo "                              By default, before any existing project file is modified,"
+    echo "                              it is copied to a file with extension '~' before."
+    echo "                              The creation of these backup files is disabled by this option."
+    echo "  --template, -t <arg>        Root directory of project template."
+    echo "                              Defaults to the project template of this BASIS installation."
     echo
-    echo "  --verbose, -v              Increases verbosity of output messages. Can be given multiple times."
-    echo "  --help, -h                 Displays help and exit."
-    echo "  --helpshort                Displays usage information and exits."
-    echo "  --version                  Displays version information and exits."
+    echo "  --verbose, -v               Increases verbosity of output messages. Can be given multiple times."
+    echo "  --help, -h                  Displays help and exit."
+    echo "  --helpshort                 Displays short help and exits."
+    echo "  --version                   Displays version information and exits."
 }
 
 # ----------------------------------------------------------------------------
@@ -196,7 +196,7 @@ function print_help
 	echo "  $exec_name --name MyProject --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
     echo "    Create new project using C/C++ and Python with dependency on the package 'VTK'."
     echo
-    echo "  $exec_name --root /path/to/existing/project --test --conf-test"
+    echo "  $exec_name --root /path/to/existing/project --test --config-test"
     echo "    Add full testing support to existing project."
     echo
     echo "  $exec_name --root /path/to/existing/porject --use ITK --useopt MATLAB"
@@ -345,8 +345,8 @@ function use_standard_template
 {
     local overwrite=${1:-0}
 
-    if [ $overwrite -eq 0 -o $conf_settings -eq 0 ]; then conf_settings=1; fi
-    if [ $overwrite -eq 0 -o $conf_depends -eq 0 ]; then conf_depends=1; fi
+    if [ $overwrite -eq 0 -o $conf_settings -eq 0 ]; then conf_settings=-1; fi
+    if [ $overwrite -eq 0 -o $conf_depends -eq 0 ]; then conf_depends=-1; fi
     if [ $overwrite -eq 0 -o $conf_components -eq 0 ]; then conf_components=-1; fi
     if [ $overwrite -eq 0 -o $conf_package -eq 0 ]; then conf_package=-1; fi
     if [ $overwrite -eq 0 -o $conf_find -eq 0 ]; then conf_find=-1; fi
@@ -519,73 +519,99 @@ do
             use_full_template
             ;;
 
-        --conf-settings)
+        --config)
+            conf_settings=1
+            conf_depends=1
+            conf_components=1
+            conf_package=1
+            conf_find=1
+            conf_find_version=1
+            conf_generate=1
+            conf_script=1
+            conf_tests=1
+            conf_use=1
+            ;;
+
+        --noconfig)
+            conf_settings=-1
+            conf_depends=-1
+            conf_components=-1
+            conf_package=-1
+            conf_find=-1
+            conf_find_version=-1
+            conf_generate=-1
+            conf_script=-1
+            conf_tests=-1
+            conf_use=-1
+            ;;
+
+        --conf-settings|--config-settings)
             conf_settings=1
             ;;
-        --noconf-settings)
+        --noconf-settings|--noconf-settings)
             conf_settings=-1
             ;;
 
-        --conf-depends)
+        --conf-depends|--config-depends)
             conf_depends=1
             ;;
-        --noconf-depends)
+        --noconf-depends|--noconf-depends)
             conf_depends=-1
             ;;
 
-        --conf-components)
+        --conf-components|--config-components)
             conf_components=1
             ;;
-        --noconf-components)
+        --noconf-components|--noconf-components)
             conf_components=-1
             ;;
 
-        --conf-package)
+        --conf-package|--config-package)
             conf_package=1
             ;;
-        --noconf-package)
+        --noconf-package|--noconf-package)
             conf_package=-1
             ;;
 
-        --conf-find)
+        --conf-find|--config-find)
             conf_find=1
             ;;
-        --noconf-find)
+        --noconf-find|--noconf-find)
             conf_find=-1
             ;;
 
-        --conf-find-version)
+        --conf-find-version|--config-find-version)
             conf_find_version=1
             ;;
-        --noconf-find-version)
+        --noconf-find-version|--noconf-find-version)
             conf_find_version=-1
             ;;
 
-        --conf-generate)
+        --conf-generate|--config-generate)
             conf_generate=1
             ;;
-        --noconf-generate)
+        --noconf-generate|--noconf-generate)
             conf_generate=-1
             ;;
 
-        --conf-script)
+        --conf-script|--config-script)
             conf_script=1
             ;;
-        --noconf-script)
+        --noconf-script|--noconf-script)
             conf_script=-1
             ;;
 
-        --conf-test)
+        --conf-test|--config-test)
             conf_tests=1
             ;;
-        --noconf-test)
+        --noconf-test|--noconf-test)
             conf_tests=-1
             ;;
 
-        --conf-use)
+        --conf-use|--config-use)
             conf_use=1
             ;;
-        --noconf-use)
+        --noconf-use|--noconf-use)
             conf_use=-1
             ;;
 
@@ -637,12 +663,6 @@ do
     shift
 done
 
-# use by default C++ as programming language if none is specified
-if [ $languages_num -eq 0 ]; then
-    languages=('CXX')
-    languages_num=1
-fi
-
 # depends_file required if external packages should be found
 if [ $package_num -gt 0 ]; then
     conf_depends=1
@@ -674,15 +694,24 @@ if [ ! -z "$name" ]; then
         echo "No project description given!"
         exit 1
     fi
+    # use by default C++ as programming language if none is specified
+    if [ $languages_num -eq 0 ]; then
+        languages=('CXX')
+        languages_num=1
+    fi
 # request to modify existing project
-elif [ ! -z "$root" ]; then
+elif [ -n "$root" ]; then
     mode=1
+    # remove trailing slashes from root
+    root=`echo "$root" | sed 's/\/*$//'`
+    root=`echo "$root" | sed 's/\\*$//'`
+    # check existence of root directory
     if [ ! -d "$root" ]; then
         echo "Project directory $root does not exist!" 1>&2
         echo "If you want to create a new project, please specify a project name." 1>&2
         exit 1
     fi
-    if [ ! -z "$description" ]; then
+    if [ -n "$description" ]; then
         echo "Cannot modify description of existing project. Please edit root CMakeLists.txt file manually." 1>&2
         echo "Do not use option --description when attempting to modify an existing project." 1>&2
         exit 1
