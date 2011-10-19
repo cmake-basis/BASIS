@@ -742,7 +742,7 @@ if [ -f "$cache" ]; then
     if [ $? -ne 0 ]; then
         echo "W Failed to source $cache. Continuing with default." 1>&2
     else
-        if [ $conf_settings     -eq 0 -a $_conf_setttings    -eq 1 ]; then conf_settings=1; fi
+        if [ $conf_settings     -eq 0 -a $_conf_settings     -eq 1 ]; then conf_settings=1; fi
         if [ $conf_depends      -eq 0 -a $_conf_depends      -eq 1 ]; then conf_depends=1; fi
         if [ $conf_components   -eq 0 -a $_conf_components   -eq 1 ]; then conf_components=1; fi
         if [ $conf_package      -eq 0 -a $_conf_package      -eq 1 ]; then conf_package=1; fi
