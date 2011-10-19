@@ -977,13 +977,21 @@ function del
 
     # delete existing directory if empty only
     if [ -d "$root/$path" ]; then
-        if [ $verbosity -gt 0 ]; then
-            rmdir "$root/$path"
+        if [ $force -eq 0 ]; then
+            if [ $verbosity -gt 0 ]; then
+                rmdir "$root/$path"
+            else
+                rmdir "$root/$path" &> /dev/null
+            fi
         else
-            rmdir "$root/$path" &> /dev/null
+            if [ $verbosity -gt 0 ]; then
+                rm -rf "$root/$path"
+            else
+                rm -rf "$root/$path" &> /dev/null
+            fi
         fi
         if [ $? -ne 0 ]; then
-            echo "E $root/$path - failed to remove directory"
+            echo "E $root/$path - failed to remove directory; use --force to force deletion of non-empty directory"
             return 1
         else
             echo "D $root/$path"
