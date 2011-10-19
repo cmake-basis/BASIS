@@ -740,23 +740,23 @@ if [ -f "$cache" ]; then
     source $cache
 
     if [ $? -ne 0 ]; then
-        echo "W Failed to cache $cache. Continuing with default." 1>&2
+        echo "W Failed to source $cache. Continuing with default." 1>&2
     else
-        if [ $conf_settings     -eq 0 ]; then conf_settings=$_conf_settings; fi
-        if [ $conf_depends      -eq 0 ]; then conf_depends=$_conf_depends; fi
-        if [ $conf_components   -eq 0 ]; then conf_components=$_conf_components; fi
-        if [ $conf_package      -eq 0 ]; then conf_package=$_conf_package; fi
-        if [ $conf_find         -eq 0 ]; then conf_find=$_conf_find; fi
-        if [ $conf_find_version -eq 0 ]; then conf_find_version=$_conf_find_version; fi
-        if [ $conf_generate     -eq 0 ]; then conf_generate=$_conf_generate; fi
-        if [ $conf_script       -eq 0 ]; then conf_script=$_conf_script; fi
-        if [ $conf_tests        -eq 0 ]; then conf_tests=$_conf_tests; fi
-        if [ $conf_use          -eq 0 ]; then conf_use=$_conf_use; fi
-        if [ $data              -eq 0 ]; then data=$_data; fi
-        if [ $doc               -eq 0 ]; then doc=$_doc; fi
-        if [ $example           -eq 0 ]; then example=$_example; fi
-        if [ $include           -eq 0 ]; then include=$_include; fi
-        if [ $tests             -eq 0 ]; then tests=$_tests; fi
+        if [ $conf_settings     -eq 0 -a $_conf_setttings    -eq 1 ]; then conf_settings=1; fi
+        if [ $conf_depends      -eq 0 -a $_conf_depends      -eq 1 ]; then conf_depends=1; fi
+        if [ $conf_components   -eq 0 -a $_conf_components   -eq 1 ]; then conf_components=1; fi
+        if [ $conf_package      -eq 0 -a $_conf_package      -eq 1 ]; then conf_package=1; fi
+        if [ $conf_find         -eq 0 -a $_conf_find         -eq 1 ]; then conf_find=1; fi
+        if [ $conf_find_version -eq 0 -a $_conf_find_version -eq 1 ]; then conf_find_version=1; fi
+        if [ $conf_generate     -eq 0 -a $_conf_generate     -eq 1 ]; then conf_generate=1; fi
+        if [ $conf_script       -eq 0 -a $_conf_script       -eq 1 ]; then conf_script=1; fi
+        if [ $conf_tests        -eq 0 -a $_conf_tests        -eq 1 ]; then conf_tests=1; fi
+        if [ $conf_use          -eq 0 -a $_conf_use          -eq 1 ]; then conf_use=1; fi
+        if [ $data              -eq 0 -a $_data              -eq 1 ]; then data=1; fi
+        if [ $doc               -eq 0 -a $_doc               -eq 1 ]; then doc=1; fi
+        if [ $example           -eq 0 -a $_example           -eq 1 ]; then example=1; fi
+        if [ $include           -eq 0 -a $_include           -eq 1 ]; then include=1; fi
+        if [ $tests             -eq 0 -a $_tests             -eq 1 ]; then tests=1; fi
     fi
 else
     # by default, use standard project template without overwriting user adjustments
