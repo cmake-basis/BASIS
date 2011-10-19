@@ -169,7 +169,7 @@ string Subprocess::to_string(const CommandLine& args)
 Subprocess::Subprocess ()
 {
 #if WINDOWS
-    ZeroMemory(info_);
+    ZeroMemory(&info_, sizeof(info_));
     stdin_ = INVALID_HANDLE_VALUE;
     stdout_ = INVALID_HANDLE_VALUE;
     stderr_ = INVALID_HANDLE_VALUE;
@@ -208,9 +208,9 @@ Subprocess::~Subprocess ()
 
 // ---------------------------------------------------------------------------
 bool Subprocess::popen(const CommandLine& args,
-                       const RedirectMode stdin,
-                       const RedirectMode stdout,
-                       const RedirectMode stderr,
+                       const RedirectMode rm_in,
+                       const RedirectMode rm_out,
+                       const RedirectMode rm_err,
                        const Environment* env)
 {
 #if WINDOWS
@@ -219,7 +219,7 @@ bool Subprocess::popen(const CommandLine& args,
         return false;
     }
 
-    ZeroMemory(info_, sizeof(info_));
+    ZeroMemory(&info_, sizeof(info_));
     if (stdin_) CloseHandle(stdin_);
     if (stdout_) CloseHandle(stdout_);
     if (stderr_) CloseHandle(stderr_);
@@ -229,7 +229,7 @@ bool Subprocess::popen(const CommandLine& args,
     status_ = -1;
 
     // TODO
-#  pragma error "not implemented yet for Windows"
+#  error "not implemented yet for Windows"
 #else
     if (info_.pid != -1 && !poll()) {
         cerr << "Subprocess::popen(): Previously opened process not terminated yet!" << endl;
@@ -250,19 +250,19 @@ bool Subprocess::popen(const CommandLine& args,
     int fdsout[2] = {-1, -1};
     int fdserr[2] = {-1, -1};
 
-    if (stdin == RM_PIPE && pipe(fdsin) == -1) {
+    if (rm_in == RM_PIPE && pipe(fdsin) == -1) {
         cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         return false;
     }
 
-    if (stdout == RM_PIPE && pipe(fdsout) == -1) {
+    if (rm_out == RM_PIPE && pipe(fdsout) == -1) {
         if (fdsin[0] != -1) close(fdsin[0]);
         if (fdsin[1] != -1) close(fdsin[1]);
         cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         return false;
     }
 
-    if (stderr == RM_PIPE && pipe(fdserr) == -1) {
+    if (rm_err == RM_PIPE && pipe(fdserr) == -1) {
         if (fdsin [0] != -1) close(fdsin  [0]);
         if (fdsin [1] != -1) close(fdsin  [1]);
         if (fdsout[0] != -1) close(fdsout [0]);
@@ -564,7 +564,7 @@ int Subprocess::write(const void* buf, size_t nbuf)
 {
 #if WINDOWS
     // TODO
-#  pragma error "not implemented yet for Windows"
+#  error "not implemented yet for Windows"
 #else
     return stdin_ != -1 ? ::write(stdin_, buf, nbuf) : -1;
 #endif
@@ -575,7 +575,7 @@ int Subprocess::read(void* buf, size_t nbuf, bool err)
 {
 #if WINDOWS
     // TODO
-#  pragma error "not implemented yet for Windows"
+#  error "not implemented yet for Windows"
 #else
     int fds = stdout_;
     if (err && stderr_ != -1) fds = stderr_;

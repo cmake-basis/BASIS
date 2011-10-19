@@ -167,7 +167,7 @@ std::string get_executable_path(const std::string& target);
  *                         argument, e.g., "this argument \\").
  * @param [in]  quiet      Turns off output of stdout and stderr of child
  *                         process to stdout of parent process.
- * @param [out] stdout     Output stream where command output is written to.
+ * @param [out] out        Output stream where command output is written to.
  * @param [in]  allow_fail If true, no exception is thrown if the exit code
  *                         of the child process is non-zero. Otherwise,
  *                         a SubprocessException object is thrown in that case.
@@ -182,7 +182,8 @@ std::string get_executable_path(const std::string& target);
  */
 int execute_process(const std::string& cmd,
                     bool               quiet      = false,
-                    std::ostream*      stdout     = NULL,
+                    // attention: stdout is a macro defined by windows.h
+                    std::ostream*      out        = NULL,
                     bool               allow_fail = false,
                     int                verbose    = 0,
                     bool               simulate   = false);
@@ -204,7 +205,7 @@ int execute_process(const std::string& cmd,
  *                            executable file if applicable.
  * @param [in]     quiet      Turns off output of stdout and stderr of child
  *                            process to stdout of parent process.
- * @param [out]    stdout     Output stream where command output is written to.
+ * @param [out]    out        Output stream where command output is written to.
  * @param [in]     allow_fail If true, no exception is thrown if the exit code
  *                            of the child process is non-zero. Otherwise,
  *                            a SubprocessException object is thrown in that case.
@@ -219,7 +220,8 @@ int execute_process(const std::string& cmd,
  */
 int execute_process(std::vector<std::string>& args,
                     bool                      quiet      = false,
-                    std::ostream*             stdout     = NULL,
+                    // attention: stdout is a macro defined by windows.h
+                    std::ostream*             out        = NULL,
                     bool                      allow_fail = false,
                     int                       verbose    = 0,
                     bool                      simulate   = false);

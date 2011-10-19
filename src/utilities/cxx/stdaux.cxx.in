@@ -152,15 +152,15 @@ string get_executable_path(const string& target)
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-int execute_process(const string& cmd, bool quiet, ostream* stdout,
+int execute_process(const string& cmd, bool quiet, ostream* out,
                     bool allow_fail, int verbose, bool simulate)
 {
     vector<string> args = Subprocess::split(cmd);
-    return execute_process(args, quiet, stdout, allow_fail, verbose, simulate);
+    return execute_process(args, quiet, out, allow_fail, verbose, simulate);
 }
 
 // ---------------------------------------------------------------------------
-int execute_process(vector<string>& args, bool quiet, ostream* stdout,
+int execute_process(vector<string>& args, bool quiet, ostream* out,
                     bool allow_fail, int verbose, bool simulate)
 {
     if (args.empty() || args[0].empty()) {
@@ -178,7 +178,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* stdout,
     }
     // execute command
     int status = 0;
-    if (quiet && stdout == NULL) {
+    if (quiet && out == NULL) {
         status = Subprocess::call(args);
     } else {
         Subprocess p;
@@ -190,7 +190,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* stdout,
         while ((n = p.read(buf, 1023)) > 0) {
             buf[n] = '\0';
             if (!quiet) printf("%s", buf);
-            if (stdout) *stdout << buf;
+            if (out) *out << buf;
         }
         if (!p.wait()) {
             BASIS_THROW(SubprocessException, "execute_process(): Failed to wait for subprocess");
@@ -198,7 +198,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* stdout,
         while ((n = p.read(buf, 1023)) > 0) {
             buf[n] = '\0';
             if (!quiet) printf("%s", buf);
-            if (stdout) *stdout << buf;
+            if (out) *out << buf;
         }
         status = p.returncode();
     }

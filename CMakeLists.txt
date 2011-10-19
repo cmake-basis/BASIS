@@ -51,6 +51,21 @@ set (BASIS_PERL_LIBRARY_DIR     "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
 # include BASIS policies, settings, macros, and functions
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
+# select languages used by this project
+set (LANGUAGES "LANGUAGES")
+if (BUILD_CXX_UTILITIES)
+  list (APPEND LANGUAGES "CXX")
+endif ()
+if (BUILD_PYTHON_UTILITIES)
+  list (APPEND LANGUAGES "Python")
+endif ()
+if (BUILD_PERL_UTILITIES)
+  list (APPEND LANGUAGES "Perl")
+endif ()
+if (BUILD_BASH_UTILITIES)
+  list (APPEND LANGUAGES "BASH")
+endif ()
+
 # initialize project
 basis_project_initialize (
   NAME        "BASIS"
@@ -58,7 +73,7 @@ basis_project_initialize (
   DESCRIPTION "This package implements and supports the development of"
               " software which follows the SBIA Build system And Software"
               " Implementation Standard (BASIS)."
-  LANGUAGES   CXX Python Perl BASH
+  ${LANGUAGES}
 )
 
 # ============================================================================

@@ -46,9 +46,9 @@ private:
 
     /// Type used for file handles of pipes between processes.
 #if WINDOWS
-    typedef PHANDLE PipeHandle;
+    typedef HANDLE PipeHandle;
 #else
-    typedef int     PipeHandle;
+    typedef int    PipeHandle;
 #endif
 
     /// Information structure required by system to identify subprocess.
@@ -125,11 +125,11 @@ public:
      *
      * @param [in] args   Command-line of subprocess. The first argument has to
      *                    be the name/path of the command to be executed.
-     * @param [in] stdin  Mode used for redirection of stdin of subprocess.
+     * @param [in] rm_in  Mode used for redirection of stdin of subprocess.
      *                    Can be either RM_NONE or RM_PIPE.
-     * @param [in] stdout Mode used for redirection of stdout of subprocess.
+     * @param [in] rm_out Mode used for redirection of stdout of subprocess.
      *                    Can be either RM_NONE or RM_PIPE.
-     * @param [in] stderr Mode used for redirection of stderr of subprocess.
+     * @param [in] rm_err Mode used for redirection of stderr of subprocess.
      *                    Can be either RM_NONE, RM_PIPE, or RM_STDOUT.
      * @param [in] env    Environment for the subprocess. If NULL is given, the
      *                    environment of the parent process is used.
@@ -137,9 +137,10 @@ public:
      * @returns Whether the subprocess was created successfully.
      */
     bool popen(const CommandLine& args,
-               const RedirectMode stdin  = RM_NONE,
-               const RedirectMode stdout = RM_NONE,
-               const RedirectMode stderr = RM_NONE,
+               // attention: stdin, stdout, and stderr are macros defined by windows.h
+               const RedirectMode rm_in  = RM_NONE,
+               const RedirectMode rm_out = RM_NONE,
+               const RedirectMode rm_err = RM_NONE,
                const Environment* env    = NULL);
 
     /**
@@ -155,22 +156,23 @@ public:
      *                    inside an argument as well as to escape a backslash
      *                    itself (required if backslash at end of double quoted
      *                    argument, e.g., "this argument \\").
-     * @param [in] stdin  Mode used for redirection of stdin of subprocess.
+     * @param [in] rm_in  Mode used for redirection of stdin of subprocess.
      *                    Can be either RM_NONE or RM_PIPE.
-     * @param [in] stdout Mode used for redirection of stdout of subprocess.
+     * @param [in] rm_out Mode used for redirection of stdout of subprocess.
      *                    Can be either RM_NONE or RM_PIPE.
-     * @param [in] stderr Mode used for redirection of stderr of subprocess.
+     * @param [in] rm_err Mode used for redirection of stderr of subprocess.
      *                    Can be either RM_NONE, RM_PIPE, or RM_STDOUT.
      * @param [in] env    Environment for the subprocess. If NULL is given, the
      *                    environment of the parent process is used.
      */
     bool popen(const std::string& cmd,
-               const RedirectMode stdin  = RM_NONE,
-               const RedirectMode stdout = RM_NONE,
-               const RedirectMode stderr = RM_NONE,
+               // attention: stdin, stdout, and stderr are macros defined by windows.h
+               const RedirectMode rm_in  = RM_NONE,
+               const RedirectMode rm_out = RM_NONE,
+               const RedirectMode rm_err = RM_NONE,
                const Environment* env    = NULL)
     {
-        return popen(split(cmd), stdin, stdout, stderr, env);
+        return popen(split(cmd), rm_in, rm_out, rm_err, env);
     }
 
     /**
