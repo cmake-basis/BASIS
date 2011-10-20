@@ -68,7 +68,7 @@ basis_add_doc (
 )
 
 # ============================================================================
-# manuals
+# BASIS documentation
 # ============================================================================
 
 # Add documentation files in the current directory and/or install these files
@@ -76,14 +76,14 @@ basis_add_doc (
 #
 # See basis_add_doc()
 
-basis_add_doc ("Introduction.pptx") # BASIS introduction
 basis_add_doc ("INSTALL-basis.txt") # common installation instructions
 
-basis_add_doc ("standard") # documentation of standard
-basis_add_doc ("guides")   # how-to and style guides
+basis_add_doc ("standard")  # documentation of standard
+basis_add_doc ("guides")    # how-to and style guides
+basis_add_doc ("tutorials") # tutorial presentations
 
 # ============================================================================
-# documentation of thirdparty libraries
+# other documentation
 # ============================================================================
 
 basis_add_doc ("tclap")

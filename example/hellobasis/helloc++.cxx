@@ -1,6 +1,6 @@
 /**
  * @file  helloc++.cxx
- * @brief The typical Hello World! example program.
+ * @brief The not so typical Hello World! example program.
  *
  * Copyright (c) University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -18,6 +18,6 @@ using namespace std;
 // ---------------------------------------------------------------------------
 int main(int, char**)
 {
-    cout << "Hello BASIS!" << endl;
+    cout << "How is it going?" << endl;
     return 0;
 }
