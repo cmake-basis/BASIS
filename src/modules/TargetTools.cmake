@@ -578,8 +578,8 @@ endfunction ()
 # <table border="0">
 #   <tr>
 #     @tp @b CXX @endtp
-#     <td>The default language, adding an executable target build from C/C++
-#         source code. The target is added via CMake's add_executable() command
+#     <td>The default language, adding a library target build from C/C++
+#         source code. The target is added via CMake's add_library() command
 #         if neither or one of the options STATIC, SHARED, or MODULE is given.
 #         If the option MEX is given, a MEX-file is build using the MEX script.</td>
 #   </tr>
