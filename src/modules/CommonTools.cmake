@@ -446,11 +446,6 @@ function (basis_check_target_name TARGET_NAME)
     message (FATAL_ERROR "Target name \"${TARGET_NAME}\" is reserved and cannot be used.")
   endif ()
 
-  if (TARGET_NAME MATCHES "\\+$|\\-$")
-    message (FATAL_ERROR "Target names may not end with + or - as these special"
-                         " targets are used internally by the BASIS CMake functions.")
-  endif ()
-
   # invalid target name ?
   if (TARGET_NAME MATCHES " ")
     message (FATAL_ERROR "Target name ${TARGET_NAME} is invalid. Target names cannot contain whitespaces.")
