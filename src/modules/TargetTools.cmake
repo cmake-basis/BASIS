@@ -1087,7 +1087,7 @@ function (basis_add_library_target TARGET_NAME)
 
   if (NOT SOURCES)
     set (SOURCES "${TARGET_NAME}")
-    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME)
+    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
 
   # check target name
