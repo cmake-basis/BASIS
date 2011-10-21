@@ -8,9 +8,38 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-add_subdirectory (cxx)    # C++ utilities
-add_subdirectory (java)   # Java utilities
-add_subdirectory (python) # Python utilities
-add_subdirectory (perl)   # Perl utilities
-add_subdirectory (bash)   # BASH utilities
-add_subdirectory (matlab) # MATLAB utilities
+# ----------------------------------------------------------------------------
+# C++ utilities
+if (BUILD_CXX_UTILITIES)
+  add_subdirectory (cxx)
+endif ()
+
+# ----------------------------------------------------------------------------
+# Java utilities
+if (BUILD_JAVA_UTILITIES)
+  add_subdirectory (java)
+endif ()
+
+# ----------------------------------------------------------------------------
+# Python utilities
+if (BUILD_PYTHON_UTILITIES)
+  add_subdirectory (python)
+endif ()
+
+# ----------------------------------------------------------------------------
+# Perl utilities
+if (BUILD_PERL_UTILITIES)
+  add_subdirectory (perl)
+endif ()
+
+# ----------------------------------------------------------------------------
+# BASH utilities
+if (BUILD_BASH_UTILITIES)
+  add_subdirectory (bash)
+endif ()
+
+# ----------------------------------------------------------------------------
+# MATLAB utilities
+if (BUILD_MATLAB_UTILITIES)
+  add_subdirectory (matlab)
+endif ()
