@@ -10,7 +10,9 @@
 
 # ----------------------------------------------------------------------------
 # project management
-basis_add_executable (basisproject.sh)
+if (UNIX)
+  basis_add_executable (basisproject.sh)
+endif ()
 
 # ----------------------------------------------------------------------------
 # basic command-line tools
@@ -35,13 +37,15 @@ basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
 # automated testing
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
-basis_add_executable (basistest_svn.sh)    # wraps svn command
-basis_add_executable (basistest_slave.sh)  # executes test task
-basis_add_executable (basistest_master.sh) # executes scheduled tests
-basis_add_executable (basistest_cron.sh)   # test cron job
-basis_add_executable (basistest.sh)        # main wrapper
+if (UNIX)
+  basis_add_executable (basistest_svn.sh)    # wraps svn command
+  basis_add_executable (basistest_slave.sh)  # executes test task
+  basis_add_executable (basistest_master.sh) # executes scheduled tests
+  basis_add_executable (basistest_cron.sh)   # test cron job
+  basis_add_executable (basistest.sh)        # main wrapper
 
-# do not install symbolic links for subcommands
-foreach (C cron master slave svn)
-  basis_set_target_properties (basistest_${C} PROPERTIES SYMLINK_NAME "NONE")
-endforeach ()
+  # do not install symbolic links for subcommands
+  foreach (C cron master slave svn)
+    basis_set_target_properties (basistest_${C} PROPERTIES SYMLINK_NAME "NONE")
+  endforeach ()
+endif ()
