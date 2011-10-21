@@ -78,7 +78,17 @@ basis_set_script_path (
     "@INSTALL_MODULES_DIR@"
 )
 
+# ============================================================================
+# tests
+# ============================================================================
+
 # directory of BASIS used by tests to build test projects
 set (TESTING_BASIS_DIR "@PROJECT_BINARY_DIR@")
 # build type used to build test projects
 set (TESTING_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
+
+# which utilities to test
+set (BUILD_CXX_UTILITIES    "@BUILD_CXX_UTILITIES@")
+set (BUILD_PYTHON_UTILITIES "@BUILD_PYTHON_UTILITIES@")
+set (BUILD_PERL_UTILITIES   "@BUILD_PERL_UTILITIES@")
+set (BUILD_BASH_UTILITIES   "@BUILD_BASH_UTILITIES@")
