@@ -317,7 +317,7 @@ doc=0                # add/remove doc folder
 example=0            # add/remove example
 include=0            # add/remove public includes tree
 tests=0              # add/remove testing tree
- 
+
 # ----------------------------------------------------------------------------
 # select minimal project template
 function use_minimal_template
@@ -343,23 +343,23 @@ function use_minimal_template
 # select standard project template
 function use_standard_template
 {
-    local overwrite=${1:-0}
+    local overwrite=${1:-1}
 
-    if [ $overwrite -eq 0 -o $conf_settings -eq 0 ]; then conf_settings=-1; fi
-    if [ $overwrite -eq 0 -o $conf_depends -eq 0 ]; then conf_depends=-1; fi
-    if [ $overwrite -eq 0 -o $conf_components -eq 0 ]; then conf_components=-1; fi
-    if [ $overwrite -eq 0 -o $conf_package -eq 0 ]; then conf_package=-1; fi
-    if [ $overwrite -eq 0 -o $conf_find -eq 0 ]; then conf_find=-1; fi
-    if [ $overwrite -eq 0 -o $conf_find_version -eq 0 ]; then conf_find_version=-1; fi
-    if [ $overwrite -eq 0 -o $conf_generate -eq 0 ]; then conf_generate=-1; fi
-    if [ $overwrite -eq 0 -o $conf_script -eq 0 ]; then conf_script=-1; fi
-    if [ $overwrite -eq 0 -o $conf_tests -eq 0 ]; then conf_tests=-1; fi
-    if [ $overwrite -eq 0 -o $conf_use -eq 0 ]; then conf_use=-1; fi
-    if [ $overwrite -eq 0 -o $data -eq 0 ]; then data=-1; fi
-    if [ $overwrite -eq 0 -o $doc -eq 0 ]; then doc=1; fi
-    if [ $overwrite -eq 0 -o $example -eq 0 ]; then example=1; fi
-    if [ $overwrite -eq 0 -o $include -eq 0 ]; then include=-1; fi
-    if [ $overwrite -eq 0 -o $tests -eq 0 ]; then tests=1; fi
+    if [ $overwrite -eq 1 -o $conf_settings -eq 0 ]; then conf_settings=-1; fi
+    if [ $overwrite -eq 1 -o $conf_depends -eq 0 ]; then conf_depends=-1; fi
+    if [ $overwrite -eq 1 -o $conf_components -eq 0 ]; then conf_components=-1; fi
+    if [ $overwrite -eq 1 -o $conf_package -eq 0 ]; then conf_package=-1; fi
+    if [ $overwrite -eq 1 -o $conf_find -eq 0 ]; then conf_find=-1; fi
+    if [ $overwrite -eq 1 -o $conf_find_version -eq 0 ]; then conf_find_version=-1; fi
+    if [ $overwrite -eq 1 -o $conf_generate -eq 0 ]; then conf_generate=-1; fi
+    if [ $overwrite -eq 1 -o $conf_script -eq 0 ]; then conf_script=-1; fi
+    if [ $overwrite -eq 1 -o $conf_tests -eq 0 ]; then conf_tests=-1; fi
+    if [ $overwrite -eq 1 -o $conf_use -eq 0 ]; then conf_use=-1; fi
+    if [ $overwrite -eq 1 -o $data -eq 0 ]; then data=-1; fi
+    if [ $overwrite -eq 1 -o $doc -eq 0 ]; then doc=1; fi
+    if [ $overwrite -eq 1 -o $example -eq 0 ]; then example=1; fi
+    if [ $overwrite -eq 1 -o $include -eq 0 ]; then include=-1; fi
+    if [ $overwrite -eq 1 -o $tests -eq 0 ]; then tests=1; fi
 }
 
 # ----------------------------------------------------------------------------
@@ -381,6 +381,33 @@ function use_full_template
     example=1
     include=1
     tests=1
+}
+
+# ----------------------------------------------------------------------------
+# select default options
+function use_default_template
+{
+    if [ $mode -eq 1 ]; then
+        if [ -e "$root/config" ]; then
+            if [ $conf_components   -eq 0 -a -e "$root/config/Components.cmake" ]; then conf_components=1; fi
+            if [ $conf_find         -eq 0 -a -e "$root/config/Config.cmake.in" ]; then conf_find=1; fi
+            if [ $conf_find_version -eq 0 -a -e "$root/config/ConfigVersion.cmake.in" ]; then conf_find_version=1; fi
+            if [ $conf_tests        -eq 0 -a -e "$root/config/CTestCustom.cmake.in" ]; then conf_tests=1; fi
+            if [ $conf_depends      -eq 0 -a -e "$root/config/Depends.cmake" ]; then conf_depends=1; fi
+            if [ $conf_generate     -eq 0 -a -e "$root/config/GenerateConfig.cmake" ]; then conf_generate=1; fi
+            if [ $conf_package      -eq 0 -a -e "$root/config/Package.cmake" ]; then conf_package=1; fi
+            if [ $conf_script       -eq 0 -a -e "$root/config/ScriptConfig.cmake.in" ]; then conf_script=1; fi
+            if [ $conf_settings     -eq 0 -a -e "$root/config/Settings.cmake" ]; then conf_settings=1; fi
+            if [ $conf_use          -eq 0 -a -e "$root/config/Use.cmake.in" ]; then conf_use=1; fi
+        fi
+        if [ $data    -eq 0 -a -e "$root/data"    ]; then data=1; fi
+        if [ $doc     -eq 0 -a -e "$root/doc"     ]; then doc=1; fi
+        if [ $example -eq 0 -a -e "$root/example" ]; then example=1; fi
+        if [ $include -eq 0 -a -e "$root/include" ]; then include=1; fi
+        if [ $tests   -eq 0 -a -e "$root/test"    ]; then tests=1; fi
+    else
+        use_standard_template 0 # do not overwrite command-line options
+    fi
 }
 
 # ----------------------------------------------------------------------------
@@ -762,35 +789,8 @@ description=${description//\//\\\/}
 description=${description//\\/\\\\}
 description=${description//"/\\"}
 
-# read cache
-cache=$root/$cache
-
-if [ -f "$cache" ]; then
-    source $cache
-
-    if [ $? -ne 0 ]; then
-        echo "W Failed to source $cache. Continuing with default." 1>&2
-    else
-        if [ $conf_settings     -eq 0 -a $_conf_settings     -eq 1 ]; then conf_settings=1; fi
-        if [ $conf_depends      -eq 0 -a $_conf_depends      -eq 1 ]; then conf_depends=1; fi
-        if [ $conf_components   -eq 0 -a $_conf_components   -eq 1 ]; then conf_components=1; fi
-        if [ $conf_package      -eq 0 -a $_conf_package      -eq 1 ]; then conf_package=1; fi
-        if [ $conf_find         -eq 0 -a $_conf_find         -eq 1 ]; then conf_find=1; fi
-        if [ $conf_find_version -eq 0 -a $_conf_find_version -eq 1 ]; then conf_find_version=1; fi
-        if [ $conf_generate     -eq 0 -a $_conf_generate     -eq 1 ]; then conf_generate=1; fi
-        if [ $conf_script       -eq 0 -a $_conf_script       -eq 1 ]; then conf_script=1; fi
-        if [ $conf_tests        -eq 0 -a $_conf_tests        -eq 1 ]; then conf_tests=1; fi
-        if [ $conf_use          -eq 0 -a $_conf_use          -eq 1 ]; then conf_use=1; fi
-        if [ $data              -eq 0 -a $_data              -eq 1 ]; then data=1; fi
-        if [ $doc               -eq 0 -a $_doc               -eq 1 ]; then doc=1; fi
-        if [ $example           -eq 0 -a $_example           -eq 1 ]; then example=1; fi
-        if [ $include           -eq 0 -a $_include           -eq 1 ]; then include=1; fi
-        if [ $tests             -eq 0 -a $_tests             -eq 1 ]; then tests=1; fi
-    fi
-else
-    # by default, use standard project template without overwriting user adjustments
-    use_standard_template 1
-fi
+# default template
+use_default_template
 
 # ----------------------------------------------------------------------------
 ## @brief Alter template file.
@@ -1144,36 +1144,6 @@ addordel $tests "test" 0              || retval=1 # for deletion of directory
 # example
 addordel $example "example/CMakeLists.txt" || retval=1
 addordel $example "example" 0              || retval=1 # for deletion of directory
-
-# write cache
-function write_to_cache
-{
-    local name=$1
-    eval local value=\$$name
-
-    if [ $value -eq 1 ]; then
-        echo "_$name=1" >> $cache
-    else
-        echo "_$name=0" >> $cache
-    fi
-}
-
-echo -n "" > $cache
-write_to_cache conf_settings
-write_to_cache conf_depends
-write_to_cache conf_components
-write_to_cache conf_package
-write_to_cache conf_find
-write_to_cache conf_find_version
-write_to_cache conf_generate
-write_to_cache conf_script
-write_to_cache conf_tests
-write_to_cache conf_use
-write_to_cache data
-write_to_cache doc
-write_to_cache example
-write_to_cache include
-write_to_cache tests
 
 # done
 if [ $retval -ne 0 ]; then
