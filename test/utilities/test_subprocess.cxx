@@ -126,7 +126,7 @@ TEST(Subprocess, Popen)
 
     Subprocess::CommandLine cmd;
     cmd.push_back(cCmd);
-    EXPECT_TRUE(p.popen(cmd));
+    EXPECT_TRUE(p.popen(cmd)) << "Failed to run command: " << cCmd;
     EXPECT_TRUE(p.wait());
     EXPECT_TRUE(p.poll());
     EXPECT_FALSE(p.signaled());
@@ -144,13 +144,13 @@ TEST(Subprocess, ReturnCode)
 {
     Subprocess p;
 
-    EXPECT_TRUE(p.popen(cCmd + " --exit 1"));
+    EXPECT_TRUE(p.popen(cCmd + " --exit 1")) << "Failed to run command: " << cCmd << " --exit 1";
     EXPECT_TRUE(p.wait());
     EXPECT_TRUE(p.poll());
     EXPECT_FALSE(p.signaled());
     EXPECT_EQ(1, p.returncode());
 
-    EXPECT_TRUE(p.popen(cCmd + " --exit 42"));
+    EXPECT_TRUE(p.popen(cCmd + " --exit 42")) << "Failed to run command: " << cCmd << " --exit 42";
     EXPECT_TRUE(p.wait());
     EXPECT_TRUE(p.poll());
     EXPECT_FALSE(p.signaled());
@@ -163,7 +163,8 @@ TEST(Subprocess, Terminate)
     Subprocess p;
     char buf[2];
 
-    EXPECT_TRUE(p.popen(cCmd + " --sleep 60 --greet", Subprocess::RM_NONE, Subprocess::RM_PIPE));
+    EXPECT_TRUE(p.popen(cCmd + " --sleep 10 --greet", Subprocess::RM_NONE, Subprocess::RM_PIPE))
+            << "Failed to run command: " << cCmd << " --sleep 10 --greet";
     EXPECT_FALSE(p.poll());
     EXPECT_FALSE(p.signaled());
     EXPECT_TRUE(p.terminate());
