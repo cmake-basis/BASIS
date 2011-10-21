@@ -11,8 +11,15 @@
 # test project independent utilities
 basis_add_test (test_path.cxx       UNITTEST)
 basis_add_test (test_subprocess.cxx UNITTEST)
-basis_add_test (test_core.sh        UNITTEST)
-basis_add_test (test_shtap.sh       UNITTEST)
+
+if (UNIX)
+  basis_add_test (test_core.sh  UNITTEST)
+  basis_add_test (test_shtap.sh UNITTEST)
+endif ()
 
 # test project-specific utilities
-basis_add_test (test_utilities.sh)
+# TODO Make this test available on Windows as well, with only the tests of the
+#      BASH utilities excluded.
+if (UNIX)
+  basis_add_test (test_utilities.sh)
+endif ()

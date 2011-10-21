@@ -21,7 +21,12 @@
 option (BUILD_CXX_UTILITIES    "Whether to build the C++ utilities."    ON)
 option (BUILD_PYTHON_UTILITIES "Whether to build the Python utilities." ON)
 option (BUILD_PERL_UTILITIES   "Whether to build the Perl utilities."   ON)
-option (BUILD_BASH_UTILITIES   "Whether to build the BASH utilities."   ON)
+
+if (UNIX)
+  option (BUILD_BASH_UTILITIES "Whether to build the BASH utilities." ON)
+else ()
+  set (BUILD_BASH_UTILITIES OFF)
+endif ()
 
 # ============================================================================
 # directories
@@ -40,4 +45,3 @@ set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/templates/src")
 
 # installation directory of project template files
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates/project")
-

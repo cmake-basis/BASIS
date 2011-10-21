@@ -8,4 +8,6 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_add_test (test_basisproject.sh)
+if (UNIX)
+  basis_add_test (test_basisproject.sh)
+endif ()

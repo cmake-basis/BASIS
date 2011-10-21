@@ -171,17 +171,33 @@ function cleanup
 # main
 # ============================================================================
 
+# create test project
 create
+# add some executable target used by ExecutableTargetInfo tests
 add_executable 'helloworld.cxx'
-add_test 'test_ExecutableTargetInfo.cxx' UNITTEST
-add_test 'test_executabletargetinfo.py.in' WITH_EXT
-add_test 'test_ExecutableTargetInfo.pl.in' WITH_EXT
-add_test 'test_executabletargetinfo.sh.in' WITH_EXT
-add_test 'test_stdaux.cxx' UNITTEST
-add_test 'test_stdaux.py.in' WITH_EXT
-add_test 'test_stdaux.pl.in' WITH_EXT
-add_test 'test_stdaux.sh.in' WITH_EXT
+# test C++ utilities
+if [ '@BUILD_CXX_UTILITIES@' == 'ON' ]; then
+    add_test 'test_ExecutableTargetInfo.cxx' UNITTEST
+    add_test 'test_stdaux.cxx' UNITTEST
+fi
+# test Python utilities
+if [ '@BUILD_PYTHON_UTILITIES@' == 'ON' ]; then
+  add_test 'test_executabletargetinfo.py.in' WITH_EXT
+  add_test 'test_stdaux.py.in' WITH_EXT
+fi
+# test Perl utilities
+if [ '@BUILD_PERL_UTILITIES@' == 'ON' ]; then
+  add_test 'test_ExecutableTargetInfo.pl.in' WITH_EXT
+  add_test 'test_stdaux.pl.in' WITH_EXT
+fi
+# test BASH utilities
+if [ '@BUILD_BASH_UTILITIES@' == 'ON' ]; then
+  add_test 'test_executabletargetinfo.sh.in' WITH_EXT
+  add_test 'test_stdaux.sh.in' WITH_EXT
+fi
+# build tests
 build
+# run tests
 run cd "${BUILD_DIR}"
 if [ ${FLAGS_verbose} -gt 0 ]; then
     run ctest -V -V "$@"
