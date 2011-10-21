@@ -249,18 +249,18 @@ endmacro ()
 
 macro (installtree_asserts)
   # prefix must be an absolute path
-  if (NOT IS_ABSOLUTE "${CMAKE_INSTALL_PREFIX}")
-    message (FATAL_ERROR "CMAKE_INSTALL_PREFIX must be an absolute path!")
+  if (NOT IS_ABSOLUTE "${INSTALL_PREFIX}")
+    message (FATAL_ERROR "INSTALL_PREFIX must be an absolute path!")
   endif ()
 
   # install tree must be different from source and build tree
-  string (TOLOWER "${CMAKE_SOURCE_DIR}"     SOURCE_ROOT)
-  string (TOLOWER "${CMAKE_BINARY_DIR}"     BUILD_ROOT)
-  string (TOLOWER "${CMAKE_INSTALL_PREFIX}" INSTALL_ROOT)
+  string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
+  string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
+  string (TOLOWER "${INSTALL_PREFIX}"   INSTALL_ROOT)
 
   if ("${INSTALL_ROOT}" MATCHES "${BUILD_ROOT}|${SOURCE_ROOT}")
-    message (FATAL_ERROR "The current CMAKE_INSTALL_PREFIX points at the source or build tree:\n"
-                         "  ${CMAKE_INSTALL_PREFIX}\n"
+    message (FATAL_ERROR "The current INSTALL_PREFIX points at the source or build tree:\n"
+                         "  ${INSTALL_PREFIX}\n"
                          "This is not supported. Please choose another installation prefix."
     )
   endif()
