@@ -52,6 +52,16 @@ set (BASIS_PERL_LIBRARY_DIR     "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
 include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # select languages used by this project
+option (BUILD_CXX_UTILITIES    "Whether to build the C++ utilities."    ON)
+option (BUILD_PYTHON_UTILITIES "Whether to build the Python utilities." ON)
+option (BUILD_PERL_UTILITIES   "Whether to build the Perl utilities."   ON)
+
+if (UNIX)
+  option (BUILD_BASH_UTILITIES "Whether to build the BASH utilities." ON)
+else ()
+  set (BUILD_BASH_UTILITIES OFF)
+endif ()
+
 set (LANGUAGES "LANGUAGES")
 if (BUILD_CXX_UTILITIES)
   list (APPEND LANGUAGES "CXX")
