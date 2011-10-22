@@ -15,20 +15,6 @@
 ##############################################################################
 
 # ============================================================================
-# build options
-# ============================================================================
-
-option (BUILD_CXX_UTILITIES    "Whether to build the C++ utilities."    ON)
-option (BUILD_PYTHON_UTILITIES "Whether to build the Python utilities." ON)
-option (BUILD_PERL_UTILITIES   "Whether to build the Perl utilities."   ON)
-
-if (UNIX)
-  option (BUILD_BASH_UTILITIES "Whether to build the BASH utilities." ON)
-else ()
-  set (BUILD_BASH_UTILITIES OFF)
-endif ()
-
-# ============================================================================
 # directories
 # ============================================================================
 
