@@ -39,6 +39,9 @@ mark_as_advanced (BASIS_MCC_MATLAB_MODE)
 # build configuration
 # ============================================================================
 
+## @brief Script used to invoke the MATLAB Compiler in MATLAB mode.
+set (BASIS_SCRIPT_MCC "${CMAKE_CURRENT_LIST_DIR}/runmcc.m")
+
 ## @addtogroup CMakeAPI
 #  @{
 
