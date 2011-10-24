@@ -43,6 +43,8 @@ set (
 )
 mark_as_advanced(INSTALL_APIDOC_DIR)
 
+file (GLOB API_DOX_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doxygen/*.dox")
+
 basis_add_doc (
   api
   GENERATOR        Doxygen
@@ -53,7 +55,7 @@ basis_add_doc (
                    # additional templates provided by BASIS
                    "${PROJECT_CODE_DIR}/cmake/ScriptConfig.cmake.in"
                    # additional Doxygen pages including main page
-                   "${CMAKE_CURRENT_SOURCE_DIR}/DoxygenPages.h"
+                   ${API_DOX_FILES}
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
                    "*/tclap/*"            # TCLAP
                    "*/gmock/*"            # Google Mock
