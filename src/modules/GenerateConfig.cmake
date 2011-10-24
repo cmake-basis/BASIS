@@ -14,7 +14,7 @@
 #
 # Similarly, if the file @c PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
 # it is used as template for the \<package\>ConfigVersion.cmake file. The same
-# applies to Use.cmake.in.
+# applies to ConfigUse.cmake.in.
 #
 # The variable @c PACKAGE_NAME is set to the name of the project prefixed by the
 # value of @c BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
@@ -155,10 +155,13 @@ install (
 # ----------------------------------------------------------------------------
 # choose template
 
-if (EXISTS "${PROJECT_CONFIG_DIR}/Use.cmake.in")
+if (EXISTS "${PROJECT_CONFIG_DIR}/ConfigUse.cmake.in")
+  set (TEMPLATE "${PROJECT_CONFIG_DIR}/ConfigUse.cmake.in")
+elseif (EXISTS "${PROJECT_CONFIG_DIR}/Use.cmake.in")
+  # backwards compatibility to version <= 0.1.8 of BASIS
   set (TEMPLATE "${PROJECT_CONFIG_DIR}/Use.cmake.in")
 else ()
-  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/Use.cmake.in")
+  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -173,4 +176,3 @@ install (
   FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
   DESTINATION "${INSTALL_CONFIG_DIR}"
 )
-

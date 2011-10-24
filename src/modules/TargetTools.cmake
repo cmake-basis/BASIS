@@ -479,6 +479,14 @@ endfunction ()
 #     <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
 #   </tr>
 #   <tr>
+#     @tp @b DESTINATION dir @endtp
+#     <td>Installation directory relative to @c INSTALL_PREFIX.
+#         If "none" (the case is ignored) is given as argument,
+#         no installation rules are added for this executable target.
+#         Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR
+#                  (if @p LIBEXEC is given).</td>
+#   </tr>
+#   <tr>
 #     @tp @b LANGUAGE lang @endtp
 #     <td>Source code language. By default determined from the extensions of
 #         the given source files.</td>
@@ -492,7 +500,8 @@ endfunction ()
 #   <tr>
 #     @tp @b TEST @endtp
 #     <td>Specifies that the built executable is a test executable used
-#         with basis_add_test().</td>
+#         with basis_add_test(). Test executables are output to the
+#         binary testing tree and are not installed.</td>
 #   </tr>
 #   <tr>
 #     @tp @b NO_BASIS_UTILITIES @endtp
@@ -833,7 +842,8 @@ endfunction ()
 #   <tr>
 #     @tp @b TEST @endtp
 #     <td>Specifies that the built executable is a test executable used
-#         with basis_add_test().</td>
+#         with basis_add_test(). Test executables are output to the
+#         binary testing tree and are not installed.</td>
 #   </tr>
 #   <tr>
 #     @tp @b NO_BASIS_UTILITIES @endtp
@@ -1304,13 +1314,6 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
-#      @tp @b DESTINATION dir @endtp
-#      <td>The installation directory relative to @c INSTALL_PREFIX.
-#          Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if
-#                   the @p LIBEXEC option is given or @c INSTALL_LIBRARY_DIR
-#                   if the @p MODULE option is given.</td>
-#   </tr>
-#   <tr>
 #      @tp @b COMPONENT name @endtp
 #      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT for
 #          executable scripts or @c BASIS_LIBRARY_COMPONENT for modules.</td>
@@ -1332,13 +1335,23 @@ endfunction ()
 #          @p CONFIG is used only.</td>
 #   </tr>
 #   <tr>
-#      @tp @b LIBEXEC @endtp
-#      <td>Specifies that the script is an auxiliary executable, i.e., a script
-#          which is called by other executables only.</td>
+#      @tp @b DESTINATION dir @endtp
+#      <td>The installation directory relative to @c INSTALL_PREFIX.
+#          Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if
+#                   the @p LIBEXEC option is given or @c INSTALL_LIBRARY_DIR
+#                   if the @p MODULE option is given.</td>
+#   </tr>
+#   <tr>
+#     @tp @b LIBEXEC @endtp
+#     <td>Specifies that the built executable is an auxiliary executable
+#         which is only called by other executable. Ignored if given together
+#         with the option @p TEST.</td>
 #   </tr>
 #   <tr>
 #     @tp @b TEST @endtp
-#     <td>Specifies that the script is a test executable.</td>
+#     <td>Specifies that the built executable is a test executable used
+#         with basis_add_test(). Test executables are output to the
+#         binary testing tree and are not installed.</td>
 #   </tr>
 #   <tr>
 #      @tp @b MODULE @endtp

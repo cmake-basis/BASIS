@@ -63,6 +63,59 @@ macro (find_basis_package PACKAGE)
   find_package ("${BASIS_CONFIG_PREFIX}${PACKAGE}" ${ARGN})
 endmacro ()
 
+##############################################################################
+# @brief Use found package.
+#
+# This macro includes the package's use file if the variable @c <Pkg>_USE_FILE
+# is defined. Otherwise, it adds the include directories to the search path
+# for include paths if possible. Therefore, the corresponding package
+# configuration file has to set the proper CMake variables, i.e.,
+# either @c <Pkg>_INCLUDES, @c <Pkg>_INCLUDE_DIRS, or @c <Pkg>_INCLUDE_DIR.
+#
+# @note As some packages still use all captial variables instead of ones
+#       prefixed by a string that follows the same capitalization as the
+#       package's name, this function also considers these if defined instead.
+#       Hence, if @c <PKG>_INCLUDES is defined, but not @c <Pkg>_INCLUDES, it
+#       is used in place of the latter.
+#
+# @note According to an email on the CMake mailing list, it is not a good idea
+#       to use basis_link_directories() any more given that the arguments to
+#       basis_target_link_libraries() are absolute paths to the library files.
+#       Therefore, this code is commented and not used. It remains here as a
+#       reminder only.
+
+macro (basis_use_package PACKAGE)
+  string (TOUPPER P ${PACKAGE})
+  if (${PACKAGE}_USE_FILE)
+    include ("${${PACKAGE}_USE_FILE}")
+  elseif (${P}_USE_FILE)
+    include ("${${P}_USE_FILE}")
+  else ()
+    # include directories
+    if (${PACKAGE}_INCLUDE_DIRS OR ${P}_INCLUDE_DIRS)
+      if (${PACKAGE}_INCLUDE_DIRS)
+        basis_include_directories (${${PACKAGE}_INCLUDE_DIRS})
+      else ()
+        basis_include_directories (${${P}_INCLUDE_DIRS})
+      endif ()
+    elseif (${PACKAGE}_INCLUDES OR ${P}_INCLUDES)
+      if (${PACKAGE}_INCLUDES)
+        basis_include_directories (${${PACKAGE}_INCLUDES})
+      else ()
+        basis_include_directories (${${P}_INCLUDES})
+      endif ()
+    elseif (${PACKAGE}_INCLUDE_DIR OR ${P}_INCLUDE_DIR)
+      if (${PACKAGE}_INCLUDE_DIR)
+        basis_include_directories (${${PACKAGE}_INCLUDE_DIR})
+      else ()
+        basis_include_directories (${${P}_INCLUDE_DIR})
+      endif ()
+        
+    endif ()
+  endif ()
+  set (P)
+endmacro ()
+
 # ============================================================================
 # get_filename_component
 # ============================================================================
