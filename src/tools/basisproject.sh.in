@@ -398,7 +398,7 @@ function use_default_template
             if [ $conf_package      -eq 0 -a -e "$root/config/Package.cmake" ]; then conf_package=1; fi
             if [ $conf_script       -eq 0 -a -e "$root/config/ScriptConfig.cmake.in" ]; then conf_script=1; fi
             if [ $conf_settings     -eq 0 -a -e "$root/config/Settings.cmake" ]; then conf_settings=1; fi
-            if [ $conf_use          -eq 0 -a -e "$root/config/Use.cmake.in" ]; then conf_use=1; fi
+            if [ $conf_use          -eq 0 ] && [ -e "$root/config/ConfigUse.cmake.in" -o -e "$root/config/Use.cmake.in" ]; then conf_use=1; fi
         fi
         if [ $data    -eq 0 -a -e "$root/data"    ]; then data=1; fi
         if [ $doc     -eq 0 -a -e "$root/doc"     ]; then doc=1; fi
@@ -1115,7 +1115,7 @@ addordel $conf_find_version "config/ConfigVersion.cmake.in" || retval=1
 addordel $conf_generate     "config/GenerateConfig.cmake"   || retval=1
 addordel $conf_script       "config/ScriptConfig.cmake.in"  || retval=1
 addordel $conf_tests        "config/CTestCustom.cmake.in"   || retval=1
-addordel $conf_use          "config/Use.cmake.in"           || retval=1
+addordel $conf_use          "config/ConfigUse.cmake.in"     || retval=1
 
 if [ -d "$root/config" ]; then
     if [[ $(ls "$root/config" 2>&1) == '' ]]; then
@@ -1192,28 +1192,7 @@ function add_find_package
     fi
     echo >> $file
     echo "if (${prefix}_FOUND)" >> $file
-    if [ $use_file -ne 0 ]; then
-        echo "  include (\${${prefix}_USE_FILE})" >> $file
-    else
-        echo "  if (${prefix}_INCLUDE_DIRS)" >> $file
-        echo "    basis_include_directories (\${${prefix}_INCLUDE_DIRS})" >> $file
-        echo "  elseif (${prefix}_INCLUDES)" >> $file
-        echo "    basis_include_directories (\${${prefix}_INCLUDES})" >> $file
-        echo "  elseif (${prefix}_INCLUDE_DIR)" >> $file
-        echo "    basis_include_directories (\${${prefix}_INCLUDE_DIR})" >> $file
-        echo "  endif ()" >> $file
-        # Note: According to an email on the CMake mailing list, it is not a good idea
-        #       to use basis_link_directories() any more given that the arguments to
-        #       basis_target_link_libraries() are absolute paths to the library files.
-        #       Therefore, this code is commented and not used. It remains here as a
-        #       reminder only.
-        #echo >> $file
-        #echo "  if (${prefix}_LIBRARY_DIRS)" >> $file
-        #echo "    basis_link_directories (\${${prefix}_LIBRARY_DIRS})" >> $file
-        #echo "  elseif (${prefix}_LIBRARY_DIR)" >> $file
-        #echo "    basis_link_directories (\${${prefix}_LIBRARY_DIR})" >> $file
-        #echo "  endif ()" >> $file
-    fi
+    echo "  basis_use_package (${package})" >> $file
     if [ $required -ne 0 ]; then
         echo "else ()" >> $file
         echo "  # raise fatal error in case Find${package}.cmake did not do it" >> $file

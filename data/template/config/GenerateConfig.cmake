@@ -1,8 +1,8 @@
 ##############################################################################
-# @file  CMakeLists.txt
+# @file  GenerateConfig.cmake
 # @brief Generates package configuration files.
 #
-# This CMake script configures the \<Package\>Config.cmake et al. files,
+# This CMake script configures the \<package\>Config.cmake et al. files,
 # once for the build tree and once for the install tree. Variables with a
 # _CONFIG suffix are replaced in the default template file by either the
 # value for the build or the install tree, respectively.
@@ -13,17 +13,19 @@
 # exists, it is used as template. Otherwise, the default template file is used.
 #
 # Similarly, if the file @c PROJECT_CONFIG_DIR/ConfigVersion.cmake.in exists,
-# it is used as template for the <package>ConfigVersion.cmake file. The same
+# it is used as template for the \<package\>ConfigVersion.cmake file. The same
 # applies to Use.cmake.in.
 #
-# The variable @c PACKAGE_NAME is set to the name of the project prefixed by
-# the value of @c BASIS_CONFIG_PREFIX. Hence, it is the name used by other
-# projects to find this software package.
+# The variable @c PACKAGE_NAME is set to the name of the project prefixed by the
+# value of @c BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
+# to find this software package.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeTools
 ##############################################################################
 
 # ============================================================================
@@ -33,11 +35,30 @@
 # Attention: This has to be done before configuring any files such that these
 #            variables can be used by the template files.
 
-set (PACKAGE_NAME "${BASIS_CONFIG_PREFIX}${PROJECT_NAME}")
+## @addtogroup CMakeUtilities
+#  @{
 
-set (CONFIG_FILE  "${PACKAGE_NAME}Config.cmake")
+## @brief Name of the CMake package configuration file.
+set (CONFIG_FILE "${PACKAGE_NAME}Config.cmake")
+## @brief Name of the CMake package version file.
 set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
+## @brief Name of the CMake package use file.
 set (USE_FILE     "${PACKAGE_NAME}Use.cmake")
+## @brief Name of the CMake target exports file.
+set (EXPORTS_FILE "${PACKAGE_NAME}Exports.cmake")
+## @brief Name of the CMake target exports file for custom targets.
+set (CUSTOM_EXPORTS_FILE "${PACKAGE_NAME}CustomExports.cmake")
+
+## @}
+
+# ============================================================================
+# export build targets
+# ============================================================================
+
+basis_export_targets (
+  FILE        "${EXPORTS_FILE}"
+  CUSTOM_FILE "${CUSTOM_EXPORTS_FILE}"
+)
 
 # ============================================================================
 # project configuration file
@@ -56,7 +77,6 @@ endif ()
 # build tree related configuration
 
 set (BUILD_CONFIG_SETTINGS 1)
-
 include ("${CMAKE_CURRENT_LIST_DIR}/ConfigSettings.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
@@ -77,7 +97,6 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 # install tree related configuration
 
 set (BUILD_CONFIG_SETTINGS 0)
-
 include ("${CMAKE_CURRENT_LIST_DIR}/ConfigSettings.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
@@ -136,10 +155,10 @@ install (
 # ----------------------------------------------------------------------------
 # choose template
 
-if (EXISTS "${PROJECT_CONFIG_DIR}/Use.cmake.in")
-  set (TEMPLATE "${PROJECT_CONFIG_DIR}/Use.cmake.in")
+if (EXISTS "${PROJECT_CONFIG_DIR}/ConfigUse.cmake.in")
+  set (TEMPLATE "${PROJECT_CONFIG_DIR}/ConfigUse.cmake.in")
 else ()
-  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/Use.cmake.in")
+  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -154,4 +173,3 @@ install (
   FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
   DESTINATION "${INSTALL_CONFIG_DIR}"
 )
-
