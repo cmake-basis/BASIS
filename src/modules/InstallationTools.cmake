@@ -31,7 +31,6 @@ function (basis_install_link OLD NEW)
     set (OLD \"@OLD@\")
     set (NEW \"@NEW@\")
 
-
     if (NOT IS_ABSOLUTE \"\${OLD}\")
       set (OLD \"\${CMAKE_INSTALL_PREFIX}/\${OLD}\")
     endif ()
@@ -116,10 +115,16 @@ function (basis_install_links)
             set (SYMLINK_NAME "${SYMLINK_NAME}${SYMLINK_SUFFIX}")
           endif ()
 
-          basis_install_link (
-            "${INSTALL_DIR}/${OUTPUT_NAME}"
-            "bin/${SYMLINK_NAME}"
-          )
+          # avoid creation of symbolic link if there would be a conflict with
+          # the subdirectory in bin/ where the actual executables are installed
+          if (INSTALL_SINFIX AND "${SYMLINK_NAME}" STREQUAL "${BASIS_INSALL_SINFIX}")
+            message (STATUS \"Skipping: ${INSTALL_DIR}/${OUTPUT_NAME} -> ${INSTALL_PREFIX}/bin/${SYMLINK_NAME}\")
+          else ()
+            basis_install_link (
+              "${INSTALL_DIR}/${OUTPUT_NAME}"
+              "bin/${SYMLINK_NAME}"
+            )
+          endif ()
         endif ()
       endif ()
     endif ()
