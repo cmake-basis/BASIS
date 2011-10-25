@@ -87,6 +87,8 @@ if (NiftiCLib_USE_STATIC_LIB)
 else ()
   if (WIN32)
     set (CMAKE_FIND_LIBRARY_SUFFIXES .dll .lib)
+  elseif(APPLE)
+    set (CMAKE_FIND_LIBRARY_SUFFIXES .dylib)
   else ()
     set (CMAKE_FIND_LIBRARY_SUFFIXES .so .a)
   endif()
@@ -107,9 +109,10 @@ find_path (
 
 find_path (
   NiftiCLib_INCLUDE_DIR
-    NAMES nifti1_io.h
-    HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-    DOC   "Path of directory containing nifti1.h"
+    NAMES         nifti1_io.h
+    HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+    PATH_SUFFIXES nifti
+    DOC           "Path of directory containing nifti1.h"
 )
 
 find_library (
