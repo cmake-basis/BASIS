@@ -27,6 +27,8 @@
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
+namespace basis {
+
 
 /// @addtogroup CppUtilities
 /// @{
@@ -230,6 +232,8 @@ int execute_process(std::vector<std::string>& args,
 /// @}
 // Doxygen group CppUtilities
 
+
+} // namespace basis
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
 

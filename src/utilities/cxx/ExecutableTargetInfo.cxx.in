@@ -25,6 +25,8 @@ using namespace SBIA_BASIS_NAMESPACE;
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
+namespace basis {
+
 
 // ===========================================================================
 // static members
@@ -106,5 +108,7 @@ string ExecutableTargetInfo::get_installation_directory(const string& target) co
 #endif
 }
 
+
+} // namespace basis
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

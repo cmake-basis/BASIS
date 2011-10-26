@@ -26,6 +26,8 @@
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
+namespace basis {
+
 
 /**
  * @brief Provides information about executable build targets.
@@ -189,6 +191,8 @@ private:
 
 }; // class ExecutableTargetInfo
 
+
+} // namespace basis
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
 

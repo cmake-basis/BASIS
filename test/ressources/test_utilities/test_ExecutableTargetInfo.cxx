@@ -1,6 +1,6 @@
 /**
- * @file  test_ExecutableTargetInfo.cxx
- * @brief Test ExecutableTargetInfo.cxx module.
+ * @file  test_basis::ExecutableTargetInfo.cxx
+ * @brief Test basis::ExecutableTargetInfo.cxx module.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -15,17 +15,18 @@
 using namespace SBIA_UTILITIESTEST_NAMESPACE;
 using namespace std;
 
+
 // ---------------------------------------------------------------------------
 // Tests instance().
 TEST(ExecutableTargetInfo, Instance)
 {
     // get singleton instance
-    const ExecutableTargetInfo* info = NULL;
-    info = &ExecutableTargetInfo::instance();
+    const basis::ExecutableTargetInfo* info = NULL;
+    info = &basis::ExecutableTargetInfo::instance();
     ASSERT_TRUE(info != NULL)
         << "Returned instance is NULL";
     // make sure that second call gives same instance
-    ASSERT_EQ(info, &ExecutableTargetInfo::instance())
+    ASSERT_EQ(info, &basis::ExecutableTargetInfo::instance())
         << "Second call returned another instance";
 }
 
@@ -33,7 +34,7 @@ TEST(ExecutableTargetInfo, Instance)
 // Tests get_target_uid().
 TEST(ExecutableTargetInfo, GetTargetUID)
 {
-    const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
+    const basis::ExecutableTargetInfo& info = basis::ExecutableTargetInfo::instance();
     EXPECT_STREQ("utilitiestest::basisproject", info.get_target_uid("basisproject").c_str())
         << "this project's namespace was not prepended to known target";
     EXPECT_STREQ("utilitiestest::unknown", info.get_target_uid("unknown").c_str())
@@ -54,7 +55,7 @@ TEST(ExecutableTargetInfo, GetTargetUID)
 // Tests is_known_target().
 TEST(ExecutableTargetInfo, IsKnownTarget)
 {
-    const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
+    const basis::ExecutableTargetInfo& info = basis::ExecutableTargetInfo::instance();
     EXPECT_FALSE(info.is_known_target("basisproject"))
         << "basisproject is part of UtilitiesTest though it should not";
     EXPECT_TRUE(info.is_known_target("basis::basisproject"))
@@ -69,7 +70,7 @@ TEST(ExecutableTargetInfo, IsKnownTarget)
 // Tests get_executable_name().
 TEST(ExecutableTargetInfo, GetExecutableName)
 {
-    const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
+    const basis::ExecutableTargetInfo& info = basis::ExecutableTargetInfo::instance();
 #if WINDOWS
     EXPECT_STREQ("basisproject", info.get_executable_name("basis::basisproject").c_str())
 #else
@@ -82,7 +83,7 @@ TEST(ExecutableTargetInfo, GetExecutableName)
 // Tests get_build_directory().
 TEST(ExecutableTargetInfo, GetBuildDirectory)
 {
-    const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
+    const basis::ExecutableTargetInfo& info = basis::ExecutableTargetInfo::instance();
 
     string dir;
     size_t idx;
@@ -105,7 +106,7 @@ TEST(ExecutableTargetInfo, GetBuildDirectory)
 // Tests get_installation_directory().
 TEST(ExecutableTargetInfo, GetInstallationDirectory)
 {
-    const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
+    const basis::ExecutableTargetInfo& info = basis::ExecutableTargetInfo::instance();
 
     string dir;
 

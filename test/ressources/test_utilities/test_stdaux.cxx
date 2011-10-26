@@ -26,8 +26,8 @@ using sbia::basis::SubprocessException;
 TEST(StdAux, ExecuteProcessInvalidUse)
 {
     vector<string> argv;
-    EXPECT_THROW(execute_process(""), SubprocessException);
-    EXPECT_THROW(execute_process(argv), SubprocessException);
+    EXPECT_THROW(basis::execute_process(""), SubprocessException);
+    EXPECT_THROW(basis::execute_process(argv), SubprocessException);
 }
 
 // ---------------------------------------------------------------------------
@@ -37,16 +37,16 @@ TEST(StdAux, ExecuteTarget)
     vector<string> args;
     int status;
     std::ostringstream output;
-    EXPECT_NO_THROW(status = execute_process("basis::dummy_command"));
+    EXPECT_NO_THROW(status = basis::execute_process("basis::dummy_command"));
     EXPECT_EQ(0, status) << "exit code of basis::dummy_command is 0";
-    EXPECT_NO_THROW(status = execute_process("basis::dummy_command --greet", true, &output));
+    EXPECT_NO_THROW(status = basis::execute_process("basis::dummy_command --greet", true, &output));
     EXPECT_EQ(0, status) << "exit code of basis::dummy_command --greet is 0";
     EXPECT_STREQ("Hello, BASIS!\n", output.str().c_str());
     args.clear();
     output.str("");
     args.push_back("basis::dummy_command");
     args.push_back("--warn");
-    EXPECT_NO_THROW(status = execute_process(args, true, &output));
+    EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
     EXPECT_EQ(0, status) << "exit code of basis::dummy_command --warn is 0";
     EXPECT_STREQ("WARNING: Cannot greet in other languages!\n", output.str().c_str());
 }
@@ -62,7 +62,7 @@ TEST(StdAux, ExecuteCommand)
 #endif
     int status;
     std::ostringstream output;
-    EXPECT_NO_THROW(status = execute_process(args, true, &output));
+    EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
     EXPECT_EQ(0, status) << "exit code of dir or ls is 0";
     EXPECT_STRNE("", output.str().c_str()) << "output of dir or ls is not empty";
 }
