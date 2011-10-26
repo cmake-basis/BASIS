@@ -198,7 +198,7 @@ from sbia.${PROJECT_NAME_LOWER} import basis
 set (BASIS_PERL_UTILITIES "
 use File::Basename;
 use lib '@BASIS_PERL_LIBRARY_DIR@';
-use lib dirname (__FILE__) . \"/${LIBRARY_DIR}/perl5\";
+use lib dirname (__FILE__) . \"/${PERL_LIBRARY_DIR}\";
 use lib dirname (__FILE__);
 
 package Basis;
