@@ -21,7 +21,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 """
 
-from .which import WhichError, which, whichall, whichgen
+from sbia.basis.which import WhichError, which, whichall, whichgen
 from .stdaux import print_contact, print_version, execute_process, SubprocessError
 from .executabletargetinfo import get_target_uid, is_known_target, \
         get_executable_name, get_executable_directory, get_executable_path
