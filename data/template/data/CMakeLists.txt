@@ -7,7 +7,7 @@
 # the software are, on the other side, available in the example folder.
 #
 # By default, all content of this directory is simply installed in the
-# <tt>INSTALL_SHARE_DIR</tt>/data/ directory of the installation tree.
+# @c INSTALL_DATA_DIR directory of the installation tree.
 # To group data files, place them in proper subdirectories which will be
 # copied to the @c DESTINATION directory of the basis_install() command.
 #
@@ -19,7 +19,7 @@
 
 basis_install (
   DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}/
-  DESTINATION "${INSTALL_SHARE_DIR}/data"
+  DESTINATION "${INSTALL_DATA_DIR}"
   PATTERN     CMakeLists.txt EXCLUDE
   PATTERN     *~             EXCLUDE
   PATTERN     .svn           EXCLUDE
