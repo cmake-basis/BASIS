@@ -165,6 +165,7 @@ sub get_executable_path
         if (defined $uid and exists $_location->{$uid}) {
             $path = $_location->{$uid};
             $path = File::Spec->rel2abs ($path, dirname (__FILE__));
+            $path = realpath ($path);
         } else {
             $path = which ($_[0])
         }
