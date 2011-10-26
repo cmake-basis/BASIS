@@ -37,7 +37,7 @@ set (
     "Config.cmake.in"         # default <Pkg>Config.cmake template
     "ConfigSettings.cmake"    # settings for default <Pkg>Config.cmake
     "ConfigVersion.cmake.in"  # default <Pkg>ConfigVersion.cmake template
-    "Use.cmake.in"            # default <Pkg>Use.cmake template
+    "ConfigUse.cmake.in"      # default <Pkg>Use.cmake template
     "GenerateConfig.cmake"    # generation/configuration of <Pkg>Config.cmake et al.
     "updatefile.py"           # helper used by BasisUpdate.cmake module
     "runmcc.m"                # helper used by MatlabTools.cmake module
