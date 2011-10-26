@@ -189,7 +189,7 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
             raise SubprocessError(msg)
     # if command failed, throw an exception
     if status != 0 and not allow_fail:
-        raise SubprocessError("Command " + ' '.join(['"' + i + '"' for i in args[1:]]) + " failed")
+        raise SubprocessError("Command " + ' '.join(['"' + i + '"' for i in args[0:]]) + " failed")
     # return
     if stdout:
         return (status, output)
