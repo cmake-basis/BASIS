@@ -117,6 +117,9 @@ basis_set_script_path (LIBRARY_DIR "@BINARY_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@
 basis_set_script_path (ARCHIVE_DIR "@BINARY_ARCHIVE_DIR@" "@INSTALL_ARCHIVE_DIR@")
 basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"   "@INSTALL_SHARE_DIR@")
 
+basis_set_script_path (PYTHON_LIBRARY_DIR  "@BINARY_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
+basis_set_script_path (PERL_LIBRARY_DIR    "@BINARY_PERL_LIBRARY_DIR@"   "@INSTALL_PERL_LIBRARY_DIR@")
+
 if ("${PROJECT_NAME}" STREQUAL "BASIS")
   basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
 else ()
@@ -127,10 +130,12 @@ endif ()
 # testing - only to be used within test implementations
 # ============================================================================
 
-set (TESTING_DIR         "@PROJECT_TESTING_DIR@")
-set (TESTING_RUNTIME_DIR "@TESTING_RUNTIME_DIR@")
-set (TESTING_LIBRARY_DIR "@TESTING_LIBRARY_DIR@")
-set (TESTING_OUTPUT_DIR  "@TESTING_OUTPUT_DIR@")
+set (TESTING_DIR                "@PROJECT_TESTING_DIR@")
+set (TESTING_RUNTIME_DIR        "@TESTING_RUNTIME_DIR@")
+set (TESTING_LIBRARY_DIR        "@TESTING_LIBRARY_DIR@")
+set (TESTING_PYTHON_LIBRARY_DIR "@TESTING_PYTHON_LIBRARY_DIR@")
+set (TESTING_PERL_LIBRARY_DIR   "@TESTING_PERL_LIBRARY_DIR@")
+set (TESTING_OUTPUT_DIR         "@TESTING_OUTPUT_DIR@")
 
 # ============================================================================
 # utility implementations
@@ -161,8 +166,8 @@ set (BASIS_PYTHON_UTILITIES "
 def _basis_init_sys_path():
     import os
     import sys
-    module_dir  = os.path.realpath(os.path.dirname(__file__))
-    sitelib_dir = os.path.join(module_dir, '${LIBRARY_DIR}/python')
+    module_dir  = os.path.dirname(os.path.realpath(__file__))
+    sitelib_dir = os.path.normpath(os.path.join(module_dir, '${PYTHON_LIBRARY_DIR}'))
     if sitelib_dir not in sys.path:
         sys.path.append(sitelib_dir)
     sitelib_dir = '@BASIS_PYTHON_LIBRARY_DIR@'

@@ -30,10 +30,10 @@ if (BUILD_CONFIG_SETTINGS)
   set (LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
   ## @brief Search path for Python package in build tree.
-  set (PYTHON_LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
+  set (PYTHON_LIBRARY_DIR_CONFIG "${BINARY_PYTHON_LIBRARY_DIR}")
 
   ## @brief Search path for Perl packages in build tree.
-  set (PERL_LIBRARY_DIR_CONFIG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
+  set (PERL_LIBRARY_DIR_CONFIG "${BINARY_PERL_LIBRARY_DIR}")
 
   return ()
 endif ()

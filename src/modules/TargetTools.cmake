@@ -1290,11 +1290,6 @@ endfunction ()
 # \@BASIS_SCRIPT_CONFIG\@ can be used within this custom script configuration file
 # to include the default configuration of the @c BASIS_SCRIPT_CONFIG_FILE.
 #
-# @todo Install Perl modules (@b not scripts) to common directory, i.e.,
-#       @c INSTALL_PREFIX /lib/perl5/<version>/, for example.
-#       Consider further to install Perl modules into system default location.
-#       For example, PERL_PRIVLIB directory as determined by FindPerlLibs module.
-#
 # @note This function should not be used directly. Instead, the functions
 #       basis_add_executable() and basis_add_library() should be used which in
 #       turn make use of this function if the (detected) programming language
@@ -1500,9 +1495,9 @@ function (basis_add_script TARGET_NAME)
   if (ARGN_TEST)
     if (ARGN_MODULE)
       if (SCRIPT_LANGUAGE MATCHES "^PYTHON$")
-        set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}/python/sbia/${PROJECT_NAME_LOWER}")
+        set (OUTPUT_DIRECTORY "${TESTING_PYTHON_LIBRARY_DIR}/sbia/${PROJECT_NAME_LOWER}")
       elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
-        set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}/perl5/SBIA/${PROJECT_NAME}")
+        set (OUTPUT_DIRECTORY "${TESTING_PERL_LIBRARY_DIR}/SBIA/${PROJECT_NAME}")
       else ()
         set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
       endif ()
@@ -1511,9 +1506,9 @@ function (basis_add_script TARGET_NAME)
     endif ()
   elseif (ARGN_MODULE)
     if (SCRIPT_LANGUAGE MATCHES "^PYTHON$")
-      set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python/sbia/${PROJECT_NAME_LOWER}")
+      set (OUTPUT_DIRECTORY "${BINARY_PYTHON_LIBRARY_DIR}/sbia/${PROJECT_NAME_LOWER}")
     elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
-      set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5/SBIA/${PROJECT_NAME}")
+      set (OUTPUT_DIRECTORY "${BINARY_PERL_LIBRARY_DIR}/SBIA/${PROJECT_NAME}")
     else ()
       set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
     endif ()
@@ -1806,9 +1801,9 @@ function (basis_add_script_finalize TARGET_UID)
     endif ()
   endif ()
   # create __init__.py files in build tree Python package
-  if (MODULE AND BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python/.+")
+  if (MODULE AND BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
     set (D "${LIBRARY_OUTPUT_DIRECTORY}")
-    while (NOT "${D}" STREQUAL "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
+    while (NOT "${D}" STREQUAL "${BINARY_PYTHON_LIBRARY_DIR}")
       if (D MATCHES "sbia$")
         set (BUILD_COMMANDS "${BUILD_COMMANDS}file (WRITE \"${D}/__init__.py\" \"from pkgutil import extend_path\\n__path__ = extend_path(__path__, __name__)\\n\")\n")
       else ()

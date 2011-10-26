@@ -373,6 +373,10 @@ set (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary")
 set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
 ## @brief Absolute path of output directory for testing libraries.
 set (TESTING_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
+## @brief Absolute path of output directory for Python modules used for testing.
+set (TESTING_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/python")
+## @brief Absolute path of output directory for Perl modules used for testing.
+set (TESTING_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/perl5")
 
 # ----------------------------------------------------------------------------
 # build tree
@@ -386,6 +390,10 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
 ## @brief Absolute path of output directory for built static libraries.
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
+## @brief Absolute path of output directory for Python modules.
+set (BINARY_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/python")
+## @brief Absolute path of output directory for Perl modules.
+set (BINARY_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/perl5")
 
 # ----------------------------------------------------------------------------
 # install tree
