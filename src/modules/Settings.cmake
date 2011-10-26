@@ -315,7 +315,7 @@ macro (basis_initialize_directories)
 
   set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
 
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DOC EXAMPLE MAN)
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DATA DOC EXAMPLE MAN)
     set (VAR INSTALL_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
     if ("${${VAR}}" STREQUAL "")
@@ -520,7 +520,7 @@ endif ()
 # shared data
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## @brief Path of installation directory for shared data files
+## @brief Path of installation directory for shared files
 #         relative to @c INSTALL_PREFIX.
 set (INSTALL_SHARE_DIR "share")
 
@@ -528,6 +528,10 @@ set (INSTALL_SHARE_DIR "share")
 if (INSTALL_SINFIX)
   set (INSTALL_SHARE_DIR "${INSTALL_SHARE_DIR}/${BASIS_INSTALL_SINFIX}")
 endif ()
+
+## @brief Path of installation directory for shared data files
+#         relative to @c INSTALL_PREFIX.
+set (INSTALL_DATA_DIR "${INSTALL_SHARE_DIR}/data")
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # documentation
