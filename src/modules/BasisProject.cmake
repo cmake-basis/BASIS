@@ -350,6 +350,15 @@ macro (basis_project_initialize)
   # add project config directory to CMAKE_MODULE_PATH
   set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})
 
+  # common options
+  if (EXISTS "${PROJECT_DOC_DIR}")
+    option (BUILD_DOCUMENTATION "Whether to build and/or install the documentation." ON)
+  endif ()
+
+  if (EXISTS ${PROJECT_EXAMPLE_DIR})
+    option (BUILD_EXAMPLE "Whether to build and/or install the example." ON)
+  endif ()
+
   # include project specific settings
   include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
 

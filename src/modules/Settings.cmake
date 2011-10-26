@@ -84,20 +84,6 @@ endif ()
 option (BASIS_VERBOSE "Whether BASIS functions should be verbose." "OFF")
 mark_as_advanced (BASIS_VERBOSE)
 
-## @brief Option to enable/disable build/installation of documentation.
-#
-# This option is only available if the @c PROJECT_DOC_DIR directory exists.
-if (EXISTS "${PROJECT_DOC_DIR}")
-  option (BUILD_DOCUMENTATION "Whether to build and/or install the documentation." ON)
-endif ()
-
-## @brief Option to enable/disable build/installation of example.
-#
-# This option is only available if the @c PROJECT_EXAMPLE_DIR directory exists.
-if (EXISTS ${PROJECT_EXAMPLE_DIR})
-  option (BUILD_EXAMPLE "Whether to build and/or install the example." ON)
-endif ()
-
 ## @}
 
 # ============================================================================
