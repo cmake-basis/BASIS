@@ -18,22 +18,6 @@ endif ()
 
 
 # ============================================================================
-# options
-# ============================================================================
-
-## @addtogroup CMakeAPI
-#  @{
-
-## @brief Option to enable/disable build/installation of documentation.
-#
-# This option is only available if the @c PROJECT_DOC_DIR directory exists.
-if (EXISTS "${PROJECT_DOC_DIR}")
-  option (BUILD_DOCUMENTATION "Whether to build/install the documentation." ON)
-endif ()
-
-## @}
-
-# ============================================================================
 # used programs
 # ============================================================================
 
