@@ -5,19 +5,16 @@
 # @par Input variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_DIR</td>
+#     @tp @b MATLAB_DIR @endtp
 #     <td>The installation directory of MATLAB.
 #         Can also be set as environment variable.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLABDIR</td>
+#     @tp @b MATLABDIR @endtp
 #     <td>Alternative environment variable for @p MATLAB_DIR.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_PATH_SUFFIXES</td>
+#     @tp @b MATLAB_PATH_SUFFIXES @endtp
 #     <td>Path suffixes which are used to find the proper MATLAB libraries.
 #         By default, this find module tries to determine the path suffix
 #         from the CMake variables which describe the system. For example,
@@ -32,60 +29,52 @@
 # @par Output variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_FOUND</td>
+#     @tp @b MATLAB_FOUND @endtp
 #     <td>Whether the package was found and the following CMake
 #         variables are valid.</td>
 #   </tr>
 #   <tr>
-#     @tp @b MATLAB_EXECUTABLE @tpend
+#     @tp @b MATLAB_EXECUTABLE @endtp
 #     <td>The absolute path of the found matlab executable.</td>
 #   </tr>
 #   <tr>
-#     @tp @b MATLAB_MCC_EXECUTABLE @tpend
+#     @tp @b MATLAB_MCC_EXECUTABLE @endtp
 #     <td>The absolute path of the found MATLAB Compiler (mcc) executable.</td>
 #   </tr>
 #   <tr>
-#     @tp @b MATLAB_MEX_EXECUTABLE @tpend
+#     @tp @b MATLAB_MEX_EXECUTABLE @endtp
 #     <td>The absolute path of the found MEX script (mex) executable.</td>
 #   </tr>
 #   <tr>
-#     @tp @b MATLAB_MEXEXT_EXECUTABLE @tpend
+#     @tp @b MATLAB_MEXEXT_EXECUTABLE @endtp
 #     <td>The absolute path of the found mexext script executable.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_INCLUDE_DIR</td>
+#     @tp @b MATLAB_INCLUDE_DIR @endtp
 #     <td>Package include directories.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_INCLUDES</td>
+#     @tp @b MATLAB_INCLUDES @endtp
 #     <td>Include directories including prerequisite libraries.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_mex_LIBRARY</td>
+#     @tp @b MATLAB_mex_LIBRARY @endtp
 #     <td>The MEX library of MATLAB.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_mx_LIBRARY</td>
+#     @tp @b MATLAB_mx_LIBRARY @endtp
 #     <td>The @c mx library of MATLAB.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_eng_LIBRARY</td>
+#     @tp @b MATLAB_eng_LIBRARY @endtp
 #     <td>The MATLAB engine library.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_LIBRARY</td>
+#     @tp @b MATLAB_LIBRARY @endtp
 #     <td>All MATLAB libraries.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b MATLAB_LIBRARIES</td>
+#     @tp @b MATLAB_LIBRARIES @endtp
 #     <td>Package libraries and prerequisite libraries.</td>
 #   </tr>
 # </table>
