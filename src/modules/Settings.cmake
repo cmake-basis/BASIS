@@ -173,7 +173,8 @@ set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 set (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
 
 ## @brief Installation sinfix.
-set (BASIS_INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@")
+set (BASIS_INSTALL_SINFIX "sbia/\@PROJECT_NAME_LOWER\@" CACHE STRING "Suffix/Infix used for installation paths.")
+mark_as_advanced (BASIS_INSTALL_SINFIX)
 
 # ============================================================================
 # cached variables
@@ -312,8 +313,10 @@ macro (basis_initialize_directories)
 
   # install tree
   string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
-
+  string (CONFIGURE "${BASIS_INSTALL_SINFIX}" BASIS_INSTALL_SINFIX @ONLY)
+  set (INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE PATH "Prefix used for installation paths." FORCE)
   set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
+  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE STRING "Suffix/Infix used for installation paths." FORCE)
 
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DATA DOC EXAMPLE MAN)
     set (VAR INSTALL_${P}_DIR)
@@ -415,11 +418,17 @@ string (
 ## @brief Installation prefix.
 set (
   INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
-  CACHE PATH "Installation directories prefix."
+  CACHE PATH "Prefix used for installation paths."
 )
 
-## @brief Whether to use project name as installation sinfix.
-option (INSTALL_SINFIX "Whether to use the project name as installation path suffix (or infix, respectively)." ON)
+## @brief Whether to use installation sinfix.
+option (INSTALL_SINFIX "Whether to use the package-specific installation path suffix/infix." ON)
+
+if (INSTALL_SINFIX)
+  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE STRING "Suffix/Infix used for installation paths." FORCE)
+else ()
+  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE INTERNAL "Suffix/Infix used for installation paths." FORCE)
+endif ()
 
 ## @brief Enable/Disable installation of symbolic links on Unix-based systems.
 if (UNIX)
