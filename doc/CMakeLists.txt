@@ -52,9 +52,6 @@ basis_add_doc (
                    "${PROJECT_CODE_DIR}"
                    "${BINARY_INCLUDE_DIR}"
                    "${PROJECT_INCLUDE_DIR}"
-                   # additional templates provided by BASIS
-                   "${PROJECT_CODE_DIR}/cmake/ScriptConfig.cmake.in"
-                   # additional Doxygen pages including main page
                    ${API_DOX_FILES}
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
                    "*/tclap/*"            # TCLAP

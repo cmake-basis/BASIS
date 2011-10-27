@@ -90,7 +90,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 The BASIS package provides CMake Find module implementations for third-party
 packages which are commonly used at SBIA but do not provide a CMake
-package configuration file (\<Package\>Config.cmake or \<package\>-config.cmake)
+package configuration file (&lt;Package&gt;Config.cmake or &lt;package&gt;-config.cmake)
 such that CMake cannot find the package by default in config-mode.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
