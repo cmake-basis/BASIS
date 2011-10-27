@@ -122,7 +122,7 @@ TEST(ExecutableTargetInfo, GetInstallationDirectory)
 #if WINDOWS
     EXPECT_STREQ("C:/Program Files/SBIA/bin/utilitiestest", dir.c_str())
 #else
-    EXPECT_STREQ("/usr/local/bin/utilitiestest", dir.c_str())
+    EXPECT_STREQ("/usr/local/bin/sbia/utilitiestest", dir.c_str())
 #endif
         << "installation directory of helloworld is not the expected default";
     EXPECT_STRNE(dir.c_str(), info.get_build_directory("helloworld").c_str())
