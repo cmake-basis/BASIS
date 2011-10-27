@@ -75,9 +75,9 @@ include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 # @par Project version:
 # The version number consists of three components: the major version number,
 # the minor version number, and the patch number. The format of the version
-# string is "<major>.<minor>.<patch>", where the minor version number and
-# patch number default to 0 if not given. Only digits are allowed except of
-# the two separating dots.
+# string is "&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;", where the minor version
+# number and patch number default to 0 if not given. Only digits are allowed
+# except of the two separating dots.
 # @n
 # - A change of the major version number indicates changes of the softwares
 #   @api (and @abi) and/or its behavior and/or the change or addition of major
@@ -182,7 +182,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 # @retval PROJECT_REVISION       Revision number of Subversion controlled source tree
 #                                or 0 if the source tree is not revision controlled.
 # @retval PROJECT_*_DIR          Configured and absolute paths of project source tree.
-# @retval PACKAGE_NAME           The name used as prefix for <Pkg>Config.cmake et al. files.
+# @retval PACKAGE_NAME           The name used as prefix for &lt;Pkg&gt;Config.cmake et al. files.
 # @retval BINARY_*_DIR           Absolute paths of directories in binary tree
 #                                corresponding to the @c PROJECT_*_DIR directories.
 # @retval INSTALL_*_DIR          Configured paths of installation relative to INSTALL_PREFIX.

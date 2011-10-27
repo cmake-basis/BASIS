@@ -15,9 +15,9 @@
 # Example:
 # @code
 # if (BUILD_INSTALL_SCRIPT)
-#   set (BIN_DIR "@INSTALL_BIN_DIR@")
+#   set (RUNTIME_DIR "@INSTALL_PREFIX@/@INSTALL_BIN_DIR@")
 # else ()
-#   set (BIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
+#   set (RUNTIME_DIR "@BINARY_RUNTIME_DIR@")
 # endif ()
 # @endcode
 #
@@ -59,6 +59,12 @@
 ##############################################################################
 
 # ============================================================================
+# modules
+# ============================================================================
+
+include ("@BASIS_MODULE_PATH@/CommonTools.cmake")
+
+# ============================================================================
 # script attributes
 # ============================================================================
 
@@ -74,28 +80,56 @@ string (REGEX REPLACE "[^a-zA-Z0-9]" "_" NAMESPACE "${NAMESPACE}")
 string (TOUPPER "${NAMESPACE}" NAMESPACE_UPPER)
 string (TOLOWER "${NAMESPACE}" NAMESPACE_LOWER)
 
+# Note: The following set() commands are required for the API documentatoin.
+
+## @brief Name of script file.
+set (NAME "${NAME}")
+## @brief Name of script file in uppercase only.
+set (NAME_UPPER "${NAME_UPPER}")
+## @brief Name of script file in lowercase only.
+set (NAME_LOWER "${NAME_LOWER}")
+
+## @brief Namespace string for use in global script variable names.
+set (NAMESPACE "${NAMESPACE}")
+## @brief Namespace string for use in global script constant names.
+set (NAMESPACE_UPPER "${NAMESPACE_UPPER}")
+## @brief Namespace string for use in global script variable and function names.
+set (NAMESPACE_LOWER "${NAMESPACE_LOWER}")
+
 # ============================================================================
 # project attributes
 # ============================================================================
 
-set (PROJECT_NAME          "@PROJECT_NAME@")
-set (PROJECT_NAME_UPPER    "@PROJECT_NAME_UPPER@")
-set (PROJECT_NAME_LOWER    "@PROJECT_NAME_LOWER@")
-set (PROJECT_VERSION       "@PROJECT_VERSION@")
+## @brief Project name.
+set (PROJECT_NAME "@PROJECT_NAME@")
+## @brief Project name in uppercase only.
+set (PROJECT_NAME_UPPER "@PROJECT_NAME_UPPER@")
+## @brief Project name in lowercase only.
+set (PROJECT_NAME_LOWER "@PROJECT_NAME_LOWER@")
+## @brief Project version string.
+set (PROJECT_VERSION "@PROJECT_VERSION@")
+## @brief Major version number of project.
 set (PROJECT_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+## @brief Minor version number of project.
 set (PROJECT_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+## @brief Patch number of project.
 set (PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
-set (PROJECT_REVISION      "@PROJECT_REVISION@")
+## @brief Project revision or 0 if not applicable.
+set (PROJECT_REVISION "@PROJECT_REVISION@")
 
-# project version and (if applicable) revision
+## @brief Project version and (if applicable) revision string.
+#
+# This string should be used as version string in the output of the version
+# information as it also includes the project revision if applicable.
 if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
   set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION} (revision ${PROJECT_REVISION})")
 else ()
   set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION}")
 endif ()
 
-# project version in a format that can be used with $VERSION variable in Perl
+## @brief Project version in a format that can be used with $VERSION variable in Perl.
 set (PROJECT_VERSION_PERL "${PROJECT_VERSION_MAJOR}")
+
 if (PROJECT_VERSION_MAJOR LESS 10)
   set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}.0${PROJECT_VERSION_MINOR}")
 else ()
@@ -111,42 +145,102 @@ endif ()
 # directories
 # ============================================================================
 
+# ----------------------------------------------------------------------------
+# relative to script file
+
+# Example:
+# @code
+# #! /usr/bin/env bash
+# get_executable_directory exec_dir
+# libexec_dir=${exec_dir}/@LIBEXEC_DIR@
+# @endcode
+
+## @brief Installation prefix relative to script location.
+basis_set_script_path (PREFIX_DIR "@CMAKE_BINARY_DIR@" "@INSTALL_PREFIX@")
+
+## @brief Directory of main executables relative to script location.
 basis_set_script_path (RUNTIME_DIR "@BINARY_RUNTIME_DIR@" "@INSTALL_RUNTIME_DIR@")
-basis_set_script_path (LIBEXEC_DIR "@BINARY_LIBRARY_DIR@" "@INSTALL_LIBEXEC_DIR@")
+## @brief Directory of auxiliary executables relative to script location.
+basis_set_script_path (LIBEXEC_DIR "@BINARY_LIBEXEC_DIR@" "@INSTALL_LIBEXEC_DIR@")
+## @brief Directory of shared and module libraries relative to script location.
 basis_set_script_path (LIBRARY_DIR "@BINARY_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
+## @brief Directory of static and import libraries relative to script location.
 basis_set_script_path (ARCHIVE_DIR "@BINARY_ARCHIVE_DIR@" "@INSTALL_ARCHIVE_DIR@")
-basis_set_script_path (DATA_DIR    "@PROJECT_DATA_DIR@"   "@INSTALL_DATA_DIR@")
+## @brief Directory of Python modules relative to script location.
+basis_set_script_path (PYTHON_LIBRARY_DIR "@BINARY_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
+## @brief Directory of Perl modules relative to script location.
+basis_set_script_path (PERL_LIBRARY_DIR "@BINARY_PERL_LIBRARY_DIR@" "@INSTALL_PERL_LIBRARY_DIR@")
+## @brief Directory of auxiliary data files relative to script location.
+basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 
-basis_set_script_path (PYTHON_LIBRARY_DIR  "@BINARY_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
-basis_set_script_path (PERL_LIBRARY_DIR    "@BINARY_PERL_LIBRARY_DIR@"   "@INSTALL_PERL_LIBRARY_DIR@")
-
+## @brief Directory of BASIS utility libraries relative to script location.
 if ("${PROJECT_NAME}" STREQUAL "BASIS")
   basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
 else ()
   basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
 endif ()
 
+# ----------------------------------------------------------------------------
+# relative to installation prefix
+
+# Example:
+# @code
+# #! /usr/bin/env bash
+# get_executable_directory exec_dir
+# libexec_dir=${exec_dir}/@PREFIX_DIR@/@LIBEXEC_DIR_SUFFIX@
+# @endcode
+
+basis_get_relative_path (RUNTIME_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${RUNTIME_DIR}")
+basis_get_relative_path (LIBEXEC_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${LIBEXEC_DIR}")
+basis_get_relative_path (LIBRARY_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${LIBRARY_DIR}")
+basis_get_relative_path (ARCHIVE_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${ARCHIVE_DIR}")
+basis_get_relative_path (PYTHON_LIBRARY_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${PYTHON_LIBRARY_DIR}")
+basis_get_relative_path (PERL_LIBRARY_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${PERL_LIBRARY_DIR}")
+basis_get_relative_path (DATA_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${DATA_DIR}")
+
+# Note: The following set() commands are needed for the API documentation.
+
+## @brief Directory of main executables relative to installation prefix.
+set (RUNTIME_DIR_SUFFIX "${RUNTIME_DIR_SUFFIX}")
+## @brief Directory of auxiliary executables relative to installation prefix.
+set (LIBEXEC_DIR_SUFFIX "${LIBEXEC_DIR_SUFFIX}")
+## @brief Directory of shared and module libraries relative to installation prefix.
+set (LIBRARY_DIR_SUFFIX "${LIBRARY_DIR_SUFFIX}")
+## @brief Directory of static and import libraries relative to installation prefix.
+set (ARCHIVE_DIR_SUFFIX "${ARCHIVE_DIR_SUFFIX}")
+## @brief Directory of Python modules relative to installation prefix.
+set (PYTHON_LIBRARY_DIR_SUFFIX "${PYTHON_LIBRARY_DIR_SUFFIX}")
+## @brief Directory of Perl modules relative to installation prefix.
+set (PERL_LIBRARY_DIR_SUFFIX "${PERL_LIBRARY_DIR_SUFFIX}")
+## @brief Directory of auxiliary data files relative to installation prefix.
+set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
+
 # ============================================================================
 # testing - only to be used within test implementations
 # ============================================================================
 
-set (TESTING_DIR                "@PROJECT_TESTING_DIR@")
-set (TESTING_RUNTIME_DIR        "@TESTING_RUNTIME_DIR@")
-set (TESTING_LIBRARY_DIR        "@TESTING_LIBRARY_DIR@")
+## @brief Absolute path of top directory of testing tree.
+set (TESTING_DIR "@PROJECT_TESTING_DIR@")
+## @brief Absolute path of output directory for test executables.
+set (TESTING_RUNTIME_DIR "@TESTING_RUNTIME_DIR@")
+## @brief Absolute path of output directory for libraries required by tests only.
+set (TESTING_LIBRARY_DIR "@TESTING_LIBRARY_DIR@")
+## @brief Absolute path of output directory for Python modules required by tests only.
 set (TESTING_PYTHON_LIBRARY_DIR "@TESTING_PYTHON_LIBRARY_DIR@")
-set (TESTING_PERL_LIBRARY_DIR   "@TESTING_PERL_LIBRARY_DIR@")
-set (TESTING_OUTPUT_DIR         "@TESTING_OUTPUT_DIR@")
+## @brief Absolute path of output directory for Perl modules required by tests only.
+set (TESTING_PERL_LIBRARY_DIR "@TESTING_PERL_LIBRARY_DIR@")
+## @brief Absolute path of output directory for test results.
+set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
 
 # ============================================================================
-# utility implementations
+# BASIS Utilities
 # ============================================================================
 
 # ----------------------------------------------------------------------------
 # Python
-# ----------------------------------------------------------------------------
 
-##############################################################################
-# @brief Include BASIS utilities for Python.
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for Python.
 #
 # The substituted Python code appends the root directory of the build or
 # installed Python modules to the search path and then imports the 'basis'
@@ -181,10 +275,9 @@ from sbia.${PROJECT_NAME_LOWER} import basis
 
 # ----------------------------------------------------------------------------
 # Perl
-# ----------------------------------------------------------------------------
 
-##############################################################################
-# @brief Include BASIS utilities for Perl.
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for Perl.
 #
 # Example:
 # @code
@@ -209,10 +302,9 @@ package main;
 
 # ----------------------------------------------------------------------------
 # BASH
-# ----------------------------------------------------------------------------
 
-##############################################################################
-# @brief Absolute path of current BASH file.
+# ----------------------------------------------------------------------------
+## @brief Absolute path of current BASH file.
 #
 # @note Does not resolve symbolic links.
 #
@@ -224,8 +316,8 @@ package main;
 # @ingroup BashUtilities
 set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
 
-##############################################################################
-# @brief Absolute path of directory of current BASH file.
+# ----------------------------------------------------------------------------
+## @brief Absolute path of directory of current BASH file.
 #
 # @note Does not resolve symbolic links.
 #
@@ -237,8 +329,8 @@ set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pw
 # @ingroup BashUtilities
 set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
 
-##############################################################################
-# @brief Definition of realpath() function.
+# ----------------------------------------------------------------------------
+## @brief Definition of realpath() function.
 #
 # Example:
 # @code
@@ -251,17 +343,17 @@ set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd
 #
 # @ingroup BashUtilities
 set (BASIS_BASH_FUNCTION_realpath "
-##############################################################################
-# @brief Get real path of given file or directory.
+# ----------------------------------------------------------------------------
+## @brief Get real path of given file or directory.
 #
 # @note This function was substituted by BASIS for the string
-#       \@BASIS_BASH_UTILITIES\@ or \@BASIS_BASH_realpath\@.
+#       \\\@BASIS_BASH_UTILITIES\\\@ or \\\@BASIS_BASH_realpath\\\@.
 #       Its implementation can be found in the default script configuration
 #       file provided by BASIS.
 #
 # Example:
 # @code
-# exec_dir=$(realpath $0)
+# exec_dir=`realpath $0`
 # @endcode
 #
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
@@ -269,7 +361,7 @@ set (BASIS_BASH_FUNCTION_realpath "
 # @param [in] path File or directory path.
 #
 # @returns Canonical path.
-realpath ()
+function realpath
 {
     local path=$1
 
@@ -291,8 +383,8 @@ realpath ()
 "
 )
 
-##############################################################################
-# @brief Include BASIS utilities for BASH.
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for BASH.
 #
 # Example:
 # @code

@@ -116,8 +116,8 @@ endfunction ()
 #   <tr>
 #     @tp @b DESTINATION dir @endtp
 #     <td>Installation directory prefix. Defaults to @c INSTALL_DOC_DIR or
-#         <tt>INSTALL_DOC_DIR/<target></tt> in case of the Doxygen generator,
-#         where <tt><target></tt> is the @c TARGET_NAME in lowercase only.</td>
+#         <tt>INSTALL_DOC_DIR/&lt;target&gt;</tt> in case of the Doxygen generator,
+#         where <tt>&lt;target&gt;</tt> is the @c TARGET_NAME in lowercase only.</td>
 #   </tr>
 # </table>
 #

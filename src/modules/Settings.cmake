@@ -299,11 +299,14 @@ macro (basis_initialize_directories)
     set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${SUBDIR}")
   endforeach ()
 
-  foreach (P RUNTIME LIBRARY ARCHIVE)
-    set (VAR CMAKE_${P}_OUTPUT_DIRECTORY)
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE PYTHON_LIBRARY PERL_LIBRARY)
+    set (VAR BINARY_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
-    set (BINARY_${P}_DIR "${${VAR}}")
   endforeach ()
+
+  set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
+  set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}")
+  set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}")
 
   # testing tree
   foreach (P RUNTIME LIBRARY OUTPUT)
@@ -387,12 +390,14 @@ set (TESTING_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/perl5")
 
 # These directory paths will be made absolute by the initialization functions.
 
-## @brief Absolute path of output directory for built runtime executables.
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/bin")
-## @brief Absolute path of output directory for built shared libraries and modules.
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
-## @brief Absolute path of output directory for built static libraries.
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "@PROJECT_BINARY_DIR@/lib")
+## @brief Absolute path of output directory for main executables.
+set (BINARY_RUNTIME_DIR "@PROJECT_BINARY_DIR@/bin")
+## @brief Absolute path of output directory for auxiliary executables.
+set (BINARY_LIBEXEC_DIR "@PROJECT_BINARY_DIR@/lib")
+## @brief Absolute path of output directory for shared libraries and modules.
+set (BINARY_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib")
+## @brief Absolute path of output directory for static and import libraries.
+set (BINARY_ARCHIVE_DIR "@PROJECT_BINARY_DIR@/lib")
 ## @brief Absolute path of output directory for Python modules.
 set (BINARY_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/python")
 ## @brief Absolute path of output directory for Perl modules.

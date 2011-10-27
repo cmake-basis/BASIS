@@ -64,7 +64,7 @@
 #   </tr>
 #   <tr>
 #     @tp @b ExecutableTargetInfo.cxx @endtp
-#     <tr>Definition of ExecutableTargetInfo class. The constructor of
+#     <td>Definition of ExecutableTargetInfo class. The constructor of
 #         this singleton class is created during the configuration step of
 #         CMake by the function basis_configure_ExecutableTargetInfo().</td>
 #   </tr>

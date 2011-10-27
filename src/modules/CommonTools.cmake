@@ -66,16 +66,16 @@ endmacro ()
 ##############################################################################
 # @brief Use found package.
 #
-# This macro includes the package's use file if the variable @c <Pkg>_USE_FILE
+# This macro includes the package's use file if the variable @c &lt;Pkg&gt;_USE_FILE
 # is defined. Otherwise, it adds the include directories to the search path
 # for include paths if possible. Therefore, the corresponding package
 # configuration file has to set the proper CMake variables, i.e.,
-# either @c <Pkg>_INCLUDES, @c <Pkg>_INCLUDE_DIRS, or @c <Pkg>_INCLUDE_DIR.
+# either @c &lt;Pkg&gt;_INCLUDES, @c &lt;Pkg&gt;_INCLUDE_DIRS, or @c &lt;Pkg&gt;_INCLUDE_DIR.
 #
 # @note As some packages still use all captial variables instead of ones
 #       prefixed by a string that follows the same capitalization as the
 #       package's name, this function also considers these if defined instead.
-#       Hence, if @c <PKG>_INCLUDES is defined, but not @c <Pkg>_INCLUDES, it
+#       Hence, if @c &lt;PKG&gt;_INCLUDES is defined, but not @c &lt;Pkg&gt;_INCLUDES, it
 #       is used in place of the latter.
 #
 # @note According to an email on the CMake mailing list, it is not a good idea
@@ -117,7 +117,7 @@ macro (basis_use_package PACKAGE)
 endmacro ()
 
 # ============================================================================
-# get_filename_component
+# basis_get_filename_component / basis_get_relative_path
 # ============================================================================
 
 ##############################################################################
@@ -157,6 +157,33 @@ endfunction ()
 macro (basis_get_filename_component)
   get_filename_component (${ARGN})
 endmacro ()
+
+##############################################################################
+# @brief Get path relative to a given base directory.
+#
+# This function, unless the file(RELATIVE_PATH ...) command of CMake which in
+# this case returns an empty string, returns "." if @c PATH and @c BASE are
+# the same directory.
+#
+# @param [out] REL  @c PATH relative to @c BASE.
+# @param [in]  BASE Path of base directory. If a relative path is given, it
+#                   is made absolute using basis_get_filename_component()
+#                   with ABSOLUTE as last argument.
+# @param [in]  PATH Absolute or relative path. If a relative path is given
+#                   it is made absolute using basis_get_filename_component()
+#                   with ABSOLUTE as last argument.
+#
+# @returns Sets the variable named by the first argument to the relative path.
+
+function (basis_get_relative_path REL BASE PATH)
+  basis_get_filename_component (PATH "${PATH}" ABSOLUTE)
+  basis_get_filename_component (BASE "${BASE}" ABSOLUTE)
+  file (RELATIVE_PATH P "${BASE}" "${PATH}")
+  if ("${P}" STREQUAL "")
+    set (P ".")
+  endif ()
+  set (${REL} "${P}" PARENT_SCOPE)
+endfunction ()
 
 # ============================================================================
 # version
@@ -277,6 +304,7 @@ macro (basis_set_script_path_definition FUNC)
   if (NOT PATH)
     set (PATH \".\")
   endif ()
+  string (REGEX REPLACE \"/$\" \"\" PATH \"\${PATH}\")
 
   set (\${VAR} \"\${PATH}\" PARENT_SCOPE)
 endfunction ()")
