@@ -173,7 +173,11 @@ set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 set (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
 
 ## @brief Installation sinfix.
-set (BASIS_INSTALL_SINFIX "sbia/\@PROJECT_NAME_LOWER\@" CACHE STRING "Suffix/Infix used for installation paths.")
+if (WIN32)
+  set (BASIS_INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@" CACHE STRING "Suffix/Infix used for installation paths.")
+else ()
+  set (BASIS_INSTALL_SINFIX "sbia/\@PROJECT_NAME_LOWER\@" CACHE STRING "Suffix/Infix used for installation paths.")
+endif ()
 mark_as_advanced (BASIS_INSTALL_SINFIX)
 
 # ============================================================================
