@@ -524,7 +524,7 @@ set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
 if (WIN32)
   set (INSTALL_CONFIG_DIR "cmake")
 else ()
-  set (INSTALL_CONFIG_DIR "lib/cmake")
+  set (INSTALL_CONFIG_DIR "lib/cmake/\@PROJECT_NAME_LOWER\@")
 endif ()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
