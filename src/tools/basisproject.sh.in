@@ -788,6 +788,7 @@ name_lower=`echo $name | awk '{print tolower($0)}'`
 description=${description//\//\\\/}
 description=${description//\\/\\\\}
 description=${description//"/\\"}
+description=`echo -ne "$description" | tr '\n' ' '`
 
 # default template
 use_default_template
