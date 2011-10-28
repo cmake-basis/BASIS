@@ -519,7 +519,9 @@ string to_relative_path(const string& base, const string& path)
     // path is preserved and for each following component in the base path
     // a "../" is prepended to the relative path
     string rel_path;
-    if (abs_base[abs_base.size() - 1] != '/') {
+    // truncate base path with a slash (/) as for each "*/" path component,
+    // a "../" will be prepended to the relative path
+    if (b != abs_base.end() && abs_base[abs_base.size() - 1] != '/') {
         // \attention This operation may invalidate the iterator b!
         //            Therefore, remember position of iterator and get a new one.
         size_t pos = b - abs_base.begin();
@@ -527,13 +529,14 @@ string to_relative_path(const string& base, const string& path)
         b = abs_base.begin() + pos;
     }
     while (b != abs_base.end()) {
-        if (*b == '/') {
-            if (rel_path.empty()) rel_path = "..";
-            else                  rel_path += "/..";
-        }
+        if (*b == '/') rel_path += "../";
         b++;
     }
-    if (pos < unix_path.size()) rel_path += unix_path.substr(pos);
+    if (pos + 1 < unix_path.size()) rel_path += unix_path.substr(pos + 1);
+    // remove trailing slash (/)
+    if (rel_path[rel_path.size() - 1] == '/') {
+        rel_path.erase (rel_path.size() - 1);
+    }
     return rel_path;
 }
 

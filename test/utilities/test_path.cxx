@@ -508,8 +508,9 @@ TEST (Path, to_relative_path)
     EXPECT_STREQ (".",             to_relative_path ("/usr",        "/usr").c_str ());
     EXPECT_STREQ ("..",            to_relative_path ("/usr/local",  "/usr").c_str ());
     EXPECT_STREQ ("..",            to_relative_path ("/usr/local/", "/usr").c_str ());
-    EXPECT_STREQ ("../",           to_relative_path ("/usr/local",  "/usr/").c_str ());
+    EXPECT_STREQ ("..",            to_relative_path ("/usr/local",  "/usr/").c_str ());
     EXPECT_STREQ ("../config.txt", to_relative_path ("/usr/local",  "/usr/config.txt").c_str ());
+    EXPECT_STREQ ("Testing/bin",   to_relative_path ("/usr/local/src/build", "/usr/local/src/build/Testing/bin").c_str ());
 }
 
 // ---------------------------------------------------------------------------
