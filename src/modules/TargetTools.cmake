@@ -928,8 +928,12 @@ function (basis_add_executable_target TARGET_NAME)
   # add executable target
   add_executable (${TARGET_UID} ${SOURCES})
 
-  set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE  "EXECUTABLE")
-  set_target_properties (${TARGET_UID} PROPERTIES OUTPUT_NAME "${TARGET_NAME}")
+  set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      BASIS_TYPE  "EXECUTABLE"
+      OUTPUT_NAME "${TARGET_NAME}"
+  )
 
   if (ARGN_LIBEXEC)
     set_target_properties (
@@ -937,10 +941,15 @@ function (basis_add_executable_target TARGET_NAME)
       PROPERTIES
         LIBEXEC                  1
         COMPILE_DEFINITIONS      "LIBEXEC"
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+        RUNTIME_OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}"
     )
   else ()
-    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
+    set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        LIBEXEC 0
+        RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}"
+    )
   endif ()
 
   if (ARGN_TEST)
@@ -1178,8 +1187,15 @@ function (basis_add_library_target TARGET_NAME)
   # add library target
   add_library (${TARGET_UID} ${TYPE} ${SOURCES})
 
-  set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE  "${TYPE}_LIBRARY")
-  set_target_properties (${TARGET_UID} PROPERTIES OUTPUT_NAME "${TARGET_NAME}")
+  set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      BASIS_TYPE "${TYPE}_LIBRARY"
+      OUTPUT_NAME "${TARGET_NAME}"
+      RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}"
+      LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}"
+      ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
+  )
 
   # target version information
   #
@@ -1510,12 +1526,12 @@ function (basis_add_script TARGET_NAME)
     elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
       set (OUTPUT_DIRECTORY "${BINARY_PERL_LIBRARY_DIR}/SBIA/${PROJECT_NAME}")
     else ()
-      set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+      set (OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}")
     endif ()
   elseif (ARGN_LIBEXEC)
-    set (OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    set (OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}")
   else ()
-    set (OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    set (OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
   endif ()
   if (SCRIPT_PATH AND ARGN_WITH_PATH)
     set (OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${SCRIPT_PATH}")

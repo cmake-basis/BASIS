@@ -16,10 +16,6 @@
 # it is used as template for the \<package\>ConfigVersion.cmake file. The same
 # applies to ConfigUse.cmake.in.
 #
-# The variable @c PACKAGE_NAME is set to the name of the project prefixed by the
-# value of @c BASIS_CONFIG_PREFIX. Hence, it is the name used by other projects
-# to find this software package.
-#
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
@@ -38,16 +34,18 @@
 ## @addtogroup CMakeUtilities
 #  @{
 
+## @brief Package name.
+set (CONFIG_PREFIX "${PROJECT_NAME}")
 ## @brief Name of the CMake package configuration file.
-set (CONFIG_FILE "${PACKAGE_NAME}Config.cmake")
+set (CONFIG_FILE "${CONFIG_PREFIX}Config.cmake")
 ## @brief Name of the CMake package version file.
-set (VERSION_FILE "${PACKAGE_NAME}ConfigVersion.cmake")
+set (VERSION_FILE "${CONFIG_PREFIX}ConfigVersion.cmake")
 ## @brief Name of the CMake package use file.
-set (USE_FILE     "${PACKAGE_NAME}Use.cmake")
+set (USE_FILE "${CONFIG_PREFIX}Use.cmake")
 ## @brief Name of the CMake target exports file.
-set (EXPORTS_FILE "${PACKAGE_NAME}Exports.cmake")
+set (EXPORTS_FILE "${CONFIG_PREFIX}Exports.cmake")
 ## @brief Name of the CMake target exports file for custom targets.
-set (CUSTOM_EXPORTS_FILE "${PACKAGE_NAME}CustomExports.cmake")
+set (CUSTOM_EXPORTS_FILE "${CONFIG_PREFIX}CustomExports.cmake")
 
 ## @}
 

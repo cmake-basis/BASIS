@@ -123,7 +123,7 @@ set (BASIS_RUNTIME_COMPONENT "Runtime")
 ## @brief Character used to separate namespace and target name in target UID.
 #
 # This separator is used to construct a UID for a particular target.
-# For example, "\<Project\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".
+# For example, "&lt;Project&gt;\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
 # Note that the separator must only contain characters that are valid in
 # a file path as only these characters can be used for CMake target names.
 # Also the use of '#' in target names must be avoided.
@@ -136,18 +136,11 @@ set (BASIS_NAMESPACE_SEPARATOR "@")
 ## @brief Character used to separate version and project name (e.g., in target UID).
 #
 # This separator is used to construct a UID for a particular target.
-# For example, "\<Project\>\@BASIS_VERSION_SEPARATOR\@\<version\>\@BASIS_NAMESPACE_SEPARATOR\@\<target\>".
+# For example, "&lt;Project&gt;\@BASIS_VERSION_SEPARATOR\@&lt;version&gt;\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
 # Note that the version need not be included if only a single version of each
 # package is supposed to be installed on a target system. The same rules as for
 # @c BASIS_NAMESPACE_SEPARATOR regarding character selection apply.
 set (BASIS_VERSION_SEPARATOR "-")
-
-## @brief Prefix used for CMake package config files.
-#
-# This string is used as prefix for the names of the \<Package\>Config.cmake
-# et al. files. For example, a value of "SBIA_", results in the CMake package
-# configuration file "SBIA_\<Package\>Config.cmake".
-set (BASIS_CONFIG_PREFIX "")
 
 ## @brief Script used to execute a process in CMake script mode.
 #
@@ -521,17 +514,17 @@ set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
 # build configuration
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Note: CMake's find_package() command considers certain directories.
+#       Hence, the variable BASIS_INSTALL_SINFIX which may not comply to
+#       the naming of standard locations this command would look through,
+#       cannot be used here.
+
 ## @brief Path of installation directory for CMake package configuration
 #         files relative to @c INSTALL_PREFIX.
 if (WIN32)
   set (INSTALL_CONFIG_DIR "cmake")
 else ()
   set (INSTALL_CONFIG_DIR "lib/cmake")
-endif ()
-
-# prepend INSTALL_SINFIX
-if (INSTALL_SINFIX)
-  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/${BASIS_INSTALL_SINFIX}")
 endif ()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
