@@ -140,7 +140,7 @@ if (MATLAB_DIR)
   find_program (
     MATLAB_MCC_EXECUTABLE
       NAMES         mcc
-      HINTS         "${MATLB_DIR}"
+      HINTS         "${MATLAB_DIR}"
       PATH_SUFFIXES "bin"
       DOC           "The MATLAB Compiler (mcc)."
   )
