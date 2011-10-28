@@ -130,13 +130,13 @@ TEST(Subprocess, Popen)
     EXPECT_TRUE(p.wait());
     EXPECT_TRUE(p.poll());
     EXPECT_FALSE(p.signaled());
-    EXPECT_EQ(0, p.returncode());
+    EXPECT_EQ(0, p.returncode()) << "Return code of " << cCmd << " is not 0";
 
     EXPECT_TRUE(p.popen(cCmd));
     EXPECT_TRUE(p.wait());
     EXPECT_TRUE(p.poll());
     EXPECT_FALSE(p.signaled());
-    EXPECT_EQ(0, p.returncode());
+    EXPECT_EQ(0, p.returncode()) << "Return code of " << cCmd << " is not 0";
 }
 
 // ---------------------------------------------------------------------------
@@ -148,13 +148,13 @@ TEST(Subprocess, ReturnCode)
     EXPECT_TRUE(p.wait());
     EXPECT_TRUE(p.poll());
     EXPECT_FALSE(p.signaled());
-    EXPECT_EQ(1, p.returncode()) << "Return code of " << cCmd << " is not 0";
+    EXPECT_EQ(1, p.returncode()) << "Return code of " << cCmd << " is not 1";
 
     EXPECT_TRUE(p.popen(cCmd + " --exit 42")) << "Failed to run command: " << cCmd << " --exit 42";
     EXPECT_TRUE(p.wait());
     EXPECT_TRUE(p.poll());
     EXPECT_FALSE(p.signaled());
-    EXPECT_EQ(42, p.returncode()) << "Return code of " << cCmd << " is not 0";
+    EXPECT_EQ(42, p.returncode()) << "Return code of " << cCmd << " is not 42";
 }
 
 // ---------------------------------------------------------------------------
