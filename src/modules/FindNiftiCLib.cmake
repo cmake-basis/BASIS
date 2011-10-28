@@ -49,13 +49,13 @@
 #   </tr>
 #   <tr>
 #     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_LIB</td>
+#         @b NiftiCLib_LIBRARY</td>
 #     <td>Path of @c niftiio library.</td>
 #   </tr>
 #   <tr>
 #     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_LIBRARY</td>
-#     <td>Alias for @p NiftiCLib_LIB (not cached).</td>
+#         @b NiftiCLib_LIB</td>
+#     <td>Alias for @p NiftiCLib_LIBRARY (not cached).</td>
 #   </tr>
 #   <tr>
 #     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
@@ -116,7 +116,7 @@ find_path (
 )
 
 find_library (
-  NiftiCLib_LIB
+  NiftiCLib_LIBRARY
     NAMES         niftiio
     HINTS         ${NiftiCLib_DIR} ENV NiftiCLib_DIR ENV NIFTICLIB_DIR
     PATH_SUFFIXES lib
@@ -125,11 +125,14 @@ find_library (
 )
 
 find_library (
-  NiftiCLib_LIB
+  NiftiCLib_LIBRARY
     NAMES niftiio
     HINTS ENV LD_LIBRARY_PATH
     DOC   "Path of niftiio library"
 )
+
+mark_as_advanced (NiftiCLib_INCLUDE_DIR)
+mark_as_advanced (NiftiCLib_LIBRARY)
 
 # ============================================================================
 # reset CMake variables
@@ -146,14 +149,14 @@ if (NiftiCLib_INCLUDE_DIR)
   set (NiftiCLib_INCLUDES     "${NiftiCLib_INCLUDE_DIR}")
 endif ()
 
-if (NiftiCLib_LIB)
-  set (NiftiCLib_LIBRARY "${NiftiCLib_LIB}")
+if (NiftiCLib_LIBRARY)
+  set (NiftiCLib_LIB "${NiftiCLib_LIBRARY}")
 endif ()
 
-if (NiftiCLib_LIB)
+if (NiftiCLib_LIBRARY)
   set (
     NiftiCLib_LIBRARIES
-      "${NiftiCLib_LIB}"
+      "${NiftiCLib_LIBRARY}"
   )
 endif ()
 
@@ -170,7 +173,7 @@ find_package_handle_standard_args (
   NiftiCLib
   REQUIRED_VARS
     NiftiCLib_INCLUDE_DIR
-    NiftiCLib_LIB
+    NiftiCLib_LIBRARY
 )
 
 set (NiftiCLib_FOUND ${NIFTICLIB_FOUND})
