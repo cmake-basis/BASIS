@@ -168,9 +168,9 @@ include (FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args (
   NiftiCLib
-# MESSAGE
-    DEFAULT_MSG
-# VARIABLES
+  REQUIRED_VARS
     NiftiCLib_INCLUDE_DIR
     NiftiCLib_LIB
 )
+
+set (NiftiCLib ${NIFTICLIB_FOUND})

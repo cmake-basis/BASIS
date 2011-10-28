@@ -151,10 +151,9 @@ include (FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args (
   GMock
-# MESSAGE
-    DEFAULT_MSG
-# VARIABLES
+  REQUIRED_VARS
     GMock_INCLUDE_DIR
     GMock_LIBRARY
 )
 
+set (GMOCK_FOUND "${GMock_FOUND}")

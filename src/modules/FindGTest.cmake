@@ -180,10 +180,9 @@ include (FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args (
   GTest
-# MESSAGE
-    DEFAULT_MSG
-# VARIABLES
+  REQUIRED_VARS
     GTest_INCLUDE_DIR
     GTest_LIBRARY
 )
 
+set (GTest_FOUND "${GTEST_FOUND}")

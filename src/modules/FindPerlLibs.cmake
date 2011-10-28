@@ -80,3 +80,5 @@ find_package_handle_standard_args (
   VERSION_VAR
     PERL_VERSION
 )
+
+set (PerlLibs_FOUND "${PERLLIBS_FOUND}")
