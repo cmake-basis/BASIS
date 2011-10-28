@@ -17,6 +17,14 @@
 ##############################################################################
 
 # ============================================================================
+# common settings
+# ============================================================================
+
+set (UTILITIES_LIBRARY_CONFIG "${PROJECT_NAME_LOWER}${BASIS_NAMESPACE_SEPARATOR}utilities")
+set (TEST_LIBRARY_CONFIG "${PROJECT_NAME_LOWER}${BASIS_NAMESPACE_SEPARATOR}testlib")
+set (TEST_MAIN_LIBRARY_CONFIG "${PROJECT_NAME_LOWER}${BASIS_NAMESPACE_SEPARATOR}testmain")
+
+# ============================================================================
 # build tree configuration settings
 # ============================================================================
 

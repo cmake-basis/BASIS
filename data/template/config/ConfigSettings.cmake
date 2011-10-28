@@ -22,7 +22,6 @@
 
 if (BUILD_CONFIG_SETTINGS)
   set (DATA_DIR_CONFIG "${PROJECT_DATA_DIR}")
-
   return ()
 endif ()
 
@@ -31,4 +30,3 @@ endif ()
 # ============================================================================
 
 set (DATA_DIR_CONFIG "${INSTALL_DATA_DIR}")
-

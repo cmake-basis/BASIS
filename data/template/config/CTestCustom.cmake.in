@@ -15,6 +15,8 @@
 # disable verification of self-signed CA certificates
 # ============================================================================
 
+## @brief cURL options for dashboad submissions.
+#
 # The following cURL options disable the verification of the CA certificate.
 # This is required when self-signed certificates are used which cannot be verified.
 #
@@ -23,7 +25,6 @@
 # Note: By default, CTest does not support HTTPS as submission method.
 #       In order to enable it, CTest (and hence CMake) has to be build
 #       manually with the option CMAKE_USE_OPENSSL enabled.
-
 if (CTEST_DROP_METHOD STREQUAL "https")
   set (
     CTEST_CURL_OPTIONS
@@ -45,7 +46,7 @@ endif ()
 # warnings
 # ----------------------------------------------------------------------------
 
-# match expressions for warning messages
+## @brief Match expressions for warning messages.
 set (
   CTEST_CUSTOM_WARNING_MATCH
     ${CTEST_CUSTOM_WARNING_MATCH} # keep current warning matches
@@ -54,7 +55,7 @@ set (
     "[0-9][0-9]*: warning "
 )
 
-# match expressions for ignored warning messages
+## @brief Match expressions for ignored warning messages.
 set (
   CTEST_CUSTOM_WARNING_EXCEPTION
     ${CTEST_CUSTOM_WARNING_EXCEPTION} # keep current warning exceptions
@@ -68,7 +69,7 @@ set (
 # errors
 # ----------------------------------------------------------------------------
 
-# match expressions for error messages
+## @brief Match expressions for error messages.
 set (
   CTEST_CUSTOM_ERROR_MATCH
     ${CTEST_CUSTOM_ERROR_MATCH} # keep current error matches
@@ -77,7 +78,7 @@ set (
     "[0-9][0-9]*: error "
 )
 
-# match expressions for ignored error messages
+## @brief Match expressions for ignored error messages.
 set (
   CTEST_CUSTOM_ERROR_EXCEPTION
     ${CTEST_CUSTOM_ERROR_EXCEPTION} # keep current error exceptions
@@ -91,21 +92,21 @@ set (
 # test
 # ----------------------------------------------------------------------------
 
-# specify tests which should be ignored during the test stage
+## @brief Specify tests which should be ignored during the test stage.
 set (
   CTEST_CUSTOM_TESTS_IGNORE
     ${CTEST_CUSTOM_TESTS_IGNORE}
     ""
 )
 
-# specify command to execute before execution of any test during test stage
+## @brief Specify command to execute before execution of any test during test stage.
 set (
   CTEST_CUSTOM_PRE_TEST
     ${CTEST_CUSTOM_PRE_TEST}
     ""
 )
 
-# specify command to execute at the end of the test stage
+## @brief Specify command to execute at the end of the test stage.
 set (
   CTEST_CUSTOM_POST_TEST
     ${CTEST_CUSTOM_POST_TEST}
@@ -116,16 +117,16 @@ set (
 # coverage
 # ----------------------------------------------------------------------------
 
-# exclude certain files from coverage analysis
+file (RELATIVE_PATH SRC "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
+
+## @brief Exclude certain files from coverage analysis.
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
     ${CTEST_CUSTOM_COVERAGE_EXCLUDE} # keep current exclude expressions
     # add further exclude expressions here
 )
 
-# specify additional files which should be considered
-file (RELATIVE_PATH SRC "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
-
+## @brief Specify additional files which should be considered.
 set (
   CTEST_EXTRA_COVERAGE_GLOB
     ${CTEST_EXTRA_COVERAGE_GLOB} # keep current globbing expressions
@@ -138,19 +139,19 @@ set (
 # memory check
 # ----------------------------------------------------------------------------
 
-# specify tests which should be ignored during the memory check stage
+## @brief Specify tests which should be ignored during the memory check stage.
 set (
   CTEST_CUSTOM_MEMCHECK_IGNORE
     ""
 )
 
-# specify command to execute before execution of any test during memory check stage
+## @brief Specify command to execute before execution of any test during memory check stage.
 set (
   CTEST_CUSTOM_PRE_MEMCHECK
     ""
 )
 
-# specify command to execute at the end of the memory check stage
+## @brief Specify command to execute at the end of the memory check stage.
 set (
   CTEST_CUSTOM_POST_MEMCHECK
     ""
@@ -160,14 +161,20 @@ set (
 # output
 # ----------------------------------------------------------------------------
 
-# adjust output size limit of test output in number of characters/bytes
+## @brief Adjust output size limit of failed tests in number of characters/bytes.
 #
 # Note: In order to have CTest ignore these limits and not truncate the test
 #       output, the string "CTEST_FULL_OUTPUT" has to be output by the test
 #       (e.g., as first line of the test output to stdout).
 #
 # See:  http://public.kitware.com/pipermail/cdash/2009-November/000589.html
-
 set (CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "1048576")
-set (CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "102400")
 
+## @brief Adjust output size limit of failed tests in number of characters/bytes.
+#
+# Note: In order to have CTest ignore these limits and not truncate the test
+#       output, the string "CTEST_FULL_OUTPUT" has to be output by the test
+#       (e.g., as first line of the test output to stdout).
+#
+# See:  http://public.kitware.com/pipermail/cdash/2009-November/000589.html
+set (CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "102400")

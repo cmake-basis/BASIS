@@ -1,6 +1,6 @@
 ##############################################################################
-# @file  @PACKAGE_NAME@Use.cmake
-# @brief CMake package configuration use file of @PACKAGE_NAME@.
+# @file  ConfigUse.cmake.in
+# @brief CMake package configuration use file.
 #
 # If this CMake module was already included before, it will do nothing.
 #
@@ -10,22 +10,30 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-if (__@PACKAGE_NAME@_USE_FILE_INCLUDED)
+# ----------------------------------------------------------------------------
+# prefix used for variable names
+set (NS "@PROJECT_NAME@_")
+
+# ----------------------------------------------------------------------------
+# include guard
+if (__${NS}USE_FILE_INCLUDED)
   return ()
 else ()
-  set (__@PACKAGE_NAME@_USE_FILE_INCLUDED 1)
+  set (__${NS}USE_FILE_INCLUDED 1)
 endif ()
 
+# ----------------------------------------------------------------------------
+# BASIS settings
 
-# include BASIS settings and functions
-include ("${@PACKAGE_NAME@_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
-
-# import build targets - has to be done AFTER including BasisProject module!
-if (NOT NO_@PACKAGE_NAME@_IMPORTS)
-  include ("${@PACKAGE_NAME@_EXPORTS_FILE}")
-  include ("${@PACKAGE_NAME@_CUSTOM_EXPORTS_FILE}")
-endif ()
+# include main module
+include ("${$NS}MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # include directories
-basis_include_directories ("${@PACKAGE_NAME@_INCLUDE_DIR}")
+basis_include_directories ("${${NS}INCLUDE_DIR}")
 
+# ----------------------------------------------------------------------------
+# import build targets - has to be done AFTER including BasisProject module!
+if (NOT NO_${NS}IMPORTS)
+  include ("${${NS}EXPORTS_FILE}")
+  include ("${${NS}CUSTOM_EXPORTS_FILE}")
+endif ()

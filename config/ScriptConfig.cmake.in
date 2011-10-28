@@ -56,39 +56,51 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
+# ============================================================================
+# BASIS
+# ============================================================================
+
 @BASIS_SCRIPT_CONFIG@
 
-set (BASIS_LIBRARY_DIR "${LIBRARY_DIR}")
+# ============================================================================
+# additional directories
+# ============================================================================
 
+## @brief Top directory of project template relative to script location.
 basis_set_script_path (
   TEMPLATE_DIR
     "@PROJECT_DATA_DIR@/template"
     "@INSTALL_TEMPLATE_DIR@"
 )
 
+## @brief Directory of BASIS CMake modules.
 basis_set_script_path (
   MODULES_DIR
     "@PROJECT_CODE_DIR@/modules"
     "@INSTALL_MODULES_DIR@"
 )
 
+## @brief Directory of basistest.ctest CTest script.
 basis_set_script_path (
   BASISTEST_CTEST_SCRIPT_DIR
-    "@CMAKE_LIBEXEC_OUTPUT_DIRECTORY@"
+    "@BINARY_LIBEXEC_DIR@"
     "@INSTALL_MODULES_DIR@"
 )
 
 # ============================================================================
-# tests
+# testing
 # ============================================================================
 
-# directory of BASIS used by tests to build test projects
+## @brief Directory of BASIS used by tests to build test projects.
 set (TESTING_BASIS_DIR "@PROJECT_BINARY_DIR@")
-# build type used to build test projects
+## @brief Build type used to build test projects.
 set (TESTING_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
 
-# which utilities to test
-set (BUILD_CXX_UTILITIES    "@BUILD_CXX_UTILITIES@")
+## @brief Whether C++ utilities are build.
+set (BUILD_CXX_UTILITIES "@BUILD_CXX_UTILITIES@")
+## @brief Whether Python utilities are build.
 set (BUILD_PYTHON_UTILITIES "@BUILD_PYTHON_UTILITIES@")
-set (BUILD_PERL_UTILITIES   "@BUILD_PERL_UTILITIES@")
-set (BUILD_BASH_UTILITIES   "@BUILD_BASH_UTILITIES@")
+## @brief Whether Perl utilities are build.
+set (BUILD_PERL_UTILITIES "@BUILD_PERL_UTILITIES@")
+## @brief Whether BASH utilities are build.
+set (BUILD_BASH_UTILITIES "@BUILD_BASH_UTILITIES@")
