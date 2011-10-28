@@ -518,18 +518,29 @@ function (basis_add_doc TARGET_NAME)
 
     # install documentation
     install (
-      DIRECTORY       "${DOXYGEN_OUTPUT_DIRECTORY}/"
-      DESTINATION     "${ARGN_DESTINATION}"
-      COMPONENT       "${ARGN_COMPONENT}"
-      FILES_MATCHING
-      PATTERN         html/*
-      PATTERN         latex/*
-      PATTERN         rtf/*
-      PATTERN         man/*
-      # exclude directories as FILES_MATCHING does not do this
-      PATTERN         CMakeFiles EXCLUDE # some CMake files
-      PATTERN         .svn       EXCLUDE # for in-source builds
-      PATTERN         .git       EXCLUDE # for in-source builds
+      CODE
+        "
+        macro (install_doxydoc DIR)
+          if (IS_DIRECTORY \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}\")
+            execute_process (
+              COMMAND \"${CMAKE_COMMAND}\" -E copy_directory
+                  \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}\"
+                  \"${INSTALL_PREFIX}/${ARGN_DESTINATION}/\${DIR}\"
+              RESULT_VARIABLE RC
+            )
+            if (RC EQUAL 0)
+              message (STATUS \"Installing: ${INSTALL_PREFIX}/${ARGN_DESTINATION}/\${DIR}\")
+            else ()
+              message (STATUS \"Skipped: ${INSTALL_PREFIX}/${ARGN_DESTINATION}/\${DIR}\")
+            endif ()
+          endif ()
+        endmacro ()
+
+        install_doxydoc (html)
+        install_doxydoc (latex)
+        install_doxydoc (rtf)
+        install_doxydoc (man)
+        "
     )
 
     message (STATUS "Adding documentation ${TARGET_UID}... - done")
