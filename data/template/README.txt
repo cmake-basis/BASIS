@@ -31,7 +31,10 @@ PACKAGE OVERVIEW
   - config/             Package configuration files.
   - data/               Auxiliary data required by the executables (optional).
   - doc/                Software documentation such as the user manual.
-  - src/                Source files including public header files and scripts.
+  - example/            Example input files.
+  - include/            Public header files of libraries.
+  - src/                Source code files.
+  - test/               Implementation of software tests and corresponding data.
 
   - AUTHORS             A list of the people who contributed to this software.
   - README              This readme file.
