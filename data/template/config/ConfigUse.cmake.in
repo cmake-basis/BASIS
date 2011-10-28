@@ -20,10 +20,10 @@ set (NS "@CONFIG_PREFIX@_")
 
 # ----------------------------------------------------------------------------
 # include guard
-if (__${NS}_USE_FILE_INCLUDED)
+if (__${NS}USE_FILE_INCLUDED)
   return ()
 else ()
-  set (__${NS}_USE_FILE_INCLUDED 1)
+  set (__${NS}USE_FILE_INCLUDED 1)
 endif ()
 
 # ----------------------------------------------------------------------------

@@ -26,7 +26,7 @@ endif ()
 # BASIS settings
 
 # include main module
-include ("${$NS}MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
+include ("${${NS}MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
 
 # include directories
 basis_include_directories ("${${NS}INCLUDE_DIR}")
