@@ -15,8 +15,8 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_INCLUDED=1
+[ "${_SBIA_BASIS_EXECUTABLETARGETINFO_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_BASIS_EXECUTABLETARGETINFO_INCLUDED=1
 
 
 # ============================================================================
@@ -112,7 +112,7 @@ function get_executable_name
     else
         local path && get_executable_path path "$2"
         [ $? -eq 0 ] || return 1
-        name="$(basename "${path}")"
+        name="`basename "${path}"`"
         [ $? -eq 0 ] || return 1
     fi
 
@@ -146,7 +146,7 @@ function get_executable_directory
     fi
     [ $? -eq 0 ] || return 1
     # get directory component of path
-    local dir="$(dirname "${path}")"
+    local dir="`dirname "${path}"`"
 
     local "$1" && upvar $1 "${dir}"
 }
@@ -179,7 +179,7 @@ function get_executable_path
 
     # if no target name given, get path of this executable
     if [ $# -lt 2 ]; then
-        path="$(realpath "$0")"
+        path="`realpath "$0"`"
     # otherwise, get path of executable built by named target
     else
         # get UID of target
@@ -189,7 +189,7 @@ function get_executable_path
             _executabletargetinfo_get path "${uid}" LOCATION
             if [ -n "${path}" ]; then
                 # make path absolute
-                _executabletargetinfo_to_absolute_path path "${path}" "${__EXECUTABLETARGETINFO_dir}"
+                _executabletargetinfo_to_absolute_path path "${path}" "${_EXECUTABLETARGETINFO_DIR}"
                 [ $? -eq 0 ] || return 1
             else
                 path=`/usr/bin/which "$2" 2> /dev/null`
@@ -225,7 +225,7 @@ function _executabletargetinfo_sanitize
 {
     [ $# -eq 2 ] || return 1
     [ -z "$2" ] && upvar $1 ''
-    local sane="$(echo -n "$2" | tr [:space:] '_' | tr -c [:alpha:] '_')"
+    local sane="`echo -n "$2" | tr [:space:] '_' | tr -c [:alpha:] '_'`"
     [ -n "${sane}" ] || {
         echo "_executabletargetinfo_sanitize(): Failed to sanitize string" 1>&2
         exit 1
@@ -302,12 +302,12 @@ function _executabletargetinfo_to_absolute_path
 
     [ -n "${path}" ] || return 1
 
-    local dir="$(dirname "${path}")"
+    local dir=`dirname ${path}`
 
-    if [ -d "${base}" -a -d "${dir}" ]; then
-        dir="$(cd ${base}; cd ${dir}; pwd)"
+    if [ -d "${base}" -a -d "${base}/${dir}" ]; then
+        dir=`cd ${base}; cd ${dir}; pwd`
         [ $? -eq 0 ] || return 1
-        path="${dir}/$(basename ${path})"
+        path=${dir}/`basename ${path}`
         [ $? -eq 0 ] || return 1
     fi
 
