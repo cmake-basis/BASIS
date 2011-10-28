@@ -18,9 +18,6 @@
 #define SBIA_@PROJECT_NAME_UPPER@_CONFIG_H_
 
 
-#include <string>
-
-
 /// @addtogroup CppUtilities
 /// @{
 
@@ -150,13 +147,13 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 // project attributes
 
 /// @brief The project name.
-extern const std::string cProjectName;
+extern const char* cProjectName;
 
 /// @brief The project name in lowercase only.
-extern const std::string cProjectNameLower;
+extern const char* cProjectNameLower;
 
 /// @brief The project name in uppercase only.
-extern const std::string cProjectNameUpper;
+extern const char* cProjectNameUpper;
 
 /// @brief The major version number.
 extern const unsigned int cVersionMajor;
@@ -168,7 +165,7 @@ extern const unsigned int cVersionMinor;
 extern const unsigned int cVersionPatch;
 
 /// @brief The version string given as "<major>.<minor>.<patch>".
-extern const std::string cVersion;
+extern const char* cVersion;
 
 /**
  * @brief The Subversion revision number of the project.
@@ -194,35 +191,35 @@ extern const unsigned int cRevision;
  *
  * @sa GetInstallationDirectory()
  */
-extern const std::string cBuildRoot;
+extern const char* cBuildRoot;
 
 /**
  * @brief Absolute path to runtime executables in build tree.
  *
  * @sa GetRuntimeDirectory()
  */
-extern const std::string cRuntimeBuildPath;
+extern const char* cRuntimeBuildPath;
 
 /**
  * @brief Absolute path to auxiliary executables in build tree.
  *
  * @sa GetLibexecDirectory()
  */
-extern const std::string cLibexecBuildPath;
+extern const char* cLibexecBuildPath;
 
 /**
  * @brief Absolute path to modules and shared libraries in build tree.
  *
  * @sa GetLibraryDirectory()
  */
-extern const std::string cLibraryBuildPath;
+extern const char* cLibraryBuildPath;
 
 /**
  * @brief Absolute path to auxiliary data files in build tree.
  *
  * @sa GetDataDirectory()
  */
-extern const std::string cDataBuildPath;
+extern const char* cDataBuildPath;
 
 // ---------------------------------------------------------------------------
 // paths - installation
@@ -243,7 +240,7 @@ extern const std::string cDataBuildPath;
  *
  * @sa GetInstallationDirectory()
  */
-extern const std::string cRuntimePathPrefix;
+extern const char* cRuntimePathPrefix;
 
 /**
  * @brief Path prefix used by auxiliary executables.
@@ -261,7 +258,7 @@ extern const std::string cRuntimePathPrefix;
  *
  * @sa GetInstallationDirectory()
  */
-extern const std::string cLibexecPathPrefix;
+extern const char* cLibexecPathPrefix;
 
 /**
  * @brief Path to runtime executables relative to executable directory.
@@ -271,7 +268,7 @@ extern const std::string cLibexecPathPrefix;
  *
  * @sa GetRuntimeDirectory()
  */
-extern const std::string cRuntimePath;
+extern const char* cRuntimePath;
 
 /**
  * @brief Path to auxiliary executables relative to executable directory.
@@ -281,7 +278,7 @@ extern const std::string cRuntimePath;
  *
  * @sa GetLibexecDirectory()
  */
-extern const std::string cLibexecPath;
+extern const char* cLibexecPath;
 
 /**
  * @brief Path to modules and shared libraries relative to executable directory.
@@ -291,7 +288,7 @@ extern const std::string cLibexecPath;
  *
  * @sa GetLibraryDirectory()
  */
-extern const std::string cLibraryPath;
+extern const char* cLibraryPath;
 
 /**
  * @brief Path to shared data relative to executable path prefix.
@@ -301,7 +298,7 @@ extern const std::string cLibraryPath;
  *
  * @sa GetDataDirectory()
  */
-extern const std::string cDataPath;
+extern const char* cDataPath;
 
 
 /// @}

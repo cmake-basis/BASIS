@@ -16,9 +16,6 @@
 #include <sbia/@PROJECT_NAME_LOWER@/config.h>
 
 
-using namespace std;
-
-
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 
@@ -28,10 +25,10 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
 // ---------------------------------------------------------------------------
 // project attributes
-const string cProjectName      ("@PROJECT_NAME@");
-const string cProjectNameLower ("@PROJECT_NAME_LOWER@");
-const string cProjectNameUpper ("@PROJECT_NAME_UPPER@");
-const string cVersion          ("@PROJECT_VERSION@");
+const char* cProjectName      = "@PROJECT_NAME@";
+const char* cProjectNameLower = "@PROJECT_NAME_LOWER@";
+const char* cProjectNameUpper = "@PROJECT_NAME_UPPER@";
+const char* cVersion          = "@PROJECT_VERSION@";
 
 const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
 const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
@@ -40,22 +37,22 @@ const unsigned int cRevision     = @PROJECT_REVISION@;
 
 // ---------------------------------------------------------------------------
 // paths - build tree
-const string cBuildRoot ("@BUILD_ROOT_PATH_CONFIG@");
+const char* cBuildRoot = "@BUILD_ROOT_PATH_CONFIG@";
 
-const string cRuntimeBuildPath ("@RUNTIME_BUILD_PATH_CONFIG@");
-const string cLibexecBuildPath ("@LIBEXEC_BUILD_PATH_CONFIG@");
-const string cLibraryBuildPath ("@LIBRARY_BUILD_PATH_CONFIG@");
-const string cDataBuildPath    ("@DATA_BUILD_PATH_CONFIG@");
+const char* cRuntimeBuildPath = "@RUNTIME_BUILD_PATH_CONFIG@";
+const char* cLibexecBuildPath = "@LIBEXEC_BUILD_PATH_CONFIG@";
+const char* cLibraryBuildPath = "@LIBRARY_BUILD_PATH_CONFIG@";
+const char* cDataBuildPath    = "@DATA_BUILD_PATH_CONFIG@";
 
 // ---------------------------------------------------------------------------
 // paths - installation
-const string cRuntimePathPrefix ("@RUNTIME_PATH_PREFIX_CONFIG@");
-const string cLibexecPathPrefix ("@LIBEXEC_PATH_PREFIX_CONFIG@");
+const char* cRuntimePathPrefix = "@RUNTIME_PATH_PREFIX_CONFIG@";
+const char* cLibexecPathPrefix = "@LIBEXEC_PATH_PREFIX_CONFIG@";
 
-const string cRuntimePath ("@RUNTIME_PATH_CONFIG@");
-const string cLibexecPath ("@LIBEXEC_PATH_CONFIG@");
-const string cLibraryPath ("@LIBRARY_PATH_CONFIG@");
-const string cDataPath    ("@DATA_PATH_CONFIG@");
+const char* cRuntimePath = "@RUNTIME_PATH_CONFIG@";
+const char* cLibexecPath = "@LIBEXEC_PATH_CONFIG@";
+const char* cLibraryPath = "@LIBRARY_PATH_CONFIG@";
+const char* cDataPath    = "@DATA_PATH_CONFIG@";
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

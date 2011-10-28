@@ -66,7 +66,7 @@ string ExecutableTargetInfo::get_target_uid(const string& target) const
 {
     if (target.empty()) return "";
     if (exec_names_.find(target) == exec_names_.end() && target.find("::") == string::npos) {
-        return cProjectNameLower + "::" + target;
+        return string(cProjectNameLower) + "::" + target;
     }
     return target;
 }
