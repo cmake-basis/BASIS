@@ -49,21 +49,6 @@ macro (basis_find_package PACKAGE)
 endmacro ()
 
 ##############################################################################
-# @brief Convenience macro useful to find other packages based on BASIS.
-#
-# @param [in] PACKAGE Name of other BASIS package.
-# @param [in] ARGN    Other arguments as accepted by CMake's find_package().
-#
-# @returns The package specific variables are either set by the invoked
-#          CMake Find module or the package's CMake configuration file.
-#
-# @retval <PACKAGE>_FOUND Whether the given package was found.
-
-macro (find_basis_package PACKAGE)
-  find_package ("${BASIS_CONFIG_PREFIX}${PACKAGE}" ${ARGN})
-endmacro ()
-
-##############################################################################
 # @brief Use found package.
 #
 # This macro includes the package's use file if the variable @c &lt;Pkg&gt;_USE_FILE
