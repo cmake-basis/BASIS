@@ -132,6 +132,8 @@ if __name__ == "__main__":
                 module = m.group ('module')
                 module = module.replace ("\"", "")
                 module = module.replace ("${CMAKE_CURRENT_LIST_DIR}/", "")
+                module = module.replace ("${BASIS_MODULE_PATH}/", "")
+                module = module.replace ("@BASIS_MODULE_PATH@/", "")
                 sys.stdout.write ("#include \"" + module + "\"\n")
                 continue
             # enter if-clause
