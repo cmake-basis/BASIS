@@ -12,14 +12,14 @@
 
 #include <sbia/basis/test.h>
 #include <sbia/basis/subprocess.h>
-#include <sbia/basis/path.h>
+#include "basis.h"
 
 
 using namespace std;
 using namespace SBIA_BASIS_NAMESPACE;
 
 
-const string cCmd = get_executable_directory() + "/dummy_command";
+const string cCmd = basis::get_executable_path("basis::dummy_command");
 
 // ---------------------------------------------------------------------------
 TEST(Subprocess, Split)

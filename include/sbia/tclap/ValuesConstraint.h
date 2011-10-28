@@ -25,13 +25,9 @@
 
 #include <string>
 #include <vector>
-#include <tclap/Constraint.h>
+#include <sbia/tclap/Constraint.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#else
-#define HAVE_SSTREAM
-#endif
 
 #if defined(HAVE_SSTREAM)
 #include <sstream>

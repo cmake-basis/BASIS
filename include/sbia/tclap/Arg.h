@@ -25,11 +25,7 @@
 #ifndef TCLAP_ARGUMENT_H
 #define TCLAP_ARGUMENT_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#else
-#define HAVE_SSTREAM
-#endif
+#include <sbia/basis/config.h>
 
 #include <string>
 #include <vector>
@@ -48,11 +44,11 @@ typedef std::istrstream istringstream;
 #error "Need a stringstream (sstream or strstream) to compile!"
 #endif
 
-#include <tclap/ArgException.h>
-#include <tclap/Visitor.h>
-#include <tclap/CmdLineInterface.h>
-#include <tclap/ArgTraits.h>
-#include <tclap/StandardTraits.h>
+#include <sbia/tclap/ArgException.h>
+#include <sbia/tclap/Visitor.h>
+#include <sbia/tclap/CmdLineInterface.h>
+#include <sbia/tclap/ArgTraits.h>
+#include <sbia/tclap/StandardTraits.h>
 
 namespace TCLAP {
 

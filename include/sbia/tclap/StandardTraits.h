@@ -26,9 +26,7 @@
 #ifndef TCLAP_STANDARD_TRAITS_H
 #define TCLAP_STANDARD_TRAITS_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h> // To check for long long
-#endif
+#include <sbia/basis/config.h> // To check for long long
 
 // If Microsoft has already typedef'd wchar_t as an unsigned 
 // short, then compiles will break because it's as if we're

@@ -29,10 +29,10 @@
 #include <iostream>
 #include <map>
 
-#include <tclap/CmdLineInterface.h>
-#include <tclap/CmdLineOutput.h>
-#include <tclap/XorHandler.h>
-#include <tclap/Arg.h>
+#include <sbia/tclap/CmdLineInterface.h>
+#include <sbia/tclap/CmdLineOutput.h>
+#include <sbia/tclap/XorHandler.h>
+#include <sbia/tclap/Arg.h>
 
 namespace TCLAP {
 

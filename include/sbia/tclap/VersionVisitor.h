@@ -24,9 +24,9 @@
 #ifndef TCLAP_VERSION_VISITOR_H
 #define TCLAP_VERSION_VISITOR_H
 
-#include <tclap/CmdLineInterface.h>
-#include <tclap/CmdLineOutput.h>
-#include <tclap/Visitor.h>
+#include <sbia/tclap/CmdLineInterface.h>
+#include <sbia/tclap/CmdLineOutput.h>
+#include <sbia/tclap/Visitor.h>
 
 namespace TCLAP {
 
