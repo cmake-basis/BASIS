@@ -173,4 +173,4 @@ find_package_handle_standard_args (
     NiftiCLib_LIB
 )
 
-set (NiftiCLib ${NIFTICLIB_FOUND})
+set (NiftiCLib_FOUND ${NIFTICLIB_FOUND})

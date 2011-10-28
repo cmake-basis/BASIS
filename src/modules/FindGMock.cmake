@@ -156,4 +156,4 @@ find_package_handle_standard_args (
     GMock_LIBRARY
 )
 
-set (GMOCK_FOUND "${GMock_FOUND}")
+set (GMock_FOUND "${GMOCK_FOUND}")
