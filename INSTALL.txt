@@ -39,6 +39,13 @@ INSTALLING A BINARY DISTRIBUTION PACKAGE
 
 
 
+RUNTIME REQUIREMENTS
+====================
+
+  This software has no runtime dependencies.
+
+
+
 BUILDING THE SOFTWARE FROM SOURCES
 ==================================
 
