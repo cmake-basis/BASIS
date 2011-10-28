@@ -98,7 +98,7 @@ function (basis_install_links)
 
       if (BASIS_TYPE MATCHES "EXECUTABLE" AND NOT LIBEXEC AND NOT TEST)
         get_target_property (SYMLINK_NAME ${TARGET_UID} "SYMLINK_NAME")
-        if (NOT "${SYMLINK_NAME}" STREQUAL "NONE")
+        if (NOT "${SYMLINK_NAME}" MATCHES "^none$|^None$|^NONE$")
           get_target_property (SYMLINK_PREFIX ${TARGET_UID} "SYMLINK_PREFIX")
           get_target_property (SYMLINK_SUFFIX ${TARGET_UID} "SYMLINK_SUFFIX")
           get_target_property (INSTALL_DIR    ${TARGET_UID} "RUNTIME_INSTALL_DIRECTORY")
