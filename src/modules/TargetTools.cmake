@@ -67,7 +67,7 @@ function (basis_set_target_properties)
     list (GET ARGN 0 ARG)
   endwhile ()
   if (NOT UIDS)
-    message (FATAL_ERROR "basis_set_target_properties (): No targets specified")
+    message (FATAL_ERROR "basis_set_target_properties(): No targets specified")
   endif ()
   set_target_properties (${UIDS} ${ARGN})
 endfunction ()
@@ -321,7 +321,7 @@ function (basis_target_link_libraries TARGET_NAME)
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
   if (NOT TARGET "${TARGET_UID}")
-    message (FATAL_ERROR "basis_target_link_libraries (): Unknown target ${TARGET_UID}.")
+    message (FATAL_ERROR "basis_target_link_libraries(): Unknown target ${TARGET_UID}.")
   endif ()
 
   # get type of named target
