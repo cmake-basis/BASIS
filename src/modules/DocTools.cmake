@@ -57,11 +57,11 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 # @param [out] FILTER_PATTERNS List of default Doxygen filter patterns.
 
 function (basis_default_doxygen_filters FILTER_PATTERNS)
-  basis_get_target_location (CMAKE_FILTER  "basis@doxyfilter_cmake"  ABSOLUTE)
-  basis_get_target_location (PYTHON_FILTER "basis@doxyfilter_python" ABSOLUTE)
+  basis_get_target_location (CMAKE_FILTER  "basis@doxyfilter-cmake"  ABSOLUTE)
+  basis_get_target_location (PYTHON_FILTER "basis@doxyfilter-python" ABSOLUTE)
   basis_get_target_location (PERL_FILTER   "basis@doxyfilter"        ABSOLUTE)
-  basis_get_target_location (BASH_FILTER   "basis@doxyfilter_bash"   ABSOLUTE)
-  basis_get_target_location (MATLAB_FILTER "basis@doxyfilter_matlab" ABSOLUTE)
+  basis_get_target_location (BASH_FILTER   "basis@doxyfilter-bash"   ABSOLUTE)
+  basis_get_target_location (MATLAB_FILTER "basis@doxyfilter-matlab" ABSOLUTE)
 
   set (
     ${FILTER_PATTERNS}
