@@ -1,15 +1,15 @@
 #! /usr/bin/env bash
 
 ##############################################################################
-# @file  basistest_master.sh
+# @file  basistest-master.sh
 # @brief Test master which can be run as a cron job.
 #
 # This shell script is supposed to be scheduled as cron job, where possibly
-# the basistest_cron.sh script is in fact used as cron job command without
+# the basistest-cron.sh script is in fact used as cron job command without
 # arguments where all the settings for the cron job are fixed within this
 # latter script. On execution, this master script parses the configuration
 # file and executes the configured tests using by default the
-# basistest_slave.sh script.
+# basistest-slave.sh script.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -76,7 +76,7 @@ function print_help
     echo
     cat - << EOF-DESCRIPTION
 Description:
-  This so-called testing master script is executed by the basistest_cron command.
+  This so-called testing master script is executed by the basistest-cron command.
   On each run, it reads in the configuration file given by the --config option
   line-by-line. Each line in the configuration file specifies one test job to be
   executed. See the next section for details on the format and content of such
@@ -119,7 +119,7 @@ Configuration:
     * * 1 BASIS trunk Nightly coverage,memcheck
 
 Test execution:
-  By default, the basistest_slave command is invoked for each entry in the
+  By default, the basistest-slave command is invoked for each entry in the
   configuration file. A custom test command can be set using the option --testcmd.
   The provided command has to support the following command line arguments.
 

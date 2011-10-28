@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ##
-# @file  doxyfilter_bash.py
+# @file  doxyfilter-bash.py
 # @brief Doxygen filter for BASH scripts.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.

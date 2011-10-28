@@ -349,13 +349,13 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # testing tools
-find_program (CTEST_SVN_COMMAND         NAMES basistest_svn)
+find_program (CTEST_SVN_COMMAND         NAMES basistest-svn)
 find_program (CTEST_SVN_COMMAND         NAMES svn)
 find_program (CTEST_COVERAGE_COMMAND    NAMES gcov)
 find_program (CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
 
 if (NOT CTEST_SVN_COMMAND)
-  message (FATAL_ERROR "Could not find \"basistest_svn\" or \"svn\" command!")
+  message (FATAL_ERROR "Could not find \"basistest-svn\" or \"svn\" command!")
 endif ()
 
 if (NOT CTEST_COVERAGE_COMMAND AND WITH_COVERAGE)

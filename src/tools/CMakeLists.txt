@@ -22,10 +22,10 @@ basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
 # ----------------------------------------------------------------------------
 # doxygen filters
 basis_add_executable (doxyfilter.pl        LIBEXEC)
-basis_add_executable (doxyfilter_bash.py   LIBEXEC)
-basis_add_executable (doxyfilter_cmake.py  LIBEXEC)
-basis_add_executable (doxyfilter_matlab.pl LIBEXEC)
-basis_add_executable (doxyfilter_python.py LIBEXEC)
+basis_add_executable (doxyfilter-bash.py   LIBEXEC)
+basis_add_executable (doxyfilter-cmake.py  LIBEXEC)
+basis_add_executable (doxyfilter-matlab.pl LIBEXEC)
+basis_add_executable (doxyfilter-python.py LIBEXEC)
 
 basis_add_library ("DoxyGen/Filter.pm"     WITH_PATH)
 basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
@@ -35,14 +35,14 @@ basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
 if (UNIX)
-  basis_add_executable (basistest_svn.sh)    # wraps svn command
-  basis_add_executable (basistest_slave.sh)  # executes test task
-  basis_add_executable (basistest_master.sh) # executes scheduled tests
-  basis_add_executable (basistest_cron.sh)   # test cron job
+  basis_add_executable (basistest-svn.sh)    # wraps svn command
+  basis_add_executable (basistest-slave.sh)  # executes test task
+  basis_add_executable (basistest-master.sh) # executes scheduled tests
+  basis_add_executable (basistest-cron.sh)   # test cron job
   basis_add_executable (basistest.sh)        # main wrapper
 
   # do not install symbolic links for subcommands
   foreach (C cron master slave svn)
-    basis_set_target_properties (basistest_${C} PROPERTIES SYMLINK_NAME "NONE")
+    basis_set_target_properties (basistest-${C} PROPERTIES SYMLINK_NAME "NONE")
   endforeach ()
 endif ()

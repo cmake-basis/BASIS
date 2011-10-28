@@ -104,7 +104,7 @@ if [ -n "$1" ]; then
             fi
         fi
 
-        exec "${EXEC_DIR}/basistest_${cmd}" '--help'
+        exec "${EXEC_DIR}/basistest-${cmd}" '--help'
     fi
 fi
 
@@ -116,14 +116,14 @@ while [ $# -gt 0 ]; do
             echo
             echo "Subcommand:"
             echo -n "  "
-            exec "${EXEC_DIR}/basistest_${cmd}" '--help'
+            exec "${EXEC_DIR}/basistest-${cmd}" '--help'
             ;;
         --helpshort)
             print_usage
             echo
             echo "Subcommand:"
             echo -n "  "
-            exec "${EXEC_DIR}/basistest_${cmd}" '--helpshort'
+            exec "${EXEC_DIR}/basistest-${cmd}" '--helpshort'
             ;;
         -v|--verbose)
             (( verbosity ++ ))
@@ -152,4 +152,4 @@ done
 # main
 # ============================================================================
 
-exec "${EXEC_DIR}/basistest_${cmd}" "${args[@]}"
+exec "${EXEC_DIR}/basistest-${cmd}" "${args[@]}"

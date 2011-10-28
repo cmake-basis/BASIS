@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ##
-# @file  doxyfilter_cmake.py
+# @file  doxyfilter-cmake.py
 # @brief Doxygen filter for CMake and CTest scripts.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     reFunctionEnd   = re.compile (r"endfunction\s*\(.*\)\s*$")
     reMacroStart    = re.compile (r"macro\s*\((?P<name>\w+)(?P<args>.*)\)\s*$")
     reMacroEnd      = re.compile (r"endmacro\s*\(.*\)\s*$")
-    reSetStart      = re.compile (r"set\s*\((?P<name>\w*)|set\s*$")
+    reSetStart      = re.compile (r"(set|basis_set_if_empty|basis_set_script_path|basis_set_config)\s*(\((?P<name>\w*)|$)")
     reSetVarName    = re.compile (r"(?P<name>\w+)")
     reSetEnd        = re.compile (r".*\)\s*$")
     reOptionStart   = re.compile (r"option\s*\((?P<name>\w*)|option\s*$")
