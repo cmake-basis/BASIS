@@ -343,7 +343,7 @@ macro (basis_project_initialize)
   endif ()
 
   # instantiate project directory structure
-  basis_initialize_directories ()
+  basis_initialize_settings ()
  
   # add project config directory to CMAKE_MODULE_PATH
   set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})

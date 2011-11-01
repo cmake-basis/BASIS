@@ -296,7 +296,12 @@ function (basis_configure_ExecutableTargetInfo)
           endif ()
         endforeach ()
 
-        string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
+        # always use namespace for executable aliases in ExecutableTargetInfo
+        if (BASIS_USE_TARGET_UIDS)
+          string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}" "::" ALIAS "${TARGET_UID}")
+        else ()
+          set (ALIAS "${BASIS_NAMESPACE}::${TARGET_UID}")
+        endif ()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # C++

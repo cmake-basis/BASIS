@@ -465,6 +465,7 @@ endfunction ()
 # function.
 #
 # @sa basis_target_name()
+# @sa BASIS_USE_TARGET_UIDS
 #
 # @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
@@ -472,10 +473,34 @@ endfunction ()
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
 
 function (basis_target_uid TARGET_UID TARGET_NAME)
-  if (TARGET "${TARGET_NAME}" OR TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-    set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
+  if (BASIS_USE_TARGET_UIDS)
+    if (TARGET "${TARGET_NAME}" OR TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
+      set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
+    else ()
+      set ("${TARGET_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}" PARENT_SCOPE)
+    endif ()
   else ()
-    set ("${TARGET_UID}" "${PROJECT_NAME_LOWER}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}" PARENT_SCOPE)
+    basis_target_namespace (TARGET_NS "${TARGET_NAME}")
+    if ("${TARGET_NS}" STREQUAL "${BASIS_NAMESPACE}")
+      basis_target_name (TARGET_NAME "${TARGET_NAME}")
+    endif ()
+    set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+##############################################################################
+# @brief Get namespace of build target.
+#
+# @param [out] TARGET_NS  Namespace part of target UID. If @p TARGET_UID is
+#                         no UID, i.e., does not contain a namespace part,
+#                         the namespace of this project is returned.
+# @param [in]  TARGET_UID Target UID/name.
+function (basis_target_namespace TARGET_NS TARGET_UID)
+  if (${TARGET_UID} MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
+    string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}.*$" "" TMP "${TARGET_UID}")
+    set ("${TARGET_NS}" "${TMP}" PARENT_SCOPE)
+  else ()
+    set ("${TARGET_NS}" "${BASIS_NAMESPACE}" PARENT_SCOPE)
   endif ()
 endfunction ()
 
@@ -483,6 +508,7 @@ endfunction ()
 # @brief Get "local" target name, i.e., BASIS target name.
 #
 # @sa basis_target_uid()
+# @sa BASIS_USE_TARGET_UIDS
 #
 # @param [out] TARGET_NAME Target name used as argument to BASIS functions.
 # @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
@@ -546,6 +572,7 @@ endfunction ()
 # name, the test UID, back to the original test name passed to this function.
 #
 # @sa basis_test_name()
+# @sa BASIS_USE_TARGET_UIDS
 #
 # @param [out] TEST_UID  "Global" test name, i.e., actual CTest test name.
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
@@ -553,10 +580,34 @@ endfunction ()
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
 
 function (basis_test_uid TEST_UID TEST_NAME)
-  if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-    set ("${TEST_UID}" "${TEST_NAME}" PARENT_SCOPE)
+  if (BASIS_USE_TARGET_UIDS)
+    if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
+      set ("${TEST_UID}" "${TEST_NAME}" PARENT_SCOPE)
+    else ()
+      set ("${TEST_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TEST_NAME}" PARENT_SCOPE)
+    endif ()
   else ()
-    set ("${TEST_UID}" "${PROJECT_NAME_LOWER}${BASIS_NAMESPACE_SEPARATOR}${TEST_NAME}" PARENT_SCOPE)
+    basis_test_namespace (TEST_NS "${TEST_NAME}")
+    if ("${TEST_NS}" STREQUAL "${BASIS_NAMESPACE}")
+      basis_test_name (TEST_NAME "${TEST_NAME}")
+    endif ()
+    set ("${TEST_UID}" "${TEST_NAME}" PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+##############################################################################
+# @brief Get namespace of test.
+#
+# @param [out] TEST_NS  Namespace part of test UID. If @p TEST_UID is
+#                       no UID, i.e., does not contain a namespace part,
+#                       the namespace of this project is returned.
+# @param [in]  TEST_UID Test UID/name.
+function (basis_test_namespace TEST_NS TEST_UID)
+  if (${TEST_UID} MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
+    string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}.*$" "" TMP "${TEST_UID}")
+    set ("${TEST_NS}" "${TMP}" PARENT_SCOPE)
+  else ()
+    set ("${TEST_NS}" "${BASIS_NAMESPACE}" PARENT_SCOPE)
   endif ()
 endfunction ()
 

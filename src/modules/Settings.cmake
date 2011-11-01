@@ -120,17 +120,25 @@ set (BASIS_LIBRARY_COMPONENT "Development")
 # are associated with if no component was specified, explicitly.
 set (BASIS_RUNTIME_COMPONENT "Runtime")
 
+## @brief Whether to use unique build target names.
+option (BASIS_USE_TARGET_UIDS "Whether to use (globaly) unique build target names." OFF)
+mark_as_advanced (BASIS_USE_TARGET_UIDS)
+
+## @brief Namespace used for target UIDs if @c BASIS_USE_TARGET_UIDS is @c ON.
+set (BASIS_NAMESPACE "\@PROJECT_NAME_LOWER\@")
+
 ## @brief Character used to separate namespace and target name in target UID.
 #
 # This separator is used to construct a UID for a particular target.
-# For example, "&lt;Project&gt;\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
+# For example, "\@BASIS_NAMESPACE\@\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
 # Note that the separator must only contain characters that are valid in
 # a file path as only these characters can be used for CMake target names.
 # Also the use of '#' in target names must be avoided.
 #
 # Note: For the mapping of target names to executable files, this separator
 #       may for each language be replaced by a more suitable string.
-#       For example, it is replaced by "::" for C++. See UtilitiesTools.cmake.
+#       For example, it is replaced by "::" for C++.
+#       See UtilitiesTools.cmake for details.
 set (BASIS_NAMESPACE_SEPARATOR "@")
 
 ## @brief Character used to separate version and project name (e.g., in target UID).
@@ -212,8 +220,9 @@ set (BASIS_CUSTOM_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGET
 # project directory structure
 # ============================================================================
 
-## @addtogroup CMakeUtilities
+## @addtogroup CMakeAPI
 #  @{
+
 
 # ----------------------------------------------------------------------------
 # assertions
@@ -225,8 +234,10 @@ set (BASIS_CUSTOM_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGET
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
+#
+# @ingroup CMakeUtilities
 
-macro (buildtree_asserts)
+macro (basis_buildtree_asserts)
   # root of build tree must not be root of source tree
   string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
   string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
@@ -244,8 +255,10 @@ endmacro ()
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
+#
+# @ingroup CMakeUtilities
 
-macro (installtree_asserts)
+macro (basis_installtree_asserts)
   # prefix must be an absolute path
   if (NOT IS_ABSOLUTE "${INSTALL_PREFIX}")
     message (FATAL_ERROR "INSTALL_PREFIX must be an absolute path!")
@@ -263,83 +276,6 @@ macro (installtree_asserts)
     )
   endif()
 endmacro ()
-
-# ----------------------------------------------------------------------------
-# instantiation for specific project
-# ----------------------------------------------------------------------------
-
-##############################################################################
-# @brief Instantiate project directory structure.
-#
-# This macro is invoked after the CMake project() command to instantiate
-# the project directory structure, i.e., turn the directories into absolute
-# paths using the CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR.
-# Moreover, the occurences of \@PROJECT_NAME\@, \@PROJECT_NAME_LOWER\@,
-# \@PROJECT_NAME_UPPER\@, \@PROJECT_VERSION\@, \@PROJECT_VERSION_MAJOR\@,
-# \@PROJECT_VERSION_MINOR\@, and \@PROJECT_VERSION_PATH\@ are substituted by
-# the actual values corresponding to the project name and version.
-#
-# @param [in] ARGN Not used.
-#
-# @returns Nothing.
-
-macro (basis_initialize_directories)
-  # source tree
-  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
-    set (VAR PROJECT_${P}_DIR)
-    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
-  endforeach ()
-
-  # build tree
-  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
-    file (RELATIVE_PATH SUBDIR "${PROJECT_SOURCE_DIR}" "${PROJECT_${P}_DIR}")
-    set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${SUBDIR}")
-  endforeach ()
-
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE PYTHON_LIBRARY PERL_LIBRARY)
-    set (VAR BINARY_${P}_DIR)
-    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
-  endforeach ()
-
-  set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
-  set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}")
-  set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}")
-
-  # testing tree
-  foreach (P RUNTIME LIBRARY OUTPUT)
-    set (VAR TESTING_${P}_DIR)
-    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
-  endforeach ()
-
-  # install tree
-  string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
-  string (CONFIGURE "${BASIS_INSTALL_SINFIX}" BASIS_INSTALL_SINFIX @ONLY)
-  set (INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE PATH "Prefix used for installation paths." FORCE)
-  set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
-  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE STRING "Suffix/Infix used for installation paths." FORCE)
-
-  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DATA DOC EXAMPLE MAN)
-    set (VAR INSTALL_${P}_DIR)
-    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
-    if ("${${VAR}}" STREQUAL "")
-      set (${VAR} ".")
-    endif ()
-  endforeach ()
-
-  string (CONFIGURE "${INSTALL_CONFIG_DIR}" INSTALL_CONFIG_DIR @ONLY)
-  if ("${INSTALL_CONFIG_DIR}" STREQUAL "")
-    set (INSTALL_CONFIG_DIR ".")
-  endif ()
-
-  # assertions
-  buildtree_asserts ()
-  installtree_asserts ()
-endmacro ()
-
-## @}
-
-## @addtogroup CMakeAPI
-#  @{
 
 # ----------------------------------------------------------------------------
 # source tree
@@ -579,6 +515,91 @@ if (WIN32 AND INSTALL_SINFIX)
     set (${VAR} "${${VAR}}/${BASIS_INSTALL_SINFIX}")
   endforeach ()
 endif ()
+
+# ============================================================================
+# initialize settings
+# ============================================================================
+
+##############################################################################
+# @brief Initialize project settings.
+#
+# This macro is invoked after the CMake project() command to instantiate
+# the project directory structure, i.e., turn the directories into absolute
+# paths using the CMake variables PROJECT_SOURCE_DIR and PROJECT_BINARY_DIR.
+# Moreover, the occurences of \@PROJECT_NAME\@, \@PROJECT_NAME_LOWER\@,
+# \@PROJECT_NAME_UPPER\@, \@PROJECT_VERSION\@, \@PROJECT_VERSION_MAJOR\@,
+# \@PROJECT_VERSION_MINOR\@, and \@PROJECT_VERSION_PATH\@ are substituted by
+# the actual values corresponding to the project name and version.
+#
+# Moreover, other constants used by BASIS are configured such that project
+# specific strings as the project name are substituted.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
+
+macro (basis_initialize_settings)
+  # --------------------------------------------------------------------------
+  # instantiate project directory structure
+
+  # source tree
+  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
+    set (VAR PROJECT_${P}_DIR)
+    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
+  endforeach ()
+
+  # build tree
+  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
+    file (RELATIVE_PATH SUBDIR "${PROJECT_SOURCE_DIR}" "${PROJECT_${P}_DIR}")
+    set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${SUBDIR}")
+  endforeach ()
+
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE PYTHON_LIBRARY PERL_LIBRARY)
+    set (VAR BINARY_${P}_DIR)
+    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
+  endforeach ()
+
+  set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
+  set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}")
+  set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}")
+
+  # testing tree
+  foreach (P RUNTIME LIBRARY OUTPUT)
+    set (VAR TESTING_${P}_DIR)
+    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
+  endforeach ()
+
+  # install tree
+  string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
+  string (CONFIGURE "${BASIS_INSTALL_SINFIX}" BASIS_INSTALL_SINFIX @ONLY)
+  set (INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE PATH "Prefix used for installation paths." FORCE)
+  set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
+  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE STRING "Suffix/Infix used for installation paths." FORCE)
+
+  foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DATA DOC EXAMPLE MAN)
+    set (VAR INSTALL_${P}_DIR)
+    string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
+    if ("${${VAR}}" STREQUAL "")
+      set (${VAR} ".")
+    endif ()
+  endforeach ()
+
+  string (CONFIGURE "${INSTALL_CONFIG_DIR}" INSTALL_CONFIG_DIR @ONLY)
+  if ("${INSTALL_CONFIG_DIR}" STREQUAL "")
+    set (INSTALL_CONFIG_DIR ".")
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # other constants
+
+  string (CONFIGURE "${BASIS_NAMESPACE}" BASIS_NAMESPACE @ONLY)
+
+  # --------------------------------------------------------------------------
+  # assertions
+
+  basis_buildtree_asserts ()
+  basis_installtree_asserts ()
+endmacro ()
 
 # ============================================================================
 # build configuration(s)

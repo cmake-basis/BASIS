@@ -968,7 +968,7 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add default link dependencies
   if (NOT ARGN_NO_BASIS_UTILITIES)
-    target_link_libraries (
+    basis_target_link_libraries (
       ${TARGET_UID}
         "basis${BASIS_NAMESPACE_SEPARATOR}utilities" # non-project specific
         ${BASIS_UTILITIES_TARGET}                    # project specific
@@ -2026,9 +2026,15 @@ function (basis_export_targets)
   # --------------------------------------------------------------------------
   # export non-custom targets
   if (BASIS_EXPORT_TARGETS)
+    if (BASIS_USE_TARGET_UIDS)
+      set (NAMESPACE_ARG)
+    else ()
+      set (NAMESPACE_ARG "NAMESPACE" "${BASIS_NAMESPACE}")
+    endif ()
     export (
       TARGETS   ${BASIS_EXPORT_TARGETS}
       FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
+      ${NAMESPACE_ARG}
     )
     foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
       install (
@@ -2078,10 +2084,13 @@ function (basis_export_targets)
     # create import targets
     macro (import_targets)
       foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
+        if (NOT BASIS_USE_TARGET_UIDS)
+          set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
+        endif ()
         set (C "${C}\n# Create import target ${T}\n")
         get_target_property (BASIS_TYPE ${T} "BASIS_TYPE")
         if (BASIS_TYPE MATCHES "EXECUTABLE")
-          set (C "${C}add_executable (${T} IMPORTED)\n")
+          set (C "${C}add_executable (${UID} IMPORTED)\n")
         elseif (BASIS_TYPE MATCHES "LIBRARY|MODULE_SCRIPT|MEX")
           string (REGEX REPLACE "_LIBRARY" "" TYPE "${BASIS_TYPE}")
           if (TYPE MATCHES "MEX|MCC")
@@ -2089,11 +2098,11 @@ function (basis_export_targets)
           elseif (TYPE MATCHES "^MODULE_SCRIPT$")
             set (TYPE "UNKNOWN")
           endif ()
-          set (C "${C}add_library (${T} ${TYPE} IMPORTED)\n")
+          set (C "${C}add_library (${UID} ${TYPE} IMPORTED)\n")
         else ()
           message (FATAL_ERROR "Cannot export target ${T} of type ${BASIS_TYPE}! Use NO_EXPORT option.")
         endif ()
-        set (C "${C}set_target_properties (${T} PROPERTIES BASIS_TYPE \"${BASIS_TYPE}\")\n")
+        set (C "${C}set_target_properties (${UID} PROPERTIES BASIS_TYPE \"${BASIS_TYPE}\")\n")
       endforeach ()
     endmacro ()
 
@@ -2102,9 +2111,12 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
+          if (NOT BASIS_USE_TARGET_UIDS)
+            set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
+          endif ()
           set (C "${C}\n# Import target \"${T}\" for configuration \"${CONFIG}\"\n")
-          set (C "${C}set_property (TARGET ${T} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
-          set (C "${C}set_target_properties (${T} PROPERTIES\n")
+          set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
+          set (C "${C}set_target_properties (${UID} PROPERTIES\n")
           basis_get_target_location (LOCATION ${T} ABSOLUTE)
           set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"${LOCATION}\"\n")
           if (BASIS_TYPE MATCHES "LIBRARY|MEX")
@@ -2119,9 +2131,12 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
+          if (NOT BASIS_USE_TARGET_UIDS)
+            set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
+          endif ()
           set (C "${C}\n# Import target \"${T}\" for configuration \"${CONFIG}\"\n")
-          set (C "${C}set_property (TARGET ${T} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
-          set (C "${C}set_target_properties (${T} PROPERTIES\n")
+          set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
+          set (C "${C}set_target_properties (${UID} PROPERTIES\n")
           basis_get_target_location (LOCATION ${T} POST_INSTALL_RELATIVE)
           set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_IMPORT_PREFIX}/${LOCATION}\"\n")
           if (BASIS_TYPE MATCHES "LIBRARY|MEX")
@@ -2182,5 +2197,6 @@ endfunction ()
 function (basis_install)
   install (${ARGN})
 endfunction ()
+
 
 ## @}
