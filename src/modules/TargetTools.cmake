@@ -1191,7 +1191,7 @@ function (basis_add_library_target TARGET_NAME)
   basis_configure_sources (SOURCES ${SOURCES})
 
   # add library target
-  add_library (${TARGET_UID} ${TYPE} ${CONFIGURED_SOURCES})
+  add_library (${TARGET_UID} ${TYPE} ${SOURCES})
 
   set_target_properties (
     ${TARGET_UID}
