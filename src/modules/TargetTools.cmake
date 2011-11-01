@@ -925,6 +925,9 @@ function (basis_add_executable_target TARGET_NAME)
     endif ()
   endif ()
 
+  # configure .in source files
+  basis_configure_sources (SOURCES ${SOURCES})
+
   # add executable target
   add_executable (${TARGET_UID} ${SOURCES})
 
@@ -1184,8 +1187,11 @@ function (basis_add_library_target TARGET_NAME)
     set (TYPE "MODULE")
   endif ()
 
+  # configure .in source files
+  basis_configure_sources (SOURCES ${SOURCES})
+
   # add library target
-  add_library (${TARGET_UID} ${TYPE} ${SOURCES})
+  add_library (${TARGET_UID} ${TYPE} ${CONFIGURED_SOURCES})
 
   set_target_properties (
     ${TARGET_UID}

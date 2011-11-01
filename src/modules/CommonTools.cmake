@@ -671,6 +671,36 @@ function (basis_get_source_language LANGUAGE)
 endfunction ()
 
 ##############################################################################
+# @brief Configure .in source files.
+#
+# This function configures each source file in the given argument list with
+# a .in file name suffix and stores the configured file in the build tree
+# with the same relative directory as the template source file itself.
+# The first argument names the CMake variable of the list of configured
+# source files where each list item is the absolute file path of the
+# corresponding (configured) source file.
+#
+# @param [out] LIST_NAME Name of output list.
+# @param [in]  ARGN      Input source files.
+#
+# @returns Nothing.
+function (basis_configure_sources LIST_NAME)
+  set (CONFIGURED_SOURCES)
+  foreach (SOURCE ${ARGN})
+    if (SOURCE MATCHES ".in$")
+      basis_get_relative_path (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}" "${SOURCE}")
+      get_filename_component (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}" ABSOLUTE)
+      configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}" "${CONFIGURED_SOURCE}" @ONLY)
+    else ()
+      get_filename_component (CONFIGURED_SOURCE "${SOURCE}" ABSOLUTE)
+    endif ()
+    list (APPEND CONFIGURED_SOURCES "${CONFIGURED_SOURCE}")
+  endforeach ()
+  # return
+  set (${LIST_NAME} "${CONFIGURED_SOURCES}" PARENT_SCOPE)
+endfunction ()
+
+##############################################################################
 # @brief Get type name of target.
 #
 # @param [out] TYPE        The target's type name or NOTFOUND.
