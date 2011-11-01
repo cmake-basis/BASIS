@@ -10,36 +10,36 @@
 
 # ----------------------------------------------------------------------------
 # C++ utilities
-if (BUILD_CXX_UTILITIES)
+if (BUILD_UTILITIES_FOR_CXX)
   add_subdirectory (cxx)
 endif ()
 
 # ----------------------------------------------------------------------------
 # Java utilities
-if (BUILD_JAVA_UTILITIES)
+if (BUILD_UTILITIES_FOR_JAVA)
   add_subdirectory (java)
 endif ()
 
 # ----------------------------------------------------------------------------
 # Python utilities
-if (BUILD_PYTHON_UTILITIES)
+if (BUILD_UTILITIES_FOR_PYTHON)
   add_subdirectory (python)
 endif ()
 
 # ----------------------------------------------------------------------------
 # Perl utilities
-if (BUILD_PERL_UTILITIES)
+if (BUILD_UTILITIES_FOR_PERL)
   add_subdirectory (perl)
 endif ()
 
 # ----------------------------------------------------------------------------
 # BASH utilities
-if (BUILD_BASH_UTILITIES)
+if (BUILD_UTILITIES_FOR_BASH)
   add_subdirectory (bash)
 endif ()
 
 # ----------------------------------------------------------------------------
 # MATLAB utilities
-if (BUILD_MATLAB_UTILITIES)
+if (BUILD_UTILITIES_FOR_MATLAB)
   add_subdirectory (matlab)
 endif ()
