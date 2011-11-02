@@ -36,7 +36,7 @@ from sbia.basis.which import which, WhichError
 # ============================================================================
 
 _module_dir = os.path.realpath(os.path.dirname(__file__))
-_namespace  = '@PROJECT_NAME_LOWER@'
+_namespace  = '@BASIS_NAMESPACE@'
 _locations  = None
 
 # ============================================================================
