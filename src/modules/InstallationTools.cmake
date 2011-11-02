@@ -26,6 +26,7 @@
 # @returns Adds installation command for creating the symbolic link @p NEW.
 
 function (basis_install_link OLD NEW)
+  # Attention: CMAKE_INSTALL_PREFIX must be used instead of INSTALL_PREFIX.
   set (CMD_IN
     "
     set (OLD \"@OLD@\")
@@ -62,6 +63,8 @@ function (basis_install_link OLD NEW)
 
       if (NOT RETVAL EQUAL 0)
         message (ERROR \"Failed to create (symbolic) link \${NEW} -> \${OLD}\")
+      else ()
+        list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${NEW}\")
       endif ()
     endif ()
     "
@@ -149,38 +152,19 @@ endfunction ()
 ##############################################################################
 # @brief Add uninstall target.
 #
-# @author Pau Garcia i Quiles, modified by the SBIA Group
-# @sa     http://www.cmake.org/pipermail/cmake/2007-May/014221.html
-#
-# Unix version works with any SUS-compliant operating system, as it needs
-# only Bourne Shell features Win32 version works with any Windows which
-# supports extended cmd.exe syntax (Windows NT 4.0 and newer, maybe Windows
-# NT 3.x too).
-#
 # @returns Adds the custom target @c uninstall.
 
 function (basis_add_uninstall)
-  if (WIN32)
-    add_custom_target (
-      uninstall
-        "FOR /F \"tokens=1* delims= \" %%f IN \(${CMAKE_BINARY_DIR}/install_manifest.txt\) DO \(
-            IF EXIST %%f \(
-              del /q /f %%f
-            \) ELSE \(
-               echo Problem when removing %%f - Probable causes: File already removed or not enough permissions
-             \)
-         \)"
-      VERBATIM
-    )
-  else ()
-    # Unix
-    add_custom_target (
-      uninstall
-        cat "${CMAKE_BINARY_DIR}/install_manifest.txt"
-          | while read f \; do if [ -e \"\$\${f}\" ]; then rm \"\$\${f}\" \; else echo \"Problem when removing \"\$\${f}\" - Probable causes: File already removed or not enough permissions\" \; fi\; done
-      COMMENT Uninstalling...
-    )
-  endif ()
+  configure_file (
+    ${BASIS_MODULE_PATH}/cmake_uninstall.cmake.in
+    ${PROJECT_BINARY_DIR}/cmake_uninstall.cmake
+    @ONLY
+  )
+  add_custom_target (
+    uninstall
+    COMMAND ${CMAKE_COMMAND} -P "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake"
+    COMMENT "Uninstalling..."
+  )
 endfunction ()
 
 ## @}
