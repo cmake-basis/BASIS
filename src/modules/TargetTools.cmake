@@ -2029,7 +2029,7 @@ function (basis_export_targets)
     if (BASIS_USE_TARGET_UIDS)
       set (NAMESPACE_ARG)
     else ()
-      set (NAMESPACE_ARG "NAMESPACE" "${BASIS_NAMESPACE}")
+      set (NAMESPACE_ARG "NAMESPACE" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}")
     endif ()
     export (
       TARGETS   ${BASIS_EXPORT_TARGETS}
