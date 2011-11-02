@@ -58,7 +58,7 @@ Options:
   --dry               Dry run, i.e., do not actually invoke the test execution command.
   -v [ --verbose ]    Increases verbosity of output messages. Can be given multiple times.
   -h [ --help ]       Print help and exit.
-  -u [ --usage ]      Print usage information and exit.
+  -u [ --usage ]      Print short help and exit.
   -V [ --version ]    Print version information and exit.
 EOF-OPTIONS
 }
@@ -151,7 +151,7 @@ EOF-EXAMPLES
 ## @brief Print usage (i.e., only usage and options).
 #
 # @returns Nothing.
-function print_usage
+function print_helpshort
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
@@ -362,13 +362,13 @@ while [ $# -gt 0 ]; do
 
         # standard options
 		-h|--help)    print_help; exit 0; ;;
-		-u|--usage)   print_usage; exit 0; ;;
+		-u|--usage)   print_helpshort; exit 0; ;;
         -V|--version) print_version "@NAME@"; exit 0; ;;
         -v|--verbose) (( verbosity++ )); ;;
 
         # invalid option
         *)
-            print_usage
+            print_helpshort
             echo
             echo "Invalid option $1!" 1>&2
             ;;

@@ -19,5 +19,60 @@
 # @ingroup Tools
 ##############################################################################
 
+@BASIS_BASH_UTILITIES@
+
+args=()
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --help|-h)
+            get_executable_name exec_name
+            echo "@NAME@ (@PROJECT_NAME@)"
+            echo
+            echo "Usage:"
+            echo "  ${exec_name} [svn options/arguments]"
+            echo "  ${exec_name} [options]"
+            echo
+            echo "Description:"
+            echo "  This command is used as a wrapper for the svn command to enable"
+            echo "  automated software testing at SBIA where anonymous Subversion"
+            echo "  access is generally not permitted."
+            echo
+            echo "Options:"
+            echo "  --help, -h    Print help and exit."
+            echo "  --helpshort   Print short help and exit."
+            echo "  --version     Print version information and exit."
+            echo
+            print_contact
+            exit 0
+            ;;
+
+        --helpshort)
+            get_executable_name exec_name
+            echo "@NAME@ (@PROJECT_NAME@)"
+            echo
+            echo "Usage:"
+            echo "  ${exec_name} [svn options/arguments]"
+            echo "  ${exec_name} [options]"
+            echo
+            echo "Options:"
+            echo "  --help, -h    Print help and exit."
+            echo "  --helpshort   Print short help and exit."
+            echo "  --version     Print version information and exit."
+            echo
+            print_contact
+            exit 0
+            ;;
+
+        --version)
+            print_version '@NAME@'
+            exit 0
+            ;;
+        *)
+            args=($args $1)
+            ;;
+    esac
+    shift
+done
+
 # simply call the wrapper script with the password encoded as svnuser
-exec sudo -u svnuser /bin/sh /sbia/home/svn/bin/svnwrap "$@"
+exec sudo -u svnuser /bin/sh /sbia/home/svn/bin/svnwrap "${args[@]}"

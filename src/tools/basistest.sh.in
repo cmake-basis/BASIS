@@ -37,17 +37,21 @@ Description:
 EOF-DESCRIPTION
     echo
     print_options
+    echo
+    print_contact
 }
 
 # ----------------------------------------------------------------------------
 ## @brief Print usage information.
-function print_usage
+function print_helpshort
 {
     echo "${EXEC_NAME} (@PROJECT_NAME@)"
     echo
     print_synopsis
     echo
     print_options
+    echo
+    print_contact
 }
 
 # ----------------------------------------------------------------------------
@@ -70,7 +74,7 @@ function print_options
 Options:
   <cmd>         Recognized subcommands are cron, master, slave, and svn.
   --help, -h    Print help and exit
-  --helpshort   Print usage information and exit.
+  --helpshort   Print short help and exit.
 EOF-OPTIONS
 }
 
@@ -80,9 +84,6 @@ EOF-OPTIONS
 
 if [ $# -eq 0 ]; then
     print_help
-    echo
-    echo "Contact:"
-    echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
     exit 1
 fi
 
@@ -98,6 +99,7 @@ if [ -n "$1" ]; then
         if [ -n "$2" ]; then
             if match "$2" '^(cron|master|slave|svn)$'; then
                 cmd="$2"
+                shift
             else
                 echo "Unknown command: $2" 1>&2
                 exit 1
@@ -108,67 +110,21 @@ if [ -n "$1" ]; then
         fi
 
         exec "${EXEC_DIR}/basistest-${cmd}" '--help'
+    elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+        print_help
+        exit 0
+    elif [ "$1" == "--helpshort" ]; then
+        print_helpshort
+        exit 0
+    elif [ "$1" == "--version" ]; then
+        print_version '@NAME@'
+        exit 0
     fi
 fi
-
-while [ $# -gt 0 ]; do
-	case "$1" in
-        # standard options
-        -h|--help)
-            print_help
-            echo
-            if [ -n "${cmd}" ]; then
-                echo "Subcommand:"
-                echo -n "  "
-                exec "${EXEC_DIR}/basistest-${cmd}" '--help'
-            else
-                echo "Contact:"
-                echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
-                exit 0
-            fi
-            ;;
-        --helpshort)
-            print_usage
-            echo
-            if [ -n "${cmd}" ]; then
-                echo "Subcommand:"
-                echo -n "  "
-                exec "${EXEC_DIR}/basistest-${cmd}" '--helpshort'
-            else
-                echo "Contact:"
-                echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
-                exit 0
-            fi
-            ;;
-        --version)
-            print_version
-            exit 0
-            ;;
-        -v|--verbose)
-            (( verbosity ++ ))
-            args="${args} $1"
-            ;;
-        # otherwise, pass argument on to glistr-run
-        -*)
-            # option flag
-            args[${#args}]="$1"
-            shift
-            # option argument (if there is one; let subcommand check its arguments list)
-            if [ $# -gt 0 ]; then
-                args[${#args}]="$1"
-            fi
-            ;;
-        *)
-            args[${#args}]="$1"
-            ;;
-    esac
-    shift
-done
-
-[ -n "${cmd}" ] || { echo "Missing subcommand! See ${EXEC_NAME} --help."; exit 1; }
 
 # ============================================================================
 # main
 # ============================================================================
 
-exec "${EXEC_DIR}/basistest-${cmd}" "${args[@]}"
+[ -n "${cmd}" ] || { echo "Missing subcommand! See ${EXEC_NAME} --help."; exit 1; }
+exec "${EXEC_DIR}/basistest-${cmd}" "$@"

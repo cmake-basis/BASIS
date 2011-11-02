@@ -126,7 +126,7 @@ function print_options
 ## @brief Print usage information.
 #
 # @returns Nothing.
-function print_usage
+function print_helpshort
 {
     echo "@NAME@ (@PROJECT_NAME@)"
     echo
@@ -418,7 +418,7 @@ while [ $# -gt 0 ]
 do
 	case "$1" in
 		--helpshort)
-			print_usage
+			print_helpshort
 			exit 0
 			;;
 
