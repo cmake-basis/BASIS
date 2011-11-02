@@ -65,7 +65,11 @@ BUILDING THE SOFTWARE FROM SOURCES
   CMake Options
   -------------
 
-  (no additional CMake options considered by this package)
+  BUILD_UTILITIES_FOR_CXX      Whether to build/enable the C++ utilities.
+  BUILD_UTILITIES_FOR_PYTHON   Whether to build/enable the Python utilities.
+  BUILD_UTILITIES_FOR_PERL     Whether to build/enable the Perl utilities.
+  BUILD_UTILITIES_FOR_BASH     Whether to build/enable the BASH utilities.
+                               Only available on Unix-like systems.
 
 
   Advanced CMake Options
