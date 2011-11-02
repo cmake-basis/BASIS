@@ -130,7 +130,7 @@ function build
     [ -d "${binary_dir}" ] && run rm -rf "${binary_dir}"
     run mkdir -p "${binary_dir}"
     run cd "${binary_dir}"
-    run cmake "-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@" "-DBASIS_DIR=${basis_dir}" "${source_dir}"
+    run cmake "-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@" "-DBASIS_DIR=${basis_dir}" "-DBASIS_VERBOSE=ON" "${source_dir}"
     echo "Configuring test project... - done"
     echo "Building test project..."
     run make
