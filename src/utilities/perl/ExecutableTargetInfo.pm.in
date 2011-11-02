@@ -62,7 +62,7 @@ use SBIA::BASIS::File::Which;
 # ============================================================================
 
 ## @brief Default namespace used to make build target names fully-qualified.
-my $_namespace = '@PROJECT_NAME_LOWER@';
+my $_namespace = '@BASIS_NAMESPACE@';
 
 ## @brief Maps build target names to executable file paths relative to module.
 my $_location = undef;
