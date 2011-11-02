@@ -27,7 +27,7 @@ _SBIA_BASIS_EXECUTABLETARGETINFO_INCLUDED=1
 readonly _EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
 
 ## @brief Default namespace used to convert target name to target UID.
-readonly _EXECUTABLETARGETINFO_NAMESPACE='@PROJECT_NAME_LOWER@'
+readonly _EXECUTABLETARGETINFO_NAMESPACE='@BASIS_NAMESPACE@'
 
 # ============================================================================
 # modules
