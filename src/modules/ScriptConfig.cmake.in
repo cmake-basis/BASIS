@@ -236,6 +236,9 @@ set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
 # BASIS Utilities
 # ============================================================================
 
+## @brief Default namespace of build target UIDs as used by ExecutableTargetInfo.
+set (BASIS_NAMESPACE "@BASIS_NAMESPACE@")
+
 # ----------------------------------------------------------------------------
 # Python
 
