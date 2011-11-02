@@ -32,17 +32,18 @@ set (
 # auxiliary files
 set (
   CMAKE_MODULES_AUXILIARY_FILES
-    "ExecuteProcess.cmake"    # wraps CMake's execute_process() function
-    "ScriptConfig.cmake.in"   # default script configuration file
-    "Config.cmake.in"         # default <Pkg>Config.cmake template
-    "ConfigSettings.cmake"    # settings for default <Pkg>Config.cmake
-    "ConfigVersion.cmake.in"  # default <Pkg>ConfigVersion.cmake template
-    "ConfigUse.cmake.in"      # default <Pkg>Use.cmake template
-    "GenerateConfig.cmake"    # generation/configuration of <Pkg>Config.cmake et al.
-    "updatefile.py"           # helper used by BasisUpdate.cmake module
-    "runmcc.m"                # helper used by MatlabTools.cmake module
-    "Doxyfile.in"             # default Doxygen configuration template
-    "SubversionUsers.txt"     # maps SVN users at SBIA to their real names
+    "ExecuteProcess.cmake"     # wraps CMake's execute_process() function
+    "ScriptConfig.cmake.in"    # default script configuration file
+    "cmake_uninstall.cmake.in" # uninstall script
+    "Config.cmake.in"          # default <Pkg>Config.cmake template
+    "ConfigSettings.cmake"     # settings for default <Pkg>Config.cmake
+    "ConfigVersion.cmake.in"   # default <Pkg>ConfigVersion.cmake template
+    "ConfigUse.cmake.in"       # default <Pkg>Use.cmake template
+    "GenerateConfig.cmake"     # generation/configuration of <Pkg>Config.cmake et al.
+    "updatefile.py"            # helper used by BasisUpdate.cmake module
+    "runmcc.m"                 # helper used by MatlabTools.cmake module
+    "Doxyfile.in"              # default Doxygen configuration template
+    "SubversionUsers.txt"      # maps SVN users at SBIA to their real names
 )
 
 # ----------------------------------------------------------------------------
