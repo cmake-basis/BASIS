@@ -102,6 +102,9 @@ if [ -n "$1" ]; then
                 echo "Unknown command: $2" 1>&2
                 exit 1
             fi
+        else
+            echo "Missing subcommand! See ${EXEC_NAME} --help." 1>&2
+            exit 1
         fi
 
         exec "${EXEC_DIR}/basistest-${cmd}" '--help'
@@ -114,16 +117,32 @@ while [ $# -gt 0 ]; do
         -h|--help)
             print_help
             echo
-            echo "Subcommand:"
-            echo -n "  "
-            exec "${EXEC_DIR}/basistest-${cmd}" '--help'
+            if [ -n "${cmd}" ]; then
+                echo "Subcommand:"
+                echo -n "  "
+                exec "${EXEC_DIR}/basistest-${cmd}" '--help'
+            else
+                echo "Contact:"
+                echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
+                exit 0
+            fi
             ;;
         --helpshort)
             print_usage
             echo
-            echo "Subcommand:"
-            echo -n "  "
-            exec "${EXEC_DIR}/basistest-${cmd}" '--helpshort'
+            if [ -n "${cmd}" ]; then
+                echo "Subcommand:"
+                echo -n "  "
+                exec "${EXEC_DIR}/basistest-${cmd}" '--helpshort'
+            else
+                echo "Contact:"
+                echo "  SBIA Group <sbia-software at uphs.upenn.edu>"
+                exit 0
+            fi
+            ;;
+        --version)
+            print_version
+            exit 0
             ;;
         -v|--verbose)
             (( verbosity ++ ))
