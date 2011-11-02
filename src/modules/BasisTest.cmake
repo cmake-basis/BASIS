@@ -208,7 +208,9 @@ function (basis_add_test TEST_NAME)
 
   # --------------------------------------------------------------------------
   # add test
-  message (STATUS "Adding test ${TEST_UID}...")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding test ${TEST_UID}...")
+  endif ()
 
   set (OPTS)
   if (ARGN_WORKING_DIRECTORY)
@@ -223,7 +225,9 @@ function (basis_add_test TEST_NAME)
 
   add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
 
-  message (STATUS "Adding test ${TEST_UID}... - done")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding test ${TEST_UID}... - done")
+  endif ()
 endfunction ()
 
 #############################################################################

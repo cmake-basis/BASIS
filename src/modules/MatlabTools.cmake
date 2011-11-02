@@ -380,7 +380,9 @@ function (basis_add_mex_target TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
-  message (STATUS "Adding MEX-file ${TARGET_UID}...")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding MEX-file ${TARGET_UID}...")
+  endif ()
 
   # required commands available ?
   if (NOT MATLAB_MEX_EXECUTABLE)
@@ -427,7 +429,9 @@ function (basis_add_mex_target TARGET_NAME)
     CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
   )
 
-  message (STATUS "Adding MEX-file ${TARGET_UID}... - done")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding MEX-file ${TARGET_UID}... - done")
+  endif ()
 endfunction ()
 
 ##############################################################################
@@ -499,7 +503,9 @@ function (basis_add_mex_target_finalize TARGET_UID)
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
 
-  message (STATUS "Adding build command for MEX-file ${TARGET_UID}...")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding build command for MEX-file ${TARGET_UID}...")
+  endif ()
 
   # build directory
   list (GET SOURCES 0 BUILD_DIR)
@@ -725,7 +731,9 @@ function (basis_add_mex_target_finalize TARGET_UID)
     COMPONENT   "${LIBRARY_COMPONENT}"
   )
 
-  message (STATUS "Adding build command for MEX-file ${TARGET_UID}... - done")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding build command for MEX-file ${TARGET_UID}... - done")
+  endif ()
 endfunction ()
 
 # ============================================================================
@@ -873,12 +881,14 @@ function (basis_add_mcc_target TARGET_NAME)
   basis_check_target_name ("${TARGET_NAME}")
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
 
-  if (ARGN_TYPE STREQUAL "LIBRARY")
-    message (STATUS "Adding MATLAB library ${TARGET_UID}...")
-    message (FATAL_ERROR "Build of MATLAB library from M-files not yet supported.")
-    message (STATUS "Adding MATLAB library ${TARGET_UID}... - failed")
-  else ()
-    message (STATUS "Adding MATLAB executable ${TARGET_UID}...")
+  if (BASIS_VERBOSE)
+    if (ARGN_TYPE STREQUAL "LIBRARY")
+      message (STATUS "Adding MATLAB library ${TARGET_UID}...")
+      message (FATAL_ERROR "Build of MATLAB library from M-files not yet supported.")
+      message (STATUS "Adding MATLAB library ${TARGET_UID}... - failed")
+    else ()
+      message (STATUS "Adding MATLAB executable ${TARGET_UID}...")
+    endif ()
   endif ()
 
   # required commands available ?
@@ -956,10 +966,12 @@ function (basis_add_mcc_target TARGET_NAME)
     CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
   )
 
-  if (ARGN_TYPE STREQUAL "LIBRARY")
-    message (STATUS "Adding MATLAB library ${TARGET_UID}... - done")
-  else ()
-    message (STATUS "Adding MATLAB executable ${TARGET_UID}... - done")
+  if (BASIS_VERBOSE)
+    if (ARGN_TYPE STREQUAL "LIBRARY")
+      message (STATUS "Adding MATLAB library ${TARGET_UID}... - done")
+    else ()
+      message (STATUS "Adding MATLAB executable ${TARGET_UID}... - done")
+    endif ()
   endif ()
 endfunction ()
 
@@ -1038,12 +1050,14 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     set (TYPE "EXECUTABLE")
   endif ()
 
-  if ("${TYPE}" STREQUAL "LIBRARY")
-    message (STATUS "Adding build command for MATLAB library ${TARGET_UID}...")
-  elseif ("${TYPE}" STREQUAL "EXECUTABLE")
-    message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}...")
-  else ()
-    message (FATAL_ERROR "Target ${TARGET_UID} has invalid TYPE: ${TYPE}")
+  if (BASIS_VERBOSE)
+    if ("${TYPE}" STREQUAL "LIBRARY")
+      message (STATUS "Adding build command for MATLAB library ${TARGET_UID}...")
+    elseif ("${TYPE}" STREQUAL "EXECUTABLE")
+      message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}...")
+    else ()
+      message (FATAL_ERROR "Target ${TARGET_UID} has invalid TYPE: ${TYPE}")
+    endif ()
   endif ()
 
   # build directory
@@ -1252,10 +1266,12 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     endif ()
   endif ()
 
-  if (TYPE STREQUAL "LIBRARY")
-    message (STATUS "Adding build command for MATLAB library ${TARGET_UID}... - done")
-  else ()
-    message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}... - done")
+  if (BASIS_VERBOSE)
+    if (TYPE STREQUAL "LIBRARY")
+      message (STATUS "Adding build command for MATLAB library ${TARGET_UID}... - done")
+    else ()
+      message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}... - done")
+    endif ()
   endif ()
 endfunction ()
 

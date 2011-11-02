@@ -359,7 +359,9 @@ function (basis_add_doc TARGET_NAME)
 
   if ("${ARGN_GENERATOR}" STREQUAL "NONE")
 
-    message (STATUS "Adding documentation ${TARGET_UID}...")
+    if (BASIS_VERBOSE)
+      message (STATUS "Adding documentation ${TARGET_UID}...")
+    endif ()
 
     # install documentation directory
     if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
@@ -380,7 +382,9 @@ function (basis_add_doc TARGET_NAME)
       )
     endif ()
 
-    message (STATUS "Adding documentation ${TARGET_UID}... - done")
+    if (BASIS_VERBOSE)
+      message (STATUS "Adding documentation ${TARGET_UID}... - done")
+    endif ()
 
   # --------------------------------------------------------------------------
   # generator: DOXYGEN
@@ -388,7 +392,9 @@ function (basis_add_doc TARGET_NAME)
 
   elseif ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
 
-    message (STATUS "Adding documentation ${TARGET_UID}...")
+    if (BASIS_VERBOSE)
+      message (STATUS "Adding documentation ${TARGET_UID}...")
+    endif ()
 
     # Doxygen found ?
     if (BUILD_DOCUMENTATION)
@@ -401,7 +407,9 @@ function (basis_add_doc TARGET_NAME)
 
     if (NOT DOXYGEN_EXECUTABLE)
       message (${ERRMSGTYP} "Doxygen not found. Skipping build of ${TARGET_UID}.")
-      message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
+      if (BASIS_VERBOSE)
+        message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
+      endif ()
       return ()
     endif ()
 
@@ -543,7 +551,9 @@ function (basis_add_doc TARGET_NAME)
         "
     )
 
-    message (STATUS "Adding documentation ${TARGET_UID}... - done")
+    if (BASIS_VERBOSE)
+      message (STATUS "Adding documentation ${TARGET_UID}... - done")
+    endif ()
 
   # --------------------------------------------------------------------------
   # generator: svn2cl
@@ -551,12 +561,16 @@ function (basis_add_doc TARGET_NAME)
 
   elseif ("${ARGN_GENERATOR}" STREQUAL "SVN2CL")
 
-    message (STATUS "Adding documentation ${TARGET_UID}...")
+    if (BASIS_VERBOSE)
+      message (STATUS "Adding documentation ${TARGET_UID}...")
+    endif ()
 
     # svn2cl found?
     if (NOT BASIS_CMD_SVN2CL)
       message (STATUS "svn2cl not found. Skipping build of ${TARGET_UID}.")
-      message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
+      if (BASIS_VERBOSE)
+        message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
+      endif ()
       return ()
     endif ()
 
@@ -565,7 +579,9 @@ function (basis_add_doc TARGET_NAME)
 
     if (NOT REV)
       message (STATUS "Project is not under SVN control. Skipping build of ${TARGET_UID}.")
-      message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
+      if (BASIS_VERBOSE)
+        message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
+      endif ()
       return ()
     endif ()
 
@@ -644,7 +660,9 @@ function (basis_add_doc TARGET_NAME)
       OPTIONAL
     )
 
-    message (STATUS "Adding documentation ${TARGET_UID}... - done")
+    if (BASIS_VERBOSE)
+      message (STATUS "Adding documentation ${TARGET_UID}... - done")
+    endif ()
 
   # --------------------------------------------------------------------------
   # generator: unknown
