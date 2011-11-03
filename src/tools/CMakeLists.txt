@@ -46,3 +46,8 @@ if (UNIX)
     basis_set_target_properties (basistest-${C} PROPERTIES SYMLINK_NAME "NONE")
   endforeach ()
 endif ()
+
+# ----------------------------------------------------------------------------
+# other tools
+basis_add_executable (make_html_verbatim.sh)
+basis_set_target_properties (make_html_verbatim PROPERTIES SYMLINK_NAME "NONE")
