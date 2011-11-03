@@ -528,18 +528,23 @@ function (basis_add_doc TARGET_NAME)
     install (
       CODE
         "
+        set (INSTALL_PREFIX \"${ARGN_DESTINATION}\")
+        if (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
+          set (INSTALL_PREFIX \"${INSTALL_PREFIX}/\${INSTALL_PREFIX}\")
+        endif ()
+
         macro (install_doxydoc DIR)
           if (IS_DIRECTORY \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}\")
             execute_process (
               COMMAND \"${CMAKE_COMMAND}\" -E copy_directory
                   \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}\"
-                  \"${INSTALL_PREFIX}/${ARGN_DESTINATION}/\${DIR}\"
+                  \"\${INSTALL_PREFIX}/\${DIR}\"
               RESULT_VARIABLE RC
             )
             if (RC EQUAL 0)
-              message (STATUS \"Installing: ${INSTALL_PREFIX}/${ARGN_DESTINATION}/\${DIR}\")
+              message (STATUS \"Installing: \${INSTALL_PREFIX}/\${DIR}\")
             else ()
-              message (STATUS \"Skipped: ${INSTALL_PREFIX}/${ARGN_DESTINATION}/\${DIR}\")
+              message (STATUS \"Skipped: \${INSTALL_PREFIX}/\${DIR}\")
             endif ()
           endif ()
         endmacro ()
