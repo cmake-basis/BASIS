@@ -236,21 +236,21 @@ endfunction ()
 # @par Default options:
 # <table border="0">
 #   <tr>
-#     @tp <b>-u [ --usage ]</b> @endtp
-#     <td>Usage information. The output has to match the regular expression
+#     @tp <b>--helpshort</b> @endtp
+#     <td>Short help. The output has to match the regular expression
 #         "[Uu]sage:\n\s*\<executable name\>", where \<executable name\>
 #         is the name of the tested executable.</td>
 #   </tr>
 #   <tr>
-#     @tp <b>-h [ --help ]</b> @endtp
+#     @tp <b>--help, -h</b> @endtp
 #     <td>Help screen. Simply tests if the option is accepted.</td>
 #   </tr>
 #   <tr>
-#     @tp <b>-V [ --version ]</b> @endtp
+#     @tp <b>--version</b> @endtp
 #     <td>Version information. Output has to include the project version string.</td>
 #   </tr>
 #   <tr>
-#     @tp <b>-v [ --verbose ]</b> @endtp
+#     @tp <b>--verbose, -v</b> @endtp
 #     <td>Increase verbosity of output messages. Simply tests if the option is accepted.</td>
 #   </tr>
 # </table>
@@ -315,17 +315,8 @@ function (basis_add_tests_of_default_options TARGET_NAME)
   # test option: --help
   basis_add_test (${EXEC}HelpL "${EXEC_CMD}" "--help")
 
-  # test option: -u
-  basis_add_test (${EXEC}UsageS "${EXEC_CMD}" "-u")
-
-  set_tests_properties (
-    ${EXEC}UsageS
-    PROPERTIES
-      PASS_REGULAR_EXPRESSION "[Uu]sage:(\n)( )*${EXEC_NAME}"
-  )
-
-  # test option: --usage
-  basis_add_test (${EXEC}UsageL "${EXEC_CMD}" "--usage")
+  # test option: --helpshort
+  basis_add_test (${EXEC}UsageL "${EXEC_CMD}" "--helpshort")
 
   set_tests_properties (
     ${EXEC}UsageL
