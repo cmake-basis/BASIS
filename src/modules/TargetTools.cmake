@@ -2062,6 +2062,7 @@ function (basis_export_targets)
         DESTINATION "${INSTALL_CONFIG_DIR}"
         FILE        "${ARGN_FILE}"
         COMPONENT   "${COMPONENT}"
+        ${NAMESPACE_ARG}
       )
     endforeach ()
   endif ()
