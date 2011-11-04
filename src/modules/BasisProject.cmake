@@ -282,8 +282,14 @@ macro (basis_project_initialize)
     file (GLOB PROJECT_REDIST_LICENSE_FILES "${PROJECT_SOURCE_DIR}/COPYING-*")
   endif ()
 
-  # start CMake project
-  project ("${PROJECT_NAME}")
+  # resolve dependencies BEFORE project() command as, for example,
+  # Slicer4 will invoke a project() command in the SlicerConfig.cmake file.
+  include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
+
+  # start CMake project if not done yet
+  if (NOT ${PROJECT_NAME}_SOURCE_DIR)
+    project ("${PROJECT_NAME}")
+  endif ()
 
   set (CMAKE_PROJECT_NAME "${PROJECT_NAME}") # variable used by CPack
 
@@ -363,8 +369,7 @@ macro (basis_project_initialize)
   # enable testing
   include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
 
-  # resolve dependencies
-  include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
+  
 
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
   basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
