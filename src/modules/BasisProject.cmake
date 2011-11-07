@@ -282,11 +282,8 @@ macro (basis_project_initialize)
     file (GLOB PROJECT_REDIST_LICENSE_FILES "${PROJECT_SOURCE_DIR}/COPYING-*")
   endif ()
 
-  # resolve dependencies BEFORE project() command as, for example,
-  # Slicer4 will invoke a project() command in the SlicerConfig.cmake file.
-  include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
-
   # start CMake project if not done yet
+  # note that in particular SlicerConfig.cmake will invoke project() by itself
   if (NOT ${PROJECT_NAME}_SOURCE_DIR)
     project ("${PROJECT_NAME}")
   endif ()
@@ -366,10 +363,11 @@ macro (basis_project_initialize)
   # include project specific settings
   include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
 
+  # resolve dependencies
+  include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
+
   # enable testing
   include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
-
-  
 
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
   basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
