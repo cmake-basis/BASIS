@@ -469,7 +469,7 @@ function (basis_add_doc TARGET_NAME)
     if (DOXYGEN_TAGFILE MATCHES "^(None|NONE|none)$")
       set (DOXYGEN_TAGFILE)
     else ()
-      set (DOXYGEN_TAGFILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}.tags"
+      set (DOXYGEN_TAGFILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}.tags")
     endif ()
 
     set (NUMBER_OF_OUTPUTS 0)
