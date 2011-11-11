@@ -21,5 +21,5 @@ basis_install (
 
 # ----------------------------------------------------------------------------
 # Python modules
-basis_add_library (__init__.py MODULE) # package initialization
+basis_add_library (pyutils-__init__.py __init__.py MODULE) # package initialization
 basis_add_library (${PROJECT_CODE_DIR}/tools/which.py MODULE)
