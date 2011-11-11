@@ -712,6 +712,11 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
+#     @tp @b BINARY_DIRECTORY @endtp
+#     <td>Explicitly specify directory in build tree where configured
+#         source files should be written to.</td>
+#   </tr>
+#   <tr>
 #     @tp @b KEEP_DOT_IN_SUFFIX @endtp
 #     <td>By default, after a source file with the .in extension has been
 #         configured, the .in suffix is removed from the file name.
@@ -722,18 +727,30 @@ endfunction ()
 # @returns Nothing.
 function (basis_configure_sources LIST_NAME)
   # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "KEEP_DOT_IN_SUFFIX" "" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (ARGN "KEEP_DOT_IN_SUFFIX" "BINARY_DIRECTORY" "" ${ARGN})
+
+  if (ARGN_BINARY_DIRECTORY AND NOT ARGN_BINARY_DIRECTORY MATCHES "^${PROJECT_BINARY_DIR}")
+    message (FATAL_ERROR "Specified BINARY_DIRECTORY must be inside the build tree!")
+  endif ()
 
   # configure source files
   set (CONFIGURED_SOURCES)
   foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
     if (SOURCE MATCHES "\\.in$")
-      basis_get_relative_path (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}" "${SOURCE}")
-      get_filename_component (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}" ABSOLUTE)
+      if (ARGN_BINARY_DIRECTORY)
+        get_filename_component (SOURCE_NAME "${SOURCE}" NAME)
+        set (CONFIGURED_SOURCE "${ARGN_BINARY_DIRECTORY}/${SOURCE_NAME}")
+      elseif (NOT SOURCE MATCHES "^${PROJECT_SOURCE_DIR}")
+        get_filename_component (SOURCE_NAME "${SOURCE}" NAME)
+        set (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE_NAME}")
+      else ()
+        basis_get_relative_path (CONFIGURED_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}" "${SOURCE}")
+        get_filename_component (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURED_SOURCE}" ABSOLUTE)
+      endif ()
       if (NOT ARGN_KEEP_DOT_IN_SUFFIX)
         string (REGEX REPLACE "\\.in$" "" CONFIGURED_SOURCE "${CONFIGURED_SOURCE}")
       endif ()
-      configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}" "${CONFIGURED_SOURCE}" @ONLY)
+      configure_file ("${SOURCE}" "${CONFIGURED_SOURCE}" @ONLY)
     else ()
       # if the source file path is relative, prefer possibly already
       # configured sources in build tree such as the test driver source file

@@ -1413,11 +1413,6 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
 
-  # binary directory
-  if (NOT ARGN_BINARY_DIRECTORY)
-    set (ARGN_BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-  endif ()
-
   # determine path part which is optionally prepended to the binary directory
   if (ARGN_WITH_PATH)
     get_filename_component (SCRIPT_PATH "${ARGN_SCRIPT}" PATH)
@@ -1486,7 +1481,16 @@ function (basis_add_script TARGET_NAME)
   #       The second pass is done during the build step, where
   #       %NAME% patterns are replaced using the variables set in the
   #       script configuration.
-  basis_configure_sources (ARGN_SCRIPT "${ARGN_SCRIPT}" KEEP_DOT_IN_SUFFIX)
+  if (ARGN_BINARY_DIRECTORY)
+    basis_configure_sources (
+      ARGN_SCRIPT
+        "${ARGN_SCRIPT}"
+      BINARY_DIRECTORY "${ARGN_BINARY_DIRECTORY}"
+      KEEP_DOT_IN_SUFFIX
+    )
+  else ()
+    basis_configure_sources (ARGN_SCRIPT "${ARGN_SCRIPT}" KEEP_DOT_IN_SUFFIX)
+  endif ()
 
   # remove extension on Unix if sha-bang directive is present
   set (OUTPUT_NAME "${SCRIPT_NAME}")
@@ -1499,6 +1503,13 @@ function (basis_add_script TARGET_NAME)
 
   # directory for build system files
   set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
+
+  # binary directory
+  if (ARGN_BINARY_DIRECTORY)
+    set (BINARY_DIRECTORY "${ARGN_BINARY_DIRECTORY}")
+  else ()
+    set (BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIRECTORY}")
+  endif ()
 
   # output directory
   if (ARGN_TEST)
@@ -1603,7 +1614,7 @@ function (basis_add_script TARGET_NAME)
       BASIS_TYPE                "${TYPE}"
       BASIS_LANGUAGE            "${SCRIPT_LANGUAGE}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
-      BINARY_DIRECTORY          "${ARGN_BINARY_DIRECTORY}"
+      BINARY_DIRECTORY          "${BINARY_DIRECTORY}"
       RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
       LIBRARY_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
       RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
