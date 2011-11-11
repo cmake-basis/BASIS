@@ -417,7 +417,7 @@ function (basis_add_doc TARGET_NAME)
     CMAKE_PARSE_ARGUMENTS (
       DOXYGEN
         "GENERATE_HTML;GENERATE_LATEX;GENERATE_RTF;GENERATE_MAN"
-        "DOXYFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY"
+        "DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY"
         "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS"
         ${ARGN_UNPARSED_ARGUMENTS}
     )
@@ -466,6 +466,11 @@ function (basis_add_doc TARGET_NAME)
     if (NOT DOXYGEN_OUTPUT_DIRECTORY)
       set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}")
     endif ()
+    if (DOXYGEN_TAGFILE MATCHES "^(None|NONE|none)$")
+      set (DOXYGEN_TAGFILE)
+    else ()
+      set (DOXYGEN_TAGFILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}.tags"
+    endif ()
 
     set (NUMBER_OF_OUTPUTS 0)
     foreach (FMT HTML LATEX RTF MAN)
@@ -496,7 +501,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
     # configure Doxyfile
-    set (DOXYFILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.doxy")
+    set (DOXYFILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}.doxy")
     configure_file ("${DOXYGEN_DOXYFILE}" "${DOXYFILE}" @ONLY)
 
     # add target
@@ -516,6 +521,18 @@ function (basis_add_doc TARGET_NAME)
           "${DOXYGEN_OUTPUT_DIRECTORY}/rtf"
           "${DOXYGEN_OUTPUT_DIRECTORY}/man"
     )
+
+    # clean up / install tags file
+    if (DOXYGEN_TAGFILE)
+      set_property (
+        DIRECTORY
+        APPEND PROPERTY
+          ADDITIONAL_MAKE_CLEAN_FILES
+            "${DOXYGEN_TAGFILE}"
+      )
+
+      install (FILES "${DOXYGEN_TAGFILE}" DESTINATION "${ARGN_DESTINATION}" OPTIONAL)
+    endif ()
 
     # add target as dependency to doc target
     if (NOT TARGET doc)
