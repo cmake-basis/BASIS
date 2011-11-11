@@ -527,7 +527,7 @@ function (basis_add_executable TARGET_NAME)
     CMAKE_PARSE_ARGUMENTS (
       TMP
       "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_BASIS_UTILITIES;NO_EXPORT"
-      "DESTINATION;COMPONENT;CONFIG;CONFIG_FILE"
+      "BINARY_DIRECTORY;DESTINATION;COMPONENT;CONFIG;CONFIG_FILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
@@ -681,7 +681,7 @@ function (basis_add_library TARGET_NAME)
     CMAKE_PARSE_ARGUMENTS (
       TMP
       "STATIC;SHARED;MODULE;MEX;TEST;WITH_PATH;NO_EXPORT"
-      "DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;CONFIG;CONFIG_SCRIPT;MFILE"
+      "BINARY_DIRECTORY;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;CONFIG;CONFIG_SCRIPT;MFILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
@@ -1421,7 +1421,7 @@ function (basis_add_script TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
       "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_EXPORT"
-      "CONFIG;CONFIG_FILE;COMPONENT;DESTINATION"
+      "BINARY_DIRECTORY;CONFIG;CONFIG_FILE;COMPONENT;DESTINATION"
       ""
     ${ARGN}
   )
@@ -1444,10 +1444,20 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
 
+  # binary directory
+  if (NOT ARGN_BINARY_DIRECTORY)
+    set (ARGN_BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIRECTORY}")
+  endif ()
+
+  # determine path part which is optionally prepended to the binary directory
   if (ARGN_WITH_PATH)
     get_filename_component (SCRIPT_PATH "${ARGN_SCRIPT}" PATH)
     if (IS_ABSOLUTE "${SCRIPT_PATH}")
-      file (RELATIVE_PATH SCRIPT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${SCRIPT_PATH}")
+      if (SCRIPT_PATH MATCHES "^${PROJECT_SOURCE_DIR}")
+        basis_get_relative_path (SCRIPT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${SCRIPT_PATH}")
+      else ()
+        set (SCRIPT_PATH)
+      endif ()
     endif ()
   endif ()
 
@@ -1510,8 +1520,7 @@ function (basis_add_script TARGET_NAME)
 
   # configure scripts ending in ".in"
   if ("${ARGN_SCRIPT}" MATCHES "\\.in$")
-    basis_get_relative_path (F "${CMAKE_CURRENT_SOURCE_DIR}" "${ARGN_SCRIPT}")
-    set (F "${CMAKE_CURRENT_BINARY_DIR}/${F}")
+    set (F "${ARGN_BINARY_DIRECTORY}/${SCRIPT_NAME}.in")
     # configure script
     #
     # Note: Always configure script twice because the BASIS_*_UTILITIES
@@ -1522,18 +1531,20 @@ function (basis_add_script TARGET_NAME)
     # read in script
     file (READ "${F}" SCRIPT)
     # convert %NAME% variables to @NAME@
-    string (REGEX MATCHALL "%[A-Z_][A-Z_]*%" VARS "${SCRIPT}")
+    string (REGEX MATCHALL "%[A-Z_][A-Z_]+%" VARS "${SCRIPT}")
     list (REMOVE_DUPLICATES VARS)
     set (CONFIGURED_SCRIPT "${SCRIPT}")
     foreach (VAR ${VARS})
-      string (REGEX REPLACE "%([A-Z_][A-Z_]*)%" "@\\1@" CONFIGURED_SCRIPT "${SCRIPT}")
+      string (REGEX REPLACE "%([A-Z_][A-Z_]+)%" "@\\1@" CONFIGURED_SCRIPT "${SCRIPT}")
     endforeach ()
     if (NOT "${CONFIGURED_SCRIPT}" STREQUAL "${SCRIPT}")
       file (WRITE "${F}" "${CONFIGURED_SCRIPT}")
     endif ()
+    # free space
+    set (SCRIPT)
+    set (CONFIGURED_SCRIPT)
     # use configured script in the remainder
     set (ARGN_SCRIPT "${F}")
-    set (SCRIPT)
   endif ()
 
   # remove extension on Unix if sha-bang directive is present
@@ -1644,7 +1655,7 @@ function (basis_add_script TARGET_NAME)
       BASIS_TYPE                "${TYPE}"
       BASIS_LANGUAGE            "${SCRIPT_LANGUAGE}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
-      BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
+      BINARY_DIRECTORY          "${ARGN_BINARY_DIRECTORY}"
       RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
       LIBRARY_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
       RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"

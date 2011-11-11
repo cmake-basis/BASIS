@@ -127,10 +127,8 @@ set (BASIS_BASH_FUNCTION_realpath "
 # ----------------------------------------------------------------------------
 ## @brief Get real path of given file or directory.
 #
-# @note This function was substituted by BASIS for the string
+# @note This function was substituted by BASIS either for the string
 #       \\\@BASIS_BASH_UTILITIES\\\@ or \\\@BASIS_BASH_realpath\\\@.
-#       Its implementation can be found in the default script configuration
-#       file provided by BASIS.
 #
 # Example:
 # @code
