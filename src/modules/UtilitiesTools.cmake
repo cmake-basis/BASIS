@@ -48,7 +48,7 @@ def _basis_init_sys_path():
         sys.path.append(sitelib_dir)
 
 _basis_init_sys_path()
-from sbia.\@PROJECT_NAME_LOWER\@ import basis
+from sbia.%PROJECT_NAME_LOWER% import basis
 "
 )
 
@@ -75,7 +75,7 @@ use lib dirname (__FILE__) . '/%PERL_LIBRARY_DIR%';
 use lib dirname (__FILE__);
 
 package Basis;
-use SBIA::\@PROJECT_NAME\@::Basis qw(:everything);
+use SBIA::%PROJECT_NAME%::Basis qw(:everything);
 package main;
 "
 )
@@ -178,9 +178,9 @@ function realpath
 # @ingroup BashUtilities
 set (BASIS_BASH_UTILITIES "
 # constants used by the shflags.sh module
-HELP_COMMAND='%NAME% (\@PROJECT_NAME\@)'
+HELP_COMMAND='%NAME% (%PROJECT_NAME%)'
 HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
-HELP_VERSION='\@PROJECT_VERSION_AND_REVISION\@'
+HELP_VERSION='%PROJECT_VERSION_AND_REVISION%'
 HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 
@@ -581,7 +581,6 @@ function (basis_configure_ExecutableTargetInfo)
 
   if (PYTHON)
     # script configuration
-    set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
     set (CONFIG "${CONFIG}if (BUILD_INSTALL_SCRIPT)\n")
     set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${PY_I}\")\n")
     set (CONFIG "${CONFIG}else ()\n")
@@ -605,7 +604,6 @@ function (basis_configure_ExecutableTargetInfo)
 
   if (PERL)
     # script configuration
-    set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
     set (CONFIG "${CONFIG}if (BUILD_INSTALL_SCRIPT)\n")
     set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${PL_I}\")\n")
     set (CONFIG "${CONFIG}else ()\n")
@@ -629,7 +627,6 @@ function (basis_configure_ExecutableTargetInfo)
 
   if (BASH)
     # script configuration
-    set (CONFIG "@BASIS_SCRIPT_CONFIG@\n\n")
     set (CONFIG "${CONFIG}if (BUILD_INSTALL_SCRIPT)\n")
     set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${SH_I}\")\n")
     set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${SH_A}\n\n# define short aliases for this project's targets\n${SH_S}\")\n")

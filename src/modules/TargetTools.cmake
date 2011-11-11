@@ -1271,10 +1271,6 @@ endfunction ()
 ##############################################################################
 # @brief Add script target.
 #
-# This function adds a script target to the project, where during the build
-# step the script is configured via configure_file() and copied to the binary
-# output directory. During installation, the script built for the install
-# tree is copied to the specified @p DESTINATION.
 #
 # If the script name ends in ".in", the ".in" suffix is removed from the
 # output name. Further, the extension of the script such as .sh or .py is
@@ -1291,38 +1287,14 @@ endfunction ()
 # @endcode
 #
 # Certain CMake variables within the script are replaced during the configure step.
-# These variables and their values are given by a so-called script config(uration)
-# file. The specified script configuration file is loaded during the build of
-# the script prior to the configure_file() command. As paths may be different
-# for scripts that are used directly from the build tree and scripts that are
-# copied into the install tree, the variable @c BUILD_INSTALL_SCRIPT is 1 when the
-# script is build for the install tree and 0 otherwise. This variable can be
-# used within the script configuration file to set the value of the CMake
-# variables used within the script differently for either case.
+# See @ref ScriptTargets for details.
 #
-# Example:
-# @code
-# basis_add_script (Script1.sh CONFIG Script1Config.cmake)
-# @endcode
-#
-# Script1Config.cmake
-# @code
-# basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
-# @endcode
-#
-# See documentation of basis_set_script_path_definition() and ScriptConfig.cmake
-# file in @c BASIS_MODULE_PATH for details.
-#
-# Note that this function only adds a custom target and stores all information
-# required to setup the actual custom build command as properties of this target.
-# The custom build command itself is added by basis_add_script_finalize(), which
-# is supposed to be called once at the end of the root CMakeLists.txt file of the
-# sub-/superproject. This way properties such as the @c OUTPUT_NAME can still be modified
-# after adding the script target.
-#
-# If a custom script configuration file is used, the variable
-# \@BASIS_SCRIPT_CONFIG\@ can be used within this custom script configuration file
-# to include the default configuration of the @c BASIS_SCRIPT_CONFIG_FILE.
+# Note that this function only configures the script file if it ends in the ".in"
+# suffix and adds a custom target which stores all information required to setup
+# the actual custom build command as properties. The custom build command itself
+# is added by basis_add_script_finalize(), which is supposed to be called once at
+# the end of the root CMakeLists.txt file. This way properties such as the
+# @c OUTPUT_NAME can still be modified after adding the script target.
 #
 # @note This function should not be used directly. Instead, the functions
 #       basis_add_executable() and basis_add_library() should be used which in
@@ -1349,19 +1321,16 @@ endfunction ()
 #   </tr>
 #   <tr>
 #      @tp @b CONFIG config @endtp
-#      <td>Script configuration given directly as string argument. This
-#          string is appended to the content of the script configuration file
-#          as specified by @p CONFIG_FILE if this option is given. The string
-#          "@BASIS_SCRIPT_CONFIG@" in the script configuration is replaced by
-#          the content of the default script configuration file.
-#          Default: "@BASIS_SCRIPT_CONFIG@"</td>
+#      <td>Additional script configuration given directly as string argument.
+#          This string is included in the CMake build script before configuring
+#          the script file after the script configuration files have been included.</td>
 #   </tr>
 #   <tr>
 #      @tp @b CONFIG_FILE file @endtp
-#      <td>Script configuration file. If "NONE", "None", or "none" is given,
-#          the script is copied only. Defaults to the file
-#          PROJECT_CONFIG_DIR/ScriptConfig.cmake.in if it exists. Otherwise,
-#          @p CONFIG is used only.</td>
+#      <td>Additional script configuration file. This file is included after
+#          the default script configuration file of BASIS and after the default
+#          script configuration file which is located in @c PROJECT_BINARY_DIR,
+#          but before the script configuration code given by @p CONFIG.</td>
 #   </tr>
 #   <tr>
 #      @tp @b DESTINATION dir @endtp
@@ -1446,7 +1415,7 @@ function (basis_add_script TARGET_NAME)
 
   # binary directory
   if (NOT ARGN_BINARY_DIRECTORY)
-    set (ARGN_BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIRECTORY}")
+    set (ARGN_BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
   endif ()
 
   # determine path part which is optionally prepended to the binary directory
@@ -1481,14 +1450,6 @@ function (basis_add_script TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
-  if (NOT ARGN_CONFIG AND NOT ARGN_CONFIG_FILE)
-    if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
-      set (ARGN_CONFIG_FILE "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
-    else ()
-      set (ARGN_CONFIG "\@BASIS_SCRIPT_CONFIG\@")
-    endif ()
-  endif ()
-
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -1518,34 +1479,14 @@ function (basis_add_script TARGET_NAME)
   get_filename_component (SCRIPT_NAME "${ARGN_SCRIPT}" NAME)
   string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME}")
 
-  # configure scripts ending in ".in"
-  if ("${ARGN_SCRIPT}" MATCHES "\\.in$")
-    set (F "${ARGN_BINARY_DIRECTORY}/${SCRIPT_NAME}.in")
-    # configure script
-    #
-    # Note: Always configure script twice because the BASIS_*_UTILITIES
-    #       variables get replaced by code which again contains variables
-    #       that must be replaced.
-    configure_file ("${ARGN_SCRIPT}" "${F}" @ONLY)
-    configure_file ("${F}" "${F}" @ONLY)
-    # read in script
-    file (READ "${F}" SCRIPT)
-    # convert %NAME% variables to @NAME@
-    string (REGEX MATCHALL "%[A-Z_][A-Z_]+%" VARS "${SCRIPT}")
-    list (REMOVE_DUPLICATES VARS)
-    set (CONFIGURED_SCRIPT "${SCRIPT}")
-    foreach (VAR ${VARS})
-      string (REGEX REPLACE "%([A-Z_][A-Z_]+)%" "@\\1@" CONFIGURED_SCRIPT "${SCRIPT}")
-    endforeach ()
-    if (NOT "${CONFIGURED_SCRIPT}" STREQUAL "${SCRIPT}")
-      file (WRITE "${F}" "${CONFIGURED_SCRIPT}")
-    endif ()
-    # free space
-    set (SCRIPT)
-    set (CONFIGURED_SCRIPT)
-    # use configured script in the remainder
-    set (ARGN_SCRIPT "${F}")
-  endif ()
+  # configure script file
+  #
+  # Note: This is the first pass, which replaces @NAME@ patterns as
+  #       also done for other source files if the file name ends in ".in".
+  #       The second pass is done during the build step, where
+  #       %NAME% patterns are replaced using the variables set in the
+  #       script configuration.
+  basis_configure_sources (ARGN_SCRIPT "${ARGN_SCRIPT}" KEEP_DOT_IN_SUFFIX)
 
   # remove extension on Unix if sha-bang directive is present
   set (OUTPUT_NAME "${SCRIPT_NAME}")
@@ -1555,6 +1496,9 @@ function (basis_add_script TARGET_NAME)
       get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
     endif ()
   endif ()
+
+  # directory for build system files
+  set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
 
   # output directory
   if (ARGN_TEST)
@@ -1614,29 +1558,33 @@ function (basis_add_script TARGET_NAME)
 
   # script configuration (only if script file name ends in ".in")
   set (INSTALL_DIR "${ARGN_DESTINATION}")
-  set (SCRIPT_CONFIG)
 
   if (ARGN_SCRIPT MATCHES "\\.in$")
+    # Configure script configuration files using configure_file()
+    # to have CMake create build rules to update the configured
+    # file if the script configuration was modified.
+    # The configured files are included by the build script that is
+    # generated by basis_add_script_finalize().
+    configure_file ("${BASIS_SCRIPT_CONFIG_FILE}" "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake" @ONLY)
+    if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
+      configure_file ("${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in" "${BINARY_CONFIG_DIR}/ScriptConfig.cmake" @ONLY)
+    endif ()
     if (ARGN_CONFIG_FILE)
       if (NOT EXISTS "${ARGN_CONFIG_FILE}")
         message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG_FILE}\" does not exist. It is required to build the script ${TARGET_UID}.")
       endif ()
-      file (READ "${ARGN_CONFIG_FILE}" SCRIPT_CONFIG)
+      configure_file ("${ARGN_CONFIG_FILE}" "${BUILD_DIR}/ScriptConfig.cmake" @ONLY)
     endif ()
+    # configure script configuration given as string
     if (ARGN_CONFIG)
-      set (SCRIPT_CONFIG "${SCRIPT_CONFIG}\n\n${ARGN_CONFIG}")
+      string (CONFIGURE ARGN_CONFIG "${ARGN_CONFIG}" @ONLY)
     endif ()
-
-    if (SCRIPT_CONFIG MATCHES "@BASIS_SCRIPT_CONFIG@" AND EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
-      file (READ "${BASIS_SCRIPT_CONFIG_FILE}" BASIS_SCRIPT_CONFIG)
-    else ()
-      set (BASIS_SCRIPT_CONFIG)
-    endif ()
-
-    while (SCRIPT_CONFIG MATCHES "@[a-zA-Z0-9_-]+@")
-      string (CONFIGURE "${SCRIPT_CONFIG}" SCRIPT_CONFIG @ONLY)
-    endwhile ()
-    set (BASIS_SCRIPT_CONFIG)
+  elseif (ARGN_CONFIG OR ARGN_CONFIG_FILE)
+    message (WARNING "Provided script configuration for ${TARGET_UID} but the script file "
+                     "is missing a .in suffix. Will ignore script configuration and just "
+                     "copy the script file as is without configuring it.")
+    set (ARGN_CONFIG)
+    set (ARGN_CONFIG_FILE)
   endif ()
 
   # add custom target
@@ -1663,7 +1611,7 @@ function (basis_add_script TARGET_NAME)
       OUTPUT_NAME               "${OUTPUT_NAME}"
       PREFIX                    ""
       SUFFIX                    ""
-      COMPILE_DEFINITIONS       "${SCRIPT_CONFIG}"
+      COMPILE_DEFINITIONS       "${ARGN_CONFIG}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
   )
@@ -1803,6 +1751,7 @@ function (basis_add_script_finalize TARGET_UID)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # create build script
   #
   # Note: If the script is configured, this is done twice, once for the build tree
@@ -1813,6 +1762,7 @@ function (basis_add_script_finalize TARGET_UID)
   #       If a documentation is generated automatically from the sources, the
   #       latter, i.e., the script which will be installed is used as input file.
   set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
+  set (CONFIGURED_FILE "${BUILD_DIR}/${SCRIPT_NAME}.in")
   if (MODULE)
     set (OUTPUT_FILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   else ()
@@ -1820,18 +1770,40 @@ function (basis_add_script_finalize TARGET_UID)
   endif ()
   set (INSTALL_FILE "${SCRIPT_FILE}")
   set (OUTPUT_FILES "${OUTPUT_FILE}")
+  set (DEPENDS) # script configuration files if used
 
-  set (C "# DO NOT edit. This file was automatically generated by BASIS.\n\n")
+  set (C "# DO NOT edit. This file was automatically generated by BASIS.\n")
 
-  if (COMPILE_DEFINITIONS)
+  if (SCRIPT_FILE MATCHES "\\.in$")
+    # make (configured) script configuration files a dependency
+    set (DEPENDS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
+    if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+      set (DEPENDS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+    endif ()
+    if (EXISTS "${BUILD_DIR}/ScriptConfig.cmake")
+      list (APPEND DEPENDS "${BUILD_DIR}/ScriptConfig.cmake")
+    endif ()
+
+    # adjust list of output files
+    #list (APPEND OUTPUT_FILES "${CONFIGURED_FILE}")
     if (RUNTIME_INSTALL_DIRECTORY)
       set (INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
       list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
     endif ()
 
-    string (REPLACE "\r" "" COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}")
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # common code for build of build tree and install tree version
+
+    # convert %NAME% patterns in script file to @NAME@
+    set (C "${C}\n")
+    set (C "${C}# convert %NAME% to \@NAME\@\n")
+    set (C "${C}file (READ \"${SCRIPT_FILE}\" SCRIPT)\n")
+    set (C "${C}string (REGEX REPLACE \"%([a-zA-Z0-9_][a-zA-Z0-9_]+)%\" \"\@\\\\1\@\" SCRIPT \"\${SCRIPT}\")\n")
+    set (C "${C}file (WRITE \"${CONFIGURED_FILE}\" \"\${SCRIPT}\")\n")
 
     # tools for use in script configuration
+    set (C "${C}\n")
+    set (C "${C}# definitions of utility functions\n")
     set (C "${C}include (\"${BASIS_MODULE_PATH}/CommonTools.cmake\")\n")
     set (C "${C}\n")
     set (C "${C}function (basis_set_script_path VAR PATH)\n")
@@ -1854,8 +1826,10 @@ function (basis_add_script_finalize TARGET_UID)
     set (C "${C}  string (REGEX REPLACE \"/$\" \"\" PATH \"\${PATH}\")\n")
     set (C "${C}  set (\${VAR} \"\${PATH}\" PARENT_SCOPE)\n")
     set (C "${C}endfunction ()\n")
-    set (C "${C}\n")
+
     # common variables
+    set (C "${C}\n")
+    set (C "${C}# set script attributes\n")
     set (C "${C}set (LANGUAGE \"${BASIS_LANGUAGE}\")\n")
     set (C "${C}set (NAME \"${OUTPUT_NAME}\")\n")
     set (C "${C}string (TOUPPER \"\${NAME}\" NAME_UPPER)\n")
@@ -1864,7 +1838,13 @@ function (basis_add_script_finalize TARGET_UID)
     set (C "${C}string (REGEX REPLACE \"[^a-zA-Z0-9]\" \"_\" NAMESPACE \"\${NAMESPACE}\")\n")
     set (C "${C}string (TOUPPER \"\${NAMESPACE}\" NAMESPACE_UPPER)\n")
     set (C "${C}string (TOLOWER \"\${NAMESPACE}\" NAMESPACE_LOWER)\n")
-    # build script for use in build tree
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # build script for build tree
+
+    # script configuration code
+    set (C "${C}\n")
+    set (C "${C}# build script for use in build tree\n")
     set (C "${C}set (BUILD_INSTALL_SCRIPT 0)\n")
     if (MODULE)
       set (C "${C}set (DIR \"${LIBRARY_OUTPUT_DIRECTORY}\")\n")
@@ -1872,26 +1852,53 @@ function (basis_add_script_finalize TARGET_UID)
       set (C "${C}set (DIR \"${RUNTIME_OUTPUT_DIRECTORY}\")\n")
     endif ()
     set (C "${C}set (FILE \"\${DIR}/\${NAME}\")\n")
-    set (C "${C}${COMPILE_DEFINITIONS}\n")
-    set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${OUTPUT_FILE}\" @ONLY)\n")
+    set (C "${C}\n")
+    set (C "${C}include (\"${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake\")\n")
+    set (C "${C}include (\"${BINARY_CONFIG_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
+    set (C "${C}include (\"${BUILD_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
+    set (C "${C}\n")
+    if (COMPILE_DEFINITIONS)
+      set (C "${C}${COMPILE_DEFINITIONS}\n")
+    endif ()
+    # configure script for build tree
+    set (C "${C}configure_file (\"${CONFIGURED_FILE}\" \"${OUTPUT_FILE}\" @ONLY)\n")
+    # make executable
     if (NOT MODULE)
-      set (C "${C}\nif (UNIX)\n")
+      set (C "${C}\n")
+      set (C "${C}if (UNIX)\n")
       set (C "${C}  execute_process (COMMAND chmod +x \"${OUTPUT_FILE}\")\n")
       set (C "${C}endif ()\n")
     endif ()
-    # build script for installation tree
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # build script for installation tree (optional)
+
     if (MODULE)
       set (INSTALL_DIR "${LIBRARY_INSTALL_DIRECTORY}")
     else ()
       set (INSTALL_DIR "${RUNTIME_INSTALL_DIRECTORY}")
     endif ()
+
     if (INSTALL_DIR)
-      set (C "${C}\nset (BUILD_INSTALL_SCRIPT 1)\n")
+      # script configuration code
+      set (C "${C}\n")
+      set (C "${C}# build script for use in installation tree\n")
+      set (C "${C}set (BUILD_INSTALL_SCRIPT 1)\n")
       set (C "${C}set (DIR \"${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR}\")\n")
       set (C "${C}set (FILE \"\${DIR}/\${NAME}\")\n")
-      set (C "${C}${COMPILE_DEFINITIONS}\n")
-      set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${INSTALL_FILE}\" @ONLY)\n")
+      set (C "${C}\n")
+      set (C "${C}include (\"${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake\")\n")
+      set (C "${C}include (\"${BINARY_CONFIG_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
+      set (C "${C}include (\"${BUILD_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
+      set (C "${C}\n")
+      if (COMPILE_DEFINITIONS)
+        set (C "${C}${COMPILE_DEFINITIONS}\n")
+      endif ()
+      # configure script for installation tree
+      set (C "${C}configure_file (\"${CONFIGURED_FILE}\" \"${INSTALL_FILE}\" @ONLY)\n")
     endif ()
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # otherwise, just copy script file
   else ()
     set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${OUTPUT_FILE}\" COPYONLY)\n")
@@ -1901,6 +1908,8 @@ function (basis_add_script_finalize TARGET_UID)
       set (C "${C}endif ()\n")
     endif ()
   endif ()
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # create __init__.py files in build tree Python package
   if (MODULE AND BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
     set (D "${LIBRARY_OUTPUT_DIRECTORY}")
@@ -1914,52 +1923,37 @@ function (basis_add_script_finalize TARGET_UID)
     endwhile ()
   endif ()
 
-  # write build script only if it differs from previous build script
-  #
-  # Note: Adding BUILD_SCRIPT to the dependencies of the custom command
-  #       caused the custom command to be executed every time even when the
-  #       BUILD_SCRIPT file was not modified. Therefore, use dummy output
-  #       file which is deleted when the script differs from the previous one.
-  #
-  # TODO There must be a better solution to this problem.
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # setup build commands
+
+  # write build script
   file (WRITE "${BUILD_SCRIPT}" "${C}")
 
-  file (WRITE "${BUILD_SCRIPT}.check" "# DO NOT edit. Automatically generated by BASIS.
-execute_process (
-  COMMAND \"${CMAKE_COMMAND}\" -E compare_files \"${BUILD_SCRIPT}\" \"${BUILD_SCRIPT}.copy\"
-  RESULT_VARIABLE BUILD_SCRIPT_CHANGED
-  OUTPUT_QUIET
-  ERROR_QUIET
-)
-
-if (BUILD_SCRIPT_CHANGED)
-  file (REMOVE \"${BUILD_SCRIPT}.copy\")
-endif ()"
-  )
-
-  # add custom target
+  # add custom target to execute build script
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${OUTPUT_FILE}")
 
   add_custom_command (
-    OUTPUT  ${OUTPUT_FILES} "${BUILD_SCRIPT}.copy"
-    DEPENDS "${SCRIPT_FILE}"
+    OUTPUT  ${OUTPUT_FILES}
+    MAIN_DEPENDENCY "${SCRIPT_FILE}"
+    DEPENDS ${DEPENDS}
     COMMAND "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
-    COMMAND "${CMAKE_COMMAND}" -E copy "${BUILD_SCRIPT}" "${BUILD_SCRIPT}.copy"
     COMMENT "Building script ${REL}..."
   )
 
-  add_custom_target (
-    ${TARGET_UID}-
-    COMMAND "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}.check"
-  )
+  if (TARGET "_${TARGET_UID}")
+    message (FATAL_ERROR "There is another target named _${TARGET_UID}. "
+                         "BASIS uses target names starting with an underscore "
+                         "for custom targets which are required to build script files. "
+                         "Do not use leading underscores in target names.")
+  endif ()
 
+  # add custom target which triggers execution of build script
   add_custom_target (
-    ${TARGET_UID}+
+    ${TARGET_UID}-build
     DEPENDS ${OUTPUT_FILES}
   )
 
-  add_dependencies (${TARGET_UID}+ ${TARGET_UID}-)
-  add_dependencies (${TARGET_UID}  ${TARGET_UID}+)
+  add_dependencies (${TARGET_UID} ${TARGET_UID}-build)
 
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})

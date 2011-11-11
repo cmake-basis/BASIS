@@ -509,8 +509,10 @@ function (basis_check_target_name TARGET_NAME)
   endif ()
 
   # invalid target name ?
-  if (TARGET_NAME MATCHES " ")
-    message (FATAL_ERROR "Target name ${TARGET_NAME} is invalid. Target names cannot contain whitespaces.")
+  if (NOT TARGET_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9._+]|-)*$")
+    message (FATAL_ERROR "Target name ${TARGET_NAME} is invalid.\nChoose a target name "
+                         " which only contains alphanumeric characters, "
+                         "'_', '-', '+', or '.', and starts with a letter.\n")
   endif ()
 
   if (TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
@@ -613,12 +615,14 @@ function (basis_check_test_name TEST_NAME)
     message (FATAL_ERROR "Test name \"${TEST_NAME}\" is reserved and cannot be used.")
   endif ()
 
-  if (TEST_NAME MATCHES " ")
-    message (FATAL_ERROR "Test name \"${TEST_NAME}\" is invalid. Test names cannot contain whitespaces.")
+  if (NOT TEST_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9_+.]|-)*$")
+    message (FATAL_ERROR "Test name ${TEST_NAME} is invalid.\nChoose a test name "
+                         " which only contains alphanumeric characters, "
+                         "'_', '-', '+', or '.', and starts with a letter.\n")
   endif ()
 
-  if (TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-    message (FATAL_ERROR "Target name ${TARGET_NAME} is invalid. Target names cannot"
+  if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
+    message (FATAL_ERROR "Test name ${TEST_NAME} is invalid. Test names cannot"
                          " contain string '${BASIS_NAMESPACE_SEPARATOR}'.")
   endif ()
 endfunction ()
@@ -702,16 +706,33 @@ endfunction ()
 # corresponding (configured) source file.
 #
 # @param [out] LIST_NAME Name of output list.
-# @param [in]  ARGN      Input source files.
+# @param [in]  ARGN      These arguments are parsed and the following
+#                        options recognized. All remaining arguments are
+#                        considered to be source file paths.
+# @par
+# <table border="0">
+#   <tr>
+#     @tp @b KEEP_DOT_IN_SUFFIX @endtp
+#     <td>By default, after a source file with the .in extension has been
+#         configured, the .in suffix is removed from the file name.
+#         This can be omitted by giving this option.</td>
+#   </tr>
+# </table>
 #
 # @returns Nothing.
 function (basis_configure_sources LIST_NAME)
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (ARGN "KEEP_DOT_IN_SUFFIX" "" "" ${ARGN})
+
+  # configure source files
   set (CONFIGURED_SOURCES)
-  foreach (SOURCE ${ARGN})
+  foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
     if (SOURCE MATCHES "\\.in$")
       basis_get_relative_path (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}" "${SOURCE}")
       get_filename_component (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}" ABSOLUTE)
-      string (REGEX REPLACE "\\.in$" "" CONFIGURED_SOURCE "${CONFIGURED_SOURCE}")
+      if (NOT ARGN_KEEP_DOT_IN_SUFFIX)
+        string (REGEX REPLACE "\\.in$" "" CONFIGURED_SOURCE "${CONFIGURED_SOURCE}")
+      endif ()
       configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}" "${CONFIGURED_SOURCE}" @ONLY)
     else ()
       # if the source file path is relative, prefer possibly already

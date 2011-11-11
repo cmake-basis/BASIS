@@ -16,6 +16,21 @@
 ##############################################################################
 
 # ============================================================================
+# project attributes - used by BASIS_*_UTILITIES code
+# ============================================================================
+
+set (PROJECT_NAME "@PROJECT_NAME@")
+set (PROJECT_NAME_UPPER "@PROJECT_NAME_UPPER@")
+set (PROJECT_NAME_LOWER "@PROJECT_NAME_LOWER@")
+
+## @brief Project version string used by print_version().
+#
+# This CMake variable has to be defined in the script configuration because
+# it is used by the BASIS_*_UTILITIES code which is substituted during the
+# first configuration and finalized during the build step.
+set (PROJECT_VERSION_AND_REVISION "@PROJECT_VERSION_AND_REVISION@")
+
+# ============================================================================
 # script attributes
 # ============================================================================
 

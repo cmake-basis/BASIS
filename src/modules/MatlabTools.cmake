@@ -706,13 +706,20 @@ function (basis_add_mex_target_finalize TARGET_UID)
   endif ()
 
   # add custom target
+  if (TARGET "_${TARGET_UID}")
+    message (FATAL_ERROR "There is another target named _${TARGET_UID}. "
+                         "BASIS uses target names starting with an underscore "
+                         "for custom targets which are required to build MEX-files. "
+                         "Do not use leading underscores in target names.")
+  endif ()
+
   add_custom_target (
-    ${TARGET_UID}+
+    _${TARGET_UID}
     DEPENDS ${BUILD_OUTPUTS}
     SOURCES ${SOURCES}
   )
 
-  add_dependencies (${TARGET_UID} ${TARGET_UID}+)
+  add_dependencies (${TARGET_UID} _${TARGET_UID})
 
   # cleanup on "make clean"
   set_property (
@@ -1218,13 +1225,21 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   )
 
   # add custom target
+  if (TARGET "_${TARGET_UID}")
+    message (FATAL_ERROR "There is another target named _${TARGET_UID}. "
+                         "BASIS uses target names starting with an underscore "
+                         "for custom targets which are required to build executables or "
+                         "shared libraries from MATLAB source files. "
+                         "Do not use leading underscores in target names.")
+  endif ()
+
   add_custom_target (
-    ${TARGET_UID}+
+    _${TARGET_UID}
     DEPENDS ${BUILD_OUTPUT}
     SOURCES ${SOURCES}
   )
 
-  add_dependencies (${TARGET_UID} ${TARGET_UID}+)
+  add_dependencies (${TARGET_UID} _${TARGET_UID})
 
   # cleanup on "make clean"
   set_property (
