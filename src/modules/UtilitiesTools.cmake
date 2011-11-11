@@ -15,6 +15,184 @@
 
 
 # ============================================================================
+# Python utilities
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for Python.
+#
+# The substituted Python code appends the root directory of the build or
+# installed Python modules to the search path and then imports the 'basis'
+# module of this project. Note that every BASIS project has its own 'basis'
+# module, which belong to different packages, however.
+#
+# Example:
+# @code
+# #! /usr/bin/env python
+# @BASIS_PYTHON_UTILITIES@
+# ...
+# @endcode
+#
+# @ingroup PythonUtilities
+
+set (BASIS_PYTHON_UTILITIES "
+def _basis_init_sys_path():
+    import os
+    import sys
+    module_dir  = os.path.dirname(os.path.realpath(__file__))
+    sitelib_dir = os.path.normpath(os.path.join(module_dir, '%PYTHON_LIBRARY_DIR%'))
+    if sitelib_dir not in sys.path:
+        sys.path.append(sitelib_dir)
+    sitelib_dir = os.path.normpath(os.path.join(module_dir, '%BASIS_PYTHON_LIBRARY_DIR%'))
+    if sitelib_dir not in sys.path:
+        sys.path.append(sitelib_dir)
+
+_basis_init_sys_path()
+from sbia.\@PROJECT_NAME_LOWER\@ import basis
+"
+)
+
+# ============================================================================
+# Perl utilities
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for Perl.
+#
+# Example:
+# @code
+# #! /usr/bin/env perl
+# @BASIS_PERL_UTILITIES@
+# ...
+# @endcode
+#
+# @ingroup PerlUtilities
+
+set (BASIS_PERL_UTILITIES "
+use File::Basename;
+use lib dirname (__FILE__) . '/%BASIS_PERL_LIBRARY_DIR%';
+use lib dirname (__FILE__) . '/%PERL_LIBRARY_DIR%';
+use lib dirname (__FILE__);
+
+package Basis;
+use SBIA::\@PROJECT_NAME\@::Basis qw(:everything);
+package main;
+"
+)
+
+# ============================================================================
+# BASH utilities
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Absolute path of current BASH file.
+#
+# @note Does not resolve symbolic links.
+#
+# Example:
+# @code
+# readonly __MYMODULE=@BASIS_BASH___FILE__@
+# @endcode
+#
+# @ingroup BashUtilities
+set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
+
+# ----------------------------------------------------------------------------
+## @brief Absolute path of directory of current BASH file.
+#
+# @note Does not resolve symbolic links.
+#
+# Example:
+# @code
+# readonly __MYMODULE_dir=@BASIS_BASH___DIR__@
+# @endcode
+#
+# @ingroup BashUtilities
+set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
+
+# ----------------------------------------------------------------------------
+## @brief Definition of realpath() function.
+#
+# Example:
+# @code
+# #! /usr/bin/env bash
+# @BASIS_BASH_FUNCTION_realpath@
+# exec_dir=$(realpath $0)
+# @endcode
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+#
+# @ingroup BashUtilities
+set (BASIS_BASH_FUNCTION_realpath "
+# ----------------------------------------------------------------------------
+## @brief Get real path of given file or directory.
+#
+# @note This function was substituted by BASIS for the string
+#       \\\@BASIS_BASH_UTILITIES\\\@ or \\\@BASIS_BASH_realpath\\\@.
+#       Its implementation can be found in the default script configuration
+#       file provided by BASIS.
+#
+# Example:
+# @code
+# exec_dir=`realpath $0`
+# @endcode
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
+#
+# @param [in] path File or directory path.
+#
+# @returns Canonical path.
+function realpath
+{
+    local path=$1
+
+    local linkdir=''
+    local symlink=''
+
+    while [ -h \${path} ]; do
+        # 1) change to directory of the symbolic link
+        # 2) change to directory where the symbolic link points to
+        # 3) get the current working directory
+        # 4) append the basename
+        linkdir=$(dirname -- \"\${path}\")
+        symlink=$(readlink \${path})
+        path=$(cd \"\${linkdir}\" && cd $(dirname -- \"\${symlink}\") && pwd)/$(basename -- \"\${symlink}\")
+    done
+
+    echo -n \"$(cd -P -- \"$(dirname \"\${path}\")\" && pwd -P)/$(basename -- \"\${path}\")\"
+}
+"
+)
+
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for BASH.
+#
+# Example:
+# @code
+# #! /usr/bin/env bash
+# @BASIS_BASH_UTILITIES@
+# get_executable_directory exec_dir
+# get_executable_name      exec_name
+#
+# echo "The executable ${exec_name} is located in ${exec_dir}."
+# @endcode
+#
+# @ingroup BashUtilities
+set (BASIS_BASH_UTILITIES "
+# constants used by the shflags.sh module
+HELP_COMMAND='%NAME% (\@PROJECT_NAME\@)'
+HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
+HELP_VERSION='\@PROJECT_VERSION_AND_REVISION\@'
+HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
+
+${BASIS_BASH_FUNCTION_realpath}
+readonly _%NAMESPACE_UPPER%_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
+source \"\${_%NAMESPACE_UPPER%_DIR}/%LIBRARY_DIR%/basis.sh\" || exit 1
+"
+)
+
+# ============================================================================
 # auxiliary sources
 # ============================================================================
 

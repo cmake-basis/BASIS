@@ -5,50 +5,7 @@
 # @note The file ScriptConfig.cmake.in is configured and used by BASIS to
 #       generate CMake build scripts for the "build" of script files.
 #
-# This CMake file defines CMake variables which can be used within scripts.
-# If the project structure differs for the build tree and the install tree,
-# the CMake variables used within the script can be set depending on the
-# value of the variable @c BUILD_INSTALL_SCRIPT. This variable evaluates to
-# true, when the script is build, i.e., configured, for the installation tree
-# and to false, otherwise.
-#
-# Example:
-# @code
-# if (BUILD_INSTALL_SCRIPT)
-#   set (RUNTIME_DIR "@INSTALL_PREFIX@/@INSTALL_BIN_DIR@")
-# else ()
-#   set (RUNTIME_DIR "@BINARY_RUNTIME_DIR@")
-# endif ()
-# @endcode
-#
-# Avoid the use of absolute paths, however! Instead, use the variable
-# SCRIPT_DIR which is set to the directory of the script file to make these
-# paths relative to the directory of the script file. The relative paths
-# determined by the script configuration script shall be used in the script.
-# Therefore, the script has to determine its directory at runtime. This can
-# usually easily be done by extracting the path component from the first argument.
-# To ease this task, BASIS provides utility functions for each supported
-# scripting language which can be used for that.
-#
-# Example for BASH:
-# @code
-# # /usr/bin/env bash
-# @BASIS_BASH_UTILITIES@
-# get_executable_directory exec_dir
-# [ $? -eq 0 ] || { echo 'Failed to get directory of this executable'; exit 1; }
-# data_dir="${exec_dir}/@DATA_DIR@"
-# @endcode
-#
-# where @c DATA_DIR is the relative path determined during the script
-# configuration. See documentation of basis_set_script_path_definition()
-# for a convenience function which can be used just for that. This function
-# generates the definition of a function which is prepended to this script
-# configuration. Use this function as follows in the script configuration file.
-#
-# Example:
-# @code
-# basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
-# @endcode
+# See @ref ScriptTargets for details.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -59,28 +16,26 @@
 ##############################################################################
 
 # ============================================================================
-# modules
-# ============================================================================
-
-include ("@BASIS_MODULE_PATH@/CommonTools.cmake")
-
-# ============================================================================
 # script attributes
 # ============================================================================
 
-# Note: The NAME variable is set inside the build script prior to the inclusion
-#       of the configured script configuration. This is done by the function
-#       basis_add_script_finalize().
-
-string (TOUPPER "${NAME}" NAME_UPPER)
-string (TOLOWER "${NAME}" NAME_LOWER)
-
-get_filename_component (NAMESPACE "${NAME}" NAME_WE)
-string (REGEX REPLACE "[^a-zA-Z0-9]" "_" NAMESPACE "${NAMESPACE}")
-string (TOUPPER "${NAMESPACE}" NAMESPACE_UPPER)
-string (TOLOWER "${NAMESPACE}" NAMESPACE_LOWER)
-
 # Note: The following set() commands are required for the API documentatoin.
+
+## @brief Detected scripting language or UNKNOWN.
+set (LANGUAGE "${LANGUAGE}")
+
+## @brief Directory of script file.
+#
+# @note Mainly used in script configuration itself to make relative paths
+#       absolute. In particular, basis_set_script_path() uses this variable.
+set (DIR "${DIR}")
+
+## @brief Absolute path of script file.
+#
+# @note As this path is fixed after the build, it should be used only if
+#       it is not otherwise possible to determine the path of the current
+#       script file. It prohibits the relocation of the installation.
+set (FILE "${FILE}")
 
 ## @brief Name of script file.
 set (NAME "${NAME}")
@@ -97,51 +52,6 @@ set (NAMESPACE_UPPER "${NAMESPACE_UPPER}")
 set (NAMESPACE_LOWER "${NAMESPACE_LOWER}")
 
 # ============================================================================
-# project attributes
-# ============================================================================
-
-## @brief Project name.
-set (PROJECT_NAME "@PROJECT_NAME@")
-## @brief Project name in uppercase only.
-set (PROJECT_NAME_UPPER "@PROJECT_NAME_UPPER@")
-## @brief Project name in lowercase only.
-set (PROJECT_NAME_LOWER "@PROJECT_NAME_LOWER@")
-## @brief Project version string.
-set (PROJECT_VERSION "@PROJECT_VERSION@")
-## @brief Major version number of project.
-set (PROJECT_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
-## @brief Minor version number of project.
-set (PROJECT_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
-## @brief Patch number of project.
-set (PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
-## @brief Project revision or 0 if not applicable.
-set (PROJECT_REVISION "@PROJECT_REVISION@")
-
-## @brief Project version and (if applicable) revision string.
-#
-# This string should be used as version string in the output of the version
-# information as it also includes the project revision if applicable.
-if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
-  set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION} (revision ${PROJECT_REVISION})")
-else ()
-  set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION}")
-endif ()
-
-## @brief Project version in a format that can be used with $VERSION variable in Perl.
-set (PROJECT_VERSION_PERL "${PROJECT_VERSION_MAJOR}")
-
-if (PROJECT_VERSION_MAJOR LESS 10)
-  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}.0${PROJECT_VERSION_MINOR}")
-else ()
-  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}.${PROJECT_VERSION_MINOR}")
-endif ()
-if (PROJECT_VERSION_PATCH LESS 10)
-  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}_0${PROJECT_VERSION_PATCH}")
-else ()
-  set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}_${PROJECT_VERSION_PATCH}")
-endif ()
-
-# ============================================================================
 # directories
 # ============================================================================
 
@@ -152,7 +62,7 @@ endif ()
 # @code
 # #! /usr/bin/env bash
 # get_executable_directory exec_dir
-# libexec_dir=${exec_dir}/@LIBEXEC_DIR@
+# libexec_dir=${exec_dir}/__LIBEXEC_DIR__
 # @endcode
 
 ## @brief Installation prefix relative to script location.
@@ -173,11 +83,25 @@ basis_set_script_path (PERL_LIBRARY_DIR "@BINARY_PERL_LIBRARY_DIR@" "@INSTALL_PE
 ## @brief Directory of auxiliary data files relative to script location.
 basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 
-## @brief Directory of BASIS utility libraries relative to script location.
-if ("${PROJECT_NAME}" STREQUAL "BASIS")
+## @brief Directory of BASIS C++ libraries.
+if ("@PROJECT_NAME@" STREQUAL "BASIS")
   basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
 else ()
   basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
+endif ()
+
+## @brief Directory of BASIS Python modules.
+if ("@PROJECT_NAME@" STREQUAL "BASIS")
+  basis_set_script_path (BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
+else ()
+  basis_set_script_path (BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@")
+endif ()
+
+## @brief Directory of BASIS Perl modules.
+if ("@PROJECT_NAME@" STREQUAL "BASIS")
+  basis_set_script_path (BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@" "@INSTALL_PERL_LIBRARY_DIR@")
+else ()
+  basis_set_script_path (BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -187,16 +111,16 @@ endif ()
 # @code
 # #! /usr/bin/env bash
 # get_executable_directory exec_dir
-# libexec_dir=${exec_dir}/@PREFIX_DIR@/@LIBEXEC_DIR_SUFFIX@
+# libexec_dir=${exec_dir}/__PREFIX_DIR__/__LIBEXEC_DIR_SUFFIX__
 # @endcode
 
-basis_get_relative_path (RUNTIME_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${RUNTIME_DIR}")
-basis_get_relative_path (LIBEXEC_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${LIBEXEC_DIR}")
-basis_get_relative_path (LIBRARY_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${LIBRARY_DIR}")
-basis_get_relative_path (ARCHIVE_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${ARCHIVE_DIR}")
-basis_get_relative_path (PYTHON_LIBRARY_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${PYTHON_LIBRARY_DIR}")
-basis_get_relative_path (PERL_LIBRARY_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${PERL_LIBRARY_DIR}")
-basis_get_relative_path (DATA_DIR_SUFFIX "${SCRIPT_DIR}/${PREFIX_DIR}" "${SCRIPT_DIR}/${DATA_DIR}")
+basis_get_relative_path (RUNTIME_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${RUNTIME_DIR}")
+basis_get_relative_path (LIBEXEC_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${LIBEXEC_DIR}")
+basis_get_relative_path (LIBRARY_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${LIBRARY_DIR}")
+basis_get_relative_path (ARCHIVE_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${ARCHIVE_DIR}")
+basis_get_relative_path (PYTHON_LIBRARY_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${PYTHON_LIBRARY_DIR}")
+basis_get_relative_path (PERL_LIBRARY_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${PERL_LIBRARY_DIR}")
+basis_get_relative_path (DATA_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${DATA_DIR}")
 
 # Note: The following set() commands are needed for the API documentation.
 
@@ -214,202 +138,3 @@ set (PYTHON_LIBRARY_DIR_SUFFIX "${PYTHON_LIBRARY_DIR_SUFFIX}")
 set (PERL_LIBRARY_DIR_SUFFIX "${PERL_LIBRARY_DIR_SUFFIX}")
 ## @brief Directory of auxiliary data files relative to installation prefix.
 set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
-
-# ============================================================================
-# testing - only to be used within test implementations
-# ============================================================================
-
-## @brief Absolute path of top directory of testing tree.
-set (TESTING_DIR "@PROJECT_TESTING_DIR@")
-## @brief Absolute path of output directory for test executables.
-set (TESTING_RUNTIME_DIR "@TESTING_RUNTIME_DIR@")
-## @brief Absolute path of output directory for libraries required by tests only.
-set (TESTING_LIBRARY_DIR "@TESTING_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Python modules required by tests only.
-set (TESTING_PYTHON_LIBRARY_DIR "@TESTING_PYTHON_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Perl modules required by tests only.
-set (TESTING_PERL_LIBRARY_DIR "@TESTING_PERL_LIBRARY_DIR@")
-## @brief Absolute path of output directory for test results.
-set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
-
-# ============================================================================
-# BASIS Utilities
-# ============================================================================
-
-## @brief Default namespace of build target UIDs as used by ExecutableTargetInfo.
-set (BASIS_NAMESPACE "@BASIS_NAMESPACE@")
-
-# ----------------------------------------------------------------------------
-# Python
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for Python.
-#
-# The substituted Python code appends the root directory of the build or
-# installed Python modules to the search path and then imports the 'basis'
-# module of this project. Note that every BASIS project has its own 'basis'
-# module, which belong to different packages, however.
-#
-# Example:
-# @code
-# #! /usr/bin/env python
-# @BASIS_PYTHON_UTILITIES@
-# ...
-# @endcode
-#
-# @ingroup PythonUtilities
-
-set (BASIS_PYTHON_UTILITIES "
-def _basis_init_sys_path():
-    import os
-    import sys
-    module_dir  = os.path.dirname(os.path.realpath(__file__))
-    sitelib_dir = os.path.normpath(os.path.join(module_dir, '${PYTHON_LIBRARY_DIR}'))
-    if sitelib_dir not in sys.path:
-        sys.path.append(sitelib_dir)
-    sitelib_dir = '@BASIS_PYTHON_LIBRARY_DIR@'
-    if sitelib_dir not in sys.path:
-        sys.path.append(sitelib_dir)
-
-_basis_init_sys_path()
-from sbia.${PROJECT_NAME_LOWER} import basis
-"
-)
-
-# ----------------------------------------------------------------------------
-# Perl
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for Perl.
-#
-# Example:
-# @code
-# #! /usr/bin/env perl
-# @BASIS_PERL_UTILITIES@
-# ...
-# @endcode
-#
-# @ingroup PerlUtilities
-
-set (BASIS_PERL_UTILITIES "
-use File::Basename;
-use lib '@BASIS_PERL_LIBRARY_DIR@';
-use lib dirname (__FILE__) . \"/${PERL_LIBRARY_DIR}\";
-use lib dirname (__FILE__);
-
-package Basis;
-use SBIA::${PROJECT_NAME}::Basis qw(:everything);
-package main;
-"
-)
-
-# ----------------------------------------------------------------------------
-# BASH
-
-# ----------------------------------------------------------------------------
-## @brief Absolute path of current BASH file.
-#
-# @note Does not resolve symbolic links.
-#
-# Example:
-# @code
-# readonly __MYMODULE=@BASIS_BASH___FILE__@
-# @endcode
-#
-# @ingroup BashUtilities
-set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
-
-# ----------------------------------------------------------------------------
-## @brief Absolute path of directory of current BASH file.
-#
-# @note Does not resolve symbolic links.
-#
-# Example:
-# @code
-# readonly __MYMODULE_dir=@BASIS_BASH___DIR__@
-# @endcode
-#
-# @ingroup BashUtilities
-set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
-
-# ----------------------------------------------------------------------------
-## @brief Definition of realpath() function.
-#
-# Example:
-# @code
-# #! /usr/bin/env bash
-# @BASIS_BASH_FUNCTION_realpath@
-# exec_dir=$(realpath $0)
-# @endcode
-#
-# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-#
-# @ingroup BashUtilities
-set (BASIS_BASH_FUNCTION_realpath "
-# ----------------------------------------------------------------------------
-## @brief Get real path of given file or directory.
-#
-# @note This function was substituted by BASIS for the string
-#       \\\@BASIS_BASH_UTILITIES\\\@ or \\\@BASIS_BASH_realpath\\\@.
-#       Its implementation can be found in the default script configuration
-#       file provided by BASIS.
-#
-# Example:
-# @code
-# exec_dir=`realpath $0`
-# @endcode
-#
-# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-#
-# @param [in] path File or directory path.
-#
-# @returns Canonical path.
-function realpath
-{
-    local path=$1
-
-    local linkdir=''
-    local symlink=''
-
-    while [ -h \${path} ]; do
-        # 1) change to directory of the symbolic link
-        # 2) change to directory where the symbolic link points to
-        # 3) get the current working directory
-        # 4) append the basename
-        linkdir=$(dirname -- \"\${path}\")
-        symlink=$(readlink \${path})
-        path=$(cd \"\${linkdir}\" && cd $(dirname -- \"\${symlink}\") && pwd)/$(basename -- \"\${symlink}\")
-    done
-
-    echo -n \"$(cd -P -- \"$(dirname \"\${path}\")\" && pwd -P)/$(basename -- \"\${path}\")\"
-}
-"
-)
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for BASH.
-#
-# Example:
-# @code
-# #! /usr/bin/env bash
-# @BASIS_BASH_UTILITIES@
-# get_executable_directory exec_dir
-# get_executable_name      exec_name
-#
-# echo "The executable ${exec_name} is located in ${exec_dir}."
-# @endcode
-#
-# @ingroup BashUtilities
-set (BASIS_BASH_UTILITIES "
-# constants used by the shflags.sh module
-HELP_COMMAND='${NAME} (${PROJECT_NAME})'
-HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
-HELP_VERSION='${PROJECT_VERSION_AND_REVISION}'
-HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
-
-${BASIS_BASH_FUNCTION_realpath}
-readonly _${NAMESPACE_UPPER}_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
-source \"\${_${NAMESPACE_UPPER}_DIR}/${LIBRARY_DIR}/basis.sh\"
-"
-)
