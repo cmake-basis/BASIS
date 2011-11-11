@@ -624,6 +624,9 @@ mark_as_advanced (CMAKE_CONFIGURATION_TYPES)
 mark_as_advanced (DEBUG_CONFIGURATIONS)
 
 if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$|^Coverage$|^Release$")
+  if (NOT CMAKE_BUILD_TYPE STREQUAL "")
+    message ("Invalid build type ${CMAKE_BUILD_TYPE}! Setting CMAKE_BUILD_TYPE to Release.")
+  endif ()
   set (CMAKE_BUILD_TYPE "Release")
 endif ()
 
@@ -635,6 +638,9 @@ set (
     "Current build configuration. Specify either \"Debug\", \"Coverage\", or \"Release\"."
   FORCE
 )
+
+# set the possible values of build type for cmake-gui
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "Coverage")
 
 # ----------------------------------------------------------------------------
 # common
