@@ -358,8 +358,11 @@ function (basis_configure_auxiliary_modules)
   if (BASIS_PROJECT_USES_PYTHON)
     foreach (MODULE basis stdaux)
       set (TARGET_NAME "${MODULE}.py")
-      basis_add_library (${TARGET_NAME} MODULE "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py")
-      basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis")
+      basis_add_library (
+        ${TARGET_NAME} "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py"
+        MODULE
+          BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis"
+      )
     endforeach ()
   endif ()
 
@@ -368,8 +371,11 @@ function (basis_configure_auxiliary_modules)
   if (BASIS_PROJECT_USES_PERL)
     foreach (MODULE Basis StdAux)
       set (TARGET_NAME "${MODULE}.pm")
-      basis_add_library (${TARGET_NAME} MODULE "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm")
-      basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis")
+      basis_add_library (
+        ${TARGET_NAME} "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm"
+        MODULE
+          BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis"
+      )
     endforeach ()
   endif ()
 
@@ -378,8 +384,11 @@ function (basis_configure_auxiliary_modules)
   if (BASIS_PROJECT_USES_BASH)
     foreach (MODULE basis stdaux)
       set (TARGET_NAME "${MODULE}.sh")
-      basis_add_library (${TARGET_NAME} MODULE "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh")
-      basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis")
+      basis_add_library (
+        ${TARGET_NAME} "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh"
+        MODULE
+          BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis"
+      )
     endforeach ()
   endif ()
 
@@ -582,8 +591,13 @@ function (basis_configure_ExecutableTargetInfo)
     # add module
     set (TEMPLATE_FILE "${BASIS_PYTHON_TEMPLATES_DIR}/executabletargetinfo.py")
     basis_get_source_target_name (TARGET_NAME "${TEMPLATE_FILE}" NAME)
-    basis_add_library (${TARGET_NAME} MODULE CONFIG "${CONFIG}" "${TEMPLATE_FILE}")
-    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis")
+    basis_add_library (
+      ${TARGET_NAME}
+        "${TEMPLATE_FILE}"
+      MODULE
+        BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis"
+        CONFIG "${CONFIG}"
+    )
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -601,8 +615,13 @@ function (basis_configure_ExecutableTargetInfo)
     # add module
     set (TEMPLATE_FILE "${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm")
     basis_get_source_target_name (TARGET_NAME "${TEMPLATE_FILE}" NAME)
-    basis_add_library (${TARGET_NAME} MODULE CONFIG "${CONFIG}" "${TEMPLATE_FILE}")
-    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis")
+    basis_add_library (
+      ${TARGET_NAME}
+        "${TEMPLATE_FILE}"
+      MODULE
+        BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis"
+        CONFIG "${CONFIG}"
+    )
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -622,8 +641,13 @@ function (basis_configure_ExecutableTargetInfo)
     # add module
     set (TEMPLATE_FILE "${BASIS_BASH_TEMPLATES_DIR}/executabletargetinfo.sh")
     basis_get_source_target_name (TARGET_NAME "${TEMPLATE_FILE}" NAME)
-    basis_add_library (${TARGET_NAME} MODULE CONFIG "${CONFIG}" "${TEMPLATE_FILE}")
-    basis_set_target_properties (${TARGET_NAME} PROPERTIES BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis")
+    basis_add_library (
+      ${TARGET_NAME}
+        "${TEMPLATE_FILE}"
+      MODULE
+        BINARY_DIRECTORY "${BINARY_CODE_DIR}/basis"
+        CONFIG "${CONFIG}"
+    )
   endif ()
 
   # --------------------------------------------------------------------------
