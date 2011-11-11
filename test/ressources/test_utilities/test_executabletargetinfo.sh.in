@@ -12,7 +12,7 @@
 
 @BASIS_BASH_UTILITIES@
 
-source "${_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh"
+source "${_%NAMESPACE_UPPER%_DIR}/%BASIS_LIBRARY_DIR%/shtap.sh"
 
 # ============================================================================
 # plan

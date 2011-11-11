@@ -17,7 +17,7 @@
 # ============================================================================
 
 basis_dir='@TESTING_BASIS_DIR@'
-ressources_dir='@TESTING_DIR@/ressources/test_basisproject'
+ressources_dir='@PROJECT_TESTING_DIR@/ressources/test_basisproject'
 source_dir='@TESTING_OUTPUT_DIR@/test_basisproject-source'
 binary_dir='@TESTING_OUTPUT_DIR@/test_basisproject-build'
 

@@ -41,7 +41,7 @@ ExecutableTargetInfo* ExecutableTargetInfo::instance_ = NULL;
 // ---------------------------------------------------------------------------
 ExecutableTargetInfo::ExecutableTargetInfo()
 {
-    @EXECUTABLE_TARGET_INFO@
+    %EXECUTABLE_TARGET_INFO%
 }
 
 // ---------------------------------------------------------------------------

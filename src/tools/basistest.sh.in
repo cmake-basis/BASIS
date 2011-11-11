@@ -15,8 +15,8 @@
 # constants
 # ============================================================================
 
-get_executable_name      EXEC_NAME && readonly EXEC_NAME
-get_executable_directory EXEC_DIR  && readonly EXEC_DIR
+get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
+get_executable_directory _EXEC_DIR  && readonly _EXEC_DIR
 
 # ============================================================================
 # help
@@ -26,8 +26,6 @@ get_executable_directory EXEC_DIR  && readonly EXEC_DIR
 ## @brief Print help.
 function print_help
 {
-    echo "${EXEC_NAME} (@PROJECT_NAME@)"
-    echo
     print_synopsis
     echo
     cat - << EOF-DESCRIPTION
@@ -45,8 +43,6 @@ EOF-DESCRIPTION
 ## @brief Print usage information.
 function print_helpshort
 {
-    echo "${EXEC_NAME} (@PROJECT_NAME@)"
-    echo
     print_synopsis
     echo
     print_options
@@ -60,9 +56,9 @@ function print_synopsis
 {
     cat - << EOF-SYNOPSIS
 Usage:
-  ${EXEC_NAME} <cmd> [options] [options of subcommand]
-  ${EXEC_NAME} help <cmd>
-  ${EXEC_NAME} [options]
+  ${_EXEC_NAME} <cmd> [options] [options of subcommand]
+  ${_EXEC_NAME} help <cmd>
+  ${_EXEC_NAME} [options]
 EOF-SYNOPSIS
 }
 
@@ -105,11 +101,11 @@ if [ -n "$1" ]; then
                 exit 1
             fi
         else
-            echo "Missing subcommand! See ${EXEC_NAME} --help." 1>&2
+            echo "Missing subcommand! See ${_EXEC_NAME} --help." 1>&2
             exit 1
         fi
 
-        exec "${EXEC_DIR}/basistest-${cmd}" '--help'
+        exec "${_EXEC_DIR}/basistest-${cmd}" '--help'
     elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
         print_help
         exit 0
@@ -117,7 +113,7 @@ if [ -n "$1" ]; then
         print_helpshort
         exit 0
     elif [ "$1" == "--version" ]; then
-        print_version '@NAME@'
+        print_version '%NAME%'
         exit 0
     fi
 fi
@@ -126,5 +122,5 @@ fi
 # main
 # ============================================================================
 
-[ -n "${cmd}" ] || { echo "Missing subcommand! See ${EXEC_NAME} --help."; exit 1; }
-exec "${EXEC_DIR}/basistest-${cmd}" "$@"
+[ -n "${cmd}" ] || { echo "Missing subcommand! See ${_EXEC_NAME} --help."; exit 1; }
+exec "${_EXEC_DIR}/basistest-${cmd}" "$@"

@@ -29,8 +29,8 @@
 # constants
 # ============================================================================
 
-get_executable_directory EXEC_DIR  && readonly EXEC_DIR
-get_executable_name      EXEC_NAME && readonly EXEC_NAME
+get_executable_directory _EXEC_DIR  && readonly _EXEC_DIR
+get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
 
 # ============================================================================
 # settings
@@ -61,13 +61,13 @@ schedule='/sbia/home/swtest/var/run/basistest.schedule'
 #
 # Has to be given with full path because SGE copies the slave script which
 # looks for the CTest script relative to its own location.
-ctest="${EXEC_DIR}/@MODULES_DIR@/basistest.ctest"
+ctest="${_EXEC_DIR}/%MODULES_DIR%/basistest.ctest"
 
 ## @brief Testing master script.
-master="${EXEC_DIR}/basistest-master"
+master="${_EXEC_DIR}/basistest-master"
 
 ## @brief Test execution command.
-slave="${EXEC_DIR}/basistest-slave -v -S ${ctest} --args shared-source,common-site=sbia-c5,common-site=compute"
+slave="${_EXEC_DIR}/basistest-slave -v -S ${ctest} --args shared-source,common-site=sbia-c5,common-site=compute"
 
 # ============================================================================
 # main
@@ -76,10 +76,8 @@ slave="${EXEC_DIR}/basistest-slave -v -S ${ctest} --args shared-source,common-si
 while [ $# -gt 0 ]; do
     case "$1" in
         -h|--help)
-            echo "@NAME@ (@PROJECT_NAME@)"
-            echo
             echo "Usage:"
-            echo "  ${EXEC_NAME}"
+            echo "  ${_EXEC_NAME}"
             echo
             echo "Description:"
             echo "  This command should be run regularly by a cron job. It contains"
@@ -91,22 +89,20 @@ while [ $# -gt 0 ]; do
             ;;
 
         --helpshort)
-            echo "@NAME@ (@PROJECT_NAME@)"
-            echo
             echo "Usage:"
-            echo "  ${EXEC_NAME}"
+            echo "  ${_EXEC_NAME}"
             echo
             print_contact
             exit 0
             ;;
 
         --version)
-            print_version '@NAME@'
+            print_version '%NAME%'
             exit 0
             ;;
 
         *)
-            echo "Invalid argument $1! See ${EXEC_NAME} --help." 1>&2
+            echo "Invalid argument $1! See ${_EXEC_NAME} --help." 1>&2
             exit 1
             ;;
     esac

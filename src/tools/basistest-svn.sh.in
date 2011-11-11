@@ -26,8 +26,6 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --help|-h)
             get_executable_name exec_name
-            echo "@NAME@ (@PROJECT_NAME@)"
-            echo
             echo "Usage:"
             echo "  ${exec_name} [svn options/arguments]"
             echo "  ${exec_name} [options]"
@@ -48,8 +46,6 @@ while [ $# -gt 0 ]; do
 
         --helpshort)
             get_executable_name exec_name
-            echo "@NAME@ (@PROJECT_NAME@)"
-            echo
             echo "Usage:"
             echo "  ${exec_name} [svn options/arguments]"
             echo "  ${exec_name} [options]"
@@ -64,7 +60,7 @@ while [ $# -gt 0 ]; do
             ;;
 
         --version)
-            print_version '@NAME@'
+            print_version '%NAME%'
             exit 0
             ;;
         *)

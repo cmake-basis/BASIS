@@ -21,7 +21,7 @@
 # ============================================================================
 
 readonly BASIS_DIR='@TESTING_BASIS_DIR@'
-readonly RESSOURCES_DIR='@TESTING_DIR@/ressources/test_utilities'
+readonly RESSOURCES_DIR='@PROJECT_TESTING_DIR@/ressources/test_utilities'
 readonly SOURCE_DIR='@TESTING_OUTPUT_DIR@/test_utilities-source'
 readonly BUILD_DIR='@TESTING_OUTPUT_DIR@/test_utilities-build'
 

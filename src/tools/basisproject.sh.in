@@ -19,8 +19,8 @@
 # ============================================================================
 
 # executable information
-get_executable_directory exec_dir
-get_executable_name      exec_name
+get_executable_directory _EXEC_DIR
+get_executable_name      _EXEC_NAME
 
 ## @brief Name of CMake configuration file used to resolve dependencies.
 depends_file='Depends.cmake'
@@ -128,10 +128,8 @@ function print_options
 # @returns Nothing.
 function print_helpshort
 {
-    echo "@NAME@ (@PROJECT_NAME@)"
-    echo
     echo "Usage:"
-	echo "  $exec_name [options]"
+	echo "  $_EXEC_NAME [options]"
     echo
     print_options
     echo
@@ -144,10 +142,8 @@ function print_helpshort
 # @returns Nothing.
 function print_help
 {
-    echo "@NAME@ (@PROJECT_NAME@)"
-    echo
     echo "Usage:"
-	echo "  $exec_name [options]"
+	echo "  $_EXEC_NAME [options]"
 	echo
 	echo "Description:"
     echo "  This command-line tool, also referred to as project tool, can be used to"
@@ -188,18 +184,18 @@ function print_help
 	print_options
     echo
     echo "Examples:"
-	echo "  $exec_name --name MyProject --description \"Novel image analysis method.\" --language CXX"
+	echo "  $_EXEC_NAME --name MyProject --description \"Novel image analysis method.\" --language CXX"
     echo "    Create a new project named 'MyProject' under the current working"
     echo "    directory using the default project template. Further, enable support for the"
     echo "    C/C++ programming language."
     echo
-	echo "  $exec_name --name MyProject --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
+	echo "  $_EXEC_NAME --name MyProject --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
     echo "    Create new project using C/C++ and Python with dependency on the package 'VTK'."
     echo
-    echo "  $exec_name --root /path/to/existing/project --test --config-test"
+    echo "  $_EXEC_NAME --root /path/to/existing/project --test --config-test"
     echo "    Add full testing support to existing project."
     echo
-    echo "  $exec_name --root /path/to/existing/porject --use ITK --useopt MATLAB"
+    echo "  $_EXEC_NAME --root /path/to/existing/porject --use ITK --useopt MATLAB"
     echo "    Add dependencies on ITK (mandatory) and MATLAB (optional) to existing project."
     echo
     print_contact
@@ -284,7 +280,7 @@ fi
 # ----------------------------------------------------------------------------
 
 # root directory of project template
-template="$exec_dir/@TEMPLATE_DIR@"
+template="$_EXEC_DIR/%TEMPLATE_DIR%"
 
 root=""              # root directory of new project (defaults to `pwd`/$name)
 name=""              # name of the project to create
@@ -428,7 +424,7 @@ do
 			;;
 
 		--version)
-			print_version "@NAME@"
+			print_version "%NAME%"
 			exit 0
 			;;
 
@@ -1184,8 +1180,6 @@ function add_find_package
     echo >> $file
     echo "# ----------------------------------------------------------------------------" >> $file
     echo "# $package" >> $file
-    echo "# ----------------------------------------------------------------------------" >> $file
-    echo >> $file
     if [ $required -ne 0 ]; then
     echo "basis_find_package (${package} REQUIRED)" >> $file
     else

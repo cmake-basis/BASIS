@@ -191,7 +191,7 @@ sub get_executable_path
 sub initialize
 {
     $_location = {
-    @EXECUTABLE_TARGET_INFO@
+    %EXECUTABLE_TARGET_INFO%
     };
 }
 

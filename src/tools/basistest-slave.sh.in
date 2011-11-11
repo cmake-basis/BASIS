@@ -22,8 +22,8 @@
 # constants
 # ============================================================================
 
-get_executable_directory EXEC_DIR  && readonly EXEC_DIR
-get_executable_name      EXEC_NAME && readonly EXEC_NAME
+get_executable_directory _EXEC_DIR  && readonly _EXEC_DIR
+get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
 
 # ============================================================================
 # help/version
@@ -60,10 +60,8 @@ EOF-OPTIONS
 # @returns Nothing.
 function print_help
 {
-    echo "@NAME@ (@PROJECT_NAME@)"
-    echo
     echo "Usage:"
-    echo "  ${EXEC_NAME} [options]"
+    echo "  ${_EXEC_NAME} [options]"
     echo
     cat - << EOF-DESCRIPTION
 Description:
@@ -74,7 +72,7 @@ EOF-DESCRIPTION
     echo
     cat - << EOF-EXAMPLES
 Examples:
-  ${EXEC_NAME} -p BASIS -a coverage,memcheck
+  ${_EXEC_NAME} -p BASIS -a coverage,memcheck
 
     Performs the testing of the project BASIS itself, including coverage
     analysis and memory checks.
@@ -89,10 +87,8 @@ EOF-EXAMPLES
 # @returns Nothing.
 function print_helpshort
 {
-    echo "@NAME@ (@PROJECT_NAME@)"
-    echo
     echo "Usage:"
-    echo "  ${EXEC_NAME} [options]"
+    echo "  ${_EXEC_NAME} [options]"
     echo
     print_options
     echo
@@ -104,7 +100,7 @@ function print_helpshort
 # ============================================================================
 
 # CTest script
-ctest_script="${EXEC_DIR}/@BASISTEST_CTEST_SCRIPT_DIR@/basistest.ctest"
+ctest_script="${_EXEC_DIR}/%BASISTEST_CTEST_SCRIPT_DIR%/basistest.ctest"
 
 project=''           # name of the BASIS project
 branch='trunk'       # the branch to test
@@ -167,7 +163,7 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_helpshort; exit 0; ;;
-        -V|--version) print_version "@NAME@"; exit 0; ;;
+        -V|--version) print_version "%NAME%"; exit 0; ;;
         -v|--verbose) ((verbosity++)); ;;
 
         # invalid option
@@ -193,7 +189,7 @@ fi
 # main
 # ============================================================================
 
-echo "${EXEC_NAME} running on host $(hostname)"
+echo "${_EXEC_NAME} running on host $(hostname)"
 echo
 
 # see if ctest can be found

@@ -26,6 +26,24 @@ set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
 
 # ============================================================================
+# settings
+# ============================================================================
+
+## @brief Directory of BASIS used by tests to build test projects.
+set (TESTING_BASIS_DIR "${PROJECT_BINARY_DIR}")
+## @brief Build type used to build test projects.
+set (TESTING_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+
+## @brief Whether C++ utilities are build.
+set (TEST_CXX_UTILITIES "${BUILD_UTILITIES_FOR_CXX}")
+## @brief Whether Python utilities are build.
+set (TEST_PYTHON_UTILITIES "${BUILD_UTILITIES_FOR_PYTHON}")
+## @brief Whether Perl utilities are build.
+set (TEST_PERL_UTILITIES "${BUILD_UTILITIES_FOR_PERL}")
+## @brief Whether BASH utilities are build.
+set (TEST_BASH_UTILITIES "${BUILD_UTILITIES_FOR_BASH}")
+
+# ============================================================================
 # subdirectories
 # ============================================================================
 

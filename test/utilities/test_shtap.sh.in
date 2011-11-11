@@ -12,8 +12,8 @@
 
 readonly _TEST_SHTAP_DIR=@BASIS_BASH___DIR__@
 
-source "${_TEST_SHTAP_DIR}/@BASIS_LIBRARY_DIR@/core.sh" || exit 1
-source "${_TEST_SHTAP_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh" || exit 1
+source "${_TEST_SHTAP_DIR}/%BASIS_LIBRARY_DIR%/core.sh" || exit 1
+source "${_TEST_SHTAP_DIR}/%BASIS_LIBRARY_DIR%/shtap.sh" || exit 1
 
 
 # ============================================================================

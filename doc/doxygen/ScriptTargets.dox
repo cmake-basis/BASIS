@@ -1,0 +1,94 @@
+/**
+ * @file  ScriptTargets.dox
+ * @brief Documentation of build of scripts and script configuration.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@page ScriptTargets Build of Script Targets
+
+@section Introduction
+
+
+
+@section ScriptConfig Script Configuration
+
+The so-called script configuration is a CMake script which defines CMake
+variables for use within script files. These variables are substituted by
+their respective values during the build step. Note that the usual mechanisms
+of using CMake variables in source files with the <tt>.in</tt> suffix is
+also used for script files. However, these variables get substituted already
+during the configure step of CMake where the basis_add_executable() or
+basis_add_script() function, respectively, is called. At this point, certain
+properties such as the name of the output script file and the installation
+destination may still change. Thus, directory paths relative to the script's
+location cannot be set properly this way. Therefore, the concept of the
+script configuration was introduced in BASIS which allows to defer the
+substitution of such variables at a later time during the actual build step.
+Hence, script files may be configured twice, once during the configure
+step, where patterns such as <tt>@&lt;name&gt;@</tt> are replaced, and once
+during the build step where patterns such as <tt>__&lt<NAME>&gt;__</tt>
+are replaced. Note that for the later it is required that names of the
+corresponding CMake variables which are defined by the script configuration
+need to be all uppercase.
+
+The script configuration is passed either directly as string argument to
+the @c CONFIG option of the basis_add_script() or basis_add_executable()
+command, respectivley, or saved in a file named ScriptConfig.cmake.in
+which has to be located in the @c PROJECT_CONFIG_DIR. BASIS itself provides
+such default script configuration file for the most important variables
+already.
+
+If the project structure differs for the build tree and the install tree,
+the CMake variables used within the script can be set depending on the
+value of the variable @c BUILD_INSTALL_SCRIPT. This variable evaluates to
+true, when the script is build, i.e., configured, for the installation tree
+and to false, otherwise.
+
+Example:
+@code
+if (BUILD_INSTALL_SCRIPT)
+  set (RUNTIME_DIR "@INSTALL_PREFIX@/@INSTALL_BIN_DIR@")
+else ()
+  set (RUNTIME_DIR "@BINARY_RUNTIME_DIR@")
+endif ()
+@endcode
+
+Avoid the use of absolute paths, however! Instead, use the variable
+SCRIPT_DIR which is set to the directory of the script file to make these
+paths relative to the directory of the script file. The relative paths
+determined by the script configuration script shall be used in the script.
+Therefore, the script has to determine its directory at runtime. This can
+usually easily be done by extracting the path component from the first argument.
+To ease this task, BASIS provides utility functions for each supported
+scripting language which can be used for that.
+
+Example for BASH:
+@code
+# /usr/bin/env bash
+@BASIS_BASH_UTILITIES@
+get_executable_directory exec_dir
+[ $? -eq 0 ] || { echo 'Failed to get directory of this executable'; exit 1; }
+data_dir="${exec_dir}/%DATA_DIR%"
+@endcode
+
+where @c DATA_DIR is the relative path determined during the script
+configuration. See documentation of basis_set_script_path_definition()
+for a convenience function which can be used just for that. This function
+generates the definition of a function which is prepended to this script
+configuration. Use this function as follows in the script configuration file.
+
+Example:
+@code
+basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
+@endcode
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+*/

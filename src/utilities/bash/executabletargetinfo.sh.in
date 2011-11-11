@@ -33,7 +33,7 @@ readonly _EXECUTABLETARGETINFO_NAMESPACE='@BASIS_NAMESPACE@'
 # modules
 # ============================================================================
 
-source "${_EXECUTABLETARGETINFO_DIR}/@BASIS_LIBRARY_DIR@/core.sh" # upvar()
+source "${_EXECUTABLETARGETINFO_DIR}/%BASIS_LIBRARY_DIR%/core.sh" # upvar()
 
 # ============================================================================
 # public functions
@@ -334,7 +334,7 @@ function _executabletargetinfo_initialize
 {
     [ $# -eq 0 ] || return 1
 
-    @EXECUTABLE_TARGET_INFO@
+    %EXECUTABLE_TARGET_INFO%
 
     _EXECUTABLETARGETINFO_INITIALIZED=1
     return 0
@@ -349,7 +349,7 @@ if [ -z "${use_executable_target_aliases}" ] || [ ${use_executable_target_aliase
 fi
 
 # define aliases of build target names to executable file paths
-@EXECUTABLE_ALIASES@
+%EXECUTABLE_ALIASES%
 
 # enable expansion of aliases also in non-interactive shells
 shopt -s expand_aliases

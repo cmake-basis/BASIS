@@ -153,4 +153,4 @@ def _initialize():
     """Initialize dictionaries with information about executable targets."""
     global _locations
     
-    @EXECUTABLE_TARGET_INFO@
+    %EXECUTABLE_TARGET_INFO%

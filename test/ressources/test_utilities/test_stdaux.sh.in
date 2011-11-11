@@ -12,13 +12,13 @@
 
 @BASIS_BASH_UTILITIES@
 
-source "${_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh"
+source "${_%NAMESPACE_UPPER%_DIR}/%BASIS_LIBRARY_DIR%/shtap.sh"
 
 # ============================================================================
 # plan
 # ============================================================================
  
-plan_tests 18;
+plan_tests 20;
 
 # ============================================================================
 # tests
@@ -35,32 +35,39 @@ isnt $? 0
 # Test execution of executable target.
 execute_process 'basis::dummy_command'
 is $? 0
-stdout=`execute_process 'basis::dummy_command --greet'`
+stdout=`execute_process 'basis::dummy_command' --greet`
 is $? 0
 match "$stdout" '^Hello, BASIS!'
 is $? 0
 
 # ----------------------------------------------------------------------------
-# Test allow_fail keyword argument of execute_process().
-stdout=`execute_process 'basis::dummy_command --exit 1'; echo 'CONTINUED'`
+# Test -- argument
+stdout=`execute_process -- ls`
+is $? 0
+stdout=`execute_process -- --allow_fail ls` # option considered as command
+isnt $? 0
+
+# ----------------------------------------------------------------------------
+# Test --allow_fail option of execute_process().
+stdout=`execute_process 'basis::dummy_command' --exit 1 || echo 'CONTINUED'`
 isnt $? 0
 match "$stdout" 'CONTINUED'
 isnt $? 0
-stdout=`execute_process 'basis::dummy_command --exit 1' 1; echo 'CONTINUED'`
+stdout=`execute_process 'basis::dummy_command' --exit 1 || echo 'CONTINUED'`
 isnt $? 0
 match "$stdout" 'CONTINUED'
 isnt $? 0
-stdout=`execute_process 'basis::dummy_command --exit 1' 0; echo 'CONTINUED'`
+stdout=`execute_process --allow_fail 'basis::dummy_command' --exit 1 || echo 'CONTINUED'`
 is $? 0
 match "$stdout" 'CONTINUED'
 is $? 0
 
 # ----------------------------------------------------------------------------
-# Test verbose keyword argument of execute_process().
-stdout=`execute_process 'basis::dummy_command' 1 0`
+# Test --verbose option of execute_process().
+stdout=`execute_process 'basis::dummy_command'`
 is $? 0
 is $stdout ''
-stdout=`execute_process 'basis::dummy_command' 1 1`
+stdout=`execute_process --verbose 'basis::dummy_command'`
 is $? 0
 isnt $stdout ''
 match "$stdout" 'dummy_command'
@@ -68,6 +75,6 @@ is $? 0
 
 # ----------------------------------------------------------------------------
 # Test execution of some non-target command.
-stdout=`execute_process 'ls / &> /dev/null'`
+stdout=`execute_process ls / &> /dev/null`
 is $? 0
 is $stdout ''

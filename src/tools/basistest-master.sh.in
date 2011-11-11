@@ -25,8 +25,8 @@
 # constants
 # ============================================================================
 
-get_executable_directory EXEC_DIR  && readonly EXEC_DIR
-get_executable_name      EXEC_NAME && readonly EXEC_NAME
+get_executable_directory _EXEC_DIR  && readonly _EXEC_DIR
+get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
 
 # ============================================================================
 # default settings
@@ -69,10 +69,8 @@ EOF-OPTIONS
 # @returns Nothing.
 function print_help
 {
-    echo "@NAME@ (@PROJECT_NAME@)"
-    echo
     echo "Usage:"
-    echo "  ${EXEC_NAME} [options]"
+    echo "  ${_EXEC_NAME} [options]"
     echo
     cat - << EOF-DESCRIPTION
 Description:
@@ -136,7 +134,7 @@ EOF-DESCRIPTION
     echo
     cat - << EOF-EXAMPLES
 Examples:
-  ${EXEC_NAME} --conf /etc/basis/testd.conf --schedule /var/run/basis/testd
+  ${_EXEC_NAME} --conf /etc/basis/testd.conf --schedule /var/run/basis/testd
 
     Runs this daemon with the configuration file "/etc/basis/testd.conf",
     where the test schedule "/var/run/basis/testd" is created (or updated).
@@ -153,10 +151,8 @@ EOF-EXAMPLES
 # @returns Nothing.
 function print_helpshort
 {
-    echo "@NAME@ (@PROJECT_NAME@)"
-    echo
     echo "Usage:"
-    echo "  ${EXEC_NAME} [options]"
+    echo "  ${_EXEC_NAME} [options]"
     echo
     print_options
     echo
@@ -325,9 +321,9 @@ function schedule_test
 # options
 # ============================================================================
 
-test_cmd="${EXEC_DIR}/basistest" # command used to run tests
-verbose=0                        # verbosity of output messages
-dry=0                            # whether this is a dry testing run
+test_cmd="${_EXEC_DIR}/basistest-slave" # command used to run tests
+verbose=0                               # verbosity of output messages
+dry=0                                   # whether this is a dry testing run
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -363,7 +359,7 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_helpshort; exit 0; ;;
-        -V|--version) print_version "@NAME@"; exit 0; ;;
+        -V|--version) print_version "%NAME%"; exit 0; ;;
         -v|--verbose) (( verbosity++ )); ;;
 
         # invalid option

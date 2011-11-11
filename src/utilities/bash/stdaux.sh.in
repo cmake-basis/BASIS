@@ -14,8 +14,8 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_SBIA_@NAMESPACE_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_@NAMESPACE_UPPER@_STDAUX_INCLUDED=1
+[ "${_SBIA_%NAMESPACE_UPPER%_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_%NAMESPACE_UPPER%_STDAUX_INCLUDED=1
 
 
 ## @addtogroup BashUtilities
