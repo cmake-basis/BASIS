@@ -14,8 +14,8 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_@PROJECT_NAME_UPPER@_STDAUX_INCLUDED=1
+[ "${_SBIA_@NAMESPACE_UPPER@_STDAUX_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_@NAMESPACE_UPPER@_STDAUX_INCLUDED=1
 
 
 ## @addtogroup BashUtilities
@@ -46,7 +46,7 @@ function print_version
         copyright="Copyright (c) University of Pennsylvania. All rights reserved.\n\
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
     fi
-    echo "${name} (@PROJECT_NAME@) version @PROJECT_VERSION_AND_REVISION@"
+    echo "${name} (UtilitiesTest) version 0.0.0"
     echo -e "${copyright}"
 }
 
@@ -75,74 +75,96 @@ function print_contact
 # ----------------------------------------------------------------------------
 ## @brief Execute command as subprocess.
 #
-# See basis_array_to_quoted_string() for a function to convert a command-line
-# given as array of arguments into a quoted string that can be passed to
-# this function.
+# This function is used to execute a subprocess within a BASH script.
+#
+# Options:
+# --allow_fail    Allows the command to fail. By default, if the command
+#                 returns a non-zero exit code, the exit() function is
+#                 called to terminate the current shell.
+# --verbose, -v   Print command-line to stdout before execution.
+# --simulate      If this option is given, the command is not actually
+#                 executed, but the command-line printed to stdout only.
+#
+# Example:
+# @code
+# # the next command will exit the current shell if it fails
+# execute_process ls /not/existing
+# # to prevent this, provide the --allow_fail option
+# execute_process --allow_fail ls /not/existing
+# # to make it more explicit where the command-line to execute starts, use --
+# execute_process --allow_fail -- ls /not/existing
+# @endcode
 #
 # Note that the output of the command is not redirected by this function.
-# In order to execute the command quietly, call this function as:
+# In order to execute the command quietly, use this function as follows:
 # @code
-# execute_process 'ls /' &> /dev/null
+# execute_process ls / &> /dev/null
 # @endcode
-# In order to store the command output in a variable including error messages
+# Or to store the command output in a variable including error messages
 # use it as follows:
 # @code
-# output=`execute_process 'ls /' 2>&1`
+# output=`execute_process ls / 2>&1`
 # @endcode
-# Note that in this case, the option @p allow_fail has no effect as the
-# calling shell will never be terminated even if @p allow_fail is non-zero
-# and the command failed, thus invoking an exit(). This, however, only
-# exits the subshell. Checking the exit code $? is in this case recommended.
+# Note that in this case, the option --allow_fail has no effect as the
+# calling shell will never be terminated. Only the subshell in which the
+# command is executed will be terminated. Checking the exit code $? is
+# in this case required.
 #
-# @param [in] args       Command-line given as quoted string.
-# @param [in] allow_fail If 0, failing of the command does not result in
-#                        the current shell being terminated with exit code 1.
-# @param [in] verbose    Verbosity of output messages. A value greater than
-#                        zero enables verbose output of the command being
-#                        executed. This does not affect the verbosity of the
-#                        command itself.
-# @param [in] simulate   If 0, the command is not actually executed, but
-#                        the command-line only printed to stdout.
+# @param [in] options Function options as given above.
+# @param [in] cmd     Executable of command to run. This is assumed to be
+#                     the first non-option argument or the argument that
+#                     follows the special '--' argument.
+# @param [in] args    All remaining arguments are passed as arguments to
+#                     the given command.
 #
-# @returns Exit code of subprocess. The output of the command is not redirected.
-#          Hence, in order to store the commands
+# @returns Exit code of subprocess.
 function execute_process
 {
-    [ -n "$1" ] || return 1
-    local args="$1"
-    local allow_fail="${2:-1}"
-    local verbose="${3:-0}"
-    local simulate="${4:-1}"
-    local status=0
-    # extract command from command-line
-    match "$args" "^[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\\\")*[^\\]\"|[^ ]+)(.*)$"
-    [ $? -eq 0 ] || return 1
-    local command=${BASH_REMATCH[1]}
-    local arguments=${BASH_REMATCH[4]}
+    # parse arguments
+    local allow_fail='false'
+    local simulate='false'
+    local verbose=0
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --allow_fail)
+                allow_fail='true'
+                ;;
+            --verbose|-v)
+                ((verbose++))
+                ;;
+            --simulate)
+                simulate='true'
+                ;;
+            --)
+                shift
+                break
+                ;;
+            *)
+                break
+                ;;
+        esac
+        shift
+    done
+    # command to execute and its arguments
+    local command="$1"; shift
+    [ -n "${command}" ] || return 1
     # map build target name to file
     local exec_path && get_executable_path exec_path "${command}"
     if [ -z "${exec_path}" ]; then
         echo "${command}: Either unknown build target or command not found" 1>&2
         exit 1
     fi
-    # if path contains a whitespace character...
-    if match "${exec_path}" '[ \t\n]'; then
-        # ...quote path with quotes inside path escaped
-        exec_path=`echo "${exec_path}" | sed 's/"/\\"/g'`
-        exec_path="\"${exec_path}\""
-    fi
-    # prepend absolute path of found executable
-    args="${exec_path}${arguments}"
     # some verbose output
     if [ ${verbose} -gt 0 ]; then
-        echo "\$ ${args}"
+        local argsstr && basis_array_to_quoted_string args "$@"
+        echo "\$ ${exec_path} ${argsstr}"
     fi
     # execute command
-    [ ${simulate} -eq 0 ] || eval "${args}"
-    status=$?
+    [ "X${simulate}" == "Xtrue" ] || eval "${exec_path}" "$@"
+    local status=$?
     # if command failed, exit
-    [ ${status} -eq 0 -o ${allow_fail} -eq 0 ] || {
-        echo "Command ${args} failed" 1>&2
+    [ ${status} -eq 0 -o "X${allow_fail}" == "Xtrue" ] || {
+        echo "Command ${exec_path} ${argsstr} failed" 1>&2
         exit 1
     }
     # return exit code

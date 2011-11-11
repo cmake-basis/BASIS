@@ -207,18 +207,15 @@ There is NO WARRANTY, to the extent permitted by law."
 # ----------------------------------------------------------------------------
 ## @brief Build quoted string from array.
 #
-# As BASH does not support arrays as input arguments to a function, the
-# array to be converted to a quoted string has to be available in the
-# variable named basis_array before calling this function.
-#
 # Example:
 # @code
-# basis_array=('this' "isn't" a 'simple example of "a quoted"' 'string')
-# basis_array_to_quoted_string str
+# basis_array_to_quoted_string str 'this' "isn't" a 'simple example of "a quoted"' 'string'
 # echo "${str}"
 # @endcode
 #
-# @param [out] var Name of result variable for quoted string.
+# @param [out] var      Name of result variable for quoted string.
+# @param [in]  elements All remaining arguments are considered to be the
+#                       elements of the array to convert.
 #
 # @returns Nothing.
 function basis_array_to_quoted_string
