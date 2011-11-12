@@ -35,6 +35,19 @@ namespace basis {
 ExecutableTargetInfo* ExecutableTargetInfo::instance_ = NULL;
 
 // ===========================================================================
+// construction / destruction
+// ===========================================================================
+
+ExecutableTargetInfo::ExecutableTargetInfo()
+{
+    @EXECUTABLE_TARGET_INFO@
+}
+
+ExecutableTargetInfo::~ExecutableTargetInfo()
+{
+}
+
+// ===========================================================================
 // public interface
 // ===========================================================================
 
