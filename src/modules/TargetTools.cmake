@@ -1508,7 +1508,7 @@ function (basis_add_script TARGET_NAME)
   if (ARGN_BINARY_DIRECTORY)
     set (BINARY_DIRECTORY "${ARGN_BINARY_DIRECTORY}")
   else ()
-    set (BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIRECTORY}")
+    set (BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
   endif ()
 
   # output directory
@@ -1743,6 +1743,14 @@ function (basis_add_script_finalize TARGET_UID)
   # build directory (note that CMake returns basename of build directory as first element of SOURCES list)
   list (GET SOURCES 0 BUILD_DIR)
   set (BUILD_DIR "${BUILD_DIR}.dir")
+
+  # binary directory
+  if (NOT BINARY_DIRECTORY)
+    message (FATAL_ERROR "basis_add_script_finalize(${TARGET_UID}): BINARY_DIRECTORY property not set!")
+  endif ()
+  if (NOT BINARY_DIRECTORY MATCHES "^${PROJECT_BINARY_DIR}")
+    message (FATAL_ERROR "basis_add_script_finalize(${TARGET_UID}): BINARY_DIRECTORY must be inside of build tree!")
+  endif ()
 
   # extract script file from SOURCES
   list (GET SOURCES 1 SCRIPT_FILE)
