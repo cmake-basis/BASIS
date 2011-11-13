@@ -469,7 +469,7 @@ function (basis_add_doc TARGET_NAME)
     if (DOXYGEN_TAGFILE MATCHES "^(None|NONE|none)$")
       set (DOXYGEN_TAGFILE)
     else ()
-      set (DOXYGEN_TAGFILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}.tags")
+      set (DOXYGEN_TAGFILE "${DOXYGEN_OUTPUT_DIRECTORY}/doxygen.tags")
     endif ()
 
     set (NUMBER_OF_OUTPUTS 0)
@@ -530,8 +530,6 @@ function (basis_add_doc TARGET_NAME)
           ADDITIONAL_MAKE_CLEAN_FILES
             "${DOXYGEN_TAGFILE}"
       )
-
-      install (FILES "${DOXYGEN_TAGFILE}" DESTINATION "${ARGN_DESTINATION}" OPTIONAL)
     endif ()
 
     # add target as dependency to doc target
@@ -563,6 +561,8 @@ function (basis_add_doc TARGET_NAME)
             else ()
               message (STATUS \"Skipped: \${INSTALL_PREFIX}/\${DIR}\")
             endif ()
+
+            list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${DIR}\")
           endif ()
         endmacro ()
 
@@ -570,6 +570,16 @@ function (basis_add_doc TARGET_NAME)
         install_doxydoc (latex)
         install_doxydoc (rtf)
         install_doxydoc (man)
+
+        if (EXISTS \"${DOXYGEN_TAGFILE}\")
+          get_filename_component (DOXYGEN_TAGFILE_NAME \"${DOXYGEN_TAGFILE}\" NAME)
+          execute_process (
+            COMMAND \"${CMAKE_COMMAND}\" -E copy
+              \"${DOXYGEN_TAGFILE}\"
+              \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\"
+          )
+          list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\")
+        endif ()
         "
     )
 
