@@ -160,7 +160,7 @@ function execute_process
         echo "\$ ${exec_path} ${argsstr}"
     fi
     # execute command
-    [ "X${simulate}" == "Xtrue" ] || eval "${exec_path}" "$@"
+    [ "X${simulate}" == "Xtrue" ] || { "${exec_path}" "$@" }
     local status=$?
     # if command failed, exit
     [ ${status} -eq 0 -o "X${allow_fail}" == "Xtrue" ] || {
