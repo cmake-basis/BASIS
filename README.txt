@@ -112,8 +112,7 @@ COMPONENTS
 
   - basisproject   Creates a new project or modifies an already previously
                    created project in order to add or remove certain components
-                   of the project template or to upgrade to a newer BASIS
-                   template.
+                   of the project template or to upgrade to a newer BASIS template.
   - basistest      Implements automated software tests.
   - doxyfilter     Doxygen filters for the supported programming languages.
 
@@ -151,15 +150,17 @@ PACKAGE OVERVIEW
   - doc/             Documentation of BASIS.
   - include/         Public header files.
   - src/             Source code files.
-  - src/cmake/       CMake implementations and corresponding auxiliary files.
+  - src/geshi/       A language file written in PHP for the use with GeSHi,
+                     a source code highlighting extension for MediaWiki.
+  - src/modules/     CMake implementations and corresponding auxiliary files.
   - src/tools/       Source code of command-line tools.
   - src/utilities/   Source code of utility functions.
   - test/            Tests of the implementations in src/.
 
   - AUTHORS.txt      A list of the people who contributed to this sofware.
-  - README.txt       This readme file.
   - COPYING.txt      The copyright and license notices.
   - INSTALL.txt      Build and installation instructions.
+  - README.txt       This readme file.
 
 
   Binary Package
@@ -187,15 +188,17 @@ INSTALLATION
 DOCUMENTATION
 =============
 
-  The PowerPoint 2007 presentation named Introduction.pptx gives a more detailed
-  and in parts visual introduction of the BASIS project. It can be found on the
-  SBIA Wiki [2] and the doc/ directory of the BASIS package.
+  The PowerPoint 2007 presentation named "BASIS Tutorial - 01 Introduction.pptx"
+  gives a more detailed and in parts visual introduction of the BASIS project.
+  It can be found on the SBIA Wiki [2] and the doc/tutorials/ directory of the
+  BASIS package. Further tutorials can be found here as well.
 
-  See the plain text documents in the doc/ directory for details on the standard
-  regarding different aspects of the software development and furthermore the
-  how-to guides on the SBIA Wiki [1]. The API documentation of BASIS [3], on the
-  other side, is a great reference regarding the CMake implementations and
-  utility functions.
+  See the plain text documents in the doc/standard/  and doc/guides/ directories
+  for details on the standard regarding different aspects of the software
+  development and furthermore the how-to guides on the SBIA Wiki [1].
+
+  The API documentation of BASIS [3], on the other side, is a great reference
+  regarding the CMake implementations and utility functions.
 
 
 
