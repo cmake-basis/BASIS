@@ -414,8 +414,8 @@ function (basis_add_mex_target TARGET_NAME)
       LIBRARY_OUTPUT_DIRECTORY  "${BINARY_LIBRARY_DIR}"
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
-      INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
-      LINK_DIRECTORIES          "${BASIS_LINK_DIRECTORIES}"
+      BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}"
+      BASIS_LINK_DIRECTORIES    "${BASIS_LINK_DIRECTORIES}"
       COMPILE_FLAGS             "${BASIS_MEX_FLAGS}"
       LINK_FLAGS                ""
       LINK_DEPENDS              ""
@@ -485,8 +485,8 @@ function (basis_add_mex_target_finalize TARGET_UID)
       "SUFFIX"
       "VERSION"
       "SOVERSION"
-      "INCLUDE_DIRECTORIES"
-      "LINK_DIRECTORIES"
+      "BASIS_INCLUDE_DIRECTORIES"
+      "BASIS_LINK_DIRECTORIES"
       "SOURCES"
       "COMPILE_FLAGS"
       "LINK_DEPENDS"
@@ -621,13 +621,13 @@ function (basis_add_mex_target_finalize TARGET_UID)
   endif ()
   list (APPEND MEX_ARGS "-outdir" "${BUILD_DIR}")                # output directory
   list (APPEND MEX_ARGS "-output" "${OUTPUT_NAME_WE}")           # output name (w/o extension)
-  foreach (INCLUDE_PATH ${INCLUDE_DIRECTORIES})                  # include directories
+  foreach (INCLUDE_PATH ${BASIS_INCLUDE_DIRECTORIES})            # include directories
     list (FIND MEX_ARGS "-I${INCLUDE_PATH}" IDX)                 # as specified via
     if (INCLUDE_PATH AND IDX EQUAL -1)                           # basis_include_directories ()
       list (APPEND MEX_ARGS "-I${INCLUDE_PATH}")
     endif ()
   endforeach ()
-  foreach (LIBRARY_PATH ${LINK_DIRECTORIES})                     # link directories
+  foreach (LIBRARY_PATH ${BASIS_LINK_DIRECTORIES})               # link directories
     list (FIND MEX_ARGS "-L${LIBRARY_PATH}" IDX)                 # as specified via
     if (LIBRARY_PATH AND IDX EQUAL -1)                           # basis_link_directories ()
       list (APPEND MEX_ARGS "-L${LIBRARY_PATH}")
@@ -948,7 +948,7 @@ function (basis_add_mcc_target TARGET_NAME)
       LIBRARY_OUTPUT_DIRECTORY  "${BINARY_LIBRARY_DIR}"
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
-      INCLUDE_DIRECTORIES       "${BASIS_INCLUDE_DIRECTORIES}"
+      BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}"
       COMPILE_FLAGS             "${COMPILE_FLAGS}"
       LINK_DEPENDS              ""
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
@@ -1033,7 +1033,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       "SUFFIX"
       "VERSION"
       "SOVERSION"
-      "INCLUDE_DIRECTORIES"
+      "BASIS_INCLUDE_DIRECTORIES"
       "SOURCES"
       "COMPILE_FLAGS"
       "LINK_DEPENDS"
@@ -1102,14 +1102,14 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endforeach ()
 
   # assemble build command
-  set (MCC_ARGS ${COMPILE_FLAGS})                    # user specified flags
-  foreach (INCLUDE_PATH ${INCLUDE_DIRECTORIES})      # add directories added via
-    list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)       # basis_include_directories ()
-    if (EXISTS INCLUDE_PATH AND IDX EQUAL -1)        # function to search path
+  set (MCC_ARGS ${COMPILE_FLAGS})                     # user specified flags
+  foreach (INCLUDE_PATH ${BASIS_INCLUDE_DIRECTORIES}) # add directories added via
+    list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)        # basis_include_directories ()
+    if (EXISTS "${INCLUDE_PATH}" AND IDX EQUAL -1)    # function to search path
       list (APPEND MCC_ARGS "-I" "${INCLUDE_PATH}")
     endif ()
   endforeach ()
-  list (FIND INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX)
+  list (FIND BASIS_INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX)
   if (IDX EQUAL -1)
     # add current source directory to search path,
     # needed for build in MATLAB mode as working directory
