@@ -49,6 +49,10 @@ if (EXISTS "${PROJECT_CODE_DIR}")
   add_subdirectory ("${PROJECT_CODE_DIR}")
 endif ()
 
+if (EXISTS "${PROJECT_MODULES_DIR}")
+  add_subdirectory ("${PROJECT_MODULES_DIR}")
+endif ()
+
 # auxiliary data files
 if (EXISTS "${PROJECT_DATA_DIR}")
   add_subdirectory ("${PROJECT_DATA_DIR}")
