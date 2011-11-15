@@ -9,18 +9,21 @@
 ##############################################################################
 
 # ============================================================================
-# CMake version
+# required CMake version
 # ============================================================================
 
 cmake_minimum_required (VERSION 2.8.4)
 
 # ============================================================================
-# initialize
+# project template version
 # ============================================================================
 
-# the version of the template this project was instantiated from
-# this information might be used by BASIS to maintain backwards compatibility
+# the version of the BASIS template this project was instantiated from
 set (TEMPLATE_VERSION "ReplaceByTemplateVersion")
+
+# ============================================================================
+# initialize
+# ============================================================================
 
 # find BASIS package
 find_package (BASIS REQUIRED)
@@ -33,12 +36,7 @@ else ()
 endif ()
 
 # initialize project
-basis_project_initialize (
-  NAME        "ReplaceByProjectName"
-  VERSION     "0.0.0"
-  DESCRIPTION "ReplaceByProjectDescription"
-  LANGUAGES   #AddLanguageHere
-)
+basis_project_initialize ()
 
 # ============================================================================
 # subdirectories

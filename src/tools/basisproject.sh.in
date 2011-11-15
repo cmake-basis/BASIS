@@ -15,21 +15,11 @@
 @BASIS_BASH_UTILITIES@
 
 # ============================================================================
-# settings
+# executable information
 # ============================================================================
 
-# executable information
 get_executable_directory _EXEC_DIR
 get_executable_name      _EXEC_NAME
-
-## @brief Name of CMake configuration file used to resolve dependencies.
-depends_file='Depends.cmake'
-
-## @brief Project configuration file relative to project root directory.
-#
-# This file stores the latest configuration used to create or modify the
-# project using this command-line tool.
-cache=".basis/cache"
 
 # ============================================================================
 # usage / help / version
@@ -41,85 +31,91 @@ cache=".basis/cache"
 # @returns Nothing.
 function print_options
 {
-    echo "Required Options:"
-    echo "  --name, -n <Project>        Name of the new project."
-    echo "  --description, -d <arg>     Brief project description."
-    echo "  --root, -r <arg>            Specify root directory of new project or directory of"
-    echo "                              existing project. When creating a new project by giving"
-    echo "                              the --name and --description options, this option is optional"
-    echo "                              and a directory named after the project is created under the"
-    echo "                              current working directory by default. In order to modify an"
-    echo "                              existing project, this option is required and has to specify"
-    echo "                              the root directory of a previously created project. The --name"
-    echo "                              and --description options must not be given in this case."
-    echo
-    echo "Template Options:"
-    echo "  --minimal                   Choose minimal project template. Corresponds to not selecting any"
-    echo "                              of the additional template files."
-    echo "  --standard                  Choose standard project template. This is the default project template"
-    echo "                              if no template was selected explicitly. Corresponds to:"
-    echo "                                --doc"
-    echo "                                --example"
-    echo "                                --noconfig"
-    echo "                                --nodata"
-    echo "                                --test"
-    echo "  --full                      Choose full project template. Corresponds to selecting all files."
-    echo
-    echo "  --[no]config                Whether to include all config/ files. Corresponds to:"
-    echo "                                --[no]config-components"
-    echo "                                --[no]config-depends"
-    echo "                                --[no]config-find"
-    echo "                                --[no]config-find-version"
-    echo "                                --[no]config-generate"
-    echo "                                --[no]config-package"
-    echo "                                --[no]config-script"
-    echo "                                --[no]config-settings"
-    echo "                                --[no]config-test"
-    echo "                                --[no]config-use"
-    echo "  --[no]config-components     Whether to include custom Components.cmake file."
-    echo "  --[no]config-depends        Whether to include custom Depends.cmake file."
-    echo "  --[no]config-find           Whether to include custom <Project>Config.cmake file."
-    echo "  --[no]config-find-version   Whether to include custom <Project>ConfigVersion.cmake file."
-    echo "  --[no]config-generate       Whether to include custom GenerateConfig.cmake script."
-    echo "  --[no]config-package        Whether to include custom Package.cmake file."
-    echo "  --[no]config-script         Whether to include custom ScriptConfig.cmake.in file."
-    echo "  --[no]config-settings       Whether to include custom Settings.cmake file."
-    echo "  --[no]config-test           Whether to include custom CTestCustom.cmake file."
-    echo "  --[no]config-use            Whether to include custom <Project>Use.cmake file."
-    echo "  --[no]data                  Whether to include support of auxiliary data files."
-    echo "  --[no]example               Whether to include support of example."
-    echo "  --[no]include               Whetehr to include support of public header files."
-    echo "  --[no]test                  Whether to include support for testing."
-    echo
-    echo "Dependencies Options:"
-    echo "  --language <arg>            Programming language used by this project."
-    echo "                              The currently supported languages are:"
-    echo "                              CXX (C/C++), Python, Perl, BASH, and MATLAB."
-    echo "                              Note that the argument is case insensitive."
-    echo "  --use <arg>                 Name of external package used by this project."
-    echo "                              Note that the package name is case sensitive."
-    echo "  --useopt <arg>              Name of external package optionally used by this project."
-    echo "                              Note that the package name is case sensitive."
-    echo
-    echo "Other Options:"
-    echo "  --clean                     Remove backup and other temporary files left behind."
-    echo "  --clean-all                 Remove not only backup and other temporary files, but also"
-    echo "                              the hidden '.basis' directories with copies of the template files."
-    echo "  --force                     Force deletion of modified template files and non-empty directories."
-    echo "  --[no]update                Do not update existing files. Only add new files."
-    echo "                              By default, in case of existing files, the project file is updated"
-    echo "                              by merging changes of the possibly newer template and the existing file."
-    echo "  --[no]backup                Do not backup project files before updating them."
-    echo "                              By default, before any existing project file is modified,"
-    echo "                              it is copied to a file with extension '~' before."
-    echo "                              The creation of these backup files is disabled by this option."
-    echo "  --template, -t <arg>        Root directory of project template."
-    echo "                              Defaults to the project template of this BASIS installation."
-    echo
-    echo "  --verbose, -v               Increases verbosity of output messages. Can be given multiple times."
-    echo "  --help, -h                  Displays help and exit."
-    echo "  --helpshort                 Displays short help and exits."
-    echo "  --version                   Displays version information and exits."
+    cat -- << EOF_OPTIONS
+Required Options:
+  --name, -n <Project>        Name of the new project.
+  --description, -d <arg>     Brief project description.
+  --root, -r <arg>            Specify root directory of new project or directory
+                              of existing project. When creating a new project
+                              by giving the --name and --description options,
+                              this option is optional and a directory named after
+                              the project is created under the current working
+                              directory by default. In order to modify an existing
+                              project, this option is required and has to specify
+                              the root directory of a previously created project.
+                              The --name and --description options must not be
+                              given in this case.
+
+Template Options:
+  --minimal                   Choose minimal project template. Corresponds to not
+                              selecting any
+                              of the additional template files.
+  --standard                  Choose standard project template. This is the default
+                              project template if no template was selected explicitly.
+                              Corresponds to:
+                                --doc
+                                --example
+                                --noconfig
+                                --nodata
+                                --test
+  --full                      Choose full project template.
+                              Corresponds to selecting all files.
+
+  --[no]config                Whether to include all config/ files. Corresponds to:
+                                --[no]config-components
+                                --[no]config-find
+                                --[no]config-find-version
+                                --[no]config-generate
+                                --[no]config-package
+                                --[no]config-script
+                                --[no]config-settings
+                                --[no]config-test
+                                --[no]config-use
+  --[no]config-components     Whether to include custom Components.cmake file.
+  --[no]config-find           Whether to include custom <Project>Config.cmake file.
+  --[no]config-find-version   Whether to include custom <Project>ConfigVersion.cmake file.
+  --[no]config-generate       Whether to include custom GenerateConfig.cmake script.
+  --[no]config-package        Whether to include custom Package.cmake file.
+  --[no]config-script         Whether to include custom ScriptConfig.cmake.in file.
+  --[no]config-settings       Whether to include custom Settings.cmake file.
+  --[no]config-test           Whether to include custom CTestCustom.cmake file.
+  --[no]config-use            Whether to include custom <Project>Use.cmake file.
+  --[no]data                  Whether to include support of auxiliary data files.
+  --[no]example               Whether to include support of example.
+  --[no]include               Whetehr to include support of public header files.
+  --[no]test                  Whether to include support for testing.
+
+Dependencies Options:"
+  --use <arg>                 Name of external package used by this project.
+                              Note that the package name is case sensitive.
+  --useopt <arg>              Name of external package optionally used by this project.
+                              Note that the package name is case sensitive.
+
+Other Options:
+  --clean                     Remove backup and other temporary files left behind.
+  --clean-all                 Remove not only backup and other temporary files,
+                              but also the hidden '.basis' directory with copies
+                              of the template files.
+  --force                     Force deletion of modified template files and
+                              non-empty directories.
+  --[no]update                Do not update existing files. Only add new files.
+                              By default, in case of existing files, the project
+                              file is updated by merging changes of the possibly
+                              newer template and the existing file.
+  --[no]backup                Do not backup project files before updating them.
+                              By default, before any existing project file is
+                              modified, it is copied to a file with extension
+                              '~' before. The creation of these backup files is
+                              disabled by this option.
+  --template, -t <arg>        Root directory of project template. Defaults to
+                              the project template of this BASIS installation.
+
+  --verbose, -v               Increases verbosity of output messages.
+                              Can be given multiple times.
+  --help, -h                  Displays help and exit.
+  --helpshort                 Displays short help and exits.
+  --version                   Displays version information and exits.
+EOF_OPTIONS
 }
 
 # ----------------------------------------------------------------------------
@@ -144,52 +140,50 @@ function print_help
 {
     echo "Usage:"
 	echo "  $_EXEC_NAME [options]"
-	echo
-	echo "Description:"
-    echo "  This command-line tool, also referred to as project tool, can be used to"
-    echo "  create a new BASIS project from the template version @TEMPLATE_VERSION@ or to modify or"
-    echo "  upgrade an already existing project."
     echo
-    echo "  Depending on the grade of customization or optional inclusion of template"
-    echo "  components, different subsets of the fully featured project template can be"
-    echo "  selected. Additional template files and folders can be added to an existing"
-    echo "  project at any time. Further, if the --no* options are given explicitly,"
-    echo "  project files previously copied from the template are deleted. Files are,"
-    echo "  however, only deleted if they were not modified by the project developer since"
-    echo "  their creation and hence do not contain project related changes. Similarly are"
-    echo "  directories deleted by this tool only if empty. The deletion of modified files"
-    echo "  can be forced by using the --force option. Non-empty directories are yet kept"
-    echo "  and have to be deleted manually."
-    echo
-    echo "  An additional feature of this tool is, that it can upgrade an existing project"
-    echo "  to a newer project template version, given that the existing directory structure"
-    echo "  and file names were preserved. User changes to previously added template files"
-    echo "  are preserved and merged with the changes of the template using a so-called"
-    echo "  three-way diff using diff3 similar to the Subversion tool svn. Therefore, copies"
-    echo "  of the template files which a project file was created from are stored in the hidden"
-    echo "  '.basis' subdirectory. This directory should be kept and commited to the version"
-    echo "  control system if it is intended to manage the project files using this tool in"
-    echo "  the future, e.g., to upgrade to a newer template version. Otherwise, the option"
-    echo "  --clean-all can be used to have this tool delete this directory from the project."
-    echo
-    echo "  Besides the name of the new project and a brief description, names of external"
-    echo "  packages required or optionally used by this project can be specified. For each"
-    echo "  such package, an entry in the project's $depends_file file is created. If the"
-    echo "  package is not supported explicitly by BASIS, generic CMake statements to"
-    echo "  find the package are added. Note that these may not work for this unsupported"
-    echo "  package. In this case, the $depends_file file has to be edited manually."
-    echo "  Note that if an existing project is modified, the $depends_file file is added"
-    echo "  if not yet existent, ignoring the option --noconfig-depends."
+    cat -- << EOF_DESCRIPTION
+Description:
+  This command-line tool, also referred to as project tool, can be used to
+  create a new project from the BASIS project template version @TEMPLATE_VERSION@ or to modify a
+  previously created BASIS project.
+
+  Depending on the grade of customization or optional inclusion of template
+  components, different subsets of the fully featured project template can be
+  selected. Additional template files and folders can be added to an existing
+  project at any time. Further, if the --no* options are given explicitly,
+  project files previously copied from the template are deleted. Files are,
+  however, only deleted if they were not modified by the project developer since
+  their creation and hence do not contain project related changes. Similarly are
+  directories deleted by this tool only if empty. The deletion of modified files
+  can be forced by using the --force option. Non-empty directories are yet kept
+  and have to be deleted manually.
+
+  An additional feature of this tool is, that it can upgrade an existing project
+  to a newer project template version, given that the existing directory structure
+  and file names were preserved. User changes to previously added template files
+  are preserved and merged with the changes of the template using a so-called
+  three-way diff using diff3 similar to the Subversion tool svn. Therefore, copies
+  of the template files which a project file was created from are stored in the hidden
+  '.basis' subdirectory. This directory should be kept and commited to the version
+  control system if it is intended to manage the project files using this tool in
+  the future, e.g., to upgrade to a newer template version. Otherwise, the option
+  --clean-all can be used to have this tool delete this directory from the project.
+
+  Besides the name of the new project and a brief description, names of external
+  packages required or optionally used by this project can be specified. For each
+  such package, an entry in the list of dependencies given as argument to the
+  DEPENDS or DEPENDS_OPTIONAL option, respectively, of the basis_project() command
+  is added.
+EOF_DESCRIPTION
     echo
 	print_options
     echo
     echo "Examples:"
-	echo "  $_EXEC_NAME --name MyProject --description \"Novel image analysis method.\" --language CXX"
+	echo "  $_EXEC_NAME --name MyProject --description \"Novel image analysis method.\""
     echo "    Create a new project named 'MyProject' under the current working"
-    echo "    directory using the default project template. Further, enable support for the"
-    echo "    C/C++ programming language."
+    echo "    directory using the default project template."
     echo
-	echo "  $_EXEC_NAME --name MyProject --description \"Novel image analysis method.\" --language CXX --language PYTHON --use VTK"
+	echo "  $_EXEC_NAME --name MyProject --description \"Novel image analysis method.\" --use VTK"
     echo "    Create new project using C/C++ and Python with dependency on the package 'VTK'."
     echo
     echo "  $_EXEC_NAME --root /path/to/existing/project --test --config-test"
@@ -248,7 +242,7 @@ function get_project_name
     local name=''
 
     while read -r line; do
-        if [[ $line == *basis_project_initialize* ]]; then
+        if [[ $line == *basis_project* ]]; then
             active=1
         fi
         if [ $active -ne 0 ]; then
@@ -261,7 +255,7 @@ function get_project_name
                 break
             fi
         fi
-    done < "$root/CMakeLists.txt"
+    done < "$root/BasisProject.cmake"
     echo $name
 }
 
@@ -286,12 +280,10 @@ root=""              # root directory of new project (defaults to `pwd`/$name)
 name=""              # name of the project to create
 description=""       # project description
 verbosity=0          # verbosity level of output messages
-languages=()         # programming languages
-languages_num=0      # length of array languages
-package_names=()     # names of packages the new project depends on
-package_required=()  # whether the package at the same index in package_names
+dependencies=()     # names of packages the new project depends on
+dependency_required=()  # whether the package at the same index in dependencies
                      # is required or optional
-package_num=0        # length of arrays package_names and package_required
+dependencies_num=0   # length of arrays dependencies and dependency_required
 update=1             # whether to update existing files
 force=0              # whether to force update or removal of files
 backup=1             # whether to backup project files before updating them
@@ -299,7 +291,6 @@ clean=0              # whether to remove backup and other temporary files
 clean_all=0          # whether to remove all additional files
 
 conf_settings=0      # add/remove project settings file
-conf_depends=0       # add/remove dependencies configuration file
 conf_components=0    # add/remove components configuration file
 conf_package=0       # add/remove package configuration file
 conf_find=0          # add/remove find package configuration file
@@ -319,7 +310,6 @@ tests=0              # add/remove testing tree
 function use_minimal_template
 {
     conf_settings=-1
-    conf_depends=-1
     conf_components=-1
     conf_package=-1
     conf_find=-1
@@ -342,7 +332,6 @@ function use_standard_template
     local overwrite=${1:-1}
 
     if [ $overwrite -eq 1 -o $conf_settings -eq 0 ]; then conf_settings=-1; fi
-    if [ $overwrite -eq 1 -o $conf_depends -eq 0 ]; then conf_depends=-1; fi
     if [ $overwrite -eq 1 -o $conf_components -eq 0 ]; then conf_components=-1; fi
     if [ $overwrite -eq 1 -o $conf_package -eq 0 ]; then conf_package=-1; fi
     if [ $overwrite -eq 1 -o $conf_find -eq 0 ]; then conf_find=-1; fi
@@ -363,7 +352,6 @@ function use_standard_template
 function use_full_template
 {
     conf_settings=1
-    conf_depends=1
     conf_components=1
     conf_package=1
     conf_find=1
@@ -389,7 +377,6 @@ function use_default_template
             if [ $conf_find         -eq 0 -a -e "$root/config/Config.cmake.in" ]; then conf_find=1; fi
             if [ $conf_find_version -eq 0 -a -e "$root/config/ConfigVersion.cmake.in" ]; then conf_find_version=1; fi
             if [ $conf_tests        -eq 0 -a -e "$root/config/CTestCustom.cmake.in" ]; then conf_tests=1; fi
-            if [ $conf_depends      -eq 0 -a -e "$root/config/Depends.cmake" ]; then conf_depends=1; fi
             if [ $conf_generate     -eq 0 -a -e "$root/config/GenerateConfig.cmake" ]; then conf_generate=1; fi
             if [ $conf_package      -eq 0 -a -e "$root/config/Package.cmake" ]; then conf_package=1; fi
             if [ $conf_script       -eq 0 -a -e "$root/config/ScriptConfig.cmake.in" ]; then conf_script=1; fi
@@ -495,23 +482,12 @@ do
             force=1
             ;;
 
-        --language)
-            shift
-            if [ $# -gt 0 ]; then
-                languages[$languages_num]="$1"
-                ((languages_num++))
-            else
-                echo "Option --language requires an argument!" 1>&2
-                exit 1
-            fi
-            ;;
-
         --use)
             shift
             if [ $# -gt 0 ]; then
-                package_names[$package_num]="$1"
-                package_required[$package_num]=1
-                ((package_num++))
+                dependencies[$dependencies_num]="$1"
+                dependency_required[$dependencies_num]='true'
+                ((dependencies_num++))
             else
                 echo "Option --use requires an argument!" 1>&2
                 exit 1
@@ -521,9 +497,9 @@ do
         --useopt|--optuse)
             shift
             if [ $# -gt 0 ]; then
-                package_names[$package_num]="$1"
-                package_required[$package_num]=0
-                ((package_num++))
+                dependencies[$dependencies_num]="$1"
+                dependency_required[$dependencies_num]='false'
+                ((dependencies_num++))
             else
                 echo "Option --useopt requires an argument!" 1>&2
                 exit 1
@@ -544,7 +520,6 @@ do
 
         --config)
             conf_settings=1
-            conf_depends=1
             conf_components=1
             conf_package=1
             conf_find=1
@@ -557,7 +532,6 @@ do
 
         --noconfig)
             conf_settings=-1
-            conf_depends=-1
             conf_components=-1
             conf_package=-1
             conf_find=-1
@@ -573,13 +547,6 @@ do
             ;;
         --noconf-settings|--noconf-settings)
             conf_settings=-1
-            ;;
-
-        --conf-depends|--config-depends)
-            conf_depends=1
-            ;;
-        --noconf-depends|--noconf-depends)
-            conf_depends=-1
             ;;
 
         --conf-components|--config-components)
@@ -686,11 +653,6 @@ do
     shift
 done
 
-# depends_file required if external packages should be found
-if [ $package_num -gt 0 ]; then
-    conf_depends=1
-fi
-
 # simplify template path
 cwd=$(pwd)
 cd $template
@@ -717,11 +679,6 @@ if [ ! -z "$name" ]; then
         echo "No project description given!"
         exit 1
     fi
-    # use by default C++ as programming language if none is specified
-    if [ $languages_num -eq 0 ]; then
-        languages=('CXX')
-        languages_num=1
-    fi
 # request to modify existing project
 elif [ -n "$root" ]; then
     mode=1
@@ -734,6 +691,12 @@ elif [ -n "$root" ]; then
         echo "If you want to create a new project, please specify a project name." 1>&2
         exit 1
     fi
+    # is project a BASIS project?
+    if [ ! -f "${root}/BasisProject.cmake" ]; then
+        echo "Could not find a BasisProject.cmake file in ${root}! Are you sure this is a BASIS project?" 1>&2
+        exit 1
+    fi
+    # notify user that --description option is invalid
     if [ -n "$description" ]; then
         echo "Cannot modify description of existing project. Please edit root CMakeLists.txt file manually." 1>&2
         echo "Do not use option --description when attempting to modify an existing project." 1>&2
@@ -743,7 +706,7 @@ elif [ -n "$root" ]; then
         name=$(get_project_name "$root")
     fi
     if [ -z "$name" ]; then
-        echo "Failed to determine project name! Expected to find expression 'NAME[ ]\+\"ProjectName\"' in root CMakeLists.txt file." 1>&2
+        echo "Failed to determine project name! Expected to find expression 'NAME[ ]\+\"<project name>\"' in BasisProject.cmake file." 1>&2
         exit 1
     fi
 # invalid usage
@@ -798,17 +761,6 @@ function alter
         | sed "s/ReplaceByProjectDescription/$description/g" \
         | sed "s/ReplaceByTemplateVersion/@TEMPLATE_VERSION@/g" \
         > "$2"
-}
-
-# ----------------------------------------------------------------------------
-## @brief Alter languages.
-function alter_languages
-{
-    for language in "${languages[@]}"; do
-        # attention: the -i option of sed differs for Darwin and Linux version
-        sed "s/#AddLanguageHere/$language #AddLanguageHere/g" "$2" > "$2.temp"
-        mv "$2.temp" "$2"
-    done
 }
 
 # ----------------------------------------------------------------------------
@@ -906,8 +858,7 @@ function add
                 fi
             fi
             # alter project file, e.g., substitute for project name
-            alter           "$root/$path"      "$root/$path.temp"
-            alter_languages "$root/$path.temp" "$root/$path.temp"
+            alter "$root/$path" "$root/$path.temp"
             if [ -f "$root/$path.temp" ]; then
                 diff "$root/$path" "$root/$path.temp" &> /dev/null
                 if [ $? -ne 0 ]; then
@@ -930,8 +881,6 @@ function add
                 cp "$template/$path" "$root/$path.template" &> /dev/null
                 return 1
             fi
-            # alter languages
-            alter_languages "$root/$path.update" "$root/$path.update"
             # check if anything has changed at all
             diff "$root/$path" "$root/$path.update" &> /dev/null
             if [ $? -ne 0 ]; then
@@ -1098,11 +1047,11 @@ add "AUTHORS.txt"        || retval=1
 add "README.txt"         || retval=1
 add "INSTALL.txt"        || retval=1
 add "COPYING.txt"        || retval=1
+add "BasisProject.cmake" || retval=1
 add "CMakeLists.txt"     || retval=1
 add "src/CMakeLists.txt" || retval=1
 
 # additional configuration files
-addordel $conf_depends      "config/$depends_file"          || retval=1
 addordel $conf_settings     "config/Settings.cmake"         || retval=1
 addordel $conf_components   "config/Components.cmake"       || retval=1
 addordel $conf_package      "config/Package.cmake"          || retval=1
@@ -1142,104 +1091,37 @@ addordel $tests "test" 0              || retval=1 # for deletion of directory
 addordel $example "example/CMakeLists.txt" || retval=1
 addordel $example "example" 0              || retval=1 # for deletion of directory
 
+# ----------------------------------------------------------------------------
+# add dependencies to basis_project() command in BasisProject.cmake file
+if [ ${dependencies_num} -gt 0 ]; then
+    config_file="${root}/BasisProject.cmake"
+    idx=0
+    while [ $idx -lt $dependencies_num ]; do
+        dependency="${dependencies[$idx]}"
+        required=${dependency_required[$idx]}
+        # Attention: The -i option of sed differs for Darwin and Linux version.
+        # Note: The actual newline in the expression is intended.
+        if [ "X${required}" == 'Xtrue' ]; then
+            sed "s/#AddDependencyHere/\"${dependency}\" #AddDependencyHere/g" "${config_file}" > "${config_file}.temp" || retval=1
+        else
+            sed "s/#AddOptionalDependencyHere/\"${dependency}\" #AddOptionalDependencyHere/g" "${config_file}" > "${config_file}.temp" || retval=1
+        fi
+        if [ $? -eq 0 ]; then
+            mv "${config_file}.temp" "${config_file}" || retval=1
+        else
+            rm -f "${config_file}.temp"
+        fi
+        ((idx++))
+    done
+    echo "M ${config_file} - Added dependencies"
+fi
+
+# ----------------------------------------------------------------------------
 # done
 if [ $retval -ne 0 ]; then
     echo "$msg... - errors occurred"
 else
     echo "$msg... - done"
-fi
-
-# ----------------------------------------------------------------------------
-## @brief Append find_package() commands to CMake configuration file.
-#
-# @param [in] path             The path to the CMake configuration file.
-# @param [in] package          The name of the package.
-# @param [in] required         Whether this package is required.
-# @param [in] uppercase_prefix Whether to use uppercase only prefix for variables.
-# @param [in] use_file         Whether this package provides a \<name\>Use.cmake file.
-# @param [in] prefix           Prefix to use for package variables. Defaults to package name.
-#
-# @returns Nothing.
-function add_find_package
-{
-    local file=$1
-    local package=$2
-    local required=$3
-    local uppercase_prefix=$4
-    local use_file=$5
-    local prefix=$package
-
-    if [ $# -gt 5 ]; then
-        prefix=$6
-    fi
-
-    if [ $uppercase_prefix -ne 0 ]; then
-        prefix=$(echo $prefix | tr [:lower:] [:upper:])
-    fi
-
-    echo >> $file
-    echo "# ----------------------------------------------------------------------------" >> $file
-    echo "# $package" >> $file
-    if [ $required -ne 0 ]; then
-    echo "basis_find_package (${package} REQUIRED)" >> $file
-    else
-    echo "basis_find_package (${package})" >> $file
-    fi
-    echo >> $file
-    echo "if (${prefix}_FOUND)" >> $file
-    echo "  basis_use_package (${package})" >> $file
-    if [ $required -ne 0 ]; then
-        echo "else ()" >> $file
-        echo "  # raise fatal error in case Find${package}.cmake did not do it" >> $file
-        echo "  message (FATAL_ERROR \"Package ${package} not found.\")" >> $file
-    fi
-    echo "endif ()" >> $file
-
-    echo "M $file - added entry for package $package"
-}
-
-# ----------------------------------------------------------------------------
-# modify dependencies
-if [ $package_num -gt 0 ]; then
-    echo
-    echo "Adding dependencies..."
-
-    depends_file_path=$root/config/$depends_file
-
-    if [ ! -f "$depends_file_path" ]; then
-        echo "Dependencies configuration file $depends_file not found!" 1>&2
-        exit 1
-    fi
-
-    idx=0
-    while [ $idx -lt $package_num ]
-    do
-        pkg="${package_names[$idx]}"
-        required=${package_required[$idx]}
-
-        case "$pkg" in
-            # use package name for both find_package()
-            # and <Pkg>_VARIABLE variable names
-            # -> package provides <PKG>_USE_FILE
-            ITK)
-                add_find_package $depends_file_path $pkg $required 0 1
-                ;;
-            # use package name for find_package()
-            # and <PKG>_VARIABLE variable names
-            Matlab)
-                add_find_package $depends_file_path $pkg $required 1 0
-                ;;
-            # default, use package name for both find_package()
-            # and <Pkg>_VARIABLE variable names
-            *)
-                add_find_package $depends_file_path $pkg $required 0 0
-                ;;
-        esac
-
-        ((idx++))
-    done
-
-    echo "Adding dependencies... - done"
 fi
 
 # ============================================================================

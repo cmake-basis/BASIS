@@ -16,19 +16,23 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # basic command-line tools
-basis_add_executable (which which.py)
-basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
+if (PYTHONINTERP_FOUND)
+  basis_add_executable (which which.py)
+  basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
+endif ()
 
 # ----------------------------------------------------------------------------
 # doxygen filters
-basis_add_executable (doxyfilter.pl        LIBEXEC)
-basis_add_executable (doxyfilter-bash.py   LIBEXEC)
-basis_add_executable (doxyfilter-cmake.py  LIBEXEC)
-basis_add_executable (doxyfilter-matlab.pl LIBEXEC)
-basis_add_executable (doxyfilter-python.py LIBEXEC)
+if (PERL_FOUND AND PYTHONINTERP_FOUND)
+  basis_add_executable (doxyfilter.pl        LIBEXEC)
+  basis_add_executable (doxyfilter-bash.py   LIBEXEC)
+  basis_add_executable (doxyfilter-cmake.py  LIBEXEC)
+  basis_add_executable (doxyfilter-matlab.pl LIBEXEC)
+  basis_add_executable (doxyfilter-python.py LIBEXEC)
 
-basis_add_library ("DoxyGen/Filter.pm"     WITH_PATH)
-basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
+  basis_add_library ("DoxyGen/Filter.pm"     WITH_PATH)
+  basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
+endif ()
 
 # ----------------------------------------------------------------------------
 # automated testing
@@ -49,5 +53,7 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # other tools
-basis_add_executable (make_html_verbatim.sh)
-basis_set_target_properties (make_html_verbatim PROPERTIES SYMLINK_NAME "NONE")
+if (UNIX)
+  basis_add_executable (make_html_verbatim.sh)
+  basis_set_target_properties (make_html_verbatim PROPERTIES SYMLINK_NAME "NONE")
+endif ()

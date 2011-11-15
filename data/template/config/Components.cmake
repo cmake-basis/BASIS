@@ -2,8 +2,8 @@
 # @file  Components.cmake
 # @brief Configuration of component-based installers.
 #
-# This file is included by the BasisPack module if found in the
-# PROJECT_CONFIG_DIR after the CPack module was included. It is used to
+# This file is included by the BasisPack.cmake module if found in the
+# @c PROJECT_CONFIG_DIR after the CPack module was included. It is used to
 # configure component-based installers.
 #
 # Use the functions basis_add_component() and basis_add_component_group()
@@ -29,5 +29,4 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
-
 

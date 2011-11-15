@@ -238,24 +238,32 @@ function test_full_to_minimal_empty_project
 }
 
 # ----------------------------------------------------------------------------
-## @brief Test configuration of used languages.
-function test_configuration_of_language_support
+## @brief Test configuration of dependencies.
+function test_configuration_of_dependencies
 {
     local line
 
     echo "------------------------------------------------------------------------------"
-    echo "test_configuration_of_language_support:"
+    echo "test_configuration_of_dependencies:"
     echo
-    create --minimal --language CXX
-    line="$(grep 'LANGUAGES' "${source_dir}/CMakeLists.txt")"
-    if [[ "${line}" != '  LANGUAGES   CXX #AddLanguageHere' ]]; then
+    create --minimal --use "ITK"
+    line="$(grep 'DEPENDS ' "${source_dir}/BasisProject.cmake")"
+    [ ${FLAGS_verbose} -eq 0 ] || echo "Line: ${line}"
+    if [[ "${line}" != '  DEPENDS          "ITK" #AddDependencyHere' ]]; then
         echo
         echo "FAILED"
         exit 1
     fi
-    update --language python --language Perl
-    line="$(grep 'LANGUAGES' "${source_dir}/CMakeLists.txt")"
-    if [[ "${line}" != '  LANGUAGES   CXX python Perl #AddLanguageHere' ]]; then
+    update --use "VTK" --useopt "Cuda"
+    line="$(grep 'DEPENDS ' "${source_dir}/BasisProject.cmake")"
+    [ ${FLAGS_verbose} -eq 0 ] || echo "Line: ${line}"
+    if [[ "${line}" != '  DEPENDS          "ITK" "VTK" #AddDependencyHere' ]]; then
+        echo
+        echo "FAILED"
+        exit 1
+    fi
+    line="$(grep 'DEPENDS_OPTIONAL ' "${source_dir}/BasisProject.cmake")"
+    if [[ "${line}" != '  DEPENDS_OPTIONAL "Cuda" #AddOptionalDependencyHere' ]]; then
         echo
         echo "FAILED"
         exit 1
@@ -295,7 +303,7 @@ test_full_empty_project
 test_minimal_to_standard_empty_project
 test_minimal_to_full_empty_project
 test_full_to_minimal_empty_project
-test_configuration_of_language_support
+test_configuration_of_dependencies
 
 # negative tests
 test_required_arguments

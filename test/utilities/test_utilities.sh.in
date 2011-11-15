@@ -90,13 +90,7 @@ function create
     run "${BASISPROJECT}" \
         --name 'UtilitiesTest' \
         --description "A project used to test the BASIS utilities." \
-        --root "${SOURCE_DIR}" \
-        --language CXX \
-        --language Java \
-        --language Python \
-        --language Perl \
-        --language BASH \
-        --language MATLAB
+        --root "${SOURCE_DIR}"
     echo "Creating test project... - done"
 }
 
