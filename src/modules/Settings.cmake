@@ -299,6 +299,8 @@ set (PROJECT_DOC_DIR "@PROJECT_SOURCE_DIR@/doc")
 set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
 ## @brief Absolute path of diretory of public header files in source tree.
 set (PROJECT_INCLUDE_DIR "@PROJECT_SOURCE_DIR@/include")
+## @brief Absolute path of directory of project modules.
+set (PROJECT_MODULES_DIR "@PROJECT_SOURCE_DIR@/modules")
 ## @brief Absolute path of directory of testing tree in source tree.
 set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 
@@ -543,13 +545,13 @@ macro (basis_initialize_settings)
   # instantiate project directory structure
 
   # source tree
-  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
+  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE MODULES TESTING)
     set (VAR PROJECT_${P}_DIR)
     string (CONFIGURE "${${VAR}}" ${VAR} @ONLY)
   endforeach ()
 
   # build tree
-  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE TESTING)
+  foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE MODULES TESTING)
     file (RELATIVE_PATH SUBDIR "${PROJECT_SOURCE_DIR}" "${PROJECT_${P}_DIR}")
     set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${SUBDIR}")
   endforeach ()
