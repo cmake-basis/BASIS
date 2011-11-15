@@ -309,16 +309,6 @@ endfunction ()
 # @ingroup CMakeAPI
 
 function (basis_add_doc TARGET_NAME)
-  basis_check_target_name ("${TARGET_NAME}")
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
-
-  # lower target name is used, for example, for default DESTINATION
-  string (TOLOWER "${TARGET_NAME}" TARGET_NAME_LOWER)
-
-  # --------------------------------------------------------------------------
-  # default common options
-  # --------------------------------------------------------------------------
-
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "" "GENERATOR;COMPONENT;DESTINATION" "" ${ARGN})
 
@@ -329,6 +319,15 @@ function (basis_add_doc TARGET_NAME)
     # generator name is case insensitive
     string (TOUPPER "${ARGN_GENERATOR}" ARGN_GENERATOR)
   endif ()
+
+  # check target name
+  if (NOT "${ARGN_GENERATOR}" STREQUAL "NONE")
+    basis_check_target_name ("${TARGET_NAME}")
+    basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  endif ()
+
+  # lower target name is used, for example, for default DESTINATION
+  string (TOLOWER "${TARGET_NAME}" TARGET_NAME_LOWER)
 
   # default destination
   if (NOT ARGN_DESTINATION)
@@ -360,7 +359,7 @@ function (basis_add_doc TARGET_NAME)
   if ("${ARGN_GENERATOR}" STREQUAL "NONE")
 
     if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_UID}...")
+      message (STATUS "Adding documentation ${TARGET_NAME}...")
     endif ()
 
     # install documentation directory
@@ -383,7 +382,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
     if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_UID}... - done")
+      message (STATUS "Adding documentation ${TARGET_NAME}... - done")
     endif ()
 
   # --------------------------------------------------------------------------
