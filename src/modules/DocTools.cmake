@@ -57,26 +57,48 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 # @param [out] FILTER_PATTERNS List of default Doxygen filter patterns.
 
 function (basis_default_doxygen_filters FILTER_PATTERNS)
-  basis_get_target_location (CMAKE_FILTER  "basis@doxyfilter-cmake"  ABSOLUTE)
-  basis_get_target_location (PYTHON_FILTER "basis@doxyfilter-python" ABSOLUTE)
-  basis_get_target_location (PERL_FILTER   "basis@doxyfilter"        ABSOLUTE)
-  basis_get_target_location (BASH_FILTER   "basis@doxyfilter-bash"   ABSOLUTE)
-  basis_get_target_location (MATLAB_FILTER "basis@doxyfilter-matlab" ABSOLUTE)
+  set (PATTERNS)
 
-  set (
-    ${FILTER_PATTERNS}
-      "*.cmake=\"${CMAKE_FILTER}\""
-      "*.cmake.in=\"${CMAKE_FILTER}\""
-      "*.ctest=\"${CMAKE_FILTER}\""
-      "*.ctest.in=\"${CMAKE_FILTER}\""
-      "CMakeLists.txt=\"${CMAKE_FILTER}\""
-      "*.sh=\"${BASH_FILTER}\""
-      "*.sh.in=\"${BASH_FILTER}\""
-      "*.m=\"${MATLAB_FILTER}\""
-      "*.m.in=\"${MATLAB_FILTER}\""
-      "*.py=" # TODO Python filer disabled because it does not work properly
-    PARENT_SCOPE
+  macro (register_filter FILTER)
+    basis_target_uid (TARGET_UID "${FILTER}")
+    if (TARGET "${TARGET_UID}")
+      basis_get_target_location (FILTER_PATH "${TARGET_UID}" ABSOLUTE)
+      foreach (ARG ${ARGN})
+        list (APPEND PATTERNS "${ARG}=${FILTER_PATH}")
+      endforeach ()
+    endif ()
+  endmacro ()
+
+  register_filter (
+    basis@doxyfilter-cmake
+      "CMakeLists.txt"
+      "*.cmake"
+      "*.cmake.in"
+      "*.ctest"
+      "*.ctest.in"
   )
+
+  register_filter (
+    basis@doxyfilter-bash
+      "*.sh"
+      "*.sh.in"
+  )
+
+  register_filter (
+    basis@doxyfilter-matlab
+      "*.m"
+      "*.m.in"
+  )
+
+  # TODO Python filer disabled because it does not work properly
+#  register_filter (
+#    basis@doxyfilter-python
+#      "*.py"
+#      "*.py.in"
+#  )
+
+  # return
+  set ("${FILTER_PATTERNS}" "${PATTERNS}" PARENT_SCOPE)
 endfunction ()
 
 ## @}
@@ -449,7 +471,10 @@ function (basis_add_doc TARGET_NAME)
     endif ()
     basis_list_to_delimited_string (DOXYGEN_INPUT " " ${DOXYGEN_INPUT})
     if (NOT DOXYGEN_INPUT_FILTER)
-      basis_get_target_location (DOXYGEN_INPUT_FILTER "basis@doxyfilter" ABSOLUTE)
+      basis_target_uid (DOXYFILTER "basis@doxyfilter")
+      if (TARGET "${DOXYFILTER}")
+        basis_get_target_location (DOXYGEN_INPUT_FILTER "${DOXYFILTER}" ABSOLUTE)
+      endif ()
     endif ()
     if (DOXYGEN_INPUT_FILTER MATCHES "^(None|NONE|none)$")
       set (DOXYGEN_INPUT_FILTER)

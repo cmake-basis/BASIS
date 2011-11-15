@@ -70,7 +70,7 @@ endmacro ()
 #       reminder only.
 
 macro (basis_use_package PACKAGE)
-  string (TOUPPER P ${PACKAGE})
+  string (TOUPPER "${PACKAGE}" P)
   if (${PACKAGE}_FOUND OR ${P}_FOUND)
     if (${PACKAGE}_USE_FILE)
       include ("${${PACKAGE}_USE_FILE}")

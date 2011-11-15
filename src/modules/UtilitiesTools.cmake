@@ -368,7 +368,7 @@ function (basis_configure_auxiliary_modules)
 
   # --------------------------------------------------------------------------
   # Python
-  if (BASIS_PROJECT_USES_PYTHON)
+  if (BASIS_PROJECT_USES_PYTHON_UTILITIES)
     foreach (MODULE basis stdaux)
       set (TARGET_NAME "${MODULE}.py")
       basis_add_library (
@@ -381,7 +381,7 @@ function (basis_configure_auxiliary_modules)
 
   # --------------------------------------------------------------------------
   # Perl
-  if (BASIS_PROJECT_USES_PERL)
+  if (BASIS_PROJECT_USES_PERL_UTILITIES)
     foreach (MODULE Basis StdAux)
       set (TARGET_NAME "${MODULE}.pm")
       basis_add_library (
@@ -394,7 +394,7 @@ function (basis_configure_auxiliary_modules)
 
   # --------------------------------------------------------------------------
   # BASH
-  if (BASIS_PROJECT_USES_BASH)
+  if (BASIS_PROJECT_USES_BASH_UTILITIES)
     foreach (MODULE basis stdaux)
       set (TARGET_NAME "${MODULE}.sh")
       basis_add_library (
@@ -428,10 +428,10 @@ function (basis_configure_ExecutableTargetInfo)
   # --------------------------------------------------------------------------
   # ExecutableTargetInfo not used?
 
-  set (CXX    ${BASIS_PROJECT_USES_CXX})
-  set (PYTHON ${BASIS_PROJECT_USES_PYTHON})
-  set (PERL   ${BASIS_PROJECT_USES_PERL})
-  set (BASH   ${BASIS_PROJECT_USES_BASH})
+  set (CXX    TRUE)
+  set (PYTHON ${BASIS_PROJECT_USES_PYTHON_UTILITIES})
+  set (PERL   ${BASIS_PROJECT_USES_PERL_UTILITIES})
+  set (BASH   ${BASIS_PROJECT_USES_BASH_UTILITIES})
 
   if (NOT CXX AND NOT PYTHON AND NOT PERL AND NOT BASH)
     return ()

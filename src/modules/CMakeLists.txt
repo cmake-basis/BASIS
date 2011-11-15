@@ -12,17 +12,19 @@
 # modules
 set (
   CMAKE_MODULES
+    # main modules
     "BasisPack.cmake"               # packaging, wraps CPack
-    "BasisProject.cmake"            # main module
+    "BasisSettings.cmake"           # basic settings
+    "BasisTools.cmake"              # definition of macros and functions
     "BasisTest.cmake"               # testing, wraps CTest
     "BasisUpdate.cmake"             # automatic file update (deprecated)
+    # submodules included by BasisTools.cmake
     "CommonTools.cmake"             # common functions/macros
     "DocTools.cmake"                # documentation generation
     "ExternalData.cmake"            # storing data externally
     "ExternalData_config.cmake.in"  # config of ExternalData.cmake module
     "InstallationTools.cmake"       # software installation
     "MatlabTools.cmake"             # MATLAB support
-    "Settings.cmake"                # basic settings
     "SubversionTools.cmake"         # Subversion support
     "TargetTools.cmake"             # addition of build targets
     "UtilitiesTools.cmake"          # generation/configuration of utilities

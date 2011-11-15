@@ -1467,6 +1467,13 @@ function (basis_add_script TARGET_NAME)
     message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Missing script file ${ARGN_SCRIPT}!")
   endif ()
 
+  # "parse" script to check if BASIS utilities are used and hence required
+  file (READ "${ARGN_SCRIPT}" SCRIPT)
+  if (SCRIPT MATCHES "@BASIS_([A-Z]+)_UTILITIES@")
+    set (BASIS_PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE CACHE INTERNAL "" FORCE)
+  endif ()
+  set (SCRIPT)
+
   # get scripting language
   basis_get_source_language (SCRIPT_LANGUAGE "${ARGN_SCRIPT}")
 
@@ -2290,14 +2297,6 @@ function (basis_export_targets)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Replaces CMake's install() command.
-#
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
-
-function (basis_install)
-  install (${ARGN})
-endfunction ()
-
 
 ## @}
+# Doxygen group

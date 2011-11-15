@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  Settings.cmake
+# @file  BasisSettings.cmake
 # @brief BASIS configuration and default CMake settings used by projects.
 #
 # This module defines global CMake constants and variables which are used
@@ -27,6 +27,24 @@
 #
 # @ingroup CMakeTools
 ##############################################################################
+
+# ============================================================================
+# CMake version and policies
+# ============================================================================
+
+cmake_minimum_required (VERSION 2.8.4)
+
+# Add policies introduced with CMake versions newer than the one specified
+# above. These policies would otherwise trigger a policy not set warning by
+# newer CMake versions.
+
+if (POLICY CMP0016)
+  cmake_policy (SET CMP0016 NEW)
+endif ()
+
+if (POLICY CMP0017)
+  cmake_policy (SET CMP0017 NEW)
+endif ()
 
 # ============================================================================
 # system checks

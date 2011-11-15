@@ -29,7 +29,7 @@
 cmake_minimum_required (VERSION 2.8.4)
 
 # ============================================================================
-# initialize
+# project template version
 # ============================================================================
 
 # The version of the template this project was instantiated from.
@@ -46,6 +46,10 @@ cmake_minimum_required (VERSION 2.8.4)
 # be avoided.
 set (TEMPLATE_VERSION "1.0")
 
+# ============================================================================
+# initialize
+# ============================================================================
+
 # the following variables would be set by the BASISConfig.cmake file if
 # this would be a project which uses BASIS; in fact, this *is* BASIS, though
 set (BASIS_MODULE_PATH          "${CMAKE_CURRENT_SOURCE_DIR}/src/modules")
@@ -59,42 +63,10 @@ set (BASIS_PYTHON_LIBRARY_DIR   "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
 set (BASIS_PERL_LIBRARY_DIR     "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
 
 # include BASIS policies, settings, macros, and functions
-include ("${BASIS_MODULE_PATH}/BasisProject.cmake" NO_POLICY_SCOPE)
+include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
+include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
 
-# select languages used by this project
-option (BUILD_UTILITIES_FOR_CXX    "Whether to build the C++ utilities."    ON)
-option (BUILD_UTILITIES_FOR_PYTHON "Whether to build the Python utilities." ON)
-option (BUILD_UTILITIES_FOR_PERL   "Whether to build the Perl utilities."   ON)
-
-if (UNIX)
-  option (BUILD_UTILITIES_FOR_BASH "Whether to build the BASH utilities." ON)
-else ()
-  set (BUILD_UTILITIES_FOR_BASH OFF)
-endif ()
-
-set (LANGUAGES "LANGUAGES")
-if (BUILD_UTILITIES_FOR_CXX)
-  list (APPEND LANGUAGES "CXX")
-endif ()
-if (BUILD_UTILITIES_FOR_PYTHON)
-  list (APPEND LANGUAGES "Python")
-endif ()
-if (BUILD_UTILITIES_FOR_PERL)
-  list (APPEND LANGUAGES "Perl")
-endif ()
-if (BUILD_UTILITIES_FOR_BASH)
-  list (APPEND LANGUAGES "BASH")
-endif ()
-
-# initialize project
-basis_project_initialize (
-  NAME        "BASIS"
-  VERSION     "0.0.0"
-  DESCRIPTION "This package implements and supports the development of"
-              " software which follows the SBIA Build system And Software"
-              " Implementation Standard (BASIS)."
-  ${LANGUAGES}
-)
+basis_project_initialize ()
 
 # ============================================================================
 # subdirectories
@@ -103,6 +75,10 @@ basis_project_initialize (
 # source code of programs
 if (EXISTS "${PROJECT_CODE_DIR}")
   add_subdirectory ("${PROJECT_CODE_DIR}")
+endif ()
+
+if (EXISTS "${PROJECT_MODULES_DIR}")
+  add_subdirectory ("${PROJECT_MODULES_DIR}")
 endif ()
 
 # auxiliary data files

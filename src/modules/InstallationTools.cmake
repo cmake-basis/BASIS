@@ -13,9 +13,37 @@
 ## @addtogroup CMakeUtilities
 # @{
 
+
 # ============================================================================
-# Links
+# Installation
 # ============================================================================
+
+##############################################################################
+# @brief Replaces CMake's install() command.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
+
+function (basis_install)
+  install (${ARGN})
+endfunction ()
+
+##############################################################################
+# @brief Install content of current source directory excluding typical files.
+#
+# @param [in] DESTINATION Destination directory.
+# @param [in] ARGN        Further arguments for CMake's install(DIRECTORY) command.
+
+function (basis_install_directory DESTINATION)
+  install (
+    DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/"
+    DESTINATION "${DESTINATION}"
+    ${ARGN}
+    PATTERN     CMakeLists.txt EXCLUDE
+    PATTERN     *~             EXCLUDE
+    PATTERN     .svn           EXCLUDE
+    PATTERN     .git           EXCLUDE
+  )
+endfunction ()
 
 ##############################################################################
 # @brief Add installation command for creation of a symbolic link.
