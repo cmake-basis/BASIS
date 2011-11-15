@@ -32,9 +32,19 @@ cmake_minimum_required (VERSION 2.8.4)
 # initialize
 # ============================================================================
 
-# the version of the template this project was instantiated from
-# this information might be used by BASIS to maintain backwards compatibility
-set (TEMPLATE_VERSION "0.1.6")
+# The version of the template this project was instantiated from.
+# This information might be used by BASIS to maintain backwards compatibility.
+#
+# Note that this version in case of the BASIS project itself defines the
+# current version of the project template. Thus, this version number has to
+# be changed whenever the project template was modified.
+#
+# A patch version number is not used here because subtle changes of the
+# template files do not need to be tracked. This version number may only
+# become of importance in case the project template is noticably extended or
+# modified, which has to be done with care, however, in any case and should
+# be avoided.
+set (TEMPLATE_VERSION "1.0")
 
 # the following variables would be set by the BASISConfig.cmake file if
 # this would be a project which uses BASIS; in fact, this *is* BASIS, though
