@@ -40,9 +40,9 @@ PACKAGE OVERVIEW
   - test/               Implementation of software tests and corresponding data.
 
   - AUTHORS.txt         A list of the people who contributed to this software.
-  - README.txt          This readme file.
   - COPYING.txt         The copyright and license notices.
   - INSTALL.txt         Build and installation instructions.
+  - README.txt          This readme file.
 
 
   Binary Package
