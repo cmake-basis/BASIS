@@ -147,7 +147,7 @@ function print_help
 	echo
 	echo "Description:"
     echo "  This command-line tool, also referred to as project tool, can be used to"
-    echo "  create a new BASIS project from the template version @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ or to modify or"
+    echo "  create a new BASIS project from the template version @TEMPLATE_VERSION@ or to modify or"
     echo "  upgrade an already existing project."
     echo
     echo "  Depending on the grade of customization or optional inclusion of template"
@@ -796,7 +796,7 @@ function alter
     cat "$1" \
         | sed "s/ReplaceByProjectName/$name/g" \
         | sed "s/ReplaceByProjectDescription/$description/g" \
-        | sed "s/ReplaceByTemplateVersion/@PROJECT_VERSION@/g" \
+        | sed "s/ReplaceByTemplateVersion/@TEMPLATE_VERSION@/g" \
         > "$2"
 }
 
