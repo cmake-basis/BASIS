@@ -183,8 +183,8 @@ macro (basis_project_modules)
     basis_module_info (${F})
     list (APPEND PROJECT_MODULES ${MODULE})
     get_filename_component (${MODULE}_BASE ${F} PATH)
-    set (${MODULE}_SOURCE_DIR ${PROJECT_SOURCE_DIR}/${${MODULE}_BASE})
-    set (${MODULE}_BINARY_DIR ${PROJECT_BINARY_DIR}/${${MODULE}_BASE})
+    set (MODULE_${MODULE}_SOURCE_DIR ${PROJECT_SOURCE_DIR}/${${MODULE}_BASE})
+    set (MODULE_${MODULE}_BINARY_DIR ${PROJECT_BINARY_DIR}/${${MODULE}_BASE})
   endforeach()
   unset (MODULE)
 
@@ -274,7 +274,7 @@ macro (basis_project_modules)
   include (${BASIS_MODULE_PATH}/TopologicalSort.cmake)
   topological_sort (PROJECT_MODULES_ENABLED "" "_DEPENDS")
 
- # remove external dependencies
+  # remove external dependencies
   set (L)
   foreach (MODULE ${PROJECT_MODULES_ENABLED})
     if (${MODULE}_DECLARED)
@@ -306,6 +306,104 @@ macro (basis_project_modules)
     endif ()
   endforeach ()
 endmacro ()
+
+##############################################################################
+# @brief Configure public header files.
+#
+# Copy public header files to build tree using the same relative paths
+# as will be used for the installation. We need to use configure_file()
+# here such that the header files in the build tree are updated whenever
+# the source header file was modified. Moreover, this gives us a chance to
+# configure header files with the .in suffix.
+
+function (basis_configure_public_headers)
+  file (
+    GLOB_RECURSE
+      PROJECT_PUBLIC_HEADERS
+    RELATIVE "${PROJECT_INCLUDE_DIR}"
+      "${PROJECT_INCLUDE_DIR}/*.h"
+      "${PROJECT_INCLUDE_DIR}/*.h.in"
+      "${PROJECT_INCLUDE_DIR}/*.hh"
+      "${PROJECT_INCLUDE_DIR}/*.hh.in"
+      "${PROJECT_INCLUDE_DIR}/*.hpp"
+      "${PROJECT_INCLUDE_DIR}/*.hpp.in"
+      "${PROJECT_INCLUDE_DIR}/*.hxx"
+      "${PROJECT_INCLUDE_DIR}/*.hxx.in"
+      "${PROJECT_INCLUDE_DIR}/*.inl"
+      "${PROJECT_INCLUDE_DIR}/*.inl.in"
+      "${PROJECT_INCLUDE_DIR}/*.txx"
+      "${PROJECT_INCLUDE_DIR}/*.txx.in"
+  )
+
+  foreach (H ${PROJECT_PUBLIC_HEADERS})
+    get_filename_component (D "${H}" PATH)
+    if (H MATCHES "\\.in$")
+      get_filename_component (F "${H}" NAME_WE)
+      set (MODE "@ONLY")
+    else ()
+      get_filename_component (F "${H}" NAME)
+      set (MODE "COPYONLY")
+    endif ()
+    if (INCLUDE_PREFIX MATCHES "/$")
+      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${D}/${F}" ${MODE})
+    else ()
+      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${D}/${INCLUDE_PREFIX}${F}" ${MODE})
+    endif ()
+  endforeach ()
+
+  basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
+  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
+endfunction ()
+
+##############################################################################
+# @brief Install root documentation files.
+#
+# The root documentation files are located in the top-level directory of the
+# source tree. These are, in particular, the readme file, the INSTALL file
+# with build and installation instructions, the AUTHORS file with information
+# on the authors of the software, and the COPYING file with copyright and
+# licensing information.
+#
+# @note Do this after the inclusion of the Settings.cmake file such that a
+#       project can potentially overwrite the defaults even though not
+#       recommended.
+
+function (basis_install_root_documentation_files)
+  macro (basis_install_root_documentation_file DOC_FILE)
+    if (NOT EXISTS ${DOC_FILE})
+      return ()
+    endif ()
+    # use extension on Windows, but leave it out on Unix
+    get_filename_component (FILE_NAME "${DOC_FILE}" NAME_WE)
+    get_filename_component (FILE_EXT  "${DOC_FILE}" EXT)
+    if (WIN32)
+      if (NOT FILE_EXT)
+        set (FILE_EXT ".txt")
+      endif ()
+    else ()
+      if (FILE_EXT STREQUAL ".txt")
+        set (FILE_EXT "")
+      endif ()
+    endif ()
+    set (OUTPUT_NAME "${FILE_NAME}${FILE_EXT}")
+    # copy file to build tree
+    if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+      configure_file ("${DOC_FILE}" "${PROJECT_BINARY_DIR}/${OUTPUT_NAME}" COPYONLY)
+    endif ()
+    # install file
+    install (
+      FILES       "${DOC_FILE}"
+      DESTINATION "${INSTALL_DOC_DIR}"
+      RENAME      "${OUTPUT_NAME}"
+      OPTIONAL
+    )
+  endmacro ()
+
+  basis_install_root_documentation_file ("${PROJECT_AUTHORS_FILE}")
+  basis_install_root_documentation_file ("${PROJECT_README_FILE}")
+  basis_install_root_documentation_file ("${PROJECT_INSTALL_FILE}")
+  basis_install_root_documentation_file ("${PROJECT_LICENSE_FILE}")
+endfunction ()
 
 ##############################################################################
 # @brief Initialize project, calls CMake's project() command.
@@ -453,9 +551,9 @@ macro (basis_project_initialize)
   # start CMake project if not done yet
   #
   # Note that in particular SlicerConfig.cmake will invoke project() by itself.
-  if (NOT ${PROJECT_NAME}_SOURCE_DIR)
+  #if (NOT ${PROJECT_NAME}_SOURCE_DIR)
     project ("${PROJECT_NAME}")
-  endif ()
+  #endif ()
 
   set (CMAKE_PROJECT_NAME "${PROJECT_NAME}") # variable used by CPack
 
@@ -501,15 +599,15 @@ macro (basis_project_initialize)
   endif ()
 
   # print project information
-  if (BASIS_VERBOSE)
+  if (BASIS_VERBOSE AND NOT PROJECT_IS_MODULE)
     message (STATUS "Project:")
     message (STATUS "  Name      = ${PROJECT_NAME}")
     message (STATUS "  Version   = ${PROJECT_VERSION}")
     message (STATUS "  SoVersion = ${PROJECT_SOVERSION}")
     if (PROJECT_REVISION)
-    message (STATUS "  Revision  = ${PROJECT_REVISION}")
+      message (STATUS "  Revision  = ${PROJECT_REVISION}")
     else ()
-    message (STATUS "  Revision  = n/a")
+      message (STATUS "  Revision  = n/a")
     endif ()
   endif ()
 
@@ -556,60 +654,7 @@ macro (basis_project_initialize)
   endif ()
 
   # --------------------------------------------------------------------------
-  # header files
-
-  # Copy public header files to build tree using the same relative paths
-  # as will be used for the installation. We need to use configure_file()
-  # here such that the header files in the build tree are updated whenever
-  # the source header file was modified. Moreover, this gives us a chance to
-  # configure header files with the .in suffix.
-
-  file (
-    GLOB_RECURSE
-      PROJECT_PUBLIC_HEADERS
-    RELATIVE "${PROJECT_INCLUDE_DIR}"
-      "${PROJECT_INCLUDE_DIR}/*.h"
-      "${PROJECT_INCLUDE_DIR}/*.h.in"
-      "${PROJECT_INCLUDE_DIR}/*.hh"
-      "${PROJECT_INCLUDE_DIR}/*.hh.in"
-      "${PROJECT_INCLUDE_DIR}/*.hpp"
-      "${PROJECT_INCLUDE_DIR}/*.hpp.in"
-      "${PROJECT_INCLUDE_DIR}/*.hxx"
-      "${PROJECT_INCLUDE_DIR}/*.hxx.in"
-      "${PROJECT_INCLUDE_DIR}/*.inl"
-      "${PROJECT_INCLUDE_DIR}/*.inl.in"
-      "${PROJECT_INCLUDE_DIR}/*.txx"
-      "${PROJECT_INCLUDE_DIR}/*.txx.in"
-  )
-
-  foreach (H ${PROJECT_PUBLIC_HEADERS})
-    get_filename_component (D "${H}" PATH)
-    if (H MATCHES "\\.in$")
-      get_filename_component (F "${H}" NAME_WE)
-      set (MODE "@ONLY")
-    else ()
-      get_filename_component (F "${H}" NAME)
-      set (MODE "COPYONLY")
-    endif ()
-    if (INCLUDE_PREFIX MATCHES "/$")
-      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${D}/${F}" ${MODE})
-    else ()
-      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${D}/${INCLUDE_PREFIX}${F}" ${MODE})
-    endif ()
-  endforeach ()
-
-  basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
-  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
-
-  unset (PROJECT_PUBLIC_HEADERS)
-  unset (MODE)
-
-  # --------------------------------------------------------------------------
   # authors, readme, install and license files
-
-  # Do this after the inclusion of the Settings.cmake file such that a project
-  # can potentially overwrite the defaults even though not recommended.
-
   if (NOT PROJECT_AUTHORS_FILE)
     if (EXISTS "${PROJECT_SOURCE_DIR}/AUTHORS.txt")
       set (PROJECT_AUTHORS_FILE "${PROJECT_SOURCE_DIR}/AUTHORS.txt")
@@ -653,130 +698,6 @@ macro (basis_project_initialize)
   elseif (NOT EXISTS "${PROJECT_LICENSE_FILE}")
     message (FATAL_ERROR "Specified project license file does not exist.")
   endif ()
-
-  get_filename_component (AUTHORS "${PROJECT_AUTHORS_FILE}" NAME_WE)
-  get_filename_component (README  "${PROJECT_README_FILE}"  NAME_WE)
-  get_filename_component (INSTALL "${PROJECT_INSTALL_FILE}" NAME_WE)
-  get_filename_component (LICENSE "${PROJECT_LICENSE_FILE}" NAME_WE)
-
-  get_filename_component (AUTHORS_EXT "${PROJECT_AUTHORS_FILE}" EXT)
-  get_filename_component (README_EXT  "${PROJECT_README_FILE}"  EXT)
-  get_filename_component (INSTALL_EXT "${PROJECT_INSTALL_FILE}" EXT)
-  get_filename_component (LICENSE_EXT "${PROJECT_LICENSE_FILE}" EXT)
-
-  if (WIN32)
-    if (NOT AUTHORS_EXT)
-      set (AUTHORS_EXT ".txt")
-    endif ()
-    if (NOT README_EXT)
-      set (README_EXT ".txt")
-    endif ()
-    if (NOT INSTALL_EXT)
-      set (INSTALL_EXT ".txt")
-    endif ()
-    if (NOT LICENSE_EXT)
-      set (LICENSE_EXT ".txt")
-    endif ()
-  else ()
-    if (AUTHORS_EXT STREQUAL ".txt")
-      set (AUTHORS_EXT "")
-    endif ()
-    if (README_EXT STREQUAL ".txt")
-      set (README_EXT "")
-    endif ()
-    if (INSTALL_EXT STREQUAL ".txt")
-      set (INSTALL_EXT "")
-    endif ()
-    if (LICENSE_EXT STREQUAL ".txt")
-      set (LICENSE_EXT "")
-    endif ()
-  endif ()
-
-  set (AUTHORS "${AUTHORS}${AUTHORS_EXT}")
-  set (README  "${README}${README_EXT}")
-  set (INSTALL "${INSTALL}${INSTALL_EXT}")
-  set (LICENSE "${LICENSE}${LICENSE_EXT}")
-
-  if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
-    if (PROJECT_README_FILE)
-      configure_file ("${PROJECT_README_FILE}" "${PROJECT_BINARY_DIR}/${README}" COPYONLY)
-    endif ()
-    if (PROJECT_LICENSE_FILE)
-      configure_file ("${PROJECT_LICENSE_FILE}" "${PROJECT_BINARY_DIR}/${LICENSE}" COPYONLY)
-    endif ()
-    if (PROJECT_AUTHORS_FILE)
-      configure_file ("${PROJECT_AUTHORS_FILE}" "${PROJECT_BINARY_DIR}/${AUTHORS}" COPYONLY)
-    endif ()
-    if (PROJECT_INSTALL_FILE)
-      configure_file ("${PROJECT_INSTALL_FILE}" "${PROJECT_BINARY_DIR}/${INSTALL}" COPYONLY)
-    endif ()
-  endif ()
-
-  install (
-    FILES       "${PROJECT_README_FILE}"
-    DESTINATION "${INSTALL_DOC_DIR}"
-    RENAME      "${README}"
-    OPTIONAL
-  )
-
-  install (
-    FILES       "${PROJECT_AUTHORS_FILE}"
-    DESTINATION "${INSTALL_DOC_DIR}"
-    RENAME      "${AUTHORS}"
-    OPTIONAL
-  )
-
-  install (
-    FILES       "${PROJECT_INSTALL_FILE}"
-    DESTINATION "${INSTALL_DOC_DIR}"
-    RENAME      "${INSTALL}"
-    OPTIONAL
-  )
-
-  install (
-    FILES       "${PROJECT_LICENSE_FILE}"
-    DESTINATION "${INSTALL_DOC_DIR}"
-    RENAME      "${LICENSE}"
-    OPTIONAL
-  )
-
-  unset (AUTHORS)
-  unset (README)
-  unset (INSTALL)
-  unset (LICENSE)
-
-  unset (AUTHORS_EXT)
-  unset (README_EXT)
-  unset (INSTALL_EXT)
-  unset (LICENSE_EXT)
-
-  # --------------------------------------------------------------------------
-  # (pre-)configure C++ utilities
-
-  basis_configure_auxiliary_sources (
-    BASIS_UTILITIES_SOURCES
-    BASIS_UTILITIES_HEADERS
-    BASIS_UTILITIES_PUBLIC_HEADERS
-  )
-
-  set (BASIS_UTILITIES_INCLUDE_DIRS)
-  foreach (H ${BASIS_UTILITIES_HEADERS})
-    get_filename_component (D "${H}" PATH)
-    list (APPEND BASIS_UTILITIES_INCLUDE_DIRS "${D}")
-  endforeach ()
-  if (BASIS_UTILITIES_INCLUDE_DIRS)
-    list (REMOVE_DUPLICATES BASIS_UTILITIES_INCLUDE_DIRS)
-  endif ()
-  if (BASIS_UTILITIES_INCLUDE_DIRS)
-    basis_include_directories (BEFORE ${BASIS_UTILITIES_INCLUDE_DIRS})
-  endif ()
-
-  if (BASIS_UTILITIES_HEADERS)
-    source_group ("Default" FILES ${BASIS_UTILITIES_HEADERS})
-  endif ()
-  if (BASIS_UTILITIES_SOURCES)
-    source_group ("Default" FILES ${BASIS_UTILITIES_SOURCES})
-  endif ()
 endmacro ()
 
 # ============================================================================
@@ -802,6 +723,10 @@ endmacro ()
 # @ingroup CMakeAPI
 
 macro (basis_project_finalize)
+  # --------------------------------------------------------------------------
+  # install root documentation files
+  basis_install_root_documentation_files ()
+
   # --------------------------------------------------------------------------
   # install public headers
 
@@ -927,8 +852,34 @@ endmacro ()
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # initialize project
-  basis_project_modules ()
   basis_project_initialize ()
+
+  # --------------------------------------------------------------------------
+  # load information of modules
+  set (PROJECT_MODULES)
+  set (PROJECT_MODULES_ENABLED)
+  set (PROJECT_MODULES_DISABLED)
+
+  if (NOT PROJECT_IS_MODULE)
+    basis_project_modules ()
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # public header files
+  basis_configure_public_headers ()
+
+  # --------------------------------------------------------------------------
+  # pre-configure C++ utilities
+  basis_configure_auxiliary_sources (
+    BASIS_UTILITIES_SOURCES
+    BASIS_UTILITIES_HEADERS
+    BASIS_UTILITIES_PUBLIC_HEADERS
+  )
+
+  basis_use_auxiliary_sources (
+    BASIS_UTILITIES_SOURCES
+    BASIS_UTILITIES_HEADERS
+  )
 
   # --------------------------------------------------------------------------
   # subdirectories
@@ -940,7 +891,15 @@ macro (basis_project_impl)
 
   # build modules
   foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-    add_subdirectory ("${${MODULE}_SOURCE_DIR}" "${${MODULE}_BINARY_DIR}")
+    if (BASIS_VERBOSE)
+      message (STATUS "Configuring module ${MODULE}...")
+    endif ()
+    set (PROJECT_IS_MODULE TRUE)
+    add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
+    set (PROJECT_IS_MODULE FALSE)
+    if (BASIS_VERBOSE)
+      message (STATUS "Configuring module ${MODULE}... - done")
+    endif ()
   endforeach ()
 
   # install auxiliary data files

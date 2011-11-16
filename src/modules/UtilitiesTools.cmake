@@ -341,6 +341,8 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   endif ()
   list (APPEND SOURCES_OUT "${SOURCE_OUT}")
 
+  
+
   # return
   set (${SOURCES}        "${SOURCES_OUT}"        PARENT_SCOPE)
   set (${HEADERS}        "${HEADERS_OUT}"        PARENT_SCOPE)
@@ -348,6 +350,32 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
 
   if (BASIS_VERBOSE)
     message (STATUS "Configuring auxiliary sources... - done")
+  endif ()
+endfunction ()
+
+##############################################################################
+# @brief Add include directories of auxiliary sources to search path.
+#
+# @param [in] SOURCES_LIST Name of list of source files.
+# @param [in] HEADERS_LIST Name of list of header files.
+
+function (basis_use_auxiliary_sources SOURCES_LIST HEADERS_LIST)
+  set (INCLUDE_DIRS)
+  foreach (H IN LISTS ${HEADERS_LIST})
+    get_filename_component (D "${H}" PATH)
+    list (APPEND INCLUDE_DIRS "${D}")
+  endforeach ()
+  if (INCLUDE_DIRS)
+    list (REMOVE_DUPLICATES INCLUDE_DIRS)
+  endif ()
+  if (INCLUDE_DIRS)
+    basis_include_directories (BEFORE ${INCLUDE_DIRS})
+  endif ()
+  if (${HEADERS_LIST})
+    source_group ("Default" FILES ${${HEADERS_LIST}})
+  endif ()
+  if (${SOURCES_LIST})
+    source_group ("Default" FILES ${${SOURCES_LIST}})
   endif ()
 endfunction ()
 

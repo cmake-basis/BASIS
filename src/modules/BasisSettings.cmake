@@ -328,36 +328,36 @@ endmacro ()
 #       are supposed to use these variables instead of the actual names.
 
 ## @brief Absolute path of directory of project sources in source tree.
-set (PROJECT_CODE_DIR "@PROJECT_SOURCE_DIR@/src")
+set (PROJECT_CODE_DIR "\@PROJECT_SOURCE_DIR\@/src")
 ## @brief Absolute path of directory of BASIS project configuration in source tree.
-set (PROJECT_CONFIG_DIR "@PROJECT_SOURCE_DIR@/config")
+set (PROJECT_CONFIG_DIR "\@PROJECT_SOURCE_DIR\@/config")
 ## @brief Absolute path of directory of auxiliary data in source tree.
-set (PROJECT_DATA_DIR "@PROJECT_SOURCE_DIR@/data")
+set (PROJECT_DATA_DIR "\@PROJECT_SOURCE_DIR\@/data")
 ## @brief Absolute path of directory of documentation files in source tree.
-set (PROJECT_DOC_DIR "@PROJECT_SOURCE_DIR@/doc")
+set (PROJECT_DOC_DIR "\@PROJECT_SOURCE_DIR\@/doc")
 ## @brief Absolute path of directory of example in source tree.
-set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
+set (PROJECT_EXAMPLE_DIR "\@PROJECT_SOURCE_DIR\@/example")
 ## @brief Absolute path of diretory of public header files in source tree.
-set (PROJECT_INCLUDE_DIR "@PROJECT_SOURCE_DIR@/include")
+set (PROJECT_INCLUDE_DIR "\@PROJECT_SOURCE_DIR\@/include")
 ## @brief Absolute path of directory of project modules.
-set (PROJECT_MODULES_DIR "@PROJECT_SOURCE_DIR@/modules")
+set (PROJECT_MODULES_DIR "\@PROJECT_SOURCE_DIR\@/modules")
 ## @brief Absolute path of directory of testing tree in source tree.
-set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
+set (PROJECT_TESTING_DIR "\@PROJECT_SOURCE_DIR\@/test")
 
 # ----------------------------------------------------------------------------
 # testing tree
 # ----------------------------------------------------------------------------
 
 ## @brief Absolute path of output directory for tests.
-set (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary")
+set (TESTING_OUTPUT_DIR "\@PROJECT_BINARY_DIR\@/Testing/Temporary")
 ## @brief Absolute path of output directory for built test executables.
-set (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
+set (TESTING_RUNTIME_DIR "\@PROJECT_BINARY_DIR\@/Testing/bin")
 ## @brief Absolute path of output directory for testing libraries.
-set (TESTING_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
+set (TESTING_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib")
 ## @brief Absolute path of output directory for Python modules used for testing.
-set (TESTING_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/python")
+set (TESTING_PYTHON_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib/python")
 ## @brief Absolute path of output directory for Perl modules used for testing.
-set (TESTING_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/perl5")
+set (TESTING_PERL_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib/perl5")
 
 # ----------------------------------------------------------------------------
 # build tree
@@ -366,17 +366,17 @@ set (TESTING_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/perl5")
 # These directory paths will be made absolute by the initialization functions.
 
 ## @brief Absolute path of output directory for main executables.
-set (BINARY_RUNTIME_DIR "@PROJECT_BINARY_DIR@/bin")
+set (BINARY_RUNTIME_DIR "\@PROJECT_BINARY_DIR\@/bin")
 ## @brief Absolute path of output directory for auxiliary executables.
-set (BINARY_LIBEXEC_DIR "@PROJECT_BINARY_DIR@/lib")
+set (BINARY_LIBEXEC_DIR "\@PROJECT_BINARY_DIR\@/lib")
 ## @brief Absolute path of output directory for shared libraries and modules.
-set (BINARY_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib")
+set (BINARY_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib")
 ## @brief Absolute path of output directory for static and import libraries.
-set (BINARY_ARCHIVE_DIR "@PROJECT_BINARY_DIR@/lib")
+set (BINARY_ARCHIVE_DIR "\@PROJECT_BINARY_DIR\@/lib")
 ## @brief Absolute path of output directory for Python modules.
-set (BINARY_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/python")
+set (BINARY_PYTHON_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib/python")
 ## @brief Absolute path of output directory for Perl modules.
-set (BINARY_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/perl5")
+set (BINARY_PERL_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib/perl5")
 
 # ----------------------------------------------------------------------------
 # install tree
