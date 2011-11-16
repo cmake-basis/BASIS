@@ -6,7 +6,9 @@
 #       from the template file ConfigUse.cmake.in which is part of this
 #       source package.
 #
-# If this CMake module was already included before, it will do nothing.
+# If this CMake module was already included before, it will only reset the
+# BASIS settings for a new invocation of the function basis_project_impl(),
+# for example, inside a module of a project.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -19,6 +21,10 @@
 set (NS "@PROJECT_NAME@_")
 
 # ----------------------------------------------------------------------------
+# attention: Always reset the settings when this file is included!
+include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
+
+# ----------------------------------------------------------------------------
 # include guard
 if (__${NS}USE_FILE_INCLUDED)
   return ()
@@ -29,7 +35,6 @@ endif ()
 # ----------------------------------------------------------------------------
 # BASIS CMake tools
 
-include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 include ("${${NS}MODULE_PATH}/BasisTools.cmake")
 
 # ----------------------------------------------------------------------------
