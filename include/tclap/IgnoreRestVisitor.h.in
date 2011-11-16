@@ -23,8 +23,8 @@
 #ifndef TCLAP_IGNORE_REST_VISITOR_H
 #define TCLAP_IGNORE_REST_VISITOR_H
 
-#include <sbia/tclap/Visitor.h>
-#include <sbia/tclap/Arg.h>
+#include <@INCLUDE_PREFIX@tclap/Visitor.h>
+#include <@INCLUDE_PREFIX@tclap/Arg.h>
 
 namespace TCLAP {
 

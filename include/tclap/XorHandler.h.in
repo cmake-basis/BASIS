@@ -23,7 +23,7 @@
 #ifndef TCLAP_XORHANDLER_H
 #define TCLAP_XORHANDLER_H
 
-#include <sbia/tclap/Arg.h>
+#include <@INCLUDE_PREFIX@tclap/Arg.h>
 #include <string>
 #include <vector>
 #include <algorithm>

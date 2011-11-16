@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#include <sbia/tclap/Arg.h>
+#include <@INCLUDE_PREFIX@tclap/Arg.h>
 
 namespace TCLAP {
 

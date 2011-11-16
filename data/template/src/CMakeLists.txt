@@ -12,7 +12,7 @@
 # library target(s)
 # ============================================================================
 
-# Add library target for each library using basis_add_library ().
+# Add library target for each library using basis_add_library().
 #
 # This command can not only be used to build libraries from C/C++, but also source
 # code written in other programming languages such as Java, Python, Perl, BASH,

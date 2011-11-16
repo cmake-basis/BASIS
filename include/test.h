@@ -45,8 +45,8 @@
 #  define GTEST_HAS_PTHREAD 0
 #endif
 
-#include <sbia/gtest/gtest.h>
-#include <sbia/gmock/gmock.h>
+#include <sbia/basis/gtest/gtest.h>
+#include <sbia/basis/gmock/gmock.h>
 
 
 #endif // SBIA_BASIS_TEST_H_

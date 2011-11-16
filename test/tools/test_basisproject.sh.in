@@ -247,7 +247,7 @@ function test_configuration_of_dependencies
     echo "test_configuration_of_dependencies:"
     echo
     create --minimal --use "ITK"
-    line="$(grep 'DEPENDS ' "${source_dir}/BasisProject.cmake")"
+    line="$(grep ' DEPENDS ' "${source_dir}/BasisProject.cmake")"
     [ ${FLAGS_verbose} -eq 0 ] || echo "Line: ${line}"
     if [[ "${line}" != '  DEPENDS          "ITK" #AddDependencyHere' ]]; then
         echo
@@ -262,8 +262,8 @@ function test_configuration_of_dependencies
         echo "FAILED"
         exit 1
     fi
-    line="$(grep 'DEPENDS_OPTIONAL ' "${source_dir}/BasisProject.cmake")"
-    if [[ "${line}" != '  DEPENDS_OPTIONAL "Cuda" #AddOptionalDependencyHere' ]]; then
+    line="$(grep 'OPTIONAL_DEPENDS ' "${source_dir}/BasisProject.cmake")"
+    if [[ "${line}" != '  OPTIONAL_DEPENDS "Cuda" #AddOptionalDependencyHere' ]]; then
         echo
         echo "FAILED"
         exit 1
