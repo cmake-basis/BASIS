@@ -797,9 +797,11 @@ endfunction ()
 
 function (basis_add_executable_target TARGET_NAME)
   # parse arguments
+  set (NO_BASIS_UTILITIES "${BASIS_NO_BASIS_UTILITIES}")
+
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-    "LIBEXEC;TEST;NO_BASIS_UTILITIES;NO_EXPORT"
+    "LIBEXEC;TEST;BASIS_UTILITIES;NO_BASIS_UTILITIES;NO_EXPORT"
     "DESTINATION;COMPONENT"
     ""
     ${ARGN}
@@ -815,6 +817,14 @@ function (basis_add_executable_target TARGET_NAME)
   # check target name
   basis_check_target_name (${TARGET_NAME})
   basis_target_uid (TARGET_UID "${TARGET_NAME}")
+
+  # whether or not to link to BASIS utilities
+  if (ARGN_NO_BASIS_UTILITIES)
+    set (NO_BASIS_UTILITIES TRUE)
+  endif ()
+  if (ARGN_BASIS_UTILITIES)
+    set (NO_BASIS_UTILITIES FALSE)
+  endif ()
 
   # component
   if (NOT ARGN_COMPONENT)
@@ -840,7 +850,7 @@ function (basis_add_executable_target TARGET_NAME)
   endif ()
 
   # add standard auxiliary library
-  if (NOT ARGN_NO_BASIS_UTILITIES)
+  if (NOT NO_BASIS_UTILITIES)
     basis_target_uid (BASIS_UTILITIES_TARGET "basisutilities")
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
       basis_target_name (T "${BASIS_UTILITIES_TARGET}")

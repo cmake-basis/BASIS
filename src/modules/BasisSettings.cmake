@@ -146,6 +146,10 @@ set (BASIS_RUNTIME_COMPONENT "Runtime")
 option (BASIS_USE_TARGET_UIDS "Whether to use (globally) unique build target names." OFF)
 mark_as_advanced (BASIS_USE_TARGET_UIDS)
 
+## @brief Specifies that the BASIS C++ utilities shall by default not be added
+#         as dependency of an executable.
+set (BASIS_NO_BASIS_UTILITIES FALSE)
+
 ## @brief Character used to separate namespace and target name in target UID.
 #
 # This separator is used to construct a UID for a particular target.
@@ -243,8 +247,6 @@ else ()
   endif ()
   mark_as_advanced (BASIS_INSTALL_SINFIX)
 endif ()
-
-
 
 
 ## @}

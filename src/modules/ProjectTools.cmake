@@ -201,6 +201,8 @@ endmacro ()
 # @ingroup CMakeAPI
 
 macro (basis_project_initialize)
+  message ("basis_project_initialize()")
+
   # --------------------------------------------------------------------------
   # reset
 
@@ -420,6 +422,8 @@ macro (basis_project_initialize)
       "${PROJECT_INCLUDE_DIR}/*.txx"
       "${PROJECT_INCLUDE_DIR}/*.txx.in"
   )
+
+  message ("Headers of ${PROJECT_NAME}: ${PROJECT_PUBLIC_HEADERS}")
 
   foreach (H ${PROJECT_PUBLIC_HEADERS})
     get_filename_component (D "${H}" PATH)
@@ -740,4 +744,63 @@ macro (basis_project_finalize)
   if (NOT PROJECT_IS_MODULE)
     include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
   endif ()
+endmacro ()
+
+# ============================================================================
+# root CMakeLists.txt implementation
+# ============================================================================
+
+##############################################################################
+# @brief Implementation of root CMakeLists.txt file of BASIS project.
+#
+# This macro implements the entire logic of the top-level CMakeLists.txt file.
+# At first, the project is initialized and the BASIS settings configured using
+# the project information given in the BasisProject.cmake file which must be
+# located in the same directory. The, the code in the CMakeLists.txt files
+# in the subdirectories is executed in order. At the end, the configuration
+# of the build system is finalized, including in particular also the addition
+# of custom build targets which perform the actual build of custom build
+# targets such as the ones build using the MATLAB Compiler.
+#
+# @sa BasisProject.cmake
+# @sa basis_project()
+# @sa basis_project_initialize()
+# @sa basis_project_finalize()
+
+macro (basis_project_impl)
+  # --------------------------------------------------------------------------
+  # initialize project
+  basis_project_initialize ()
+
+  # --------------------------------------------------------------------------
+  # subdirectories
+
+  # build source code of programs
+  if (EXISTS "${PROJECT_CODE_DIR}")
+    add_subdirectory ("${PROJECT_CODE_DIR}")
+  endif ()
+
+  # install auxiliary data files
+  if (EXISTS "${PROJECT_DATA_DIR}")
+    add_subdirectory ("${PROJECT_DATA_DIR}")
+  endif ()
+
+  # build/install package documentation
+  if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
+    add_subdirectory ("${PROJECT_DOC_DIR}")
+  endif ()
+
+  # build/install example application
+  if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
+    add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
+  endif ()
+
+  # build software tests
+  if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
+   add_subdirectory ("${PROJECT_TESTING_DIR}")
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # finalize
+  basis_project_finalize ()
 endmacro ()

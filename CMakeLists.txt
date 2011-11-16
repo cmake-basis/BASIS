@@ -13,24 +13,23 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# ============================================================================
-# CMake version
-# ============================================================================
+# ----------------------------------------------------------------------------
+# required CMake version
 
-# Note: There is a bug in CMake version 2.8.2 which prevents the following
-#       command to execute correctly:
+# There is a bug in CMake version 2.8.2 which prevents the following command
+# to execute correctly:
 #
-#         cmake "-DCOMMAND=CFLAGS=-Wall [...]" -P ExecuteProcess.cmake
+#   cmake "-DCOMMAND=CFLAGS=-Wall [...]" -P ExecuteProcess.cmake
 #
-#       because of the occurrence of an equal sign (=) within the value
-#       assigned to variable COMMAND. This bug was apparently fixed in
-#       CMake version 2.8.4. A command such as the one above is required to
-#       build MEX-files using the MEX script and MATLAB Compiler targets.
+# because of the occurrence of an equal sign (=) within the value assigned to
+# variable COMMAND. This bug was apparently fixed in CMake version 2.8.4.
+# A command such as the one above is required to build MEX-files using the
+# MEX script and MATLAB Compiler targets.
+
 cmake_minimum_required (VERSION 2.8.4)
 
-# ============================================================================
-# project template version
-# ============================================================================
+# ----------------------------------------------------------------------------
+# version of BASIS template this project was instantiated from
 
 # The version of the template this project was instantiated from.
 # This information might be used by BASIS to maintain backwards compatibility.
@@ -44,14 +43,15 @@ cmake_minimum_required (VERSION 2.8.4)
 # become of importance in case the project template is noticably extended or
 # modified, which has to be done with care, however, in any case and should
 # be avoided.
+
 set (TEMPLATE_VERSION "1.0")
 
-# ============================================================================
-# initialize
-# ============================================================================
+# ----------------------------------------------------------------------------
+# include BASIS policies, settings, macros, and functions
 
-# the following variables would be set by the BASISConfig.cmake file if
-# this would be a project which uses BASIS; in fact, this *is* BASIS, though
+# The following variables would be set by the BASISConfig.cmake file if
+# this would be a project which uses BASIS.
+
 set (BASIS_MODULE_PATH          "${CMAKE_CURRENT_SOURCE_DIR}/src/modules")
 set (BASIS_INCLUDE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set (BASIS_LIBRARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/lib")
@@ -62,47 +62,9 @@ set (BASIS_BASH_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash"
 set (BASIS_PYTHON_LIBRARY_DIR   "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
 set (BASIS_PERL_LIBRARY_DIR     "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
 
-# include BASIS policies, settings, macros, and functions
 include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
 
-basis_project_initialize ()
-
-# ============================================================================
-# subdirectories
-# ============================================================================
-
-# source code of programs
-if (EXISTS "${PROJECT_CODE_DIR}")
-  add_subdirectory ("${PROJECT_CODE_DIR}")
-endif ()
-
-if (EXISTS "${PROJECT_MODULES_DIR}")
-  add_subdirectory ("${PROJECT_MODULES_DIR}")
-endif ()
-
-# auxiliary data files
-if (EXISTS "${PROJECT_DATA_DIR}")
-  add_subdirectory ("${PROJECT_DATA_DIR}")
-endif ()
-
-# package documentation
-if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
-  add_subdirectory ("${PROJECT_DOC_DIR}")
-endif ()
-
-# example application
-if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
-  add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
-endif ()
-
-# software testing
-if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
-  add_subdirectory ("${PROJECT_TESTING_DIR}")
-endif ()
-
-# ============================================================================
-# finalize
-# ============================================================================
-
-basis_project_finalize ()
+# ----------------------------------------------------------------------------
+# configure build system
+basis_project_impl ()
