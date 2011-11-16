@@ -8,35 +8,24 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# ============================================================================
-# required CMake version
-# ============================================================================
-
+# ----------------------------------------------------------------------------
+# minimum required CMake version
 cmake_minimum_required (VERSION 2.8.4)
 
-# ============================================================================
-# project template version
-# ============================================================================
-
-# the version of the BASIS template this project was instantiated from
+# ----------------------------------------------------------------------------
+# version of BASIS template used by this project
 set (TEMPLATE_VERSION "ReplaceByTemplateVersion")
 
-# ============================================================================
-# initialize
-# ============================================================================
-
-# find BASIS package
+# ----------------------------------------------------------------------------
+# include BASIS policies, settings, macros, and functions
 find_package (BASIS REQUIRED)
 
-# include BASIS policies, settings, macros, and functions
 if (BASIS_FOUND)
   include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
 else ()
   return ()
 endif ()
 
-# ============================================================================
-# main
-# ============================================================================
-
+# ----------------------------------------------------------------------------
+# configure build system
 basis_project_impl ()
