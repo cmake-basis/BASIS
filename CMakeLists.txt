@@ -14,7 +14,7 @@
 ##############################################################################
 
 # ----------------------------------------------------------------------------
-# required CMake version
+# minimum required CMake version
 
 # There is a bug in CMake version 2.8.2 which prevents the following command
 # to execute correctly:

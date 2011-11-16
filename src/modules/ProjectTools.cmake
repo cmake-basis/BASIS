@@ -147,6 +147,167 @@ endmacro ()
 # ============================================================================
 
 ##############################################################################
+# @brief Initialize project modules.
+
+macro (basis_project_modules)
+  # --------------------------------------------------------------------------
+  # load module DAG
+
+  # glob BasisProject.cmake files in modules subdirectory
+  file (
+    GLOB
+      MODULE_INFO_FILES
+    RELATIVE
+      "${PROJECT_SOURCE_DIR}"
+      "${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
+  )
+
+  # use function scope to avoid overwriting of this project's variables
+  function (basis_module_info F)
+    set (PROJECT_IS_MODULE TRUE)
+    include (${PROJECT_SOURCE_DIR}/${F})
+    # make sure that basis_project() was called
+    if (NOT PROJECT_NAME)
+      message (FATAL_ERROR "basis_module_info(): Module name not defined in ${F}!")
+    endif ()
+    # do not use MODULE instead of PROJECT_NAME as it is not set in
+    # the scope of this function but its parent only
+    set (MODULE "${PROJECT_NAME}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_DEPENDS "${PROJECT_DEPENDS}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_TEST_DEPENDS "${PROJECT_TEST_DEPENDS}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_DECLARED TRUE PARENT_SCOPE)
+  endfunction ()
+
+  set (PROJECT_MODULES)
+  foreach (F ${MODULE_INFO_FILES})
+    basis_module_info (${F})
+    list (APPEND PROJECT_MODULES ${MODULE})
+    get_filename_component (${MODULE}_BASE ${F} PATH)
+    set (${MODULE}_SOURCE_DIR ${PROJECT_SOURCE_DIR}/${${MODULE}_BASE})
+    set (${MODULE}_BINARY_DIR ${PROJECT_BINARY_DIR}/${${MODULE}_BASE})
+  endforeach()
+  unset (MODULE)
+
+  # validate the module DAG to identify cyclic dependencies
+  macro (basis_module_check MODULE NEEDED_BY STACK)
+    if (${MODULE}_DECLARED)
+      if (${MODULE}_CHECK_STARTED AND NOT ${MODULE}_CHECK_FINISHED)
+        # we reached a module while traversing its own dependencies recursively
+        set (MSG "")
+        foreach (M ${STACK})
+          set (MSG " ${M} =>${MSG}")
+          if ("${M}" STREQUAL "${MODULE}")
+            break ()
+          endif ()
+        endforeach ()
+        message (FATAL_ERROR "Module dependency cycle detected:\n ${MSG} ${MODULE}")
+      elseif (NOT ${MODULE}_CHECK_STARTED)
+        # traverse dependencies of this module
+        set (${MODULE}_CHECK_STARTED TRUE)
+        foreach (D IN LISTS ${MODULE}_DEPENDS)
+          basis_module_check (${D} ${MODULE} "${MODULE};${STACK}")
+        endforeach ()
+        set (${MODULE}_CHECK_FINISHED TRUE)
+      endif ()
+    endif ()
+  endmacro ()
+
+  foreach (MODULE ${PROJECT_MODULES})
+    basis_module_check ("${MODULE}" "" "")
+  endforeach ()
+
+  # --------------------------------------------------------------------------
+  # determine list of enabled modules
+
+  # provide an option for all modules
+  option (BUILD_ALL_MODULES "Request to build all modules." OFF)
+
+  # provide an option for each module
+  foreach (MODULE ${PROJECT_MODULES})
+    option (MODULE_${MODULE} "Request building module ${MODULE}" OFF)
+    if (${MODULE}_EXCLUDE_FROM_ALL)
+      set (${MODULE}_IN_ALL FALSE)
+    else ()
+      set (${MODULE}_IN_ALL ${BUILD_ALL_MODULES})
+    endif ()
+  endforeach ()
+
+  # follow dependencies
+  macro (basis_module_enable MODULE NEEDED_BY)
+    if (${MODULE}_DECLARED)
+      if (NEEDED_BY)
+        list (APPEND ${MODULE}_NEEDED_BY "${MODULE}")
+      else ()
+        set (${MODULE}_NEEDED_BY "")
+      endif ()
+      if (NOT ${MODULE}_ENABLED)
+        set (${MODULE}_ENABLED TRUE)
+        foreach (D IN LISTS ${MODULE}_DEPENDS)
+          basis_module_enable (${D} ${MODULE})
+        endforeach ()
+      endif ()
+    endif ()
+  endmacro ()
+
+  foreach (MODULE ${PROJECT_MODULES})
+    if (MODULE_${MODULE} OR ${MODULE}_IN_ALL)
+      basis_module_enable ("${MODULE}" "")
+    endif ()
+  endforeach ()
+
+  # build final list of enabled modules
+  set (PROJECT_MODULES_ENABLED "")
+  set (PROJECT_MODULES_DISABLED "")
+  foreach (MODULE ${PROJECT_MODULES})
+    if (${MODULE}_DECLARED)
+      if (${MODULE}_ENABLED)
+        list (APPEND PROJECT_MODULES_ENABLED ${MODULE})
+      else ()
+        list (APPEND PROJECT_MODULES_DISABLED ${MODULE})
+      endif ()
+    endif ()
+  endforeach ()
+  list (SORT PROJECT_MODULES_ENABLED) # Deterministic order.
+  list (SORT PROJECT_MODULES_DISABLED) # Deterministic order.
+
+  # order list to satisfy dependencies
+  include (${BASIS_MODULE_PATH}/TopologicalSort.cmake)
+  topological_sort (PROJECT_MODULES_ENABLED "" "_DEPENDS")
+
+ # remove external dependencies
+  set (L)
+  foreach (MODULE ${PROJECT_MODULES_ENABLED})
+    if (${MODULE}_DECLARED)
+      list (APPEND L "${MODULE}")
+    endif ()
+  endforeach ()
+  set (PROJECT_MODULES_ENABLED "${L}")
+  unset (L)
+
+  # report what will be built
+  foreach (MODULE ${PROJECT_MODULES_ENABLED})
+    if (MODULE_${MODULE})
+      set (R ", requested by MODULE_${MODULE}")
+    elseif (${MODULE}_IN_ALL)
+      set (R ", requested by BUILD_ALL_MODULES")
+    else ()
+      set (R ", needed by [${${MODULE}_NEEDED_BY}]")
+    endif ()
+    message (STATUS "Enabled ${MODULE}${R}.")
+  endforeach ()
+  unset (R)
+
+  # hide options for modules that will build anyway
+  foreach (MODULE ${PROJECT_MODULES})
+    if (${MODULE}_IN_ALL OR ${MODULE}_NEEDED_BY)
+      set_property (CACHE MODULE_${MODULE} PROPERTY TYPE INTERNAL)
+    else ()
+      set_property (CACHE MODULE_${MODULE} PROPERTY TYPE BOOL)
+    endif ()
+  endforeach ()
+endmacro ()
+
+##############################################################################
 # @brief Initialize project, calls CMake's project() command.
 #
 # This macro is called at the beginning of the root CMakeLists.txt file of
@@ -766,6 +927,7 @@ endmacro ()
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # initialize project
+  basis_project_modules ()
   basis_project_initialize ()
 
   # --------------------------------------------------------------------------
