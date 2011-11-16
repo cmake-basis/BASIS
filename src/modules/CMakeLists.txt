@@ -27,6 +27,7 @@ set (
     "MatlabTools.cmake"             # MATLAB support
     "SubversionTools.cmake"         # Subversion support
     "TargetTools.cmake"             # addition of build targets
+    "TopologicalSort.cmake"         # topological sorting of build dependencies
     "UtilitiesTools.cmake"          # generation/configuration of utilities
 )
 

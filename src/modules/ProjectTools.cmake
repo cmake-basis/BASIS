@@ -20,6 +20,9 @@
 # Any BASIS project has to call this macro in the file BasisProject.cmake
 # located in the top level directory of the source tree in order to define
 # the project attributes required by BASIS to setup the build system.
+# Moreover, if the BASIS project is a module of another BASIS project, this
+# file and the variables set by this macro are used by the super-project to
+# identify its modules and the dependencies among them.
 #
 # @par Project version:
 # The version number consists of three components: the major version number,
@@ -48,36 +51,23 @@
 # additional CMake code shall be executed to include the settings of the external
 # package (which is usually done in a so-called Use<Pkg>.cmake file if the
 # package would be CMake aware), such code should be added to the Settings.cmake
-# file of the project located in the directory @c PROJECT_CONFIG_DIR.
-#
-# @par Default documentation:
-# Each BASIS project has to have a README.txt file in the top directory of the
-# software component. This file is the root documentation file which refers the
-# user to the further documentation files in @c PROJECT_DOC_DIR.
-# The same applies to the COPYING.txt file with the copyright and license
-# notices which must be present in the top directory of the source tree as well.
+# file of the project.
 #
 # @param [in] ARGN This list is parsed for the following arguments:
 # @par
 # <table border="0">
 #   <tr>
-#     @tp @b DEPENDS name[, name] @endtp
-#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
-#         or names of external packages.</td>
+#     @tp @b NAME name @endtp
+#     <td>The name of the project.</td>
 #   </tr>
 #   <tr>
-#     @tp @b DEPENDS_OPTIONAL name[, name] @endtp
-#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
-#         or names of external packages which are used only if available.</td>
+#     @tp @b VERSION major[.minor[.patch]] @endtp
+#     <td>Project version string. Defaults to "1.0.0"</td>
 #   </tr>
 #   <tr>
 #     @tp @b DESCRIPTION description @endtp
 #     <td>Package description, used for packing. If multiple arguments are given,
 #         they are concatenated using one space character as delimiter.</td>
-#   </tr>
-#   <tr>
-#     @tp @b NAME name @endtp
-#     <td>The name of the project.</td>
 #   </tr>
 #   <tr>
 #     @tp @b PACKAGE_VENDOR name @endtp
@@ -86,60 +76,69 @@
 #         Default: "SBIA Group at University of Pennsylvania".</td>
 #   </tr>
 #   <tr>
-#     @tp @b VERSION major[.minor[.patch]] @endtp
-#     <td>Project version string. Defaults to "1.0.0"</td>
+#     @tp @b DEPENDS name[, name] @endtp
+#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
+#         or names of external packages.</td>
 #   </tr>
 #   <tr>
-#     @tp @b WELCOME_FILE file @endtp
-#     <td>Welcome file used for installer.</td>
+#     @tp @b OPTIONAL_DEPENDS name[, name] @endtp
+#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
+#         or names of external packages which are used only if available.</td>
+#   </tr>
+#   <tr>
+#     @tp @b TEST_DEPENDS name[, name] @endtp
+#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
+#         or names of external packages which are only required by the tests.</td>
 #   </tr>
 # </table>
 #
 # @returns Sets the following non-cached CMake variables:
-# @retval PROJECT_DEPENDS          List of @c DEPENDS arguments.
-# @retval PROJECT_DEPENDS_OPTIONAL List of @c DEPENDS_OPTIONAL arguments.
-# @retval PROJECT_DESCRIPTION      @c DESCRIPTION argument.
 # @retval PROJECT_NAME             @c NAME argument.
-# @retval PROJECT_PACKAGE_VENDOR   @c PACKAGE_VENDOR argument.
 # @retval PROJECT_VERSION          @c VERSION argument.
+# @retval PROJECT_DESCRIPTION      Concatenated @c DESCRIPTION arguments.
+# @retval PROJECT_PACKAGE_VENDOR   Concatenated @c PACKAGE_VENDOR argument.
+# @retval PROJECT_DEPENDS          @c DEPENDS arguments.
+# @retval PROJECT_OPTIONAL_DEPENDS @c OPTIONAL_DEPENDS arguments.
+# @retval PROJECT_TEST_DEPENDS     @c TEST_DEPENDS arguments.
 
 macro (basis_project)
   # clear project attributes of CMake defaults or superproject
-  set (PROJECT_DEPENDS)
-  set (PROJECT_DEPENDS_OPTIONAL)
-  set (PROJECT_DESCRIPTION)
   set (PROJECT_NAME)
-  set (PROJECT_PACKAGE_VENDOR)
   set (PROJECT_VERSION)
+  set (PROJECT_DESCRIPTION)
+  set (PROJECT_DEPENDS)
+  set (PROJECT_OPTIONAL_DEPENDS)
+  set (PROJECT_TEST_DEPENDS)
+  set (PROJECT_PACKAGE_VENDOR)
 
   # parse arguments and/or include project settings file
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
       ""
       "NAME;VERSION"
-      "DEPENDS;DEPENDS_OPTIONAL;DESCRIPTION;PACKAGE_VENDOR"
+      "DESCRIPTION;PACKAGE_VENDOR;DEPENDS;OPTIONAL_DEPENDS;TEST_DEPENDS"
     ${ARGN}
   )
 
   # check required project attributes or set default values
   if (NOT PROJECT_NAME)
-    message (FATAL_ERROR "Project name not specified!")
+    message (FATAL_ERROR "basis_project(): Project name not specified!")
   endif ()
 
   if (NOT PROJECT_VERSION)
-    message (FATAL_ERROR "Project version not specified!")
-  endif ()
-
-  if (PROJECT_PACKAGE_VENDOR)
-    basis_list_to_delimited_string (PROJECT_PACKAGE_VENDOR " " ${PROJECT_PACKAGE_VENDOR})
-  else ()
-    set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
+    message (FATAL_ERROR "basis_project(): Project version not specified!")
   endif ()
 
   if (PROJECT_DESCRIPTION)
     basis_list_to_delimited_string (PROJECT_DESCRIPTION " " ${PROJECT_DESCRIPTION})
   else ()
     set (PROJECT_DESCRIPTION "")
+  endif ()
+
+  if (PROJECT_PACKAGE_VENDOR)
+    basis_list_to_delimited_string (PROJECT_PACKAGE_VENDOR " " ${PROJECT_PACKAGE_VENDOR})
+  else ()
+    set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
   endif ()
 endmacro ()
 
@@ -150,14 +149,22 @@ endmacro ()
 ##############################################################################
 # @brief Initialize project, calls CMake's project() command.
 #
-# This macro is called at the beginning the root CMakeLists.txt file of each
-# BASIS project. It in particular includes the file BasisProject.cmake to
-# set the project attributes and uses these to initialize the project.
+# This macro is called at the beginning of the root CMakeLists.txt file of
+# each BASIS (sub-)project. It in particular includes the BasisProject.cmake
+# file to set the project attributes and uses these to initialize the project.
 #
 # As the BasisTest.cmake module has to be included after the project()
-# command was used, it is not included by the CMake BASIS package use file.
+# command was used, it is not included by the package use file of BASIS.
 # Instead, it is included by this macro.
 #
+# @par Default documentation:
+# Each BASIS project has to have a README.txt file in the top directory of the
+# software component. This file is the root documentation file which refers the
+# user to the further documentation files in @c PROJECT_DOC_DIR.
+# The same applies to the COPYING.txt file with the copyright and license
+# notices which must be present in the top directory of the source tree as well.
+#
+# @par Project finalization:
 # At the end of the root CMakeLists.txt file, the counterpart of this macro,
 # the macro basis_project_finalize(), has to be invoked to finalize the
 # configuration of the project's build system.
@@ -166,21 +173,30 @@ endmacro ()
 # @sa basis_project_finalize()
 #
 # @returns Sets the following non-cached CMake variables:
-# @retval BINARY_*_DIR                 Absolute paths of directories in binary tree
-#                                      corresponding to the @c PROJECT_*_DIR directories.
-#                                      See Settings.cmake file.
-# @retval DEFAULT_HEADERS              List of default auxiliary headers generated by this macro.
-# @retval DEFAULT_PUBLIC_HEADERS       List of public default auxiliary headers
-#                                      generated by this macro.
-# @retval DEFAULT_SOURCES              List of default auxiliary sources generated by this macro.
-# @retval PROJECT_NAME_LOWER           Project name in all lowercase letters.
-# @retval PROJECT_NAME_UPPER           Project name in all uppercase letters.
-# @retval PROJECT_REVISION             Revision number of Subversion controlled source tree
-#                                      or 0 if the source tree is not revision controlled.
-# @retval PROJECT_VERSION_AND_REVISION A string of project version and revision that
-#                                      can be used for the output of version information.
-# @retval INSTALL_*_DIR                Configured paths of installation relative to INSTALL_PREFIX.
-#                                      See Settings.cmake file.
+# @retval BINARY_*_DIR                     Absolute paths of directories in
+#                                          binary tree corresponding to the
+#                                          @c PROJECT_*_DIR directories.
+#                                          See Settings.cmake file.
+# @retval INSTALL_*_DIR                    Configured paths of installation
+#                                          relative to INSTALL_PREFIX.
+#                                          See Settings.cmake file.
+# @retval BASIS_UTILITIES_HEADERS          List of headers of BASIS C++ utilities.
+# @retval BASIS_UTILITEIS_PUBLIC_HEADERS   List of public headers of BASIS C++ utilities.
+# @retval BASIS_UTILITIES_SOURCES          List of sources of BASIS C++ utilities.
+# @retval PROJECT_NAME_LOWER               Project name in all lowercase letters.
+# @retval PROJECT_NAME_UPPER               Project name in all uppercase letters.
+# @retval PROJECT_NAME_INFIX               Project name used as infix for installation
+#                                          directories and namespace identifiers.
+#                                          In particular, the project name in either
+#                                          all lowercase or mixed case starting with
+#                                          an uppercase letter depending on whether
+#                                          the @c PROJECT_NAME has mixed case or not.
+# @retval PROJECT_REVISION                 Revision number of Subversion controlled
+#                                          source tree or 0 if the source tree is
+#                                          not under revision control.
+# @retval PROJECT_VERSION_AND_REVISION     A string of project version and revision
+#                                          that can be used for the output of
+#                                          version information.
 #
 # @ingroup CMakeAPI
 
@@ -188,14 +204,20 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # reset
 
-  set (BASIS_PROJECT_USES_JAVA_UTILITIES   FALSE CACHE INTERNAL "" FORCE)
-  set (BASIS_PROJECT_USES_PYTHON_UTILITIES FALSE CACHE INTERNAL "" FORCE)
-  set (BASIS_PROJECT_USES_PERL_UTILITIES   FALSE CACHE INTERNAL "" FORCE)
-  set (BASIS_PROJECT_USES_BASH_UTILITIES   FALSE CACHE INTERNAL "" FORCE)
-  set (BASIS_PROJECT_USES_MATLAB_UTILITIES FALSE CACHE INTERNAL "" FORCE)
+  # These variables need to be properties such that they can be set in
+  # subdirectories. Moreover, they have to be assigned with the project's
+  # root source directory such that a super-project's properties are restored
+  # after this subproject is finalized such that the super-project itself can
+  # be finalized properly.
+  basis_set_project_property (BASIS_PROJECT_USES_JAVA_UTILITIES   FALSE)
+  basis_set_project_property (BASIS_PROJECT_USES_PYTHON_UTILITIES FALSE)
+  basis_set_project_property (BASIS_PROJECT_USES_PERL_UTILITIES   FALSE)
+  basis_set_project_property (BASIS_PROJECT_USES_BASH_UTILITIES   FALSE)
+  basis_set_project_property (BASIS_PROJECT_USES_MATLAB_UTILITIES FALSE)
 
   set (PROJECT_DEPENDS)
-  set (PROJECT_DEPENDS_OPTIONAL)
+  set (PROJECT_OPTIONAL_DEPENDS)
+  set (PROJECT_TEST_DEPENDS)
   set (PROJECT_DESCRIPTION)
   set (PROJECT_NAME)
   set (PROJECT_PACKAGE_VENDOR)
@@ -227,6 +249,9 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # resolve dependencies
 
+  # add project config directory to CMAKE_MODULE_PATH
+  set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config" ${CMAKE_MODULE_PATH})
+
   foreach (P ${PROJECT_DEPENDS})
     if ("${P}" STREQUAL "Slicer")
       if (NOT EXTENSION_NAME)
@@ -243,21 +268,23 @@ macro (basis_project_initialize)
     endif ()
   endforeach ()
 
-  foreach (P ${PROJECT_DEPENDS_OPTIONAL})
+  foreach (P ${PROJECT_OPTIONAL_DEPENDS})
     if ("${P}" STREQUAL "Slicer")
       if (NOT EXTENSION_NAME)
         set (EXTENSION_NAME "${PROJECT_NAME}")
       endif ()
     endif ()
-    basis_find_package ("${P}")
+    basis_find_package ("${P}" QUIET)
     string (TOUPPER "${P}" U)
     if (${P}_FOUND OR ${U}_FOUND)
       basis_use_package ("${P}")
     endif ()
   endforeach ()
 
-  set (P)
-  set (U)
+  # Note: Test dependencies are resolved after the inclusion of BasisTest.cmake below.
+
+  unset (P)
+  unset (U)
 
   # --------------------------------------------------------------------------
   # project()
@@ -274,6 +301,8 @@ macro (basis_project_initialize)
   # convert project name to upper and lower case only, respectively
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
+
+  basis_normalize_name (PROJECT_NAME_INFIX "${PROJECT_NAME}")
 
   # get current revision of project
   basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
@@ -310,6 +339,13 @@ macro (basis_project_initialize)
     set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}_${PROJECT_VERSION_PATCH}")
   endif ()
 
+  # determine whether this project is a module of another project
+  if (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set (IS_MODULE FALSE)
+  else ()
+    set (IS_MODULE TRUE)
+  endif ()
+
   # print project information
   if (BASIS_VERBOSE)
     message (STATUS "Project:")
@@ -329,9 +365,6 @@ macro (basis_project_initialize)
   # instantiate project directory structure
   basis_initialize_settings ()
  
-  # add project config directory to CMAKE_MODULE_PATH
-  set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})
-
   # common options
   if (EXISTS "${PROJECT_DOC_DIR}")
     option (BUILD_DOCUMENTATION "Whether to build and/or install the documentation." ON)
@@ -342,19 +375,86 @@ macro (basis_project_initialize)
   endif ()
 
   # include project specific settings
+  #
+  # This file gives further more flexibility to find external packages.
+  # In particular, the default behavior does not support to look for a
+  # specific version or only parts of a package. This can be done in the
+  # Settings.cmake file using the basis_find_package() command.
   include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
 
   # enable testing
   include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
 
+  if (BUILD_TESTING)
+    foreach (P ${PROJECT_TEST_DEPENDS})
+      basis_find_package ("${P}")
+      if (${P}_FOUND OR ${U}_FOUND)
+        basis_use_package ("${P}")
+      else ()
+        message (FATAL_ERROR "Could not find package ${P}! It is required by "
+                             "the tests of ${PROJECT_NAME}. Either set ${P}_DIR "
+                             "manually and try again or disable testing by "
+                             "setting BUILD_TESTING to OFF.")
+      endif ()
+    endforeach ()
+    unset (P)
+    unset (U)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # header files
+
+  # Copy public header files to build tree using the same relative paths
+  # as will be used for the installation. We need to use configure_file()
+  # here such that the header files in the build tree are updated whenever
+  # the source header file was modified. Moreover, this gives us a chance to
+  # configure header files with the .in suffix.
+
+  file (
+    GLOB_RECURSE
+      PROJECT_PUBLIC_HEADERS
+    RELATIVE "${PROJECT_INCLUDE_DIR}"
+      "${PROJECT_INCLUDE_DIR}/*.h"
+      "${PROJECT_INCLUDE_DIR}/*.h.in"
+      "${PROJECT_INCLUDE_DIR}/*.hh"
+      "${PROJECT_INCLUDE_DIR}/*.hh.in"
+      "${PROJECT_INCLUDE_DIR}/*.hpp"
+      "${PROJECT_INCLUDE_DIR}/*.hpp.in"
+      "${PROJECT_INCLUDE_DIR}/*.hxx"
+      "${PROJECT_INCLUDE_DIR}/*.hxx.in"
+      "${PROJECT_INCLUDE_DIR}/*.inl"
+      "${PROJECT_INCLUDE_DIR}/*.inl.in"
+      "${PROJECT_INCLUDE_DIR}/*.txx"
+      "${PROJECT_INCLUDE_DIR}/*.txx.in"
+  )
+
+  foreach (H ${PROJECT_PUBLIC_HEADERS})
+    get_filename_component (D "${H}" PATH)
+    if (H MATCHES "\\.in$")
+      get_filename_component (F "${H}" NAME_WE)
+      set (MODE "@ONLY")
+    else ()
+      get_filename_component (F "${H}" NAME)
+      set (MODE "COPYONLY")
+    endif ()
+    if (INCLUDE_PREFIX MATCHES "/$")
+      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${D}/${F}" ${MODE})
+    else ()
+      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${D}/${INCLUDE_PREFIX}${F}" ${MODE})
+    endif ()
+  endforeach ()
+
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
-  basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
-  basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}")
   basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
-  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}")
+
+  unset (PROJECT_PUBLIC_HEADERS)
+  unset (MODE)
 
   # --------------------------------------------------------------------------
   # authors, readme, install and license files
+
+  # Do this after the inclusion of the Settings.cmake file such that a project
+  # can potentially overwrite the defaults even though not recommended.
 
   if (NOT PROJECT_AUTHORS_FILE)
     if (EXISTS "${PROJECT_SOURCE_DIR}/AUTHORS.txt")
@@ -371,7 +471,7 @@ macro (basis_project_initialize)
       set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README.txt")
     elseif (EXISTS "${PROJECT_SOURCE_DIR}/README")
       set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README")
-    else ()
+    elseif (NOT IS_MODULE)
       message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a README file.")
     endif ()
   elseif (NOT EXISTS "${PROJECT_README_FILE}")
@@ -393,7 +493,7 @@ macro (basis_project_initialize)
       set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING.txt")
     elseif (EXISTS "${PROJECT_SOURCE_DIR}/COPYING")
       set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING")
-    else ()
+    elseif (NOT IS_MODULE)
       message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a COPYING file.")
     endif ()
   elseif (NOT EXISTS "${PROJECT_LICENSE_FILE}")
@@ -444,8 +544,12 @@ macro (basis_project_initialize)
   set (LICENSE "${LICENSE}${LICENSE_EXT}")
 
   if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
-    configure_file ("${PROJECT_README_FILE}" "${PROJECT_BINARY_DIR}/${README}" COPYONLY)
-    configure_file ("${PROJECT_LICENSE_FILE}" "${PROJECT_BINARY_DIR}/${LICENSE}" COPYONLY)
+    if (PROJECT_README_FILE)
+      configure_file ("${PROJECT_README_FILE}" "${PROJECT_BINARY_DIR}/${README}" COPYONLY)
+    endif ()
+    if (PROJECT_LICENSE_FILE)
+      configure_file ("${PROJECT_LICENSE_FILE}" "${PROJECT_BINARY_DIR}/${LICENSE}" COPYONLY)
+    endif ()
     if (PROJECT_AUTHORS_FILE)
       configure_file ("${PROJECT_AUTHORS_FILE}" "${PROJECT_BINARY_DIR}/${AUTHORS}" COPYONLY)
     endif ()
@@ -458,76 +562,39 @@ macro (basis_project_initialize)
     FILES       "${PROJECT_README_FILE}"
     DESTINATION "${INSTALL_DOC_DIR}"
     RENAME      "${README}"
+    OPTIONAL
   )
 
-  if (PROJECT_AUTHORS_FILE)
-    install (
-      FILES       "${PROJECT_AUTHORS_FILE}"
-      DESTINATION "${INSTALL_DOC_DIR}"
-      RENAME      "${AUTHORS}"
-    )
-  endif ()
+  install (
+    FILES       "${PROJECT_AUTHORS_FILE}"
+    DESTINATION "${INSTALL_DOC_DIR}"
+    RENAME      "${AUTHORS}"
+    OPTIONAL
+  )
 
-  if (PROJECT_INSTALL_FILE)
-    install (
-      FILES       "${PROJECT_INSTALL_FILE}"
-      DESTINATION "${INSTALL_DOC_DIR}"
-      RENAME      "${INSTALL}"
-    )
-  endif ()
+  install (
+    FILES       "${PROJECT_INSTALL_FILE}"
+    DESTINATION "${INSTALL_DOC_DIR}"
+    RENAME      "${INSTALL}"
+    OPTIONAL
+  )
 
-  if (IS_SUBPROJECT)
-    execute_process (
-      COMMAND "${CMAKE_COMMAND}"
-              -E compare_files "${CMAKE_SOURCE_DIR}/${LICENSE}" "${PROJECT_LICENSE_FILE}"
-      RESULT_VARIABLE INSTALL_LICENSE
-    )
+  install (
+    FILES       "${PROJECT_LICENSE_FILE}"
+    DESTINATION "${INSTALL_DOC_DIR}"
+    RENAME      "${LICENSE}"
+    OPTIONAL
+  )
 
-    if (INSTALL_LICENSE)
-      if (WIN32)
-        get_filename_component (LICENSE "${LICENSE}" NAME_WE)
-      endif ()
-      set (PROJECT_LICENSE "${LICENSE}-${PROJECT_NAME}")
-      if (WIN32)
-        set (PROJECT_LICENSE "${PROJECT_LICENSE}.txt")
-      endif ()
+  unset (AUTHORS)
+  unset (README)
+  unset (INSTALL)
+  unset (LICENSE)
 
-      install (
-        FILES       "${PROJECT_LICENSE_FILE}"
-        DESTINATION "${INSTALL_DOC_DIR}"
-        RENAME      "${PROJECT_LICENSE}"
-      )
-      file (
-        APPEND "${CMAKE_BINARY_DIR}/${LICENSE}"
-        "\n\n------------------------------------------------------------------------------\n"
-        "See ${PROJECT_LICENSE} file for\n"
-        "copyright and license notices of the ${PROJECT_NAME} package.\n"
-        "------------------------------------------------------------------------------\n"
-      )
-      install (
-        FILES       "${CMAKE_BINARY_DIR}/${LICENSE}"
-        DESTINATION "${INSTALL_DOC_DIR}"
-      )
-    endif ()
-
-    set (INSTALL_LICENSE)
-  else ()
-    install (
-      FILES       "${PROJECT_LICENSE_FILE}"
-      DESTINATION "${INSTALL_DOC_DIR}"
-      RENAME      "${LICENSE}"
-    )
-  endif ()
-
-  set (AUTHORS)
-  set (README)
-  set (INSTALL)
-  set (LICENSE)
-
-  set (AUTHORS_EXT)
-  set (README_EXT)
-  set (INSTALL_EXT)
-  set (LICENSE_EXT)
+  unset (AUTHORS_EXT)
+  unset (README_EXT)
+  unset (INSTALL_EXT)
+  unset (LICENSE_EXT)
 
   # --------------------------------------------------------------------------
   # (pre-)configure C++ utilities
@@ -586,7 +653,7 @@ macro (basis_project_finalize)
 
   install (
     DIRECTORY   "${PROJECT_INCLUDE_DIR}/"
-    DESTINATION "${INSTALL_INCLUDE_DIR}"
+    DESTINATION "${INSTALL_INCLUDE_DIR}/${BASIS_INCLUDE_PREFIX}"
     OPTIONAL
     PATTERN     ".svn" EXCLUDE
     PATTERN     ".git" EXCLUDE
@@ -631,8 +698,8 @@ macro (basis_project_finalize)
   # --------------------------------------------------------------------------
   # utilities
 
-  # if project uses MATLAB
-  if (BASIS_PROJECT_USES_MATLAB)
+  # write convenience file to setup MATLAB environment
+  if (MATLAB_FOUND)
     basis_create_addpaths_mfile ()
   endif ()
 
@@ -662,7 +729,7 @@ macro (basis_project_finalize)
   endif ()
 
   # add uninstall target
-  if (NOT IS_SUBPROJECT)
+  if (NOT IS_MODULE)
     basis_add_uninstall ()
   endif ()
 
@@ -677,5 +744,7 @@ macro (basis_project_finalize)
   endif ()
 
   # package software
-  include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
+  if (NOT IS_MODULE)
+    include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
+  endif ()
 endmacro ()

@@ -7,7 +7,8 @@
 # another BASIS project, the dependencies to other subprojects are specified
 # here such that the super-project can analyze the dependencies among its
 # subprojects. Besides intra-project dependencies, dependencies on external
-# packages are specified here as well.
+# packages can be specified here as well. A more flexible alternative to
+# resolve external dependencies is given by the Depends.cmake file.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -15,7 +16,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# Note: The #Add*DependencyHere pattern is required by the basisproject tool.
+# Note: The #Add*DependencyHere patterns are required by the basisproject tool
+#       and should be kept at the end of the corresponding line.
 
 basis_project (
   NAME             "BASIS"
@@ -24,5 +26,6 @@ basis_project (
                    "software which follows the SBIA Build system And Software "
                    "Implementation Standard (BASIS)."
   DEPENDS          #AddDependencyHere
-  DEPENDS_OPTIONAL "PythonInterp" "Perl" "PerlLibs" #AddOptionalDependencyHere
+  OPTIONAL_DEPENDS "PythonInterp" "Perl" "PerlLibs" #AddOptionalDependencyHere
+  TEST_DEPENDS     #AddTestDependencyHere
 )

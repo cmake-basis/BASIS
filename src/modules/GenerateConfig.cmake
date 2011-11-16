@@ -34,6 +34,7 @@
 ## @addtogroup CMakeUtilities
 #  @{
 
+
 ## @brief Package name.
 set (CONFIG_PREFIX "${PROJECT_NAME}")
 ## @brief Name of the CMake package configuration file.
@@ -47,7 +48,9 @@ set (EXPORTS_FILE "${CONFIG_PREFIX}Exports.cmake")
 ## @brief Name of the CMake target exports file for custom targets.
 set (CUSTOM_EXPORTS_FILE "${CONFIG_PREFIX}CustomExports.cmake")
 
+
 ## @}
+# end of Doxygen group
 
 # ============================================================================
 # export build targets

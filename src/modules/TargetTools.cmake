@@ -20,6 +20,7 @@ endif ()
 ## @addtogroup CMakeAPI
 #  @{
 
+
 # ============================================================================
 # target name
 # ============================================================================
@@ -140,21 +141,17 @@ endmacro ()
 # @brief Replaces CMake's include_directories() command.
 #
 # All arguments are passed on to CMake's include_directories() command.
-# Additionally, the list of include directories is stored in the cached CMake
-# variable BASIS_INCLUDE_DIRECTORIES. This variable can be used by custom
-# commands for the build process, e.g., it is used as argument for the -I
-# option of the MATLAB Compiler.
 #
-# Additionally, a list of all include directories added is cached. Hence,
-# this list is extended even across subdirectories. Directories are always
-# appended ignoring the BEFORE argument. The value of this internal cache
-# variabel is cleared by basis_project_initialize().
+# Additionally, a list of all include directories used by a project is cached.
+# Hence, this list is extended even across subdirectories. Directories are
+# always appended ignoring the BEFORE argument. This list is stored as
+# BASIS_INCLUDE_DIRECTORIES property of the project's source directory.
 #
-# @param ARGN Argument list passed on to CMake's include_directories command.
+# @param ARGN Argument list passed on to CMake's include_directories() command.
 #
-# @returns Adds the given paths to the list of include search paths and
-#          to the variables @c BASIS_INCLUDE_DIRECTORIES and
-#          @c BASIS_CACHED_INCLUDE_DIRECTORIES.
+# @returns Adds the given paths to the list of include search paths
+#          and updates the @c BASIS_INCLUDE_DIRECTORIES property of the
+#          top source directory of the project.
 
 function (basis_include_directories)
   # CMake's include_directories ()
@@ -170,47 +167,16 @@ function (basis_include_directories)
     list (APPEND DIRS "${P}")
   endforeach ()
 
-  # current include directories
-  if (BASIS_INCLUDE_DIRECTORIES)
-    if (ARGN_BEFORE)
-      set (
-        BASIS_INCLUDE_DIRECTORIES
-          "${DIRS};${BASIS_INCLUDE_DIRECTORIES}"
-      )
-    else ()
-      set (
-        BASIS_INCLUDE_DIRECTORIES
-          "${BASIS_INCLUDE_DIRECTORIES};${DIRS}"
-      )
-    endif ()
-  else ()
-    set (BASIS_INCLUDE_DIRECTORIES "${DIRS}")
-  endif ()
+  # append directories to "global" list of include directories
+  basis_get_project_property (BASIS_INCLUDE_DIRECTORIES)
 
+  list (APPEND BASIS_INCLUDE_DIRECTORIES ${DIRS})
+ 
   if (BASIS_INCLUDE_DIRECTORIES)
     list (REMOVE_DUPLICATES BASIS_INCLUDE_DIRECTORIES)
   endif ()
 
-  set (BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}" PARENT_SCOPE)
-
-  # cached include directories
-  if (BASIS_CACHED_INCLUDE_DIRECTORIES)
-    set (
-      BASIS_CACHED_INCLUDE_DIRECTORIES
-        "${BASIS_CACHED_INCLUDE_DIRECTORIES};${DIRS}"
-    )
-  else ()
-    set (BASIS_CACHED_INCLUDE_DIRECTORIES "${DIRS}")
-  endif ()
-
-  if (BASIS_CACHED_INCLUDE_DIRECTORIES)
-    list (REMOVE_DUPLICATES BASIS_CACHED_INCLUDE_DIRECTORIES)
-  endif ()
-
-  set (
-    BASIS_CACHED_INCLUDE_DIRECTORIES "${BASIS_CACHED_INCLUDE_DIRECTORIES}"
-    CACHE INTERNAL "${BASIS_CACHED_INCLUDE_DIRECTORIES_DOC}" FORCE
-  )
+  basis_set_project_property (BASIS_INCLUDE_DIRECTORIES ${BASIS_INCLUDE_DIRECTORIES})
 endfunction ()
 
 ##############################################################################
@@ -233,35 +199,11 @@ endmacro ()
 #
 # @param [in] ARGN Arguments for link_directories().
 #
-# @returns Adds the given paths to the search path for link libraries and
-#          to the variable @c BASIS_LINK_DIRECTORIES.
+# @returns Adds the given paths to the search path for link libraries.
 
 function (basis_link_directories)
   # CMake's link_directories()
   _link_directories (${ARGN})
-
-  # make relative paths absolute
-  set (DIRS)
-  foreach (P ${ARGN})
-    get_filename_component (P "${P}" ABSOLUTE)
-    list (APPEND DIRS "${P}")
-  endforeach ()
-
-  # current link directories
-  if (BASIS_LINK_DIRECTORIES)
-    set (
-      BASIS_LINK_DIRECTORIES
-        "${BASIS_LINK_DIRECTORIES};${DIRS}"
-    )
-  else ()
-    set (BASIS_LINK_DIRECTORIES "${DIRS}")
-  endif ()
-
-  if (BASIS_LINK_DIRECTORIES)
-    list (REMOVE_DUPLICATES BASIS_LINK_DIRECTORIES)
-  endif ()
-
-  set (BASIS_LINK_DIRECTORIES "${BASIS_LINK_DIRECTORIES}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
@@ -391,10 +333,7 @@ endfunction ()
 
 function (add_executable TARGET_NAME)
   _add_executable (${TARGET_NAME} ${ARGN})
-  set (
-    BASIS_TARGETS "${BASIS_TARGETS};${TARGET_NAME}"
-    CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
-  )
+  basis_set_project_property (BASIS_TARGETS APPEND "${TARGET_NAME}")
 endfunction ()
 
 ##############################################################################
@@ -409,10 +348,7 @@ endfunction ()
 
 function (add_library TARGET_NAME)
   _add_library (${TARGET_NAME} ${ARGN})
-  set (
-    BASIS_TARGETS "${BASIS_TARGETS};${TARGET_NAME}"
-    CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
-  )
+  basis_set_project_property (BASIS_TARGETS APPEND "${TARGET_NAME}")
 endfunction ()
 
 ##############################################################################
@@ -1000,11 +936,7 @@ function (basis_add_executable_target TARGET_NAME)
       set (EXPORT_OPT)
     else ()
       set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-
-      set (
-        BASIS_EXPORT_TARGETS "${BASIS_EXPORT_TARGETS};${TARGET_UID}"
-        CACHE INTERNAL "${BASIS_EXPORT_TARGETS_DOC}" FORCE
-      )
+      basis_set_project_property (BASIS_EXPORT_TARGETS APPEND "${TARGET_UID}")
     endif ()
 
     install (
@@ -1229,10 +1161,7 @@ function (basis_add_library_target TARGET_NAME)
     set (EXPORT_OPT)
   else ()
     set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-    set (
-      BASIS_EXPORT_TARGETS "${BASIS_EXPORT_TARGETS};${TARGET_UID}"
-      CACHE INTERNAL "${BASIS_EXPORT_TARGETS_DOC}" FORCE
-    )
+    basis_set_project_property (BASIS_EXPORT_TARGETS APPEND "${TARGET_UID}")
   endif ()
 
   if (ARGN_RUNTIME_DESTINATION)
@@ -1430,8 +1359,11 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   if (ARGN_TEST)
-    set (ARGN_LIBEXEC   0)
-    set (ARGN_NO_EXPORT 1)
+    set (ARGN_LIBEXEC   FALSE)
+    set (ARGN_NO_EXPORT TRUE)
+  endif ()
+  if (NOT ARGN_NO_EXPORT)
+    set (ARGN_NO_EXPORT FALSE)
   endif ()
 
   if (NOT ARGN_COMPONENT)
@@ -1470,7 +1402,7 @@ function (basis_add_script TARGET_NAME)
   # "parse" script to check if BASIS utilities are used and hence required
   file (READ "${ARGN_SCRIPT}" SCRIPT)
   if (SCRIPT MATCHES "@BASIS_([A-Z]+)_UTILITIES@")
-    set (BASIS_PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE CACHE INTERNAL "" FORCE)
+    basis_set_project_property (BASIS_PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE)
   endif ()
   set (SCRIPT)
 
@@ -1632,6 +1564,7 @@ function (basis_add_script TARGET_NAME)
       COMPILE_DEFINITIONS       "${ARGN_CONFIG}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
+      NO_EXPORT                 "${ARGN_NO_EXPORT}"
   )
 
   if (ARGN_TEST)
@@ -1647,17 +1580,7 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   # add target to list of targets
-  set (
-    BASIS_TARGETS "${BASIS_TARGETS};${TARGET_UID}"
-    CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE
-  )
-
-  if (NOT ARGN_NO_EXPORT)
-    set (
-      BASIS_CUSTOM_EXPORT_TARGETS "${BASIS_CUSTOM_EXPORT_TARGETS};${TARGET_UID}"
-      CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGETS_DOC}" FORCE
-    )
-  endif ()
+  basis_set_project_property (BASIS_TARGETS APPEND "${TARGET_UID}")
 
   if (BASIS_VERBOSE)
     if (ARGN_MODULE)
@@ -1692,7 +1615,7 @@ function (basis_add_script_finalize TARGET_UID)
   basis_target_uid (TARGET_UID "${TARGET_UID}")
 
   # already finalized before ?
-  if (TARGET "${TARGET_UID}+")
+  if (TARGET "_${TARGET_UID}")
     return ()
   endif ()
 
@@ -1730,6 +1653,7 @@ function (basis_add_script_finalize TARGET_UID)
       "LIBRARY_COMPONENT"
       "LIBEXEC"
       "TEST"
+      "NO_EXPORT"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -1975,16 +1899,20 @@ function (basis_add_script_finalize TARGET_UID)
 
   # add custom target which triggers execution of build script
   add_custom_target (
-    ${TARGET_UID}-build
+    _${TARGET_UID}
     DEPENDS ${OUTPUT_FILES}
   )
 
-  add_dependencies (${TARGET_UID} ${TARGET_UID}-build)
+  add_dependencies (${TARGET_UID} _${TARGET_UID})
 
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
 
   # install script
+  if (NOT ARGN_NO_EXPORT)
+    basis_set_project_property (BASIS_CUSTOM_EXPORT_TARGETS APPEND "${TARGET_UID}")
+  endif ()
+
   if (MODULE)
     if (LIBRARY_INSTALL_DIRECTORY)
       install (
@@ -2044,8 +1972,9 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_add_custom_finalize)
+  basis_get_project_property (BASIS_TARGETS)
   foreach (TARGET_UID ${BASIS_TARGETS})
-    get_target_property (IMPORTED   ${TARGET_UID} "IMPORTED")
+    get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
     if (NOT IMPORTED)
       get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
       if (BASIS_TYPE MATCHES "SCRIPT")
@@ -2126,6 +2055,9 @@ function (basis_export_targets)
 
   # --------------------------------------------------------------------------
   # export non-custom targets
+
+  basis_get_project_property (BASIS_EXPORT_TARGETS)
+
   if (BASIS_EXPORT_TARGETS)
     if (BASIS_USE_TARGET_UIDS)
       set (NAMESPACE_ARG)
@@ -2150,6 +2082,8 @@ function (basis_export_targets)
 
   # --------------------------------------------------------------------------
   # export custom targets
+
+  basis_get_project_property (BASIS_CUSTOM_EXPORT_TARGETS)
 
   if (BASIS_CUSTOM_EXPORT_TARGETS)
 

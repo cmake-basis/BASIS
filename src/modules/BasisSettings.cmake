@@ -4,7 +4,7 @@
 #
 # This module defines global CMake constants and variables which are used
 # by the BASIS CMake functions and macros. Hence, these values can be used
-# to configure the behaviour of these functions to some extent without the
+# to configure the behavior of these functions to some extent without the
 # need to modify the functions themselves.
 #
 # Moreover, this file specifies the common CMake settings such as the build
@@ -98,11 +98,14 @@ endif ()
 ## @addtogroup CMakeAPI
 #  @{
 
+
 ## @brief Enable/Disable verbose messages of BASIS functions.
-option (BASIS_VERBOSE "Whether BASIS functions should be verbose." "OFF")
+option (BASIS_VERBOSE "Whether BASIS functions should be verbose." OFF)
 mark_as_advanced (BASIS_VERBOSE)
 
+
 ## @}
+# end of Doxygen group
 
 # ============================================================================
 # constants and global settings
@@ -110,6 +113,7 @@ mark_as_advanced (BASIS_VERBOSE)
 
 ## @addtogroup CMakeUtilities
 #  @{
+
 
 ## @brief List of names used for special purpose targets.
 #
@@ -139,11 +143,8 @@ set (BASIS_LIBRARY_COMPONENT "Development")
 set (BASIS_RUNTIME_COMPONENT "Runtime")
 
 ## @brief Whether to use unique build target names.
-option (BASIS_USE_TARGET_UIDS "Whether to use (globaly) unique build target names." OFF)
+option (BASIS_USE_TARGET_UIDS "Whether to use (globally) unique build target names." OFF)
 mark_as_advanced (BASIS_USE_TARGET_UIDS)
-
-## @brief Namespace used for target UIDs if @c BASIS_USE_TARGET_UIDS is @c ON.
-set (BASIS_NAMESPACE "\@PROJECT_NAME_LOWER\@")
 
 ## @brief Character used to separate namespace and target name in target UID.
 #
@@ -157,7 +158,7 @@ set (BASIS_NAMESPACE "\@PROJECT_NAME_LOWER\@")
 #       may for each language be replaced by a more suitable string.
 #       For example, it is replaced by "::" for C++.
 #       See UtilitiesTools.cmake for details.
-set (BASIS_NAMESPACE_SEPARATOR "@")
+set (BASIS_NAMESPACE_SEPARATOR "/")
 
 ## @brief Character used to separate version and project name (e.g., in target UID).
 #
@@ -191,48 +192,63 @@ set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 # of changelogs.
 set (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
 
-## @brief Installation sinfix.
-if (WIN32)
-  set (BASIS_INSTALL_SINFIX "\@PROJECT_NAME_LOWER\@" CACHE STRING "Suffix/Infix used for installation paths.")
-else ()
-  set (BASIS_INSTALL_SINFIX "sbia/\@PROJECT_NAME_LOWER\@" CACHE STRING "Suffix/Infix used for installation paths.")
-endif ()
-mark_as_advanced (BASIS_INSTALL_SINFIX)
-
-# ============================================================================
-# cached variables
-# ============================================================================
-
-# The following variables are used across BASIS macros and functions. They
-# in particular remember information added by one function or macro and is
-# required by another function or macro.
+## @brief Namespace used for target UIDs if @c BASIS_USE_TARGET_UIDS is @c ON.
 #
-# Note: These variables are reset whenever this module is included the first
-#       time. The guard directive at the beginning of this file protects
-#       these variables to be overwritten each time this module is included.
+# The namespace of a BASIS project is made up of its name as well as the
+# names of the projects it is a module of, i.e., the namespace encodes the
+# super-/subproject relationship and guarantees uniqueness of target names
+# and other identifiers.
+if (BASIS_NAMESPACE)
+  set (BASIS_NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}")
+endif ()
+set (BASIS_NAMESPACE "${BASIS_NAMESPACE}\@PROJECT_NAME_INFIX\@")
 
-## @brief Documentation string for @c BASIS_CACHED_INCLUDE_DIRECTORIES.
-set (BASIS_CACHED_INCLUDE_DIRECTORIES_DOC "All include directories.")
-## @brief Cached include directories added across subdirectories.
-set (BASIS_CACHED_INCLUDE_DIRECTORIES "" CACHE INTERNAL "${BASIS_CACHED_INCLUDE_DIRECTORIES_DOC}" FORCE)
+## @brief Installation prefix for public header files.
+#
+# The prefix used for the installation of public header files under the
+# @c INSTALL_INCLUDE_DIR, i.e., the header files have to be included in a
+# source file as:
+# @code
+# #include <@INCLUDE_PREFIX@config.h>
+# @endcode
+# This avoids name conflicts among projects in a more reliable way then only
+# changing the order of paths in the include search path.
+#
+# If this project is a module of another project, it appends it's name to the
+# already set include prefix. Otherwise, the include prefix is set to the
+# common default prefix of BASIS projects first, i.e., "sbia", and then the
+# name of the project is appended.
+#
+# @note The include prefix must end with a slash if it is a subdirectory.
+#       BASIS will not use a slash by itself to separate the prefix from
+#       the header file name.
+if (NOT INCLUDE_PREFIX)
+  set (INCLUDE_PREFIX "sbia/")
+endif ()
+set (INCLUDE_PREFIX "${INCLUDE_PREFIX}\@PROJECT_NAME_INFIX\@/")
 
-## @brief Documentation string for @c BASIS_TARGETS.
-set (BASIS_TARGETS_DOC "Names of all targets.")
-## @brief Cached UIDs of all build targets.
-set (BASIS_TARGETS "" CACHE INTERNAL "${BASIS_TARGETS_DOC}" FORCE)
+## @brief Installation sinfix.
+#
+# The suffix/infix used for installation directories. If this project is not
+# a module of another project, the sinfix is cached during the first
+# configuration which enables the user to modify it. Modules, on the other
+# side, append their name to the already set sinfix.
+if (BASIS_INSTALL_SINFIX)
+  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}/\@PROJECT_NAME_INFIX\@")
+else ()
+  if (WIN32)
+    set (BASIS_INSTALL_SINFIX "\@PROJECT_NAME_INFIX\@" CACHE STRING "Suffix/Infix used for installation paths.")
+  else ()
+    set (BASIS_INSTALL_SINFIX "sbia/\@PROJECT_NAME_INFIX\@" CACHE STRING "Suffix/Infix used for installation paths.")
+  endif ()
+  mark_as_advanced (BASIS_INSTALL_SINFIX)
+endif ()
 
-## @brief Documentation string for @c BASIS_EXPORT_TARGETS.
-set (BASIS_EXPORT_TARGETS_DOC "All non-custom export targets.")
-## @brief Cached UIDs of exported non-custom build targets.
-set (BASIS_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_EXPORT_TARGETS_DOC}" FORCE)
 
-## @brief Documentation string for @c BASIS_CUSTOM_EXPORT_TARGETS.
-set (BASIS_CUSTOM_EXPORT_TARGETS_DOC "All custom export targets.")
-## @brief Cached UIDs of exported custom build targets.
-set (BASIS_CUSTOM_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGETS_DOC}" FORCE)
 
 
 ## @}
+# end of Doxygen group
 
 # ============================================================================
 # project directory structure
@@ -249,6 +265,9 @@ set (BASIS_CUSTOM_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGET
 ##############################################################################
 # @brief Ensure certain requirements on build tree.
 #
+# Requirements:
+# * Root of build tree must not be root of source tree.
+#
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
@@ -256,7 +275,6 @@ set (BASIS_CUSTOM_EXPORT_TARGETS "" CACHE INTERNAL "${BASIS_CUSTOM_EXPORT_TARGET
 # @ingroup CMakeUtilities
 
 macro (basis_buildtree_asserts)
-  # root of build tree must not be root of source tree
   string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
   string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
 
@@ -270,6 +288,10 @@ endmacro ()
 ##############################################################################
 # @brief Ensure certain requirements on install tree.
 #
+# Requirements:
+# * Prefix must be an absolute path.
+# * Install tree must be different from source and build tree.
+#
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
@@ -277,12 +299,10 @@ endmacro ()
 # @ingroup CMakeUtilities
 
 macro (basis_installtree_asserts)
-  # prefix must be an absolute path
   if (NOT IS_ABSOLUTE "${INSTALL_PREFIX}")
     message (FATAL_ERROR "INSTALL_PREFIX must be an absolute path!")
   endif ()
 
-  # install tree must be different from source and build tree
   string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
   string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
   string (TOLOWER "${INSTALL_PREFIX}"   INSTALL_ROOT)
@@ -383,9 +403,9 @@ set (
 option (INSTALL_SINFIX "Whether to use the package-specific installation path suffix/infix." ON)
 
 if (INSTALL_SINFIX)
-  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE STRING "Suffix/Infix used for installation paths." FORCE)
+  set_property (CACHE BASIS_INSTALL_SINFIX PROPERTY TYPE STRING)
 else ()
-  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE INTERNAL "Suffix/Infix used for installation paths." FORCE)
+  set_property (CACHE BASIS_INSTALL_SINFIX PROPERTY TYPE INTERNAL)
 endif ()
 
 ## @brief Enable/Disable installation of symbolic links on Unix-based systems.
@@ -610,9 +630,32 @@ macro (basis_initialize_settings)
   endif ()
 
   # --------------------------------------------------------------------------
+  # project properties
+
+  # The following variables are used across BASIS macros and functions. They
+  # in particular remember information added by one function or macro which
+  # is required by another function or macro.
+  #
+  # These variables need to be properties such that they can be set in
+  # subdirectories. Moreover, they have to be assigned with the project's
+  # root source directory such that a super-project's properties are restored
+  # after this subproject is finalized such that the super-project itself can
+  # be finalized properly.
+
+  # list of all include directories
+  set_property (DIRECTORY PROPERTY BASIS_INCLUDE_DIRECTORIES "")
+  # list of all build targets
+  set_property (DIRECTORY PROPERTY BASIS_TARGETS "")
+  # list of all exported targets
+  set_property (DIRECTORY PROPERTY BASIS_EXPORT_TARGETS "")
+  # list of all exported custom targets
+  set_property (DIRECTORY PROPERTY BASIS_CUSTOM_EXPORT_TARGETS "")
+
+  # --------------------------------------------------------------------------
   # other constants
 
   string (CONFIGURE "${BASIS_NAMESPACE}" BASIS_NAMESPACE @ONLY)
+  string (CONFIGURE "${INCLUDE_PREFIX}"  INCLUDE_PREFIX  @ONLY)
 
   # --------------------------------------------------------------------------
   # assertions
@@ -660,14 +703,37 @@ set (
 )
 
 # set the possible values of build type for cmake-gui
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "Coverage")
+set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "Coverage")
+
+# ----------------------------------------------------------------------------
+# disabled configurations
+# ----------------------------------------------------------------------------
+
+# disable support for MinSizeRel and RelWithDebInfo
+foreach (C MINSIZEREL RELWITHDEBINFO)
+  # compiler flags
+  set_property (CACHE CMAKE_C_FLAGS_${C} PROPERTY TYPE INTERNAL)
+  set_property (CACHE CMAKE_CXX_FLAGS_${C} PROPERTY TYPE INTERNAL)
+
+  # linker flags
+  set_property (CACHE CMAKE_EXE_LINKER_FLAGS_${C} PROPERTY TYPE INTERNAL)
+  set_property (CACHE CMAKE_MODULE_LINKER_FLAGS_${C} PROPERTY TYPE INTERNAL)
+  set_property (CACHE CMAKE_SHARED_LINKER_FLAGS_${C} PROPERTY TYPE INTERNAL)
+endforeach ()
+
+# disable support for plain C
+set_property (CACHE CMAKE_C_FLAGS PROPERTY TYPE INTERNAL)
+foreach (C DEBUG RELEASE)
+  set_property (CACHE CMAKE_C_FLAGS_${C} PROPERTY TYPE INTERNAL)
+endforeach ()
+
+unset (C)
 
 # ----------------------------------------------------------------------------
 # common
 # ----------------------------------------------------------------------------
 
 # common compiler flags
-set (CMAKE_C_FLAGS "" CACHE INTERNAL "" FORCE) # disabled
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # common linker flags
@@ -676,36 +742,10 @@ set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}")
 set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}")
 
 # ----------------------------------------------------------------------------
-# MinSizeRel - disabled
-# ----------------------------------------------------------------------------
-
-# compiler flags of MinSizeRel configuration
-set (CMAKE_C_FLAGS_MINSIZEREL ""   CACHE INTERNAL "" FORCE)
-set (CMAKE_CXX_FLAGS_MINSIZEREL "" CACHE INTERNAL "" FORCE)
-
-# linker flags of MinSizeRel configuration
-set (CMAKE_EXE_LINKER_FLAGS_MINSIZEREL    "" CACHE INTERNAL "" FORCE)
-set (CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL "" CACHE INTERNAL "" FORCE)
-set (CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "" CACHE INTERNAL "" FORCE)
-
-# ----------------------------------------------------------------------------
-# RelWithDebInfo - disabled
-# ----------------------------------------------------------------------------
-
-# compiler flags of RelWithDebInfo configuration
-set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "" CACHE INTERNAL "" FORCE)
-
-# linker flags of RelWithDebInfo configuration
-set (CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO    "" CACHE INTERNAL "" FORCE)
-set (CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "" CACHE INTERNAL "" FORCE)
-set (CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "" CACHE INTERNAL "" FORCE)
-
-# ----------------------------------------------------------------------------
 # Debug
 # ----------------------------------------------------------------------------
 
 # compiler flags of Debug configuration
-set (CMAKE_C_FLAGS_DEBUG "" CACHE INTERNAL "" FORCE) # disabled
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 
 # linker flags of Debug configuration
@@ -718,7 +758,6 @@ set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG}")
 # ----------------------------------------------------------------------------
 
 # compiler flags of Release configuration
-set (CMAKE_C_FLAGS_RELEASE "" CACHE INTERNAL "" FORCE) # disabled
 set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 
 # linker flags of Release configuration
@@ -731,7 +770,7 @@ set (CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
 # ----------------------------------------------------------------------------
 
 # compiler flags for Coverage configuration
-set (CMAKE_C_FLAGS_COVERAGE "" CACHE INTERNAL "" FORCE) # disabled
+set (CMAKE_C_FLAGS_COVERAGE "" CACHE INTERNAL "" FORCE)
 set (CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
 
 # linker flags for Coverage configuration
@@ -739,4 +778,6 @@ set (CMAKE_EXE_LINKER_FLAGS_COVERAGE    "-fprofile-arcs -ftest-coverage")
 set (CMAKE_MODULE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 set (CMAKE_SHARED_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 
+
 ## @}
+# end of Doxygen group

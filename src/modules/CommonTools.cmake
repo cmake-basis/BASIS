@@ -25,13 +25,18 @@ endif ()
 #  @{
 
 ## @brief The Python interpreter.
+#
+# @todo Replace by PYTHON_EXECUTABLE as set by FindPythonInterp.cmake module.
 find_program (BASIS_CMD_PYTHON NAMES python DOC "The Python interpreter (python).")
 mark_as_advanced (BASIS_CMD_PYTHON)
 
 ## @}
+# end of Doxygen group
+
 
 ## @addtogroup CMakeAPI
 #  @{
+
 
 # ============================================================================
 # find other packages
@@ -123,19 +128,36 @@ endmacro ()
 #          component of the given file path.
 
 function (get_filename_component)
-  _get_filename_component (${ARGN})
+  if (ARGC GREATER 4)
+    message (FATAL_ERROR "(basis_)get_filename_component(): Too many arguments!")
+  endif ()
+
   list (GET ARGN 0 VAR)
+  list (GET ARGN 1 STR)
   list (GET ARGN 2 CMD)
   if (${CMD} STREQUAL "EXT")
+    _get_filename_component (${VAR} "${STR}" ${CMD})
     string (REGEX MATCHALL "\\.[^.]*" PARTS "${${VAR}}")
     list (LENGTH PARTS LEN)
     if (LEN GREATER 1)
       math (EXPR LEN "${LEN} - 1")
       list (GET PARTS ${LEN} ${VAR})
     endif ()
+  elseif (${CMD} STREQUAL "NAME_WE")
+    _get_filename_component (${VAR} "${STR}" NAME)
+    string (REGEX REPLACE "\\.[^.]*$" "" ${VAR} ${${VAR}})
   else ()
+    _get_filename_component (${VAR} "${STR}" ${CMD})
   endif ()
-  set (${VAR} "${${VAR}}" PARENT_SCOPE)
+  if (ARGC EQUAL 4)
+    if (NOT ARGV3 STREQUAL "CACHE")
+      message (FATAL_ERROR "(basis_)get_filename_component(): Invalid fourth argument: ${ARGV3}!")
+    else ()
+      set (${VAR} "${${VAR}}" CACHE STRING "")
+    endif ()
+  else ()
+    set (${VAR} "${${VAR}}" PARENT_SCOPE)
+  endif ()
 endfunction ()
 
 ##############################################################################
@@ -181,8 +203,37 @@ function (basis_get_relative_path REL BASE PATH)
 endfunction ()
 
 # ============================================================================
-# version
+# name / version
 # ============================================================================
+
+##############################################################################
+# @brief Convert string to lowercase only or mixed case.
+#
+# Strings in all uppercase or all lowercase are converted to all lowercase
+# letters because these are usually used for acronymns. All other strings
+# are returned unmodified with the one exception that the first letter has
+# to be uppercase for mixed case strings.
+#
+# This function is in particular used to normalize the project name for use
+# in installation directory paths and namespaces.
+#
+# @param [out] OUT String in CamelCase.
+# @param [in]  STR String.
+
+function (basis_normalize_name OUT STR)
+  # strings in all uppercase or all lowercase such as acronymns are an
+  # exception and shall be converted to all lowercase instead
+  string (TOLOWER "${STR}" L)
+  string (TOUPPER "${STR}" U)
+  if (STR STREQUAL L OR STR STREQUAL U)
+    set (${OUT} "${L}" PARENT_SCOPE)
+  # change first letter to uppercase
+  else ()
+    string (SUBSTRING "${U}"   0  1 A)
+    string (SUBSTRING "${STR}" 1 -1 B)
+    set (${OUT} "${A}${B}" PARENT_SCOPE)
+  endif ()
+endfunction ()
 
 ##############################################################################
 # @brief Extract version numbers from version string.
@@ -316,6 +367,41 @@ function (basis_get_property VAR SCOPE ELEMENT)
   get_property (VALUE ${SCOPE} ${ELEMENT} ${ARGN})
   set ("${VAR}" "${VALUE}" PARENT_SCOPE)
 endfunction ()
+
+##############################################################################
+# @brief Set project-global property.
+#
+# Set property associated with top directory of the current project's source
+# tree. This is in particular of importance when a project is a module of
+# another project to avoid invalidating the super-project's properties.
+
+function (basis_set_project_property PROPERTY)
+  if (ARGC LESS 2)
+    message (FATAL_ERROR "basis_set_project_property(): Too few arguments!")
+  endif ()
+  if (ARGV1 AND "${ARGV1}" STREQUAL "APPEND")
+    set (APPEND "APPEND")
+    list (REMOVE_AT ARGN 0)
+  else ()
+    set (APPEND "")
+  endif ()
+  set_property (
+    DIRECTORY "${PROJECT_SOURCE_DIR}"
+    ${APPEND}
+    PROPERTY "${PROPERTY}" ${ARGN}
+  )
+endfunction ()
+
+##############################################################################
+# @brief Get project-global property value.
+
+macro (basis_get_project_property PROPERTY)
+  get_property (
+    ${PROPERTY}
+      DIRECTORY "${PROJECT_SOURCE_DIR}"
+      PROPERTY  "${PROPERTY}"
+  )
+endmacro ()
 
 # ============================================================================
 # list / string manipulations
@@ -748,7 +834,7 @@ function (basis_configure_sources LIST_NAME)
         get_filename_component (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURED_SOURCE}" ABSOLUTE)
       endif ()
       if (NOT ARGN_KEEP_DOT_IN_SUFFIX)
-        string (REGEX REPLACE "\\.in$" "" CONFIGURED_SOURCE "${CONFIGURED_SOURCE}")
+        get_filename_component (CONFIGURED_SOURCE "${CONFIGURED_SOURCE}" NAME_WE)
       endif ()
       configure_file ("${SOURCE}" "${CONFIGURED_SOURCE}" @ONLY)
     else ()
@@ -953,3 +1039,4 @@ endfunction ()
 
 
 ## @}
+# end of Doxygen group

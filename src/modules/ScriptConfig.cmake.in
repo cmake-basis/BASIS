@@ -22,6 +22,7 @@
 set (PROJECT_NAME "@PROJECT_NAME@")
 set (PROJECT_NAME_UPPER "@PROJECT_NAME_UPPER@")
 set (PROJECT_NAME_LOWER "@PROJECT_NAME_LOWER@")
+set (PROJECT_NAME_INFIX "@PROJECT_NAME_INFIX@")
 
 ## @brief Project version string used by print_version().
 #

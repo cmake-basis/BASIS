@@ -23,6 +23,10 @@ set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}" ${CMAKE_MODULE_PATH})
 # ExternalData.cmake module - yet only part of ITK, not CMake
 include ("${CMAKE_CURRENT_LIST_DIR}/ExternalData.cmake")
 
+# the module for the topological sort of modules according to their
+# inter-dependencies was copied from the ITK v4 project
+include ("${CMAKE_CURRENT_LIST_DIR}/TopologicalSort.cmake")
+
 # BASIS modules
 include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/DocTools.cmake")

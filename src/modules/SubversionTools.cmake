@@ -31,8 +31,10 @@ else ()
   mark_as_advanced (BASIS_CMD_SVN)
 endif ()
 
+
 ## @addtogroup CMakeUtilities
 #  @{
+
 
 # ============================================================================
 # retrieve SVN information
@@ -152,4 +154,6 @@ function (basis_svn_status URL STATUS)
   endif ()
 endfunction ()
 
+
 ## @}
+# end of Doxygen group
