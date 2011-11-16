@@ -16,15 +16,15 @@
 
 
 // command-line parsing
-#include <sbia/tclap/CmdLine.h>
+#include <@BASIS_INCLUDE_PREFIX@tclap/CmdLine.h>
 
 // basis utilities library
-#include <sbia/basis/exceptions.h>
-#include <sbia/basis/path.h>
-#include <sbia/basis/subprocess.h>
+#include <@BASIS_INCLUDE_PREFIX@exceptions.h>
+#include <@BASIS_INCLUDE_PREFIX@path.h>
+#include <@BASIS_INCLUDE_PREFIX@subprocess.h>
 
 // project-specific utilities
-#include <sbia/@PROJECT_NAME_LOWER@/config.h>
+#include <@INCLUDE_PREFIX@config.h>
 #include "ExecutableTargetInfo.h"
 #include "stdaux.h"
 
