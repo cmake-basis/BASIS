@@ -933,10 +933,15 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # subdirectories
 
-  # build source code of programs
+  # build source code
   if (EXISTS "${PROJECT_CODE_DIR}")
     add_subdirectory ("${PROJECT_CODE_DIR}")
   endif ()
+
+  # build modules
+  foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
+    add_subdirectory ("${${MODULE}_SOURCE_DIR}" "${${MODULE}_BINARY_DIR}")
+  endforeach ()
 
   # install auxiliary data files
   if (EXISTS "${PROJECT_DATA_DIR}")
