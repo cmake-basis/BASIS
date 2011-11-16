@@ -201,8 +201,6 @@ endmacro ()
 # @ingroup CMakeAPI
 
 macro (basis_project_initialize)
-  message ("basis_project_initialize()")
-
   # --------------------------------------------------------------------------
   # reset
 
@@ -422,8 +420,6 @@ macro (basis_project_initialize)
       "${PROJECT_INCLUDE_DIR}/*.txx"
       "${PROJECT_INCLUDE_DIR}/*.txx.in"
   )
-
-  message ("Headers of ${PROJECT_NAME}: ${PROJECT_PUBLIC_HEADERS}")
 
   foreach (H ${PROJECT_PUBLIC_HEADERS})
     get_filename_component (D "${H}" PATH)
