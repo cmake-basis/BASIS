@@ -125,7 +125,7 @@ macro (basis_project)
     message (FATAL_ERROR "basis_project(): Project name not specified!")
   endif ()
 
-  if (NOT PROJECT_VERSION)
+  if (NOT PROJECT_IS_MODULE AND NOT PROJECT_VERSION)
     message (FATAL_ERROR "basis_project(): Project version not specified!")
   endif ()
 
@@ -339,13 +339,6 @@ macro (basis_project_initialize)
     set (PROJECT_VERSION_PERL "${PROJECT_VERSION_PERL}_${PROJECT_VERSION_PATCH}")
   endif ()
 
-  # determine whether this project is a module of another project
-  if (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set (IS_MODULE FALSE)
-  else ()
-    set (IS_MODULE TRUE)
-  endif ()
-
   # print project information
   if (BASIS_VERBOSE)
     message (STATUS "Project:")
@@ -471,7 +464,7 @@ macro (basis_project_initialize)
       set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README.txt")
     elseif (EXISTS "${PROJECT_SOURCE_DIR}/README")
       set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README")
-    elseif (NOT IS_MODULE)
+    elseif (NOT PROJECT_IS_MODULE)
       message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a README file.")
     endif ()
   elseif (NOT EXISTS "${PROJECT_README_FILE}")
@@ -493,7 +486,7 @@ macro (basis_project_initialize)
       set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING.txt")
     elseif (EXISTS "${PROJECT_SOURCE_DIR}/COPYING")
       set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING")
-    elseif (NOT IS_MODULE)
+    elseif (NOT PROJECT_IS_MODULE)
       message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a COPYING file.")
     endif ()
   elseif (NOT EXISTS "${PROJECT_LICENSE_FILE}")
@@ -729,7 +722,7 @@ macro (basis_project_finalize)
   endif ()
 
   # add uninstall target
-  if (NOT IS_MODULE)
+  if (NOT PROJECT_IS_MODULE)
     basis_add_uninstall ()
   endif ()
 
@@ -744,7 +737,7 @@ macro (basis_project_finalize)
   endif ()
 
   # package software
-  if (NOT IS_MODULE)
+  if (NOT PROJECT_IS_MODULE)
     include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
   endif ()
 endmacro ()
