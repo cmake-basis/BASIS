@@ -35,40 +35,8 @@ else ()
   return ()
 endif ()
 
-# initialize project
-basis_project_initialize ()
-
 # ============================================================================
-# subdirectories
+# main
 # ============================================================================
 
-# source code of programs
-if (EXISTS "${PROJECT_CODE_DIR}")
-  add_subdirectory ("${PROJECT_CODE_DIR}")
-endif ()
-
-# auxiliary data files
-if (EXISTS "${PROJECT_DATA_DIR}")
-  add_subdirectory ("${PROJECT_DATA_DIR}")
-endif ()
-
-# package documentation
-if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
-  add_subdirectory ("${PROJECT_DOC_DIR}")
-endif ()
-
-# example application
-if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
-  add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
-endif ()
-
-# software testing
-if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
-  add_subdirectory ("${PROJECT_TESTING_DIR}")
-endif ()
-
-# ============================================================================
-# finalize
-# ============================================================================
-
-basis_project_finalize ()
+basis_project_impl ()
