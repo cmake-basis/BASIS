@@ -62,8 +62,8 @@ set (BASIS_BASH_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash"
 set (BASIS_PYTHON_LIBRARY_DIR   "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
 set (BASIS_PERL_LIBRARY_DIR     "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
 
-include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
+include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 
 # ----------------------------------------------------------------------------
 # configure build system

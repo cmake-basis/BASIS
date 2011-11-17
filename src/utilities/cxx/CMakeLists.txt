@@ -36,13 +36,6 @@ basis_set_target_properties (utilities PROPERTIES OUTPUT_NAME "basisutilities")
 # ----------------------------------------------------------------------------
 # unit testing
 
-# add include/sbia directory to include search path as the original Google
-# Test and Google Mock sources include the headers via
-# @code
-# #include "gtest/gtest.h"
-# @endcode
-basis_include_directories ("${PROJECT_INCLUDE_DIR}/sbia") 
-
 if (NOT HAVE_TR1_TUPLE)
   basis_add_definitions ("-DGTEST_USE_OWN_TR1_TUPLE=1")
 endif ()

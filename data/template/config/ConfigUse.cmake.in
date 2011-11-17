@@ -23,7 +23,7 @@ set (NS "@CONFIG_PREFIX@_")
 if (__${NS}USE_FILE_INCLUDED)
   return ()
 else ()
-  set (__${NS}USE_FILE_INCLUDED 1)
+  set (__${NS}USE_FILE_INCLUDED TRUE)
 endif ()
 
 # ----------------------------------------------------------------------------

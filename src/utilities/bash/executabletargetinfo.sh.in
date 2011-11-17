@@ -26,9 +26,6 @@ _SBIA_BASIS_EXECUTABLETARGETINFO_INCLUDED=1
 ## @brief Absolute directory path of ExecutableTargetInfo.sh module.
 readonly _EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
 
-## @brief Default namespace used to convert target name to target UID.
-readonly _EXECUTABLETARGETINFO_NAMESPACE='@BASIS_NAMESPACE@'
-
 # ============================================================================
 # modules
 # ============================================================================
@@ -68,8 +65,8 @@ function get_target_uid
     fi
     # convert target name to target UID
     local path && _executabletargetinfo_get path "${target}" LOCATION
-    if [ -z "${path}" ] && [[ "${target//::/}" == "${target}" ]]; then
-        target="${_EXECUTABLETARGETINFO_NAMESPACE}::${target}"
+    if [ -z "${path}" ] && [[ "${target//@BASIS_NAMESPACE_SEPARATOR@/}" == "${target}" ]]; then
+        target="@BASIS_NAMESPACE@@BASIS_NAMESPACE_SEPARATOR@${target}"
     fi
 
     local "$1" && upvar $1 "${target}"

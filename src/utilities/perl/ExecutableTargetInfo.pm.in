@@ -61,9 +61,6 @@ use SBIA::BASIS::File::Which;
 # private data
 # ============================================================================
 
-## @brief Default namespace used to make build target names fully-qualified.
-my $_namespace = '@BASIS_NAMESPACE@';
-
 ## @brief Maps build target names to executable file paths relative to module.
 my $_location = undef;
 
@@ -99,7 +96,7 @@ sub get_target_uid
     # do nothing if target name is fully-qualified
     $target !~ /::/ or return $target;
     # otherwise, prepend default namespace name
-    return $_namespace . '::' . $target;
+    return '@BASIS_NAMESPACE@@BASIS_NAMESPACE_SEPARATOR@' . $target;
 }
 
 # ----------------------------------------------------------------------------

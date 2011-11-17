@@ -21,7 +21,8 @@
 set (NS "@PROJECT_NAME@_")
 
 # ----------------------------------------------------------------------------
-# attention: Always reset the settings when this file is included!
+# Always reset the settings when this file is included!
+include ("${${NS}MODULE_PATH}/BasisTools.cmake")
 include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 
 # ----------------------------------------------------------------------------
@@ -29,13 +30,8 @@ include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 if (__${NS}USE_FILE_INCLUDED)
   return ()
 else ()
-  set (__${NS}USE_FILE_INCLUDED 1)
+  set (__${NS}USE_FILE_INCLUDED TRUE)
 endif ()
-
-# ----------------------------------------------------------------------------
-# BASIS CMake tools
-
-include ("${${NS}MODULE_PATH}/BasisTools.cmake")
 
 # ----------------------------------------------------------------------------
 # BASIS utilities

@@ -36,7 +36,6 @@ from sbia.basis.which import which, WhichError
 # ============================================================================
 
 _module_dir = os.path.realpath(os.path.dirname(__file__))
-_namespace  = '@BASIS_NAMESPACE@'
 _locations  = None
 
 # ============================================================================
@@ -60,7 +59,6 @@ def get_target_uid(target):
     
     """
     global _locations
-    global _namespace
     
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
@@ -77,7 +75,7 @@ def get_target_uid(target):
     if target.find('::') > -1:
         return target
     # otherwise, prepend default namespace identifier
-    return '::'.join([_namespace, target])
+    return '@BASIS_NAMESPACE_SEPARATOR@'.join(['@BASIS_NAMESPACE@', target])
 
 # ----------------------------------------------------------------------------
 def is_known_target(target):
