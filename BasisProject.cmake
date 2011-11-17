@@ -3,12 +3,13 @@
 # @brief Meta-data of this BASIS project.
 #
 # This file defines project meta-data, i.e., attributes, which are used by
-# BASIS to setup the project. Moreover, if the project is a subproject of
-# another BASIS project, the dependencies to other subprojects are specified
-# here such that the super-project can analyze the dependencies among its
-# subprojects. Besides intra-project dependencies, dependencies on external
-# packages can be specified here as well. A more flexible alternative to
-# resolve external dependencies is given by the Depends.cmake file.
+# BASIS to setup the project. Moreover, if the project is a module of another
+# BASIS project, the dependencies to other modules have to be specified here
+# such that the (super-)project can analyze the inter-module dependencies.
+# However, not only dependencies to other modules can be specified here,
+# but also dependencies on external packages. A more flexible alternative to
+# resolve external dependencies is to add the corresponding CMake statements
+# to the Settings.cmake file. This should only be done if required.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
