@@ -39,6 +39,9 @@ basis_set_config (USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
 # libraries
 # ============================================================================
 
+## @brief Prefix required for including header files of this package.
+basis_set_config (INCLUDE_PREFIX "@INCLUDE_PREFIX@")
+
 ## @brief Directory of header files.
 basis_set_config (INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 
