@@ -511,7 +511,7 @@ set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
 if (WIN32)
   basis_set_if_empty (INSTALL_CONFIG_DIR "cmake")
 else ()
-  basis_set_if_empty (INSTALL_CONFIG_DIR "lib/cmake/\@PROJECT_NAME_LOWER\@")
+  basis_set_if_empty (INSTALL_CONFIG_DIR "lib/cmake/\@PROJECT_NAME_INFIX\@")
 endif ()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
