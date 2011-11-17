@@ -326,40 +326,146 @@ endmacro ()
 # configure header files with the .in suffix.
 
 function (basis_configure_public_headers)
-  file (
-    GLOB_RECURSE
-      PROJECT_PUBLIC_HEADERS
-    RELATIVE "${PROJECT_INCLUDE_DIR}"
-      "${PROJECT_INCLUDE_DIR}/*.h"
-      "${PROJECT_INCLUDE_DIR}/*.h.in"
-      "${PROJECT_INCLUDE_DIR}/*.hh"
-      "${PROJECT_INCLUDE_DIR}/*.hh.in"
-      "${PROJECT_INCLUDE_DIR}/*.hpp"
-      "${PROJECT_INCLUDE_DIR}/*.hpp.in"
-      "${PROJECT_INCLUDE_DIR}/*.hxx"
-      "${PROJECT_INCLUDE_DIR}/*.hxx.in"
-      "${PROJECT_INCLUDE_DIR}/*.inl"
-      "${PROJECT_INCLUDE_DIR}/*.inl.in"
-      "${PROJECT_INCLUDE_DIR}/*.txx"
-      "${PROJECT_INCLUDE_DIR}/*.txx.in"
+  # --------------------------------------------------------------------------
+  # settings
+
+  # log file which lists the configured header files
+  set (CMAKE_FILE "${BINARY_INCLUDE_DIR}/PublicHeaders.cmake")
+
+  # considered extensions
+  set (
+    EXTENSIONS
+      ".h"
+      ".hh"
+      ".hpp"
+      ".hxx"
+      ".inl"
+      ".txx"
   )
 
-  foreach (H ${PROJECT_PUBLIC_HEADERS})
-    get_filename_component (D "${H}" PATH)
-    if (H MATCHES "\\.in$")
-      get_filename_component (F "${H}" NAME_WE)
-      set (MODE "@ONLY")
-    else ()
-      get_filename_component (F "${H}" NAME)
-      set (MODE "COPYONLY")
-    endif ()
-    if (INCLUDE_PREFIX MATCHES "/$")
-      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${D}/${F}" ${MODE})
-    else ()
-      configure_file ("${PROJECT_INCLUDE_DIR}/${H}" "${BINARY_INCLUDE_DIR}/${D}/${INCLUDE_PREFIX}${F}" ${MODE})
-    endif ()
-  endforeach ()
+  # --------------------------------------------------------------------------
+  # clean up last run before the error because a file was added/removed
+  file (REMOVE "${CMAKE_FILE}")
+  file (REMOVE "${CMAKE_FILE}.tmp")
+  file (REMOVE "${CMAKE_FILE}.updated")
 
+  # --------------------------------------------------------------------------
+  # configure public header files already during the configure step
+  if (BASIS_VERBOSE)
+    message (STATUS "Configuring public header files...")
+  endif ()
+
+  execute_process (
+    COMMAND "${CMAKE_COMMAND}"
+            -D "PROJECT_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
+            -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
+            -D "EXTENSIONS=${EXTENSIONS}"
+            -D "CMAKE_FILE=${CMAKE_FILE}"
+            -D "VARIABLE_NAME=PUBLIC_HEADERS"
+            -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
+  )
+
+  execute_process (
+    COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
+  )
+
+  if (NOT EXISTS "${CMAKE_FILE}")
+    message (FATAL_ERROR "File ${CMAKE_FILE} not generated as it should have been! "
+                         "Try running CMake again.")
+  endif ()
+
+  if (BASIS_VERBOSE)
+    message (STATUS "Configuring public header files... - done")
+  endif ()
+
+  # We need a list of the configured files to add them as dependency of the
+  # custom build targets such that these get re-build whenever a file changed.
+  # Additionally, including this file here which is modified whenever a
+  # header file is added or removed triggeres a re-configuration of the
+  # build system which is required to re-execute this function and adjust
+  # these custom build targets.
+
+  include ("${CMAKE_FILE}")
+
+  # --------------------------------------------------------------------------
+  # check if any header was added or removed (always out-of-date)
+
+  # error message displayed when a file was added or removed which requires
+  # a reconfiguration of the build system
+  set (ERRORMSG "You have either added or removed a public header file. "
+                "Therefore, the build system needs to be re-configured. "
+                "Either try to build again which will trigger CMake to "
+                "re-configure the build system or run CMake manually.")
+  basis_list_to_string (ERRORMSG ${ERRORMSG})
+
+  # custom command which globs the files in the project's include directory
+  add_custom_command (
+    OUTPUT  "${CMAKE_FILE}.tmp"
+    COMMAND "${CMAKE_COMMAND}"
+            -D "PROJECT_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
+            -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
+            -D "EXTENSIONS=${EXTENSIONS}"
+            -D "CMAKE_FILE=${CMAKE_FILE}.tmp"
+            -D "VARIABLE_NAME=PUBLIC_HEADERS"
+            -D "PREVIEW=TRUE" # do not actually configure the files
+            -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
+    COMMENT "Checking if public header files were added or removed"
+    VERBATIM
+  )
+
+  # custom target to detect whether a file was added or removed
+  add_custom_target (
+    _check_headers
+    # trigger execution of custom command that generates the list
+    # of current files in the project's include directory
+    DEPENDS "${CMAKE_FILE}.tmp"
+    # compare current list of header to list of previously configured files
+    # if the lists differ, remove the CMAKE_FILE which was included in
+    # this function such that CMake re-configures the build system
+    COMMAND "${CMAKE_COMMAND}"
+            -D "OUTPUT_FILE=${CMAKE_FILE}"
+            -D "REFERENCE_FILE=${CMAKE_FILE}.tmp"
+            -D "ACTION=remove_and_error_if_different"
+            -D "ERRORMSG=${ERRORMSG}"
+            -P "${BASIS_MODULE_PATH}/CompareFiles.cmake"
+    # remove temporary file again to force its regeneration
+    COMMAND "${CMAKE_COMMAND}" -E remove "${CMAKE_FILE}.tmp"
+    VERBATIM
+  )
+
+  # --------------------------------------------------------------------------
+  # add build command to re-configure public header files
+
+  if (PUBLIC_HEADERS)
+    set (PROJECT_PUBLIC_HEADERS)
+    foreach (HEADER IN LISTS PUBLIC_HEADERS)
+      list (APPEND PROJECT_PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/${HEADER}")
+    endforeach ()
+
+    add_custom_command (
+      OUTPUT  "${CMAKE_FILE}.updated" # do not use same file as included
+                                      # before otherwise CMake will re-configure
+                                      # the build system next time
+      COMMAND "${CMAKE_COMMAND}"
+              -D "PROJECT_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+              -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
+              -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
+              -D "EXTENSIONS=${EXTENSIONS}"
+              -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
+      COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
+      DEPENDS ${PROJECT_PUBLIC_HEADERS}
+      COMMENT "Configuring public header files"
+      VERBATIM
+    )
+
+    add_custom_target (
+      _headers ALL
+      DEPENDS _check_headers "${CMAKE_FILE}.updated"
+      SOURCES ${PROJECT_PUBLIC_HEADERS}
+    )
+  endif ()
 endfunction ()
 
 ##############################################################################
@@ -498,7 +604,7 @@ macro (basis_project_initialize)
                            "in the file BasisProject.cmake?")
     endif ()
   else ()
-    basis_project (${ARGN})
+    message (FATAL_ERROR "Missing BasisProject.cmake file!")
   endif ()
  
   # --------------------------------------------------------------------------

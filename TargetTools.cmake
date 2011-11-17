@@ -1815,7 +1815,7 @@ function (basis_add_script_finalize TARGET_UID)
     set (C "${C}\n")
     set (C "${C}# convert %NAME% to \@NAME\@\n")
     set (C "${C}file (READ \"${SCRIPT_FILE}\" SCRIPT)\n")
-    set (C "${C}string (REGEX REPLACE \"%([a-zA-Z0-9_][a-zA-Z0-9_]+)%\" \"\@\\\\1\@\" SCRIPT \"\${SCRIPT}\")\n")
+    set (C "${C}string (REGEX REPLACE \"%([A-Z0-9_][A-Z0-9_]+)%\" \"\@\\\\1\@\" SCRIPT \"\${SCRIPT}\")\n")
     set (C "${C}file (WRITE \"${CONFIGURED_FILE}\" \"\${SCRIPT}\")\n")
 
     # tools for use in script configuration
