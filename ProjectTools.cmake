@@ -998,11 +998,6 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # subdirectories
 
-  # build source code
-  if (EXISTS "${PROJECT_CODE_DIR}")
-    add_subdirectory ("${PROJECT_CODE_DIR}")
-  endif ()
-
   # build modules
   foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
     if (BASIS_VERBOSE)
@@ -1015,6 +1010,11 @@ macro (basis_project_impl)
       message (STATUS "Configuring module ${MODULE}... - done")
     endif ()
   endforeach ()
+
+  # build source code
+  if (EXISTS "${PROJECT_CODE_DIR}")
+    add_subdirectory ("${PROJECT_CODE_DIR}")
+  endif ()
 
   # install auxiliary data files
   if (EXISTS "${PROJECT_DATA_DIR}")
