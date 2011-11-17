@@ -167,10 +167,14 @@ function (basis_include_directories)
 
   # make relative paths absolute
   set (DIRS)
-  foreach (P ${ARGN_UNPARSED_ARGUMENTS})
+  foreach (P IN LISTS ARGN_UNPARSED_ARGUMENTS)
     get_filename_component (P "${P}" ABSOLUTE)
     list (APPEND DIRS "${P}")
   endforeach ()
+
+  if (NOT DIRS)
+    message (WARNING "basis_include_directories(): No directories given to add!")
+  endif ()
 
   # update list of current include directories
   #

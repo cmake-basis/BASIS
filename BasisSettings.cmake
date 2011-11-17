@@ -654,7 +654,7 @@ macro (basis_initialize_settings)
   # be finalized properly.
 
   # list of all include directories
-  basis_set_project_property (INCLUDE_DIRS "")
+  basis_set_project_property (PROJECT_INCLUDE_DIRS "")
   # list of all build targets
   basis_set_project_property (TARGETS "")
   # list of all exported targets

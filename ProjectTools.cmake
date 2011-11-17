@@ -360,8 +360,6 @@ function (basis_configure_public_headers)
     endif ()
   endforeach ()
 
-  basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
-  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
 endfunction ()
 
 ##############################################################################
@@ -868,6 +866,12 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # public header files
   basis_configure_public_headers ()
+
+  # attention: Must be called inside a macro, otherwise the
+  #            BASIS_INCLUDE_DIRECTORIES variable is only changed in the
+  #            scope of the function.
+  basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
+  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
 
   # --------------------------------------------------------------------------
   # pre-configure C++ utilities
