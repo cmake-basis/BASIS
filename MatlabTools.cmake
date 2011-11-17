@@ -408,9 +408,6 @@ function (basis_add_mex_target TARGET_NAME)
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
 
-  get_directory_property (INCLUDE_DIRS PROPERTY INCLUDE_DIRECTORIES)
-  get_directory_property (LINK_DIRS    PROPERTY LINK_DIRECTORIES)
-
   # set target properties required by basis_add_mex_target_finalize ()
   set_target_properties (
     ${TARGET_UID}
@@ -426,8 +423,8 @@ function (basis_add_mex_target TARGET_NAME)
       LIBRARY_OUTPUT_DIRECTORY  "${BINARY_LIBRARY_DIR}"
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
-      BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
-      BASIS_LINK_DIRECTORIES    "${LINK_DIRS}"
+      BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}"
+      BASIS_LINK_DIRECTORIES    "${BASIS_LINK_DIRECTORIES}"
       COMPILE_FLAGS             "${BASIS_MEX_FLAGS}"
       LINK_FLAGS                ""
       LINK_DEPENDS              ""
@@ -959,8 +956,6 @@ function (basis_add_mcc_target TARGET_NAME)
     endif ()
   endif ()
 
-  get_directory_property (INCLUDE_DIRS PROPERTY BASIS_INCLUDE_DIRECTORIES)
-
   set_target_properties (
     ${TARGET_UID}
     PROPERTIES
@@ -973,7 +968,8 @@ function (basis_add_mcc_target TARGET_NAME)
       LIBRARY_OUTPUT_DIRECTORY  "${BINARY_LIBRARY_DIR}"
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
-      BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
+      BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}"
+      BASIS_LINK_DIRECTORIES    "${BASIS_LINK_DIRECTORIES}"
       COMPILE_FLAGS             "${COMPILE_FLAGS}"
       LINK_DEPENDS              ""
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
@@ -1057,6 +1053,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       "VERSION"
       "SOVERSION"
       "BASIS_INCLUDE_DIRECTORIES"
+      "BASIS_LINK_DIRECTORIES"
       "SOURCES"
       "COMPILE_FLAGS"
       "LINK_DEPENDS"

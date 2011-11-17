@@ -142,10 +142,15 @@ endmacro ()
 #
 # All arguments are passed on to CMake's include_directories() command.
 #
-# Additionally, a list of all include directories used by a project is cached.
-# Hence, this list is extended even across subdirectories. Directories are
-# always appended ignoring the BEFORE argument. This list is stored as
-# BASIS_INCLUDE_DIRECTORIES property of the project's source directory.
+# Even though CMake (at least since 2.8.6) claims to provide a property named
+# INCLUDE_DIRECTORIES on directories for debugging purposes, does it not
+# seem to be set properly at least when using CMake 2.8.4. Hence, also to be
+# more independent from CMake's API, we maintain our own list of currently
+# active include directories.
+#
+# Additionally, a list of all include directories used by a project is stored
+# as project property (see basis_set_project_property()) named
+# PROJECT_INCLUDE_DIRECTORIES.
 #
 # @param ARGN Argument list passed on to CMake's include_directories() command.
 #
@@ -167,13 +172,40 @@ function (basis_include_directories)
     list (APPEND DIRS "${P}")
   endforeach ()
 
-  # append directories to "global" list of include directories
-  basis_get_project_property (INCLUDE_DIRS)
-  list (APPEND INCLUDE_DIRS ${DIRS})
-  if (INCLUDE_DIRS)
-    list (REMOVE_DUPLICATES INCLUDE_DIRS)
+  # update list of current include directories
+  #
+  # Attention: Do not name this variable BASIS_INCLUDE_DIRS as
+  #            this is the global list used by the project BASIS
+  #            using basis_set_project_property(INCLUDE_DIRS).
+  if (BASIS_INCLUDE_DIRECTORIES)
+    if (ARGN_BEFORE)
+      set (
+        BASIS_INCLUDE_DIRECTORIES
+          "${DIRS};${BASIS_INCLUDE_DIRECTORIES}"
+      )
+    else ()
+      set (
+        BASIS_INCLUDE_DIRECTORIES
+          "${BASIS_INCLUDE_DIRECTORIES};${DIRS}"
+      )
+    endif ()
+  else ()
+    set (BASIS_INCLUDE_DIRECTORIES "${DIRS}")
   endif ()
-  basis_set_project_property (INCLUDE_DIRS ${INCLUDE_DIRS})
+
+  if (BASIS_INCLUDE_DIRECTORIES)
+    list (REMOVE_DUPLICATES BASIS_INCLUDE_DIRECTORIES)
+  endif ()
+
+  set (BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}" PARENT_SCOPE)
+
+  # append directories to "global" list of include directories
+  basis_get_project_property (PROJECT_INCLUDE_DIRS)
+  list (APPEND PROJECT_INCLUDE_DIRS ${DIRS})
+  if (PROJECT_INCLUDE_DIRS)
+    list (REMOVE_DUPLICATES PROJECT_INCLUDE_DIRS)
+  endif ()
+  basis_set_project_property (PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS})
 endfunction ()
 
 ##############################################################################
@@ -201,6 +233,30 @@ endmacro ()
 function (basis_link_directories)
   # CMake's link_directories()
   _link_directories (${ARGN})
+
+  # make relative paths absolute
+  set (DIRS)
+  foreach (P IN LISTS ARGN)
+    get_filename_component (P "${P}" ABSOLUTE)
+    list (APPEND DIRS "${P}")
+  endforeach ()
+
+  # update list of current link directories
+  #
+  # Attention: Do not name this variable BASIS_LINK_DIRS as
+  #            this is reserved for the global list used by the project
+  #            BASIS using basis_set_project_property(LINK_DIRS).
+  if (BASIS_LINK_DIRECTORIES)
+    set (BASIS_LINK_DIRECTORIES "${BASIS_LINK_DIRECTORIES};${DIRS}")
+  else ()
+    set (BASIS_LINK_DIRECTORIES "${DIRS}")
+  endif ()
+
+  if (BASIS_LINK_DIRECTORIES)
+    list (REMOVE_DUPLICATES BASIS_LINK_DIRECTORIES)
+  endif ()
+
+  set (BASIS_LINK_DIRECTORIES "${BASIS_LINK_DIRECTORIES}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
