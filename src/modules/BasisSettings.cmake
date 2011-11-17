@@ -131,28 +131,29 @@ mark_as_advanced (BASIS_VERBOSE)
 #
 # Contains a list of target names that are used by the BASIS functions for
 # special purposes and are hence not to be used for project targets.
-set (BASIS_RESERVED_TARGET_NAMES
-  "test"
-  "uninstall"
-  "doc"
-  "changelog"
-  "package"
-  "package_source"
-  "bundle"
-  "bundle_source"
+basis_set_if_empty (
+  BASIS_RESERVED_TARGET_NAMES
+    "test"
+    "uninstall"
+    "doc"
+    "changelog"
+    "package"
+    "package_source"
+    "bundle"
+    "bundle_source"
 )
 
 ## @brief Default component used for library targets when no component is specified.
 #
 # The default component a library target and its auxiliary files
 # are associated with if no component was specified, explicitly.
-set (BASIS_LIBRARY_COMPONENT "Development")
+basis_set_if_empty (BASIS_LIBRARY_COMPONENT "Development")
 
 ## @brief Default component used for executables when no component is specified.
 #
 # The default component an executable target and its auxiliary files
 # are associated with if no component was specified, explicitly.
-set (BASIS_RUNTIME_COMPONENT "Runtime")
+basis_set_if_empty (BASIS_RUNTIME_COMPONENT "Runtime")
 
 ## @brief Whether to use unique build target names.
 option (BASIS_USE_TARGET_UIDS "Whether to use (globally) unique build target names." OFF)
@@ -160,7 +161,7 @@ mark_as_advanced (BASIS_USE_TARGET_UIDS)
 
 ## @brief Specifies that the BASIS C++ utilities shall by default not be added
 #         as dependency of an executable.
-set (BASIS_NO_BASIS_UTILITIES FALSE)
+basis_set_if_empty (BASIS_NO_BASIS_UTILITIES FALSE)
 
 ## @brief Character used to separate namespace and target name in target UID.
 #
@@ -174,7 +175,7 @@ set (BASIS_NO_BASIS_UTILITIES FALSE)
 #       may for each language be replaced by a more suitable string.
 #       For example, it is replaced by "::" for C++.
 #       See UtilitiesTools.cmake for details.
-set (BASIS_NAMESPACE_SEPARATOR "/")
+basis_set_if_empty (BASIS_NAMESPACE_SEPARATOR "/")
 
 ## @brief Character used to separate version and project name (e.g., in target UID).
 #
@@ -183,7 +184,7 @@ set (BASIS_NAMESPACE_SEPARATOR "/")
 # Note that the version need not be included if only a single version of each
 # package is supposed to be installed on a target system. The same rules as for
 # @c BASIS_NAMESPACE_SEPARATOR regarding character selection apply.
-set (BASIS_VERSION_SEPARATOR "-")
+basis_set_if_empty (BASIS_VERSION_SEPARATOR "-")
 
 ## @brief Script used to execute a process in CMake script mode.
 #
@@ -191,7 +192,7 @@ set (BASIS_VERSION_SEPARATOR "-")
 # and to add some error message parsing, this script is used by some build
 # rules to actually perform the build step. See for example, the build of
 # executables using the MATLAB Compiler.
-set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmake")
+basis_set_if_empty (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmake")
 
 ## @brief Default script configuration template.
 #
@@ -199,14 +200,14 @@ set (BASIS_SCRIPT_EXECUTE_PROCESS "${CMAKE_CURRENT_LIST_DIR}/ExecuteProcess.cmak
 # script during the build step. If the file
 # @c PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
 # is set to its path by basis_project_initialize().
-set (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
+basis_set_if_empty (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptConfig.cmake.in")
 
 ## @brief File used by default as <tt>--authors</tt> file to <tt>svn2cl</tt>.
 #
 # This file lists all Subversion users at SBIA and is used by default for
 # the mapping of Subversion user names to real names during the generation
 # of changelogs.
-set (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
+basis_set_if_empty (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
 
 ## @brief Namespace used for target UIDs if @c BASIS_USE_TARGET_UIDS is @c ON.
 #
@@ -328,6 +329,9 @@ endmacro ()
 #       only the directory structure of the tempate needs to be updated.
 #       The BASIS CMake functions should not be required to change as they
 #       are supposed to use these variables instead of the actual names.
+
+# Attention: Always reset these variables as they are used by both, the
+#            project and its modules.
 
 ## @brief Absolute path of directory of project sources in source tree.
 set (PROJECT_CODE_DIR "\@PROJECT_SOURCE_DIR\@/src")
