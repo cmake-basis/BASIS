@@ -51,7 +51,6 @@ basis_add_doc (
   INPUT            "${BINARY_CODE_DIR}"
                    "${PROJECT_CODE_DIR}"
                    "${BINARY_INCLUDE_DIR}"
-                   "${PROJECT_INCLUDE_DIR}"
                    ${API_DOX_FILES}
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
                    "*/tclap/*"            # TCLAP

@@ -33,15 +33,15 @@ endif ()
 # ============================================================================
 
 # installation directory of CMake modules
-set (INSTALL_MODULES_DIR "${INSTALL_SHARE_DIR}/modules")
+set (INSTALL_MODULES_DIR "${INSTALL_SHARE_DIR}/cmake")
 
 # installation directory of utilities template files
-set (INSTALL_CXX_TEMPLATES_DIR    "${INSTALL_SHARE_DIR}/templates/src")
-set (INSTALL_JAVA_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/templates/src")
-set (INSTALL_PYTHON_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/templates/src")
-set (INSTALL_PERL_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/templates/src")
-set (INSTALL_BASH_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/templates/src")
-set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/templates/src")
+set (INSTALL_CXX_TEMPLATES_DIR    "${INSTALL_SHARE_DIR}/utilities/cxx")
+set (INSTALL_JAVA_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/java")
+set (INSTALL_PYTHON_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/python")
+set (INSTALL_PERL_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/perl")
+set (INSTALL_BASH_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/bash")
+set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/matlab")
 
 # installation directory of project template files
-set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates/project")
+set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
