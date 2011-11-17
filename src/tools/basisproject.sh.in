@@ -1078,9 +1078,7 @@ addordel $doc "doc/CMakeLists.txt" || retval=1
 addordel $doc "doc" 0              || retval=1 # for deletion of directory
 
 # public includes
-addordel $include "include/sbia/$name_lower" 0 || retval=1
-addordel $include "include/sbia"             0 || retval=1 # for deletion of directory
-addordel $include "include"                  0 || retval=1 # for deletion of directory
+addordel $include "include" 0 || retval=1 # for deletion of directory
 
 # testing tree
 addordel $tests "CTestConfig.cmake"   || retval=1
