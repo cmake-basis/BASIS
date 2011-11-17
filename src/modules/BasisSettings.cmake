@@ -401,6 +401,9 @@ string (
     "${CMAKE_INSTALL_PREFIX}"
 )
 
+# hide CMAKE_INSTALL_PREFIX
+set_property (CACHE CMAKE_INSTALL_PREFIX PROPERTY TYPE INTERNAL)
+
 ## @brief Installation prefix.
 set (
   INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
