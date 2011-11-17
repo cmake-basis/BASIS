@@ -25,6 +25,7 @@ set (
     "ExternalData_config.cmake.in"  # config of ExternalData.cmake module
     "InstallationTools.cmake"       # software installation
     "MatlabTools.cmake"             # MATLAB support
+    "ProjectTools.cmake"            # main project/module helpers
     "SubversionTools.cmake"         # Subversion support
     "TargetTools.cmake"             # addition of build targets
     "TopologicalSort.cmake"         # topological sorting of build dependencies

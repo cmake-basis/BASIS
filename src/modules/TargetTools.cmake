@@ -168,15 +168,12 @@ function (basis_include_directories)
   endforeach ()
 
   # append directories to "global" list of include directories
-  basis_get_project_property (BASIS_INCLUDE_DIRECTORIES)
-
-  list (APPEND BASIS_INCLUDE_DIRECTORIES ${DIRS})
- 
-  if (BASIS_INCLUDE_DIRECTORIES)
-    list (REMOVE_DUPLICATES BASIS_INCLUDE_DIRECTORIES)
+  basis_get_project_property (INCLUDE_DIRS)
+  list (APPEND INCLUDE_DIRS ${DIRS})
+  if (INCLUDE_DIRS)
+    list (REMOVE_DUPLICATES INCLUDE_DIRS)
   endif ()
-
-  basis_set_project_property (BASIS_INCLUDE_DIRECTORIES ${BASIS_INCLUDE_DIRECTORIES})
+  basis_set_project_property (INCLUDE_DIRS ${INCLUDE_DIRS})
 endfunction ()
 
 ##############################################################################
@@ -333,7 +330,7 @@ endfunction ()
 
 function (add_executable TARGET_NAME)
   _add_executable (${TARGET_NAME} ${ARGN})
-  basis_set_project_property (BASIS_TARGETS APPEND "${TARGET_NAME}")
+  basis_set_project_property (TARGETS APPEND "${TARGET_NAME}")
 endfunction ()
 
 ##############################################################################
@@ -348,7 +345,7 @@ endfunction ()
 
 function (add_library TARGET_NAME)
   _add_library (${TARGET_NAME} ${ARGN})
-  basis_set_project_property (BASIS_TARGETS APPEND "${TARGET_NAME}")
+  basis_set_project_property (TARGETS APPEND "${TARGET_NAME}")
 endfunction ()
 
 ##############################################################################
@@ -946,7 +943,7 @@ function (basis_add_executable_target TARGET_NAME)
       set (EXPORT_OPT)
     else ()
       set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-      basis_set_project_property (BASIS_EXPORT_TARGETS APPEND "${TARGET_UID}")
+      basis_set_project_property (EXPORT_TARGETS APPEND "${TARGET_UID}")
     endif ()
 
     install (
@@ -1171,7 +1168,7 @@ function (basis_add_library_target TARGET_NAME)
     set (EXPORT_OPT)
   else ()
     set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-    basis_set_project_property (BASIS_EXPORT_TARGETS APPEND "${TARGET_UID}")
+    basis_set_project_property (EXPORT_TARGETS APPEND "${TARGET_UID}")
   endif ()
 
   if (ARGN_RUNTIME_DESTINATION)
@@ -1412,7 +1409,7 @@ function (basis_add_script TARGET_NAME)
   # "parse" script to check if BASIS utilities are used and hence required
   file (READ "${ARGN_SCRIPT}" SCRIPT)
   if (SCRIPT MATCHES "@BASIS_([A-Z]+)_UTILITIES@")
-    basis_set_project_property (BASIS_PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE)
+    basis_set_project_property (PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE)
   endif ()
   set (SCRIPT)
 
@@ -1590,7 +1587,7 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   # add target to list of targets
-  basis_set_project_property (BASIS_TARGETS APPEND "${TARGET_UID}")
+  basis_set_project_property (TARGETS APPEND "${TARGET_UID}")
 
   if (BASIS_VERBOSE)
     if (ARGN_MODULE)
@@ -1920,7 +1917,7 @@ function (basis_add_script_finalize TARGET_UID)
 
   # install script
   if (NOT ARGN_NO_EXPORT)
-    basis_set_project_property (BASIS_CUSTOM_EXPORT_TARGETS APPEND "${TARGET_UID}")
+    basis_set_project_property (CUSTOM_EXPORT_TARGETS APPEND "${TARGET_UID}")
   endif ()
 
   if (MODULE)
@@ -1982,8 +1979,8 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_add_custom_finalize)
-  basis_get_project_property (BASIS_TARGETS)
-  foreach (TARGET_UID ${BASIS_TARGETS})
+  basis_get_project_property (TARGETS)
+  foreach (TARGET_UID ${TARGETS})
     get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
     if (NOT IMPORTED)
       get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
@@ -2066,16 +2063,16 @@ function (basis_export_targets)
   # --------------------------------------------------------------------------
   # export non-custom targets
 
-  basis_get_project_property (BASIS_EXPORT_TARGETS)
+  basis_get_project_property (EXPORT_TARGETS)
 
-  if (BASIS_EXPORT_TARGETS)
+  if (EXPORT_TARGETS)
     if (BASIS_USE_TARGET_UIDS)
       set (NAMESPACE_ARG)
     else ()
       set (NAMESPACE_ARG "NAMESPACE" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}")
     endif ()
     export (
-      TARGETS   ${BASIS_EXPORT_TARGETS}
+      TARGETS   ${EXPORT_TARGETS}
       FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
       ${NAMESPACE_ARG}
     )
@@ -2093,9 +2090,9 @@ function (basis_export_targets)
   # --------------------------------------------------------------------------
   # export custom targets
 
-  basis_get_project_property (BASIS_CUSTOM_EXPORT_TARGETS)
+  basis_get_project_property (CUSTOM_EXPORT_TARGETS)
 
-  if (BASIS_CUSTOM_EXPORT_TARGETS)
+  if (CUSTOM_EXPORT_TARGETS)
 
     # helper macros to avoid duplication of code
     # two version of exports file are created, one for the build tree and
@@ -2129,7 +2126,7 @@ function (basis_export_targets)
 
     # create import targets
     macro (import_targets)
-      foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
+      foreach (T ${CUSTOM_EXPORT_TARGETS})
         if (BASIS_USE_TARGET_UIDS)
           set (UID "${T}")
         else ()
@@ -2158,7 +2155,7 @@ function (basis_export_targets)
     macro (build_properties)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
-        foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
+        foreach (T ${CUSTOM_EXPORT_TARGETS})
           if (BASIS_USE_TARGET_UIDS)
             set (UID "${T}")
           else ()
@@ -2180,7 +2177,7 @@ function (basis_export_targets)
     macro (install_properties)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
-        foreach (T ${BASIS_CUSTOM_EXPORT_TARGETS})
+        foreach (T ${CUSTOM_EXPORT_TARGETS})
           if (BASIS_USE_TARGET_UIDS)
             set (UID "${T}")
           else ()

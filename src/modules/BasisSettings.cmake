@@ -16,6 +16,12 @@
 #            underneath this directory tree, but not propagate to the parent
 #            or a sibling.
 #
+# @note Variables in this file which are only set if not set previously, e.g.,
+#       by using basis_set_if_empty(), are set when this file is included
+#       the first time by a project, but not changed when it is included by
+#       a module of this project. This is important in order to merge the
+#       module's output files with the files of the project it is part of.
+#
 # @note As this file also sets the CMake policies to be used, it has to
 #       be included using the @c NO_POLICY_SCOPE in order for these policies
 #       to take effect also in the including file and its subdirectories.
@@ -45,6 +51,12 @@ endif ()
 if (POLICY CMP0017)
   cmake_policy (SET CMP0017 NEW)
 endif ()
+
+# ============================================================================
+# modules
+# ============================================================================
+
+include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake") # basis_set_if_empty()
 
 # ============================================================================
 # system checks
@@ -202,10 +214,7 @@ set (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
 # names of the projects it is a module of, i.e., the namespace encodes the
 # super-/subproject relationship and guarantees uniqueness of target names
 # and other identifiers.
-if (BASIS_NAMESPACE)
-  set (BASIS_NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}")
-endif ()
-set (BASIS_NAMESPACE "${BASIS_NAMESPACE}\@PROJECT_NAME_INFIX\@")
+basis_set_if_empty (BASIS_NAMESPACE "\@PROJECT_NAME_INFIX\@")
 
 ## @brief Installation prefix for public header files.
 #
@@ -226,10 +235,7 @@ set (BASIS_NAMESPACE "${BASIS_NAMESPACE}\@PROJECT_NAME_INFIX\@")
 # @note The include prefix must end with a slash if it is a subdirectory.
 #       BASIS will not use a slash by itself to separate the prefix from
 #       the header file name.
-if (NOT INCLUDE_PREFIX)
-  set (INCLUDE_PREFIX "sbia/")
-endif ()
-set (INCLUDE_PREFIX "${INCLUDE_PREFIX}\@PROJECT_NAME_INFIX\@/")
+basis_set_if_empty (INCLUDE_PREFIX "sbia/\@PROJECT_NAME_INFIX\@/")
 
 ## @brief Installation sinfix.
 #
@@ -237,16 +243,12 @@ set (INCLUDE_PREFIX "${INCLUDE_PREFIX}\@PROJECT_NAME_INFIX\@/")
 # a module of another project, the sinfix is cached during the first
 # configuration which enables the user to modify it. Modules, on the other
 # side, append their name to the already set sinfix.
-if (BASIS_INSTALL_SINFIX)
-  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}/\@PROJECT_NAME_INFIX\@")
+if (WIN32)
+  basis_set_if_empty (BASIS_INSTALL_SINFIX "\@PROJECT_NAME_INFIX\@" CACHE STRING "Suffix/Infix used for installation paths.")
 else ()
-  if (WIN32)
-    set (BASIS_INSTALL_SINFIX "\@PROJECT_NAME_INFIX\@" CACHE STRING "Suffix/Infix used for installation paths.")
-  else ()
-    set (BASIS_INSTALL_SINFIX "sbia/\@PROJECT_NAME_INFIX\@" CACHE STRING "Suffix/Infix used for installation paths.")
-  endif ()
-  mark_as_advanced (BASIS_INSTALL_SINFIX)
+  basis_set_if_empty (BASIS_INSTALL_SINFIX "sbia/\@PROJECT_NAME_INFIX\@" CACHE STRING "Suffix/Infix used for installation paths.")
 endif ()
+mark_as_advanced (BASIS_INSTALL_SINFIX)
 
 
 ## @}
@@ -349,15 +351,15 @@ set (PROJECT_TESTING_DIR "\@PROJECT_SOURCE_DIR\@/test")
 # ----------------------------------------------------------------------------
 
 ## @brief Absolute path of output directory for tests.
-set (TESTING_OUTPUT_DIR "\@PROJECT_BINARY_DIR\@/Testing/Temporary")
+basis_set_if_empty (TESTING_OUTPUT_DIR "\@PROJECT_BINARY_DIR\@/Testing/Temporary")
 ## @brief Absolute path of output directory for built test executables.
-set (TESTING_RUNTIME_DIR "\@PROJECT_BINARY_DIR\@/Testing/bin")
+basis_set_if_empty (TESTING_RUNTIME_DIR "\@PROJECT_BINARY_DIR\@/Testing/bin")
 ## @brief Absolute path of output directory for testing libraries.
-set (TESTING_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib")
+basis_set_if_empty (TESTING_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib")
 ## @brief Absolute path of output directory for Python modules used for testing.
-set (TESTING_PYTHON_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib/python")
+basis_set_if_empty (TESTING_PYTHON_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib/python")
 ## @brief Absolute path of output directory for Perl modules used for testing.
-set (TESTING_PERL_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib/perl5")
+basis_set_if_empty (TESTING_PERL_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib/perl5")
 
 # ----------------------------------------------------------------------------
 # build tree
@@ -366,17 +368,17 @@ set (TESTING_PERL_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/Testing/lib/perl5")
 # These directory paths will be made absolute by the initialization functions.
 
 ## @brief Absolute path of output directory for main executables.
-set (BINARY_RUNTIME_DIR "\@PROJECT_BINARY_DIR\@/bin")
+basis_set_if_empty (BINARY_RUNTIME_DIR "\@PROJECT_BINARY_DIR\@/bin")
 ## @brief Absolute path of output directory for auxiliary executables.
-set (BINARY_LIBEXEC_DIR "\@PROJECT_BINARY_DIR\@/lib")
+basis_set_if_empty (BINARY_LIBEXEC_DIR "\@PROJECT_BINARY_DIR\@/lib")
 ## @brief Absolute path of output directory for shared libraries and modules.
-set (BINARY_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib")
+basis_set_if_empty (BINARY_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib")
 ## @brief Absolute path of output directory for static and import libraries.
-set (BINARY_ARCHIVE_DIR "\@PROJECT_BINARY_DIR\@/lib")
+basis_set_if_empty (BINARY_ARCHIVE_DIR "\@PROJECT_BINARY_DIR\@/lib")
 ## @brief Absolute path of output directory for Python modules.
-set (BINARY_PYTHON_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib/python")
+basis_set_if_empty (BINARY_PYTHON_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib/python")
 ## @brief Absolute path of output directory for Perl modules.
-set (BINARY_PERL_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib/perl5")
+basis_set_if_empty (BINARY_PERL_LIBRARY_DIR "\@PROJECT_BINARY_DIR\@/lib/perl5")
 
 # ----------------------------------------------------------------------------
 # install tree
@@ -593,7 +595,7 @@ macro (basis_initialize_settings)
   # build tree
   foreach (P CODE CONFIG DATA DOC EXAMPLE INCLUDE MODULES TESTING)
     file (RELATIVE_PATH SUBDIR "${PROJECT_SOURCE_DIR}" "${PROJECT_${P}_DIR}")
-    set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${SUBDIR}")
+    basis_set_if_empty (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${SUBDIR}")
   endforeach ()
 
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE PYTHON_LIBRARY PERL_LIBRARY)
@@ -614,9 +616,9 @@ macro (basis_initialize_settings)
   # install tree
   string (CONFIGURE "${INSTALL_PREFIX}" INSTALL_PREFIX @ONLY)
   string (CONFIGURE "${BASIS_INSTALL_SINFIX}" BASIS_INSTALL_SINFIX @ONLY)
-  set (INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE PATH "Prefix used for installation paths." FORCE)
+  basis_set_if_empty (INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE PATH "Prefix used for installation paths." FORCE)
   set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
-  set (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE STRING "Suffix/Infix used for installation paths." FORCE)
+  basis_set_if_empty (BASIS_INSTALL_SINFIX "${BASIS_INSTALL_SINFIX}" CACHE STRING "Suffix/Infix used for installation paths." FORCE)
 
   foreach (P RUNTIME LIBEXEC LIBRARY ARCHIVE INCLUDE SHARE DATA DOC EXAMPLE MAN)
     set (VAR INSTALL_${P}_DIR)
@@ -645,13 +647,19 @@ macro (basis_initialize_settings)
   # be finalized properly.
 
   # list of all include directories
-  set_property (DIRECTORY PROPERTY BASIS_INCLUDE_DIRECTORIES "")
+  basis_set_project_property (INCLUDE_DIRS "")
   # list of all build targets
-  set_property (DIRECTORY PROPERTY BASIS_TARGETS "")
+  basis_set_project_property (TARGETS "")
   # list of all exported targets
-  set_property (DIRECTORY PROPERTY BASIS_EXPORT_TARGETS "")
+  basis_set_project_property (EXPORT_TARGETS "")
   # list of all exported custom targets
-  set_property (DIRECTORY PROPERTY BASIS_CUSTOM_EXPORT_TARGETS "")
+  basis_set_project_property (CUSTOM_EXPORT_TARGETS "")
+
+  basis_set_project_property (PROJECT_USES_JAVA_UTILITIES   FALSE)
+  basis_set_project_property (PROJECT_USES_PYTHON_UTILITIES FALSE)
+  basis_set_project_property (PROJECT_USES_PERL_UTILITIES   FALSE)
+  basis_set_project_property (PROJECT_USES_BASH_UTILITIES   FALSE)
+  basis_set_project_property (PROJECT_USES_MATLAB_UTILITIES FALSE)
 
   # --------------------------------------------------------------------------
   # other constants

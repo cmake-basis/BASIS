@@ -282,11 +282,11 @@ endfunction ()
 #
 # @returns Sets @p VAR if it's value was not valid before.
 
-function (basis_set_if_empty VAR)
-  if (NOT ${VAR})
-    set (${VAR} ${ARGN})
+macro (basis_set_if_empty VAR)
+  if (NOT "${VAR}")
+    set ("${VAR}" ${ARGN})
   endif ()
-endfunction ()
+endmacro ()
 
 ##############################################################################
 # @brief Set path relative to script file.
@@ -371,37 +371,37 @@ endfunction ()
 ##############################################################################
 # @brief Set project-global property.
 #
-# Set property associated with top directory of the current project's source
-# tree. This is in particular of importance when a project is a module of
-# another project to avoid invalidating the super-project's properties.
+# Set property associated with current project/module. The property is in
+# fact just a cached variable whose name is prefixed by the project's name.
 
 function (basis_set_project_property PROPERTY)
+  if (ARGC GREATER 1 AND "${ARGV1}" STREQUAL "APPEND")
+    basis_get_project_property (CURRENT ${PROPERTY})
+    list (REMOVE_AT ARGN 0)
+  else ()
+    set (CURRENT "")
+  endif ()
   if (ARGC LESS 2)
     message (FATAL_ERROR "basis_set_project_property(): Too few arguments!")
   endif ()
-  if (ARGV1 AND "${ARGV1}" STREQUAL "APPEND")
-    set (APPEND "APPEND")
-    list (REMOVE_AT ARGN 0)
-  else ()
-    set (APPEND "")
-  endif ()
-  set_property (
-    DIRECTORY "${PROJECT_SOURCE_DIR}"
-    ${APPEND}
-    PROPERTY "${PROPERTY}" ${ARGN}
-  )
+  set (${PROJECT_NAME}_${PROPERTY} "${CURRENT};${ARGN}" CACHE INTERNAL "" FORCE)
 endfunction ()
 
 ##############################################################################
 # @brief Get project-global property value.
 
-macro (basis_get_project_property PROPERTY)
-  get_property (
-    ${PROPERTY}
-      DIRECTORY "${PROJECT_SOURCE_DIR}"
-      PROPERTY  "${PROPERTY}"
-  )
-endmacro ()
+function (basis_get_project_property PROPERTY)
+  if (ARGC GREATER 2)
+    message (FATAL_ERROR "basis_get_project_property(): Too many arguments!")
+  endif ()
+  if (ARGC EQUAL 2)
+    set (VAR      ${ARGV0})
+    set (PROPERTY ${ARGV1})
+  else ()
+    set (VAR ${PROPERTY})
+  endif ()
+  set (${VAR} "${${PROJECT_NAME}_${PROPERTY}}" PARENT_SCOPE)
+endfunction ()
 
 # ============================================================================
 # list / string manipulations
