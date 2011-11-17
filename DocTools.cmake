@@ -70,7 +70,7 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   endmacro ()
 
   register_filter (
-    basis@doxyfilter-cmake
+    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-cmake
       "CMakeLists.txt"
       "*.cmake"
       "*.cmake.in"
@@ -79,20 +79,20 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   )
 
   register_filter (
-    basis@doxyfilter-bash
+    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-bash
       "*.sh"
       "*.sh.in"
   )
 
   register_filter (
-    basis@doxyfilter-matlab
+    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-matlab
       "*.m"
       "*.m.in"
   )
 
   # TODO Python filer disabled because it does not work properly
 #  register_filter (
-#    basis@doxyfilter-python
+#    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-python
 #      "*.py"
 #      "*.py.in"
 #  )
@@ -465,13 +465,12 @@ function (basis_add_doc TARGET_NAME)
         DOXYGEN_INPUT
           "${BINARY_INCLUDE_DIR}"
           "${BINARY_CODE_DIR}"
-          "${PROJECT_INCLUDE_DIR}"
           "${PROJECT_CODE_DIR}"
       )
     endif ()
     basis_list_to_delimited_string (DOXYGEN_INPUT " " ${DOXYGEN_INPUT})
     if (NOT DOXYGEN_INPUT_FILTER)
-      basis_target_uid (DOXYFILTER "basis@doxyfilter")
+      basis_target_uid (DOXYFILTER "basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter")
       if (TARGET "${DOXYFILTER}")
         basis_get_target_location (DOXYGEN_INPUT_FILTER "${DOXYFILTER}" ABSOLUTE)
       endif ()
@@ -728,4 +727,3 @@ function (basis_add_doc TARGET_NAME)
     message (FATAL_ERROR "Unknown documentation generator: ${ARGN_GENERATOR}.")
   endif ()
 endfunction ()
-

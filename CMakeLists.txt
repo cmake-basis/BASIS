@@ -1,11 +1,6 @@
 ##############################################################################
 # @file  CMakeLists.txt
-# @brief Root build configuration file.
-#
-# This is the root build configuration of the BASIS package. As can be noted
-# does BASIS make use of exactly the standard it advocates and hence also the
-# CMake modules which implement this standard. Therefore, these modules are
-# considered the cornerstone of BASIS.
+# @brief Build configuration of CMake modules and utilities.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -14,57 +9,62 @@
 ##############################################################################
 
 # ----------------------------------------------------------------------------
-# minimum required CMake version
-
-# There is a bug in CMake version 2.8.2 which prevents the following command
-# to execute correctly:
-#
-#   cmake "-DCOMMAND=CFLAGS=-Wall [...]" -P ExecuteProcess.cmake
-#
-# because of the occurrence of an equal sign (=) within the value assigned to
-# variable COMMAND. This bug was apparently fixed in CMake version 2.8.4.
-# A command such as the one above is required to build MEX-files using the
-# MEX script and MATLAB Compiler targets.
-
-cmake_minimum_required (VERSION 2.8.4)
-
-# ----------------------------------------------------------------------------
-# version of BASIS template this project was instantiated from
-
-# The version of the template this project was instantiated from.
-# This information might be used by BASIS to maintain backwards compatibility.
-#
-# Note that this version in case of the BASIS project itself defines the
-# current version of the project template. Thus, this version number has to
-# be changed whenever the project template was modified.
-#
-# A patch version number is not used here because subtle changes of the
-# template files do not need to be tracked. This version number may only
-# become of importance in case the project template is noticably extended or
-# modified, which has to be done with care, however, in any case and should
-# be avoided.
-
-set (TEMPLATE_VERSION "1.0")
+# modules
+set (
+  CMAKE_MODULES
+    # main modules
+    "BasisPack.cmake"               # packaging, wraps CPack
+    "BasisSettings.cmake"           # basic settings
+    "BasisTools.cmake"              # definition of macros and functions
+    "BasisTest.cmake"               # testing, wraps CTest
+    "BasisUpdate.cmake"             # automatic file update (deprecated)
+    # submodules included by BasisTools.cmake
+    "CommonTools.cmake"             # common functions/macros
+    "DocTools.cmake"                # documentation generation
+    "ExternalData.cmake"            # storing data externally
+    "ExternalData_config.cmake.in"  # config of ExternalData.cmake module
+    "InstallationTools.cmake"       # software installation
+    "MatlabTools.cmake"             # MATLAB support
+    "ProjectTools.cmake"            # main project/module helpers
+    "SubversionTools.cmake"         # Subversion support
+    "TargetTools.cmake"             # addition of build targets
+    "TopologicalSort.cmake"         # topological sorting of build dependencies
+    "UtilitiesTools.cmake"          # generation/configuration of utilities
+)
 
 # ----------------------------------------------------------------------------
-# include BASIS policies, settings, macros, and functions
-
-# The following variables would be set by the BASISConfig.cmake file if
-# this would be a project which uses BASIS.
-
-set (BASIS_MODULE_PATH          "${CMAKE_CURRENT_SOURCE_DIR}/src/modules")
-set (BASIS_INCLUDE_DIR          "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set (BASIS_LIBRARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/lib")
-set (BASIS_CXX_TEMPLATES_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")
-set (BASIS_PYTHON_TEMPLATES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/python")
-set (BASIS_PERL_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/perl")
-set (BASIS_BASH_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash")
-set (BASIS_PYTHON_LIBRARY_DIR   "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/python")
-set (BASIS_PERL_LIBRARY_DIR     "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/perl5")
-
-include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
-include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
+# auxiliary files
+set (
+  CMAKE_MODULES_AUXILIARY_FILES
+    "ExecuteProcess.cmake"     # wraps CMake's execute_process() function
+    "ScriptConfig.cmake.in"    # default script configuration file
+    "cmake_uninstall.cmake.in" # uninstall script
+    "Config.cmake.in"          # default <Pkg>Config.cmake template
+    "ConfigSettings.cmake"     # settings for default <Pkg>Config.cmake
+    "ConfigVersion.cmake.in"   # default <Pkg>ConfigVersion.cmake template
+    "ConfigUse.cmake.in"       # default <Pkg>Use.cmake template
+    "GenerateConfig.cmake"     # generation/configuration of <Pkg>Config.cmake et al.
+    "updatefile.py"            # helper used by BasisUpdate.cmake module
+    "runmcc.m"                 # helper used by MatlabTools.cmake module
+    "Doxyfile.in"              # default Doxygen configuration template
+    "SubversionUsers.txt"      # maps SVN users at SBIA to their real names
+)
 
 # ----------------------------------------------------------------------------
-# configure build system
-basis_project_impl ()
+# Find<Pkg>.cmake modules
+set (
+  CMAKE_FIND_MODULES
+    "FindGMock.cmake"             # for Google Mock
+    "FindGTest.cmake"             # for Google Test
+    "FindMATLAB.cmake"            # for MATLAB
+    "FindMatlabNiftiTools.cmake"  # for MATLAB Central NIfTI tools
+    "FindMOSEK.cmake"             # for MOSEK
+    "FindNiftiCLib.cmake"         # for nifticlib
+)
+
+# ----------------------------------------------------------------------------
+# install files
+basis_install (
+  FILES       ${CMAKE_MODULES} ${CMAKE_FIND_MODULES} ${CMAKE_MODULES_AUXILIARY_FILES}
+  DESTINATION "${INSTALL_MODULES_DIR}"
+)
