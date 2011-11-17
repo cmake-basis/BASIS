@@ -509,9 +509,9 @@ set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
 ## @brief Path of installation directory for CMake package configuration
 #         files relative to @c INSTALL_PREFIX.
 if (WIN32)
-  set (INSTALL_CONFIG_DIR "cmake")
+  basis_set_if_empty (INSTALL_CONFIG_DIR "cmake")
 else ()
-  set (INSTALL_CONFIG_DIR "lib/cmake/\@PROJECT_NAME_LOWER\@")
+  basis_set_if_empty (INSTALL_CONFIG_DIR "lib/cmake/\@PROJECT_NAME_LOWER\@")
 endif ()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

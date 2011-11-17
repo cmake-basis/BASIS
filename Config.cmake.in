@@ -13,15 +13,14 @@
 ##############################################################################
 
 # ============================================================================
-# helper
+# namespace
 # ============================================================================
 
-# prefix used for variable names
-set (NS "@CONFIG_PREFIX@_")
+@BASIS_NS@
 
 # ----------------------------------------------------------------------------
 macro (basis_set_config NAME)
-  set (${NS}${NAME} ${ARGN})
+  set (\${NS}\${NAME} \${ARGN})
 endmacro ()
 
 # ============================================================================
@@ -44,9 +43,11 @@ basis_set_config (INCLUDE_PREFIX "@INCLUDE_PREFIX@")
 
 ## @brief Directory of header files.
 basis_set_config (INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
+basis_set_config (INCLUDE_DIRS "${${NS}INCLUDE_DIR}")
 
 ## @brief Directory of libraries.
 basis_set_config (LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
+basis_set_config (LIBRARY_DIRS "${${NS}LIBRARY_DIR}")
 
 ## @brief Search path for Python package.
 basis_set_config (PYTHON_LIBRARY_DIR "@PYTHON_LIBRARY_DIR_CONFIG@")
@@ -63,3 +64,40 @@ basis_set_config (EXPORTS_FILE "${CMAKE_CURRENT_LIST_DIR}/@EXPORTS_FILE@")
 
 ## @brief Absolute path of custom exports file to be included by other projects.
 basis_set_config (CUSTOM_EXPORTS_FILE "${CMAKE_CURRENT_LIST_DIR}/@CUSTOM_EXPORTS_FILE@")
+
+# ============================================================================
+# modules
+# ============================================================================
+
+## @brief List of project modules.
+basis_set_config (MODULES "@PROJECT_MODULES@")
+
+## @brief List of build project modules.
+basis_set_config (MODULES_ENABLED "@PROJECT_MODULES_ENABLED@")
+
+## @brief List of requested modules.
+if (${NS}FIND_COMPONENTS)
+  basis_set_config (MODULES_REQUESTED "${${NS}FIND_COMPONENTS}")
+endif()
+if(NOT ${NS}MODULES_REQUESTED)
+  basis_set_config (MODULES_REQUESTED "${${NS}MODULES_ENABLED}")
+endif()
+
+foreach (M IN LISTS ${NS}MODULES_REQUESTED)
+  # include configuration files of modules
+  set (${M}_CONFIG_PREFIX "${NS}${M}_")
+  include ("@MODULES_DIR_CONFIG@/${M}/${M}Config.cmake")
+  unset (${M}_CONFIG_PREFIX)
+  # append include directories
+  if (${NS}${M}_INCLUDE_DIRS)
+    list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIRS})
+  elseif (${NS}${M}_INCLUDE_DIR)
+    list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIR})
+  endif ()
+  # append library directories
+  if (${NS}${M}_LIBRARY_DIRS)
+    list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIRS})
+  elseif (${NS}${M}_LIBARY_DIR)
+    list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIR})
+  endif ()
+endforeach ()

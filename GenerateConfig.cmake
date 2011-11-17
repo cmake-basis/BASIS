@@ -62,6 +62,22 @@ basis_export_targets (
 )
 
 # ============================================================================
+# namespace
+# ============================================================================
+
+# code used at top of packing configuration and use files to set package
+# namespace prefix used for configuration variables
+set (BASIS_NS
+"# prefix used for variable names
+set (NS \"${CONFIG_PREFIX}_\")
+
+# allow caller to change namespace - used by projects with modules
+if (\${NS}CONFIG_PREFIX)
+  set (NS \"\${\${NS}CONFIG_PREFIX}\")
+endif ()"
+)
+
+# ============================================================================
 # project configuration file
 # ============================================================================
 
@@ -72,6 +88,17 @@ if (EXISTS "${PROJECT_CONFIG_DIR}/Config.cmake.in")
   set (TEMPLATE "${PROJECT_CONFIG_DIR}/Config.cmake.in")
 else ()
   set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in")
+endif ()
+
+# ----------------------------------------------------------------------------
+# provide code of BASIS config file as variable
+if (NOT "${TEMPLATE}" STREQUAL "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in")
+  file (READ "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in" BASIS_TEMPLATE)
+  # remove file header
+  string (REGEX REPLACE "^########.*########" "" BASIS_TEMPLATE "${BASIS_TEMPLATE}")
+  string (STRIP "${BASIS_TEMPLATE}" BASIS_TEMPLATE)
+else ()
+  set (BASIS_TEMPLATE "")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -92,6 +119,7 @@ endif ()
 # ----------------------------------------------------------------------------
 # configure project configuration file for build tree
 
+string (CONFIGURE "${BASIS_TEMPLATE}" BASIS_CONFIG @ONLY)
 configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 
 # ----------------------------------------------------------------------------
@@ -112,6 +140,7 @@ endif ()
 # ----------------------------------------------------------------------------
 # configure project configuration file for install tree
 
+string (CONFIGURE "${BASIS_TEMPLATE}" BASIS_CONFIG @ONLY)
 configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install" @ONLY)
 
 # ----------------------------------------------------------------------------
@@ -166,8 +195,20 @@ else ()
 endif ()
 
 # ----------------------------------------------------------------------------
+# provide code of BASIS use file as variable
+if (NOT "${TEMPLATE}" STREQUAL "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in")
+  file (READ "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in" BASIS_USE)
+  # remove file header
+  string (REGEX REPLACE "^########.*########" "" BASIS_USE "${BASIS_USE}")
+  string (STRIP "${BASIS_USE}" BASIS_USE)
+else ()
+  set (BASIS_USE "")
+endif ()
+
+# ----------------------------------------------------------------------------
 # configure project use file
 
+string (CONFIGURE "${BASIS_USE}" BASIS_USE @ONLY)
 configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${USE_FILE}" @ONLY)
 
 # ----------------------------------------------------------------------------
@@ -177,3 +218,8 @@ install (
   FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
   DESTINATION "${INSTALL_CONFIG_DIR}"
 )
+
+unset (BASIS_NS)
+unset (BASIS_TEMPLATE)
+unset (BASIS_CONFIG)
+unset (BASIS_USE)
