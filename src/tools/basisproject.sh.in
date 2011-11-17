@@ -72,14 +72,13 @@ Template Options:
                                 --[no]config-test
                                 --[no]config-use
   --[no]config-components     Whether to include custom Components.cmake file.
-  --[no]config-find           Whether to include custom <Project>Config.cmake file.
-  --[no]config-find-version   Whether to include custom <Project>ConfigVersion.cmake file.
-  --[no]config-generate       Whether to include custom GenerateConfig.cmake script.
+  --[no]config-find           Whether to include custom Config.cmake.in file.
+  --[no]config-find-version   Whether to include custom ConfigVersion.cmake.in file.
   --[no]config-package        Whether to include custom Package.cmake file.
   --[no]config-script         Whether to include custom ScriptConfig.cmake.in file.
   --[no]config-settings       Whether to include custom Settings.cmake file.
   --[no]config-test           Whether to include custom CTestCustom.cmake file.
-  --[no]config-use            Whether to include custom <Project>Use.cmake file.
+  --[no]config-use            Whether to include custom ConfigUse.cmake.in file.
   --[no]data                  Whether to include support of auxiliary data files.
   --[no]example               Whether to include support of example.
   --[no]include               Whetehr to include support of public header files.
@@ -295,7 +294,6 @@ conf_components=0    # add/remove components configuration file
 conf_package=0       # add/remove package configuration file
 conf_find=0          # add/remove find package configuration file
 conf_find_version=0  # add/remove find package configuration version file
-conf_generate=0      # add/remove generate find package configuration script
 conf_script=0        # add/remove script configuration file
 conf_tests=0         # add/remove testing configuration file
 conf_use=0           # add/remove unit testing
@@ -314,7 +312,6 @@ function use_minimal_template
     conf_package=-1
     conf_find=-1
     conf_find_version=-1
-    conf_generate=-1
     conf_script=-1
     conf_tests=-1
     conf_use=-1
@@ -336,7 +333,6 @@ function use_standard_template
     if [ $overwrite -eq 1 -o $conf_package -eq 0 ]; then conf_package=-1; fi
     if [ $overwrite -eq 1 -o $conf_find -eq 0 ]; then conf_find=-1; fi
     if [ $overwrite -eq 1 -o $conf_find_version -eq 0 ]; then conf_find_version=-1; fi
-    if [ $overwrite -eq 1 -o $conf_generate -eq 0 ]; then conf_generate=-1; fi
     if [ $overwrite -eq 1 -o $conf_script -eq 0 ]; then conf_script=-1; fi
     if [ $overwrite -eq 1 -o $conf_tests -eq 0 ]; then conf_tests=-1; fi
     if [ $overwrite -eq 1 -o $conf_use -eq 0 ]; then conf_use=-1; fi
@@ -356,7 +352,6 @@ function use_full_template
     conf_package=1
     conf_find=1
     conf_find_version=1
-    conf_generate=1
     conf_script=1
     conf_tests=1
     conf_use=1
@@ -377,7 +372,6 @@ function use_default_template
             if [ $conf_find         -eq 0 -a -e "$root/config/Config.cmake.in" ]; then conf_find=1; fi
             if [ $conf_find_version -eq 0 -a -e "$root/config/ConfigVersion.cmake.in" ]; then conf_find_version=1; fi
             if [ $conf_tests        -eq 0 -a -e "$root/config/CTestCustom.cmake.in" ]; then conf_tests=1; fi
-            if [ $conf_generate     -eq 0 -a -e "$root/config/GenerateConfig.cmake" ]; then conf_generate=1; fi
             if [ $conf_package      -eq 0 -a -e "$root/config/Package.cmake" ]; then conf_package=1; fi
             if [ $conf_script       -eq 0 -a -e "$root/config/ScriptConfig.cmake.in" ]; then conf_script=1; fi
             if [ $conf_settings     -eq 0 -a -e "$root/config/Settings.cmake" ]; then conf_settings=1; fi
@@ -524,7 +518,6 @@ do
             conf_package=1
             conf_find=1
             conf_find_version=1
-            conf_generate=1
             conf_script=1
             conf_tests=1
             conf_use=1
@@ -536,7 +529,6 @@ do
             conf_package=-1
             conf_find=-1
             conf_find_version=-1
-            conf_generate=-1
             conf_script=-1
             conf_tests=-1
             conf_use=-1
@@ -575,13 +567,6 @@ do
             ;;
         --noconf-find-version|--noconf-find-version)
             conf_find_version=-1
-            ;;
-
-        --conf-generate|--config-generate)
-            conf_generate=1
-            ;;
-        --noconf-generate|--noconf-generate)
-            conf_generate=-1
             ;;
 
         --conf-script|--config-script)
@@ -1058,7 +1043,6 @@ addordel $conf_package      "config/Package.cmake"          || retval=1
 addordel $conf_find         "config/Config.cmake.in"        || retval=1
 addordel $conf_find         "config/ConfigSettings.cmake"   || retval=1
 addordel $conf_find_version "config/ConfigVersion.cmake.in" || retval=1
-addordel $conf_generate     "config/GenerateConfig.cmake"   || retval=1
 addordel $conf_script       "config/ScriptConfig.cmake.in"  || retval=1
 addordel $conf_tests        "config/CTestCustom.cmake.in"   || retval=1
 addordel $conf_use          "config/ConfigUse.cmake.in"     || retval=1
