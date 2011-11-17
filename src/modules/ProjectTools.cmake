@@ -185,6 +185,8 @@ macro (basis_project_modules)
     get_filename_component (${MODULE}_BASE ${F} PATH)
     set (MODULE_${MODULE}_SOURCE_DIR ${PROJECT_SOURCE_DIR}/${${MODULE}_BASE})
     set (MODULE_${MODULE}_BINARY_DIR ${PROJECT_BINARY_DIR}/${${MODULE}_BASE})
+    # help modules to find each other using find_package()
+    set (${MODULE}_DIR ${MODULE_${MODULE}_BINARY_DIR})
   endforeach()
   unset (MODULE)
 
