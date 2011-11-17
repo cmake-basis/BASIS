@@ -341,8 +341,6 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   endif ()
   list (APPEND SOURCES_OUT "${SOURCE_OUT}")
 
-  
-
   # return
   set (${SOURCES}        "${SOURCES_OUT}"        PARENT_SCOPE)
   set (${HEADERS}        "${HEADERS_OUT}"        PARENT_SCOPE)
