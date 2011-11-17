@@ -75,9 +75,6 @@ endif ()
 # libraries
 # ============================================================================
 
-## @brief Prefix used to install header files.
-basis_set_config (INCLUDE_PREFIX "@INCLUDE_PREFIX@")
-
 ## @brief Directory of header files.
 basis_set_config (INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
 
