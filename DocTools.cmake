@@ -360,9 +360,8 @@ function (basis_add_doc TARGET_NAME)
   if (NOT ARGN_DESTINATION)
     if ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
       if (NOT INSTALL_APIDOC_DIR)
-        basis_get_relative_path (APIDOC_DIR "${INSTALL_PREFIX}" "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}")
         set (
-          INSTALL_APIDOC_DIR "${APIDOC_DIR}"
+          INSTALL_APIDOC_DIR "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}"
           CACHE PATH
             "Installation directory of API documentation."
         )
