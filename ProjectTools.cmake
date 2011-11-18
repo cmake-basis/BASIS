@@ -311,7 +311,7 @@ macro (basis_project_modules)
         AND NOT ${MODULE}_IN_ALL # BUILD_ALL_MODULES was not set ON
         AND ${MODULE}_NEEDED_BY) # module is needed by other module(s)
       set (MODULE_${MODULE} ON CACHE BOOL "Request building module ${MODULE}." FORCE)
-      message ("Enabled MODULE_${MODULE}, needed by [${${MODULE}_NEEDED_BY}].")
+      message ("Enabled module ${MODULE}, needed by [${${MODULE}_NEEDED_BY}].")
     endif ()
   endforeach ()
 endmacro ()
