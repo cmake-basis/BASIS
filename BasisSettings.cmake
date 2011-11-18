@@ -219,7 +219,7 @@ basis_set_if_empty (BASIS_VERSION_SEPARATOR "-")
 # This variable is in particular used to convert build target names of
 # modules of a project unique in order to avoid name conflicts.
 if (PROJECT_IS_MODULE)
-  set (BASIS_NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}\@PROJECT_NAME_INFIX\@")
+  set (BASIS_NAMESPACE "\@PROJECT_NAME_INFIX\@")
 else ()
   basis_set_if_empty (BASIS_NAMESPACE "\@PROJECT_NAME_INFIX\@")
 endif ()
