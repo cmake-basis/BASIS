@@ -18,6 +18,14 @@ set (TEMPLATE_VERSION "ReplaceByTemplateVersion")
 
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
+
+# circumvent issue with CMake's find_package() interpreting these variables
+# relative to the current binary directory instead of the top-level directory
+if (BASIS_DIR AND NOT IS_ABSOLUTE "${BASIS_DIR}")
+  set (BASIS_DIR "${CMAKE_BINARY_DIR}/${BASIS_DIR}")
+  get_filename_component (BASIS_DIR "${BASIS_DIR}" ABSOLUTE)
+endif ()
+
 find_package (BASIS REQUIRED)
 
 if (BASIS_FOUND)

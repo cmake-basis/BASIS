@@ -21,7 +21,7 @@ ressources_dir='@PROJECT_TESTING_DIR@/ressources/test_basisproject'
 source_dir='@TESTING_OUTPUT_DIR@/test_basisproject-source'
 binary_dir='@TESTING_OUTPUT_DIR@/test_basisproject-build'
 
-get_executable_path basisproject_path 'basis::basisproject'
+get_executable_path basisproject_path 'basis.basisproject'
 [ -z "${basisproject_path}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
 
 # ============================================================================
@@ -250,20 +250,26 @@ function test_configuration_of_dependencies
     line="$(grep ' DEPENDS ' "${source_dir}/BasisProject.cmake")"
     [ ${FLAGS_verbose} -eq 0 ] || echo "Line: ${line}"
     if [[ "${line}" != '  DEPENDS          "ITK" #AddDependencyHere' ]]; then
+        echo "Unexpected DEPENDS line of BasisProject.cmake file:" 1>&2
+        echo "${line}" 1>&2
         echo
         echo "FAILED"
         exit 1
     fi
     update --use "VTK" --useopt "Cuda"
-    line="$(grep 'DEPENDS ' "${source_dir}/BasisProject.cmake")"
+    line="$(grep ' DEPENDS ' "${source_dir}/BasisProject.cmake")"
     [ ${FLAGS_verbose} -eq 0 ] || echo "Line: ${line}"
     if [[ "${line}" != '  DEPENDS          "ITK" "VTK" #AddDependencyHere' ]]; then
+        echo "Unexpected DEPENDS line of BasisProject.cmake file:" 1>&2
+        echo "${line}" 1>&2
         echo
         echo "FAILED"
         exit 1
     fi
     line="$(grep 'OPTIONAL_DEPENDS ' "${source_dir}/BasisProject.cmake")"
     if [[ "${line}" != '  OPTIONAL_DEPENDS "Cuda" #AddOptionalDependencyHere' ]]; then
+        echo "Unexpected OPTIONAL_DEPENDS line of BasisProject.cmake file:" 1>&2
+        echo "${line}" 1>&2
         echo
         echo "FAILED"
         exit 1

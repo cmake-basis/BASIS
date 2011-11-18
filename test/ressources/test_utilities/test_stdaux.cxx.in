@@ -37,17 +37,17 @@ TEST(StdAux, ExecuteTarget)
     vector<string> args;
     int status;
     std::ostringstream output;
-    EXPECT_NO_THROW(status = basis::execute_process("basis::dummy_command"));
-    EXPECT_EQ(0, status) << "exit code of basis::dummy_command is 0";
-    EXPECT_NO_THROW(status = basis::execute_process("basis::dummy_command --greet", true, &output));
-    EXPECT_EQ(0, status) << "exit code of basis::dummy_command --greet is 0";
+    EXPECT_NO_THROW(status = basis::execute_process("basis@BASIS_NAMESPACE_SEPARATOR@dummy_command"));
+    EXPECT_EQ(0, status) << "exit code of basis@BASIS_NAMESPACE_SEPARATOR@dummy_command is 0";
+    EXPECT_NO_THROW(status = basis::execute_process("basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --greet", true, &output));
+    EXPECT_EQ(0, status) << "exit code of basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --greet is 0";
     EXPECT_STREQ("Hello, BASIS!\n", output.str().c_str());
     args.clear();
     output.str("");
-    args.push_back("basis::dummy_command");
+    args.push_back("basis@BASIS_NAMESPACE_SEPARATOR@dummy_command");
     args.push_back("--warn");
     EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
-    EXPECT_EQ(0, status) << "exit code of basis::dummy_command --warn is 0";
+    EXPECT_EQ(0, status) << "exit code of basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --warn is 0";
     EXPECT_STREQ("WARNING: Cannot greet in other languages!\n", output.str().c_str());
 }
 

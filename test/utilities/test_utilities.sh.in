@@ -25,7 +25,7 @@ readonly RESSOURCES_DIR='@PROJECT_TESTING_DIR@/ressources/test_utilities'
 readonly SOURCE_DIR='@TESTING_OUTPUT_DIR@/test_utilities-source'
 readonly BUILD_DIR='@TESTING_OUTPUT_DIR@/test_utilities-build'
 
-get_executable_path BASISPROJECT 'basis::basisproject'
+get_executable_path BASISPROJECT 'basis.basisproject'
 [ -z "${BASISPROJECT}" ] && { echo "FAILED to get path of basisproject command!"; exit 1; }
 readonly BASISPROJECT
 
@@ -138,9 +138,10 @@ function copy
 function add_test
 {
     local impl=$1
-    local target=${1%\.*}
+    local target=${1%\.in}
+    target=${target%\.*}
     copy ${impl} 'test'
-    echo "basis_add_test (\"${target}\" SOURCES \"${impl}\" $2)" >> "${SOURCE_DIR}/test/CMakeLists.txt"
+    echo "basis_add_test (\"${impl}\" $2)" >> "${SOURCE_DIR}/test/CMakeLists.txt"
 }
 
 # ----------------------------------------------------------------------------
@@ -148,9 +149,10 @@ function add_test
 function add_executable
 {
     local impl=$1
-    local target=${1%\.*}
+    local target=${1%\.in}
+    target=${target%\.*}
     copy ${impl} 'src'
-    echo "basis_add_executable (\"${target}\" \"${impl}\" $2)" >> "${SOURCE_DIR}/src/CMakeLists.txt"
+    echo "basis_add_executable (\"${impl}\" $2)" >> "${SOURCE_DIR}/src/CMakeLists.txt"
 }
 
 # ----------------------------------------------------------------------------
@@ -171,8 +173,8 @@ create
 add_executable 'helloworld.cxx'
 # test C++ utilities
 if [ '@TEST_CXX_UTILITIES@' == 'ON' ]; then
-    add_test 'test_ExecutableTargetInfo.cxx' UNITTEST
-    add_test 'test_stdaux.cxx' UNITTEST
+    add_test 'test_ExecutableTargetInfo.cxx.in' UNITTEST
+    add_test 'test_stdaux.cxx.in' UNITTEST
 fi
 # test Python utilities
 if [ '@TEST_PYTHON_UTILITIES@' == 'ON' ]; then

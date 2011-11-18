@@ -19,7 +19,7 @@ using namespace std;
 using namespace SBIA_BASIS_NAMESPACE;
 
 
-const string cCmd = basis::get_executable_path("basis::dummy_command");
+const string cCmd = basis::get_executable_path("basis.dummy_command");
 
 // ---------------------------------------------------------------------------
 TEST(Subprocess, Split)

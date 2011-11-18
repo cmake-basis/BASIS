@@ -36,38 +36,38 @@ isnt $@, '';
 
 # ----------------------------------------------------------------------------
 # Test type of return value of execute_process().
-eval { @retval = Basis::execute_process('basis::dummy_command'); };
+eval { @retval = Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command'); };
 is $@, '';
 is scalar @retval, 1;
-eval { @retval = Basis::execute_process('basis::dummy_command', stdout => 0); };
+eval { @retval = Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', stdout => 0); };
 is $@, '';
 is scalar @retval, 1;
-eval { @retval = Basis::execute_process('basis::dummy_command', stdout => 1); };
+eval { @retval = Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', stdout => 1); };
 is $@, '';
 is scalar @retval, 2;
 
 # ----------------------------------------------------------------------------
 # Test execution of executable target.
 is Basis::execute_process(['basis::dummy_command']), 0;
-eval { @retval = Basis::execute_process(['basis::dummy_command', '--greet'], stdout => 1, quiet => 1); };
+eval { @retval = Basis::execute_process(['basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', '--greet'], stdout => 1, quiet => 1); };
 is $retval[0], 0;
 like $retval[1], qr/^Hello, BASIS!\s*\n/;
 
 # ----------------------------------------------------------------------------
 # Test allow_fail keyword argument of execute_process().
-eval { Basis::execute_process('basis::dummy_command --exit 1'); };
+eval { Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --exit 1'); };
 isnt $@, '';
-eval { Basis::execute_process('basis::dummy_command --exit 1', allow_fail => 0); };
+eval { Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --exit 1', allow_fail => 0); };
 isnt $@, '';
-eval { Basis::execute_process('basis::dummy_command --exit 1', allow_fail => 1); };
+eval { Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --exit 1', allow_fail => 1); };
 is $@, '';
 
 # ----------------------------------------------------------------------------
 # Test verbose keyword argument of execute_process().
-eval { @retval = Basis::execute_process('basis::dummy_command', verbose => 1, quiet => 1, stdout => 1); };
+eval { @retval = Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', verbose => 1, quiet => 1, stdout => 1); };
 is $retval[0], 0;
 is $retval[1], '';
-eval { @retval = Basis::execute_process('basis::dummy_command', verbose => 2, quiet => 1, stdout => 1); };
+eval { @retval = Basis::execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', verbose => 2, quiet => 1, stdout => 1); };
 is $retval[0], 0;
 is $retval[1], '';
 

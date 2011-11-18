@@ -221,7 +221,10 @@ function get_executable_path
 function _executabletargetinfo_sanitize
 {
     [ $# -eq 2 ] || return 1
-    [ -n "$2" ] || upvar $1 ''
+    [ -n "$2" ] || {
+        upvar $1 ''
+        return 0
+    }
     local sane="`echo -n "$2" | tr [:space:] '_' | tr -c [:alpha:] '_'`"
     [ -n "${sane}" ] || {
         echo "_executabletargetinfo_sanitize(): Failed to sanitize string '$2'" 1>&2
