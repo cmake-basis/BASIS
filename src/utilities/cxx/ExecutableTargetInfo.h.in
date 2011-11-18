@@ -57,7 +57,7 @@ namespace basis {
  *
  * @note This class is not intended to be subclassed.
  *
- * @sa GetExecutableFile()
+ * @sa get_executable_path()
  *
  * @ingroup BasisCxxUtilities
  */
