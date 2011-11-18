@@ -324,7 +324,7 @@ foreach (ARG ${ARGV})
       if (NOT VALUE)
         set (FAILURE 1)
       else ()
-        list (APPEND CTEST_CMAKE_OPTIONS "-D${OPTION}=${VALUE}")
+        set (CTEST_CMAKE_OPTIONS "${CTEST_CMAKE_OPTIONS} \"-D${OPTION}=${VALUE}\"")
       endif ()
     endif ()
   else ()
@@ -440,6 +440,9 @@ if (INSTALL_DOXYGEN_DIR)
 else ()
   set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=OFF")
 endif ()
+if (CMAKE_CTEST_OPTIONS)
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} ${CTEST_CMAKE_OPTIONS}")
+endif ()
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-G${CTEST_CMAKE_GENERATOR}\"")
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
 
@@ -483,11 +486,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
   # --------------------------------------------------------------------------
   # configure build
-  if (CTEST_CMAKE_OPTIONS)
-    ctest_configure (OPTIONS "${CTEST_CMAKE_OPTIONS}")
-  else ()
-    ctest_configure ()
-  endif ()
+  ctest_configure ()
   ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
 
   # --------------------------------------------------------------------------
