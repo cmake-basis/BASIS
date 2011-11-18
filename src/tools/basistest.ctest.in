@@ -73,6 +73,8 @@ Options:
   common-site=<prefix>   Do not distinguish between different sites with a common
                          prefix in the name. Useful when the test jobs are executed
                          on a commonly configured cluster.
+  site=<site>            Use given site name no matter on which actual machine
+                         the test is executed.
   force-build            Force build even if no files were updated.
   force-test             Force test even if no files were updated.
   force                  Alias for options force-build and force-test.
@@ -297,6 +299,8 @@ foreach (ARG ${ARGV})
       set_bool_option (SHARED_SOURCE)
     elseif (${OPTION} STREQUAL "common-site")
       append_option (COMMON_SITE_PREFIXES)
+    elseif (${OPTION} STREQUAL "site")
+        set_option (CTEST_SITE)
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
       set_bool_option (FORCE_TEST)
@@ -366,19 +370,21 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # site information
-site_name (CTEST_SITE)
+if (NOT CTEST_SITE)
+  site_name (CTEST_SITE)
 
-# remove ".local" or ".uphs.upenn.edu" suffix from site name
-string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" CTEST_SITE "${CTEST_SITE}")
+  # remove ".local" or ".uphs.upenn.edu" suffix from site name
+  string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" CTEST_SITE "${CTEST_SITE}")
 
-# common site name
-if (COMMON_SITE_PREFIXES)
-  foreach (P ${COMMON_SITE_PREFIXES})
-    if (CTEST_SITE MATCHES "^${P}")
-      set (CTEST_SITE "${P}")
-      break ()
-    endif ()
-  endforeach ()
+  # common site name
+  if (COMMON_SITE_PREFIXES)
+    foreach (P ${COMMON_SITE_PREFIXES})
+      if (CTEST_SITE MATCHES "^${P}")
+        set (CTEST_SITE "${P}")
+        break ()
+      endif ()
+    endforeach ()
+  endif ()
 endif ()
 
 # Note: The build name given in the .xml files will be replaced by this script
