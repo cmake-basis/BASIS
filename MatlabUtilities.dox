@@ -1,0 +1,27 @@
+/**
+ * @file  MatlabUtilities.dox
+ * @brief Documenation of BASIS MATLAB Utilities Doxygen group.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@defgroup BasisMatlabUtilities BASIS MATLAB Utilities
+@brief    Auxiliary implementations for use in MATLAB scripts.
+
+@todo The MATLAB utilities are not implemented yet. Note, however, that
+      for certain utilities provided for other programming languages there
+      is no use in MATLAB. For example, the ExecutableTargetInfo module is
+      not required as MATLAB does not allow the execution of an executable
+      from within MATLAB scripts.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup BasisUtilities
+*/

@@ -138,14 +138,24 @@ set (
   CPACK_SOURCE_IGNORE_FILES
     "${CPACK_SOURCE_IGNORE_FILES}"
 	"/CVS/"
-	"/.svn/"
-	".swp$"
-	".#"
+	"/\\\\.svn/"
+	"\\\\.swp$"
+	"\\\\.#"
 	"/#"
-	".*~"
-	"cscope.*"
+	"\\\\.*~"
+	"cscope\\\\.*"
 	"[b|B]uild"
 )
+
+# exclude diabled modules from source package
+if (PROJECT_MODULES_DISABLED)
+  set (P)
+  foreach (M ${PROJECT_MODULES_DISABLED})
+    list (APPEND P "/${M}/")
+  endforeach ()
+  set (CPACK_SOURCE_IGNORE_FILES "${CPACK_SOURCE_IGNORE_FILES}" "${P}")
+  unset (P)
+endif ()
 
 # ============================================================================
 # include project package information

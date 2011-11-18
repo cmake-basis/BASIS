@@ -924,11 +924,7 @@ macro (basis_project_finalize)
       basis_add_uninstall ()
     endif ()
     # generate configuration files
-    if (EXISTS "${PROJECT_CONFIG_DIR}/GenerateConfig.cmake")
-      include ("${PROJECT_CONFIG_DIR}/GenerateConfig.cmake")
-    else ()
-      include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
-    endif ()
+    include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
     # package software
     include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
 

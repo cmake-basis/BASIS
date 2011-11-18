@@ -1917,6 +1917,13 @@ function (basis_add_script_finalize TARGET_UID)
 
   add_dependencies (${TARGET_UID} _${TARGET_UID})
 
+  # Provide target to build all scripts. In particular, scripts need to be build
+  # before the doc target which thus depends on this target.
+  if (NOT TARGET scripts)
+    add_custom_target (scripts)
+  endif ()
+  add_dependencies (scripts _${TARGET_UID})
+
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
 

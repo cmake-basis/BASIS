@@ -213,6 +213,11 @@ endfunction ()
 #         Default: <tt>CMAKE_CURRENT_BINARY_DIR/TARGET_NAME</tt>.</td>
 #   </tr>
 #   <tr>
+#     @tp @b COLS_IN_ALPHA_INDEX @endtp
+#     <td>Number of columns in alphabetical index if @p GENERATE_HTML is @c YES.
+#         Default: 3.</td>
+#   </tr>
+#   <tr>
 #     @tp @b GENERATE_HTML @endtp
 #     <td>If given, Doxygen's @c GENERATE_HTML tag is set to YES, otherwise NO.</td>
 #   </tr>
@@ -354,7 +359,16 @@ function (basis_add_doc TARGET_NAME)
   # default destination
   if (NOT ARGN_DESTINATION)
     if ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
-      set (ARGN_DESTINATION "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}")
+      if (NOT INSTALL_APIDOC_DIR)
+        basis_get_relative_path (APIDOC_DIR "${INSTALL_PREFIX}" "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}")
+        set (
+          INSTALL_APIDOC_DIR "${APIDOC_DIR}"
+          CACHE PATH
+            "Installation directory of API documentation."
+        )
+        mark_as_advanced (INSTALL_APIDOC_DIR)
+      endif ()
+      set (ARGN_DESTINATION "${INSTALL_APIDOC_DIR}")
     else ()
       set (ARGN_DESTINATION "${INSTALL_DOC_DIR}")
     endif ()
@@ -438,7 +452,7 @@ function (basis_add_doc TARGET_NAME)
     CMAKE_PARSE_ARGUMENTS (
       DOXYGEN
         "GENERATE_HTML;GENERATE_LATEX;GENERATE_RTF;GENERATE_MAN"
-        "DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY"
+        "DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX"
         "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS"
         ${ARGN_UNPARSED_ARGUMENTS}
     )
@@ -460,15 +474,49 @@ function (basis_add_doc TARGET_NAME)
         set (DOXYGEN_PROJECT_NUMBER "")
       endif ()
     endif ()
-    if (NOT DOXYGEN_INPUT)
-      set (
-        DOXYGEN_INPUT
-          "${BINARY_INCLUDE_DIR}"
-          "${BINARY_CODE_DIR}"
-          "${PROJECT_CODE_DIR}"
-      )
+    # input directories and files
+    if (EXISTS "${BINARY_INCLUDE_DIR}")
+      list (APPEND DOXYGEN_INPUT "${BINARY_INCLUDE_DIR}")
     endif ()
-    basis_list_to_delimited_string (DOXYGEN_INPUT " " ${DOXYGEN_INPUT})
+    if (EXISTS "${BINARY_CODE_DIR}")
+      list (APPEND DOXYGEN_INPUT "${BINARY_CODE_DIR}")
+    endif ()
+    if (EXISTS "${PROJECT_CODE_DIR}")
+      list (APPEND DOXYGEN_INPUT "${PROJECT_CODE_DIR}")
+    endif ()
+    basis_get_relative_path (INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
+    basis_get_relative_path (CODE_DIR    "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
+    foreach (M IN LISTS PROJECT_MODULES_ENABLED)
+      if (EXISTS "${PROJECT_MODULES_DIR}/${M}/${CODE_DIR}")
+        list (APPEND DOXYGEN_INPUT "${PROJECT_MODULES_DIR}/${M}/${CODE_DIR}")
+      endif ()
+      if (EXISTS "${PROJECT_MODULES_DIR}/${M}/${INCLUDE_DIR}")
+        list (APPEND DOXYGEN_INPUT "${BINARY_MODULES_DIR}/${M}/${INCLUDE_DIR}")
+      endif ()
+    endforeach ()
+    foreach (L IN ITEMS Cxx Java Python Perl Bash Matlab)
+      string (TOUPPER "${L}" U)
+      if ("${L}" STREQUAL "Cxx")
+        # note that the C++ utilities are always configured and available
+        # even if not used, resp., no binary links to them
+        set (PROJECT_USES_CXX_UTILITIES TRUE)
+      else ()
+        basis_get_project_property (PROJECT_USES_${U}_UTILITIES)
+      endif ()
+      if (PROJECT_USES_${U}_UTILITIES)
+        list (FIND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Utilities.dox" IDX)
+        if (IDX EQUAL -1)
+          list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Utilities.dox")
+        endif ()
+        list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/${L}Utilities.dox")
+      endif ()
+    endforeach ()
+    file (GLOB_RECURSE DOX_FILES "${PROJECT_DOC_DIR}/*.dox")
+    list (APPEND DOXYGEN_INPUT ${DOX_FILES})
+    basis_list_to_delimited_string (
+      DOXYGEN_INPUT "\nINPUT                 += " ${DOXYGEN_INPUT}
+    )
+    # input filters
     if (NOT DOXYGEN_INPUT_FILTER)
       basis_target_uid (DOXYFILTER "basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter")
       if (TARGET "${DOXYFILTER}")
@@ -481,11 +529,17 @@ function (basis_add_doc TARGET_NAME)
     if (NOT DOXYGEN_FILTER_PATTERNS)
       basis_default_doxygen_filters (DOXYGEN_FILTER_PATTERNS)
     endif ()
-    basis_list_to_delimited_string (DOXYGEN_FILTER_PATTERNS " " ${DOXYGEN_FILTER_PATTERNS})
+    basis_list_to_delimited_string (
+      DOXYGEN_FILTER_PATTERNS "\nFILTER_PATTERNS       +=" ${DOXYGEN_FILTER_PATTERNS}
+    )
+    # exclude patterns
     if (NOT DOXYGEN_EXCLUDE_PATTERNS)
       set (DOXYGEN_EXCLUDE_PATTERNS "")
     endif ()
-    basis_list_to_delimited_string (DOXYGEN_EXCLUDE_PATTERNS " " ${DOXYGEN_EXCLUDE_PATTERNS})
+    basis_list_to_delimited_string (
+      DOXYGEN_EXCLUDE_PATTERNS "\nEXCLUDE_PATTERNS     += " ${DOXYGEN_EXCLUDE_PATTERNS}
+    )
+    # outputs
     if (NOT DOXYGEN_OUTPUT_DIRECTORY)
       set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}")
     endif ()
@@ -494,7 +548,6 @@ function (basis_add_doc TARGET_NAME)
     else ()
       set (DOXYGEN_TAGFILE "${DOXYGEN_OUTPUT_DIRECTORY}/doxygen.tags")
     endif ()
-
     set (NUMBER_OF_OUTPUTS 0)
     foreach (FMT HTML LATEX RTF MAN)
       set (VAR DOXYGEN_GENERATE_${FMT})
@@ -508,6 +561,10 @@ function (basis_add_doc TARGET_NAME)
     if (NUMBER_OF_OUTPUTS EQUAL 0)
       set (DOXYGEN_GENERATE_HTML "YES")
       set (NUMBER_OF_OUTPUTS 1)
+    endif ()
+    # other settings
+    if (NOT DOXYGEN_COLS_IN_ALPHA_INDEX OR DOXYGEN_COLS_IN_ALPHA_INDEX MATCHES "[^0-9]")
+      set (DOXYGEN_COLS_IN_ALPHA_INDEX 3)
     endif ()
 
     # set output paths relative to DOXYGEN_OUTPUT_DIRECTORY
@@ -557,10 +614,16 @@ function (basis_add_doc TARGET_NAME)
 
     # add target as dependency to doc target
     if (NOT TARGET doc)
-      add_custom_target(doc)
+      add_custom_target (doc)
     endif ()
 
     add_dependencies (doc ${TARGET_UID})
+    if (TARGET headers)
+      add_dependencies (${TARGET_UID} headers)
+    endif ()
+    if (TARGET scripts)
+      add_dependencies (${TARGET_UID} scripts)
+    endif ()
 
     # install documentation
     install (

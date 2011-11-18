@@ -137,18 +137,19 @@ mark_as_advanced (BASIS_VERBOSE)
 basis_set_if_empty (
   BASIS_RESERVED_TARGET_NAMES
     "all"
-    "clean"
-    "depend"
-    "test"
-    "headers"
-    "headers_check"
-    "uninstall"
-    "doc"
-    "changelog"
-    "package"
-    "package_source"
     "bundle"
     "bundle_source"
+    "changelog"
+    "clean"
+    "depend"
+    "doc"
+    "headers"
+    "headers_check"
+    "package"
+    "package_source"
+    "scripts"
+    "test"
+    "uninstall"
 )
 
 ## @brief Default component used for library targets when no component is specified.

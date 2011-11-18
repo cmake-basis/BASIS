@@ -36,6 +36,14 @@ set (
 # auxiliary files
 set (
   CMAKE_MODULES_AUXILIARY_FILES
+    "Doxyfile.in"                 # default Doxygen configuration template
+    "Utilities.dox"               # documentation of BASIS Utilities group
+    "CxxUtilities.dox"            # documentation of C++ Utilities group
+    "JavaUtilities.dox"           # documentation of Java Utilities group
+    "PythonUtilities.dox"         # documentation of Python Utilities group
+    "PerlUtilities.dox"           # documentation of Perl Utilities group
+    "BashUtilities.dox"           # documentation of BASH Utilities group
+    "MatlabUtilities.dox"         # documentation of MATLAB Utilities group
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
     "ScriptConfig.cmake.in"       # default script configuration file
     "cmake_uninstall.cmake.in"    # uninstall script
@@ -48,7 +56,6 @@ set (
     "GenerateConfig.cmake"        # generation/configuration of <Pkg>Config.cmake et al.
     "updatefile.py"               # helper used by BasisUpdate.cmake module
     "runmcc.m"                    # helper used by MatlabTools.cmake module
-    "Doxyfile.in"                 # default Doxygen configuration template
     "SubversionUsers.txt"         # maps SVN users at SBIA to their real names
 )
 

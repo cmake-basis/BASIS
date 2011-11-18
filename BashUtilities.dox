@@ -1,0 +1,21 @@
+/**
+ * @file  BashUtilities.dox
+ * @brief Documenation of BASIS BASH Utilities Doxygen group.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+ * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@defgroup BasisBashUtilities BASIS BASH Utilities
+@brief    Auxiliary implementations for use in BASH scripts.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup BasisUtilities
+*/
