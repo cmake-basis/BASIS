@@ -221,7 +221,7 @@ function get_executable_path
 function _executabletargetinfo_sanitize
 {
     [ $# -eq 2 ] || return 1
-    [ -z "$2" ] && upvar $1 ''
+    [ -n "$2" ] || upvar $1 ''
     local sane="`echo -n "$2" | tr [:space:] '_' | tr -c [:alpha:] '_'`"
     [ -n "${sane}" ] || {
         echo "_executabletargetinfo_sanitize(): Failed to sanitize string '$2'" 1>&2
@@ -246,6 +246,16 @@ function _executabletargetinfo_add
 
     local key  && _executabletargetinfo_sanitize key  "$1"
     local name && _executabletargetinfo_sanitize name "$2"
+    [ -n "${key}" ] && [ -n "${name}" ] || {
+        if [ -z "${key}" ] && [ -z "${name}" ]; then
+            echo "_executabletargetinfo_add(): Neither lookup table nor key specified" 1>&2
+        elif [ -z "${key}" ]; then
+            echo "_executabletargetinfo_add(): No key specified for addition to hash table '${name}'" 1>&2
+        else
+            echo "_executabletargetinfo_add(): No lookup table given for addition of key '${key}'" 1>&2
+        fi
+        exit 1
+    }
     eval "readonly __EXECUTABLETARGETINFO_${name}_${key}='$3'"
 }
 
@@ -269,6 +279,16 @@ function _executabletargetinfo_get
 
     local key  && _executabletargetinfo_sanitize key  "$2"
     local name && _executabletargetinfo_sanitize name "$3"
+    [ -n "${key}" ] && [ -n "${name}" ] || {
+        if [ -z "${key}" ] && [ -z "${name}" ]; then
+            echo "_executabletargetinfo_get(): Neither lookup table nor key specified" 1>&2
+        elif [ -z "${key}" ]; then
+            echo "_executabletargetinfo_get(): No key specified for lookup in hash table '${name}'" 1>&2
+        else
+            echo "_executabletargetinfo_get(): No lookup table given for lookup of key '${key}'" 1>&2
+        fi
+        exit 1
+    }
     eval "local value=\${__EXECUTABLETARGETINFO_${name}_${key}}"
 
     local "$1" && upvar $1 "${value}"
