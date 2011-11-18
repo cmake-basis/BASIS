@@ -48,6 +48,8 @@ Required options:
   project=<project>   Name of the BASIS project to test.
 
 Options:
+  <variable>=<value>     Passes -D<variable>=<value> on to CMake for the
+                         configuration of the build tree.
   model=<model>          Name of the dashboard model, i.e., one of
                          \"Nightly\", \"Continuous\", and \"Experimental\".
                          Default: \"Experimental\".
@@ -214,6 +216,7 @@ set (CTEST_SVN_BRANCH   "trunk")
 # build configuration
 set (CTEST_CMAKE_GENERATOR     "Unix Makefiles")
 set (CTEST_BUILD_CONFIGURATION "Release")
+set (CTEST_CMAKE_OPTIONS)
 
 set (WITH_MEMCHECK 0) # whether to perform memory checks
 set (WITH_COVERAGE 0) # whether to perform coverage analysis
@@ -318,7 +321,11 @@ foreach (ARG ${ARGV})
       print_help ()
       return ()
     else ()
-      set (FAILURE 1)
+      if (NOT VALUE)
+        set (FAILURE 1)
+      else ()
+        list (APPEND CTEST_CMAKE_OPTIONS "-D${OPTION}=${VALUE}")
+      endif ()
     endif ()
   else ()
     set (FAILURE 1)
@@ -476,7 +483,11 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
   # --------------------------------------------------------------------------
   # configure build
-  ctest_configure ()
+  if (CTEST_CMAKE_OPTIONS)
+    ctest_configure (OPTIONS "${CTEST_CMAKE_OPTIONS}")
+  else ()
+    ctest_configure ()
+  endif ()
   ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
 
   # --------------------------------------------------------------------------
