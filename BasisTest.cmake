@@ -125,12 +125,19 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
-#     @tp @b LANGUAGE lang @endtp
-#     <td>The programming language in which the test is implemented.
-#         It is determined automatically from the given input source code
-#         files if not specified explicitly. Otherwise, if the programming
-#         language could not be determined, it is assumed that the given
-#         input file is already the test executable itself.</td>
+#     @tp @b COMMAND @tpend
+#     <td>The command to execute. The command arguments have to be given
+#         following the @p ARGS argument. Alternatively, a test can be
+#         build from sources and the build executable is used as command.
+#         In this case, specify the @p SOURCES argument instead.</td>
+#   </tr>
+#   <tr>
+#     @tp @b ARGS arg1 [arg2 ...] @endtp
+#     <td>Arguments passed on to CMake's add_test().</td>
+#   </tr>
+#   <tr>
+#     @tp @b WORKING_DIRECTORY dir @endtp
+#     <td>The working directory of the test command.</td>
 #   </tr>
 #   <tr>
 #     @tp @b SOURCES file1 [file2 ...] @endtp
@@ -144,11 +151,16 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b LINK_DEPENDS file1|target1 [file2|target2 ...] @endtp
-#     <td>Link dependencies.</td>
+#     <td>Link dependencies of test executable build from sources.</td>
 #   </tr>
 #   <tr>
-#     @tp @b ARGS arg1 [arg2 ...] @endtp
-#     <td>Arguments passed on to CMake's add_test().</td>
+#     @tp @b WITH_EXT @endtp
+#     <td>Do not strip extension if test name is derived from source file
+#   </tr>
+#   <tr>
+#     @tp @b ARGN @endtp
+#     <td>All other arguments are passed on to basis_add_executable() if
+#         an executable target for the test is added.</td>
 #   </tr>
 # </table>
 #
@@ -159,8 +171,8 @@ function (basis_add_test TEST_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-    "UNITTEST;NO_DEFAULT_MAIN"
-    "LANGUAGE;WORKING_DIRECTORY"
+    "UNITTEST;NO_DEFAULT_MAIN;WITH_EXT"
+    "WORKING_DIRECTORY"
     "CONFIGURATIONS;SOURCES;LINK_DEPENDS;COMMAND;ARGS"
     ${ARGN}
   )
@@ -169,8 +181,11 @@ function (basis_add_test TEST_NAME)
   # test name
   if (NOT ARGN_COMMAND AND NOT ARGN_SOURCES)
     get_filename_component (ARGN_SOURCES "${TEST_NAME}" ABSOLUTE)
-    string (REGEX REPLACE "\\.in$" "" TEST_NAME "${TEST_NAME}")
-    get_filename_component (TEST_NAME "${TEST_NAME}" NAME_WE)
+    if (ARGN_WITH_EXT)
+      basis_get_source_target_name (TEST_NAME "${TEST_NAME}" NAME)
+    else ()
+      basis_get_source_target_name (TEST_NAME "${TEST_NAME}" NAME_WE)
+    endif ()
   endif ()
 
   basis_check_test_name ("${TEST_NAME}")
@@ -195,7 +210,7 @@ function (basis_add_test TEST_NAME)
       endif ()
     endif ()
 
-    basis_add_executable (${TEST_NAME} TEST ${ARGN_SOURCES})
+    basis_add_executable (${TEST_NAME} TEST ${ARGN_SOURCES} ${ARGN_UNPARSED_ARGUMENTS})
     if (ARGN_LINK_DEPENDS)
       basis_target_link_libraries (${TEST_NAME} ${ARGN_LINK_DEPENDS})
     endif ()

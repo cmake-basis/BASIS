@@ -22,32 +22,6 @@ endif ()
 
 
 # ============================================================================
-# target name
-# ============================================================================
-
-##############################################################################
-# @brief Derive target name from source file name.
-#
-# @param [out] TARGET_NAME Target name.
-# @param [in]  SOURCE_FILE Source file.
-# @param [in]  COMPONENT   Third argument to get_filename_component().
-#
-# @returns Target name derived from @p SOURCE_FILE.
-#
-# @ingroup CMakeUtilities
-
-function (basis_get_source_target_name TARGET_NAME SOURCE_FILE COMPONENT)
-  # remove ".in" suffix from file name
-  string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
-  # get name component
-  get_filename_component (OUT "${SOURCE_FILE}" ${COMPONENT})
-  # replace special characters
-  string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR_REGEX}" "_" OUT "${OUT}")
-  # return
-  set (${TARGET_NAME} "${OUT}" PARENT_SCOPE)
-endfunction ()
-
-# ============================================================================
 # properties
 # ============================================================================
 
@@ -448,6 +422,14 @@ endfunction ()
 #   <tr>
 #     @tp @b NO_EXPORT @endtp
 #     <td>Do not export the target.</td>
+#   </tr>
+#   <tr>
+#     @tp @b WITH_PATH , @b WITH_EXT @endtp
+#     <td>See documentation of basis_add_script().</td>
+#   </tr>
+#   <tr>
+#     @tp @b CONFIG , @b CONFIG_FILE @endtp
+#     <td>See documentation of basis_add_script().</td>
 #   </tr>
 # </table>
 #

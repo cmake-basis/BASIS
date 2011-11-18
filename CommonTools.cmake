@@ -50,7 +50,14 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 #
 # @retval <PACKAGE>_FOUND Whether the given package was found.
 macro (basis_find_package PACKAGE)
-    find_package (${PACKAGE} ${ARGN})
+  # circumvent issue with CMake's find_package() interpreting these variables
+  # relative to the current binary directory instead of the top-level directory
+  if (${PACKAGE}_DIR AND NOT IS_ABSOLUTE "${${PACKAGE}_DIR}")
+    set (${PACKAGE}_DIR "${CMAKE_BINARY_DIR}/${${PACKAGE}_DIR}")
+    get_filename_component (${PACKAGE}_DIR "${${PACKAGE}_DIR}" ABSOLUTE)
+  endif ()
+  # now look for the package
+  find_package (${PACKAGE} ${ARGN})
 endmacro ()
 
 ##############################################################################
@@ -377,7 +384,9 @@ endfunction ()
 function (basis_set_project_property PROPERTY)
   if (ARGC GREATER 1 AND "${ARGV1}" STREQUAL "APPEND")
     basis_get_project_property (CURRENT ${PROPERTY})
-    set (CURRENT "${CURRENT};")
+    if (CURRENT)
+      set (CURRENT "${CURRENT};")
+    endif ()
     list (REMOVE_AT ARGN 0)
   else ()
     set (CURRENT "")
@@ -517,6 +526,32 @@ endfunction ()
 # ============================================================================
 # name <=> UID
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# target name from source file path
+# ----------------------------------------------------------------------------
+
+##############################################################################
+# @brief Derive target name from source file name.
+#
+# @param [out] TARGET_NAME Target name.
+# @param [in]  SOURCE_FILE Source file.
+# @param [in]  COMPONENT   Third argument to get_filename_component().
+#
+# @returns Target name derived from @p SOURCE_FILE.
+#
+# @ingroup CMakeUtilities
+
+function (basis_get_source_target_name TARGET_NAME SOURCE_FILE COMPONENT)
+  # remove ".in" suffix from file name
+  string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
+  # get name component
+  get_filename_component (OUT "${SOURCE_FILE}" ${COMPONENT})
+  # replace special characters
+  string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR_REGEX}" "_" OUT "${OUT}")
+  # return
+  set (${TARGET_NAME} "${OUT}" PARENT_SCOPE)
+endfunction ()
 
 # ----------------------------------------------------------------------------
 # target name <=> target UID
@@ -822,23 +857,25 @@ function (basis_get_source_language LANGUAGE)
   set (LANGUAGE_OUT)
   # iterate over source files
   foreach (SOURCE_FILE ${ARGN})
+    # ignore .in suffix
+    string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
     # C++
-    if (SOURCE_FILE MATCHES "\\.c$|\\.cc$|\\.cpp$|\\.cxx$")
+    if (SOURCE_FILE MATCHES "\\.(c|cc|cpp|cxx|h|hpp|hxx|txx|inl)$")
       set (LANG "CXX")
     # Java
-    elseif (SOURCE_FILE MATCHES "\\.java$|\\.java\\.in$")
+    elseif (SOURCE_FILE MATCHES "\\.java$")
       set (LANG "JAVA")
     # JavaScript
-    elseif (SOURCE_FILE MATCHES "\\.js$|\\.js\\.in$")
+    elseif (SOURCE_FILE MATCHES "\\.js$")
       set (LANG "JAVASCRIPT")
     # Python
-    elseif (SOURCE_FILE MATCHES "\\.py$|\\.py\\.in$")
+    elseif (SOURCE_FILE MATCHES "\\.py$")
       set (LANG "PYTHON")
     # Perl
-    elseif (SOURCE_FILE MATCHES "\\.pl$|\\.pl\\.in$|\\.pm$|\\.pm\\.in$|\\.t$|\\.t\\.in$")
+    elseif (SOURCE_FILE MATCHES "\\.(pl|pm|t)$")
       set (LANG "PERL")
     # BASH
-    elseif (SOURCE_FILE MATCHES "\\.sh$|\\.sh\\.in$")
+    elseif (SOURCE_FILE MATCHES "\\.sh$")
       set (LANG "BASH")
     # MATLAB
     elseif (SOURCE_FILE MATCHES "\\.m$")

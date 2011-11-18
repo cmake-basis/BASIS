@@ -230,7 +230,7 @@ macro (basis_project_modules)
 
   # provide an option for each module
   foreach (MODULE ${PROJECT_MODULES})
-    option (MODULE_${MODULE} "Request building module ${MODULE}" OFF)
+    option (MODULE_${MODULE} "Request building module ${MODULE}." OFF)
     if (${MODULE}_EXCLUDE_FROM_ALL)
       set (${MODULE}_IN_ALL FALSE)
     else ()
@@ -304,14 +304,14 @@ macro (basis_project_modules)
   endforeach ()
   unset (R)
 
-  # hide options for modules that will build anyway
+  # turn options ON for modules that are required by other modules
   foreach (MODULE ${PROJECT_MODULES})
-    if (DEFINED MODULE_${MODULE})
-      if (${MODULE}_IN_ALL OR ${MODULE}_NEEDED_BY)
-        set_property (CACHE MODULE_${MODULE} PROPERTY TYPE INTERNAL)
-      else ()
-        set_property (CACHE MODULE_${MODULE} PROPERTY TYPE BOOL)
-      endif ()
+    if (DEFINED MODULE_${MODULE} # there was an option for the user
+        AND NOT MODULE_${MODULE} # user did not set it to ON themself
+        AND NOT ${MODULE}_IN_ALL # BUILD_ALL_MODULES was not set ON
+        AND ${MODULE}_NEEDED_BY) # module is needed by other module(s)
+      set (MODULE_${MODULE} ON CACHE BOOL "Request building module ${MODULE}." FORCE)
+      message ("Enabled MODULE_${MODULE}, needed by [${${MODULE}_NEEDED_BY}].")
     endif ()
   endforeach ()
 endmacro ()
