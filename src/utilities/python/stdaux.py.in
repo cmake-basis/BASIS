@@ -9,6 +9,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisPythonUtilities
 ##############################################################################
 
 """
@@ -31,6 +33,11 @@ import shlex      # used to split() quoted command-line
 import re         # to see if string contains whitespaces
 
 from .executabletargetinfo import get_executable_path
+
+
+## @addtogroup BasisPythonUtilities
+# @{
+
 
 # ============================================================================
 # version / contact
@@ -195,3 +202,7 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
         return (status, output)
     else:
         return status
+
+
+## @}
+# end of Doxygen group

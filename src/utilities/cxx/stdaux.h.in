@@ -10,7 +10,7 @@
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 
 #pragma once
@@ -30,7 +30,7 @@ SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 namespace basis {
 
 
-/// @addtogroup CppUtilities
+/// @addtogroup BasisCxxUtilities
 /// @{
 
 
@@ -86,7 +86,7 @@ bool executing_in_build_tree();
  *
  * @note If the executable is executed from within the build tree, the
  *       returned path will not be correct. Therefore, only use this
- *       function when ExecutingInBuildTree() returns false. Otherwise,
+ *       function when executing_in_build_tree() returns false. Otherwise,
  *       the configured absolute paths which are valid for the build tree
  *       have to be used. Note that the build tree is not supposed to be
  *       relocatable in any case as it is only a temporary directory tree
@@ -136,7 +136,7 @@ std::string get_data_directory();
  * absolute path of the executable file which was built and/or installed as
  * the specified build target.
  *
- * @note The BASIS path module provides a function also named GetExecutablePath()
+ * @note The BASIS path module provides a function also named get_executable_path()
  *       which can be used to get the canonical path of the calling executable.
  *
  * @sa ExecutableTargetInfo
@@ -230,7 +230,7 @@ int execute_process(std::vector<std::string>& args,
 
 
 /// @}
-// Doxygen group CppUtilities
+// end of Doxygen group
 
 
 } // namespace basis

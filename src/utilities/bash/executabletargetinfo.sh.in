@@ -11,7 +11,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 ##############################################################################
 
 # return if already loaded
@@ -36,7 +36,7 @@ source "${_EXECUTABLETARGETINFO_DIR}/%BASIS_LIBRARY_DIR%/core.sh" # upvar()
 # public functions
 # ============================================================================
 
-## @addtogroup BashUtilities
+## @addtogroup BasisBashUtilities
 #  @{
 
 
@@ -202,7 +202,7 @@ function get_executable_path
 
 
 ## @}
-# Doxygen group BashUtilities
+# end of Doxygen group
 
 # ============================================================================
 # private helpers

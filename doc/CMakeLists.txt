@@ -37,23 +37,10 @@ basis_add_doc (
 #
 # See basis_add_doc()
 
-set (
-  INSTALL_APIDOC_DIR ""
-  CACHE PATH "Installation directory of API documentation. Default is used when not set."
-)
-mark_as_advanced(INSTALL_APIDOC_DIR)
-
-file (GLOB API_DOX_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doxygen/*.dox")
-
 basis_add_doc (
   api
   GENERATOR        Doxygen
-  INPUT            "${BINARY_CODE_DIR}"
-                   "${PROJECT_CODE_DIR}"
-                   "${BINARY_INCLUDE_DIR}"
-                   ${API_DOX_FILES}
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
-                   "*/tclap/*"            # TCLAP
                    "*/gmock/*"            # Google Mock
                    "*/gtest/*"            # Google Test
                    "*/argh/*"             # Python Argh
@@ -62,7 +49,6 @@ basis_add_doc (
                    # files in binary source tree
                    "cmake_install.cmake"
                    "CTestTestfile.cmake"
-  DESTINATION      "${INSTALL_APIDOC_DIR}"
 )
 
 # ============================================================================

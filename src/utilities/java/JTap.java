@@ -26,6 +26,8 @@
  * @sa http://testanything.org/wiki/index.php/Tap-functions
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ *
+ * @ingroup BasisJavaUtilities
  */
 
 import java.io.* ;

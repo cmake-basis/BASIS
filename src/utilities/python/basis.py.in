@@ -1,18 +1,24 @@
 ##############################################################################
 # @file  basis.py
-# @brief Main module of BASIS utilities for the @PROJECT_NAME@ package.
+# @brief Main module of BASIS Python Utilities.
 #
 # @note The basis.py module is automatically created by BASIS from the
 #       template file basis.py.in which is part of the BASIS installation.
+#
+# This module imports the modules of the BASIS Python Utilities. Hence, it is
+# sufficient to only import this module. This is done by the
+# @c &#64;BASIS_PYTHON_UTILITIES&#64; code.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisPythonUtilities
 ##############################################################################
 
 """
-Main module of BASIS utilities for the @PROJECT_NAME@ package.
+Main module of BASIS Python Utilities.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.

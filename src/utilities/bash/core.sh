@@ -12,7 +12,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 ##############################################################################
 
 # return if already loaded
@@ -20,7 +20,7 @@
 _SBIA_CORE_INCLUDED=1
 
 
-## @addtogroup BashUtilities
+## @addtogroup BasisBashUtilities
 #  @{
 
 
@@ -280,4 +280,4 @@ function basis_split
 
 
 ## @}
-# Doxygen group BashUtilities
+# end of Doxygen group

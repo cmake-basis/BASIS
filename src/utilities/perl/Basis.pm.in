@@ -2,13 +2,20 @@
 # @file  Basis.pm
 # @brief BASIS utilities for Perl.
 #
+#
 # @note The Basis.pm module is automatically created by BASIS from the
 #       template file Basis.pm.in which is part of the BASIS installation.
+#
+# This module uses the modules of the BASIS Perl Utilities and exports the
+# utility functions. Hence, it is sufficient to only use this module.
+# This is done by the @c &#64;BASIS_PERL_UTILITIES&#64; code.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisPerlUtilities
 
 package SBIA::@PROJECT_NAME@::Basis;
 

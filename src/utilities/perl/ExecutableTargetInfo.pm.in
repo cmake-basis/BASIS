@@ -10,6 +10,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisPerlUtilities
 
 package SBIA::@PROJECT_NAME@::ExecutableTargetInfo;
 
@@ -67,6 +69,10 @@ my $_location = undef;
 # ============================================================================
 # public functions
 # ============================================================================
+
+## @addtogroup BasisPerlUtilities
+# @{
+
 
 # ----------------------------------------------------------------------------
 ## @brief Get UID of build target.
@@ -169,6 +175,10 @@ sub get_executable_path
     }
     return $path;
 }
+
+
+## @}
+# end of Doxygen group
 
 # ============================================================================
 # protected/private functions

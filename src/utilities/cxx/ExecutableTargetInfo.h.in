@@ -10,7 +10,7 @@
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 
 #pragma once
@@ -59,7 +59,7 @@ namespace basis {
  *
  * @sa GetExecutableFile()
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 class ExecutableTargetInfo
 {

@@ -1,13 +1,16 @@
 /**
  * @file  basis.h
- * @brief BASIS utilities for C++.
+ * @brief Main include file of BASIS C++ Utilities.
+ *
+ * This header file includes the header files of the BASIS C++ Utilities.
+ * Hence, it is sufficient to only include this header file.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 
 #pragma once

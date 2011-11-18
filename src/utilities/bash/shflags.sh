@@ -99,7 +99,7 @@
 #
 # Released under the LGPL (GNU Lesser General Public License)
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 
 # return if FLAGS already loaded
 [ -n "${FLAGS_VERSION:-}" ] && return 0

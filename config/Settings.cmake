@@ -45,3 +45,15 @@ set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/matlab")
 
 # installation directory of project template files
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
+
+# ============================================================================
+# utilities
+# ============================================================================
+
+# configure all BASIS utilities such that they are included in API
+# documentation even if BASIS does not use them itself
+basis_set_project_property (PROJECT_USES_JAVA_UTILITIES   TRUE)
+basis_set_project_property (PROJECT_USES_PYTHON_UTILITIES TRUE)
+basis_set_project_property (PROJECT_USES_PERL_UTILITIES   TRUE)
+basis_set_project_property (PROJECT_USES_BASH_UTILITIES   TRUE)
+basis_set_project_property (PROJECT_USES_MATLAB_UTILITIES TRUE)

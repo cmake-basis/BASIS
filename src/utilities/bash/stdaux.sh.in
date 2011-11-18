@@ -10,7 +10,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 ##############################################################################
 
 # return if already loaded
@@ -18,7 +18,7 @@
 _SBIA_%NAMESPACE_UPPER%_STDAUX_INCLUDED=1
 
 
-## @addtogroup BashUtilities
+## @addtogroup BasisBashUtilities
 #  @{
 
 
@@ -175,4 +175,4 @@ function execute_process
 
 
 ## @}
-# Doxygen group BashUtilities
+# end of Doxygen group

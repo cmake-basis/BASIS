@@ -7,7 +7,7 @@
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 
 

@@ -1,6 +1,10 @@
 ##############################################################################
 # @file  basis.sh
-# @brief BASIS utilities for BASH.
+# @brief Main module of BASIS BASH Utilities.
+#
+# This module sources the modules of the BASIS BASH Utilities. Hence, it is
+# sufficient to only source this module. This is done by the
+# @c &#64;BASIS_BASH_UTILITIES&#64; code.
 #
 # @note The basis.sh module is automatically created by BASIS from the
 #       template file basis.sh.in which is part of the BASIS installation.
@@ -10,7 +14,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 ##############################################################################
 
 # return if already loaded

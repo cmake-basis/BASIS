@@ -10,7 +10,7 @@
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 
 #pragma once
@@ -18,7 +18,7 @@
 #define SBIA_@PROJECT_NAME_UPPER@_CONFIG_H_
 
 
-/// @addtogroup CppUtilities
+/// @addtogroup BasisCxxUtilities
 /// @{
 
 // ===========================================================================
@@ -185,9 +185,13 @@ extern const unsigned int cRevision;
  * @brief Absolute path of top directory of build tree.
  *
  * This constant is set to the absolute path of the top directory of the build
- * tree in which the software is built. It can be used to determine whether
- * an executable was executed from within the build tree rather than an
- * installation.
+ * tree in which the software was built. It can be used to determine whether
+ * an executable is executing from within the build tree rather than an
+ * installation. Given that we tend to build software in a directory with the
+ * prefix "-build", but never choose such directory for the installation prefix,
+ * a check whether or not the location of the executable file is inside this
+ * build tree is enough to know whether or not it is executed from within the
+ * build tree or an installation.
  *
  * @sa GetInstallationDirectory()
  */
@@ -302,6 +306,7 @@ extern const char* cDataPath;
 
 
 /// @}
+// end of Doxygen group
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

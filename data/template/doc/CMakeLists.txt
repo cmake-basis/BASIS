@@ -37,15 +37,7 @@ basis_add_doc (
 #
 # See basis_add_doc()
 
-set (
-  INSTALL_APIDOC_DIR ""
-  CACHE PATH
-    "Installation directory of API documentation. Default is used if not set."
-)
-
-mark_as_advanced (INSTALL_APIDOC_DIR)
-
-basis_add_doc (api GENERATOR Doxygen DESTINATION "${INSTALL_APIDOC_DIR}")
+basis_add_doc (api GENERATOR Doxygen)
 
 # ============================================================================
 # manuals

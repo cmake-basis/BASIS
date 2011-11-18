@@ -10,7 +10,7 @@
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 
 #include <sbia/@PROJECT_NAME_LOWER@/config.h>

@@ -9,6 +9,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisPerlUtilities
 
 package SBIA::@PROJECT_NAME@::StdAux;
 
@@ -49,6 +51,11 @@ BEGIN {
 
     Exporter::export_ok_tags ('everything');
 }
+
+
+## @addtogroup BasisPerlUtilities
+# @{
+
 
 # ============================================================================
 # version / contact
@@ -217,6 +224,10 @@ sub execute_process
         return $status;
     }
 }
+
+
+## @}
+# end of Doxygen group
 
 
 1; # indicate success of module loading

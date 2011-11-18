@@ -10,6 +10,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisPythonUtilities
 ##############################################################################
 
 """
@@ -41,6 +43,10 @@ _locations  = None
 # ============================================================================
 # public function
 # ============================================================================
+
+## @addtogroup BasisPythonUtilities
+# @{
+
 
 # ----------------------------------------------------------------------------
 def get_target_uid(target):
@@ -141,6 +147,10 @@ def get_executable_path(target=None):
                 pass
     
     return path
+
+
+## @}
+# end of Doxygen group
 
 # ============================================================================
 # private functions
