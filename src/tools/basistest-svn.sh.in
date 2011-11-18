@@ -64,7 +64,7 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         *)
-            args=($args $1)
+            args=("${args[@]}" "$1")
             ;;
     esac
     shift
