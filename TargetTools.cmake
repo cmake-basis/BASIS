@@ -39,10 +39,12 @@ endif ()
 function (basis_get_source_target_name TARGET_NAME SOURCE_FILE COMPONENT)
   # remove ".in" suffix from file name
   string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
-  # get filename component
-  get_filename_component (TARGET_NAME_OUT "${SOURCE_FILE}" ${COMPONENT})
+  # get name component
+  get_filename_component (OUT "${SOURCE_FILE}" ${COMPONENT})
+  # replace special characters
+  string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR_REGEX}" "_" OUT "${OUT}")
   # return
-  set (${TARGET_NAME} "${TARGET_NAME_OUT}" PARENT_SCOPE)
+  set (${TARGET_NAME} "${OUT}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
@@ -142,21 +144,13 @@ endmacro ()
 #
 # All arguments are passed on to CMake's include_directories() command.
 #
-# Even though CMake (at least since 2.8.6) claims to provide a property named
-# INCLUDE_DIRECTORIES on directories for debugging purposes, does it not
-# seem to be set properly at least when using CMake 2.8.4. Hence, also to be
-# more independent from CMake's API, we maintain our own list of currently
-# active include directories.
-#
 # Additionally, a list of all include directories used by a project is stored
 # as project property (see basis_set_project_property()) named
-# PROJECT_INCLUDE_DIRECTORIES.
+# @c PROJECT_INCLUDE_DIRECTORIES.
 #
 # @param ARGN Argument list passed on to CMake's include_directories() command.
 #
-# @returns Adds the given paths to the list of include search paths
-#          and updates the @c BASIS_INCLUDE_DIRECTORIES property of the
-#          top source directory of the project.
+# @returns Nothing.
 
 function (basis_include_directories)
   # CMake's include_directories ()
@@ -175,33 +169,6 @@ function (basis_include_directories)
   if (NOT DIRS)
     message (WARNING "basis_include_directories(): No directories given to add!")
   endif ()
-
-  # update list of current include directories
-  #
-  # Attention: Do not name this variable BASIS_INCLUDE_DIRS as
-  #            this is the global list used by the project BASIS
-  #            using basis_set_project_property(INCLUDE_DIRS).
-  if (BASIS_INCLUDE_DIRECTORIES)
-    if (ARGN_BEFORE)
-      set (
-        BASIS_INCLUDE_DIRECTORIES
-          "${DIRS};${BASIS_INCLUDE_DIRECTORIES}"
-      )
-    else ()
-      set (
-        BASIS_INCLUDE_DIRECTORIES
-          "${BASIS_INCLUDE_DIRECTORIES};${DIRS}"
-      )
-    endif ()
-  else ()
-    set (BASIS_INCLUDE_DIRECTORIES "${DIRS}")
-  endif ()
-
-  if (BASIS_INCLUDE_DIRECTORIES)
-    list (REMOVE_DUPLICATES BASIS_INCLUDE_DIRECTORIES)
-  endif ()
-
-  set (BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}" PARENT_SCOPE)
 
   # append directories to "global" list of include directories
   basis_get_project_property (PROJECT_INCLUDE_DIRS)
@@ -228,39 +195,17 @@ endmacro ()
 ##############################################################################
 # @brief Replaces CMake's link_directories() command.
 #
+# All arguments are passed on to CMake's link_directories() command.
+#
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:link_directories
 #
 # @param [in] ARGN Arguments for link_directories().
 #
-# @returns Adds the given paths to the search path for link libraries.
+# @returns Nothing.
 
 function (basis_link_directories)
   # CMake's link_directories()
   _link_directories (${ARGN})
-
-  # make relative paths absolute
-  set (DIRS)
-  foreach (P IN LISTS ARGN)
-    get_filename_component (P "${P}" ABSOLUTE)
-    list (APPEND DIRS "${P}")
-  endforeach ()
-
-  # update list of current link directories
-  #
-  # Attention: Do not name this variable BASIS_LINK_DIRS as
-  #            this is reserved for the global list used by the project
-  #            BASIS using basis_set_project_property(LINK_DIRS).
-  if (BASIS_LINK_DIRECTORIES)
-    set (BASIS_LINK_DIRECTORIES "${BASIS_LINK_DIRECTORIES};${DIRS}")
-  else ()
-    set (BASIS_LINK_DIRECTORIES "${DIRS}")
-  endif ()
-
-  if (BASIS_LINK_DIRECTORIES)
-    list (REMOVE_DUPLICATES BASIS_LINK_DIRECTORIES)
-  endif ()
-
-  set (BASIS_LINK_DIRECTORIES "${BASIS_LINK_DIRECTORIES}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
@@ -873,7 +818,7 @@ function (basis_add_executable_target TARGET_NAME)
 
   # check target name
   basis_check_target_name (${TARGET_NAME})
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # whether or not to link to BASIS utilities
   if (ARGN_NO_BASIS_UTILITIES)
@@ -908,7 +853,7 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add standard auxiliary library
   if (NOT NO_BASIS_UTILITIES)
-    basis_target_uid (BASIS_UTILITIES_TARGET "basisutilities")
+    basis_make_target_uid (BASIS_UTILITIES_TARGET "basisutilities")
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
       basis_target_name (T "${BASIS_UTILITIES_TARGET}")
       basis_add_library (${T} STATIC ${BASIS_UTILITIES_SOURCES})
@@ -1117,7 +1062,7 @@ function (basis_add_library_target TARGET_NAME)
 
   # check target name
   basis_check_target_name (${TARGET_NAME})
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # library type
   if (NOT ARGN_SHARED AND NOT ARGN_STATIC AND NOT ARGN_MODULE)
@@ -1446,7 +1391,7 @@ function (basis_add_script TARGET_NAME)
 
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
   if (BASIS_VERBOSE)
     if (ARGN_MODULE)
@@ -2126,15 +2071,10 @@ function (basis_export_targets)
   basis_get_project_property (EXPORT_TARGETS)
 
   if (EXPORT_TARGETS)
-    if (BASIS_USE_TARGET_UIDS)
-      set (NAMESPACE_ARG)
-    else ()
-      set (NAMESPACE_ARG "NAMESPACE" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}")
-    endif ()
     export (
       TARGETS   ${EXPORT_TARGETS}
       FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
-      ${NAMESPACE_ARG}
+      NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}"
     )
     foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
       install (
@@ -2142,7 +2082,7 @@ function (basis_export_targets)
         DESTINATION "${INSTALL_CONFIG_DIR}"
         FILE        "${ARGN_FILE}"
         COMPONENT   "${COMPONENT}"
-        ${NAMESPACE_ARG}
+        NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}"
       )
     endforeach ()
   endif ()
@@ -2187,11 +2127,7 @@ function (basis_export_targets)
     # create import targets
     macro (import_targets)
       foreach (T ${CUSTOM_EXPORT_TARGETS})
-        if (BASIS_USE_TARGET_UIDS)
-          set (UID "${T}")
-        else ()
-          set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
-        endif ()
+        set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
         set (C "${C}\n# Create import target \"${UID}\"\n")
         get_target_property (BASIS_TYPE ${T} "BASIS_TYPE")
         if (BASIS_TYPE MATCHES "EXECUTABLE")
@@ -2216,11 +2152,7 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${CUSTOM_EXPORT_TARGETS})
-          if (BASIS_USE_TARGET_UIDS)
-            set (UID "${T}")
-          else ()
-            set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
-          endif ()
+          set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
           set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${UID} PROPERTIES\n")
@@ -2238,11 +2170,7 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${CUSTOM_EXPORT_TARGETS})
-          if (BASIS_USE_TARGET_UIDS)
-            set (UID "${T}")
-          else ()
-            set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
-          endif ()
+          set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
           set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${UID} PROPERTIES\n")

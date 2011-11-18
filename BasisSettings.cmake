@@ -62,44 +62,47 @@ include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake") # basis_set_if_empty()
 # system checks
 # ============================================================================
 
-include (CheckTypeSize)
-include (CheckIncludeFile)
+# used by tests to disable these checks
+if (NOT BASIS_NO_SYSTEM_CHECKS)
+  include (CheckTypeSize)
+  include (CheckIncludeFile)
 
-# check if type long long is supported
-CHECK_TYPE_SIZE ("long long" LONG_LONG)
+  # check if type long long is supported
+  CHECK_TYPE_SIZE ("long long" LONG_LONG)
 
-if (HAVE_LONG_LONG)
-  set (HAVE_LONG_LONG 1)
-else ()
-  set (HAVE_LONG_LONG 0)
-endif ()
+  if (HAVE_LONG_LONG)
+    set (HAVE_LONG_LONG 1)
+  else ()
+    set (HAVE_LONG_LONG 0)
+  endif ()
 
-# check for presence of sstream header
-include (TestForSSTREAM)
+  # check for presence of sstream header
+  include (TestForSSTREAM)
 
-if (CMAKE_NO_ANSI_STRING_STREAM)
-  set (HAVE_SSTREAM 0)
-else ()
-  set (HAVE_SSTREAM 1)
-endif ()
+  if (CMAKE_NO_ANSI_STRING_STREAM)
+    set (HAVE_SSTREAM 0)
+  else ()
+    set (HAVE_SSTREAM 1)
+  endif ()
 
-# check if tr/tuple header file is available
-CHECK_INCLUDE_FILE ("tr1/tuple" HAVE_TR1_TUPLE)
+  # check if tr/tuple header file is available
+  CHECK_INCLUDE_FILE ("tr1/tuple" HAVE_TR1_TUPLE)
 
-if (HAVE_TR1_TUPLE)
-  set (HAVE_TR1_TUPLE 1)
-else ()
-  set (HAVE_TR1_TUPLE 0)
-endif ()
+  if (HAVE_TR1_TUPLE)
+    set (HAVE_TR1_TUPLE 1)
+  else ()
+    set (HAVE_TR1_TUPLE 0)
+  endif ()
 
-# check for availibility of pthreads library
-find_package (Threads) # defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT
+  # check for availibility of pthreads library
+  find_package (Threads) # defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT
 
-if (Threads_FOUND)
-  if (CMAKE_USE_PTHREADS_INIT)
-    set (HAVE_PTHREAD 1)
-  else  ()
-    set (HAVE_PTHREAD 0)
+  if (Threads_FOUND)
+    if (CMAKE_USE_PTHREADS_INIT)
+      set (HAVE_PTHREAD 1)
+    else  ()
+      set (HAVE_PTHREAD 0)
+    endif ()
   endif ()
 endif ()
 
@@ -155,36 +158,9 @@ basis_set_if_empty (BASIS_LIBRARY_COMPONENT "Development")
 # are associated with if no component was specified, explicitly.
 basis_set_if_empty (BASIS_RUNTIME_COMPONENT "Runtime")
 
-## @brief Whether to use unique build target names.
-option (BASIS_USE_TARGET_UIDS "Whether to use (globally) unique build target names." OFF)
-mark_as_advanced (BASIS_USE_TARGET_UIDS)
-
 ## @brief Specifies that the BASIS C++ utilities shall by default not be added
 #         as dependency of an executable.
 basis_set_if_empty (BASIS_NO_BASIS_UTILITIES FALSE)
-
-## @brief Character used to separate namespace and target name in target UID.
-#
-# This separator is used to construct a UID for a particular target.
-# For example, "\@BASIS_NAMESPACE\@\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
-# Note that the separator must only contain characters that are valid in
-# a file path as only these characters can be used for CMake target names.
-# Also the use of '#' in target names must be avoided.
-#
-# Note: For the mapping of target names to executable files, this separator
-#       may for each language be replaced by a more suitable string.
-#       For example, it is replaced by "::" for C++.
-#       See UtilitiesTools.cmake for details.
-basis_set_if_empty (BASIS_NAMESPACE_SEPARATOR "/")
-
-## @brief Character used to separate version and project name (e.g., in target UID).
-#
-# This separator is used to construct a UID for a particular target.
-# For example, "&lt;Project&gt;\@BASIS_VERSION_SEPARATOR\@&lt;version&gt;\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
-# Note that the version need not be included if only a single version of each
-# package is supposed to be installed on a target system. The same rules as for
-# @c BASIS_NAMESPACE_SEPARATOR regarding character selection apply.
-basis_set_if_empty (BASIS_VERSION_SEPARATOR "-")
 
 ## @brief Script used to execute a process in CMake script mode.
 #
@@ -209,13 +185,44 @@ basis_set_if_empty (BASIS_SCRIPT_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/ScriptCo
 # of changelogs.
 basis_set_if_empty (BASIS_SVN_USERS_FILE "${CMAKE_CURRENT_LIST_DIR}/SubversionUsers.txt")
 
-## @brief Namespace used for target UIDs if @c BASIS_USE_TARGET_UIDS is @c ON.
+## @brief Character used to separate namespace and target name in target UID.
+#
+# This separator is used to construct a UID for a particular target.
+# For example, "\@BASIS_NAMESPACE\@\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
+# Note that the separator must only contain characters that are valid in
+# a file path as only these characters can be used for CMake target names.
+#
+# @attention The use of '#' in target names must be avoided as this
+#            starts a comment in CMake. Further, even though '::' is familiar
+#            to C++ developers, this is only allowed on Unix, but not on
+#            Windows as part of a file or directory name.
+basis_set_if_empty (BASIS_NAMESPACE_SEPARATOR ".")
+
+## @brief Character used to separate version and project name (e.g., in target UID).
+#
+# This separator is used to construct a UID for a particular target. For example,
+# "&lt;Project&gt;\@BASIS_VERSION_SEPARATOR\@&lt;version&gt;\@BASIS_NAMESPACE_SEPARATOR\@&lt;target&gt;".
+# Note that the version need not be included if only a single version of each
+# package is supposed to be installed on a target system. The same rules as for
+# @c BASIS_NAMESPACE_SEPARATOR regarding character selection apply.
+#
+# @note Not used by the current implementation.
+basis_set_if_empty (BASIS_VERSION_SEPARATOR "-")
+
+## @brief Namespace used for the current project.
 #
 # The namespace of a BASIS project is made up of its name as well as the
 # names of the projects it is a module of, i.e., the namespace encodes the
 # super-/subproject relationship and guarantees uniqueness of target names
 # and other identifiers.
-basis_set_if_empty (BASIS_NAMESPACE "\@PROJECT_NAME_INFIX\@")
+#
+# This variable is in particular used to convert build target names of
+# modules of a project unique in order to avoid name conflicts.
+if (PROJECT_IS_MODULE)
+  set (BASIS_NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}\@PROJECT_NAME_INFIX\@")
+else ()
+  basis_set_if_empty (BASIS_NAMESPACE "\@PROJECT_NAME_INFIX\@")
+endif ()
 
 ## @brief Installation prefix for public header files.
 #
@@ -673,6 +680,10 @@ macro (basis_initialize_settings)
 
   string (CONFIGURE "${BASIS_NAMESPACE}" BASIS_NAMESPACE @ONLY)
   string (CONFIGURE "${INCLUDE_PREFIX}"  INCLUDE_PREFIX  @ONLY)
+
+  basis_sanitize_for_regex (PROJECT_NAME_REGEX "${PROJECT_NAME}")
+  basis_sanitize_for_regex (BASIS_NAMESPACE_REGEX "${BASIS_NAMESPACE}")
+  basis_sanitize_for_regex (BASIS_NAMESPACE_SEPARATOR_REGEX "${BASIS_NAMESPACE_SEPARATOR}")
 
   # --------------------------------------------------------------------------
   # assertions

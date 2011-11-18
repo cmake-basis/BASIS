@@ -399,7 +399,7 @@ function (basis_configure_auxiliary_modules)
   # Python
   if (PROJECT_USES_PYTHON_UTILITIES)
     foreach (MODULE basis stdaux)
-      set (TARGET_NAME "${MODULE}.py")
+      basis_get_source_target_name (TARGET_NAME "${MODULE}.py" NAME)
       basis_add_library (
         ${TARGET_NAME} "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py"
         MODULE
@@ -412,7 +412,7 @@ function (basis_configure_auxiliary_modules)
   # Perl
   if (PROJECT_USES_PERL_UTILITIES)
     foreach (MODULE Basis StdAux)
-      set (TARGET_NAME "${MODULE}.pm")
+      basis_get_source_target_name (TARGET_NAME "${MODULE}.pm" NAME)
       basis_add_library (
         ${TARGET_NAME} "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm"
         MODULE
@@ -425,7 +425,7 @@ function (basis_configure_auxiliary_modules)
   # BASH
   if (PROJECT_USES_BASH_UTILITIES)
     foreach (MODULE basis stdaux)
-      set (TARGET_NAME "${MODULE}.sh")
+      basis_get_source_target_name (TARGET_NAME "${MODULE}.sh" NAME)
       basis_add_library (
         ${TARGET_NAME} "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh"
         MODULE
@@ -580,8 +580,7 @@ function (basis_configure_ExecutableTargetInfo)
           set (SH_A "${SH_A}\nalias '${ALIAS}'=$(get_executable_path '${ALIAS}')")
 
           # short alias (if target belongs to this project)
-          basis_target_namespace (TARGET_NS "${TARGET_UID}")
-          if ("${TARGET_NS}" STREQUAL "${BASIS_NAMESPACE}")
+          if (TARGET_UID MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}")
             basis_target_name (TARGET_NAME "${TARGET_UID}")
             set (SH_S "${SH_S}\nalias '${TARGET_NAME}'='${ALIAS}'")
           endif ()

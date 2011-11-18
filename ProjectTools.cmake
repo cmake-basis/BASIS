@@ -330,7 +330,7 @@ function (basis_configure_public_headers)
   # settings
 
   # log file which lists the configured header files
-  set (CMAKE_FILE "${BINARY_INCLUDE_DIR}/PublicHeaders.cmake")
+  set (CMAKE_FILE "${CMAKE_CURRENT_BINARY_DIR}/PublicHeaders.cmake")
 
   # considered extensions
   set (
@@ -416,8 +416,9 @@ function (basis_configure_public_headers)
   )
 
   # custom target to detect whether a file was added or removed
+  basis_make_target_uid (CHECK_HEADERS_TARGET _check_headers)
   add_custom_target (
-    _check_headers
+    ${CHECK_HEADERS_TARGET}
     # trigger execution of custom command that generates the list
     # of current files in the project's include directory
     DEPENDS "${CMAKE_FILE}.tmp"
@@ -460,8 +461,9 @@ function (basis_configure_public_headers)
       VERBATIM
     )
 
+    basis_make_target_uid (CONFIGURE_HEADERS_TARGET _headers)
     add_custom_target (
-      _headers ALL
+      ${CONFIGURE_HEADERS_TARGET} ALL
       DEPENDS _check_headers "${CMAKE_FILE}.updated"
       SOURCES ${PROJECT_PUBLIC_HEADERS}
     )

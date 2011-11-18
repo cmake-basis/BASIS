@@ -174,7 +174,7 @@ function (basis_add_test TEST_NAME)
   endif ()
 
   basis_check_test_name ("${TEST_NAME}")
-  basis_test_uid (TEST_UID "${TEST_NAME}")
+  basis_make_test_uid (TEST_UID "${TEST_NAME}")
 
   # --------------------------------------------------------------------------
   # build test executable

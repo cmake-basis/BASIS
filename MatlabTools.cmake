@@ -387,7 +387,7 @@ function (basis_add_mex_target TARGET_NAME)
 
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
   if (BASIS_VERBOSE)
     message (STATUS "Adding MEX-file ${TARGET_UID}...")
@@ -409,6 +409,9 @@ function (basis_add_mex_target TARGET_NAME)
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
 
   # set target properties required by basis_add_mex_target_finalize ()
+  get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
+  get_directory_property (LINK_DIRS LINK_DIRECTORIES)
+
   set_target_properties (
     ${TARGET_UID}
     PROPERTIES
@@ -423,8 +426,8 @@ function (basis_add_mex_target TARGET_NAME)
       LIBRARY_OUTPUT_DIRECTORY  "${BINARY_LIBRARY_DIR}"
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
-      BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}"
-      BASIS_LINK_DIRECTORIES    "${BASIS_LINK_DIRECTORIES}"
+      BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
+      BASIS_LINK_DIRECTORIES    "${LINK_DIRS}"
       COMPILE_FLAGS             "${BASIS_MEX_FLAGS}"
       LINK_FLAGS                ""
       LINK_DEPENDS              ""
@@ -906,7 +909,7 @@ function (basis_add_mcc_target TARGET_NAME)
 
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
   if (BASIS_VERBOSE)
     if (ARGN_TYPE STREQUAL "LIBRARY")
@@ -956,6 +959,9 @@ function (basis_add_mcc_target TARGET_NAME)
     endif ()
   endif ()
 
+  get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
+  get_directory_property (LINK_DIRS LINK_DIRECTORIES)
+
   set_target_properties (
     ${TARGET_UID}
     PROPERTIES
@@ -968,8 +974,8 @@ function (basis_add_mcc_target TARGET_NAME)
       LIBRARY_OUTPUT_DIRECTORY  "${BINARY_LIBRARY_DIR}"
       RUNTIME_INSTALL_DIRECTORY "${RUNTIME_INSTALL_DIR}"
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_LIBRARY_DIR}"
-      BASIS_INCLUDE_DIRECTORIES "${BASIS_INCLUDE_DIRECTORIES}"
-      BASIS_LINK_DIRECTORIES    "${BASIS_LINK_DIRECTORIES}"
+      BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
+      BASIS_LINK_DIRECTORIES    "${LINK_DIRS}"
       COMPILE_FLAGS             "${COMPILE_FLAGS}"
       LINK_DEPENDS              ""
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"

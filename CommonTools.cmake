@@ -409,6 +409,18 @@ endfunction ()
 # ============================================================================
 
 ##############################################################################
+# @brief Sanitize string variable for use in regular expression.
+#
+# @note This function may not work for all cases, but is used in particular
+#       to sanitize project names, target names, namespace identifiers,...
+#
+# @param [out] OUT String that can be used in regular expression.
+# @param [in]  STR String to sanitize.
+macro (basis_sanitize_for_regex OUT STR)
+  string (REGEX REPLACE "([.+*?^$])" "\\\\\\1" ${OUT} "${STR}")
+endmacro ()
+
+##############################################################################
 # @brief Concatenates all list elements into a single string.
 #
 # The list elements are concatenated without any delimiter in between.
@@ -511,18 +523,50 @@ endfunction ()
 # ----------------------------------------------------------------------------
 
 ##############################################################################
+# @brief Make target UID from given target name.
+#
+# This function is intended for use by the basis_add_*() functions only.
+#
+# @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
+# @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
+#
+# @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
+
+macro (basis_make_target_uid TARGET_UID TARGET_NAME)
+  if (PROJECT_IS_MODULE)
+    set ("${TARGET_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}")
+  else ()
+    set ("${TARGET_UID}" "${TARGET_NAME}")
+  endif ()
+endmacro ()
+
+##############################################################################
 # @brief Get "global" target name, i.e., actual CMake target name.
 #
-# In order to ensure that CMake target names are unique across BASIS projects,
-# the target name used by a developer of a BASIS project is converted by this
-# function into another target name which is used as acutal CMake target name.
+# In order to ensure that CMake target names are unique across modules of
+# a BASIS project, the target name given to the BASIS CMake functions is
+# converted by basis_make_target_uid() into a so-called target UID which is
+# used as actual CMake target name. This function can be used to get for a
+# given target name or UID the closest match of a known target UID.
 #
-# The function basis_target_name() can be used to convert the unique target
-# name, the target UID, back to the original target name passed to this
-# function.
+# In particular, if this project is a module of another BASIS project, the
+# namespace given by @c BASIS_NAMESPACE is used as prefix, where the namespace
+# prefix and the build target name are separated using the
+# @c BASIS_NAMESPACE_SEPARATOR. Otherwise, if this project is the top-level
+# project, no namespace is prefix and if the project's namespace is given
+# as prefix, it will be removed instead. When the target is exported, however,
+# the namespace of this project will be prefixed again. This is taken care
+# of by the basis_export_targets() function.
+#
+# Note that names of imported targets are not prefixed in any case.
+#
+# The counterpart basis_target_name() can be used to convert the target UID
+# back to the target name without namespace prefix.
+#
+# @note At the moment, BASIS does not support modules which themselves have
+#       modules again. This would require a more nested namespace hierarchy.
 #
 # @sa basis_target_name()
-# @sa BASIS_USE_TARGET_UIDS
 #
 # @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
@@ -530,17 +574,40 @@ endfunction ()
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
 
 function (basis_target_uid TARGET_UID TARGET_NAME)
-  if (BASIS_USE_TARGET_UIDS)
-    if (TARGET "${TARGET_NAME}" OR TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-      set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
+  # if given name is a CMake target name
+  if (TARGET "${TARGET_NAME}")
+    # Prefer target with same name but belonging to current namespace,
+    # but do not modify names of imported targets.
+    #
+    # Note: The top-level project uses target names without namespace.
+    #       Hence, it could be that a module uses a target name which
+    #       is an actual CMake target of the top-level project.
+    get_target_property (IMPORTED "${TARGET_NAME}" IMPORTED)
+    if (NOT IMPORTED AND PROJECT_IS_MODULE)
+      set (TMP "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}")
+      if (TARGET "${TMP}")
+        message ("NAME: ${TARGET_NAME} -> ${TMP}")
+        set ("${TARGET_UID}" "${TMP}" PARENT_SCOPE)
+      else ()
+        set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
+      endif ()
     else ()
-      set ("${TARGET_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}" PARENT_SCOPE)
+      set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
     endif ()
+  # if current namespace is already prefixed
+  elseif (TARGET_NAME MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}(.*)")
+    # do nothing if this is a module
+    if (PROJECT_IS_MODULE)
+      set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
+    # strip it off if this is the top-level project
+    else ()
+      set ("${TARGET_UID}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+    endif ()
+  # otherwise, prefix build target name if this project is a module
+  elseif (PROJECT_IS_MODULE)
+    set ("${TARGET_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}" PARENT_SCOPE)
+  # or do nothing if this is a top-level project
   else ()
-    basis_target_namespace (TARGET_NS "${TARGET_NAME}")
-    if ("${TARGET_NS}" STREQUAL "${BASIS_NAMESPACE}")
-      basis_target_name (TARGET_NAME "${TARGET_NAME}")
-    endif ()
     set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
   endif ()
 endfunction ()
@@ -548,24 +615,34 @@ endfunction ()
 ##############################################################################
 # @brief Get namespace of build target.
 #
-# @param [out] TARGET_NS  Namespace part of target UID. If @p TARGET_UID is
-#                         no UID, i.e., does not contain a namespace part,
-#                         the namespace of this project is returned.
+# @param [out] TARGET_NS  Namespace part of target UID.
 # @param [in]  TARGET_UID Target UID/name.
+
 function (basis_target_namespace TARGET_NS TARGET_UID)
-  if (${TARGET_UID} MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-    string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}.*$" "" TMP "${TARGET_UID}")
-    set ("${TARGET_NS}" "${TMP}" PARENT_SCOPE)
+  # ensure we have a fully-qualified target UID
+  if (PROJECT_IS_MODULE)
+    basis_target_uid (UID "${TARGET_UID}")
   else ()
+    set (UID "${TARGET_UID}")
+  endif ()
+  # if this UID belongs to the current namespace, return this namespace
+  if (UID MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}")
     set ("${TARGET_NS}" "${BASIS_NAMESPACE}" PARENT_SCOPE)
+  # otherwise, return first component of namespace specification, i.e.,
+  # the top-level namespace of the other project
+  elseif (UID MATCHES "^([^${BASIS_NAMESPACE_SEPARATOR_REGEX}]*)${BASIS_NAMESPACE_SEPARATOR_REGEX}")
+    set ("${TARGET_NS}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  endif ()
+    set ("${TARGET_NS}" "" PARENT_SCOPE)
   endif ()
 endfunction ()
 
 ##############################################################################
 # @brief Get "local" target name, i.e., BASIS target name.
 #
+# If the given target belongs
+#
 # @sa basis_target_uid()
-# @sa BASIS_USE_TARGET_UIDS
 #
 # @param [out] TARGET_NAME Target name used as argument to BASIS functions.
 # @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
@@ -573,8 +650,20 @@ endfunction ()
 # @returns Sets @p TARGET_NAME to the name of the build target with UID @p TARGET_UID.
 
 function (basis_target_name TARGET_NAME TARGET_UID)
-  string (REGEX REPLACE "^.*${BASIS_NAMESPACE_SEPARATOR}" "" TMP "${TARGET_UID}")
-  set ("${TARGET_NAME}" "${TMP}" PARENT_SCOPE)
+  # ensure we have a fully-qualified target UID
+  if (PROJECT_IS_MODULE)
+    basis_target_uid (UID "${TARGET_UID}")
+  else ()
+    set (UID "${TARGET_UID}")
+  endif ()
+  # if this UID belongs to the current namespace, everything after this
+  # namespace is considered to be the "local" target name
+  if (UID MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}(.*)")
+    set ("${TARGET_NAME}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  # otherwise, the target belongs to another module/project
+  else ()
+    set ("${TARGET_NAME}" "${TARGET_UID}" PARENT_SCOPE)
+  endif ()
 endfunction ()
 
 ##############################################################################
@@ -597,13 +686,13 @@ function (basis_check_target_name TARGET_NAME)
 
   # invalid target name ?
   if (NOT TARGET_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9._+]|-)*$")
-    message (FATAL_ERROR "Target name ${TARGET_NAME} is invalid.\nChoose a target name "
+    message (FATAL_ERROR "Target name '${TARGET_NAME}' is invalid.\nChoose a target name "
                          " which only contains alphanumeric characters, "
                          "'_', '-', '+', or '.', and starts with a letter.\n")
   endif ()
 
-  if (TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-    message (FATAL_ERROR "Target name ${TARGET_NAME} is invalid. Target names cannot"
+  if (TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR_REGEX}")
+    message (FATAL_ERROR "Target name '${TARGET_NAME}' is invalid. Target names cannot"
                          " contain string '${BASIS_NAMESPACE_SEPARATOR}'.")
   endif ()
 
@@ -619,6 +708,20 @@ endfunction ()
 # ----------------------------------------------------------------------------
 # test name <=> test UID
 # ----------------------------------------------------------------------------
+
+##############################################################################
+# @brief Make test UID from given test name.
+#
+# This function is intended for use by the basis_add_test() only.
+#
+# @param [out] TEST_UID  "Global" test name, i.e., actual CTest test name.
+# @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
+#
+# @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
+
+macro (basis_make_test_uid TEST_UID TEST_NAME)
+  basis_make_target_uid ("${TEST_UID}" "${TEST_NAME}")
+endmacro ()
 
 ##############################################################################
 # @brief Get "global" test name, i.e., actual CTest test name.
@@ -638,21 +741,9 @@ endfunction ()
 #
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
 
-function (basis_test_uid TEST_UID TEST_NAME)
-  if (BASIS_USE_TARGET_UIDS)
-    if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-      set ("${TEST_UID}" "${TEST_NAME}" PARENT_SCOPE)
-    else ()
-      set ("${TEST_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TEST_NAME}" PARENT_SCOPE)
-    endif ()
-  else ()
-    basis_test_namespace (TEST_NS "${TEST_NAME}")
-    if ("${TEST_NS}" STREQUAL "${BASIS_NAMESPACE}")
-      basis_test_name (TEST_NAME "${TEST_NAME}")
-    endif ()
-    set ("${TEST_UID}" "${TEST_NAME}" PARENT_SCOPE)
-  endif ()
-endfunction ()
+macro (basis_test_uid TEST_UID TEST_NAME)
+  basis_target_uid ("${TEST_UID}" "${TEST_NAME}")
+endmacro ()
 
 ##############################################################################
 # @brief Get namespace of test.
@@ -661,14 +752,10 @@ endfunction ()
 #                       no UID, i.e., does not contain a namespace part,
 #                       the namespace of this project is returned.
 # @param [in]  TEST_UID Test UID/name.
-function (basis_test_namespace TEST_NS TEST_UID)
-  if (${TEST_UID} MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
-    string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR}.*$" "" TMP "${TEST_UID}")
-    set ("${TEST_NS}" "${TMP}" PARENT_SCOPE)
-  else ()
-    set ("${TEST_NS}" "${BASIS_NAMESPACE}" PARENT_SCOPE)
-  endif ()
-endfunction ()
+
+macro (basis_test_namespace TEST_NS TEST_UID)
+  basis_target_namespace ("${TEST_NS}" "${TEST_UID}")
+endmacro ()
 
 ##############################################################################
 # @brief Get "local" test name, i.e., BASIS test name.
@@ -680,10 +767,9 @@ endfunction ()
 #
 # @returns Sets @p TEST_NAME to the name of the test with UID @p TEST_UID.
 
-function (basis_test_name TEST_NAME TEST_UID)
-  string (REGEX REPLACE "^.*${BASIS_NAMESPACE_SEPARATOR}" "" TMP "${TEST_UID}")
-  set ("${TEST_NAME}" "${TMP}" PARENT_SCOPE)
-endfunction ()
+macro (basis_test_name TEST_NAME TEST_UID)
+  basis_target_name ("${TEST_NAME}" "${TEST_UID}")
+endmacro ()
 
 ##############################################################################
 # @brief Checks whether a given name is a valid test name.
@@ -708,7 +794,7 @@ function (basis_check_test_name TEST_NAME)
                          "'_', '-', '+', or '.', and starts with a letter.\n")
   endif ()
 
-  if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR}")
+  if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR_REGEX}")
     message (FATAL_ERROR "Test name ${TEST_NAME} is invalid. Test names cannot"
                          " contain string '${BASIS_NAMESPACE_SEPARATOR}'.")
   endif ()
