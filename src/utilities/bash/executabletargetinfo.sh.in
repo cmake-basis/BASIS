@@ -224,7 +224,7 @@ function _executabletargetinfo_sanitize
     [ -z "$2" ] && upvar $1 ''
     local sane="`echo -n "$2" | tr [:space:] '_' | tr -c [:alpha:] '_'`"
     [ -n "${sane}" ] || {
-        echo "_executabletargetinfo_sanitize(): Failed to sanitize string" 1>&2
+        echo "_executabletargetinfo_sanitize(): Failed to sanitize string '$2'" 1>&2
         exit 1
     }
     local "$1" && upvar $1 "${sane}"
