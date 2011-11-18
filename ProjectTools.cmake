@@ -416,7 +416,7 @@ function (basis_configure_public_headers)
   )
 
   # custom target to detect whether a file was added or removed
-  basis_make_target_uid (CHECK_HEADERS_TARGET _check_headers)
+  basis_make_target_uid (CHECK_HEADERS_TARGET check_headers)
   add_custom_target (
     ${CHECK_HEADERS_TARGET}
     # trigger execution of custom command that generates the list
@@ -461,10 +461,10 @@ function (basis_configure_public_headers)
       VERBATIM
     )
 
-    basis_make_target_uid (CONFIGURE_HEADERS_TARGET _headers)
+    basis_make_target_uid (CONFIGURE_HEADERS_TARGET headers)
     add_custom_target (
       ${CONFIGURE_HEADERS_TARGET} ALL
-      DEPENDS _check_headers "${CMAKE_FILE}.updated"
+      DEPENDS ${CHECK_HEADERS_TARGET} "${CMAKE_FILE}.updated"
       SOURCES ${PROJECT_PUBLIC_HEADERS}
     )
   endif ()

@@ -137,6 +137,8 @@ mark_as_advanced (BASIS_VERBOSE)
 basis_set_if_empty (
   BASIS_RESERVED_TARGET_NAMES
     "test"
+    "headers"
+    "check_headers"
     "uninstall"
     "doc"
     "changelog"
