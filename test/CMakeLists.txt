@@ -48,5 +48,6 @@ set (TEST_BASH_UTILITIES "${BUILD_UTILITIES_FOR_BASH}")
 # ============================================================================
 
 add_subdirectory (ressources)
+add_subdirectory (cmake)
 add_subdirectory (tools)
 add_subdirectory (utilities)
