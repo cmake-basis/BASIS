@@ -72,7 +72,7 @@ def get_target_uid(target):
     if target in _locations:
         return target
     # do nothing if target name is UID
-    if target.find('::') > -1:
+    if target.find('@BASIS_NAMESPACE_SEPARATOR@') > -1:
         return target
     # otherwise, prepend default namespace identifier
     return '@BASIS_NAMESPACE_SEPARATOR@'.join(['@BASIS_NAMESPACE@', target])

@@ -63,7 +63,7 @@ const ExecutableTargetInfo& ExecutableTargetInfo::instance()
 string ExecutableTargetInfo::get_target_uid(const string& target) const
 {
     if (target.empty()) return "";
-    if (exec_names_.find(target) == exec_names_.end() && target.find("::") == string::npos) {
+    if (exec_names_.find(target) == exec_names_.end() && target.find("@BASIS_NAMESPACE_SEPARATOR@") == string::npos) {
         return string("@BASIS_NAMESPACE@@BASIS_NAMESPACE_SEPARATOR@") + target;
     }
     return target;

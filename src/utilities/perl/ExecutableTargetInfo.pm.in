@@ -94,7 +94,7 @@ sub get_target_uid
     # do nothing if target name is known
     not exists $_location->{$target} or return $target;
     # do nothing if target name is fully-qualified
-    $target !~ /::/ or return $target;
+    $target !~ /@BASIS_NAMESPACE_SEPARATOR@/ or return $target;
     # otherwise, prepend default namespace name
     return '@BASIS_NAMESPACE@@BASIS_NAMESPACE_SEPARATOR@' . $target;
 }
