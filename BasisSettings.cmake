@@ -136,9 +136,12 @@ mark_as_advanced (BASIS_VERBOSE)
 # special purposes and are hence not to be used for project targets.
 basis_set_if_empty (
   BASIS_RESERVED_TARGET_NAMES
+    "all"
+    "clean"
+    "depend"
     "test"
     "headers"
-    "check_headers"
+    "headers_check"
     "uninstall"
     "doc"
     "changelog"

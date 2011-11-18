@@ -416,7 +416,7 @@ function (basis_configure_public_headers)
   )
 
   # custom target to detect whether a file was added or removed
-  basis_make_target_uid (CHECK_HEADERS_TARGET check_headers)
+  basis_make_target_uid (CHECK_HEADERS_TARGET headers_check)
   add_custom_target (
     ${CHECK_HEADERS_TARGET}
     # trigger execution of custom command that generates the list
