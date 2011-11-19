@@ -103,10 +103,11 @@ Configuration:
     <model>     Dashboard model, i.e., either one of "Nightly", "Continuous",
                 and "Experimental". Defaults to "Nightly".
     <options>   Additional options to the CTest script.
-                The "basisctest" script of BASIS is used by default.
-                Run "ctest -S <path>/basisctest,usage" to get a list of
+                The "basistest.ctest" script of BASIS is used by default.
+                Run "ctest -S <path>/basistest.ctest,usage" to get a list of
                 available options. By default, the default options of the
-                CTest script are used.
+                CTest script are used. Note that this option can in particular
+                be used to define CMake variables for the build configuration.
 
   Attention: Neither of these entries may contain any whitespace character!
 
