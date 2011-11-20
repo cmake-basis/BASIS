@@ -33,9 +33,9 @@ isnt $? 0
 
 # ----------------------------------------------------------------------------
 # Test execution of executable target.
-execute_process 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command'
+execute_process 'basis.dummy_command'
 is $? 0
-stdout=`execute_process 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command' --greet`
+stdout=`execute_process 'basis.dummy_command' --greet`
 is $? 0
 match "$stdout" '^Hello, BASIS!'
 is $? 0
@@ -49,25 +49,25 @@ isnt $? 0
 
 # ----------------------------------------------------------------------------
 # Test --allow_fail option of execute_process().
-stdout=`execute_process 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command' --exit 1 || echo 'CONTINUED'`
+stdout=`execute_process 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
 isnt $? 0
 match "$stdout" 'CONTINUED'
 isnt $? 0
-stdout=`execute_process 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command' --exit 1 || echo 'CONTINUED'`
+stdout=`execute_process 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
 isnt $? 0
 match "$stdout" 'CONTINUED'
 isnt $? 0
-stdout=`execute_process --allow_fail 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command' --exit 1 || echo 'CONTINUED'`
+stdout=`execute_process --allow_fail 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
 is $? 0
 match "$stdout" 'CONTINUED'
 is $? 0
 
 # ----------------------------------------------------------------------------
 # Test --verbose option of execute_process().
-stdout=`execute_process 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command'`
+stdout=`execute_process 'basis.dummy_command'`
 is $? 0
 is $stdout ''
-stdout=`execute_process --verbose 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command'`
+stdout=`execute_process --verbose 'basis.dummy_command'`
 is $? 0
 isnt $stdout ''
 match "$stdout" 'dummy_command'

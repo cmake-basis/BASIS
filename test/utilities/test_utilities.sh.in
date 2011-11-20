@@ -102,7 +102,14 @@ function build
     [ -d "${BUILD_DIR}" ] && run rm -rf "${BUILD_DIR}"
     run mkdir -p "${BUILD_DIR}"
     run cd "${BUILD_DIR}"
-    run cmake "-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@" "-DBASIS_DIR=${BASIS_DIR}" "-DBASIS_VERBOSE=ON" "${SOURCE_DIR}"
+    config=("-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@" "-DBASIS_DIR=${BASIS_DIR}")
+    if [ ${FLAGS_verbose} -gt 0 ]; then
+      config=("${config[@]}" "-DBASIS_VERBOSE=ON")
+    fi
+    if [ ${FLAGS_verbose} -gt 1 ]; then
+      config=("${config[@]}" "-DBASIS_DEBUG=ON")
+    fi
+    run cmake "${config[@]}" "${SOURCE_DIR}"
     echo "Configuring test project... - done"
     echo "Building test project..."
     if [ ${FLAGS_verbose} -gt 0 ]; then
@@ -177,20 +184,20 @@ if [ '@TEST_CXX_UTILITIES@' == 'ON' ]; then
     add_test 'test_stdaux.cxx.in' UNITTEST
 fi
 # test Python utilities
-if [ '@TEST_PYTHON_UTILITIES@' == 'ON' ]; then
-  add_test 'test_executabletargetinfo.py.in' WITH_EXT
-  add_test 'test_stdaux.py.in' WITH_EXT
-fi
+#if [ '@TEST_PYTHON_UTILITIES@' == 'ON' ]; then
+#  add_test 'test_executabletargetinfo.py.in' WITH_EXT
+#  add_test 'test_stdaux.py.in' WITH_EXT
+#fi
 # test Perl utilities
-if [ '@TEST_PERL_UTILITIES@' == 'ON' ]; then
-  add_test 'test_ExecutableTargetInfo.pl.in' WITH_EXT
-  add_test 'test_stdaux.pl.in' WITH_EXT
-fi
+#if [ '@TEST_PERL_UTILITIES@' == 'ON' ]; then
+#  add_test 'test_ExecutableTargetInfo.pl.in' WITH_EXT
+#  add_test 'test_stdaux.pl.in' WITH_EXT
+#fi
 # test BASH utilities
-if [ '@TEST_BASH_UTILITIES@' == 'ON' ]; then
-  add_test 'test_executabletargetinfo.sh.in' WITH_EXT
-  add_test 'test_stdaux.sh.in' WITH_EXT
-fi
+#if [ '@TEST_BASH_UTILITIES@' == 'ON' ]; then
+#  add_test 'test_executabletargetinfo.sh.in' WITH_EXT
+#  add_test 'test_stdaux.sh.in' WITH_EXT
+#fi
 # build tests
 build
 # run tests

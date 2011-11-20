@@ -37,14 +37,14 @@ class TestProcessExecution(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_return_type(self):
         """Test type of return value of execute_process()."""
-        self.assertEquals(int, type(execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command')))
-        self.assertEquals(int, type(execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', stdout=False)))
-        self.assertEquals(tuple, type(execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', stdout=True)))
+        self.assertEquals(int, type(execute_process('basis.dummy_command')))
+        self.assertEquals(int, type(execute_process('basis.dummy_command', stdout=False)))
+        self.assertEquals(tuple, type(execute_process('basis.dummy_command', stdout=True)))
  
     # ------------------------------------------------------------------------
     def test_target_execution(self):
         """Test execution of executable target."""
-        self.assertEquals(0, execute_process(['basis@BASIS_NAMESPACE_SEPARATOR@dummy_command']))
+        self.assertEquals(0, execute_process(['basis.dummy_command']))
         self.assertEquals(
                 (0, 'Hello, BASIS!\n'),
                 execute_process(['basis::dummy_command', '--greet'],
@@ -53,17 +53,17 @@ class TestProcessExecution(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_allow_fail(self):
         """Test allow_fail keyword argument of execute_process()."""
-        self.assertRaises(SubprocessError, execute_process, 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --exit 1')
-        self.assertRaises(SubprocessError, execute_process, 'basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --exit 1', allow_fail=False)
-        self.assertEquals(1, execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command --exit 1', allow_fail=True))
+        self.assertRaises(SubprocessError, execute_process, 'basis.dummy_command --exit 1')
+        self.assertRaises(SubprocessError, execute_process, 'basis.dummy_command --exit 1', allow_fail=False)
+        self.assertEquals(1, execute_process('basis.dummy_command --exit 1', allow_fail=True))
 
     # ------------------------------------------------------------------------
     def test_verbose(self):
         """Test verbose keyword argument of execute_process()."""
-        (status, stdout) = execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', verbose=True, quiet=True, stdout=True)
+        (status, stdout) = execute_process('basis.dummy_command', verbose=True, quiet=True, stdout=True)
         self.assertEquals(0, status)
         self.assertEquals('', stdout)
-        (status, stdout) = execute_process('basis@BASIS_NAMESPACE_SEPARATOR@dummy_command', verbose=2, quiet=True, stdout=True)
+        (status, stdout) = execute_process('basis.dummy_command', verbose=2, quiet=True, stdout=True)
         self.assertEquals(0, status)
         self.assertEquals('', stdout)
 

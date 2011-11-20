@@ -62,23 +62,42 @@ const ExecutableTargetInfo& ExecutableTargetInfo::instance()
 // ---------------------------------------------------------------------------
 string ExecutableTargetInfo::get_target_uid(const string& target) const
 {
+    // empty(, invalid) target name remains unchanged
     if (target.empty()) return "";
-    if (exec_names_.find(target) == exec_names_.end() && target.find("@BASIS_NAMESPACE_SEPARATOR@") == string::npos) {
-        return string("@BASIS_NAMESPACE@@BASIS_NAMESPACE_SEPARATOR@") + target;
+    // in case of a leading namespace separator, do not modify target name
+    if (target.at(0) == '.') return target;
+    // project namespace
+    string prefix = string("@PROJECT_NAMESPACE_CMAKE@");
+    // try prepending namespace or parts of it until target is known
+    for (;;) {
+        if (exec_names_.find(prefix + "." + target) != exec_names_.end()) {
+            return prefix + "." + target;
+        }
+        string::size_type pos = prefix.rfind('.');
+        if (pos == string::npos) break;
+        prefix = prefix.substr(0, pos);
     }
+    // otherwise, return target name unchanged
     return target;
 }
 
 // ---------------------------------------------------------------------------
 bool ExecutableTargetInfo::is_known_target(const string& target) const
 {
+    if (target.empty()) return false;
+    string uid;
+    if (target.at(0) == '.') uid = target.substr(1);
+    else uid = get_target_uid(target);
     return exec_names_.find(get_target_uid(target)) != exec_names_.end();
 }
 
 // ---------------------------------------------------------------------------
 string ExecutableTargetInfo::get_executable_name(const string& target) const
 {
-    string uid = get_target_uid(target);
+    if (target.empty()) return false;
+    string uid;
+    if (target.at(0) == '.') uid = target.substr(1);
+    else uid = get_target_uid(target);
     MapIterator it = exec_names_.find(uid);
     if (it == exec_names_.end ()) return "";
     return it->second;
@@ -87,7 +106,10 @@ string ExecutableTargetInfo::get_executable_name(const string& target) const
 // ---------------------------------------------------------------------------
 string ExecutableTargetInfo::get_build_directory(const string& target) const
 {
-    string uid = get_target_uid(target);
+    if (target.empty()) return false;
+    string uid;
+    if (target.at(0) == '.') uid = target.substr(1);
+    else uid = get_target_uid(target);
     MapIterator it = build_dirs_.find(uid);
     if (it == build_dirs_.end()) return "";
     return it->second;
@@ -96,7 +118,10 @@ string ExecutableTargetInfo::get_build_directory(const string& target) const
 // ---------------------------------------------------------------------------
 string ExecutableTargetInfo::get_installation_directory(const string& target) const
 {
-    string uid = get_target_uid(target);
+    if (target.empty()) return false;
+    string uid;
+    if (target.at(0) == '.') uid = target.substr(1);
+    else uid = get_target_uid(target);
     MapIterator it = install_dirs_.find(uid);
     if (it == install_dirs_.end()) return "";
 #ifdef LIBEXEC

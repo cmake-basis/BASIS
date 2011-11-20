@@ -53,22 +53,30 @@ source "${_EXECUTABLETARGETINFO_DIR}/%BASIS_LIBRARY_DIR%/core.sh" # upvar()
 function get_target_uid
 {
     [ -n "$1" ] && [ $# -eq 2 ] || return 1
-
     local target="$2"
-    # empty string as input remains unchanged
-    [ -z "${target}" ] && local "$1" && upvar $1 '' && return 0
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
     if [ -z "${_EXECUTABLETARGETINFO_INITIALIZED}" ]; then
         _executabletargetinfo_initialize || return 1
     fi
-    # convert target name to target UID
-    local path && _executabletargetinfo_get path "${target}" LOCATION
-    if [ -z "${path}" ] && [[ "${target//@BASIS_NAMESPACE_SEPARATOR@/}" == "${target}" ]]; then
-        target="@BASIS_NAMESPACE@@BASIS_NAMESPACE_SEPARATOR@${target}"
-    fi
-
+    # empty string as input remains unchanged
+    [ -z "${target}" ] && local "$1" && upvar $1 '' && return 0
+    # in case of a leading namespace separator, do not modify target name
+    [ "${target/\.}" != "${target}" ] && local "$1" && upvar $1 "${target}" && return 0
+    # project namespace
+    local prefix="@PROJECT_NAMESPACE_CMAKE@.DUMMY"
+    # try prepending namespace or parts of it until target is known
+    local path=''
+    while [ "${prefix/\.*/}" != "${prefix}" ]; do
+        prefix="${prefix%\.*}"
+        _executabletargetinfo_get path "${prefix}.${target}" LOCATION
+        if [ -n "${path}" ]; then
+            local "$1" && upvar $1 "${prefix}.${target}"
+            return 0
+        fi
+    done
+    # otherwise, return target name unchanged
     local "$1" && upvar $1 "${target}"
 }
 
@@ -181,6 +189,7 @@ function get_executable_path
     else
         # get UID of target
         local uid && get_target_uid uid "$2"
+        uid="${uid/\.}"
         if [ -n "${uid}" ]; then
             # get path relative to this module
             _executabletargetinfo_get path "${uid}" LOCATION

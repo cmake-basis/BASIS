@@ -42,23 +42,23 @@ is "${sane}" 'basis_basisproject' '@ replaced by _'
 # without namespace
 get_target_uid uid 'basisproject'
 is $? 0 'return value is 0'
-is "${uid}" 'utilitiestest@BASIS_NAMESPACE_SEPARATOR@basisproject' 'namespace prepended to known target'
+is "${uid}" 'utilitiestest.basisproject' 'namespace prepended to known target'
 get_target_uid uid 'unknown'
 is $? 0 'return value is 0'
-is "${uid}" 'utilitiestest@BASIS_NAMESPACE_SEPARATOR@unknown' 'namespace prepended to unknown target'
+is "${uid}" 'utilitiestest.unknown' 'namespace prepended to unknown target'
 
 # with namespace
-get_target_uid uid 'basis@BASIS_NAMESPACE_SEPARATOR@basisproject'
+get_target_uid uid 'basis.basisproject'
 is $? 0 'return value is 0'
-is "${uid}" 'basis@BASIS_NAMESPACE_SEPARATOR@basisproject' 'UID remains unchanged'
-get_target_uid uid 'hammer@BASIS_NAMESPACE_SEPARATOR@hammer'
+is "${uid}" 'basis.basisproject' 'UID remains unchanged'
+get_target_uid uid 'hammer.hammer'
 is $? 0 'return value is 0'
-is "${uid}" 'hammer@BASIS_NAMESPACE_SEPARATOR@hammer' 'UID remains unchanged'
+is "${uid}" 'hammer.hammer' 'UID remains unchanged'
 
 # global namespace
-get_target_uid uid '@BASIS_NAMESPACE_SEPARATOR@hello'
+get_target_uid uid '.hello'
 is $? 0 'return value is 0'
-is "${uid}" '@BASIS_NAMESPACE_SEPARATOR@hello' 'global namespace remains unchanged'
+is "${uid}" '.hello' 'global namespace remains unchanged'
 
 # empty string
 get_target_uid uid ''
@@ -70,13 +70,13 @@ is "${uid}" '' 'empty string remains unchanged'
 
 is_known_target 'basisproject'
 isnt $? 0 'basisproject not part of UtilitiesTest'
-is_known_target 'basis@BASIS_NAMESPACE_SEPARATOR@basisproject'
-is $? 0 'basis@BASIS_NAMESPACE_SEPARATOR@basisproject is known target'
+is_known_target 'basis.basisproject'
+is $? 0 'basis.basisproject is known target'
 is_known_target ''
 isnt $? 0 'empty target string is unknown target'
 is_known_target
 isnt $? 0 'undefined target string is unknown target'
-is_known_target 'hammer@BASIS_NAMESPACE_SEPARATOR@hammer'
+is_known_target 'hammer.hammer'
 isnt $? 0 'some unknown target'
 
 # ----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ is $? 0 'return value is 0'
 like "${dir}" '/Testing/Temporary/test_utilities-build/Testing/bin' 'directory of this executable'
 
 # directory of executable built by other target
-get_executable_directory dir 'basis@BASIS_NAMESPACE_SEPARATOR@basisproject'
+get_executable_directory dir 'basis.basisproject'
 is $? 0 'return value is 0'
 like "${dir}" '^/.*/bin(/basis)?$' 'directory of other executable'
 
@@ -118,7 +118,7 @@ is $? 0 'return value is 0'
 is "${path}" "${dir}/${name}" 'path of this executable'
 
 # path of executable built by other target
-target='basis@BASIS_NAMESPACE_SEPARATOR@basisproject'
+target='basis.basisproject'
 get_executable_path path "${target}"
 is $? 0 'return value is 0'
 get_executable_directory dir "${target}"

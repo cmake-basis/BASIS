@@ -39,6 +39,5 @@
 
 # always reset the settings when this file is included
 include ("${${NS}MODULE_PATH}/BasisTools.cmake")
-include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 
 @BASIS_USE@

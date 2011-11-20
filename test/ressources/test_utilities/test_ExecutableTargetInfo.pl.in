@@ -23,15 +23,15 @@ use Test::More tests => 19;
 # ----------------------------------------------------------------------------
 # Test Basis::get_target_uid().
 
-is (Basis::get_target_uid ('basisproject'), 'utilitiestest@BASIS_NAMESPACE_SEPARATOR@basisproject',
+is (Basis::get_target_uid ('basisproject'), 'utilitiestest.basisproject',
     'this project\'s namespace prepended to known target');
-is (Basis::get_target_uid ('unknown'), 'utilitiestest@BASIS_NAMESPACE_SEPARATOR@unknown',
+is (Basis::get_target_uid ('unknown'), 'utilitiestest.unknown',
     'this project\'s namespace prepended to unknown target');
-is (Basis::get_target_uid ('basis@BASIS_NAMESPACE_SEPARATOR@basisproject'), 'basis@BASIS_NAMESPACE_SEPARATOR@basisproject',
+is (Basis::get_target_uid ('basis.basisproject'), 'basis.basisproject',
     'UID remains unchanged');
-is (Basis::get_target_uid ('hammer@BASIS_NAMESPACE_SEPARATOR@hammer'), 'hammer@BASIS_NAMESPACE_SEPARATOR@hammer',
+is (Basis::get_target_uid ('hammer.hammer'), 'hammer.hammer',
     'UID remains unchanged');
-is (Basis::get_target_uid ('@BASIS_NAMESPACE_SEPARATOR@hello'), '@BASIS_NAMESPACE_SEPARATOR@hello',
+is (Basis::get_target_uid ('.hello'), '.hello',
     'global namespace remains unchanged');
 is (Basis::get_target_uid (undef), undef,
     'invalid argument results in undef as return value');
@@ -43,13 +43,13 @@ is (Basis::get_target_uid (''), undef,
 
 ok (!Basis::is_known_target ('basisproject'),
     'basisproject not part of UtilitiesTest');
-ok (Basis::is_known_target ('basis@BASIS_NAMESPACE_SEPARATOR@basisproject'),
+ok (Basis::is_known_target ('basis.basisproject'),
     'basis::basisproject is a known target');
 ok (!Basis::is_known_target (undef),
     'undefined argument is unknown target');
 ok (!Basis::is_known_target (''),
     'empty target string is unknown target');
-ok (!Basis::is_known_target ('hammer@BASIS_NAMESPACE_SEPARATOR@hammer'),
+ok (!Basis::is_known_target ('hammer.hammer'),
     'some unknown target');
 
 # ----------------------------------------------------------------------------
@@ -60,9 +60,9 @@ like (Basis::get_executable_name (),
     qr/^test_ExecutableTargetInfo\.pl?$/,
     "name of this executable");
 # name of executable built by some target
-like (Basis::get_executable_name ('basis@BASIS_NAMESPACE_SEPARATOR@basisproject'),
+like (Basis::get_executable_name ('basis.basisproject'),
     qr/^basisproject(\.sh)?$/,
-    "name of basis@BASIS_NAMESPACE_SEPARATOR@basisproject executable");
+    "name of basis.basisproject executable");
 
 # ----------------------------------------------------------------------------
 # Test Basis::get_executable_directory().
@@ -72,9 +72,9 @@ like (Basis::get_executable_directory (),
     qr/\/Testing\/Temporary\/test_utilities-build\/Testing\/bin/,
     "directory of this executable");
 # directory of executable built by some target
-like (Basis::get_executable_directory ('basis@BASIS_NAMESPACE_SEPARATOR@basisproject'),
+like (Basis::get_executable_directory ('basis.basisproject'),
     qr/^\/.*\/bin(\/basis)?$/,
-    "directory of basis@BASIS_NAMESPACE_SEPARATOR@basisproject executable");
+    "directory of basis.basisproject executable");
 
 # ----------------------------------------------------------------------------
 # Test Basis::get_executable_path().
@@ -84,7 +84,7 @@ is (Basis::get_executable_path (),
     Basis::get_executable_directory () . '/' . Basis::get_executable_name (),
     "path of this executable");
 # path of executable built by some target
-my $target = 'basis@BASIS_NAMESPACE_SEPARATOR@basisproject';
+my $target = 'basis.basisproject';
 is (Basis::get_executable_path ($target),
     Basis::get_executable_directory ($target) . '/' . Basis::get_executable_name ($target),
     "path of $target executable");

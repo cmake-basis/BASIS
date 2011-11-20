@@ -90,19 +90,25 @@ my $_location = undef;
 sub get_target_uid
 {
     my $target = $_[0];
-    # handle invalid arguments
-    defined $target or return undef;
-    length ($target) > 0 or return undef;
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
     defined $_location or initialize ();
-    # do nothing if target name is known
-    not exists $_location->{$target} or return $target;
-    # do nothing if target name is fully-qualified
-    $target !~ /@BASIS_NAMESPACE_SEPARATOR@/ or return $target;
-    # otherwise, prepend default namespace name
-    return '@BASIS_NAMESPACE@@BASIS_NAMESPACE_SEPARATOR@' . $target;
+    # handle invalid arguments
+    defined $target or return undef;
+    length ($target) > 0 or return undef;
+    # in case of a leading namespace separator, do not modify target name
+    $target !~ /^\./ or return $target;
+    # project namespace
+    my $prefix='@PROJECT_NAMESPACE_CMAKE@.DUMMY';
+    # try prepending namespace or parts of it until target is known
+    while $prefix =~ s/(.*)\.[^.]*/$1/ {
+        if exists $_location->($prefix . '.' . $target) {
+            return $prefix . '.' . $target;
+        }
+    }
+    # otherwise, return target name unchanged
+    return $target;
 }
 
 # ----------------------------------------------------------------------------
@@ -113,9 +119,10 @@ sub get_target_uid
 # @returns Whether the given build target is known by this module.
 sub is_known_target
 {
-    my $target = get_target_uid ($_[0]);
-    defined $target or return 0;
-    exists $_location->{$target};
+    my $uid = get_target_uid ($_[0]);
+    $uid =~ s/^[.]?(.*)/$1/;
+    defined $uid or return 0;
+    exists $_location->{$uid};
 }
 
 # ----------------------------------------------------------------------------
@@ -165,6 +172,7 @@ sub get_executable_path
         $path = realpath ($0);
     } else {
         my $uid = get_target_uid ($_[0]);
+        $uid =~ s/^[.]?(.*)/$1/;
         if (defined $uid and exists $_location->{$uid}) {
             $path = $_location->{$uid};
             $path = File::Spec->rel2abs ($path, dirname (__FILE__));

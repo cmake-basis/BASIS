@@ -74,21 +74,28 @@ def get_target_uid(target):
     # handle invalid arguments
     if target is None or target == "":
         return None
-    # do nothing if target name is know
-    if target in _locations:
+    # in case of a leading namespace separator, do not modify target name
+    if target.startswith('.'):
         return target
-    # do nothing if target name is UID
-    if target.find('@BASIS_NAMESPACE_SEPARATOR@') > -1:
-        return target
-    # otherwise, prepend default namespace identifier
-    return '@BASIS_NAMESPACE_SEPARATOR@'.join(['@BASIS_NAMESPACE@', target])
+    # project namespace
+    prefix = '@PROJECT_NAMESPACE_CMAKE@'
+    # try prepending namespace or parts of it until target is known
+    separator = '.'
+    while separator != '':
+        if separator.join(prefix, target) in _locations:
+            return separator.join(prefix, target)
+        (prefix, separator, n) = prefix.partition(separator)
+    # otherwise, return target name unchanged
+    return target
 
 # ----------------------------------------------------------------------------
 def is_known_target(target):
     """Determine whether a given build target is known by this module."""
     global _locations
-    
-    return get_target_uid(target) in _locations
+    uid = get_target_uid(target)
+    if uid.startswith('.'):
+        uid = uid[1:]
+    return uid in _locations
 
 # ----------------------------------------------------------------------------
 def get_executable_name(target=None):
@@ -138,6 +145,8 @@ def get_executable_path(target=None):
             path += "/<stdin>" # interactive shell
     else:
         uid = get_target_uid(target)
+        if uid.startswith('.'):
+            uid = uid[1:]
         if uid is not None and uid in _locations:
             path = os.path.normpath(os.path.join(_module_dir, _locations[uid]))
         else:
