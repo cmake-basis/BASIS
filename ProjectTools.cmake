@@ -773,19 +773,21 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # settings
 
+  
+  # include project specific settings
+  #
+  # This file enables the project to modify the default behavior of BASIS,
+  # but only if BASIS allows so as the BASIS settings are included afterwards.
+  include ("${PROJECT_SOURCE_DIR}/config/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
+
   # configure and include BASIS settings
   configure_file (
     "${BASIS_MODULE_PATH}/Settings.cmake.in"
     "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Settings.cmake"
     @ONLY
   )
-  include ("${PROJECT_BINARY_DIR}/${PROJECT_NAME}Settings.cmake" NO_POLICY_SCOPE)
 
-  # include project specific settings
-  #
-  # This file enables the project to overwrite and extend the BASIS settings
-  # as well as more flexibility to find external packages.
-  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
+  include ("${PROJECT_BINARY_DIR}/${PROJECT_NAME}Settings.cmake" NO_POLICY_SCOPE)
 
   # enable testing
   include ("${BASIS_MODULE_PATH}/BasisTest.cmake")

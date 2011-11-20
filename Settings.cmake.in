@@ -188,8 +188,17 @@ set (BASIS_SVN_USERS_FILE "${BASIS_MODULE_PATH}/SubversionUsers.txt")
 # the fully-qualified target UID is usually required.
 set (BASIS_USE_FULLY_QUALIFIED_UIDS OFF CACHE INTERNAL "")
 
+## @brief Whether BASIS should use a separate namespace for each module.
+#
+# If this option is ON, BASIS will use a separate namespace for each module.
+# Otherwise, all modules of a project reside dirctly in the namespace of the
+# top-level project itself.
+basis_set_if_not_set (BASIS_USE_MODULE_NAMESPACES OFF)
+
 ## @brief Global namespace of BASIS projects.
-set (BASIS_NAMESPACE "SBIA")
+if (NOT DEFINED BASIS_NAMESPACE)
+  set (BASIS_NAMESPACE "SBIA")
+endif ()
 string (TOLOWER "${BASIS_NAMESPACE}" BASIS_NAMESPACE_LOWER)
 string (TOUPPER "${BASIS_NAMESPACE}" BASIS_NAMESPACE_UPPER)
 
@@ -228,7 +237,9 @@ basis_sanitize_for_regex (
 if (NOT PROJECT_IS_MODULE)
   set (PROJECT_NAMESPACE_CMAKE "${BASIS_PROJECT_NAMESPACE_CMAKE}")
 else ()
-  set (PROJECT_NAMESPACE_CMAKE "${PROJECT_NAMESPACE_CMAKE}.@PROJECT_NAME_LOWER@")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (PROJECT_NAMESPACE_CMAKE "${PROJECT_NAMESPACE_CMAKE}.@PROJECT_NAME_LOWER@")
+  endif ()
 endif ()
 basis_sanitize_for_regex (PROJECT_NAMESPACE_CMAKE_REGEX "${PROJECT_NAMESPACE_CMAKE}")
 
@@ -255,7 +266,9 @@ if (NOT PROJECT_IS_MODULE)
     set (PROJECT_NAMESPACE_CXX "@PROJECT_NAME_LOWER@")
   endif ()
 else ()
-  set (PROJECT_NAMESPACE_CXX "${PROJECT_NAMESPACE_CXX}::@PROJECT_NAME_LOWER@")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (PROJECT_NAMESPACE_CXX "${PROJECT_NAMESPACE_CXX}::@PROJECT_NAME_LOWER@")
+  endif ()
 endif ()
 
 ## @brief Java package name of project.
@@ -276,7 +289,9 @@ if (NOT PROJECT_IS_MODULE)
     set (PROJECT_NAMESPACE_JAVA "@PROJECT_NAME_LOWER@")
   endif ()
 else ()
-  set (PROJECT_NAMESPACE_JAVA "${PROJECT_NAMESPACE_JAVA}.@PROJECT_NAME_LOWER@")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (PROJECT_NAMESPACE_JAVA "${PROJECT_NAMESPACE_JAVA}.@PROJECT_NAME_LOWER@")
+  endif ()
 endif ()
 
 ## @brief Python package name of project.
@@ -297,7 +312,9 @@ if (NOT PROJECT_IS_MODULE)
     set (PROJECT_NAMESPACE_PYTHON "@PROJECT_NAME_LOWER@")
   endif ()
 else ()
-  set (PROJECT_NAMESPACE_PYTHON "${PROJECT_NAMESPACE_PYTHON}.@PROJECT_NAME_LOWER@")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (PROJECT_NAMESPACE_PYTHON "${PROJECT_NAMESPACE_PYTHON}.@PROJECT_NAME_LOWER@")
+  endif ()
 endif ()
 
 ## @brief Perl package name of project.
@@ -320,7 +337,9 @@ if (NOT PROJECT_IS_MODULE)
     set (PROJECT_NAMESPACE_PERL "@PROJECT_NAME@")
   endif ()
 else ()
-  set (PROJECT_NAMESPACE_PERL "${PROJECT_NAMESPACE_PERL}::@PROJECT_NAME@")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (PROJECT_NAMESPACE_PERL "${PROJECT_NAMESPACE_PERL}::@PROJECT_NAME@")
+  endif ()
 endif ()
 
 ## @brief BASH namespace of project.
@@ -367,7 +386,9 @@ if (NOT PROJECT_IS_MODULE)
     set (PROJECT_NAMESPACE_BASH "@PROJECT_NAME_UPPER@")
   endif ()
 else ()
-  set (PROJECT_NAMESPACE_BASH "${PROJECT_NAMESPACE_BASH}_@PROJECT_NAME_UPPER@")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (PROJECT_NAMESPACE_BASH "${PROJECT_NAMESPACE_BASH}_@PROJECT_NAME_UPPER@")
+  endif ()
 endif ()
 
 ## @brief MATLAB package name of project.
@@ -392,7 +413,9 @@ if (NOT PROJECT_IS_MODULE)
     set (PROJECT_NAMESPACE_MATLAB "@PROJECT_NAME_LOWER@")
   endif ()
 else ()
-  set (PROJECT_NAMESPACE_MATLAB "${PROJECT_NAMESPACE_MATLAB}.@PROJECT_NAME_LOWER@")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (PROJECT_NAMESPACE_MATLAB "${PROJECT_NAMESPACE_MATLAB}.@PROJECT_NAME_LOWER@")
+  endif ()
 endif ()
 
 ## @brief Prefix for public header files.
@@ -430,7 +453,9 @@ if (NOT PROJECT_IS_MODULE)
     set (INCLUDE_PREFIX "@PROJECT_NAME_LOWER@/")
   endif ()
 else ()
-  set (INCLUDE_PREFIX "${INCLUDE_PREFIX}/@PROJECT_NAME_LOWER@/")
+  if (BASIS_USE_MODULE_NAMESPACES)
+    set (INCLUDE_PREFIX "${INCLUDE_PREFIX}/@PROJECT_NAME_LOWER@/")
+  endif ()
 endif ()
 
 
@@ -547,7 +572,7 @@ set (
     "Prefix used for installation paths."
 )
 
-set_property (CACHE CMAKE_INSTALL_PREFIX PROPERTY TYPE INTERNAL)
+set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
 
 # ----------------------------------------------------------------------------
 # infix

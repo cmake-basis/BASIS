@@ -281,9 +281,22 @@ endfunction ()
 # @param [out] VAR  Name of variable.
 # @param [in]  ARGN Arguments to set() command excluding variable name.
 #
-# @returns Sets @p VAR if it's value was not valid before.
+# @returns Sets @p VAR if its value was not valid before.
 macro (basis_set_if_empty VAR)
   if (NOT "${VAR}")
+    set ("${VAR}" ${ARGN})
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Set value of variable only if variable is not defined yet.
+#
+# @param [out] VAR  Name of variable.
+# @param [in]  ARGN Arguments to set() command excluding variable name.
+#
+# @returns Sets @p VAR if it was not defined before.
+macro (basis_set_if_not_set VAR)
+  if (NOT DEFINED "${VAR}")
     set ("${VAR}" ${ARGN})
   endif ()
 endmacro ()
