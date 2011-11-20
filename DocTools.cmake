@@ -60,7 +60,7 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   set (PATTERNS)
 
   macro (register_filter FILTER)
-    basis_target_uid (TARGET_UID "${FILTER}")
+    basis_get_target_uid (TARGET_UID "${FILTER}")
     if (TARGET "${TARGET_UID}")
       basis_get_target_location (FILTER_PATH "${TARGET_UID}" ABSOLUTE)
       foreach (ARG ${ARGN})
@@ -70,7 +70,7 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   endmacro ()
 
   register_filter (
-    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-cmake
+    basis.doxyfilter-cmake
       "CMakeLists.txt"
       "*.cmake"
       "*.cmake.in"
@@ -79,20 +79,20 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   )
 
   register_filter (
-    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-bash
+    basis.doxyfilter-bash
       "*.sh"
       "*.sh.in"
   )
 
   register_filter (
-    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-matlab
+    basis.doxyfilter-matlab
       "*.m"
       "*.m.in"
   )
 
   # TODO Python filer disabled because it does not work properly
 #  register_filter (
-#    basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter-python
+#    basis.doxyfilter-python
 #      "*.py"
 #      "*.py.in"
 #  )
@@ -350,7 +350,7 @@ function (basis_add_doc TARGET_NAME)
   # check target name
   if (NOT "${ARGN_GENERATOR}" STREQUAL "NONE")
     basis_check_target_name ("${TARGET_NAME}")
-    basis_target_uid (TARGET_UID "${TARGET_NAME}")
+    basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
   endif ()
 
   # lower target name is used, for example, for default DESTINATION
@@ -393,8 +393,14 @@ function (basis_add_doc TARGET_NAME)
 
   if ("${ARGN_GENERATOR}" STREQUAL "NONE")
 
+    basis_get_relative_path (
+      DOC_PATH
+        "${CMAKE_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
+    )
+
     if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_NAME}...")
+      message (STATUS "Adding documentation ${DOC_PATH}...")
     endif ()
 
     # install documentation directory
@@ -417,7 +423,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
     if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_NAME}... - done")
+      message (STATUS "Adding documentation ${DOC_PATH}... - done")
     endif ()
 
   # --------------------------------------------------------------------------
@@ -517,7 +523,7 @@ function (basis_add_doc TARGET_NAME)
     )
     # input filters
     if (NOT DOXYGEN_INPUT_FILTER)
-      basis_target_uid (DOXYFILTER "basis${BASIS_NAMESPACE_SEPARATOR}doxyfilter")
+      basis_get_target_uid (DOXYFILTER "basis.doxyfilter")
       if (TARGET "${DOXYFILTER}")
         basis_get_target_location (DOXYGEN_INPUT_FILTER "${DOXYFILTER}" ABSOLUTE)
       endif ()

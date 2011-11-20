@@ -465,7 +465,7 @@ endfunction ()
 
 function (basis_add_mex_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
-  basis_target_uid (TARGET_UID "${TARGET_UID}")
+  basis_get_target_uid (TARGET_UID "${TARGET_UID}")
 
   # finalized before ?
   if (TARGET "_${TARGET_UID}")
@@ -479,7 +479,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   endif ()
 
   # get target properties
-  basis_target_name (TARGET_NAME ${TARGET_UID})
+  basis_get_target_name (TARGET_NAME ${TARGET_UID})
 
   set (
     PROPERTIES
@@ -542,7 +542,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   set (LINK_LIBS)
 
   foreach (LIB ${LINK_DEPENDS})
-    basis_target_uid (UID "${LIB}")
+    basis_get_target_uid (UID "${LIB}")
     if (TARGET ${UID})
       basis_get_target_location (LIB_FILE ${UID} ABSOLUTE)
       list (APPEND DEPENDS ${UID})
@@ -1028,7 +1028,7 @@ endfunction ()
 
 function (basis_add_mcc_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
-  basis_target_uid (TARGET_UID "${TARGET_UID}")
+  basis_get_target_uid (TARGET_UID "${TARGET_UID}")
 
   # finalized before ?
   if (TARGET "_${TARGET_UID}")
@@ -1042,7 +1042,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endif ()
 
   # get target properties
-  basis_target_name (TARGET_NAME ${TARGET_UID})
+  basis_get_target_name (TARGET_NAME ${TARGET_UID})
 
   set (
     PROPERTIES
@@ -1118,7 +1118,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   set (LINK_LIBS)
 
   foreach (LIB ${LINK_DEPENDS})
-    basis_target_uid (UID "${LIB}")
+    basis_get_target_uid (UID "${LIB}")
     if (TARGET ${UID})
       basis_get_target_location (LIB_FILE ${UID} ABSOLUTE)
       list (APPEND DEPENDS ${UID})

@@ -14,8 +14,8 @@
 # meta-data
 # ============================================================================
 
-##############################################################################
-# @brief Defines project meta-data, i.e., attributes.
+# ----------------------------------------------------------------------------
+## @brief Defines project meta-data, i.e., attributes.
 #
 # Any BASIS project has to call this macro in the file BasisProject.cmake
 # located in the top level directory of the source tree in order to define
@@ -100,7 +100,6 @@
 # @retval PROJECT_DEPENDS          @c DEPENDS arguments.
 # @retval PROJECT_OPTIONAL_DEPENDS @c OPTIONAL_DEPENDS arguments.
 # @retval PROJECT_TEST_DEPENDS     @c TEST_DEPENDS arguments.
-
 macro (basis_project)
   # clear project attributes of CMake defaults or superproject
   set (PROJECT_NAME)
@@ -124,6 +123,17 @@ macro (basis_project)
   if (NOT PROJECT_NAME)
     message (FATAL_ERROR "basis_project(): Project name not specified!")
   endif ()
+  if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
+    message (FATAL_ERROR "basis_project(): Invalid project name!\n\n"
+                         "Please choose a project name with either only captial "
+                         "letters in case of an acronym or a name with mixed case, "
+                         "but starting with a captial letter.\n\n"
+                         "Note that numbers are allowed, but not as first character. "
+                         "Further, do not use characters such as '_' or '-' to "
+                         "separate parts of the project name. Instead, use the "
+                         "upper camel case notation "
+                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
+  endif ()
 
   if (NOT PROJECT_IS_MODULE AND NOT PROJECT_VERSION)
     message (FATAL_ERROR "basis_project(): Project version not specified!")
@@ -146,9 +156,58 @@ endmacro ()
 # initialization
 # ============================================================================
 
-##############################################################################
-# @brief Initialize project modules.
+# ----------------------------------------------------------------------------
+## @brief Ensure certain requirements on build tree.
+#
+# Requirements:
+# * Root of build tree must not be root of source tree.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
+#
+# @ingroup CMakeUtilities
+macro (basis_buildtree_asserts)
+  string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
+  string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
+  if ("${BUILD_ROOT}" STREQUAL "${SOURCE_ROOT}")
+    message(FATAL_ERROR "This project should not be configured & build in the "
+                        "source directory:\n"
+                        "  ${CMAKE_SOURCE_DIR}\n"
+                        "You must run CMake in a separate build directory.")
+  endif()
+endmacro ()
 
+# ----------------------------------------------------------------------------
+## @brief Ensure certain requirements on install tree.
+#
+# Requirements:
+# * Prefix must be an absolute path.
+# * Install tree must be different from source and build tree.
+#
+# @param [in] ARGN Not used.
+#
+# @returns Nothing.
+#
+# @ingroup CMakeUtilities
+macro (basis_installtree_asserts)
+  if (NOT IS_ABSOLUTE "${INSTALL_PREFIX}")
+    message (FATAL_ERROR "INSTALL_PREFIX must be an absolute path!")
+  endif ()
+  string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
+  string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
+  string (TOLOWER "${INSTALL_PREFIX}"   INSTALL_ROOT)
+  if ("${INSTALL_ROOT}" MATCHES "${BUILD_ROOT}|${SOURCE_ROOT}")
+    message (FATAL_ERROR "The current INSTALL_PREFIX points at the source or build tree:\n"
+                         "  ${INSTALL_PREFIX}\n"
+                         "This is not permitted by this project. "
+                         "Please choose another installation prefix."
+    )
+  endif()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Initialize project modules.
 macro (basis_project_modules)
   # --------------------------------------------------------------------------
   # load module DAG
@@ -316,15 +375,14 @@ macro (basis_project_modules)
   endforeach ()
 endmacro ()
 
-##############################################################################
-# @brief Configure public header files.
+# ----------------------------------------------------------------------------
+## @brief Configure public header files.
 #
 # Copy public header files to build tree using the same relative paths
 # as will be used for the installation. We need to use configure_file()
 # here such that the header files in the build tree are updated whenever
 # the source header file was modified. Moreover, this gives us a chance to
 # configure header files with the .in suffix.
-
 function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # settings
@@ -470,8 +528,8 @@ function (basis_configure_public_headers)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Install root documentation files.
+# ----------------------------------------------------------------------------
+## @brief Install root documentation files.
 #
 # The root documentation files are located in the top-level directory of the
 # source tree. These are, in particular, the readme file, the INSTALL file
@@ -482,7 +540,6 @@ endfunction ()
 # @note Do this after the inclusion of the Settings.cmake file such that a
 #       project can potentially overwrite the defaults even though not
 #       recommended.
-
 function (basis_install_root_documentation_files)
   macro (basis_install_root_documentation_file DOC_FILE)
     if (NOT EXISTS ${DOC_FILE})
@@ -520,8 +577,8 @@ function (basis_install_root_documentation_files)
   basis_install_root_documentation_file ("${PROJECT_LICENSE_FILE}")
 endfunction ()
 
-##############################################################################
-# @brief Initialize project, calls CMake's project() command.
+# ----------------------------------------------------------------------------
+## @brief Initialize project, calls CMake's project() command.
 #
 # This macro is called at the beginning of the root CMakeLists.txt file of
 # each BASIS (sub-)project. It in particular includes the BasisProject.cmake
@@ -573,7 +630,6 @@ endfunction ()
 #                                          version information.
 #
 # @ingroup CMakeAPI
-
 macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # reset
@@ -655,9 +711,9 @@ macro (basis_project_initialize)
   # start CMake project if not done yet
   #
   # Note that in particular SlicerConfig.cmake will invoke project() by itself.
-  #if (NOT ${PROJECT_NAME}_SOURCE_DIR)
+  if (NOT PROJECT_SOURCE_DIR OR NOT "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
     project ("${PROJECT_NAME}")
-  #endif ()
+  endif ()
 
   set (CMAKE_PROJECT_NAME "${PROJECT_NAME}") # variable used by CPack
 
@@ -665,7 +721,6 @@ macro (basis_project_initialize)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
 
-  basis_normalize_name (PROJECT_NAME_INFIX "${PROJECT_NAME}")
 
   # get current revision of project
   basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
@@ -718,33 +773,19 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # settings
 
-  # instantiate project directory structure
-  basis_initialize_settings ()
- 
-  if (PROJECT_IS_MODULE)
-    # Install configuration files of modules in subdirectories such that
-    # CMake does not find them by default. Their might be a case that
-    # someone is using two projects where the one project is named just
-    # the same as the module of the other project.
-    set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/${PROJECT_NAME}")
-  endif ()
-
-  # common options
-  if (EXISTS "${PROJECT_DOC_DIR}")
-    option (BUILD_DOCUMENTATION "Whether to build and/or install the documentation." ON)
-  endif ()
-
-  if (EXISTS ${PROJECT_EXAMPLE_DIR})
-    option (BUILD_EXAMPLE "Whether to build and/or install the example." ON)
-  endif ()
+  # configure and include BASIS settings
+  configure_file (
+    "${BASIS_MODULE_PATH}/Settings.cmake.in"
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Settings.cmake"
+    @ONLY
+  )
+  include ("${PROJECT_BINARY_DIR}/${PROJECT_NAME}Settings.cmake" NO_POLICY_SCOPE)
 
   # include project specific settings
   #
-  # This file gives further more flexibility to find external packages.
-  # In particular, the default behavior does not support to look for a
-  # specific version or only parts of a package. This can be done in the
-  # Settings.cmake file using the basis_find_package() command.
-  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" OPTIONAL)
+  # This file enables the project to overwrite and extend the BASIS settings
+  # as well as more flexibility to find external packages.
+  include ("${PROJECT_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
 
   # enable testing
   include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
@@ -816,8 +857,8 @@ endmacro ()
 # finalization
 # ============================================================================
 
-##############################################################################
-# @brief Finalize build configuration of project.
+# ----------------------------------------------------------------------------
+## @brief Finalize build configuration of project.
 #
 # This macro has to be called at the end of the root CMakeLists.txt file of
 # each BASIS project initialized by basis_project().
@@ -833,7 +874,6 @@ endmacro ()
 #          See basis_add_custom_finalize() function.
 #
 # @ingroup CMakeAPI
-
 macro (basis_project_finalize)
   # --------------------------------------------------------------------------
   # module
@@ -935,8 +975,8 @@ endmacro ()
 # root CMakeLists.txt implementation
 # ============================================================================
 
-##############################################################################
-# @brief Implementation of root CMakeLists.txt file of BASIS project.
+# ----------------------------------------------------------------------------
+## @brief Implementation of root CMakeLists.txt file of BASIS project.
 #
 # This macro implements the entire logic of the top-level CMakeLists.txt file.
 # At first, the project is initialized and the BASIS settings configured using
@@ -951,11 +991,15 @@ endmacro ()
 # @sa basis_project()
 # @sa basis_project_initialize()
 # @sa basis_project_finalize()
-
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # initialize project
   basis_project_initialize ()
+
+  # --------------------------------------------------------------------------
+  # assertions
+  basis_buildtree_asserts ()
+  basis_installtree_asserts ()
 
   # --------------------------------------------------------------------------
   # load information of modules

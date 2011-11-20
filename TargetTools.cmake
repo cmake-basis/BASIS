@@ -35,14 +35,23 @@ endif ()
 # @returns Sets the specified properties of the given build target.
 
 function (basis_set_target_properties)
+  if (BASIS_DEBUG AND BASIS_VERBOSE)
+    message ("** basis_set_target_properties()")
+    message ("**     ARGN: ${ARGN}")
+  endif ()
   set (UIDS)
   list (GET ARGN 0 ARG)
   while (ARG AND NOT ARG STREQUAL "PROPERTIES")
-    basis_target_uid (UID "${ARG}")
+    basis_get_target_uid (UID "${ARG}")
     list (APPEND UIDS "${UID}")
     list (REMOVE_AT ARGN 0)
     list (GET ARGN 0 ARG)
   endwhile ()
+  if (BASIS_DEBUG)
+    message ("** basis_set_target_properties()")
+    message ("**     UIDS: ${UIDS}")
+    message ("**     ARGN: ${ARGN}")
+  endif ()
   if (NOT UIDS)
     message (FATAL_ERROR "basis_set_target_properties(): No targets specified")
   endif ()
@@ -61,7 +70,7 @@ endfunction ()
 # @returns Sets @p VAR to the value of the requested property.
 
 function (basis_get_target_property VAR TARGET_NAME)
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   get_target_property (VALUE "${TARGET_UID}" ${ARGN})
   set (${VAR} "${VALUE}" PARENT_SCOPE)
 endfunction ()
@@ -198,7 +207,7 @@ endfunction ()
 function (basis_add_dependencies)
   set (ARGS)
   foreach (ARG ${ARGN})
-    basis_target_uid (UID "${ARG}")
+    basis_get_target_uid (UID "${ARG}")
     if (TARGET "${UID}")
       list (APPEND ARGS "${UID}")
     else ()
@@ -217,7 +226,7 @@ endfunction ()
 # to the LINK_DEPENDS property of the given MATLAB Compiler target.
 #
 # Another reason is the mapping of build target names to fully-qualified
-# build target names as used by BASIS (see basis_target_uid()).
+# build target names as used by BASIS (see basis_get_target_uid()).
 #
 # Example:
 # @code
@@ -236,7 +245,7 @@ endfunction ()
 #          @c DEPENDS property of these target, in particular.
 
 function (basis_target_link_libraries TARGET_NAME)
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
 
   if (NOT TARGET "${TARGET_UID}")
     message (FATAL_ERROR "basis_target_link_libraries(): Unknown target ${TARGET_UID}.")
@@ -248,7 +257,7 @@ function (basis_target_link_libraries TARGET_NAME)
   # substitute non-fully qualified target names
   set (ARGS)
   foreach (ARG ${ARGN})
-    basis_target_uid (UID "${ARG}")
+    basis_get_target_uid (UID "${ARG}")
     if (TARGET "${UID}")
       list (APPEND ARGS "${UID}")
     else ()
@@ -781,8 +790,6 @@ endfunction ()
 
 function (basis_add_executable_target TARGET_NAME)
   # parse arguments
-  set (NO_BASIS_UTILITIES "${BASIS_NO_BASIS_UTILITIES}")
-
   CMAKE_PARSE_ARGUMENTS (
     ARGN
     "LIBEXEC;TEST;BASIS_UTILITIES;NO_BASIS_UTILITIES;NO_EXPORT"
@@ -803,6 +810,7 @@ function (basis_add_executable_target TARGET_NAME)
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
   # whether or not to link to BASIS utilities
+  set (NO_BASIS_UTILITIES "${BASIS_NO_BASIS_UTILITIES}")
   if (ARGN_NO_BASIS_UTILITIES)
     set (NO_BASIS_UTILITIES TRUE)
   endif ()
@@ -837,13 +845,17 @@ function (basis_add_executable_target TARGET_NAME)
   if (NOT NO_BASIS_UTILITIES)
     basis_make_target_uid (BASIS_UTILITIES_TARGET "basisutilities")
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
-      basis_target_name (T "${BASIS_UTILITIES_TARGET}")
+      basis_get_target_name (T "${BASIS_UTILITIES_TARGET}")
       basis_add_library (${T} STATIC ${BASIS_UTILITIES_SOURCES})
 
       # define dependency on non-project specific utilities as the order in
       # which static libraries are listed on the command-line for the linker
       # matters; this will tell CMake to get the order right
-      basis_target_link_libraries (${T} basis${BASIS_NAMESPACE_SEPARATOR}utilities)
+      if (BASIS_NAMESPACE)
+        basis_target_link_libraries (${T} ${BASIS_NAMESPACE_LOWER}.basis.utilities)
+      else ()
+        basis_target_link_libraries (${T} basis.utilities)
+      endif ()
 
       basis_set_target_properties (
         ${T}
@@ -854,6 +866,10 @@ function (basis_add_executable_target TARGET_NAME)
           # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
           ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
       )
+
+      if (BASIS_DEBUG)
+        message ("** Added BASIS utilities library ${BASIS_UTILITIES_TARGET}")
+      endif ()
     endif ()
   endif ()
 
@@ -862,6 +878,11 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add executable target
   add_executable (${TARGET_UID} ${SOURCES})
+
+  basis_make_target_uid (HEADERS_TARGET headers)
+  if (TARGET "${HEADERS_TARGET}")
+    add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
+  endif ()
 
   set_target_properties (
     ${TARGET_UID}
@@ -900,11 +921,14 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add default link dependencies
   if (NOT ARGN_NO_BASIS_UTILITIES)
-    basis_target_link_libraries (
-      ${TARGET_UID}
-        "basis${BASIS_NAMESPACE_SEPARATOR}utilities" # non-project specific
-        ${BASIS_UTILITIES_TARGET}                    # project specific
-    )
+    # non-project specific utilities build as part of BASIS
+    if (BASIS_NAMESPACE)
+      basis_target_link_libraries (${TARGET_UID} ${BASIS_NAMESPACE_LOWER}.basis.utilities)
+    else ()
+      basis_target_link_libraries (${TARGET_UID} basis.utilities)
+    endif ()
+    # project specific utilities build as part of this project
+    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
 
   # target version information
@@ -1128,6 +1152,11 @@ function (basis_add_library_target TARGET_NAME)
 
   # add library target
   add_library (${TARGET_UID} ${TYPE} ${SOURCES})
+
+  basis_make_target_uid (HEADERS_TARGET headers)
+  if (TARGET ${HEADERS_TARGET})
+    add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
+  endif ()
 
   set_target_properties (
     ${TARGET_UID}
@@ -1606,7 +1635,7 @@ endfunction ()
 
 function (basis_add_script_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
-  basis_target_uid (TARGET_UID "${TARGET_UID}")
+  basis_get_target_uid (TARGET_UID "${TARGET_UID}")
 
   # already finalized before ?
   if (TARGET "_${TARGET_UID}")
@@ -1624,7 +1653,7 @@ function (basis_add_script_finalize TARGET_UID)
   endif ()
 
   # get target properties
-  basis_target_name (TARGET_NAME ${TARGET_UID})
+  basis_get_target_name (TARGET_NAME ${TARGET_UID})
 
   set (
     PROPERTIES
@@ -2007,7 +2036,7 @@ endfunction ()
 
 function (basis_get_soname SONAME OBJFILE)
   # get absolute path of object file
-  basis_target_uid (TARGET_UID ${OBJFILE})
+  basis_get_target_uid (TARGET_UID ${OBJFILE})
   if (TARGET TARGET_UID)
     basis_get_target_location (OBJFILE ${TARGET_UID} ABSOLUTE)
   else ()
@@ -2063,7 +2092,7 @@ function (basis_export_targets)
     export (
       TARGETS   ${EXPORT_TARGETS}
       FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
-      NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}"
+      NAMESPACE "${PROJECT_NAMESPACE_CMAKE}."
     )
     foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
       install (
@@ -2071,7 +2100,7 @@ function (basis_export_targets)
         DESTINATION "${INSTALL_CONFIG_DIR}"
         FILE        "${ARGN_FILE}"
         COMPONENT   "${COMPONENT}"
-        NAMESPACE "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}"
+        NAMESPACE "${PROJECT_NAMESPACE_CMAKE}."
       )
     endforeach ()
   endif ()
@@ -2116,7 +2145,7 @@ function (basis_export_targets)
     # create import targets
     macro (import_targets)
       foreach (T ${CUSTOM_EXPORT_TARGETS})
-        set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
+        set (UID "${PROJECT_NAMESPACE_CMAKE}.${T}")
         set (C "${C}\n# Create import target \"${UID}\"\n")
         get_target_property (BASIS_TYPE ${T} "BASIS_TYPE")
         if (BASIS_TYPE MATCHES "EXECUTABLE")
@@ -2141,7 +2170,7 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${CUSTOM_EXPORT_TARGETS})
-          set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
+          set (UID "${PROJECT_NAMESPACE_CMAKE}.${T}")
           set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${UID} PROPERTIES\n")
@@ -2159,7 +2188,7 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${CUSTOM_EXPORT_TARGETS})
-          set (UID "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${T}")
+          set (UID "${PROJECT_NAMESPACE_CMAKE}.${T}")
           set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${UID} PROPERTIES\n")

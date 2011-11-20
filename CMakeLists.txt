@@ -14,7 +14,6 @@ set (
   CMAKE_MODULES
     # main modules
     "BasisPack.cmake"               # packaging, wraps CPack
-    "BasisSettings.cmake"           # basic settings
     "BasisTools.cmake"              # definition of macros and functions
     "BasisTest.cmake"               # testing, wraps CTest
     "BasisUpdate.cmake"             # automatic file update (deprecated)
@@ -56,6 +55,7 @@ set (
     "GenerateConfig.cmake"        # generation/configuration of <Pkg>Config.cmake et al.
     "updatefile.py"               # helper used by BasisUpdate.cmake module
     "runmcc.m"                    # helper used by MatlabTools.cmake module
+    "Settings.cmake.in"           # BASIS settings template
     "SubversionUsers.txt"         # maps SVN users at SBIA to their real names
 )
 

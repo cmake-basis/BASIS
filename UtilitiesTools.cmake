@@ -33,8 +33,7 @@
 # ...
 # @endcode
 #
-# @ingroup PythonUtilities
-
+# @ingroup BasisPythonUtilities
 set (BASIS_PYTHON_UTILITIES "
 def _basis_init_sys_path():
     import os
@@ -43,12 +42,12 @@ def _basis_init_sys_path():
     sitelib_dir = os.path.normpath(os.path.join(module_dir, '%PYTHON_LIBRARY_DIR%'))
     if sitelib_dir not in sys.path:
         sys.path.append(sitelib_dir)
-    sitelib_dir = os.path.normpath(os.path.join(module_dir, '%BASIS_PYTHON_LIBRARY_DIR%'))
+    sitelib_dir = os.path.normpath(os.path.join(module_dir, '@BASIS_PYTHON_LIBRARY_DIR@'))
     if sitelib_dir not in sys.path:
         sys.path.append(sitelib_dir)
 
 _basis_init_sys_path()
-from sbia.%PROJECT_NAME_LOWER% import basis
+from @PROJECT_NAMESPACE_PYTHON@ import basis
 "
 )
 
@@ -66,16 +65,15 @@ from sbia.%PROJECT_NAME_LOWER% import basis
 # ...
 # @endcode
 #
-# @ingroup PerlUtilities
-
+# @ingroup BasisPerlUtilities
 set (BASIS_PERL_UTILITIES "
 use File::Basename;
-use lib dirname (__FILE__) . '/%BASIS_PERL_LIBRARY_DIR%';
+use lib dirname (__FILE__) . '/@BASIS_PERL_LIBRARY_DIR@';
 use lib dirname (__FILE__) . '/%PERL_LIBRARY_DIR%';
 use lib dirname (__FILE__);
 
 package Basis;
-use SBIA::%PROJECT_NAME%::Basis qw(:everything);
+use @PROJECT_NAMESPACE_PERL@::Basis qw(:everything);
 package main;
 "
 )
@@ -94,7 +92,7 @@ package main;
 # readonly __MYMODULE=@BASIS_BASH___FILE__@
 # @endcode
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
 
 # ----------------------------------------------------------------------------
@@ -107,7 +105,7 @@ set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pw
 # readonly __MYMODULE_dir=@BASIS_BASH___DIR__@
 # @endcode
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
 
 # ----------------------------------------------------------------------------
@@ -122,7 +120,7 @@ set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd
 #
 # @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 set (BASIS_BASH_FUNCTION_realpath "
 # ----------------------------------------------------------------------------
 ## @brief Get real path of given file or directory.
@@ -175,7 +173,7 @@ function realpath
 # echo "The executable ${exec_name} is located in ${exec_dir}."
 # @endcode
 #
-# @ingroup BashUtilities
+# @ingroup BasisBashUtilities
 set (BASIS_BASH_UTILITIES "
 # constants used by the shflags.sh module
 HELP_COMMAND='%NAME% (%PROJECT_NAME%)'
@@ -185,8 +183,8 @@ HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 
 ${BASIS_BASH_FUNCTION_realpath}
-readonly _%NAMESPACE_UPPER%_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
-source \"\${_%NAMESPACE_UPPER%_DIR}/%LIBRARY_DIR%/basis.sh\" || exit 1
+readonly _%PROJECT_NAMESPACE_BASH%_@NAMESPACE_UPPER@_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
+source \"\${_%PROJECT_NAMESPACE_BASH%_@NAMESPACE_UPPER@_DIR}/%LIBRARY_DIR%/basis.sh\" || exit 1
 "
 )
 
@@ -530,9 +528,10 @@ function (basis_configure_ExecutableTargetInfo)
           endif ()
         endforeach ()
 
-        set (ALIAS "${TARGET_UID}")
-        if (NOT ALIAS MATCHES "${BASIS_NAMESPACE_SEPARATOR_REGEX}")
-          set (ALIAS "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${ALIAS}")
+        if (TARGET_UID MATCHES "\\.")
+          set (ALIAS "${TARGET_UID}")
+        else ()
+          set (ALIAS "${PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
         endif ()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -584,8 +583,8 @@ function (basis_configure_ExecutableTargetInfo)
           set (SH_A "${SH_A}\nalias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
 
           # short alias (if target belongs to this project)
-          if (TARGET_UID MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}")
-            basis_target_name (TARGET_NAME "${TARGET_UID}")
+          if (TARGET_UID MATCHES "^${PROJECT_NAMESPACE_CMAKE_REGEX}\\.")
+            basis_get_target_name (TARGET_NAME "${TARGET_UID}")
             set (SH_S "${SH_S}\nalias '${TARGET_NAME}'='${ALIAS}'")
           endif ()
         endif ()

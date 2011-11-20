@@ -42,8 +42,8 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 # find other packages
 # ============================================================================
 
-##############################################################################
-# @brief Replaces CMake's find_package() command.
+# ----------------------------------------------------------------------------
+## @brief Replaces CMake's find_package() command.
 #
 # @param [in] PACKAGE Name of other package.
 # @param [in] ARGN    Optional arguments to find_package().
@@ -60,8 +60,8 @@ macro (basis_find_package PACKAGE)
   find_package (${PACKAGE} ${ARGN})
 endmacro ()
 
-##############################################################################
-# @brief Use found package.
+# ----------------------------------------------------------------------------
+## @brief Use found package.
 #
 # This macro includes the package's use file if the variable @c &lt;Pkg&gt;_USE_FILE
 # is defined. Otherwise, it adds the include directories to the search path
@@ -80,7 +80,6 @@ endmacro ()
 #       basis_target_link_libraries() are absolute paths to the library files.
 #       Therefore, this code is commented and not used. It remains here as a
 #       reminder only.
-
 macro (basis_use_package PACKAGE)
   string (TOUPPER "${PACKAGE}" P)
   if (${PACKAGE}_FOUND OR ${P}_FOUND)
@@ -121,8 +120,8 @@ endmacro ()
 # basis_get_filename_component / basis_get_relative_path
 # ============================================================================
 
-##############################################################################
-# @brief Replaces CMake's get_filename_component() command to fix a bug.
+# ----------------------------------------------------------------------------
+## @brief Replaces CMake's get_filename_component() command to fix a bug.
 #
 # The get_filename_component() command of CMake returns the entire portion
 # after the first period (.) [including the period] as extension. However,
@@ -133,7 +132,6 @@ endmacro ()
 #
 # @returns Sets the variable named by the first argument to the requested
 #          component of the given file path.
-
 function (get_filename_component)
   if (ARGC GREATER 4)
     message (FATAL_ERROR "(basis_)get_filename_component(): Too many arguments!")
@@ -167,17 +165,16 @@ function (get_filename_component)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Alias for the overwritten get_filename_component() function.
+# ----------------------------------------------------------------------------
+## @brief Alias for the overwritten get_filename_component() function.
 #
 # @sa get_filename_component()
-
 macro (basis_get_filename_component)
   get_filename_component (${ARGN})
 endmacro ()
 
-##############################################################################
-# @brief Get path relative to a given base directory.
+# ----------------------------------------------------------------------------
+## @brief Get path relative to a given base directory.
 #
 # This function, unless the file(RELATIVE_PATH ...) command of CMake which in
 # this case returns an empty string, returns "." if @c PATH and @c BASE are
@@ -192,7 +189,6 @@ endmacro ()
 #                   with ABSOLUTE as last argument.
 #
 # @returns Sets the variable named by the first argument to the relative path.
-
 function (basis_get_relative_path REL BASE PATH)
   basis_get_filename_component (PATH "${PATH}" ABSOLUTE)
   basis_get_filename_component (BASE "${BASE}" ABSOLUTE)
@@ -213,8 +209,8 @@ endfunction ()
 # name / version
 # ============================================================================
 
-##############################################################################
-# @brief Convert string to lowercase only or mixed case.
+# ----------------------------------------------------------------------------
+## @brief Convert string to lowercase only or mixed case.
 #
 # Strings in all uppercase or all lowercase are converted to all lowercase
 # letters because these are usually used for acronymns. All other strings
@@ -226,7 +222,6 @@ endfunction ()
 #
 # @param [out] OUT String in CamelCase.
 # @param [in]  STR String.
-
 function (basis_normalize_name OUT STR)
   # strings in all uppercase or all lowercase such as acronymns are an
   # exception and shall be converted to all lowercase instead
@@ -242,8 +237,8 @@ function (basis_normalize_name OUT STR)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Extract version numbers from version string.
+# ----------------------------------------------------------------------------
+## @brief Extract version numbers from version string.
 #
 # @param [in]  VERSION Version string in the format "MAJOR[.MINOR[.PATCH]]".
 # @param [out] MAJOR   Major version number if given or 0.
@@ -251,7 +246,6 @@ endfunction ()
 # @param [out] PATCH   Patch number if given or 0.
 #
 # @returns See @c [out] parameters.
-
 function (basis_version_numbers VERSION MAJOR MINOR PATCH)
   string (REGEX MATCHALL "[0-9]+" VERSION_PARTS "${VERSION}")
   list (LENGTH VERSION_PARTS VERSION_COUNT)
@@ -281,22 +275,21 @@ endfunction ()
 # set
 # ============================================================================
 
-##############################################################################
-# @brief Set value of variable only if variable is not set already.
+# ----------------------------------------------------------------------------
+## @brief Set value of variable only if variable is not set already.
 #
 # @param [out] VAR  Name of variable.
 # @param [in]  ARGN Arguments to set() command excluding variable name.
 #
 # @returns Sets @p VAR if it's value was not valid before.
-
 macro (basis_set_if_empty VAR)
   if (NOT "${VAR}")
     set ("${VAR}" ${ARGN})
   endif ()
 endmacro ()
 
-##############################################################################
-# @brief Set path relative to script file.
+# ----------------------------------------------------------------------------
+## @brief Set path relative to script file.
 #
 # This function can be used in script configurations. It takes a variable
 # name and a path as input arguments. If the given path is relative, it makes
@@ -318,7 +311,6 @@ endmacro ()
 # @param [in]  ARG3 Path to directory or file inside install tree.
 #                   If this argument is not given, PATH is used for both
 #                   the build and install tree version of the script.
-
 function (basis_set_script_path VAR PATH)
   message (FATAL_ERROR "This function can only be used in ScriptConfig.cmake.in!")
 endfunction ()
@@ -327,14 +319,13 @@ endfunction ()
 # set/get any property
 # ============================================================================
 
-##############################################################################
-# @brief Replaces CMake's set_property() command.
+# ----------------------------------------------------------------------------
+## @brief Replaces CMake's set_property() command.
 #
 # @param [in] SCOPE The argument for the @p SCOPE parameter of set_property().
 # @param [in] ARGN  Arguments as accepted by set_property().
 #
 # @returns Sets the specified property.
-
 function (basis_set_property SCOPE)
   if (SCOPE MATCHES "^TARGET$|^TEST$")
     set (IDX 0)
@@ -343,9 +334,9 @@ function (basis_set_property SCOPE)
         break ()
       endif ()
       if (SCOPE STREQUAL "TEST")
-        basis_test_uid (UID "${ARG}")
+        basis_get_test_uid (UID "${ARG}")
       else ()
-        basis_target_uid (UID "${ARG}")
+        basis_get_target_uid (UID "${ARG}")
       endif ()
       list (REMOVE_AT ARGN ${IDX})
       list (INSERT ARGN ${IDX} "${UID}")
@@ -355,8 +346,8 @@ function (basis_set_property SCOPE)
   set_property (${ARGN})
 endfunction ()
 
-##############################################################################
-# @brief Replaces CMake's get_property() command.
+# ----------------------------------------------------------------------------
+## @brief Replaces CMake's get_property() command.
 #
 # @param [out] VAR     Property value.
 # @param [in]  SCOPE   The argument for the @p SCOPE argument of get_property().
@@ -364,23 +355,21 @@ endfunction ()
 # @param [in]  ARGN    Arguments as accepted by get_property().
 #
 # @returns Sets @p VAR to the value of the requested property.
-
 function (basis_get_property VAR SCOPE ELEMENT)
   if (SCOPE STREQUAL "TARGET")
-    basis_target_uid (ELEMENT "${ELEMENT}")
+    basis_get_target_uid (ELEMENT "${ELEMENT}")
   elseif (SCOPE STREQUAL "TEST")
-    basis_test_uid (ELEMENT "${ELEMENT}")
+    basis_get_test_uid (ELEMENT "${ELEMENT}")
   endif ()
   get_property (VALUE ${SCOPE} ${ELEMENT} ${ARGN})
   set ("${VAR}" "${VALUE}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Set project-global property.
+# ----------------------------------------------------------------------------
+## @brief Set project-global property.
 #
 # Set property associated with current project/module. The property is in
 # fact just a cached variable whose name is prefixed by the project's name.
-
 function (basis_set_project_property PROPERTY)
   if (ARGC GREATER 1 AND "${ARGV1}" STREQUAL "APPEND")
     basis_get_project_property (CURRENT ${PROPERTY})
@@ -397,9 +386,8 @@ function (basis_set_project_property PROPERTY)
   set (${PROJECT_NAME}_${PROPERTY} "${CURRENT}${ARGN}" CACHE INTERNAL "" FORCE)
 endfunction ()
 
-##############################################################################
-# @brief Get project-global property value.
-
+# ----------------------------------------------------------------------------
+## @brief Get project-global property value.
 function (basis_get_project_property PROPERTY)
   if (ARGC GREATER 2)
     message (FATAL_ERROR "basis_get_project_property(): Too many arguments!")
@@ -417,8 +405,8 @@ endfunction ()
 # list / string manipulations
 # ============================================================================
 
-##############################################################################
-# @brief Sanitize string variable for use in regular expression.
+# ----------------------------------------------------------------------------
+## @brief Sanitize string variable for use in regular expression.
 #
 # @note This function may not work for all cases, but is used in particular
 #       to sanitize project names, target names, namespace identifiers,...
@@ -429,8 +417,8 @@ macro (basis_sanitize_for_regex OUT STR)
   string (REGEX REPLACE "([.+*?^$])" "\\\\\\1" ${OUT} "${STR}")
 endmacro ()
 
-##############################################################################
-# @brief Concatenates all list elements into a single string.
+# ----------------------------------------------------------------------------
+## @brief Concatenates all list elements into a single string.
 #
 # The list elements are concatenated without any delimiter in between.
 # Use basis_list_to_delimited_string() to specify a delimiter such as a
@@ -442,7 +430,6 @@ endmacro ()
 # @param [in]  ARGN Input list.
 #
 # @returns Sets @p STR to the resulting string.
-
 function (basis_list_to_string STR)
   set (OUT)
   foreach (ELEM ${ARGN})
@@ -451,8 +438,8 @@ function (basis_list_to_string STR)
   set ("${STR}" "${OUT}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Concatenates all list elements into a single delimited string.
+# ----------------------------------------------------------------------------
+## @brief Concatenates all list elements into a single delimited string.
 #
 # @param [out] STR   Output string.
 # @param [in]  DELIM Delimiter used to separate list elements.
@@ -461,7 +448,6 @@ endfunction ()
 # @param [in]  ARGN  Input list.
 #
 # @returns Sets @p STR to the resulting string.
-
 function (basis_list_to_delimited_string STR DELIM)
   set (OUT)
   foreach (ELEM ${ARGN})
@@ -477,8 +463,8 @@ function (basis_list_to_delimited_string STR DELIM)
   set ("${STR}" "${OUT}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Splits a string at space characters into a list.
+# ----------------------------------------------------------------------------
+## @brief Splits a string at space characters into a list.
 #
 # @todo Probably this can be done in a better way...
 #       Difficulty is, that string (REPLACE) does always replace all
@@ -490,7 +476,6 @@ endfunction ()
 # @param [in]  STR  Input string.
 #
 # @returns Sets @p LST to the resulting CMake list.
-
 function (basis_string_to_list LST STR)
   set (TMP "${STR}")
   set (OUT)
@@ -528,11 +513,7 @@ endfunction ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# target name from source file path
-# ----------------------------------------------------------------------------
-
-##############################################################################
-# @brief Derive target name from source file name.
+## @brief Derive target name from source file name.
 #
 # @param [out] TARGET_NAME Target name.
 # @param [in]  SOURCE_FILE Source file.
@@ -541,24 +522,19 @@ endfunction ()
 # @returns Target name derived from @p SOURCE_FILE.
 #
 # @ingroup CMakeUtilities
-
 function (basis_get_source_target_name TARGET_NAME SOURCE_FILE COMPONENT)
   # remove ".in" suffix from file name
   string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
   # get name component
   get_filename_component (OUT "${SOURCE_FILE}" ${COMPONENT})
   # replace special characters
-  string (REGEX REPLACE "${BASIS_NAMESPACE_SEPARATOR_REGEX}" "_" OUT "${OUT}")
+  string (REPLACE "." "_" OUT "${OUT}")
   # return
   set (${TARGET_NAME} "${OUT}" PARENT_SCOPE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-# target name <=> target UID
-# ----------------------------------------------------------------------------
-
-##############################################################################
-# @brief Make target UID from given target name.
+## @brief Make target UID from given target name.
 #
 # This function is intended for use by the basis_add_*() functions only.
 #
@@ -566,17 +542,22 @@ endfunction ()
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
-
 macro (basis_make_target_uid TARGET_UID TARGET_NAME)
-  if (PROJECT_IS_MODULE)
-    set ("${TARGET_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}")
-  else ()
-    set ("${TARGET_UID}" "${TARGET_NAME}")
+  set ("${TARGET_UID}" "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
+  # strip off top-level namespace part (optional)
+  if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+    string (
+      REGEX REPLACE
+        "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
+        ""
+      "${TARGET_UID}"
+        "${${TARGET_UID}}"
+    )
   endif ()
 endmacro ()
 
-##############################################################################
-# @brief Get "global" target name, i.e., actual CMake target name.
+# ----------------------------------------------------------------------------
+## @brief Get "global" target name, i.e., actual CMake target name.
 #
 # In order to ensure that CMake target names are unique across modules of
 # a BASIS project, the target name given to the BASIS CMake functions is
@@ -585,124 +566,143 @@ endmacro ()
 # given target name or UID the closest match of a known target UID.
 #
 # In particular, if this project is a module of another BASIS project, the
-# namespace given by @c BASIS_NAMESPACE is used as prefix, where the namespace
-# prefix and the build target name are separated using the
-# @c BASIS_NAMESPACE_SEPARATOR. Otherwise, if this project is the top-level
-# project, no namespace is prefix and if the project's namespace is given
-# as prefix, it will be removed instead. When the target is exported, however,
-# the namespace of this project will be prefixed again. This is taken care
-# of by the basis_export_targets() function.
+# namespace given by @c PROJECT_NAMESPACE_CMAKE is used as prefix, where the
+# namespace prefix and the build target name are separated by a dot (.).
+# Otherwise, if this project is the top-level project, no namespace prefix is
+# used and if the project's namespace is given as prefix, it will be removed.
+# When the target is exported, however, the namespace of this project will be
+# prefixed again. This is done by the basis_export_targets() function.
 #
 # Note that names of imported targets are not prefixed in any case.
 #
-# The counterpart basis_target_name() can be used to convert the target UID
+# The counterpart basis_get_target_name() can be used to convert the target UID
 # back to the target name without namespace prefix.
 #
 # @note At the moment, BASIS does not support modules which themselves have
 #       modules again. This would require a more nested namespace hierarchy.
 #
-# @sa basis_target_name()
+# @sa basis_get_target_name()
 #
 # @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
-
-function (basis_target_uid TARGET_UID TARGET_NAME)
-  # if given name is a CMake target name
-  if (TARGET "${TARGET_NAME}")
-    # Prefer target with same name but belonging to current namespace,
-    # but do not modify names of imported targets.
-    #
-    # Note: The top-level project uses target names without namespace.
-    #       Hence, it could be that a module uses a target name which
-    #       is an actual CMake target of the top-level project.
-    get_target_property (IMPORTED "${TARGET_NAME}" IMPORTED)
-    if (NOT IMPORTED AND PROJECT_IS_MODULE)
-      set (TMP "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}")
-      if (TARGET "${TMP}")
-        message ("NAME: ${TARGET_NAME} -> ${TMP}")
-        set ("${TARGET_UID}" "${TMP}" PARENT_SCOPE)
-      else ()
-        set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
-      endif ()
-    else ()
-      set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
-    endif ()
-  # if current namespace is already prefixed
-  elseif (TARGET_NAME MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}(.*)")
-    # do nothing if this is a module
-    if (PROJECT_IS_MODULE)
-      set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
-    # strip it off if this is the top-level project
-    else ()
-      set ("${TARGET_UID}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
-    endif ()
-  # otherwise, prefix build target name if this project is a module
-  elseif (PROJECT_IS_MODULE)
-    set ("${TARGET_UID}" "${BASIS_NAMESPACE}${BASIS_NAMESPACE_SEPARATOR}${TARGET_NAME}" PARENT_SCOPE)
-  # or do nothing if this is a top-level project
+function (basis_get_target_uid TARGET_UID TARGET_NAME)
+  # in case of a leading namespace separator, do not modify target name
+  if (TARGET_NAME MATCHES "^\\.")
+    set (UID "${TARGET_NAME}")
+  # otherwise,
   else ()
-    set ("${TARGET_UID}" "${TARGET_NAME}" PARENT_SCOPE)
+    set (UID "${TARGET_NAME}")
+    # try prepending namespace or parts of it until target is known
+    if (BASIS_DEBUG AND BASIS_VERBOSE)
+      message ("** basis_get_target_uid()")
+    endif ()
+    set (PREFIX "${PROJECT_NAMESPACE_CMAKE}")
+    if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+      string (
+        REGEX REPLACE
+          "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
+          ""
+        PREFIX
+          "${PREFIX}"
+      )
+    endif ()
+    while (PREFIX)
+      if (BASIS_DEBUG AND BASIS_VERBOSE)
+        message ("**     Trying: ${PREFIX}.${TARGET_NAME}")
+      endif ()
+      if (TARGET "${PREFIX}.${TARGET_NAME}")
+        set (UID "${PREFIX}.${TARGET_NAME}")
+        break ()
+      else ()
+        if (PREFIX MATCHES "(.*)\\.[^.]+")
+          set (PREFIX "${CMAKE_MATCH_1}")
+        else ()
+          break ()
+        endif ()
+      endif ()
+    endwhile ()
   endif ()
+  # strip off top-level namespace part (optional)
+  if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+    string (
+      REGEX REPLACE
+        "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
+        ""
+      UID
+        "${UID}"
+    )
+  endif ()
+  # return
+  if (BASIS_DEBUG AND BASIS_VERBOSE)
+    message ("** basis_get_target_uid(): ${TARGET_NAME} -> ${UID}")
+  endif ()
+  set ("${TARGET_UID}" "${UID}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Get namespace of build target.
+# ----------------------------------------------------------------------------
+## @brief Get fully-qualified target name.
+#
+# This function always returns a fully-qualified target UID, no matter if
+# the option @c BASIS_USE_FULLY_QUALIFIED_UIDS is @c OFF. Note that
+# if this option is @c ON, the returned target UID is may not be the
+# actual name of a CMake target.
+#
+# @sa basis_get_target_uid()
+#
+# @param [out] TARGET_UID  Fully-qualified target UID.
+# @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
+function (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
+  basis_get_target_uid (UID "${TARGET_NAME}")
+  if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+    get_target_property (IMPORTED "${UID}" IMPORTED)
+    if (NOT IMPORTED)
+      set (UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.${UID}")
+    endif ()
+  endif ()
+  set ("${TARGET_UID}" "${UID}" PARENT_SCOPE)
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Get namespace of build target.
 #
 # @param [out] TARGET_NS  Namespace part of target UID.
 # @param [in]  TARGET_UID Target UID/name.
-
-function (basis_target_namespace TARGET_NS TARGET_UID)
-  # ensure we have a fully-qualified target UID
-  if (PROJECT_IS_MODULE)
-    basis_target_uid (UID "${TARGET_UID}")
-  else ()
-    set (UID "${TARGET_UID}")
-  endif ()
-  # if this UID belongs to the current namespace, return this namespace
-  if (UID MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}")
-    set ("${TARGET_NS}" "${BASIS_NAMESPACE}" PARENT_SCOPE)
-  # otherwise, return first component of namespace specification, i.e.,
-  # the top-level namespace of the other project
-  elseif (UID MATCHES "^([^${BASIS_NAMESPACE_SEPARATOR_REGEX}]*)${BASIS_NAMESPACE_SEPARATOR_REGEX}")
+function (basis_get_target_namespace TARGET_NS TARGET_UID)
+  # make sure we have a fully-qualified target UID
+  basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
+  # return namespace part
+  if (UID MATCHES "^(.*)\\.")
     set ("${TARGET_NS}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
-  endif ()
+  else ()
     set ("${TARGET_NS}" "" PARENT_SCOPE)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Get "local" target name, i.e., BASIS target name.
+# ----------------------------------------------------------------------------
+## @brief Get "local" target name, i.e., BASIS target name.
 #
-# If the given target belongs
-#
-# @sa basis_target_uid()
+# @sa basis_get_target_uid()
 #
 # @param [out] TARGET_NAME Target name used as argument to BASIS functions.
 # @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
 #
 # @returns Sets @p TARGET_NAME to the name of the build target with UID @p TARGET_UID.
-
-function (basis_target_name TARGET_NAME TARGET_UID)
-  # ensure we have a fully-qualified target UID
-  if (PROJECT_IS_MODULE)
-    basis_target_uid (UID "${TARGET_UID}")
-  else ()
-    set (UID "${TARGET_UID}")
+function (basis_get_target_name TARGET_NAME TARGET_UID)
+  # make sure we have a fully-qualified target UID
+  basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
+  # strip off namespace of current project
+  string (REGEX REPLACE "^${PROJECT_NAMESPACE_CMAKE}\\." "" NAME "${UID}")
+  # return
+  if (BASIS_DEBUG AND BASIS_VERBOSE)
+    message ("** basis_get_target_name(): ${UID} -> ${NAME}")
   endif ()
-  # if this UID belongs to the current namespace, everything after this
-  # namespace is considered to be the "local" target name
-  if (UID MATCHES "^${BASIS_NAMESPACE_REGEX}${BASIS_NAMESPACE_SEPARATOR_REGEX}(.*)")
-    set ("${TARGET_NAME}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
-  # otherwise, the target belongs to another module/project
-  else ()
-    set ("${TARGET_NAME}" "${TARGET_UID}" PARENT_SCOPE)
-  endif ()
+  set ("${TARGET_NAME}" "${NAME}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Checks whether a given name is a valid target name.
+# ----------------------------------------------------------------------------
+## @brief Checks whether a given name is a valid target name.
 #
 # Displays fatal error message when target name is invalid.
 #
@@ -711,7 +711,6 @@ endfunction ()
 # @returns Nothing.
 #
 # @ingroup CMakeUtilities
-
 function (basis_check_target_name TARGET_NAME)
   # reserved target name ?
   list (FIND BASIS_RESERVED_TARGET_NAMES "${TARGET_NAME}" IDX)
@@ -726,13 +725,13 @@ function (basis_check_target_name TARGET_NAME)
                          "'_', '-', '+', or '.', and starts with a letter.\n")
   endif ()
 
-  if (TARGET_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR_REGEX}")
+  if (TARGET_NAME MATCHES "\\.")
     message (FATAL_ERROR "Target name '${TARGET_NAME}' is invalid. Target names cannot"
-                         " contain string '${BASIS_NAMESPACE_SEPARATOR}'.")
+                         " contain dots (.). Consider using underscores (_) instead.")
   endif ()
 
   # unique ?
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
 
   if (TARGET "${TARGET_UID}")
     message (FATAL_ERROR "There exists already a target named ${TARGET_UID}."
@@ -741,11 +740,7 @@ function (basis_check_target_name TARGET_NAME)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-# test name <=> test UID
-# ----------------------------------------------------------------------------
-
-##############################################################################
-# @brief Make test UID from given test name.
+## @brief Make test UID from given test name.
 #
 # This function is intended for use by the basis_add_test() only.
 #
@@ -753,61 +748,98 @@ endfunction ()
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
-
 macro (basis_make_test_uid TEST_UID TEST_NAME)
   basis_make_target_uid ("${TEST_UID}" "${TEST_NAME}")
 endmacro ()
 
-##############################################################################
-# @brief Get "global" test name, i.e., actual CTest test name.
+# ----------------------------------------------------------------------------
+## @brief Get "global" test name, i.e., actual CTest test name.
 #
 # In order to ensure that CTest test names are unique across BASIS projects,
 # the test name used by a developer of a BASIS project is converted by this
 # function into another test name which is used as acutal CTest test name.
 #
-# The function basis_test_name() can be used to convert the unique test
+# The function basis_get_test_name() can be used to convert the unique test
 # name, the test UID, back to the original test name passed to this function.
 #
-# @sa basis_test_name()
-# @sa BASIS_USE_TARGET_UIDS
+# @sa basis_get_test_name()
 #
 # @param [out] TEST_UID  "Global" test name, i.e., actual CTest test name.
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
-
-macro (basis_test_uid TEST_UID TEST_NAME)
-  basis_target_uid ("${TEST_UID}" "${TEST_NAME}")
+macro (basis_get_test_uid TEST_UID TEST_NAME)
+  if (TEST_UID MATCHES "\\.")
+    set ("${TEST_UID}" "${TEST_NAME}")
+  else ()
+    set ("${TEST_UID}" "${PROJECT_NAMESPACE_CMAKE}.${TEST_NAME}")
+  endif ()
+  # strip off top-level namespace part (optional)
+  if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+    string (
+      REGEX REPLACE
+        "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
+        ""
+      "${TEST_UID}"
+        "${${TEST_UID}}"
+    )
+  endif ()
 endmacro ()
 
-##############################################################################
-# @brief Get namespace of test.
+# ----------------------------------------------------------------------------
+## @brief Get "global" test name, i.e., actual CTest test name.
+#
+# This function always returns a fully-qualified test UID, no matter if
+# the option @c BASIS_USE_FULLY_QUALIFIED_UIDS is @c OFF. Note that
+# if this option is @c ON, the returned test UID may not be the
+# actual name of a CMake test.
+#
+# @sa basis_get_test_uid()
+#
+# @param [out] TEST_UID  Fully-qualified test UID.
+# @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
+macro (basis_get_fully_qualified_test_uid TEST_UID TEST_NAME)
+  if (TEST_UID MATCHES "\\.")
+    set ("${TEST_UID}" "${TEST_NAME}")
+  else ()
+    set ("${TEST_UID}" "${PROJECT_NAMESPACE_CMAKE}.${TEST_NAME}")
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Get namespace of test.
 #
 # @param [out] TEST_NS  Namespace part of test UID. If @p TEST_UID is
 #                       no UID, i.e., does not contain a namespace part,
 #                       the namespace of this project is returned.
 # @param [in]  TEST_UID Test UID/name.
-
-macro (basis_test_namespace TEST_NS TEST_UID)
-  basis_target_namespace ("${TEST_NS}" "${TEST_UID}")
+macro (basis_get_test_namespace TEST_NS TEST_UID)
+  if (TEST_UID MATCHES "^(.*)\\.")
+    set ("${TEST_NS}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  else ()
+    set ("${TEST_NS}" "" PARENT_SCOPE)
+  endif ()
 endmacro ()
 
-##############################################################################
-# @brief Get "local" test name, i.e., BASIS test name.
+# ----------------------------------------------------------------------------
+## @brief Get "local" test name, i.e., BASIS test name.
 #
-# @sa basis_test_uid()
+# @sa basis_get_test_uid()
 #
 # @param [out] TEST_NAME Test name used as argument to BASIS functions.
 # @param [in]  TEST_UID  "Global" test name, i.e., actual CTest test name.
 #
 # @returns Sets @p TEST_NAME to the name of the test with UID @p TEST_UID.
-
-macro (basis_test_name TEST_NAME TEST_UID)
-  basis_target_name ("${TEST_NAME}" "${TEST_UID}")
+macro (basis_get_test_name TEST_NAME TEST_UID)
+  if (TEST_UID MATCHES "([^.]+)$")
+    set ("${TEST_NAME}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  else ()
+    set ("${TEST_NAME}" "" PARENT_SCOPE)
+  endif ()
 endmacro ()
 
-##############################################################################
-# @brief Checks whether a given name is a valid test name.
+# ----------------------------------------------------------------------------
+## @brief Checks whether a given name is a valid test name.
 #
 # Displays fatal error message when test name is invalid.
 #
@@ -816,7 +848,6 @@ endmacro ()
 # @returns Nothing.
 #
 # @ingroup CMakeUtilities
-
 function (basis_check_test_name TEST_NAME)
   list (FIND BASIS_RESERVED_TEST_NAMES "${TEST_NAME}" IDX)
   if (NOT IDX EQUAL -1)
@@ -829,9 +860,9 @@ function (basis_check_test_name TEST_NAME)
                          "'_', '-', '+', or '.', and starts with a letter.\n")
   endif ()
 
-  if (TEST_NAME MATCHES "${BASIS_NAMESPACE_SEPARATOR_REGEX}")
+  if (TEST_NAME MATCHES "\\.")
     message (FATAL_ERROR "Test name ${TEST_NAME} is invalid. Test names cannot"
-                         " contain string '${BASIS_NAMESPACE_SEPARATOR}'.")
+                         " contain dots (.). Consider using underscores (_) instead.")
   endif ()
 endfunction ()
 
@@ -839,8 +870,8 @@ endfunction ()
 # common target tools
 # ============================================================================
 
-##############################################################################
-# @brief Detect programming language of given source code files.
+# ----------------------------------------------------------------------------
+## @brief Detect programming language of given source code files.
 #
 # This function determines the programming language in which the given source
 # code files are written. If no common programming language could be determined,
@@ -852,7 +883,6 @@ endfunction ()
 # @param [in]  ARGN     List of source code files.
 #
 # @ingroup CMakeUtilities
-
 function (basis_get_source_language LANGUAGE)
   set (LANGUAGE_OUT)
   # iterate over source files
@@ -905,8 +935,8 @@ function (basis_get_source_language LANGUAGE)
   set (${LANGUAGE} "${LANGUAGE_OUT}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Configure .in source files.
+# ----------------------------------------------------------------------------
+## @brief Configure .in source files.
 #
 # This function configures each source file in the given argument list with
 # a .in file name suffix and stores the configured file in the build tree
@@ -947,20 +977,39 @@ function (basis_configure_sources LIST_NAME)
   set (CONFIGURED_SOURCES)
   foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
     if (SOURCE MATCHES "\\.in$")
+      # if binary directory was given explicitly, use it
       if (ARGN_BINARY_DIRECTORY)
         get_filename_component (SOURCE_NAME "${SOURCE}" NAME)
+        if (NOT ARGN_KEEP_DOT_IN_SUFFIX)
+          string (REGEX REPLACE "\\.in$" "" SOURCE_NAME "${SOURCE_NAME}")
+        endif ()
         set (CONFIGURED_SOURCE "${ARGN_BINARY_DIRECTORY}/${SOURCE_NAME}")
-      elseif (NOT SOURCE MATCHES "^${PROJECT_SOURCE_DIR}")
-        get_filename_component (SOURCE_NAME "${SOURCE}" NAME)
-        set (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE_NAME}")
+      # otherwise,
       else ()
-        basis_get_relative_path (CONFIGURED_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}" "${SOURCE}")
-        get_filename_component (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURED_SOURCE}" ABSOLUTE)
+        # if source is in project's source tree use relative binary directory
+        basis_sanitize_for_regex (REGEX "${PROJECT_SOURCE_DIR}")
+        if (SOURCE MATCHES "^${REGEX}")
+          basis_get_relative_path (CONFIGURED_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}" "${SOURCE}")
+          get_filename_component (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURED_SOURCE}" ABSOLUTE)
+          if (NOT ARGN_KEEP_DOT_IN_SUFFIX)
+            string (REGEX REPLACE "\\.in$" "" CONFIGURED_SOURCE "${CONFIGURED_SOURCE}")
+          endif ()
+        # otherwise, use current binary directory
+        else ()
+          get_filename_component (SOURCE_NAME "${SOURCE}" NAME)
+          if (NOT ARGN_KEEP_DOT_IN_SUFFIX)
+            string (REGEX REPLACE "\\.in$" "" SOURCE_NAME "${SOURCE_NAME}")
+          endif ()
+          set (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE_NAME}")
+        endif ()
       endif ()
-      if (NOT ARGN_KEEP_DOT_IN_SUFFIX)
-        get_filename_component (CONFIGURED_SOURCE "${CONFIGURED_SOURCE}" NAME_WE)
-      endif ()
+      # configure source file
       configure_file ("${SOURCE}" "${CONFIGURED_SOURCE}" @ONLY)
+      if (BASIS_DEBUG)
+        message ("** Configured source file with .in extension")
+        message ("**     Source:            ${SOURCE}")
+        message ("**     Configured source: ${CONFIGURED_SOURCE}")
+      endif ()
     else ()
       # if the source file path is relative, prefer possibly already
       # configured sources in build tree such as the test driver source file
@@ -974,6 +1023,11 @@ function (basis_configure_sources LIST_NAME)
           get_filename_component (CONFIGURED_SOURCE "${SOURCE}" ABSOLUTE)
         endif ()
       endif ()
+      if (BASIS_DEBUG)
+        message ("** Skipped configuration of source file")
+        message ("**     Source:            ${SOURCE}")
+        message ("**     Configured source: ${CONFIGURED_SOURCE}")
+      endif ()
     endif ()
     list (APPEND CONFIGURED_SOURCES "${CONFIGURED_SOURCE}")
   endforeach ()
@@ -981,14 +1035,13 @@ function (basis_configure_sources LIST_NAME)
   set (${LIST_NAME} "${CONFIGURED_SOURCES}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Get type name of target.
+# ----------------------------------------------------------------------------
+## @brief Get type name of target.
 #
 # @param [out] TYPE        The target's type name or NOTFOUND.
 # @param [in]  TARGET_NAME The name of the target.
-
 function (basis_target_type TYPE TARGET_NAME)
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET ${TARGET_UID})
     get_target_property (TYPE_OUT ${TARGET_UID} "BASIS_TYPE")
     if (NOT TYPE_OUT)
@@ -1001,8 +1054,8 @@ function (basis_target_type TYPE TARGET_NAME)
   set ("${TYPE}" "${TYPE_OUT}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Get location of build target output file.
+# ----------------------------------------------------------------------------
+## @brief Get location of build target output file.
 #
 # This convenience function can be used to get the full path of the output
 # file generated by a given build target. It is similar to the read-only
@@ -1022,11 +1075,10 @@ endfunction ()
 #                          of the installed file post installation.
 #
 # @returns Path of output file similar to @c LOCATION property of CMake targets.
-
 function (basis_get_target_location VAR TARGET_NAME PART)
-  basis_target_uid (TARGET_UID "${TARGET_NAME}")
+  basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET "${TARGET_UID}")
-    basis_target_name (TARGET_NAME "${TARGET_UID}")
+    basis_get_target_name (TARGET_NAME "${TARGET_UID}")
     basis_target_type (TYPE "${TARGET_UID}")
     get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
 
