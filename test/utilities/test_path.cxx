@@ -272,6 +272,32 @@ TEST (Path, split_path)
     EXPECT_STREQ ("usr/local/", dir  .c_str ());
     EXPECT_STREQ ("",           fname.c_str ());
     EXPECT_STREQ ("",           ext  .c_str ());
+
+    set<string> exts;
+    exts.insert(".nii");
+    exts.insert(".gz");
+    exts.insert(".hdr");
+
+    EXPECT_NO_THROW (split_path ("/home/andreas/brain.nii.gz", &root, &dir, &fname, &ext, &exts));
+#if WINDOWS
+    EXPECT_STREQ ("C:/", root.c_str ());
+#else
+    EXPECT_STREQ ("/", root.c_str ());
+#endif
+    EXPECT_STREQ ("home/andreas/", dir  .c_str());
+    EXPECT_STREQ ("brain.nii",      fname.c_str());
+    EXPECT_STREQ (".gz",            ext  .c_str());
+
+    exts.insert(".nii.gz");
+    EXPECT_NO_THROW (split_path ("/home/andreas/brain.nii.gz", &root, &dir, &fname, &ext, &exts));
+#if WINDOWS
+    EXPECT_STREQ ("C:/", root.c_str ());
+#else
+    EXPECT_STREQ ("/", root.c_str ());
+#endif
+    EXPECT_STREQ ("home/andreas/", dir  .c_str());
+    EXPECT_STREQ ("brain",          fname.c_str());
+    EXPECT_STREQ (".nii.gz",        ext  .c_str());
 }
 
 // ---------------------------------------------------------------------------
@@ -395,6 +421,15 @@ TEST (Path, get_file_name_extension)
     EXPECT_STREQ (".doc", get_file_name_extension ("/Users/andreas/word.doc").c_str ());
     EXPECT_STREQ ("",     get_file_name_extension ("doc/README").c_str ());
     EXPECT_STREQ (".txt", get_file_name_extension ("Copyright.txt").c_str ());
+
+    set<string> exts;
+    exts.insert(".nii");
+    exts.insert(".gz");
+    exts.insert(".hdr");
+
+    EXPECT_STREQ (".gz", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
+    exts.insert(".nii.gz");
+    EXPECT_STREQ (".nii.gz", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
 
     // test with invalid argument
     EXPECT_THROW (get_file_name_extension (""), invalid_argument);

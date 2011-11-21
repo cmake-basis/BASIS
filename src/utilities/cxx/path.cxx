@@ -288,7 +288,8 @@ string get_working_directory()
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-void split_path(const string&path, string* root, string* dir, string* fname, string* ext)
+void split_path(const string&path, string* root, string* dir, string* fname,
+                string* ext, const set<string>* exts)
 {
     // file root
     if (root) *root = get_file_root(path);
@@ -329,7 +330,18 @@ void split_path(const string&path, string* root, string* dir, string* fname, str
             name = unix_path.substr(last + 1);
         }
 
-        size_t pos = name.find_last_of('.');
+        size_t pos = string::npos;
+        
+        if (exts && exts->size() > 0) {
+            for (set<string>::const_iterator i = exts->begin(); i != exts->end(); ++i) {
+                size_t start = name.size() - i->size();
+                if (start < pos && name.compare(start, i->size(), *i) == 0) {
+                    pos = start;
+                }
+            }
+        } else {
+            pos = name.find_last_of('.');
+        }
 
         if (pos == string::npos) {
             if (fname) {
@@ -405,18 +417,18 @@ string get_file_name(const string& path)
 }
 
 // ---------------------------------------------------------------------------
-string get_file_name_without_extension(const string& path)
+string get_file_name_without_extension(const string& path, const set<string>* exts)
 {
     string fname;
-    split_path(path, NULL, NULL, &fname, NULL);
+    split_path(path, NULL, NULL, &fname, NULL, exts);
     return fname;
 }
 
 // ---------------------------------------------------------------------------
-string get_file_name_extension(const string& path)
+string get_file_name_extension(const string& path, const set<string>* exts)
 {
     string ext;
-    split_path(path, NULL, NULL, NULL, &ext);
+    split_path(path, NULL, NULL, NULL, &ext, exts);
     return ext;
 }
 
