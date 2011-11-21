@@ -1,0 +1,34 @@
+##############################################################################
+# @file  Depends.cmake
+# @brief Find additional dependencies.
+#
+# This file is included by basis_project_impl() after it included the
+# BasisProject.cmake file of the project and collected information about its
+# modules. Furthermore, it is included before it looks for the packages
+# specified as arguments to the basis_project() command. At this point, the
+# CMake project is not initialized yet and most BASIS varibles are not set.
+#
+# Use this file to find additional dependencies or dependencies which are
+# only required by a project if certain modules are enabled.
+#
+# Use case: If this project has a module which is a Slicer Extension
+# and the project itself shall be build as Slicer Extension only if the
+# module is enabled, the Slicer package configuration file has to be
+# included here such that the Slicer settings are imported before any
+# module is configured. This is done by using the command
+#
+# Example:
+# @code
+# if (SlicerExtension_ENABLED)
+#   # requires Slicer if the SlicerExtension module is enabled
+#   basis_find_package (Slicer REQUIRED)
+#   basis_use_package (Slicer)
+# endif ()
+# @endcode
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
