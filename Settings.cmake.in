@@ -104,7 +104,6 @@ if (NOT BASIS_NO_SYSTEM_CHECKS)
   endif ()
 endif ()
 
-
 # ============================================================================
 # constants and global settings
 # ============================================================================
@@ -151,6 +150,15 @@ set (BASIS_RUNTIME_COMPONENT "Runtime")
 #         as dependency of an executable.
 set (BASIS_NO_BASIS_UTILITIES FALSE)
 
+## @brief Enable compilation of scripts if supported by the language.
+#
+# In particular, Python modules are compiled if this option is enabled and
+# only the compiled modules are installed.
+#
+# @sa basis_add_script()
+option (BASIS_COMPILE_SCRIPTS FALSE)
+mark_as_advanced (BASIS_COMPILE_SCRIPTS)
+
 ## @brief Script used to execute a process in CMake script mode.
 #
 # In order to be able to assign a timeout to the execution of a custom command
@@ -189,14 +197,14 @@ basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 # "sbia.@PROJECT_NAME_LOWER@.target", the CMake target name will simply
 # be "target". Only when the target is referenced from another project,
 # the fully-qualified target UID is usually required.
-set (BASIS_USE_FULLY_QUALIFIED_UIDS OFF CACHE INTERNAL "")
+basis_set_if_empty (BASIS_USE_FULLY_QUALIFIED_UIDS OFF)
 
 ## @brief Whether BASIS should use a separate namespace for each module.
 #
 # If this option is ON, BASIS will use a separate namespace for each module.
 # Otherwise, all modules of a project reside dirctly in the namespace of the
 # top-level project itself.
-basis_set_if_not_set (BASIS_USE_MODULE_NAMESPACES OFF)
+basis_set_if_empty (BASIS_USE_MODULE_NAMESPACES OFF)
 
 ## @brief Global namespace of BASIS projects.
 if (NOT DEFINED BASIS_NAMESPACE)

@@ -853,11 +853,7 @@ function (basis_add_executable_target TARGET_NAME)
       # define dependency on non-project specific utilities as the order in
       # which static libraries are listed on the command-line for the linker
       # matters; this will tell CMake to get the order right
-      if (BASIS_NAMESPACE)
-        target_link_libraries (${BASIS_UTILITIES_TARGET} ${BASIS_NAMESPACE_LOWER}.basis.utilities)
-      else ()
-        target_link_libraries (${BASIS_UTILITIES_TARGET} basis.utilities)
-      endif ()
+      target_link_libraries (${BASIS_UTILITIES_TARGET} ${BASIS_UTILITIES_LIBRARY})
 
       set_target_properties (
         ${BASIS_UTILITIES_TARGET}
@@ -932,11 +928,7 @@ function (basis_add_executable_target TARGET_NAME)
   # add default link dependencies
   if (NOT ARGN_NO_BASIS_UTILITIES)
     # non-project specific utilities build as part of BASIS
-    if (BASIS_NAMESPACE)
-      basis_target_link_libraries (${TARGET_UID} ${BASIS_NAMESPACE_LOWER}.basis.utilities)
-    else ()
-      basis_target_link_libraries (${TARGET_UID} basis.utilities)
-    endif ()
+    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
     # project specific utilities build as part of this project
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
@@ -1327,6 +1319,13 @@ endfunction ()
 #     @tp @b NO_EXPORT @endtp
 #     <td>Do not export build target.</td>
 #   </tr>
+#   <tr>
+#     @tp @b COMPILE | @c NOCOMPILE @endtp
+#     <td>Enable/disable compilation of script if supported by scripting
+#         language as well as BASIS. In particular, Python modules can be
+#         compiled. If a script could be compiled by BASIS, only the
+#         compiled file is installed. Default: @c BASIS_COMPILE_SCRIPTS</td>
+#   </tr>
 # </table>
 #
 # @returns Adds custom build target @p TARGET_NAME. In order to add the
@@ -1339,11 +1338,19 @@ function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_EXPORT"
+      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_EXPORT;COMPILE;NOCOMPILE"
       "BINARY_DIRECTORY;CONFIG;CONFIG_FILE;COMPONENT;DESTINATION"
       ""
     ${ARGN}
   )
+
+  if (ARGN_COMPILE)
+    set (COMPILE TRUE)
+  elseif (ARGN_NOCOMPILE)
+    set (COMPILE FALSE)
+  else ()
+    set (COMPILE "${BASIS_COMPILE_SCRIPTS}")
+  endif ()
 
   list (LENGTH ARGN_UNPARSED_ARGUMENTS LEN)
   if (LEN EQUAL 0)
@@ -1586,6 +1593,7 @@ function (basis_add_script TARGET_NAME)
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
       NO_EXPORT                 "${ARGN_NO_EXPORT}"
+      COMPILE                   "${COMPILE}"
   )
 
   if (ARGN_TEST)
@@ -1675,6 +1683,7 @@ function (basis_add_script_finalize TARGET_UID)
       "LIBEXEC"
       "TEST"
       "NO_EXPORT"
+      "COMPILE"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -1733,13 +1742,20 @@ function (basis_add_script_finalize TARGET_UID)
   #       If a documentation is generated automatically from the sources, the
   #       latter, i.e., the script which will be installed is used as input file.
   set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
-  set (CONFIGURED_FILE "${BUILD_DIR}/${SCRIPT_NAME}.in")
+  # configured script file for build tree
   if (MODULE)
-    set (OUTPUT_FILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+    set (CONFIGURED_FILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   else ()
-    set (OUTPUT_FILE "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+    set (CONFIGURED_FILE "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   endif ()
-  set (INSTALL_FILE "${SCRIPT_FILE}")
+  # final output script file for build tree
+  set (OUTPUT_FILE "${CONFIGURED_FILE}")
+  # configured script file for install tree
+  set (CONFIGURED_INSTALL_FILE "${SCRIPT_FILE}")
+  # final output script file for install tree
+  set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
+  set (INSTALL_NAME "${OUTPUT_NAME}")
+  # output files of build command
   set (OUTPUT_FILES "${OUTPUT_FILE}")
   set (DEPENDS) # script configuration files if used
 
@@ -1755,11 +1771,27 @@ function (basis_add_script_finalize TARGET_UID)
       list (APPEND DEPENDS "${BUILD_DIR}/ScriptConfig.cmake")
     endif ()
 
-    # adjust list of output files
-    #list (APPEND OUTPUT_FILES "${CONFIGURED_FILE}")
+    # additional output files
+    set (TEMPLATE_FILE "${BUILD_DIR}/${SCRIPT_NAME}.in")
+    list (APPEND OUTPUT_FILES "${TEMPLATE_FILE}")
     if (RUNTIME_INSTALL_DIRECTORY)
-      set (INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
-      list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
+      set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
+      set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
+      list (APPEND OUTPUT_FILES "${CONFIGURED_INSTALL_FILE}")
+    endif ()
+    if (MODULE AND COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+      # Python modules get optionally compiled
+      get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
+      get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
+      set (OUTPUT_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
+      list (APPEND OUTPUT_FILES "${OUTPUT_FILE}")
+      # and the compiled module installed
+      if (RUNTIME_INSTALL_DIRECTORY)
+        get_filename_component (MODULE_PATH "${CONFIGURED_INSTALL_FILE}" PATH)
+        get_filename_component (MODULE_NAME "${CONFIGURED_INSTALL_FILE}" NAME_WE)
+        set (INSTALL_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
+        list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
+      endif ()
     endif ()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1770,7 +1802,7 @@ function (basis_add_script_finalize TARGET_UID)
     set (C "${C}# convert %NAME% to \@NAME\@\n")
     set (C "${C}file (READ \"${SCRIPT_FILE}\" SCRIPT)\n")
     set (C "${C}string (REGEX REPLACE \"%([A-Z0-9_][A-Z0-9_]+)%\" \"\@\\\\1\@\" SCRIPT \"\${SCRIPT}\")\n")
-    set (C "${C}file (WRITE \"${CONFIGURED_FILE}\" \"\${SCRIPT}\")\n")
+    set (C "${C}file (WRITE \"${TEMPLATE_FILE}\" \"\${SCRIPT}\")\n")
 
     # tools for use in script configuration
     set (C "${C}\n")
@@ -1832,12 +1864,21 @@ function (basis_add_script_finalize TARGET_UID)
       set (C "${C}${COMPILE_DEFINITIONS}\n")
     endif ()
     # configure script for build tree
-    set (C "${C}configure_file (\"${CONFIGURED_FILE}\" \"${OUTPUT_FILE}\" @ONLY)\n")
-    # make executable
-    if (NOT MODULE)
+    set (C "${C}configure_file (\"${TEMPLATE_FILE}\" \"${CONFIGURED_FILE}\" @ONLY)\n")
+    if (MODULE)
+      # compile module if applicable
+      if (COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_FILE}')\")\n")
+        get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
+        get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
+        set (OUTPUT_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
+        list (APPEND OUTPUT_FILES "${OUTPUT_FILE}")
+      endif ()
+    else ()
+      # or set executable bit on Unix
       set (C "${C}\n")
       set (C "${C}if (UNIX)\n")
-      set (C "${C}  execute_process (COMMAND chmod +x \"${OUTPUT_FILE}\")\n")
+      set (C "${C}  execute_process (COMMAND chmod +x \"${CONFIGURED_FILE}\")\n")
       set (C "${C}endif ()\n")
     endif ()
 
@@ -1866,29 +1907,68 @@ function (basis_add_script_finalize TARGET_UID)
         set (C "${C}${COMPILE_DEFINITIONS}\n")
       endif ()
       # configure script for installation tree
-      set (C "${C}configure_file (\"${CONFIGURED_FILE}\" \"${INSTALL_FILE}\" @ONLY)\n")
+      set (C "${C}configure_file (\"${TEMPLATE_FILE}\" \"${CONFIGURED_INSTALL_FILE}\" @ONLY)\n")
+      # compile module if applicable
+      if (MODULE AND COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_INSTALL_FILE}')\")\n")
+        get_filename_component (MODULE_PATH "${CONFIGURED_INSTALL_FILE}" PATH)
+        get_filename_component (MODULE_NAME "${CONFIGURED_INSTALL_FILE}" NAME_WE)
+        set (INSTALL_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
+        string (REGEX REPLACE "\\.py$" ".pyc" INSTALL_NAME "${INSTALL_NAME}")
+        list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
+      endif ()
     endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # otherwise, just copy script file
   else ()
-    set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${OUTPUT_FILE}\" COPYONLY)\n")
-    if (NOT MODULE)
-      set (C "${C}\nif (UNIX)\n")
-      set (C "${C}  execute_process (COMMAND chmod +x \"${OUTPUT_FILE}\")\n")
+    set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${CONFIGURED_FILE}\" COPYONLY)\n")
+    # compile module if applicable
+    if (MODULE)
+      if (COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_FILE}')\")\n")
+        get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
+        get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
+        set (INSTALL_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
+        string (REGEX REPLACE "\\.py$" ".pyc" INSTALL_NAME "${INSTALL_NAME}")
+        list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
+      endif ()
+    # or set executable bit on Unix
+    else ()
+      set (C "${C}\n")
+      set (C "${C}if (UNIX)\n")
+      set (C "${C}  execute_process (COMMAND chmod +x \"${CONFIGURED_FILE}\")\n")
       set (C "${C}endif ()\n")
     endif ()
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # create __init__.py files in build tree Python package
-  if (MODULE AND BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
+  set (INIT_PY)
+  set (MAIN_INIT_PY)
+  if (MODULE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
     set (D "${LIBRARY_OUTPUT_DIRECTORY}")
-    while (NOT "${D}" STREQUAL "${BINARY_PYTHON_LIBRARY_DIR}")
+    while (NOT D STREQUAL BINARY_PYTHON_LIBRARY_DIR)
       if (D MATCHES "sbia$")
         set (C "${C}file (WRITE \"${D}/__init__.py\" \"from pkgutil import extend_path\\n__path__ = extend_path(__path__, __name__)\\n\")\n")
+        if (COMPILE)
+          basis_set_if_empty (MAIN_INIT_PY "${D}/__init__.pyc")
+        else ()
+          basis_set_if_empty (MAIN_INIT_PY "${D}/__init__.py")
+        endif ()
       else ()
         set (C "${C}execute_process (COMMAND \"${CMAKE_COMMAND}\" -E touch \"${D}/__init__.py\")\n")
+        if (COMPILE)
+          basis_set_if_empty (INIT_PY "${D}/__init__.pyc")
+        else ()
+          basis_set_if_empty (INIT_PY "${D}/__init__.py")
+        endif ()
+      endif ()
+      if (COMPILE)
+        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${D}/__init__.py')\")\n")
+        list (APPEND OUTPUT_FILES "${D}/__init__.py" "${D}/__init__.pyc")
+      else ()
+        list (APPEND OUTPUT_FILES "${D}/__init__.py" "${D}/__init__.py")
       endif ()
       get_filename_component (D "${D}" PATH)
     endwhile ()
@@ -1919,11 +1999,7 @@ function (basis_add_script_finalize TARGET_UID)
   endif ()
 
   # add custom target which triggers execution of build script
-  add_custom_target (
-    _${TARGET_UID}
-    DEPENDS ${OUTPUT_FILES}
-  )
-
+  add_custom_target (_${TARGET_UID} DEPENDS ${OUTPUT_FILES})
   add_dependencies (${TARGET_UID} _${TARGET_UID})
 
   # Provide target to build all scripts. In particular, scripts need to be build
@@ -1945,31 +2021,36 @@ function (basis_add_script_finalize TARGET_UID)
     if (LIBRARY_INSTALL_DIRECTORY)
       install (
         FILES       "${INSTALL_FILE}"
-        RENAME      "${OUTPUT_NAME}"
+        RENAME      "${INSTALL_NAME}"
         DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
         COMPONENT   "${LIBRARY_COMPONENT}"
       )
 
-      # create __init__.py files for Python package
-      if (BASIS_LANGUAGE STREQUAL "PYTHON" AND LIBRARY_INSTALL_DIRECTORY MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR}/.+")
-        set (C)
+      if (INIT_PY OR MAIN_INIT_PY)
         set (D "${LIBRARY_INSTALL_DIRECTORY}")
-        while (NOT "${D}" STREQUAL "${INSTALL_PYTHON_LIBRARY_DIR}")
+        while (NOT D STREQUAL INSTALL_PYTHON_LIBRARY_DIR)
           if (D MATCHES "sbia$")
-            set (C "${C}file (WRITE \"${CMAKE_INSTALL_PREFIX}/${D}/__init__.py\" \"from pkgutil import extend_path\\n__path__ = extend_path(__path__, __name__)\\n\")\n")
+            install (
+              FILES       "${MAIN_INIT_PY}"
+              DESTINATION "${D}"
+              COMPONENT   "${LIBRARY_COMPONENT}"
+            )
           else ()
-            set (C "${C}execute_process (COMMAND \"${CMAKE_COMMAND}\" -E touch \"${INSTALL_PREFIX}/${D}/__init__.py\")\n")
+            install (
+              FILES       "${INIT_PY}"
+              DESTINATION "${D}"
+              COMPONENT   "${LIBRARY_COMPONENT}"
+            )
           endif ()
           get_filename_component (D "${D}" PATH)
         endwhile ()
-        install (CODE "${C}")
       endif ()
     endif ()
   else ()
     if (RUNTIME_INSTALL_DIRECTORY)
       install (
         PROGRAMS    "${INSTALL_FILE}"
-        RENAME      "${OUTPUT_NAME}"
+        RENAME      "${INSTALL_NAME}"
         DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
         COMPONENT   "${RUNTIME_COMPONENT}"
       )
