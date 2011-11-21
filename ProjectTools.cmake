@@ -429,12 +429,6 @@ function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # clean up last run before the error because a file was added/removed
 
-  # top-level project is the first and hence shall clean up the include
-  # directory to ensure that no removed files remain there
-  if (NOT PROJECT_IS_MODULE)
-    file (REMOVE_RECURSE "${BINARY_INCLUDE_DIR}")
-  endif ()
-
   file (REMOVE "${CMAKE_FILE}")
   file (REMOVE "${CMAKE_FILE}.tmp")
   file (REMOVE "${CMAKE_FILE}.updated")
@@ -1071,6 +1065,8 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # reset
+  set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
+
   set (PROJECT_DEPENDS)
   set (PROJECT_OPTIONAL_DEPENDS)
   set (PROJECT_TEST_DEPENDS)
@@ -1084,6 +1080,8 @@ macro (basis_project_impl)
   set (PROJECT_README_FILE)
   set (PROJECT_INSTALL_FILE)
   set (PROJECT_LICENSE_FILE)
+
+  basis_set_if_empty (PROJECT_IS_MODULE FALSE)
 
   # --------------------------------------------------------------------------
   # project meta-data
