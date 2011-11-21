@@ -64,10 +64,13 @@ endif ()
 # use modules
 # ============================================================================
 
-foreach (M IN LISTS ${NS}MODULES_REQUESTED)
-  if (${NS}${M}_USE_FILE)
-    set (${M}_CONFIG_PREFIX "${NS}${M}_")
-    include ("${${NS}${M}_USE_FILE}")
-    unset (${M}_CONFIG_PREFIX)
-  endif ()
-endforeach ()
+# following statements only valid for top-level projects, not modules
+if (NOT @PROJECT_IS_MODULE@)
+  foreach (M IN LISTS ${NS}MODULES_REQUESTED)
+    if (${NS}${M}_USE_FILE)
+      set (${M}_CONFIG_PREFIX "${NS}${M}_")
+      include ("${${NS}${M}_USE_FILE}")
+      unset (${M}_CONFIG_PREFIX)
+    endif ()
+  endforeach ()
+endif ()

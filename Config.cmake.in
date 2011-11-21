@@ -69,35 +69,38 @@ basis_set_config (CUSTOM_EXPORTS_FILE "${CMAKE_CURRENT_LIST_DIR}/@CUSTOM_EXPORTS
 # modules
 # ============================================================================
 
-## @brief List of project modules.
-basis_set_config (MODULES "@PROJECT_MODULES@")
+# following statements only valid for top-level projects, not modules
+if (NOT @PROJECT_IS_MODULE@)
+  ## @brief List of project modules.
+  basis_set_config (MODULES "@PROJECT_MODULES@")
 
-## @brief List of build project modules.
-basis_set_config (MODULES_ENABLED "@PROJECT_MODULES_ENABLED@")
+  ## @brief List of build project modules.
+  basis_set_config (MODULES_ENABLED "@PROJECT_MODULES_ENABLED@")
 
-## @brief List of requested modules.
-if (${NS}FIND_COMPONENTS)
-  basis_set_config (MODULES_REQUESTED "${${NS}FIND_COMPONENTS}")
-endif()
-if(NOT ${NS}MODULES_REQUESTED)
-  basis_set_config (MODULES_REQUESTED "${${NS}MODULES_ENABLED}")
-endif()
+  ## @brief List of requested modules.
+  if (${NS}FIND_COMPONENTS)
+    basis_set_config (MODULES_REQUESTED "${${NS}FIND_COMPONENTS}")
+  endif()
+  if(NOT ${NS}MODULES_REQUESTED)
+    basis_set_config (MODULES_REQUESTED "${${NS}MODULES_ENABLED}")
+  endif()
 
-foreach (M IN LISTS ${NS}MODULES_REQUESTED)
-  # include configuration files of modules
-  set (${M}_CONFIG_PREFIX "${NS}${M}_")
-  include ("@MODULES_DIR_CONFIG@/${M}/${M}Config.cmake")
-  unset (${M}_CONFIG_PREFIX)
-  # append include directories
-  if (${NS}${M}_INCLUDE_DIRS)
-    list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIRS})
-  elseif (${NS}${M}_INCLUDE_DIR)
-    list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIR})
-  endif ()
-  # append library directories
-  if (${NS}${M}_LIBRARY_DIRS)
-    list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIRS})
-  elseif (${NS}${M}_LIBARY_DIR)
-    list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIR})
-  endif ()
-endforeach ()
+  foreach (M IN LISTS ${NS}MODULES_REQUESTED)
+    # include configuration files of modules
+    set (${M}_CONFIG_PREFIX "${NS}${M}_")
+    include ("@MODULES_DIR_CONFIG@/${M}/${M}Config.cmake")
+    unset (${M}_CONFIG_PREFIX)
+    # append include directories
+    if (${NS}${M}_INCLUDE_DIRS)
+      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIRS})
+    elseif (${NS}${M}_INCLUDE_DIR)
+      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIR})
+    endif ()
+    # append library directories
+    if (${NS}${M}_LIBRARY_DIRS)
+      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIRS})
+    elseif (${NS}${M}_LIBARY_DIR)
+      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIR})
+    endif ()
+  endforeach ()
+endif ()

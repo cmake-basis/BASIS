@@ -42,6 +42,19 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 # find other packages
 # ============================================================================
 
+if (BASIS_DEBUG)
+  macro (find_package PACKAGE)
+    message ("** Looking for package ${PACKAGE}...")
+    _find_package ("${PACKAGE}" ${ARGN})
+    string (TOUPPER "${PACKAGE}" P)
+    if (${PACKAGE}_FOUND OR ${P}_FOUND)
+      message ("** Looking for package ${PACKAGE}... - found")
+    else ()
+      message ("** Looking for package ${PACKAGE}... - not found")
+    endif ()
+  endmacro ()
+endif ()
+
 # ----------------------------------------------------------------------------
 ## @brief Replaces CMake's find_package() command.
 #
@@ -50,14 +63,29 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 #
 # @retval <PACKAGE>_FOUND Whether the given package was found.
 macro (basis_find_package PACKAGE)
-  # circumvent issue with CMake's find_package() interpreting these variables
-  # relative to the current binary directory instead of the top-level directory
-  if (${PACKAGE}_DIR AND NOT IS_ABSOLUTE "${${PACKAGE}_DIR}")
-    set (${PACKAGE}_DIR "${CMAKE_BINARY_DIR}/${${PACKAGE}_DIR}")
-    get_filename_component (${PACKAGE}_DIR "${${PACKAGE}_DIR}" ABSOLUTE)
+  # look for other module of top-level project
+  if (PROJECT_IS_MODULE)
+    list (FIND PROJECT_MODULES "${PACKAGE}" IDX)
+    if (NOT IDX EQUAL -1)
+      list (FIND PROJECT_MODULES_ENABLED "${PACKAGE}" IDX)
+      if (IDX EQUAL -1)
+        set (${PACKAGE}_FOUND FALSE)
+      else ()
+        include ("${${PACKAGE}_DIR}/${PACKAGE}Config.cmake")
+        set (${PACKAGE}_FOUND TRUE)
+      endif ()
+    endif ()
   endif ()
-  # now look for the package
-  find_package (${PACKAGE} ${ARGN})
+  if (NOT ${PACKAGE}_FOUND)
+    # circumvent issue with CMake's find_package() interpreting these variables
+    # relative to the current binary directory instead of the top-level directory
+    if (${PACKAGE}_DIR AND NOT IS_ABSOLUTE "${${PACKAGE}_DIR}")
+      set (${PACKAGE}_DIR "${CMAKE_BINARY_DIR}/${${PACKAGE}_DIR}")
+      get_filename_component (${PACKAGE}_DIR "${${PACKAGE}_DIR}" ABSOLUTE)
+    endif ()
+    # now look for the package
+    find_package (${PACKAGE} ${ARGN})
+  endif ()
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -81,39 +109,55 @@ endmacro ()
 #       Therefore, this code is commented and not used. It remains here as a
 #       reminder only.
 macro (basis_use_package PACKAGE)
-  string (TOUPPER "${PACKAGE}" P)
-  if (${PACKAGE}_FOUND OR ${P}_FOUND)
-    if (${PACKAGE}_USE_FILE)
-      include ("${${PACKAGE}_USE_FILE}")
-    elseif (${P}_USE_FILE)
-      include ("${${P}_USE_FILE}")
-    else ()
-      # include directories
-      if (${PACKAGE}_INCLUDE_DIRS OR ${P}_INCLUDE_DIRS)
-        if (${PACKAGE}_INCLUDE_DIRS)
-          basis_include_directories (${${PACKAGE}_INCLUDE_DIRS})
+  foreach (A IN ITEMS "WORKAROUND FOR NOT BEING ABLE TO USE RETURN")
+    # use other module of top-level project
+    if (PROJECT_IS_MODULE)
+      list (FIND PROJECT_MODULES "${PACKAGE}" IDX)
+      if (NOT IDX EQUAL -1)
+        if (${PACKAGE}_FOUND)
+          include ("${${PACKAGE}_DIR}/${PACKAGE}Use.cmake")
+          break ()
         else ()
-          basis_include_directories (${${P}_INCLUDE_DIRS})
+          message (FATAL_ERROR "Module ${PACKAGE} not found! This must be a "
+                               "mistake of BASIS. Talk to the maintainer of this "
+                               "package and have them fix it.")
         endif ()
-      elseif (${PACKAGE}_INCLUDES OR ${P}_INCLUDES)
-        if (${PACKAGE}_INCLUDES)
-          basis_include_directories (${${PACKAGE}_INCLUDES})
-        else ()
-          basis_include_directories (${${P}_INCLUDES})
-        endif ()
-      elseif (${PACKAGE}_INCLUDE_DIR OR ${P}_INCLUDE_DIR)
-        if (${PACKAGE}_INCLUDE_DIR)
-          basis_include_directories (${${PACKAGE}_INCLUDE_DIR})
-        else ()
-          basis_include_directories (${${P}_INCLUDE_DIR})
-        endif ()
-            
       endif ()
     endif ()
-  else ()
-    message (FATAL_ERROR "Package ${PACKAGE} not found!")
-  endif ()
-  set (P)
+    # use external package
+    string (TOUPPER "${PACKAGE}" P)
+    if (${PACKAGE}_FOUND OR ${P}_FOUND)
+      if (${PACKAGE}_USE_FILE)
+        include ("${${PACKAGE}_USE_FILE}")
+      elseif (${P}_USE_FILE)
+        include ("${${P}_USE_FILE}")
+      else ()
+        # include directories
+        if (${PACKAGE}_INCLUDE_DIRS OR ${P}_INCLUDE_DIRS)
+          if (${PACKAGE}_INCLUDE_DIRS)
+            basis_include_directories (${${PACKAGE}_INCLUDE_DIRS})
+          else ()
+            basis_include_directories (${${P}_INCLUDE_DIRS})
+          endif ()
+        elseif (${PACKAGE}_INCLUDES OR ${P}_INCLUDES)
+          if (${PACKAGE}_INCLUDES)
+            basis_include_directories (${${PACKAGE}_INCLUDES})
+          else ()
+            basis_include_directories (${${P}_INCLUDES})
+          endif ()
+        elseif (${PACKAGE}_INCLUDE_DIR OR ${P}_INCLUDE_DIR)
+          if (${PACKAGE}_INCLUDE_DIR)
+            basis_include_directories (${${PACKAGE}_INCLUDE_DIR})
+          else ()
+            basis_include_directories (${${P}_INCLUDE_DIR})
+          endif ()  
+        endif ()
+      endif ()
+    else ()
+      message (FATAL_ERROR "Package ${PACKAGE} not found!")
+    endif ()
+    unset (P)
+  endforeach ()
 endmacro ()
 
 # ============================================================================

@@ -843,28 +843,38 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add standard auxiliary library
   if (NOT NO_BASIS_UTILITIES)
-    basis_make_target_uid (BASIS_UTILITIES_TARGET "basisutilities")
+    set (BASIS_UTILITIES_TARGET "basisutilities")
+    if (BASIS_USE_FULLY_QUALIFIED_UIDS)
+      set (BASIS_UTILITIES_TARGET "${BASIS_PROJECT_NAMESPACE_CMAKE}.${BASIS_UTILITIES_TARGET}")
+    endif ()
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
-      basis_get_target_name (T "${BASIS_UTILITIES_TARGET}")
-      basis_add_library (${T} STATIC ${BASIS_UTILITIES_SOURCES})
+      add_library (${BASIS_UTILITIES_TARGET} STATIC ${BASIS_UTILITIES_SOURCES})
 
       # define dependency on non-project specific utilities as the order in
       # which static libraries are listed on the command-line for the linker
       # matters; this will tell CMake to get the order right
       if (BASIS_NAMESPACE)
-        basis_target_link_libraries (${T} ${BASIS_NAMESPACE_LOWER}.basis.utilities)
+        target_link_libraries (${BASIS_UTILITIES_TARGET} ${BASIS_NAMESPACE_LOWER}.basis.utilities)
       else ()
-        basis_target_link_libraries (${T} basis.utilities)
+        target_link_libraries (${BASIS_UTILITIES_TARGET} basis.utilities)
       endif ()
 
-      basis_set_target_properties (
-        ${T}
+      set_target_properties (
+        ${BASIS_UTILITIES_TARGET}
         PROPERTIES
-          OUTPUT_NAME "basisutilities_${PROJECT_NAME_LOWER}"
+          BASIS_TYPE "STATIC_LIBRARY"
           # make sure that this library is always output to the 'lib' directory
           # even if only test executables use it; see CMakeLists.txt in 'test'
           # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
-          ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
+          ARCHIVE_OUTPUT_DIRECTORY "${BASIS_BINARY_ARCHIVE_DIR}"
+      )
+
+      install (
+        TARGETS ${BASIS_UTILITIES_TARGET}
+        EXPORT  ${BASIS_PROJECT_NAME}
+        ARCHIVE
+          DESTINATION "${BASIS_INSTALL_ARCHIVE_DIR}"
+          COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
       )
 
       if (BASIS_DEBUG)
@@ -929,18 +939,6 @@ function (basis_add_executable_target TARGET_NAME)
     endif ()
     # project specific utilities build as part of this project
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
-  endif ()
-
-  # target version information
-  # Note: On UNIX-based systems this only creates annoying files with
-  #       the version string as suffix and two symbolic links.
-  if (WIN32)
-    set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        VERSION   ${PROJECT_VERSION}
-        SOVERSION ${PROJECT_SOVERSION}
-    )
   endif ()
 
   # install executable
@@ -2089,10 +2087,16 @@ function (basis_export_targets)
   basis_get_project_property (EXPORT_TARGETS)
 
   if (EXPORT_TARGETS)
+    if (BASIS_USE_FULLY_QUALIFIED_UIDS)
+      set (NAMESPACE_OPT)
+    else ()
+      set (NAMESPACE_OPT NAMESPACE "${BASIS_PROJECT_NAMESPACE_CMAKE}.")
+    endif ()
+
     export (
       TARGETS   ${EXPORT_TARGETS}
       FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
-      NAMESPACE "${PROJECT_NAMESPACE_CMAKE}."
+      ${NAMESPACE_OPT}
     )
     foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
       install (
@@ -2100,7 +2104,7 @@ function (basis_export_targets)
         DESTINATION "${INSTALL_CONFIG_DIR}"
         FILE        "${ARGN_FILE}"
         COMPONENT   "${COMPONENT}"
-        NAMESPACE "${PROJECT_NAMESPACE_CMAKE}."
+        ${NAMESPACE_OPT}
       )
     endforeach ()
   endif ()
@@ -2145,7 +2149,7 @@ function (basis_export_targets)
     # create import targets
     macro (import_targets)
       foreach (T ${CUSTOM_EXPORT_TARGETS})
-        set (UID "${PROJECT_NAMESPACE_CMAKE}.${T}")
+        basis_get_fully_qualified_target_uid (UID "${T}")
         set (C "${C}\n# Create import target \"${UID}\"\n")
         get_target_property (BASIS_TYPE ${T} "BASIS_TYPE")
         if (BASIS_TYPE MATCHES "EXECUTABLE")
@@ -2170,7 +2174,7 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${CUSTOM_EXPORT_TARGETS})
-          set (UID "${PROJECT_NAMESPACE_CMAKE}.${T}")
+          basis_get_fully_qualified_target_uid (UID "${T}")
           set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${UID} PROPERTIES\n")
@@ -2188,7 +2192,7 @@ function (basis_export_targets)
       foreach (CONFIG ${CMAKE_BUILD_TYPE})
         string (TOUPPER "${CONFIG}" CONFIG_UPPER)
         foreach (T ${CUSTOM_EXPORT_TARGETS})
-          set (UID "${PROJECT_NAMESPACE_CMAKE}.${T}")
+          basis_get_fully_qualified_target_uid (UID "${T}")
           set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
           set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
           set (C "${C}set_target_properties (${UID} PROPERTIES\n")

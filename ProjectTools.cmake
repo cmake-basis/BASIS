@@ -208,7 +208,17 @@ endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Initialize project modules.
+#
+# @attention At this point, the project-specific variables have not been
+#            set yet. For example, use @c CMAKE_CURRENT_SOURCE_DIR instead of
+#            @c PROJECT_SOURCE_DIR.
 macro (basis_project_modules)
+  # --------------------------------------------------------------------------
+  # reset variables
+  set (PROJECT_MODULES)
+  set (PROJECT_MODULES_ENABLED)
+  set (PROJECT_MODULES_DISABLED)
+
   # --------------------------------------------------------------------------
   # load module DAG
 
@@ -217,14 +227,14 @@ macro (basis_project_modules)
     GLOB
       MODULE_INFO_FILES
     RELATIVE
-      "${PROJECT_SOURCE_DIR}"
-      "${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
+      "${CMAKE_CURRENT_SOURCE_DIR}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/modules/*/BasisProject.cmake"
   )
 
   # use function scope to avoid overwriting of this project's variables
   function (basis_module_info F)
     set (PROJECT_IS_MODULE TRUE)
-    include (${PROJECT_SOURCE_DIR}/${F})
+    include ("${CMAKE_CURRENT_SOURCE_DIR}/${F}")
     # make sure that basis_project() was called
     if (NOT PROJECT_NAME)
       message (FATAL_ERROR "basis_module_info(): Module name not defined in ${F}!")
@@ -242,12 +252,12 @@ macro (basis_project_modules)
     basis_module_info (${F})
     list (APPEND PROJECT_MODULES ${MODULE})
     get_filename_component (${MODULE}_BASE ${F} PATH)
-    set (MODULE_${MODULE}_SOURCE_DIR ${PROJECT_SOURCE_DIR}/${${MODULE}_BASE})
+    set (MODULE_${MODULE}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${${MODULE}_BASE}")
     # use module name as subdirectory name such that the default package
     # configuration file knows where to find the module configurations
-    set (MODULE_${MODULE}_BINARY_DIR ${PROJECT_BINARY_DIR}/modules/${MODULE})
-    # help modules to find each other using find_package()
-    set (${MODULE}_DIR ${MODULE_${MODULE}_BINARY_DIR})
+    set (MODULE_${MODULE}_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/modules/${MODULE}")
+    # help modules to find each other using basis_find_package()
+    set (${MODULE}_DIR "${MODULE_${MODULE}_BINARY_DIR}")
   endforeach()
   unset (MODULE)
 
@@ -353,13 +363,13 @@ macro (basis_project_modules)
   # report what will be built
   foreach (MODULE ${PROJECT_MODULES_ENABLED})
     if (MODULE_${MODULE})
-      set (R ", requested by MODULE_${MODULE}")
+      set (R ", requested by option MODULE_${MODULE}")
     elseif (${MODULE}_IN_ALL)
-      set (R ", requested by BUILD_ALL_MODULES")
+      set (R ", requested by option BUILD_ALL_MODULES")
     else ()
-      set (R ", needed by [${${MODULE}_NEEDED_BY}]")
+      set (R ", needed by modules [${${MODULE}_NEEDED_BY}]")
     endif ()
-    message (STATUS "Enabled ${MODULE}${R}.")
+    message (STATUS "Enabled module ${MODULE}${R}.")
   endforeach ()
   unset (R)
 
@@ -383,6 +393,9 @@ endmacro ()
 # here such that the header files in the build tree are updated whenever
 # the source header file was modified. Moreover, this gives us a chance to
 # configure header files with the .in suffix.
+#
+# @note This function configures also the public header files of the modules
+#       already. Hence, it must not be called if this project is a module.
 function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # settings
@@ -401,8 +414,27 @@ function (basis_configure_public_headers)
       ".txx"
   )
 
+  # considered include directories
+  basis_get_relative_path (INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
+  set (INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/${INCLUDE_DIR}")
+  if (NOT PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
+    # If module namespace are used, each module is taking care of its own headers.
+    # Otherwise, the top-level project collects the headers and puts them into its
+    # namespace. Note that INCLUDE_PREFIX is set in the BASIS Settings.cmake.
+    foreach (M IN LISTS PROJECT_MODULES_ENABLED)
+      list (APPEND INCLUDE_DIRS "${PROJECT_MODULES_DIR}/${M}/${INCLUDE_DIR}")
+    endforeach ()
+  endif ()
+
   # --------------------------------------------------------------------------
   # clean up last run before the error because a file was added/removed
+
+  # top-level project is the first and hence shall clean up the include
+  # directory to ensure that no removed files remain there
+  if (NOT PROJECT_IS_MODULE)
+    file (REMOVE_RECURSE "${BINARY_INCLUDE_DIR}")
+  endif ()
+
   file (REMOVE "${CMAKE_FILE}")
   file (REMOVE "${CMAKE_FILE}.tmp")
   file (REMOVE "${CMAKE_FILE}.updated")
@@ -415,22 +447,27 @@ function (basis_configure_public_headers)
 
   execute_process (
     COMMAND "${CMAKE_COMMAND}"
-            -D "PROJECT_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+            -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
             -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
             -D "EXTENSIONS=${EXTENSIONS}"
             -D "CMAKE_FILE=${CMAKE_FILE}"
             -D "VARIABLE_NAME=PUBLIC_HEADERS"
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
+    RESULT_VARIABLE RT
   )
 
-  execute_process (
-    COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
-  )
+  if (RT EQUAL 0)
+    execute_process (
+      COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
+    )
+  else ()
+    message (FATAL_ERROR "Failed to configure public header files!")
+  endif ()
 
   if (NOT EXISTS "${CMAKE_FILE}")
-    message (FATAL_ERROR "File ${CMAKE_FILE} not generated as it should have been! "
-                         "Try running CMake again.")
+    message (FATAL_ERROR "File ${CMAKE_FILE} not generated as it should have been!")
   endif ()
 
   if (BASIS_VERBOSE)
@@ -461,7 +498,8 @@ function (basis_configure_public_headers)
   add_custom_command (
     OUTPUT  "${CMAKE_FILE}.tmp"
     COMMAND "${CMAKE_COMMAND}"
-            -D "PROJECT_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+            -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
             -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
             -D "EXTENSIONS=${EXTENSIONS}"
@@ -496,25 +534,20 @@ function (basis_configure_public_headers)
 
   # --------------------------------------------------------------------------
   # add build command to re-configure public header files
-
   if (PUBLIC_HEADERS)
-    set (PROJECT_PUBLIC_HEADERS)
-    foreach (HEADER IN LISTS PUBLIC_HEADERS)
-      list (APPEND PROJECT_PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/${HEADER}")
-    endforeach ()
-
     add_custom_command (
       OUTPUT  "${CMAKE_FILE}.updated" # do not use same file as included
                                       # before otherwise CMake will re-configure
                                       # the build system next time
       COMMAND "${CMAKE_COMMAND}"
-              -D "PROJECT_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+              -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+              -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
               -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
               -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
               -D "EXTENSIONS=${EXTENSIONS}"
               -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
       COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
-      DEPENDS ${PROJECT_PUBLIC_HEADERS}
+      DEPENDS ${PUBLIC_HEADERS}
       COMMENT "Configuring public header files"
       VERBATIM
     )
@@ -523,9 +556,13 @@ function (basis_configure_public_headers)
     add_custom_target (
       ${CONFIGURE_HEADERS_TARGET} ALL
       DEPENDS ${CHECK_HEADERS_TARGET} "${CMAKE_FILE}.updated"
-      SOURCES ${PROJECT_PUBLIC_HEADERS}
+      SOURCES ${PUBLIC_HEADERS}
     )
   endif ()
+
+  # --------------------------------------------------------------------------
+  # add directory of configured headers to include search path
+  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -580,14 +617,6 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Initialize project, calls CMake's project() command.
 #
-# This macro is called at the beginning of the root CMakeLists.txt file of
-# each BASIS (sub-)project. It in particular includes the BasisProject.cmake
-# file to set the project attributes and uses these to initialize the project.
-#
-# As the BasisTest.cmake module has to be included after the project()
-# command was used, it is not included by the package use file of BASIS.
-# Instead, it is included by this macro.
-#
 # @par Default documentation:
 # Each BASIS project has to have a README.txt file in the top directory of the
 # software component. This file is the root documentation file which refers the
@@ -595,122 +624,73 @@ endfunction ()
 # The same applies to the COPYING.txt file with the copyright and license
 # notices which must be present in the top directory of the source tree as well.
 #
-# @par Project finalization:
-# At the end of the root CMakeLists.txt file, the counterpart of this macro,
-# the macro basis_project_finalize(), has to be invoked to finalize the
-# configuration of the project's build system.
-#
 # @sa basis_project()
-# @sa basis_project_finalize()
+# @sa basis_project_impl()
 #
 # @returns Sets the following non-cached CMake variables:
-# @retval BINARY_*_DIR                     Absolute paths of directories in
-#                                          binary tree corresponding to the
-#                                          @c PROJECT_*_DIR directories.
-#                                          See Settings.cmake file.
-# @retval INSTALL_*_DIR                    Configured paths of installation
-#                                          relative to INSTALL_PREFIX.
-#                                          See Settings.cmake file.
-# @retval BASIS_UTILITIES_HEADERS          List of headers of BASIS C++ utilities.
-# @retval BASIS_UTILITEIS_PUBLIC_HEADERS   List of public headers of BASIS C++ utilities.
-# @retval BASIS_UTILITIES_SOURCES          List of sources of BASIS C++ utilities.
-# @retval PROJECT_NAME_LOWER               Project name in all lowercase letters.
-# @retval PROJECT_NAME_UPPER               Project name in all uppercase letters.
-# @retval PROJECT_NAME_INFIX               Project name used as infix for installation
-#                                          directories and namespace identifiers.
-#                                          In particular, the project name in either
-#                                          all lowercase or mixed case starting with
-#                                          an uppercase letter depending on whether
-#                                          the @c PROJECT_NAME has mixed case or not.
-# @retval PROJECT_REVISION                 Revision number of Subversion controlled
-#                                          source tree or 0 if the source tree is
-#                                          not under revision control.
-# @retval PROJECT_VERSION_AND_REVISION     A string of project version and revision
-#                                          that can be used for the output of
-#                                          version information.
+# @retval PROJECT_NAME_LOWER             Project name in all lowercase letters.
+# @retval PROJECT_NAME_UPPER             Project name in all uppercase letters.
+# @retval PROJECT_NAME_INFIX             Project name used as infix for installation
+#                                        directories and namespace identifiers.
+#                                        In particular, the project name in either
+#                                        all lowercase or mixed case starting with
+#                                        an uppercase letter depending on whether
+#                                        the @c PROJECT_NAME has mixed case or not.
+# @retval PROJECT_REVISION               Revision number of Subversion controlled
+#                                        source tree or 0 if the source tree is
+#                                        not under revision control.
+# @retval PROJECT_VERSION_AND_REVISION   A string of project version and revision
+#                                        that can be used for the output of
+#                                        version information.
 #
 # @ingroup CMakeAPI
 macro (basis_project_initialize)
   # --------------------------------------------------------------------------
-  # reset
+  # Slicer extension
 
-  set (PROJECT_DEPENDS)
-  set (PROJECT_OPTIONAL_DEPENDS)
-  set (PROJECT_TEST_DEPENDS)
-  set (PROJECT_DESCRIPTION)
-  set (PROJECT_NAME)
-  set (PROJECT_PACKAGE_VENDOR)
-  set (PROJECT_VERSION)
+  # Unfortunately, Slicer invokes the project() command in the SlicerConfig.cmake
+  # file. Furthermore, it must be the first package to be included. Therefore,
+  # scan dependencies for Slicer, which is an indicator that this project is
+  # an extension for Slicer and look for it here already.
 
-  set (PROJECT_AUTHORS_FILE)
-  set (PROJECT_WELCOME_FILE)
-  set (PROJECT_README_FILE)
-  set (PROJECT_INSTALL_FILE)
-  set (PROJECT_LICENSE_FILE)
-
-  # set here such that it can be overwritten in the Settings.cmake file
-  set (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
-
-  # --------------------------------------------------------------------------
-  # project meta-data
-
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
-    include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
-
-    if (NOT PROJECT_NAME)
-      message (FATAL_ERROR "Project name not defined! Forgot to call basis_project() "
-                           "in the file BasisProject.cmake?")
+  list (FIND PROJECT_DEPENDS "Slicer" IDX)
+  if (IDX EQUAL -1)
+    # A module that only optionally can be a Slicer Extension by itself
+    # shall not be build as Slicer Extension if this project is not an
+    # extension for Slicer. Only a project can be a Slicer Extension.
+    if (NOT PROJECT_IS_MODULE)
+      list (FIND PROJECT_OPTIONAL_DEPENDS "Slicer" IDX)
+      if (NOT IDX EQUAL -1)
+        basis_find_package ("Slicer" QUIET)
+        if (Slicer_FOUND)
+          basis_use_package ("Slicer")
+        endif ()
+      endif ()
     endif ()
   else ()
-    message (FATAL_ERROR "Missing BasisProject.cmake file!")
-  endif ()
- 
-  # --------------------------------------------------------------------------
-  # resolve dependencies
-
-  # add project config directory to CMAKE_MODULE_PATH
-  set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config" ${CMAKE_MODULE_PATH})
-
-  foreach (P ${PROJECT_DEPENDS})
-    if ("${P}" STREQUAL "Slicer")
-      if (NOT EXTENSION_NAME)
-        set (EXTENSION_NAME "${PROJECT_NAME}")
-      endif ()
+    # If a module requires Slicer, the top-level project must be a
+    # Slicer Extension and hence specify Slicer as a dependency.
+    if (PROJECT_IS_MODULE AND NOT Slicer_FOUND)
+      message (FATAL_ERROR "Module ${PROJECT_NAME} requires Slicer, which "
+                           "indicates it is a Slicer Extension. Therefore, "
+                           "the top-level project must be a Slicer Extension "
+                           "as well and declare Slicer as a dependency such "
+                           "that the configuration file of the Slicer package "
+                           "is included before the modules are being configured.")
     endif ()
-    basis_find_package ("${P}" REQUIRED)
-    string (TOUPPER "${P}" U)
-    if (${P}_FOUND OR ${U}_FOUND)
-      basis_use_package ("${P}")
+    basis_find_package ("Slicer" REQUIRED)
+    if (Slicer_FOUND)
+      basis_use_package ("Slicer")
     else ()
-      message (FATAL_ERROR "Package ${P} not found!")
+      message (FATAL_ERROR "Package Slicer not found!")
       return ()
     endif ()
-  endforeach ()
-
-  foreach (P ${PROJECT_OPTIONAL_DEPENDS})
-    if ("${P}" STREQUAL "Slicer")
-      if (NOT EXTENSION_NAME)
-        set (EXTENSION_NAME "${PROJECT_NAME}")
-      endif ()
-    endif ()
-    basis_find_package ("${P}" QUIET)
-    string (TOUPPER "${P}" U)
-    if (${P}_FOUND OR ${U}_FOUND)
-      basis_use_package ("${P}")
-    endif ()
-  endforeach ()
-
-  # Note: Test dependencies are resolved after the inclusion of BasisTest.cmake below.
-
-  unset (P)
-  unset (U)
+  endif ()
 
   # --------------------------------------------------------------------------
   # project()
 
-  # start CMake project if not done yet
-  #
-  # Note that in particular SlicerConfig.cmake will invoke project() by itself.
+  # note that in particular SlicerConfig.cmake will invoke project() by itself
   if (NOT PROJECT_SOURCE_DIR OR NOT "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
     project ("${PROJECT_NAME}")
   endif ()
@@ -721,6 +701,16 @@ macro (basis_project_initialize)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
 
+  # This variable is in particular used in the Directories.cmake.in template
+  # file to separate the files of modules of a project from each other
+  # if BASIS_USE_MODULE_NAMESPACES is set to ON.
+  if (WINDOWS)
+    # Windows users prefer mixed case directory names
+    set (PROJECT_NAME_INFIX "${PROJECT_NAME}")
+  else ()
+    # Unix users often prefer lowercase directory names
+    set (PROJECT_NAME_INFIX "${PROJECT_NAME_LOWER}")
+  endif ()
 
   # get current revision of project
   basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
@@ -773,40 +763,38 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # settings
 
-  
+  # configure and include BASIS directory structure
+  configure_file (
+    "${BASIS_MODULE_PATH}/Directories.cmake.in"
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake"
+    @ONLY
+  )
+
+  include ("${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake")
+
   # include project specific settings
   #
   # This file enables the project to modify the default behavior of BASIS,
   # but only if BASIS allows so as the BASIS settings are included afterwards.
-  include ("${PROJECT_SOURCE_DIR}/config/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
+  if (EXISTS "${PROJECT_CONFIG_DIR}/Settings.cmake.in")
+    configure_file (
+      "${PROJECT_CONFIG_DIR}/Settings.cmake.in"
+      "${BINARY_CONFIG_DIR}/Settings.cmake"
+      @ONLY
+    )
+    include ("${BINARY_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE)
+  else ()
+    include ("${PROJECT_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
+  endif ()
 
   # configure and include BASIS settings
   configure_file (
     "${BASIS_MODULE_PATH}/Settings.cmake.in"
-    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Settings.cmake"
+    "${BINARY_CONFIG_DIR}/BasisSettings.cmake"
     @ONLY
   )
 
-  include ("${PROJECT_BINARY_DIR}/${PROJECT_NAME}Settings.cmake" NO_POLICY_SCOPE)
-
-  # enable testing
-  include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
-
-  if (BUILD_TESTING)
-    foreach (P ${PROJECT_TEST_DEPENDS})
-      basis_find_package ("${P}")
-      if (${P}_FOUND OR ${U}_FOUND)
-        basis_use_package ("${P}")
-      else ()
-        message (FATAL_ERROR "Could not find package ${P}! It is required by "
-                             "the tests of ${PROJECT_NAME}. Either set ${P}_DIR "
-                             "manually and try again or disable testing by "
-                             "setting BUILD_TESTING to OFF.")
-      endif ()
-    endforeach ()
-    unset (P)
-    unset (U)
-  endif ()
+  include ("${BINARY_CONFIG_DIR}/BasisSettings.cmake" NO_POLICY_SCOPE)
 
   # --------------------------------------------------------------------------
   # authors, readme, install and license files
@@ -855,6 +843,86 @@ macro (basis_project_initialize)
   endif ()
 endmacro ()
 
+# ----------------------------------------------------------------------------
+## @brief Find packages this project depends on.
+macro (basis_find_packages)
+  # Attention: This function is used before the Directories.cmake.in and
+  #            Settings.cmake.in files were configured and included.
+  set (PROJECT_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
+
+  # --------------------------------------------------------------------------
+  # add project config directory to CMAKE_MODULE_PATH
+  set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})
+
+  # --------------------------------------------------------------------------
+  # Depends.cmake
+
+  # This file is in particular of interest if a dependency is required if
+  # certain modules are enabled, but not others.
+  #
+  # For example, if a module is a Slicer extension which integrates the tools
+  # of other modules as extension for Slicer, the package configuration of
+  # Slicer has to be included first and hence, in this case Slicer must be
+  # added as dependency of the top-level project. Not so, however, if the Slicer
+  # extension module is not enabled. Thus, the top-level project can look for
+  # Slicer using basis_find_package() only if the Slicer Extension module
+  # is enabled. It can check for this using the variable <Module>_ENABLED or
+  # the list PROJECT_MODULES_ENABLED.
+
+  # Attention: This function is used before the Directories.cmake.in and
+  #            Settings.cmake.in files were configured and included.
+  include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
+
+  # --------------------------------------------------------------------------
+  # required dependencies
+  foreach (P IN LISTS PROJECT_DEPENDS)
+    if ("${P}" STREQUAL "Slicer")
+      if (NOT EXTENSION_NAME)
+        set (EXTENSION_NAME "${PROJECT_NAME}")
+      endif ()
+    endif ()
+    basis_find_package ("${P}" REQUIRED)
+    string (TOUPPER "${P}" U)
+    if (${P}_FOUND OR ${U}_FOUND)
+      basis_use_package ("${P}")
+    else ()
+      message (FATAL_ERROR "Package ${P} not found!")
+      return ()
+    endif ()
+  endforeach ()
+
+  # --------------------------------------------------------------------------
+  # optional dependencies
+  foreach (P IN LISTS PROJECT_OPTIONAL_DEPENDS)
+    if ("${P}" STREQUAL "Slicer")
+      if (NOT EXTENSION_NAME)
+        set (EXTENSION_NAME "${PROJECT_NAME}")
+      endif ()
+    endif ()
+    basis_find_package ("${P}" QUIET)
+    string (TOUPPER "${P}" U)
+    if (${P}_FOUND OR ${U}_FOUND)
+      basis_use_package ("${P}")
+    endif ()
+  endforeach ()
+
+  # --------------------------------------------------------------------------
+  # test dependencies
+  if (BUILD_TESTING)
+    foreach (P IN LISTS PROJECT_TEST_DEPENDS)
+      basis_find_package ("${P}")
+      if (${P}_FOUND OR ${U}_FOUND)
+        basis_use_package ("${P}")
+      else ()
+        message (FATAL_ERROR "Could not find package ${P}! It is required by "
+                             "the tests of ${PROJECT_NAME}. Either specify "
+                             "package location manually and try again or "
+                             "disable testing by setting BUILD_TESTING to OFF.")
+      endif ()
+    endforeach ()
+  endif ()
+endmacro ()
+
 # ============================================================================
 # finalization
 # ============================================================================
@@ -877,6 +945,11 @@ endmacro ()
 #
 # @ingroup CMakeAPI
 macro (basis_project_finalize)
+  # write convenience file to setup MATLAB environment
+  if (MATLAB_FOUND)
+    basis_create_addpaths_mfile ()
+  endif ()
+
   # --------------------------------------------------------------------------
   # module
 
@@ -887,24 +960,14 @@ macro (basis_project_finalize)
     # Note: Should be done for each module as the finalize functions
     #       might use the PROJECT_* variables.
     basis_add_custom_finalize ()
-
     # generate configuration files
-    if (EXISTS "${PROJECT_CONFIG_DIR}/GenerateConfig.cmake")
-      include ("${PROJECT_CONFIG_DIR}/GenerateConfig.cmake")
-    else ()
-      include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
-    endif ()
+    include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
 
   # --------------------------------------------------------------------------
   # project
 
   else ()
 
-    # collect targets of modules and set of all include directories
-    foreach (MODULE ${PROJECT_MODULES_ENABLED})
-      basis_set_project_property (INCLUDE_DIRS APPEND ${${MODULE}_INCLUDE_DIRS})
-      basis_set_project_property (TARGETS APPEND ${${MODULE}_TARGETS})
-    endforeach ()
     # install root documentation files
     basis_install_root_documentation_files ()
     # install public headers
@@ -946,10 +1009,6 @@ macro (basis_project_finalize)
         DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
         COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
       )
-    endif ()
-    # write convenience file to setup MATLAB environment
-    if (MATLAB_FOUND)
-      basis_create_addpaths_mfile ()
     endif ()
     # configure auxiliary modules
     basis_configure_auxiliary_modules ()
@@ -995,6 +1054,61 @@ endmacro ()
 # @sa basis_project_finalize()
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
+  # CMake version and policies
+  cmake_minimum_required (VERSION 2.8.4)
+
+  # Add policies introduced with CMake versions newer than the one specified
+  # above. These policies would otherwise trigger a policy not set warning by
+  # newer CMake versions.
+
+  if (POLICY CMP0016)
+    cmake_policy (SET CMP0016 NEW)
+  endif ()
+
+  if (POLICY CMP0017)
+    cmake_policy (SET CMP0017 NEW)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # reset
+  set (PROJECT_DEPENDS)
+  set (PROJECT_OPTIONAL_DEPENDS)
+  set (PROJECT_TEST_DEPENDS)
+  set (PROJECT_DESCRIPTION)
+  set (PROJECT_NAME)
+  set (PROJECT_PACKAGE_VENDOR)
+  set (PROJECT_VERSION)
+
+  set (PROJECT_AUTHORS_FILE)
+  set (PROJECT_WELCOME_FILE)
+  set (PROJECT_README_FILE)
+  set (PROJECT_INSTALL_FILE)
+  set (PROJECT_LICENSE_FILE)
+
+  # --------------------------------------------------------------------------
+  # project meta-data
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
+    include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
+
+    if (NOT PROJECT_NAME)
+      message (FATAL_ERROR "Project name not defined! Forgot to call basis_project() "
+                           "in the file BasisProject.cmake?")
+    endif ()
+  else ()
+    message (FATAL_ERROR "Missing BasisProject.cmake file!")
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # load information of modules
+  if (NOT PROJECT_IS_MODULE)
+    basis_project_modules ()
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # find packages
+  basis_find_packages ()
+
+  # --------------------------------------------------------------------------
   # initialize project
   basis_project_initialize ()
 
@@ -1004,28 +1118,20 @@ macro (basis_project_impl)
   basis_installtree_asserts ()
 
   # --------------------------------------------------------------------------
-  # load information of modules
-  set (PROJECT_MODULES)
-  set (PROJECT_MODULES_ENABLED)
-  set (PROJECT_MODULES_DISABLED)
-
+  # enable testing
   if (NOT PROJECT_IS_MODULE)
-    basis_project_modules ()
+    include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
   endif ()
 
   # --------------------------------------------------------------------------
   # public header files
-  basis_configure_public_headers ()
-
-  # attention: Must be called inside a macro, otherwise the
-  #            BASIS_INCLUDE_DIRECTORIES variable is only changed in the
-  #            scope of the function.
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
-  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
+  if (NOT PROJECT_IS_MODULE OR BASIS_USE_MODULE_NAMESPACES)
+    basis_configure_public_headers ()
+  endif ()
 
   # --------------------------------------------------------------------------
   # pre-configure C++ utilities
-
   if (NOT PROJECT_IS_MODULE)
     basis_configure_auxiliary_sources (
       BASIS_UTILITIES_SOURCES
@@ -1040,20 +1146,32 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
+  # top-level project settings
+  if (NOT PROJECT_IS_MODULE)
+    # used to only build one global BASIS utilities library for all modules
+    set (BASIS_PROJECT_NAME            "${PROJECT_NAME}")
+    set (BASIS_PROJECT_NAMESPACE_CMAKE "${PROJECT_NAMESPACE_CMAKE}")
+    set (BASIS_BINARY_ARCHIVE_DIR      "${BINARY_ARCHIVE_DIR}")
+    set (BASIS_INSTALL_ARCHIVE_DIR     "${INSTALL_ARCHIVE_DIR}")
+  endif ()
+
+  # --------------------------------------------------------------------------
   # subdirectories
 
   # build modules
-  foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-    if (BASIS_VERBOSE)
-      message (STATUS "Configuring module ${MODULE}...")
-    endif ()
-    set (PROJECT_IS_MODULE TRUE)
-    add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
-    set (PROJECT_IS_MODULE FALSE)
-    if (BASIS_VERBOSE)
-      message (STATUS "Configuring module ${MODULE}... - done")
-    endif ()
-  endforeach ()
+  if (NOT PROJECT_IS_MODULE)
+    foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
+      if (BASIS_VERBOSE)
+        message (STATUS "Configuring module ${MODULE}...")
+      endif ()
+      set (PROJECT_IS_MODULE TRUE)
+      add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
+      set (PROJECT_IS_MODULE FALSE)
+      if (BASIS_VERBOSE)
+        message (STATUS "Configuring module ${MODULE}... - done")
+      endif ()
+    endforeach ()
+  endif ()
 
   # build source code
   if (EXISTS "${PROJECT_CODE_DIR}")
