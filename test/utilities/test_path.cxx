@@ -410,6 +410,15 @@ TEST (Path, get_file_name_without_extension)
     EXPECT_STREQ ("README",    get_file_name_without_extension ("doc/README").c_str ());
     EXPECT_STREQ ("Copyright", get_file_name_without_extension ("Copyright.txt").c_str ());
 
+    set<string> exts;
+    exts.insert(".nii");
+    exts.insert(".hdr");
+    EXPECT_STREQ ("brain.nii.gz", get_file_name_without_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
+    exts.insert(".gz");
+    EXPECT_STREQ ("brain.nii", get_file_name_without_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
+    exts.insert(".nii.gz");
+    EXPECT_STREQ ("brain", get_file_name_without_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
+
     // test with invalid argument
     EXPECT_THROW (get_file_name_without_extension (""), invalid_argument);
 }
@@ -424,9 +433,9 @@ TEST (Path, get_file_name_extension)
 
     set<string> exts;
     exts.insert(".nii");
-    exts.insert(".gz");
     exts.insert(".hdr");
-
+    EXPECT_STREQ ("", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
+    exts.insert(".gz");
     EXPECT_STREQ (".gz", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
     exts.insert(".nii.gz");
     EXPECT_STREQ (".nii.gz", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
