@@ -20,9 +20,9 @@
 # common settings
 # ============================================================================
 
-basis_get_fully_qualified_target_uid (UTILITIES_LIBRARY_CONFIG "utilities")
-basis_get_fully_qualified_target_uid (TEST_LIBRARY_CONFIG "testlib")
-basis_get_fully_qualified_target_uid (TEST_MAIN_LIBRARY_CONFIG "testmain")
+basis_get_fully_qualified_target_uid (UTILITIES_LIBRARY_CONFIG "${BASIS_UTILITIES_LIBRARY}")
+basis_get_fully_qualified_target_uid (TEST_LIBRARY_CONFIG      "${BASIS_TEST_LIBRARY}")
+basis_get_fully_qualified_target_uid (TEST_MAIN_LIBRARY_CONFIG "${BASIS_TEST_MAIN_LIBRARY}")
 
 # ============================================================================
 # build tree configuration settings

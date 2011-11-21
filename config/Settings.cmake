@@ -57,3 +57,15 @@ basis_set_project_property (PROJECT_USES_PYTHON_UTILITIES TRUE)
 basis_set_project_property (PROJECT_USES_PERL_UTILITIES   TRUE)
 basis_set_project_property (PROJECT_USES_BASH_UTILITIES   TRUE)
 basis_set_project_property (PROJECT_USES_MATLAB_UTILITIES TRUE)
+
+# target UIDs of BASIS libraries; these would be set by the package configuration
+# file if this BASIS project would not be BASIS itself
+if (BASIS_USE_FULLY_QUALIFIED_UIDS)
+  set (BASIS_UTILITIES_LIBRARY "sbia.basis.utilities")
+  set (BASIS_TEST_LIBRARY      "sbia.basis.testlib")
+  set (BASIS_TEST_MAIN_LIBRARY "sbia.basis.testmain")
+else ()
+  set (BASIS_UTILITIES_LIBRARY "utilities")
+  set (BASIS_TEST_LIBRARY      "testlib")
+  set (BASIS_TEST_MAIN_LIBRARY "testmain")
+endif ()
