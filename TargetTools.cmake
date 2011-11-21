@@ -858,7 +858,8 @@ function (basis_add_executable_target TARGET_NAME)
       set_target_properties (
         ${BASIS_UTILITIES_TARGET}
         PROPERTIES
-          BASIS_TYPE "STATIC_LIBRARY"
+          BASIS_TYPE  "STATIC_LIBRARY"
+          OUTPUT_NAME "basisutilities"
           # make sure that this library is always output to the 'lib' directory
           # even if only test executables use it; see CMakeLists.txt in 'test'
           # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
