@@ -42,12 +42,12 @@ def _basis_init_sys_path():
     sitelib_dir = os.path.normpath(os.path.join(module_dir, '%PYTHON_LIBRARY_DIR%'))
     if sitelib_dir not in sys.path:
         sys.path.append(sitelib_dir)
-    sitelib_dir = os.path.normpath(os.path.join(module_dir, '@BASIS_PYTHON_LIBRARY_DIR@'))
+    sitelib_dir = os.path.normpath(os.path.join(module_dir, '%BASIS_PYTHON_LIBRARY_DIR%'))
     if sitelib_dir not in sys.path:
         sys.path.append(sitelib_dir)
 
 _basis_init_sys_path()
-from @PROJECT_NAMESPACE_PYTHON@ import basis
+from %PROJECT_NAMESPACE_PYTHON% import basis
 "
 )
 
@@ -68,12 +68,12 @@ from @PROJECT_NAMESPACE_PYTHON@ import basis
 # @ingroup BasisPerlUtilities
 set (BASIS_PERL_UTILITIES "
 use File::Basename;
-use lib dirname (__FILE__) . '/@BASIS_PERL_LIBRARY_DIR@';
+use lib dirname (__FILE__) . '/%BASIS_PERL_LIBRARY_DIR%';
 use lib dirname (__FILE__) . '/%PERL_LIBRARY_DIR%';
 use lib dirname (__FILE__);
 
 package Basis;
-use @PROJECT_NAMESPACE_PERL@::Basis qw(:everything);
+use %PROJECT_NAMESPACE_PERL%::Basis qw(:everything);
 package main;
 "
 )
@@ -183,8 +183,8 @@ HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 
 ${BASIS_BASH_FUNCTION_realpath}
-readonly _%PROJECT_NAMESPACE_BASH%_@NAMESPACE_UPPER@_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
-source \"\${_%PROJECT_NAMESPACE_BASH%_@NAMESPACE_UPPER@_DIR}/%LIBRARY_DIR%/basis.sh\" || exit 1
+readonly _%PROJECT_NAMESPACE_BASH%_%NAMESPACE_UPPER%_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
+source \"\${_%PROJECT_NAMESPACE_BASH%_%NAMESPACE_UPPER%_DIR}/%LIBRARY_DIR%/basis.sh\" || exit 1
 "
 )
 

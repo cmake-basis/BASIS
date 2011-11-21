@@ -19,17 +19,10 @@
 # project attributes - used by BASIS_*_UTILITIES code
 # ============================================================================
 
-set (PROJECT_NAME "@PROJECT_NAME@")
+set (PROJECT_NAME       "@PROJECT_NAME@")
 set (PROJECT_NAME_UPPER "@PROJECT_NAME_UPPER@")
 set (PROJECT_NAME_LOWER "@PROJECT_NAME_LOWER@")
 set (PROJECT_NAME_INFIX "@PROJECT_NAME_INFIX@")
-
-## @brief Project version string used by print_version().
-#
-# This CMake variable has to be defined in the script configuration because
-# it is used by the BASIS_*_UTILITIES code which is substituted during the
-# first configuration and finalized during the build step.
-set (PROJECT_VERSION_AND_REVISION "@PROJECT_VERSION_AND_REVISION@")
 
 # ============================================================================
 # script attributes
@@ -99,27 +92,6 @@ basis_set_script_path (PERL_LIBRARY_DIR "@BINARY_PERL_LIBRARY_DIR@" "@INSTALL_PE
 ## @brief Directory of auxiliary data files relative to script location.
 basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 
-## @brief Directory of BASIS C++ libraries.
-if ("@PROJECT_NAME@" STREQUAL "BASIS")
-  basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
-else ()
-  basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
-endif ()
-
-## @brief Directory of BASIS Python modules.
-if ("@PROJECT_NAME@" STREQUAL "BASIS")
-  basis_set_script_path (BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
-else ()
-  basis_set_script_path (BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@")
-endif ()
-
-## @brief Directory of BASIS Perl modules.
-if ("@PROJECT_NAME@" STREQUAL "BASIS")
-  basis_set_script_path (BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@" "@INSTALL_PERL_LIBRARY_DIR@")
-else ()
-  basis_set_script_path (BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@")
-endif ()
-
 # ----------------------------------------------------------------------------
 # relative to installation prefix
 
@@ -154,3 +126,30 @@ set (PYTHON_LIBRARY_DIR_SUFFIX "${PYTHON_LIBRARY_DIR_SUFFIX}")
 set (PERL_LIBRARY_DIR_SUFFIX "${PERL_LIBRARY_DIR_SUFFIX}")
 ## @brief Directory of auxiliary data files relative to installation prefix.
 set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
+
+# ============================================================================
+# CMake variables required by BASIS_*_UTILITIES code
+# ============================================================================
+
+set (PROJECT_VERSION_AND_REVISION "@PROJECT_VERSION_AND_REVISION@")
+set (PROJECT_NAMESPACE_PYTHON "@PROJECT_NAMESPACE_PYTHON@")
+set (PROJECT_NAMESPACE_PERL "@PROJECT_NAMESPACE_PERL@")
+set (PROJECT_NAMESPACE_BASH "@PROJECT_NAMESPACE_BASH@")
+
+if ("@PROJECT_NAME@" STREQUAL "BASIS")
+  basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
+else ()
+  basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
+endif ()
+
+if ("@PROJECT_NAME@" STREQUAL "BASIS")
+  basis_set_script_path (BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
+else ()
+  basis_set_script_path (BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@")
+endif ()
+
+if ("@PROJECT_NAME@" STREQUAL "BASIS")
+  basis_set_script_path (BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@" "@INSTALL_PERL_LIBRARY_DIR@")
+else ()
+  basis_set_script_path (BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@")
+endif ()
