@@ -63,7 +63,7 @@ function get_target_uid
     # empty string as input remains unchanged
     [ -z "${target}" ] && local "$1" && upvar $1 '' && return 0
     # in case of a leading namespace separator, do not modify target name
-    [ "${target/\.}" != "${target}" ] && local "$1" && upvar $1 "${target}" && return 0
+    [ "${target:0:1}" == '.' ] && local "$1" && upvar $1 "${target}" && return 0
     # project namespace
     local prefix="@PROJECT_NAMESPACE_CMAKE@.DUMMY"
     # try prepending namespace or parts of it until target is known
@@ -189,7 +189,7 @@ function get_executable_path
     else
         # get UID of target
         local uid && get_target_uid uid "$2"
-        uid="${uid/\.}"
+        [ "${uid:0:1}" == '.' ] && uid=${uid:1}
         if [ -n "${uid}" ]; then
             # get path relative to this module
             _executabletargetinfo_get path "${uid}" LOCATION
