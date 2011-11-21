@@ -31,4 +31,3 @@ endfunction ()
 # ----------------------------------------------------------------------------
 # tests of CommonTools.cmake functions
 cmake_test (test_string_manipulation)
-cmake_test (test_basis_target_uid)
