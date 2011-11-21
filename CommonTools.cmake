@@ -750,7 +750,7 @@ function (basis_get_target_name TARGET_NAME TARGET_UID)
   # make sure we have a fully-qualified target UID
   basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
   # strip off namespace of current project
-  string (REGEX REPLACE "^${PROJECT_NAMESPACE_CMAKE}\\." "" NAME "${UID}")
+  string (REGEX REPLACE "^${PROJECT_NAMESPACE_CMAKE_REGEX}\\." "" NAME "${UID}")
   # return
   if (BASIS_DEBUG AND BASIS_VERBOSE)
     message ("** basis_get_target_name(): ${UID} -> ${NAME}")
