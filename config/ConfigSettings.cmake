@@ -20,9 +20,9 @@
 # common settings
 # ============================================================================
 
-set (UTILITIES_LIBRARY_CONFIG "${BASIS_CMAKE_NAMESPACE}.utilities")
-set (TEST_LIBRARY_CONFIG "${BASIS_CMAKE_NAMESPACE}.testlib")
-set (TEST_MAIN_LIBRARY_CONFIG "${BASIS_CMAKE_NAMESPACE}.testmain")
+basis_get_fully_qualified_target_uid (UTILITIES_LIBRARY_CONFIG "utilities")
+basis_get_fully_qualified_target_uid (TEST_LIBRARY_CONFIG "testlib")
+basis_get_fully_qualified_target_uid (TEST_MAIN_LIBRARY_CONFIG "testmain")
 
 # ============================================================================
 # build tree configuration settings

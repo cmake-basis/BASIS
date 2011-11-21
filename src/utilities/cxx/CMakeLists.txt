@@ -31,8 +31,6 @@ basis_add_library (
     "subprocess.cxx" # subprocess execution
 )
 
-basis_set_target_properties (utilities PROPERTIES OUTPUT_NAME "basisutilities")
-
 # ----------------------------------------------------------------------------
 # unit testing
 
@@ -43,5 +41,4 @@ endif ()
 basis_add_library (testlib  STATIC "test.cxx")
 basis_add_library (testmain STATIC "test_main.cxx")
 
-basis_set_target_properties (testlib  PROPERTIES OUTPUT_NAME "basistest")
-basis_set_target_properties (testmain PROPERTIES OUTPUT_NAME "basistest_main")
+basis_set_target_properties (testlib  PROPERTIES OUTPUT_NAME "test")

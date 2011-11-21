@@ -58,9 +58,9 @@ basis_set_config (MATLAB_TEMPLATES_DIR "@MATLAB_TEMPLATES_DIR_CONFIG@")
 ## @brief Utilities library.
 basis_set_config (UTILITIES_LIBRARY "@UTILITIES_LIBRARY_CONFIG@")
 ## @brief Unit testing library.
-basis_set_config (TEST_LIBRARY "@TEST_LIBRARY_CONFIG")
+basis_set_config (TEST_LIBRARY "@TEST_LIBRARY_CONFIG@")
 ## @brief Implementation of main() function of unit test driver.
-basis_set_config (TEST_MAIN_LIBRARY "@TEST_MAIN_LIBRARY_CONFIG")
+basis_set_config (TEST_MAIN_LIBRARY "@TEST_MAIN_LIBRARY_CONFIG@")
 
 ## @brief Main libraries.
 basis_set_config (LIBRARIES
