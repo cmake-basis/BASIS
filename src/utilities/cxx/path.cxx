@@ -744,6 +744,20 @@ string get_executable_name()
     return name;
 }
 
+// ---------------------------------------------------------------------------
+bool file_exists(const std::string fName)
+{
+  //Test that fname
+  if ( ! is_valid_path(fName) )
+    return false;
+    
+  struct stat st;
+  if(stat(fName.c_str(),&st) == 0)
+    return true; //fName is exists, May be a directory
+
+  return false;
+}
+
 
 SBIA_BASIS_NAMESPACE_END
 

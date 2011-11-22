@@ -63,6 +63,8 @@ extern const std::string cPathSeparatorStr;
  * @attention This function only checks whether the string is a valid path
  *            identifier. It does <b>not</b> check whether the file exists.
  *
+ * @sa file_exists()
+ *
  * @param [in] path   The path string.
  * @param [in] strict Whether to be strict, i.e., whether a drive specification
  *                    other than "C:" is considered invalid on UNIX-based
@@ -513,6 +515,15 @@ std::string get_executable_directory();
  */
 std::string get_executable_name();
 
+/**
+ * @brief Test the existance of a file.
+ *
+ * @param [in] path File.
+ *
+ * @return Whether the given file is an existing file.
+ * @throw std::invalid_argument if the given path is not valid.
+ */
+bool file_exists( const std::string File);
 
 SBIA_BASIS_NAMESPACE_END
 
