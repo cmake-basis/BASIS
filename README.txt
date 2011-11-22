@@ -150,9 +150,9 @@ PACKAGE OVERVIEW
   - doc/             Documentation of BASIS.
   - include/         Public header files.
   - src/             Source code files.
+  - src/cmake/       CMake implementations and corresponding auxiliary files.
   - src/geshi/       A language file written in PHP for the use with GeSHi,
                      a source code highlighting extension for MediaWiki.
-  - src/modules/     CMake implementations and corresponding auxiliary files.
   - src/tools/       Source code of command-line tools.
   - src/utilities/   Source code of utility functions.
   - test/            Tests of the implementations in src/.
