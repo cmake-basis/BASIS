@@ -10,7 +10,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 
 
 @BASIS_PERL_UTILITIES@
@@ -23,11 +23,13 @@ use Test::More tests => 19;
 # ----------------------------------------------------------------------------
 # Test Basis::get_target_uid().
 
-is (Basis::get_target_uid ('basisproject'), 'utilitiestest.basisproject',
-    'this project\'s namespace prepended to known target');
-is (Basis::get_target_uid ('unknown'), 'utilitiestest.unknown',
-    'this project\'s namespace prepended to unknown target');
-is (Basis::get_target_uid ('basis.basisproject'), 'basis.basisproject',
+is (Basis::get_target_uid ('basisproject'), 'basisproject',
+    'target of other project unmodified');
+is (Basis::get_target_uid ('unknown'), 'unknown',
+    'unknown target unmodified');
+is (Basis::get_target_uid ('basis.basisproject'), 'sbia.basis.basisproject',
+    'global namespace prepended');
+is (Basis::get_target_uid ('sbia.basis.basisproject'), 'sbia.basis.basisproject',
     'UID remains unchanged');
 is (Basis::get_target_uid ('hammer.hammer'), 'hammer.hammer',
     'UID remains unchanged');
@@ -44,7 +46,7 @@ is (Basis::get_target_uid (''), undef,
 ok (!Basis::is_known_target ('basisproject'),
     'basisproject not part of UtilitiesTest');
 ok (Basis::is_known_target ('basis.basisproject'),
-    'basis::basisproject is a known target');
+    'basis.basisproject is a known target');
 ok (!Basis::is_known_target (undef),
     'undefined argument is unknown target');
 ok (!Basis::is_known_target (''),

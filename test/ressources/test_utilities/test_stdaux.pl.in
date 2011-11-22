@@ -48,7 +48,7 @@ is scalar @retval, 2;
 
 # ----------------------------------------------------------------------------
 # Test execution of executable target.
-is Basis::execute_process(['basis::dummy_command']), 0;
+is Basis::execute_process(['basis.dummy_command']), 0;
 eval { @retval = Basis::execute_process(['basis.dummy_command', '--greet'], stdout => 1, quiet => 1); };
 is $retval[0], 0;
 like $retval[1], qr/^Hello, BASIS!\s*\n/;

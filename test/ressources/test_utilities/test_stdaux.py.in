@@ -47,7 +47,7 @@ class TestProcessExecution(unittest.TestCase):
         self.assertEquals(0, execute_process(['basis.dummy_command']))
         self.assertEquals(
                 (0, 'Hello, BASIS!\n'),
-                execute_process(['basis::dummy_command', '--greet'],
+                execute_process(['basis.dummy_command', '--greet'],
                         stdout=True, quiet=True))
 
     # ------------------------------------------------------------------------

@@ -82,8 +82,8 @@ def get_target_uid(target):
     # try prepending namespace or parts of it until target is known
     separator = '.'
     while separator != '':
-        if separator.join(prefix, target) in _locations:
-            return separator.join(prefix, target)
+        if separator.join([prefix, target]) in _locations:
+            return separator.join([prefix, target])
         (prefix, separator, n) = prefix.partition(separator)
     # otherwise, return target name unchanged
     return target
@@ -93,6 +93,8 @@ def is_known_target(target):
     """Determine whether a given build target is known by this module."""
     global _locations
     uid = get_target_uid(target)
+    if uid is None or uid == "":
+        return False
     if uid.startswith('.'):
         uid = uid[1:]
     return uid in _locations
@@ -145,7 +147,7 @@ def get_executable_path(target=None):
             path += "/<stdin>" # interactive shell
     else:
         uid = get_target_uid(target)
-        if uid.startswith('.'):
+        if uid is not None and uid.startswith('.'):
             uid = uid[1:]
         if uid is not None and uid in _locations:
             path = os.path.normpath(os.path.join(_module_dir, _locations[uid]))

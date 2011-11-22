@@ -67,3 +67,9 @@ basis_set_config (LIBRARIES
   ${${NS}UTILITIES_LIBRARY}
   ${${NS}TEST_LIBRARY}
 )
+
+# ============================================================================
+# CMake tools
+# ============================================================================
+
+include ("${${NS}MODULE_PATH}/BasisTools.cmake")

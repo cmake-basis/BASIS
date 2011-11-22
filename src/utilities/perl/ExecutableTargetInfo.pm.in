@@ -102,8 +102,8 @@ sub get_target_uid
     # project namespace
     my $prefix='@PROJECT_NAMESPACE_CMAKE@.DUMMY';
     # try prepending namespace or parts of it until target is known
-    while $prefix =~ s/(.*)\.[^.]*/$1/ {
-        if exists $_location->($prefix . '.' . $target) {
+    while ($prefix =~ s/(.*)\.[^.]*/$1/) {
+        if (exists $_location->{$prefix . '.' . $target}) {
             return $prefix . '.' . $target;
         }
     }
@@ -120,8 +120,8 @@ sub get_target_uid
 sub is_known_target
 {
     my $uid = get_target_uid ($_[0]);
-    $uid =~ s/^[.]?(.*)/$1/;
     defined $uid or return 0;
+    $uid =~ s/^[.]?(.*)/$1/;
     exists $_location->{$uid};
 }
 
@@ -172,7 +172,7 @@ sub get_executable_path
         $path = realpath ($0);
     } else {
         my $uid = get_target_uid ($_[0]);
-        $uid =~ s/^[.]?(.*)/$1/;
+        defined $uid and $uid =~ s/^[.]?(.*)/$1/;
         if (defined $uid and exists $_location->{$uid}) {
             $path = $_location->{$uid};
             $path = File::Spec->rel2abs ($path, dirname (__FILE__));

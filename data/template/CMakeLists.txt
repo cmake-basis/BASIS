@@ -28,12 +28,6 @@ endif ()
 
 find_package (BASIS REQUIRED)
 
-if (BASIS_FOUND)
-  include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
-else ()
-  return ()
-endif ()
-
 # ----------------------------------------------------------------------------
 # configure build system
 basis_project_impl ()

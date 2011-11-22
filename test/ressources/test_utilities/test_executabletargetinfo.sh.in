@@ -12,13 +12,13 @@
 
 @BASIS_BASH_UTILITIES@
 
-source "${_%NAMESPACE_UPPER%_DIR}/%BASIS_LIBRARY_DIR%/shtap.sh"
+source "${_%PROJECT_NAMESPACE_BASH%_%NAMESPACE_UPPER%_DIR}/%BASIS_LIBRARY_DIR%/shtap.sh"
 
 # ============================================================================
 # plan
 # ============================================================================
 
-plan_tests 40
+plan_tests 43
 
 # ============================================================================
 # tests
@@ -42,15 +42,18 @@ is "${sane}" 'basis_basisproject' '@ replaced by _'
 # without namespace
 get_target_uid uid 'basisproject'
 is $? 0 'return value is 0'
-is "${uid}" 'utilitiestest.basisproject' 'namespace prepended to known target'
+is "${uid}" 'basisproject' 'target of other project unmodified'
 get_target_uid uid 'unknown'
 is $? 0 'return value is 0'
-is "${uid}" 'utilitiestest.unknown' 'namespace prepended to unknown target'
+is "${uid}" 'unknown' 'unknown target unmodified'
 
 # with namespace
+get_target_uid uid 'sbia.basis.basisproject'
+is $? 0 'return value is 0'
+is "${uid}" 'sbia.basis.basisproject' 'UID remains unchanged'
 get_target_uid uid 'basis.basisproject'
 is $? 0 'return value is 0'
-is "${uid}" 'basis.basisproject' 'UID remains unchanged'
+is "${uid}" 'sbia.basis.basisproject' 'global namespace prepended'
 get_target_uid uid 'hammer.hammer'
 is $? 0 'return value is 0'
 is "${uid}" 'hammer.hammer' 'UID remains unchanged'
@@ -88,7 +91,7 @@ is $? 0 'return value is 0'
 is "${name}" 'test_executabletargetinfo.sh' 'name of this executable'
 
 # name of executable built by other target
-get_executable_name name 'basis::basisproject'
+get_executable_name name 'basis.basisproject'
 is $? 0 'return value is 0'
 like "${name}" 'basisproject(\.sh)?' 'name of other executable'
 

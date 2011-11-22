@@ -88,8 +88,9 @@ function get_target_uid
 # @returns Whether the given build target is known by this module.
 function is_known_target
 {
-    [ -n "$1" ] || return 1
-    local path && _executabletargetinfo_get path "$1" LOCATION
+    get_target_uid uid "$1"
+    [ -n "${uid}" ] || return 1
+    local path && _executabletargetinfo_get path "${uid}" LOCATION
     [ -n "${path}" ]
 }
 

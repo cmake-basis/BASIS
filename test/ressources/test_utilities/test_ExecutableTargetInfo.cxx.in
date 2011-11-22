@@ -35,17 +35,17 @@ TEST(ExecutableTargetInfo, Instance)
 TEST(ExecutableTargetInfo, GetTargetUID)
 {
     const basis::ExecutableTargetInfo& info = basis::ExecutableTargetInfo::instance();
-    EXPECT_STREQ("utilitiestest.basisproject", info.get_target_uid("basisproject").c_str())
-        << "this project's namespace was not prepended to known target";
-    EXPECT_STREQ("utilitiestest.unknown", info.get_target_uid("unknown").c_str())
-        << "this project's namespace was not prepended to unknown target";
+    EXPECT_STREQ("basisproject", info.get_target_uid("basisproject").c_str())
+        << "wrong referenced target of other project modified";
+    EXPECT_STREQ("unknown", info.get_target_uid("unknown").c_str())
+        << "unknown target modified";
     EXPECT_STREQ(info.get_target_uid("helloworld").c_str(), info.get_target_uid("utilitiestest.helloworld").c_str ())
         << "using either target name or target UID does not give the same for own executable";
-    EXPECT_STREQ("basis.basisproject", info.get_target_uid("basis.basisproject").c_str())
+    EXPECT_STREQ("sbia.basis.basisproject", info.get_target_uid("basis.basisproject").c_str())
         << "UID changed";
-    EXPECT_STREQ("hammer.hammer", info.get_target_uid("hammer.hammer").c_str())
+    EXPECT_STREQ("sbia.utilitiestest.helloworld", info.get_target_uid("utilitiestest.helloworld").c_str())
         << "UID changed";
-    EXPECT_STREQ(".hello", info.get_target_uid("::hello").c_str())
+    EXPECT_STREQ(".hello", info.get_target_uid(".hello").c_str())
         << "namespace prepended even though global namespace specified";
     EXPECT_STREQ("", info.get_target_uid("").c_str())
         << "empty string resulted in non-empty string";
@@ -96,7 +96,7 @@ TEST(ExecutableTargetInfo, GetBuildDirectory)
     EXPECT_STREQ("/bin", dir.substr(idx).c_str())
         << "basis.basisproject does not live in a 'bin' directory";
 
-    EXPECT_STREQ("", info.get_build_directory("unknonw").c_str())
+    EXPECT_STREQ("", info.get_build_directory("unknown").c_str())
         << "returned value is not an empty string for unknown targets";
     EXPECT_STREQ ("", info.get_build_directory("").c_str())
         << "returned value is not an empty string for '' target";

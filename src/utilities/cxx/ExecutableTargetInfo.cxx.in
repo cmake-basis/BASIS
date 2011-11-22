@@ -65,7 +65,7 @@ string ExecutableTargetInfo::get_target_uid(const string& target) const
     // empty(, invalid) target name remains unchanged
     if (target.empty()) return "";
     // in case of a leading namespace separator, do not modify target name
-    if (target.at(0) == '.') return target;
+    if (target[0] == '.') return target;
     // project namespace
     string prefix = string("@PROJECT_NAMESPACE_CMAKE@");
     // try prepending namespace or parts of it until target is known
@@ -86,17 +86,17 @@ bool ExecutableTargetInfo::is_known_target(const string& target) const
 {
     if (target.empty()) return false;
     string uid;
-    if (target.at(0) == '.') uid = target.substr(1);
+    if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
-    return exec_names_.find(get_target_uid(target)) != exec_names_.end();
+    return exec_names_.find(uid) != exec_names_.end();
 }
 
 // ---------------------------------------------------------------------------
 string ExecutableTargetInfo::get_executable_name(const string& target) const
 {
-    if (target.empty()) return false;
+    if (target.empty()) return "";
     string uid;
-    if (target.at(0) == '.') uid = target.substr(1);
+    if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
     MapIterator it = exec_names_.find(uid);
     if (it == exec_names_.end ()) return "";
@@ -106,9 +106,9 @@ string ExecutableTargetInfo::get_executable_name(const string& target) const
 // ---------------------------------------------------------------------------
 string ExecutableTargetInfo::get_build_directory(const string& target) const
 {
-    if (target.empty()) return false;
+    if (target.empty()) return "";
     string uid;
-    if (target.at(0) == '.') uid = target.substr(1);
+    if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
     MapIterator it = build_dirs_.find(uid);
     if (it == build_dirs_.end()) return "";
@@ -118,9 +118,9 @@ string ExecutableTargetInfo::get_build_directory(const string& target) const
 // ---------------------------------------------------------------------------
 string ExecutableTargetInfo::get_installation_directory(const string& target) const
 {
-    if (target.empty()) return false;
+    if (target.empty()) return "";
     string uid;
-    if (target.at(0) == '.') uid = target.substr(1);
+    if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
     MapIterator it = install_dirs_.find(uid);
     if (it == install_dirs_.end()) return "";

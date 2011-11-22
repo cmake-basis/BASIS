@@ -28,13 +28,16 @@ class TestExecutableTargetInfo(unittest.TestCase):
     def test_get_target_uid(self):
         self.assertEquals (
                 basis.get_target_uid ('basisproject'),
-                'utilitiestest.basisproject')
+                'basisproject')
         self.assertEquals (
                 basis.get_target_uid ('unknown'),
-                'utilitiestest.unknown')
+                'unknown')
+        self.assertEquals (
+                basis.get_target_uid ('sbia.basis.basisproject'),
+                'sbia.basis.basisproject')
         self.assertEquals (
                 basis.get_target_uid ('basis.basisproject'),
-                'basis.basisproject')
+                'sbia.basis.basisproject')
         self.assertEquals (
                 basis.get_target_uid ('hammer.hammer'),
                 'hammer.hammer')
