@@ -214,13 +214,13 @@ std::string get_working_directory();
  *                    returned.
  * @param [out] ext   The file name extension. If NULL is given, the extension
  *                    is not returned.
- * @param [in]  exts  Set of recognized extensions. Note that the given set
- *                    can contain extensions with dots (.) as part of the
- *                    extension, e.g., ".nii.gz". If NULL or an empty set is
- *                    given, the part after the last dot (including the dot)
- *                    is considered to be the file name extension. Otherwise,
- *                    the longest extension from the given set which is equal
- *                    to the end of the file path is returned as extension.
+ * @param [in]  exts  Set of additionally recognized extensions. Note that the
+ *                    given set can contain extensions with dots (.) as part of
+ *                    the extension, e.g., ".nii.gz". If given, the longest
+ *                    extension from the given set which is equal to the end of
+ *                    the file path is returned as extension. Otherwise, the part
+ *                    after the last dot (including the dot) is considered to be
+ *                    the file name extension.
  *
  * @throw std::invalid_argument if the given path is not valid.
  */
@@ -281,13 +281,12 @@ std::string get_file_name(const std::string& path);
  * @sa is_valid_path()
  *
  * @param [in] path Path.
- * @param [in] exts Set of recognized extensions. Note that the given set
- *                  can contain extensions with dots (.) as part of the
- *                  extension, e.g., ".nii.gz". If NULL or an empty set is
- *                  given, the part after the last dot (including the dot)
- *                  is considered to be the file name extension. Otherwise,
- *                  the longest extension from the given set which is equal
- *                  to the end of the file path is removed.
+ * @param [in] exts Set of additionally recognized extensions. Note that the
+ *                  given set can contain extensions with dots (.) as part of
+ *                  the extension, e.g., ".nii.gz". If given, the longest
+ *                  extension from the given set which is equal to the end of
+ *                  the file path is removed. Otherwise, the part after the
+ *                  last dot (including the dot) is removed.
  *
  * @return File name without directory and extension.
  *
@@ -309,7 +308,7 @@ std::string get_file_name_without_extension(const std::string&           path,
  *                  given, the part after the last dot (including the dot)
  *                  is considered to be the file name extension. Otherwise,
  *                  the longest extension from the given set which is equal
- *                  to the end of the file path is returned as extension.
+ *                  to the end of the file path is returned.
  *
  * @return File name extension including leading period (.).
  *

@@ -332,6 +332,7 @@ void split_path(const string&path, string* root, string* dir, string* fname,
 
         size_t pos = string::npos;
         
+        // first test user supplied extension
         if (exts && exts->size() > 0) {
             for (set<string>::const_iterator i = exts->begin(); i != exts->end(); ++i) {
                 size_t start = name.size() - i->size();
@@ -339,7 +340,9 @@ void split_path(const string&path, string* root, string* dir, string* fname,
                     pos = start;
                 }
             }
-        } else {
+        }
+        // otherwise, extract last extension component
+        if (pos == string::npos) {
             pos = name.find_last_of('.');
         }
 
