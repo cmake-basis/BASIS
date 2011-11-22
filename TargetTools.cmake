@@ -41,7 +41,7 @@ function (basis_set_target_properties)
   endif ()
   set (UIDS)
   list (GET ARGN 0 ARG)
-  while (ARG AND NOT ARG STREQUAL "PROPERTIES")
+  while (ARG AND NOT "${ARG}" STREQUAL "PROPERTIES")
     basis_get_target_uid (UID "${ARG}")
     list (APPEND UIDS "${UID}")
     list (REMOVE_AT ARGN 0)
@@ -466,11 +466,11 @@ function (basis_add_executable TARGET_NAME)
     endif ()
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
-    if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS" OR ARGN_LANGUAGE STREQUAL "UNKNOWN")
+    if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS" OR "${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
       message ("basis_add_executable(${TARGET_UID}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
-      if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS")
+      if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS")
         message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
-      elseif (ARGN_LANGUAGE STREQUAL "UNKNOWN")
+      elseif ("${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
         message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       endif ()
     endif ()
@@ -479,13 +479,13 @@ function (basis_add_executable TARGET_NAME)
 
   # --------------------------------------------------------------------------
   # C++
-  if (ARGN_LANGUAGE STREQUAL "CXX")
+  if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
 
     basis_add_executable_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
 
   # --------------------------------------------------------------------------
   # MATLAB
-  elseif (ARGN_LANGUAGE STREQUAL "MATLAB")
+  elseif ("${ARGN_LANGUAGE}" STREQUAL "MATLAB")
 
     basis_add_mcc_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS} TYPE EXECUTABLE)
 
@@ -620,11 +620,11 @@ function (basis_add_library TARGET_NAME)
     endif ()
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
-    if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS" OR ARGN_LANGUAGE STREQUAL "UNKNOWN")
+    if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS" OR "${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
       message ("basis_add_library(${TARGET_UID}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
-      if (ARGN_LANGUAGE STREQUAL "AMBIGUOUS")
+      if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS")
         message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
-      elseif (ARGN_LANGUAGE STREQUAL "UNKNOWN")
+      elseif ("${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
         message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       endif ()
     endif ()
@@ -633,7 +633,7 @@ function (basis_add_library TARGET_NAME)
 
   # --------------------------------------------------------------------------
   # C++
-  if (ARGN_LANGUAGE STREQUAL "CXX")
+  if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
 
     CMAKE_PARSE_ARGUMENTS (
       ARGN
@@ -677,7 +677,7 @@ function (basis_add_library TARGET_NAME)
 
   # --------------------------------------------------------------------------
   # MATLAB
-  elseif (ARGN_LANGUAGE STREQUAL "MATLAB")
+  elseif ("${ARGN_LANGUAGE}" STREQUAL "MATLAB")
 
     CMAKE_PARSE_ARGUMENTS (
       ARGN
@@ -1464,7 +1464,7 @@ function (basis_add_script TARGET_NAME)
   set (OUTPUT_NAME "${SCRIPT_NAME}")
   if (NOT ARGN_MODULE AND NOT ARGN_WITH_EXT AND UNIX)
     file (STRINGS "${ARGN_SCRIPT}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
-    if (SHABANG STREQUAL "#!")
+    if ("${SHABANG}" STREQUAL "#!")
       get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
     endif ()
   endif ()
@@ -1949,7 +1949,7 @@ function (basis_add_script_finalize TARGET_UID)
   set (MAIN_INIT_PY)
   if (MODULE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
     set (D "${LIBRARY_OUTPUT_DIRECTORY}")
-    while (NOT D STREQUAL BINARY_PYTHON_LIBRARY_DIR)
+    while (NOT "${D}" STREQUAL "${BINARY_PYTHON_LIBRARY_DIR}")
       if (D MATCHES "sbia$")
         set (C "${C}file (WRITE \"${D}/__init__.py\" \"from pkgutil import extend_path\\n__path__ = extend_path(__path__, __name__)\\n\")\n")
         if (COMPILE)
@@ -2029,7 +2029,7 @@ function (basis_add_script_finalize TARGET_UID)
 
       if (INIT_PY OR MAIN_INIT_PY)
         set (D "${LIBRARY_INSTALL_DIRECTORY}")
-        while (NOT D STREQUAL INSTALL_PYTHON_LIBRARY_DIR)
+        while (NOT "${D}" STREQUAL "${INSTALL_PYTHON_LIBRARY_DIR}")
           if (D MATCHES "sbia$")
             install (
               FILES       "${MAIN_INIT_PY}"

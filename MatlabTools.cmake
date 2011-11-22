@@ -873,7 +873,7 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
 
   if (NOT ARGN_COMPONENT)
-    if (ARGN_TYPE STREQUAL "EXECUTABLE")
+    if ("${ARGN_TYPE}" STREQUAL "EXECUTABLE")
       set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
     else ()
       set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
@@ -912,7 +912,7 @@ function (basis_add_mcc_target TARGET_NAME)
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
   if (BASIS_VERBOSE)
-    if (ARGN_TYPE STREQUAL "LIBRARY")
+    if ("${ARGN_TYPE}" STREQUAL "LIBRARY")
       message (STATUS "Adding MATLAB library ${TARGET_UID}...")
       message (FATAL_ERROR "Build of MATLAB library from M-files not yet supported.")
       message (STATUS "Adding MATLAB library ${TARGET_UID}... - failed")
@@ -943,7 +943,7 @@ function (basis_add_mcc_target TARGET_NAME)
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
 
   # set target properties required by basis_add_mcc_target_finalize ()
-  if (ARGN_TYPE STREQUAL "LIBRARY")
+  if ("${ARGN_TYPE}" STREQUAL "LIBRARY")
     set (TYPE "MCC_LIBRARY")
   else ()
     set (TYPE "MCC_EXECUTABLE")
@@ -999,7 +999,7 @@ function (basis_add_mcc_target TARGET_NAME)
   basis_set_project_property (TARGETS APPEND "${TARGET_UID}")
 
   if (BASIS_VERBOSE)
-    if (ARGN_TYPE STREQUAL "LIBRARY")
+    if ("${ARGN_TYPE}" STREQUAL "LIBRARY")
       message (STATUS "Adding MATLAB library ${TARGET_UID}... - done")
     else ()
       message (STATUS "Adding MATLAB executable ${TARGET_UID}... - done")
@@ -1143,7 +1143,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     # differs from the current source directory then
     list (APPEND MCC_ARGS "-I" "${SOURCE_DIRECTORY}")
   endif ()
-  if (TYPE STREQUAL "LIBRARY")
+  if ("${TYPE}" STREQUAL "LIBRARY")
     list (APPEND MCC_ARGS "-l")                       # build library
   else ()
     list (APPEND MCC_ARGS "-m")                       # build standalone application
@@ -1200,7 +1200,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME}")
 
   # output files of build command
-  if (TYPE STREQUAL "LIBRARY")
+  if ("${TYPE}" STREQUAL "LIBRARY")
     set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
 
     set (
@@ -1280,7 +1280,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
         "${BUILD_DIR}/readme.txt"
   )
 
-  if (TYPE STREQUAL "LIBRARY")
+  if ("${TYPE}" STREQUAL "LIBRARY")
   else ()
     set_property (
       DIRECTORY
@@ -1294,7 +1294,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endif ()
 
   # install target
-  if (TYPE STREQUAL "LIBRARY")
+  if ("${TYPE}" STREQUAL "LIBRARY")
     # TODO
   else ()
     if (TEST)
@@ -1313,7 +1313,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endif ()
 
   if (BASIS_VERBOSE)
-    if (TYPE STREQUAL "LIBRARY")
+    if ("${TYPE}" STREQUAL "LIBRARY")
       message (STATUS "Adding build command for MATLAB library ${TARGET_UID}... - done")
     else ()
       message (STATUS "Adding build command for MATLAB executable ${TARGET_UID}... - done")

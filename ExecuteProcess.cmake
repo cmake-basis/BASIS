@@ -183,7 +183,7 @@ if (LOG_ARGS)
     set (TMP)
   endif ()
 
-  if (ERROR_FILE AND NOT ERROR_FILE STREQUAL OUTPUT_FILE)
+  if (ERROR_FILE AND NOT "${ERROR_FILE}" STREQUAL "${OUTPUT_FILE}")
     set (TMP "Command: ${CMD}\n\nWorking directory: ${WORKING_DIRECTORY}\n\nTimeout: ${TIMEOUT}\n\nOutput:\n\n${STDERR}")
     file (WRITE "${ERROR_FILE}" "${TMP}")
     set (TMP)
@@ -192,7 +192,7 @@ endif ()
 
 # print error message (and exit with exit code 1) on error
 if (NOT RETVAL EQUAL 0)
-  if (STDOUT STREQUAL STDERR)
+  if ("${STDOUT}" STREQUAL "${STDERR}")
     message (
       FATAL_ERROR "
 Command: ${CMD}
