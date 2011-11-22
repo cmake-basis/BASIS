@@ -138,37 +138,42 @@ list (APPEND EXCLUDE_DIRS
 get_filename_component (D "$ENV{DESTDIR}${INSTALL_PREFIX}" PATH)
 list (APPEND EXCLUDE_DIRS "${D}")
 
+string (REPLACE "." "\\." INSTALL_PREFIX_REGEX "$ENV{DESTDIR}${INSTALL_PREFIX}")
+
 foreach (F ${MANIFEST})
-  get_filename_component (D "$ENV{DESTDIR}${F}" PATH)
-  while (D)
-    # skip directory if we removed it already
-    if (NOT EXISTS "${D}" OR NOT IS_DIRECTORY "${D}")
-      if ("${D}" STREQUAL "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
-        return () # we are done, the installation root has been removed
+  # remove directories only if file was installed inside the installation root
+  if (F MATCHES "^${INSTALL_PREFIX_REGEX}")
+    get_filename_component (D "$ENV{DESTDIR}${F}" PATH)
+    while (D)
+      # skip directory if we removed it already
+      if (NOT EXISTS "${D}" OR NOT IS_DIRECTORY "${D}")
+        if ("${D}" STREQUAL "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
+          return () # we are done, the installation root has been removed
+        endif ()
+        break ()
       endif ()
-      break ()
-    endif ()
-    # skip directory if it is in list of excluded directories
-    list (FIND EXCLUDE_DIRS "${D}" IDX)
-    if (NOT IDX EQUAL -1)
-      break ()
-    endif ()
-    # glob files in directory to make sure it is empty
-    file (GLOB FILES "${D}/*")
-    if (NOT FILES)
-      # remove directory
-      message (STATUS "Uninstalling: ${D}")
-      execute_process (COMMAND "${CMAKE_COMMAND}" -E remove_directory "${D}" RESULT_VARIABLE RT)
-      if (NOT RT EQUAL 0)
-        set (OK FALSE)
-        message (STATUS "Failed to remove ${D}")
+      # skip directory if it is in list of excluded directories
+      list (FIND EXCLUDE_DIRS "${D}" IDX)
+      if (NOT IDX EQUAL -1)
+        break ()
       endif ()
-    endif ()
-    if ("${D}" STREQUAL "$ENV{DESTDIR}${INSTALL_PREFIX}")
-      # we reached the root installation direcory
-      break ()
-    endif ()
-    # procede with parent directory
-    get_filename_component (D "${D}" PATH)
-  endwhile ()
+      # glob files in directory to make sure it is empty
+      file (GLOB FILES "${D}/*")
+      if (NOT FILES)
+        # remove directory
+        message (STATUS "Uninstalling: ${D}")
+        execute_process (COMMAND "${CMAKE_COMMAND}" -E remove_directory "${D}" RESULT_VARIABLE RT)
+        if (NOT RT EQUAL 0)
+          set (OK FALSE)
+          message (STATUS "Failed to remove ${D}")
+        endif ()
+      endif ()
+      if ("${D}" STREQUAL "$ENV{DESTDIR}${INSTALL_PREFIX}")
+        # we reached the root installation direcory
+        break ()
+      endif ()
+      # procede with parent directory
+      get_filename_component (D "${D}" PATH)
+    endwhile ()
+  endif ()
 endforeach ()
