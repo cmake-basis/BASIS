@@ -18,21 +18,19 @@
 # Installation
 # ============================================================================
 
-##############################################################################
-# @brief Replaces CMake's install() command.
+# ----------------------------------------------------------------------------
+## @brief Replaces CMake's install() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
-
 function (basis_install)
   install (${ARGN})
 endfunction ()
 
-##############################################################################
-# @brief Install content of current source directory excluding typical files.
+# ----------------------------------------------------------------------------
+## @brief Install content of current source directory excluding typical files.
 #
 # @param [in] DESTINATION Destination directory.
 # @param [in] ARGN        Further arguments for CMake's install(DIRECTORY) command.
-
 function (basis_install_directory DESTINATION)
   install (
     DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/"
@@ -45,14 +43,13 @@ function (basis_install_directory DESTINATION)
   )
 endfunction ()
 
-##############################################################################
-# @brief Add installation command for creation of a symbolic link.
+# ----------------------------------------------------------------------------
+## @brief Add installation command for creation of a symbolic link.
 #
 # @param [in] OLD  The value of the symbolic link.
 # @param [in] NEW  The name of the symbolic link.
 #
 # @returns Adds installation command for creating the symbolic link @p NEW.
-
 function (basis_install_link OLD NEW)
   # Attention: CMAKE_INSTALL_PREFIX must be used instead of INSTALL_PREFIX.
   set (CMD_IN
@@ -61,10 +58,10 @@ function (basis_install_link OLD NEW)
     set (NEW \"@NEW@\")
 
     if (NOT IS_ABSOLUTE \"\${OLD}\")
-      set (OLD \"\${CMAKE_INSTALL_PREFIX}/\${OLD}\")
+      set (OLD \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/\${OLD}\")
     endif ()
     if (NOT IS_ABSOLUTE \"\${NEW}\")
-      set (NEW \"\${CMAKE_INSTALL_PREFIX}/\${NEW}\")
+      set (NEW \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/\${NEW}\")
     endif ()
 
     if (IS_SYMLINK \"\${NEW}\")
@@ -102,8 +99,8 @@ function (basis_install_link OLD NEW)
   install (CODE "${CMD}")
 endfunction ()
 
-##############################################################################
-# @brief Adds installation command for creation of symbolic links.
+# ----------------------------------------------------------------------------
+## @brief Adds installation command for creation of symbolic links.
 #
 # This function creates for each main executable a symbolic link directly
 # in the directory @c INSTALL_PREFIX/bin if @c INSTALL_SINFIX is TRUE and the
@@ -112,7 +109,6 @@ endfunction ()
 #
 # @returns Adds installation command for creation of symbolic links in the
 #          installation tree.
-
 function (basis_install_links)
   if (NOT UNIX)
     return ()
@@ -178,12 +174,13 @@ endfunction ()
 # Deinstallation
 # ============================================================================
 
-##############################################################################
-# @brief Add uninstall target.
+# ----------------------------------------------------------------------------
+## @brief Add uninstall target.
 #
-# @returns Adds the custom target @c uninstall.
-
+# @returns Adds the custom target @c uninstall and code to cmake_install.cmake
+#          to install an uninstaller.
 function (basis_add_uninstall)
+  # add uninstall target
   configure_file (
     ${BASIS_MODULE_PATH}/cmake_uninstall.cmake.in
     ${PROJECT_BINARY_DIR}/cmake_uninstall.cmake
@@ -196,4 +193,6 @@ function (basis_add_uninstall)
   )
 endfunction ()
 
+
 ## @}
+# end of Doxygen group

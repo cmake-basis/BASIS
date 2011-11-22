@@ -78,3 +78,12 @@ basis_install (
   FILES       ${CMAKE_MODULES} ${CMAKE_FIND_MODULES} ${CMAKE_MODULES_AUXILIARY_FILES}
   DESTINATION "${INSTALL_MODULES_DIR}"
 )
+
+# Attention: DO NOT add the uninstall subdirectory here! Instead, the
+#            CMakeLists.txt file is installed in a separate directory.
+#            This directory is added to the build configuration of each
+#            BASIS project (including BASIS) at the end of basis_project_impl().
+basis_install (
+  FILES       "uninstall/CMakeLists.txt"
+  DESTINATION "${INSTALL_MODULES_DIR}/uninstall"
+)

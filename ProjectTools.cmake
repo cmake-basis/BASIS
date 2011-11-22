@@ -1009,10 +1009,6 @@ macro (basis_project_finalize)
     if (INSTALL_LINKS)
       basis_install_links ()
     endif ()
-    # add uninstall target
-    if (NOT PROJECT_IS_MODULE)
-      basis_add_uninstall ()
-    endif ()
     # generate configuration files
     include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
     # package software
@@ -1217,4 +1213,16 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # finalize
   basis_project_finalize ()
+
+  # add uninstall target
+  if (NOT PROJECT_IS_MODULE)
+    basis_add_uninstall ()
+  endif ()
+
+  # add code to generate uninstaller at the end of the installation
+  #
+  # Attention: This must be done at last and using a add_subdirector() call
+  #            such that the code is executed by the root cmake_install.cmake
+  #            at last!
+  add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
 endmacro ()
