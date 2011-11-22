@@ -101,15 +101,6 @@
 # @retval PROJECT_OPTIONAL_DEPENDS @c OPTIONAL_DEPENDS arguments.
 # @retval PROJECT_TEST_DEPENDS     @c TEST_DEPENDS arguments.
 macro (basis_project)
-  # clear project attributes of CMake defaults or superproject
-  set (PROJECT_NAME)
-  set (PROJECT_VERSION)
-  set (PROJECT_DESCRIPTION)
-  set (PROJECT_DEPENDS)
-  set (PROJECT_OPTIONAL_DEPENDS)
-  set (PROJECT_TEST_DEPENDS)
-  set (PROJECT_PACKAGE_VENDOR)
-
   # parse arguments and/or include project settings file
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
@@ -135,8 +126,23 @@ macro (basis_project)
                          "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
   endif ()
 
-  if (NOT PROJECT_IS_MODULE AND NOT PROJECT_VERSION)
-    message (FATAL_ERROR "basis_project(): Project version not specified!")
+  if (PROJECT_VERSION)
+    if (NOT PROJECT_VERSION MATCHES "^[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(rc[0-9]+|[a-z])?$")
+      message (FATAL_ERROR "basis_project(): Invalid version ${PROJECT_VERSION}!")
+    endif ()
+    if (PROJECT_IS_MODULE)
+      if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?$")
+        set (PROJECT_VERSION "${BASIS_PROJECT_VERSION}")
+      endif ()
+    else ()
+      set (BASIS_PROJECT_VERSION "${PROJECT_VERSION}")
+    endif ()
+  else ()
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_VERSION "${BASIS_PROJECT_VERSION}")
+    else ()
+      message (FATAL_ERROR "basis_project(): Project version not specified!")
+    endif ()
   endif ()
 
   if (PROJECT_DESCRIPTION)
@@ -147,9 +153,17 @@ macro (basis_project)
 
   if (PROJECT_PACKAGE_VENDOR)
     basis_list_to_delimited_string (PROJECT_PACKAGE_VENDOR " " ${PROJECT_PACKAGE_VENDOR})
+    if (NOT PROJECT_IS_MODULE)
+      set (BASIS_PROJECT_PACKAGE_VENDOR "${PROJECT_PACKAGE_VENDOR}")
+    endif ()
+  elseif (PROJECT_IS_MODULE)
+    set (PROJECT_PACKAGE_VENDOR "${BASIS_PROJECT_PACKAGE_VENDOR}")
   else ()
     set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
   endif ()
+
+  # let basis_project_impl() know that basis_project() was called
+  set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
 
 # ============================================================================
@@ -240,17 +254,19 @@ macro (basis_project_modules)
   # use function scope to avoid overwriting of this project's variables
   function (basis_module_info F)
     set (PROJECT_IS_MODULE TRUE)
+    set (BASIS_basis_project_CALLED FALSE)
     include ("${CMAKE_CURRENT_SOURCE_DIR}/${F}")
     # make sure that basis_project() was called
-    if (NOT PROJECT_NAME)
-      message (FATAL_ERROR "basis_module_info(): Module name not defined in ${F}!")
+    if (NOT BASIS_basis_project_CALLED)
+      message (FATAL_ERROR "basis_module_info(): Missing basis_project() command in ${F}!")
     endif ()
-    # do not use MODULE instead of PROJECT_NAME as it is not set in
-    # the scope of this function but its parent only
-    set (MODULE "${PROJECT_NAME}" PARENT_SCOPE)
+    # remember dependencies
     set (${PROJECT_NAME}_DEPENDS "${PROJECT_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_TEST_DEPENDS "${PROJECT_TEST_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_DECLARED TRUE PARENT_SCOPE)
+    # do not use MODULE instead of PROJECT_NAME in this function as it is not
+    # set in the scope of this function but its parent scope only
+    set (MODULE "${PROJECT_NAME}" PARENT_SCOPE)
   endfunction ()
 
   set (PROJECT_MODULES)
@@ -566,53 +582,65 @@ function (basis_configure_public_headers)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Install root documentation files.
+## @brief Configure root documentation files.
 #
 # The root documentation files are located in the top-level directory of the
-# source tree. These are, in particular, the readme file, the INSTALL file
-# with build and installation instructions, the AUTHORS file with information
-# on the authors of the software, and the COPYING file with copyright and
-# licensing information.
-#
-# @note Do this after the inclusion of the Settings.cmake file such that a
-#       project can potentially overwrite the defaults even though not
-#       recommended.
-function (basis_install_root_documentation_files)
-  macro (basis_install_root_documentation_file DOC_FILE)
-    if (NOT EXISTS ${DOC_FILE})
-      return ()
-    endif ()
-    # use extension on Windows, but leave it out on Unix
-    get_filename_component (FILE_NAME "${DOC_FILE}" NAME_WE)
-    get_filename_component (FILE_EXT  "${DOC_FILE}" EXT)
-    if (WIN32)
-      if (NOT FILE_EXT)
-        set (FILE_EXT ".txt")
+# project's source tree. These are, in particular, the
+# * @c AUTHORS.txt file with information on the authors of the software,
+# * @c COPYING.txt file with copyright and licensing information,
+# * @c README.txt file,
+# * @c INSTALL.txt file with build and installation instructions,
+# * @c WELCOME.txt file with text used as welcome text of the installer.
+# where the top-level project requires all of these files except of the
+# @c WELCOME.txt file which defaults to the readme file. Modules of a project
+# usually do not include any of these files. Otherwise, the content of the
+# module's documentation file is appended to the corresponding file of the
+# top-level project.
+macro (basis_configure_root_documentation_files)
+  foreach (F AUTHORS COPYING README INSTALL WELCOME)
+    if (EXISTS "${PROJECT_SOURCE_DIR}/${F}.txt")
+      set (PROJECT_${F}_FILE "${PROJECT_SOURCE_DIR}/${F}.txt")
+      if (PROJECT_IS_MODULE)
+        file (READ "${PROJECT_${F}_FILE}" T)
+        file (
+          APPEND "${BASIS_PROJECT_${F}_FILE}"
+          "\n\n\n"
+          "------------------------------------------------------------------------------\n"
+          "${PROJECT_NAME} Module\n"
+          "------------------------------------------------------------------------------\n"
+          "${T}"
+        )
+      else ()
+        set (BASIS_PROJECT_${F}_FILE "${PROJECT_BINARY_DIR}/${F}.txt")
+        # do not use configure_file() to copy the file, otherwise CMake will
+        # update the build system only because we modified this file in the if-clause
+        execute_process (COMMAND "${CMAKE_COMMAND}" -E copy "${PROJECT_${F}_FILE}" "${BASIS_PROJECT_${F}_FILE}")
+        # use extension on Windows, but leave it out on Unix
+        get_filename_component (N "${F}" NAME_WE)
+        get_filename_component (E "${F}" EXT)
+        if (WIN32)
+          if (NOT E)
+            set (E ".txt")
+          endif ()
+        else ()
+          if (E STREQUAL ".txt")
+            set (E "")
+          endif ()
+        endif ()
+        set (N "${N}${E}")
+        # install file
+        install (
+          FILES       "${PROJECT_BINARY_DIR}/${F}.txt"
+          DESTINATION "${INSTALL_DOC_DIR}"
+          RENAME      "${N}"
+          OPTIONAL
+        )
       endif ()
-    else ()
-      if (FILE_EXT STREQUAL ".txt")
-        set (FILE_EXT "")
-      endif ()
+    elseif (NOT F MATCHES "WELCOME" AND NOT PROJECT_IS_MODULE)
+      message (FATAL_ERROR "Project requires a ${F}.txt file in ${PROJECT_SOURCE_DIR}!")
     endif ()
-    set (OUTPUT_NAME "${FILE_NAME}${FILE_EXT}")
-    # copy file to build tree
-    if (NOT "${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
-      configure_file ("${DOC_FILE}" "${PROJECT_BINARY_DIR}/${OUTPUT_NAME}" COPYONLY)
-    endif ()
-    # install file
-    install (
-      FILES       "${DOC_FILE}"
-      DESTINATION "${INSTALL_DOC_DIR}"
-      RENAME      "${OUTPUT_NAME}"
-      OPTIONAL
-    )
-  endmacro ()
-
-  basis_install_root_documentation_file ("${PROJECT_AUTHORS_FILE}")
-  basis_install_root_documentation_file ("${PROJECT_README_FILE}")
-  basis_install_root_documentation_file ("${PROJECT_INSTALL_FILE}")
-  basis_install_root_documentation_file ("${PROJECT_LICENSE_FILE}")
-endfunction ()
+  endforeach ()
+endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Initialize project, calls CMake's project() command.
@@ -727,11 +755,17 @@ macro (basis_project_initialize)
   set (PROJECT_VERSION   "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
   set (PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
-  # combine version and revision
-  if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
-    set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION} (revision ${PROJECT_REVISION})")
+  # version information string
+  if (PROJECT_VERSION MATCHES "0+(\\.0+)?(\\.0+)?")
+    set (PROJECT_VERSION_AND_REVISION "")
   else ()
     set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION}")
+  endif ()
+  if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
+    if (PROJECT_VERSION_AND_REVISION)
+      set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION_AND_REVISION} ")
+    endif ()
+    set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION_AND_REVISION}(revision ${PROJECT_REVISION})")
   endif ()
 
   # version number for use in Perl modules
@@ -795,52 +829,6 @@ macro (basis_project_initialize)
   )
 
   include ("${BINARY_CONFIG_DIR}/BasisSettings.cmake" NO_POLICY_SCOPE)
-
-  # --------------------------------------------------------------------------
-  # authors, readme, install and license files
-  if (NOT PROJECT_AUTHORS_FILE)
-    if (EXISTS "${PROJECT_SOURCE_DIR}/AUTHORS.txt")
-      set (PROJECT_AUTHORS_FILE "${PROJECT_SOURCE_DIR}/AUTHORS.txt")
-    elseif (EXISTS "${PROJECT_SOURCE_DIR}/AUTHORS")
-      set (PROJECT_AUTHORS_FILE "${PROJECT_SOURCE_DIR}/AUTHORS")
-    endif ()
-  elseif (NOT EXISTS "${PROJECT_AUTHORS_FILE}")
-    message (FATAL_ERROR "Specified project AUTHORS file does not exist.")
-  endif ()
-
-  if (NOT PROJECT_README_FILE)
-    if (EXISTS "${PROJECT_SOURCE_DIR}/README.txt")
-      set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README.txt")
-    elseif (EXISTS "${PROJECT_SOURCE_DIR}/README")
-      set (PROJECT_README_FILE "${PROJECT_SOURCE_DIR}/README")
-    elseif (NOT PROJECT_IS_MODULE)
-      message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a README file.")
-    endif ()
-  elseif (NOT EXISTS "${PROJECT_README_FILE}")
-    message (FATAL_ERROR "Specified project README file does not exist.")
-  endif ()
-
-  if (NOT PROJECT_INSTALL_FILE)
-    if (EXISTS "${PROJECT_SOURCE_DIR}/INSTALL.txt")
-      set (PROJECT_INSTALL_FILE "${PROJECT_SOURCE_DIR}/INSTALL.txt")
-    elseif (EXISTS "${PROJECT_SOURCE_DIR}/INSTALL")
-      set (PROJECT_INSTALL_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
-    endif ()
-  elseif (NOT EXISTS "${PROJECT_INSTALL_FILE}")
-    message (FATAL_ERROR "Specified project INSTALL file does not exist.")
-  endif ()
-
-  if (NOT PROJECT_LICENSE_FILE)
-    if (EXISTS "${PROJECT_SOURCE_DIR}/COPYING.txt")
-      set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING.txt")
-    elseif (EXISTS "${PROJECT_SOURCE_DIR}/COPYING")
-      set (PROJECT_LICENSE_FILE "${PROJECT_SOURCE_DIR}/COPYING")
-    elseif (NOT PROJECT_IS_MODULE)
-      message (FATAL_ERROR "Project ${PROJECT_NAME} is missing a COPYING file.")
-    endif ()
-  elseif (NOT EXISTS "${PROJECT_LICENSE_FILE}")
-    message (FATAL_ERROR "Specified project license file does not exist.")
-  endif ()
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -968,8 +956,6 @@ macro (basis_project_finalize)
 
   else ()
 
-    # install root documentation files
-    basis_install_root_documentation_files ()
     # install public headers
     install (
       DIRECTORY   "${BINARY_INCLUDE_DIR}/"
@@ -1071,32 +1057,20 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # reset
-  set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
 
-  set (PROJECT_DEPENDS)
-  set (PROJECT_OPTIONAL_DEPENDS)
-  set (PROJECT_TEST_DEPENDS)
-  set (PROJECT_DESCRIPTION)
-  set (PROJECT_NAME)
-  set (PROJECT_PACKAGE_VENDOR)
-  set (PROJECT_VERSION)
-
-  set (PROJECT_AUTHORS_FILE)
-  set (PROJECT_WELCOME_FILE)
-  set (PROJECT_README_FILE)
-  set (PROJECT_INSTALL_FILE)
-  set (PROJECT_LICENSE_FILE)
-
+  # only set if not set by top-level project before configuring a module
   basis_set_if_empty (PROJECT_IS_MODULE FALSE)
+
+  # hide it here to avoid that it shows up in the GUI on error
+  set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
 
   # --------------------------------------------------------------------------
   # project meta-data
   if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
+    set (BASIS_basis_project_CALLED FALSE)
     include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
-
-    if (NOT PROJECT_NAME)
-      message (FATAL_ERROR "Project name not defined! Forgot to call basis_project() "
-                           "in the file BasisProject.cmake?")
+    if (NOT BASIS_basis_project_CALLED)
+      message (FATAL_ERROR "Missing basis_project() command in BasisProject.cmake!")
     endif ()
   else ()
     message (FATAL_ERROR "Missing BasisProject.cmake file!")
@@ -1151,6 +1125,10 @@ macro (basis_project_impl)
   # assertions
   basis_buildtree_asserts ()
   basis_installtree_asserts ()
+
+  # --------------------------------------------------------------------------
+  # root documentation files
+  basis_configure_root_documentation_files ()
 
   # --------------------------------------------------------------------------
   # enable testing
