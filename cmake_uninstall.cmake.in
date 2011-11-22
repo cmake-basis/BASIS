@@ -157,7 +157,7 @@ foreach (F ${MANIFEST})
     file (GLOB FILES "${D}/*")
     if (NOT FILES)
       # remove directory
-      message (STATUS "Removing:     ${D}")
+      message (STATUS "Uninstalling: ${D}")
       execute_process (COMMAND "${CMAKE_COMMAND}" -E remove_directory "${D}" RESULT_VARIABLE RT)
       if (NOT RT EQUAL 0)
         set (OK FALSE)
