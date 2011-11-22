@@ -209,6 +209,12 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Initialize project modules.
 #
+# Most parts of this macro were copied from the ITK4 project
+# (http://www.vtk.org/Wiki/ITK_Release_4), in particular, the top-level
+# CMakeLists.txt file. This file does not state any specific license, but
+# the ITK package itself is released under the Apache License Version 2.0,
+# January 2004 (http://www.apache.org/licenses/).
+#
 # @attention At this point, the project-specific variables have not been
 #            set yet. For example, use @c CMAKE_CURRENT_SOURCE_DIR instead of
 #            @c PROJECT_SOURCE_DIR.
