@@ -1097,6 +1097,32 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
+  # reset project properties - *after* PROJECT_NAME was set
+
+  # The following variables are used across BASIS macros and functions. They
+  # in particular remember information added by one function or macro which
+  # is required by another function or macro.
+  #
+  # These variables need to be properties such that they can be set in
+  # subdirectories. Moreover, they have to be assigned with the project's
+  # root source directory such that a super-project's properties are restored
+  # after this subproject is finalized such that the super-project itself can
+  # be finalized properly.
+  #
+  # Attention: In particular the TARGETS property is already used during the
+  #            import of targets by including the use files of external
+  #            packages. Hence, this property has to be reset before.
+  basis_set_project_property (PROJECT_INCLUDE_DIRS "")
+  basis_set_project_property (TARGETS "")
+  basis_set_project_property (EXPORT_TARGETS "")
+  basis_set_project_property (CUSTOM_EXPORT_TARGETS "")
+  basis_set_project_property (PROJECT_USES_JAVA_UTILITIES   FALSE)
+  basis_set_project_property (PROJECT_USES_PYTHON_UTILITIES FALSE)
+  basis_set_project_property (PROJECT_USES_PERL_UTILITIES   FALSE)
+  basis_set_project_property (PROJECT_USES_BASH_UTILITIES   FALSE)
+  basis_set_project_property (PROJECT_USES_MATLAB_UTILITIES FALSE)
+
+  # --------------------------------------------------------------------------
   # load information of modules
   if (NOT PROJECT_IS_MODULE)
     basis_project_modules ()
@@ -1104,6 +1130,11 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # find packages
+
+  # any package use file must be included after PROJECT_NAME was set as the
+  # imported targets are added to the <Project>_TARGETS property using
+  # basis_set_project_property() in add_executable() and add_library()
+  include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
   basis_find_packages ()
 
   # --------------------------------------------------------------------------

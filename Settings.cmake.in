@@ -589,39 +589,6 @@ set (CMAKE_MODULE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 set (CMAKE_SHARED_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
 
 # ============================================================================
-# project properties
-# ============================================================================
-
-# The following variables are used across BASIS macros and functions. They
-# in particular remember information added by one function or macro which
-# is required by another function or macro.
-#
-# These variables need to be properties such that they can be set in
-# subdirectories. Moreover, they have to be assigned with the project's
-# root source directory such that a super-project's properties are restored
-# after this subproject is finalized such that the super-project itself can
-# be finalized properly.
-
-## @brief List of all include directories used by project.
-basis_set_project_property (PROJECT_INCLUDE_DIRS "")
-## @brief List of all build targets.
-basis_set_project_property (TARGETS "")
-## @brief List of all exported targets.
-basis_set_project_property (EXPORT_TARGETS "")
-## @brief List of all exported custom BASIS targets.
-basis_set_project_property (CUSTOM_EXPORT_TARGETS "")
-## @brief Whether this project makes use of the BASIS Java utilities.
-basis_set_project_property (PROJECT_USES_JAVA_UTILITIES   FALSE)
-## @brief Whether this project makes use of the BASIS Python utilities.
-basis_set_project_property (PROJECT_USES_PYTHON_UTILITIES FALSE)
-## @brief Whether this project makes use of the BASIS Perl utilities.
-basis_set_project_property (PROJECT_USES_PERL_UTILITIES   FALSE)
-## @brief Whether this project makes use of the BASIS BASH utilities.
-basis_set_project_property (PROJECT_USES_BASH_UTILITIES   FALSE)
-## @brief Whether this project makes use of the BASIS MATLAB utilities.
-basis_set_project_property (PROJECT_USES_MATLAB_UTILITIES FALSE)
-
-# ============================================================================
 # common options
 # ============================================================================
 
