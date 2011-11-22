@@ -544,9 +544,9 @@ function (basis_configure_ExecutableTargetInfo)
 
           set (CC "${CC}\n")
           set (CC "${CC}\n    // ${TARGET_UID}")
-          set (CC "${CC}\n    exec_names_  [\"${ALIAS}\"] = \"${EXEC_NAME}\";")
-          set (CC "${CC}\n    build_dirs_  [\"${ALIAS}\"] = \"${BUILD_DIR}\";")
-          set (CC "${CC}\n    install_dirs_[\"${ALIAS}\"] = \"${INSTALL_DIR}\";")
+          set (CC "${CC}\n    _exec_names  [\"${ALIAS}\"] = \"${EXEC_NAME}\";")
+          set (CC "${CC}\n    _build_dirs  [\"${ALIAS}\"] = \"${BUILD_DIR}\";")
+          set (CC "${CC}\n    _install_dirs[\"${ALIAS}\"] = \"${INSTALL_DIR}\";")
         endif ()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
