@@ -413,7 +413,7 @@ TEST (Path, get_file_name_without_extension)
     set<string> exts;
     exts.insert(".nii");
     exts.insert(".hdr");
-    EXPECT_STREQ ("brain.nii.gz", get_file_name_without_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
+    EXPECT_STREQ ("brain.nii", get_file_name_without_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
     exts.insert(".gz");
     EXPECT_STREQ ("brain.nii", get_file_name_without_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
     exts.insert(".nii.gz");
@@ -434,7 +434,7 @@ TEST (Path, get_file_name_extension)
     set<string> exts;
     exts.insert(".nii");
     exts.insert(".hdr");
-    EXPECT_STREQ ("", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
+    EXPECT_STREQ (".gz", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
     exts.insert(".gz");
     EXPECT_STREQ (".gz", get_file_name_extension ("/home/andreas/brain.nii.gz", &exts).c_str());
     exts.insert(".nii.gz");
