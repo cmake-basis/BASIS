@@ -30,19 +30,21 @@ PACKAGE OVERVIEW
   Source Package
   --------------
 
-  - CMakeLists.txt      Root CMake configuration file.
-  - config/             Package configuration files.
-  - data/               Auxiliary data required by the executables (optional).
-  - doc/                Software documentation such as the user manual.
-  - example/            Example input files.
-  - include/            Public header files of libraries.
-  - src/                Source code files.
-  - test/               Implementation of software tests and corresponding data.
+  - BasisProject.cmake   Meta-data used by BASIS to configure the project.
+  - CMakeLists.txt       Root CMake configuration file.
+  - config/              Package configuration files.
+  - data/                Auxiliary data required by the executables (optional).
+  - doc/                 Software documentation such as the user manual.
+  - example/             Example input files.
+  - include/             Public header files of libraries.
+  - modules/             Additional software modules.
+  - src/                 Source code files.
+  - test/                Implementation of software tests and corresponding data.
 
-  - AUTHORS.txt         A list of the people who contributed to this software.
-  - COPYING.txt         The copyright and license notices.
-  - INSTALL.txt         Build and installation instructions.
-  - README.txt          This readme file.
+  - AUTHORS.txt          A list of the people who contributed to this software.
+  - COPYING.txt          The copyright and license notices.
+  - INSTALL.txt          Build and installation instructions.
+  - README.txt           This readme file.
 
 
   Binary Package
