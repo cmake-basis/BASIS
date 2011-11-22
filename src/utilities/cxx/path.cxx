@@ -20,7 +20,7 @@
 #  include <windows.h>             // GetModuleFileName()
 #else
 #  include <unistd.h>              // getcwd()
-#  include <sys/stat.h>            // lstat()
+#  include <sys/stat.h>            // stat(), lstat()
 #endif
 #if MACOS
 #  include <mach-o/dyld.h>         // _NSGetExecutablePath()
@@ -563,8 +563,46 @@ string join_paths(const string& base, const string& path)
 }
 
 // ===========================================================================
-// symbolic links
+// file / directory checks
 // ===========================================================================
+
+// ---------------------------------------------------------------------------
+bool is_file(const std::string path)
+{
+#if WINDOWS 
+#  error Not implemented yet!
+#else
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0) return false;
+    return S_ISREG(info.st_mode);
+#endif
+    return false;
+}
+
+// ---------------------------------------------------------------------------
+bool is_dir(const std::string path)
+{
+#if WINDOWS 
+#  error Not implemented yet!
+#else
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0) return false;
+    return S_ISDIR(info.st_mode);
+#endif
+    return false;
+}
+
+// ---------------------------------------------------------------------------
+bool exists(const std::string path)
+{
+#if WINDOWS 
+#  error Not implemented yet!
+#else
+    struct stat info;
+    if (stat(path.c_str(), &info) == 0) return true;
+#endif
+    return false;
+}
 
 // ---------------------------------------------------------------------------
 bool is_symlink(const string& path)
@@ -581,6 +619,10 @@ bool is_symlink(const string& path)
     return S_ISLNK(info.st_mode);
 #endif
 }
+
+// ===========================================================================
+// symbolic links
+// ===========================================================================
 
 // ---------------------------------------------------------------------------
 bool read_symlink(const string& link, string& value)
@@ -747,20 +789,5 @@ string get_executable_name()
     return name;
 }
 
-// ---------------------------------------------------------------------------
-bool file_exists(const std::string fName)
-{
-  //Test that fname
-  if ( ! is_valid_path(fName) )
-    return false;
-    
-  struct stat st;
-  if(stat(fName.c_str(),&st) == 0)
-    return true; //fName is exists, May be a directory
-
-  return false;
-}
-
 
 SBIA_BASIS_NAMESPACE_END
-

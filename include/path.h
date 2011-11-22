@@ -431,8 +431,39 @@ std::string to_relative_path(const std::string& base, const std::string& path);
 std::string join_paths(const std::string& base, const std::string& path);
 
 // ===========================================================================
-// symbolic links
+// file / directory checks
 // ===========================================================================
+
+/**
+ * @brief Test the existance of a file or directory.
+ *
+ * @param [in] path File or directory path.
+ *
+ * @return Whether the given file or directory is an exists.
+ */
+bool exists(const std::string path);
+
+/**
+ * @brief Test whether a given path is the path of an existent file.
+ *
+ * @note This function follows symbolic links.
+ *
+ * @param [in] path File path.
+ *
+ * @return Whether the given path is an existent file.
+ */
+bool is_file(const std::string path);
+
+/**
+ * @brief Test whether a given path is the path of an existent directory.
+ *
+ * @note This function follows symbolic links.
+ *
+ * @param [in] path Directory path.
+ *
+ * @return Whether the given path is an existent directory.
+ */
+bool is_dir(const std::string path);
 
 /**
  * @brief Whether a given path is a symbolic link.
@@ -446,6 +477,10 @@ std::string join_paths(const std::string& base, const std::string& path);
  * @throw std::invalid_argument if the given path is not valid.
  */
 bool is_symlink(const std::string& path);
+
+// ===========================================================================
+// symbolic links
+// ===========================================================================
 
 /**
  * @brief Read value of symbolic link.
@@ -514,15 +549,6 @@ std::string get_executable_directory();
  */
 std::string get_executable_name();
 
-/**
- * @brief Test the existance of a file.
- *
- * @param [in] path File.
- *
- * @return Whether the given file is an existing file.
- * @throw std::invalid_argument if the given path is not valid.
- */
-bool file_exists( const std::string File);
 
 SBIA_BASIS_NAMESPACE_END
 
