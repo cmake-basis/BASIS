@@ -29,12 +29,6 @@ namespace basis {
 
 
 // ===========================================================================
-// static members
-// ===========================================================================
-
-ExecutableTargetInfo* ExecutableTargetInfo::instance_ = NULL;
-
-// ===========================================================================
 // construction / destruction
 // ===========================================================================
 
@@ -54,9 +48,8 @@ ExecutableTargetInfo::~ExecutableTargetInfo()
 // ---------------------------------------------------------------------------
 const ExecutableTargetInfo& ExecutableTargetInfo::instance()
 {
-    // TODO make this thread-safe!
-    if (!instance_) instance_ = new ExecutableTargetInfo();
-    return *instance_;
+    static ExecutableTargetInfo instance;
+    return instance;
 }
 
 // ---------------------------------------------------------------------------
@@ -70,7 +63,7 @@ string ExecutableTargetInfo::get_target_uid(const string& target) const
     string prefix = string("@PROJECT_NAMESPACE_CMAKE@");
     // try prepending namespace or parts of it until target is known
     for (;;) {
-        if (exec_names_.find(prefix + "." + target) != exec_names_.end()) {
+        if (_exec_names.find(prefix + "." + target) != _exec_names.end()) {
             return prefix + "." + target;
         }
         string::size_type pos = prefix.rfind('.');
@@ -88,7 +81,7 @@ bool ExecutableTargetInfo::is_known_target(const string& target) const
     string uid;
     if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
-    return exec_names_.find(uid) != exec_names_.end();
+    return _exec_names.find(uid) != _exec_names.end();
 }
 
 // ---------------------------------------------------------------------------
@@ -98,8 +91,8 @@ string ExecutableTargetInfo::get_executable_name(const string& target) const
     string uid;
     if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
-    MapIterator it = exec_names_.find(uid);
-    if (it == exec_names_.end ()) return "";
+    MapIterator it = _exec_names.find(uid);
+    if (it == _exec_names.end ()) return "";
     return it->second;
 }
 
@@ -110,8 +103,8 @@ string ExecutableTargetInfo::get_build_directory(const string& target) const
     string uid;
     if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
-    MapIterator it = build_dirs_.find(uid);
-    if (it == build_dirs_.end()) return "";
+    MapIterator it = _build_dirs.find(uid);
+    if (it == _build_dirs.end()) return "";
     return it->second;
 }
 
@@ -122,8 +115,8 @@ string ExecutableTargetInfo::get_installation_directory(const string& target) co
     string uid;
     if (target[0] == '.') uid = target.substr(1);
     else uid = get_target_uid(target);
-    MapIterator it = install_dirs_.find(uid);
-    if (it == install_dirs_.end()) return "";
+    MapIterator it = _install_dirs.find(uid);
+    if (it == _install_dirs.end()) return "";
 #ifdef LIBEXEC
     return join_paths(join_paths(get_executable_directory(), cLibexecPathPrefix), it->second);
 #else

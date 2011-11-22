@@ -179,15 +179,12 @@ private:
 private:
 
     /// Maps build target names to executable file names.
-    MapType exec_names_;
+    MapType _exec_names;
     /// Maps build target names to output directories in build tree.
-    MapType build_dirs_;
+    MapType _build_dirs;
     /// Maps build target names to installation directories relative to
     /// installation prefix as returned by GetInstallationPrefix().
-    MapType install_dirs_;
-
-    /// Static instance.
-    static ExecutableTargetInfo* instance_;
+    MapType _install_dirs;
 
 }; // class ExecutableTargetInfo
 
