@@ -105,7 +105,12 @@ string ExecutableTargetInfo::get_build_directory(const string& target) const
     else uid = get_target_uid(target);
     MapIterator it = _build_dirs.find(uid);
     if (it == _build_dirs.end()) return "";
+#if defined CMAKE_INTDIR
+    // this subdirectory is used by CMake generators for IDEs such as Visual Studio
+    return join_paths(it->second, CMAKE_INTDIR);
+#else
     return it->second;
+#endif
 }
 
 // ---------------------------------------------------------------------------
