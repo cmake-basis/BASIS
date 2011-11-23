@@ -239,21 +239,21 @@ BUILDING THE SOFWARE FROM SOURCES
 
      The advanced CMake settings are:
 
-     - INSTAlL_APIDOC_DIR    Installation directory of the API documentation
+     - INSTALL_APIDOC_DIR    Installation directory of the API documentation
                              relative to the INSTALL_PREFIX.
 
-     Please refer to the package specific build instructions given in the
-     INSTALL file which is located in the root directory of the source tree
-     or the 'doc' directory of the installation for details on the package specific
-     CMake variables.
+     Please refer also to the package specific build instructions given in the
+     INSTALL file of the corresponding package which is located in the root directory
+     of the source tree or the 'doc' directory of the installation. In this document,
+     additional project specific CMake variables and options may be listed.
 
-     Note: The ccmake tool also provides a brief description to each variable
+     Hint: The ccmake tool also provides a brief description to each variable
            in the status bar.
 
   3. Build the software
 
-     To build the package executables, run GNU Make in the root directory
-     of the configured build tree, i.e.,
+     To build the package executables and libraries, run GNU Make in the root
+     directory of the configured build tree, i.e.,
 
        $ make
 
@@ -269,14 +269,15 @@ BUILDING THE SOFWARE FROM SOURCES
 
        $ make doc
 
-     The advanced INSTALL_DOC_API_DIR CMake variable can be set to an absolute
+     The advanced INSTALL_APIDOC_DIR CMake variable can be set to an absolute
      path or a path relative to the INSTALL_PREFIX directory in order to modify
      the installation directory for the API documentation which is generated
      from the in-source comments. This can be useful, for example, to install
      the documentation in the document directory of a web server.
 
-     If you have access to the SVN repository of the project, a changelog can
-     be generated from the SVN history by building the "changelog" target, i.e.,
+     If you have access to the Subversion repository of the project, a change
+     log can be generated from the Subversion history by building the "changelog"
+     target, i.e.,
 
        $ make changelog
 
@@ -310,8 +311,7 @@ BUILDING THE SOFWARE FROM SOURCES
        $ make install
 
      in the root directory of the build tree. This will copy the installation
-     files into the directories specified during the configuration of the build
-     tree (see build step 2).
+     files into the directories specified during the configuration step.
  
      The package files are installed in the following locations:
 
@@ -331,36 +331,30 @@ BUILDING THE SOFWARE FROM SOURCES
 
      where <prefix> is the value of INSTALL_PREFIX and <sinfix> is an empty
      string if INSTALL_SINFIX is OFF and the package name in lowercase
-     otherwise (the default). If more than one version of a software
-     package shall be installed, include the package version in the <prefix>
-     by setting INSTALL_PREFIX to "/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@",
-     for example.
+     otherwise preceded by the common infix "sbia/" (the default).
+     
+     If more than one version of a software package shall be installed,
+     include the package version in the <prefix> by setting INSTALL_PREFIX
+     to "/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@", for example,
+     and disable the use of the <sinfix> by setting INSTALL_SINFIX to OFF.
 
-     Additionally, if INSTALL_SINFIX and INSTALL_LINKS are ON (the default),
+     Additionally, if both INSTALL_SINFIX and INSTALL_LINKS are ON (the default),
      the following (symbolic) links are created on UNIX-based systems:
 
      - <prefix>/bin/<exec>               -> <prefix>/bin/<sinfix>/<exec>
-     - <prefix>/share/doc/<sinfix>       -> <prefix>/share/<sinfix>/doc/
      - <prefix>/share/man/man.1/<exec>.1 -> <prefix>/share/<sinfix>/man/man.1/<exec>.1
      - <prefix>/share/man/man.3/<func>.3 -> <prefix>/share/<sinfix>/man/man.3/<func>.3
 
-     Consider also the package specific installation instructions given in
-     the INSTALL file of the respective package.
-
-     After the successful installation, the build tree can be deleted. Note,
-     however, that the Makefile-based deinstallation of the package requires
-     the build tree to be present. To save disk space, the intermediate
-     object files and built executables should still be deleted by
-
-       $ make clean
+     After the successful installation, the build tree can be deleted.
 
   6. Setup your environment (optional)
 
      In order to ease the execution of the main executable files, we suggest to
-     add either the path ~/$pkg-build/bin/ or <prefix>/bin/ and optionally
-     <prefix>/bin/<sinfix> to the search path for executable files, i.e., the
-     PATH environment variable. This is, however, generally no requirement for
-     the correct functioning of the software. For example,
+     add either the path ~/$pkg-build/bin/ or <prefix>/bin/ to the search path
+     for executable files, i.e., the PATH environment variable. This is, however,
+     generally no requirement for the correct functioning of the software.
+
+     For example,
 
      $ export PATH="<prefix>/bin/:<prefix>/bin/<sinfix>/:${PATH}"
 
@@ -415,8 +409,33 @@ BUILDING THE SOFWARE FROM SOURCES
 
   Attention: With the current implementation, this command will simply
              delete all the files which were installed during the *last*
-             build of the install target ("make install"). Directories will
-             not be removed even when empty afterwards.
+             build of the install target ("make install").
+
+
+  Deinstallation using the Uninstaller
+  ------------------------------------
+
+  During the installation, a manifest of all installed files and a CMake
+  script which reads in this list in order to remove these files again
+  is generated and installed in <prefix>/lib/cmake/<package>/.
+
+  If INSTALL_SINFIX was set to ON during the installation, a shell script
+  named "uninstall" was written to the <prefix>/bin/<sinfix>/ directory
+  on Unix and a corresponding Batch file on Windows. Additionally, if
+  INSTALL_LINKS was set to ON, a symbolic link named "uninstall_<package>"
+  was created in <prefix>/bin/. Otherwise, if INSTALL_SINFIX was set to ON,
+  the uninstaller is located in <prefix>/bin/ and named "uninstall_<package>".
+
+  Hence, in order to remove all files installed by this package as well
+  as the empty directories left behind inside the installation root directory
+  given by <prefix>, run the command
+
+  $ uninstall_<package>
+
+  assuming that you added <prefix>/bin/ to your PATH environment variable.
+
+  The advantage of the uninstaller is, that the build tree is no longer
+  required in order to uninstall the software package.
 
 
 
