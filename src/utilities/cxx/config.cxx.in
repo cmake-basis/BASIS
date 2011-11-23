@@ -18,6 +18,9 @@
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
+namespace basis
+{
+
 
 // ===========================================================================
 // constants
@@ -55,5 +58,6 @@ const char* cLibraryPath = "@LIBRARY_PATH_CONFIG@";
 const char* cDataPath    = "@DATA_PATH_CONFIG@";
 
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+} // namespace basis
 
+SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END

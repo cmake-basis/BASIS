@@ -142,6 +142,9 @@
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
 
+namespace basis
+{
+
 
 // ---------------------------------------------------------------------------
 // project attributes
@@ -305,12 +308,13 @@ extern const char* cLibraryPath;
 extern const char* cDataPath;
 
 
-/// @}
-// end of Doxygen group
-
+} // namespace basis
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
 
+
+/// @}
+// end of Doxygen group
 
 #endif // SBIA_@PROJECT_NAME_UPPER@_CONFIG_H_
 
