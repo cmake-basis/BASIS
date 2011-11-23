@@ -623,6 +623,8 @@ endif ()
 # @note This option is not available on Windows.
 if (UNIX)
   option (INSTALL_LINKS "Request installation of (symbolic) links." ON)
+else ()
+  set (INSTALL_LINKS OFF)
 endif ()
 
 

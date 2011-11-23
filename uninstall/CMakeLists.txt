@@ -30,6 +30,9 @@ if (INSTALL_SINFIX)
 else ()
   set (UNINSTALLER_NAME "uninstall_${PROJECT_NAME}")
 endif ()
+if (WIN32)
+  set (UNINSTALLER_NAME "${UNINSTALLER_NAME}.bat")
+endif ()
 
 install (
   CODE
@@ -40,9 +43,9 @@ install (
     if (UNIX)
       file (APPEND \"\${UNINSTALLER}\" \"#! /bin/sh\n\")
     endif ()
-    file (APPEND \"\${UNINSTALLER}\" \"${CMAKE_COMMAND} -P \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PROJECT_NAME}Uninstall.cmake\")
+    file (APPEND \"\${UNINSTALLER}\" \"\\\"${CMAKE_COMMAND}\\\" -P \\\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PROJECT_NAME}Uninstall.cmake\\\"\")
     if (UNIX)
-      execute_process (COMMAND /bin/chmod +x \"\${UNINSTALLER}\")
+      execute_process (COMMAND /bin/chmod +x \"\\\"\${UNINSTALLER}\\\"\")
     endif ()
     list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${UNINSTALLER}\")
     "

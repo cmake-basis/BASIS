@@ -57,7 +57,7 @@ else ()
   if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@InstallManifest.txt")
     # install manifest written to installation tree
     set (MANIFEST_FILE "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@InstallManifest.txt")
-  else (CMAKE_INSTALL_COMPONENT)
+  elseif (CMAKE_INSTALL_COMPONENT)
     set (MANIFEST_FILE "${CMAKE_CURRENT_LIST_DIR}/install_manifest_${CMAKE_INSTALL_COMPONENT}.txt")
   else ()
     set (MANIFEST_FILE "${CMAKE_CURRENT_LIST_DIR}/install_manifest.txt")
