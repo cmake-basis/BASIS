@@ -21,7 +21,7 @@
 #include <string>
 #include <map>
 
-#include <sbia/@PROJECT_NAME_LOWER@/config.h>
+#include <@INCLUDE_PREFIX@config.h>
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
@@ -49,11 +49,11 @@ namespace basis {
  * themselves when adding the target to the build configuration.
  *
  * In order to get the actual file path of the built executable file, the
- * function GetExecutableFile() is provided by this module. This function
- * uses the static singleton instance of this class in order to map the given
- * build target name to the name of the built and optionally installed
- * executable. The code which initializes the required maps is generated
- * automatically during the configuration of the build system by BASIS.
+ * function get_executable_path() is provided by the stdaux.h module.
+ * This function uses the static singleton instance of this class in order to
+ * map the given build target name to the name of the built and optionally
+ * installed executable. The code which initializes the required maps is
+ * generated automatically during the configuration of the build system.
  *
  * @note This class is not intended to be subclassed.
  *

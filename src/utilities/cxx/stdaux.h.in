@@ -22,7 +22,7 @@
 #include <vector>
 #include <iostream>
 
-#include <sbia/@PROJECT_NAME_LOWER@/config.h>
+#include <@INCLUDE_PREFIX@config.h>
 
 
 SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
