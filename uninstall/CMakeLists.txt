@@ -45,7 +45,7 @@ install (
     endif ()
     file (APPEND \"\${UNINSTALLER}\" \"\\\"${CMAKE_COMMAND}\\\" -P \\\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PROJECT_NAME}Uninstall.cmake\\\"\")
     if (UNIX)
-      execute_process (COMMAND /bin/chmod +x \"\\\"\${UNINSTALLER}\\\"\")
+      execute_process (COMMAND /bin/chmod +x \"\${UNINSTALLER}\")
     endif ()
     list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${UNINSTALLER}\")
     "
