@@ -93,7 +93,6 @@ public:
      * @brief Get static instance of this module.
      *
      * @attention This method is not thread-safe!
-     * @todo Make it thread-safe using mutex locks.
      *
      * @return Static instance of this class.
      */
