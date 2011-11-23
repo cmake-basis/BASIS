@@ -16,6 +16,8 @@
 #include <vector>
 #include <string>
 
+#include <sbia/basis/config.h> // defines WINDOWS macro
+
 #if WINDOWS
 #  include <windows.h>
 #else
