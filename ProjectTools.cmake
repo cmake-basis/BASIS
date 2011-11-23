@@ -759,7 +759,7 @@ macro (basis_project_initialize)
   set (PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
   # version information string
-  if (PROJECT_VERSION MATCHES "0+(\\.0+)?(\\.0+)?")
+  if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?")
     set (PROJECT_VERSION_AND_REVISION "")
   else ()
     set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION}")
