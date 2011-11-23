@@ -196,35 +196,35 @@ extern const unsigned int cRevision;
  * build tree is enough to know whether or not it is executed from within the
  * build tree or an installation.
  *
- * @sa GetInstallationDirectory()
+ * @sa get_installation_directory()
  */
 extern const char* cBuildRoot;
 
 /**
  * @brief Absolute path to runtime executables in build tree.
  *
- * @sa GetRuntimeDirectory()
+ * @sa get_runtime_directory()
  */
 extern const char* cRuntimeBuildPath;
 
 /**
  * @brief Absolute path to auxiliary executables in build tree.
  *
- * @sa GetLibexecDirectory()
+ * @sa get_libexec_directory()
  */
 extern const char* cLibexecBuildPath;
 
 /**
  * @brief Absolute path to modules and shared libraries in build tree.
  *
- * @sa GetLibraryDirectory()
+ * @sa get_library_directory()
  */
 extern const char* cLibraryBuildPath;
 
 /**
  * @brief Absolute path to auxiliary data files in build tree.
  *
- * @sa GetDataDirectory()
+ * @sa get_data_directory()
  */
 extern const char* cDataBuildPath;
 
@@ -239,13 +239,13 @@ extern const char* cDataBuildPath;
  *
  * Example:
  * @code
- * std::string path = GetExecutableDirectory () + cRuntimePathPrefix + cDataPath;
+ * std::string path = get_executable_directory() + cRuntimePathPrefix + cDataPath;
  * @endcode
  *
  * The resulting path is the absolute path to the shared data directory if
  * executed by a main executable which is located in the runtime directory.
  *
- * @sa GetInstallationDirectory()
+ * @sa get_installation_directory()
  */
 extern const char* cRuntimePathPrefix;
 
@@ -257,13 +257,13 @@ extern const char* cRuntimePathPrefix;
  *
  * Example:
  * @code
- * std::string path = GetExecutableDirectory () + cLibexecPathPrefix + cDataPath;
+ * std::string path = get_executable_directory() + cLibexecPathPrefix + cDataPath;
  * @endcode
  *
  * The resulting path is the absolute path to the shared data directory if
  * executed by an auxiliary executable which is located in the libexec directory.
  *
- * @sa GetInstallationDirectory()
+ * @sa get_installation_directory()
  */
 extern const char* cLibexecPathPrefix;
 
@@ -273,7 +273,7 @@ extern const char* cLibexecPathPrefix;
  * @sa cRuntimePathPrefix
  * @sa cLibexecPathPrefix
  *
- * @sa GetRuntimeDirectory()
+ * @sa get_runtime_directory()
  */
 extern const char* cRuntimePath;
 
@@ -283,7 +283,7 @@ extern const char* cRuntimePath;
  * @sa cRuntimePathPrefix
  * @sa cLibexecPathPrefix
  *
- * @sa GetLibexecDirectory()
+ * @sa get_libexec_directory()
  */
 extern const char* cLibexecPath;
 
@@ -293,7 +293,7 @@ extern const char* cLibexecPath;
  * @sa cRuntimePathPrefix
  * @sa cLibexecPathPrefix
  *
- * @sa GetLibraryDirectory()
+ * @sa get_library_directory()
  */
 extern const char* cLibraryPath;
 
@@ -303,7 +303,7 @@ extern const char* cLibraryPath;
  * @sa cRuntimePathPrefix
  * @sa cLibexecPathPrefix
  *
- * @sa GetDataDirectory()
+ * @sa get_data_directory()
  */
 extern const char* cDataPath;
 
