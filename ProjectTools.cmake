@@ -1113,7 +1113,9 @@ macro (basis_project_impl)
   # any package use file must be included after PROJECT_NAME was set as the
   # imported targets are added to the <Project>_TARGETS property using
   # basis_set_project_property() in add_executable() and add_library()
-  include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
+  if (BASIS_USE_FILE)
+    include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
+  endif ()
   basis_find_packages ()
 
   # --------------------------------------------------------------------------
