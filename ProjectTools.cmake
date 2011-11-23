@@ -1005,10 +1005,6 @@ macro (basis_project_finalize)
     basis_configure_ExecutableTargetInfo ()
     # finalize addition of custom targets
     basis_add_custom_finalize ()
-    # install symbolic links
-    if (INSTALL_LINKS)
-      basis_install_links ()
-    endif ()
     # generate configuration files
     include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
     # package software
@@ -1215,6 +1211,21 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # finalize
   basis_project_finalize ()
+
+  # install symbolic links
+  if (INSTALL_LINKS)
+    basis_install_links ()
+    # documentation
+    # Note: Not all CPack generators preserve symbolic links to directories
+    # Note: This is not part of the filesystem hierarchy standard of Linux,
+    #       but of the standard of certain distributions including Ubuntu.
+    if (NOT PROJECT_IS_MODULE AND INSTALL_SINFIX AND BASIS_INSTALL_SINFIX)
+      basis_install_link (
+        "${INSTALL_DOC_DIR}"
+        "share/doc/${BASIS_INSTALL_SINFIX}"
+      )
+    endif ()
+  endif ()
 
   if (NOT PROJECT_IS_MODULE)
     # add uninstall target
