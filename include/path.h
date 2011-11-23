@@ -317,6 +317,19 @@ std::string get_file_name_without_extension(const std::string&           path,
 std::string get_file_name_extension(const std::string&           path,
                                     const std::set<std::string>* exts = NULL);
 
+/**
+ * @brief Test whether a given path has an extension.
+ *
+ * @param [in] path Path.
+ * @param [in] exts Set of recognized extensions or NULL.
+ *
+ * @return Whether the given path has a file name extension. If @p exts is not
+ *         NULL, this function returns true only if the file name ends in one
+ *         of the specified extensions (including dot if required). Otherwise,
+ *         it only checks if the path has a dot (.) in the file name.
+ */
+bool has_extension(const std::string& path, const std::set<std::string>* exts = NULL);
+
 // ===========================================================================
 // absolute / relative paths
 // ===========================================================================

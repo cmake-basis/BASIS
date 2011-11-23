@@ -435,6 +435,13 @@ string get_file_name_extension(const string& path, const set<string>* exts)
     return ext;
 }
 
+// ---------------------------------------------------------------------------
+bool has_extension(const string& path, const set<string>* exts)
+{
+    string ext = get_file_name_extension(path, exts);
+    return exts ? exts->find(ext) != exts->end() : !ext.empty();
+}
+
 // ===========================================================================
 // absolute / relative paths
 // ===========================================================================
@@ -570,7 +577,8 @@ string join_paths(const string& base, const string& path)
 bool is_file(const std::string path)
 {
 #if WINDOWS 
-#  error Not implemented yet!
+    const DWORD info = ::GetFileAttributes(path.c_str());
+    return (FILE_ATTRIBUTE_DIRECTORY & info) == 0;
 #else
     struct stat info;
     if (stat(path.c_str(), &info) != 0) return false;
@@ -583,7 +591,8 @@ bool is_file(const std::string path)
 bool is_dir(const std::string path)
 {
 #if WINDOWS 
-#  error Not implemented yet!
+    const DWORD info = ::GetFileAttributes(path.c_str());
+    return (FILE_ATTRIBUTE_DIRECTORY & info) != 0;
 #else
     struct stat info;
     if (stat(path.c_str(), &info) != 0) return false;
@@ -596,7 +605,8 @@ bool is_dir(const std::string path)
 bool exists(const std::string path)
 {
 #if WINDOWS 
-#  error Not implemented yet!
+    const DWORD info = ::GetFileAttributes(path.c_str());
+    return info != INVALID_FILE_ATTRIBUTES;
 #else
     struct stat info;
     if (stat(path.c_str(), &info) == 0) return true;
