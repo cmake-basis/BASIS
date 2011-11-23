@@ -471,12 +471,18 @@ bool Subprocess::poll() const
     DWORD dwStatus = 0;
     if (GetExitCodeProcess(info_.hProcess, &dwStatus)) {
         status_ = static_cast<int>(dwStatus);
+        return status_ != STILL_ACTIVE;
+/*
+        This should have been more save in case 259 is used as exit code
+        by the process. However, it did not seem to work as expected.
+
         if (status_ == STILL_ACTIVE) {
             // if the process is terminated, this would return WAIT_OBJECT_0
             return WaitForSingleObject(info_.hProcess, 0) != WAIT_TIMEOUT;
         } else {
             return false;
         }
+*/
     }
     BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
 #else
