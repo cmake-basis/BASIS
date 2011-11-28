@@ -638,21 +638,40 @@ function (basis_add_doc TARGET_NAME)
         endif ()
 
         macro (install_doxydoc DIR)
-          if (IS_DIRECTORY \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}\")
+          file (
+            GLOB_RECURSE
+              FILES
+            RELATIVE \"${DOXYGEN_OUTPUT_DIRECTORY}\"
+              \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}/*\"
+          )
+          foreach (F IN LISTS FILES)
             execute_process (
-              COMMAND \"${CMAKE_COMMAND}\" -E copy_directory
-                  \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}\"
-                  \"\${INSTALL_PREFIX}/\${DIR}\"
+              COMMAND \"${CMAKE_COMMAND}\" -E compare_files
+                  \"${DOXYGEN_OUTPUT_DIRECTORY}/\${F}\"
+                  \"\${INSTALL_PREFIX}/\${F}\"
               RESULT_VARIABLE RC
+              OUTPUT_QUIET
+              ERROR_QUIET
             )
             if (RC EQUAL 0)
-              message (STATUS \"Installing: \${INSTALL_PREFIX}/\${DIR}\")
+              message (STATUS \"Up-to-date: \${INSTALL_PREFIX}/\${F}\")
             else ()
-              message (STATUS \"Skipped: \${INSTALL_PREFIX}/\${DIR}\")
+              message (STATUS \"Installing: \${INSTALL_PREFIX}/\${F}\")
+              execute_process (
+                COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
+                    \"${DOXYGEN_OUTPUT_DIRECTORY}/\${F}\"
+                    \"\${INSTALL_PREFIX}/\${F}\"
+                RESULT_VARIABLE RC
+                OUTPUT_QUIET
+                ERROR_QUIET
+              )
+              if (RC EQUAL 0)
+                list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${F}\")
+              else ()
+                message (STATUS \"Failed to install \${INSTALL_PREFIX}/\${F}\")
+              endif ()
             endif ()
-
-            list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${DIR}\")
-          endif ()
+          endforeach ()
         endmacro ()
 
         install_doxydoc (html)
