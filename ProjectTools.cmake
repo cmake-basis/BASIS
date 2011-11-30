@@ -386,9 +386,9 @@ macro (basis_project_modules)
   unset (L)
 
   # report what will be built
-  foreach (MODULE ${PROJECT_MODULES_ENABLED})
-    message (STATUS "Enabled module ${MODULE}.")
-  endforeach ()
+  if (PROJECT_MODULES_ENABLED)
+    message (STATUS "Enabled modules [${PROJECT_MODULES_ENABLED}].")
+  endif ()
 
   # turn options ON for modules that are required by other modules
   foreach (MODULE ${PROJECT_MODULES})
