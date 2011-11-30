@@ -740,10 +740,9 @@ endfunction ()
 # @sa basis_add_executable()
 # @sa basis_install()
 #
-# @param [in] TARGET_NAME Name of the target. If the target is build from a
-#                         single source file, the file path of this source file
-#                         can be given as first argument. The build target name
-#                         is then derived from the name of the source file.
+# @param [in] TARGET_NAME Name of the target. If a source file is given
+#                         as first argument, the build target name is derived
+#                         from the name of this source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted, all other arguments are
 #                         considered to be source code files and simply passed
@@ -800,8 +799,9 @@ function (basis_add_executable_target TARGET_NAME)
 
   set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
 
-  if (NOT SOURCES)
-    set (SOURCES "${TARGET_NAME}")
+  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+  if (NOT SOURCES OR EXISTS "${S}")
+    list (APPEND SOURCES "${TARGET_NAME}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
 
@@ -981,10 +981,9 @@ endfunction ()
 # @p LIBRARY_DESTINATION. The installation of each of the library components
 # can be omitted by giving "none" as argument for the destination parameters.
 #
-# @param [in] TARGET_NAME Name of the target. If the target is build from a
-#                         single source file, the file path of this source file
-#                         can be given as first argument. The build target name
-#                         is then derived from the name of the source file.
+# @param [in] TARGET_NAME Name of the target. If a source file is given
+#                         as first argument, the build target name is derived
+#                         from the name of this source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted. All other arguments are
 #                         considered to be source code files and simply
@@ -1052,8 +1051,9 @@ function (basis_add_library_target TARGET_NAME)
 
   set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
 
-  if (NOT SOURCES)
-    set (SOURCES "${TARGET_NAME}")
+  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+  if (NOT SOURCES OR EXISTS "${S}")
+    list (APPEND SOURCES "${TARGET_NAME}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
 

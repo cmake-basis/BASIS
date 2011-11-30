@@ -323,10 +323,9 @@ endfunction ()
 #
 # @sa basis_add_library()
 #
-# @param [in] TARGET_NAME Name of the target. If the target is build from a
-#                         single source file, the file path of this source file
-#                         can be given as first argument. The build target name
-#                         is then derived from the name of the source file.
+# @param [in] TARGET_NAME Name of the target. If a source file is given
+#                         as first argument, the build target name is derived
+#                         from the name of this source file.
 # @param [in] ARGN        Remaining arguments such as in particular the
 #                         input source files. Moreover, the following arguments
 #                         are parsed:
@@ -376,8 +375,9 @@ function (basis_add_mex_target TARGET_NAME)
   endif ()
 
   set (SOURCES)
-  if (NOT ARGN_UNPARSED_ARGUMENTS)
-    set (ARGN_UNPARSED_ARGUMENTS "${TARGET_NAME}")
+  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+  if (NOT ARGN_UNPARSED_ARGUMENTS OR EXISTS "${S}")
+    list (APPEND ARGN_UNPARSED_ARGUMENTS "${TARGET_NAME}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
   foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
@@ -788,10 +788,9 @@ endfunction ()
 # @sa basis_add_executable()
 # @sa basis_add_library()
 #
-# @param [in] TARGET_NAME Name of the target. If the target is build from a
-#                         single source file, the file path of this source file
-#                         can be given as first argument. The build target name
-#                         is then derived from the name of the source file.
+# @param [in] TARGET_NAME Name of the target. If a source file is given
+#                         as first argument, the build target name is derived
+#                         from the name of this source file.
 # @param [in] ARGN        Remaining arguments such as in particular the
 #                         input source files. Moreover, the following arguments
 #                         are parsed:
@@ -898,8 +897,9 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
 
   set (SOURCES)
-  if (NOT ARGN_UNPARSED_ARGUMENTS)
-    set (ARGN_UNPARSED_ARGUMETNS "${TARGET_NAME}")
+  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+  if (NOT ARGN_UNPARSED_ARGUMENTS OR EXISTS "${S}")
+    list (APPEND ARGN_UNPARSED_ARGUMETNS "${TARGET_NAME}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
   foreach (ARG ${ARGN_UNPARSED_ARGUMENTS})
