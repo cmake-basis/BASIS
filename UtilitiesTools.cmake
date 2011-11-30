@@ -489,11 +489,12 @@ function (basis_configure_ExecutableTargetInfo)
   endif ()
 
   basis_get_project_property (TARGETS PROPERTY TARGETS)
-  foreach (TARGET_UID IN LISTS TARGETS)
-    if (NOT TARGET_UID)
-      message (WARNING "There is an empty entry in the TARGETS project property!")
-    endif ()
+  foreach (M IN LISTS PROJECT_MODULES_ENABLED)
+    basis_get_project_property (T PROJECT ${M} PROPERTY TARGETS)
+    list (APPEND TARGETS ${T})
+  endforeach ()
 
+  foreach (TARGET_UID IN LISTS TARGETS)
     basis_target_type   (TYPE ${TARGET_UID})
     get_target_property (TEST ${TARGET_UID} "TEST")
  
