@@ -43,9 +43,9 @@ endif ()
 
 # library directories
 if (${NS}LIBRARY_DIRS)
-  include_directories (${${NS}LIBRARY_DIRS})
+  link_directories (${${NS}LIBRARY_DIRS})
 elseif (${NS}LIBRARY_DIR)
-  include_directories (${${NS}LIBRARY_DIR})
+  link_directories (${${NS}LIBRARY_DIR})
 endif ()
 
 # ============================================================================

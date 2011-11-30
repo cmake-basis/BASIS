@@ -42,12 +42,12 @@ basis_set_config (USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
 basis_set_config (INCLUDE_PREFIX "@INCLUDE_PREFIX@")
 
 ## @brief Directory of header files.
-basis_set_config (INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
-basis_set_config (INCLUDE_DIRS "${${NS}INCLUDE_DIR}")
+basis_set_config (INCLUDE_DIR  "@INCLUDE_DIR_CONFIG@")
+basis_set_config (INCLUDE_DIRS "@INCLUDE_DIRS_CONFIG@")
 
 ## @brief Directory of libraries.
-basis_set_config (LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
-basis_set_config (LIBRARY_DIRS "${${NS}LIBRARY_DIR}")
+basis_set_config (LIBRARY_DIR  "@LIBRARY_DIR_CONFIG@")
+basis_set_config (LIBRARY_DIRS "@LIBRARY_DIRS_CONFIG@")
 
 ## @brief Search path for Python package.
 basis_set_config (PYTHON_LIBRARY_DIR "@PYTHON_LIBRARY_DIR_CONFIG@")

@@ -15,6 +15,44 @@
 ##############################################################################
 
 # ============================================================================
+# common configuration settings
+# ============================================================================
+
+basis_sanitize_for_regex (RS "${PROJECT_SOURCE_DIR}")
+basis_sanitize_for_regex (RB "${PROJECT_BINARY_DIR}")
+
+# include directories of dependencies
+get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
+if (INCLUDE_DIRS)
+  list (REMOVE_DUPLICATES INCLUDE_DIRS)
+endif ()
+
+set (INCLUDE_DIRS_CONFIG "\${\${NS}INCLUDE_DIR}")
+foreach (D IN LISTS INCLUDE_DIRS)
+  # exclude project own directories
+  if (NOT D MATCHES "^${RS}|^${RB}")
+    list (APPEND INCLUDE_DIRS_CONFIG "${D}")
+  endif ()
+endforeach ()
+
+# link directories of dependencies
+get_directory_property (LIBRARY_DIRS LINK_DIRECTORIES)
+if (LIBRARY_DIRS)
+  list (REMOVE_DUPLICATES LIBRARY_DIRS)
+endif ()
+
+set (LIBRARY_DIRS_CONFIG "\${\${NS}LIBRARY_DIR}")
+foreach (D IN LISTS LIBRARY_DIRS)
+  # exclude project own directories
+  if (NOT D MATCHES "^${RS}|^${RB}")
+    list (APPEND LIBRARY_DIRS_CONFIG "${D}")
+  endif ()
+endforeach ()
+
+unset (RS)
+unset (RB)
+
+# ============================================================================
 # build tree configuration settings
 # ============================================================================
 
