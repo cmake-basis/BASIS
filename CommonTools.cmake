@@ -135,7 +135,7 @@ macro (basis_use_package PACKAGE)
         if (BASIS_DEBUG)
           message ("**     This is the top-level project.")
         endif ()
-        break ()
+        break () # instead of return()
       else ()
         # use other module of top-level project
         list (FIND PROJECT_MODULES "${PACKAGE}" IDX)
@@ -145,7 +145,7 @@ macro (basis_use_package PACKAGE)
               message ("**     Include package use file of other module.")
             endif ()
             include ("${${PACKAGE}_DIR}/${PACKAGE}Use.cmake")
-            break ()
+            break () # instead of return()
           else ()
             message (FATAL_ERROR "Module ${PACKAGE} not found! This must be a "
                                  "mistake of BASIS. Talk to the maintainer of this "
