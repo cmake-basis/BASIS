@@ -2015,7 +2015,7 @@ function (basis_add_script_finalize TARGET_UID)
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
 
   # install script
-  if (NOT ARGN_NO_EXPORT)
+  if (NOT ARGN_NO_EXPORT AND NOT TEST)
     basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
   endif ()
 
