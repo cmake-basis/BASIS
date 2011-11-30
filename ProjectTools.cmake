@@ -387,16 +387,8 @@ macro (basis_project_modules)
 
   # report what will be built
   foreach (MODULE ${PROJECT_MODULES_ENABLED})
-    if (MODULE_${MODULE})
-      set (R ", requested by option MODULE_${MODULE}")
-    elseif (${MODULE}_IN_ALL)
-      set (R ", requested by option BUILD_ALL_MODULES")
-    else ()
-      set (R ", needed by modules [${${MODULE}_NEEDED_BY}]")
-    endif ()
-    message (STATUS "Enabled module ${MODULE}${R}.")
+    message (STATUS "Enabled module ${MODULE}.")
   endforeach ()
-  unset (R)
 
   # turn options ON for modules that are required by other modules
   foreach (MODULE ${PROJECT_MODULES})
