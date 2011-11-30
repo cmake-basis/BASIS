@@ -18,8 +18,8 @@
 # common configuration settings
 # ============================================================================
 
-basis_sanitize_for_regex (RS "${PROJECT_SOURCE_DIR}")
-basis_sanitize_for_regex (RB "${PROJECT_BINARY_DIR}")
+basis_sanitize_for_regex (RS "${CMAKE_SOURCE_DIR}")
+basis_sanitize_for_regex (RB "${CMAKE_BINARY_DIR}")
 
 # include directories of dependencies
 get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
