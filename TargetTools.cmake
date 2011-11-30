@@ -41,7 +41,7 @@ function (basis_set_target_properties)
   endif ()
   set (UIDS)
   list (GET ARGN 0 ARG)
-  while (ARG AND NOT "${ARG}" STREQUAL "PROPERTIES")
+  while (ARG AND NOT ARG MATCHES "^PROPERTIES$")
     basis_get_target_uid (UID "${ARG}")
     list (APPEND UIDS "${UID}")
     list (REMOVE_AT ARGN 0)
@@ -154,12 +154,12 @@ function (basis_include_directories)
   endif ()
 
   # append directories to "global" list of include directories
-  basis_get_project_property (PROJECT_INCLUDE_DIRS)
-  list (APPEND PROJECT_INCLUDE_DIRS ${DIRS})
-  if (PROJECT_INCLUDE_DIRS)
-    list (REMOVE_DUPLICATES PROJECT_INCLUDE_DIRS)
+  basis_get_project_property (INCLUDE_DIRS PROPERTY PROJECT_INCLUDE_DIRS)
+  list (APPEND INCLUDE_DIRS ${DIRS})
+  if (INCLUDE_DIRS)
+    list (REMOVE_DUPLICATES INCLUDE_DIRS)
   endif ()
-  basis_set_project_property (PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS})
+  basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS ${INCLUDE_DIRS})
 endfunction ()
 
 ##############################################################################
@@ -318,7 +318,7 @@ endfunction ()
 
 function (add_executable TARGET_NAME)
   _add_executable (${TARGET_NAME} ${ARGN})
-  basis_set_project_property (TARGETS APPEND "${TARGET_NAME}")
+  basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_NAME}")
 endfunction ()
 
 ##############################################################################
@@ -333,7 +333,7 @@ endfunction ()
 
 function (add_library TARGET_NAME)
   _add_library (${TARGET_NAME} ${ARGN})
-  basis_set_project_property (TARGETS APPEND "${TARGET_NAME}")
+  basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_NAME}")
 endfunction ()
 
 ##############################################################################
@@ -466,11 +466,11 @@ function (basis_add_executable TARGET_NAME)
     endif ()
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
-    if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS" OR "${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
+    if (ARGN_LANGUAGE MATCHES "AMBIGUOUS|UNKNOWN")
       message ("basis_add_executable(${TARGET_UID}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
-      if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS")
+      if (ARGN_LANGUAGE MATCHES "AMBIGUOUS")
         message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
-      elseif ("${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
+      elseif (ARGN_LANGUAGE MATCHES "UNKNOWN")
         message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       endif ()
     endif ()
@@ -479,13 +479,13 @@ function (basis_add_executable TARGET_NAME)
 
   # --------------------------------------------------------------------------
   # C++
-  if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
+  if (ARGN_LANGUAGE MATCHES "CXX")
 
     basis_add_executable_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
 
   # --------------------------------------------------------------------------
   # MATLAB
-  elseif ("${ARGN_LANGUAGE}" STREQUAL "MATLAB")
+  elseif (ARGN_LANGUAGE MATCHES "MATLAB")
 
     basis_add_mcc_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS} TYPE EXECUTABLE)
 
@@ -620,11 +620,11 @@ function (basis_add_library TARGET_NAME)
     endif ()
 
     basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
-    if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS" OR "${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
+    if (ARGN_LANGUAGE MATCHES "AMBIGUOUS|UNKNOWN")
       message ("basis_add_library(${TARGET_UID}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
-      if ("${ARGN_LANGUAGE}" STREQUAL "AMBIGUOUS")
+      if (ARGN_LANGUAGE MATCHES "AMBIGUOUS")
         message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
-      elseif ("${ARGN_LANGUAGE}" STREQUAL "UNKNOWN")
+      elseif (ARGN_LANGUAGE MATCHES "UNKNOWN")
         message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       endif ()
     endif ()
@@ -633,7 +633,7 @@ function (basis_add_library TARGET_NAME)
 
   # --------------------------------------------------------------------------
   # C++
-  if ("${ARGN_LANGUAGE}" STREQUAL "CXX")
+  if (ARGN_LANGUAGE MATCHES "CXX")
 
     CMAKE_PARSE_ARGUMENTS (
       ARGN
@@ -677,7 +677,7 @@ function (basis_add_library TARGET_NAME)
 
   # --------------------------------------------------------------------------
   # MATLAB
-  elseif ("${ARGN_LANGUAGE}" STREQUAL "MATLAB")
+  elseif (ARGN_LANGUAGE MATCHES "MATLAB")
 
     CMAKE_PARSE_ARGUMENTS (
       ARGN
@@ -946,7 +946,7 @@ function (basis_add_executable_target TARGET_NAME)
       set (EXPORT_OPT)
     else ()
       set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-      basis_set_project_property (EXPORT_TARGETS APPEND "${TARGET_UID}")
+      basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
     endif ()
 
     install (
@@ -1176,7 +1176,7 @@ function (basis_add_library_target TARGET_NAME)
     set (EXPORT_OPT)
   else ()
     set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-    basis_set_project_property (EXPORT_TARGETS APPEND "${TARGET_UID}")
+    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
   endif ()
 
   if (ARGN_RUNTIME_DESTINATION)
@@ -1432,7 +1432,7 @@ function (basis_add_script TARGET_NAME)
   # "parse" script to check if BASIS utilities are used and hence required
   file (READ "${ARGN_SCRIPT}" SCRIPT)
   if (SCRIPT MATCHES "@BASIS_([A-Z]+)_UTILITIES@")
-    basis_set_project_property (PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE)
+    basis_set_project_property (PROPERTY PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE)
   endif ()
   set (SCRIPT)
 
@@ -1465,7 +1465,7 @@ function (basis_add_script TARGET_NAME)
   set (OUTPUT_NAME "${SCRIPT_NAME}")
   if (NOT ARGN_MODULE AND NOT ARGN_WITH_EXT AND UNIX)
     file (STRINGS "${ARGN_SCRIPT}" SHABANG LIMIT_COUNT 2 LIMIT_INPUT 2)
-    if ("${SHABANG}" STREQUAL "#!")
+    if (SHABANG MATCHES "#!")
       get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
     endif ()
   endif ()
@@ -1611,7 +1611,7 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   # add target to list of targets
-  basis_set_project_property (TARGETS APPEND "${TARGET_UID}")
+  basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
 
   if (BASIS_VERBOSE)
     if (ARGN_MODULE)
@@ -1781,7 +1781,7 @@ function (basis_add_script_finalize TARGET_UID)
       set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
       list (APPEND OUTPUT_FILES "${CONFIGURED_INSTALL_FILE}")
     endif ()
-    if (MODULE AND COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+    if (MODULE AND COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
       # Python modules get optionally compiled
       get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
       get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
@@ -1869,7 +1869,7 @@ function (basis_add_script_finalize TARGET_UID)
     set (C "${C}configure_file (\"${TEMPLATE_FILE}\" \"${CONFIGURED_FILE}\" @ONLY)\n")
     if (MODULE)
       # compile module if applicable
-      if (COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+      if (COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
         set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_FILE}')\")\n")
         get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
         get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
@@ -1911,7 +1911,7 @@ function (basis_add_script_finalize TARGET_UID)
       # configure script for installation tree
       set (C "${C}configure_file (\"${TEMPLATE_FILE}\" \"${CONFIGURED_INSTALL_FILE}\" @ONLY)\n")
       # compile module if applicable
-      if (MODULE AND COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+      if (MODULE AND COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
         set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_INSTALL_FILE}')\")\n")
         get_filename_component (MODULE_PATH "${CONFIGURED_INSTALL_FILE}" PATH)
         get_filename_component (MODULE_NAME "${CONFIGURED_INSTALL_FILE}" NAME_WE)
@@ -1927,7 +1927,7 @@ function (basis_add_script_finalize TARGET_UID)
     set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${CONFIGURED_FILE}\" COPYONLY)\n")
     # compile module if applicable
     if (MODULE)
-      if (COMPILE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON")
+      if (COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
         set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_FILE}')\")\n")
         get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
         get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
@@ -1948,7 +1948,7 @@ function (basis_add_script_finalize TARGET_UID)
   # create __init__.py files in build tree Python package
   set (INIT_PY)
   set (MAIN_INIT_PY)
-  if (MODULE AND "${BASIS_LANGUAGE}" STREQUAL "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
+  if (MODULE AND BASIS_LANGUAGE MATCHES "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
     set (D "${LIBRARY_OUTPUT_DIRECTORY}")
     while (NOT "${D}" STREQUAL "${BINARY_PYTHON_LIBRARY_DIR}")
       if (D MATCHES "sbia$")
@@ -2016,7 +2016,7 @@ function (basis_add_script_finalize TARGET_UID)
 
   # install script
   if (NOT ARGN_NO_EXPORT)
-    basis_set_project_property (CUSTOM_EXPORT_TARGETS APPEND "${TARGET_UID}")
+    basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
   endif ()
 
   if (MODULE)
@@ -2083,7 +2083,7 @@ endfunction ()
 # @ingroup CMakeUtilities
 
 function (basis_add_custom_finalize)
-  basis_get_project_property (TARGETS)
+  basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID ${TARGETS})
     get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
     if (NOT IMPORTED)
@@ -2167,7 +2167,7 @@ function (basis_export_targets)
   # --------------------------------------------------------------------------
   # export non-custom targets
 
-  basis_get_project_property (EXPORT_TARGETS)
+  basis_get_project_property (EXPORT_TARGETS PROPERTY EXPORT_TARGETS)
 
   if (EXPORT_TARGETS)
     if (BASIS_USE_FULLY_QUALIFIED_UIDS)
@@ -2195,7 +2195,7 @@ function (basis_export_targets)
   # --------------------------------------------------------------------------
   # export custom targets
 
-  basis_get_project_property (CUSTOM_EXPORT_TARGETS)
+  basis_get_project_property (CUSTOM_EXPORT_TARGETS PROPERTY CUSTOM_EXPORT_TARGETS)
 
   if (CUSTOM_EXPORT_TARGETS)
 

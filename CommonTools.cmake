@@ -69,7 +69,7 @@ macro (basis_find_package PACKAGE)
   endif ()
   if (PROJECT_IS_MODULE)
     # allow modules to specify top-level project as dependency
-    if ("${PACKAGE}" STREQUAL "${BASIS_PROJECT_NAME}")
+    if (PACKAGE MATCHES "^${BASIS_PROJECT_NAME}$")
       if (BASIS_DEBUG)
         message ("**     This is the top-level project.")
       endif ()
@@ -131,7 +131,7 @@ macro (basis_use_package PACKAGE)
     endif ()
     if (PROJECT_IS_MODULE)
       # allow modules to specify top-level project as dependency
-      if ("${PACKAGE}" STREQUAL "${BASIS_PROJECT_NAME}")
+      if (PACKAGE MATCHES "^${BASIS_PROJECT_NAME}$")
         if (BASIS_DEBUG)
           message ("**     This is the top-level project.")
         endif ()
@@ -217,7 +217,7 @@ function (get_filename_component)
   list (GET ARGN 0 VAR)
   list (GET ARGN 1 STR)
   list (GET ARGN 2 CMD)
-  if ("${CMD}" STREQUAL "EXT")
+  if (CMD MATCHES "^EXT")
     _get_filename_component (${VAR} "${STR}" ${CMD})
     string (REGEX MATCHALL "\\.[^.]*" PARTS "${${VAR}}")
     list (LENGTH PARTS LEN)
@@ -225,14 +225,14 @@ function (get_filename_component)
       math (EXPR LEN "${LEN} - 1")
       list (GET PARTS ${LEN} ${VAR})
     endif ()
-  elseif ("${CMD}" STREQUAL "NAME_WE")
+  elseif (CMD MATCHES "NAME_WE")
     _get_filename_component (${VAR} "${STR}" NAME)
     string (REGEX REPLACE "\\.[^.]*$" "" ${VAR} ${${VAR}})
   else ()
     _get_filename_component (${VAR} "${STR}" ${CMD})
   endif ()
   if (ARGC EQUAL 4)
-    if (NOT "${ARGV3}" STREQUAL "CACHE")
+    if (NOT ARGV3 MATCHES "^CACHE$")
       message (FATAL_ERROR "(basis_)get_filename_component(): Invalid fourth argument: ${ARGV3}!")
     else ()
       set (${VAR} "${${VAR}}" CACHE STRING "")
@@ -415,7 +415,7 @@ function (basis_dump_variables RESULT_FILE)
   file (WRITE "${RESULT_FILE}" "# CMake variables dump created by BASIS\n")
   get_cmake_property (VARIABLE_NAMES VARIABLES)
   foreach (V IN LISTS VARIABLE_NAMES)
-    if (NOT "${V}" STREQUAL "RESULT_FILE")
+    if (NOT V MATCHES "^RESULT_FILE$")
       set (VALUE "${${V}}")
       # sanitize value for use in set() command
       string (REGEX REPLACE "([^\\])\\\\([^\\])" "\\1\\\\\\\\\\2" VALUE "${VALUE}")
@@ -441,7 +441,7 @@ function (basis_set_property SCOPE)
       if (ARG MATCHES "^APPEND$|^PROPERTY$")
         break ()
       endif ()
-      if ("${SCOPE}" STREQUAL "TEST")
+      if (SCOPE MATCHES "^TEST$")
         basis_get_test_uid (UID "${ARG}")
       else ()
         basis_get_target_uid (UID "${ARG}")
@@ -464,9 +464,9 @@ endfunction ()
 #
 # @returns Sets @p VAR to the value of the requested property.
 function (basis_get_property VAR SCOPE ELEMENT)
-  if ("${SCOPE}" STREQUAL "TARGET")
+  if (SCOPE MATCHES "^TARGET$")
     basis_get_target_uid (ELEMENT "${ELEMENT}")
-  elseif ("${SCOPE}" STREQUAL "TEST")
+  elseif (SCOPE MATCHES "^TEST$")
     basis_get_test_uid (ELEMENT "${ELEMENT}")
   endif ()
   get_property (VALUE ${SCOPE} ${ELEMENT} ${ARGN})
@@ -478,35 +478,63 @@ endfunction ()
 #
 # Set property associated with current project/module. The property is in
 # fact just a cached variable whose name is prefixed by the project's name.
-function (basis_set_project_property PROPERTY)
-  if (ARGC GREATER 1 AND "${ARGV1}" STREQUAL "APPEND")
-    basis_get_project_property (CURRENT ${PROPERTY})
+function (basis_set_project_property)
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "APPEND"
+      "PROJECT"
+      "PROPERTY"
+    ${ARGN}
+  )
+
+  if (NOT ARGN_PROJECT)
+    set (ARGN_PROJECT "${PROJECT_NAME}")
+  endif ()
+  if (NOT ARGN_PROPERTY)
+    message (FATAL_ERROR "Missing PROPERTY argument!")
+  endif ()
+
+  list (GET ARGN_PROPERTY 0 PROPERTY_NAME)
+  list (REMOVE_AT ARGN_PROPERTY 0) # remove property name from values
+
+  if (ARGN_APPEND)
+    basis_get_project_property (CURRENT PROPERTY ${PROPERTY_NAME})
     if (CURRENT)
-      set (CURRENT "${CURRENT};")
+      list (INSERT ARGN_PROPERTY 0 ${CURRENT})
     endif ()
-    list (REMOVE_AT ARGN 0)
-  else ()
-    set (CURRENT "")
   endif ()
-  if (ARGC LESS 2)
-    message (FATAL_ERROR "basis_set_project_property(): Too few arguments!")
-  endif ()
-  set (${PROJECT_NAME}_${PROPERTY} "${CURRENT}${ARGN}" CACHE INTERNAL "" FORCE)
+
+  set (
+    ${ARGN_PROJECT}_${PROPERTY_NAME}
+      "${ARGN_PROPERTY}"
+    CACHE INTERNAL
+      "Property ${PROPERTY_NAME} of project ${ARGN_PROJECT}."
+    FORCE
+  )
 endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get project-global property value.
-function (basis_get_project_property PROPERTY)
-  if (ARGC GREATER 2)
-    message (FATAL_ERROR "basis_get_project_property(): Too many arguments!")
+function (basis_get_project_property VARIABLE)
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      ""
+      "PROJECT;PROPERTY"
+      ""
+    ${ARGN}
+  )
+
+  if (NOT ARGN_PROJECT)
+    set (ARGN_PROJECT "${PROJECT_NAME}")
   endif ()
-  if (ARGC EQUAL 2)
-    set (VAR      ${ARGV0})
-    set (PROPERTY ${ARGV1})
-  else ()
-    set (VAR ${PROPERTY})
+  if (NOT ARGN_PROPERTY)
+    message (FATAL_ERROR "Missing PROPERTY argument!")
   endif ()
-  set (${VAR} "${${PROJECT_NAME}_${PROPERTY}}" PARENT_SCOPE)
+  if (ARGN_UNPARSED_ARGUMENTS)
+    message (FATAL_ERROR "Too many arguments: ${ARGN_UNPARSED_ARGUMENTS}!")
+  endif ()
+
+  set (${VARIABLE} "${${ARGN_PROJECT}_${ARGN_PROPERTY}}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
@@ -1024,10 +1052,10 @@ function (basis_get_source_language LANGUAGE)
       break ()
     endif ()
     # detect ambiguity
-    if (LANGUAGE_OUT AND NOT "${LANG}" STREQUAL "${LANGUAGE_OUT}")
-      if ("${LANGUAGE_OUT}" STREQUAL "CXX" AND "${LANG}" STREQUAL "MATLAB")
+    if (LANGUAGE_OUT AND NOT LANG MATCHES "${LANGUAGE_OUT}")
+      if (LANGUAGE_OUT MATCHES "CXX" AND LANG MATCHES "MATLAB")
         # MATLAB Compiler can handle this...
-      elseif ("${LANGUAGE_OUT}" STREQUAL "MATLAB" AND "${LANG}" STREQUAL "CXX")
+      elseif (LANGUAGE_OUT MATCHES "MATLAB" AND LANG MATCHES "CXX")
         # language stays MATLAB
         set (LANG "MATLAB")
       else ()
@@ -1228,7 +1256,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       endif ()
 
       # Make path relative to INSTALL_PREFIX if POST_INSTALL_PREFIX given
-      if (LOCATION AND "${ARGV2}" STREQUAL "POST_INSTALL_RELATIVE")
+      if (LOCATION AND ARGV2 MATCHES "POST_INSTALL_RELATIVE")
         file (RELATIVE_PATH LOCATION "${INSTALL_PREFIX}" "${LOCATION}")
       endif ()
 
@@ -1291,11 +1319,11 @@ function (basis_get_target_location VAR TARGET_NAME PART)
         set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
       endif ()
 
-      if ("${PART}" STREQUAL "POST_INSTALL")
+      if (PART MATCHES "^POST_INSTALL$")
         if (NOT IS_ABSOLUTE "${DIRECTORY}")
           set (DIRECTORY "${INSTALL_PREFIX}/${DIRECTORY}")
         endif ()
-      elseif ("${PART}" STREQUAL "POST_INSTALL_RELATIVE")
+      elseif (PART MATCHES "^POST_INSTALL_RELATIVE$")
         if (IS_ABSOLUTE "${DIRECTORY}")
           file (RELATIVE_PATH DIRECTORY "${INSTALL_PREFIX}" "${DIRECTORY}")
           if (NOT DIRECTORY)

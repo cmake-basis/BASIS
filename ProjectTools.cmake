@@ -966,37 +966,49 @@ macro (basis_project_finalize)
       PATTERN     ".git" EXCLUDE
     )
     # "parse" public header files to check if C++ BASIS utilities are included
-    set (PUBLIC_HEADERS)
-    if (PROJECT_INCLUDE_DIR AND NOT BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
-      file (GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/*.h")
-    endif ()
-    set (REGEX)
-    foreach (P ${BASIS_UTILITIES_PUBLIC_HEADERS})
-      basis_get_relative_path (H "${BINARY_INCLUDE_DIR}" "${P}")
-      if (NOT REGEX)
-        set (REGEX "#include +[<\"](${H}")
-      else ()
-        set (REGEX "${REGEX}|${H}")
+    if (BASIS_UTILITIES_PUBLIC_HEADERS)
+      set (PUBLIC_HEADERS)
+      if (PROJECT_INCLUDE_DIR AND NOT BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
+        file (GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/*.h")
       endif ()
-    endforeach ()
-    if (REGEX AND PUBLIC_HEADERS)
-      set (REGEX "${REGEX})[>\"]")
-      foreach (P ${PUBLIC_HEADERS})
-        file (READ "${P}" C)
-        if (C MATCHES "${REGEX}")
-          set (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES TRUE)
+      set (REGEX)
+      foreach (P ${BASIS_UTILITIES_PUBLIC_HEADERS})
+        basis_get_relative_path (H "${BINARY_INCLUDE_DIR}" "${P}")
+        if (NOT REGEX)
+          set (REGEX "#include +[<\"](${H}")
+        else ()
+          set (REGEX "${REGEX}|${H}")
+        endif ()
+      endforeach ()
+      if (REGEX AND PUBLIC_HEADERS)
+        set (REGEX "${REGEX})[>\"]")
+        foreach (P ${PUBLIC_HEADERS})
+          file (READ "${P}" C)
+          if (C MATCHES "${REGEX}")
+            set (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES TRUE)
+            break ()
+          endif ()
+        endforeach ()
+      endif ()
+      # install public headers of C++ utilities
+      if (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
+        install (
+          FILES       ${BASIS_UTILITIES_PUBLIC_HEADERS}
+          DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
+          COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
+        )
+      endif ()
+    endif ()
+    # inherit PROJECT_USES_*_UTILITIES properties from modules
+    foreach (L IN ITEMS PYTHON PERL BASH)
+      foreach (M IN LISTS PROJECT_MODULES_ENABLED)
+        basis_get_project_property (P PROJECT ${M} PROPERTY PROJECT_USES_${L}_UTILITIES)
+        if (P)
+          basis_set_project_property (PROPERTY PROJECT_USES_${L}_UTILITIES TRUE)
           break ()
         endif ()
       endforeach ()
-    endif ()
-    # install public headers of C++ utilities
-    if (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
-      install (
-        FILES       ${BASIS_UTILITIES_PUBLIC_HEADERS}
-        DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
-        COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-      )
-    endif ()
+    endforeach ()
     # configure auxiliary modules
     basis_configure_auxiliary_modules ()
     # configure ExecutableTargetInfo modules
@@ -1085,15 +1097,15 @@ macro (basis_project_impl)
   # Attention: In particular the TARGETS property is already used during the
   #            import of targets by including the use files of external
   #            packages. Hence, this property has to be reset before.
-  basis_set_project_property (PROJECT_INCLUDE_DIRS "")
-  basis_set_project_property (TARGETS "")
-  basis_set_project_property (EXPORT_TARGETS "")
-  basis_set_project_property (CUSTOM_EXPORT_TARGETS "")
-  basis_set_project_property (PROJECT_USES_JAVA_UTILITIES   FALSE)
-  basis_set_project_property (PROJECT_USES_PYTHON_UTILITIES FALSE)
-  basis_set_project_property (PROJECT_USES_PERL_UTILITIES   FALSE)
-  basis_set_project_property (PROJECT_USES_BASH_UTILITIES   FALSE)
-  basis_set_project_property (PROJECT_USES_MATLAB_UTILITIES FALSE)
+  basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS "")
+  basis_set_project_property (PROPERTY TARGETS "")
+  basis_set_project_property (PROPERTY EXPORT_TARGETS "")
+  basis_set_project_property (PROPERTY CUSTOM_EXPORT_TARGETS "")
+  basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES   FALSE)
+  basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES FALSE)
+  basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES   FALSE)
+  basis_set_project_property (PROPERTY PROJECT_USES_BASH_UTILITIES   FALSE)
+  basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES FALSE)
 
   # --------------------------------------------------------------------------
   # load information of modules

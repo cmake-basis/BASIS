@@ -116,7 +116,7 @@ function (basis_install_links)
   endif ()
 
   # main executables
-  basis_get_project_property (TARGETS)
+  basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID ${TARGETS})
     get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
 

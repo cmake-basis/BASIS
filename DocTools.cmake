@@ -350,7 +350,7 @@ function (basis_add_doc TARGET_NAME)
   endif ()
 
   # check target name
-  if (NOT "${ARGN_GENERATOR}" STREQUAL "NONE")
+  if (NOT ARGN_GENERATOR MATCHES "NONE")
     basis_check_target_name ("${TARGET_NAME}")
     basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
   endif ()
@@ -360,7 +360,7 @@ function (basis_add_doc TARGET_NAME)
 
   # default destination
   if (NOT ARGN_DESTINATION)
-    if ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
+    if (ARGN_GENERATOR MATCHES "DOXYGEN")
       if (NOT INSTALL_APIDOC_DIR)
         set (
           INSTALL_APIDOC_DIR "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}"
@@ -376,7 +376,7 @@ function (basis_add_doc TARGET_NAME)
   endif ()
 
   # default component
-  if ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
+  if (ARGN_GENERATOR MATCHES "DOXYGEN")
     if (NOT ARGN_COMPONENT)
       set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
     endif ()
@@ -393,7 +393,7 @@ function (basis_add_doc TARGET_NAME)
   # generator: NONE
   # --------------------------------------------------------------------------
 
-  if ("${ARGN_GENERATOR}" STREQUAL "NONE")
+  if (ARGN_GENERATOR MATCHES "NONE")
 
     basis_get_relative_path (
       DOC_PATH
@@ -432,7 +432,7 @@ function (basis_add_doc TARGET_NAME)
   # generator: DOXYGEN
   # --------------------------------------------------------------------------
 
-  elseif ("${ARGN_GENERATOR}" STREQUAL "DOXYGEN")
+  elseif (ARGN_GENERATOR MATCHES "DOXYGEN")
 
     if (BASIS_VERBOSE)
       message (STATUS "Adding documentation ${TARGET_UID}...")
@@ -501,14 +501,14 @@ function (basis_add_doc TARGET_NAME)
     list (APPEND DOXYGEN_INPUT ${DOX_FILES})
     foreach (L IN ITEMS Cxx Java Python Perl Bash Matlab)
       string (TOUPPER "${L}" U)
-      if ("${L}" STREQUAL "Cxx")
+      if (U MATCHES "CXX")
         # note that the C++ utilities are always configured and available
         # even if not used, resp., no binary links to them
         set (PROJECT_USES_CXX_UTILITIES TRUE)
       else ()
-        basis_get_project_property (PROJECT_USES_${U}_UTILITIES)
+        basis_get_project_property (USES_${U}_UTILITIES PROPERTY PROJECT_USES_${U}_UTILITIES)
       endif ()
-      if (PROJECT_USES_${U}_UTILITIES)
+      if (USES_${U}_UTILITIES)
         list (FIND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Utilities.dox" IDX)
         if (IDX EQUAL -1)
           list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Utilities.dox")
@@ -699,7 +699,7 @@ function (basis_add_doc TARGET_NAME)
   # generator: svn2cl
   # --------------------------------------------------------------------------
 
-  elseif ("${ARGN_GENERATOR}" STREQUAL "SVN2CL")
+  elseif (ARGN_GENERATOR MATCHES "SVN2CL")
 
     if (BASIS_VERBOSE)
       message (STATUS "Adding documentation ${TARGET_UID}...")
