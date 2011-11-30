@@ -135,6 +135,25 @@ mark_as_advanced (NiftiCLib_INCLUDE_DIR)
 mark_as_advanced (NiftiCLib_LIBRARY)
 
 # ============================================================================
+# import targets
+# ============================================================================
+
+if (NiftiCLib_LIBRARY)
+  if (NiftiCLib_USE_STATIC_LIB)
+    add_library (niftiio STATIC IMPORTED)
+  else ()
+    add_library (niftiio SHARED IMPORTED)
+  endif ()
+
+  set_target_properties (
+    niftiio
+    PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+      IMPORTED_LOCATION "${NiftiCLib_LIBRARY}"
+  )
+endif ()
+
+# ============================================================================
 # reset CMake variables
 # ============================================================================
 
