@@ -843,12 +843,13 @@ function (basis_add_executable_target TARGET_NAME)
 
   # add standard auxiliary library
   if (NOT NO_BASIS_UTILITIES)
-    set (BASIS_UTILITIES_TARGET "basisutilities")
+    set (BASIS_UTILITIES_TARGET "basis")
     if (BASIS_USE_FULLY_QUALIFIED_UIDS)
       set (BASIS_UTILITIES_TARGET "${BASIS_PROJECT_NAMESPACE_CMAKE}.${BASIS_UTILITIES_TARGET}")
     endif ()
     if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
       add_library (${BASIS_UTILITIES_TARGET} STATIC ${BASIS_UTILITIES_SOURCES})
+      string (REGEX REPLACE "^.*\\." "" OUTPUT_NAME "${BASIS_UTILITIES_TARGET}")
 
       # define dependency on non-project specific utilities as the order in
       # which static libraries are listed on the command-line for the linker
@@ -859,7 +860,7 @@ function (basis_add_executable_target TARGET_NAME)
         ${BASIS_UTILITIES_TARGET}
         PROPERTIES
           BASIS_TYPE  "STATIC_LIBRARY"
-          OUTPUT_NAME "basisutilities"
+          OUTPUT_NAME "${OUTPUT_NAME}"
           # make sure that this library is always output to the 'lib' directory
           # even if only test executables use it; see CMakeLists.txt in 'test'
           # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
