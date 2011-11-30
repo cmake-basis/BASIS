@@ -56,6 +56,12 @@ if (NOT VARIABLE_NAME)
 endif ()
 
 # ----------------------------------------------------------------------------
+# include file which defines CMake variables for use in .h.in files
+if (INCLUDE_FILE)
+  include ("${INCLUDE_FILE}")
+endif ()
+
+# ----------------------------------------------------------------------------
 # configure header files
 set (_CONFIGURED_HEADERS)
 foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)

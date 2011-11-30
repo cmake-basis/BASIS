@@ -410,6 +410,24 @@ endfunction ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+## @brief Output current CMake variables to file.
+function (basis_dump_variables RESULT_FILE)
+  file (WRITE "${RESULT_FILE}" "# CMake variables dump created by BASIS\n")
+  get_cmake_property (VARIABLE_NAMES VARIABLES)
+  foreach (V IN LISTS VARIABLE_NAMES)
+    if (NOT "${V}" STREQUAL "RESULT_FILE")
+      set (VALUE "${${V}}")
+      # sanitize value for use in set() command
+      string (REGEX REPLACE "([^\\])\\\${" "\\1\\\\\${" VALUE "${VALUE}")
+      string (REGEX REPLACE "([^\\])\"" "\\1\\\\\"" VALUE "${VALUE}")
+      string (REGEX REPLACE "([^\\])\\\\([^\\])" "\\1\\\\\\\\\\2" VALUE "${VALUE}")
+      # append variable to output file
+      file (APPEND "${RESULT_FILE}" "set (${V} \"${VALUE}\")\n")
+    endif ()
+  endforeach ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Replaces CMake's set_property() command.
 #
 # @param [in] SCOPE The argument for the @p SCOPE parameter of set_property().
