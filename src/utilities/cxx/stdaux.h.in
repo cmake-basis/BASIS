@@ -25,9 +25,11 @@
 #include <@INCLUDE_PREFIX@config.h>
 
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+namespace sbia
+{
 
-namespace basis {
+namespace basis
+{
 
 
 /// @addtogroup BasisCxxUtilities
@@ -235,7 +237,7 @@ int execute_process(std::vector<std::string>& args,
 
 } // namespace basis
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+} // namespace sbia
 
 
 #endif // SBIA_@PROJECT_NAME_UPPER@_STDAUX_H_

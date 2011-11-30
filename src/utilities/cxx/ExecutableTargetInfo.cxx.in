@@ -23,9 +23,11 @@ using namespace std;
 using namespace SBIA_BASIS_NAMESPACE;
 
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+namespace sbia
+{
 
-namespace basis {
+namespace basis
+{
 
 
 // ===========================================================================
@@ -132,4 +134,4 @@ string ExecutableTargetInfo::get_installation_directory(const string& target) co
 
 } // namespace basis
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+} // namespace sbia

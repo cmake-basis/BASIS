@@ -27,9 +27,11 @@ using namespace std;
 using namespace SBIA_BASIS_NAMESPACE;
 
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+namespace sbia
+{
 
-namespace basis {
+namespace basis
+{
 
 
 // ===========================================================================
@@ -214,4 +216,4 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
 
 } // namespace basis
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+} // namespace sbia

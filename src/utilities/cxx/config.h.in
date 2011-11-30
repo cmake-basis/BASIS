@@ -140,7 +140,8 @@
 // constants
 // ===========================================================================
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+namespace sbia
+{
 
 namespace basis
 {
@@ -310,7 +311,7 @@ extern const char* cDataPath;
 
 } // namespace basis
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+} // namespace sbia
 
 
 /// @}

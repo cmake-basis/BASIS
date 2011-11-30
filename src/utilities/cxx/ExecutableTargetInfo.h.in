@@ -24,9 +24,11 @@
 #include <@INCLUDE_PREFIX@config.h>
 
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+namespace sbia
+{
 
-namespace basis {
+namespace basis
+{
 
 
 /**
@@ -190,7 +192,7 @@ private:
 
 } // namespace basis
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+} // namespace sbia
 
 
 #endif // SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_H_

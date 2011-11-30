@@ -16,7 +16,8 @@
 #include <@INCLUDE_PREFIX@config.h>
 
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_BEGIN
+namespace sbia
+{
 
 namespace basis
 {
@@ -60,4 +61,4 @@ const char* cDataPath    = "@DATA_PATH_CONFIG@";
 
 } // namespace basis
 
-SBIA_@PROJECT_NAME_UPPER@_NAMESPACE_END
+} // namespace sbia
