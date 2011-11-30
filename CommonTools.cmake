@@ -418,9 +418,9 @@ function (basis_dump_variables RESULT_FILE)
     if (NOT "${V}" STREQUAL "RESULT_FILE")
       set (VALUE "${${V}}")
       # sanitize value for use in set() command
+      string (REGEX REPLACE "([^\\])\\\\([^\\])" "\\1\\\\\\\\\\2" VALUE "${VALUE}")
       string (REGEX REPLACE "([^\\])\\\${" "\\1\\\\\${" VALUE "${VALUE}")
       string (REGEX REPLACE "([^\\])\"" "\\1\\\\\"" VALUE "${VALUE}")
-      string (REGEX REPLACE "([^\\])\\\\([^\\])" "\\1\\\\\\\\\\2" VALUE "${VALUE}")
       # append variable to output file
       file (APPEND "${RESULT_FILE}" "set (${V} \"${VALUE}\")\n")
     endif ()
