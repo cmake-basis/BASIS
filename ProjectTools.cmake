@@ -445,9 +445,9 @@ function (basis_configure_public_headers)
   if (NOT PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
     # If module namespace are used, each module is taking care of its own headers.
     # Otherwise, the top-level project collects the headers and puts them into its
-    # namespace. Note that INCLUDE_PREFIX is set in the BASIS Settings.cmake.
+    # namespace. Note that INCLUDE_PREFIX is set in the BASIS Settings.cmake file.
     foreach (M IN LISTS PROJECT_MODULES_ENABLED)
-      list (APPEND INCLUDE_DIRS "${PROJECT_MODULES_DIR}/${M}/${INCLUDE_DIR}")
+      list (APPEND INCLUDE_DIRS "${MODULE_${M}_SOURCE_DIR}/${INCLUDE_DIR}")
     endforeach ()
   endif ()
 
@@ -582,6 +582,7 @@ function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # add directory of configured headers to include search path
   basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
+  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}")
 endfunction ()
 
 # ----------------------------------------------------------------------------
