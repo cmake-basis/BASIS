@@ -503,7 +503,7 @@ function (basis_configure_public_headers)
 
   # error message displayed when a file was added or removed which requires
   # a reconfiguration of the build system
-  set (ERRORMSG "You have either added or removed a public header file. "
+  set (ERRORMSG "You have either added, removed, or renamed a public header file. "
                 "Therefore, the build system needs to be re-configured. "
                 "Either try to build again which will trigger CMake to "
                 "re-configure the build system or run CMake manually.")
@@ -513,7 +513,6 @@ function (basis_configure_public_headers)
   add_custom_command (
     OUTPUT  "${CMAKE_FILE}.tmp"
     COMMAND "${CMAKE_COMMAND}"
-            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
             -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
