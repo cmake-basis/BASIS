@@ -149,13 +149,13 @@ macro (basis_project)
   endif ()
 
   if (PROJECT_DESCRIPTION)
-    basis_list_to_delimited_string (PROJECT_DESCRIPTION " " ${PROJECT_DESCRIPTION})
+    basis_list_to_string (PROJECT_DESCRIPTION ${PROJECT_DESCRIPTION})
   else ()
     set (PROJECT_DESCRIPTION "")
   endif ()
 
   if (PROJECT_PACKAGE_VENDOR)
-    basis_list_to_delimited_string (PROJECT_PACKAGE_VENDOR " " ${PROJECT_PACKAGE_VENDOR})
+    basis_list_to_string (PROJECT_PACKAGE_VENDOR ${PROJECT_PACKAGE_VENDOR})
     if (NOT PROJECT_IS_MODULE)
       set (BASIS_PROJECT_PACKAGE_VENDOR "${PROJECT_PACKAGE_VENDOR}")
     endif ()
@@ -443,6 +443,9 @@ function (basis_configure_public_headers)
     endforeach ()
   endif ()
 
+  # dump currently defined CMake variables such that these can be used in .h.in files
+  basis_dump_variables ("${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake")
+
   # --------------------------------------------------------------------------
   # clean up last run before the error because a file was added/removed
 
@@ -458,6 +461,7 @@ function (basis_configure_public_headers)
 
   execute_process (
     COMMAND "${CMAKE_COMMAND}"
+            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
             -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
@@ -509,6 +513,7 @@ function (basis_configure_public_headers)
   add_custom_command (
     OUTPUT  "${CMAKE_FILE}.tmp"
     COMMAND "${CMAKE_COMMAND}"
+            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
             -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
@@ -551,6 +556,7 @@ function (basis_configure_public_headers)
                                       # before otherwise CMake will re-configure
                                       # the build system next time
       COMMAND "${CMAKE_COMMAND}"
+              -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
               -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
               -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
               -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
