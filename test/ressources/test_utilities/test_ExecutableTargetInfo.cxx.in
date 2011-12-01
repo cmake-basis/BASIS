@@ -12,7 +12,7 @@
 #include "ExecutableTargetInfo.h" // testee
 
 
-using namespace sbia::utilitiestest;
+using namespace sbia;
 using namespace std;
 
 
