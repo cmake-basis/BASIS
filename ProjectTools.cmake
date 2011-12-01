@@ -1152,6 +1152,7 @@ macro (basis_project_impl)
   # enable testing
   if (NOT PROJECT_IS_MODULE)
     include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
+    basis_disable_testing_if_no_tests ()
   endif ()
 
   # --------------------------------------------------------------------------

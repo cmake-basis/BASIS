@@ -32,13 +32,6 @@ set (RUN_FROM_CTEST_OR_DART 1)
 include (CTestTargets)
 set (RUN_FROM_CTEST_OR_DART)
 
-# disable testing if no testing sources found
-if (NOT EXISTS "${PROJECT_TESTING_DIR}")
-  set (BUILD_TESTING "OFF" CACHE INTERNAL "No testing tree to build." FORCE)
-else ()
-  set (BUILD_TESTING "ON" CACHE BOOL "Build the testing tree.")
-endif ()
-
 # configure custom CTest settings and/or copy them to binary tree
 # TODO How does this go well with the super-build?
 if ("${PROJECT_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
@@ -77,15 +70,43 @@ endif ()
 ## @addtogroup CMakeAPI
 #  @{
 
-##############################################################################
-# @brief Replaces CMake's set_tests_properties() command.
+
+# ----------------------------------------------------------------------------
+## @brief Disable testing if project does not implement any tests.
+#
+# This function checks if there are test/ subdirectories in the project and
+# disables and hides the BUILD_TESTING option if none are found.
+function (basis_disable_testing_if_no_tests)
+  if (IS_DIRECTORY "${PROJECT_TESTING_DIR}")
+    set (DISABLE_TESTING FALSE)
+  else ()
+    set (DISABLE_TESTING TRUE)
+  endif ()
+  if (DISABLE_TESTING)
+    basis_get_relative_path (TESTING_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_TESTING_DIR}")
+    foreach (M IN LISTS PROJECT_MODULES_ENABLED)
+      if (IS_DIRECTORY "${MODULE_${M}_SOURCE_DIR}/${TESTING_DIR}")
+        set (DISABLE_TESTING FALSE)
+        break ()
+      endif ()
+    endforeach ()
+  endif ()
+  if (DISABLE_TESTING)
+    set_property (CACHE BUILD_TESTING PROPERTY VALUE OFF)
+    set_property (CACHE BUILD_TESTING PROPERTY TYPE  INTERNAL)
+  else ()
+    set_property (CACHE BUILD_TESTING PROPERTY TYPE BOOL)
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Replaces CMake's set_tests_properties() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property
 #
 # @param [in] ARGN Arguments for set_tests_property().
 #
 # @returns Sets the given properties of the specified test.
-
 function (basis_set_tests_properties)
   set (UIDS)
   list (GET ARGN 0 ARG)
@@ -98,8 +119,8 @@ function (basis_set_tests_properties)
   set_tests_properties (${UIDS} ${ARGN})
 endfunction ()
 
-##############################################################################
-# @brief Replaces CMake's get_test_property() command.
+# ----------------------------------------------------------------------------
+## @brief Replaces CMake's get_test_property() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property
 #
@@ -108,15 +129,14 @@ endfunction ()
 # @param [in]  ARGN      Remaining arguments of get_test_property().
 #
 # @returns Sets @p VAR to the value of the requested property.
-
 function (basis_get_test_property VAR TEST_NAME)
   basis_get_test_uid (TEST_UID "${TEST_NAME}")
   get_test_property (VALUE "${TEST_UID}" ${ARGN})
   set (${VAR} "${VALUE}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Add test.
+# ----------------------------------------------------------------------------
+## @brief Add test.
 #
 # @todo Make use of ExternalData module to fetch remote test data.
 #
@@ -165,7 +185,6 @@ endfunction ()
 # </table>
 #
 # @returns Adds CTest test.
-
 function (basis_add_test TEST_NAME)
   # --------------------------------------------------------------------------
   # parse arguments
@@ -268,8 +287,8 @@ function (basis_add_test TEST_NAME)
   endif ()
 endfunction ()
 
-#############################################################################
-# @brief Add tests of default options for given executable.
+# ----------------------------------------------------------------------------
+## @brief Add tests of default options for given executable.
 #
 # @par Default options:
 # <table border="0">
@@ -296,7 +315,6 @@ endfunction ()
 # @param [in] TARGET_NAME Name of executable or script target.
 #
 # @returns Adds tests for the default options of the specified executable.
-
 function (basis_add_tests_of_default_options TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
 
@@ -367,4 +385,6 @@ function (basis_add_tests_of_default_options TARGET_NAME)
   endif ()
 endfunction ()
 
+
 ## @}
+# end of Doxygen group
