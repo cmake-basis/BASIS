@@ -785,6 +785,11 @@ endfunction ()
 #       This way, the properties such as the @c OUTPUT_NAME of the custom
 #       target can be still modified.
 #
+# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
+#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
+#       Moreover, no installation rules are added. Test executables are further
+#       not exported, regardless of whether NO_EXPORT is given or not.
+#
 # @sa basis_add_executable()
 # @sa basis_add_library()
 #
@@ -821,11 +826,6 @@ endfunction ()
 #         called by other executables only.</td>
 #   </tr>
 #   <tr>
-#     @tp @b TEST @endtp
-#     <td>Specifies that the built executable is a test executable.
-#         If LIBEXEC is given as well, it will be ignored.</td>
-#   </tr>
-#   <tr>
 #     @tp @b NO_EXPORT @endtp
 #     <td>Do not export the target.</td>
 #   </tr>
@@ -846,8 +846,18 @@ function (basis_add_mcc_target TARGET_NAME)
     ${ARGN}
   )
 
+  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
+    set (ARGN_TEST TRUE)
+  else ()
+    if (ARGN_TEST)
+      message (FATAL_ERROR "Executable ${TARGET_NAME} cannot have TEST property!"
+                           "If it is a test executable, put it in ${PROJECT_TESTING_DIR}.")
+    endif ()
+    set (ARGN_TEST FALSE)
+  endif ()
+
   if (ARGN_TEST)
-    set (ARGN_LIBEXEC FALSE)
     set (ARGN_NO_EXPORT TRUE)
   endif ()
   if (NOT ARGN_NO_EXPORT)

@@ -65,6 +65,8 @@ endif ()
 basis_set_if_empty (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary")
 ## @brief Absolute path of output directory for built test executables.
 basis_set_if_empty (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
+## @brief Absolute path of output directory for auxiliary executables used by tests.
+basis_set_if_empty (TESTING_LIBEXEC_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
 ## @brief Absolute path of output directory for testing libraries.
 basis_set_if_empty (TESTING_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
 ## @brief Absolute path of output directory for Python modules used for testing.

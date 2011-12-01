@@ -522,6 +522,11 @@ endfunction ()
 # in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
 # @p LIBEXEC is given.
 #
+# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
+#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
+#       Moreover, no installation rules are added. Test executables are further
+#       not exported, regardless of whether NO_EXPORT is given or not.
+#
 # @param [in] TARGET_NAME Name of the target. If the target is build from a
 #                         single source file, the file path of this source file
 #                         can be given as first argument. The build target name
@@ -552,14 +557,7 @@ endfunction ()
 #   <tr>
 #     @tp @b LIBEXEC @endtp
 #     <td>Specifies that the built executable is an auxiliary executable
-#         which is only called by other executable. Ignored if given together
-#         with the option @p TEST.</td>
-#   </tr>
-#   <tr>
-#     @tp @b TEST @endtp
-#     <td>Specifies that the built executable is a test executable used
-#         with basis_add_test(). Test executables are output to the
-#         binary testing tree and are not installed.</td>
+#         which is only called by other executables.</td>
 #   </tr>
 #   <tr>
 #     @tp @b NO_BASIS_UTILITIES @endtp
@@ -586,13 +584,19 @@ endfunction ()
 function (basis_add_executable TARGET_NAME)
   # --------------------------------------------------------------------------
   # determine language
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "LANGUAGE" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "TEST" # discard deprecated TEST option
+      "LANGUAGE"
+      ""
+    ${ARGN}
+  )
 
   if (NOT ARGN_LANGUAGE)
 
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_BASIS_UTILITIES;NO_EXPORT"
+      "LIBEXEC;MODULE;WITH_PATH;WITH_EXT;NO_BASIS_UTILITIES;NO_EXPORT"
       "BINARY_DIRECTORY;DESTINATION;COMPONENT;CONFIG;CONFIG_FILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
@@ -740,13 +744,19 @@ endfunction ()
 function (basis_add_library TARGET_NAME)
   # --------------------------------------------------------------------------
   # determine language
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "LANGUAGE" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "TEST" # discard deprecated TEST option
+      "LANGUAGE"
+      ""
+    ${ARGN}
+  )
 
   if (NOT ARGN_LANGUAGE)
 
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "STATIC;SHARED;MODULE;MEX;TEST;WITH_PATH;NO_EXPORT"
+      "STATIC;SHARED;MODULE;MEX;WITH_PATH;NO_EXPORT"
       "BINARY_DIRECTORY;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;CONFIG;CONFIG_SCRIPT;MFILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
@@ -870,6 +880,11 @@ endfunction ()
 # An installation rule should then be added manually using the command
 # basis_install() after the executable target was added.
 #
+# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
+#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
+#       Moreover, no installation rules are added. Test executables are further
+#       not exported, regardless of whether NO_EXPORT is given or not.
+#
 # @note This function should not be used directly. Instead, it is called
 #       by basis_add_executable() if the (detected) programming language
 #       of the given source code files is @c CXX (i.e., C/C++).
@@ -901,14 +916,7 @@ endfunction ()
 #   <tr>
 #     @tp @b LIBEXEC @endtp
 #     <td>Specifies that the built executable is an auxiliary executable
-#         which is only called by other executable. Ignored if given together
-#         with the option @p TEST.</td>
-#   </tr>
-#   <tr>
-#     @tp @b TEST @endtp
-#     <td>Specifies that the built executable is a test executable used
-#         with basis_add_test(). Test executables are output to the
-#         binary testing tree and are not installed.</td>
+#         which is only called by other executable.</td>
 #   </tr>
 #   <tr>
 #     @tp @b NO_BASIS_UTILITIES @endtp
@@ -933,6 +941,17 @@ function (basis_add_executable_target TARGET_NAME)
     ""
     ${ARGN}
   )
+
+  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
+    set (ARGN_TEST TRUE)
+  else ()
+    if (ARGN_TEST)
+      message (FATAL_ERROR "Executable ${TARGET_NAME} cannot have TEST property!"
+                           "If it is a test executable, put it in ${PROJECT_TESTING_DIR}.")
+    endif ()
+    set (ARGN_TEST FALSE)
+  endif ()
 
   set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
 
@@ -967,11 +986,6 @@ function (basis_add_executable_target TARGET_NAME)
     else ()
       set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
     endif ()
-  endif ()
-
-  # TEST implies non-LIBEXEC
-  if (ARGN_TEST)
-    set (ARGN_LIBEXEC 0)
   endif ()
 
   if (BASIS_VERBOSE)
@@ -1029,6 +1043,7 @@ function (basis_add_executable_target TARGET_NAME)
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
 
+  # target properties
   _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
@@ -1040,8 +1055,37 @@ function (basis_add_executable_target TARGET_NAME)
     _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
-        LIBEXEC                  1
-        COMPILE_DEFINITIONS      "LIBEXEC"
+        LIBEXEC             1
+        COMPILE_DEFINITIONS "LIBEXEC"
+    )
+  else ()
+    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
+  endif ()
+  if (ARGN_TEST)
+    _set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
+  else ()
+    _set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
+  endif ()
+
+  # output directory
+  if (ARGN_TEST)
+    if (ARGN_LIBEXEC)
+      _set_target_properties (
+        ${TARGET_UID}
+        PROPERTIES
+          RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}"
+      )
+    else ()
+      _set_target_properties (
+        ${TARGET_UID}
+        PROPERTIES
+          RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}"
+      )
+    endif ()
+  elseif (ARGN_LIBEXEC)
+    _set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}"
     )
   else ()
@@ -1051,17 +1095,6 @@ function (basis_add_executable_target TARGET_NAME)
         LIBEXEC 0
         RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}"
     )
-  endif ()
-
-  if (ARGN_TEST)
-    _set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        TEST                      1
-        RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}"
-    )
-  else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
   endif ()
 
   # add default link dependencies
@@ -1187,6 +1220,13 @@ function (basis_add_library_target TARGET_NAME)
     ${ARGN}
   )
 
+  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
+    set (ARGN_TEST TRUE)
+  else ()
+    set (ARGN_TEST FALSE)
+  endif ()
+
   set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
 
   get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
@@ -1292,10 +1332,26 @@ function (basis_add_library_target TARGET_NAME)
     PROPERTIES
       BASIS_TYPE "${TYPE}_LIBRARY"
       OUTPUT_NAME "${TARGET_NAME}"
-      RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}"
-      LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}"
-      ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
   )
+
+  # output directory
+  if (ARGN_TEST)
+    _set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}"
+        ARCHIVE_OUTPUT_DIRECTORY "${TESTING_ARCHIVE_DIR}"
+    )
+  else ()
+    _set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}"
+        ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
+    )
+  endif ()
 
   # target version information
   #
@@ -1309,32 +1365,38 @@ function (basis_add_library_target TARGET_NAME)
   # Thus, do NOT set VERSION and SOVERSION properties.
 
   # install library
-  if (ARGN_NO_EXPORT)
-    set (EXPORT_OPT)
+  if (ARGN_TEST)
+    # TODO At the moment, no tests are installed. Once there is a way to
+    #      install selected tests, the shared libraries they depend on
+    #      need to be installed as well.
   else ()
-    set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
-  endif ()
+    if (ARGN_NO_EXPORT)
+      set (EXPORT_OPT)
+    else ()
+      set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
+      basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
 
-  if (ARGN_RUNTIME_DESTINATION)
-    install (
-      TARGETS ${TARGET_UID} ${EXPORT_OPT}
-      RUNTIME
-        DESTINATION "${ARGN_RUNTIME_DESTINATION}"
-        COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
-    )
-  endif ()
+    if (ARGN_RUNTIME_DESTINATION)
+      install (
+        TARGETS ${TARGET_UID} ${EXPORT_OPT}
+        RUNTIME
+          DESTINATION "${ARGN_RUNTIME_DESTINATION}"
+          COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
+      )
+    endif ()
 
-  if (ARGN_LIBRARY_DESTINATION)
-    install (
-      TARGETS ${TARGET_UID} ${EXPORT_OPT}
-      LIBRARY
-        DESTINATION "${ARGN_LIBRARY_DESTINATION}"
-        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
-      ARCHIVE
-        DESTINATION "${ARGN_LIBRARY_DESTINATION}"
-        COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
-    )
+    if (ARGN_LIBRARY_DESTINATION)
+      install (
+        TARGETS ${TARGET_UID} ${EXPORT_OPT}
+        LIBRARY
+          DESTINATION "${ARGN_LIBRARY_DESTINATION}"
+          COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
+        ARCHIVE
+          DESTINATION "${ARGN_LIBRARY_DESTINATION}"
+          COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
+      )
+    endif ()
   endif ()
 
   # done
@@ -1351,7 +1413,6 @@ endfunction ()
 
 ##############################################################################
 # @brief Add script target.
-#
 #
 # If the script name ends in ".in", the ".in" suffix is removed from the
 # output name. Further, the extension of the script such as .sh or .py is
@@ -1376,6 +1437,11 @@ endfunction ()
 # is added by basis_add_script_finalize(), which is supposed to be called once at
 # the end of the root CMakeLists.txt file. This way properties such as the
 # @c OUTPUT_NAME can still be modified after adding the script target.
+#
+# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
+#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
+#       Moreover, no installation rules are added. Test executables are further
+#       not exported, regardless of whether NO_EXPORT is given or not.
 #
 # @note This function should not be used directly. Instead, the functions
 #       basis_add_executable() and basis_add_library() should be used which in
@@ -1423,14 +1489,7 @@ endfunction ()
 #   <tr>
 #     @tp @b LIBEXEC @endtp
 #     <td>Specifies that the built executable is an auxiliary executable
-#         which is only called by other executable. Ignored if given together
-#         with the option @p TEST.</td>
-#   </tr>
-#   <tr>
-#     @tp @b TEST @endtp
-#     <td>Specifies that the built executable is a test executable used
-#         with basis_add_test(). Test executables are output to the
-#         binary testing tree and are not installed.</td>
+#         which is only called by other executable.</td>
 #   </tr>
 #   <tr>
 #      @tp @b MODULE @endtp
@@ -1483,6 +1542,17 @@ function (basis_add_script TARGET_NAME)
     ${ARGN}
   )
 
+  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
+    set (ARGN_TEST TRUE)
+  else ()
+    if (ARGN_TEST)
+      message (FATAL_ERROR "Executable ${TARGET_NAME} cannot have TEST property!"
+                           "If it is a test executable, put it in ${PROJECT_TESTING_DIR}.")
+    endif ()
+    set (ARGN_TEST FALSE)
+  endif ()
+
   if (ARGN_COMPILE)
     set (COMPILE TRUE)
   elseif (ARGN_NOCOMPILE)
@@ -1526,7 +1596,6 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   if (ARGN_TEST)
-    set (ARGN_LIBEXEC   FALSE)
     set (ARGN_NO_EXPORT TRUE)
   endif ()
   if (NOT ARGN_NO_EXPORT)
@@ -1627,6 +1696,8 @@ function (basis_add_script TARGET_NAME)
       else ()
         set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
       endif ()
+    elseif (ARGN_LIBEXEC)
+      set (OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
     else ()
       set (OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
     endif ()

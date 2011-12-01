@@ -186,6 +186,11 @@ endfunction ()
 #
 # @returns Adds CTest test.
 function (basis_add_test TEST_NAME)
+  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
+  if (NOT CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
+    message (FATAL_ERROR "Tests can only be added inside ${PROJECT_TESTING_DIR}!")
+  endif ()
+
   # --------------------------------------------------------------------------
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -238,7 +243,7 @@ function (basis_add_test TEST_NAME)
       endif ()
     endif ()
 
-    basis_add_executable (${TEST_NAME} TEST ${ARGN_SOURCES} ${ARGN_UNPARSED_ARGUMENTS})
+    basis_add_executable (${TEST_NAME} ${ARGN_SOURCES} ${ARGN_UNPARSED_ARGUMENTS})
     if (ARGN_LINK_DEPENDS)
       basis_target_link_libraries (${TEST_NAME} ${ARGN_LINK_DEPENDS})
     endif ()
