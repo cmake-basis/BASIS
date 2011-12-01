@@ -16,9 +16,8 @@
 #include <string>
 
 
-using namespace SBIA_UTILITIESTEST_NAMESPACE;
+using namespace sbia;
 using namespace std;
-using sbia::basis::SubprocessException;
 
 
 // ---------------------------------------------------------------------------
@@ -26,8 +25,8 @@ using sbia::basis::SubprocessException;
 TEST(StdAux, ExecuteProcessInvalidUse)
 {
     vector<string> argv;
-    EXPECT_THROW(basis::execute_process(""), SubprocessException);
-    EXPECT_THROW(basis::execute_process(argv), SubprocessException);
+    EXPECT_THROW(basis::execute_process(""), basis::SubprocessException);
+    EXPECT_THROW(basis::execute_process(argv), basis::SubprocessException);
 }
 
 // ---------------------------------------------------------------------------
