@@ -467,6 +467,62 @@ function (basis_configure_ExecutableTargetInfo)
   endif ()
 
   # --------------------------------------------------------------------------
+  # lists of executable targets and their location
+  set (EXECUTABLE_TARGETS)
+  set (BUILD_LOCATIONS)
+  set (INSTALL_LOCATIONS)
+
+  # project targets
+  foreach (P IN ITEMS ${PROJECT_NAME} ${PROJECT_MODULES_ENABLED})
+    basis_get_project_property (TARGETS ${P})
+    foreach (TARGET IN LISTS TARGETS)
+      basis_get_target_type (TYPE ${TARGET})
+      get_target_property (TEST ${TARGET} TEST)
+      if (NOT TEST AND TYPE MATCHES "EXECUTABLE")
+        basis_get_target_location (BUILD_LOCATION   ${TARGET} ABSOLUTE)
+        basis_get_target_location (INSTALL_LOCATION ${TARGET} POST_INSTALL)
+        if (BUILD_LOCATION AND INSTALL_LOCATION)
+          list (APPEND EXECUTABLE_TARGETS "${TARGET}")
+          list (APPEND BUILD_LOCATIONS    "${BUILD_LOCATION}")
+          list (APPEND INSTALL_LOCATIONS  "${INSTALL_LOCATION}")
+        else ()
+          message (FATAL_ERROR "Failed to determine build or install location of target ${TARGET}!")
+        endif ()
+      endif ()
+    endforeach ()
+  endforeach ()
+
+  # imported targets - exclude targets imported from other module
+  foreach (P IN ITEMS ${PROJECT_NAME} ${PROJECT_MODULES_ENABLED})
+    basis_get_project_property (IMPORTED_TARGETS   ${P})
+    basis_get_project_property (IMPORTED_TYPES     ${P})
+    basis_get_project_property (IMPORTED_LOCATIONS ${P})
+    set (I 0)
+    list (LENGTH IMPORTED_TARGETS N)
+    while (I LESS N)
+      list (GET IMPORTED_TARGETS   ${I} TARGET)
+      list (GET IMPORTED_TYPES     ${I} TYPE)
+      list (GET IMPORTED_LOCATIONS ${I} LOCATION)
+      if (TYPE MATCHES "EXECUTABLE")
+        # get corresponding UID to recognize targets imported from other modules
+        basis_get_target_uid (UID ${TARGET})
+        # skip already considered executables
+        list (FIND EXECUTABLE_TARGETS ${UID} IDX)
+        if (IDX EQUAL -1)
+          if (LOCATION MATCHES "^NOTFOUND$")
+            message (WARNING "Imported target ${TARGET} has no location property!")
+          else ()
+            list (APPEND EXECUTABLE_TARGETS ${TARGET})
+            list (APPEND BUILD_LOCATIONS    "${LOCATION}")
+            list (APPEND INSTALL_LOCATIONS  "${LOCATION}")
+          endif ()
+        endif ()
+      endif ()
+      math (EXPR I "${I} + 1")
+    endwhile ()
+  endforeach ()
+
+  # --------------------------------------------------------------------------
   # generate source code
 
   set (CC)   # C++    - build tree and install tree version, constructor block
@@ -488,106 +544,81 @@ function (basis_configure_ExecutableTargetInfo)
     set (PY_I "${PY_I}    _locations = {\n")
   endif ()
 
-  basis_get_project_property (TARGETS PROPERTY TARGETS)
-  foreach (M IN LISTS PROJECT_MODULES_ENABLED)
-    basis_get_project_property (T PROJECT ${M} PROPERTY TARGETS)
-    list (APPEND TARGETS ${T})
-  endforeach ()
+  set (I 0)
+  list (LENGTH EXECUTABLE_TARGETS N)
+  while (I LESS N)
+    # get executable information
+    list (GET EXECUTABLE_TARGETS ${I} TARGET_UID)
+    list (GET BUILD_LOCATIONS    ${I} BUILD_LOCATION)
+    list (GET INSTALL_LOCATIONS  ${I} INSTALL_LOCATION)
 
-  foreach (TARGET_UID IN LISTS TARGETS)
-    basis_target_type   (TYPE ${TARGET_UID})
-    get_target_property (TEST ${TARGET_UID} "TEST")
- 
-    if (TYPE MATCHES "EXECUTABLE" AND NOT TEST)
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # get target properties
-      basis_get_target_location (BUILD_LOCATION   "${TARGET_UID}" ABSOLUTE)
-      basis_get_target_location (INSTALL_LOCATION "${TARGET_UID}" POST_INSTALL)
-
-      if (NOT BUILD_LOCATION)
-        message (WARNING "Failed to determine build location of ${TARGET_UID}")
+    # installation path relative to different library paths
+    foreach (L LIBRARY PYTHON_LIBRARY PERL_LIBRARY)
+      file (
+        RELATIVE_PATH INSTALL_LOCATION_REL2${L}
+          "${INSTALL_PREFIX}/${INSTALL_${L}_DIR}"
+          "${INSTALL_LOCATION}"
+      )
+      if (NOT INSTALL_LOCATION_REL2${L})
+        set (INSTALL_LOCATION_REL2${L} ".")
       endif ()
-      if (NOT INSTALL_LOCATION)
-        message (WARNING "Failed to determine installation location of ${TARGET_UID}")
-      endif ()
+    endforeach ()
 
-      if (BUILD_LOCATION AND INSTALL_LOCATION)
-
-        foreach (L LIBRARY PYTHON_LIBRARY PERL_LIBRARY)
-          file (
-            RELATIVE_PATH INSTALL_LOCATION_REL2${L}
-              "${INSTALL_PREFIX}/${INSTALL_${L}_DIR}"
-              "${INSTALL_LOCATION}"
-          )
-          if (NOT INSTALL_LOCATION_REL2${L})
-            set (INSTALL_LOCATION_REL2${L} ".")
-          endif ()
-        endforeach ()
-
-        if (TARGET_UID MATCHES "\\.")
-          set (ALIAS "${TARGET_UID}")
-        else ()
-          set (ALIAS "${PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
-        endif ()
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # C++
-
-        if (CXX)
-          get_filename_component (EXEC_NAME   "${BUILD_LOCATION}"   NAME)
-          get_filename_component (BUILD_DIR   "${BUILD_LOCATION}"   PATH)
-          get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
-
-          set (CC "${CC}\n")
-          set (CC "${CC}\n    // ${TARGET_UID}")
-          set (CC "${CC}\n    _exec_names  [\"${ALIAS}\"] = \"${EXEC_NAME}\";")
-          set (CC "${CC}\n    _build_dirs  [\"${ALIAS}\"] = \"${BUILD_DIR}\";")
-          set (CC "${CC}\n    _install_dirs[\"${ALIAS}\"] = \"${INSTALL_DIR}\";")
-        endif ()
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Python
-
-        if (PYTHON)
-          set (PY_B "${PY_B}        '${ALIAS}' : '${BUILD_LOCATION}',\n")
-          set (PY_I "${PY_I}        '${ALIAS}' : '../../${INSTALL_LOCATION_REL2PYTHON_LIBRARY}',\n")
-        endif ()
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Perl
-
-        if (PERL)
-          if (PL_B)
-            set (PL_B "${PL_B},\n")
-          endif ()
-          set (PL_B "${PL_B}    '${ALIAS}' => '${BUILD_LOCATION}'")
-          if (PL_I)
-            set (PL_I "${PL_I},\n")
-          endif ()
-          set (PL_I "${PL_I}    '${ALIAS}' => '../../${INSTALL_LOCATION_REL2PERL_LIBRARY}'")
-        endif ()
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # BASH
-
-        if (BASH)
-          # hash entry
-          set (SH_B "${SH_B}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${BUILD_LOCATION}'")
-          set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
-
-          # alias
-          set (SH_A "${SH_A}\nalias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
-
-          # short alias (if target belongs to this project)
-          if (TARGET_UID MATCHES "^${PROJECT_NAMESPACE_CMAKE_REGEX}\\.")
-            basis_get_target_name (TARGET_NAME "${TARGET_UID}")
-            set (SH_S "${SH_S}\nalias '${TARGET_NAME}'='${ALIAS}'")
-          endif ()
-        endif ()
-      endif ()
-
+    # target UID including project namespace
+    if (TARGET_UID MATCHES "\\.")
+      set (ALIAS "${TARGET_UID}")
+    else ()
+      set (ALIAS "${PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
     endif ()
-  endforeach ()
+
+    # C++
+    if (CXX)
+      get_filename_component (EXEC_NAME   "${BUILD_LOCATION}"   NAME)
+      get_filename_component (BUILD_DIR   "${BUILD_LOCATION}"   PATH)
+      get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+
+      set (CC "${CC}\n")
+      set (CC "${CC}\n    // ${TARGET_UID}")
+      set (CC "${CC}\n    _exec_names  [\"${ALIAS}\"] = \"${EXEC_NAME}\";")
+      set (CC "${CC}\n    _build_dirs  [\"${ALIAS}\"] = \"${BUILD_DIR}\";")
+      set (CC "${CC}\n    _install_dirs[\"${ALIAS}\"] = \"${INSTALL_DIR}\";")
+    endif ()
+
+    # Python
+    if (PYTHON)
+      set (PY_B "${PY_B}        '${ALIAS}' : '${BUILD_LOCATION}',\n")
+      set (PY_I "${PY_I}        '${ALIAS}' : '../../${INSTALL_LOCATION_REL2PYTHON_LIBRARY}',\n")
+    endif ()
+
+    # Perl
+    if (PERL)
+      if (PL_B)
+        set (PL_B "${PL_B},\n")
+      endif ()
+      set (PL_B "${PL_B}    '${ALIAS}' => '${BUILD_LOCATION}'")
+      if (PL_I)
+        set (PL_I "${PL_I},\n")
+      endif ()
+      set (PL_I "${PL_I}    '${ALIAS}' => '../../${INSTALL_LOCATION_REL2PERL_LIBRARY}'")
+    endif ()
+
+    # BASH
+    if (BASH)
+      # hash entry
+      set (SH_B "${SH_B}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${BUILD_LOCATION}'")
+      set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}' LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
+      # alias
+      set (SH_A "${SH_A}\nalias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
+      # short alias (if target belongs to this project)
+      if (TARGET_UID MATCHES "^${PROJECT_NAMESPACE_CMAKE_REGEX}\\.")
+        basis_get_target_name (TARGET_NAME "${TARGET_UID}")
+        set (SH_S "${SH_S}\nalias '${TARGET_NAME}'='${ALIAS}'")
+      endif ()
+    endif ()
+
+    # next executable target
+    math (EXPR I "${I} + 1")
+  endwhile ()
 
   set (PY_B "${PY_B}    }")
   set (PY_I "${PY_I}    }")

@@ -418,9 +418,10 @@ function (basis_dump_variables RESULT_FILE)
     if (NOT V MATCHES "^RESULT_FILE$")
       set (VALUE "${${V}}")
       # sanitize value for use in set() command
-      string (REGEX REPLACE "([^\\])\\\\([^\\])" "\\1\\\\\\\\\\2" VALUE "${VALUE}")
+      string (REPLACE "\\" "\\\\"    VALUE "${VALUE}") # escape backspaces
+      string (REPLACE "\"" "\\\\\""  VALUE "${VALUE}") # escape double quotes
+      # escape ${VAR} by \${VAR} such that CMake does not evaluate it
       string (REGEX REPLACE "([^\\])\\\${" "\\1\\\\\${" VALUE "${VALUE}")
-      string (REGEX REPLACE "([^\\])\"" "\\1\\\\\"" VALUE "${VALUE}")
       # append variable to output file
       file (APPEND "${RESULT_FILE}" "set (${V} \"${VALUE}\")\n")
     endif ()
@@ -499,8 +500,8 @@ function (basis_set_project_property)
 
   if (ARGN_APPEND)
     basis_get_project_property (CURRENT PROPERTY ${PROPERTY_NAME})
-    if (CURRENT)
-      list (INSERT ARGN_PROPERTY 0 ${CURRENT})
+    if (NOT "${CURRENT}" STREQUAL "")
+      list (INSERT ARGN_PROPERTY 0 "${CURRENT}")
     endif ()
   endif ()
 
@@ -515,25 +516,41 @@ endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get project-global property value.
+#
+# Example:
+# @code
+# basis_get_project_property(TARGETS)
+# basis_get_project_property(TARGETS ${PROJECT_NAME})
+# basis_get_project_property(TARGETS ${PROJECT_NAME} TARGETS)
+# basis_get_project_property(TARGETS PROPERTY TARGETS)
+# @endcode
+#
+# @param [out] VARIABLE Name of result variable.
+# @param [in]  ARGN     See the example uses. The optional second argument
+#                       is either the name of the project similar to CMake's
+#                       get_target_property() command or the keyword PROPERTY
+#                       followed by the name of the property.
 function (basis_get_project_property VARIABLE)
-  CMAKE_PARSE_ARGUMENTS (
-    ARGN
-      ""
-      "PROJECT;PROPERTY"
-      ""
-    ${ARGN}
-  )
-
-  if (NOT ARGN_PROJECT)
+  if (ARGC GREATER 3)
+    message (FATAL_ERROR "Too many arguments!")
+  endif ()
+  if (ARGC EQUAL 1)
     set (ARGN_PROJECT "${PROJECT_NAME}")
+    set (ARGN_PROPERTY "${VARIABLE}")
+  elseif (ARGC EQUAL 2)
+    if (ARGV1 MATCHES "^PROPERTY$")
+      message (FATAL_ERROR "Expected argument after PROPERTY keyword!")
+    endif ()
+    set (ARGN_PROJECT  "${ARGV1}")
+    set (ARGN_PROPERTY "${VARIABLE}")
+  else ()
+    if (ARGV1 MATCHES "^PROPERTY$")
+      set (ARGN_PROJECT "${PROJECT_NAME}")
+    else ()
+      set (ARGN_PROJECT  "${ARGV1}")
+    endif ()
+    set (ARGN_PROPERTY "${ARGV2}")
   endif ()
-  if (NOT ARGN_PROPERTY)
-    message (FATAL_ERROR "Missing PROPERTY argument!")
-  endif ()
-  if (ARGN_UNPARSED_ARGUMENTS)
-    message (FATAL_ERROR "Too many arguments: ${ARGN_UNPARSED_ARGUMENTS}!")
-  endif ()
-
   set (${VARIABLE} "${${ARGN_PROJECT}_${ARGN_PROPERTY}}" PARENT_SCOPE)
 endfunction ()
 
@@ -1176,7 +1193,7 @@ endfunction ()
 #
 # @param [out] TYPE        The target's type name or NOTFOUND.
 # @param [in]  TARGET_NAME The name of the target.
-function (basis_target_type TYPE TARGET_NAME)
+function (basis_get_target_type TYPE TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET ${TARGET_UID})
     get_target_property (TYPE_OUT ${TARGET_UID} "BASIS_TYPE")
@@ -1215,7 +1232,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET "${TARGET_UID}")
     basis_get_target_name (TARGET_NAME "${TARGET_UID}")
-    basis_target_type (TYPE "${TARGET_UID}")
+    basis_get_target_type (TYPE        "${TARGET_UID}")
     get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
 
     # ------------------------------------------------------------------------

@@ -52,6 +52,11 @@ set (PROJECT_MODULES_DIR "@PROJECT_SOURCE_DIR@/modules")
 ## @brief Absolute path of directory of testing tree in source tree.
 set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
 
+## @brief Absolute path of root directory of source tree of top-level project.
+if (NOT PROJECT_IS_MODULE)
+  set (BASIS_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
+endif ()
+
 # ============================================================================
 # testing tree
 # ============================================================================
@@ -120,6 +125,11 @@ endif ()
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}")
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}")
+
+## @brief Absolute path of root directory of build tree of top-level project.
+if (NOT PROJECT_IS_MODULE)
+  set (BASIS_PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
+endif ()
 
 # ============================================================================
 # install tree

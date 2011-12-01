@@ -25,37 +25,124 @@ endif ()
 # properties
 # ============================================================================
 
-##############################################################################
-# @brief Replaces CMake's set_target_properties() command.
+# ----------------------------------------------------------------------------
+## @brief Set target property.
+#
+# This function is overwritten by BASIS in order to update the information
+# about imported executable targets.
+#
+# @note Do not use this function in your CMakeLists.txt configuration files.
+#       Use basis_set_target_properties() instead.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties
+#
+# @param [in] ARGN Arguments for set_target_properties().
+function (set_target_properties)
+  # target names
+  list (FIND ARGN "PROPERTIES" IDX)
+  if (IDX EQUAL -1)
+    message (FATAL_ERROR "Missing PROPERTIES argument!")
+  elseif (IDX EQUAL 0)
+    message (FATAL_ERROR "No targets specified!")
+  endif ()
+  set (INDICES)
+  set (I 0)
+  while (I LESS IDX)
+    list (APPEND INDICES ${I})
+    math (EXPR I "${I} + 1")
+  endwhile ()
+  list (GET ARGN ${INDICES} TARGETS)
+  # remaining arguments are property value pairs
+  list (REMOVE_AT ARGN ${INDICES} ${IDX})
+  # set target properties
+  #
+  # Note: By looping of the properties, the empty property values
+  #       are correctly passed on to CMake's set_target_properties()
+  #       command, while
+  #       _set_target_properties(${TARGET_UIDS} PROPERTIES ${ARGN})
+  #       (erroneously) discards the empty elements in ARGN.
+  list (LENGTH ARGN N)
+  while (N GREATER 1)
+    list (GET ARGN 0 PROPERTY)
+    list (GET ARGN 1 VALUE)
+    # check property name
+    if ("${PROPERTY}" STREQUAL "")
+      message (FATAL_ERROR "Empty property name given!")
+    # if property is related to the location of an imported target,
+    # update corresponding project properties
+    elseif (PROPERTY MATCHES "^IMPORTED_LOCATION")
+      list (GET TARGETS 0 TARGET)
+      basis_update_imported_location (${TARGET} ${PROPERTY} "${VALUE}")
+    # if property is related to the type of an imported target,
+    # update corresponding project properties
+    elseif (PROPERTY MATCHES "^BASIS_TYPE$")
+      list (GET TARGETS 0 TARGET)
+      basis_update_imported_type (${TARGET} "${VALUE}")
+    endif ()
+    # set target property
+    _set_target_properties (${TARGETS} PROPERTIES ${PROPERTY} "${VALUE}")
+    # remove property value pair
+    list (REMOVE_AT ARGN 0 1)
+    list (LENGTH ARGN N)
+  endwhile ()
+  # make sure that every property had a corresponding value
+  if (NOT N EQUAL 0)
+    message (FATAL_ERROR "No value given for target property ${ARGN}")
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Set properties on a target.
+#
+# This BASIS function replaces CMake's set_target_properties() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties
 #
 # @param [in] ARGN Arguments for set_target_properties().
 #
-# @returns Sets the specified properties of the given build target.
-
+# @returns Sets the specified properties on the given target.
 function (basis_set_target_properties)
-  if (BASIS_DEBUG AND BASIS_VERBOSE)
-    message ("** basis_set_target_properties()")
-    message ("**     ARGN: ${ARGN}")
-  endif ()
-  set (UIDS)
+  # convert target names to UIDs
+  set (TARGET_UIDS)
   list (GET ARGN 0 ARG)
   while (ARG AND NOT ARG MATCHES "^PROPERTIES$")
-    basis_get_target_uid (UID "${ARG}")
-    list (APPEND UIDS "${UID}")
+    basis_get_target_uid (TARGET_UID "${ARG}")
+    list (APPEND TARGET_UIDS "${TARGET_UID}")
     list (REMOVE_AT ARGN 0)
     list (GET ARGN 0 ARG)
   endwhile ()
-  if (BASIS_DEBUG)
-    message ("** basis_set_target_properties()")
-    message ("**     UIDS: ${UIDS}")
-    message ("**     ARGN: ${ARGN}")
+  if (NOT ARG MATCHES "^PROPERTIES$")
+    message (FATAL_ERROR "Missing PROPERTIES argument!")
+  elseif (NOT TARGET_UIDS)
+    message (FATAL_ERROR "No targets specified!")
   endif ()
-  if (NOT UIDS)
-    message (FATAL_ERROR "basis_set_target_properties(): No targets specified")
+  # remove PROPERTIES keyword
+  list (REMOVE_AT ARGN 0)
+  # set target properties
+  #
+  # Note: By looping of the properties, the empty property values
+  #       are correctly passed on to CMake's set_target_properties()
+  #       command, while
+  #       _set_target_properties(${TARGET_UIDS} PROPERTIES ${ARGN})
+  #       (erroneously) discards the empty elements in ARGN.
+  list (LENGTH ARGN N)
+  while (N GREATER 1)
+    list (GET ARGN 0 PROPERTY)
+    list (GET ARGN 1 VALUE)
+    # check property name
+    if ("${PROPERTY}" STREQUAL "")
+      message (FATAL_ERROR "Empty property name given!")
+    endif ()
+    # set target property
+    _set_target_properties (${TARGET_UIDS} PROPERTIES ${PROPERTY} "${VALUE}")
+    # remove property value pair
+    list (REMOVE_AT ARGN 0 1)
+    list (LENGTH ARGN N)
+  endwhile ()
+  # make sure that every property had a corresponding value
+  if (NOT N EQUAL 0)
+    message (FATAL_ERROR "No value given for target property ${ARGN}")
   endif ()
-  set_target_properties (${UIDS} ${ARGN})
 endfunction ()
 
 ##############################################################################
@@ -295,7 +382,7 @@ function (basis_target_link_libraries TARGET_NAME)
       endwhile ()
     endif ()
 
-    set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
+    _set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
   # other
   else ()
     target_link_libraries (${TARGET_UID} ${ARGS})
@@ -306,34 +393,54 @@ endfunction ()
 # add targets
 # ============================================================================
 
-##############################################################################
-# @brief CMake's add_executable(), overwritten only to be able to store also
-#        imported build targets declared in exports files in BASIS_TARGETS.
+# ----------------------------------------------------------------------------
+## @brief Add executable target.
 #
-# Use basis_add_executable() instead where possible!
+# This BASIS function overwrites CMake's add_executable() command in order
+# to store information of imported targets which is in particular used to
+# generate the source code of the ExecutableTargetInfo modules which are
+# part of the BASIS utilities.
 #
-# @sa basis_add_executable()
+# @note Use basis_add_executable() instead where possible!
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
+#
+# @param [in] TARGET Name of the target.
+# @param [in] ARGN   Further arguments of CMake's add_executable().
 #
 # @ingroup CMakeUtilities
-
-function (add_executable TARGET_NAME)
-  _add_executable (${TARGET_NAME} ${ARGN})
-  basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_NAME}")
+function (add_executable TARGET)
+  if (ARGC EQUAL 2 AND ARGV1 MATCHES "^IMPORTED$")
+    _add_executable (${TARGET} IMPORTED)
+    basis_add_imported_target ("${TARGET}" EXECUTABLE)
+  else ()
+    _add_executable (${TARGET} ${ARGN})
+    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
+  endif ()
 endfunction ()
 
-##############################################################################
-# @brief CMake's add_library(), overwritten only to be able to store also
-#        imported build targets declared in exports files in BASIS_TARGETS.
+# ----------------------------------------------------------------------------
+## @brief Add library target.
 #
-# Use basis_add_library() instead where possible!
+# This BASIS function overwrites CMake's add_library() command in order
+# to store information of imported targets.
 #
-# @sa basis_add_library()
+# @note Use basis_add_library() instead where possible!
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
+#
+# @param [in] TARGET Name of the target.
+# @param [in] ARGN   Further arguments of CMake's add_library().
 #
 # @ingroup CMakeUtilities
-
-function (add_library TARGET_NAME)
-  _add_library (${TARGET_NAME} ${ARGN})
-  basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_NAME}")
+function (add_library TARGET)
+  if (ARGC EQUAL 3 AND ARGV2 MATCHES "^IMPORTED$")
+    _add_library (${TARGET} "${ARGV1}" IMPORTED)
+    basis_add_imported_target ("${TARGET}" "${ARGV1}")
+  else ()
+    _add_library (${TARGET} ${ARGN})
+    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
+  endif ()
 endfunction ()
 
 ##############################################################################
@@ -856,7 +963,7 @@ function (basis_add_executable_target TARGET_NAME)
       # matters; this will tell CMake to get the order right
       target_link_libraries (${BASIS_UTILITIES_TARGET} ${BASIS_UTILITIES_LIBRARY})
 
-      set_target_properties (
+      _set_target_properties (
         ${BASIS_UTILITIES_TARGET}
         PROPERTIES
           BASIS_TYPE  "STATIC_LIBRARY"
@@ -892,7 +999,7 @@ function (basis_add_executable_target TARGET_NAME)
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
 
-  set_target_properties (
+  _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       BASIS_TYPE  "EXECUTABLE"
@@ -900,7 +1007,7 @@ function (basis_add_executable_target TARGET_NAME)
   )
 
   if (ARGN_LIBEXEC)
-    set_target_properties (
+    _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
         LIBEXEC                  1
@@ -908,7 +1015,7 @@ function (basis_add_executable_target TARGET_NAME)
         RUNTIME_OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}"
     )
   else ()
-    set_target_properties (
+    _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
         LIBEXEC 0
@@ -917,14 +1024,14 @@ function (basis_add_executable_target TARGET_NAME)
   endif ()
 
   if (ARGN_TEST)
-    set_target_properties (
+    _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
         TEST                      1
         RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}"
     )
   else ()
-    set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
+    _set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
   endif ()
 
   # add default link dependencies
@@ -956,7 +1063,7 @@ function (basis_add_executable_target TARGET_NAME)
     )
 
     # set (custom) properties used by BASIS also for custom build targets
-    set_target_properties (
+    _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
         RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
@@ -1150,7 +1257,7 @@ function (basis_add_library_target TARGET_NAME)
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
 
-  set_target_properties (
+  _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       BASIS_TYPE "${TYPE}_LIBRARY"
@@ -1577,7 +1684,7 @@ function (basis_add_script TARGET_NAME)
     set (TYPE "EXECUTABLE_SCRIPT")
   endif ()
 
-  set_target_properties (
+  _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       BASIS_TYPE                "${TYPE}"
@@ -1599,15 +1706,15 @@ function (basis_add_script TARGET_NAME)
   )
 
   if (ARGN_TEST)
-    set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
+    _set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
   else ()
-    set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
+    _set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
   endif ()
 
   if (ARGN_LIBEXEC)
-    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
+    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
   else ()
-    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
+    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
   endif ()
 
   # add target to list of targets
@@ -2094,18 +2201,162 @@ endfunction ()
 function (basis_add_custom_finalize)
   basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID ${TARGETS})
-    get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
-    if (NOT IMPORTED)
-      get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
-      if (BASIS_TYPE MATCHES "SCRIPT")
-        basis_add_script_finalize (${TARGET_UID})
-      elseif (BASIS_TYPE MATCHES "MEX")
-        basis_add_mex_target_finalize (${TARGET_UID})
-      elseif (BASIS_TYPE MATCHES "MCC")
-        basis_add_mcc_target_finalize (${TARGET_UID})
-      endif ()
+    get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
+    if (BASIS_TYPE MATCHES "SCRIPT")
+      basis_add_script_finalize (${TARGET_UID})
+    elseif (BASIS_TYPE MATCHES "MEX")
+      basis_add_mex_target_finalize (${TARGET_UID})
+    elseif (BASIS_TYPE MATCHES "MCC")
+      basis_add_mcc_target_finalize (${TARGET_UID})
     endif ()
   endforeach ()
+endfunction ()
+
+# ============================================================================
+# importing targets
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Add imported target.
+#
+# Imported targets are only valid in the scope where they were imported.
+# In order to be able to add the information of the imported executable targets
+# to the ExecutableTargetInfo modules of the BASIS utilities which are configured
+# during the finalization of the (top-level) project, the information of
+# imported targets has to be stored in the global scope. Therefore, internal
+# cache variables prefixed by the name of the project are used
+# (see basis_set_project_property()):
+#
+# - <Project>_IMPORTED_TARGETS   : List of imported targets.
+# - <Project>_IMPORTED_TYPES     : Types of imported targets.
+# - <Project>_IMPORTED_LOCATIONS : Locations of imported target files.
+# - <Project>_IMPORTED_RANKS     : Rank of current imported locations. This rank
+#                                  value is used to decide whether the current
+#                                  location takes precedence over another imported
+#                                  location. For example, IMPORTED_LOCATION_<a>,
+#                                  may be preferred over IMPORTED_LOCATION_<b>.
+#
+# @sa basis_update_imported_location()
+#
+# @param [in] TARGET Name (UID) of the imported target.
+# @param [in] TYPE   Type of the imported target.
+function (basis_add_imported_target TARGET TYPE)
+  # if target was added before
+  basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)
+  if (TARGETS)
+    list (FIND TARGETS "${TARGET}" IDX)
+    if (NOT IDX EQUAL -1)
+      # do nothing
+      return ()
+    endif ()
+  endif ()
+  # otherwise, add it to the project properties
+  basis_set_project_property (APPEND PROPERTY IMPORTED_TARGETS   "${TARGET}")
+  basis_set_project_property (APPEND PROPERTY IMPORTED_TYPES     "${TYPE}")
+  basis_set_project_property (APPEND PROPERTY IMPORTED_LOCATIONS "NOTFOUND")
+  basis_set_project_property (APPEND PROPERTY IMPORTED_RANKS     10)
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Update location of imported target.
+#
+# @param [in] TARGET     Name (UID) of the imported target.
+# @param [in] PROPERTY   Target location property. Either IMPORTED_LOCATION
+#                        or IMPORTED_LOCATION_<config>, where <config> is
+#                        one of the imported build configurations.
+#                        This argument is used to decide whether to keep
+#                        the current target information or to replace it
+#                        by the new one.
+# @param [in] LOCATION   Location of imported target.
+function (basis_update_imported_location TARGET PROPERTY LOCATION)
+  # get index of imported target
+  basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)
+  list (FIND TARGETS "${TARGET}" IDX)
+  if (IDX EQUAL -1)
+    # imported targets have to be added via basis_add_imported_target() first
+    # otherwise, ignore target here and do not update the non-existent information
+    return ()
+  endif ()
+  # get current information of target
+  basis_get_project_property (TYPES     PROPERTY IMPORTED_TYPES)
+  basis_get_project_property (LOCATIONS PROPERTY IMPORTED_LOCATIONS)
+  basis_get_project_property (RANKS     PROPERTY IMPORTED_RANKS)
+  list (GET TYPES ${IDX} TYPE)
+  list (GET RANKS ${IDX} CURRENT_RANK)
+  # decide whether current information shall be overwritten
+  string (TOUPPER "${CMAKE_BUILD_TYPE}" C)
+  set (
+    RANKING
+      # first pick
+      "IMPORTED_LOCATION_${C}"    # 0) prefer location corresponding to current configuration
+      "IMPORTED_LOCATION"         # 1) then use non-configuration specific location
+      "IMPORTED_LOCATION_RELEASE" # 2) otherwise use RELEASE version if available
+      # 3) last pick, use first imported executable
+  )
+  list (FIND RANKING "${PROPERTY}" RANK)
+  if (RANK EQUAL -1)
+    set (RANK 3)
+  endif ()
+  # bail out if current information shall be kept
+  if (NOT "${RANK}" LESS "${CURRENT_RANK}")
+    return ()
+  endif ()
+  # remove current information
+  list (REMOVE_AT TYPES     ${IDX})
+  list (REMOVE_AT LOCATIONS ${IDX})
+  list (REMOVE_AT RANKS     ${IDX})
+  # add imported information
+  list (LENGTH TYPES N)
+  if (IDX LESS N)
+    list (INSERT TYPES     ${IDX} "${TYPE}")
+    list (INSERT LOCATIONS ${IDX} "${LOCATION}")
+    list (INSERT RANKS     ${IDX} "${RANK}")
+  else ()
+    list (APPEND TYPES     "${TYPE}")
+    list (APPEND LOCATIONS "${LOCATION}")
+    list (APPEND RANKS     "${RANK}")
+  endif ()
+  # update project properties
+  basis_set_project_property (PROPERTY IMPORTED_TYPES     "${TYPES}")
+  basis_set_project_property (PROPERTY IMPORTED_LOCATIONS "${LOCATIONS}")
+  basis_set_project_property (PROPERTY IMPORTED_RANKS     "${RANKS}")
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Update type of imported target.
+#
+# This function is in particular called in basis_set_target_properties()
+# if the BASIS_TYPE property of custom BASIS targets is set after the
+# imported target was added with the initial type UNKNOWN.
+#
+# @param [in] TARGET Name (UID) of the imported target.
+# @param [in] TYPE   Type of imported target.
+function (basis_update_imported_type TARGET TYPE)
+  # get index of imported target
+  basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)
+  list (FIND TARGETS "${TARGET}" IDX)
+  if (IDX EQUAL -1)
+    # imported targets have to be added via basis_add_imported_target() first
+    # otherwise, ignore target here and do not update the non-existent information
+    return ()
+  endif ()
+  # get current type of imported target
+  basis_get_project_property (TYPES PROPERTY IMPORTED_TYPES)
+  list (GET TYPES ${IDX} CURRENT_TYPE)
+  # bail out if current type shall be kept
+  if (NOT CURRENT_TYPE MATCHES "^UNKNOWN$")
+    return ()
+  endif ()
+  # replace current type
+  list (REMOVE_AT TYPES ${IDX})
+  list (LENGTH TYPES N)
+  if (IDX LESS N)
+    list (INSERT TYPES ${IDX} ${TYPE})
+  else ()
+    list (APPEND TYPES ${TYPE})
+  endif ()
+  # update project property
+  basis_set_project_property (PROPERTY IMPORTED_TYPES "${TYPES}")
 endfunction ()
 
 # ============================================================================

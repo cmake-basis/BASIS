@@ -1002,7 +1002,7 @@ macro (basis_project_finalize)
     # inherit PROJECT_USES_*_UTILITIES properties from modules
     foreach (L IN ITEMS PYTHON PERL BASH)
       foreach (M IN LISTS PROJECT_MODULES_ENABLED)
-        basis_get_project_property (P PROJECT ${M} PROPERTY PROJECT_USES_${L}_UTILITIES)
+        basis_get_project_property (P ${M} PROJECT_USES_${L}_UTILITIES)
         if (P)
           basis_set_project_property (PROPERTY PROJECT_USES_${L}_UTILITIES TRUE)
           break ()
@@ -1094,17 +1094,28 @@ macro (basis_project_impl)
   # after this subproject is finalized such that the super-project itself can
   # be finalized properly.
   #
-  # Attention: In particular the TARGETS property is already used during the
-  #            import of targets by including the use files of external
-  #            packages. Hence, this property has to be reset before.
+  # Attention: In particular the IMPORTED_* properties are already used
+  #            during the import of targets when including the use files of
+  #            external packages. Hence, this property has to be reset before.
+
+  # see basis_add_imported_target()
+  basis_set_project_property (PROPERTY IMPORTED_TARGETS "")
+  basis_set_project_property (PROPERTY IMPORTED_TYPES "")
+  basis_set_project_property (PROPERTY IMPORTED_LOCATIONS "")
+  basis_set_project_property (PROPERTY IMPORTED_RANKS "")
+  # see basis_include_directories()
   basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS "")
+  # see add_executable(), add_library()
   basis_set_project_property (PROPERTY TARGETS "")
+  # see basis_add_*() functions
   basis_set_project_property (PROPERTY EXPORT_TARGETS "")
   basis_set_project_property (PROPERTY CUSTOM_EXPORT_TARGETS "")
-  basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES   FALSE)
+  # see basis_add_script()
   basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES FALSE)
   basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES   FALSE)
   basis_set_project_property (PROPERTY PROJECT_USES_BASH_UTILITIES   FALSE)
+  # yet unused
+  basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES   FALSE)
   basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES FALSE)
 
   # --------------------------------------------------------------------------

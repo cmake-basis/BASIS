@@ -412,7 +412,7 @@ function (basis_add_mex_target TARGET_NAME)
   get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
   get_directory_property (LINK_DIRS LINK_DIRECTORIES)
 
-  set_target_properties (
+  _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       BASIS_TYPE                "MEX"
@@ -962,7 +962,7 @@ function (basis_add_mcc_target TARGET_NAME)
   get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
   get_directory_property (LINK_DIRS LINK_DIRECTORIES)
 
-  set_target_properties (
+  _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       BASIS_TYPE                "${TYPE}"
@@ -984,15 +984,15 @@ function (basis_add_mcc_target TARGET_NAME)
   )
 
   if (ARGN_LIBEXEC)
-    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
+    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
   else ()
-    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
+    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
   endif ()
 
   if (ARGN_TEST)
-    set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
+    _set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
   else ()
-    set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
+    _set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
   endif ()
 
   # add target to list of targets
