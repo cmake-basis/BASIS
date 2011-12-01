@@ -65,6 +65,24 @@ function (set_target_properties)
   while (N GREATER 1)
     list (GET ARGN 0 PROPERTY)
     list (GET ARGN 1 VALUE)
+    list (REMOVE_AT ARGN 0 1)
+    list (LENGTH ARGN N)
+    # The following loop is only required b/c CMake's ARGV and ARGN
+    # lists do not support arguments which are themselves lists.
+    # Therefore, we need a way to decide when the list of values for a
+    # property is terminated. We use here as a criteria the fact that
+    # property names are generally all uppercase without whitespaces
+    # while values will less likely follow this naming. As long as only one
+    # value is given for a property, this will not affect anything.
+    while (N GREATER 0)
+      list (GET ARGN 0 ARG)
+      if (ARG MATCHES "^[A-Z_]$")
+        break ()
+      endif ()
+      list (APPEND VALUE "${ARG}")
+      list (REMOVE_AT ARGN 0)
+      list (LENGTH ARGN N)
+    endwhile ()
     # check property name
     if ("${PROPERTY}" STREQUAL "")
       message (FATAL_ERROR "Empty property name given!")
@@ -81,9 +99,6 @@ function (set_target_properties)
     endif ()
     # set target property
     _set_target_properties (${TARGETS} PROPERTIES ${PROPERTY} "${VALUE}")
-    # remove property value pair
-    list (REMOVE_AT ARGN 0 1)
-    list (LENGTH ARGN N)
   endwhile ()
   # make sure that every property had a corresponding value
   if (NOT N EQUAL 0)
@@ -129,15 +144,30 @@ function (basis_set_target_properties)
   while (N GREATER 1)
     list (GET ARGN 0 PROPERTY)
     list (GET ARGN 1 VALUE)
+    list (REMOVE_AT ARGN 0 1)
+    list (LENGTH ARGN N)
+    # The following loop is only required b/c CMake's ARGV and ARGN
+    # lists do not support arguments which are themselves lists.
+    # Therefore, we need a way to decide when the list of values for a
+    # property is terminated. We use here as a criteria the fact that
+    # property names are generally all uppercase without whitespaces
+    # while values will less likely follow this naming. As long as only one
+    # value is given for a property, this will not affect anything.
+    while (N GREATER 0)
+      list (GET ARGN 0 ARG)
+      if (ARG MATCHES "^[A-Z_]$")
+        break ()
+      endif ()
+      list (APPEND VALUE "${ARG}")
+      list (REMOVE_AT ARGN 0)
+      list (LENGTH ARGN N)
+    endwhile ()
     # check property name
     if ("${PROPERTY}" STREQUAL "")
       message (FATAL_ERROR "Empty property name given!")
     endif ()
     # set target property
     _set_target_properties (${TARGET_UIDS} PROPERTIES ${PROPERTY} "${VALUE}")
-    # remove property value pair
-    list (REMOVE_AT ARGN 0 1)
-    list (LENGTH ARGN N)
   endwhile ()
   # make sure that every property had a corresponding value
   if (NOT N EQUAL 0)
