@@ -768,7 +768,7 @@ macro (basis_project_initialize)
     else ()
       if (UNIX)
         execute_process (
-          COMMAND "date" -u "+%Y.%m.%d.%H%M (UTC)"
+          COMMAND "date" -u "+%Y.%m.%d (%H:%M UTC)"
           RESULT_VARIABLE RT
           OUTPUT_VARIABLE BUILD
           ERROR_QUIET
