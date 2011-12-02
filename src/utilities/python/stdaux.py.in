@@ -116,7 +116,9 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
                            In the latter case, the array elements are converted
                            to strings using the built-in str() function.
                            Hence, any type which can be converted to a string
-                           can be used.
+                           can be used. The first argument must be the name
+                           or path of the executable of the command or the
+                           name of the corresponding build target.
     @param [in] quiet      Turns off output of stdout of child process to
                            stdout of parent process.
     @param [in] stdout     Whether to return the command output.

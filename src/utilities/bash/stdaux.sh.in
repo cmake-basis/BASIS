@@ -77,14 +77,6 @@ function print_contact
 #
 # This function is used to execute a subprocess within a BASH script.
 #
-# Options:
-# --allow_fail    Allows the command to fail. By default, if the command
-#                 returns a non-zero exit code, the exit() function is
-#                 called to terminate the current shell.
-# --verbose, -v   Print command-line to stdout before execution.
-# --simulate      If this option is given, the command is not actually
-#                 executed, but the command-line printed to stdout only.
-#
 # Example:
 # @code
 # # the next command will exit the current shell if it fails
@@ -110,12 +102,31 @@ function print_contact
 # command is executed will be terminated. Checking the exit code $? is
 # in this case required.
 #
-# @param [in] options Function options as given above.
-# @param [in] cmd     Executable of command to run. This is assumed to be
-#                     the first non-option argument or the argument that
-#                     follows the special '--' argument.
+# @param [in] options Function options as documented below.
+# @param [in] cmd     Executable of command to run or corresponding build
+#                     target name. This is assumed to be the first
+#                     non-option argument or the argument that follows the
+#                     special '--' argument.
 # @param [in] args    All remaining arguments are passed as arguments to
 #                     the given command.
+# @par Options:
+# <table border="0">
+#   <tr>
+#     @tp @b --allow_fail @endtp
+#     <td>Allows the command to fail. By default, if the command
+#         returns a non-zero exit code, the exit() function is
+#         called to terminate the current shell.</td>
+#   </tr>
+#   <tr>
+#     @tp <b>--verbose, -v</b> @endtp
+#     <td>Print command-line to stdout before execution.</td>
+#   </tr>
+#   <tr>
+#     @tp @b --simulate @endtp
+#     <td>If this option is given, the command is not actually
+#         executed, but the command-line printed to stdout only.</td>
+#   </tr>
+# </table>
 #
 # @returns Exit code of subprocess.
 function execute_process
