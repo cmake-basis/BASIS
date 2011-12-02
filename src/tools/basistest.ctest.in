@@ -359,7 +359,11 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # testing tools
-find_program (CTEST_SVN_COMMAND         NAMES basistest-svn)
+find_program (
+  CTEST_SVN_COMMAND
+  NAMES basistest-svn
+  HINTS "${CMAKE_CURRENT_LIST_DIR}/%RUNTIME_DIR%"
+)
 find_program (CTEST_SVN_COMMAND         NAMES svn)
 find_program (CTEST_COVERAGE_COMMAND    NAMES gcov)
 find_program (CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
