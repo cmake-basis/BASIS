@@ -772,6 +772,7 @@ macro (basis_project_initialize)
           RESULT_VARIABLE RT
           OUTPUT_VARIABLE BUILD
           ERROR_QUIET
+          OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         if (RT EQUAL 0)
           set (PROJECT_VERSION_AND_REVISION "build ${BUILD}")
