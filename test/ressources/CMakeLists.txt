@@ -8,6 +8,5 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# Note: Do NOT use TEST option, as this exported target is used by test project.
 basis_add_executable (dummy_command dummy_command.cxx)
 basis_set_target_properties(dummy_command PROPERTIES SYMLINK_NAME none)
