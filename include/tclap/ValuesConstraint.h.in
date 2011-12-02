@@ -27,7 +27,7 @@
 #include <vector>
 #include <@INCLUDE_PREFIX@tclap/Constraint.h>
 
-#include <config.h>
+#include <@INCLUDE_PREFIX@config.h>
 
 #if defined(HAVE_SSTREAM)
 #include <sstream>
