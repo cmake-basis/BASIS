@@ -5,20 +5,17 @@
 # @par Input variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_DIR</td>
+#     @tp @b NiftiCLib_DIR @endtp
 #     <td>The nifticlib package files are searched under the specified root
 #         directory. If they are not found there, the default search paths
 #         are considered. This variable can also be set as environment variable.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NIFTICLIB_DIR</td>
+#     @tp @b NIFTICLIB_DIR @endtp
 #     <td>Alternative environment variable for @p NiftiCLib_DIR.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_USE_STATIC_LIB</td>
+#     @tp @b NiftiCLib_USE_STATIC_LIB @endtp
 #     <td>Forces this module to search for the static library. Otherwise,
 #         the shared library is preferred.</td>
 #   </tr>
@@ -27,40 +24,41 @@
 # @par Output variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_FOUND</td>
+#     @tp  @b NiftiCLib_FOUND @endtp
 #     <td>Whether the nifticlib package was found and the following CMake
 #         variables are valid.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_INCLUDE_DIR</td>
+#     @tp @b NiftiCLib_INCLUDE_DIR @endtp
 #     <td>Cached include directory/ies.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_INCLUDE_DIRS</td>
+#     @tp @b NiftiCLib_INCLUDE_DIRS @endtp
 #     <td>Alias for @p NiftiCLib_INCLUDE_DIR (not cached).</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_INCLUDES</td>
+#     @tp @b NiftiCLib_INCLUDES @endtp
 #     <td>Alias for @p NiftiCLib_INCLUDE_DIR (not cached).</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_LIBRARY</td>
+#     @tp @b NiftiCLib_LIBRARY @endtp
 #     <td>Path of @c niftiio library.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_LIB</td>
+#     @tp @b NiftiCLib_LIB @endtp
 #     <td>Alias for @p NiftiCLib_LIBRARY (not cached).</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b NiftiCLib_LIBRARIES</td>
+#     @tp @b NiftiCLib_LIBRARIES @endtp
 #     <td>Path of @c niftiio library and prerequisite libraries.</td>
+#   </tr>
+# </table>
+#
+# @par Imported targets:
+# <table border="0">
+#   <tr>
+#     @tp @b niftiio @endtp
+#     <td>The library target of the nifticlib library.</td>
 #   </tr>
 # </table>
 #
