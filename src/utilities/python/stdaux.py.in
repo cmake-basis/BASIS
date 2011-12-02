@@ -60,7 +60,7 @@ def print_version(name, copyright=None, license=None):
     
     """
     # version
-    sys.stdout.write(name + " (@PROJECT_NAME@) version @PROJECT_VERSION_AND_REVISION@\n")
+    sys.stdout.write(name + " (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@\n")
     # copyright notice
     if not copyright:
         sys.stdout.write("Copyright (c) University of Pennsylvania. All rights reserved.\n")

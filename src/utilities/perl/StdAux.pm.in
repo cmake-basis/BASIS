@@ -77,7 +77,7 @@ sub print_version
 {
     my ($name, $copyright, $license) = @_;
     # version
-    print $name, " (@PROJECT_NAME@) version @PROJECT_VERSION_AND_REVISION@";
+    print $name, " (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@";
     # copyright notice
     if (defined $copyright) {
         print $copyright, '\n' unless $copyright == '';

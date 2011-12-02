@@ -9,8 +9,6 @@
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup BasisCxxUtilities
  */
 
 #include <cstdio> // printf for faster output than <iostream>
@@ -43,9 +41,7 @@ void print_version(const char* name, const char* copyright, const char* license)
 {
     if (name) cout << name;
     else      cout << get_executable_name();
-    cout << " (" << cProjectName << ") version " << cVersion;
-    if (cRevision > 0) cout << " (revision " << cRevision << ")";
-    cout << endl;
+    cout << " (" << cProjectName << ") " << "@PROJECT_VERSION_AND_REVISION@" << endl;
     if (copyright == NULL) {
         cout << "Copyright (c) University of Pennsylvania. All rights reserved." << endl;
     } else if (*copyright != '\0') {

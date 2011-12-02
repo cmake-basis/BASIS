@@ -46,7 +46,7 @@ function print_version
         copyright="Copyright (c) University of Pennsylvania. All rights reserved.\n\
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
     fi
-    echo "${name} (@PROJECT_NAME@) version @PROJECT_VERSION_AND_REVISION@"
+    echo "${name} (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@"
     echo -e "${copyright}"
 }
 
