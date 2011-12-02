@@ -141,15 +141,14 @@ endif ()
 # configure project configuration file for install tree
 
 string (CONFIGURE "${BASIS_TEMPLATE}" BASIS_CONFIG @ONLY)
-configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install" @ONLY)
+configure_file ("${TEMPLATE}" "${BINARY_CONFIG_DIR}/${CONFIG_FILE}" @ONLY)
 
 # ----------------------------------------------------------------------------
 # install project configuration file
 
 install (
-  FILES       "${PROJECT_BINARY_DIR}/${CONFIG_FILE}.install"
+  FILES       "${BINARY_CONFIG_DIR}/${CONFIG_FILE}"
   DESTINATION "${INSTALL_CONFIG_DIR}"
-  RENAME      "${CONFIG_FILE}"
 )
 
 # ============================================================================

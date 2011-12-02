@@ -670,7 +670,12 @@ endmacro ()
 #                                        not under revision control.
 # @retval PROJECT_VERSION_AND_REVISION   A string of project version and revision
 #                                        that can be used for the output of
-#                                        version information.
+#                                        version information. The format of this
+#                                        string is either one of the following:
+#                                          - "version 1.0.0 (revision 42)"
+#                                          - "version 1.0.0" (if revision unknown)
+#                                          - "revision 42" (if version is 0.0.0)
+#                                          - "version unknown" (otherwise)
 #
 # @ingroup CMakeAPI
 macro (basis_project_initialize)
@@ -758,15 +763,16 @@ macro (basis_project_initialize)
 
   # version information string
   if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?")
-    set (PROJECT_VERSION_AND_REVISION "")
-  else ()
-    set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION}")
-  endif ()
-  if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
-    if (PROJECT_VERSION_AND_REVISION)
-      set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION_AND_REVISION} ")
+    if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
+      set (PROJECT_VERSION_AND_REVISION "revision ${PROJECT_REVISION}")
+    else ()
+      set (PROJECT_VERSION_AND_REVISION "version unknown")
     endif ()
-    set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION_AND_REVISION}(revision ${PROJECT_REVISION})")
+  else ()
+    set (PROJECT_VERSION_AND_REVISION "version ${PROJECT_VERSION}")
+    if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
+      set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION_AND_REVISION} (revision ${PROJECT_REVISION})")
+    endif ()
   endif ()
 
   # version number for use in Perl modules
