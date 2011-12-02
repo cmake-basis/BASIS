@@ -763,14 +763,28 @@ macro (basis_project_initialize)
 
   # version information string
   if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?")
-    if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
+    if (PROJECT_REVISION)
       set (PROJECT_VERSION_AND_REVISION "revision ${PROJECT_REVISION}")
     else ()
-      set (PROJECT_VERSION_AND_REVISION "version unknown")
+      if (UNIX)
+        execute_process (
+          COMMAND "date" -u "+%Y.%m.%d.%H%M (UTC)"
+          RESULT_VARIABLE RT
+          OUTPUT_VARIABLE BUILD
+          ERROR_QUIET
+        )
+        if (RT EQUAL 0)
+          set (PROJECT_VERSION_AND_REVISION "build ${BUILD}")
+        else ()
+          set (PROJECT_VERSION_AND_REVISION "version unknown")
+        endif ()
+      else ()
+        set (PROJECT_VERSION_AND_REVISION "version unknown")
+      endif ()
     endif ()
   else ()
     set (PROJECT_VERSION_AND_REVISION "version ${PROJECT_VERSION}")
-    if (PROJECT_REVISION AND PROJECT_REVISION GREATER 0)
+    if (PROJECT_REVISION)
       set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION_AND_REVISION} (revision ${PROJECT_REVISION})")
     endif ()
   endif ()
