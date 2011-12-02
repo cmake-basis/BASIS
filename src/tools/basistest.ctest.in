@@ -494,13 +494,18 @@ if (FORCE_BUILD OR UPDATED_FILES)
   ctest_build ()
 
   # --------------------------------------------------------------------------
-  # install documentation
+  # build and install API documentation
   if (INSTALL_DOXYGEN_DIR)
+    ctest_build (TARGET doc)
     if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
       file (
         INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html"
         DESTINATION "${INSTALL_DOXYGEN_DIR}"
       )
+      message (STATUS "Installed API documentation to ${INSTALL_DOXYGEN_DIR}.")
+    else ()
+      message (STATUS "Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
+      message (STATUS "Skipped installation of API documentation.")
     endif ()
   endif ()
 
