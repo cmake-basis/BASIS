@@ -2048,12 +2048,13 @@ function (basis_add_script_finalize TARGET_UID)
       set (INSTALL_DIR "${RUNTIME_INSTALL_DIRECTORY}")
     endif ()
 
+
     if (INSTALL_DIR)
       # script configuration code
       set (C "${C}\n")
       set (C "${C}# build script for use in installation tree\n")
       set (C "${C}set (BUILD_INSTALL_SCRIPT 1)\n")
-      set (C "${C}set (DIR \"${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR}\")\n")
+      set (C "${C}set (DIR \"${INSTALL_PREFIX}/${INSTALL_DIR}\")\n")
       set (C "${C}set (FILE \"\${DIR}/\${NAME}\")\n")
       set (C "${C}\n")
       set (C "${C}include (\"${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake\")\n")
@@ -2139,7 +2140,7 @@ function (basis_add_script_finalize TARGET_UID)
     file (WRITE "${BUILD_SCRIPT}.tmp" "${C}")
     execute_process (
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-          "${BUILD_SCRIPT}" "${BUILD_SCRIPT}.tmp"
+          "${BUILD_SCRIPT}.tmp" "${BUILD_SCRIPT}"
     )
     file (REMOVE "${BUILD_SCRIPT}.tmp")
   else ()
