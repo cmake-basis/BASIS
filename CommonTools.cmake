@@ -420,8 +420,10 @@ function (basis_dump_variables RESULT_FILE)
       # sanitize value for use in set() command
       string (REPLACE "\\" "\\\\"    VALUE "${VALUE}") # escape backspaces
       string (REPLACE "\"" "\\\\\""  VALUE "${VALUE}") # escape double quotes
-      # escape ${VAR} by \${VAR} such that CMake does not evaluate it
-      string (REGEX REPLACE "([^\\])\\\${" "\\1\\\\\${" VALUE "${VALUE}")
+      # Escape ${VAR} by \${VAR} such that CMake does not evaluate it.
+      # Escape $STR{VAR} by \$STR{VAR} such that CMake does not report a
+      # syntax error b/c it expects either ${VAR}, $ENV{VAR}, or $CACHE{VAR}.
+      string (REGEX REPLACE "([^\\])\\\$([^ ]*){" "\\1\\\\\$\\2{" VALUE "${VALUE}")
       # append variable to output file
       file (APPEND "${RESULT_FILE}" "set (${V} \"${VALUE}\")\n")
     endif ()
