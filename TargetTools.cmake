@@ -26,87 +26,6 @@ endif ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Set target property.
-#
-# This function is overwritten by BASIS in order to update the information
-# about imported executable targets.
-#
-# @note Do not use this function in your CMakeLists.txt configuration files.
-#       Use basis_set_target_properties() instead.
-#
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties
-#
-# @param [in] ARGN Arguments for set_target_properties().
-function (set_target_properties)
-  # target names
-  list (FIND ARGN "PROPERTIES" IDX)
-  if (IDX EQUAL -1)
-    message (FATAL_ERROR "Missing PROPERTIES argument!")
-  elseif (IDX EQUAL 0)
-    message (FATAL_ERROR "No targets specified!")
-  endif ()
-  set (INDICES)
-  set (I 0)
-  while (I LESS IDX)
-    list (APPEND INDICES ${I})
-    math (EXPR I "${I} + 1")
-  endwhile ()
-  list (GET ARGN ${INDICES} TARGETS)
-  # remaining arguments are property value pairs
-  list (REMOVE_AT ARGN ${INDICES} ${IDX})
-  # set target properties
-  #
-  # Note: By looping of the properties, the empty property values
-  #       are correctly passed on to CMake's set_target_properties()
-  #       command, while
-  #       _set_target_properties(${TARGET_UIDS} PROPERTIES ${ARGN})
-  #       (erroneously) discards the empty elements in ARGN.
-  list (LENGTH ARGN N)
-  while (N GREATER 1)
-    list (GET ARGN 0 PROPERTY)
-    list (GET ARGN 1 VALUE)
-    list (REMOVE_AT ARGN 0 1)
-    list (LENGTH ARGN N)
-    # The following loop is only required b/c CMake's ARGV and ARGN
-    # lists do not support arguments which are themselves lists.
-    # Therefore, we need a way to decide when the list of values for a
-    # property is terminated. We use here as a criteria the fact that
-    # property names are generally all uppercase without whitespaces
-    # while values will less likely follow this naming. As long as only one
-    # value is given for a property, this will not affect anything.
-    while (N GREATER 0)
-      list (GET ARGN 0 ARG)
-      if (ARG MATCHES "^[A-Z_]$")
-        break ()
-      endif ()
-      list (APPEND VALUE "${ARG}")
-      list (REMOVE_AT ARGN 0)
-      list (LENGTH ARGN N)
-    endwhile ()
-    # check property name
-    if ("${PROPERTY}" STREQUAL "")
-      message (FATAL_ERROR "Empty property name given!")
-    # if property is related to the location of an imported target,
-    # update corresponding project properties
-    elseif (PROPERTY MATCHES "^IMPORTED_LOCATION")
-      list (GET TARGETS 0 TARGET)
-      basis_update_imported_location (${TARGET} ${PROPERTY} "${VALUE}")
-    # if property is related to the type of an imported target,
-    # update corresponding project properties
-    elseif (PROPERTY MATCHES "^BASIS_TYPE$")
-      list (GET TARGETS 0 TARGET)
-      basis_update_imported_type (${TARGET} "${VALUE}")
-    endif ()
-    # set target property
-    _set_target_properties (${TARGETS} PROPERTIES ${PROPERTY} "${VALUE}")
-  endwhile ()
-  # make sure that every property had a corresponding value
-  if (NOT N EQUAL 0)
-    message (FATAL_ERROR "No value given for target property ${ARGN}")
-  endif ()
-endfunction ()
-
-# ----------------------------------------------------------------------------
 ## @brief Set properties on a target.
 #
 # This BASIS function replaces CMake's set_target_properties() command.
@@ -140,6 +59,11 @@ function (basis_set_target_properties)
   #       command, while
   #       _set_target_properties(${TARGET_UIDS} PROPERTIES ${ARGN})
   #       (erroneously) discards the empty elements in ARGN.
+  if (BASIS_DEBUG)
+    message ("** set_target_properties:")
+    message ("**   Target(s):  ${TARGETS}")
+    message ("**   Properties: [${ARGN}]")
+  endif ()
   list (LENGTH ARGN N)
   while (N GREATER 1)
     list (GET ARGN 0 PROPERTY)
@@ -155,13 +79,16 @@ function (basis_set_target_properties)
     # value is given for a property, this will not affect anything.
     while (N GREATER 0)
       list (GET ARGN 0 ARG)
-      if (ARG MATCHES "^[A-Z_]$")
+      if (ARG MATCHES "^[A-Z_]+$")
         break ()
       endif ()
       list (APPEND VALUE "${ARG}")
       list (REMOVE_AT ARGN 0)
       list (LENGTH ARGN N)
     endwhile ()
+    if (BASIS_DEBUG)
+      message ("**   -> ${PROPERTY} = [${VALUE}]")
+    endif ()
     # check property name
     if ("${PROPERTY}" STREQUAL "")
       message (FATAL_ERROR "Empty property name given!")
@@ -175,8 +102,10 @@ function (basis_set_target_properties)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Replaces CMake's get_target_property() command.
+# ----------------------------------------------------------------------------
+## @brief Get value of property set on target.
+#
+# Replaces CMake's get_target_property() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_target_property
 #
@@ -185,7 +114,6 @@ endfunction ()
 # @param [in]  ARGN        Remaining arguments for get_target_property().
 #
 # @returns Sets @p VAR to the value of the requested property.
-
 function (basis_get_target_property VAR TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   get_target_property (VALUE "${TARGET_UID}" ${ARGN})
@@ -196,28 +124,30 @@ endfunction ()
 # definitions
 # ============================================================================
 
-##############################################################################
-# @brief Replaces CMake's add_definitions() command.
+# ----------------------------------------------------------------------------
+## @brief Add compile definitions.
+#
+# Replaces CMake's add_definitions() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_definitions
 #
 # @param [in] ARGN Arguments for add_definition().
 #
 # @returns Adds the given definitions.
-
 function (basis_add_definitions)
   add_definitions (${ARGN})
 endfunction ()
 
-##############################################################################
-# @brief Replaces CMake's remove_definitions() command.
+# ----------------------------------------------------------------------------
+## @brief Remove previously added compile definitions.
+#
+# Replaces CMake's remove_definitions() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:remove_definition
 #
 # @param [in] ARGN Arguments for remove_definitions().
 #
 # @returns Removes the specified definitions.
-
 function (basis_remove_definitions)
   remove_definitions (${ARGN})
 endfunction ()
@@ -226,8 +156,10 @@ endfunction ()
 # directories
 # ============================================================================
 
-##############################################################################
-# @brief Overwrites CMake's include_directories() command.
+# ----------------------------------------------------------------------------
+## @brief Add directories to search path for include files.
+#
+# Overwrites CMake's include_directories() command.
 #
 # The include_directories() command has to be overwritten such that when
 # use files from other projects as for example ITK are included, we still
@@ -235,12 +167,16 @@ endfunction ()
 # about our own basis_include_directories() function.
 #
 # @param [in] ARGN All arguments are passed on to basis_include_directories().
+#
+# @ingroup CMakeUtilities
 macro (include_directories)
   basis_include_directories (${ARGN})
 endmacro ()
 
-##############################################################################
-# @brief Replaces CMake's include_directories() command.
+# ----------------------------------------------------------------------------
+## @brief Add directories to search path for include files.
+#
+# Replaces CMake's include_directories() command.
 #
 # All arguments are passed on to CMake's include_directories() command.
 #
@@ -251,7 +187,6 @@ endmacro ()
 # @param ARGN Argument list passed on to CMake's include_directories() command.
 #
 # @returns Nothing.
-
 function (basis_include_directories)
   # CMake's include_directories ()
   _include_directories (${ARGN})
@@ -279,8 +214,10 @@ function (basis_include_directories)
   basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS ${INCLUDE_DIRS})
 endfunction ()
 
-##############################################################################
-# @brief Overwrites CMake's link_directories() command.
+# ----------------------------------------------------------------------------
+## @brief Add directories to search path for libraries.
+#
+# Overwrites CMake's link_directories() command.
 #
 # The link_directories() command has to be overwritten such that when
 # use files from other projects as for example ITK are included, we still
@@ -288,12 +225,16 @@ endfunction ()
 # about our own basis_link_directories() function.
 #
 # @param [in] ARGN All arguments are passed on to basis_link_directories().
+#
+# @ingroup CMakeUtilities
 macro (link_directories)
   basis_link_directories (${ARGN})
 endmacro ()
 
-##############################################################################
-# @brief Replaces CMake's link_directories() command.
+# ----------------------------------------------------------------------------
+## @brief Add directories to search path for libraries.
+#
+# Replaces CMake's link_directories() command.
 #
 # All arguments are passed on to CMake's link_directories() command.
 #
@@ -302,7 +243,6 @@ endmacro ()
 # @param [in] ARGN Arguments for link_directories().
 #
 # @returns Nothing.
-
 function (basis_link_directories)
   # CMake's link_directories()
   _link_directories (${ARGN})
@@ -312,15 +252,16 @@ endfunction ()
 # dependencies
 # ============================================================================
 
-##############################################################################
-# @brief Replaces CMake's add_dependencies() command.
+# ----------------------------------------------------------------------------
+## @brief Add dependencies to build target.
+#
+# Replaces CMake's add_dependencies() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_dependencies
 #
 # @param [in] ARGN Arguments for add_dependencies().
 #
 # @returns Adds the given dependencies of the specified build target.
-
 function (basis_add_dependencies)
   set (ARGS)
   foreach (ARG ${ARGN})
@@ -334,8 +275,10 @@ function (basis_add_dependencies)
   add_dependencies (${ARGS})
 endfunction ()
 
-##############################################################################
-# @brief Replaces CMake's target_link_libraries() command.
+# ----------------------------------------------------------------------------
+## @brief Add link dependencies to build target.
+#
+# Replaces CMake's target_link_libraries() command.
 #
 # The main reason for replacing this function is to treat libraries such as
 # MEX-files which are supposed to be compiled into a MATLAB executable added
@@ -360,7 +303,6 @@ endfunction ()
 # @returns Adds link dependencies to the specified build target.
 #          For custom targets, the given libraries are added to the
 #          @c DEPENDS property of these target, in particular.
-
 function (basis_target_link_libraries TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
 
@@ -426,57 +368,7 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add executable target.
 #
-# This BASIS function overwrites CMake's add_executable() command in order
-# to store information of imported targets which is in particular used to
-# generate the source code of the ExecutableTargetInfo modules which are
-# part of the BASIS utilities.
-#
-# @note Use basis_add_executable() instead where possible!
-#
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
-#
-# @param [in] TARGET Name of the target.
-# @param [in] ARGN   Further arguments of CMake's add_executable().
-#
-# @ingroup CMakeUtilities
-function (add_executable TARGET)
-  if (ARGC EQUAL 2 AND ARGV1 MATCHES "^IMPORTED$")
-    _add_executable (${TARGET} IMPORTED)
-    basis_add_imported_target ("${TARGET}" EXECUTABLE)
-  else ()
-    _add_executable (${TARGET} ${ARGN})
-    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
-  endif ()
-endfunction ()
-
-# ----------------------------------------------------------------------------
-## @brief Add library target.
-#
-# This BASIS function overwrites CMake's add_library() command in order
-# to store information of imported targets.
-#
-# @note Use basis_add_library() instead where possible!
-#
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
-#
-# @param [in] TARGET Name of the target.
-# @param [in] ARGN   Further arguments of CMake's add_library().
-#
-# @ingroup CMakeUtilities
-function (add_library TARGET)
-  if (ARGC EQUAL 3 AND ARGV2 MATCHES "^IMPORTED$")
-    _add_library (${TARGET} "${ARGV1}" IMPORTED)
-    basis_add_imported_target ("${TARGET}" "${ARGV1}")
-  else ()
-    _add_library (${TARGET} ${ARGN})
-    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
-  endif ()
-endfunction ()
-
-##############################################################################
-# @brief Replacement for CMake's add_executable() command.
-#
-# This function adds an executable target.
+# Replacement for CMake's add_executable() command.
 #
 # Besides adding usual executable targets build by the set <tt>C/CXX</tt>
 # language compiler, this function inspects the list of source files given and
@@ -580,7 +472,6 @@ endfunction ()
 # @returns Adds an executable build target. In case of an executable build from
 #          non-CXX source files, the function basis_add_custom_finalize() has to be
 #          invoked to actually add the custom target that builds it.
-
 function (basis_add_executable TARGET_NAME)
   # --------------------------------------------------------------------------
   # determine language
@@ -641,10 +532,10 @@ function (basis_add_executable TARGET_NAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Replaces CMake's add_library() command.
+# ----------------------------------------------------------------------------
+## @brief Add library target.
 #
-# This function adds a library target.
+# Replaces CMake's add_library() command.
 #
 # Besides adding usual library targets built from C/C++ source code files,
 # this function can also add custom build targets for libraries implemented
@@ -740,7 +631,6 @@ endfunction ()
 # @returns Adds a library build target. In case of a library not written in
 #          C/C++, basis_add_custom_finalize() has to be invoked to finalize
 #          the addition of the build target(s).
-
 function (basis_add_library TARGET_NAME)
   # --------------------------------------------------------------------------
   # determine language
@@ -860,8 +750,70 @@ function (basis_add_library TARGET_NAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Adds an executable target built from C++ source code.
+
+## @}
+# end of Doxygen group
+
+# ============================================================================
+# internal helpers
+# ============================================================================
+
+## @addtogroup CMakeUtilities
+# @{
+
+
+# ----------------------------------------------------------------------------
+## @brief Add executable target.
+#
+# This BASIS function overwrites CMake's add_executable() command in order
+# to store information of imported targets which is in particular used to
+# generate the source code of the ExecutableTargetInfo modules which are
+# part of the BASIS utilities.
+#
+# @note Use basis_add_executable() instead where possible!
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
+#
+# @param [in] TARGET Name of the target.
+# @param [in] ARGN   Further arguments of CMake's add_executable().
+#
+# @ingroup CMakeUtilities
+function (add_executable TARGET)
+  if (ARGC EQUAL 2 AND ARGV1 MATCHES "^IMPORTED$")
+    _add_executable (${TARGET} IMPORTED)
+    basis_add_imported_target ("${TARGET}" EXECUTABLE)
+  else ()
+    _add_executable (${TARGET} ${ARGN})
+    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Add library target.
+#
+# This BASIS function overwrites CMake's add_library() command in order
+# to store information of imported targets.
+#
+# @note Use basis_add_library() instead where possible!
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
+#
+# @param [in] TARGET Name of the target.
+# @param [in] ARGN   Further arguments of CMake's add_library().
+#
+# @ingroup CMakeUtilities
+function (add_library TARGET)
+  if (ARGC EQUAL 3 AND ARGV2 MATCHES "^IMPORTED$")
+    _add_library (${TARGET} "${ARGV1}" IMPORTED)
+    basis_add_imported_target ("${TARGET}" "${ARGV1}")
+  else ()
+    _add_library (${TARGET} ${ARGN})
+    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Adds an executable target built from C++ source code.
 #
 # This function adds an executable target for the build of an executable from
 # C++ source code files.
@@ -929,9 +881,6 @@ endfunction ()
 # </table>
 #
 # @returns Adds an executable build target built from C++ sources.
-#
-# @ingroup CMakeUtilities
-
 function (basis_add_executable_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -1105,10 +1054,14 @@ function (basis_add_executable_target TARGET_NAME)
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
 
-  # install executable
+  # install executable and/or export target
   if (ARGN_TEST)
 
     # TODO install (selected?) tests
+
+    if (NOT ARGN_NO_EXPORT)
+      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
 
   else ()
 
@@ -1125,7 +1078,6 @@ function (basis_add_executable_target TARGET_NAME)
       COMPONENT   "${ARGN_COMPONENT}"
     )
 
-    # set (custom) properties used by BASIS also for custom build targets
     _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
@@ -1138,8 +1090,8 @@ function (basis_add_executable_target TARGET_NAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Add build target for library built from C++ source code.
+# ----------------------------------------------------------------------------
+## @brief Add build target for library built from C++ source code.
 #
 # This function adds a library target which builds a library from C++ source
 # code files.
@@ -1207,9 +1159,6 @@ endfunction ()
 # </table>
 #
 # @returns Adds a library build target.
-#
-# @ingroup CMakeUtilities
-
 function (basis_add_library_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -1369,6 +1318,10 @@ function (basis_add_library_target TARGET_NAME)
     # TODO At the moment, no tests are installed. Once there is a way to
     #      install selected tests, the shared libraries they depend on
     #      need to be installed as well.
+
+    if (NOT ARGN_NO_EXPORT)
+      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
   else ()
     if (ARGN_NO_EXPORT)
       set (EXPORT_OPT)
@@ -1411,8 +1364,8 @@ function (basis_add_library_target TARGET_NAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Add script target.
+# ----------------------------------------------------------------------------
+## @brief Add script target.
 #
 # If the script name ends in ".in", the ".in" suffix is removed from the
 # output name. Further, the extension of the script such as .sh or .py is
@@ -1529,9 +1482,6 @@ endfunction ()
 # @returns Adds custom build target @p TARGET_NAME. In order to add the
 #          custom target that actually builds the script file,
 #          basis_add_script_finalize() has to be invoked.
-#
-# @ingroup CMakeUtilities
-
 function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -1830,8 +1780,8 @@ function (basis_add_script TARGET_NAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Finalize addition of script.
+# ----------------------------------------------------------------------------
+## @brief Finalize addition of script.
 #
 # This function uses the properties of the custom script target added by
 # basis_add_script() to create the custom build command and adds this build
@@ -1846,9 +1796,6 @@ endfunction ()
 #
 # @returns Adds custom target(s) to actually build the script target
 #          @p TARGET_UID added by basis_add_script().
-#
-# @ingroup CMakeUtilities
-
 function (basis_add_script_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
   basis_get_target_uid (TARGET_UID "${TARGET_UID}")
@@ -2232,8 +2179,12 @@ function (basis_add_script_finalize TARGET_UID)
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
 
   # install script
-  if (NOT ARGN_NO_EXPORT AND NOT TEST)
-    basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
+  if (NOT ARGN_NO_EXPORT)
+    if (TEST)
+      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+    else ()
+      basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
   endif ()
 
   if (MODULE)
@@ -2281,8 +2232,8 @@ function (basis_add_script_finalize TARGET_UID)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Finalize addition of custom targets.
+# ----------------------------------------------------------------------------
+## @brief Finalize addition of custom targets.
 #
 # This function is called by basis_add_project_finalize() to finalize the
 # addition of the custom build targets such as, for example, build targets
@@ -2296,9 +2247,6 @@ endfunction ()
 # @returns Adds custom targets that actually build the executables and
 #          libraries for which custom build targets where added by
 #          basis_add_executable(), basis_add_library(), and basis_add_script().
-#
-# @ingroup CMakeUtilities
-
 function (basis_add_custom_finalize)
   basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID ${TARGETS})
@@ -2313,385 +2261,6 @@ function (basis_add_custom_finalize)
   endforeach ()
 endfunction ()
 
-# ============================================================================
-# importing targets
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-## @brief Add imported target.
-#
-# Imported targets are only valid in the scope where they were imported.
-# In order to be able to add the information of the imported executable targets
-# to the ExecutableTargetInfo modules of the BASIS utilities which are configured
-# during the finalization of the (top-level) project, the information of
-# imported targets has to be stored in the global scope. Therefore, internal
-# cache variables prefixed by the name of the project are used
-# (see basis_set_project_property()):
-#
-# - <Project>_IMPORTED_TARGETS   : List of imported targets.
-# - <Project>_IMPORTED_TYPES     : Types of imported targets.
-# - <Project>_IMPORTED_LOCATIONS : Locations of imported target files.
-# - <Project>_IMPORTED_RANKS     : Rank of current imported locations. This rank
-#                                  value is used to decide whether the current
-#                                  location takes precedence over another imported
-#                                  location. For example, IMPORTED_LOCATION_<a>,
-#                                  may be preferred over IMPORTED_LOCATION_<b>.
-#
-# @sa basis_update_imported_location()
-#
-# @param [in] TARGET Name (UID) of the imported target.
-# @param [in] TYPE   Type of the imported target.
-function (basis_add_imported_target TARGET TYPE)
-  # if target was added before
-  basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)
-  if (TARGETS)
-    list (FIND TARGETS "${TARGET}" IDX)
-    if (NOT IDX EQUAL -1)
-      # do nothing
-      return ()
-    endif ()
-  endif ()
-  # otherwise, add it to the project properties
-  basis_set_project_property (APPEND PROPERTY IMPORTED_TARGETS   "${TARGET}")
-  basis_set_project_property (APPEND PROPERTY IMPORTED_TYPES     "${TYPE}")
-  basis_set_project_property (APPEND PROPERTY IMPORTED_LOCATIONS "NOTFOUND")
-  basis_set_project_property (APPEND PROPERTY IMPORTED_RANKS     10)
-endfunction ()
-
-# ----------------------------------------------------------------------------
-## @brief Update location of imported target.
-#
-# @param [in] TARGET     Name (UID) of the imported target.
-# @param [in] PROPERTY   Target location property. Either IMPORTED_LOCATION
-#                        or IMPORTED_LOCATION_<config>, where <config> is
-#                        one of the imported build configurations.
-#                        This argument is used to decide whether to keep
-#                        the current target information or to replace it
-#                        by the new one.
-# @param [in] LOCATION   Location of imported target.
-function (basis_update_imported_location TARGET PROPERTY LOCATION)
-  # get index of imported target
-  basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)
-  list (FIND TARGETS "${TARGET}" IDX)
-  if (IDX EQUAL -1)
-    # imported targets have to be added via basis_add_imported_target() first
-    # otherwise, ignore target here and do not update the non-existent information
-    return ()
-  endif ()
-  # get current information of target
-  basis_get_project_property (TYPES     PROPERTY IMPORTED_TYPES)
-  basis_get_project_property (LOCATIONS PROPERTY IMPORTED_LOCATIONS)
-  basis_get_project_property (RANKS     PROPERTY IMPORTED_RANKS)
-  list (GET TYPES ${IDX} TYPE)
-  list (GET RANKS ${IDX} CURRENT_RANK)
-  # decide whether current information shall be overwritten
-  string (TOUPPER "${CMAKE_BUILD_TYPE}" C)
-  set (
-    RANKING
-      # first pick
-      "IMPORTED_LOCATION_${C}"    # 0) prefer location corresponding to current configuration
-      "IMPORTED_LOCATION"         # 1) then use non-configuration specific location
-      "IMPORTED_LOCATION_RELEASE" # 2) otherwise use RELEASE version if available
-      # 3) last pick, use first imported executable
-  )
-  list (FIND RANKING "${PROPERTY}" RANK)
-  if (RANK EQUAL -1)
-    set (RANK 3)
-  endif ()
-  # bail out if current information shall be kept
-  if (NOT "${RANK}" LESS "${CURRENT_RANK}")
-    return ()
-  endif ()
-  # remove current information
-  list (REMOVE_AT TYPES     ${IDX})
-  list (REMOVE_AT LOCATIONS ${IDX})
-  list (REMOVE_AT RANKS     ${IDX})
-  # add imported information
-  list (LENGTH TYPES N)
-  if (IDX LESS N)
-    list (INSERT TYPES     ${IDX} "${TYPE}")
-    list (INSERT LOCATIONS ${IDX} "${LOCATION}")
-    list (INSERT RANKS     ${IDX} "${RANK}")
-  else ()
-    list (APPEND TYPES     "${TYPE}")
-    list (APPEND LOCATIONS "${LOCATION}")
-    list (APPEND RANKS     "${RANK}")
-  endif ()
-  # update project properties
-  basis_set_project_property (PROPERTY IMPORTED_TYPES     "${TYPES}")
-  basis_set_project_property (PROPERTY IMPORTED_LOCATIONS "${LOCATIONS}")
-  basis_set_project_property (PROPERTY IMPORTED_RANKS     "${RANKS}")
-endfunction ()
-
-# ----------------------------------------------------------------------------
-## @brief Update type of imported target.
-#
-# This function is in particular called in basis_set_target_properties()
-# if the BASIS_TYPE property of custom BASIS targets is set after the
-# imported target was added with the initial type UNKNOWN.
-#
-# @param [in] TARGET Name (UID) of the imported target.
-# @param [in] TYPE   Type of imported target.
-function (basis_update_imported_type TARGET TYPE)
-  # get index of imported target
-  basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)
-  list (FIND TARGETS "${TARGET}" IDX)
-  if (IDX EQUAL -1)
-    # imported targets have to be added via basis_add_imported_target() first
-    # otherwise, ignore target here and do not update the non-existent information
-    return ()
-  endif ()
-  # get current type of imported target
-  basis_get_project_property (TYPES PROPERTY IMPORTED_TYPES)
-  list (GET TYPES ${IDX} CURRENT_TYPE)
-  # bail out if current type shall be kept
-  if (NOT CURRENT_TYPE MATCHES "^UNKNOWN$")
-    return ()
-  endif ()
-  # replace current type
-  list (REMOVE_AT TYPES ${IDX})
-  list (LENGTH TYPES N)
-  if (IDX LESS N)
-    list (INSERT TYPES ${IDX} ${TYPE})
-  else ()
-    list (APPEND TYPES ${TYPE})
-  endif ()
-  # update project property
-  basis_set_project_property (PROPERTY IMPORTED_TYPES "${TYPES}")
-endfunction ()
-
-# ============================================================================
-# exporting targets
-# ============================================================================
-
-##############################################################################
-# @brief Get soname of object file.
-#
-# This function extracts the soname from object files in the ELF format on
-# systems where the objdump command is available. On all other systems,
-# an empty string is returned.
-#
-# @param [out] SONAME  The soname of the object file.
-# @param [in]  OBJFILE Object file in ELF format.
-#
-# @ingroup CMakeUtilities
-
-function (basis_get_soname SONAME OBJFILE)
-  # get absolute path of object file
-  basis_get_target_uid (TARGET_UID ${OBJFILE})
-  if (TARGET TARGET_UID)
-    basis_get_target_location (OBJFILE ${TARGET_UID} ABSOLUTE)
-  else ()
-    get_filename_component (OBJFILE "${OBJFILE}" ABSOLUTE)
-  endif ()
-  # usually CMake did this already
-  find_program (CMAKE_OBJDUMP NAMES objdump DOC "The objdump command")
-  # run objdump and extract soname
-  execute_process (
-    COMMAND ${CMAKE_OBJDUMP} -p "${OBJFILE}"
-    COMMAND sed -n "-e's/^[[:space:]]*SONAME[[:space:]]*//p'"
-    RESULT_VARIABLE STATUS
-    OUTPUT_VARIABLE SONAME_OUT
-    ERROR_QUIET
-  )
-  # return
-  if (STATUS EQUAL 0)
-    set (${SONAME} "${SONAME_OUT}" PARENT_SCOPE)
-  else ()
-    set (${SONAME} "" PARENT_SCOPE)
-  endif ()
-endfunction ()
-
-##############################################################################
-# @brief Export all targets added by basis_add_* commands.
-#
-# @ingroup CMakeUtilities
-
-function (basis_export_targets)
-  # parse arguments
-  CMAKE_PARSE_ARGUMENTS (ARGN "" "FILE;CUSTOM_FILE" "" ${ARGN})
-
-  if (NOT ARGN_FILE)
-    message (FATAL_ERROR "basis_export_targets(): FILE option is required!")
-  endif ()
-  if (NOT ARGN_CUSTOM_FILE)
-    message (FATAL_ERROR "basis_export_targets(): CUSTOM_FILE option is required!")
-  endif ()
-
-  if (IS_ABSOLUTE ARGN_FILE)
-    message (FATAL_ERROR "basis_export_targets(): FILE option argument must be a relative path!")
-  endif ()
-  if (IS_ABSOLUTE ARGN_CUSTOM_FILE)
-    message (FATAL_ERROR "basis_export_targets(): CUSTOM_FILE option argument must be a relative path!")
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # export non-custom targets
-
-  basis_get_project_property (EXPORT_TARGETS PROPERTY EXPORT_TARGETS)
-
-  if (EXPORT_TARGETS)
-    if (BASIS_USE_FULLY_QUALIFIED_UIDS)
-      set (NAMESPACE_OPT)
-    else ()
-      set (NAMESPACE_OPT NAMESPACE "${BASIS_PROJECT_NAMESPACE_CMAKE}.")
-    endif ()
-
-    export (
-      TARGETS   ${EXPORT_TARGETS}
-      FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
-      ${NAMESPACE_OPT}
-    )
-    foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
-      install (
-        EXPORT      "${PROJECT_NAME}"
-        DESTINATION "${INSTALL_CONFIG_DIR}"
-        FILE        "${ARGN_FILE}"
-        COMPONENT   "${COMPONENT}"
-        ${NAMESPACE_OPT}
-      )
-    endforeach ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # export custom targets
-
-  basis_get_project_property (CUSTOM_EXPORT_TARGETS PROPERTY CUSTOM_EXPORT_TARGETS)
-
-  if (CUSTOM_EXPORT_TARGETS)
-
-    # helper macros to avoid duplication of code
-    # two version of exports file are created, one for the build tree and
-    # one for the installation tree
-
-    # header
-    macro (header)
-      set (C)
-      set (C "# Generated by BASIS\n\n")
-      set (C "${C}if (\"\${CMAKE_MAJOR_VERSION}.\${CMAKE_MINOR_VERSION}\" LESS 2.8)\n")
-      set (C "${C}  message (FATAL_ERROR \"CMake >= 2.8.4 required\")\n")
-      set (C "${C}endif ()\n")
-      set (C "${C}cmake_policy (PUSH)\n")
-      set (C "${C}cmake_policy (VERSION 2.8.4)\n")
-      set (C "${C}#----------------------------------------------------------------\n")
-      set (C "${C}# Generated CMake target import file.\n")
-      set (C "${C}#----------------------------------------------------------------\n")
-      set (C "${C}\n# Commands may need to know the format version.\n")
-      set (C "${C}set (CMAKE_IMPORT_FILE_VERSION 1)\n")
-    endmacro ()
-
-    # compute installation prefix relative to INSTALL_CONFIG_DIR
-    macro (prefix)
-      set (C "${C}\n# Compute the installation prefix relative to this file.\n")
-      set (C "${C}get_filename_component (_IMPORT_PREFIX \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)\n")
-      string (REGEX REPLACE "[/\\]" ";" DIRS "${INSTALL_CONFIG_DIR}")
-      foreach (D ${DIRS})
-        set (C "${C}get_filename_component (_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)\n")
-      endforeach ()
-    endmacro ()
-
-    # create import targets
-    macro (import_targets)
-      foreach (T ${CUSTOM_EXPORT_TARGETS})
-        basis_get_fully_qualified_target_uid (UID "${T}")
-        set (C "${C}\n# Create import target \"${UID}\"\n")
-        get_target_property (BASIS_TYPE ${T} "BASIS_TYPE")
-        if (BASIS_TYPE MATCHES "EXECUTABLE")
-          set (C "${C}add_executable (${UID} IMPORTED)\n")
-        elseif (BASIS_TYPE MATCHES "LIBRARY|MODULE_SCRIPT|MEX")
-          string (REGEX REPLACE "_LIBRARY" "" TYPE "${BASIS_TYPE}")
-          if (TYPE MATCHES "MEX|MCC")
-            set (TYPE "SHARED")
-          elseif (TYPE MATCHES "^MODULE_SCRIPT$")
-            set (TYPE "UNKNOWN")
-          endif ()
-          set (C "${C}add_library (${UID} ${TYPE} IMPORTED)\n")
-        else ()
-          message (FATAL_ERROR "Cannot export target ${T} of type ${BASIS_TYPE}! Use NO_EXPORT option.")
-        endif ()
-        set (C "${C}set_target_properties (${UID} PROPERTIES BASIS_TYPE \"${BASIS_TYPE}\")\n")
-      endforeach ()
-    endmacro ()
-
-    # set properties of imported targets
-    macro (build_properties)
-      foreach (CONFIG ${CMAKE_BUILD_TYPE})
-        string (TOUPPER "${CONFIG}" CONFIG_UPPER)
-        foreach (T ${CUSTOM_EXPORT_TARGETS})
-          basis_get_fully_qualified_target_uid (UID "${T}")
-          set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
-          set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
-          set (C "${C}set_target_properties (${UID} PROPERTIES\n")
-          basis_get_target_location (LOCATION ${T} ABSOLUTE)
-          set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"${LOCATION}\"\n")
-          if (BASIS_TYPE MATCHES "LIBRARY|MEX")
-            set (C "${C}  IMPORTED_LINK_INTERFACE_LANGUAGES_${CONFIG_UPPER} \"CXX\"\n")
-          endif ()
-          set (C "${C}  )\n")
-        endforeach ()
-      endforeach ()
-    endmacro ()
-
-    macro (install_properties)
-      foreach (CONFIG ${CMAKE_BUILD_TYPE})
-        string (TOUPPER "${CONFIG}" CONFIG_UPPER)
-        foreach (T ${CUSTOM_EXPORT_TARGETS})
-          basis_get_fully_qualified_target_uid (UID "${T}")
-          set (C "${C}\n# Import target \"${UID}\" for configuration \"${CONFIG}\"\n")
-          set (C "${C}set_property (TARGET ${UID} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${CONFIG})\n")
-          set (C "${C}set_target_properties (${UID} PROPERTIES\n")
-          basis_get_target_location (LOCATION ${T} POST_INSTALL_RELATIVE)
-          set (C "${C}  IMPORTED_LOCATION_${CONFIG_UPPER} \"\${_IMPORT_PREFIX}/${LOCATION}\"\n")
-          if (BASIS_TYPE MATCHES "LIBRARY|MEX")
-            set (C "${C}  IMPORTED_LINK_INTERFACE_LANGUAGES_${CONFIG_UPPER} \"CXX\"\n")
-          endif ()
-          set (C "${C}  )\n")
-        endforeach ()
-      endforeach ()
-    endmacro ()
-
-    # footer
-    macro (footer)
-      set (C "${C}\n# Cleanup temporary variables.\n")
-      set (C "${C}set (_IMPORT_PREFIX)\n")
-      set (C "${C}\n# Commands beyond this point should not need to know the version.\n")
-      set (C "${C}set (CMAKE_IMPORT_FILE_VERSION)\n")
-      set (C "${C}cmake_policy (POP)\n")
-    endmacro ()
-
-    # DO NOT use '-' in the filename prefix for the custom exports.
-    # Otherwise, it is automatically included by the exports file written
-    # by CMake for the installation tree. This is, however, not the case
-    # for the build tree. Therefore, we have to include the custom exports
-    # file our selves in the use file.
-
-    # write exports for build tree
-    header ()
-    import_targets ()
-    build_properties ()
-    footer ()
-
-    file (WRITE "${PROJECT_BINARY_DIR}/${ARGN_CUSTOM_FILE}" "${C}")
-
-    # write exports for installation
-    header ()
-    prefix ()
-    import_targets ()
-    install_properties ()
-    footer ()
-
-    get_filename_component (TMP_FILE "${ARGN_CUSTOM_FILE}" NAME_WE)
-    set (TMP_FILE "${TMP_FILE}.install")
-    file (WRITE "${PROJECT_BINARY_DIR}/${TMP_FILE}" "${C}")
-    install (
-      FILES       "${PROJECT_BINARY_DIR}/${TMP_FILE}"
-      DESTINATION "${INSTALL_CONFIG_DIR}"
-      RENAME      "${ARGN_CUSTOM_FILE}"
-    )
-
-  endif ()
-endfunction ()
-
 
 ## @}
-# Doxygen group
+# end of Doxygen group

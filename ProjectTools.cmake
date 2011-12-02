@@ -1110,6 +1110,7 @@ macro (basis_project_impl)
   # see basis_add_*() functions
   basis_set_project_property (PROPERTY EXPORT_TARGETS "")
   basis_set_project_property (PROPERTY CUSTOM_EXPORT_TARGETS "")
+  basis_set_project_property (PROPERTY TEST_EXPORT_TARGETS "")
   # see basis_add_script()
   basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES FALSE)
   basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES   FALSE)

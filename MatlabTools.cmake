@@ -433,6 +433,7 @@ function (basis_add_mex_target TARGET_NAME)
       LINK_DEPENDS              ""
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
       MFILE                     "${ARGN_MFILE}"
+      TEST                      "0" # MEX-files cannot be used for testing only yet
       NO_EXPORT                 "${ARGN_NO_EXPORT}"
   )
 
@@ -503,6 +504,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
       "LINK_FLAGS"
       "LIBRARY_COMPONENT"
       "MFILE"
+      "TEST"
       "NO_EXPORT"
   )
 
@@ -744,7 +746,11 @@ function (basis_add_mex_target_finalize TARGET_UID)
 
   # install MEX-file
   if (NOT NO_EXPORT)
-    basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
+    if (TEST)
+      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+    else ()
+      basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
   endif ()
 
   install (
@@ -1303,17 +1309,22 @@ function (basis_add_mcc_target_finalize TARGET_UID)
     )
   endif ()
 
-  # install target
+  # export target
+  if (NOT NO_EXPORT)
+    if (TEST)
+      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+    else ()
+      basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
+  endif ()
+
+  # install executable or library
   if (TYPE MATCHES "LIBRARY")
     # TODO
   else ()
     if (TEST)
       # TODO Install (selected?) test executables
     else ()
-      if (NOT NO_EXPORT)
-        basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
-      endif ()
-
       install (
         PROGRAMS    ${BUILD_OUTPUT}
         DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
