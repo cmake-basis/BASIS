@@ -579,7 +579,13 @@ function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # add directory of configured headers to include search path
   basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
-  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}")
+
+  # Attention: BASIS includes public header files which are named the
+  #            same as system-wide header files. Therefore, avoid to add
+  #            include/sbia/basis/ to the include search path.
+  if (NOT PROJECT_NAME MATCHES "^BASIS$")
+    basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}")
+  endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------

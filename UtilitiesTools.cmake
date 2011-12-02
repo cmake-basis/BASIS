@@ -356,17 +356,32 @@ endfunction ()
 # @param [in] HEADERS_LIST Name of list of header files.
 
 function (basis_use_auxiliary_sources SOURCES_LIST HEADERS_LIST)
+  # Attention: BASIS includes public header files which are named the
+  #            same as system-wide header files. Therefore, avoid to add
+  #            include/sbia/basis/ to the include search path.
+  #
+  #            For all other projects, this path was already added to the
+  #            standard include search path (or not if not desired).
+  #            In any case, do not add this path at this point.
+  string (REGEX REPLACE "/$" "" EXCLUDE_DIRS "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}")
+  # get list of paths to auxiliary header files
   set (INCLUDE_DIRS)
   foreach (H IN LISTS ${HEADERS_LIST})
     get_filename_component (D "${H}" PATH)
-    list (APPEND INCLUDE_DIRS "${D}")
+    list (FIND EXCLUDE_DIRS "${D}" IDX)
+    if (IDX EQUAL -1)
+      list (APPEND INCLUDE_DIRS "${D}")
+    endif ()
   endforeach ()
+  # remove duplicates
   if (INCLUDE_DIRS)
     list (REMOVE_DUPLICATES INCLUDE_DIRS)
   endif ()
+  # add include directories
   if (INCLUDE_DIRS)
     basis_include_directories (BEFORE ${INCLUDE_DIRS})
   endif ()
+  # define source groups
   if (${HEADERS_LIST})
     source_group ("Default" FILES ${${HEADERS_LIST}})
   endif ()
