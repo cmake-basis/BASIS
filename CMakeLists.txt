@@ -20,8 +20,10 @@ set (
     # submodules included by BasisTools.cmake
     "CommonTools.cmake"             # common functions/macros
     "DocTools.cmake"                # documentation generation
+    "ExportTools.cmake"             # exporting targets
     "ExternalData.cmake"            # storing data externally
     "ExternalData_config.cmake.in"  # config of ExternalData.cmake module
+    "ImportTools.cmake"             # importing targets
     "InstallationTools.cmake"       # software installation
     "MatlabTools.cmake"             # MATLAB support
     "ProjectTools.cmake"            # main project/module helpers
