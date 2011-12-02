@@ -145,15 +145,22 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
-#     @tp @b COMMAND @tpend
-#     <td>The command to execute. The command arguments have to be given
-#         following the @p ARGS argument. Alternatively, a test can be
-#         build from sources and the build executable is used as command.
-#         In this case, specify the @p SOURCES argument instead.</td>
+#     @tp @b COMMAND cmd [arg1 [arg2 ...]] @tpend
+#     <td>The command to execute and optionally its arguments. Alternatively,
+#         a test can be build build from sources and the build executable
+#         used as command. In this case, specify the sources using the
+#         @p SOURCES argument. The command name @c cmd if given is used as
+#         output name of the built executable. If you do not want to
+#         specify the name of the output executable explicitly, but have
+#         it derived from the @p TEST_NAME, do not given the @p COMMAND
+#         option and use the @p ARGS option instead to only specify the
+#         arguments of the test command.</td>
 #   </tr>
 #   <tr>
 #     @tp @b ARGS arg1 [arg2 ...] @endtp
-#     <td>Arguments passed on to CMake's add_test().</td>
+#     <td>Arguments of the test command. If this option is given, the
+#         @p COMMAND option must only have one argument, the name or path
+#         of the test command.</td>
 #   </tr>
 #   <tr>
 #     @tp @b WORKING_DIRECTORY dir @endtp
@@ -201,6 +208,17 @@ function (basis_add_test TEST_NAME)
     ${ARGN}
   )
 
+  list (LENGTH ARGN_COMMAND N)
+  if (N GREATER 1)
+    if (ARGN_ARGS)
+      message (FATAL_ERROR "Specify test arguments using either COMMAND or ARGS option, not both!")
+    endif ()
+    list (GET ARGN_COMMAND 0 CMD)
+    list (REMOVE_AT ARGN_COMMAND 0)
+    set (ARGN_ARGS ${ARGN_COMMAND})
+    set (ARGN_COMMAND "${CMD}")
+  endif ()
+
   # --------------------------------------------------------------------------
   # test name
   if (NOT ARGN_COMMAND AND NOT ARGN_SOURCES)
@@ -215,6 +233,14 @@ function (basis_add_test TEST_NAME)
 
   basis_check_test_name ("${TEST_NAME}")
   basis_make_test_uid (TEST_UID "${TEST_NAME}")
+
+  if (BASIS_DEBUG)
+    message ("** basis_add_test():")
+    message ("**   Name:      ${TEST_NAME}")
+    message ("**   Command:   ${ARGN_COMMAND}")
+    message ("**   Arguments: ${ARGN_ARGS}")
+    message ("**   Sources:   ${ARGN_SOURCES}")
+  endif ()
 
   # --------------------------------------------------------------------------
   # build test executable
@@ -249,7 +275,7 @@ function (basis_add_test TEST_NAME)
     endif ()
 
     if (ARGN_COMMAND)
-      basis_set_target_properties (${TEST_UID} PROPERTIES OUTPUT_NAME ${ARGN_COMMAND})
+      basis_set_target_properties (${TEST_UID} PROPERTIES OUTPUT_NAME ${CMD})
     endif ()
     basis_get_target_location (ARGN_COMMAND "${TEST_UID}" ABSOLUTE)
 
