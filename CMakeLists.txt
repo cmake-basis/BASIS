@@ -68,6 +68,7 @@ set (
   CMAKE_FIND_MODULES
     "FindGMock.cmake"             # for Google Mock
     "FindGTest.cmake"             # for Google Test
+    "FindLIBLINEAR.cmake"         # for LIBLINEAR
     "FindMATLAB.cmake"            # for MATLAB
     "FindMatlabNiftiTools.cmake"  # for MATLAB Central NIfTI tools
     "FindMOSEK.cmake"             # for MOSEK
