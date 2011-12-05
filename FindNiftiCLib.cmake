@@ -70,9 +70,15 @@
 # @ingroup CMakeFindModules
 ##############################################################################
 
-# ============================================================================
+# ----------------------------------------------------------------------------
 # initialize search
-# ============================================================================
+if (NOT NiftiCLib_DIR)
+  if (NOT "$ENV{NIFTICLIB_DIR}" STREQUAL "")
+    set (NiftiCLib_DIR "$ENV{NIFTICLIB_DIR}" CACHE PATH "Installation prefix for NiftiCLib." FORCE)
+  else ()
+    set (NiftiCLib_DIR "$ENV{NiftiCLib_DIR}" CACHE PATH "Installation prefix for NiftiCLib." FORCE)
+  endif ()
+endif ()
 
 set (NiftiCLib_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
 
@@ -92,50 +98,85 @@ else ()
   endif()
 endif ()
 
-# ============================================================================
+# ----------------------------------------------------------------------------
 # find paths/files
-# ============================================================================
+if (NiftiCLib_DIR)
 
-find_path (
-  NiftiCLib_INCLUDE_DIR
-    NAMES         nifti1_io.h
-    HINTS         ${NiftiCLib_DIR} ENV NiftiCLib_DIR ENV NIFTICLIB_DIR
-    PATH_SUFFIXES include include/nifti
-    DOC           "Path of directory containing nifti1.h"
-    NO_DEFAULT_PATH
-)
+    find_path (
+      NiftiCLib_INCLUDE_DIR
+        NAMES         nifti1_io.h
+        HINTS         ${NiftiCLib_DIR}
+        PATH_SUFFIXES include include/nifti
+        DOC           "Path of directory containing nifti1.h"
+        NO_DEFAULT_PATH
+    )
 
-find_path (
-  NiftiCLib_INCLUDE_DIR
-    NAMES         nifti1_io.h
-    HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-    PATH_SUFFIXES nifti
-    DOC           "Path of directory containing nifti1.h"
-)
+    find_library (
+      NiftiCLib_LIBRARY
+        NAMES         niftiio
+        HINTS         ${NiftiCLib_DIR}
+        PATH_SUFFIXES lib
+        DOC           "Path of niftiio library"
+        NO_DEFAULT_PATH
+    )
 
-find_library (
-  NiftiCLib_LIBRARY
-    NAMES         niftiio
-    HINTS         ${NiftiCLib_DIR} ENV NiftiCLib_DIR ENV NIFTICLIB_DIR
-    PATH_SUFFIXES lib
-    DOC           "Path of niftiio library"
-    NO_DEFAULT_PATH
-)
+    find_library (
+      NiftiCLib_znz_LIBRARY
+        NAMES znz
+        HINTS ENV LD_LIBRARY_PATH
+        DOC   "Path of niftiio library"
+    )
 
-find_library (
-  NiftiCLib_LIBRARY
-    NAMES niftiio
-    HINTS ENV LD_LIBRARY_PATH
-    DOC   "Path of niftiio library"
-)
+else ()
+
+    find_path (
+      NiftiCLib_INCLUDE_DIR
+        NAMES         nifti1_io.h
+        HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+        PATH_SUFFIXES nifti
+        DOC           "Path of directory containing nifti1.h"
+    )
+
+    find_library (
+      NiftiCLib_LIBRARY
+        NAMES niftiio
+        HINTS ENV LD_LIBRARY_PATH
+        DOC   "Path of niftiio library"
+    )
+
+    find_library (
+      NiftiCLib_znz_LIBRARY
+        NAMES znz
+        HINTS ENV LD_LIBRARY_PATH
+        DOC   "Path of niftiio library"
+    )
+
+endif ()
 
 mark_as_advanced (NiftiCLib_INCLUDE_DIR)
 mark_as_advanced (NiftiCLib_LIBRARY)
+mark_as_advanced (NiftiCLib_znz_LIBRARY)
 
-# ============================================================================
+# ----------------------------------------------------------------------------
+# aliases / backwards compatibility
+if (NiftiCLib_INCLUDE_DIR)
+  set (NiftiCLib_INCLUDE_DIRS "${NiftiCLib_INCLUDE_DIR}")
+  set (NiftiCLib_INCLUDES     "${NiftiCLib_INCLUDE_DIR}")
+endif ()
+
+if (NiftiCLib_LIBRARY)
+  set (NiftiCLib_LIB "${NiftiCLib_LIBRARY}")
+endif ()
+
+if (NiftiCLib_LIBRARY)
+  set (NiftiCLib_LIBRARIES "${NiftiCLib_LIBRARY}")
+endif ()
+if (NiftiCLib_LIBRARIES AND NiftiCLib_znz_LIBRARY)
+  list (APPEND NiftiCLib_LIBRARIES "${NiftiCLib_znz_LIBRARY}")
+endif ()
+
+# ----------------------------------------------------------------------------
 # import targets
-# ============================================================================
-
 if (NiftiCLib_LIBRARY)
   if (NiftiCLib_USE_STATIC_LIB)
     add_library (niftiio STATIC IMPORTED)
@@ -151,39 +192,13 @@ if (NiftiCLib_LIBRARY)
   )
 endif ()
 
-# ============================================================================
+# ----------------------------------------------------------------------------
 # reset CMake variables
-# ============================================================================
-
 set (CMAKE_FIND_LIBRARY_SUFFIXES ${NiftiCLib_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES})
 
-# ============================================================================
-# aliases / backwards compatibility
-# ============================================================================
-
-if (NiftiCLib_INCLUDE_DIR)
-  set (NiftiCLib_INCLUDE_DIRS "${NiftiCLib_INCLUDE_DIR}")
-  set (NiftiCLib_INCLUDES     "${NiftiCLib_INCLUDE_DIR}")
-endif ()
-
-if (NiftiCLib_LIBRARY)
-  set (NiftiCLib_LIB "${NiftiCLib_LIBRARY}")
-endif ()
-
-if (NiftiCLib_LIBRARY)
-  set (
-    NiftiCLib_LIBRARIES
-      "${NiftiCLib_LIBRARY}"
-  )
-endif ()
-
-# ============================================================================
-# found ?
-# ============================================================================
-
+# ----------------------------------------------------------------------------
 # handle the QUIETLY and REQUIRED arguments and set *_FOUND to TRUE
 # if all listed variables are found or TRUE
-
 include (FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args (
