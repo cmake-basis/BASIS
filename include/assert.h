@@ -1,6 +1,6 @@
 /**
  * @file  assert.h
- * @brief Defines macro used for assertions with custom messages.
+ * @brief Defines macro used for assertions.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -19,6 +19,38 @@
 #include <cstdlib>  // to terminate the program execution
 
 
+#ifdef assert
+#  undef assert
+#endif
+#ifdef ASSERT
+#  undef ASSERT
+#endif
+
+
+/**
+ * @macro assert
+ * @brief Assertion without custom message.
+ *
+ * The assertion is only checked if NDEBUG is defined.
+ *
+ * Example:
+ * @code
+ * assert(x > 0);
+ * @endcode
+ */
+#ifndef NDEBUG
+#   define assert(condition) \
+    do { \
+        if (!(condition)) { \
+            ::std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
+                        << " line " << __LINE__ << ::std::endl; \
+            ::std::exit(EXIT_FAILURE); \
+        } \
+    } while (false)
+#else
+#   define assert(condition) do { } while (false)
+#endif
+
 /**
  * @macro ASSERT
  * @brief Assertion with custom message.
@@ -36,9 +68,9 @@
 #   define ASSERT(condition, message) \
     do { \
         if (!(condition)) { \
-            std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
-                      << " line " << __LINE__ << ": " << message << std::endl; \
-            std::exit(EXIT_FAILURE); \
+            ::std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
+                        << " line " << __LINE__ << ": " << message << ::std::endl; \
+            ::std::exit(EXIT_FAILURE); \
         } \
     } while (false)
 #else
