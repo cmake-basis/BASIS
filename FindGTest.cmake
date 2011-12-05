@@ -5,21 +5,18 @@
 # @par Input variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_DIR</td>
+#     @tp @b GTest_DIR @endtp
 #     <td>The Google Test package files are searched under the specified
 #         root directory. If they are not found there, the default search
 #         paths are considered.
 #         This variable can also be set as environment variable.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTEST_DIR</td>
+#     @tp @b GTEST_DIR @endtp
 #     <td>Alternative environment variable for @p GTest_DIR.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_SHARED_LIBRARIES</td>
+#     @tp @b GTest_SHARED_LIBRARIES @endtp
 #     <td>Forces this module to search for shared libraries.
 #         Otherwise, static libraries are preferred.</td>
 #   </tr>
@@ -28,33 +25,27 @@
 # @par Output variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_FOUND</td>
+#     @tp @b GTest_FOUND @endtp
 #     <td>Whether the package was found and the following CMake variables are valid.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_INCLUDE_DIR</td>
+#     @tp @b GTest_INCLUDE_DIR @endtp
 #     <td>Package include directories.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_INCLUDES</td>
+#     @tp @b GTest_INCLUDES @endtp
 #     <td>Include directories including prerequisite libraries.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_LIBRARY</td>
+#     @tp @b GTest_LIBRARY @endtp
 #     <td>Path of @c gtest library.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_main_LIBRARY</td>
+#     @tp @b GTest_main_LIBRARY @endtp
 #     <td>Path of @c gtest_main library (optional).</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GTest_LIBRARIES</td>
+#     @tp @b GTest_LIBRARIES @endtp
 #     <td>Package libraries and prerequisite libraries.</td>
 #   </tr>
 # </table>

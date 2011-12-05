@@ -5,21 +5,18 @@
 # @par Input variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMock_DIR</td>
+#     @tp @b GMock_DIR @endtp
 #     <td>The Google Mock package files are searched under the specified
 #         root directory. If they are not found there, the default search
 #         paths are considered. This variable can also be set as environment
 #         variable.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMOCK_DIR</td>
+#     @tp @b GMOCK_DIR @endtp
 #     <td>Alternative environment variable for @p GMock_DIR.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMock_SHARED_LIBRARIES</td>
+#     @tp @b GMock_SHARED_LIBRARIES @endtp
 #     <td>Forces this module to search for shared libraries.
 #         Otherwise, static libraries are preferred.</td>
 #   </tr>
@@ -28,28 +25,23 @@
 # @par Output variables:
 # <table border="0">
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMock_FOUND</td>
+#     @tp @b GMock_FOUND @endtp
 #     <td>Whether the package was found and the following CMake variables are valid.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMock_INCLUDE_DIR</td>
+#     @tp @b GMock_INCLUDE_DIR @endtp
 #     <td>Package include directories.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMock_INCLUDES</td>
+#     @tp @b GMock_INCLUDES @endtp
 #     <td>Include directories including prerequisite libraries.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMock_LIBRARY</td>
+#     @tp @b GMock_LIBRARY @endtp
 #     <td>Package libraries.</td>
 #   </tr>
 #   <tr>
-#     <td style="white-space:nowrap; vertical-align:top; padding-right:1em">
-#         @b GMock_LIBRARIES</td>
+#     @tp @b GMock_LIBRARIES @endtp
 #     <td>Package ibraries and prerequisite libraries.</td>
 #   </tr>
 # </table>
