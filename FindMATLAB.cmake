@@ -275,3 +275,11 @@ find_package_handle_standard_args (
     MATLAB_INCLUDE_DIR
     ${MATLAB_LIBRARY_VARS}
 )
+
+# ----------------------------------------------------------------------------
+# set MATLAB_DIR
+if (NOT MATLAB_DIR AND MATLAB_FOUND)
+  string (REGEX REPLACE "extern/include/?" "" MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
+  set (MATLAB_DIR "${MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
+  unset (MATLAB_PREFIX)
+endif ()

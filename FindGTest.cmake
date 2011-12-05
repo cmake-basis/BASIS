@@ -186,3 +186,11 @@ find_package_handle_standard_args (
 )
 
 set (GTest_FOUND "${GTEST_FOUND}")
+
+# ----------------------------------------------------------------------------
+# set GTest_DIR
+if (NOT GTest_DIR AND GTest_FOUND)
+  string (REGEX REPLACE "include(/gtest)?/?" "" GTest_PREFIX "${GTest_INCLUDE_DIR}")
+  set (GTest_DIR "${GTest_PREFIX}" CACHE PATH "Installation prefix for GTest." FORCE)
+  unset (GTest_PREFIX)
+endif ()

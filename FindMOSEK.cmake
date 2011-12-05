@@ -403,3 +403,10 @@ find_package_handle_standard_args (
     ${MOSEK_REQUIRED_VARS}
 )
 
+# ----------------------------------------------------------------------------
+# set MOSEK_DIR
+if (NOT MOSEK_DIR AND MOSEK_FOUND)
+  string (REGEX REPLACE "${MOSEK_TOOLS_SUFFIX}/h/?" "" MOSEK_PREFIX "${MOSEK_INCLUDE_DIR}")
+  set (MOSEK_DIR "${MOSEK_PREFIX}" CACHE PATH "Installation prefix for MOSEK." FORCE)
+  unset (MOSEK_PREFIX)
+endif ()

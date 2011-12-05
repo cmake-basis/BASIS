@@ -157,3 +157,11 @@ find_package_handle_standard_args (
 )
 
 set (GMock_FOUND "${GMOCK_FOUND}")
+
+# ----------------------------------------------------------------------------
+# set GMock_DIR
+if (NOT GMock_DIR AND GMock_FOUND)
+  string (REGEX REPLACE "include(/gmock)?/?" "" GMock_PREFIX "${GMock_INCLUDE_DIR}")
+  set (GMock_DIR "${GMock_PREFIX}" CACHE PATH "Installation prefix for GMock." FORCE)
+  unset (GMock_PREFIX)
+endif ()

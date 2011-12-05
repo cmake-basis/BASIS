@@ -209,3 +209,11 @@ find_package_handle_standard_args (
 )
 
 set (NiftiCLib_FOUND ${NIFTICLIB_FOUND})
+
+# ----------------------------------------------------------------------------
+# set NiftiCLib_DIR
+if (NOT NiftiCLib_DIR AND NiftiCLib_FOUND)
+  string (REGEX REPLACE "include/nifti/?" "" NiftiCLib_PREFIX "${NiftiCLib_INCLUDE_DIR}")
+  set (NiftiCLib_DIR "${NiftiCLib_PREFIX}" CACHE PATH "Installation prefix for NiftiCLib." FORCE)
+  unset (NiftiCLib_PREFIX)
+endif ()
