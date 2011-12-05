@@ -539,9 +539,11 @@ function (basis_configure_public_headers)
     COMMAND "${CMAKE_COMMAND}"
             -D "OUTPUT_FILE=${CMAKE_FILE}"
             -D "REFERENCE_FILE=${CMAKE_FILE}.tmp"
-            -D "ACTION=remove_and_error_if_different"
+            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
+            -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
             -D "ERRORMSG=${ERRORMSG}"
-            -P "${BASIS_MODULE_PATH}/CompareFiles.cmake"
+            -P "${BASIS_MODULE_PATH}/CheckPublicHeaders.cmake"
     # remove temporary file again to force its regeneration
     COMMAND "${CMAKE_COMMAND}" -E remove "${CMAKE_FILE}.tmp"
     VERBATIM
