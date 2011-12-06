@@ -2096,34 +2096,31 @@ function (basis_add_script_finalize TARGET_UID)
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # create __init__.py files in build tree Python package
-  set (INIT_PY)
-  set (MAIN_INIT_PY)
-  if (MODULE AND BASIS_LANGUAGE MATCHES "PYTHON" AND LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
-    set (D "${LIBRARY_OUTPUT_DIRECTORY}")
-    while (NOT "${D}" STREQUAL "${BINARY_PYTHON_LIBRARY_DIR}")
-      if (D MATCHES "sbia$")
+  set (INSTALL_INIT_PY)
+  if (MODULE AND BASIS_LANGUAGE MATCHES "PYTHON")
+    set (ROOT)
+    if (LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
+      set (ROOT "${BINARY_PYTHON_LIBRARY_DIR}")
+    elseif (LIBRARY_OUTPUT_DIRECTORY MATCHES "^${TESTING_PYTHON_LIBRARY_DIR}/.+")
+      set (ROOT "${TESTING_PYTHON_LIBRARY_DIR}")
+    endif ()
+    if (ROOT)
+      set (D "${LIBRARY_OUTPUT_DIRECTORY}")
+      while (NOT "${D}" STREQUAL "${ROOT}")
         set (C "${C}file (WRITE \"${D}/__init__.py\" \"from pkgutil import extend_path\\n__path__ = extend_path(__path__, __name__)\\n\")\n")
         if (COMPILE)
-          basis_set_if_empty (MAIN_INIT_PY "${D}/__init__.pyc")
+          basis_set_if_empty (INSTALL_INIT_PY "${D}/__init__.pyc")
         else ()
-          basis_set_if_empty (MAIN_INIT_PY "${D}/__init__.py")
+          basis_set_if_empty (INSTALL_INIT_PY "${D}/__init__.py")
         endif ()
-      else ()
-        set (C "${C}execute_process (COMMAND \"${CMAKE_COMMAND}\" -E touch \"${D}/__init__.py\")\n")
+        list (APPEND OUTPUT_FILES "${D}/__init__.py")
         if (COMPILE)
-          basis_set_if_empty (INIT_PY "${D}/__init__.pyc")
-        else ()
-          basis_set_if_empty (INIT_PY "${D}/__init__.py")
+          set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${D}/__init__.py')\")\n")
+          list (APPEND OUTPUT_FILES "${D}/__init__.pyc")
         endif ()
-      endif ()
-      if (COMPILE)
-        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${D}/__init__.py')\")\n")
-        list (APPEND OUTPUT_FILES "${D}/__init__.py" "${D}/__init__.pyc")
-      else ()
-        list (APPEND OUTPUT_FILES "${D}/__init__.py" "${D}/__init__.py")
-      endif ()
-      get_filename_component (D "${D}" PATH)
-    endwhile ()
+        get_filename_component (D "${D}" PATH)
+      endwhile ()
+    endif ()
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2191,22 +2188,14 @@ function (basis_add_script_finalize TARGET_UID)
         COMPONENT   "${LIBRARY_COMPONENT}"
       )
 
-      if (INIT_PY OR MAIN_INIT_PY)
+      if (INSTALL_INIT_PY)
         set (D "${LIBRARY_INSTALL_DIRECTORY}")
         while (NOT "${D}" STREQUAL "${INSTALL_PYTHON_LIBRARY_DIR}")
-          if (D MATCHES "sbia$")
-            install (
-              FILES       "${MAIN_INIT_PY}"
-              DESTINATION "${D}"
-              COMPONENT   "${LIBRARY_COMPONENT}"
-            )
-          else ()
-            install (
-              FILES       "${INIT_PY}"
-              DESTINATION "${D}"
-              COMPONENT   "${LIBRARY_COMPONENT}"
-            )
-          endif ()
+          install (
+            FILES       "${INSTALL_INIT_PY}"
+            DESTINATION "${D}"
+            COMPONENT   "${LIBRARY_COMPONENT}"
+          )
           get_filename_component (D "${D}" PATH)
         endwhile ()
       endif ()
