@@ -37,9 +37,11 @@ if __name__ == '__main__':
             description='Used to test the CMake tools for MATLAB.',
             use=['MATLAB'])
     # copy files to project
-    add_file('helloworld.m', prefix='src')
+    add_file('helloworld.m', prefix='src') # example MCC executable
+    add_file('echo.cxx', prefix='src')     # example MEX-file
     # edit CMakeLists.txt files
     add_cmake_code('src/CMakeLists.txt', 'basis_add_executable(helloworld.m)')
+    add_cmake_code('src/CMakeLists.txt', 'basis_add_library(echo.cxx MEX)')
     # build project
     build_project(verbose)
     # run tests
