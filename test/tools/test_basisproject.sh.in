@@ -249,7 +249,7 @@ function test_configuration_of_dependencies
     create --minimal --use "ITK"
     line="$(grep ' DEPENDS ' "${source_dir}/BasisProject.cmake")"
     [ ${FLAGS_verbose} -eq 0 ] || echo "Line: ${line}"
-    if [[ "${line}" != '  DEPENDS          "ITK" #AddDependencyHere' ]]; then
+    if [ ! matches "${line}" ' +DEPENDS +"ITK" #AddDependencyHere' ]; then
         echo "Unexpected DEPENDS line of BasisProject.cmake file:" 1>&2
         echo "${line}" 1>&2
         echo
@@ -259,7 +259,7 @@ function test_configuration_of_dependencies
     update --use "VTK" --useopt "Cuda"
     line="$(grep ' DEPENDS ' "${source_dir}/BasisProject.cmake")"
     [ ${FLAGS_verbose} -eq 0 ] || echo "Line: ${line}"
-    if [[ "${line}" != '  DEPENDS          "ITK" "VTK" #AddDependencyHere' ]]; then
+    if [ ! matches "${line}" ' +DEPENDS +"ITK" "VTK" #AddDependencyHere' ]]; then
         echo "Unexpected DEPENDS line of BasisProject.cmake file:" 1>&2
         echo "${line}" 1>&2
         echo
@@ -267,7 +267,7 @@ function test_configuration_of_dependencies
         exit 1
     fi
     line="$(grep 'OPTIONAL_DEPENDS ' "${source_dir}/BasisProject.cmake")"
-    if [[ "${line}" != '  OPTIONAL_DEPENDS "Cuda" #AddOptionalDependencyHere' ]]; then
+    if [ ! matches "${line}" ' +OPTIONAL_DEPENDS +"Cuda" #AddOptionalDependencyHere' ]]; then
         echo "Unexpected OPTIONAL_DEPENDS line of BasisProject.cmake file:" 1>&2
         echo "${line}" 1>&2
         echo
