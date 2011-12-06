@@ -1908,6 +1908,7 @@ function (basis_add_script_finalize TARGET_UID)
 
   if (SCRIPT_FILE MATCHES "\\.in$")
     # make (configured) script configuration files a dependency
+    list (APPEND DEPENDS "${BUILD_DIR}/variables.cmake")
     if (EXISTS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
       list (APPEND DEPENDS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
     endif ()
@@ -1969,6 +1970,8 @@ function (basis_add_script_finalize TARGET_UID)
     set (C "${C}endfunction ()\n")
 
     # variables dumped by basis_add_script()
+    set (C "${C}\n")
+    set (C "${C}# dumped CMake variables\n")
     set (C "${C}include (\"\${CMAKE_CURRENT_LIST_DIR}/variables.cmake\")\n")
 
     # common variables
@@ -2005,7 +2008,10 @@ function (basis_add_script_finalize TARGET_UID)
       set (C "${C}${COMPILE_DEFINITIONS}\n")
     endif ()
     # configure script for build tree
-    set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${CONFIGURED_FILE}\" @ONLY)\n")
+    set (C "${C}file (READ \"${SCRIPT_FILE}\" SCRIPT)\n")
+    set (C "${C}string (CONFIGURE \"\${SCRIPT}\" SCRIPT @ONLY)\n")
+    set (C "${C}string (CONFIGURE \"\${SCRIPT}\" SCRIPT @ONLY)\n")
+    set (C "${C}file (WRITE \"${CONFIGURED_FILE}\" \"\${SCRIPT}\")\n")
     if (MODULE)
       # compile module if applicable
       if (COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
@@ -2048,7 +2054,10 @@ function (basis_add_script_finalize TARGET_UID)
         set (C "${C}${COMPILE_DEFINITIONS}\n")
       endif ()
       # configure script for installation tree
-      set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${CONFIGURED_INSTALL_FILE}\" @ONLY)\n")
+      set (C "${C}file (READ \"${SCRIPT_FILE}\" SCRIPT)\n")
+      set (C "${C}string (CONFIGURE \"\${SCRIPT}\" SCRIPT @ONLY)\n")
+      set (C "${C}string (CONFIGURE \"\${SCRIPT}\" SCRIPT @ONLY)\n")
+      set (C "${C}file (WRITE \"${CONFIGURED_INSTALL_FILE}\" \"\${SCRIPT}\")\n")
       # compile module if applicable
       if (MODULE AND COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
         set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_INSTALL_FILE}')\")\n")
@@ -2063,6 +2072,7 @@ function (basis_add_script_finalize TARGET_UID)
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # otherwise, just copy script file
   else ()
+
     set (C "${C}configure_file (\"${SCRIPT_FILE}\" \"${CONFIGURED_FILE}\" COPYONLY)\n")
     # compile module if applicable
     if (MODULE)
@@ -2081,6 +2091,7 @@ function (basis_add_script_finalize TARGET_UID)
       set (C "${C}  execute_process (COMMAND /bin/chmod +x \"${CONFIGURED_FILE}\")\n")
       set (C "${C}endif ()\n")
     endif ()
+
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

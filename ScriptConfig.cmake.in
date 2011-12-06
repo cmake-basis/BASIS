@@ -17,15 +17,6 @@
 ##############################################################################
 
 # ============================================================================
-# project attributes - used by BASIS_*_UTILITIES code
-# ============================================================================
-
-set (PROJECT_NAME       "@PROJECT_NAME@")
-set (PROJECT_NAME_UPPER "@PROJECT_NAME_UPPER@")
-set (PROJECT_NAME_LOWER "@PROJECT_NAME_LOWER@")
-set (PROJECT_NAME_INFIX "@PROJECT_NAME_INFIX@")
-
-# ============================================================================
 # script attributes
 # ============================================================================
 
@@ -131,11 +122,6 @@ set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
 # ============================================================================
 # CMake variables required by BASIS_*_UTILITIES code
 # ============================================================================
-
-set (PROJECT_VERSION_AND_REVISION "@PROJECT_VERSION_AND_REVISION@")
-set (PROJECT_NAMESPACE_PYTHON "@PROJECT_NAMESPACE_PYTHON@")
-set (PROJECT_NAMESPACE_PERL "@PROJECT_NAMESPACE_PERL@")
-set (PROJECT_NAMESPACE_BASH "@PROJECT_NAMESPACE_BASH@")
 
 if ("@PROJECT_NAME@" STREQUAL "BASIS")
   basis_set_script_path (BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
