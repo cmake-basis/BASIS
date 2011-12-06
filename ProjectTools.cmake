@@ -90,23 +90,29 @@
 #     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
 #         or names of external packages which are only required by the tests.</td>
 #   </tr>
+#   <tr>
+#     @tp @b OPTIONAL_TEST_DEPENDS name[, name] @endtp
+#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
+#         or names of external packages which are used only by the tests if available.</td>
+#   </tr>
 # </table>
 #
 # @returns Sets the following non-cached CMake variables:
-# @retval PROJECT_NAME             @c NAME argument.
-# @retval PROJECT_VERSION          @c VERSION argument.
-# @retval PROJECT_DESCRIPTION      Concatenated @c DESCRIPTION arguments.
-# @retval PROJECT_PACKAGE_VENDOR   Concatenated @c PACKAGE_VENDOR argument.
-# @retval PROJECT_DEPENDS          @c DEPENDS arguments.
-# @retval PROJECT_OPTIONAL_DEPENDS @c OPTIONAL_DEPENDS arguments.
-# @retval PROJECT_TEST_DEPENDS     @c TEST_DEPENDS arguments.
+# @retval PROJECT_NAME                    @c NAME argument.
+# @retval PROJECT_VERSION                 @c VERSION argument.
+# @retval PROJECT_DESCRIPTION             Concatenated @c DESCRIPTION arguments.
+# @retval PROJECT_PACKAGE_VENDOR          Concatenated @c PACKAGE_VENDOR argument.
+# @retval PROJECT_DEPENDS                 @c DEPENDS arguments.
+# @retval PROJECT_OPTIONAL_DEPENDS        @c OPTIONAL_DEPENDS arguments.
+# @retval PROJECT_TEST_DEPENDS            @c TEST_DEPENDS arguments.
+# @retval PROJECT_OPTIONAL_TEST_DEPENDS   @c OPTIONAL_TEST_DEPENDS arguments.
 macro (basis_project)
   # parse arguments and/or include project settings file
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
       ""
       "NAME;VERSION"
-      "DESCRIPTION;PACKAGE_VENDOR;DEPENDS;OPTIONAL_DEPENDS;TEST_DEPENDS"
+      "DESCRIPTION;PACKAGE_VENDOR;DEPENDS;OPTIONAL_DEPENDS;TEST_DEPENDS;OPTIONAL_TEST_DEPENDS"
     ${ARGN}
   )
 
@@ -265,7 +271,9 @@ macro (basis_project_modules)
     endif ()
     # remember dependencies
     set (${PROJECT_NAME}_DEPENDS "${PROJECT_DEPENDS}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_OPTIONAL_DEPENDS "${PROJECT_OPTINOAL_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_TEST_DEPENDS "${PROJECT_TEST_DEPENDS}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS "${PROJECT_OPTIONAL_TEST_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_DECLARED TRUE PARENT_SCOPE)
     # do not use MODULE instead of PROJECT_NAME in this function as it is not
     # set in the scope of this function but its parent scope only
@@ -929,6 +937,7 @@ macro (basis_find_packages)
   if (BUILD_TESTING)
     foreach (P IN LISTS PROJECT_TEST_DEPENDS)
       basis_find_package ("${P}")
+      string (TOUPPER "${P}" U)
       if (${P}_FOUND OR ${U}_FOUND)
         basis_use_package ("${P}")
       else ()
@@ -936,6 +945,18 @@ macro (basis_find_packages)
                              "the tests of ${PROJECT_NAME}. Either specify "
                              "package location manually and try again or "
                              "disable testing by setting BUILD_TESTING to OFF.")
+      endif ()
+    endforeach ()
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # optional test dependencies
+  if (BUILD_TESTING)
+    foreach (P IN LISTS PROJECT_OPTIONAL_TEST_DEPENDS)
+      basis_find_package ("${P}" QUIET)
+      string (TOUPPER "${P}" U)
+      if (${P}_FOUND OR ${U}_FOUND)
+        basis_use_package ("${P}")
       endif ()
     endforeach ()
   endif ()
