@@ -415,7 +415,7 @@ function (basis_dump_variables RESULT_FILE)
   file (WRITE "${RESULT_FILE}" "# CMake variables dump created by BASIS\n")
   get_cmake_property (VARIABLE_NAMES VARIABLES)
   foreach (V IN LISTS VARIABLE_NAMES)
-    if (NOT V MATCHES "^RESULT_FILE$")
+    if (NOT V MATCHES "^_|^RESULT_FILE$|^ARGC$|^ARGV[0-9]?$")
       set (VALUE "${${V}}")
       # sanitize value for use in set() command
       string (REPLACE "\\" "\\\\"    VALUE "${VALUE}") # escape backspaces
