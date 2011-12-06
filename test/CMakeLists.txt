@@ -18,14 +18,6 @@
 ##############################################################################
 
 # ============================================================================
-# output directories
-# ============================================================================
-
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
-
-# ============================================================================
 # settings
 # ============================================================================
 
@@ -42,6 +34,12 @@ set (TEST_PYTHON_UTILITIES "${BUILD_UTILITIES_FOR_PYTHON}")
 set (TEST_PERL_UTILITIES "${BUILD_UTILITIES_FOR_PERL}")
 ## @brief Whether BASH utilities are build.
 set (TEST_BASH_UTILITIES "${BUILD_UTILITIES_FOR_BASH}")
+
+# ============================================================================
+# utilities
+# ============================================================================
+
+basis_add_library (testaux.py)
 
 # ============================================================================
 # subdirectories

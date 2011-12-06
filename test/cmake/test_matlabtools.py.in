@@ -1,0 +1,51 @@
+#! /usr/bin/env python
+
+##############################################################################
+# @file  test_matlabtools.py
+# @brief Test CMake MATLAB tools.
+#
+# This test first builds the test project which is based on BASIS and uses
+# the CMake MATLAB tools to build the executables and libraries. Then it
+# triggers the execution of the separate tests which are built as part
+# of this test project.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+import sys
+sys.path.append('@BINARY_PYTHON_LIBRARY_DIR@')
+sys.path.append('@TESTING_PYTHON_LIBRARY_DIR@')
+from sbia.basis.testaux import *
+
+# ============================================================================
+# main
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+if __name__ == '__main__':
+    # parse arguments
+    verbose = 0
+    opts = parse_arguments()
+    for o, a in opts:
+        if o in ['--verbose', '-v']: verbose = verbose + 1
+        else: assert False, "Unhandled option " + o
+    # create project
+    create_project('MatlabToolsTest',
+            description='Used to test the CMake tools for MATLAB.',
+            use=['MATLAB'])
+    # copy files to project
+    add_file('helloworld.m', prefix='src')
+    # edit CMakeLists.txt files
+    add_cmake_code('src/CMakeLists.txt', 'basis_add_executable(helloworld.m)')
+    # build project
+    build_project(verbose)
+    # run tests
+    os.chdir(BUILD_DIR)
+    test_cmd=['ctest', '-V']
+    if verbose > 0:
+        test_cmd.append('-V')
+    test_cmd.extend(sys.argv[1:])
+    basis.execute_process(test_cmd, verbose=True)

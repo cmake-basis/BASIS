@@ -31,3 +31,9 @@ endfunction ()
 # ----------------------------------------------------------------------------
 # tests of CommonTools.cmake functions
 cmake_test (test_string_manipulation)
+
+# ----------------------------------------------------------------------------
+# test use MATLAB Compiler and MEX-script
+if (MATLAB_FOUND)
+  basis_add_test (test_matlabtools.py)
+endif ()

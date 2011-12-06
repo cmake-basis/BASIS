@@ -1,0 +1,148 @@
+#! /usr/bin/env python
+
+##############################################################################
+# @file  test_matlabtools.py
+# @brief Test CMake MATLAB tools.
+#
+# This test first builds the test project which is based on BASIS and uses
+# the CMake MATLAB tools to build the executables and libraries. Then it
+# triggers the execution of the separate tests which are built as part
+# of this test project.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+@BASIS_PYTHON_UTILITIES@
+
+# ============================================================================
+# modules
+# ============================================================================
+
+import os
+import sys
+import shutil
+import getopt
+
+# ============================================================================
+# constants
+# ============================================================================
+
+TEST_NAME      = os.path.basename(basis.get_executable_name())
+BASIS_DIR      = '@TESTING_BASIS_DIR@'
+RESSOURCES_DIR = os.path.join('@PROJECT_TESTING_DIR@/ressources', TEST_NAME)
+SOURCE_DIR     = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME)
+BUILD_DIR      = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME + '-build')
+
+# ============================================================================
+# helpers
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+def parse_arguments(flags='v', options=['verbose'], allow_args=False):
+    "Parse test arguments."
+    try:
+        opts, args = getopt.gnu_getopt(sys.argv[1:], flags, options)
+        if not allow_args and len(args) > 0:
+            sys.stderr.write("Unhandled positional parameters given!\n")
+            sys.stderr.write("Arguments: " + repr(args) + "\n")
+            sys.exit(1)
+    except getopt.GetoptError, e:
+        sys.stderr.write(str(e) + '\n')
+        sys.exit(1)
+    if allow_args: return opts, args
+    else: return opts
+
+# ----------------------------------------------------------------------------
+def create_project(name, description='Test project.', use=[], useopt=[]):
+    "Create test project."
+    print "Creating test project..."
+    if os.path.exists(SOURCE_DIR): shutil.rmtree(SOURCE_DIR)
+    # attention: changing the project name will affect the tests!
+    create_cmd = ['basis.basisproject',
+            '--name', name,
+            '--description', description,
+            '--root', SOURCE_DIR]
+    for pkg in use:
+        create_cmd.extend(['--use', pgk])
+    for pkg in useopt:
+        create_cmd.extend(['--useopt', pgk])
+    basis.execute_process(create_cmd, verbose=True)
+    print "Creating test project... - done"
+
+# ----------------------------------------------------------------------------
+def build_project(verbose=0):
+    "Build test project."
+    print "Configuring test project..."
+    if os.path.exists(BUILD_DIR): shutil.rmtree(BUILD_DIR)
+    os.makedirs(BUILD_DIR)
+    wd=os.getcwd()
+    os.chdir(BUILD_DIR)
+    build_cmd=['cmake',
+            '-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@',
+            '-DBASIS_DIR=' + BASIS_DIR]
+    if verbose > 0:
+        build_cmd.append('-DBASIS_VERBOSE=ON')
+    if verbose > 1:
+        build_cmd.append('-DBASIS_DEBUG=ON')
+    build_cmd.append(SOURCE_DIR)
+    basis.execute_process(build_cmd, verbose=True)
+    print "Configuring test project... - done"
+    print "Building test project..."
+    if verbose > 0:
+        basis.execute_process(['make', 'VERBOSE=1'], verbose=True)
+    else:
+        basis.execute_process('make', verbose=True)
+    print "Building test project... - done"
+    os.chdir(wd)
+
+# ----------------------------------------------------------------------------
+def add_file(file, prefix='.', name=None):
+    """Copy file from ressources directory to project source tree.
+    
+    @param [in] file   File path relative to top directory of ressources tree.
+    @param [in] prefix Path prefix relative to project source tree. Defaults
+                       to the root of the project source tree itself.
+    @param [in] name   Name of file in project source tree. Defaults to the
+                       name of the file given by @p file.
+    
+    """
+    if not name: name = os.path.basename(file)
+    dst = os.path.join(SOURCE_DIR, prefix, os.path.dirname(file), name)
+    shutil.copy(os.path.join(RESSOURCES_DIR, file), dst)
+    print "Added file " + dst
+
+# ----------------------------------------------------------------------------
+def add_dependency(package, required=True):
+    "Add package to list of project dependencies."
+    fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "r")
+    code = fp.read()
+    fp.close()
+    if required:
+        code = code.replace('#AddDependencyHere', package + ' #AddDependencyHere')
+    else:
+        code = code.replace('#AddOptionalDependencyHere', package + ' #AddOptionalDependencyHere')
+    fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "w")
+    fp.write(code)
+    fp.close()
+    if required: print "Added dependency on " + package
+    else: print "Added optional dependency on " + package
+
+# ----------------------------------------------------------------------------
+def add_cmake_code(cmakefile, code):
+    "Add CMake code to CMakeLists.txt file."
+    cmakefile = os.path.join(SOURCE_DIR, cmakefile)
+    if not os.path.exists(cmakefile):
+        raise Exception('File ' + cmakefile + ' does not exist!')
+    fp = open(os.path.join(SOURCE_DIR, cmakefile), 'a')
+    fp.write(code + '\n')
+    fp.close()
+    print "Modified file " + cmakefile
+
+# ----------------------------------------------------------------------------
+def cleanup():
+    "Cleanup source and binary tree."
+    if os.path.exists(SOURCE_DIR): shutil.rmtree(SOURCE_DIR)
+    if os.path.exists(BUILD_DIR):  shutil.rmtree(BUILD_DIR)
