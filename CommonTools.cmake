@@ -418,12 +418,14 @@ function (basis_dump_variables RESULT_FILE)
     if (NOT V MATCHES "^_|^RESULT_FILE$|^ARGC$|^ARGV[0-9]?$")
       set (VALUE "${${V}}")
       # sanitize value for use in set() command
-      string (REPLACE "\\" "\\\\"    VALUE "${VALUE}") # escape backspaces
-      string (REPLACE "\"" "\\\\\""  VALUE "${VALUE}") # escape double quotes
+      string (REPLACE "\\" "\\\\" VALUE "${VALUE}") # escape backspaces
+      string (REPLACE "\"" "\\\"" VALUE "${VALUE}") # escape double quotes
       # Escape ${VAR} by \${VAR} such that CMake does not evaluate it.
       # Escape $STR{VAR} by \$STR{VAR} such that CMake does not report a
       # syntax error b/c it expects either ${VAR}, $ENV{VAR}, or $CACHE{VAR}.
+      # Escape @VAR@ by \@VAR\@ such that CMake does not evaluate it.
       string (REGEX REPLACE "([^\\])\\\$([^ ]*){" "\\1\\\\\$\\2{" VALUE "${VALUE}")
+      string (REGEX REPLACE "([^\\])\\\@([^ ]*)\@" "\\1\\\\\@\\2\\\\\@" VALUE "${VALUE}")
       # append variable to output file
       file (APPEND "${RESULT_FILE}" "set (${V} \"${VALUE}\")\n")
     endif ()
