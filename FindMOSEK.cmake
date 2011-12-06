@@ -138,10 +138,38 @@ if (MOSEK_MATLAB)
       set (MATLAB_RELEASE "R2009b")
     endif ()
   endif ()
+  string (TOLOWER "${MATLAB_RELEASE}" MATLAB_RELEASE_LOWER)
   # search path for MOSEK MATLAB toolbox
   if (NOT MOSEK_TOOLBOX_SUFFIX)
-    string (TOLOWER "${MATLAB_RELEASE}" TMP)
-    set (MOSEK_TOOLBOX_SUFFIX "toolbox/${TMP}")
+    if (MOSEK_DIR)
+      file (
+        GLOB_RECURSE
+          MOSEK_TOOLBOX_SUFFIXES
+        RELATIVE "${MOSEK_DIR}"
+        "${MOSEK_DIR}/toolbox/*/*.mex*"
+      )
+      set (MOSEK_TOOLBOX_VERSIONS)
+      foreach (MOSEK_MEX_FILE IN LISTS MOSEK_TOOLBOX_SUFFIXES)
+        get_filename_component (MOSEK_TOOLBOX_SUFFIX  "${MOSEK_MEX_FILE}" PATH)
+        get_filename_component (MOSEK_TOOLBOX_VERSION "${MOSEK_TOOLBOX_SUFFIX}" NAME)
+        list (APPEND MOSEK_TOOLBOX_VERSIONS "${MOSEK_TOOLBOX_VERSION}")
+      endforeach ()
+      list (SORT MOSEK_TOOLBOX_VERSIONS)
+      list (REVERSE MOSEK_TOOLBOX_VERSIONS)
+      string (REGEX MATCH "[0-9][0-9]*" MATLAB_RELEASE_YEAR "${MATLAB_RELEASE}")
+      foreach (MOSEK_TOOLBOX_VERSION IN LISTS MOSEK_TOOLBOX_VERSIONS)
+        if (MOSEK_TOOLBOX_VERSION MATCHES "[rR]([0-9][0-9]*)[ab]")
+          if (CMAKE_MATCH_1 EQUAL MATLAB_RELEASE_VERSION OR
+              CMAKE_MATCH_1 LESS  MATLAB_RELEASE_VERSION)
+            set (MATLAB_TOOLBOX_SUFFIX "toolbox/${MOSEK_TOOLBOX_VERSION}")
+            break ()
+          endif ()
+        endif ()
+      endforeach ()
+    endif ()
+    if (NOT MOSEK_TOOLBOX_SUFFIX)
+      set (MOSEK_TOOLBOX_SUFFIX "toolbox/${MATLAB_RELEASE_LOWER}")
+    endif ()
   endif ()
   # extension of MEX-files
   if (NOT MEX_EXT)
