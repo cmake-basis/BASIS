@@ -48,7 +48,7 @@ set (
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
     "ScriptConfig.cmake.in"       # default script configuration file
     "cmake_uninstall.cmake.in"    # uninstall script
-    "CompareFiles.cmake"          # used for comparison of files in custom commands
+    "CheckPublicHeaders.cmake"    # check if header files were added/removed
     "Config.cmake.in"             # default <Pkg>Config.cmake template
     "ConfigSettings.cmake"        # settings for default <Pkg>Config.cmake
     "ConfigureIncludeFiles.cmake" # used to configure public header files
