@@ -89,7 +89,7 @@ mark_as_advanced (BASIS_MEX_TIMEOUT)
 
 function (basis_get_full_matlab_version VERSION)
   if (NOT MATLAB_EXECUTABLE)
-    message (FATAL_ERROR "MATLAB_EXECUTABLE not found. Forgot to add basis_find_package(MATLAB) to Depends.cmake?")
+    message (FATAL_ERROR "MATLAB_EXECUTABLE not found. Forgot to add MATLAB as dependency?")
   endif ()
 
   set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
@@ -396,7 +396,7 @@ function (basis_add_mex_target TARGET_NAME)
   # required commands available ?
   if (NOT MATLAB_MEX_EXECUTABLE)
     message (FATAL_ERROR "MATLAB MEX script (mex) not found. It is required to build target ${TARGET_UID}."
-                         " Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MEX_EXECUTABLE manually and try again.")
+                         " Forgot to add MATLAB as dependency? Otherwise, set MATLAB_MEX_EXECUTABLE manually and try again.")
   endif ()
  
   # MEX flags
@@ -940,7 +940,7 @@ function (basis_add_mcc_target TARGET_NAME)
   # required commands available ?
   if (NOT MATLAB_MCC_EXECUTABLE)
     message (FATAL_ERROR "MATLAB Compiler not found. It is required to build target ${TARGET_UID}."
-                         " Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_MCC_EXECUTABLE manually and try again.")
+                         " Forgot to add MATLAB as dependency? Otherwise, set MATLAB_MCC_EXECUTABLE manually and try again.")
   endif ()
  
   # MCC flags
@@ -1187,7 +1187,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
 
     if (NOT MATLAB_EXECUTABLE)
       message (WARNING "MATLAB executable not found. It is required to build target ${TARGET_UID} in MATLAB mode."
-                       " Forgot to add basis_find_package(MATLAB) to Depends.cmake? Otherwise, set MATLAB_EXECUTABLE manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
+                       " Forgot to MATLAB as dependency? Otherwise, set MATLAB_EXECUTABLE manually and try again or set BASIS_MCC_MATLAB_MODE to OFF."
                        " Will build target ${TARGET_UID} in standalone mode instead.")
       set (MATLAB_MODE OFF)
     endif ()
