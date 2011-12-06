@@ -146,7 +146,7 @@ if (MOSEK_MATLAB)
   # extension of MEX-files
   if (NOT MEX_EXT)
     if (COMMAND basis_mexext)
-      basis_mexext (MEX_EXT)
+      basis_mexext ()
     else ()
       set (MEX_EXT "mexa64")
     endif ()
