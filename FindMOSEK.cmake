@@ -357,6 +357,12 @@ set (MOSEK_LIBRARIES "${MOSEK_LIBRARY}")
 set (MOSEK_INCLUDE_DIRS "${MOSEK_INCLUDES}")
 
 # ----------------------------------------------------------------------------
+# debugging
+if (BASIS_DEBUG AND COMMAND basis_dump_variables)
+  basis_dump_variables ("${CMAKE_CURRENT_BINARY_DIR}/FindMOSEKVariables.cmake")
+endif ()
+
+# ----------------------------------------------------------------------------
 # handle the QUIETLY and REQUIRED arguments and set *_FOUND to TRUE
 # if all listed variables are found or TRUE
 include (FindPackageHandleStandardArgs)
