@@ -21,10 +21,11 @@
 #       and should be kept at the end of the corresponding line.
 
 basis_project (
-  NAME             "ReplaceByProjectName"
-  VERSION          "0.0.0"
-  DESCRIPTION      "ReplaceByProjectDescription"
-  DEPENDS          #AddDependencyHere
-  OPTIONAL_DEPENDS #AddOptionalDependencyHere
-  TEST_DEPENDS     #AddTestDependencyHere
+  NAME                  "ReplaceByProjectName"
+  VERSION               "0.0.0"
+  DESCRIPTION           "ReplaceByProjectDescription"
+  DEPENDS               #AddDependencyHere
+  OPTIONAL_DEPENDS      #AddOptionalDependencyHere
+  TEST_DEPENDS          #AddTestDependencyHere
+  OPTIONAL_TEST_DEPENDS #AddOptionalTestDependencyHere
 )
