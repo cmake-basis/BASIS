@@ -912,8 +912,10 @@ macro (basis_find_packages)
     if (${P}_FOUND OR ${U}_FOUND)
       basis_use_package ("${P}")
     else ()
+      if (BASIS_DEBUG)
+        basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFind${P}.cmake")
+      endif ()
       message (FATAL_ERROR "Package ${P} not found!")
-      return ()
     endif ()
   endforeach ()
 
@@ -941,6 +943,9 @@ macro (basis_find_packages)
       if (${P}_FOUND OR ${U}_FOUND)
         basis_use_package ("${P}")
       else ()
+        if (BASIS_DEBUG)
+          basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFind${P}.cmake")
+        endif ()
         message (FATAL_ERROR "Could not find package ${P}! It is required by "
                              "the tests of ${PROJECT_NAME}. Either specify "
                              "package location manually and try again or "
