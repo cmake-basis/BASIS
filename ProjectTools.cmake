@@ -1175,6 +1175,10 @@ macro (basis_project_impl)
     basis_project_modules ()
   endif ()
 
+  if (BASIS_DEBUG)
+    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterDetectionOfModules.cmake")
+  endif ()
+
   # --------------------------------------------------------------------------
   # find packages
 
@@ -1185,6 +1189,10 @@ macro (basis_project_impl)
     include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
   endif ()
   basis_find_packages ()
+
+  if (BASIS_DEBUG)
+    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFindDependencies.cmake")
+  endif ()
 
   # --------------------------------------------------------------------------
   # initialize project
@@ -1240,6 +1248,9 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # subdirectories
+  if (BASIS_DEBUG)
+    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterInitialization.cmake")
+  endif ()
 
   # build modules
   if (NOT PROJECT_IS_MODULE)
@@ -1281,6 +1292,10 @@ macro (basis_project_impl)
    add_subdirectory ("${PROJECT_TESTING_DIR}")
   endif ()
 
+  if (BASIS_DEBUG)
+    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterSubdirectories.cmake")
+  endif ()
+
   # --------------------------------------------------------------------------
   # finalize
   basis_project_finalize ()
@@ -1309,5 +1324,9 @@ macro (basis_project_impl)
     #            such that the code is executed by the root cmake_install.cmake
     #            at last!
     add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
+  endif ()
+
+  if (BASIS_DEBUG)
+    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFinalization.cmake")
   endif ()
 endmacro ()
