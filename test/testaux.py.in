@@ -66,9 +66,9 @@ def create_project(name, description='Test project.', use=[], useopt=[]):
             '--description', description,
             '--root', SOURCE_DIR]
     for pkg in use:
-        create_cmd.extend(['--use', pgk])
+        create_cmd.extend(['--use', pkg])
     for pkg in useopt:
-        create_cmd.extend(['--useopt', pgk])
+        create_cmd.extend(['--useopt', pkg])
     basis.execute_process(create_cmd, verbose=True)
     print "Creating test project... - done"
 
