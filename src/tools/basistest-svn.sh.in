@@ -60,7 +60,7 @@ while [ $# -gt 0 ]; do
             ;;
 
         --version)
-            print_version '%NAME%'
+            print_version '@NAME@'
             exit 0
             ;;
         *)

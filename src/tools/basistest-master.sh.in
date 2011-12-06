@@ -360,7 +360,7 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_helpshort; exit 0; ;;
-        -V|--version) print_version "%NAME%"; exit 0; ;;
+        -V|--version) print_version "@NAME@"; exit 0; ;;
         -v|--verbose) (( verbosity++ )); ;;
 
         # invalid option

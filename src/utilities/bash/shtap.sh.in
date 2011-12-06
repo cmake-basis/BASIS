@@ -120,9 +120,9 @@ readonly SHTAP_VERSION='1.02-sbia'
 
 
 readonly _SHTAP_DIR=@BASIS_BASH___DIR__@
-source "${_SHTAP_DIR}/%LIBRARY_DIR%/core.sh" # match()
+source "${_SHTAP_DIR}/@LIBRARY_DIR@/core.sh" # match()
 
-readonly _SHTAP_FILENAME='%NAME%'
+readonly _SHTAP_FILENAME='@NAME@'
 
 TODO=
 

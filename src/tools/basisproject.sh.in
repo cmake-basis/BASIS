@@ -14,6 +14,7 @@
  
 @BASIS_BASH_UTILITIES@
 
+
 # ============================================================================
 # executable information
 # ============================================================================
@@ -273,7 +274,7 @@ fi
 # ----------------------------------------------------------------------------
 
 # root directory of project template
-template="$_EXEC_DIR/%TEMPLATE_DIR%"
+template="$_EXEC_DIR/@TEMPLATE_DIR@"
 
 root=""              # root directory of new project (defaults to `pwd`/$name)
 name=""              # name of the project to create
@@ -405,7 +406,7 @@ do
 			;;
 
 		--version)
-			print_version "%NAME%"
+			print_version "@NAME@"
 			exit 0
 			;;
 

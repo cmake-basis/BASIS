@@ -113,7 +113,7 @@ if [ -n "$1" ]; then
         print_helpshort
         exit 0
     elif [ "$1" == "--version" ]; then
-        print_version '%NAME%'
+        print_version '@NAME@'
         exit 0
     fi
 fi

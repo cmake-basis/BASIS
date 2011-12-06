@@ -29,7 +29,7 @@
 function (print_usage_section)
   message ("
 Usage:
-  ctest [ctest options] -S %NAME%[,option[=value]]*
+  ctest [ctest options] -S @NAME@[,option[=value]]*
 
   Note: No commas or equality signs are allowed inside of option values even
         if the value is enclosed by quotation marks.")
@@ -154,7 +154,7 @@ endfunction ()
 # @returns Nothing.
 
 function (print_usage)
-  message ("CTest script %NAME% (@PROJECT_NAME@)")
+  message ("CTest script @NAME@ (@PROJECT_NAME@)")
   print_usage_section ()
   print_options ()
   print_contact ()
@@ -172,7 +172,7 @@ function (print_version)
   if (@PROJECT_REVISION@ GREATER 0) # project revision > 0
     set (VERSION_INFO "${VERSION_INFO} (revision @PROJECT_REVISION@)")
   endif ()
-  message ("CTest script %NAME% (@PROJECT_NAME@) ${VERSION_INFO}")
+  message ("CTest script @NAME@ (@PROJECT_NAME@) ${VERSION_INFO}")
   message ("Copyright (c) 2011 University of Pennsylvania. All rights reserved.")
   message ("See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.")
 endfunction ()
@@ -362,7 +362,7 @@ endif ()
 find_program (
   CTEST_SVN_COMMAND
   NAMES basistest-svn
-  HINTS "${CMAKE_CURRENT_LIST_DIR}/%RUNTIME_DIR%"
+  HINTS "${CMAKE_CURRENT_LIST_DIR}/@RUNTIME_DIR@"
 )
 find_program (CTEST_SVN_COMMAND         NAMES svn)
 find_program (CTEST_COVERAGE_COMMAND    NAMES gcov)

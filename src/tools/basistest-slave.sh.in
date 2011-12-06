@@ -100,7 +100,7 @@ function print_helpshort
 # ============================================================================
 
 # CTest script
-ctest_script="${_EXEC_DIR}/%BASISTEST_CTEST_SCRIPT_DIR%/basistest.ctest"
+ctest_script="${_EXEC_DIR}/@BASISTEST_CTEST_SCRIPT_DIR@/basistest.ctest"
 
 project=''           # name of the BASIS project
 branch='trunk'       # the branch to test
@@ -163,7 +163,7 @@ while [ $# -gt 0 ]; do
         # standard options
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_helpshort; exit 0; ;;
-        -V|--version) print_version "%NAME%"; exit 0; ;;
+        -V|--version) print_version "@NAME@"; exit 0; ;;
         -v|--verbose) ((verbosity++)); ;;
 
         # invalid option
