@@ -5,7 +5,7 @@
 
 ##
 # @file  updatefile.py
-# @brief Update file from template file while preserving custom sections.
+# @brief Update file from template file while preserving custom sections (deprecated).
 #
 # This script is used by the BasisUpdate.cmake module. This module is used to
 # update files of a project instantiated from a particular revision of the
@@ -26,6 +26,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeHelpers
 
 # modules
 import os
