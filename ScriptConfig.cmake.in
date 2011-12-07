@@ -7,14 +7,16 @@
 #       of the BASIS installation.
 #
 # This script configuration file is included before the default script
-# configuration file ScriptConfig.cmake which is part of the package itself.
+# configuration file which is part of the package itself (ScriptConfig.cmake),
+# if such file exists in the @c PROJECT_CONFIG_DIR.
 # Therefore, the BASIS script configuration can be overwritten by the
-# default script configuration of the project, which in turn can be overwritten
-# specifically for each script by specifying a script-specific script
-# configuration using the @c CONFIG and/or @c CONFIG_FILE options of the
-# basis_add_executable() or basis_add_library() command, respectively.
+# default script configuration of the project, which in turn can be
+# overwritten specifically for each script target by specifying a
+# script target-specific script configuration using the @c CONFIG and/or
+# @c CONFIG_FILE option of the basis_add_executable() or basis_add_library()
+# command, respectively.
 #
-# See @ref ScriptTargets for details.
+# See @ref ScriptTargets for more details on the build of script targets.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
