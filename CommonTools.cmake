@@ -59,53 +59,73 @@ endif ()
 # of this project (the top-level project), it ensures that this module is
 # found instead of an external package.
 #
-# @param [in] PACKAGE Name of other package.
-# @param [in] ARGN    Optional arguments to find_package().
+# @param [in] PACKAGE Name of other package. Optionally, the package name
+#                     can include a version specification as suffix which
+#                     is separated by the package name using an underscore (_)
+#                     character, i.e., <Package>[_major[.minor[.patch[.tweak]]]].
+#                     If a version specification is given, it is passed on as
+#                     second argument to CMake's
+#                     <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
+#                     find_package()</a> command.
+# @param [in] ARGN    Advanced arguments for
+#                     <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
+#                     find_package()</a>.
 #
-# @retval &lt;PACKAGE&gt;_FOUND Whether the given package was found.
+# @retval <PACKAGE>_FOUND Whether the given package was found.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package
 #
 # @ingroup CMakeAPI
 macro (basis_find_package PACKAGE)
+  # split PACKAGE into package name and version number
+  set (PKG "${PACKAGE}")
+  set (VER)
+  if (PKG MATCHES "^(.*)_([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
+    set (PKG "${CMAKE_MATCH_1}")
+    set (VER "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
+  endif ()
+  # some debugging output
   if (BASIS_DEBUG)
     message ("** basis_find_package()")
-    message ("**     Package: ${PACKAGE}")
+    message ("**     Package: ${PKG}")
+    message ("**     Version: ${VER}")
   endif ()
   if (PROJECT_IS_MODULE)
     # allow modules to specify top-level project as dependency
-    if (PACKAGE MATCHES "^${BASIS_PROJECT_NAME}$")
+    if (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
       if (BASIS_DEBUG)
         message ("**     This is the top-level project.")
       endif ()
-      set (${PACKAGE}_FOUND TRUE)
+      set (${PKG}_FOUND TRUE)
     else ()
       # look for other module of top-level project
-      list (FIND PROJECT_MODULES "${PACKAGE}" IDX)
+      list (FIND PROJECT_MODULES "${PKG}" IDX)
       if (NOT IDX EQUAL -1)
-        list (FIND PROJECT_MODULES_ENABLED "${PACKAGE}" IDX)
+        list (FIND PROJECT_MODULES_ENABLED "${PKG}" IDX)
         if (IDX EQUAL -1)
-          set (${PACKAGE}_FOUND FALSE)
+          set (${PKG}_FOUND FALSE)
         else ()
           if (BASIS_DEBUG)
             message ("**     Identified it as other module of this project.")
           endif ()
-          include ("${${PACKAGE}_DIR}/${PACKAGE}Config.cmake")
-          set (${PACKAGE}_FOUND TRUE)
+          include ("${${PKG}_DIR}/${PKG}Config.cmake")
+          set (${PKG}_FOUND TRUE)
         endif ()
       endif ()
     endif ()
   endif ()
-  if (NOT ${PACKAGE}_FOUND)
+  if (NOT ${PKG}_FOUND)
     # circumvent issue with CMake's find_package() interpreting these variables
     # relative to the current binary directory instead of the top-level directory
-    if (${PACKAGE}_DIR AND NOT IS_ABSOLUTE "${${PACKAGE}_DIR}")
-      set (${PACKAGE}_DIR "${CMAKE_BINARY_DIR}/${${PACKAGE}_DIR}")
-      get_filename_component (${PACKAGE}_DIR "${${PACKAGE}_DIR}" ABSOLUTE)
+    if (${PKG}_DIR AND NOT IS_ABSOLUTE "${${PKG}_DIR}")
+      set (${PKG}_DIR "${CMAKE_BINARY_DIR}/${${PKG}_DIR}")
+      get_filename_component (${PKG}_DIR "${${PKG}_DIR}" ABSOLUTE)
     endif ()
     # now look for the package
-    find_package (${PACKAGE} ${ARGN})
+    find_package (${PKG} ${VER} ${ARGN})
   endif ()
+  unset (PKG)
+  unset (VER)
 endmacro ()
 
 # ----------------------------------------------------------------------------
