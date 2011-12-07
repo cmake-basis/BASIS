@@ -140,8 +140,9 @@ endfunction ()
 #
 # This command is used similar to CMake's
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test">
-# add_test()</a> command. It adds a test to the CTest-based testing system.
-# Unlike CMake's
+# add_test()</a> command. It adds a test to the
+# <a href="http://www.cmake.org/cmake/help/ctest-2-8-docs.html">CTest</a>-based
+# testing system. Unlike CMake's
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test">
 # add_test()</a>, this command can, for convenience, implicitly add
 # the necessary executable build target to the build system. Therefore,
@@ -212,7 +213,7 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b UNITTEST @endtp
-#     <td>Specifies that the test is a unit tests. In this case, the test
+#     <td>Specifies that the test is a unit test. In this case, the test
 #         implementation is linked to the default unit testing framework
 #         for the used programming language which is part of the BASIS
 #         installation.</td>
