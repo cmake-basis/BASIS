@@ -13,78 +13,114 @@
 
 @section Introduction
 
+This page describes the "build" script files.
+Unlike source files written in non-scripting languages such as C++ or Java,
+source files written in scripting languages such as Python, Perl, or BASH
+do not need to be compiled before their execution. They are interpreted
+directly and hence do not need to be build (in case of Python, however,
+they are as well compiled by the interpreter itself to improve speed).
+On the other side, CMake provides a mechanism to replace CMake
+variables in a source file by their respective values which are set in the
+CMakeLists.txt files (or an included CMake script file). As it is often
+useful to introduce build specific information in a script file such as
+the relative location of auxiliary executables or data files, the
+basis_add_executable() and basis_add_library() commands also provide a
+means of building script files, where during the build of the script
+the CMake variables as given by <tt>\@VARIABLE_NAME\@</tt> patterns are
+replaced by the value of the corresponding CMake variable if defined or
+by an empty string otherwise. Similar to the configuration of source files
+written in C++ or MATLAB, the names of the script files which shall be
+configured by BASIS during the build step have to end with the <tt>.in</tt>
+suffix. Otherwise, the script file is not modified by the BASIS build
+commands and simply copied to the build tree or installation tree,
+respectively. Opposed to configuring the source files already during
+the configure step of CMake, as is the case for C++ and MATLAB source files,
+script files are configured during the build step to allow for the used
+CMake variables to be set differently depending on whether the script is
+intended for use inside the build tree or the installation tree.
+Moreover, certain properties of the script target can still be modified
+after the basis_add_executable() or basis_add_library() command, respectively,
+using the basis_set_target_properties() or basis_set_property() command.
+Hence, the final values of these variables are not known before the configuration
+of the build system has been completed. Therefore, all CMake variables
+which are defined when the basis_add_executable() or basis_add_library()
+command is called, are dumped to a CMake script file to preserve their value
+at this moment and the dump of the variables is written to a file in the
+build tree. This file is loaded again during the build step by the custom
+build command which eventually configures the script file using CMake's
+<a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:configure_file">
+configure_file()</a> command with the <tt>\@ONLY</tt> option.
+This build command configures the script file twice. The first "built" script
+is intended for use within the build tree while the second "built" script will
+be copied upon installation to the installation tree.
 
+Before each configuration of the (template) script file (the <tt>.in</tt>
+source file in the source tree), the file with the dumped CMake variable
+values and the various script configuration files are included in the
+following order:
+-# Dump file of CMake variables defined when the script target was added.
+-# Default script configuration file of BASIS (BasisScriptConfig.cmake).
+-# Default script configuration file of individual project (ScriptConfig.cmake, optional).
+-# Script configuration file specified using the @c CONFIG_FILE argument of
+   the basis_add_executable() or basis_add_library() command.
+-# Script configuration code specified using the @c CONFIG argument of the
+   basis_add_executable() or basis_add_library() command.
 
 @section ScriptConfig Script Configuration
 
-The so-called script configuration is a CMake script which defines CMake
-variables for use within script files. These variables are substituted by
-their respective values during the build step. Note that the usual mechanisms
-of using CMake variables in source files with the <tt>.in</tt> suffix is
-also used for script files. However, these variables get substituted already
-during the configure step of CMake where the basis_add_executable() or
-basis_add_script() function, respectively, is called. At this point, certain
-properties such as the name of the output script file and the installation
-destination may still change. Thus, directory paths relative to the script's
-location cannot be set properly this way. Therefore, the concept of the
-script configuration was introduced in BASIS which allows to defer the
-substitution of such variables at a later time during the actual build step.
-Hence, script files may be configured twice, once during the configure
-step, where patterns such as <tt>@&lt;name&gt;@</tt> are replaced, and once
-during the build step where patterns such as <tt>__&lt<NAME>&gt;__</tt>
-are replaced. Note that for the later it is required that names of the
-corresponding CMake variables which are defined by the script configuration
-need to be all uppercase.
+The so-called script configuration is CMake code which defines CMake variables
+for use within script files. This code is either saved in a CMake script file
+with the <tt>.cmake</tt> file name extension or specified directly as argument
+of the @c CONFIG option of the basis_add_executable() or basis_add_library()
+command used to add a script target to the build system. The variables defined
+by the script configuration are substituted by their respective values during
+the build of the script target. Note that the CMake code of the script
+configuration is evaluated during the build of the script target, not during
+the configuration of the build system. Therefore, the variables defined in
+the script configuration can be set differently for each of the two builds
+of the script files. If the script configuration is evaluated before the
+configuration of the script file for use inside the build tree, the CMake
+variable @c BUILD_INSTALL_SCRIPT is set to @c FALSE. Otherwise, if the script
+configuration is evaluated during the build of the script for use in the
+installation tree, this variable is set to @c TRUE instead. It can therefore
+be used to set the variables in the script configuration depending on
+whether or not the script is build for use in the build tree or installation
+tree.
 
-The script configuration is passed either directly as string argument to
-the @c CONFIG option of the basis_add_script() or basis_add_executable()
-command, respectivley, or saved in a file named ScriptConfig.cmake.in
-which has to be located in the @c PROJECT_CONFIG_DIR. BASIS itself provides
-such default script configuration file for the most important variables
-already.
-
-If the project structure differs for the build tree and the install tree,
-the CMake variables used within the script can be set depending on the
-value of the variable @c BUILD_INSTALL_SCRIPT. This variable evaluates to
-true, when the script is build, i.e., configured, for the installation tree
-and to false, otherwise.
-
-Example:
+For example, the project structure differs for the build tree and the install
+tree, and hence relative file paths to the different directories of auxiliary
+executables or data files have to be set differently depending on the value
+of @c BUILD_INSTALL_SCRIPT, i.e.,
 @code
 if (BUILD_INSTALL_SCRIPT)
-  set (RUNTIME_DIR "@INSTALL_PREFIX@/@INSTALL_BIN_DIR@")
+  set (RUNTIME_DIR "@INSTALL_PREFIX@/@INSTALL_RUNTIME_DIR@")
 else ()
   set (RUNTIME_DIR "@BINARY_RUNTIME_DIR@")
 endif ()
 @endcode
 
-Avoid the use of absolute paths, however! Instead, use the variable
-SCRIPT_DIR which is set to the directory of the script file to make these
-paths relative to the directory of the script file. The relative paths
-determined by the script configuration script shall be used in the script.
-Therefore, the script has to determine its directory at runtime. This can
-usually easily be done by extracting the path component from the first argument.
-To ease this task, BASIS provides utility functions for each supported
-scripting language which can be used for that.
-
-Example for BASH:
+Avoid the use of absolute paths, however! Instead, use the @c DIR variable
+which is set in the build script to the directory of the output script file
+to make these paths relative to the directory which contains the configured
+script file. These relative paths which are defined by the script configuration
+shall be used in the script as follows:
 @code
 # /usr/bin/env bash
 @BASIS_BASH_UTILITIES@
-get_executable_directory exec_dir
+get_executable_directory EXEC_DIR && readonly EXEC_DIR
 [ $? -eq 0 ] || { echo 'Failed to get directory of this executable'; exit 1; }
-data_dir="${exec_dir}/%DATA_DIR%"
+readonly DATA_DIR="${EXEC_DIR}/@DATA_DIR@"
 @endcode
-
-where @c DATA_DIR is the relative path determined during the script
-configuration. See documentation of basis_set_script_path_definition()
-for a convenience function which can be used just for that. This function
-generates the definition of a function which is prepended to this script
-configuration. Use this function as follows in the script configuration file.
-
-Example:
+where @c DATA_DIR is the relative path to the required data files as determined
+during the evaluation of the script configuration. See documentation of
+the basis_set_script_path() function for a convenience function which can be 
+used therefore. Note that this function is defined in the custom build script
+generated by BASIS for the build of each script target and hence can only be
+used within a script configuration. For example, use this function as follows
+in the <tt>PROJECT_CONFIG_DIR/ScriptConfig.cmake.in</tt> script configuration
+file of your project:
 @code
-basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
+basis_set_script_path(DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 @endcode
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
