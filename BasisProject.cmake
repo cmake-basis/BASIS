@@ -5,11 +5,16 @@
 # This file defines project meta-data, i.e., attributes, which are used by
 # BASIS to setup the project. Moreover, if the project is a module of another
 # BASIS project, the dependencies to other modules have to be specified here
-# such that the (super-)project can analyze the inter-module dependencies.
+# such that the top-level project can analyze the inter-module dependencies.
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to
-# resolve external dependencies is to add the corresponding CMake statements
-# to the Settings.cmake file. This should only be done if required.
+# resolve external dependencies is to add the corresponding basis_find_package()
+# statements to the Depends.cmake file. This should, however, only be done
+# if specifying the dependencies as arguments to the basis_project() function
+# cannot be used to resolve the dependencies properly. If you only need to
+# make use of additional variables set by the package configuration file
+# of the external package or the corresponding Find<Package>.cmake module,
+# add the related CMake code to the Settings.cmake file instead.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
