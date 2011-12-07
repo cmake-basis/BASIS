@@ -12,6 +12,14 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup CMakeTemplates
+# @ingroup BasisScriptConfig
 ##############################################################################
 
+## @addtogroup BasisScriptConfig
+# @{
+
+
+
+
+## @}
+# end of Doxygen group - keep at end of file

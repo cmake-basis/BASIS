@@ -20,6 +20,13 @@ if __name__ == "__main__":
         sys.stderr.write ("No file specified to process!\n")
         sys.exit (1)
     fileName = sys.argv [1]
+    # package name
+    packageName = '__Pkg__'
+    m = re.search ('(^|/)(?P<pkg>\w+)Config(Version)?\.cmake', fileName)
+    if m: packageName = m.group('pkg')
+    else:
+        m = re.search ('(^|/)(?P<pkg>\w+)Use\.cmake', fileName)
+        if m: packageName = m.group('pkg')
     # open input file
     f = open (fileName, 'r')
     if not f:
@@ -31,7 +38,7 @@ if __name__ == "__main__":
     reFunctionEnd   = re.compile (r"endfunction\s*\(.*\)\s*$")
     reMacroStart    = re.compile (r"macro\s*\((?P<name>\w+)(?P<args>.*)\)\s*$")
     reMacroEnd      = re.compile (r"endmacro\s*\(.*\)\s*$")
-    reSetStart      = re.compile (r"(set|basis_set_if_empty|basis_set_script_path|basis_set_config)\s*(\((?P<name>\w*)|$)")
+    reSetStart      = re.compile (r"(?P<cmd>set|basis_set_if_empty|basis_set_script_path|basis_set_config)\s*(\((?P<name>\w*)|$)")
     reSetVarName    = re.compile (r"(?P<name>\w+)")
     reSetEnd        = re.compile (r".*\)\s*$")
     reOptionStart   = re.compile (r"option\s*\((?P<name>\w*)|option\s*$")
@@ -49,6 +56,7 @@ if __name__ == "__main__":
     commentDepth  = 0     # if-clause depth where comment was encountered
     previousBlock = ''    # name of previous CMake code block
     currentBlock  = ''    # name of current CMake code block
+    currentCmd    = ''    # used in particular to distinguish set() commands
     optParams     = []    # documented optional function/macro parameters
     for line in f:
         line = line.strip ()
@@ -94,6 +102,8 @@ if __name__ == "__main__":
             m = reSetVarName.match (line)
             if m is not None:
                 name = m.group ('name')
+                if currentCmd == 'basis_set_config':
+                    name = '_'.join([packageName, name])
                 sys.stdout.write (name + ";\n")
                 currentBlock = 'set'
                 m = reSetEnd.match (line)
@@ -126,6 +136,7 @@ if __name__ == "__main__":
             continue
         # look for new comment block or block following a comment
         if currentBlock == '':
+            currentCmd = ''
             # include
             m = reInclude.match (line)
             if m is not None:
@@ -134,6 +145,7 @@ if __name__ == "__main__":
                 module = module.replace ("${CMAKE_CURRENT_LIST_DIR}/", "")
                 module = module.replace ("${BASIS_MODULE_PATH}/", "")
                 module = module.replace ("@BASIS_MODULE_PATH@/", "")
+                module = module.replace ("${${NS}MODULE_PATH}/", "")
                 sys.stdout.write ("#include \"" + module + "\"\n")
                 continue
             # enter if-clause
@@ -215,11 +227,14 @@ if __name__ == "__main__":
                 # setting of global variable/constant
                 m = reSetStart.match (line)
                 if m is not None:
-                    name = m.group ('name')
+                    currentCmd = m.group ('cmd')
+                    name       = m.group ('name')
                     if name == '':
                         currentBlock = 'set-no-name'
                         sys.stdout.write ("\n")
                         continue
+                    if currentCmd == 'basis_set_config':
+                        name = '_'.join([packageName, name])
                     sys.stdout.write (name + ";\n")
                     m = reSetEnd.match (line)
                     if m is None:

@@ -46,6 +46,8 @@ basis_add_doc (
                    "*/argh/*"             # Python Argh
                    "*/test.cxx"           # Google Mock and Test
                    "*/test_main.cxx"      # main() of unit tests based on GMock
+                   # templates of standard modules
+                   "ScriptConfig.cmake.in"
                    # files in binary source tree
                    "cmake_install.cmake"
                    "CTestTestfile.cmake"

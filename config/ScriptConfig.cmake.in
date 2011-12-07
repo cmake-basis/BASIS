@@ -11,7 +11,13 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisScriptConfig
 ##############################################################################
+
+## @addtogroup BasisScriptConfig
+# @{
+
 
 ## @brief Top directory of project template relative to script location.
 basis_set_script_path (
@@ -33,3 +39,7 @@ basis_set_script_path (
     "@BINARY_LIBEXEC_DIR@"
     "@INSTALL_MODULES_DIR@"
 )
+
+
+## @}
+# end of Doxygen group - keep at end of file
