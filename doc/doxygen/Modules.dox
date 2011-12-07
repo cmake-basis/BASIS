@@ -32,7 +32,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 // ---------------------------------------------------------------------------
 /**
 @defgroup CMakeFindModules Find Package Modules
-@brief    CMake Find modules used by find_package() command.
+@brief    CMake Find modules used by basis_find_package() command.
 
 The BASIS package provides CMake Find module implementations for third-party
 packages which are commonly used at SBIA but do not provide a CMake
