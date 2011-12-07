@@ -9,13 +9,7 @@
 %
 % Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-function main()
+function helloworld()
 % This is the main function of the program.
-
-if (nargin != 0)
-  print_help();
-  exit(1);
+echo('Hello, World!'); % own MEX-function
 end
-
-fprintf('Hello, World!');
-exit(0);
