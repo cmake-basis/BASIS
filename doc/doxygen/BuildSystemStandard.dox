@@ -1,6 +1,6 @@
 /**
- * @file  ScriptTargets.dox
- * @brief Documentation of build of scripts and script configuration.
+ * @file  BuildSystemStandard.dox
+ * @brief Build system standard page of API documentation.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -9,11 +9,14 @@
  */
 
 /**
-@page ScriptTargets Build of Script Targets
+@page BuildSystemStandard Build System Standard
 
-@section Introduction
+@section ProjectTemplate Software Project Template
 
-This page describes the "build" script files.
+@todo This section has to be written yet.
+
+@section ScriptTargets Build of Script Targets
+
 Unlike source files written in non-scripting languages such as C++ or Java,
 source files written in scripting languages such as Python, Perl, or BASH
 do not need to be compiled before their execution. They are interpreted
@@ -66,7 +69,7 @@ following order:
 -# Script configuration code specified using the @c CONFIG argument of the
    basis_add_executable() or basis_add_library() command.
 
-@section ScriptConfig Script Configuration
+@subsection ScriptConfig Script Configuration
 
 The so-called script configuration is CMake code which defines CMake variables
 for use within script files. This code is either saved in a CMake script file

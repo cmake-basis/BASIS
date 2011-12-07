@@ -15,6 +15,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisSettings
 ##############################################################################
 
 # Note: The #Add*DependencyHere patterns are required by the basisproject tool
@@ -27,7 +29,7 @@ basis_project (
                         "software which follows the SBIA Build system And Software "
                         "Implementation Standard (BASIS)."
   DEPENDS               #AddDependencyHere
-  OPTIONAL_DEPENDS      "PythonInterp" "Perl" "PerlLibs" #AddOptionalDependencyHere
+  OPTIONAL_DEPENDS      PythonInterp Perl PerlLibs #AddOptionalDependencyHere
   TEST_DEPENDS          #AddTestDependencyHere
   OPTIONAL_TEST_DEPENDS MATLAB #AddOptionalTestDependencyHere
 )

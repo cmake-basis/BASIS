@@ -40,6 +40,7 @@ basis_add_doc (
 basis_add_doc (
   api
   GENERATOR        Doxygen
+  INPUT            "${PROJECT_DATA_DIR}/template/config/Depends.cmake"
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
                    "*/gmock/*"            # Google Mock
                    "*/gtest/*"            # Google Test

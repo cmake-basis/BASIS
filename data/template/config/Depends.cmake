@@ -17,6 +17,10 @@
 # included here such that the Slicer settings are imported before any
 # module is configured. This is done by using the command
 #
+# Another use case would be that you want to specify advanced options to
+# the basis_find_package() function which you cannot specify as part of
+# the dependencies arguments of the basis_project() function.
+#
 # Example:
 # @code
 # if (SlicerExtension_ENABLED)
@@ -30,5 +34,7 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisSettings
 ##############################################################################
 
