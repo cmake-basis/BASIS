@@ -8,7 +8,7 @@
 #
 # @sa http://i31www.ira.uka.de/~baas/pydoxy/
 #
-# @ingroup CMakeHelpers
+# @ingroup Tools
 
 # pythfilter.py v1.5.5, written by Matthias Baas (baas@ira.uka.de)
 

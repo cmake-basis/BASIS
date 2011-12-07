@@ -9,7 +9,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup CMakeHelpers
+# @ingroup Tools
 
 import sys
 import re

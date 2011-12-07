@@ -35,10 +35,8 @@
 #  
 # =======================================================================
 
-## @file
-# implementation of DoxyGen::Filter.
-#
-# @ingroup CMakeHelpers
+## @file Filter.pm
+# @brief Implementation of DoxyGen::Filter.
 
 
 ## @class

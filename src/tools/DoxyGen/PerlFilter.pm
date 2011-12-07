@@ -46,10 +46,8 @@
 #  
 # =======================================================================
 
-## @file
-# implementation of DoxyGen::PerlFilter.
-#
-# @ingroup CMakeHelpers
+## @file PerlFilter.pm
+# @brief Implementation of DoxyGen::PerlFilter.
 
 
 ## @class

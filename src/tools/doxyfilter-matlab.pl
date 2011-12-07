@@ -8,7 +8,7 @@
 #
 # @sa http://www.mathworks.com/matlabcentral/fileexchange/25925-using-doxygen-with-matlab
 #
-# @ingroup CMakeHelpers
+# @ingroup Tools
 
 if ($#ARGV != 0)
 {
