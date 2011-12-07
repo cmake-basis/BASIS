@@ -555,7 +555,9 @@ endfunction ()
 #          has to be invoked to finalize the addition of the custom build target.
 #          This is done automatically by the basis_project_impl() macro.
 #
-# @sa basis_add_executable_target(), basis_add_script(), basis_add_mcc_target()
+# @sa basis_add_executable_target()
+# @sa basis_add_script()
+# @sa basis_add_mcc_target()
 #
 # @ingroup CMakeAPI
 function (basis_add_executable TARGET_NAME)
@@ -757,8 +759,10 @@ endfunction ()
 #          to finalize the addition of the build target(s). This is done
 #          automatically by the basis_project_impl() macro.
 #
-# @sa basis_add_library_target(), basis_add_script(), basis_add_mex_target(),
-#     basis_add_mcc_target()
+# @sa basis_add_library_target()
+# @sa basis_add_script()
+# @sa basis_add_mex_target()
+# @sa basis_add_mcc_target()
 #
 # @ingroup CMakeAPI
 function (basis_add_library TARGET_NAME)
