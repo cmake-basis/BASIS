@@ -17,7 +17,7 @@ else ()
 endif ()
 
 
-## @addtogroup CMakeAPI
+## @addtogroup CMakeUtilities
 #  @{
 
 
@@ -28,13 +28,20 @@ endif ()
 # ----------------------------------------------------------------------------
 ## @brief Set properties on a target.
 #
-# This BASIS function replaces CMake's set_target_properties() command.
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties">
+# set_target_properties()</a> command and extends its functionality.
+# In particular, it maps the given target names to the corresponding target UIDs.
+#
+# @param [in] ARGN List of arguments. See
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties">
+#                  set_target_properties()</a>.
+#
+# @returns Sets the specified properties on the given target.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties
 #
-# @param [in] ARGN Arguments for set_target_properties().
-#
-# @returns Sets the specified properties on the given target.
+# @ingroup CMakeAPI
 function (basis_set_target_properties)
   # convert target names to UIDs
   set (TARGET_UIDS)
@@ -105,15 +112,22 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Get value of property set on target.
 #
-# Replaces CMake's get_target_property() command.
-#
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_target_property
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties">
+# get_target_properties()</a> command and extends its functionality.
+# In particular, it maps the given @p TARGET_NAME to the corresponding target UID.
 #
 # @param [out] VAR         Name of output variable.
 # @param [in]  TARGET_NAME Name of build target.
-# @param [in]  ARGN        Remaining arguments for get_target_property().
+# @param [in]  ARGN        Remaining arguments for
+#                          <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_target_properties">
+#                          get_target_properties()</a>.
 #
 # @returns Sets @p VAR to the value of the requested property.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_target_property
+#
+# @ingroup CMakeAPI
 function (basis_get_target_property VAR TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   get_target_property (VALUE "${TARGET_UID}" ${ARGN})
@@ -127,13 +141,19 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add compile definitions.
 #
-# Replaces CMake's add_definitions() command.
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_definitions">
+# add_definitions()</a> command.
+#
+# @param [in] ARGN List of arguments for
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_definitions">
+#                  add_definitions()</a>.
+#
+# @returns Adds the given definitions.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_definitions
 #
-# @param [in] ARGN Arguments for add_definition().
-#
-# @returns Adds the given definitions.
+# @ingroup CMakeAPI
 function (basis_add_definitions)
   add_definitions (${ARGN})
 endfunction ()
@@ -141,13 +161,19 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Remove previously added compile definitions.
 #
-# Replaces CMake's remove_definitions() command.
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:remove_definitions">
+# remove_definitions()</a> command.
+#
+# @param [in] ARGN List of arguments for
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:remove_definitions">
+#                  remove_definitions()</a>.
+#
+# @returns Removes the specified definitions.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:remove_definition
 #
-# @param [in] ARGN Arguments for remove_definitions().
-#
-# @returns Removes the specified definitions.
+# @ingroup CMakeAPI
 function (basis_remove_definitions)
   remove_definitions (${ARGN})
 endfunction ()
@@ -159,16 +185,18 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add directories to search path for include files.
 #
-# Overwrites CMake's include_directories() command.
+# Overwrites CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:include_directories">
+# include_directories()</a> command. This is required because the
+# basis_include_directories() function is not used by other projects in their
+# package use files. Therefore, this macro is an alias for
+# basis_include_directories().
 #
-# The include_directories() command has to be overwritten such that when
-# use files from other projects as for example ITK are included, we still
-# get to know the paths added by these external projects which do not know
-# about our own basis_include_directories() function.
+# @param [in] ARGN List of arguments for basis_include_directories().
 #
-# @param [in] ARGN All arguments are passed on to basis_include_directories().
+# @returns Adds the given paths to the search path for include files.
 #
-# @ingroup CMakeUtilities
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:include_directories
 macro (include_directories)
   basis_include_directories (${ARGN})
 endmacro ()
@@ -176,17 +204,23 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Add directories to search path for include files.
 #
-# Replaces CMake's include_directories() command.
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:include_directories">
+# include_directories()</a> command. Besides invoking CMake's internal command
+# with the given arguments, it updates the @c PROJECT_INCLUDE_DIRECTORIES
+# property on the current project (see basis_set_project_property()). This list
+# contains a list of all include directories used by a project, regardless of
+# the directory in which the basis_include_directories() function was used.
 #
-# All arguments are passed on to CMake's include_directories() command.
-#
-# Additionally, a list of all include directories used by a project is stored
-# as project property (see basis_set_project_property()) named
-# @c PROJECT_INCLUDE_DIRECTORIES.
-#
-# @param ARGN Argument list passed on to CMake's include_directories() command.
+# @param ARGN List of arguments for
+#             <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:include_directories">
+#             include_directories()</a> command.
 #
 # @returns Nothing.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:include_directories
+#
+# @ingroup CMakeAPI
 function (basis_include_directories)
   # CMake's include_directories ()
   _include_directories (${ARGN})
@@ -217,16 +251,18 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add directories to search path for libraries.
 #
-# Overwrites CMake's link_directories() command.
+# Overwrites CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:link_directories">
+# link_directories()</a> command. This is required because the
+# basis_link_directories() function is not used by other projects in their
+# package use files. Therefore, this macro is an alias for
+# basis_link_directories().
 #
-# The link_directories() command has to be overwritten such that when
-# use files from other projects as for example ITK are included, we still
-# get to know the paths added by these external projects which do not know
-# about our own basis_link_directories() function.
+# @param [in] ARGN List of arguments for basis_link_directories().
 #
-# @param [in] ARGN All arguments are passed on to basis_link_directories().
+# @returns Adds the given paths to the search path for libraries.
 #
-# @ingroup CMakeUtilities
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:link_directories
 macro (link_directories)
   basis_link_directories (${ARGN})
 endmacro ()
@@ -234,17 +270,23 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Add directories to search path for libraries.
 #
-# Replaces CMake's link_directories() command.
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:link_directories">
+# link_directories()</a> command. Even though this function yet only invokes
+# CMake's internal command, it should be used in BASIS projects to enable the
+# extension of this command's functionality as part of BASIS if required.
 #
-# All arguments are passed on to CMake's link_directories() command.
+# @param [in] ARGN List of arguments for
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:link_directories">
+#                  link_directories()</a>.
+#
+# @returns Adds the given paths to the search path for libraries.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:link_directories
 #
-# @param [in] ARGN Arguments for link_directories().
-#
-# @returns Nothing.
+# @ingroup CMakeAPI
 function (basis_link_directories)
-  # CMake's link_directories()
+  # CMake's link_directories() command
   _link_directories (${ARGN})
 endfunction ()
 
@@ -262,6 +304,8 @@ endfunction ()
 # @param [in] ARGN Arguments for add_dependencies().
 #
 # @returns Adds the given dependencies of the specified build target.
+#
+# @ingroup CMakeAPI
 function (basis_add_dependencies)
   set (ARGS)
   foreach (ARG ${ARGN})
@@ -295,14 +339,16 @@ endfunction ()
 # basis_target_link_libraries (MyMATLABApp MyMEXFunc OtherMEXFunc.mexa64)
 # @endcode
 #
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:target_link_libraries
-#
 # @param [in] TARGET_NAME Name of the target.
 # @param [in] ARGN        Link libraries.
 #
 # @returns Adds link dependencies to the specified build target.
 #          For custom targets, the given libraries are added to the
 #          @c DEPENDS property of these target, in particular.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:target_link_libraries
+#
+# @ingroup CMakeAPI
 function (basis_target_link_libraries TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
 
@@ -368,13 +414,23 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add executable target.
 #
-# Replacement for CMake's add_executable() command.
+# This is the main function to add an executable target to the build system,
+# where an executable can be a binary file or a script written in a scripting
+# language. In general we refer to any output file which is part of the software
+# (i.e., excluding configuration files) and which can be executed
+# (e.g., a binary file in the ELF format) or interpreted (e.g., a BASH script)
+# directly, as executable file. Natively, CMake supports only executables build
+# from C/C++ source code files. This function extends CMake's capabilities
+# by adding custom build commands for non-natively supported programming
+# languages and further standardizes the build of executable targets.
+# For example, by default, it is not necessary to specify installation rules
+# separately as these are added by this function already (see below).
 #
+# @par Programming languages
 # Besides adding usual executable targets build by the set <tt>C/CXX</tt>
 # language compiler, this function inspects the list of source files given and
 # detects whether this list contains sources which need to be build using a
 # different compiler. In particular, it supports the following languages:
-#
 # <table border="0">
 #   <tr>
 #     @tp @b CXX @endtp
@@ -383,7 +439,7 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp <b>PYTHON</b>|<b>PERL</b>|<b>BASH</b> @endtp
-#     <td>Executables written in one of the named scripting language are built by
+#     <td>Executables written in one of the named scripting languages are built by
 #         configuring and/or copying the script files to the build tree and
 #         installation tree, respectively. During the build step, certain strings
 #         of the form \@VARIABLE\@ are substituted by the values set during the
@@ -402,22 +458,41 @@ endfunction ()
 #   </tr>
 # </table>
 #
-# In case of CXX, the BASIS utilities library is added as link dependency of
-# the added executable target by default. If none of the BASIS C++ utilities
-# are used by the executable, the option NO_BASIS_UTILITIES can be given.
-# Note, however, that the utilities library is a static library and thus the
-# linker would not include any of the BASIS utilities object code in the binary
-# executable in that case anyway.
+# @par Helper functions
+# If the programming language of the input source files is not specified
+# explicitly by providing the @p LANGUAGE argument, the extensions of the
+# source files are inspected using basis_get_source_language(). Once the
+# programming language is known, this function invokes the proper subcommand.
+# In particular, it calls basis_add_executable_target() for C++ sources (.cxx),
+# basis_add_mcc_target() for MATLAB scripts (.m), and basis_add_script() for all
+# other source files.
 #
+# @note DO NOT use the mentioned subcommands directly. Always use
+#       basis_add_library() to add a library target to your project. Only refer
+#       to the documentation of the subcommands to learn about the available
+#       options of the particular subcommand.
+#
+# @par Output directories
+# The built executable file is output to the @c BINARY_RUNTIME_DIR or
+# @c BINARY_LIBEXEC_DIR if the @p LIBEXEC option is given.
+# If this function is used within the @c PROJECT_TESTING_DIR, however,
+# the built executable is output to the @c TESTING_RUNTIME_DIR or
+# @c TESTING_LIBEXEC_DIR instead.
+#
+# @par Installation
 # An install command for the added executable target is added by this function
 # as well. The executable will be installed as part of the component @p COMPONENT
 # in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
-# @p LIBEXEC is given.
+# @p LIBEXEC is given. Executable targets are exported such that they can be
+# imported by other CMake-aware projects by including the CMake configuration file
+# of this package (&lt;Package&gt;Config.cmake file). No installation rules are
+# added, however, if this function is used within the @c PROJECT_TESTING_DIR.
+# Test executables are further only exported as part of the build tree.
 #
 # @note If this function is used within the @c PROJECT_TESTING_DIR, the built
-#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
-#       Moreover, no installation rules are added. Test executables are further
-#       not exported, regardless of whether NO_EXPORT is given or not.
+#       executable is output to the @c TESTING_RUNTIME_DIR or
+#       @c TESTING_LIBEXEC_DIR instead. Moreover, no installation rules are added.
+#       Test executables are further only exported as part of the build tree.
 #
 # @param [in] TARGET_NAME Name of the target. If the target is build from a
 #                         single source file, the file path of this source file
@@ -469,9 +544,14 @@ endfunction ()
 #   </tr>
 # </table>
 #
-# @returns Adds an executable build target. In case of an executable build from
-#          non-CXX source files, the function basis_add_custom_finalize() has to be
-#          invoked to actually add the custom target that builds it.
+# @returns Adds an executable build target. In case of an executable which is
+#          not build from C++ source files, the function basis_add_custom_finalize()
+#          has to be invoked to finalize the addition of the custom build target.
+#          This is done automatically by the basis_project_impl() macro.
+#
+# @sa basis_add_executable_target(), basis_add_script(), basis_add_mcc_target()
+#
+# @ingroup CMakeAPI
 function (basis_add_executable TARGET_NAME)
   # --------------------------------------------------------------------------
   # determine language
@@ -535,31 +615,40 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add library target.
 #
-# Replaces CMake's add_library() command.
+# This is the main function to add a library target to the build system, where
+# a library can be a binary archive, shared library, a MEX-file or a module
+# written in a scripting language. In general we refer to any output file which
+# is part of the software (i.e., excluding configuration files), but cannot be
+# executed (e.g., a binary file in the ELF format) or interpreted
+# (e.g., a BASH script) directly, as library file. Natively, CMake supports only
+# libraries build from C/C++ source code files. This function extends CMake's
+# capabilities by adding custom build commands for non-natively supported
+# programming languages and further standardizes the build of library targets.
+# For example, by default, it is not necessary to specify installation rules
+# separately as these are added by this function already (see below).
 #
+# @par Programming languages
 # Besides adding usual library targets built from C/C++ source code files,
 # this function can also add custom build targets for libraries implemented
 # in other programming languages. It therefore tries to detect the programming
 # language of the given source code files and delegates the addition of the
-# build target to the proper helper functions.
-#
-# In particular, the following languages are supported:
-#
+# build target to the proper helper functions. It in particular supports the
+# following languages:
 # <table border="0">
 #   <tr>
 #     @tp @b CXX @endtp
-#     <td>The default language, adding a library target build from C/C++
-#         source code. The target is added via CMake's add_library() command
-#         if neither or one of the options STATIC, SHARED, or MODULE is given.
-#         If the option MEX is given, a MEX-file is build using the MEX script.</td>
+#     <td>Source files written in C/C++ are by default built into either
+#         @p STATIC, @p SHARED, or @p MODULE libraries. If the @p MEX option
+#         is given, however, a MEX-file (a shared library) is build using
+#         the MEX script instead of using the default C++ compiler directly.</td>
 #   </tr>
 #   <tr>
 #     @tp <b>PYTHON</b>|<b>PERL</b>|<b>BASH</b> @endtp
-#     <td>Modules written in one of the named scripting language are built similar
+#     <td>Modules written in one of the named scripting languages are built similar
 #         to executable scripts except that the file name extension is preserved
-#         and no executable file permission is set. These modules are intended
-#         for import/inclusion in other modules or executables written in the
-#         particular scripting language only.</td>
+#         and no executable file permission is set on Unix. These modules are
+#         intended for import/inclusion in other modules or executables written
+#         in the particular scripting language only.</td>
 #   </tr>
 #   <tr>
 #     @tp @b MATLAB @endtp
@@ -570,12 +659,42 @@ endfunction ()
 #   </tr>
 # </table>
 #
+# @par Helper functions
+# If the programming language of the input source files is not specified
+# explicitly by providing the @p LANGUAGE argument, the extensions of the
+# source files are inspected using basis_get_source_language(). Once the
+# programming language is known, this function invokes the proper subcommand.
+# In particular, it calls basis_add_library_target() for C++ sources (.cxx)
+# if the target is not a MEX-file target, basis_add_mex_target() for C++ sources
+# if the @p MEX option is given, basis_add_mcc_target() for MATLAB scripts (.m),
+# and basis_add_script() for all other source files.
+#
+# @note DO NOT use the mentioned subcommands directly. Always use
+#       basis_add_library() to add a library target to your project. Only refer
+#       to the documentation of the subcommands to learn about the available
+#       options of the particular subcommand.
+#
+# @par Output directories
+# The built libraries are output to the @c BINARY_RUNTIME_DIR, @c BINARY_LIBRARY_DIR,
+# and/or @c BINARY_ARCHIVE_DIR. Python modules are output to subdirectories in
+# the @c BINARY_PYTHON_LIBRARY_DIR. Perl modules are output to subdirectories in
+# the @c BINARY_PERL_LIBRARY_DIR. If this command is used within the
+# @c PROJECT_TESTING_DIR, however, the files are output to the
+# @c TESTING_RUNTIME_DIR, @c TESTING_LIBRARY_DIR, @c TESTING_ARCHIVE_DIR,
+# @c TESTING_PYTHON_LIBRARY_DIR, or @c TESTING_PERL_LIBRARY_DIR instead.
+#
+# @par Installation
 # An install command for the added library target is added by this function
 # as well. Runtime libraries are installed as part of the @p RUNTIME_COMPONENT
 # to the @p RUNTIME_DESTINATION. Library components are installed as part of
-# the @p LIBRARY_COMPONENT to the @p LIBRARY_DESTINATION.
+# the @p LIBRARY_COMPONENT to the @p LIBRARY_DESTINATION. Library targets are
+# exported such that they can be imported by other CMake-aware projects by
+# including the CMake configuration file of this package
+# (&lt;Package&gt;Config.cmake file). If this function is used within the
+# @c PROJECT_TESTING_DIR, however, no installation rules are added.
+# Test library targets are further only exported as part of the build tree.
 #
-# Example:
+# @par Example
 # @code
 # basis_add_library (MyLib1 STATIC mylib.cxx)
 # basis_add_library (MyLib2 STATIC mylib.cxx COMPONENT dev)
@@ -628,9 +747,15 @@ endfunction ()
 #   </tr>
 # </table>
 #
-# @returns Adds a library build target. In case of a library not written in
-#          C/C++, basis_add_custom_finalize() has to be invoked to finalize
-#          the addition of the build target(s).
+# @returns Adds a library build target. In case of a library not written in C++
+#          or MEX-file targets, basis_add_custom_finalize() has to be invoked
+#          to finalize the addition of the build target(s). This is done
+#          automatically by the basis_project_impl() macro.
+#
+# @sa basis_add_library_target(), basis_add_script(), basis_add_mex_target(),
+#     basis_add_mcc_target()
+#
+# @ingroup CMakeAPI
 function (basis_add_library TARGET_NAME)
   # --------------------------------------------------------------------------
   # determine language
@@ -750,34 +875,25 @@ function (basis_add_library TARGET_NAME)
   endif ()
 endfunction ()
 
-
-## @}
-# end of Doxygen group
-
 # ============================================================================
 # internal helpers
 # ============================================================================
 
-## @addtogroup CMakeUtilities
-# @{
-
-
 # ----------------------------------------------------------------------------
 ## @brief Add executable target.
 #
-# This BASIS function overwrites CMake's add_executable() command in order
-# to store information of imported targets which is in particular used to
-# generate the source code of the ExecutableTargetInfo modules which are
-# part of the BASIS utilities.
+# This BASIS function overwrites CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable">
+# add_executable()</a> command in order to store information of imported targets
+# which is in particular used to generate the source code of the ExecutableTargetInfo
+# modules which are part of the BASIS utilities.
 #
 # @note Use basis_add_executable() instead where possible!
-#
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
 #
 # @param [in] TARGET Name of the target.
 # @param [in] ARGN   Further arguments of CMake's add_executable().
 #
-# @ingroup CMakeUtilities
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
 function (add_executable TARGET)
   if (ARGC EQUAL 2 AND ARGV1 MATCHES "^IMPORTED$")
     _add_executable (${TARGET} IMPORTED)
@@ -791,17 +907,16 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add library target.
 #
-# This BASIS function overwrites CMake's add_library() command in order
-# to store information of imported targets.
+# This BASIS function overwrites CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_library">
+# add_library()</a> command in order to store information of imported targets.
 #
 # @note Use basis_add_library() instead where possible!
-#
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
 #
 # @param [in] TARGET Name of the target.
 # @param [in] ARGN   Further arguments of CMake's add_library().
 #
-# @ingroup CMakeUtilities
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_library
 function (add_library TARGET)
   if (ARGC EQUAL 3 AND ARGV2 MATCHES "^IMPORTED$")
     _add_library (${TARGET} "${ARGV1}" IMPORTED)
@@ -816,33 +931,21 @@ endfunction ()
 ## @brief Adds an executable target built from C++ source code.
 #
 # This function adds an executable target for the build of an executable from
-# C++ source code files.
+# C++ source code files. Refer to the documentation of basis_add_executable()
+# for a description of general options for adding an executable target.
 #
 # By default, the BASIS C++ utilities library is added as link dependency of
 # the executable target. If none of the BASIS C++ utilities are used by the
-# executable, the option NO_BASIS_UTILITIES can be given. Note, however,
-# that the utilities library is a static library and thus the linker would
-# simply not include any of the BASIS utilities object code in the final
-# binary executable file.
-#
-# Further, an install command for the added executable target is added by
-# this function. The executable will be installed as part of the component
-# @p COMPONENT in the directory specified by the @p DESTINATION argument.
-# This can be omitted by specifying "none" as argument for @p DESTINATION.
-# An installation rule should then be added manually using the command
-# basis_install() after the executable target was added.
-#
-# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
-#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
-#       Moreover, no installation rules are added. Test executables are further
-#       not exported, regardless of whether NO_EXPORT is given or not.
+# executable, the option NO_BASIS_UTILITIES can be given. To enable this option
+# by default, set the variable @c BASIS_NO_BASIS_UTILITIES to TRUE before the
+# basis_add_executable() commands, i.e., best in the Settings.cmake file located
+# in the @c PROJECT_CONFIG_DIR. Note, however, that the utilities library is a
+# static library and thus the linker would simply not include any of the BASIS
+# utilities object code in the final binary executable file if not used.
 #
 # @note This function should not be used directly. Instead, it is called
 #       by basis_add_executable() if the (detected) programming language
 #       of the given source code files is @c CXX (i.e., C/C++).
-#
-# @sa basis_add_executable()
-# @sa basis_install()
 #
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
@@ -881,6 +984,9 @@ endfunction ()
 # </table>
 #
 # @returns Adds an executable build target built from C++ sources.
+#
+# @sa basis_add_executable()
+# @sa basis_install()
 function (basis_add_executable_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -1094,15 +1200,13 @@ endfunction ()
 ## @brief Add build target for library built from C++ source code.
 #
 # This function adds a library target which builds a library from C++ source
-# code files.
+# code files. Refer to the documentation of basis_add_library() for a
+# description of the general options for adding a library target.
 #
-# An install command for the added library target is added by this function
-# as well. The runtime library, i.e., shared library or module, will be
-# installed as part of the @p RUNTIME_COMPONENT in the directory specified
-# by @p RUNTIME_DESTINATION. Static and import libraries will be installed
-# as part of the LIBRARY_COMPONENT in the directory specified by the
-# @p LIBRARY_DESTINATION. The installation of each of the library components
-# can be omitted by giving "none" as argument for the destination parameters.
+# @note This function should not be used directly. Instead, it is called
+#       by basis_add_library() if the (detected) programming language
+#       of the given source code files is @c CXX (i.e., C/C++) and the
+#       option @c MEX is not given.
 #
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
@@ -1401,11 +1505,6 @@ endfunction ()
 #       turn make use of this function if the (detected) programming language
 #       is a (supported) scripting language.
 #
-# @sa basis_add_executable()
-# @sa basis_add_library()
-# @sa basis_add_script_finalize()
-# @sa basis_add_custom_finalize()
-#
 # @param [in] TARGET_NAME Name of the target. If the target is build from a
 #                         single source file, the file path of this source file
 #                         can be given as first argument. The build target name
@@ -1482,6 +1581,11 @@ endfunction ()
 # @returns Adds custom build target @p TARGET_NAME. In order to add the
 #          custom target that actually builds the script file,
 #          basis_add_script_finalize() has to be invoked.
+#
+# @sa basis_add_executable()
+# @sa basis_add_library()
+# @sa basis_add_script_finalize()
+# @sa basis_add_custom_finalize()
 function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -1773,15 +1877,15 @@ endfunction ()
 # basis_add_script() to create the custom build command and adds this build
 # command as dependency of this added target.
 #
-# @sa basis_add_script()
-# @sa basis_add_custom_finalize()
-#
 # @param [in] TARGET_UID "Global" target name. If this function is used
 #                        within the same project as basis_add_script(),
 #                        the "local" target name may be given alternatively.
 #
 # @returns Adds custom target(s) to actually build the script target
 #          @p TARGET_UID added by basis_add_script().
+#
+# @sa basis_add_script()
+# @sa basis_add_custom_finalize()
 function (basis_add_script_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
   basis_get_target_uid (TARGET_UID "${TARGET_UID}")
@@ -2224,13 +2328,13 @@ endfunction ()
 # to build script files, MATLAB Compiler targets, and MEX script generated
 # MEX-files.
 #
-# @sa basis_add_script_finalize()
-# @sa basis_add_mcc_target_finalize()
-# @sa basis_add_mex_target_finalize()
-#
 # @returns Adds custom targets that actually build the executables and
 #          libraries for which custom build targets where added by
 #          basis_add_executable(), basis_add_library(), and basis_add_script().
+#
+# @sa basis_add_script_finalize()
+# @sa basis_add_mcc_target_finalize()
+# @sa basis_add_mex_target_finalize()
 function (basis_add_custom_finalize)
   basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID ${TARGETS})

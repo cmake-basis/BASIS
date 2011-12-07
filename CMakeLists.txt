@@ -37,7 +37,9 @@ set (
 # auxiliary files
 set (
   CMAKE_MODULES_AUXILIARY_FILES
+    # API documentation
     "Doxyfile.in"                 # default Doxygen configuration template
+    "Modules.dox"                 # documentation of BASIS modules groups
     "Utilities.dox"               # documentation of BASIS Utilities group
     "CxxUtilities.dox"            # documentation of C++ Utilities group
     "JavaUtilities.dox"           # documentation of Java Utilities group
@@ -45,21 +47,23 @@ set (
     "PerlUtilities.dox"           # documentation of Perl Utilities group
     "BashUtilities.dox"           # documentation of BASH Utilities group
     "MatlabUtilities.dox"         # documentation of MATLAB Utilities group
-    "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
-    "ScriptConfig.cmake.in"       # default script configuration file
-    "cmake_uninstall.cmake.in"    # uninstall script
-    "CheckPublicHeaders.cmake"    # check if header files were added/removed
+    # package configuration
     "Config.cmake.in"             # default <Pkg>Config.cmake template
     "ConfigSettings.cmake"        # settings for default <Pkg>Config.cmake
-    "ConfigureIncludeFiles.cmake" # used to configure public header files
     "ConfigVersion.cmake.in"      # default <Pkg>ConfigVersion.cmake template
     "ConfigUse.cmake.in"          # default <Pkg>Use.cmake template
     "GenerateConfig.cmake"        # generation/configuration of <Pkg>Config.cmake et al.
-    "updatefile.py"               # helper used by BasisUpdate.cmake module
-    "runmcc.m"                    # helper used by MatlabTools.cmake module
+    # other
+    "CheckPublicHeaders.cmake"    # check if header files were added/removed
+    "cmake_uninstall.cmake.in"    # uninstall script
+    "ConfigureIncludeFiles.cmake" # used to configure public header files
     "Directories.cmake.in"        # project directory structure
+    "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
+    "runmcc.m"                    # helper used by MatlabTools.cmake module
+    "ScriptConfig.cmake.in"       # default script configuration file
     "Settings.cmake.in"           # BASIS settings
     "SubversionUsers.txt"         # maps SVN users at SBIA to their real names
+    "updatefile.py"               # helper used by BasisUpdate.cmake module
 )
 
 # ----------------------------------------------------------------------------

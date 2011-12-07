@@ -6,8 +6,6 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#
-# @ingroup CMakeAPI
 ##############################################################################
 
 # ============================================================================
@@ -106,6 +104,8 @@
 # @retval PROJECT_OPTIONAL_DEPENDS        @c OPTIONAL_DEPENDS arguments.
 # @retval PROJECT_TEST_DEPENDS            @c TEST_DEPENDS arguments.
 # @retval PROJECT_OPTIONAL_TEST_DEPENDS   @c OPTIONAL_TEST_DEPENDS arguments.
+#
+# @ingroup CMakeAPI
 macro (basis_project)
   # parse arguments and/or include project settings file
   CMAKE_PARSE_ARGUMENTS (
@@ -175,6 +175,11 @@ macro (basis_project)
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
 
+
+## @addtogroup CMakeUtilities
+# @{
+
+
 # ============================================================================
 # initialization
 # ============================================================================
@@ -183,13 +188,11 @@ endmacro ()
 ## @brief Ensure certain requirements on build tree.
 #
 # Requirements:
-# * Root of build tree must not be root of source tree.
+# - Root of build tree must not be root of source tree.
 #
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
-#
-# @ingroup CMakeUtilities
 macro (basis_buildtree_asserts)
   string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
   string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
@@ -205,14 +208,12 @@ endmacro ()
 ## @brief Ensure certain requirements on install tree.
 #
 # Requirements:
-# * Prefix must be an absolute path.
-# * Install tree must be different from source and build tree.
+# - Prefix must be an absolute path.
+# - Install tree must be different from source and build tree.
 #
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
-#
-# @ingroup CMakeUtilities
 macro (basis_installtree_asserts)
   if (NOT IS_ABSOLUTE "${INSTALL_PREFIX}")
     message (FATAL_ERROR "INSTALL_PREFIX must be an absolute path!")
@@ -692,8 +693,6 @@ endmacro ()
 #                                          - "version 1.0.0" (if revision unknown)
 #                                          - "revision 42" (if version is 0.0.0)
 #                                          - "version unknown" (otherwise)
-#
-# @ingroup CMakeAPI
 macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # Slicer extension
@@ -981,13 +980,11 @@ endmacro ()
 # PROJECT_CONFIG_DIR/GenerateConfig.cmake when this file exists or using
 # the default script of BASIS.
 #
-# @sa basis_project_initialize()
-#
 # @returns Finalizes addition of custom build targets, i.e., adds the
 #          custom targets which actually perform the build of these targets.
 #          See basis_add_custom_finalize() function.
 #
-# @ingroup CMakeAPI
+# @sa basis_project_initialize()
 macro (basis_project_finalize)
   # write convenience file to setup MATLAB environment
   if (MATLAB_FOUND)
@@ -1078,6 +1075,10 @@ macro (basis_project_finalize)
   endif ()
 endmacro ()
 
+
+## @}
+# end of Doxygen group
+
 # ============================================================================
 # root CMakeLists.txt implementation
 # ============================================================================
@@ -1096,8 +1097,8 @@ endmacro ()
 #
 # @sa BasisProject.cmake
 # @sa basis_project()
-# @sa basis_project_initialize()
-# @sa basis_project_finalize()
+#
+# @ingroup CMakeAPI
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # CMake version and policies

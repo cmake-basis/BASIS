@@ -40,8 +40,8 @@ endif ()
 # retrieve SVN information
 # ============================================================================
 
-##############################################################################
-# @brief Get current revision of file or directory.
+# ----------------------------------------------------------------------------
+## @brief Get current revision of file or directory.
 #
 # @param [in]  URL  Absolute path of directory or file. May also be a URL to the
 #                   directory or file in the repository. A leading "file://" is
@@ -52,7 +52,6 @@ endif ()
 #
 # @returns Sets @p REV to the revision of the working copy/repository
 #          at URL @p URL.
-
 function (basis_svn_get_revision URL REV)
   set (OUT "0")
 
@@ -80,8 +79,8 @@ function (basis_svn_get_revision URL REV)
   set ("${REV}" "${OUT}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Get revision number when directory or file was last changed.
+# ----------------------------------------------------------------------------
+## @brief Get revision number when directory or file was last changed.
 #
 # @param [in]  URL  Absolute path of directory or file. May also be a URL to the
 #                   directory or file in the repository. A leading "file://" is
@@ -93,7 +92,6 @@ endfunction ()
 #
 # @returns Sets @p REV to revision number at which the working copy/repository
 #          specified by the URL @p URL was last modified.
-
 function (basis_svn_get_last_changed_revision URL REV)
   set (OUT "0")
 
@@ -121,8 +119,8 @@ function (basis_svn_get_last_changed_revision URL REV)
   set ("${REV}" "${OUT}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Get status of revision controlled file.
+# ----------------------------------------------------------------------------
+## @brief Get status of revision controlled file.
 #
 # @param [in]  URL    Absolute path of directory or file. May also be a URL to
 #                     the directory or file in the repository.
@@ -134,7 +132,6 @@ endfunction ()
 #                     returned when BASIS_CMD_SVN is invalid.
 #
 # @returns Sets @p STATUS to the output of the <tt>svn info</tt> command.
-
 function (basis_svn_status URL STATUS)
   if (BASIS_CMD_SVN)
     # remove "file://" from URL

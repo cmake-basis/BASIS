@@ -30,9 +30,9 @@ endif ()
 # @note Do not use this function in your CMakeLists.txt configuration files.
 #       Use basis_set_target_properties() instead.
 #
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties
-#
 # @param [in] ARGN Arguments for set_target_properties().
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties
 function (set_target_properties)
   # target names
   list (FIND ARGN "PROPERTIES" IDX)
@@ -121,19 +121,32 @@ endfunction ()
 # cache variables prefixed by the name of the project are used
 # (see basis_set_project_property()):
 #
-# - <Project>_IMPORTED_TARGETS   : List of imported targets.
-# - <Project>_IMPORTED_TYPES     : Types of imported targets.
-# - <Project>_IMPORTED_LOCATIONS : Locations of imported target files.
-# - <Project>_IMPORTED_RANKS     : Rank of current imported locations. This rank
-#                                  value is used to decide whether the current
-#                                  location takes precedence over another imported
-#                                  location. For example, IMPORTED_LOCATION_<a>,
-#                                  may be preferred over IMPORTED_LOCATION_<b>.
-#
-# @sa basis_update_imported_location()
+# <table border="0">
+#   <tr>
+#     @tp @b IMPORTED_TARGETS @endtp
+#     <td>List of imported targets.</td>
+#   </tr>
+#   <tr>
+#     @tp @b IMPORTED_TYPES @endtp
+#     <td>Types of imported targets.</td>
+#   </tr>
+#   <tr>
+#     @tp @b IMPORTED_LOCATIONS @endtp
+#     <td>Locations of imported target files.</td>
+#   </tr>
+#   <tr>
+#     @tp @b IMPORTED_RANKS @endtp
+#     <td>Rank of current imported locations. This rank value is used to decide
+#         whether the current location takes precedence over another imported
+#         location. For example, IMPORTED_LOCATION_&lt;a&gt;, may be preferred
+#         over IMPORTED_LOCATION_&lt;b&gt;.
+#   </tr>
+# </table>
 #
 # @param [in] TARGET Name (UID) of the imported target.
 # @param [in] TYPE   Type of the imported target.
+#
+# @sa basis_update_imported_location()
 function (basis_add_imported_target TARGET TYPE)
   # if target was added before
   basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)

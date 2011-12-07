@@ -1,10 +1,18 @@
 ##############################################################################
 # @file  BasisScriptConfig.cmake
-# @brief Default script configuration.
+# @brief BASIS script configuration.
 #
 # @note The file BasisScriptConfig.cmake is automatically generated
 #       by BASIS from the template file ScriptConfig.cmake.in which is part
 #       of the BASIS installation.
+#
+# This script configuration file is included before the default script
+# configuration file ScriptConfig.cmake which is part of the package itself.
+# Therefore, the BASIS script configuration can be overwritten by the
+# default script configuration of the project, which in turn can be overwritten
+# specifically for each script by specifying a script-specific script
+# configuration using the @c CONFIG and/or @c CONFIG_FILE options of the
+# basis_add_executable() or basis_add_library() command, respectively.
 #
 # See @ref ScriptTargets for details.
 #
@@ -13,8 +21,12 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup CMakeTemplates
+# @ingroup BasisScriptConfig
 ##############################################################################
+
+## @addtogroup BasisScriptConfig
+# @{
+
 
 # ============================================================================
 # script attributes
@@ -140,3 +152,7 @@ if ("@PROJECT_NAME@" STREQUAL "BASIS")
 else ()
   basis_set_script_path (BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@")
 endif ()
+
+
+## @}
+# end of Doxygen group

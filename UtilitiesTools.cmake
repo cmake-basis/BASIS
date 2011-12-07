@@ -133,11 +133,11 @@ set (BASIS_BASH_FUNCTION_realpath "
 # exec_dir=`realpath $0`
 # @endcode
 #
-# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-#
 # @param [in] path File or directory path.
 #
 # @returns Canonical path.
+#
+# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
 function realpath
 {
     local path=$1
@@ -192,8 +192,8 @@ source \"\${_\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_DIR}/\@LIBRARY_DIR\@
 # auxiliary sources
 # ============================================================================
 
-##############################################################################
-# @brief Configure auxiliary C++ source files.
+# ----------------------------------------------------------------------------
+## @brief Configure auxiliary C++ source files.
 #
 # This function configures the following default auxiliary source files
 # which can be used by the projects which are making use of BASIS.
@@ -253,7 +253,6 @@ source \"\${_\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_DIR}/\@LIBRARY_DIR\@
 # @param [out] PUBLIC_HEADERS Auxiliary headers that should be installed.
 #
 # @returns Sets the variables specified by the @c [out] parameters.
-
 function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   if (BASIS_VERBOSE)
     message (STATUS "Configuring auxiliary sources...")
@@ -349,12 +348,11 @@ function (basis_configure_auxiliary_sources SOURCES HEADERS PUBLIC_HEADERS)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Add include directories of auxiliary sources to search path.
+# ----------------------------------------------------------------------------
+## @brief Add include directories of auxiliary sources to search path.
 #
 # @param [in] SOURCES_LIST Name of list of source files.
 # @param [in] HEADERS_LIST Name of list of header files.
-
 function (basis_use_auxiliary_sources SOURCES_LIST HEADERS_LIST)
   # Attention: BASIS includes public header files which are named the
   #            same as system-wide header files. Therefore, avoid to add
@@ -390,9 +388,8 @@ function (basis_use_auxiliary_sources SOURCES_LIST HEADERS_LIST)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Configure auxiliary modules for scripting languages.
-
+# ----------------------------------------------------------------------------
+## @brief Configure auxiliary modules for scripting languages.
 function (basis_configure_auxiliary_modules)
   basis_get_project_property (PYTHON PROPERTY PROJECT_USES_PYTHON_UTILITIES)
   basis_get_project_property (PERL   PROPERTY PROJECT_USES_PERL_UTILITIES)
@@ -450,8 +447,8 @@ function (basis_configure_auxiliary_modules)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Configure ExecutibleTargetInfo modules.
+# ----------------------------------------------------------------------------
+## @brief Configure ExecutibleTargetInfo modules.
 #
 # This function generates the initialization code of the ExecutableTargetInfo
 # module for different supported programming languages. In case of C++, the
@@ -463,7 +460,6 @@ endfunction ()
 # after all targets have been added and finalized (in case of custom targets).
 #
 # @returns Nothing.
-
 function (basis_configure_ExecutableTargetInfo)
   # --------------------------------------------------------------------------
   # ExecutableTargetInfo not used?
@@ -745,4 +741,4 @@ endfunction ()
 
 
 ## @}
-# End Doxygen group
+# end of Doxygen group

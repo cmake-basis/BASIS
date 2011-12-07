@@ -17,12 +17,13 @@ else ()
 endif ()
 
 
+## @addtogroup CMakeUtilities
+#  @{
+
+
 # ============================================================================
 # common commands
 # ============================================================================
-
-## @addtogroup CMakeUtilities
-#  @{
 
 ## @brief The Python interpreter.
 #
@@ -30,18 +31,11 @@ endif ()
 find_program (BASIS_CMD_PYTHON NAMES python DOC "The Python interpreter (python).")
 mark_as_advanced (BASIS_CMD_PYTHON)
 
-## @}
-# end of Doxygen group
-
-
-## @addtogroup CMakeAPI
-#  @{
-
-
 # ============================================================================
 # find other packages
 # ============================================================================
 
+# ----------------------------------------------------------------------------
 if (BASIS_DEBUG)
   macro (find_package PACKAGE)
     message ("** Looking for package ${PACKAGE}...")
@@ -62,6 +56,8 @@ endif ()
 # @param [in] ARGN    Optional arguments to find_package().
 #
 # @retval <PACKAGE>_FOUND Whether the given package was found.
+#
+# @ingroup CMakeAPI
 macro (basis_find_package PACKAGE)
   if (BASIS_DEBUG)
     message ("** basis_find_package()")
@@ -123,6 +119,8 @@ endmacro ()
 #       basis_target_link_libraries() are absolute paths to the library files.
 #       Therefore, this code is commented and not used. It remains here as a
 #       reminder only.
+#
+# @ingroup CMakeAPI
 macro (basis_use_package PACKAGE)
   foreach (A IN ITEMS "WORKAROUND FOR NOT BEING ABLE TO USE RETURN")
     if (BASIS_DEBUG)
@@ -246,6 +244,8 @@ endfunction ()
 ## @brief Alias for the overwritten get_filename_component() function.
 #
 # @sa get_filename_component()
+#
+# @ingroup CMakeAPI
 macro (basis_get_filename_component)
   get_filename_component (${ARGN})
 endmacro ()
@@ -266,6 +266,8 @@ endmacro ()
 #                   with ABSOLUTE as last argument.
 #
 # @returns Sets the variable named by the first argument to the relative path.
+#
+# @ingroup CMakeAPI
 function (basis_get_relative_path REL BASE PATH)
   basis_get_filename_component (PATH "${PATH}" ABSOLUTE)
   basis_get_filename_component (BASE "${BASE}" ABSOLUTE)
@@ -401,6 +403,8 @@ endmacro ()
 # @param [in]  ARG3 Path to directory or file inside install tree.
 #                   If this argument is not given, PATH is used for both
 #                   the build and install tree version of the script.
+#
+# @ingroup CMakeAPI
 function (basis_set_script_path VAR PATH)
   message (FATAL_ERROR "This function can only be used in ScriptConfig.cmake.in!")
 endfunction ()
@@ -439,6 +443,8 @@ endfunction ()
 # @param [in] ARGN  Arguments as accepted by set_property().
 #
 # @returns Sets the specified property.
+#
+# @ingroup CMakeAPI
 function (basis_set_property SCOPE)
   if (SCOPE MATCHES "^TARGET$|^TEST$")
     set (IDX 0)
@@ -468,6 +474,8 @@ endfunction ()
 # @param [in]  ARGN    Arguments as accepted by get_property().
 #
 # @returns Sets @p VAR to the value of the requested property.
+#
+# @ingroup CMakeAPI
 function (basis_get_property VAR SCOPE ELEMENT)
   if (SCOPE MATCHES "^TARGET$")
     basis_get_target_uid (ELEMENT "${ELEMENT}")
@@ -581,12 +589,12 @@ endmacro ()
 # Use basis_list_to_delimited_string() to specify a delimiter such as a
 # whitespace character or comma (,) as delimiter.
 #
-# @sa basis_list_to_delimited_string()
-#
 # @param [out] STR  Output string.
 # @param [in]  ARGN Input list.
 #
 # @returns Sets @p STR to the resulting string.
+#
+# @sa basis_list_to_delimited_string()
 function (basis_list_to_string STR)
   set (OUT)
   foreach (ELEM ${ARGN})
@@ -677,8 +685,6 @@ endfunction ()
 # @param [in]  COMPONENT   Third argument to get_filename_component().
 #
 # @returns Target name derived from @p SOURCE_FILE.
-#
-# @ingroup CMakeUtilities
 function (basis_get_source_target_name TARGET_NAME SOURCE_FILE COMPONENT)
   # remove ".in" suffix from file name
   string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
@@ -738,12 +744,12 @@ endmacro ()
 # @note At the moment, BASIS does not support modules which themselves have
 #       modules again. This would require a more nested namespace hierarchy.
 #
-# @sa basis_get_target_name()
-#
 # @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
+#
+# @sa basis_get_target_name()
 function (basis_get_target_uid TARGET_UID TARGET_NAME)
   # in case of a leading namespace separator, do not modify target name
   if (TARGET_NAME MATCHES "^\\.")
@@ -806,10 +812,10 @@ endfunction ()
 # if this option is @c ON, the returned target UID is may not be the
 # actual name of a CMake target.
 #
-# @sa basis_get_target_uid()
-#
 # @param [out] TARGET_UID  Fully-qualified target UID.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
+#
+# @sa basis_get_target_uid()
 function (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
   basis_get_target_uid (UID "${TARGET_NAME}")
   if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
@@ -840,12 +846,12 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Get "local" target name, i.e., BASIS target name.
 #
-# @sa basis_get_target_uid()
-#
 # @param [out] TARGET_NAME Target name used as argument to BASIS functions.
 # @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
 #
 # @returns Sets @p TARGET_NAME to the name of the build target with UID @p TARGET_UID.
+#
+# @sa basis_get_target_uid()
 function (basis_get_target_name TARGET_NAME TARGET_UID)
   # make sure we have a fully-qualified target UID
   basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
@@ -866,8 +872,6 @@ endfunction ()
 # @param [in] TARGET_NAME Desired target name.
 #
 # @returns Nothing.
-#
-# @ingroup CMakeUtilities
 function (basis_check_target_name TARGET_NAME)
   # reserved target name ?
   list (FIND BASIS_RESERVED_TARGET_NAMES "${TARGET_NAME}" IDX)
@@ -919,12 +923,12 @@ endmacro ()
 # The function basis_get_test_name() can be used to convert the unique test
 # name, the test UID, back to the original test name passed to this function.
 #
-# @sa basis_get_test_name()
-#
 # @param [out] TEST_UID  "Global" test name, i.e., actual CTest test name.
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
+#
+# @sa basis_get_test_name()
 macro (basis_get_test_uid TEST_UID TEST_NAME)
   if (TEST_UID MATCHES "\\.")
     set ("${TEST_UID}" "${TEST_NAME}")
@@ -951,10 +955,10 @@ endmacro ()
 # if this option is @c ON, the returned test UID may not be the
 # actual name of a CMake test.
 #
-# @sa basis_get_test_uid()
-#
 # @param [out] TEST_UID  Fully-qualified test UID.
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
+#
+# @sa basis_get_test_uid()
 macro (basis_get_fully_qualified_test_uid TEST_UID TEST_NAME)
   if (TEST_UID MATCHES "\\.")
     set ("${TEST_UID}" "${TEST_NAME}")
@@ -981,12 +985,12 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Get "local" test name, i.e., BASIS test name.
 #
-# @sa basis_get_test_uid()
-#
 # @param [out] TEST_NAME Test name used as argument to BASIS functions.
 # @param [in]  TEST_UID  "Global" test name, i.e., actual CTest test name.
 #
 # @returns Sets @p TEST_NAME to the name of the test with UID @p TEST_UID.
+#
+# @sa basis_get_test_uid()
 macro (basis_get_test_name TEST_NAME TEST_UID)
   if (TEST_UID MATCHES "([^.]+)$")
     set ("${TEST_NAME}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
@@ -1003,8 +1007,6 @@ endmacro ()
 # @param [in] TEST_NAME Desired test name.
 #
 # @returns Nothing.
-#
-# @ingroup CMakeUtilities
 function (basis_check_test_name TEST_NAME)
   list (FIND BASIS_RESERVED_TEST_NAMES "${TEST_NAME}" IDX)
   if (NOT IDX EQUAL -1)
@@ -1038,8 +1040,6 @@ endfunction ()
 #
 # @param [out] LANGUAGE Detected programming language.
 # @param [in]  ARGN     List of source code files.
-#
-# @ingroup CMakeUtilities
 function (basis_get_source_language LANGUAGE)
   set (LANGUAGE_OUT)
   # iterate over source files
@@ -1219,8 +1219,6 @@ endfunction ()
 # @c LOCATION property of CMake targets and should be used instead of
 # reading this porperty.
 #
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#prop_tgt:LOCATION
-#
 # @param [out] VAR         Path of build target output file.
 # @param [in]  TARGET_NAME Name of build target.
 # @param [in]  PART        Which file name component of the @c LOCATION
@@ -1232,6 +1230,8 @@ endfunction ()
 #                          of the installed file post installation.
 #
 # @returns Path of output file similar to @c LOCATION property of CMake targets.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#prop_tgt:LOCATION
 function (basis_get_target_location VAR TARGET_NAME PART)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET "${TARGET_UID}")

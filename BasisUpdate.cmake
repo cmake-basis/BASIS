@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  BasisUpdate.cmake
-# @brief Implements automatic file udpate feature.
+# @brief Implements automatic file udpate feature (deprecated).
 #
 # @note The automatic file update works well and the implementation is fine.
 #       However, its use became more and more obsolete during the enhancement
@@ -51,6 +51,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup CMakeUtilities
 ##############################################################################
 
 if (__BASIS_UPDATE_INCLUDED)

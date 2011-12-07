@@ -133,7 +133,7 @@ endif ()
 # ============================================================================
 
 ## @brief Patterns to be ignored when creating source package.
-# @ingroup CMakeAPI
+# @ingroup BasisSettings
 set (
   CPACK_SOURCE_IGNORE_FILES
     "${CPACK_SOURCE_IGNORE_FILES}"
@@ -186,20 +186,20 @@ include (CPack)
 ## @addtogroup CMakeAPI
 #  @{
 
-##############################################################################
-# @brief Add component group.
+
+# ----------------------------------------------------------------------------
+## @brief Add component group.
 #
 # @attention This functionality is not yet entirely implemented.
 # @todo Come up and implement components concept which fits into superproject concept.
-#
-# @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
-# @sa cpack_add_component_group()
 #
 # @param [in] GRPNAME Name of the component group.
 # @param [in] ARGN    Further arguments passed to cpack_add_component_group().
 #
 # @returns Adds the component group @p GRPNAME.
-
+#
+# @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
+# @sa cpack_add_component_group()
 function (basis_add_component_group GRPNAME)
   set (OPTION_NAME)
   set (PARENT_GROUP)
@@ -225,20 +225,19 @@ function (basis_add_component_group GRPNAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Add component.
+# ----------------------------------------------------------------------------
+## @brief Add component.
 #
 # @attention This functionality is not yet entirely implemented.
 # @todo Come up and implement components concept which fits into superproject concept.
-#
-# @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
-# @sa cpack_add_component()
 #
 # @param [in] COMPNAME Name of the component.
 # @param [in] ARGN     Further arguments passed to cpack_add_component().
 #
 # @returns Adds the component named @p COMPNAME.
-
+#
+# @sa http://www.cmake.org/pipermail/cmake/2008-August/023336.html
+# @sa cpack_add_component()
 function (basis_add_component COMPNAME)
   set (OPTION_NAME)
   set (GROUP)
@@ -268,35 +267,36 @@ function (basis_add_component COMPNAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Add pre-configured install type.
-#
-# @sa CPack.cmake
-# @sa cpack_add_install_type ()
+# ----------------------------------------------------------------------------
+## @brief Add pre-configured install type.
 #
 # @param [in] ARGN Arguments for cpack_add_install_type().
 #
 # @returns Adds a pre-configured installation type.
-
+#
+# @sa CPack.cmake
+# @sa cpack_add_install_type ()
 function (basis_add_install_type)
   cpack_add_install_type (${ARGN})
 endfunction ()
 
-##############################################################################
-# @brief Configure installation-time downloads of selected components.
-#
-# @sa CPack.cmake
-# @sa cpack_configure_downloads()
+# ----------------------------------------------------------------------------
+## @brief Configure installation-time downloads of selected components.
 #
 # @param [in] ARGN Arguments for cpack_configure_downloads().
 #
 # @returns Nothing.
-
+#
+# @sa CPack.cmake
+# @sa cpack_configure_downloads()
 function (basis_configure_downloads)
   cpack_configure_downloads (${ARGN})
 endfunction ()
 
+
 ## @}
+# end of Doxygen group
+
 
 # ----------------------------------------------------------------------------
 # include components definition

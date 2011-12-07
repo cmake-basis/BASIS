@@ -102,11 +102,11 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Replaces CMake's set_tests_properties() command.
 #
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property
-#
 # @param [in] ARGN Arguments for set_tests_property().
 #
 # @returns Sets the given properties of the specified test.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property
 function (basis_set_tests_properties)
   set (UIDS)
   list (GET ARGN 0 ARG)
@@ -122,13 +122,13 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Replaces CMake's get_test_property() command.
 #
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property
-#
 # @param [out] VAR       Property value.
 # @param [in]  TEST_NAME Name of test.
 # @param [in]  ARGN      Remaining arguments of get_test_property().
 #
 # @returns Sets @p VAR to the value of the requested property.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property
 function (basis_get_test_property VAR TEST_NAME)
   basis_get_test_uid (TEST_UID "${TEST_NAME}")
   get_test_property (VALUE "${TEST_UID}" ${ARGN})

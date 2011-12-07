@@ -39,10 +39,14 @@ mark_as_advanced (BASIS_CMD_SVN2CL)
 ## @addtogroup CMakeUtilities
 #  @{
 
+
 ## @brief Default Doxygen configuration.
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
+
 ## @}
+# end of Doxygen group
+
 
 # ============================================================================
 # helper
@@ -51,11 +55,11 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 ## @addtogroup CMakeUtilities
 #  @{
 
-##############################################################################
-# @brief Get default Doxygen filter patterns.
+
+# ----------------------------------------------------------------------------
+## @brief Get default Doxygen filter patterns.
 #
 # @param [out] FILTER_PATTERNS List of default Doxygen filter patterns.
-
 function (basis_default_doxygen_filters FILTER_PATTERNS)
   set (PATTERNS)
 
@@ -103,14 +107,17 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
   set ("${FILTER_PATTERNS}" "${PATTERNS}" PARENT_SCOPE)
 endfunction ()
 
+
 ## @}
+# end of Doxygen group
+
 
 # ============================================================================
 # adding / generating documentation
 # ============================================================================
 
-##############################################################################
-# @brief Add documentation target.
+# ----------------------------------------------------------------------------
+## @brief Add documentation target.
 #
 # This function is especially used to add a custom target to the "doc" target
 # which is used to generate documentation from input files such as in
@@ -123,7 +130,7 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
-#     @tp @b COMPONENT @endtp
+#     @tp @b COMPONENT component @endtp
 #     <td>Name of the component this documentation belongs to.
 #         Defaults to @c BASIS_LIBRARY_COMPONENT for documentation generated
 #         from in-source comments and @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
@@ -177,28 +184,28 @@ endfunction ()
 #     @tp @b PROJECT_NUMBER version @endtp
 #     <td>Value for Doxygen's @c PROJECT_NUMBER tag which is used
 #         to specify the project version number.@n
-#         Default: @c PROJECT_VERSION.</td>
+#         Default: @c PROJECT_VERSION_AND_REVISION.</td>
 #   </tr>
 #   <tr>
 #     @tp @b INPUT path1 [path2 ...] @endtp
 #     <td>Value for Doxygen's @c INPUT tag which is used to specify input
 #         directories/files.@n
-#         Default: @c PROJECT_CODE_DIR    @c BINARY_CODE_DIR
-#                  @c PROJECT_INCLUDE_DIR @c BINARY_INCLUDE_DIR.</td>
+#         Default: @c PROJECT_CODE_DIR, @c BINARY_CODE_DIR,
+#                  @c PROJECT_INCLUDE_DIR, @c BINARY_INCLUDE_DIR.</td>
 #   </tr>
 #   <tr>
-#     @tp @b INPUT_FILTER @endtp
+#     @tp @b INPUT_FILTER filter @endtp
 #     <td>
 #       Value for Doxygen's @c INPUT_FILTER tag which can be used to
 #       specify a default filter for all input files. Set to either one of
 #       @c None, @c NONE, or @c none to use no input filter.@n
-#       Default: @c BASIS_DOXYGEN_INPUT_FILTER.
+#       Default: @c doxyfilter of BASIS.
 #     </td>
 #   <tr>
 #     @tp @b FILTER_PATTERNS pattern1 [pattern2 ...]</td> @endtp
 #     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
 #         specify filters on a per file pattern basis.@n
-#         Default: @c BASIS_DOXYGEN_FILTER_PATTERNS.</td>
+#         Default: BASIS Doxygen filter patterns.</td>
 #   </tr>
 #   <tr>
 #     @tp @b EXCLUDE_PATTERNS pattern1 [pattern2 ...] @endtp
@@ -215,7 +222,7 @@ endfunction ()
 #         Default: <tt>CMAKE_CURRENT_BINARY_DIR/TARGET_NAME</tt>.</td>
 #   </tr>
 #   <tr>
-#     @tp @b COLS_IN_ALPHA_INDEX @endtp
+#     @tp @b COLS_IN_ALPHA_INDEX n @endtp
 #     <td>Number of columns in alphabetical index if @p GENERATE_HTML is @c YES.
 #         Default: 3.</td>
 #   </tr>
@@ -238,12 +245,13 @@ endfunction ()
 # </table>
 # @n
 # See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
-# documentation of the Doxygen tags.
+# documentation of the Doxygen tags. If none of the <tt>GENERATE_&lt;*&gt;</tt>
+# options is given, @c GENERATE_HTML is set to @c YES.
 # @n@n
 # Example:
 # @code
 # basis_add_doc (
-#   API
+#   api
 #   GENERATOR Doxygen
 #     DOXYFILE        "Doxyfile.in"
 #     PROJECT_NAME    "${PROJECT_NAME}"
@@ -266,13 +274,13 @@ endfunction ()
 #     @tp @b AUTHORS authors @endtp
 #     <td>Authors file for svn2cl which maps SVN user names to real names.
 #         On each line, this files must have an entry such as
-#         <tt>schuha@UPHS.PENNHEALTH.PRV:Andreas Schuh</tt>.
+#         <tt>%schuha@UPHS.PENNHEALTH.PRV:Andreas Schuh</tt>.
 #         Default: @c BASIS_SVN_USERS_FILE, which is part of BASIS and lists all
 #         SVN users at SBIA.</td>
 #   </tr>
 #   <tr>
 #     @tp @b BREAK_BEFORE_MSG num @endtp
-#     <td>.</td>
+#     <td>Add n line breaks between the paths and the log message. Default: 1</td>
 #   </tr>
 #   <tr>
 #     @tp @b GROUP_BY_DAY @endtp
@@ -288,11 +296,11 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b LINELEN num @endtp
-#     <td>.</td>
+#     <td>Maximum length of output lines.</td>
 #   </tr>
 #   <tr>
 #     @tp @b OUTPUT_NAME filename @endtp
-#     <td>.</td>
+#     <td>Output changelog to file @c filename. Default: @c ChangeLog.</td>
 #   </tr>
 #   <tr>
 #     @tp @b PATH dir @endtp
@@ -336,7 +344,6 @@ endfunction ()
 #          generator.
 #
 # @ingroup CMakeAPI
-
 function (basis_add_doc TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "" "GENERATOR;COMPONENT;DESTINATION" "" ${ARGN})
@@ -484,6 +491,11 @@ function (basis_add_doc TARGET_NAME)
     if (EXISTS "${BINARY_CONFIG_DIR}/BasisSettings.cmake")
       list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/BasisSettings.cmake")
     endif ()
+    if (EXISTS "${BINARY_CONFIG_DIR}/Settings.cmake")
+      list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/Settings.cmake")
+    elseif (EXISTS "${PROJECT_CONFIG_DIR}/Settings.cmake")
+      list (APPEND DOXYGEN_INPUT "${PROJECT_CONFIG_DIR}/Settings.cmake")
+    endif ()
     if (EXISTS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
       list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
     endif ()
@@ -493,11 +505,11 @@ function (basis_add_doc TARGET_NAME)
     if (EXISTS "${BINARY_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
       list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
     endif ()
-    if (EXISTS "${BINARY_CONFIG_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
-      list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+    if (EXISTS "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+      list (APPEND DOXYGEN_INPUT "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
     endif ()
-    if (EXISTS "${BINARY_CONFIG_DIR}/${PROJECT_NAME}Use.cmake")
-      list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/${PROJECT_NAME}Use.cmake")
+    if (EXISTS "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Use.cmake")
+      list (APPEND DOXYGEN_INPUT "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Use.cmake")
     endif ()
     # input directories
     if (EXISTS "${BINARY_INCLUDE_DIR}")
@@ -522,6 +534,8 @@ function (basis_add_doc TARGET_NAME)
     # add .dox files as input
     file (GLOB_RECURSE DOX_FILES "${PROJECT_DOC_DIR}/*.dox")
     list (APPEND DOXYGEN_INPUT ${DOX_FILES})
+    # add .dox files of BASIS modules
+    list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Modules.dox")
     # add .dox files of used BASIS utilities
     list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Utilities.dox")
     list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/CxxUtilities.dox")

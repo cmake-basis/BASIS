@@ -21,8 +21,9 @@ endif ()
 # options
 # ============================================================================
 
-## @addtogroup CMakeAPI
+## @addtogroup BasisSettings
 #  @{
+
 
 ## @brief Enable/Disable invocation of MATLAB Compiler in MATLAB mode.
 option (
@@ -33,17 +34,21 @@ option (
 
 mark_as_advanced (BASIS_MCC_MATLAB_MODE)
 
+
 ## @}
+# end of Doxygen group
+
 
 # ============================================================================
 # build configuration
 # ============================================================================
 
+## @addtogroup BasisSettings
+#  @{
+
+
 ## @brief Script used to invoke the MATLAB Compiler in MATLAB mode.
 set (BASIS_SCRIPT_MCC "${CMAKE_CURRENT_LIST_DIR}/runmcc.m")
-
-## @addtogroup CMakeAPI
-#  @{
 
 ## @brief Compile flags used to build MATLAB Compiler targets.
 set (
@@ -71,14 +76,17 @@ mark_as_advanced (BASIS_MEX_FLAGS)
 mark_as_advanced (BASIS_MCC_TIMEOUT)
 mark_as_advanced (BASIS_MEX_TIMEOUT)
 
+
 ## @}
+# end of Doxygen group
+
 
 # ============================================================================
 # utilities
 # ============================================================================
 
-##############################################################################
-# @brief Determine version of MATLAB installation.
+# ----------------------------------------------------------------------------
+## @brief Determine version of MATLAB installation.
 #
 # @param [out] VERSION Value returned by the "version" command of MATLAB or
 #                      an empty string if execution of MATLAB failed.
@@ -86,7 +94,6 @@ mark_as_advanced (BASIS_MEX_TIMEOUT)
 # @returns Sets the variable named by @p VERSION to the full MATLAB version.
 #
 # @ingroup CMakeUtilities
-
 function (basis_get_full_matlab_version VERSION)
   if (NOT MATLAB_EXECUTABLE)
     message (FATAL_ERROR "MATLAB_EXECUTABLE not found. Forgot to add MATLAB as dependency?")
@@ -126,8 +133,8 @@ function (basis_get_full_matlab_version VERSION)
   set (VERSION "${VERSION}" PARENT_SCOPE)
 endfunction ()
 
-##############################################################################
-# @brief Determine version of MATLAB installation.
+# ----------------------------------------------------------------------------
+## @brief Determine version of MATLAB installation.
 #
 # @param [out] ARGN The first argument ARGV0 is set to the version of the
 #                   MATLAB installation, i.e., "7.9.0", for example, or an
@@ -141,7 +148,6 @@ endfunction ()
 #          MATLAB version.
 #
 # @ingroup CMakeUtilities
-
 function (basis_get_matlab_version)
   if (ARGC GREATER 1)
     message (FATAL_ERROR "basis_get_matlab_version (): Invalid number of arguments.")
@@ -163,8 +169,8 @@ function (basis_get_matlab_version)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Determine release version of MATLAB installation.
+# ----------------------------------------------------------------------------
+## @brief Determine release version of MATLAB installation.
 #
 # @param [out] ARGN The first argument ARGV0 is set to the release version of
 #                   the MATLAB installation, i.e., "R2009b", for example,
@@ -178,7 +184,6 @@ endfunction ()
 #          of MATLAB.
 #
 # @ingroup CMakeUtilities
-
 function (basis_get_matlab_release)
   if (ARGC GREATER 1)
     message (FATAL_ERROR "basis_get_matlab_release (): Invalid number of arguments.")
@@ -200,8 +205,8 @@ function (basis_get_matlab_release)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Determine extension of MEX-files for this architecture.
+# ----------------------------------------------------------------------------
+## @brief Determine extension of MEX-files for this architecture.
 #
 # @param [out] ARGN The first argument ARGV0 is set to the extension of
 #                   MEX-files (excluding '.'). If the CMake variable MEX_EXT
@@ -215,7 +220,6 @@ endfunction ()
 #          platform-specific extension of MEX-files.
 #
 # @ingroup CMakeUtilities
-
 function (basis_mexext)
   # default return value
   set (MEXEXT "${MEX_EXT}")
@@ -278,8 +282,8 @@ function (basis_mexext)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief This function writes a MATLAB M-file with addpath() statements.
+# ----------------------------------------------------------------------------
+## @brief This function writes a MATLAB M-file with addpath() statements.
 #
 # This function writes an MATLAB M-file into the top directory of the build
 # tree which contains an addpath() statement for each directory that was added
@@ -288,7 +292,6 @@ endfunction ()
 # @returns Creates file add_\<project\>_paths.m in the current binary directory.
 #
 # @ingroup CMakeUtilities
-
 function (basis_create_addpaths_mfile)
   set (MFILE "${CMAKE_CURRENT_BINARY_DIR}/add_${PROJECT_NAME_LOWER}_paths.m")
   file (WRITE "${MFILE}" "% DO NOT edit. This file is automatically generated by BASIS.\n")
@@ -302,8 +305,8 @@ endfunction ()
 # MEX target
 # ============================================================================
 
-##############################################################################
-# @brief Add MEX target.
+# ----------------------------------------------------------------------------
+## @brief Add MEX target.
 #
 # This function is used to add a shared library target which is built
 # using the MATLAB MEX script (mex). It is invoked by basis_add_library().
@@ -320,8 +323,6 @@ endfunction ()
 #       by either basis_project_finalize() or basis_superproject_finalize().
 #       This way, the properties such as the OUTPUT_NAME of the custom
 #       target can be still modified.
-#
-# @sa basis_add_library()
 #
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
@@ -347,8 +348,9 @@ endfunction ()
 #
 # @returns Adds custom target to build MEX-file using the MEX script.
 #
+# @sa basis_add_library()
+#
 # @ingroup CMakeUtilities
-
 function (basis_add_mex_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -445,14 +447,12 @@ function (basis_add_mex_target TARGET_NAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Finalize addition of MEX target.
+# ----------------------------------------------------------------------------
+## @brief Finalize addition of MEX target.
 #
 # This function uses the properties of the custom MEX-file target added by
 # basis_add_mex_target() to create the custom build command and adds this
 # build command as dependency of this added target.
-#
-# @sa basis_add_mex_target()
 #
 # @param [in] TARGET_UID "Global" target name. If this function is used
 #                        within the same project as basis_add_mex_target(),
@@ -462,8 +462,9 @@ endfunction ()
 #          basis_add_mex_target() which actually perform the invocation of
 #          the MEX script.
 #
+# @sa basis_add_mex_target()
+#
 # @ingroup CMakeUtilities
-
 function (basis_add_mex_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
   basis_get_target_uid (TARGET_UID "${TARGET_UID}")
@@ -768,8 +769,8 @@ endfunction ()
 # MATLAB Compiler target
 # ============================================================================
 
-##############################################################################
-# @brief Add MATLAB Compiler target.
+# ----------------------------------------------------------------------------
+## @brief Add MATLAB Compiler target.
 #
 # This function is used to add an executable or library target which is built
 # using the MATLAB Compiler (MCC). It is invoked by basis_add_executable()
@@ -795,9 +796,6 @@ endfunction ()
 #       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
 #       Moreover, no installation rules are added. Test executables are further
 #       not exported, regardless of whether NO_EXPORT is given or not.
-#
-# @sa basis_add_executable()
-# @sa basis_add_library()
 #
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
@@ -840,8 +838,10 @@ endfunction ()
 # @returns Adds custom target which builds depending on the @p TYPE argument
 #          either an executable or a shared library using the MATLAB Compiler.
 #
+# @sa basis_add_executable()
+# @sa basis_add_library()
+#
 # @ingroup CMakeUtilities
-
 function (basis_add_mcc_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
@@ -1023,14 +1023,12 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
 endfunction ()
 
-##############################################################################
-# @brief Finalize addition of MATLAB Compiler target.
+# ----------------------------------------------------------------------------
+## @brief Finalize addition of MATLAB Compiler target.
 #
 # This function uses the properties of the custom MATLAB Compiler target
 # added by basis_add_mcc_target() to create the custom build command and
 # adds this build command as dependency of this added target.
-#
-# @sa basis_add_mcc_target()
 #
 # @param [in] TARGET_UID "Global" target name. If this function is used
 #                        within the same project as basis_add_mcc_target(),
@@ -1040,8 +1038,9 @@ endfunction ()
 #          of the MATLAB Compiler using the values of the properties of
 #          the target with UID @p TARGET_UID.
 #
+# @sa basis_add_mcc_target()
+#
 # @ingroup CMakeUtilities
-
 function (basis_add_mcc_target_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
   basis_get_target_uid (TARGET_UID "${TARGET_UID}")

@@ -13,19 +13,17 @@
 # option is given. The name of the CMake variables must be equal the
 # name of the arguments to the execute_process() command.
 #
-# @sa http://www.cmake.org/cmake/help/cmake2.6docs.html#command:execute_process
-#
 # Arguments of execute_process() which are considered:
 #
-# - COMMAND
-# - WORKING_DIRECTORY
-# - TIMEOUT
-# - OUTPUT_FILE
-# - ERROR_FILE
-# - OUTPUT_QUIET
-# - ERROR_QUIET
-# - OUTPUT_STRIP_TRAILING_WHITESPACE
-# - ERROR_STRIP_TRAILING_WHITESPACE
+# - @b COMMAND
+# - @b WORKING_DIRECTORY
+# - @b TIMEOUT
+# - @b OUTPUT_FILE
+# - @b ERROR_FILE
+# - @b OUTPUT_QUIET
+# - @b ERROR_QUIET
+# - @b OUTPUT_STRIP_TRAILING_WHITESPACE
+# - @b ERROR_STRIP_TRAILING_WHITESPACE
 #
 # Additionally, matching expressions (separated by ';') to identify error messages
 # in the output streams stdout and stderr can be specified by the input argument
@@ -56,6 +54,8 @@
 # cmake -DCOMMAND='ls -l' -DWORKING_DIRECTORY='/' -DTIMEOUT=60
 #       -P ExecuteProcess.cmake
 # @endcode
+#
+# @sa http://www.cmake.org/cmake/help/cmake2.6docs.html#command:execute_process
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

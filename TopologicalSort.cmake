@@ -1,3 +1,7 @@
+##############################################################################
+# @file  TopologicalSort.cmake
+# @brief CMake implementation of topological sorting algorithm.
+#
 # Perform a reverse topological sort on the given LIST.
 #
 #   topological_sort(my_list "MY_" "_EDGES")
@@ -26,6 +30,8 @@
 #  With the involcation of topological_sort shown above and these
 #  variables, the resulting reverse topological ordering will be b, a,
 #  c.
+#
+# @ingroup CMakeUtilities
 
 ##############################################################################
 # Modified from Boost Utilities

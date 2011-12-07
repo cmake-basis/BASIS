@@ -10,6 +10,8 @@
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisConfig
 ##############################################################################
 
 # ============================================================================
@@ -85,22 +87,23 @@ if (NOT @PROJECT_IS_MODULE@)
     basis_set_config (MODULES_REQUESTED "${${NS}MODULES_ENABLED}")
   endif()
 
-  foreach (M IN LISTS ${NS}MODULES_REQUESTED)
+  foreach (${NS}MODULE IN LISTS ${NS}MODULES_REQUESTED)
     # include configuration files of modules
-    set (${M}_CONFIG_PREFIX "${NS}${M}_")
-    include ("@MODULES_DIR_CONFIG@/${M}/${M}Config.cmake")
-    unset (${M}_CONFIG_PREFIX)
+    set (${${NS}MODULE}_CONFIG_PREFIX "${NS}${MODULE}_")
+    include ("@MODULES_DIR_CONFIG@/${${NS}MODULE}/${${NS}MODULE}Config.cmake")
+    unset (${${NS}MODULE}_CONFIG_PREFIX)
     # append include directories
-    if (${NS}${M}_INCLUDE_DIRS)
-      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIRS})
+    if (${NS}${${NS}MODULE}_INCLUDE_DIRS)
+      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIRS})
     elseif (${NS}${M}_INCLUDE_DIR)
-      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${M}_INCLUDE_DIR})
+      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIR})
     endif ()
     # append library directories
-    if (${NS}${M}_LIBRARY_DIRS)
-      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIRS})
-    elseif (${NS}${M}_LIBARY_DIR)
-      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${M}_LIBRARY_DIR})
+    if (${NS}${${NS}MODULE}_LIBRARY_DIRS)
+      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIRS})
+    elseif (${NS}${${NS}MODULE}_LIBARY_DIR)
+      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIR})
     endif ()
   endforeach ()
+  unset (${NS}MODULE)
 endif ()

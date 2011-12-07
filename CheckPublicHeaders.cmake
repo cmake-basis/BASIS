@@ -1,6 +1,6 @@
 ##############################################################################
-# @file  CompareFiles.cmake
-# @brief CMake script used to check whether public headers were add/removed.
+# @file  CheckPublicHeaders.cmake
+# @brief CMake script used to check whether public headers were added/removed.
 #
 # This script removes the deprecated public headers from the build tree and
 # then throws a fatal error if public header files were added or removed to
