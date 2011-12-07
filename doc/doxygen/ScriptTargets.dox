@@ -76,39 +76,42 @@ command used to add a script target to the build system. The variables defined
 by the script configuration are substituted by their respective values during
 the build of the script target. Note that the CMake code of the script
 configuration is evaluated during the build of the script target, not during
-the configuration of the build system. Therefore, the variables defined in
-the script configuration can be set differently for each of the two builds
-of the script files. If the script configuration is evaluated before the
-configuration of the script file for use inside the build tree, the CMake
-variable @c BUILD_INSTALL_SCRIPT is set to @c FALSE. Otherwise, if the script
-configuration is evaluated during the build of the script for use in the
-installation tree, this variable is set to @c TRUE instead. It can therefore
-be used to set the variables in the script configuration depending on
-whether or not the script is build for use in the build tree or installation
-tree.
+the configuration of the build system. During the configuration of the build
+systems, the script configuration is, however, configured in order to replace
+<tt>\@VARIABLE_NAME\@</tt> patterns in the configuration by their respective
+values as defined by the build configuration (<tt>CMakeLists.txt</tt> files).
+Therefore, the variables defined in the script configuration can be set
+differently for each of the two builds of the script files. If the script
+configuration is evaluated before the configuration of the script file for use
+inside the build tree, the CMake variable @c BUILD_INSTALL_SCRIPT is set to
+@c FALSE. Otherwise, if the script configuration is evaluated during the build
+of the script for use in the installation tree, this variable is set to
+@c TRUE instead. It can therefore be used to set the variables in the script
+configuration depending on whether or not the script is build for use in the
+build tree or the installation tree.
 
-For example, the project structure differs for the build tree and the install
-tree, and hence relative file paths to the different directories of auxiliary
-executables or data files have to be set differently depending on the value
+For example, the project structure differs for the build tree and the
+installation tree. Hence, relative file paths to the different directories
+of data files, for instance, have to be set differently depending on the value
 of @c BUILD_INSTALL_SCRIPT, i.e.,
 @code
 if (BUILD_INSTALL_SCRIPT)
-  set (RUNTIME_DIR "@INSTALL_PREFIX@/@INSTALL_RUNTIME_DIR@")
+  set (DATA_DIR "@INSTALL_PREFIX@/@INSTALL_DATA_DIR@")
 else ()
-  set (RUNTIME_DIR "@BINARY_RUNTIME_DIR@")
+  set (DATA_DIR "@PROJECT_DATA_DIR@")
 endif ()
 @endcode
 
 Avoid the use of absolute paths, however! Instead, use the @c DIR variable
 which is set in the build script to the directory of the output script file
-to make these paths relative to the directory which contains the configured
+to make these paths relative to this directory which contains the configured
 script file. These relative paths which are defined by the script configuration
-shall be used in the script as follows:
+are then used in the script file as follows:
 @code
 # /usr/bin/env bash
 @BASIS_BASH_UTILITIES@
 get_executable_directory EXEC_DIR && readonly EXEC_DIR
-[ $? -eq 0 ] || { echo 'Failed to get directory of this executable'; exit 1; }
+[ $? -eq 0 ] || { echo 'Failed to determine directory of this executable!'; exit 1; }
 readonly DATA_DIR="${EXEC_DIR}/@DATA_DIR@"
 @endcode
 where @c DATA_DIR is the relative path to the required data files as determined
@@ -122,6 +125,11 @@ file of your project:
 @code
 basis_set_script_path(DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 @endcode
+
+Note that most of the more common variables which are useful for the development
+of scripts are already defined by the default script configuration file of
+BASIS. Refer to the documentation of the BasisScriptConfig.cmake file for a
+list of available variables.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
