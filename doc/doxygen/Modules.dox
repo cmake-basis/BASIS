@@ -14,21 +14,6 @@
 
 // ---------------------------------------------------------------------------
 /**
-@defgroup CMakeModules CMake Modules
-@brief    CMake Modules.
-
-The BASIS package in particular provides CMake implementations which
-standardize the build system and support the developer of a project in
-setting up a software development project.
-
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-*/
-
-// ---------------------------------------------------------------------------
-/**
 @defgroup CMakeAPI Public CMake Interface
 @brief    Public interface of CMake modules.
 
@@ -41,7 +26,7 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-@ingroup CMakeModules
+@ingroup BasisModules
 */
 
 // ---------------------------------------------------------------------------
@@ -54,7 +39,7 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-@ingroup CMakeModules
+@ingroup BasisModules
 */
 
 // ---------------------------------------------------------------------------
@@ -67,7 +52,7 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-@ingroup CMakeModules
+@ingroup BasisModules
 */
 
 // ---------------------------------------------------------------------------
@@ -80,7 +65,7 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-@ingroup CMakeModules
+@ingroup BasisModules
 */
 
 // ---------------------------------------------------------------------------
@@ -98,7 +83,7 @@ See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-@ingroup CMakeModules
+@ingroup BasisModules
 */
 
 // ===========================================================================
@@ -107,7 +92,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 // ---------------------------------------------------------------------------
 /**
-@defgroup Tools Command-line Tools
+@defgroup Tools BASIS Tools
 @brief    Basic command-line tools.
 
 The BASIS package not only provides the implementation of the standardized

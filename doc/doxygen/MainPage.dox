@@ -32,7 +32,8 @@ dependent on the BASIS package, similarly to a software implemented in
 C++ depending on third-party libraries used by this implementation, for
 example. Therefore, in order to be able to build a BASIS project,
 the BASIS package has to be installed. Note, however, that BASIS is not
-required during the runtime, i.e., for executing the software.
+necessarily required during the runtime, i.e., for executing the software.
+This depends on which @ref BasisUtilities are used by the project.
 
 @section Links Related Links
 
