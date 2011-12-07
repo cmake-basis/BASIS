@@ -9,7 +9,7 @@
  */
 
 /**
-@defgroup BasisJavaUtilities BASIS Java Utilities
+@defgroup BasisJavaUtilities Java Utilities
 @brief    Auxiliary implementations for use in Java source code.
 
 @todo The Java utilities are not implemented yet.

@@ -9,7 +9,7 @@
  */
 
 /**
-@defgroup BasisPerlUtilities BASIS Perl Utilities
+@defgroup BasisPerlUtilities Perl Utilities
 @brief    Auxiliary implementations for use in Perl scripts.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.

@@ -9,7 +9,7 @@
  */
 
 /**
-@defgroup BasisMatlabUtilities BASIS MATLAB Utilities
+@defgroup BasisMatlabUtilities MATLAB Utilities
 @brief    Auxiliary implementations for use in MATLAB scripts.
 
 @todo The MATLAB utilities are not implemented yet. Note, however, that

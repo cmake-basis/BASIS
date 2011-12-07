@@ -9,7 +9,7 @@
  */
 
 /**
-@defgroup BasisBashUtilities BASIS BASH Utilities
+@defgroup BasisBashUtilities BASH Utilities
 @brief    Auxiliary implementations for use in BASH scripts.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.

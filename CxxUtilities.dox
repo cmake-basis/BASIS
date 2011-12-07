@@ -9,7 +9,7 @@
  */
 
 /**
-@defgroup BasisCxxUtilities BASIS C++ Utilities
+@defgroup BasisCxxUtilities C++ Utilities
 @brief    Auxiliary implementations for use in C++ source code.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
