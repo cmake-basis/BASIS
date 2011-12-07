@@ -22,6 +22,8 @@
 ## @brief Replaces CMake's install() command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
+#
+# @ingroup CMakeAPI
 function (basis_install)
   install (${ARGN})
 endfunction ()
@@ -31,6 +33,8 @@ endfunction ()
 #
 # @param [in] DESTINATION Destination directory.
 # @param [in] ARGN        Further arguments for CMake's install(DIRECTORY) command.
+#
+# @ingroup CMakeAPI
 function (basis_install_directory DESTINATION)
   install (
     DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/"
@@ -51,6 +55,8 @@ endfunction ()
 # @param [in] NEW  The name of the symbolic link.
 #
 # @returns Adds installation command for creating the symbolic link @p NEW.
+#
+# @ingroup CMakeAPI
 function (basis_install_link OLD NEW)
   # Attention: CMAKE_INSTALL_PREFIX must be used instead of INSTALL_PREFIX.
   set (CMD_IN
