@@ -4,8 +4,8 @@
 #
 # This file is included by basis_project_impl() after it looked for the
 # required and optional dependencies and the CMake variables related to the
-# project directory structure was included (see
-# &lt;Project&gt;Directories.cmake file in @c PROJECT_BINARY_DIR).
+# project directory structure was included (see BASISDirectories.cmake file
+# in @c PROJECT_BINARY_DIR, where BASIS is here the name of the project).
 # It is further included before the BasisSettings.cmake file.
 #
 # In particular, build options should be added in this file using CMake's
