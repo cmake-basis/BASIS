@@ -50,12 +50,21 @@ if (BASIS_DEBUG)
 endif ()
 
 # ----------------------------------------------------------------------------
-## @brief Replaces CMake's find_package() command.
+## @brief Find external software package or other project module.
+#
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
+# find_package()</a> command and extends its functionality.
+# In particular, if the given package name is the name of another module
+# of this project (the top-level project), it ensures that this module is
+# found instead of an external package.
 #
 # @param [in] PACKAGE Name of other package.
 # @param [in] ARGN    Optional arguments to find_package().
 #
-# @retval <PACKAGE>_FOUND Whether the given package was found.
+# @retval &lt;PACKAGE&gt;_FOUND Whether the given package was found.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package
 #
 # @ingroup CMakeAPI
 macro (basis_find_package PACKAGE)
@@ -107,6 +116,10 @@ endmacro ()
 # for include paths if possible. Therefore, the corresponding package
 # configuration file has to set the proper CMake variables, i.e.,
 # either @c &lt;Pkg&gt;_INCLUDES, @c &lt;Pkg&gt;_INCLUDE_DIRS, or @c &lt;Pkg&gt;_INCLUDE_DIR.
+#
+# If the given package name is the name of another module of this project
+# (the top-level project), this function includes the use file of the specified
+# module.
 #
 # @note As some packages still use all captial variables instead of ones
 #       prefixed by a string that follows the same capitalization as the
@@ -196,17 +209,27 @@ endmacro ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Replaces CMake's get_filename_component() command to fix a bug.
+## @brief Fixes CMake's
+#         <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_filename_component">
+#         get_filename_component()</a> command.
 #
 # The get_filename_component() command of CMake returns the entire portion
 # after the first period (.) [including the period] as extension. However,
 # only the component following the last period (.) [including the period]
 # should be considered to be the extension.
 #
+# @note Consider the use of the basis_get_filename_component() macro as
+#       an alias to emphasize that this function is different from CMake's
+#       <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_filename_component">
+#       get_filename_component()</a> command.
+#
 # @param [in,out] ARGN Arguments as accepted by get_filename_component().
 #
 # @returns Sets the variable named by the first argument to the requested
 #          component of the given file path.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_filename_component
+# @sa basis_get_filename_component
 function (get_filename_component)
   if (ARGC GREATER 4)
     message (FATAL_ERROR "(basis_)get_filename_component(): Too many arguments!")
@@ -253,9 +276,9 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Get path relative to a given base directory.
 #
-# This function, unless the file(RELATIVE_PATH ...) command of CMake which in
-# this case returns an empty string, returns "." if @c PATH and @c BASE are
-# the same directory.
+# Unlike the file(RELATIVE_PATH ...) command of CMake which if @p PATH and
+# @p BASE are the same directory returns an empty string, this function
+# returns a dot (.) in this case instead.
 #
 # @param [out] REL  @c PATH relative to @c BASE.
 # @param [in]  BASE Path of base directory. If a relative path is given, it
@@ -266,6 +289,8 @@ endmacro ()
 #                   with ABSOLUTE as last argument.
 #
 # @returns Sets the variable named by the first argument to the relative path.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:file
 #
 # @ingroup CMakeAPI
 function (basis_get_relative_path REL BASE PATH)
@@ -632,7 +657,7 @@ endfunction ()
 ## @brief Splits a string at space characters into a list.
 #
 # @todo Probably this can be done in a better way...
-#       Difficulty is, that string (REPLACE) does always replace all
+#       Difficulty is, that string(REPLACE) does always replace all
 #       occurrences. Therefore, we need a regular expression which matches
 #       the entire string. More sophisticated regular expressions should do
 #       a better job, though.

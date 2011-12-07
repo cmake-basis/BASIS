@@ -297,13 +297,18 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add dependencies to build target.
 #
-# Replaces CMake's add_dependencies() command.
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_dependencies">
+# add_dependencies()</a> command and extends its functionality.
+# In particular, it maps the given target names to the corresponding target UIDs.
 #
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_dependencies
-#
-# @param [in] ARGN Arguments for add_dependencies().
+# @param [in] ARGN Arguments for
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_dependencies">
+#                  add_dependencies()</a>.
 #
 # @returns Adds the given dependencies of the specified build target.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_dependencies
 #
 # @ingroup CMakeAPI
 function (basis_add_dependencies)
@@ -322,7 +327,9 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add link dependencies to build target.
 #
-# Replaces CMake's target_link_libraries() command.
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:target_link_libraries">
+# target_link_libraries()</a> command.
 #
 # The main reason for replacing this function is to treat libraries such as
 # MEX-files which are supposed to be compiled into a MATLAB executable added
