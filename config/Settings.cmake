@@ -4,12 +4,13 @@
 #
 # This file is included by basis_project_impl() after it looked for the
 # required and optional dependencies and the CMake variables related to the
-# project directory structure was included (see BASISDirectories.cmake file
+# project directory structure were defined (see BASISDirectories.cmake file
 # in @c PROJECT_BINARY_DIR, where BASIS is here the name of the project).
 # It is further included before the BasisSettings.cmake file.
 #
 # In particular, build options should be added in this file using CMake's
-# option() command. Further, any common settings related to using a found
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:option">
+# option()</a> command. Further, any common settings related to using a found
 # dependency can be set here if the basis_use_package() command was enable
 # to import the required configuration of a particular external package.
 #
