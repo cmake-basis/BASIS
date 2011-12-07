@@ -31,21 +31,13 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 // ---------------------------------------------------------------------------
 /**
-@defgroup CMakeUtilities CMake Utilities
-@brief    Utility implementations used by the CMake modules.
+@defgroup CMakeFindModules Find Package Modules
+@brief    CMake Find modules used by find_package() command.
 
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-
-@ingroup BasisModules
-*/
-
-// ---------------------------------------------------------------------------
-/**
-@defgroup CMakeHelpers  Non-CMake Utilities
-@brief    Auxiliary non-CMake implementations used by the CMake modules.
+The BASIS package provides CMake Find module implementations for third-party
+packages which are commonly used at SBIA but do not provide a CMake
+package configuration file (&lt;Package&gt;Config.cmake or &lt;package&gt;-config.cmake)
+such that CMake cannot find the package by default in config-mode.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -70,20 +62,28 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 // ---------------------------------------------------------------------------
 /**
-@defgroup CMakeFindModules Find Package Modules
-@brief    CMake Find modules used by find_package() command.
-
-The BASIS package provides CMake Find module implementations for third-party
-packages which are commonly used at SBIA but do not provide a CMake
-package configuration file (&lt;Package&gt;Config.cmake or &lt;package&gt;-config.cmake)
-such that CMake cannot find the package by default in config-mode.
+@defgroup CMakeUtilities CMake Utilities
+@brief    Utilities implementated by the CMake modules.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
-@ingroup BasisModules
+@ingroup CMakeTools
+*/
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CMakeHelpers  Non-CMake Utilities
+@brief    Auxiliary non-CMake implementations used by the CMake modules.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup CMakeTools
 */
 
 // ===========================================================================

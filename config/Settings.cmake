@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  Settings.cmake
-# @brief General project build configuration.
+# @brief General project settings.
 #
 # This file is included by basis_project_impl() after it looked for the
 # required and optional dependencies and the CMake variables related to the
