@@ -67,7 +67,7 @@ endif ()
 # utilities
 # ============================================================================
 
-## @addtogroup CMakeAPI
+## @addtogroup CMakeUtilities
 #  @{
 
 
@@ -107,6 +107,8 @@ endfunction ()
 # @returns Sets the given properties of the specified test.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property
+#
+# @ingroup CMakeAPI
 function (basis_set_tests_properties)
   set (UIDS)
   list (GET ARGN 0 ARG)
@@ -129,6 +131,8 @@ endfunction ()
 # @returns Sets @p VAR to the value of the requested property.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property
+#
+# @ingroup CMakeAPI
 function (basis_get_test_property VAR TEST_NAME)
   basis_get_test_uid (TEST_UID "${TEST_NAME}")
   get_test_property (VALUE "${TEST_UID}" ${ARGN})
@@ -236,6 +240,8 @@ endfunction ()
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test
 #
 # @todo Make use of ExternalData module to fetch remote test data.
+#
+# @ingroup CMakeAPI
 function (basis_add_test TEST_NAME)
   basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
   if (NOT CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
