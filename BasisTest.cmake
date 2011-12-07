@@ -143,12 +143,16 @@ endfunction ()
 # add_test()</a> command. It adds a test to the CTest-based testing system.
 # Unlike CMake's
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test">
-# add_test()</a>, this command can for convenience implicitly add
+# add_test()</a>, this command can, for convenience, implicitly add
 # the necessary executable build target to the build system. Therefore,
 # instead of the name of the executable command, specify the sources of the
 # test implementation. An executable build target is then added by this
 # function using basis_add_executable(), and the built executable is used
-# as test command.
+# as test command. If the @p UNITTEST option is given, the necessary unit
+# testing libraries which are part of the BASIS installation are added as
+# link dependencies as well as the default implementation of the main()
+# function if none of the specified source files has the suffix
+# <tt>-main</tt> or <tt>_main</tt> in the file name.
 #
 # @param [in] TEST_NAME Name of the test.
 # @param [in] ARGN      The following parameters are parsed:
