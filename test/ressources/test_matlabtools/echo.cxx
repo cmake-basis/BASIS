@@ -29,7 +29,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
         mexErrMsgTxt("Could not convert argument to string.");
     }
     // print message
-    fprintf(msg);
+    mexPrintf(msg);
     // clean up
     mxFree(msg);
 }
