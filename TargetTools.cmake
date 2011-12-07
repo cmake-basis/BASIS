@@ -494,10 +494,9 @@ endfunction ()
 #       @c TESTING_LIBEXEC_DIR instead. Moreover, no installation rules are added.
 #       Test executables are further only exported as part of the build tree.
 #
-# @param [in] TARGET_NAME Name of the target. If the target is build from a
-#                         single source file, the file path of this source file
-#                         can be given as first argument. The build target name
-#                         is then derived from the name of the source file.
+# @param [in] TARGET_NAME Name of the target. If a source file is given
+#                         as first argument, the build target name is derived
+#                         from the name of this source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted, all other arguments are passed
 #                         on to add_executable() or the respective custom
@@ -710,10 +709,9 @@ endfunction ()
 # basis_add_library (ShellModule MODULE MyModule.sh.in)
 # @endcode
 #
-# @param [in] TARGET_NAME Name of the target. If the target is build from a
-#                         single source file, the file path of this source file
-#                         can be given as first argument. The build target name
-#                         is then derived from the name of the source file.
+# @param [in] TARGET_NAME Name of the target. If a source file is given
+#                         as first argument, the build target name is derived
+#                         from the name of this source file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted:
 # @par

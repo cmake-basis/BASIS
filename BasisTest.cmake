@@ -154,19 +154,23 @@ endfunction ()
 # function if none of the specified source files has the suffix
 # <tt>-main</tt> or <tt>_main</tt> in the file name.
 #
-# @param [in] TEST_NAME Name of the test.
+# @param [in] TEST_NAME Name of the test. If a source file is given
+#                       as first argument, the test name is derived
+#                       from the name of this source file and the source
+#                       file is added to the list of sources which implement
+#                       the test command.
 # @param [in] ARGN      The following parameters are parsed:
 # @par
 # <table border="0">
 #   <tr>
 #     @tp @b COMMAND cmd [arg1 [arg2 ...]] @tpend
 #     <td>The command to execute and optionally its arguments. Alternatively,
-#         a test can be build build from sources and the build executable
+#         a test can be build from sources and the build executable
 #         used as command. In this case, specify the sources using the
 #         @p SOURCES argument. The command name @c cmd if given is used as
 #         output name of the built executable. If you do not want to
 #         specify the name of the output executable explicitly, but have
-#         it derived from the @p TEST_NAME, do not given the @p COMMAND
+#         it derived from the @p TEST_NAME, do not specify the @p COMMAND
 #         option and use the @p ARGS option instead to only specify the
 #         arguments of the test command.</td>
 #   </tr>
@@ -181,22 +185,41 @@ endfunction ()
 #     <td>The working directory of the test command.</td>
 #   </tr>
 #   <tr>
+#     @tp @b CONFIGURATIONS @endtp
+#     <td>If a CONFIGURATIONS option is given then the test will be executed
+#         only when testing under one of the named configurations.</td>
+#   </tr>
+#   <tr>
 #     @tp @b SOURCES file1 [file2 ...] @endtp
-#     <td>The source files of the unit test. If this list contains a
-#         file named either "*-main.*" or "*_main.*", the default
-#         implementation of the main() function is not used.
-#         Otherwise, the executable is linked to the default implementation of
-#         the main() function, i.e., the static library basis_test_main.
-#         If this option is omitted, the @p TARGET_NAME argument is assumed
-#         to be the name of the C++ file with the test implementation.</td>
+#     <td>The source files of the test. Use the @p UNITTEST option to specify
+#         that the sources are an implementation of a unit test. In this case,
+#         the default implementation of the main() function is added to the
+#         build of the test executable. However, if this list contains a
+#         file with the suffix <tt>-main</tt> or <tt>_main</tt> in the name,
+#         the default implementation of the main() function is not used.
+#         See the documentation of the @p UNITTEST option for further details.</td>
 #   </tr>
 #   <tr>
 #     @tp @b LINK_DEPENDS file1|target1 [file2|target2 ...] @endtp
 #     <td>Link dependencies of test executable build from sources.</td>
 #   </tr>
 #   <tr>
+#     @tp @b NO_DEFAULT_MAIN @endtp
+#     <td>Force that the implementation of the default main() function
+#         is not added to unit tests even if neither of the given source
+#         files has the suffix <tt>-main</tt> or <tt>_main</tt> in the
+#         file name.</td>
+#   </tr>
+#   <tr>
+#     @tp @b UNITTEST @endtp
+#     <td>Specifies that the test is a unit tests. In this case, the test
+#         implementation is linked to the default unit testing framework
+#         for the used programming language which is part of the BASIS
+#         installation.</td>
+#   </tr>
+#   <tr>
 #     @tp @b WITH_EXT @endtp
-#     <td>Do not strip extension if test name is derived from source file
+#     <td>Do not strip extension if test name is derived from source file name.</td>
 #   </tr>
 #   <tr>
 #     @tp @b ARGN @endtp
