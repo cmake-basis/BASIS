@@ -25,9 +25,9 @@
 # @par Project version:
 # The version number consists of three components: the major version number,
 # the minor version number, and the patch number. The format of the version
-# string is "&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;", where the minor version
-# number and patch number default to 0 if not given. Only digits are allowed
-# except of the two separating dots.
+# string is "<major>.<minor>.<patch>", where the minor version number and patch
+# number default to "0" if not given. Only digits are allowed except of the two
+# separating dots.
 # @n
 # - A change of the major version number indicates changes of the softwares
 #   @api (and @abi) and/or its behavior and/or the change or addition of major
@@ -41,15 +41,15 @@
 # @par Dependencies:
 # Dependencies on other BASIS projects, which can be subprojects of the same
 # BASIS top-level project, as well as dependencies on external packages such as ITK
-# have to be defined here using the DEPENDS argument option. This will be used
+# have to be defined here using the @p DEPENDS argument option. This will be used
 # by a top-level project to ensure that the dependencies among its subprojects are
 # resolved properly. For each external dependency, the BASIS functions
 # basis_find_package() and basis_use_package() are invoked by
 # basis_project_initialize(). If an external package is not CMake aware and
 # additional CMake code shall be executed to include the settings of the external
-# package (which is usually done in a so-called Use<Pkg>.cmake file if the
-# package would be CMake aware), such code should be added to the Settings.cmake
-# file of the project.
+# package (which is usually done in a so-called <tt>Use&lt;Pkg&gt;.cmake</tt> file
+# if the package would be CMake aware), such code should be added to the
+# <tt>Settings.cmake</tt> file of the project.
 #
 # @param [in] ARGN This list is parsed for the following arguments:
 # @par
@@ -1084,16 +1084,17 @@ endmacro ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Implementation of root CMakeLists.txt file of BASIS project.
+## @brief Implementation of root <tt>CMakeLists.txt</tt> file of BASIS project.
 #
-# This macro implements the entire logic of the top-level CMakeLists.txt file.
-# At first, the project is initialized and the BASIS settings configured using
-# the project information given in the BasisProject.cmake file which must be
-# located in the same directory. The, the code in the CMakeLists.txt files
-# in the subdirectories is executed in order. At the end, the configuration
-# of the build system is finalized, including in particular also the addition
-# of custom build targets which perform the actual build of custom build
-# targets such as the ones build using the MATLAB Compiler.
+# This macro implements the entire logic of the top-level
+# <tt>CMakeLists.txt</tt> file. At first, the project is initialized and the
+# BASIS settings configured using the project information given in the
+# <tt>BasisProject.cmake</tt> file which must be located in the same directory.
+# The, the code in the <tt>CMakeLists.txt</tt> files in the subdirectories is
+# executed in order. At the end, the configuration of the build system is
+# finalized, including in particular also the addition of custom build targets
+# which perform the actual build of custom build targets such as the ones build
+# using the MATLAB Compiler.
 #
 # @sa BasisProject.cmake
 # @sa basis_project()

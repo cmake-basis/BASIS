@@ -462,12 +462,22 @@ function (basis_dump_variables RESULT_FILE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Replaces CMake's set_property() command.
+## @brief Set a named property in a given scope.
 #
-# @param [in] SCOPE The argument for the @p SCOPE parameter of set_property().
-# @param [in] ARGN  Arguments as accepted by set_property().
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_property">
+# set_property()</a> command.
+#
+# @param [in] SCOPE The argument for the @p SCOPE parameter of
+#                   <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_property">
+#                   set_property()</a>.
+# @param [in] ARGN  Arguments as accepted by.
+#                   <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_property">
+#                   set_property()</a>.
 #
 # @returns Sets the specified property.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_property
 #
 # @ingroup CMakeAPI
 function (basis_set_property SCOPE)
@@ -491,14 +501,26 @@ function (basis_set_property SCOPE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Replaces CMake's get_property() command.
+## @brief Get a property.
+#
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_property">
+# get_property()</a> command.
 #
 # @param [out] VAR     Property value.
-# @param [in]  SCOPE   The argument for the @p SCOPE argument of get_property().
-# @param [in]  ELEMENT The argument for the @p ELEMENT argument of get_property().
-# @param [in]  ARGN    Arguments as accepted by get_property().
+# @param [in]  SCOPE   The argument for the @p SCOPE argument of
+#                      <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_property">
+#                      get_property()</a>.
+# @param [in]  ELEMENT The argument for the @p ELEMENT argument of
+#                      <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_property">
+#                      get_property()</a>.
+# @param [in]  ARGN    Arguments as accepted by
+#                      <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_property">
+#                      get_property()</a>.
 #
 # @returns Sets @p VAR to the value of the requested property.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_property
 #
 # @ingroup CMakeAPI
 function (basis_get_property VAR SCOPE ELEMENT)

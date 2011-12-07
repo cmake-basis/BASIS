@@ -100,9 +100,15 @@ function (basis_disable_testing_if_no_tests)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Replaces CMake's set_tests_properties() command.
+## @brief Set a property of the tests.
 #
-# @param [in] ARGN Arguments for set_tests_property().
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property">
+# set_tests_properties()</a> command.
+#
+# @param [in] ARGN List of arguments for
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property">
+#                  set_tests_properties()</a>.
 #
 # @returns Sets the given properties of the specified test.
 #
@@ -122,11 +128,17 @@ function (basis_set_tests_properties)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Replaces CMake's get_test_property() command.
+## @brief Get a property of the test.
+#
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property">
+# get_test_property()</a> command.
 #
 # @param [out] VAR       Property value.
 # @param [in]  TEST_NAME Name of test.
-# @param [in]  ARGN      Remaining arguments of get_test_property().
+# @param [in]  ARGN      Remaining arguments of
+#                        <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_test_property">
+#                        get_test_property()</a>.
 #
 # @returns Sets @p VAR to the value of the requested property.
 #

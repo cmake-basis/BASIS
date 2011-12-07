@@ -438,6 +438,7 @@ endfunction ()
 # language compiler, this function inspects the list of source files given and
 # detects whether this list contains sources which need to be build using a
 # different compiler. In particular, it supports the following languages:
+# @n
 # <table border="0">
 #   <tr>
 #     @tp @b CXX @endtp
@@ -642,6 +643,7 @@ endfunction ()
 # language of the given source code files and delegates the addition of the
 # build target to the proper helper functions. It in particular supports the
 # following languages:
+# @n
 # <table border="0">
 #   <tr>
 #     @tp @b CXX @endtp

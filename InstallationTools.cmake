@@ -19,7 +19,11 @@
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Replaces CMake's install() command.
+## @brief Specify rules to run at install time.
+#
+# This function replaces CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install">
+# install()</a> command.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
 #
@@ -32,7 +36,11 @@ endfunction ()
 ## @brief Install content of current source directory excluding typical files.
 #
 # @param [in] DESTINATION Destination directory.
-# @param [in] ARGN        Further arguments for CMake's install(DIRECTORY) command.
+# @param [in] ARGN        Further arguments for CMake's
+#                         <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install">
+#                         <tt>install(DIRECTORY)</tt></a> command.
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
 #
 # @ingroup CMakeAPI
 function (basis_install_directory DESTINATION)
@@ -49,12 +57,15 @@ function (basis_install_directory DESTINATION)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Add installation command for creation of a symbolic link.
+## @brief Add installation rule to create a symbolic link.
+#
+# Note that the installation rule will only be effective on a Unix-like
+# system, i.e., one which supports the creation of a symbolic link.
 #
 # @param [in] OLD  The value of the symbolic link.
 # @param [in] NEW  The name of the symbolic link.
 #
-# @returns Adds installation command for creating the symbolic link @p NEW.
+# @returns Adds installation rule to create the symbolic link @p NEW.
 #
 # @ingroup CMakeAPI
 function (basis_install_link OLD NEW)
@@ -107,11 +118,11 @@ function (basis_install_link OLD NEW)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Adds installation command for creation of symbolic links.
+## @brief Adds installation rules to create default symbolic links.
 #
 # This function creates for each main executable a symbolic link directly
 # in the directory @c INSTALL_PREFIX/bin if @c INSTALL_SINFIX is TRUE and the
-# software is installed on a Unix-based system, i.e., one which
+# software is installed on a Unix-like system, i.e., one which
 # supports the creation of symbolic links.
 #
 # @returns Adds installation command for creation of symbolic links in the
@@ -173,8 +184,8 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add uninstall target.
 #
-# @returns Adds the custom target @c uninstall and code to cmake_install.cmake
-#          to install an uninstaller.
+# @returns Adds the custom target @c uninstall and code to
+#          <tt>cmake_install.cmake</tt> to install an uninstaller.
 function (basis_add_uninstall)
   # add uninstall target
   configure_file (
