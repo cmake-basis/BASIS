@@ -454,7 +454,10 @@ set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECT
 # testing
 # ============================================================================
 
-set (SUBMIT_RESULTS 0)
+set (CONFIGURE_RESULT 1)   # whether configuration was successful (0 if it was)
+set (BUILD_RESULT     1)   # whether build was successful (0 if it was)
+
+set (SUBMIT_RESULTS FALSE) # whether to submit the results to the dashboard
 
 # ----------------------------------------------------------------------------
 # empty the binary directory
@@ -476,7 +479,7 @@ endif ()
 ctest_update (RETURN_VALUE NUM_FILES)
 
 if (NUM_FILES EQUAL -1)
-  set (SUBMIT_RESULTS 1)
+  set (SUBMIT_RESULTS TRUE)
 elseif (NOT CTEST_CHECKOUT_COMMAND AND NUM_FILES EQUAL 0)
   set (UPDATED_FILES 0)
 else ()
@@ -486,35 +489,46 @@ endif ()
 # perform other test stages and submit results only if required
 if (FORCE_BUILD OR UPDATED_FILES)
 
-  set (SUBMIT_RESULTS 1)
+  set (SUBMIT_RESULTS TRUE)
 
   # --------------------------------------------------------------------------
   # configure build
-  ctest_configure ()
-  ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
+  ctest_configure (RETURN_VALUE CONFIGURE_RESULT)
+
+  if (CONFIGURE_RESULT EQUAL 0)
+    ctest_read_custom_files ("${CTEST_BINARY_DIRECTORY}")
+  endif ()
 
   # --------------------------------------------------------------------------
   # build project
-  ctest_build ()
+  if (CONFIGURE_RESULT EQUAL 0)
+    ctest_build (RETURN_VALUE BUILD_RESULT)
+  endif ()
 
   # --------------------------------------------------------------------------
   # build and install API documentation
-  if (INSTALL_DOXYGEN_DIR)
-    ctest_build (TARGET doc)
-    if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
-      file (
-        INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html"
-        DESTINATION "${INSTALL_DOXYGEN_DIR}"
-      )
-      message (STATUS "Installed API documentation to ${INSTALL_DOXYGEN_DIR}.")
+  if (CONFIGURE_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
+    message ("Building API documentation...")
+    ctest_build (TARGET doc RETURN_VALUE RT)
+    if (RT EQUAL 0)
+      if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
+        file (
+          INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html"
+          DESTINATION "${INSTALL_DOXYGEN_DIR}"
+        )
+        message (STATUS "Installed API documentation to ${INSTALL_DOXYGEN_DIR}.")
+      else ()
+        message (STATUS "Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
+        message (STATUS "Skipped installation of API documentation.")
+      endif ()
+      message ("Building API documentation... - done")
     else ()
-      message (STATUS "Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
-      message (STATUS "Skipped installation of API documentation.")
+      message ("Building API documentation... - failed")
     endif ()
   endif ()
 
   # perform tests only if required
-  if (FORCE_TEST OR UPDATED_FILES)
+  if (FORCE_TEST OR BUILD_RESULT EQUAL 0 OR UPDATED_FILES)
 
     # ------------------------------------------------------------------------
     # run tests
@@ -595,4 +609,3 @@ endif ()
 if (TMPBIN)
   file (REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
 endif ()
-
