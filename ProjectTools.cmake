@@ -19,7 +19,7 @@
 # located in the top level directory of the source tree in order to define
 # the project attributes required by BASIS to setup the build system.
 # Moreover, if the BASIS project is a module of another BASIS project, this
-# file and the variables set by this macro are used by the super-project to
+# file and the variables set by this macro are used by the top-level project to
 # identify its modules and the dependencies among them.
 #
 # @par Project version:
@@ -40,9 +40,9 @@
 #
 # @par Dependencies:
 # Dependencies on other BASIS projects, which can be subprojects of the same
-# BASIS super-project, as well as dependencies on external packages such as ITK
+# BASIS top-level project, as well as dependencies on external packages such as ITK
 # have to be defined here using the DEPENDS argument option. This will be used
-# by a super-project to ensure that the dependencies among its subprojects are
+# by a top-level project to ensure that the dependencies among its subprojects are
 # resolved properly. For each external dependency, the BASIS functions
 # basis_find_package() and basis_use_package() are invoked by
 # basis_project_initialize(). If an external package is not CMake aware and
@@ -1146,8 +1146,8 @@ macro (basis_project_impl)
   #
   # These variables need to be properties such that they can be set in
   # subdirectories. Moreover, they have to be assigned with the project's
-  # root source directory such that a super-project's properties are restored
-  # after this subproject is finalized such that the super-project itself can
+  # root source directory such that a top-level project's properties are restored
+  # after this subproject is finalized such that the top-level project itself can
   # be finalized properly.
   #
   # Attention: In particular the IMPORTED_* properties are already used
