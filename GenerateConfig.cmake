@@ -105,7 +105,7 @@ endif ()
 # build tree related configuration
 
 set (BUILD_CONFIG_SETTINGS 1)
-include ("${CMAKE_CURRENT_LIST_DIR}/ConfigSettings.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisConfigSettings.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
 if (INCLUDE_DIR_CONFIG)
@@ -126,7 +126,7 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 # install tree related configuration
 
 set (BUILD_CONFIG_SETTINGS 0)
-include ("${CMAKE_CURRENT_LIST_DIR}/ConfigSettings.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/BasisConfigSettings.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
 if (INCLUDE_DIR_CONFIG)

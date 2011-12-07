@@ -20,7 +20,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 /**
 @defgroup BasisSettings BASIS Settings
-@brief    CMake module defining default settings for BASIS.
+@brief    CMake modules defining settings for BASIS.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -56,7 +56,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 /**
 @defgroup BasisScriptConfig Script Configuration
-@brief    CMake script configuration.
+@brief    Script configuration as used for @ref ScriptTargets.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

@@ -502,6 +502,9 @@ function (basis_add_doc TARGET_NAME)
     if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
       list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
     endif ()
+    if (EXISTS "${PROJECT_CONFIG_DIR}/ConfigSettings.cmake")
+      list (APPEND DOXYGEN_INPUT "${PROJECT_CONFIG_DIR}/ConfigSettings.cmake")
+    endif ()
     if (EXISTS "${BINARY_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
       list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
     endif ()
@@ -557,8 +560,9 @@ function (basis_add_doc TARGET_NAME)
       endif ()
     endforeach ()
     basis_list_to_delimited_string (
-      DOXYGEN_INPUT "\nINPUT                 += " ${DOXYGEN_INPUT}
+      DOXYGEN_INPUT "\"\nINPUT                 += \"" ${DOXYGEN_INPUT}
     )
+    set (DOXYGEN_INPUT "\"${DOXYGEN_INPUT}\"")
     # input filters
     if (NOT DOXYGEN_INPUT_FILTER)
       basis_get_target_uid (DOXYFILTER "${BASIS_NAMESPACE_LOWER}.basis.doxyfilter")

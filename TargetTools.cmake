@@ -1581,7 +1581,7 @@ endfunction ()
 #     <td>Do not export build target.</td>
 #   </tr>
 #   <tr>
-#     @tp @b COMPILE | @c NOCOMPILE @endtp
+#     @tp @b COMPILE | @b NOCOMPILE @endtp
 #     <td>Enable/disable compilation of script if supported by scripting
 #         language as well as BASIS. In particular, Python modules can be
 #         compiled. If a script could be compiled by BASIS, only the

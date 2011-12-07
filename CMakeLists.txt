@@ -49,7 +49,7 @@ set (
     "MatlabUtilities.dox"         # documentation of MATLAB Utilities group
     # package configuration
     "Config.cmake.in"             # default <Pkg>Config.cmake template
-    "ConfigSettings.cmake"        # settings for default <Pkg>Config.cmake
+    "BasisConfigSettings.cmake"   # settings for default <Pkg>Config.cmake
     "ConfigVersion.cmake.in"      # default <Pkg>ConfigVersion.cmake template
     "ConfigUse.cmake.in"          # default <Pkg>Use.cmake template
     "GenerateConfig.cmake"        # generation/configuration of <Pkg>Config.cmake et al.

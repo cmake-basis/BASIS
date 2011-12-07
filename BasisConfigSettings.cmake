@@ -1,8 +1,8 @@
 ##############################################################################
-# @file  ConfigSettings.cmake
-# @brief Sets variables used in CMake package configuration file.
+# @file  BasisConfigSettings.cmake
+# @brief Sets basic variables used in CMake package configuration.
 #
-# It is suggested to use _CONFIG as suffix for variable names that are to be
+# It is suggested to use @c _CONFIG as suffix for variable names that are to be
 # substituted in the Config.cmake.in template file in order to distinguish
 # these variables from the build configuration.
 #
@@ -11,7 +11,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup CMakeTools
+# @ingroup BasisSettings
 ##############################################################################
 
 # ============================================================================

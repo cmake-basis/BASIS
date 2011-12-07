@@ -52,7 +52,7 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
-# @ingroup CMakeUtilities
+# @ingroup CMakeTools
 ##############################################################################
 
 if (__BASIS_UPDATE_INCLUDED)
