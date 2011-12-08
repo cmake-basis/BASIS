@@ -898,18 +898,38 @@ macro (basis_find_packages)
   #            Settings.cmake.in files were configured and included.
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
 
+
+  # --------------------------------------------------------------------------
+  # Slicer must be found before all others...
+  if (PROJECT_DEPENDS          MATCHES "^Slicer(-[0-9.]+)?({})?" OR
+      PROJECT_OPTIONAL_DEPENDS MATCHES "^Slicer(-[0-9.]+)?({})?")
+    basis_find_package ("Slicer${CMAKE_MATCH_1}")
+    basis_use_package  ("Slicer")
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # optional dependencies - first in case a newer version of a package
+  #                         can optionally be used, but at least an older
+  #                         one is required
+  foreach (P IN LISTS PROJECT_OPTIONAL_DEPENDS)
+    basis_find_package ("${P}" QUIET)
+    basis_use_package ("${P}")
+  endforeach ()
+
+  # --------------------------------------------------------------------------
+  # optional test dependencies
+  if (BUILD_TESTING)
+    foreach (P IN LISTS PROJECT_OPTIONAL_TEST_DEPENDS)
+      basis_find_package ("${P}" QUIET)
+      basis_use_package ("${P}")
+    endforeach ()
+  endif ()
+
   # --------------------------------------------------------------------------
   # required dependencies
   foreach (P IN LISTS PROJECT_DEPENDS)
     basis_find_package ("${P}" REQUIRED)
     basis_use_package ("${P}"  REQUIRED)
-  endforeach ()
-
-  # --------------------------------------------------------------------------
-  # optional dependencies
-  foreach (P IN LISTS PROJECT_OPTIONAL_DEPENDS)
-    basis_find_package ("${P}" QUIET)
-    basis_use_package ("${P}")
   endforeach ()
 
   # --------------------------------------------------------------------------
@@ -929,15 +949,6 @@ macro (basis_find_packages)
                              "disable testing by setting BUILD_TESTING to OFF.")
         
       endif ()
-    endforeach ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # optional test dependencies
-  if (BUILD_TESTING)
-    foreach (P IN LISTS PROJECT_OPTIONAL_TEST_DEPENDS)
-      basis_find_package ("${P}" QUIET)
-      basis_use_package ("${P}")
     endforeach ()
   endif ()
 
