@@ -528,7 +528,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
   endif ()
 
   # perform tests only if required
-  if (FORCE_TEST OR BUILD_RESULT EQUAL 0 OR UPDATED_FILES)
+  if (FORCE_TEST OR (BUILD_RESULT EQUAL 0 AND UPDATED_FILES))
 
     # ------------------------------------------------------------------------
     # run tests
