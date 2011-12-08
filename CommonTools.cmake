@@ -153,32 +153,49 @@ endmacro ()
 #       Therefore, this code is commented and not used. It remains here as a
 #       reminder only.
 #
+# @param [in] PACKAGE Name of other package. Optionally, the package name
+#                     can include a version specification as suffix which
+#                     is separated by the package name using a dash (-), i.e.,
+#                     <Package>[-major[.minor[.patch[.tweak]]]].
+#                     If a version specification is given, it is passed on as
+#                     @c version argument to CMake's
+#                     <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
+#                     find_package()</a> command.
+#
 # @ingroup CMakeAPI
 macro (basis_use_package PACKAGE)
+  # split PACKAGE into package name and version number
+  set (PKG "${PACKAGE}")
+  set (VER)
+  if (PKG MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
+    set (PKG "${CMAKE_MATCH_1}")
+    set (VER "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
+  endif ()
   foreach (A IN ITEMS "WORKAROUND FOR NOT BEING ABLE TO USE RETURN")
     if (BASIS_DEBUG)
       message ("** basis_use_package()")
-      message ("**     Package: ${PACKAGE}")
+      message ("**    Package: ${PKG}")
+      message ("**    Version: ${VER}")
     endif ()
     if (PROJECT_IS_MODULE)
       # allow modules to specify top-level project as dependency
-      if (PACKAGE MATCHES "^${BASIS_PROJECT_NAME}$")
+      if (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
         if (BASIS_DEBUG)
           message ("**     This is the top-level project.")
         endif ()
         break () # instead of return()
       else ()
         # use other module of top-level project
-        list (FIND PROJECT_MODULES "${PACKAGE}" IDX)
+        list (FIND PROJECT_MODULES "${PKG}" IDX)
         if (NOT IDX EQUAL -1)
-          if (${PACKAGE}_FOUND)
+          if (${PKG}_FOUND)
             if (BASIS_DEBUG)
               message ("**     Include package use file of other module.")
             endif ()
-            include ("${${PACKAGE}_DIR}/${PACKAGE}Use.cmake")
+            include ("${${PKG}_DIR}/${PKG}Use.cmake")
             break () # instead of return()
           else ()
-            message (FATAL_ERROR "Module ${PACKAGE} not found! This must be a "
+            message (FATAL_ERROR "Module ${PKG} not found! This must be a "
                                  "mistake of BASIS. Talk to the maintainer of this "
                                  "package and have them fix it.")
           endif ()
@@ -186,32 +203,32 @@ macro (basis_use_package PACKAGE)
       endif ()
     endif ()
     # use external package
-    string (TOUPPER "${PACKAGE}" P)
-    if (${PACKAGE}_FOUND OR ${P}_FOUND)
+    string (TOUPPER "${PKG}" P)
+    if (${PKG}_FOUND OR ${P}_FOUND)
       if (BASIS_DEBUG)
         message ("**     Include package use file of external package.")
       endif ()
-      if (${PACKAGE}_USE_FILE)
-        include ("${${PACKAGE}_USE_FILE}")
+      if (${PKG}_USE_FILE)
+        include ("${${PKG}_USE_FILE}")
       elseif (${P}_USE_FILE)
         include ("${${P}_USE_FILE}")
       else ()
         # include directories
-        if (${PACKAGE}_INCLUDE_DIRS OR ${P}_INCLUDE_DIRS)
-          if (${PACKAGE}_INCLUDE_DIRS)
-            basis_include_directories (${${PACKAGE}_INCLUDE_DIRS})
+        if (${PKG}_INCLUDE_DIRS OR ${P}_INCLUDE_DIRS)
+          if (${PKG}_INCLUDE_DIRS)
+            basis_include_directories (${${PKG}_INCLUDE_DIRS})
           else ()
             basis_include_directories (${${P}_INCLUDE_DIRS})
           endif ()
-        elseif (${PACKAGE}_INCLUDES OR ${P}_INCLUDES)
-          if (${PACKAGE}_INCLUDES)
-            basis_include_directories (${${PACKAGE}_INCLUDES})
+        elseif (${PKG}_INCLUDES OR ${P}_INCLUDES)
+          if (${PKG}_INCLUDES)
+            basis_include_directories (${${PKG}_INCLUDES})
           else ()
             basis_include_directories (${${P}_INCLUDES})
           endif ()
-        elseif (${PACKAGE}_INCLUDE_DIR OR ${P}_INCLUDE_DIR)
-          if (${PACKAGE}_INCLUDE_DIR)
-            basis_include_directories (${${PACKAGE}_INCLUDE_DIR})
+        elseif (${PKG}_INCLUDE_DIR OR ${P}_INCLUDE_DIR)
+          if (${PKG}_INCLUDE_DIR)
+            basis_include_directories (${${PKG}_INCLUDE_DIR})
           else ()
             basis_include_directories (${${P}_INCLUDE_DIR})
           endif ()  
