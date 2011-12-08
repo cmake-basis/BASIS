@@ -76,10 +76,13 @@ if (NOT @PROJECT_IS_MODULE@)
   ## @brief List of project modules.
   basis_set_config (MODULES "@PROJECT_MODULES@")
 
-  ## @brief List of build project modules.
+  ## @brief List of built project modules.
   basis_set_config (MODULES_ENABLED "@PROJECT_MODULES_ENABLED@")
 
-  ## @brief List of requested modules.
+  ## @brief List of modules requested by external package using the
+  #         @c COMPONENTS argument of
+  #         <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
+  #         find_package()</a>.
   if (${NS}FIND_COMPONENTS)
     basis_set_config (MODULES_REQUESTED "${${NS}FIND_COMPONENTS}")
   endif()
