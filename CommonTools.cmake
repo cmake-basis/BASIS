@@ -485,7 +485,7 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Output current CMake variables to file.
 function (basis_dump_variables RESULT_FILE)
-  file (WRITE "${RESULT_FILE}" "# CMake variables dump created by BASIS\n")
+  set (DUMP)
   get_cmake_property (VARIABLE_NAMES VARIABLES)
   foreach (V IN LISTS VARIABLE_NAMES)
     if (NOT V MATCHES "^_|^RESULT_FILE$|^ARGC$|^ARGV[0-9]?$")
@@ -500,9 +500,10 @@ function (basis_dump_variables RESULT_FILE)
       string (REGEX REPLACE "([^\\])\\\$([^ ]*){" "\\1\\\\\$\\2{" VALUE "${VALUE}")
       string (REGEX REPLACE "([^\\])\\\@([^ ]*)\@" "\\1\\\\\@\\2\\\\\@" VALUE "${VALUE}")
       # append variable to output file
-      file (APPEND "${RESULT_FILE}" "set (${V} \"${VALUE}\")\n")
+      set (DUMP "${DUMP}set (${V} \"${VALUE}\")\n")
     endif ()
   endforeach ()
+  file (WRITE "${RESULT_FILE}" "# CMake variables dump created by BASIS\n${DUMP}")
 endfunction ()
 
 # ----------------------------------------------------------------------------
