@@ -901,54 +901,33 @@ macro (basis_find_packages)
   # --------------------------------------------------------------------------
   # required dependencies
   foreach (P IN LISTS PROJECT_DEPENDS)
-    if ("${P}" STREQUAL "Slicer")
-      if (NOT EXTENSION_NAME)
-        set (EXTENSION_NAME "${PROJECT_NAME}")
-      endif ()
-    endif ()
     basis_find_package ("${P}" REQUIRED)
-    string (TOUPPER "${P}" U)
-    if (${P}_FOUND OR ${U}_FOUND)
-      basis_use_package ("${P}")
-    else ()
-      if (BASIS_DEBUG)
-        basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFind${P}.cmake")
-      endif ()
-      message (FATAL_ERROR "Package ${P} not found!")
-    endif ()
+    basis_use_package ("${P}"  REQUIRED)
   endforeach ()
 
   # --------------------------------------------------------------------------
   # optional dependencies
   foreach (P IN LISTS PROJECT_OPTIONAL_DEPENDS)
-    if ("${P}" STREQUAL "Slicer")
-      if (NOT EXTENSION_NAME)
-        set (EXTENSION_NAME "${PROJECT_NAME}")
-      endif ()
-    endif ()
     basis_find_package ("${P}" QUIET)
-    string (TOUPPER "${P}" U)
-    if (${P}_FOUND OR ${U}_FOUND)
-      basis_use_package ("${P}")
-    endif ()
+    basis_use_package ("${P}")
   endforeach ()
 
   # --------------------------------------------------------------------------
   # test dependencies
   if (BUILD_TESTING)
     foreach (P IN LISTS PROJECT_TEST_DEPENDS)
-      basis_find_package ("${P}")
+      basis_find_package ("${P}") # do not use REQUIRED here to be able to show
+      basis_use_package ("${P}")  # error message below
+      if (P MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
+        set (P "${CMAKE_MATCH_1}")
+      endif ()
       string (TOUPPER "${P}" U)
-      if (${P}_FOUND OR ${U}_FOUND)
-        basis_use_package ("${P}")
-      else ()
-        if (BASIS_DEBUG)
-          basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFind${P}.cmake")
-        endif ()
+      if (NOT ${P}_FOUND AND NOT ${U}_FOUND)
         message (FATAL_ERROR "Could not find package ${P}! It is required by "
                              "the tests of ${PROJECT_NAME}. Either specify "
                              "package location manually and try again or "
                              "disable testing by setting BUILD_TESTING to OFF.")
+        
       endif ()
     endforeach ()
   endif ()
@@ -958,12 +937,11 @@ macro (basis_find_packages)
   if (BUILD_TESTING)
     foreach (P IN LISTS PROJECT_OPTIONAL_TEST_DEPENDS)
       basis_find_package ("${P}" QUIET)
-      string (TOUPPER "${P}" U)
-      if (${P}_FOUND OR ${U}_FOUND)
-        basis_use_package ("${P}")
-      endif ()
+      basis_use_package ("${P}")
     endforeach ()
   endif ()
+
+  unset (P)
 endmacro ()
 
 # ============================================================================
