@@ -455,7 +455,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
     if (NOT DOXYGEN_EXECUTABLE)
-      message (${ERRMSGTYP} "Doxygen not found. Skipping build of ${TARGET_UID}.")
+      message (${ERRMSGTYP} "Doxygen not found. Disabling build of ${TARGET_UID} documentation.")
       if (BASIS_VERBOSE)
         message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
       endif ()
@@ -755,7 +755,7 @@ function (basis_add_doc TARGET_NAME)
 
     # svn2cl found?
     if (NOT BASIS_CMD_SVN2CL)
-      message (STATUS "svn2cl not found. Skipping build of ${TARGET_UID}.")
+      message (STATUS "svn2cl not found. Disabling build of ${TARGET_UID}.")
       if (BASIS_VERBOSE)
         message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
       endif ()
