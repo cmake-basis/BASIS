@@ -242,7 +242,8 @@ function get_project_name
     local name=''
 
     while read -r line; do
-        if [[ $line == *basis_project* ]]; then
+        match "$line" '^ *basis_project *\(.*'
+        if [ $? -eq 0 ]; then
             active=1
         fi
         if [ $active -ne 0 ]; then
@@ -250,7 +251,8 @@ function get_project_name
             if [ ! -z "$name" ]; then
                 break
             fi
-            if [[ $line == *\)* ]]; then
+            match "$line" '[^#]*\)'
+            if [ $? -eq 0 ]; then
                 active=0
                 break
             fi
