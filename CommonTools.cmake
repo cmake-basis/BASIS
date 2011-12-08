@@ -36,6 +36,14 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+macro (find_package)
+  if (BASIS_DEBUG)
+    message ("find_package(${ARGV})")
+  endif ()
+  _find_package(${ARGV})
+endmacro ()
+
+# ----------------------------------------------------------------------------
 ## @brief Find external software package or other project module.
 #
 # This function replaces CMake's
