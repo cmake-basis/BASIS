@@ -36,20 +36,6 @@ mark_as_advanced (BASIS_CMD_PYTHON)
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-if (BASIS_DEBUG)
-  macro (find_package PACKAGE)
-    message ("** Looking for package ${PACKAGE}...")
-    _find_package ("${PACKAGE}" ${ARGN})
-    string (TOUPPER "${PACKAGE}" P)
-    if (${PACKAGE}_FOUND OR ${P}_FOUND)
-      message ("** Looking for package ${PACKAGE}... - found")
-    else ()
-      message ("** Looking for package ${PACKAGE}... - not found")
-    endif ()
-  endmacro ()
-endif ()
-
-# ----------------------------------------------------------------------------
 ## @brief Find external software package or other project module.
 #
 # This function replaces CMake's
@@ -167,7 +153,23 @@ macro (basis_find_package PACKAGE)
     elseif (ARGN_REQUIRED)
       list (APPEND FIND_ARGN "REQUIRED")
     endif ()
-    find_package (${PKG} ${VER} ${FIND_ARGN})
+    if ("${PKG}" MATCHES "^(BLAS|MFC|wxWidgets)$")
+      # if Find<Pkg>.cmake prints status message, don't do it here
+      find_package (${PKG} ${VER} ${FIND_ARGN})
+    else ()
+      set (MSG "${PKG}")
+      if (VER)
+        set (MSG "${PKG} ${VER}")
+      endif ()
+      message (STATUS "Looking for package ${MSG}...")
+      find_package (${PKG} ${VER} ${FIND_ARGN})
+      string (TOUPPER "${PKG}" P)
+      if (${PKG}_FOUND OR ${P}_FOUND)
+        message (STATUS "Looking for package ${MSG}... - found")
+      else ()
+        message (STATUS "Looking for package ${MSG}... - not found")
+      endif ()
+    endif ()
   endif ()
   unset (PKG)
   unset (VER)
