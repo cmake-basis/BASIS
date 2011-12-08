@@ -30,6 +30,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     }
     // print message
     mexPrintf(msg);
+    mexPrintf("\n");
     // clean up
     mxFree(msg);
 }
