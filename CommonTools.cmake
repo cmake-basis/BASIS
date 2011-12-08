@@ -61,8 +61,9 @@ endif ()
 #
 # @param [in] PACKAGE Name of other package. Optionally, the package name
 #                     can include a version specification as suffix which
-#                     is separated by the package name using an underscore (_)
-#                     character, i.e., <Package>[_major[.minor[.patch[.tweak]]]].
+#                     is separated by the package name using a dash (-) or
+#                     an underscore (_) character, i.e.,
+#                     <Package>[(_|-)major[.minor[.patch[.tweak]]]].
 #                     If a version specification is given, it is passed on as
 #                     second argument to CMake's
 #                     <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
@@ -80,7 +81,7 @@ macro (basis_find_package PACKAGE)
   # split PACKAGE into package name and version number
   set (PKG "${PACKAGE}")
   set (VER)
-  if (PKG MATCHES "^(.*)_([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
+  if (PKG MATCHES "^(.*)[_-]([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
     set (PKG "${CMAKE_MATCH_1}")
     set (VER "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
   endif ()
