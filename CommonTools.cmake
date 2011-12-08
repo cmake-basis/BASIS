@@ -77,21 +77,45 @@ endif ()
 #
 # @ingroup CMakeAPI
 macro (basis_find_package PACKAGE)
-  # split PACKAGE into package name and version number
+  # parse arguments
   set (PKG "${PACKAGE}")
   set (VER)
-  if (ARGC GREATER 1 AND ARGV1 MATCHES "[0-9]+(\\.[0-9]+)*")
-    set (VER "${ARGV1}")
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+    "EXACT;QUIET;REQUIRED"
+    ""
+    "COMPONENTS"
+    ${ARGN}
+  )
+  # extract components from PACKAGE
+  if (PKG MATCHES "^([^ ]+){(.*)}$")
+    set (PKG "${CMAKE_MATCH_1}")
+    string (REPLACE "," ";" CMPS "${CMAKE_MATCH_2}")
+    list (APPEND ARGN_COMPONENTS ${CMPS})
+    unset (CMPS)
+  endif ()
+  # split PACKAGE into package name and version number
+  if (ARGN_UNPARSED_ARGUMENTS MATCHES "^[0-9]+(\\.[0-9]+)*$")
+    set (VER "${CMAKE_MATCH_0}")
   endif ()
   if (PKG MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
+    if (VER)
+      message (FATAL_ERROR "Cannot use both version specification as part of "
+                           "package name and explicit version argument.")
+    endif ()
     set (PKG "${CMAKE_MATCH_1}")
     set (VER "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
   endif ()
   # some debugging output
   if (BASIS_DEBUG)
     message ("** basis_find_package()")
-    message ("**     Package: ${PKG}")
-    message ("**     Version: ${VER}")
+    message ("**     Package:    ${PKG}")
+    if (VER)
+    message ("**     Version:    ${VER}")
+    endif ()
+    if (ARGN_COMPONENTS)
+    message ("**     Components: [${ARGN_COMPONENTS}]")
+    endif ()
   endif ()
   if (PROJECT_IS_MODULE)
     # allow modules to specify top-level project as dependency
@@ -131,7 +155,19 @@ macro (basis_find_package PACKAGE)
       endif ()
     endif ()
     # now look for the package
-    find_package (${PKG} ${VER} ${ARGN})
+    set (FIND_ARGN)
+    if (ARGN_EXACT)
+      list (APPEND FIND_ARGN "EXACT")
+    endif ()
+    if (ARGN_QUIET)
+      list (APPEND FIND_ARGN "QUIET")
+    endif ()
+    if (ARGN_COMPONENTS)
+      list (APPEND FIND_ARGN "COMPONENTS" ${ARGN_COMPONENTS})
+    elseif (ARGN_REQUIRED)
+      list (APPEND FIND_ARGN "REQUIRED")
+    endif ()
+    find_package (${PKG} ${VER} ${FIND_ARGN})
   endif ()
   unset (PKG)
   unset (VER)
@@ -170,8 +206,12 @@ endmacro ()
 #
 # @ingroup CMakeAPI
 macro (basis_use_package PACKAGE)
-  # split PACKAGE into package name and version number
   set (PKG "${PACKAGE}")
+  # extract components from PACKAGE
+  if (PKG MATCHES "^([^ ]+){.*}$")
+    set (PKG "${CMAKE_MATCH_1}")
+  endif ()
+  # split PACKAGE into package name and version number
   if (PKG MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
     set (PKG "${CMAKE_MATCH_1}")
   endif ()
@@ -181,6 +221,7 @@ macro (basis_use_package PACKAGE)
       message ("** basis_use_package()")
       message ("**    Package: ${PKG}")
     endif ()
+    
     if (PROJECT_IS_MODULE)
       # allow modules to specify top-level project as dependency
       if (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
@@ -209,6 +250,13 @@ macro (basis_use_package PACKAGE)
     # use external package
     string (TOUPPER "${PKG}" P)
     if (${PKG}_FOUND OR ${P}_FOUND)
+      # use package only if basis_use_package() not invoked before
+      if (BASIS_USE_${PKG}_INCLUDED)
+        if (BASIS_DEBUG)
+          message ("**     External package used before already.")
+        endif ()
+        break ()
+      endif ()
       if (BASIS_DEBUG)
         message ("**     Include package use file of external package.")
       endif ()
@@ -238,6 +286,7 @@ macro (basis_use_package PACKAGE)
           endif ()  
         endif ()
       endif ()
+      set (BASIS_USE_${PKG}_INCLUDED TRUE)
     elseif (ARGC GREATER 1 AND "${ARGV1}" MATCHES "^REQUIRED$")
       if (BASIS_DEBUG)
         basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFind${PKG}.cmake")

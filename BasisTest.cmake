@@ -19,6 +19,8 @@
 # include CTest module which enables testing, but prevent it from generating
 # any configuration file or adding targets yet as we want to adjust the
 # default CTest settings--in particular the site name--before
+option (BUILD_TESTING "Enable tests." OFF)
+
 set (RUN_FROM_DART 1)
 include (CTest)
 
