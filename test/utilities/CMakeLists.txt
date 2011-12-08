@@ -19,7 +19,4 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # project-specific utilities
-# TODO Reimplement using Python and only exclude BASH utilities on Windows
-if (UNIX)
-  basis_add_test (test_utilities.sh)
-endif ()
+basis_add_test (test_utilities.py)

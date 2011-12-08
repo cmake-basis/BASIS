@@ -1,0 +1,73 @@
+#! /usr/bin/env python
+
+##############################################################################
+# @file  test_utilities.py
+# @brief Test BASIS utilities.
+#
+# This test first builds the test project which is based on BASIS and then
+# triggers the execution of the separate test cases which are built as part
+# of this test project.
+#
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+import sys
+sys.path.insert(0, '@BINARY_PYTHON_LIBRARY_DIR@')
+sys.path.insert(0, '@TESTING_PYTHON_LIBRARY_DIR@')
+from sbia.basis.testaux import *
+
+# ============================================================================
+# main
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+if __name__ == '__main__':
+    # parse arguments
+    verbose = 0
+    opts = parse_arguments()
+    for o, a in opts:
+        if o in ['--verbose', '-v']: verbose = verbose + 1
+        else: assert False, "Unhandled option " + o
+    # create project
+    create_project('UtilitiesTest',
+            description='Used to test the BASIS utilities.')
+    # copy files to project
+    add_file('helloworld.cxx', prefix='src') # example executable
+    if '@TEST_CXX_UTILITIES@' == 'ON': # tests of C++ utilities
+        add_file('test_ExecutableTargetInfo.cxx.in', prefix='test')
+        add_file('test_stdaux.cxx.in', prefix='test')
+    if '@TEST_PYTHON_UTILITIES@' == 'ON': # tests of Python utilities
+        add_file('test_executabletargetinfo.py.in', prefix='test')
+        add_file('test_stdaux.py.in', prefix='test')
+    if '@TEST_PERL_UTILITIES@' == 'ON': # tests of Perl utilities
+        add_file('test_ExecutableTargetInfo.pl.in', prefix='test')
+        add_file('test_stdaux.pl.in', prefix='test')
+    if '@TEST_BASH_UTILITIES@' == 'ON': # tests of BASH utilities
+        add_file('test_executabletargetinfo.sh.in', prefix='test')
+        add_file('test_stdaux.sh.in', prefix='test')
+    # edit CMakeLists.txt files
+    add_cmake_code('src/CMakeLists.txt', 'basis_add_executable(helloworld.cxx)')
+    if '@TEST_CXX_UTILITIES@' == 'ON': # tests of C++ utilities
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_ExecutableTargetInfo.cxx UNITTEST)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.cxx UNITTEST)')
+    if '@TEST_PYTHON_UTILITIES@' == 'ON': # tests of Python utilities
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_executabletargetinfo.py WITH_EXT)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.py WITH_EXT)')
+    if '@TEST_PERL_UTILITIES@' == 'ON': # tests of Perl utilities
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_ExecutableTargetInfo.pl WITH_EXT)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.pl WITH_EXT)')
+    if '@TEST_BASH_UTILITIES@' == 'ON': # tests of BASH utilities
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_executabletargetinfo.sh WITH_EXT)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.sh WITH_EXT)')
+    # build project
+    build_project(verbose)
+    # run tests
+    os.chdir(BUILD_DIR)
+    test_cmd=['ctest', '-V']
+    if verbose > 0:
+        test_cmd.append('-V')
+    test_cmd.extend(sys.argv[1:])
+    basis.execute_process(test_cmd, verbose=True)
