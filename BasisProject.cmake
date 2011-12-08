@@ -36,5 +36,5 @@ basis_project (
   DEPENDS               #AddDependencyHere
   OPTIONAL_DEPENDS      PythonInterp Perl PerlLibs #AddOptionalDependencyHere
   TEST_DEPENDS          #AddTestDependencyHere
-  OPTIONAL_TEST_DEPENDS ITK-4.0{ITKTestKernel} ITK-3.18 MATLAB #AddOptionalTestDependencyHere
+  OPTIONAL_TEST_DEPENDS ITK-4{ITKTestKernel} ITK-3.18 MATLAB #AddOptionalTestDependencyHere
 )
