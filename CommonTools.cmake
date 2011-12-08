@@ -157,10 +157,7 @@ endmacro ()
 #                     can include a version specification as suffix which
 #                     is separated by the package name using a dash (-), i.e.,
 #                     <Package>[-major[.minor[.patch[.tweak]]]].
-#                     If a version specification is given, it is passed on as
-#                     @c version argument to CMake's
-#                     <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
-#                     find_package()</a> command.
+#                     A version specification is simply ignored by this macro.
 #
 # @ingroup CMakeAPI
 macro (basis_use_package PACKAGE)
