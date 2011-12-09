@@ -82,10 +82,14 @@ macro (basis_find_package PACKAGE)
     ${ARGN}
   )
   # extract components from PACKAGE
-  if (PKG MATCHES "^([^ ]+){(.*)}$")
+  if (PKG MATCHES "^([^ ]+)[ \\n\\t]*{(.*)}$")
     set (PKG "${CMAKE_MATCH_1}")
     string (REPLACE "," ";" CMPS "${CMAKE_MATCH_2}")
-    list (APPEND ARGN_COMPONENTS ${CMPS})
+    foreach (CMP IN LISTS CMPS)
+      string (STRIP "${CMP}" CMP)
+      list (APPEND ARGN_COMPONENTS ${CMP})
+    endforeach ()
+    unset (CMP)
     unset (CMPS)
   endif ()
   # split PACKAGE into package name and version number
@@ -541,6 +545,23 @@ endfunction ()
 # ============================================================================
 # set/get any property
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Convert list into regular expression.
+#
+# This function is in particular used to convert a list of property names
+# such as <CONFIG>_OUTPUT_NAME, e.g., the list @c BASIS_PROPERTIES_ON_TARGETS,
+# into a regular expression which can be used in pattern matches.
+#
+# @param [out] REGEX Name of variable for resulting regular expression.
+# @param [in]  ARGN  List of patterns which may contain placeholders in the
+#                    form of "<this is a placeholder>". These are replaced
+#                    by the regular expression "[^ ]+".
+macro (basis_list_to_regex REGEX)
+  string (REGEX REPLACE "<[^>]+>" "[^ ]+" ${REGEX} "${ARGN}")
+  string (REGEX REPLACE ";" "|" ${REGEX} "${${REGEX}}")
+  set (${REGEX} "^(${${REGEX}})$")
+endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Output current CMake variables to file.

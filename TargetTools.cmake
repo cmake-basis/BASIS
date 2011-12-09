@@ -33,6 +33,10 @@ endif ()
 # set_target_properties()</a> command and extends its functionality.
 # In particular, it maps the given target names to the corresponding target UIDs.
 #
+# @note Due to a bug in CMake (http://www.cmake.org/Bug/view.php?id=12303),
+#       except of the first property given directly after the @c PROPERTIES keyword,
+#       only properties listed in @c BASIS_PROPERTIES_ON_TARGETS can be set.
+#
 # @param [in] ARGN List of arguments. See
 #                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties">
 #                  set_target_properties()</a>.
@@ -55,20 +59,20 @@ function (basis_set_target_properties)
   if (NOT ARG MATCHES "^PROPERTIES$")
     message (FATAL_ERROR "Missing PROPERTIES argument!")
   elseif (NOT TARGET_UIDS)
-    message (FATAL_ERROR "No targets specified!")
+    message (FATAL_ERROR "No target specified!")
   endif ()
   # remove PROPERTIES keyword
   list (REMOVE_AT ARGN 0)
-  # set target properties
+  # set targets properties
   #
-  # Note: By looping of the properties, the empty property values
+  # Note: By iterating over the properties, the empty property values
   #       are correctly passed on to CMake's set_target_properties()
   #       command, while
   #       _set_target_properties(${TARGET_UIDS} PROPERTIES ${ARGN})
   #       (erroneously) discards the empty elements in ARGN.
   if (BASIS_DEBUG)
-    message ("** set_target_properties:")
-    message ("**   Target(s):  ${TARGETS}")
+    message ("** basis_set_target_properties:")
+    message ("**   Target(s):  ${TARGET_UIDS}")
     message ("**   Properties: [${ARGN}]")
   endif ()
   list (LENGTH ARGN N)
@@ -80,13 +84,12 @@ function (basis_set_target_properties)
     # The following loop is only required b/c CMake's ARGV and ARGN
     # lists do not support arguments which are themselves lists.
     # Therefore, we need a way to decide when the list of values for a
-    # property is terminated. We use here as a criteria the fact that
-    # property names are generally all uppercase without whitespaces
-    # while values will less likely follow this naming. As long as only one
-    # value is given for a property, this will not affect anything.
+    # property is terminated. Hence, we only allow known properties
+    # to be set, except for the first property where the name follows
+    # directly after the PROPERTIES keyword.
     while (N GREATER 0)
       list (GET ARGN 0 ARG)
-      if (ARG MATCHES "^[A-Z_]+$")
+      if (ARG MATCHES "${BASIS_PROPERTIES_ON_TARGETS_REGEX}")
         break ()
       endif ()
       list (APPEND VALUE "${ARG}")

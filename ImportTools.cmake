@@ -20,7 +20,6 @@ endif ()
 ## @addtogroup CMakeUtilities
 #  @{
 
-
 # ----------------------------------------------------------------------------
 ## @brief Set target property.
 #
@@ -30,15 +29,16 @@ endif ()
 # @note Do not use this function in your CMakeLists.txt configuration files.
 #       Use basis_set_target_properties() instead.
 #
-# @param [in] ARGN Arguments for set_target_properties().
+# @note Due to a bug in CMake (http://www.cmake.org/Bug/view.php?id=12303),
+#       except of the first property given directly after the @c PROPERTIES keyword,
+#       only properties listed in @c BASIS_PROPERTIES_ON_TARGETS can be set.
+#
+# @param [in] ARGN List of arguments for
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties">
+#                  set_target_properties()</a>.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_target_properties
 function (set_target_properties)
-  # redirect to basis_set_target_properties() if we are not importing targets
-  if (NOT BASIS_SET_TARGET_PROPERTIES_IMPORT)
-    basis_set_target_properties (${ARGV})
-    return ()
-  endif ()
   # target names
   list (FIND ARGN "PROPERTIES" IDX)
   if (IDX EQUAL -1)
@@ -57,7 +57,7 @@ function (set_target_properties)
   list (REMOVE_AT ARGN ${INDICES} ${IDX})
   # set target properties
   #
-  # Note: By looping of the properties, the empty property values
+  # Note: By iterating over the properties, the empty property values
   #       are correctly passed on to CMake's set_target_properties()
   #       command, while
   #       _set_target_properties(${TARGET_UIDS} PROPERTIES ${ARGN})
@@ -76,14 +76,12 @@ function (set_target_properties)
     # The following loop is only required b/c CMake's ARGV and ARGN
     # lists do not support arguments which are themselves lists.
     # Therefore, we need a way to decide when the list of values for a
-    # property is terminated. We use here as a criteria the fact that
-    # property names are generally all uppercase without whitespaces
-    # with the prefix IMPORTED_ while values will less likely follow
-    # this naming. As long as only one value is given for a property,
-    # this will not affect anything.
+    # property is terminated. Hence, we only allow known properties
+    # to be set, except for the first property where the name follows
+    # directly after the PROPERTIES keyword.
     while (N GREATER 0)
       list (GET ARGN 0 ARG)
-      if (ARG MATCHES "^(BASIS_TYPE|IMPORTED_[A-Z_]+)$")
+      if (ARG MATCHES "${BASIS_PROPERTIES_ON_TARGETS_REGEX}")
         break ()
       endif ()
       list (APPEND VALUE "${ARG}")

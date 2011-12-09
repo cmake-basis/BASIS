@@ -66,6 +66,47 @@ if (
 endif ()
 
 # ============================================================================
+# constants
+# ============================================================================
+
+## @brief Names of recognized properties on tests.
+#
+# Unfortunately, the @c ARGV and @c ARGN arguments of a CMake function()
+# or macro() does not preserve values which themselves are lists. Therefore,
+# it is not possible to distinguish between property names and their values
+# in the arguments passed to basis_set_tests_properties().
+# To overcome this problem, this list specifies all the possible property names.
+# Everything else is considered to be a property value except the first argument
+# follwing right after the @c PROPERTIES keyword. Alternatively,
+# basis_set_property() can be used as here no disambiguity exists.
+#
+# @note Placeholders such as &lt;CONFIG&gt; are allowed. These are treated
+#       as the regular expression "[^ ]+". See basis_list_to_regex().
+#
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#section_PropertiesonTests
+set (BASIS_PROPERTIES_ON_TESTS
+  ATTACHED_FILES
+  ATTACHED_FILES_ON_FAIL
+  COST
+  DEPENDS
+  ENVIRONMENT
+  FAIL_REGULAR_EXPRESSION
+  LABELS
+  MEASUREMENT
+  PASS_REGULAR_EXPRESSION
+  PROCESSORS
+  REQUIRED_FILES
+  RESOURCE_LOCK
+  RUN_SERIAL
+  TIMEOUT
+  WILL_FAIL
+  WORKING_DIRECTORY
+)
+
+# convert list into regular expression
+basis_list_to_regex (BASIS_PROPERTIES_ON_TESTS_REGEX ${BASIS_PROPERTIES_ON_TESTS})
+
+# ============================================================================
 # utilities
 # ============================================================================
 
@@ -108,6 +149,10 @@ endfunction ()
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property">
 # set_tests_properties()</a> command.
 #
+# @note Due to a bug in CMake (http://www.cmake.org/Bug/view.php?id=12303),
+#       except of the first property given directly after the @c PROPERTIES keyword,
+#       only properties listed in @c BASIS_PROPERTIES_ON_TESTS can be set.
+#
 # @param [in] ARGN List of arguments for
 #                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property">
 #                  set_tests_properties()</a>.
@@ -118,15 +163,69 @@ endfunction ()
 #
 # @ingroup CMakeAPI
 function (basis_set_tests_properties)
-  set (UIDS)
+  # convert test names to UIDs
+  set (TEST_UIDS)
   list (GET ARGN 0 ARG)
   while (ARG AND NOT ARG MATCHES "^PROPERTIES$")
-    basis_get_test_uid (UID "${ARG}")
-    list (APPEND UIDS "${UID}")
+    basis_get_test_uid (TEST_UID "${ARG}")
+    list (APPEND TEST_UIDS "${TEST_UID}")
     list (REMOVE_AT ARGN 0)
     list (GET ARGN 0 ARG)
   endwhile ()
-  set_tests_properties (${UIDS} ${ARGN})
+  if (NOT ARG MATCHES "^PROPERTIES$")
+    message (FATAL_ERROR "Missing PROPERTIES argument!")
+  elseif (NOT TEST_UIDS)
+    message (FATAL_ERROR "No test specified!")
+  endif ()
+  # remove PROPERTIES keyword
+  list (REMOVE_AT ARGN 0)
+  # set tests properties
+  #
+  # Note: By iterating over the properties, the empty property values
+  #       are correctly passed on to CMake's set_tests_properties()
+  #       command, while
+  #       set_tests_properties(${TEST_UIDS} PROPERTIES ${ARGN})
+  #       (erroneously) discards the empty elements in ARGN.
+  if (BASIS_DEBUG)
+    message ("** basis_set_tests_properties:")
+    message ("**   Test(s)  :  ${TEST_UIDS}")
+    message ("**   Properties: [${ARGN}]")
+  endif ()
+  list (LENGTH ARGN N)
+  while (N GREATER 1)
+    list (GET ARGN 0 PROPERTY)
+    list (GET ARGN 1 VALUE)
+    list (REMOVE_AT ARGN 0 1)
+    list (LENGTH ARGN N)
+    # The following loop is only required b/c CMake's ARGV and ARGN
+    # lists do not support arguments which are themselves lists.
+    # Therefore, we need a way to decide when the list of values for a
+    # property is terminated. Hence, we only allow known properties
+    # to be set, except for the first property where the name follows
+    # directly after the PROPERTIES keyword.
+    while (N GREATER 0)
+      list (GET ARGN 0 ARG)
+      if (ARG MATCHES "${BASIS_PROPERTIES_ON_TESTS_REGEX}")
+        break ()
+      endif ()
+      list (APPEND VALUE "${ARG}")
+      list (REMOVE_AT ARGN 0)
+      list (LENGTH ARGN N)
+    endwhile ()
+    if (BASIS_DEBUG)
+      message ("**   -> ${PROPERTY} = [${VALUE}]")
+    endif ()
+    # check property name
+    if ("${PROPERTY}" STREQUAL "")
+      message (FATAL_ERROR "Empty property name given!")
+    endif ()
+    # set target property
+    set_tests_properties (${TEST_UIDS} PROPERTIES ${PROPERTY} "${VALUE}")
+  endwhile ()
+  # make sure that every property had a corresponding value
+  if (NOT N EQUAL 0)
+    message (FATAL_ERROR "No value given for test property ${ARGN}")
+  endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -172,7 +271,7 @@ function (basis_add_test_driver TESTDRIVER_NAME)
   if (ARGN_EXTRA_INCLUDE OR ARGN_FUNCTION)
     message (FATAL_ERROR "Invalid argument EXTRA_INCLUDE or FUNCTON! "
                          "Use create_test_sourcelist() if you want to create "
-                         "your own test driver.")
+                         "a custom test driver.")
   endif ()
   # choose test driver implementation depending on which packages are available
   set (TESTDRIVER_INCLUDE "sbia/basis/testdriver.h")
@@ -201,7 +300,16 @@ function (basis_add_test_driver TESTDRIVER_NAME)
     basis_set_target_properties (
       ${TESTDRIVER_NAME}
       PROPERTIES
-        COMPILE_DEFINITIONS HAVE_ITK ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}
+        COMPILE_DEFINITIONS
+          HAVE_ITK=1
+          ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}
+    )
+  else ()
+    basis_set_target_properties (
+      ${TESTDRIVER_NAME}
+      PROPERTIES
+        COMPILE_DEFINITIONS
+          HAVE_ITK=0
     )
   endif ()
 endfunction ()

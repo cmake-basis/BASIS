@@ -861,17 +861,19 @@ macro (basis_project_initialize)
 
   # configure and include BASIS settings
   configure_file (
-    "${BASIS_MODULE_PATH}/Settings.cmake.in"
-    "${BINARY_CONFIG_DIR}/BasisSettings.cmake"
+    "${BASIS_MODULE_PATH}/ProjectSettings.cmake.in"
+    "${BINARY_CONFIG_DIR}/BasisProjectSettings.cmake"
     @ONLY
   )
 
-  include ("${BINARY_CONFIG_DIR}/BasisSettings.cmake" NO_POLICY_SCOPE)
+  include ("${BINARY_CONFIG_DIR}/ProjectSettings.cmake" NO_POLICY_SCOPE)
 endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Find packages this project depends on.
 macro (basis_find_packages)
+  set (BASIS_SET_TARGET_PROPERTIES_IMPORT TRUE) # see set_target_properties()
+
   # Attention: This function is used before the Directories.cmake.in and
   #            Settings.cmake.in files were configured and included.
   set (PROJECT_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
@@ -954,6 +956,8 @@ macro (basis_find_packages)
   endif ()
 
   unset (P)
+
+  set (BASIS_SET_TARGET_PROPERTIES_IMPORT FALSE) # see set_target_properties()
 endmacro ()
 
 # ============================================================================
@@ -1185,9 +1189,7 @@ macro (basis_project_impl)
   if (BASIS_USE_FILE)
     include ("${BASIS_USE_FILE}" NO_POLICY_SCOPE)
   endif ()
-  set (BASIS_SET_TARGET_PROPERTIES_IMPORT TRUE) # see set_target_properties()
   basis_find_packages ()
-  set (BASIS_SET_TARGET_PROPERTIES_IMPORT FALSE)
 
   if (BASIS_DEBUG)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFindDependencies.cmake")
