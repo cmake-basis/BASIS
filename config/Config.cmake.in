@@ -79,6 +79,7 @@ basis_set_config (LIBRARIES
 # ============================================================================
 
 include ("${${NS}MODULE_PATH}/BasisTools.cmake")
+include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 
 
 ## @}

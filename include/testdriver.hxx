@@ -15,14 +15,10 @@
 #define _SBIA_BASIS_TESTDRIVER_HXX
 
 
-#include "basis.h"
+#include <sbia/basis/path.h>
 
 #if HAVE_ITK
-#  if ITK_VERSION_MAJOR >= 4
-#    include "testdriver-itk4.hxx"
-#  else
-#    include "testdriver-itk.hxx"
-#  endif
+#  include "testdriver-itk.hxx"
 #endif
 
 
@@ -124,7 +120,8 @@ void print_help()
     cout << endl;
     print_options();
     cout << endl;
-    print_contact();
+    cout << "Contact:" << endl;
+    cout << "  SBIA Group <sbia-software at uphs.upenn.edu>" << endl;
 }
 
 // ---------------------------------------------------------------------------
@@ -144,24 +141,35 @@ void testdriversetup(int* argc, char** argv[])
 {
     cerr << "This test driver is not yet implemented! Use the ITK implementation in the meantime." << endl;
     BASIS_THROW(runtime_error, "Not implemented yet");
+
+#if HAVE_ITK
+    RegisterRequiredFactories();
+#endif
 }
 
 // ===========================================================================
 // image regression testing
 // ===========================================================================
 
-#if !HAVE_ITK
 // ---------------------------------------------------------------------------
 int image_regression_test(const char*  imagefile,
                           const char*  baseline,
                           double       intensity_tolerance,
                           unsigned int max_number_of_differences,
                           unsigned int tolerance_radius,
-                          bool         generate_report)
+                          int          report)
 {
+#if HAVE_ITK
+    return RegressionTestImage(imagefile,
+                               baseline,
+                               report,
+                               intensity_tolerance,
+                               max_number_of_differences,
+                               tolerance_radius);
+#else
     BASIS_THROW(runtime_error, "Not implemented yet! Use ITK implementation instead.");
-}
 #endif
+}
 
 
 #endif // _SBIA_BASIS_TESTDRIVER_HXX

@@ -97,7 +97,7 @@ typedef pair<const char*, const char*> FilenamePair;
 // ===========================================================================
 
 /// @brief Maximum dimension of images used for testing.
-const unsigned int MAX_TEST_IMAGE_DIMENSION = 6;
+const unsigned int BASIS_MAX_TEST_IMAGE_DIMENSION = 6;
 
 /**
  * @brief Structure holding parsed command-line arguments.
@@ -158,13 +158,20 @@ vector<string> get_baseline_filenames(string filename_template);
  * @param [in] intensity_tolerance Maximum tolerable intensity difference.
  * @param [in] max_number_of_diffs Maximum number of differing image elements.
  * @param [in] tolerance_radius    Tolerance radius.
+ * @param [in] report              Level of test report to generate.
+ *                                 If zero, no report is generated.
+ *                                 If greater than zero, a report is generated.
+ *                                 Similar to the verbosity of a program,
+ *                                 is this parameter used to set the verbosity
+ *                                 of the report. Most implementations yet
+ *                                 only either generate a (full) report or none.
  */
 int image_regression_test(const char*  imagefile,
                           const char*  baseline,
-                          double       intensity_tolerance,
+                          double       intensity_tolerance = 2.0,
                           unsigned int number_of_pixels_tolerance = 0,
                           unsigned int tolerance_radius = 0,
-                          bool         generate_report = false);
+                          int          report = 0);
 
 // ===========================================================================
 // implementation

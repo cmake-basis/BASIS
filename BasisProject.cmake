@@ -28,13 +28,17 @@
 #       and should be kept at the end of the corresponding line.
 
 basis_project (
-  NAME                 "BASIS"
-  VERSION               "0.0.0"
-  DESCRIPTION           "This package implements and supports the development of "
-                        "software which follows the SBIA Build system And Software "
-                        "Implementation Standard (BASIS)."
-  DEPENDS               #AddDependencyHere
-  OPTIONAL_DEPENDS      PythonInterp Perl PerlLibs ITK #AddOptionalDependencyHere
-  TEST_DEPENDS          #AddTestDependencyHere
-  OPTIONAL_TEST_DEPENDS MATLAB #AddOptionalTestDependencyHere
+  NAME        "BASIS"
+  VERSION     "0.0.0"
+  DESCRIPTION "This package implements and supports the development of "
+              "software which follows the SBIA Build system And Software "
+              "Implementation Standard (BASIS)."
+  OPTIONAL_DEPENDS
+    PythonInterp
+    Perl
+    PerlLibs
+    ITK-4{ITKTestKernel}
+    ITK
+  OPTIONAL_TEST_DEPENDS
+    MATLAB
 )

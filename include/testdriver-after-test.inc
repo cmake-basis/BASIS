@@ -64,7 +64,7 @@
                     break;
                 }
             }
-            // if the best we can do still has errors, generate the error images
+            // if the best we can do still has errors...
             if (beststatus != 0) {
                 image_regression_test(
                         test_filename,
@@ -72,7 +72,7 @@
                         arguments.compare_intensity_tolerance,
                         arguments.compare_max_number_of_differences,
                         arguments.compare_tolerance_radius,
-                        true); // generate error images
+                        1); // ...generate error images
             }
             // output the matching baseline for submission to the dashboard
             cout << "<DartMeasurement name=\"BaselineImageName\" type=\"text/string\">";
