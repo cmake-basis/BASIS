@@ -25,8 +25,12 @@ find_package (Subversion)
 
 ## @brief The Subversion command (svn).
 if (Subversion_FOUND)
+  set (BASIS_CMD_SVN "${Subversion_SVN_EXECUTABLE}")
+elseif (SVNCOMMAND)
   set (BASIS_CMD_SVN "${SVNCOMMAND}")
-else ()
+endif ()
+
+if (NOT BASIS_CMD_SVN)
   find_program (BASIS_CMD_SVN NAMES svn DOC "Subversion command line client (svn).")
   mark_as_advanced (BASIS_CMD_SVN)
 endif ()
@@ -66,6 +70,11 @@ function (basis_svn_get_revision URL REV)
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+
+    if (BASIS_DEBUG)
+      message ("** basis_svn_get_revision()")
+      message ("**   svn info: ${OUT}")
+    endif ()
 
     # extract revision
     string (REGEX REPLACE "^(.*\n)?Revision: ([^\n]+).*" "\\2" OUT "${OUT}")
