@@ -152,7 +152,7 @@ BUILDING THE SOFWARE FROM SOURCES
 
     Ubuntu:   (pre-installed)
 
-  - CMake 2.8.4 or greater
+  - CMake >= 2.8.4
 
     Web:      http://www.cmake.org/
     Download: http://www.cmake.org/cmake/resources/software.html
