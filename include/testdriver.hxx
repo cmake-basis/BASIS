@@ -139,7 +139,7 @@ void print_helpshort()
 // ---------------------------------------------------------------------------
 void testdriversetup(int* argc, char** argv[])
 {
-    cerr << "This test driver is not yet implemented! Use the ITK implementation in the meantime." << endl;
+    cerr << "This test driver is not yet implemented!" << endl;
     BASIS_THROW(runtime_error, "Not implemented yet");
 
 #if HAVE_ITK
