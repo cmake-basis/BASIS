@@ -34,7 +34,7 @@ basis_project (
                         "software which follows the SBIA Build system And Software "
                         "Implementation Standard (BASIS)."
   DEPENDS               #AddDependencyHere
-  OPTIONAL_DEPENDS      PythonInterp Perl PerlLibs #AddOptionalDependencyHere
+  OPTIONAL_DEPENDS      PythonInterp Perl PerlLibs ITK #AddOptionalDependencyHere
   TEST_DEPENDS          #AddTestDependencyHere
-  OPTIONAL_TEST_DEPENDS ITK-4{ITKTestKernel} ITK MATLAB #AddOptionalTestDependencyHere
+  OPTIONAL_TEST_DEPENDS MATLAB #AddOptionalTestDependencyHere
 )

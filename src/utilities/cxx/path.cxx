@@ -9,22 +9,22 @@
  */
 
 
-#include <sbia/basis/path.h>       // declarations and BASIS configuration
+#include <sbia/basis/path.h>   // declarations and BASIS configuration
 
-#include <stdlib.h>                // malloc() & free(), _splitpath_s() (WINDOWS)
+#include <stdlib.h>            // malloc() & free(), _splitpath_s() (WINDOWS)
 
 #if WINDOWS
-#  include <direct.h>              // _getcwd()
-#  include <windows.h>             // GetModuleFileName()
+#  include <direct.h>          // _getcwd()
+#  include <windows.h>         // GetModuleFileName()
 #else
-#  include <unistd.h>              // getcwd()
-#  include <sys/stat.h>            // stat(), lstat()
+#  include <unistd.h>          // getcwd()
+#  include <sys/stat.h>        // stat(), lstat()
 #endif
 #if MACOS
-#  include <mach-o/dyld.h>         // _NSGetExecutablePath()
+#  include <mach-o/dyld.h>     // _NSGetExecutablePath()
 #endif
 
-#include <sbia/basis/exceptions.h> // to throw exceptions
+#include <sbia/basis/except.h> // to throw exceptions
 
 
 using namespace std; // this a .cxx file, hence it is ok to do so

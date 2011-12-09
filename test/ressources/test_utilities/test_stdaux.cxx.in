@@ -8,10 +8,10 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <sbia/basis/test.h>       // unit testing framework
-#include "stdaux.h"                // testee
+#include <sbia/basis/test.h>   // unit testing framework
+#include "stdaux.h"            // testee
 
-#include <sbia/basis/exceptions.h> // SubprocessException
+#include <sbia/basis/except.h> // SubprocessException
 #include <vector>
 #include <string>
 

@@ -23,7 +23,7 @@
 #  include <signal.h>
 #endif
 
-#include <sbia/basis/exceptions.h>
+#include <sbia/basis/except.h>
 #include <sbia/basis/subprocess.h>
 
 

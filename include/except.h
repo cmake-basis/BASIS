@@ -47,9 +47,9 @@ SBIA_BASIS_NAMESPACE_BEGIN
  */
 #define BASIS_THROW(type, msg) \
     { \
-       std::ostringstream oss; \
+       ::std::ostringstream oss; \
        oss << msg; \
-       throw type(oss.str()); \
+       throw type(oss.str().c_str()); \
     }
 
 // ===========================================================================
@@ -60,14 +60,14 @@ SBIA_BASIS_NAMESPACE_BEGIN
  * @class SubprocessException
  * @brief Exception type thrown by execute_process().
  */
-class SubprocessException : public std::exception
+class SubprocessException : public ::std::exception
 {
 public:
-    SubprocessException(const std::string& msg) : msg_(msg) {}
+    SubprocessException(const ::std::string& msg) : msg_(msg) {}
     ~SubprocessException() throw () {}
 
 private:
-    std::string msg_; ///< Error message.
+    ::std::string msg_; ///< Error message.
 }; // class SubprocessException
 
 
