@@ -14,7 +14,7 @@
 #include <cstdio> // printf for faster output than <iostream>
 
 #include <sbia/basis/path.h>
-#include <sbia/basis/exceptions.h>
+#include <sbia/basis/except.h>
 #include <sbia/basis/subprocess.h>
 #include "ExecutableTargetInfo.h"
 
