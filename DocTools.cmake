@@ -157,9 +157,16 @@ endfunction ()
 # The documentation files are installed in/as <tt>INSTALL_DOC_DIR/TARGET_NAME</tt>
 # as part of the component specified by the @c COMPONENT option.
 # @n@n
+# <table border="0">
+#   <tr>
+#     @tp @b OUTPUT_NAME filename @endtp
+#     <td>Name of installed documentationf file. Default: @p TARGET_NAME.</td>
+#   </tr>
+# </table>
+# @n
 # Example:
 # @code
-# basis_add_doc (UserManual.pdf)
+# basis_add_doc ("User Manual.pdf" OUTPUT_NAME "BASIS User Manual.pdf")
 # basis_add_doc (DeveloperManual.docx COMPONENT dev)
 # basis_add_doc (SourceManual.html    COMPONENT src)
 # @endcode
@@ -402,10 +409,16 @@ function (basis_add_doc TARGET_NAME)
 
   if (ARGN_GENERATOR MATCHES "NONE")
 
+    CMAKE_PARSE_ARGUMENTS (DOC "" "OUTPUT_NAME" "" ${ARGN_UNPARSED_ARGUMENTS})
+
+    if (NOT DOC_OUTPUT_NAME)
+      set (DOC_OUTPUT_NAME "${TARGET_NAME}")
+    endif ()
+
     basis_get_relative_path (
       DOC_PATH
         "${CMAKE_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${DOC_OUTPUT_NAME}"
     )
 
     if (BASIS_VERBOSE)
@@ -415,8 +428,8 @@ function (basis_add_doc TARGET_NAME)
     # install documentation directory
     if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
       install (
-        DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
-        DESTINATION "${ARGN_DESTINATION}"
+        DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/"
+        DESTINATION "${ARGN_DESTINATION}/${DOC_OUTPUT_NAME}"
         COMPONENT   "${ARGN_COMPONENT}"
         PATTERN     ".svn" EXCLUDE
         PATTERN     ".git" EXCLUDE
@@ -428,6 +441,7 @@ function (basis_add_doc TARGET_NAME)
         FILES       "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}"
         DESTINATION "${ARGN_DESTINATION}"
         COMPONENT   "${ARGN_COMPONENT}"
+        RENAME      "${DOC_OUTPUT_NAME}"
       )
     endif ()
 
@@ -584,9 +598,7 @@ function (basis_add_doc TARGET_NAME)
       DOXYGEN_FILTER_PATTERNS "\nFILTER_PATTERNS       +=" ${DOXYGEN_FILTER_PATTERNS}
     )
     # exclude patterns
-    if (NOT DOXYGEN_EXCLUDE_PATTERNS)
-      set (DOXYGEN_EXCLUDE_PATTERNS "")
-    endif ()
+    list (APPEND DOXYGEN_EXCLUDE_PATTERNS "cmake_install.cmake")
     basis_list_to_delimited_string (
       DOXYGEN_EXCLUDE_PATTERNS "\nEXCLUDE_PATTERNS     += " ${DOXYGEN_EXCLUDE_PATTERNS}
     )
