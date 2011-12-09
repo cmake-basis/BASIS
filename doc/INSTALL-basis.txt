@@ -162,6 +162,12 @@ BUILDING THE SOFWARE FROM SOURCES
     If your operating system such as certain Linux distributions do not
     support CMake 2.8.4 or greater yet, you need to download a more recent
     CMake version from the download page noted above and install it manually.
+    Often this is easiest accomplished by using the CMake version supported
+    by your platform itself to configure the build system for the more
+    recent CMake version. In order to not conflict with the CMake installation
+    of your particular Linux distribution, it is recommended to install your
+    own build of CMake in a different directory or to at least remove the
+    pre-installed CMake installation prior to installing the new version.
 
   - BASIS
 
@@ -171,6 +177,9 @@ BUILDING THE SOFWARE FROM SOURCES
     The Build system And Software Implementation Standard (BASIS) among other
     features defines the project directory structure and provides CMake
     implementations to ease and standardize the build and installation.
+    Refer to the INSTALL document of the software package you want to build
+    and install for information on which particular BASIS version is required
+    by this package.
 
 
   Build and Installation Instructions
@@ -215,16 +224,16 @@ BUILDING THE SOFWARE FROM SOURCES
      The common CMake variables which configure the build and installation are:
 
      - BUILD_DOCUMENTATION   Whether build and installation instructions for the
-                             documentation should be added. If FALSe, the
-                             documentation in the doc/ directory is skipped.
-                             Otherwise, the documentation can be build by building
-                             the "doc" target.
+                             documentation should be added. If OFF, the
+                             build configuration of the doc/ directory is skipped.
+                             Otherwise, the "doc" target is added which is used
+                             to build the documentation.
      - BUILD_EXAMPLE         Whether the examples should be built (if required)
                              and/or installed.
      - BUILD_TESTING         Whether the testing tree should be built and system
                              tests, i.e., tests that execute the installed programs
                              and compare the outputs to the expected results should
-                             be installed.
+                             be installed (if done so by the software package).
      - CMAKE_BUILD_TYPE      Specify the build configuration to build. If not
                              set, the "Release" configuration will be build.
                              Valid values are "Release", "Debug", and "Coverage".
@@ -260,10 +269,10 @@ BUILDING THE SOFWARE FROM SOURCES
   4. Build the documentation (optional)
 
      In order to build the documentation, the BUILD_DOCUMENTATION variable
-     has to be set to TRUE. If not done before, this option can be enabled by
+     has to be set to ON. If not done before, this option can be enabled by
      using the command:
 
-       $ cmake -D BUILD_DOCUMENTATION=TRUE ~/$pkg-build
+       $ cmake -D BUILD_DOCUMENTATION=ON ~/$pkg-build
 
      The documentation is build by building the "doc" target, i.e.,
 
@@ -423,7 +432,7 @@ BUILDING THE SOFWARE FROM SOURCES
   named "uninstall" was written to the <prefix>/bin/<sinfix>/ directory
   on Unix and a corresponding Batch file on Windows. Additionally, if
   INSTALL_LINKS was set to ON, a symbolic link named "uninstall_<package>"
-  was created in <prefix>/bin/. Otherwise, if INSTALL_SINFIX was set to ON,
+  was created in <prefix>/bin/. Otherwise, if INSTALL_SINFIX was set to OFF,
   the uninstaller is located in <prefix>/bin/ and named "uninstall_<package>".
 
   Hence, in order to remove all files installed by this package as well
@@ -435,7 +444,9 @@ BUILDING THE SOFWARE FROM SOURCES
   assuming that you added <prefix>/bin/ to your PATH environment variable.
 
   The advantage of the uninstaller is, that the build tree is no longer
-  required in order to uninstall the software package.
+  required in order to uninstall the software package. Thus, you do not
+  need to keep a copy of the build tree once you installed the software
+  only to be able to uninstall the package again.
 
 
 
