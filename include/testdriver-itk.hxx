@@ -331,7 +331,7 @@ int RegressionTestImage(const char *testImageFilename,
 }
 
 
-#else ITK_VERSION_MAJOR >= 4
+#else // ITK_VERSION_MAJOR >= 4
 
 
 // ---------------------------------------------------------------------------
@@ -416,7 +416,7 @@ int RegressionTestImage (const char* testImageFilename,
 
   if( averageIntensityDifference > 0.0 )
     {
-    if( static_cast<int>(numberOfPixelsWithDifferences) > numberOfPixelsTolerance )
+    if( numberOfPixelsWithDifferences > numberOfPixelsTolerance )
       {
       differenceFailed = true;
       }
