@@ -91,5 +91,5 @@
         cerr << "ITK test driver caught an unknown exception!!!\n";
         result = -1;
     }
-    return result
+    return result;
 //} end of main()
