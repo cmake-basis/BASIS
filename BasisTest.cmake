@@ -154,6 +154,59 @@ function (basis_get_test_property VAR TEST_NAME)
 endfunction ()
 
 # ----------------------------------------------------------------------------
+## @brief Create and add a test driver executable.
+#
+# @param [in] TESTDRIVER_NAME Name of the test driver.
+# @param [in] ARGN            List of source files implementing tests.
+#
+# @ingroup CMakeAPI
+function (basis_add_test_driver TESTDRIVER_NAME)
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      ""
+      "EXTRA_INCLUDE;FUNCTION"
+      ""
+    ${ARGN}
+  )
+  if (ARGN_EXTRA_INCLUDE OR ARGN_FUNCTION)
+    message (FATAL_ERROR "Invalid argument EXTRA_INCLUDE or FUNCTON! "
+                         "Use create_test_sourcelist() if you want to create "
+                         "your own test driver.")
+  endif ()
+  # choose test driver implementation depending on which packages are available
+  set (TESTDRIVER_INCLUDE "sbia/basis/testdriver.h")
+  set (TESTDRIVER_DEPENDS)
+  if (ITK_FOUND)
+    basis_include_directories (BEFORE ${ITK_INCLUDE_DIRS})
+    set (TESTDRIVER_LINK_DEPENDS ${ITK_LIBRARIES})
+  endif ()
+  # create test driver source code
+  set (TESTDRIVER_SOURCE "${TESTDRIVER_NAME}")
+  if (NOT TESTDRIVER_SOURCE MATCHES "\\.cxx")
+    set (TESTDRIVER_SOURCE "${TESTDRIVER_SOURCE}.cxx")
+  endif ()
+  set (CMAKE_TESTDRIVER_BEFORE_TESTMAIN "#   include <sbia/basis/testdriver-before-test.inc>")
+  set (CMAKE_TESTDRIVER_AFTER_TESTMAIN  "#   include <sbia/basis/testdriver-after-test.inc>")
+  create_test_sourcelist (
+    TESTDRIVER_SOURCES
+      ${TESTDRIVER_SOURCE} ${ARGN_UNPARSED_ARGUMENTS}
+      EXTRA_INCLUDE "${TESTDRIVER_INCLUDE}"
+      FUNCTION      testdriversetup
+  )
+  # add test driver executable
+  basis_add_executable (${TESTDRIVER_NAME} ${TESTDRIVER_SOURCES})
+  basis_target_link_libraries (${TESTDRIVER_NAME} ${TESTDRIVER_LINK_DEPENDS})
+  if (ITK_FOUND)
+    basis_set_target_properties (
+      ${TESTDRIVER_NAME}
+      PROPERTIES
+        COMPILE_DEFINITIONS HAVE_ITK ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}
+    )
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Add test.
 #
 # This command is used similar to CMake's

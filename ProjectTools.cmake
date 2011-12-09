@@ -438,6 +438,7 @@ function (basis_configure_public_headers)
       ".hxx"
       ".inl"
       ".txx"
+      ".inc"
   )
 
   # considered include directories
