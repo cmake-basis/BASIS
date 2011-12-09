@@ -866,7 +866,7 @@ macro (basis_project_initialize)
     @ONLY
   )
 
-  include ("${BINARY_CONFIG_DIR}/ProjectSettings.cmake" NO_POLICY_SCOPE)
+  include ("${BINARY_CONFIG_DIR}/BasisProjectSettings.cmake" NO_POLICY_SCOPE)
 endmacro ()
 
 # ----------------------------------------------------------------------------
