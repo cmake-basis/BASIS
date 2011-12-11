@@ -17,10 +17,10 @@ if (UNIX)
   basis_add_test (test_shtap.sh UNITTEST)
 endif ()
 
-basis_add_executable (test_CmdLine.cxx)
-basis_add_test (test_CmdLine-help COMMAND test_CmdLine --help)
-basis_add_test (test_CmdLine-helpshort COMMAND test_CmdLine --helpshort)
-basis_add_test (test_CmdLine-version COMMAND test_CmdLine --version)
+basis_add_executable (parseargs.cxx)
+basis_add_test (parseargs-help COMMAND parseargs --help)
+basis_add_test (parseargs-helpshort COMMAND parseargs --helpshort)
+basis_add_test (parseargs-version COMMAND parseargs --version)
 
 # ----------------------------------------------------------------------------
 # project-specific utilities

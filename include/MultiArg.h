@@ -1,5 +1,5 @@
 /**
- * @file  MultiArg.h
+ * @file  basis/MultiArg.h
  * @brief Extends TCLAP's MultiArg implementation.
  *
  * Instead of always only consuming one argument after the argument name or
@@ -59,6 +59,7 @@ public:
      *                        the generation of the USAGE statement. The goal
      *                        is to be helpful to the end user of the program.
      * @param [in] n          Number of values per argument occurrence.
+     * @param [in] once       Accept argument only once.
      * @param [in] v          An optional visitor. You probably should not
      *                        use this unless you have a very good reason.
      */
@@ -68,6 +69,7 @@ public:
              bool req,
              const std::string& typeDesc,
              unsigned int n = 1,
+             bool once = false,
              TCLAP::Visitor* v = NULL);
 
     /**
@@ -85,6 +87,7 @@ public:
      *                        is to be helpful to the end user of the program.
      * @param [in] parser     A CmdLine parser object to add this Arg to
      * @param [in] n          Number of values per argument occurrence.
+     * @param [in] once       Accept argument only once.
      * @param [in] v          An optional visitor. You probably should not
      *                        use this unless you have a very good reason.
      */
@@ -95,6 +98,7 @@ public:
              const std::string& typeDesc,
              TCLAP::CmdLineInterface& parser,
              unsigned int n = 1,
+             bool once = false,
              TCLAP::Visitor* v = NULL );
 
     /**
@@ -109,6 +113,7 @@ public:
      * @param [in] constraint A pointer to a Constraint object used
      *                        to constrain this Arg.
      * @param [in] n          Number of values per argument occurrence.
+     * @param [in] once       Accept argument only once.
      * @param [in] v          An optional visitor. You probably should not
      *                        use this unless you have a very good reason.
      */
@@ -118,8 +123,9 @@ public:
              bool req,
              TCLAP::Constraint<T>* constraint,
              unsigned int n = 1,
+             bool once = false,
              TCLAP::Visitor* v = NULL );
-          
+
     /**
      * @brief Constructor.
      *
@@ -133,6 +139,7 @@ public:
      *                        to constrain this Arg.
      * @param [in] parser     A CmdLine parser object to add this Arg to
      * @param [in] n          Number of values per argument occurrence.
+     * @param [in] once       Accept argument only once.
      * @param [in] v          An optional visitor. You probably should not
      *                        use this unless you have a very good reason.
      */
@@ -143,6 +150,7 @@ public:
              TCLAP::Constraint<T>* constraint,
              TCLAP::CmdLineInterface& parser,
              unsigned int n = 1,
+             bool once = false,
              TCLAP::Visitor* v = NULL );
  
     // -----------------------------------------------------------------------
@@ -173,6 +181,7 @@ private:
 protected:
 
     unsigned int _numberOfArguments; ///< Number of values to process each time.
+    bool         _allowOnce;         ///< Allow argument only once.
 
 }; // class MultiArg
 
@@ -189,11 +198,13 @@ MultiArg<T>::MultiArg(const std::string& flag,
                       bool req,
                       const std::string& typeDesc,
                       unsigned int n,
+                      bool once,
                       TCLAP::Visitor* v)
 :
    TCLAP::MultiArg<T>(flag, name, desc, req, typeDesc, v),
    _numberOfArguments(n)
-{ 
+{
+    if (once) TCLAP::MultiArg<T>::_acceptsMultipleValues = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -205,11 +216,13 @@ MultiArg<T>::MultiArg(const std::string& flag,
                       const std::string& typeDesc,
                       TCLAP::CmdLineInterface& parser,
                       unsigned int n,
+                      bool once,
                       TCLAP::Visitor* v)
 :
     TCLAP::MultiArg<T>(flag, name, desc, req, typeDesc, parser, v),
     _numberOfArguments(n)
 { 
+    if (once) TCLAP::MultiArg<T>::_acceptsMultipleValues = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -220,11 +233,13 @@ MultiArg<T>::MultiArg(const std::string& flag,
                       bool req,
                       TCLAP::Constraint<T>* constraint,
                       unsigned int n,
+                      bool once,
                       TCLAP::Visitor* v)
 :
     TCLAP::MultiArg<T>(flag, name, desc, req, constraint, v),
     _numberOfArguments(n)
 { 
+    if (once) TCLAP::MultiArg<T>::_acceptsMultipleValues = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -236,18 +251,22 @@ MultiArg<T>::MultiArg(const std::string& flag,
                       TCLAP::Constraint<T>* constraint,
                       TCLAP::CmdLineInterface& parser,
                       unsigned int n,
+                      bool once,
                       TCLAP::Visitor* v)
 :
     TCLAP::MultiArg<T>(flag, name, desc, req, constraint, parser, v),
     _numberOfArguments(n)
 { 
+    if (once) TCLAP::MultiArg<T>::_acceptsMultipleValues = false;
 }
 
 // ---------------------------------------------------------------------------
 template <class T>
 bool MultiArg<T>::processArg(int *i, std::vector<std::string>& args) 
 {
-    if (TCLAP::MultiArg<T>::_ignoreable && TCLAP::Arg::ignoreRest()) return false;
+    if (TCLAP::MultiArg<T>::_ignoreable && TCLAP::Arg::ignoreRest()) {
+        return false;
+    }
     if (TCLAP::MultiArg<T>::_hasBlanks( args[*i] )) return false;
     // separate flag and value if delimiter is not ' '
     std::string flag = args[*i];
@@ -263,6 +282,11 @@ bool MultiArg<T>::processArg(int *i, std::vector<std::string>& args)
     // always take the first one, regardless of number of arguments
     if (value == "")
     {
+        if (TCLAP::MultiArg<T>::_alreadySet &&
+                !TCLAP::MultiArg<T>::_acceptsMultipleValues) {
+            throw TCLAP::CmdLineParseException("Argument already set!",
+                                               TCLAP::MultiArg<T>::toString());
+        }
         (*i)++;
         if (static_cast<unsigned int>(*i) < args.size()) {
             TCLAP::MultiArg<T>::_extractValue(args[*i]);

@@ -1,5 +1,5 @@
 /**
- * @file  testdriver-itk4.hxx
+ * @file  testdriver-itk.hxx
  * @brief ITK-based implementation of test driver.
  *
  * This implementation of the test driver utilizes the ITK.

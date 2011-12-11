@@ -3,7 +3,7 @@
 ##############################################################################
 # @file  make_html_verbatim.sh
 # @brief Auxiliary script used to convert plain text file such that the
-#        content can be pasted into the body of a HTML <verbatim> tag.
+#        content can be pasted into the body of a HTML &lt;verbatim&gt; tag.
 #
 # Copyright (c) University of Pennsylvania. All rights reserved.
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

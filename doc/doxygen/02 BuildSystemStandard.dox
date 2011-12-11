@@ -1,6 +1,5 @@
 /**
- * @file  BuildSystemStandard.dox
- * @brief Build system standard page of API documentation.
+ * Build system standard page of API documentation.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -187,7 +186,8 @@ MultiUIntArg gaussian_radius(                // unsigned integer values
     "Radius of Gaussian kernel in each dimension.", // argument help
     false,                                   // required?
     "<r_x> <r_y> <r_z>",                     // value type description
-    3);                                      // number of values per argument
+    3,                                       // number of values per argument
+    true);                                   // accept argument only once
 
 DoubleArg gaussian_std(                      // floating-point argument value
     "s", "std",                              // short and long option name
@@ -210,7 +210,9 @@ PositionalArg imagefile(                     // positional, i.e., unlabeled
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-int gaussianfilter(const string& imagefile, unsigned int r[], double std)
+int gaussianfilter(const string&               imagefile,
+                   const vector<unsigned int>& r,
+                   double                      std)
 {
     // [...]
     return 0;
@@ -274,17 +276,13 @@ int main(int argc, char* argv[])
     }
 
     // -----------------------------------------------------------------------
-    // smooth image
+    // smooth image - access parsed argument value using Arg::getValue()
     unsigned int r[3];
 
-    // access parsed argument value using getValue()
-    // TODO Implement sbia::basis::MultiArg which can only occur once
-    r[0] = gaussian_radius.getValue()[gaussian_radius.getValue().size() - 3];
-    r[1] = gaussian_radius.getValue()[gaussian_radius.getValue().size() - 2];
-    r[2] = gaussian_radius.getValue()[gaussian_radius.getValue().size() - 1];
-
     if (gaussian.getValue()) {
-        return gaussianfilter(imagefile.getValue(), r, gaussian_std.getValue());
+        return gaussianfilter(imagefile.getValue(),
+                              gaussian_radius.getValue(),
+                              gaussian_std.getValue());
     } else {
         return anisotropicfilter(imagefile.getValue());
     }
@@ -300,7 +298,7 @@ output:
 @verbatim
 
 SYNOPSIS
-    smoothimage [--std <float>] [--radius <r_x> <r_y> <r_z>]... [--verbose
+    smoothimage [--std <float>] [--radius <r_x> <r_y> <r_z>] [--verbose
                 |-v] {--gaussian|--anisotropic} <image>
     smoothimage [--help|-h|--helpshort|--helpxml|--helpman|--version]
 
@@ -366,7 +364,7 @@ CONTACT
 The short help output contains of only the synopsis of the full help, i.e.,
 @verbatim
 
-    smoothimage [--std <float>] [--radius <r_x> <r_y> <r_z>]... [--verbose
+    smoothimage [--std <float>] [--radius <r_x> <r_y> <r_z>] [--verbose
                 |-v] {--gaussian|--anisotropic} <image>
     smoothimage [--help|-h|--helpshort|--helpxml|--helpman|--version]
 

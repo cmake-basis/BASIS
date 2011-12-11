@@ -1,5 +1,5 @@
 /**
- * @file  test_CmdLine.cxx
+ * @file  parseargs.cxx
  * @breif Test program for C++ command-line parsing library.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
@@ -36,7 +36,8 @@ MultiUIntArg gaussian_radius(                // unsigned integer values
     "Radius of Gaussian kernel in each dimension.", // argument help
     false,                                   // required?
     "<r_x> <r_y> <r_z>",                     // value type description
-    3);                                      // number of values per argument
+    3,                                       // number of values per argument
+    true);                                   // accept argument only once
 
 DoubleArg gaussian_std(                      // floating-point argument value
     "s", "std",                              // short and long option name
@@ -59,7 +60,7 @@ PositionalArg imagefile(                     // positional, i.e., unlabeled
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-int gaussianfilter(const string& imagefile, unsigned int r[], double std)
+int gaussianfilter(const string& imagefile, vector<unsigned int> r, double std)
 {
     // [...]
     return 0;
@@ -123,17 +124,13 @@ int main(int argc, char* argv[])
     }
 
     // -----------------------------------------------------------------------
-    // smooth image
+    // smooth image - access parsed argument values using Arg::getValue()
     unsigned int r[3];
 
-    // access parsed argument value using getValue()
-    // TODO Implement sbia::basis::MultiArg which can only occur once
-    r[0] = gaussian_radius.getValue()[gaussian_radius.getValue().size() - 3];
-    r[1] = gaussian_radius.getValue()[gaussian_radius.getValue().size() - 2];
-    r[2] = gaussian_radius.getValue()[gaussian_radius.getValue().size() - 1];
-
     if (gaussian.getValue()) {
-        return gaussianfilter(imagefile.getValue(), r, gaussian_std.getValue());
+        return gaussianfilter(imagefile.getValue(),
+                              gaussian_radius.getValue(),
+                              gaussian_std.getValue());
     } else {
         return anisotropicfilter(imagefile.getValue());
     }

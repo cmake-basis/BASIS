@@ -191,6 +191,8 @@ void testdriversetup(int* argc, char** argv[]);
  * Additionally, if a file @p filename_template exists, it is the first
  * element in the resulting list.
  *
+ * @param [in] filename_template File path template.
+ *
  * @return List of baseline filenames or empty list if no such files exist.
  */
 vector<string> get_baseline_filenames(string filename_template);
@@ -202,23 +204,24 @@ vector<string> get_baseline_filenames(string filename_template);
  * regression test result depending on how well the output image matches the
  * baseline image given the provided tolerance arguments.
  *
- * @param [in] imagefile           Output image file of test run.
- * @param [in] baseline            Baseline image file.
- * @param [in] intensity_tolerance Maximum tolerable intensity difference.
- * @param [in] max_number_of_diffs Maximum number of differing image elements.
- * @param [in] tolerance_radius    Tolerance radius.
- * @param [in] report              Level of test report to generate.
- *                                 If zero, no report is generated.
- *                                 If greater than zero, a report is generated.
- *                                 Similar to the verbosity of a program,
- *                                 is this parameter used to set the verbosity
- *                                 of the report. Most implementations yet
- *                                 only either generate a (full) report or none.
+ * @param [in] imagefile                 Output image file of test run.
+ * @param [in] baseline                  Baseline image file.
+ * @param [in] intensity_tolerance       Maximum tolerable intensity difference.
+ * @param [in] max_number_of_differences Maximum number of differing pixels.
+ * @param [in] tolerance_radius          Tolerance radius.
+ * @param [in] report                    Level of test report to generate.
+ *                                       If zero, no report is generated.
+ *                                       If greater than zero, a report is
+ *                                       generated. Similar to the verbosity of
+ *                                       a program, is this parameter used to
+ *                                       set the verbosity of the report. Most
+ *                                       implementations yet only either
+ *                                       generate a (full) report or none.
  */
 int image_regression_test(const char*  imagefile,
                           const char*  baseline,
                           double       intensity_tolerance = 2.0,
-                          unsigned int number_of_pixels_tolerance = 0,
+                          unsigned int max_number_of_differences = 0,
                           unsigned int tolerance_radius = 0,
                           int          report = 0);
 
