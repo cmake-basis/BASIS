@@ -77,6 +77,8 @@
 
 #include <sbia/basis/config.h>
 #include <sbia/basis/except.h>
+#include <sbia/basis/path.h>    // get_file_name() - basistest-after-test.inc
+#include <sbia/basis/CmdLine.h> // parsing of command-line arguments
 
 
 // acceptable in test driver includes
@@ -84,14 +86,6 @@ using namespace std;
 using namespace sbia::basis;
 
  
-
-// ===========================================================================
-// types
-// ===========================================================================
-
-/// @brief Type used to store a pair of filenames.
-typedef pair<const char*, const char*> FilenamePair;
-
 // ===========================================================================
 // arguments
 // ===========================================================================
@@ -99,18 +93,75 @@ typedef pair<const char*, const char*> FilenamePair;
 /// @brief Maximum dimension of images used for testing.
 const unsigned int BASIS_MAX_TEST_IMAGE_DIMENSION = 6;
 
-/**
- * @brief Structure holding parsed command-line arguments.
- */
-struct Arguments
-{
-    bool                 redirect;
-    string               redirect_filename;
-    vector<FilenamePair> compare_imagepairs;
-    double               compare_intensity_tolerance;
-    unsigned int         compare_max_number_of_differences;
-    unsigned int         compare_tolerance_radius;
-} arguments;
+// ---------------------------------------------------------------------------
+// environment
+MultiStringArg add_before_libpath(
+        "", "add-before-libpath",
+        "Add a path to the library path environment. This option takes"
+        " care of choosing the right environment variable for your system.",
+        false, "<dir>");
+
+MultiStringArg add_before_env(
+        "", "add-before-env",
+        "Add an environment variable named <name> with the given value."
+        " The seperator used is the default one on the system.",
+        false, "<name> <value>", 2);
+
+MultiStringArg add_before_env_with_sep(
+        "", "add-before-env-with-sep",
+        "Add an environment variable named <name> with the given value.",
+        false, "<name> <value> <sep>", 3);
+
+// ---------------------------------------------------------------------------
+// regression testing
+MultiStringArg compare(
+        "", "compare",
+        "Compare the <test> image to the <baseline> image using the"
+        " specified tolerances. If the test image should be compared to"
+        " to more than one baseline image, specify the file name of"
+        " the main baseline image and name the other baseline images"
+        " similarly with only a numerical suffix appended to the"
+        " basename of the image file path using a dot (.) as separator."
+        " For example, name your baseline images baseline.nii,"
+        " baseline.1.nii, baseline.2.nii,..., and specify baseline.nii"
+        " second argument value.",
+        false, "<test> <baseline>", 2);
+
+DoubleArg intensity_tolerance(
+        "", "intensity-tolerance",
+        "The accepted maximum difference between image intensities.",
+        false, 2.0, "<float>");
+
+UIntArg max_number_of_differences(
+        "", "max-number-of-differences",
+        "When comparing images with --compare, allow the given number"
+        " of image elements to differ.",
+        false, 0, "<n>");
+
+UIntArg tolerance_radius(
+        "", "tolerance-radius",
+        "At most one image element in the neighborhood specified by the"
+        " given radius has to fulfill the test criteria.",
+        false, 0, "<int>");
+
+// ---------------------------------------------------------------------------
+// test execution
+StringArg redirect_output(
+        "", "redirect-output",
+        "Redirects the test output to the specified file.",
+        false, "", "<file>");
+
+UIntArg max_number_of_threads(
+        "", "max-number-of-threads",
+        "Use at most <n> threads. Set explicitly to n=1 to disable"
+        " multi-threading. Note that the test itself still may use"
+        " more threads, but the regression tests will not.",
+        false, 0, "<n>");
+
+SwitchArg full_output(
+        "", "full-output",
+        "Causes the full output of the test to be passed to CDash.",
+        false);
 
 // ===========================================================================
 // initialization
@@ -173,38 +224,9 @@ int image_regression_test(const char*  imagefile,
                           unsigned int tolerance_radius = 0,
                           int          report = 0);
 
-// ===========================================================================
-// implementation
-// ===========================================================================
 
+// inline definitions
 #include "testdriver.hxx"
-
-// ---------------------------------------------------------------------------
-vector<string> get_baseline_filenames(string filename_template)
-{
-    vector<string> baselines;
-
-    ifstream ifs(filename_template.c_str());
-    if (ifs) baselines.push_back(filename_template);
-
-    int               x   = 0;
-    string::size_type pos = filename_template.rfind(".");
-    string            suffix;
-
-    if (pos != string::npos) {
-        suffix = filename_template.substr(pos);
-        filename_template.erase(pos);
-    }
-    while (++x) {
-        ostringstream filename;
-        filename << filename_template << '.' << x << suffix;
-        ifstream ifs(filename.str().c_str());
-        if (!ifs) break;
-        ifs.close();
-        baselines.push_back(filename.str());
-    }
-    return baselines;
-}
 
 
 #endif // _SBIA_BASIS_TESTDRIVER_H

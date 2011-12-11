@@ -38,9 +38,9 @@
         ofstream   redirectstream;
         streambuf* redirectbuf;
         streambuf* oldcoutbuf = NULL;
-        if (arguments.redirect) {
-            cout << "Test output has been redirected to: " << arguments.redirect_filename << std::endl;
-            redirectstream.open(arguments.redirect_filename.c_str(), ios::out);
+        if (redirect_output.isSet()) {
+            cout << "Test output has been redirected to: " << redirect_output.getValue() << std::endl;
+            redirectstream.open(redirect_output.getValue().c_str(), ios::out);
             redirectbuf = redirectstream.rdbuf();
             oldcoutbuf  = cout.rdbuf();
             cout.rdbuf(redirectbuf);

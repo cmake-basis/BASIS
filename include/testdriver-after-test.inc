@@ -37,14 +37,14 @@
         // [...]
 
         // revert redirection of output
-        if (arguments.redirect) {
+        if (oldcoutbuf) {
             cout.rdbuf(oldcoutbuf);
             redirectstream.close();
         }
         // perform regression tests of output image(s)
-        for (size_t i = 0; i < arguments.compare_imagepairs.size(); i++) {
-            const char* baseline_filename = arguments.compare_imagepairs[i].first;
-            const char* test_filename     = arguments.compare_imagepairs[i].second;
+        for (size_t i = 0; i < compare.getValue().size(); i += 2) {
+            const char* baseline_filename = compare.getValue()[i    ].c_str();
+            const char* test_filename     = compare.getValue()[i + 1].c_str();
             vector<string> baselines = get_baseline_filenames(baseline_filename);
             string bestmatch;
             int    beststatus = numeric_limits<int>::max();
@@ -52,9 +52,9 @@
                 int status = image_regression_test(
                         test_filename,
                         baselines[i].c_str(),
-                        arguments.compare_intensity_tolerance,
-                        arguments.compare_max_number_of_differences,
-                        arguments.compare_tolerance_radius);
+                        intensity_tolerance.getValue(),
+                        max_number_of_differences.getValue(),
+                        tolerance_radius.getValue());
                 if (status < beststatus) {
                     bestmatch  = baselines[i];
                     beststatus = status;
@@ -69,9 +69,9 @@
                 image_regression_test(
                         test_filename,
                         baselines[0].c_str(),
-                        arguments.compare_intensity_tolerance,
-                        arguments.compare_max_number_of_differences,
-                        arguments.compare_tolerance_radius,
+                        intensity_tolerance.getValue(),
+                        max_number_of_differences.getValue(),
+                        tolerance_radius.getValue(),
                         1); // ...generate error images
             }
             // output the matching baseline for submission to the dashboard

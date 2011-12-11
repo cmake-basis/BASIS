@@ -292,7 +292,6 @@ inline string StdOutput::getArgumentID(TCLAP::Arg* arg, bool all) const
         if (option) id += TCLAP::Arg::delimiter();
         id += getTypeDescription(arg);
     }
-    if (arg->acceptsMultipleValues()) id += "...";
     return id;
 }
 
@@ -342,6 +341,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
         s += " [";
         s += getArgumentID(*it);
         s += "]";
+        if ((*it)->acceptsMultipleValues()) s += "...";
     }
     // required arguments
     for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
@@ -349,6 +349,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
         for (TCLAP::ArgVectorIterator it = xors[i].begin();
                 it != xors[i].end(); it++) {
             s += getArgumentID(*it);
+            if ((*it)->acceptsMultipleValues()) s += "...";
             s += "|";
         }
         s[s.length() - 1] = '}';
@@ -356,6 +357,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     for (TCLAP::ArgListIterator it = reqargs.begin(); it != reqargs.end(); it++) {
         s += " ";
         s += getArgumentID(*it);
+        if ((*it)->acceptsMultipleValues()) s += "...";
     }
 
     // print usage with proper number of columns
@@ -676,9 +678,7 @@ void CmdLine::setup()
     TCLAP::Visitor* v;
 
     TCLAP::SwitchArg* verbose = new TCLAP::MultiSwitchArg(
-            "v", "verbose",
-            "Increase verbosity of output messages."
-            " This option can be given several time.");
+            "v", "verbose", "Increase verbosity of output messages.");
     add(verbose);
     deleteOnExit(verbose);
 

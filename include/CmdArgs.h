@@ -22,9 +22,10 @@
 #include <sbia/basis/tclap/SwitchArg.h>
 #include <sbia/basis/tclap/MultiSwitchArg.h>
 #include <sbia/basis/tclap/ValueArg.h>
-#include <sbia/basis/tclap/MultiArg.h>
 #include <sbia/basis/tclap/UnlabeledValueArg.h>
 #include <sbia/basis/tclap/UnlabeledMultiArg.h>
+
+#include <sbia/basis/MultiArg.h>
 
 
 namespace sbia
@@ -73,19 +74,19 @@ typedef TCLAP::ValueArg<double> DoubleArg;
 // multiple arguments option
 
 /// String argument (multiple occurrences allowed).
-typedef TCLAP::MultiArg<std::string> MultiStringArg;
+typedef MultiArg<std::string> MultiStringArg;
 /// Signed 32-bit integer argument (multiple occurrences allowed).
-typedef TCLAP::MultiArg<int> MultiInt32Arg;
+typedef MultiArg<int> MultiInt32Arg;
 /// Unsigned 32-bit integer argument (multiple occurrences allowed).
-typedef TCLAP::MultiArg<unsigned int> MultiUInt32Arg;
+typedef MultiArg<unsigned int> MultiUInt32Arg;
 /// Signed 64-bit integer argument (multiple occurrences allowed).
-typedef TCLAP::MultiArg<long> MultiInt64Arg;
+typedef MultiArg<long> MultiInt64Arg;
 /// Unsigned 64-bit integer argument (multiple occurrences allowed).
-typedef TCLAP::MultiArg<unsigned long> MultiUInt64Arg;
+typedef MultiArg<unsigned long> MultiUInt64Arg;
 /// Floating-point argument (multiple occurrences allowed).
-typedef TCLAP::MultiArg<float> MultiFloatArg;
+typedef MultiArg<float> MultiFloatArg;
 /// Floating-point argument (double precision, multiple occurrences allowed).
-typedef TCLAP::MultiArg<double> MultiDoubleArg;
+typedef MultiArg<double> MultiDoubleArg;
 /// Alias for MultiInt32Arg.
 typedef MultiInt32Arg MultiIntArg;
 /// Alias for MultiUInt32Arg.
