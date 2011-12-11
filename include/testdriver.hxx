@@ -6,8 +6,6 @@
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
 #pragma once
@@ -60,8 +58,8 @@ void testdriversetup(int* argc, char** argv[])
                 " image named baseline.nii with default intensity tolerance.",
                 // version information
                 cVersionAndRevision,
-                "Copyright (c) 2011 University of Pennsylvania. "
-                "All rights reserved.");
+                "Copyright (c) 2011 University of Pennsylvania."
+                " All rights reserved.");
 
         cmd.add(add_before_libpath);
         cmd.add(add_before_env);
@@ -92,9 +90,8 @@ void testdriversetup(int* argc, char** argv[])
         }
 
     // -----------------------------------------------------------------------
-    // catch unhandled exceptions - parse errors are already taken care of
+    // catch specification exceptions - parse errors are already taken care of
     } catch (CmdLineException& e) {
-        // invalid command-line specification
         cerr << e.error() << endl;
         exit(1);
     }

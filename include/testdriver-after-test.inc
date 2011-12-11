@@ -27,8 +27,6 @@
  * limitations under the License.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
 //int main(int, char*)

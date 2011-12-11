@@ -32,8 +32,6 @@
  * please refer to the COPYRIGHT file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
  /*=========================================================================

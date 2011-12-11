@@ -19,9 +19,10 @@
 
 
 // command-line parsing
-#include <@BASIS_INCLUDE_PREFIX@tclap/CmdLine.h>
+#include <@BASIS_INCLUDE_PREFIX@CmdLine.h>
 
 // basis utilities library
+#include <@BASIS_INCLUDE_PREFIX@assert.h>
 #include <@BASIS_INCLUDE_PREFIX@except.h>
 #include <@BASIS_INCLUDE_PREFIX@path.h>
 #include <@BASIS_INCLUDE_PREFIX@subprocess.h>

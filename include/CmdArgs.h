@@ -10,8 +10,6 @@
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
 #pragma once
@@ -62,9 +60,9 @@ typedef TCLAP::ValueArg<long> Int64Arg;
 /// Unsigned 64-bit integer argument.
 typedef TCLAP::ValueArg<unsigned long> UInt64Arg;
 /// Alias for Int32Arg.
-typedef Int32Arg IntArg;
+typedef TCLAP::ValueArg<int> IntArg;
 /// Alias for UInt32Arg.
-typedef UInt32Arg UIntArg;
+typedef TCLAP::ValueArg<unsigned int> UIntArg;
 /// Floating-point argument.
 typedef TCLAP::ValueArg<float> FloatArg;
 /// Floating-point argument (double precision).
@@ -73,24 +71,27 @@ typedef TCLAP::ValueArg<double> DoubleArg;
 // ---------------------------------------------------------------------------
 // multiple arguments option
 
+// Note: Use full namespace on the left side to help Doxygen to create
+//       the proper references to the BASIS MultiArg class.
+
 /// String argument (multiple occurrences allowed).
-typedef MultiArg<std::string> MultiStringArg;
+typedef sbia::basis::MultiArg<std::string> MultiStringArg;
 /// Signed 32-bit integer argument (multiple occurrences allowed).
-typedef MultiArg<int> MultiInt32Arg;
+typedef sbia::basis::MultiArg<int> MultiInt32Arg;
 /// Unsigned 32-bit integer argument (multiple occurrences allowed).
-typedef MultiArg<unsigned int> MultiUInt32Arg;
+typedef sbia::basis::MultiArg<unsigned int> MultiUInt32Arg;
 /// Signed 64-bit integer argument (multiple occurrences allowed).
-typedef MultiArg<long> MultiInt64Arg;
+typedef sbia::basis::MultiArg<long> MultiInt64Arg;
 /// Unsigned 64-bit integer argument (multiple occurrences allowed).
-typedef MultiArg<unsigned long> MultiUInt64Arg;
+typedef sbia::basis::MultiArg<unsigned long> MultiUInt64Arg;
 /// Floating-point argument (multiple occurrences allowed).
-typedef MultiArg<float> MultiFloatArg;
+typedef sbia::basis::MultiArg<float> MultiFloatArg;
 /// Floating-point argument (double precision, multiple occurrences allowed).
-typedef MultiArg<double> MultiDoubleArg;
+typedef sbia::basis::MultiArg<double> MultiDoubleArg;
 /// Alias for MultiInt32Arg.
-typedef MultiInt32Arg MultiIntArg;
+typedef sbia::basis::MultiArg<int> MultiIntArg;
 /// Alias for MultiUInt32Arg.
-typedef MultiUInt32Arg MultiUIntArg;
+typedef sbia::basis::MultiArg<unsigned int> MultiUIntArg;
 
 // ---------------------------------------------------------------------------
 // positional arguments

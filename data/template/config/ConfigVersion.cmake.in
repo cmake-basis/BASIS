@@ -18,27 +18,27 @@
 #     <td>The package name.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_FIND_VERSION @endtp
+#     @tp @b &lt;PACKAGE&gt;_FIND_VERSION @endtp
 #     <td>Full requested version string.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_FIND_VERSION_MAJOR @endtp
+#     @tp @b &lt;PACKAGE&gt;_FIND_VERSION_MAJOR @endtp
 #     <td>Major version if requested, else 0.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_FIND_VERSION_MINOR @endtp
+#     @tp @b &lt;PACKAGE&gt;_FIND_VERSION_MINOR @endtp
 #     <td>Minor version if requested, else 0.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_FIND_VERSION_PATCH @endtp
+#     @tp @b &lt;PACKAGE&gt;_FIND_VERSION_PATCH @endtp
 #     <td>Patch version if requested, else 0.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_FIND_VERSION_TWEAK @endtp
+#     @tp @b &lt;PACKAGE&gt;_FIND_VERSION_TWEAK @endtp
 #     <td>Tweak version if requested, else 0.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_FIND_VERSION_COUNT @endtp
+#     @tp @b &lt;PACKAGE&gt;_FIND_VERSION_COUNT @endtp
 #     <td>Number of version components, 0 to 4.</td>
 #   </tr>
 # </table>

@@ -1,13 +1,11 @@
 /**
- * @file  CmdLine.h
+ * @file  basis/CmdLine.h
  * @brief Manages command line definition and parsing of arguments.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
 #pragma once
@@ -28,6 +26,13 @@ namespace basis
 
 /**
  * @brief Manages command line definition and parsing of arguments.
+ *
+ * Common arguments are defined in the header file sbia/basis/CmdArgs.h
+ * which is included by the header file of this class.
+ *
+ * See @ref CxxCmdLineParsing for an example use of this class.
+ *
+ * @ingroup BasisCxxUtilities
  */
 class CmdLine : public TCLAP::CmdLine
 {
@@ -38,10 +43,10 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param [in] name        Program name. Should be a constant string which helps
-     *                         to identify the program, not the name of the executable
-     *                         as determined at runtime.
-     * @param [in] project     Name of project program belongs to.
+     * @param [in] name        Program name. Should be a constant string which
+     *                         helps to identify the program, not the name of
+     *                         the executable as determined at runtime.
+     * @param [in] project     Name of project this program belongs to.
      * @param [in] description Program description.
      * @param [in] example     Usage example.
      * @param [in] version     Program version.
@@ -54,14 +59,76 @@ public:
             const std::string& description,
             const std::string& example,
             const std::string& version,
-            const std::string& copyright = "Copyright (c) University of Pennsylvania. All rights reserved.",
-            const std::string& license   = "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.",
-            const std::string& contact   = "SBIA Group <sbia-software at uphs.upenn.edu>");
+            const std::string& copyright =
+                    "Copyright (c) University of Pennsylvania."
+                    " All rights reserved.",
+            const std::string& license =
+                    "See http://www.rad.upenn.edu/sbia/software/license.html"
+                    " or COPYING file.",
+            const std::string& contact =
+                    "SBIA Group <sbia-software at uphs.upenn.edu>");
 
     /**
      * @brief Destructor.
      */
     virtual ~CmdLine() { }
+
+    // -----------------------------------------------------------------------
+    // command arguments
+public:
+
+    /**
+     * @brief Adds an argument to the list of arguments to be parsed.
+     *
+     * @param [in] a Argument to be added. 
+     */
+    void add(Arg& a);
+
+    /**
+     * @brief An alternative add. Functionally identical.
+     *
+     * @param [in] a Argument to be added. 
+     */
+    void add(Arg* a);
+
+    /**
+     * @brief Add two Args that will be xor'd.  
+     *
+     * If this method is used, add does not need to be called.
+     *
+     * @param [in] a Argument to be added and xor'd. 
+     * @param [in] b Argument to be added and xor'd. 
+     */
+    void xorAdd(Arg& a, Arg& b);
+
+    /**
+     * @brief Add a list of arguments that will be xor'd.
+     *
+     * If this method is used, add does not need to be called.
+     *
+     * @param [in] xors List of Args to be added and xor'd.
+     */
+    void xorAdd(std::vector<Arg*>& xors);
+
+    // -----------------------------------------------------------------------
+    // parse command-line arguments
+public:
+
+    /**
+     * @brief Parses the command line.
+     *
+     * @param [in] argc Number of arguments.
+     * @param [in] argv Array of arguments.
+     */
+    void parse(int argc, const char* const* argv);
+
+    /**
+     * @brief Parses the command line.
+     *
+     * @param [in] args A vector of strings representing the args. 
+     *                  args[0] is still the program name.
+     */
+    void parse(std::vector<std::string>& args);
 
     // -----------------------------------------------------------------------
     // accessors
@@ -82,11 +149,18 @@ public:
     std::string& getProjectName() { return _project; }
 
     /**
+     * @brief Get program description.
+     *
+     * @returns Description of program this command-line object belongs to.
+     */
+    std::string& getDescription() { return _message; }
+
+    /**
      * @brief Get usage example.
      *
      * @returns Example command-line usage.
      */
-    std::string getExample();
+    std::string& getExample() { return _example; }
 
     /**
      * @brief Get copyright notice.

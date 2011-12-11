@@ -1,13 +1,11 @@
 /**
  * @file  assert.h
- * @brief Defines macro used for assertions.
+ * @brief Defines macros used for assertions.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
 #pragma once
@@ -28,7 +26,7 @@
 
 
 /**
- * @macro assert
+ * @def   assert
  * @brief Assertion without custom message.
  *
  * The assertion is only checked if NDEBUG is defined.
@@ -52,7 +50,7 @@
 #endif
 
 /**
- * @macro ASSERT
+ * @def   ASSERT
  * @brief Assertion with custom message.
  *
  * The assertion is only checked if NDEBUG is defined.

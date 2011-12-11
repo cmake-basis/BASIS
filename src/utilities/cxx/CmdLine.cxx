@@ -6,8 +6,6 @@
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
 
@@ -282,11 +280,11 @@ inline string StdOutput::getArgumentID(TCLAP::Arg* arg, bool all) const
     string id;
     const bool option = !isUnlabeledArg(arg);
     if (option) {
-        id = TCLAP::Arg::nameStartString() + arg->getName();
         if (all && arg->getFlag() != "") {
-            id += " or ";
             id += TCLAP::Arg::flagStartString() + arg->getFlag();
+            id += " or ";
         }
+        id += TCLAP::Arg::nameStartString() + arg->getName();
     }
     if (arg->isValueRequired()) {
         if (option) id += TCLAP::Arg::delimiter();
@@ -496,8 +494,8 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param [in] cmd   The command-line the output is generated for.
-     * @param [in] all   Enable/disable full help output.
+     * @param [in] out The object which handles the output.
+     * @param [in] all Enable/disable full help output.
      */
     HelpVisitor(StdOutput* out, bool all = true)
     :
@@ -552,13 +550,10 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param [in] cmd The command-line the output is generated for.
      */
-    XmlVisitor(StdOutput* out)
+    XmlVisitor()
     :
-        Visitor(),
-        _out(out)
+        Visitor()
     { }
 
     // -----------------------------------------------------------------------
@@ -579,7 +574,6 @@ public:
     // member variables
 protected:
 
-    StdOutput* _out; ///< Object handling the output.
 
     // -----------------------------------------------------------------------
     // unsupported
@@ -605,13 +599,10 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param [in] cmd The command-line the output is generated for.
      */
-    ManPageVisitor(StdOutput* out)
+    ManPageVisitor()
     :
-        Visitor(),
-        _out(out)
+        Visitor()
     { }
 
     // -----------------------------------------------------------------------
@@ -671,10 +662,12 @@ CmdLine::CmdLine(const std::string& name,
 // ---------------------------------------------------------------------------
 void CmdLine::setup()
 {
+    // replace output handler
     StdOutput* output = new StdOutput(this);
     if (_output) delete _output;
     _output = output;
 
+    // add standard arguments
     TCLAP::Visitor* v;
 
     TCLAP::SwitchArg* verbose = new TCLAP::MultiSwitchArg(
@@ -696,14 +689,14 @@ void CmdLine::setup()
     deleteOnExit(helpshort);
     deleteOnExit(v);
 
-    v = new XmlVisitor(output);
+    v = new XmlVisitor();
     TCLAP::SwitchArg* helpxml = new TCLAP::SwitchArg(
             "", "helpxml", "Display help in XML format and exit.", false, v);
     add(helpxml);
     deleteOnExit(helpxml);
     deleteOnExit(v);
 
-    v = new ManPageVisitor(output);
+    v = new ManPageVisitor();
     TCLAP::SwitchArg* helpman = new TCLAP::SwitchArg(
             "", "helpman", "Display help as man page and exit.", false, v);
     add(helpman);
@@ -716,18 +709,52 @@ void CmdLine::setup()
     add(vers);
     deleteOnExit(vers);
     deleteOnExit(v);
-}
 
-// ---------------------------------------------------------------------------
-string CmdLine::getExample()
-{
-    string example = _example;
+    // replace EXECNAME in example string be name of executable
     string exec_name = get_executable_name();
     string::size_type pos = 0;
-    while ((pos = example.find("EXECNAME", pos)) != string::npos) {
-        example.replace(pos, 8, exec_name);
+    while ((pos = _example.find("EXECNAME", pos)) != string::npos) {
+        _example.replace(pos, 8, exec_name);
     }
-    return example;
+}
+
+// Note: The following methods are mainly overwritten to include the
+//       documentation in the API documentation of the BASIS class.
+
+// -----------------------------------------------------------------------
+void CmdLine::add(Arg& a)
+{
+    TCLAP::CmdLine::add(a);
+}
+
+// -----------------------------------------------------------------------
+void CmdLine::add(Arg* a)
+{
+    TCLAP::CmdLine::add(a);
+}
+
+// -----------------------------------------------------------------------
+void CmdLine::xorAdd(Arg& a, Arg& b)
+{
+    TCLAP::CmdLine::xorAdd(a, b);
+}
+
+// -----------------------------------------------------------------------
+void CmdLine::xorAdd(std::vector<Arg*>& xors)
+{
+    TCLAP::CmdLine::xorAdd(xors);
+}
+
+// -----------------------------------------------------------------------
+void CmdLine::parse(int argc, const char* const* argv)
+{
+    TCLAP::CmdLine::parse(argc, argv);
+}
+
+// -----------------------------------------------------------------------
+void CmdLine::parse(std::vector<std::string>& args)
+{
+    TCLAP::CmdLine::parse(args);
 }
 
 

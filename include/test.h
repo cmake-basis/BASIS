@@ -1,6 +1,6 @@
 /**
  * @file  test.h
- * @brief Main include file for C++ unit tests.
+ * @brief Main include file of BASIS C++ unit testing framework.
  *
  * This file should be included by implementations of unit tests.
  * Note that currently we are simply using Google Test and Google Mock.
@@ -9,12 +9,20 @@
  * and macros provided by the underlying testing frameworks could then
  * potentially be replaced by own implementations.
  *
+ * @note Unit tests are added to the build configuration using the
+ *       basis_add_test() command with the @c UNITTEST option.
+ *
+ * @note For less modular tests which execute an algorithm to produce
+ *       an output image which shall be compared to one or more
+ *       baseline images, use the BASIS testing driver instead.
+ *       See basis_add_test_driver() for details.
+ *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  *
- * @ingroup CppUtilities
+ * @ingroup BasisCxxUtilities
  */
 
 #pragma once

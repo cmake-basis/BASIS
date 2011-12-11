@@ -10,8 +10,6 @@
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- *
- * @ingroup CppUtilities
  */
 
 #pragma once
@@ -32,11 +30,11 @@ namespace basis
 /**
  * @brief An argument that allows multiple values of type T to be specified.
  *
- * Very similar to a ValueArg, except a vector of values will be returned
- * instead of just one. This argument will each time it's option keyword
- * or flag is encountered process N argument values, where the number N
- * is specified at construction time. Moreover, this argument can be
- * given several times. Hence, the returned vector of values has length
+ * Very similar to a TCLAP::ValueArg, except a vector of values will be returned
+ * instead of just one. Unlike TCLAP::MultiArg, this argument will each time
+ * its option keyword or flag is encountered process N > 0 argument values,
+ * where the number N is specified at construction time. Moreover, this argument
+ * can be given several times. Hence, the returned vector of values has length
  * N * M, where M is the number of times the argument was given on the
  * command-line.
  */
