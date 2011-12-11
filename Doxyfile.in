@@ -594,6 +594,7 @@ FILE_PATTERNS          = *.c        \
                          *.cpp      \
                          *.txx      \
                          *.inl      \
+                         *.inc      \
                          *.h        \
                          *.hh       \
                          *.hxx      \

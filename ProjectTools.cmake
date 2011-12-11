@@ -862,11 +862,11 @@ macro (basis_project_initialize)
   # configure and include BASIS settings
   configure_file (
     "${BASIS_MODULE_PATH}/ProjectSettings.cmake.in"
-    "${BINARY_CONFIG_DIR}/BasisProjectSettings.cmake"
+    "${BINARY_CONFIG_DIR}/ProjectSettings.cmake"
     @ONLY
   )
 
-  include ("${BINARY_CONFIG_DIR}/BasisProjectSettings.cmake" NO_POLICY_SCOPE)
+  include ("${BINARY_CONFIG_DIR}/ProjectSettings.cmake" NO_POLICY_SCOPE)
 endmacro ()
 
 # ----------------------------------------------------------------------------

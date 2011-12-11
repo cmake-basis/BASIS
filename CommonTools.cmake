@@ -56,7 +56,7 @@ endmacro ()
 # @param [in] PACKAGE Name of other package. Optionally, the package name
 #                     can include a version specification as suffix which
 #                     is separated by the package name using a dash (-), i.e.,
-#                     <Package>[-major[.minor[.patch[.tweak]]]].
+#                     &lt;Package&gt;[-major[.minor[.patch[.tweak]]]].
 #                     If a version specification is given, it is passed on as
 #                     @c version argument to CMake's
 #                     <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
@@ -216,7 +216,7 @@ endmacro ()
 # @param [in] PACKAGE Name of other package. Optionally, the package name
 #                     can include a version specification as suffix which
 #                     is separated by the package name using a dash (-), i.e.,
-#                     <Package>[-major[.minor[.patch[.tweak]]]].
+#                     &lt;Package&gt;[-major[.minor[.patch[.tweak]]]].
 #                     A version specification is simply ignored by this macro.
 #
 # @ingroup CMakeAPI
@@ -550,7 +550,7 @@ endfunction ()
 ## @brief Convert list into regular expression.
 #
 # This function is in particular used to convert a list of property names
-# such as <CONFIG>_OUTPUT_NAME, e.g., the list @c BASIS_PROPERTIES_ON_TARGETS,
+# such as &lt;CONFIG&gt;_OUTPUT_NAME, e.g., the list @c BASIS_PROPERTIES_ON_TARGETS,
 # into a regular expression which can be used in pattern matches.
 #
 # @param [out] REGEX Name of variable for resulting regular expression.

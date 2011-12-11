@@ -173,8 +173,8 @@ endfunction ()
 #
 # @param [in] TARGET     Name (UID) of the imported target.
 # @param [in] PROPERTY   Target location property. Either IMPORTED_LOCATION
-#                        or IMPORTED_LOCATION_<config>, where <config> is
-#                        one of the imported build configurations.
+#                        or IMPORTED_LOCATION_&lt;config&gt;, where &lt;config&gt;
+#                        is one of the imported build configurations.
 #                        This argument is used to decide whether to keep
 #                        the current target information or to replace it
 #                        by the new one.

@@ -343,7 +343,7 @@ endfunction ()
 # @par
 # <table border="0">
 #   <tr>
-#     @tp @b COMMAND cmd [arg1 [arg2 ...]] @tpend
+#     @tp @b COMMAND cmd [arg1 [arg2 ...]] @endtp
 #     <td>The command to execute and optionally its arguments. Alternatively,
 #         a test can be build from sources and the build executable
 #         used as command. In this case, specify the sources using the

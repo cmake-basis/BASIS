@@ -281,7 +281,7 @@ endfunction ()
 #     @tp @b AUTHORS authors @endtp
 #     <td>Authors file for svn2cl which maps SVN user names to real names.
 #         On each line, this files must have an entry such as
-#         <tt>%schuha@UPHS.PENNHEALTH.PRV:Andreas Schuh</tt>.
+#         <tt>%schuha\@UPHS.PENNHEALTH.PRV:Andreas Schuh</tt>.
 #         Default: @c BASIS_SVN_USERS_FILE, which is part of BASIS and lists all
 #         SVN users at SBIA.</td>
 #   </tr>
@@ -508,6 +508,9 @@ function (basis_add_doc TARGET_NAME)
     endif ()
     if (EXISTS "${BINARY_CONFIG_DIR}/BasisSettings.cmake")
       list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/BasisSettings.cmake")
+    endif ()
+    if (EXISTS "${BINARY_CONFIG_DIR}/ProjectSettings.cmake")
+      list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/ProjectSettings.cmake")
     endif ()
     if (EXISTS "${BINARY_CONFIG_DIR}/Settings.cmake")
       list (APPEND DOXYGEN_INPUT "${BINARY_CONFIG_DIR}/Settings.cmake")
