@@ -447,20 +447,6 @@ mark_as_advanced (BASIS_VERBOSE)
 option (BASIS_DEBUG "Request BASIS functions to help debugging." OFF)
 mark_as_advanced (BASIS_DEBUG)
 
-## @brief Request build/installation of documentation.
-#
-# @note In case of the API documentation, enabling this option does not
-#       add the 'doc' target to the 'all' build target. In order to build
-#       the API documentation, the 'doc' target has to be build.
-if (EXISTS "${PROJECT_DOC_DIR}")
-  option (BUILD_DOCUMENTATION "Request build and/or installation of documentation." ON)
-endif ()
-
-## @brief Request build/installation of example.
-if (EXISTS ${PROJECT_EXAMPLE_DIR})
-  option (BUILD_EXAMPLE "Request build and/or installation of example." ON)
-endif ()
-
 ## @brief Request installation of symbolic links.
 #
 # @note This option is not available on Windows.
