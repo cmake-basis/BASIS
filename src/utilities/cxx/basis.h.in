@@ -14,8 +14,8 @@
  */
 
 #pragma once
-#ifndef SBIA_@PROJECT_NAME_UPPER@_BASIS_H_
-#define SBIA_@PROJECT_NAME_UPPER@_BASIS_H_
+#ifndef _SBIA_@PROJECT_NAME_UPPER@_BASIS_H
+#define _SBIA_@PROJECT_NAME_UPPER@_BASIS_H
 
 
 // command-line parsing
@@ -32,4 +32,4 @@
 #include "stdaux.h"
 
 
-#endif // SBIA_@PROJECT_NAME_UPPER@_BASIS_H_
+#endif // _SBIA_@PROJECT_NAME_UPPER@_BASIS_H

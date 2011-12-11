@@ -19,7 +19,7 @@
 #endif
 
 
-using namespace SBIA_BASIS_NAMESPACE;
+using namespace sbia::basis;
 using namespace std;
 
 

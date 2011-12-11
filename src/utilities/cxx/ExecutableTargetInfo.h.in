@@ -14,14 +14,12 @@
  */
 
 #pragma once
-#ifndef SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_H_
-#define SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_H_
+#ifndef _SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_H
+#define _SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_H
 
 
 #include <string>
 #include <map>
-
-#include <@INCLUDE_PREFIX@config.h>
 
 
 namespace sbia
@@ -195,5 +193,5 @@ private:
 } // namespace sbia
 
 
-#endif // SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_H_
+#endif // _SBIA_@PROJECT_NAME_UPPER@_EXECUTABLETARGETINFO_H
 

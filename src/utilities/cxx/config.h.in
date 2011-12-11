@@ -14,12 +14,13 @@
  */
 
 #pragma once
-#ifndef SBIA_@PROJECT_NAME_UPPER@_CONFIG_H_
-#define SBIA_@PROJECT_NAME_UPPER@_CONFIG_H_
+#ifndef _SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
+#define _SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
 
 
 /// @addtogroup BasisCxxUtilities
 /// @{
+
 
 // ===========================================================================
 // system
@@ -182,6 +183,9 @@ extern const char* cVersion;
  */
 extern const unsigned int cRevision;
 
+/// @brief Complete version information as output by --version option.
+extern const char* cVersionAndRevision;
+
 // ---------------------------------------------------------------------------
 // paths - build tree
 
@@ -317,5 +321,5 @@ extern const char* cDataPath;
 /// @}
 // end of Doxygen group
 
-#endif // SBIA_@PROJECT_NAME_UPPER@_CONFIG_H_
+#endif // _SBIA_@PROJECT_NAME_UPPER@_CONFIG_H
 

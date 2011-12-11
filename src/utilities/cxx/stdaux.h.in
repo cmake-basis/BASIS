@@ -14,15 +14,13 @@
  */
 
 #pragma once
-#ifndef SBIA_@PROJECT_NAME_UPPER@_STDAUX_H_
-#define SBIA_@PROJECT_NAME_UPPER@_STDAUX_H_
+#ifndef _SBIA_@PROJECT_NAME_UPPER@_STDAUX_H
+#define _SBIA_@PROJECT_NAME_UPPER@_STDAUX_H
 
 
 #include <string>
 #include <vector>
 #include <iostream>
-
-#include <@INCLUDE_PREFIX@config.h>
 
 
 namespace sbia
@@ -240,5 +238,5 @@ int execute_process(std::vector<std::string>& args,
 } // namespace sbia
 
 
-#endif // SBIA_@PROJECT_NAME_UPPER@_STDAUX_H_
+#endif // _SBIA_@PROJECT_NAME_UPPER@_STDAUX_H
 

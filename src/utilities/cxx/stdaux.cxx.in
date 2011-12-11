@@ -13,6 +13,7 @@
 
 #include <cstdio> // printf for faster output than <iostream>
 
+#include <sbia/basis/config.h>      // cProjectName, cVersionAndRevision
 #include <sbia/basis/path.h>
 #include <sbia/basis/except.h>
 #include <sbia/basis/subprocess.h>
@@ -22,7 +23,6 @@
 
 
 using namespace std;
-using namespace SBIA_BASIS_NAMESPACE;
 
 
 namespace sbia
@@ -41,7 +41,7 @@ void print_version(const char* name, const char* copyright, const char* license)
 {
     if (name) cout << name;
     else      cout << get_executable_name();
-    cout << " (" << cProjectName << ") " << "@PROJECT_VERSION_AND_REVISION@" << endl;
+    cout << " (" << cProjectName << ") " << cVersionAndRevision << endl;
     if (copyright == NULL) {
         cout << "Copyright (c) University of Pennsylvania. All rights reserved." << endl;
     } else if (*copyright != '\0') {

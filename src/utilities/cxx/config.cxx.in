@@ -11,8 +11,6 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <@INCLUDE_PREFIX@config.h>
-
 
 namespace sbia
 {
@@ -27,10 +25,11 @@ namespace basis
 
 // ---------------------------------------------------------------------------
 // project attributes
-const char* cProjectName      = "@PROJECT_NAME@";
-const char* cProjectNameLower = "@PROJECT_NAME_LOWER@";
-const char* cProjectNameUpper = "@PROJECT_NAME_UPPER@";
-const char* cVersion          = "@PROJECT_VERSION@";
+const char* cProjectName        = "@PROJECT_NAME@";
+const char* cProjectNameLower   = "@PROJECT_NAME_LOWER@";
+const char* cProjectNameUpper   = "@PROJECT_NAME_UPPER@";
+const char* cVersion            = "@PROJECT_VERSION@";
+const char* cVersionAndRevision = "@PROJECT_VERSION_AND_REVISION@";
 
 const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
 const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;

@@ -9,14 +9,14 @@
  */
 
 
+#include <sbia/basis/config.h> // platform macros - must be first
+
 #include <iostream>
 
 #include <cstdlib>
 #include <cassert>   // assert
 #include <cstring>   // strlen
 #include <algorithm> // for_each
-
-#include <sbia/basis/config.h>
 
 #if UNIX
 #  include <sys/wait.h>
@@ -30,7 +30,11 @@
 using namespace std;
 
 
-SBIA_BASIS_NAMESPACE_BEGIN
+namespace sbia
+{
+
+namespace basis
+{
 
 
 // ===========================================================================
@@ -169,36 +173,36 @@ string Subprocess::to_string(const CommandLine& args)
 Subprocess::Subprocess ()
 {
 #if WINDOWS
-    ZeroMemory(&info_, sizeof(info_));
-    stdin_ = INVALID_HANDLE_VALUE;
-    stdout_ = INVALID_HANDLE_VALUE;
-    stderr_ = INVALID_HANDLE_VALUE;
+    ZeroMemory(&_info, sizeof(_info));
+    _stdin = INVALID_HANDLE_VALUE;
+    _stdout = INVALID_HANDLE_VALUE;
+    _stderr = INVALID_HANDLE_VALUE;
 #else
-    info_.pid = -1;
-    stdin_ = -1;
-    stdout_ = -1;
-    stderr_ = -1;
+    _info.pid = -1;
+    _stdin = -1;
+    _stdout = -1;
+    _stderr = -1;
 #endif
-    status_ = -1;
+    _status = -1;
 }
 
 // ---------------------------------------------------------------------------
 Subprocess::~Subprocess ()
 {
 #if WINDOWS
-    if (info_.hProcess) {
+    if (_info.hProcess) {
         terminate();
-        if (stdin_) CloseHandle(stdin_);
-        if (stdout_) CloseHandle(stdout_);
-        if (stderr_) CloseHandle(stderr_);
-        CloseHandle(info_.hProcess);
-        CloseHandle(info_.hThread);
+        if (_stdin) CloseHandle(_stdin);
+        if (_stdout) CloseHandle(_stdout);
+        if (_stderr) CloseHandle(_stderr);
+        CloseHandle(_info.hProcess);
+        CloseHandle(_info.hThread);
     }
 #else
-    if (info_.pid != 0) kill();
-    if (stdin_  != -1) close(stdin_);
-    if (stdout_ != -1) close(stdout_);
-    if (stderr_ != -1) close(stderr_);
+    if (_info.pid != 0) kill();
+    if (_stdin  != -1) close(_stdin);
+    if (_stdout != -1) close(_stdout);
+    if (_stderr != -1) close(_stderr);
 #endif
 }
 
@@ -214,19 +218,19 @@ bool Subprocess::popen(const CommandLine& args,
                        const Environment* env)
 {
 #if WINDOWS
-    if (info_.hProcess != 0 && !poll()) {
+    if (_info.hProcess != 0 && !poll()) {
         cerr << "Subprocess::popen(): Previously opened process not terminated yet!" << endl;
         return false;
     }
 
-    ZeroMemory(&info_, sizeof(info_));
-    if (stdin_)  CloseHandle(stdin_);
-    if (stdout_) CloseHandle(stdout_);
-    if (stderr_) CloseHandle(stderr_);
-    stdin_  = INVALID_HANDLE_VALUE;
-    stdout_ = INVALID_HANDLE_VALUE;
-    stderr_ = INVALID_HANDLE_VALUE;
-    status_ = -1;
+    ZeroMemory(&_info, sizeof(_info));
+    if (_stdin)  CloseHandle(_stdin);
+    if (_stdout) CloseHandle(_stdout);
+    if (_stderr) CloseHandle(_stderr);
+    _stdin  = INVALID_HANDLE_VALUE;
+    _stdout = INVALID_HANDLE_VALUE;
+    _stderr = INVALID_HANDLE_VALUE;
+    _status = -1;
 
     SECURITY_ATTRIBUTES saAttr; 
     HANDLE hStdIn[2]  = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE}; // read, write
@@ -315,7 +319,7 @@ bool Subprocess::popen(const CommandLine& args,
                        NULL,         // use parent's environment 
                        NULL,         // use parent's current directory 
                        &siStartInfo, // STARTUPINFO pointer 
-                       &info_)) {    // receives PROCESS_INFORMATION
+                       &_info)) {    // receives PROCESS_INFORMATION
         CloseHandle(hStdIn[0]);
         CloseHandle(hStdIn[1]);
         CloseHandle(hStdOut[0]);
@@ -334,25 +338,25 @@ bool Subprocess::popen(const CommandLine& args,
     if (hStdErr[1] != INVALID_HANDLE_VALUE) CloseHandle(hStdErr[1]);
 
     // store handles of parent side of pipes
-    stdin_  = hStdIn[1];
-    stdout_ = hStdOut[0];
-    stderr_ = hStdErr[0];
+    _stdin  = hStdIn[1];
+    _stdout = hStdOut[0];
+    _stderr = hStdErr[0];
 
     return true;
 #else
-    if (info_.pid != -1 && !poll()) {
+    if (_info.pid != -1 && !poll()) {
         cerr << "Subprocess::popen(): Previously opened process not terminated yet!" << endl;
         return false;
     }
 
-    info_.pid = -1;
-    if (stdin_  != -1) close(stdin_);
-    if (stdout_ != -1) close(stdout_);
-    if (stderr_ != -1) close(stderr_);
-    stdin_ = -1;
-    stdout_ = -1;
-    stderr_ = -1;
-    status_ = -1;
+    _info.pid = -1;
+    if (_stdin  != -1) close(_stdin);
+    if (_stdout != -1) close(_stdout);
+    if (_stderr != -1) close(_stderr);
+    _stdin = -1;
+    _stdout = -1;
+    _stderr = -1;
+    _status = -1;
 
     // create pipes for standard input/output
     int fdsin [2] = {-1, -1}; // read, write
@@ -381,7 +385,7 @@ bool Subprocess::popen(const CommandLine& args,
     }
 
     // fork this process
-    if ((info_.pid = fork()) == -1) {
+    if ((_info.pid = fork()) == -1) {
         if (fdsin[0]  != -1) close(fdsin[0]);
         if (fdsin[1]  != -1) close(fdsin[1]);
         if (fdsout[0] != -1) close(fdsout[0]);
@@ -392,7 +396,7 @@ bool Subprocess::popen(const CommandLine& args,
         return false;
     }
 
-    if (info_.pid == 0) {
+    if (_info.pid == 0) {
 
         // close unused ends of pipes
         if (fdsin [1] != -1) close(fdsin [1]);
@@ -453,9 +457,9 @@ bool Subprocess::popen(const CommandLine& args,
         if (fdserr[1] != -1) close(fdserr[1]);
 
         // store file descriptors of parent side of pipes
-        stdin_  = fdsin [1];
-        stdout_ = fdsout[0];
-        stderr_ = fdserr[0];
+        _stdin  = fdsin [1];
+        _stdout = fdsout[0];
+        _stderr = fdserr[0];
 
         return true;
     }
@@ -467,16 +471,16 @@ bool Subprocess::poll() const
 {
 #if WINDOWS
     DWORD dwStatus = 0;
-    if (GetExitCodeProcess(info_.hProcess, &dwStatus)) {
-        status_ = static_cast<int>(dwStatus);
-        return status_ != STILL_ACTIVE;
+    if (GetExitCodeProcess(_info.hProcess, &dwStatus)) {
+        _status = static_cast<int>(dwStatus);
+        return _status != STILL_ACTIVE;
 /*
         This should have been more save in case 259 is used as exit code
         by the process. However, it did not seem to work as expected.
 
-        if (status_ == STILL_ACTIVE) {
+        if (_status == STILL_ACTIVE) {
             // if the process is terminated, this would return WAIT_OBJECT_0
-            return WaitForSingleObject(info_.hProcess, 0) != WAIT_TIMEOUT;
+            return WaitForSingleObject(_info.hProcess, 0) != WAIT_TIMEOUT;
         } else {
             return false;
         }
@@ -484,10 +488,10 @@ bool Subprocess::poll() const
     }
     BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
 #else
-    if (waitpid(info_.pid, &status_, WNOHANG | WUNTRACED | WCONTINUED) == info_.pid) {
+    if (waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED) == _info.pid) {
         BASIS_THROW(runtime_error, "waitpid() failed");
     }
-    return WIFEXITED(status_) || WIFSIGNALED(status_);
+    return WIFEXITED(_status) || WIFSIGNALED(_status);
 #endif
 }
 
@@ -495,17 +499,17 @@ bool Subprocess::poll() const
 bool Subprocess::wait()
 {
 #if WINDOWS
-    if (WaitForSingleObject(info_.hProcess, INFINITE) == WAIT_FAILED) {
+    if (WaitForSingleObject(_info.hProcess, INFINITE) == WAIT_FAILED) {
         return false;
     }
     DWORD dwStatus = 0;
-    BOOL bSuccess = GetExitCodeProcess(info_.hProcess, &dwStatus);
+    BOOL bSuccess = GetExitCodeProcess(_info.hProcess, &dwStatus);
     if (bSuccess) {
-        status_ = static_cast<int>(dwStatus);
+        _status = static_cast<int>(dwStatus);
         return true;
     } else return false;
 #else
-    return waitpid(info_.pid, &status_, 0) == info_.pid;
+    return waitpid(_info.pid, &_status, 0) == _info.pid;
 #endif
 }
 
@@ -517,7 +521,7 @@ bool Subprocess::send_signal(int signal)
     if (signal == 15) return terminate();
     return false;
 #else
-    return ::kill(info_.pid, signal) == 0;
+    return ::kill(_info.pid, signal) == 0;
 #endif
 }
 
@@ -526,9 +530,9 @@ bool Subprocess::terminate()
 {
 #if WINDOWS
     // note: 130 is the exit code used by Unix shells to indicate CTRL + C
-    return TerminateProcess(info_.hProcess, 130) != 0;
+    return TerminateProcess(_info.hProcess, 130) != 0;
 #else
-    return ::kill(info_.pid, SIGTERM) == 0;
+    return ::kill(_info.pid, SIGTERM) == 0;
 #endif
 }
 
@@ -538,7 +542,7 @@ bool Subprocess::kill()
 #if WINDOWS
     return terminate();
 #else
-    return ::kill(info_.pid, SIGKILL) == 0;
+    return ::kill(_info.pid, SIGKILL) == 0;
 #endif
 }
 
@@ -547,16 +551,16 @@ bool Subprocess::signaled() const
 {
 #if WINDOWS
     DWORD dwStatus = 0;
-    if (GetExitCodeProcess(info_.hProcess, &dwStatus)) {
-        status_ = static_cast<int>(dwStatus);
-        return status_ == 130;
+    if (GetExitCodeProcess(_info.hProcess, &dwStatus)) {
+        _status = static_cast<int>(dwStatus);
+        return _status == 130;
     }
     BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
 #else
-    if (waitpid(info_.pid, &status_, WNOHANG | WUNTRACED | WCONTINUED) == info_.pid) {
+    if (waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED) == _info.pid) {
         BASIS_THROW(runtime_error, "waitpid() failed");
     }
-    return WIFSIGNALED(status_);
+    return WIFSIGNALED(_status);
 #endif
 }
 
@@ -564,9 +568,9 @@ bool Subprocess::signaled() const
 int Subprocess::pid() const
 {
 #if WINDOWS
-    return info_.dwProcessId;
+    return _info.dwProcessId;
 #else
-    return info_.pid;
+    return _info.pid;
 #endif
 }
 
@@ -574,9 +578,9 @@ int Subprocess::pid() const
 int Subprocess::returncode() const
 {
 #if WINDOWS
-    return status_;
+    return _status;
 #else
-    return WEXITSTATUS(status_);
+    return WEXITSTATUS(_status);
 #endif
 }
 
@@ -592,9 +596,9 @@ bool Subprocess::communicate(std::istream& in, std::ostream& out, std::ostream& 
 
     // write stdin data and close pipe afterwards
 #if WINDOWS
-    if (stdin_ != INVALID_HANDLE_VALUE) {
+    if (_stdin != INVALID_HANDLE_VALUE) {
 #else
-    if (stdin_ != -1) {
+    if (_stdin != -1) {
 #endif
         while (!in.eof()) {
             in.read(buf, nbuf);
@@ -602,18 +606,18 @@ bool Subprocess::communicate(std::istream& in, std::ostream& out, std::ostream& 
             write(buf, in.gcount());
         }
 #if WINDOWS
-        CloseHandle(stdin_);
-        stdin_ = INVALID_HANDLE_VALUE;
+        CloseHandle(_stdin);
+        _stdin = INVALID_HANDLE_VALUE;
 #else
-        close(stdin_);
-        stdin_ = -1;
+        close(_stdin);
+        _stdin = -1;
 #endif
     }
     // read stdout data and close pipe afterwards
 #if WINDOWS
-    if (stdout_ != INVALID_HANDLE_VALUE) {
+    if (_stdout != INVALID_HANDLE_VALUE) {
 #else
-    if (stdout_ != -1) {
+    if (_stdout != -1) {
 #endif
         while (out.good()) {
             int n = read(buf, nbuf);
@@ -623,18 +627,18 @@ bool Subprocess::communicate(std::istream& in, std::ostream& out, std::ostream& 
             if (out.bad()) return false;
         }
 #if WINDOWS
-        CloseHandle(stdout_);
-        stdout_ = INVALID_HANDLE_VALUE;
+        CloseHandle(_stdout);
+        _stdout = INVALID_HANDLE_VALUE;
 #else
-        close(stdout_);
-        stdout_ = -1;
+        close(_stdout);
+        _stdout = -1;
 #endif
     }
     // read stdout data and close pipe afterwards
 #if WINDOWS
-    if (stderr_ != INVALID_HANDLE_VALUE) {
+    if (_stderr != INVALID_HANDLE_VALUE) {
 #else
-    if (stderr_ != -1) {
+    if (_stderr != -1) {
 #endif
         while (err.good()) {
             int n = read(buf, nbuf, true);
@@ -644,11 +648,11 @@ bool Subprocess::communicate(std::istream& in, std::ostream& out, std::ostream& 
             if (err.bad()) return false;
         }
 #if WINDOWS
-        CloseHandle(stderr_);
-        stderr_ = INVALID_HANDLE_VALUE;
+        CloseHandle(_stderr);
+        _stderr = INVALID_HANDLE_VALUE;
 #else
-        close(stderr_);
-        stderr_ = -1;
+        close(_stderr);
+        _stderr = -1;
 #endif
     }
     // wait for subprocess
@@ -660,11 +664,11 @@ bool Subprocess::communicate(std::ostream& out, std::ostream& err)
 {
     std::istringstream in;
 #if WINDOWS
-    CloseHandle(stdin_);
-    stdin_ = INVALID_HANDLE_VALUE;
+    CloseHandle(_stdin);
+    _stdin = INVALID_HANDLE_VALUE;
 #else
-    close(stdin_);
-    stdin_ = -1;
+    close(_stdin);
+    _stdin = -1;
 #endif
     return communicate(in, out, err);
 }
@@ -675,15 +679,15 @@ bool Subprocess::communicate(std::ostream& out)
     std::istringstream in;
     std::ostringstream err;
 #if WINDOWS
-    CloseHandle(stdin_);
-    stdin_ = INVALID_HANDLE_VALUE;
-    CloseHandle(stderr_);
-    stderr_ = INVALID_HANDLE_VALUE;
+    CloseHandle(_stdin);
+    _stdin = INVALID_HANDLE_VALUE;
+    CloseHandle(_stderr);
+    _stderr = INVALID_HANDLE_VALUE;
 #else
-    close(stdin_);
-    stdin_ = -1;
-    close(stderr_);
-    stderr_ = -1;
+    close(_stdin);
+    _stdin = -1;
+    close(_stderr);
+    _stderr = -1;
 #endif
     return communicate(in, out, err);
 }
@@ -693,11 +697,11 @@ int Subprocess::write(const void* buf, size_t nbuf)
 {
 #if WINDOWS
     DWORD n;
-    if (stdin_ == INVALID_HANDLE_VALUE) return -1;
-    return WriteFile(stdin_, static_cast<const char*>(buf), nbuf, &n, NULL);
+    if (_stdin == INVALID_HANDLE_VALUE) return -1;
+    return WriteFile(_stdin, static_cast<const char*>(buf), nbuf, &n, NULL);
 #else
-    if (stdin_ == -1) return -1;
-    return ::write(stdin_, buf, nbuf);
+    if (_stdin == -1) return -1;
+    return ::write(_stdin, buf, nbuf);
 #endif
 }
 
@@ -706,12 +710,12 @@ int Subprocess::read(void* buf, size_t nbuf, bool err)
 {
 #if WINDOWS
     DWORD n;
-    HANDLE h = stdout_;
-    if (err && stderr_ != INVALID_HANDLE_VALUE) h = stderr_;
+    HANDLE h = _stdout;
+    if (err && _stderr != INVALID_HANDLE_VALUE) h = _stderr;
     return ReadFile(h, static_cast<char*>(buf), nbuf, &n, NULL) && n > 0;
 #else
-    int fds = stdout_;
-    if (err && stderr_ != -1) fds = stderr_;
+    int fds = _stdout;
+    if (err && _stderr != -1) fds = _stderr;
     return ::read(fds, buf, nbuf);
 #endif
 }
@@ -737,4 +741,6 @@ int Subprocess::call(const string& cmd)
 }
 
 
-SBIA_BASIS_NAMESPACE_END
+} // namespace basis
+
+} // namespace sbia

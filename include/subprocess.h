@@ -9,26 +9,26 @@
  */
 
 #pragma once
-#ifndef SBIA_BASIS_SUBPROCESS_H_
-#define SBIA_BASIS_SUBPROCESS_H_
+#ifndef _SBIA_BASIS_SUBPROCESS_H
+#define _SBIA_BASIS_SUBPROCESS_H
 
 
 #include <vector>
 #include <string>
 
-#include <sbia/basis/config.h> // defines WINDOWS macro
-
-#if WINDOWS
+#if (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
 #  include <windows.h>
 #else
 #  include <sys/types.h>
 #  include <unistd.h>
 #endif
 
-#include <sbia/basis/config.h>
 
+namespace sbia
+{
 
-SBIA_BASIS_NAMESPACE_BEGIN
+namespace basis
+{
 
 
 /**
@@ -47,14 +47,14 @@ public:
 private:
 
     /// Type used for file handles of pipes between processes.
-#if WINDOWS
+#if (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
     typedef HANDLE PipeHandle;
 #else
     typedef int    PipeHandle;
 #endif
 
     /// Information structure required by system to identify subprocess.
-#if WINDOWS
+#if (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
     typedef PROCESS_INFORMATION Information;
 #else
     struct Information
@@ -374,16 +374,18 @@ private:
     // members
 private:
 
-    Information info_;   ///< Subprocess information.
-    PipeHandle  stdin_;  ///< Used to write data to stdin of subprocess.
-    PipeHandle  stdout_; ///< Used to read data from stdout of subprocess.
-    PipeHandle  stderr_; ///< Used to read data from stderr of subprocess.
-    mutable int status_; ///< Status of subprocess.
+    Information _info;   ///< Subprocess information.
+    PipeHandle  _stdin;  ///< Used to write data to stdin of subprocess.
+    PipeHandle  _stdout; ///< Used to read data from stdout of subprocess.
+    PipeHandle  _stderr; ///< Used to read data from stderr of subprocess.
+    mutable int _status; ///< Status of subprocess.
 
 }; // class Subprocess
 
 
-SBIA_BASIS_NAMESPACE_END
+} // namespace basis
+
+} // namespace sbia
 
 
-#endif // SBIA_BASIS_SUBPROCESS_H_
+#endif // _SBIA_BASIS_SUBPROCESS_H

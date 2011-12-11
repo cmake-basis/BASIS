@@ -13,12 +13,13 @@
 
 
 #include <sbia/basis/path.h>
+#include <@INCLUDE_PREFIX@config.h> // cLibexecPathPrefix, cRuntimePathPrefix
 
 #include "ExecutableTargetInfo.h"
 
 
+// acceptable in .cxx file
 using namespace std;
-using namespace SBIA_BASIS_NAMESPACE;
 
 
 namespace sbia

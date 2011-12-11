@@ -9,7 +9,7 @@
  */
 
 
-#include <sbia/basis/path.h>   // declarations and BASIS configuration
+#include <sbia/basis/config.h> // platform macros - must be first
 
 #include <stdlib.h>            // malloc() & free(), _splitpath_s() (WINDOWS)
 
@@ -25,12 +25,18 @@
 #endif
 
 #include <sbia/basis/except.h> // to throw exceptions
+#include <sbia/basis/path.h>   // declarations and BASIS configuration
 
 
-using namespace std; // this a .cxx file, hence it is ok to do so
+// acceptable in .cxx file
+using namespace std;
 
 
-SBIA_BASIS_NAMESPACE_BEGIN
+namespace sbia
+{
+
+namespace basis
+{
 
 
 // ===========================================================================
@@ -798,4 +804,6 @@ string get_executable_name()
 }
 
 
-SBIA_BASIS_NAMESPACE_END
+} // namespace basis
+
+} // namespace sbia

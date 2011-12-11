@@ -26,17 +26,19 @@
  */
 
 #pragma once
-#ifndef SBIA_BASIS_PATH_H_
-#define SBIA_BASIS_PATH_H_
+#ifndef _SBIA_BASIS_PATH_H
+#define _SBIA_BASIS_PATH_H
 
 
 #include <string>
 #include <set>
 
-#include <sbia/basis/config.h>
 
+namespace sbia
+{
 
-SBIA_BASIS_NAMESPACE_BEGIN
+namespace basis
+{
 
 
 // ===========================================================================
@@ -563,8 +565,9 @@ std::string get_executable_directory();
 std::string get_executable_name();
 
 
-SBIA_BASIS_NAMESPACE_END
+} // namespace basis
+
+} // namespace sbia
 
 
-#endif // SBIA_BASIS_PATH_H_
-
+#endif // _SBIA_BASIS_PATH_H

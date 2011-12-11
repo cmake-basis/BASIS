@@ -1,6 +1,6 @@
 /**
- * @file  exceptions.h
- * @brief Common exceptions and helper macros.
+ * @file  except.h
+ * @brief Basic exceptions and related helper macros.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
  * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -11,18 +11,22 @@
  */
 
 #pragma once
-#ifndef SBIA_BASIS_EXCEPTIONS_H_
-#define SBIA_BASIS_EXCEPTIONS_H_
+#ifndef _SBIA_BASIS_EXCEPT_H
+#define _SBIA_BASIS_EXCEPT_H
 
 
 #include <sstream>   // used to compose exception messages
 #include <stdexcept> // use standard STL exceptions where possible
 #include <string>    // used to store error messages
 
-#include <sbia/basis/config.h>
+#include <sbia/basis/tclap/ArgException.h> // command-line parsing
 
 
-SBIA_BASIS_NAMESPACE_BEGIN
+namespace sbia
+{
+
+namespace basis
+{
 
 
 // ===========================================================================
@@ -56,6 +60,15 @@ SBIA_BASIS_NAMESPACE_BEGIN
 // exceptions
 // ===========================================================================
 
+/// @brief Exception thrown on command-line argument parsing error.
+typedef TCLAP::ArgParseException ArgParseException;
+
+/// @brief Exception thrown on command-line parsing error.
+typedef TCLAP::CmdLineParseException CmdLineParseException;
+
+/// @brief Exception thrown when command-line specification is wrong.
+typedef TCLAP::SpecificationException CmdLineException;
+
 /**
  * @class SubprocessException
  * @brief Exception type thrown by execute_process().
@@ -71,8 +84,9 @@ private:
 }; // class SubprocessException
 
 
-SBIA_BASIS_NAMESPACE_END
+} // namespace basis
+
+} // namespace sbia
 
 
-#endif // SBIA_BASIS_EXCEPTIONS_H_
-
+#endif // _SBIA_BASIS_EXCEPT_H

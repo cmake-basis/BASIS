@@ -11,8 +11,8 @@
  */
 
 #pragma once
-#ifndef SBIA_BASIS_ASSERT_H_
-#define SBIA_BASIS_ASSERT_H_
+#ifndef _SBIA_BASIS_ASSERT_H
+#define _SBIA_BASIS_ASSERT_H
 
 
 #include <iostream> // for the output of the error message
@@ -78,4 +78,4 @@
 #endif
 
 
-#endif // SBIA_BASIS_ASSERT_H_
+#endif // _SBIA_BASIS_ASSERT_H
