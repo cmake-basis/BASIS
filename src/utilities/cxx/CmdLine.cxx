@@ -336,13 +336,13 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     // executable name
     std::string s = exec_name;
     // optional arguments
-    s += " [--verbose|-v]";
     for (TCLAP::ArgListIterator it = optargs.begin(); it != optargs.end(); it++) {
         s += " [";
         s += getArgumentID(*it);
         s += "]";
         if ((*it)->acceptsMultipleValues()) s += "...";
     }
+    s += " [--verbose|-v]";
     // required arguments
     for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
         s += " {";
