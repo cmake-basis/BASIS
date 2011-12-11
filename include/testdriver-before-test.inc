@@ -36,10 +36,10 @@
     try {
         // redirect standard output to file
         ofstream   redirectstream;
-        streambuf* redirectbuf;
-        streambuf* oldcoutbuf = NULL;
+        streambuf* redirectbuf = NULL;
+        streambuf* oldcoutbuf  = NULL;
         if (redirect_output.isSet()) {
-            cout << "Test output has been redirected to: " << redirect_output.getValue() << std::endl;
+            cout << "Test output has been redirected to: " << redirect_output.getValue() << endl;
             redirectstream.open(redirect_output.getValue().c_str(), ios::out);
             redirectbuf = redirectstream.rdbuf();
             oldcoutbuf  = cout.rdbuf();

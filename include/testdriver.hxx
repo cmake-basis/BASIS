@@ -88,7 +88,7 @@ void testdriversetup(int* argc, char** argv[])
             (*argv)[2] = NULL;
         } else {
             *argc = 1;
-            (*argv[1]) = NULL;
+            (*argv)[1] = NULL;
         }
 
     // -----------------------------------------------------------------------
