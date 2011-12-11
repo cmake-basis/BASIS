@@ -181,7 +181,6 @@ private:
 protected:
 
     unsigned int _numberOfArguments; ///< Number of values to process each time.
-    bool         _allowOnce;         ///< Allow argument only once.
 
 }; // class MultiArg
 

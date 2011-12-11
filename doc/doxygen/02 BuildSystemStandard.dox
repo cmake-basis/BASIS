@@ -1,13 +1,4 @@
 /**
- * Build system standard page of API documentation.
- *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- */
-
-/**
 @page BuildSystemStandard Build System Standard
 
 @section ProjectTemplate Software Project Template
