@@ -1,14 +1,4 @@
 /**
- * @file  PythonUtilities.dox
- * @brief Documenation of BASIS Python Utilities Doxygen group.
- *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- */
-
-/**
 @defgroup BasisPythonUtilities Python Utilities
 @brief    Auxiliary implementations for use in Python scripts.
 
