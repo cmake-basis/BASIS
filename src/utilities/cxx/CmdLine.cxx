@@ -396,7 +396,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     int offset = static_cast<int>(exec_name.length()) + 1;
     if (offset > 75 / 2) offset = 8;
     spacePrint(os, s, 75, 4, offset);
-    spacePrint(os, exec_name + " [--help|-h|--helpshort|--helpxml|--helpman|--version]", 75, 4, 0);
+    spacePrint(os, exec_name + " [-h|--help|--helpshort|--helpxml|--helpman|--version]", 75, 4, 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -755,6 +755,15 @@ void CmdLine::setup()
     // add standard arguments
     TCLAP::Visitor* v;
 
+    v = new TCLAP::IgnoreRestVisitor();
+    SwitchArg* ignore  = new SwitchArg(
+              TCLAP::Arg::flagStartString(), TCLAP::Arg::ignoreNameString(),
+              "Ignores the rest of the labeled arguments.",
+              false, v);
+    add(ignore);
+    deleteOnExit(ignore);
+    deleteOnExit(v);
+
     v = new HelpVisitor(output, true);
     TCLAP::SwitchArg* help = new TCLAP::SwitchArg(
             "h", "help", "Display help and exit.", false, v);
@@ -788,15 +797,6 @@ void CmdLine::setup()
             "", "version", "Display version information and exit.", false, v);
     add(vers);
     deleteOnExit(vers);
-    deleteOnExit(v);
-
-    v = new TCLAP::IgnoreRestVisitor();
-    SwitchArg* ignore  = new SwitchArg(
-              TCLAP::Arg::flagStartString(), TCLAP::Arg::ignoreNameString(),
-              "Ignores the rest of the labeled arguments.",
-              false, v);
-    add(ignore);
-    deleteOnExit(ignore);
     deleteOnExit(v);
 }
 
