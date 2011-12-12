@@ -17,6 +17,7 @@ set (
     "BasisTools.cmake"              # definition of macros and functions
     "BasisTest.cmake"               # testing, wraps CTest
     "BasisUpdate.cmake"             # automatic file update (deprecated)
+    "BasisSettings.cmake"           # default project-independent settings
     # submodules included by BasisTools.cmake
     "CommonTools.cmake"             # common functions/macros
     "DocTools.cmake"                # documentation generation
@@ -61,7 +62,7 @@ set (
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
     "runmcc.m"                    # helper used by MatlabTools.cmake module
     "ScriptConfig.cmake.in"       # default script configuration file
-    "Settings.cmake.in"           # BASIS settings
+    "ProjectSettings.cmake.in"    # default project-dependent settings
     "SubversionUsers.txt"         # maps SVN users at SBIA to their real names
     "updatefile.py"               # helper used by BasisUpdate.cmake module
 )
