@@ -531,11 +531,11 @@ endmacro ()
 #       to the top of the build script. The definition in CommonTools.cmake
 #       is only used to include the function in the API documentation.
 #
-# @param [out] VAR  Name of the variable.
-# @param [in]  PATH Path to directory or file.
-# @param [in]  ARG3 Path to directory or file inside install tree.
-#                   If this argument is not given, PATH is used for both
-#                   the build and install tree version of the script.
+# @param [out] VAR   Name of the variable.
+# @param [in]  PATH  Path to directory or file.
+# @param [in]  ARGV3 Path to directory or file inside install tree.
+#                    If this argument is not given, PATH is used for both
+#                    the build and install tree version of the script.
 #
 # @ingroup CMakeAPI
 function (basis_set_script_path VAR PATH)

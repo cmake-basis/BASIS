@@ -196,7 +196,8 @@ endfunction ()
 #   <tr>
 #     @tp @b INPUT path1 [path2 ...] @endtp
 #     <td>Value for Doxygen's @c INPUT tag which is used to specify input
-#         directories/files.@n
+#         directories/files. Any given input path is added to the default
+#         input paths.@n
 #         Default: @c PROJECT_CODE_DIR, @c BINARY_CODE_DIR,
 #                  @c PROJECT_INCLUDE_DIR, @c BINARY_INCLUDE_DIR.</td>
 #   </tr>
@@ -209,10 +210,18 @@ endfunction ()
 #       Default: @c doxyfilter of BASIS.
 #     </td>
 #   <tr>
-#     @tp @b FILTER_PATTERNS pattern1 [pattern2 ...]</td> @endtp
+#     @tp @b FILTER_PATTERNS pattern1 [pattern2...] @endtp
 #     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
 #         specify filters on a per file pattern basis.@n
 #         Default: BASIS Doxygen filter patterns.</td>
+#   </tr>
+#   <tr>
+#     @tp @b INCLUDE_PATH path1 [path2...] @endtp
+#     <td>Doxygen's @c INCLUDE_PATH tag can be used to specify one or more
+#         directories that contain include files that are not input files
+#         but should be processed by the preprocessor. Any given directories
+#         are appended to the default include path considered.
+#         Default: Directories added by basis_include_directories().</td>
 #   </tr>
 #   <tr>
 #     @tp @b EXCLUDE_PATTERNS pattern1 [pattern2 ...] @endtp
@@ -481,7 +490,7 @@ function (basis_add_doc TARGET_NAME)
       DOXYGEN
         "GENERATE_HTML;GENERATE_LATEX;GENERATE_RTF;GENERATE_MAN"
         "DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX"
-        "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS"
+        "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH"
         ${ARGN_UNPARSED_ARGUMENTS}
     )
  
@@ -557,6 +566,7 @@ function (basis_add_doc TARGET_NAME)
     endforeach ()
     # add .dox files as input
     file (GLOB_RECURSE DOX_FILES "${PROJECT_DOC_DIR}/*.dox")
+    list (SORT DOX_FILES) # alphabetic order
     list (APPEND DOXYGEN_INPUT ${DOX_FILES})
     # add .dox files of BASIS modules
     list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Modules.dox")
@@ -580,6 +590,19 @@ function (basis_add_doc TARGET_NAME)
         list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/${L}Utilities.dox")
       endif ()
     endforeach ()
+    # include path
+    basis_get_project_property (INCLUDE_DIRS PROPERTY PROJECT_INCLUDE_DIRS)
+    foreach (D IN LISTS INCLUDE_DIRS)
+      list (FIND DOXYGEN_INPUT "${D}" IDX)
+      if (IDX EQUAL -1)
+        list (APPEND DOXYGEN_INCLUDE_PATH "${D}")
+      endif ()
+    endforeach ()
+    basis_list_to_delimited_string (
+      DOXYGEN_INCLUDE_PATH "\"\nINCLUDE_PATH          += \"" ${DOXYGEN_INCLUDE_PATH}
+    )
+    set (DOXYGEN_INCLUDE_PATH "\"${DOXYGEN_INCLUDE_PATH}\"")
+    # make string from DOXYGEN_INPUT - after include path was set
     basis_list_to_delimited_string (
       DOXYGEN_INPUT "\"\nINPUT                 += \"" ${DOXYGEN_INPUT}
     )
@@ -598,13 +621,15 @@ function (basis_add_doc TARGET_NAME)
       basis_default_doxygen_filters (DOXYGEN_FILTER_PATTERNS)
     endif ()
     basis_list_to_delimited_string (
-      DOXYGEN_FILTER_PATTERNS "\nFILTER_PATTERNS       +=" ${DOXYGEN_FILTER_PATTERNS}
+      DOXYGEN_FILTER_PATTERNS "\"\nFILTER_PATTERNS       += \"" ${DOXYGEN_FILTER_PATTERNS}
     )
+    set (DOXYGEN_FILTER_PATTERNS "\"${DOXYGEN_FILTER_PATTERNS}\"")
     # exclude patterns
     list (APPEND DOXYGEN_EXCLUDE_PATTERNS "cmake_install.cmake")
     basis_list_to_delimited_string (
-      DOXYGEN_EXCLUDE_PATTERNS "\nEXCLUDE_PATTERNS     += " ${DOXYGEN_EXCLUDE_PATTERNS}
+      DOXYGEN_EXCLUDE_PATTERNS "\"\nEXCLUDE_PATTERNS      += \"" ${DOXYGEN_EXCLUDE_PATTERNS}
     )
+    set (DOXYGEN_EXCLUDE_PATTERNS "\"${DOXYGEN_EXCLUDE_PATTERNS}\"")
     # outputs
     if (NOT DOXYGEN_OUTPUT_DIRECTORY)
       set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}")
