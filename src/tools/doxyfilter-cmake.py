@@ -146,6 +146,8 @@ if __name__ == "__main__":
                 module = module.replace ("${BASIS_MODULE_PATH}/", "")
                 module = module.replace ("@BASIS_MODULE_PATH@/", "")
                 module = module.replace ("${${NS}MODULE_PATH}/", "")
+                module = module.replace (" OPTIONAL", "")
+                module = module.replace (" NO_POLICY_SCOPE", "")
                 sys.stdout.write ("#include \"" + module + "\"\n")
                 continue
             # enter if-clause
