@@ -62,9 +62,9 @@ void testdriversetup(int* argc, char** argv[])
         cmd.add(verbose);
 
         #ifdef BASIS_STANDALONE_TESTDRIVER
-        cmd.xorAdd(testcmd, noprocess);
+        cmd.xorAdd(noprocess, testcmd);
         #else
-        cmd.add(testname);
+        cmd.add(testcmd);
         #endif
 
         // -------------------------------------------------------------------
@@ -72,18 +72,19 @@ void testdriversetup(int* argc, char** argv[])
         cmd.parse(*argc, *argv);
 
         // -------------------------------------------------------------------
-        // leave only test name in argv[]
-        #ifndef BASIS_STANDALONE_TESTDRIVER
-        if (testname.isSet()) {
-            int i = 0;
-            while (i < (*argc) && testname.getValue() != (*argv)[i]) i++;
-            *argc = 2;
-            (*argv)[1] = (*argv)[i];
-            (*argv)[2] = NULL;
-        }
-        else
-        #endif
-        {
+        // rearrange argc and argv of main()
+        if (testcmd.isSet()) {
+            for (unsigned int i = 1; i < testcmd.getValue().size(); i++) {
+                for (int j = 1; j < (*argc); j++) {
+                    if (testcmd.getValue()[i] == (*argv)[j]) {
+                        (*argv)[i] = (*argv)[j];
+                        break;
+                    }
+                }
+            }
+            *argc = static_cast<int>(testcmd.getValue().size()) + 1;
+            (*argv)[*argc] = NULL;
+        } else {
             *argc = 1;
             (*argv)[1] = NULL;
         }

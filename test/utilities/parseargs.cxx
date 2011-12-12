@@ -58,9 +58,12 @@ int main(int argc, char* argv[])
         "r", "radius",                           // short and long option name
         "Radius of Gaussian kernel in each dimension.", // argument help
         false,                                   // required?
-        "<r_x> <r_y> <r_z>",                     // value type description
+        "<rx> <ry> <rz>",                        // value type description
         3,                                       // number of values per argument
         true);                                   // accept argument only once
+
+    MultiUIntArg gaussian_kernel(                // alternative for --radius
+        "", "kernel", "", false, "<rx> <ry> <rz>", 3, true);
 
     DoubleArg gaussian_std(                      // floating-point argument value
         "s", "std",                              // short and long option name
@@ -108,7 +111,7 @@ int main(int argc, char* argv[])
 
         cmd.xorAdd(gaussian, anisotropic);
         cmd.add(gaussian_std);
-        cmd.add(gaussian_radius);
+        cmd.xorAdd(gaussian_kernel, gaussian_radius);
         cmd.add(imagefile);
 
         cmd.parse(argc, argv);

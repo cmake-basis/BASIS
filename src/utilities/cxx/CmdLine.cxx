@@ -246,7 +246,7 @@ void StdOutput::failure(TCLAP::CmdLineInterface&, TCLAP::ArgException& e)
     if (!e.argId().empty() && e.argId() != " ") cerr << e.argId() << ", ";
     cerr << e.error() << endl;
     cerr << "See --help for a list of available and required arguments." << endl;
-	throw TCLAP::ExitException(1);
+    throw TCLAP::ExitException(1);
 }
 
 // ---------------------------------------------------------------------------
@@ -282,7 +282,7 @@ inline string StdOutput::getArgumentID(TCLAP::Arg* arg, bool all) const
     if (option) {
         if (all && arg->getFlag() != "") {
             id += TCLAP::Arg::flagStartString() + arg->getFlag();
-            id += " or ";
+            id += "  ";
         }
         id += TCLAP::Arg::nameStartString() + arg->getName();
     }
@@ -302,10 +302,10 @@ void StdOutput
     string desc = arg->getDescription();
     if (desc.compare (0, 12, "(required)  ")    == 0) desc.erase(0, 12);
     if (desc.compare (0, 15, "(OR required)  ") == 0) desc.erase(0, 15);
-    if (indentFirstLine) spacePrint(os, id, 75, 7, 0);
-    else                 spacePrint(os, id, 75, 0, 7);
+    if (indentFirstLine) spacePrint(os, id, 75, 8, 0);
+    else                 spacePrint(os, id, 75, 0, 8);
     if (!desc.empty()) {
-        spacePrint(os, desc, 75, 12, 0);
+        spacePrint(os, desc, 75, 15, 0);
     }
 }
 
@@ -318,6 +318,14 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     vector< vector<TCLAP::Arg*> > xors       = xorhandler.getXorList();
 
     // separate into argument groups
+    vector< vector<TCLAP::Arg*> > reqxors;
+    vector< vector<TCLAP::Arg*> > optxors;
+    for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
+        if (xors[i].size() > 0) {
+            if (xors[i][0]->isRequired()) reqxors.push_back(xors[i]);
+            else                           optxors.push_back(xors[i]);
+        }
+    }
     list<TCLAP::Arg*> reqargs;
     list<TCLAP::Arg*> optargs;
     for (TCLAP::ArgListIterator it = args.begin(); it != args.end(); it++) {
@@ -332,29 +340,52 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     }
 
     // executable name
-    std::string s = exec_name;
+    string s = exec_name;
+    string id;
     // optional arguments
-    for (TCLAP::ArgListIterator it = optargs.begin(); it != optargs.end(); it++) {
+    for (int i = 0; static_cast<unsigned int>(i) < optxors.size(); i++) {
         s += " [";
-        s += getArgumentID(*it);
+        for (TCLAP::ArgVectorIterator it = optxors[i].begin();
+                it != optxors[i].end(); it++) {
+            id = getArgumentID(*it);
+            s += id;
+            if ((*it)->acceptsMultipleValues() && id.find("...") == string::npos) {
+                s += "...";
+            }
+            s += "|";
+        }
+        s[s.length() - 1] = ']';
+    }
+    for (TCLAP::ArgListIterator it = optargs.begin(); it != optargs.end(); it++) {
+        id = getArgumentID(*it);
+        s += " [";
+        s += id;
         s += "]";
-        if ((*it)->acceptsMultipleValues()) s += "...";
+        if ((*it)->acceptsMultipleValues() && id.find("...") == string::npos) {
+            s += "...";
+        }
     }
     // required arguments
-    for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
+    for (int i = 0; static_cast<unsigned int>(i) < reqxors.size(); i++) {
         s += " {";
-        for (TCLAP::ArgVectorIterator it = xors[i].begin();
-                it != xors[i].end(); it++) {
-            s += getArgumentID(*it);
-            if ((*it)->acceptsMultipleValues()) s += "...";
+        for (TCLAP::ArgVectorIterator it = reqxors[i].begin();
+                it != reqxors[i].end(); it++) {
+            id = getArgumentID(*it);
+            s += id;
+            if ((*it)->acceptsMultipleValues() && id.find("...") == string::npos) {
+                s += "...";
+            }
             s += "|";
         }
         s[s.length() - 1] = '}';
     }
     for (TCLAP::ArgListIterator it = reqargs.begin(); it != reqargs.end(); it++) {
+        id = getArgumentID(*it);
         s += " ";
-        s += getArgumentID(*it);
-        if ((*it)->acceptsMultipleValues()) s += "...";
+        s += id;
+        if ((*it)->acceptsMultipleValues() && id.find("...") == string::npos) {
+            s += "...";
+        }
     }
 
     // print usage with proper number of columns
@@ -386,6 +417,14 @@ void StdOutput::printArguments(ostream& os, bool all) const
     vector< vector<TCLAP::Arg*> > xors       = xorhandler.getXorList();
 
     // separate into argument groups
+    vector< vector<TCLAP::Arg*> > reqxors;
+    vector< vector<TCLAP::Arg*> > optxors;
+    for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
+        if (xors[i].size() > 0) {
+            if (xors[i][0]->isRequired()) reqxors.push_back(xors[i]);
+            else                          optxors.push_back(xors[i]);
+        }
+    }
     list<TCLAP::Arg*> reqargs;
     list<TCLAP::Arg*> optargs;
     list<TCLAP::Arg*> stdargs;
@@ -410,14 +449,14 @@ void StdOutput::printArguments(ostream& os, bool all) const
     os << "OPTIONS" << endl;
 
     // required arguments
-    if (!xors.empty() || !reqargs.empty()) {
+    if (!reqxors.empty() || !reqargs.empty()) {
         os << "    Required arguments:" << endl;
-        for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
+        for (int i = 0; static_cast<unsigned int>(i) < reqxors.size(); i++) {
             if (i > 0) os << endl;
-            for (TCLAP::ArgVectorIterator it = xors[i].begin();
-                    it != xors[i].end(); it++) {
-                if (it != xors[i].begin()) {
-                    os << "       or ";
+            for (TCLAP::ArgVectorIterator it = reqxors[i].begin();
+                    it != reqxors[i].end(); it++) {
+                if (it != reqxors[i].begin()) {
+                    os << "     or ";
                     printArgumentHelp(os, *it, false);
                 } else {
                     printArgumentHelp(os, *it);
@@ -425,19 +464,31 @@ void StdOutput::printArguments(ostream& os, bool all) const
             }
         }
         for (TCLAP::ArgListIterator it = reqargs.begin(); it != reqargs.end(); it++) {
-            if (!xors.empty() || it != reqargs.begin()) os << endl;
+            if (!reqxors.empty() || it != reqargs.begin()) os << endl;
             printArgumentHelp(os, *it);
         }
     }
 
     // optional arguments
-    if (!optargs.empty()) {
-        if (!xors.empty() || !reqargs.empty()) {
+    if (!optxors.empty() || !optargs.empty()) {
+        if (!reqxors.empty() || !reqargs.empty()) {
             os << endl;
         }
         os << "    Optional arguments:" << endl;
+        for (int i = 0; static_cast<unsigned int>(i) < optxors.size(); i++) {
+            if (i > 0) os << endl;
+            for (TCLAP::ArgVectorIterator it = optxors[i].begin();
+                    it != optxors[i].end(); it++) {
+                if (it != optxors[i].begin()) {
+                    os << "     or ";
+                    printArgumentHelp(os, *it, false);
+                } else {
+                    printArgumentHelp(os, *it);
+                }
+            }
+        }
         for (TCLAP::ArgListIterator it = optargs.begin(); it != optargs.end(); it++) {
-            if (it != optargs.begin()) os << endl;
+            if (!optxors.empty() || it != optargs.begin()) os << endl;
             printArgumentHelp(os, *it);
         }
     }
@@ -632,7 +683,6 @@ public:
     // member variables
 protected:
 
-    StdOutput* _out; ///< Object handling the output.
 
     // -----------------------------------------------------------------------
     // unsupported
@@ -697,6 +747,11 @@ void CmdLine::setup()
     if (_output) delete _output;
     _output = output;
 
+    // remove arguments added by TCLAP::CmdLine (ignore)
+    ClearContainer(_argDeleteOnExitList);
+	ClearContainer(_visitorDeleteOnExitList);
+    TCLAP::CmdLine::_argList.clear();
+
     // add standard arguments
     TCLAP::Visitor* v;
 
@@ -734,6 +789,15 @@ void CmdLine::setup()
     add(vers);
     deleteOnExit(vers);
     deleteOnExit(v);
+
+    v = new TCLAP::IgnoreRestVisitor();
+    SwitchArg* ignore  = new SwitchArg(
+              TCLAP::Arg::flagStartString(), TCLAP::Arg::ignoreNameString(),
+              "Ignores the rest of the labeled arguments.",
+              false, v);
+    add(ignore);
+    deleteOnExit(ignore);
+    deleteOnExit(v);
 }
 
 // Note: The following methods are mainly overwritten to include the
@@ -754,13 +818,26 @@ void CmdLine::add(Arg* a)
 // -----------------------------------------------------------------------
 void CmdLine::xorAdd(Arg& a, Arg& b)
 {
-    TCLAP::CmdLine::xorAdd(a, b);
+    vector<TCLAP::Arg*> xors;
+    xors.push_back(&a);
+    xors.push_back(&b);
+    xorAdd(xors);
 }
 
 // -----------------------------------------------------------------------
 void CmdLine::xorAdd(std::vector<Arg*>& xors)
 {
-    TCLAP::CmdLine::xorAdd(xors);
+    TCLAP::CmdLine::_xorHandler.add(xors);
+
+    bool required = false;
+    for (TCLAP::ArgVectorIterator it = xors.begin(); it != xors.end(); ++it) {
+        if ((*it)->isRequired()) required = true;
+    }
+    for (TCLAP::ArgVectorIterator it = xors.begin(); it != xors.end(); ++it) {
+        if (required) (*it)->forceRequired();
+        (*it)->setRequireLabel("OR required");
+        add( *it );
+    }
 }
 
 // -----------------------------------------------------------------------

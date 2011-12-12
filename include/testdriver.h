@@ -175,23 +175,32 @@ PositionalArgs testcmd(
         "The external test command and its command-line arguments."
         " This command is executed by the test driver after altering the"
         " environment as subprocess. After the subprocess finished, the"
-        " requested regression tests are performed by the test driver.",
-        false, "[--] <command> <arg>");
+        " requested regression tests are performed by the test driver."
+        " Note that if the -- option is not given before the test command,"
+        " labeled arguments following the test command will be considered"
+        " to be options of the test driver if known by the test driver.",
+        true, "[--] <test command> <arg>...");
 
 SwitchArg noprocess(
         "", "noprocess",
-        "Do not run any test subprocess, but only perform the regression tests.",
-        false);
+        "Do not run any test subprocess but only perform the regression tests.",
+        true);
 
 #else // defined(BASIS_STANDALONE_TESTDRIVER)
 
-PositionalArg testname(
-        "testname",
-        "The name of the test to run. Displays a list of available tests"
-        " if this argument is omitted and waits for the user to input"
-        " the number of the test to run and exist with error if an"
-        " invalid test number was specified.",
-        false, "", "<test>");
+PositionalArgs testcmd(
+        "testcmd",
+        "The name of the test to run and optional arguments."
+        " Displays a list of available tests if this argument is omitted"
+        " and waits for the user to input the number of the test to run."
+        " Exist with error if an invalid test was specified."
+        " Note that if the -- option is not given before the test name,"
+        " labeled arguments following the test name will be considered"
+        " to be options of the test driver if known by the test driver."
+        " Otherwise, if the option is unknown to the test driver or the"
+        " -- option has been given before the test name, the remaining"
+        " arguments are passed on to the test.",
+        false, "", "[--] [<test name> [<arg>...]]");
 
 #endif // defined(BASIS_STANDALONE_TESTDRIVER)
 
