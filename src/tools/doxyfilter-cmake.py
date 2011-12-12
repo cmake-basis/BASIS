@@ -47,7 +47,7 @@ if __name__ == "__main__":
     reArgs          = re.compile (r"\W+")
     reCommentStart  = re.compile (r"##+(?P<comment>.*)")
     reCommentLine   = re.compile (r"#+(?P<comment>.*)")
-    reOptParamDoc   = re.compile (r"[\@\\]param\s*(\[[inout,\s]+\])?\s+(?P<param>ARG(N|V[0..9]))")
+    reOptParamDoc   = re.compile (r"[\@\\]param\s*(\[[inout,\s]+\])?\s+(?P<param>ARG(N|V[0-9]?))")
     reIfClauseStart = re.compile (r"if\s*\(")
     reIfClauseEnd   = re.compile (r"else\s*\(|elseif\s*\(|endif\s*\(")
 

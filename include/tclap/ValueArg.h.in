@@ -245,9 +245,6 @@ private:
 };
 
 
-/**
- * Constructor implementation.
- */
 template<class T>
 ValueArg<T>::ValueArg(const std::string& flag, 
                       const std::string& name, 
@@ -314,16 +311,9 @@ ValueArg<T>::ValueArg(const std::string& flag,
     parser.add( this );
 }
 
-
-/**
- * Implementation of getValue().
- */
 template<class T>
 T& ValueArg<T>::getValue() { return _value; }
 
-/**
- * Implementation of processArg().
- */
 template<class T>
 bool ValueArg<T>::processArg(int *i, std::vector<std::string>& args)
 {
@@ -376,9 +366,6 @@ bool ValueArg<T>::processArg(int *i, std::vector<std::string>& args)
 		return false;
 }
 
-/**
- * Implementation of shortID.
- */
 template<class T>
 std::string ValueArg<T>::shortID(const std::string& val) const
 {
@@ -386,9 +373,6 @@ std::string ValueArg<T>::shortID(const std::string& val) const
 	return Arg::shortID( _typeDesc ); 
 }
 
-/**
- * Implementation of longID.
- */
 template<class T>
 std::string ValueArg<T>::longID(const std::string& val) const
 {

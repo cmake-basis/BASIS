@@ -459,12 +459,22 @@ void StdOutput::printArguments(ostream& os, bool all) const
 // ---------------------------------------------------------------------------
 void StdOutput::printExample(ostream& os) const
 {
-    if (_cmd->getExample() != "") {
-        string example = _cmd->getExample();
-        string exec_name = get_executable_name();
+    const string exec_name = get_executable_name();
+    const vector<string>& examples = _cmd->getExamples();
+
+    if (!examples.empty()) {
         os << endl;
         os << "EXAMPLE" << endl;
-        spacePrint(os, _cmd->getExample(), 75, 4, 4);
+        for (vector<string>::const_iterator it = examples.begin();
+                it != examples.end(); ++it) {
+            if (it != examples.begin()) os << endl;
+            string example = *it;
+            string::size_type pos = 0;
+            while ((pos = example.find("EXECNAME", pos)) != string::npos) {
+                example.replace(pos, 8, exec_name);
+            }
+            spacePrint(os, example, 75, 4, 4);
+        }
     }
 }
 
@@ -651,7 +661,28 @@ CmdLine::CmdLine(const std::string& name,
     TCLAP::CmdLine(description, ' ', version, false),
     _name(name),
     _project(project),
-    _example(example),
+    _copyright(copyright),
+    _license(license),
+    _contact(contact)
+{
+    if (example != "") _examples.push_back(example);
+    setup();
+}
+
+// ---------------------------------------------------------------------------
+CmdLine::CmdLine(const std::string&              name,
+                 const std::string&              project,
+                 const std::string&              description,
+                 const std::vector<std::string>& examples,
+                 const std::string&              version,
+                 const std::string&              copyright,
+                 const std::string&              license,
+                 const std::string&              contact)
+:
+    TCLAP::CmdLine(description, ' ', version, false),
+    _name(name),
+    _project(project),
+    _examples(examples),
     _copyright(copyright),
     _license(license),
     _contact(contact)
@@ -709,13 +740,6 @@ void CmdLine::setup()
     add(vers);
     deleteOnExit(vers);
     deleteOnExit(v);
-
-    // replace EXECNAME in example string be name of executable
-    string exec_name = get_executable_name();
-    string::size_type pos = 0;
-    while ((pos = _example.find("EXECNAME", pos)) != string::npos) {
-        _example.replace(pos, 8, exec_name);
-    }
 }
 
 // Note: The following methods are mainly overwritten to include the

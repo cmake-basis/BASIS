@@ -6,8 +6,8 @@
  * in the namespace of BASIS itself. It only defines commonly used argument
  * types without template parameters.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
@@ -31,6 +31,10 @@ namespace sbia
 
 namespace basis
 {
+
+
+/// @addtogroup CxxCmdLine
+/// @{
 
 
 // ---------------------------------------------------------------------------
@@ -120,6 +124,10 @@ typedef TCLAP::UnlabeledValueArg<std::string> PositionalArg;
  *       more likely be a labeled argument, i.e., one with an option flag.
  */
 typedef TCLAP::UnlabeledMultiArg<std::string> PositionalArgs;
+
+
+/// @}
+// end of Doxygen group
 
 
 } // namespace basis

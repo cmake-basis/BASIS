@@ -206,9 +206,6 @@ class UnlabeledValueArg : public ValueArg<T>
 
 };
 
-/**
- * Constructor implemenation.
- */
 template<class T>
 UnlabeledValueArg<T>::UnlabeledValueArg(const std::string& name, 
 					                    const std::string& desc, 
@@ -241,9 +238,6 @@ UnlabeledValueArg<T>::UnlabeledValueArg(const std::string& name,
 	parser.add( this );
 }
 
-/**
- * Constructor implemenation.
- */
 template<class T>
 UnlabeledValueArg<T>::UnlabeledValueArg(const std::string& name, 
                                         const std::string& desc, 
@@ -274,9 +268,6 @@ UnlabeledValueArg<T>::UnlabeledValueArg(const std::string& name,
 	parser.add( this );
 }
 
-/**
- * Implementation of processArg().
- */
 template<class T>
 bool UnlabeledValueArg<T>::processArg(int *i, std::vector<std::string>& args) 
 {
@@ -294,9 +285,6 @@ bool UnlabeledValueArg<T>::processArg(int *i, std::vector<std::string>& args)
 	return true;
 }
 
-/**
- * Overriding shortID for specific output.
- */
 template<class T>
 std::string UnlabeledValueArg<T>::shortID(const std::string& val) const
 {
@@ -304,9 +292,6 @@ std::string UnlabeledValueArg<T>::shortID(const std::string& val) const
 	return std::string("<") + _typeDesc + ">";
 }
 
-/**
- * Overriding longID for specific output.
- */
 template<class T>
 std::string UnlabeledValueArg<T>::longID(const std::string& val) const
 {
@@ -318,9 +303,6 @@ std::string UnlabeledValueArg<T>::longID(const std::string& val) const
 	return std::string("<") + _typeDesc + ">";
 }
 
-/**
- * Overriding operator== for specific behavior.
- */
 template<class T>
 bool UnlabeledValueArg<T>::operator==(const Arg& a ) const
 {

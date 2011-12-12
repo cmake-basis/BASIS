@@ -1,0 +1,152 @@
+// ===========================================================================
+// CMake Modules
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CMakeAPI Public CMake Interface
+@brief    Public interface of CMake modules.
+
+The variables, functions, and macros listed here are intended to be used
+by the developer of a software development project based on BASIS in their
+project specific CMake implementation and the CMakeLists.txt files.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup BasisModules
+*/
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CMakeFindModules Find Package Modules
+@brief    CMake Find modules used by basis_find_package() command.
+
+The BASIS package provides CMake Find module implementations for third-party
+packages which are commonly used at SBIA but do not provide a CMake
+package configuration file (&lt;Package&gt;Config.cmake or &lt;package&gt;-config.cmake)
+such that CMake cannot find the package by default in config-mode.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup BasisModules
+*/
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CMakeTools Auxiliary CMake Modules
+@brief    Auxiliary CMake modules included and used by the main modules.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup BasisModules
+*/
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CMakeUtilities CMake Utilities
+@brief    Utilities implementated by the CMake modules.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup CMakeTools
+*/
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CMakeHelpers Non-CMake Utilities
+@brief    Auxiliary non-CMake implementations used by the CMake modules.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup CMakeTools
+*/
+
+// ===========================================================================
+// Utilities
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CxxCmdLine Command-line Parsing Library
+@brief    Command-line parsing library for C++.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup BasisCxxUtilities
+*/
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup CxxTesting Testing Framework
+@brief    Testing framework for C++.
+
+Unit tests test only single functions, classes, and modules of the software.
+For the implementation of such tests, BASIS includes a copy of the Google
+Test library (GTest). In order to use this library, simply include the
+sbia/basis/test.h header file in your unit test implementation. To add a
+unit test to the build system, use the basis_add_test() CMake command together
+with the @c UNITTEST option.
+
+System tests, on the other side, execute the programs of the package with
+given test input data and compare the output of the programs to the expected
+results. Therefore, a test driver similar to the one included with the ITK 4
+is provided by BASIS. It can be used to either execute a test implemented in
+C++ directly, or to run any test as external process. This test driver in
+particular provides a way of comparing an output image written by the test
+to one or more baseline images. The tolerance of the comparison regarding
+certain criteria can be set on the command-line of the test driver. Use the
+basis_add_test_driver() CMake command to add a test driver with built-in
+C++ tests to the build system, or use the imported sbia.basis.testdriver
+executable target as the @c COMMAND argument of the basis_add_test() CMake
+command. Note that tests for the separate tests built into a test driver
+created by basis_add_test_driver() have still to be added using
+basis_add_test().
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+
+@ingroup BasisCxxUtilities
+*/
+
+// ===========================================================================
+// Tools
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+/**
+@defgroup Tools BASIS Tools
+@brief    Basic command-line tools.
+
+The BASIS package not only provides the implementation of the standardized
+build system, auxiliary implementations for different supported programming
+languages, and the standardized project directory structure, it also includes
+some utility command-line tools. In particular, the project management tool
+which is used to create and/or modify BASIS projects, and tools for the
+automated testing of the software of a BASIS project. These tools are
+summarized in this module.
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+*/

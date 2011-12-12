@@ -1,6 +1,38 @@
 /**
- * @file  parseargs.cxx
- * @breif Test program for C++ command-line parsing library.
+@page CmdLineParsing Command-line Parsing
+
+@section CxxCmdLineParsing Parsing the command-line arguments in C++
+
+For the parsing of command-line arguments in C++, BASIS includes a slightly
+extended version of the <a href="http://tclap.sourceforge.net/">
+Templatized C++ Command Line Parser (TCLAP) Library</a>. For details and
+usage of this library, please refer to the TCLAP documentation which is
+also included with BASIS and can be found in the <tt>doc/</tt> directory.
+It is in particular recommended to read the
+<a href="http://tclap.sourceforge.net/manual.html">user manual</a>.
+Further, the <a href="http://tclap.sourceforge.net/html/index.html">
+API documentation</a> is a good reference on the available command-line
+argument classes. The API documentation of the TCLAP classes can also be
+found as part of this documentation.
+
+Note that BASIS provides its own subclass of the TCLAP::CmdLine class
+which is also named CmdLine, but in the sbia::basis namespace, i.e.,
+sbia::basis::CmdLine. Most of the argument implementations are, however,
+simply typedefs of the commonly used TCLAP::Arg subclasses.
+See the @ref CxxCmdLine page for a list of command-line arguments which
+are made available as part of the sbia::basis namespace.
+
+The usage of the command-line parsing library shall be demonstrated in the
+following on the implementation of an example command-line program. It should
+be noted that the try-catch block in the main() function will only help to
+track errors in the command-line specification, but once the @c cmd instance
+is initialized properly, all runtime exceptions related to the parsing of
+the command-line are handled by BASIS.
+
+@code
+/**
+ * @file  smoothimage.cxx
+ * @breif Smooth image using Gaussian or anisotropic diffusion filtering.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -21,7 +53,9 @@ using namespace sbia::basis;
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-int gaussianfilter(const string& imagefile, vector<unsigned int> r, double std)
+int gaussianfilter(const string&               imagefile,
+                   const vector<unsigned int>& r,
+                   double                      std)
 {
     // [...]
     return 0;
@@ -58,12 +92,12 @@ int main(int argc, char* argv[])
         "r", "radius",                           // short and long option name
         "Radius of Gaussian kernel in each dimension.", // argument help
         false,                                   // required?
-        "<r_x> <r_y> <r_z>",                     // value type description
+        "<rx> <ry> <rz>",                        // value type description
         3,                                       // number of values per argument
         true);                                   // accept argument only once
 
     DoubleArg gaussian_std(                      // floating-point argument value
-        "s", "std",                              // short and long option name
+        "", "std",                               // only long option name
         "Standard deviation of Gaussian in voxel units.", // argument help
         false,                                   // required?
         2.0,                                     // default value
@@ -81,7 +115,7 @@ int main(int argc, char* argv[])
     // -----------------------------------------------------------------------
     // parse command-line
     try {
-        vector<string> examples; // usage examples
+        vector<string> examples;
 
         examples.push_back(
                 "EXECNAME --gaussian --std 3.5 --radius 5 5 3 brain.nii\n"
@@ -90,13 +124,13 @@ int main(int argc, char* argv[])
                 " 3 voxels radius across slices.");
 
         examples.push_back(
-                "EXECNAME --anisotropic brain.nii\n"
+                "EXECNAME  --anisotropic brain.nii\n"
                 "Smooths the image brain.nii using an anisotropic diffusion filter.");
 
         CmdLine cmd(
                 // program identification
                 "smoothimage", cProjectName,
-                // description
+                // program description
                 "This program smooths an input image using either a Gaussian "
                 "filter or an anisotropic diffusion filter.",
                 // example usage
@@ -105,6 +139,10 @@ int main(int argc, char* argv[])
                 cVersionAndRevision,
                 "Copyright (c) 2011 University of Pennsylvania."
                 " All rights reserved.");
+
+        // The constructor of the CmdLine class has already added the standard
+        // arguments --verbose, --help, --helpshort, --helpxml, --helpman,
+        // and --version.
 
         cmd.xorAdd(gaussian, anisotropic);
         cmd.add(gaussian_std);
@@ -119,7 +157,7 @@ int main(int argc, char* argv[])
     }
 
     // -----------------------------------------------------------------------
-    // smooth image - access parsed argument values using Arg::getValue()
+    // smooth image - access parsed argument value using Arg::getValue()
     unsigned int r[3];
 
     if (gaussian.getValue()) {
@@ -130,3 +168,88 @@ int main(int argc, char* argv[])
         return anisotropicfilter(imagefile.getValue());
     }
 }
+
+@endcode
+
+Running the above program with the --help option will give the following
+output:
+@verbatim
+
+SYNOPSIS
+    smoothimage [--std <float>] [--radius <rx> <ry> <rz>] [--verbose|-v]
+                {--gaussian|--anisotropic} <image>
+    smoothimage [--help|-h|--helpshort|--helpxml|--helpman|--version]
+
+DESCRIPTION
+    This program smooths an input image using either a Gaussian filter or
+    an anisotropic diffusion filter.
+
+OPTIONS
+    Required arguments:
+       -g or --gaussian
+            Smooth image using a Gaussian filter.
+       or -a or --anisotropic
+            Smooth image using anisotropic diffusion filter.
+
+       <image>
+            Image to be smoothed.
+
+    Optional arguments:
+       -s or --std <float>
+            Standard deviation of Gaussian in voxel units.
+
+       -r or --radius <rx> <ry> <rz>
+            Radius of Gaussian kernel in each dimension.
+
+    Standard arguments:
+       -- or --ignore_rest
+            Ignores the rest of the labeled arguments following this flag.
+
+       -v or --verbose
+            Increase verbosity of output messages.
+
+       -h or --help
+            Display help and exit.
+
+       --helpshort
+            Display short help and exit.
+
+       --helpxml
+            Display help in XML format and exit.
+
+       --helpman
+            Display help as man page and exit.
+
+       --version
+            Display version information and exit.
+
+EXAMPLE
+    smoothimage --gaussian --std 3.5 --radius 5 5 3 brain.nii
+
+        Smooths the image brain.nii using a Gaussian with standard
+        deviation 3.5 voxel units and 5 voxels in-slice radius and 3 voxels
+        radius across slices.
+
+    smoothimage  --anisotropic brain.nii
+
+        Smooths the image brain.nii using an anisotropic diffusion filter.
+
+CONTACT
+    SBIA Group <sbia-software at uphs.upenn.edu>
+
+@endverbatim
+
+The short help output contains of only the synopsis of the full help, i.e.,
+@verbatim
+
+    smoothimage [--std <float>] [--radius <rx> <ry> <rz>] [--verbose|-v]
+                {--gaussian|--anisotropic} <image>
+    smoothimage [--help|-h|--helpshort|--helpxml|--helpman|--version]
+
+@endverbatim
+
+Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+*/

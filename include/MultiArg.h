@@ -6,8 +6,8 @@
  * flag, this MultiArg implementation consumes N arguments, where the number
  * of arguments N is set to a fixed number at construction time.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
@@ -37,6 +37,11 @@ namespace basis
  * can be given several times. Hence, the returned vector of values has length
  * N * M, where M is the number of times the argument was given on the
  * command-line.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * @ingroup CxxCmdLine
  */
 template <class T>
 class MultiArg : public TCLAP::MultiArg<T>

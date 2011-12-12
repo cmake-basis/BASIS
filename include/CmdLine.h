@@ -2,10 +2,12 @@
  * @file  basis/CmdLine.h
  * @brief Manages command line definition and parsing of arguments.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.
- * See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ *
+ * @ingroup CxxCmdLine
  */
 
 #pragma once
@@ -27,12 +29,12 @@ namespace basis
 /**
  * @brief Manages command line definition and parsing of arguments.
  *
- * Common arguments are defined in the header file sbia/basis/CmdArgs.h
- * which is included by the header file of this class.
- *
  * See @ref CxxCmdLineParsing for an example use of this class.
  *
- * @ingroup BasisCxxUtilities
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * @ingroup CxxCmdLine
  */
 class CmdLine : public TCLAP::CmdLine
 {
@@ -66,6 +68,34 @@ public:
                     "See http://www.rad.upenn.edu/sbia/software/license.html"
                     " or COPYING file.",
             const std::string& contact =
+                    "SBIA Group <sbia-software at uphs.upenn.edu>");
+
+    /**
+     * @brief Constructor.
+     *
+     * @param [in] name        Program name. Should be a constant string which
+     *                         helps to identify the program, not the name of
+     *                         the executable as determined at runtime.
+     * @param [in] project     Name of project this program belongs to.
+     * @param [in] description Program description.
+     * @param [in] examples    Usage examples.
+     * @param [in] version     Program version.
+     * @param [in] copyright   Copyright notice.
+     * @param [in] license     License information.
+     * @param [in] contact     Contact information.
+     */
+    CmdLine(const std::string&              name,
+            const std::string&              project,
+            const std::string&              description,
+            const std::vector<std::string>& examples,
+            const std::string&              version,
+            const std::string&              copyright =
+                    "Copyright (c) University of Pennsylvania."
+                    " All rights reserved.",
+            const std::string&              license =
+                    "See http://www.rad.upenn.edu/sbia/software/license.html"
+                    " or COPYING file.",
+            const std::string&              contact =
                     "SBIA Group <sbia-software at uphs.upenn.edu>");
 
     /**
@@ -160,7 +190,7 @@ public:
      *
      * @returns Example command-line usage.
      */
-    std::string& getExample() { return _example; }
+    std::vector<std::string>& getExamples() { return _examples; }
 
     /**
      * @brief Get copyright notice.
@@ -203,12 +233,12 @@ private:
     // member variables
 protected:
 
-    std::string _name;      ///< Program name.
-    std::string _project;   ///< Name of project program belongs to.
-    std::string _example;   ///< Program usage example.
-    std::string _copyright; ///< Program copyright.
-    std::string _license;   ///< Program license.
-    std::string _contact;   ///< Contact information.
+    std::string              _name;      ///< Program name.
+    std::string              _project;   ///< Name of project.
+    std::vector<std::string> _examples;  ///< Program usage example.
+    std::string              _copyright; ///< Program copyright.
+    std::string              _license;   ///< Program license.
+    std::string              _contact;   ///< Contact information.
 
 }; // class CmdLine
 

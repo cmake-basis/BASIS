@@ -36,7 +36,8 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # testing
-basis_add_test_driver (basistest-driver)
+basis_add_test_driver (testdriver)
+basis_set_target_properties (testdriver PROPERTIES OUTPUT_NAME "basistest-driver")
 
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
