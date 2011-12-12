@@ -260,6 +260,9 @@ set (BASIS_PROPERTIES_ON_TARGETS
   BASIS_TYPE                # BASIS type of target
   COMPILE                   # enable/disable compilation of script
   LIBEXEC                   # whether the target is an auxiliary executable
+  ARCHIVE_INSTALL_DIRECTORY # installation directory of library
+  LIBRARY_INSTALL_DIRECTORY # installation directory of library
+  RUNTIME_INSTALL_DIRECTORY # installation directory of runtime
   LIBRARY_COMPONENT         # package component of the library component
   MFILE                     # documentation file of MEX-file
   NO_EXPORT                 # enable/disable export of target
