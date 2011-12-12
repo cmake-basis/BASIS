@@ -529,9 +529,9 @@ function (basis_add_test TEST_NAME)
     endforeach ()
   endif ()
 
-  basis_get_target_uid (${COMMAND_UID} "${ARGN_COMMAND}")
+  basis_get_target_uid (COMMAND_UID "${ARGN_COMMAND}")
   if (TARGET "${COMMAND_UID}")
-    basis_get_target_location (ARGN_COMMAND ${COMMAND_UID} ABSOLUTE)
+    basis_get_target_location (ARGN_COMMAND "${COMMAND_UID}" ABSOLUTE)
   endif ()
 
   add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
