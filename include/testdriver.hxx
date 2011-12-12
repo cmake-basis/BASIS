@@ -31,17 +31,6 @@ void testdriversetup(int* argc, char** argv[])
 {
     try {
         // -------------------------------------------------------------------
-        // define additional command-line arguments
-
-        PositionalArg testname(
-                "testname",
-                "The name of the test to run. Displays a list of available tests"
-                " if this argument is omitted and waits for the user to input"
-                " the number of the test to run and exist with error if an"
-                " invalid test number was specified.",
-                false, "", "<test>");
-
-        // -------------------------------------------------------------------
         // construct command-line
         CmdLine cmd(
                 // program identification
@@ -52,7 +41,7 @@ void testdriversetup(int* argc, char** argv[])
                 // example usage
                 "EXECNAME GaussFilter --compare output.nii baseline.nii"
                 "\n"
-                "Runs the test named GaussFilter which presumably writes the"
+                "Runs the test GaussFilter which presumably writes the"
                 " gaussian smoothed image to the image file output.nii."
                 " Compares the image produced by the test to the reference"
                 " image named baseline.nii with default intensity tolerance.",
@@ -70,7 +59,13 @@ void testdriversetup(int* argc, char** argv[])
         cmd.add(redirect_output);
         cmd.add(max_number_of_threads);
         cmd.add(full_output);
+        cmd.add(verbose);
+
+        #ifdef BASIS_STANDALONE_TESTDRIVER
+        cmd.xorAdd(testcmd, noprocess);
+        #else
         cmd.add(testname);
+        #endif
 
         // -------------------------------------------------------------------
         // parse command-line
@@ -78,13 +73,17 @@ void testdriversetup(int* argc, char** argv[])
 
         // -------------------------------------------------------------------
         // leave only test name in argv[]
+        #ifndef BASIS_STANDALONE_TESTDRIVER
         if (testname.isSet()) {
             int i = 0;
             while (i < (*argc) && testname.getValue() != (*argv)[i]) i++;
             *argc = 2;
             (*argv)[1] = (*argv)[i];
             (*argv)[2] = NULL;
-        } else {
+        }
+        else
+        #endif
+        {
             *argc = 1;
             (*argv)[1] = NULL;
         }

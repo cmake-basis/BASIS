@@ -112,7 +112,7 @@ public:
      *
      * @returns Double quoted string.
      */
-    static std::string to_string(const CommandLine& args);
+    static std::string tostring(const CommandLine& args);
 
     // -----------------------------------------------------------------------
     // process control
@@ -318,7 +318,7 @@ public:
      * @brief Execute command as subprocess.
      *
      * This function is implemented in the same manner as system() on Unix.
-     * It simply creates a SubProcess instance, executes the subprocess and
+     * It simply creates a Subprocess instance, executes the subprocess and
      * waits for its termination.
      *
      * Example:
@@ -337,7 +337,7 @@ public:
      * @brief Execute command as subprocess.
      *
      * This function is implemented in the same manner as system() on Unix.
-     * It simply creates a SubProcess instance, executes the subprocess and
+     * It simply creates a Subprocess instance, executes the subprocess and
      * waits for its termination.
      *
      * Example:

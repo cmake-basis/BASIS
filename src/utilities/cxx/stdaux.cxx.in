@@ -172,7 +172,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
     if (!exec_path.empty()) args[0] = exec_path;
     // some verbose output
     if (verbose > 0) {
-        printf("$ %s", Subprocess::to_string(args).c_str());
+        printf("$ %s", Subprocess::tostring(args).c_str());
         if (simulate) printf(" (simulated)");
         printf("\n");
     }
@@ -204,7 +204,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
     }
     // if command failed, throw an exception
     if (status != 0 && !allow_fail) {
-        BASIS_THROW(SubprocessException, "Command " << Subprocess::to_string(args) << " failed");
+        BASIS_THROW(SubprocessException, "Command " << Subprocess::tostring(args) << " failed");
     }
     return status;
 }

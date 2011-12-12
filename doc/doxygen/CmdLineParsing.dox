@@ -141,8 +141,7 @@ int main(int argc, char* argv[])
                 " All rights reserved.");
 
         // The constructor of the CmdLine class has already added the standard
-        // arguments --verbose, --help, --helpshort, --helpxml, --helpman,
-        // and --version.
+        // arguments --help, --helpshort, --helpxml, --helpman, and --version.
 
         cmd.xorAdd(gaussian, anisotropic);
         cmd.add(gaussian_std);

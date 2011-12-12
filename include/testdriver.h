@@ -161,6 +161,40 @@ SwitchArg full_output(
         "Causes the full output of the test to be passed to CDash.",
         false);
 
+MultiSwitchArg verbose(
+        "v", "verbose",
+        "Increase verbosity of output messages.",
+        false);
+
+// ---------------------------------------------------------------------------
+// test / test command
+#ifdef BASIS_STANDALONE_TESTDRIVER
+
+PositionalArgs testcmd(
+        "testcmd",
+        "The external test command and its command-line arguments."
+        " This command is executed by the test driver after altering the"
+        " environment as subprocess. After the subprocess finished, the"
+        " requested regression tests are performed by the test driver.",
+        false, "[--] <command> <arg>");
+
+SwitchArg noprocess(
+        "", "noprocess",
+        "Do not run any test subprocess, but only perform the regression tests.",
+        false);
+
+#else // defined(BASIS_STANDALONE_TESTDRIVER)
+
+PositionalArg testname(
+        "testname",
+        "The name of the test to run. Displays a list of available tests"
+        " if this argument is omitted and waits for the user to input"
+        " the number of the test to run and exist with error if an"
+        " invalid test number was specified.",
+        false, "", "<test>");
+
+#endif // defined(BASIS_STANDALONE_TESTDRIVER)
+
 // ===========================================================================
 // initialization
 // ===========================================================================

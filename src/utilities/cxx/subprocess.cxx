@@ -136,7 +136,7 @@ Subprocess::CommandLine Subprocess::split(const string& cmd)
 }
 
 // ---------------------------------------------------------------------------
-string Subprocess::to_string(const CommandLine& args)
+string Subprocess::tostring(const CommandLine& args)
 {
     const char whitespace[] = " \f\n\r\t\v";
 
@@ -287,7 +287,7 @@ bool Subprocess::popen(const CommandLine& args,
     siStartInfo.hStdInput   = hStdIn[0];
     siStartInfo.dwFlags    |= STARTF_USESTDHANDLES;
 
-    string cmd = to_string(args);
+    string cmd = tostring(args);
 
     LPTSTR szCmdline = NULL;
 #ifdef UNICODE

@@ -340,7 +340,6 @@ void StdOutput::printUsage(ostream& os, bool heading) const
         s += "]";
         if ((*it)->acceptsMultipleValues()) s += "...";
     }
-    s += " [--verbose|-v]";
     // required arguments
     for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
         s += " {";
@@ -700,11 +699,6 @@ void CmdLine::setup()
 
     // add standard arguments
     TCLAP::Visitor* v;
-
-    TCLAP::SwitchArg* verbose = new TCLAP::MultiSwitchArg(
-            "v", "verbose", "Increase verbosity of output messages.");
-    add(verbose);
-    deleteOnExit(verbose);
 
     v = new HelpVisitor(output, true);
     TCLAP::SwitchArg* help = new TCLAP::SwitchArg(

@@ -84,28 +84,28 @@ TEST(Subprocess, ToString)
     args.push_back("there is a double quote (\") inside the argument");
     args.push_back("arg2");
     EXPECT_STREQ("foo \"there is a double quote (\\\") inside the argument\" arg2",
-            Subprocess::to_string(args).c_str());
+            Subprocess::tostring(args).c_str());
 
     args.clear();
     args.push_back("foo");
     args.push_back("there is a backslash (\\) inside the argument");
     args.push_back("arg2");
     EXPECT_STREQ("foo \"there is a backslash (\\\\) inside the argument\" arg2",
-            Subprocess::to_string(args).c_str());
+            Subprocess::tostring(args).c_str());
 
     args.clear();
     args.push_back("foo");
     args.push_back("there are backslashes (\\\\) inside the argument");
     args.push_back("arg2");
     EXPECT_STREQ("foo \"there are backslashes (\\\\\\\\) inside the argument\" arg2",
-            Subprocess::to_string(args).c_str());
+            Subprocess::tostring(args).c_str());
 
     args.clear();
     args.push_back("foo");
     args.push_back("there is a backslash followed by a double quote (\\\") inside the argument");
     args.push_back("arg2");
     EXPECT_STREQ("foo \"there is a backslash followed by a double quote (\\\\\\\") inside the argument\" arg2",
-            Subprocess::to_string(args).c_str());
+            Subprocess::tostring(args).c_str());
 
     args.clear();
     args.push_back("/bin/foo");
@@ -115,7 +115,7 @@ TEST(Subprocess, ToString)
     args.push_back("\\a\\path with spaces\\");
     args.push_back("last");
     EXPECT_STREQ("/bin/foo -la -x \"an argument\" \"\\\\a\\\\path with spaces\\\\\" last",
-            Subprocess::to_string(args).c_str());
+            Subprocess::tostring(args).c_str());
 
 }
 
