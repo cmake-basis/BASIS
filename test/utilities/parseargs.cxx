@@ -127,8 +127,6 @@ int main(int argc, char* argv[])
 
     // -----------------------------------------------------------------------
     // smooth image - access parsed argument values using Arg::getValue()
-    unsigned int r[3];
-
     if (gaussian.getValue()) {
         return gaussianfilter(imagefile.getValue(),
                               gaussian_radius.getValue(),
