@@ -53,9 +53,9 @@ endif ()
 # ============================================================================
 
 ## @brief Whether to import the exported targets.
-set (NO_${NS}IMPORTS "${NO_${NS}IMPORTS}")
+set (NO_@PROJECT_NAME@_IMPORTS "${NO_@PROJECT_NAME@_IMPORTS}")
 
-if (NOT NO_${NS}IMPORTS)
+if (NOT NO_@PROJECT_NAME@_IMPORTS)
   include ("${CMAKE_CURRENT_LIST_DIR}/@EXPORTS_FILE@" OPTIONAL)
   include ("${CMAKE_CURRENT_LIST_DIR}/@CUSTOM_EXPORTS_FILE@" OPTIONAL)
 endif ()
