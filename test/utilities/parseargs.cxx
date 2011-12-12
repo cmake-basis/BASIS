@@ -23,6 +23,9 @@ using namespace sbia::basis;
 // ---------------------------------------------------------------------------
 int gaussianfilter(const string& imagefile, vector<unsigned int> r, double std)
 {
+    static_cast<void>(imagefile); // avoid unused warnings
+    static_cast<void>(r);         // avoid unused warnings
+    static_cast<void>(std);       // avoid unused warnings
     // [...]
     return 0;
 }
@@ -30,6 +33,7 @@ int gaussianfilter(const string& imagefile, vector<unsigned int> r, double std)
 // ---------------------------------------------------------------------------
 int anisotropicfilter(const string& imagefile)
 {
+    static_cast<void>(imagefile); // avoid unused warnings
     // [...]
     return 0;
 }
