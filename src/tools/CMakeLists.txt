@@ -35,10 +35,27 @@ if (PERL_FOUND AND PYTHONINTERP_FOUND)
 endif ()
 
 # ----------------------------------------------------------------------------
-# testing
+# test driver
 basis_add_executable (testdriver.cxx)
 basis_set_target_properties (testdriver PROPERTIES OUTPUT_NAME "basistest-driver")
+basis_target_link_libraries (testdriver ${ITK_LIBRARIES})
 
+if (ITK_FOUND)
+  basis_set_target_properties (
+    testdriver
+    PROPERTIES
+      COMPILE_DEFINITIONS "HAVE_ITK=1" "ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}"
+  )
+else ()
+  basis_set_target_properties (
+    testdriver
+    PROPERTIES
+      COMPILE_DEFINITIONS "HAVE_ITK=0"
+  )
+endif ()
+
+# ----------------------------------------------------------------------------
+# automated testing
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
 if (UNIX)
