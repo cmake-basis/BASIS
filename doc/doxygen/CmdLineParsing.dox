@@ -230,7 +230,7 @@ EXAMPLE
         deviation 3.5 voxel units and 5 voxels in-slice radius and 3 voxels
         radius across slices.
 
-    smoothimage  --anisotropic brain.nii
+    smoothimage --anisotropic brain.nii
 
         Smooths the image brain.nii using an anisotropic diffusion filter.
 
