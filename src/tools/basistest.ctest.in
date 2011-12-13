@@ -250,6 +250,7 @@ set (WITH_COVERAGE 0) # whether to perform coverage analysis
 
 # ----------------------------------------------------------------------------
 # test execution
+SET (CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE)
 set (CTEST_TEST_OPTIONS)
 
 # ----------------------------------------------------------------------------
@@ -261,8 +262,6 @@ set (INSTALL_DOXYGEN_DIR)
 # ============================================================================
 # options
 # ============================================================================
-
-
 
 macro (set_bool_option VAR)
   if (VALUE)
