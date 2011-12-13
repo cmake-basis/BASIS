@@ -41,8 +41,8 @@
         }
         // perform regression tests of output image(s)
         for (size_t i = 0; i < compare.getValue().size(); i += 2) {
-            const char* baseline_filename = compare.getValue()[i    ].c_str();
-            const char* test_filename     = compare.getValue()[i + 1].c_str();
+            const char* test_filename     = compare.getValue()[i].c_str();
+            const char* baseline_filename = compare.getValue()[i + 1].c_str();
             vector<string> baselines = get_baseline_filenames(baseline_filename);
             string bestmatch;
             int    beststatus = numeric_limits<int>::max();
