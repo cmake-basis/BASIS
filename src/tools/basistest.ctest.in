@@ -20,16 +20,16 @@
 # ============================================================================
 
 # names of options whose name will be added to CTEST_TEST_OPTIONS
-# instead of CTEST_CMAKE_OPTIONS, while removing the CTEST_TEST_ prefix
+# instead of CTEST_CMAKE_OPTIONS
 set (KNOWN_CTEST_TEST_OPTIONS
-  CTEST_TEST_START
-  CTEST_TEST_END
-  CTEST_TEST_STRIDE
-  CTEST_TEST_INCLUDE
-  CTEST_TEST_INCLUDE_LABEL
-  CTEST_TEST_EXCLUDE
-  CTEST_TEST_EXCLUDE_LABEL
-  CTEST_TEST_PARALLEL_LEVEL
+  START
+  END
+  STRIDE
+  INCLUDE
+  INCLUDE_LABEL
+  EXCLUDE
+  EXCLUDE_LABEL
+  PARALLEL_LEVEL
 )
 
 # ============================================================================
@@ -68,9 +68,9 @@ Options:
   <variable>=<value>     Passes -D<variable>=<value> on to CMake for the
                          configuration of the build tree if the variable
                          name is not named in the following.
-                         
+
                          The values of the following variables are passed on
-                         to the ctest_test() command:")
+                         to the proper CTest scripting commands:")
   foreach (V IN LISTS KNOWN_CTEST_TEST_OPTIONS)
     message ("                           - ${V}")
   endforeach ()
@@ -358,7 +358,6 @@ foreach (ARG ${ARGV})
         if (IDX EQUAL -1)
           set (CTEST_CMAKE_OPTIONS "${CTEST_CMAKE_OPTIONS} \"-D${OPTION}=${VALUE}\"")
         else ()
-          string (REGEX REPLACE "^CTEST_TEST_" "" OPTION "${OPTION}")
           list (APPEND CTEST_TEST_OPTIONS "${OPTION}" "${VALUE}")
         endif ()
       endif ()
@@ -579,7 +578,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
     # --------------------------------------------------------------------------
     # perform memory checks
     if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
-      ctest_memcheck ()
+      ctest_memcheck (${CTEST_TEST_OPTIONS})
     endif ()
 
   endif ()
