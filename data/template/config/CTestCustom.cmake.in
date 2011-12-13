@@ -42,6 +42,16 @@ endif ()
 #
 # See http://www.vtk.org/Wiki/CMake_Testing_With_CTest#Customizing_CTest
 
+# get relative paths for use in globbing expression
+#
+# Note that all public include files are copied to the build tree and thus
+# consider only the once in the build tree, not the once in the source tree.
+file (RELATIVE_PATH PROJECT_MODULES_DIR "@PROJECT_SOURCE_DIR@" "@PROJECT_MODULES_DIR@")
+file (RELATIVE_PATH PROJECT_CODE_DIR    "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
+file (RELATIVE_PATH BINARY_INCLUDE_DIR  "@PROJECT_BINARY_DIR@" "@BINARY_INCLUDE_DIR@")
+file (RELATIVE_PATH BINARY_MODULES_DIR  "@PROJECT_BINARY_DIR@" "@BINARY_MODULES_DIR@")
+file (RELATIVE_PATH BINARY_CODE_DIR     "@PROJECT_BINARY_DIR@" "@BINARY_CODE_DIR@")
+
 # ----------------------------------------------------------------------------
 # warnings
 # ----------------------------------------------------------------------------
@@ -117,8 +127,6 @@ set (
 # coverage
 # ----------------------------------------------------------------------------
 
-file (RELATIVE_PATH SRC "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
-
 ## @brief Exclude certain files from coverage analysis.
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
@@ -126,14 +134,30 @@ set (
     # add further exclude expressions here
 )
 
-## @brief Specify additional files which should be considered.
+## @brief Extension of files considered for globbing of extra coverage files.
 set (
-  CTEST_EXTRA_COVERAGE_GLOB
-    ${CTEST_EXTRA_COVERAGE_GLOB} # keep current globbing expressions
-    "./${SRC}/*.inl"             # add inline definition
-    "./${SRC}/*.txx"             # add template definitions
-    # add further globbing expressions here
+  EXTRA_COVERAGE_GLOB_EXTENSIONS
+    ".cxx"
+    ".cpp"
+    ".cc"
+    ".c"
+    ".inc"
+    ".inl"
+    ".txx"
 )
+
+## @brief Specify additional files which should be considered.
+set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
+foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
+  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+    "./${PROJECT_CODE_DIR}/*${E}"
+    "./${PROJECT_INCLUDE_DIR}/*${E}"
+    "./${PROJECT_MODULES_DIR}/*/${PROJECT_CODE_DIR}/*${E}"
+    "./${PROJECT_MODULES_DIR}/*/${PROJECT_INCLUDE_DIR}/*${E}"
+    "./${BINARY_MODULES_DIR}/*/${PROJECT_CODE_DIR}/*${E}"
+    "./${BINARY_MODULES_DIR}/*/${PROJECT_INCLUDE_DIR}/*${E}"
+  )
+endforeach ()
 
 # ----------------------------------------------------------------------------
 # memory check
