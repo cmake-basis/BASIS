@@ -16,6 +16,23 @@
 ##############################################################################
 
 # ============================================================================
+# constants - define at first
+# ============================================================================
+
+# names of options whose name will be added to CTEST_TEST_OPTIONS
+# instead of CTEST_CMAKE_OPTIONS, while removing the CTEST_TEST_ prefix
+set (KNOWN_CTEST_TEST_OPTIONS
+  CTEST_TEST_START
+  CTEST_TEST_END
+  CTEST_TEST_STRIDE
+  CTEST_TEST_INCLUDE
+  CTEST_TEST_INCLUDE_LABEL
+  CTEST_TEST_EXCLUDE
+  CTEST_TEST_EXCLUDE_LABEL
+  CTEST_TEST_PARALLEL_LEVEL
+)
+
+# ============================================================================
 # help
 # ============================================================================
 
@@ -49,7 +66,15 @@ Required options:
 
 Options:
   <variable>=<value>     Passes -D<variable>=<value> on to CMake for the
-                         configuration of the build tree.
+                         configuration of the build tree if the variable
+                         name is not named in the following.
+                         
+                         The values of the following variables are passed on
+                         to the ctest_test() command:")
+  foreach (V IN LISTS KNOWN_CTEST_TEST_OPTIONS)
+    message ("                           - ${V}")
+  endforeach ()
+  message ("
   model=<model>          Name of the dashboard model, i.e., one of
                          \"Nightly\", \"Continuous\", and \"Experimental\".
                          Default: \"Experimental\".
@@ -224,6 +249,10 @@ set (WITH_COVERAGE 0) # whether to perform coverage analysis
 #set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "config/valgrind.sup")
 
 # ----------------------------------------------------------------------------
+# test execution
+set (CTEST_TEST_OPTIONS)
+
+# ----------------------------------------------------------------------------
 # installation directories
 
 # output directory for built Doxygen documentation
@@ -232,6 +261,8 @@ set (INSTALL_DOXYGEN_DIR)
 # ============================================================================
 # options
 # ============================================================================
+
+
 
 macro (set_bool_option VAR)
   if (VALUE)
@@ -324,7 +355,13 @@ foreach (ARG ${ARGV})
       if (NOT VALUE)
         set (FAILURE 1)
       else ()
-        set (CTEST_CMAKE_OPTIONS "${CTEST_CMAKE_OPTIONS} \"-D${OPTION}=${VALUE}\"")
+        list (FIND KNOWN_CTEST_TEST_OPTIONS "${OPTION}" IDX)
+        if (IDX EQUAL -1)
+          set (CTEST_CMAKE_OPTIONS "${CTEST_CMAKE_OPTIONS} \"-D${OPTION}=${VALUE}\"")
+        else ()
+          string (REGEX REPLACE "^CTEST_TEST_" "" OPTION "${OPTION}")
+          list (APPEND CTEST_TEST_OPTIONS "${OPTION}" "${VALUE}")
+        endif ()
       endif ()
     endif ()
   else ()
@@ -532,7 +569,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
     # ------------------------------------------------------------------------
     # run tests
-    ctest_test ()
+    ctest_test (${CTEST_TEST_OPTIONS})
 
     # --------------------------------------------------------------------------
     # perform coverage analysis
