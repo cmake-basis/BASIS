@@ -35,6 +35,12 @@ set (RUN_FROM_CTEST_OR_DART 1)
 include (CTestTargets)
 set (RUN_FROM_CTEST_OR_DART)
 
+# check availibility of CTestConfig.cmake file
+if (BUILD_TESTING AND NOT EXISTS "${PROJECT_SOURCE_DIR}/CTestConfig.cmake")
+  message (WARNING "Missing CTestConfig.cmake file in top directory of source tree!"
+                   " You will not be able to submit test results to the CDash dashboard.")
+endif ()
+
 # custom CTest configuration
 if (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake.in")
   configure_file (
