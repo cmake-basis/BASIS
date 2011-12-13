@@ -146,7 +146,7 @@ set (
     ".txx"
 )
 
-## @brief Specify additional files which should be considered.
+## @brief Specify additional files which should be considered for coverage report.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
 foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
