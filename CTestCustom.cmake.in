@@ -44,16 +44,6 @@ endif ()
 #
 # See http://www.vtk.org/Wiki/CMake_Testing_With_CTest#Customizing_CTest
 
-# get relative paths for use in globbing expression
-#
-# Note that all public include files are copied to the build tree and thus
-# consider only the once in the build tree, not the once in the source tree.
-file (RELATIVE_PATH PROJECT_MODULES_DIR "@PROJECT_SOURCE_DIR@" "@PROJECT_MODULES_DIR@")
-file (RELATIVE_PATH PROJECT_CODE_DIR    "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
-file (RELATIVE_PATH BINARY_INCLUDE_DIR  "@PROJECT_BINARY_DIR@" "@BINARY_INCLUDE_DIR@")
-file (RELATIVE_PATH BINARY_MODULES_DIR  "@PROJECT_BINARY_DIR@" "@BINARY_MODULES_DIR@")
-file (RELATIVE_PATH BINARY_CODE_DIR     "@PROJECT_BINARY_DIR@" "@BINARY_CODE_DIR@")
-
 # ----------------------------------------------------------------------------
 # warnings
 # ----------------------------------------------------------------------------
@@ -129,10 +119,20 @@ set (
 # coverage
 # ----------------------------------------------------------------------------
 
+# get relative paths for use in globbing expression
+#
+# Note that all public include files are copied to the build tree and thus
+# consider only the once in the build tree, not the once in the source tree.
+file (RELATIVE_PATH MODULES_DIR "@PROJECT_SOURCE_DIR@" "@PROJECT_MODULES_DIR@")
+file (RELATIVE_PATH CODE_DIR    "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
+file (RELATIVE_PATH INCLUDE_DIR "@PROJECT_BINARY_DIR@" "@BINARY_INCLUDE_DIR@")
+
 ## @brief Exclude certain files from coverage analysis.
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
     ${CTEST_CUSTOM_COVERAGE_EXCLUDE} # keep current exclude expressions
+    "./test/*"
+    "./modules/*/test/*"
     # add further exclude expressions here
 )
 
@@ -150,15 +150,15 @@ set (
 
 ## @brief Specify additional files which should be considered for coverage report.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
-  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "./${PROJECT_CODE_DIR}/*${E}"
-    "./${PROJECT_INCLUDE_DIR}/*${E}"
-    "./${PROJECT_MODULES_DIR}/*/${PROJECT_CODE_DIR}/*${E}"
-    "./${PROJECT_MODULES_DIR}/*/${PROJECT_INCLUDE_DIR}/*${E}"
-    "./${BINARY_MODULES_DIR}/*/${PROJECT_CODE_DIR}/*${E}"
-    "./${BINARY_MODULES_DIR}/*/${PROJECT_INCLUDE_DIR}/*${E}"
-  )
+foreach (M IN LISTS PROJECT_MODULES_ENABLED)
+  foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
+    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+      "./${CODE_DIR}/*${E}"
+      "./${INCLUDE_DIR}/*${E}"
+      "./${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
+      "./${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
+    )
+  endforeach ()
 endforeach ()
 
 # ----------------------------------------------------------------------------
