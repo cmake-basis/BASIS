@@ -240,10 +240,10 @@ endif ()
 #
 # Example:
 # @code
-# # The project's namespace is SBIA_BASIS and the name of the module in this
-# # example is shflags.sh. This gives the fully-qualified module namespace
-# # SBIA_BASIS_SHFLAGS. Note that private identifiers are further prefixed
-# # with an underscore '_'.
+# # The project's namespace is SBIA_@PROJECT_NAME_UPPER@ and the name of the
+# # module in this example is mymodule.sh. This gives the fully-qualified module
+# # namespace SBIA_MICO_MYMODULE. Note that private identifiers are further
+# # prefixed with an underscore '_'.
 #
 # # return if already loaded
 # [ "${_SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED:-0}" -eq 1 ] && return 0
