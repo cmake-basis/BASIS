@@ -16,11 +16,12 @@
 # configuration
 # ============================================================================
 
+## @brief Request build of tests.
+option (BUILD_TESTING "Request build of tests." OFF)
+
 # include CTest module which enables testing, but prevent it from generating
 # any configuration file or adding targets yet as we want to adjust the
 # default CTest settings--in particular the site name--before
-option (BUILD_TESTING "Enable tests." OFF)
-
 set (RUN_FROM_DART 1)
 include (CTest)
 
@@ -34,35 +35,25 @@ set (RUN_FROM_CTEST_OR_DART 1)
 include (CTestTargets)
 set (RUN_FROM_CTEST_OR_DART)
 
-# configure custom CTest settings and/or copy them to binary tree
-# TODO How does this go well with the super-build?
-if ("${PROJECT_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  set (CTEST_CUSTOM_FILE "CTestCustom.cmake")
-else ()
-  set (CTEST_CUSTOM_FILE "CTestCustom-${PROJECT_NAME}.cmake")
-endif ()
-
+# custom CTest configuration
 if (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake.in")
   configure_file (
     "${PROJECT_CONFIG_DIR}/CTestCustom.cmake.in"
-    "${CMAKE_BINARY_DIR}/${CTEST_CUSTOM_FILE}"
+    "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
     @ONLY
   )
 elseif (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake")
   configure_file (
-    "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake"
-    "${CMAKE_BINARY_DIR}/${CTEST_CUSTOM_FILE}"
+    "${PROJECT_CONFIG_DIR}/CTestCustom.cmake"
+    "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
     COPYONLY
   )
-endif ()
-
-if (
-      NOT "${CTEST_CUSTOM_FILE}" STREQUAL "CTestCustom.cmake"
-  AND EXISTS "${CMAKE_BINARY_DIR}/${CTEST_CUSTOM_FILE}"
-)
-  file (
-    APPEND "${CMAKE_BINARY_DIR}/CTestCustom.cmake"
-      "\ninclude (\"${CMAKE_BINARY_DIR}/${CTEST_CUSTOM_FILE}\")\n")
+else ()
+  configure_file (
+    "${BASIS_MODULE_PATH}/CTestCustom.cmake.in"
+    "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
+    @ONLY
+  )
 endif ()
 
 # ============================================================================
@@ -362,7 +353,8 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b WORKING_DIRECTORY dir @endtp
-#     <td>The working directory of the test command.</td>
+#     <td>The working directory of the test command.
+#         Default: @c TESTING_OUTPUT_DIR / @p TEST_NAME. </td>
 #   </tr>
 #   <tr>
 #     @tp @b CONFIGURATIONS @endtp
@@ -432,6 +424,7 @@ function (basis_add_test TEST_NAME)
     "CONFIGURATIONS;SOURCES;LINK_DEPENDS;COMMAND;ARGS"
     ${ARGN}
   )
+
 
   list (LENGTH ARGN_COMMAND N)
   if (N GREATER 1)
@@ -518,10 +511,10 @@ function (basis_add_test TEST_NAME)
     message (STATUS "Adding test ${TEST_UID}...")
   endif ()
 
-  set (OPTS)
-  if (ARGN_WORKING_DIRECTORY)
-    list (APPEND OPTS "WORKING_DIRECTORY" "${ARGN_WORKING_DIRECTORY}")
+  if (NOT ARGN_WORKING_DIRECTORY)
+    set (ARGN_WORKING_DIRECTORY "${TESTING_OUTPUT_DIR}/${TEST_NAME}")
   endif ()
+  set (OPTS "WORKING_DIRECTORY" "${ARGN_WORKING_DIRECTORY}")
   if (ARGN_CONFIGURATIONS)
     list (APPEND OPTS "CONFIGURATIONS")
     foreach (CONFIG ${ARGN_CONFIGURATIONS})
@@ -538,8 +531,9 @@ function (basis_add_test TEST_NAME)
 
   if (BASIS_DEBUG)
     message ("** Added test ${TEST_UID}")
-    message ("**     Command:   ${ARGN_COMMAND}")
-    message ("**     Arguments: ${ARGN_ARGS}")
+    message ("**     Command:    ${ARGN_COMMAND}")
+    message ("**     Arguments:  ${ARGN_ARGS}")
+    message ("**     Working in: ${ARGN_WORKING_DIRECTORY}")
   endif ()
 
   if (BASIS_VERBOSE)
