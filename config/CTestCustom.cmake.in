@@ -136,30 +136,26 @@ set (
     # add further exclude expressions here
 )
 
-## @brief Extension of files considered for globbing of extra coverage files.
-set (
-  EXTRA_COVERAGE_GLOB_EXTENSIONS
-    ".cxx"
-    ".cpp"
-    ".cc"
-    ".c"
-    ".inc"
-    ".inl"
-    ".txx"
-)
-
 ## @brief Specify additional files which should be considered for coverage report.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
+foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
     "./${CODE_DIR}/*${E}"
+  )
+endforeach ()
+foreach (E IN ITEMS .txx .hxx .inl .inc)
+  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
     "./${INCLUDE_DIR}/*${E}"
   )
 endforeach ()
 foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
-  foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
+  foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
       "./${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
+    )
+  endforeach ()
+  foreach (E IN ITEMS .txx .hxx .inl .inc)
+    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
       "./${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
     )
   endforeach ()
