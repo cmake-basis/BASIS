@@ -314,6 +314,7 @@ bool MultiArg<T>::processArg(int *i, std::vector<std::string>& args)
         }
     }
     TCLAP::MultiArg<T>::_alreadySet = true;
+    TCLAP::MultiArg<T>::_allowMore  = false;
     TCLAP::MultiArg<T>::_checkWithVisitor();
     return true;
 }
