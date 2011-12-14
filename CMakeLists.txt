@@ -79,6 +79,7 @@ set (
     "FindMatlabNiftiTools.cmake"  # for MATLAB Central NIfTI tools
     "FindMOSEK.cmake"             # for MOSEK
     "FindNiftiCLib.cmake"         # for nifticlib
+    "FindPerlLibs.cmake"          # for Perl libraries
 )
 
 # ----------------------------------------------------------------------------
@@ -96,3 +97,22 @@ basis_install (
   FILES       "uninstall/CMakeLists.txt"
   DESTINATION "${INSTALL_MODULES_DIR}/uninstall"
 )
+
+# ----------------------------------------------------------------------------
+# make sure that we did not forgot to install a file... very easy to forgot!
+file (GLOB MODULES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
+
+foreach (F IN LISTS MODULES)
+  if (NOT F MATCHES "^(CMakeLists\\.txt|\\..*|uninstall)$")
+    list (FIND CMAKE_MODULES "${F}" IDX)
+    if (IDX EQUAL -1)
+      list (FIND CMAKE_MODULES_AUXILIARY_FILES "${F}" IDX)
+    endif ()
+    if (IDX EQUAL -1)
+      list (FIND CMAKE_FIND_MODULES "${F}" IDX)
+    endif ()
+    if (IDX EQUAL -1)
+      message (WARNING "Seems like ${CMAKE_CURRENT_SOURCE_DIR}/${F} will not be installed!")
+    endif ()
+  endif ()
+endforeach ()
