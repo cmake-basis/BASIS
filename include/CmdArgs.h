@@ -125,6 +125,14 @@ typedef TCLAP::UnlabeledValueArg<std::string> PositionalArg;
  */
 typedef TCLAP::UnlabeledMultiArg<std::string> PositionalArgs;
 
+// ---------------------------------------------------------------------------
+// constraints
+
+/**
+ * @brief Constrains string arguments to allow only predefined values.
+ */
+typedef TCLAP::ValuesConstraint<std::string> StringValuesConstraint;
+
 
 /// @}
 // end of Doxygen group
