@@ -1,0 +1,31 @@
+/**
+ * @file  SoftwareProjectTemplate.dox
+ * @brief Documentation of software project template.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@page SoftwareProjectTemplate Software Project Template
+
+@section ProjectTemplateIntro Introduction
+
+The starting point for every project is to setup a directory structure
+which helps to organize the project files. Moreover, in order to
+configure the build system using CMake, CMakeLists.txt files have to
+be added to the project with proper CMake code to add build targets
+with the corresponding build flags to the build system. In order to
+unify the structure of projects following common practices and further
+to simply take of the burder from the developer on settings up a
+basic project, BASIS provides a so-called Software Project Template.
+Please refer to the @ref FilesystemHierarchyStandard, for a definition
+of the comman project directory structure, which is required by BASIS.
+The project template simply follows this standard regarding the directory structure.
+The more important purpose of the software project template is to
+provide template files regarding the configuration of the build,
+testing, installation, and packaging. These configuration files are,
+in particular, considered by the BASIS CMake functions.
+*/

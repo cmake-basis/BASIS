@@ -127,7 +127,8 @@ MultiStringArg compare(
 
 DoubleArg intensity_tolerance(
         "", "intensity-tolerance",
-        "The accepted maximum difference between image intensities.",
+        "The accepted maximum difference between image intensities."
+        " (default: 2.0)", // should be printed automatically
         false, 2.0, "<float>");
 
 UIntArg max_number_of_differences(
