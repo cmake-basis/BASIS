@@ -174,6 +174,14 @@ public:
      */
     virtual bool processArg(int* i, std::vector<std::string>& args); 
 
+    /**
+	 * @brief Whether the argument is required or not.
+     *
+     * Once we've matched the first value, then the arg is no longer required,
+     * except if the argument is only accepted once with multiple values.
+	 */
+	virtual bool isRequired() const;
+
     // -----------------------------------------------------------------------
     // unsupported
 private:
@@ -317,6 +325,20 @@ bool MultiArg<T>::processArg(int *i, std::vector<std::string>& args)
     TCLAP::MultiArg<T>::_allowMore  = false;
     TCLAP::MultiArg<T>::_checkWithVisitor();
     return true;
+}
+
+template<class T>
+bool MultiArg<T>::isRequired() const
+{
+    if (TCLAP::MultiArg<T>::_required) {
+        if (TCLAP::MultiArg<T>::_acceptsMultipleValues
+                && TCLAP::MultiArg<T>::_values.size() > 1)
+            return false;
+        else
+            return true;
+    }
+    else
+        return false;
 }
 
 
