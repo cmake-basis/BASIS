@@ -74,10 +74,10 @@ void testdriversetup(int* argc, char** argv[])
         // -------------------------------------------------------------------
         // rearrange argc and argv of main()
         if (testcmd.isSet()) {
-            for (unsigned int i = 1; i < testcmd.getValue().size(); i++) {
+            for (unsigned int i = 0; i < testcmd.getValue().size(); i++) {
                 for (int j = 1; j < (*argc); j++) {
                     if (testcmd.getValue()[i] == (*argv)[j]) {
-                        (*argv)[i] = (*argv)[j];
+                        (*argv)[i + 1] = (*argv)[j];
                         break;
                     }
                 }
