@@ -150,11 +150,15 @@ set (
 
 ## @brief Specify additional files which should be considered for coverage report.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (M IN LISTS PROJECT_MODULES_ENABLED)
+foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
+  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+    "./${CODE_DIR}/*${E}"
+    "./${INCLUDE_DIR}/*${E}"
+  )
+endforeach ()
+foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
   foreach (E IN LISTS EXTRA_COVERAGE_GLOB_EXTENSIONS)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "./${CODE_DIR}/*${E}"
-      "./${INCLUDE_DIR}/*${E}"
       "./${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
       "./${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
     )
