@@ -54,9 +54,9 @@ elseif (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake")
     "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
     COPYONLY
   )
-else ()
+elseif (EXISTS "${BASIS_TEMPLATE_DIR}/CTestCustom.cmake.in")
   configure_file (
-    "${BASIS_MODULE_PATH}/CTestCustom.cmake.in"
+    "${BASIS_TEMPLATE_DIR}/CTestCustom.cmake.in"
     "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
     @ONLY
   )
