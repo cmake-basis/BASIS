@@ -663,6 +663,10 @@ function (basis_add_doc TARGET_NAME)
     if (NOT DOXYGEN_COLS_IN_ALPHA_INDEX OR DOXYGEN_COLS_IN_ALPHA_INDEX MATCHES "[^0-9]")
       set (DOXYGEN_COLS_IN_ALPHA_INDEX 3)
     endif ()
+    # HTML style
+    set (DOXYGEN_HTML_STYLESHEET "${BASIS_MODULE_PATH}/doxygen_sbia.css")
+    set (DOXYGEN_HTML_HEADER     "${BASIS_MODULE_PATH}/doxygen_header.html")
+    set (DOXYGEN_HTML_FOOTER     "${BASIS_MODULE_PATH}/doxygen_footer.html")
 
     # set output paths relative to DOXYGEN_OUTPUT_DIRECTORY
     set (DOXYGEN_HTML_OUTPUT  "html")
@@ -682,10 +686,27 @@ function (basis_add_doc TARGET_NAME)
     configure_file ("${DOXYGEN_DOXYFILE}" "${DOXYFILE}" @ONLY)
 
     # add target
+    set (LOGOS)
+    if (DOXYGEN_HTML_OUTPUT)
+      set (LOGOS "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_sbia.png"
+                 "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_penn.png")
+      add_custom_command (
+        OUTPUT   ${LOGOS}
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                  "${BASIS_MODULE_PATH}/logo_sbia.png"
+                  "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_sbia.png"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                  "${BASIS_MODULE_PATH}/logo_penn.gif"
+                  "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_penn.gif"
+        COMMENT "Copying logos to ${DOXYGEN_OUTPUT_DIRECTORY}/html/..."
+      )
+    endif ()
+
     add_custom_target (
-      ${TARGET_UID}
-      COMMAND "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}"
+      ${TARGET_UID} "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}"
+      DEPENDS ${LOGOS}
       WORKING_DIRECTORY "${BASIS_MODULE_DIR}"
+      COMMENT "Building documentation ${TARGET_UID}..."
     )
 
     # cleanup on "make clean"

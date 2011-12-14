@@ -65,6 +65,11 @@ set (
     "ProjectSettings.cmake.in"    # default project-dependent settings
     "SubversionUsers.txt"         # maps SVN users at SBIA to their real names
     "updatefile.py"               # helper used by BasisUpdate.cmake module
+    "doxygen_sbia.css"            # stylesheet for Doxygen documentation
+    "doxygen_header.html"         # header of Doxygen documentation
+    "doxygen_footer.html"         # footer of Doxygen documentation
+    "logo_sbia.png"               # the logo of SBIA
+    "logo_penn.gif"               # the logo of UPenn
 )
 
 # ----------------------------------------------------------------------------
@@ -103,7 +108,7 @@ basis_install (
 file (GLOB MODULES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
 
 foreach (F IN LISTS MODULES)
-  if (NOT F MATCHES "^(CMakeLists\\.txt|\\..*|uninstall)$")
+  if (NOT F MATCHES "^(CMakeLists\\.txt|\\..*|.*\\.bak|uninstall)$")
     list (FIND CMAKE_MODULES "${F}" IDX)
     if (IDX EQUAL -1)
       list (FIND CMAKE_MODULES_AUXILIARY_FILES "${F}" IDX)
