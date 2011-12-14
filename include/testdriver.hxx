@@ -89,6 +89,12 @@ void testdriversetup(int* argc, char** argv[])
             (*argv)[1] = NULL;
         }
 
+        // Reset ignoring flag of TCLAP library. Otherwise, when a test
+        // uses the TCLAP library to parse its arguments, the labeled
+        // arguments will be immediately ignored.
+        // This required the addition of the stopIgnoring() method to TCLAP::Arg.
+        TCLAP::Arg::stopIgnoring();
+
     // -----------------------------------------------------------------------
     // catch specification exceptions - parse errors are already taken care of
     } catch (CmdLineException& e) {

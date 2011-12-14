@@ -195,6 +195,11 @@ class Arg
 		 */
 		static void beginIgnoring() { ignoreRestRef() = true; }
 
+        /**
+		 * Stop ignoring arguments. Required by the BASIS test driver!
+		 */
+		static void stopIgnoring() { ignoreRestRef() = false; }
+
 		/**
 		 * Whether to ignore the rest.
 		 */
