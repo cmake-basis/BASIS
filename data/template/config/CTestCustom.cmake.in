@@ -78,6 +78,7 @@ set (
     "[0-9][0-9]*: ERROR "       # add match expressions on separate lines
     "[0-9][0-9]*: Error "
     "[0-9][0-9]*: error "
+    "No tests were found!!!"    # CTest error if their are no tests
 )
 
 ## @brief Match expressions for ignored error messages.
