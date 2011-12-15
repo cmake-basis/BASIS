@@ -110,18 +110,20 @@ void testdriversetup(int* argc, char** argv[])
 
     // -----------------------------------------------------------------------
     // output host name
-    char hostname[256] = "unknown";
-    #if WINDOWS
-        WSADATA wsaData;
-        WSAStartup(MAKEWORD(2, 2), &wsaData);
-        gethostname(hostnam, sizeof(hostname));
-        WSACleanup();
-    #else
-        gethostname(hostname, sizeof(hostname));
-    #endif
-    hostname[255] = '\0';
-    cout << "Host: " << hostname << endl;
-    cout << endl;
+    if (verbose.getValue() > 0) {
+        char hostname[256] = "unknown";
+        #if WINDOWS
+            WSADATA wsaData;
+            WSAStartup(MAKEWORD(2, 2), &wsaData);
+            gethostname(hostnam, sizeof(hostname));
+            WSACleanup();
+        #else
+            gethostname(hostname, sizeof(hostname));
+        #endif
+        hostname[255] = '\0';
+        cout << "Host: " << hostname << endl;
+        cout << endl;
+    }
 
     // -----------------------------------------------------------------------
     // register ITK IO factories
