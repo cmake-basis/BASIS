@@ -282,8 +282,8 @@ function (basis_add_test_driver TESTDRIVER_NAME)
   if (NOT TESTDRIVER_SOURCE MATCHES "\\.cxx")
     set (TESTDRIVER_SOURCE "${TESTDRIVER_SOURCE}.cxx")
   endif ()
-  set (CMAKE_TESTDRIVER_BEFORE_TESTMAIN "#   include <sbia/basis/testdriver-before-test.inc>")
-  set (CMAKE_TESTDRIVER_AFTER_TESTMAIN  "#   include <sbia/basis/testdriver-after-test.inc>")
+  set (CMAKE_TESTDRIVER_BEFORE_TESTMAIN "    #include <sbia/basis/testdriver-before-test.inc>")
+  set (CMAKE_TESTDRIVER_AFTER_TESTMAIN  "    #include <sbia/basis/testdriver-after-test.inc>")
   create_test_sourcelist (
     TESTDRIVER_SOURCES
       ${TESTDRIVER_SOURCE} ${ARGN_UNPARSED_ARGUMENTS}
@@ -298,7 +298,8 @@ function (basis_add_test_driver TESTDRIVER_NAME)
       ${TESTDRIVER_NAME}
       PROPERTIES
         COMPILE_DEFINITIONS
-          HAVE_ITK=1
+          TESTDRIVER_NAME=\"${TESTDRIVER_NAME}\"
+          ITK_VERSION=\"${ITK_VERSION}\"
           ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}
     )
   else ()
@@ -306,7 +307,7 @@ function (basis_add_test_driver TESTDRIVER_NAME)
       ${TESTDRIVER_NAME}
       PROPERTIES
         COMPILE_DEFINITIONS
-          HAVE_ITK=0
+          TESTDRIVER_NAME=\"${TESTDRIVER_NAME}\"
     )
   endif ()
 endfunction ()
