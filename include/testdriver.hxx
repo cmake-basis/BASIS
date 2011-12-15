@@ -19,7 +19,7 @@
 #  include <netdb.h> // gethostbyname()
 #endif
 
-#if HAVE_ITK
+#ifdef ITK_VERSION
 #  include "testdriver-itk.hxx"
 #endif
 
@@ -36,11 +36,22 @@ using namespace sbia::basis;
 void testdriversetup(int* argc, char** argv[])
 {
     try {
+        string name;
+        #ifdef TESTDRIVER_NAME
+            name = TESTDRIVER_NAME;
+        #else
+            name = "testdriver";
+        #endif
+        #ifdef ITK_VERSION
+            name += " build with ITK ";
+            name += ITK_VERSION;
+        #endif
+
         // -------------------------------------------------------------------
         // construct command-line
         CmdLine cmd(
                 // program identification
-                "basistest-driver", cProjectName,
+                name, cProjectName,
                 // description
                 "This program alters the environment, runs a test and "
                 "compares the output image to one or more baseline images.",
@@ -109,7 +120,7 @@ void testdriversetup(int* argc, char** argv[])
     }
 
     // -----------------------------------------------------------------------
-    // output host name
+    // output host name and test driver information
     if (verbose.getValue() > 0) {
         char hostname[256] = "unknown";
         #if WINDOWS
@@ -122,14 +133,17 @@ void testdriversetup(int* argc, char** argv[])
         #endif
         hostname[255] = '\0';
         cout << "Host: " << hostname << endl;
+        #ifdef ITK_VERSION
+        cout << "ITK:  " << ITK_VERSION << endl;
+        #endif
         cout << endl;
     }
 
     // -----------------------------------------------------------------------
     // register ITK IO factories
-#if HAVE_ITK
-    RegisterRequiredFactories();
-#endif
+    #ifdef ITK_VERSION
+        RegisterRequiredFactories();
+    #endif
 }
 
 // ===========================================================================
@@ -171,16 +185,17 @@ int image_regression_test(const char*  imagefile,
                           unsigned int tolerance_radius,
                           int          report)
 {
-#if HAVE_ITK
-    return RegressionTestImage(imagefile,
-                               baseline,
-                               report,
-                               intensity_tolerance,
-                               max_number_of_differences,
-                               tolerance_radius);
-#else
-    BASIS_THROW(runtime_error, "Not implemented yet! Use ITK implementation instead.");
-#endif
+    #ifdef ITK_VERSION
+        return RegressionTestImage(imagefile,
+                                   baseline,
+                                   report,
+                                   intensity_tolerance,
+                                   max_number_of_differences,
+                                   tolerance_radius);
+    #else
+        BASIS_THROW(runtime_error,
+                    "Not implemented yet! Use ITK implementation instead.");
+    #endif
 }
 
 

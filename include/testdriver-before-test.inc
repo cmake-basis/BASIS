@@ -32,9 +32,6 @@
 //{
     // [...]
     try {
-        if (verbose.getValue() > 0) {
-            cout << "Performing regression tests" << endl;
-        }
         // redirect standard output to file
         ofstream   redirectstream;
         streambuf* redirectbuf = NULL;

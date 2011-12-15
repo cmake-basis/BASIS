@@ -44,13 +44,17 @@ if (ITK_FOUND)
   basis_set_target_properties (
     testdriver
     PROPERTIES
-      COMPILE_DEFINITIONS "HAVE_ITK=1" "ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}"
+      COMPILE_DEFINITIONS
+        "TESTDRIVER_NAME=\"basistest-driver\""
+        "ITK_VERSION=\"${ITK_VERSION}\""
+        "ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}"
   )
 else ()
   basis_set_target_properties (
     testdriver
     PROPERTIES
-      COMPILE_DEFINITIONS "HAVE_ITK=0"
+      COMPILE_DEFINITIONS
+        "TESTDRIVER_NAME=\"basistest-driver\""
   )
 endif ()
 

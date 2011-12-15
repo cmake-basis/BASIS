@@ -40,6 +40,9 @@
             redirectstream.close();
         }
         // perform regression tests of output image(s)
+        if (!compare.getValue().empty() && verbose.getValue() > 0) {
+            cout << "Performing regression tests" << endl;
+        }
         for (size_t i = 0; i < compare.getValue().size(); i += 2) {
             const char* test_filename     = compare.getValue()[i].c_str();
             const char* baseline_filename = compare.getValue()[i + 1].c_str();
