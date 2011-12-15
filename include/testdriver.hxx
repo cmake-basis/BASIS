@@ -13,6 +13,12 @@
 #define _SBIA_BASIS_TESTDRIVER_HXX
 
 
+#if WINDOWS
+#  include <Winsock2.h> // gethostbyname()
+#else
+#  include <netdb.h> // gethostbyname()
+#endif
+
 #if HAVE_ITK
 #  include "testdriver-itk.hxx"
 #endif
@@ -102,6 +108,23 @@ void testdriversetup(int* argc, char** argv[])
         exit(1);
     }
 
+    // -----------------------------------------------------------------------
+    // output host name
+    char hostname[256] = "unknown";
+    #if WINDOWS
+        WSADATA wsaData;
+        WSAStartup(MAKEWORD(2, 2), &wsaData);
+        gethostname(hostnam, sizeof(hostname));
+        WSACleanup();
+    #else
+        gethostname(hostname, sizeof(hostname));
+    #endif
+    hostname[255] = '\0';
+    cout << "Host: " << hostname << endl;
+    cout << endl;
+
+    // -----------------------------------------------------------------------
+    // register ITK IO factories
 #if HAVE_ITK
     RegisterRequiredFactories();
 #endif
