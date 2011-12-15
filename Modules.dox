@@ -1,5 +1,5 @@
 /**
-@defgroup BasisModules BASIS Modules
+@defgroup BasisModules BASIS CMake
 @brief    BASIS CMake modules.
 
 Copyright (c) 2011 University of Pennsylvania. All rights reserved.
