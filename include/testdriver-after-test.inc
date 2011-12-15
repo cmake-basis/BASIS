@@ -79,14 +79,17 @@
 
             result += beststatus;
         }
+        if (verbose.getValue() > 0) {
+            cout << "Performing regression tests... - done: result = " << result << endl;
+        }
 
     // catch any exceptions
     } catch (const exception& e) {
-        cerr << "ITK test driver caught an exception:\n";
+        cerr << "Test driver caught an exception:\n";
         cerr << e.what() << "\n";
         result = -1;
     } catch (...) {
-        cerr << "ITK test driver caught an unknown exception!!!\n";
+        cerr << "Test driver caught an unknown exception!!!\n";
         result = -1;
     }
     return result;
