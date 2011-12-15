@@ -11,7 +11,7 @@
 /**
 @page BuildOfScriptTargets Build of Script Targets
 
-@section ScriptTargets Build Steps
+@section ScriptTargetsIntro Introduction
 
 Unlike source files written in non-scripting languages such as C++ or Java,
 source files written in scripting languages such as Python, Perl, or BASH
@@ -24,13 +24,19 @@ CMakeLists.txt files (or an included CMake script file). As it is often
 useful to introduce build specific information in a script file such as
 the relative location of auxiliary executables or data files, the
 basis_add_executable() and basis_add_library() commands also provide a
-means of building script files, where during the build of the script
-the CMake variables as given by <tt>\@VARIABLE_NAME\@</tt> patterns are
-replaced by the value of the corresponding CMake variable if defined or
-by an empty string otherwise. Similar to the configuration of source files
-written in C++ or MATLAB, the names of the script files which shall be
-configured by BASIS during the build step have to end with the <tt>.in</tt>
-suffix. Otherwise, the script file is not modified by the BASIS build
+means of building script files. How these functions process scripts
+during the build of the software is discussed next. Afterwards it is
+described how the build of scripts can be configured.
+
+@section ScriptTargets Prerequisits and Build Steps
+
+During the build of a script, the CMake variables as given by
+<tt>\@VARIABLE_NAME\@</tt> patterns are replaced by the value of the
+corresponding CMake variable if defined, or by an empty string otherwise.
+Similar to the configuration of source files written in C++ or MATLAB,
+the names of the script files which shall be configured by BASIS during
+the build step have to end with the <tt>.in</tt> suffix.
+Otherwise, the script file is not modified by the BASIS build
 commands and simply copied to the build tree or installation tree,
 respectively. Opposed to configuring the source files already during
 the configure step of CMake, as is the case for C++ and MATLAB source files,

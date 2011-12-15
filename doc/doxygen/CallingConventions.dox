@@ -1,20 +1,17 @@
+/**
+ * @file  CallingConventions.dox
+ * @brief Documentation of calling conventions.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
 
-  Section of Biomedical Image Analysis
-  Department of Radiology
-  University of Pennsylvania
-  3600 Market Street, Suite 380
-  Philadelphia, PA 19104
+/**
+@page CallingConventions Calling Conventions
 
-  Web:   https://www.rad.upenn.edu/sbia/
-  Email: sbia-software at uphs.upenn.edu
-
-  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-  See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-
-
-INTRODUCTION
-============
+@section CallingConventionsIntro Introduction
 
   This document discusses and describes the conventions for calling other
   executables from within an executable. The calling conventions address the
@@ -22,13 +19,10 @@ INTRODUCTION
   other executables and introduce a name mapping from build target names
   to actual executable file names. These calling conventions are, however,
   hidden to the developer through automatically generated utility functions
-  for each supported programming language. See section "IMPLEMENTATION BY
-  SUPPORTED LANGUAGE" for details on the specific implementations.
+  for each supported programming language.
+  See @ref CallingConventionsImpl for details on the specific implementations.
 
-
-
-RELATIVE VS. ABSOLUTE EXECUTABLE FILE PATHS
-===========================================
+@section RelVsAbsExecPath Relative vs. Absolute Executable File Paths
 
   Relative paths such as only the executable file name require a proper setting
   of the PATH environment variable. If more than one version of a particular
@@ -43,19 +37,20 @@ RELATIVE VS. ABSOLUTE EXECUTABLE FILE PATHS
   Main executables in "<prefix>/bin/<sinfix>/" call utility executables relative
   to their own directory. For example, a BASH script called "main" that executes
   a utility script "util" in "<prefix>/lib/<sinfix>/" would do so as demonstrated
-  in the following example code:
+  in the following example code (for details on the "@VAR@" patterns, please refer
+  to the @ref BuildOfScriptTargets page):
+@code
+    # among others, defines the get_executable_directory() function
+    @BASIS_BASH_UTILITIES@
 
-    # will be substituted by the function get_executable_directory()
-    @BASH_FUNCTION_get_executable_directory@
-
-    # get absolute path of directory of auxiliary executables
-    exec_dir=$(get_executable_directory)
-    libexec_dir=${exec_dir}/@LIBEXEC_DIR@
+    # get absolute directory path of auxiliary executable
+    get_executable_directory _EXEC_DIR && readonly _EXEC_DIR
+    _LIBEXEC_DIR=${_EXEC_DIR}/@LIBEXEC_DIR@
 
     # call utility executable in libexec directory
-    ${libexec_dir}/util
-
-  where LIBEXEC_DIR is set in the BASIS ScriptConfig.cmake.in configuration file
+    ${_LIBEXEC_DIR}/util
+@endcode
+  where "@LIBEXEC_DIR@" is set in the BasisScriptConfig.cmake configuration file
   to either the output directory of auxiliary executables in the build tree relative
   to the directory of the script built for the build tree or to the path of the
   installed auxiliary executables relative to the location of the installed
@@ -69,20 +64,18 @@ RELATIVE VS. ABSOLUTE EXECUTABLE FILE PATHS
 
   If an executable in one directory wants to execute another executable in the same
   directory, it can simply do so as follows:
-
+@code
     # call other main executable
-    ${exec_dir}/othermain
+    ${_EXEC_DIR}/othermain
+@endcode
 
-
-
-EXECUTABLE FILE VS. BUILD TARGET NAMES
-======================================
+@section ExecPathVsTargetName Executable File vs. Build Target Name
 
   In order to be independent of the actual names of the executable files--which
   may vary depending on the operating system (e.g., with or without file name
   extension in case of script files) and the context in which a project was built
   (see Super- and Subprojects document)--executables should not be called by their
-  respective file name, but their (BASIS/CMake) build target name.
+  respective file name, but their build target name.
 
   It is in the responsibility of the BASIS auxiliary functions to properly map this
   project specific and (presumably) constant build target name to the absolute
@@ -94,10 +87,7 @@ EXECUTABLE FILE VS. BUILD TARGET NAMES
   configuration and does not require a modification of the source code files
   which make use of this executable.
 
-
-
-EXECUTABLE AND LIBRARY SEARCH PATHS
-===================================
+@section SystemSearchPaths Executable and Library Search Paths
 
   All considered operating systems--or more specifically the used shell and dynamic
   loader--provide certain ways to configure the search paths for executable files
@@ -106,9 +96,7 @@ EXECUTABLE AND LIBRARY SEARCH PATHS
   cons of each method to manipulate these search paths. Following these
   considerations, the solution aimed at by BASIS is detailed.
 
-
-  Unix-based Systems
-  ------------------
+@subsection UnixSearchPaths Unix
 
   On Unix-based systems (including in particular all variants of Linux and
   Mac OS X) executables are searched in directories specified by the PATH
@@ -123,7 +111,8 @@ EXECUTABLE AND LIBRARY SEARCH PATHS
   trivial or possible to set this search path in a way such that all used and
   installed software works correctly. There are many discussions on why this
   method of setting the search path is considered evil among the Unix community
-  (see for example [1]). The second option, to set the RPATH seems to be the
+  (see for example <a href="http://xahlee.org/UnixResource_dir/_/ldpath.html">here</a>).
+  The second option, to set the RPATH seems to be the
   most secure way to set the search path at compile time. This, however, only
   for shared libraries which are distributed and installed with the software
   because only in this case can we make use of the $ORIGIN variable in the
@@ -165,16 +154,15 @@ EXECUTABLE AND LIBRARY SEARCH PATHS
   during the packaging of the software and thus these packages should still
   not be integrated into the project's source tree.
 
-  Mac OS X bundles differ from the default Unix-like way of installing
-  software [2]. Here, an information property list file (Info.plist) is used
+  <a href="http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html">
+  Mac OS X bundles</a> differ from the default Unix-like way of installing
+  software. Here, an information property list file (Info.plist) is used
   to specify for each bundle separately the specific properties including
   the location of frameworks, i.e., private share libraries (shared libraries
   distributed with the bundle). Most shared libraries required by the software
   will be included in the bundle.
 
-
-  Windows
-  -------
+@subsection WindowsSearchPaths Windows
 
   On Windows systems, executable files are first searched in the current
   working directory. Then, the directories specified by the PATH environment
@@ -193,31 +181,44 @@ EXECUTABLE AND LIBRARY SEARCH PATHS
   installed in the same directory as the executables and hence will be considered
   by the operating system before any other shared libraries.
 
+@section CallingConventionsImpl Implementation by Supported Language
 
+  In the following the implementation of the calling conventions in each supported
+  programming languages is summarized.
 
-IMPLEMENTATION BY SUPPORTED LANGUAGE
-====================================
+  Note the BASIS utilities provide an execute_process() function for each of the
+  following programming languages which accepts either an executable file path or
+  a build target name as first argument of the command-line to execute. This
+  function makes use of the so-called ExecutableTargetInfo module of the
+  particular programming language whose implementation is summarized here.
 
-  C++
-  ---
+@subsection CxxCallingConventionsImpl C++
 
-  For C++ programs, the BASIS C++ utilities library provides the function
-  GetExecutablePath() which maps a build target name to the absolute path of
+  For C++ programs, the BASIS C++ utilities provide the function
+  get_executable_path() which maps a build target name to the absolute path of
   the executable file built by this target. This function makes use of the static
-  instance of the class sbia::<project>::ExecutableTargetInfo whose constructor
+  instance of the class sbia::basis::ExecutableTargetInfo whose constructor
   is automatically generated during the configuration of a project. This
   constructor initializes the data structures required for the mapping of
-  target names to absolute file paths.
+  target names to absolute file paths. Note that BASIS generates different
+  implementations of this module for different projects.
+  
+  The project implementations will, however, mainly make use of the
+  execute_process() function which accepts either an actual executable file
+  path or a build target name as first argument of the command-line to execute.
+  This function shall be used in C++ code as a substitution for the commonly
+  used system() function on Unix. The advantage of execute_process() is further,
+  that it is implemented for all operating systems which are supported by BASIS,
+  i.e., Linux, Mac OS X, and Windows. The declaration of the execute_process()
+  function can be found in the stdaux.h header file, which is included by
+  the main basis.h header file. Note that these files are as well unique
+  to each BASIS project build.
 
+@subsection JavaCallingConventionsImpl Java
 
-  Java
-  ----
+  @todo The Java programming language is not yet supported by BASIS.
 
-  TODO
-
-
-  Python
-  ------
+@subsection PythonCallingConventionsImpl Python
 
   A Python module named executabletargetinfo.py stores the location of the
   executables relative to its own path in a dictionary where the UIDs of the
@@ -227,9 +228,7 @@ IMPLEMENTATION BY SUPPORTED LANGUAGE
   executable file built by the specified target. If no target is specified,
   the name, directory, or path of the calling executable itself is returned.
 
-
-  Perl
-  ----
+@subsection PerlCallingConventionsImpl Perl
 
   The ExecutableTargetInfo.pm Perl module uses a hash reference to store the
   locations of the executable files relative to the module itself. The
@@ -239,9 +238,7 @@ IMPLEMENTATION BY SUPPORTED LANGUAGE
   If no target is specified, the name, directory, or path of the calling
   executable itself is returned.
 
-
-  BASH
-  ----
+@subsection BashCallingConventionsImpl Bash
 
   For BASH, the module executabletargetinfo.sh immidates associative arrays
   to store the location of the built executable files relative to this module.
@@ -262,10 +259,7 @@ IMPLEMENTATION BY SUPPORTED LANGUAGE
   A "shopt -u expand_aliases" disables the expansion of alises and hence should
   not be used in BASH scripts which execute other executables using these aliases.
 
-
-
-UNSUPPORTED LANGUAGES
-=====================
+@section UnsupportedCallingConventions Unsupported Languages
 
   In the following, languages for which the calling conventions are not implemented
   are listed. Reasons for not supporting these languages regarding the execution
@@ -274,23 +268,13 @@ UNSUPPORTED LANGUAGES
   may be added in future releases of BASIS. Please file a feature request on the
   SBIA Wiki page of BASIS if you need support for a yet unsupported language.
 
+@subsection MatlabCallingConventionsImpl MATLAB
 
-  MATLAB
-  ------
-
-  See [3] for a documentation of external interfaces MathWorks provides for the
-  development of applications in MATLAB. None of these interfaces includes the
-  direct execution of other executables using something like a system call.
+  Visit <a href="http://www.mathworks.com/help/techdoc/matlab_external/bp_kqh7.html">
+  this MathWorks page</a> for a documentation of external interfaces MathWorks
+  provides for the development of applications in MATLAB. None of these interfaces
+  includes the direct execution of other executables using something like a system call.
   There are better ways to execute code written in C++ or Java from MATLAB code.
   If you would need to execute a BASH or Python script from MATLAB, you need to
   rethink the design of your software.
-
-
-
-REFERENCES
-==========
-
-  [1] http://xahlee.org/UnixResource_dir/_/ldpath.html
-  [2] http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
-  [3] http://www.mathworks.com/help/techdoc/matlab_external/bp_kqh7.html
-
+*/

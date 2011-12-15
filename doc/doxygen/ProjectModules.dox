@@ -1,0 +1,33 @@
+/**
+ * @file  ProjectModules.dox
+ * @brief Documentation of project modularization.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@page ProjectModules Project Modularization
+
+@section ProjectModulesIntro Introduction
+
+  This article details the design and implementation of the project
+  modularization, where a project, also referred to as superproject
+  or top-level project (note that BASIS only allows one level of
+  submodularization), can have other projects as subprojects.
+
+  A superproject can also be viewed as the actual modularized project, where
+  each subproject is one module of this superproject which may depend on other
+  modules of the same superproject or external projects (also referred to as
+  packages). Note that an external project in this context can be another
+  super- or subproject implementing the same project modularization concept
+  as discussed herein, i.e., software developed at SBIA based on BASIS.
+  The idea, and partly the CMake implementation, has been borrowed from the
+  ITK 4 project.
+  See <a href="http://www.vtk.org/Wiki/ITK_Release_4/Modularization">
+  this</a> Wiki page for details on the ITK 4 Modularization.
+
+  @todo This page has to be written yet.
+*/
