@@ -115,7 +115,10 @@ void RegisterRequiredFactories()
 // This implementation of the image regression test was copied from the
 // Testing/Code/IO/ImageCompareCommand.cxx file of the ITK 3.20 release.
 // The function parameters have been changed such that the function prototype
-// is identical to the ITK 4 version of this function above.
+// is identical to the ITK 4 version of this function above. Moreover,
+// the output of the number of pixels with differences as ImageError
+// dart measurement has been adopted from the ITK 4 implementation to make
+// both implementations using either ITK 3 or ITK 4 more alike.
 int RegressionTestImage (const char* testImageFilename,
                          const char* baselineImageFilename,
                          int reportErrors,
@@ -191,6 +194,12 @@ int RegressionTestImage (const char* testImageFilename,
   unsigned long numberOfPixelsWithDifferences = 
                         diff->GetNumberOfPixelsWithDifferences();
 
+  //The measurement errors should be reported for both success and errors
+  //to facilitate setting tight tolerances of tests.
+  std::cout << "<DartMeasurement name=\"ImageError\" type=\"numeric/double\">";
+  std::cout << numberOfPixelsWithDifferences;
+  std::cout <<  "</DartMeasurement>" << std::endl;
+
   if( averageIntensityDifference > 0.0 )
     {
     if( numberOfPixelsWithDifferences > numberOfPixelsTolerance )
@@ -244,13 +253,7 @@ int RegressionTestImage (const char* testImageFilename,
     if(createDifferenceImage)
       {
       // if there are discrepencies, create an diff image
-      std::cout << "<DartMeasurement name=\"ImageError\" type=\"numeric/double\">";
-      std::cout << averageIntensityDifference;
-      std::cout <<  "</DartMeasurement>" << std::endl;
-
-      std::cout << "<DartMeasurement name=\"NumberOfPixelsError\" type=\"numeric/int\">";
-      std::cout << numberOfPixelsWithDifferences;
-      std::cout <<  "</DartMeasurement>" << std::endl;
+      
 
       itksys_ios::ostringstream diffName;
       diffName << testImageFilename << ".diff.png";
