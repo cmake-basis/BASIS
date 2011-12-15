@@ -1,21 +1,11 @@
 /**
 @defgroup BasisModules BASIS CMake
 @brief    BASIS CMake modules.
-
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 */
 
 /**
 @defgroup BasisSettings BASIS Settings
 @brief    CMake modules defining settings for BASIS.
-
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 @ingroup BasisModules
 */
@@ -24,11 +14,6 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 @defgroup BasisConfig Package Configuration
 @brief    CMake package configuration.
 
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-
 @ingroup BasisModules
 */
 
@@ -36,22 +21,12 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 @defgroup BasisDirectories Project Directories
 @brief    CMake variables of project directories.
 
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-
 @ingroup BasisModules
 */
 
 /**
 @defgroup BasisScriptConfig Script Configuration
 @brief    Script configuration as used for build of script targets.
-
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 @ingroup BasisModules
 */
