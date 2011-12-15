@@ -43,6 +43,21 @@
             oldcoutbuf  = cout.rdbuf();
             cout.rdbuf(redirectbuf);
         }
+        // remove all test output images if existent from previous test run
+        for (size_t i = 0; i < compare.getValue().size(); i += 2) {
+            const char* test_filename = compare.getValue()[i].c_str();
+            if (is_file(test_filename)) {
+                if (remove(test_filename) == 0) {
+                    if (verbose.getValue() > 0) {
+                        cout << "Removed already existing output image "
+                             << test_filename << endl;
+                    }
+                } else {
+                    cerr << "Warning: Failed to remove already existing output image "
+                         << test_filename << endl;
+                }
+            }
+        }
         // execute test in a try block
         // [...]
     // #include <sbia/basis/testdriver-after-test.inc>

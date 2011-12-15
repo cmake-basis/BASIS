@@ -40,47 +40,49 @@
             redirectstream.close();
         }
         // perform regression tests of output image(s)
-        if (!compare.getValue().empty() && verbose.getValue() > 0) {
-            cout << "Performing regression tests" << endl;
-        }
-        for (size_t i = 0; i < compare.getValue().size(); i += 2) {
-            const char* test_filename     = compare.getValue()[i].c_str();
-            const char* baseline_filename = compare.getValue()[i + 1].c_str();
-            vector<string> baselines = get_baseline_filenames(baseline_filename);
-            string bestmatch;
-            int    beststatus = numeric_limits<int>::max();
-            for (size_t i = 0; i < baselines.size(); i++) {
-                int status = image_regression_test(
-                        test_filename,
-                        baselines[i].c_str(),
-                        intensity_tolerance.getValue(),
-                        max_number_of_differences.getValue(),
-                        tolerance_radius.getValue());
-                if (status < beststatus) {
-                    bestmatch  = baselines[i];
-                    beststatus = status;
-                }
-                if (beststatus == 0) {
-                    // perfect test result
-                    break;
-                }
+        if (result == 0) {
+            if (!compare.getValue().empty() && verbose.getValue() > 0) {
+                cout << "Performing regression tests" << endl;
             }
-            // if the best we can do still has errors...
-            if (beststatus != 0) {
-                image_regression_test(
-                        test_filename,
-                        baselines[0].c_str(),
-                        intensity_tolerance.getValue(),
-                        max_number_of_differences.getValue(),
-                        tolerance_radius.getValue(),
-                        1); // ...generate error images
-            }
-            // output the matching baseline for submission to the dashboard
-            cout << "<DartMeasurement name=\"BaselineImageName\" type=\"text/string\">";
-            cout << get_file_name(bestmatch);
-            cout << "</DartMeasurement>" << std::endl;
+            for (size_t i = 0; i < compare.getValue().size(); i += 2) {
+                const char* test_filename     = compare.getValue()[i].c_str();
+                const char* baseline_filename = compare.getValue()[i + 1].c_str();
+                vector<string> baselines = get_baseline_filenames(baseline_filename);
+                string bestmatch;
+                int    beststatus = numeric_limits<int>::max();
+                for (size_t i = 0; i < baselines.size(); i++) {
+                    int status = image_regression_test(
+                            test_filename,
+                            baselines[i].c_str(),
+                            intensity_tolerance.getValue(),
+                            max_number_of_differences.getValue(),
+                            tolerance_radius.getValue());
+                    if (status < beststatus) {
+                        bestmatch  = baselines[i];
+                        beststatus = status;
+                    }
+                    if (beststatus == 0) {
+                        // perfect test result
+                        break;
+                    }
+                }
+                // if the best we can do still has errors...
+                if (beststatus != 0) {
+                    image_regression_test(
+                            test_filename,
+                            baselines[0].c_str(),
+                            intensity_tolerance.getValue(),
+                            max_number_of_differences.getValue(),
+                            tolerance_radius.getValue(),
+                            1); // ...generate error images
+                }
+                // output the matching baseline for submission to the dashboard
+                cout << "<DartMeasurement name=\"BaselineImageName\" type=\"text/string\">";
+                cout << get_file_name(bestmatch);
+                cout << "</DartMeasurement>" << std::endl;
 
-            result += beststatus;
+                result += beststatus;
+            }
         }
 
     // catch any exceptions
@@ -92,5 +94,4 @@
         cerr << "Test driver caught an unknown exception!!!\n";
         result = -1;
     }
-    return result;
 //} end of main()

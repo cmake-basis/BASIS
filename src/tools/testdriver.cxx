@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
     // parse command-line arguments
     testdriversetup(&argc, &argv);
 
+    // setup test
+    #include <sbia/basis/testdriver-before-test.inc>
+
     // run test subprocess
     if (testcmd.isSet()) {
         if (verbose.getValue() > 0) {
@@ -34,10 +37,7 @@ int main(int argc, char *argv[])
     }
 
     // perform regression tests
-    if (result == 0) {
-        #include <sbia/basis/testdriver-before-test.inc>
-        #include <sbia/basis/testdriver-after-test.inc>
-    }
+    #include <sbia/basis/testdriver-after-test.inc>
  
     return result;
 }

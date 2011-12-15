@@ -72,6 +72,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <cstdio> // remove() - removes a file
 
 #include <sbia/basis/config.h>
 #include <sbia/basis/except.h>

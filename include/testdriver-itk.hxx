@@ -114,11 +114,10 @@ void RegisterRequiredFactories()
 // ---------------------------------------------------------------------------
 // This implementation of the image regression test was copied from the
 // Testing/Code/IO/ImageCompareCommand.cxx file of the ITK 3.20 release.
-// The function parameters have been changed such that the function prototype
-// is identical to the ITK 4 version of this function above. Moreover,
-// the output of the number of pixels with differences as ImageError
-// dart measurement has been adopted from the ITK 4 implementation to make
-// both implementations using either ITK 3 or ITK 4 more alike.
+// Then the function has been modified such that first of all the function
+// prototype matches the one of the corresponding function of the ITK 4
+// TestKernel module and furthermore the generation of the reports is
+// identical as well.
 int RegressionTestImage (const char* testImageFilename,
                          const char* baselineImageFilename,
                          int reportErrors,
@@ -126,8 +125,6 @@ int RegressionTestImage (const char* testImageFilename,
                          unsigned int numberOfPixelsTolerance,
                          unsigned int radiusTolerance)
 {
-  const bool createDifferenceImage = reportErrors > 0; // former function parameter
-
   // Use the factory mechanism to read the test and baseline files and convert them to double
   typedef itk::Image<double,ITK_TEST_DIMENSION_MAX>         ImageType;
   typedef itk::Image<unsigned char,ITK_TEST_DIMENSION_MAX>  OutputType;
@@ -216,7 +213,7 @@ int RegressionTestImage (const char* testImageFilename,
     differenceFailed = false; 
     }
   
-  if (reportErrors)
+  if (differenceFailed && reportErrors)
     {
     typedef itk::RescaleIntensityImageFilter<ImageType,OutputType>    RescaleType;
     typedef itk::ExtractImageFilter<OutputType,DiffOutputType>        ExtractType;
@@ -249,47 +246,43 @@ int RegressionTestImage (const char* testImageFilename,
     extract->SetExtractionRegion(region);
 
     WriterType::Pointer writer = WriterType::New();
-      writer->SetInput(extract->GetOutput());
-    if(createDifferenceImage)
+    writer->SetInput(extract->GetOutput());
+
+    itksys_ios::ostringstream diffName;
+    diffName << testImageFilename << ".diff.png";
+    try
       {
-      // if there are discrepencies, create an diff image
-      
-
-      itksys_ios::ostringstream diffName;
-      diffName << testImageFilename << ".diff.png";
-      try
-        {
-        rescale->SetInput(diff->GetOutput());
-        rescale->Update();
-        }
-      catch(const std::exception& e)
-        {
-        std::cerr << "Error during rescale of " << diffName.str() << std::endl;
-        std::cerr << e.what() << "\n";
-        }
-      catch (...)
-        {
-        std::cerr << "Error during rescale of " << diffName.str() << std::endl;
-        }
-      writer->SetFileName(diffName.str().c_str());
-      try
-        {
-        writer->Update();
-        }
-      catch(const std::exception& e)
-        {
-        std::cerr << "Error during write of " << diffName.str() << std::endl;
-        std::cerr << e.what() << "\n";
-        }
-      catch (...)
-        {
-        std::cerr << "Error during write of " << diffName.str() << std::endl;
-        }
-
-      std::cout << "<DartMeasurementFile name=\"DifferenceImage\" type=\"image/png\">";
-      std::cout << diffName.str();
-      std::cout << "</DartMeasurementFile>" << std::endl;
+      rescale->SetInput(diff->GetOutput());
+      rescale->Update();
       }
+    catch(const std::exception& e)
+      {
+      std::cerr << "Error during rescale of " << diffName.str() << std::endl;
+      std::cerr << e.what() << "\n";
+      }
+    catch (...)
+      {
+      std::cerr << "Error during rescale of " << diffName.str() << std::endl;
+      }
+    writer->SetFileName(diffName.str().c_str());
+    try
+      {
+      writer->Update();
+      }
+    catch(const std::exception& e)
+      {
+      std::cerr << "Error during write of " << diffName.str() << std::endl;
+      std::cerr << e.what() << "\n";
+      }
+    catch (...)
+      {
+      std::cerr << "Error during write of " << diffName.str() << std::endl;
+      }
+
+    std::cout << "<DartMeasurementFile name=\"DifferenceImage\" type=\"image/png\">";
+    std::cout << diffName.str();
+    std::cout << "</DartMeasurementFile>" << std::endl;
+
     itksys_ios::ostringstream baseName;
     baseName << testImageFilename << ".base.png";
     try
@@ -359,7 +352,6 @@ int RegressionTestImage (const char* testImageFilename,
     std::cout << "<DartMeasurementFile name=\"TestImage\" type=\"image/png\">";
     std::cout << testName.str();
     std::cout << "</DartMeasurementFile>" << std::endl;
-
 
     }
   return differenceFailed;
