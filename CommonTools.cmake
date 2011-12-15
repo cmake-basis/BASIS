@@ -104,6 +104,9 @@ macro (basis_find_package PACKAGE)
     set (PKG "${CMAKE_MATCH_1}")
     set (VER "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
   endif ()
+  # preserve <PKG>_DIR variable which might get reset if different versions
+  # of the package are searched
+  set (PKG_DIR "${${PKG}_DIR}")
   # some debugging output
   if (BASIS_DEBUG)
     message ("** basis_find_package()")
@@ -183,6 +186,11 @@ macro (basis_find_package PACKAGE)
       endif ()
     endif ()
   endif ()
+  # reset <PKG>_DIR variable for possible next find with differing version
+  if (PKG_DIR AND NOT ${PKG}_DIR)
+    set (${PKG}_DIR "${PKG_DIR}")
+  endif ()
+  unset (PACKAGE_DIR)
   unset (PKG)
   unset (PKG_UPPER)
   unset (VER)
