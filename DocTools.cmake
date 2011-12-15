@@ -632,6 +632,7 @@ function (basis_add_doc TARGET_NAME)
     set (DOXYGEN_FILTER_PATTERNS "\"${DOXYGEN_FILTER_PATTERNS}\"")
     # exclude patterns
     list (APPEND DOXYGEN_EXCLUDE_PATTERNS "cmake_install.cmake")
+    list (APPEND DOXYGEN_EXCLUDE_PATTERNS "CTestTestfile.cmake")
     basis_list_to_delimited_string (
       DOXYGEN_EXCLUDE_PATTERNS "\"\nEXCLUDE_PATTERNS      += \"" ${DOXYGEN_EXCLUDE_PATTERNS}
     )
