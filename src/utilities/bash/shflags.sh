@@ -98,8 +98,6 @@
 # All Rights Reserved.
 #
 # Released under the LGPL (GNU Lesser General Public License)
-#
-# @ingroup BasisBashUtilities
 
 # return if FLAGS already loaded
 [ -n "${FLAGS_VERSION:-}" ] && return 0

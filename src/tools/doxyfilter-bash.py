@@ -27,7 +27,7 @@ if __name__ == "__main__":
         sys.exit (1)
     # compile regular expressions
     reShaBang       = re.compile (r"#!\s*/usr/bin/env\s+bash$|#!\s*/bin/bash$")
-    reInclude       = re.compile (r"source\s+[\"']?(?P<module>.+)[\"']?$")
+    reInclude       = re.compile (r"source\s+[\"']?(?P<module>[^#|&]+)[\"']?(\s*#.*)?$")
     reFunctionStart = re.compile (r"function\s*(?P<name1>\w+)\s*{?|(?P<name2>\w+)\s*\(\s*\)\s*{?\s*$")
     reFunctionEnd   = re.compile (r"}$")
     reCommentStart  = re.compile (r"##+(?P<comment>.*)$")
@@ -78,8 +78,11 @@ if __name__ == "__main__":
             if m is not None:
                 module = m.group ('module')
                 module = module.replace ("\"", "")
+                module = module.replace ("/./", "/")
+                module = module.replace ("${_BASIS_DIR}/", "")
                 module = module.replace ("$(get_executable_directory)/", "")
                 module = module.replace ("$exec_dir/", "")
+                module = module.replace ("${exec_dir}/", "")
                 sys.stdout.write ("#include \"" + module + "\"\n")
                 continue
             # enter if-clause

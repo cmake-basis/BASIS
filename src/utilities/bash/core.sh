@@ -7,12 +7,10 @@
 # has to be kept independent of any other modules and shall only make use
 # of BASH builtin's and basic commands.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#
-# @ingroup BasisBashUtilities
 ##############################################################################
 
 # return if already loaded

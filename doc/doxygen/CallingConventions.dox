@@ -73,9 +73,9 @@
 
   In order to be independent of the actual names of the executable files--which
   may vary depending on the operating system (e.g., with or without file name
-  extension in case of script files) and the context in which a project was built
-  (see Super- and Subprojects document)--executables should not be called by their
-  respective file name, but their build target name.
+  extension in case of script files) and the context in which a project was
+  built--executables should not be called by their respective file name,
+  but their build target name.
 
   It is in the responsibility of the BASIS auxiliary functions to properly map this
   project specific and (presumably) constant build target name to the absolute
@@ -112,7 +112,7 @@
   installed software works correctly. There are many discussions on why this
   method of setting the search path is considered evil among the Unix community
   (see for example <a href="http://xahlee.org/UnixResource_dir/_/ldpath.html">here</a>).
-  The second option, to set the RPATH seems to be the
+  The second option of setting the RPATH seems to be the
   most secure way to set the search path at compile time. This, however, only
   for shared libraries which are distributed and installed with the software
   because only in this case can we make use of the $ORIGIN variable in the
@@ -150,7 +150,9 @@
   This is in the responsibility of the administrator of the target system.
   However, by including most external packages into the distributed binary
   package, these become part of the software package and thus above methods
-  apply. Note that the inclusion of the runtime requirements should be done
+  apply.
+  
+  @note The inclusion of the runtime requirements should be done
   during the packaging of the software and thus these packages should still
   not be integrated into the project's source tree.
 
@@ -158,7 +160,7 @@
   Mac OS X bundles</a> differ from the default Unix-like way of installing
   software. Here, an information property list file (Info.plist) is used
   to specify for each bundle separately the specific properties including
-  the location of frameworks, i.e., private share libraries (shared libraries
+  the location of frameworks, i.e., private shared libraries (shared libraries
   distributed with the bundle). Most shared libraries required by the software
   will be included in the bundle.
 
@@ -171,23 +173,23 @@
   included in the name of the executable that is to be executed. Shared libraries,
   on the other side, are first searched in the directory where the using module
   is located, then in the current working directory, the Windows system directory
-  (e.g., C:\WINDOWS\system32\), and then the Windows installation directory
-  (e.g., C:\WINDOWS). Finally, the directories specified by the PATH environment
+  (e.g., "C:\WINDOWS\system32\"), and then the Windows installation directory
+  (e.g., "C:\WINDOWS"). Finally, the directories specified by the PATH environment
   variable are searched for the shared libraries.
 
   As described in the previous sections, executables which are part of the
   software package are called by the full absolute path and hence no search path
-  is considered. Further, shared libraries belonging to the software package are
-  installed in the same directory as the executables and hence will be considered
-  by the operating system before any other shared libraries.
+  is considered. Further, shared runtime libraries belonging to the software package
+  are installed in the same directory as the executables and hence will be
+  considered by the operating system before any other shared libraries.
 
 @section CallingConventionsImpl Implementation by Supported Language
 
   In the following the implementation of the calling conventions in each supported
-  programming languages is summarized.
+  programming language is summarized.
 
-  Note the BASIS utilities provide an execute_process() function for each of the
-  following programming languages which accepts either an executable file path or
+  Note that the BASIS utilities provide an execute_process() function for each
+  of these languages which accepts either an executable file path or
   a build target name as first argument of the command-line to execute. This
   function makes use of the so-called ExecutableTargetInfo module of the
   particular programming language whose implementation is summarized here.

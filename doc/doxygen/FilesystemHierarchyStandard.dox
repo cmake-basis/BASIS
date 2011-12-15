@@ -22,9 +22,8 @@ possible to account for the differences in both Unix and Windows systems as
 well as the installation of multiple versions of each package. Furthermore,
 the directory structure by default integrates software developed at SBIA not
 only seamlessly into the target system but also the various separately managed
-SBIA software packages with each other. The latter is in particular employed
-by the superproject concept, also referred to as super-build. The superproject
-concept is described in the document "Super- And Subprojects.txt".
+SBIA software packages with each other. The latter can in particular be
+employed by a superproject concept based on a super-build.
 
 In this document, names of CMake variables defined by the BASIS modules are
 given. These are used within the CMake modules to refer to the particular
@@ -34,31 +33,33 @@ directory names does not require a modification of the software itself.
 
 @subsection Legend
 
-In the reminder, <project> is a placeholder for the project name in lowercase
-letters only and <Project> is the case-sensitive project name.
+In the reminder, &lt;project&gt; is a placeholder for the project name in lowercase
+letters only and &lt;Project&gt; is the case-sensitive project name.
  
-Further, <version> is a placeholder for the project version string
-"<major>.<minor>.<patch>", where <major> is the major version number, <minor>
-the minor version number, and <patch> the patch number.
+Further, &lt;version&gt; is a placeholder for the project version string
+"<major>.<minor>.<patch>", where &lt;major&gt; is the major version number,
+&lt;minor&gt; the minor version number, and &lt;patch&gt; the patch number.
 
-The root directory of a particular project source tree is denoted by <source>,
-while the root directory of the project binary tree is referred to as <build>.
+The root directory of a particular project source tree is denoted by &lt;source&gt;,
+while the root directory of the project binary tree is referred to as &lt;build&gt;.
 Note that each software project consists of more than one project components
 (not identical to, but related with software package components).
 Each component can be downloaded, configured, build, and installed separately.
 See design-components file and section Source Tree for details.
 
 The root directory of a development branch such as in particular the trunk
-(cf. section Repository Organization), is considered relative to the base URL of the
-project repository and denoted by <tag>, while the base URL is referred to as <url>.
+(cf. section Repository Organization), is considered relative to the base URL
+of the project repository and denoted by &lt;tag&gt;, while the base URL is
+referred to as &lt;url&gt;.
 
 @section RepositoryOrganization Repository Organization
 
 The URL of the project repository is "https://sbia-svn/projects/<Project>".
 The top-level directories "trunk", "branches", and "tags" of the project named
-<Project> are located here. No other directories may be located next to these
+&lt;Project&gt; are located here. No other directories may be located next to these
 three top-level directories.
 
+@verbatim
 - trunk/                      The current development version of the project.
                               Most development is done in this master branch.
 
@@ -88,6 +89,7 @@ three top-level directories.
                               directory named <project>-<version>/.
 
                                 $ svn export <url>/tags/<project>-<version>
+@endverbatim
 
 See the "How to Branch and Release.txt" document for details on how to create
 new branches and the process of releasing a new version of a software project.
@@ -260,11 +262,11 @@ Note that the include directory by intention always ends in "sbia/<project>",
 such that header files of a project have to be included as follows:
 
 @code
-#include <sbia/<project>/SomeHeader.h>
+#include <sbia/project/SomeHeader.h>
 @endcode
 
 Hence, the include directory which is added to the search path has to be set
-to <prefix>/include/. 
+to &lt;prefix&gt;/include/. 
 
 @subsection InstallTreeDescription Description
 
