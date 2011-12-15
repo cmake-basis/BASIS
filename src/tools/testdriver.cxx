@@ -28,6 +28,10 @@ int main(int argc, char *argv[])
             cout << "$ " << Subprocess::tostring(testcmd.getValue()) << endl;
         }
         result = Subprocess::call(testcmd.getValue());
+        if (result == -1) {
+            cerr << "Failed to run/terminate test process!" << endl;
+            return 1;
+        }
     }
 
     // perform regression tests
