@@ -285,11 +285,13 @@ function schedule_date
 {
     local retval=$(date '+%Y-%m-%d %T')
     idx=0
-    num=${#schedule[@]}
-    while [ ${idx} -lt ${num} ]; do
+    numtests=${#schedule[@]}
+    while [ ${idx} -lt ${numtests} ]; do
         parts=(${schedule[${idx}]})
-        num=${#parts[@]}
-        if [ ${num} -lt 5 -o ${num} -gt 6 ]; then continue; fi
+        numparts=${#parts[@]}
+        if [ ${numparts} -lt 5 -o ${numparts} -gt 6 ]; then
+            continue
+        fi
         if [    "${parts[2]}" == "$1" \
              -a "${parts[3]}" == "$2" \
              -a "${parts[4]}" == "$3" \
@@ -361,7 +363,7 @@ while [ $# -gt 0 ]; do
 		-h|--help)    print_help; exit 0; ;;
 		-u|--usage)   print_helpshort; exit 0; ;;
         -V|--version) print_version "@NAME@"; exit 0; ;;
-        -v|--verbose) (( verbosity++ )); ;;
+        -v|--verbose) (( verbose++ )); ;;
 
         # invalid option
         *)
