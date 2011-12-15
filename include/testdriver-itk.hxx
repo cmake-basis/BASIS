@@ -120,8 +120,8 @@ int RegressionTestImage (const char* testImageFilename,
                          const char* baselineImageFilename,
                          int reportErrors,
                          double intensityTolerance,
-                         unsigned int radiusTolerance,
-                         unsigned int numberOfPixelsTolerance)
+                         unsigned int numberOfPixelsTolerance,
+                         unsigned int radiusTolerance)
 {
   const bool createDifferenceImage = reportErrors > 0; // former function parameter
 
