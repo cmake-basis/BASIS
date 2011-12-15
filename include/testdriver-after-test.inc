@@ -79,9 +79,6 @@
 
             result += beststatus;
         }
-        if (verbose.getValue() > 0) {
-            cout << "Performing regression tests... - done: result = " << result << endl;
-        }
 
     // catch any exceptions
     } catch (const exception& e) {
