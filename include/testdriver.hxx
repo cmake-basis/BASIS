@@ -15,6 +15,10 @@
 
 #if WINDOWS
 #  include <Winsock2.h> // gethostbyname()
+#  ifdef max
+#    undef max
+#  endif
+#  pragma comment(lib, "Ws2_32.lib")
 #else
 #  include <netdb.h> // gethostbyname()
 #endif
@@ -126,7 +130,7 @@ void testdriversetup(int* argc, char** argv[])
         #if WINDOWS
             WSADATA wsaData;
             WSAStartup(MAKEWORD(2, 2), &wsaData);
-            gethostname(hostnam, sizeof(hostname));
+            gethostname(hostname, sizeof(hostname));
             WSACleanup();
         #else
             gethostname(hostname, sizeof(hostname));

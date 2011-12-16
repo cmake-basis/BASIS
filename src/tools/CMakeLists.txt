@@ -39,6 +39,9 @@ endif ()
 basis_add_executable (testdriver.cxx)
 basis_set_target_properties (testdriver PROPERTIES OUTPUT_NAME "basistest-driver")
 basis_target_link_libraries (testdriver ${ITK_LIBRARIES})
+if (WIN32)
+  basis_target_link_libraries (testdriver Ws2_32)
+endif ()
 
 if (ITK_FOUND)
   basis_set_target_properties (

@@ -73,6 +73,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio> // remove() - removes a file
+#include <limits> // used in basistest-after-test.inc
 
 #include <sbia/basis/config.h>
 #include <sbia/basis/except.h>
