@@ -129,15 +129,22 @@ file (RELATIVE_PATH CODE_DIR    "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
 file (RELATIVE_PATH INCLUDE_DIR "@PROJECT_BINARY_DIR@" "@BINARY_INCLUDE_DIR@")
 
 ## @brief Exclude certain files from coverage analysis.
+#
+# Note that the expression here are regular expressions, not globbing
+# expressions as in case of CTEST_EXTRA_COVERAGE_GLOB.
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
     ${CTEST_CUSTOM_COVERAGE_EXCLUDE} # keep current exclude expressions
-    "./test/*"
-    "./modules/*/test/*"
+    "/CMakeFiles/CMakeTmp/"          # exclude try_compile sources
+    "./test/.*"                      # exclude test implementations
+    "./modules/.*/test/.*"           # exclude test implementations of modules
     # add further exclude expressions here
 )
 
 ## @brief Specify additional files which should be considered for coverage report.
+#
+# Note that the expressions here are globbing expression as interpreted
+# by CMake's file(GLOB) command, not regular expressions.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
 foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB

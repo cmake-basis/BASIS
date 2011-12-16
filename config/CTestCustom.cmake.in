@@ -131,27 +131,36 @@ file (RELATIVE_PATH INCLUDE_DIR "@PROJECT_BINARY_DIR@" "@BINARY_INCLUDE_DIR@")
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
     ${CTEST_CUSTOM_COVERAGE_EXCLUDE} # keep current exclude expressions
-    "./test/*"
-    "./modules/*/test/*"
+    "/CMakeFiles/CMakeTmp/"          # exclude try_compile sources
+    "./test/.*"                      # exclude test implementations
+    "./modules/.*/test/.*"           # exclude test implementations of modules
     # add further exclude expressions here
+    "/gtest/"                        # tested by Google
+    "/gmock/"                        # tested by Google
+    "test.cxx"                       # tested by Google
+    "test_main.cxx"                  # tested by Google
+    "/except.h"                      # only macro definitions
 )
 
 ## @brief Specify additional files which should be considered for coverage report.
+#
+# Note that the expressions here are globbing expression as interpreted
+# by CMake's file(GLOB) command, not regular expressions.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
 foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "./${CODE_DIR}/*${E}"
+    "./${CODE_DIR}/.*${E}"
   )
 endforeach ()
 foreach (E IN ITEMS .txx .hxx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "./${INCLUDE_DIR}/*${E}"
+    "./${INCLUDE_DIR}/.*${E}"
   )
 endforeach ()
 foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
   foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "./${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
+      "./${MODULES_DIR}/${M}/${CODE_DIR}/.*${E}"
     )
   endforeach ()
 endforeach ()
