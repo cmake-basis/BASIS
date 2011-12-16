@@ -11,6 +11,7 @@
 
 #include <stdexcept>
 
+#include <sbia/basis/config.h> // WINDOWS, UNIX macros
 #include <sbia/basis/test.h> // unit testing framework
 #include <sbia/basis/path.h> // testee
 
