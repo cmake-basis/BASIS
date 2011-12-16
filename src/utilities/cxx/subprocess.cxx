@@ -9,7 +9,7 @@
  */
 
 
-#include <sbia/basis/config.h> // platform macros - must be first
+#include <sbia/basis/config.h> // WINDOWS, UNIX,... macros
 
 #include <iostream>
 
