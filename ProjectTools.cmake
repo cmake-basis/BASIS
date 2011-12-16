@@ -740,12 +740,10 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # project()
 
-  # note that in particular SlicerConfig.cmake will invoke project() by itself
-  if (NOT PROJECT_SOURCE_DIR OR NOT "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+  # note that SlicerConfig.cmake will invoke project() by itself
+  if (NOT Slicer_FOUND)
     project ("${PROJECT_NAME}")
   endif ()
-
-  set (CMAKE_PROJECT_NAME "${PROJECT_NAME}") # variable used by CPack
 
   # convert project name to upper and lower case only, respectively
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
