@@ -81,10 +81,13 @@ def get_target_uid(target):
     prefix = '@PROJECT_NAMESPACE_CMAKE@'
     # try prepending namespace or parts of it until target is known
     separator = '.'
-    while separator != '':
+    while True:
         if separator.join([prefix, target]) in _locations:
             return separator.join([prefix, target])
-        (prefix, separator, n) = prefix.partition(separator)
+        parts = prefix.split(separator, 1)
+        if len(parts) == 1:
+            break
+        prefix = parts[0]
     # otherwise, return target name unchanged
     return target
 

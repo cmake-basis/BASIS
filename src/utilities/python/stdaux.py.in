@@ -32,7 +32,7 @@ import subprocess # execution of external command
 import shlex      # used to split() quoted command-line
 import re         # to see if string contains whitespaces
 
-from .executabletargetinfo import get_executable_path
+from @PROJECT_NAMESPACE_PYTHON@.executabletargetinfo import get_executable_path
 
 
 ## @addtogroup BasisPythonUtilities
