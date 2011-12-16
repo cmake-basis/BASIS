@@ -108,7 +108,7 @@ basis_install (
 file (GLOB MODULES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
 
 foreach (F IN LISTS MODULES)
-  if (NOT F MATCHES "^(CMakeLists\\.txt|\\..*|.*\\.bak|uninstall)$")
+  if (NOT F MATCHES "^(CMakeLists\\.txt|\\..*|.*\\.bak|.*~|uninstall)$")
     list (FIND CMAKE_MODULES "${F}" IDX)
     if (IDX EQUAL -1)
       list (FIND CMAKE_MODULES_AUXILIARY_FILES "${F}" IDX)
