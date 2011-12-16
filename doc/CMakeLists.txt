@@ -63,7 +63,6 @@ basis_add_doc (
 
 basis_add_doc ("INSTALL-basis.txt") # common installation instructions
 
-basis_add_doc ("guides")    # how-to and style guides
 basis_add_doc ("tutorials") # tutorial presentations
 
 # ============================================================================
