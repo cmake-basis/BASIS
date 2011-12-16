@@ -34,6 +34,8 @@ cmake_test (test_string_manipulation)
 
 # ----------------------------------------------------------------------------
 # test use MATLAB Compiler and MEX-script
-if (MATLAB_FOUND)
+if (UNIX AND MATLAB_FOUND)
+  # TODO Implement basisproject tool in Python such that it can be used
+  #      by these tests also on Windows.
   basis_add_test (test_matlabtools.py)
 endif ()

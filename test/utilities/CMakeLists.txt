@@ -24,4 +24,8 @@ basis_add_test (parseargs-version COMMAND parseargs --version)
 
 # ----------------------------------------------------------------------------
 # project-specific utilities
-basis_add_test (test_utilities.py)
+if (UNIX)
+  # TODO Implement basisproject tool in Python such that it can be used
+  #      by these tests also on Windows.
+  basis_add_test (test_utilities.py)
+endif ()
