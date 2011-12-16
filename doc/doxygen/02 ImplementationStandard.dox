@@ -1,0 +1,16 @@
+/**
+ * @file  ImplementationStandard.dox
+ * @brief The software imlementation standard.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@page ImplementationStandard Software Implementation Standard
+
+- @subpage CmdLineParsing
+- @subpage CallingConventions
+*/

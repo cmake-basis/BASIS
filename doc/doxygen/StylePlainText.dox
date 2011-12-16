@@ -1,3 +1,21 @@
+/**
+ * @file  HowToDocument.dox
+ * @brief How to document software.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@page StylePlainText Style Guide for Plain Text Files
+
+See the following guide which itself is styled according to plain text format
+it describes for details on how plain text documentation files of a software
+project shall be formatted.
+
+@verbatim
 
   Section of Biomedical Image Analysis
   Department of Radiology
@@ -86,3 +104,5 @@ ENUMERATIONS
 ============
 
   Use -, +, and * characters as bullet points.
+@endverbatim
+*/

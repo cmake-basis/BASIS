@@ -24,7 +24,7 @@ cross-platform, open-source build system. The previously known
 <a href="https://sbia-svn.uphs.upenn.edu/projects/Development_Project_Templates/CMakeProjectTemplate/">CMake Project Template</a>
 was entirely reworked and became a major component of BASIS.
 In fact, the BASIS project evolved from this initial project template
-and greatly improved it. See section @ref SoftwareProjectTemplate
+and greatly improved it. See section @ref ProjectTemplate
 of the @ref BuildSystemStandard page for a description of the template.
 
 Projects following the standard include the BASIS modules and are hence

@@ -1,0 +1,19 @@
+/**
+ * @file  HowToPackage.dox
+ * @brief How to create source and binary packages.
+ *
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+ *
+ * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ */
+
+/**
+@page HowToPackage How to Package Software
+
+@section HowToPackageIntro Introduction
+
+  This document describes the packaging of BASIS projects.
+
+  @todo This how-to guide has to be written yet.
+*/

@@ -1,5 +1,5 @@
 /**
- * @file  SoftwareProjectTemplate.dox
+ * @file  ProjectTemplate.dox
  * @brief Documentation of software project template.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
@@ -9,7 +9,7 @@
  */
 
 /**
-@page SoftwareProjectTemplate Software Project Template
+@page ProjectTemplate Software Project Template
 
 @section ProjectTemplateIntro Introduction
 
