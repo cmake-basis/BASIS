@@ -771,8 +771,6 @@ macro (basis_project_initialize)
       PROJECT_VERSION_PATCH
   )
 
-  # combine version numbers to version strings (also ensures consistency)
-  set (PROJECT_VERSION   "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
   set (PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
   # version information string
