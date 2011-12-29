@@ -58,13 +58,22 @@ INTRODUCTION
   (http://www.kitware.com/products/html/BuildingExternalProjectsWithCMake2.8.html).
   [TODO: This feature is not yet implemented!]
 
-  Another feature of BASIS is, that it not only eases the developement and
-  maintenance of separatly managed software projects, but also enables the fusion
-  of these more or less independently developed software packages into so-called
-  superprojects following the super-build methodology which more recently gained
-  more and more attraction in the CMake community. In this context, the separately
-  managed software packages are considered components of the superproject.
+  Another feature of BASIS is, that it not only eases the development and
+  maintenance of separately managed software projects, but also enables the
+  fusion of these more or less independently developed software packages into
+  so-called superprojects following the super-build methodology which more
+  recently gained more and more attraction in the CMake community.
+  In this context, the separately managed software packages are considered
+  components of the superproject.
   [TODO: This feature is not yet implemented!]
+
+  Besides the super-build of BASIS projects, BASIS provides an implementation
+  of a tighter coupling of software components. Here, the top-level project
+  (i.e., the superproject) contains other BASIS projects as modules, and these
+  modules define the dependencies to the other modules of the project. When the
+  superproject is configured, only the required modules can be selected and
+  only these will be build and installed. This type of modularization follows
+  the example of the ITK 4 project [2].
 
 
 
@@ -101,7 +110,7 @@ COMPONENTS
   - BasisPack.cmake      Replacement for the CPack.cmake module of CMake.
 
   A comprehensive documentation of these modules and the functions and macros
-  defined by them is available as part of the BASIS API documentation [4].
+  defined by them is available as part of the BASIS API documentation [5].
 
 
   Tools
@@ -190,14 +199,14 @@ DOCUMENTATION
 
   The PowerPoint 2007 presentation named "BASIS Tutorial - 01 Introduction.pptx"
   gives a more detailed and in parts visual introduction of the BASIS project.
-  It can be found on the SBIA Wiki [2] and the doc/tutorials/ directory of the
+  It can be found on the SBIA Wiki [3] and the doc/tutorials/ directory of the
   BASIS package. Further tutorials can be found here as well.
 
   See the plain text documents in the doc/standard/  and doc/guides/ directories
   for details on the standard regarding different aspects of the software
   development and furthermore the how-to guides on the SBIA Wiki [1].
 
-  The API documentation of BASIS [3], on the other side, is a great reference
+  The API documentation of BASIS [4], on the other side, is a great reference
   regarding the CMake implementations and utility functions.
 
 
@@ -206,6 +215,7 @@ REFERENCES
 ==========
 
   [1] https://sbia-portal.uphs.upenn.edu/wiki/index.php/BASIS_How-To_Guides
-  [2] https://sbia-portal.uphs.upenn.edu/wiki/index.php/BASIS
-  [3] https://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/index.html
-  [4] https://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__CMakeModules.html
+  [2] http://www.vtk.org/Wiki/ITK/Release_4/Modularization
+  [3] https://sbia-portal.uphs.upenn.edu/wiki/index.php/BASIS
+  [4] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/index.html
+  [5] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__CMakeModules.html
