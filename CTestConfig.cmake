@@ -22,7 +22,7 @@ set (CTEST_PROJECT_NAME "BASIS")
 #
 # Use the Continuous or Experimental test models if you want to execute
 # tests manually.
-set (CTEST_NIGHTLY_START_TIME "2:00:00 UTC")
+set (CTEST_NIGHTLY_START_TIME "1:00:00 EST")
 
 # dashboard submission to SBIA CDash server
 #
