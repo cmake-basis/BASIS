@@ -431,7 +431,7 @@ set (CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
 
 # compiler flags for Coverage configuration
 set (CMAKE_C_FLAGS_COVERAGE "" CACHE INTERNAL "" FORCE)
-set (CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
+set (CMAKE_CXX_FLAGS_COVERAGE "-O0 -DNDEBUG -Wall -W -fprofile-arcs -ftest-coverage")
 
 # linker flags for Coverage configuration
 set (CMAKE_EXE_LINKER_FLAGS_COVERAGE    "-fprofile-arcs -ftest-coverage")
