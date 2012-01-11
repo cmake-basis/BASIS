@@ -607,10 +607,12 @@ if (FORCE_BUILD OR UPDATED_FILES)
       message ("Installing project files...")
 
       execute_process (
-        COMMAND make install
-        RESULT_VARIABLE INSTALL_RESULT
-        OUTPUT_FILE "${CTEST_BINARY_DIRECTORY}/install.log"
-        ERROR_FILE  "${CTEST_BINARY_DIRECTORY}/install.log"
+        COMMAND           make install
+        WORKING_DIRECTORY "${CTEST_BINARY_DIRECTORY}"
+        TIMEOUT           1800 # 30 minutes
+        RESULT_VARIABLE   INSTALL_RESULT
+        OUTPUT_FILE       "${CTEST_BINARY_DIRECTORY}/install.log"
+        ERROR_FILE        "${CTEST_BINARY_DIRECTORY}/install.log"
       )
 
       if (INSTALL_RESULT EQUAL 0)
