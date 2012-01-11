@@ -90,6 +90,11 @@ Options:
                          No memory checks are performed by default.
   coverage               Perform coverage analysis. Requires gcov.
                          No coverage analysis is performed by default.
+  install                Perform installation after successful test execution.
+                         Set CMAKE_INSTALL_PREFIX to change the default installation
+                         prefix used by the project (or CMake).
+                         Note: Currently just runs \"make install\", i.e.,
+                               only works on Unix with CMake Makefile generator.
   doxygen[=<path>]       If specified, the API documentation is build
                          and the built HTML documentation copied to the
                          specified directory. If this option is given without
@@ -104,7 +109,8 @@ Options:
                          the test is executed.
   force-build            Force build even if no files were updated.
   force-test             Force test even if no files were updated.
-  force                  Alias for options force-build and force-test.
+  force-memcheck         Force memory check even if tests failed.
+  force                  Alias for options force-build, force-test, and force-memcheck.
   tmpbin                 Delete binary directory on completion (also if not successful).
   help                   Prints help and exits without performing any test.
   version                Prints version information and exits.")
@@ -228,7 +234,7 @@ endfunction ()
 set (CTEST_SOURCE_DIRECTORY "$ENV{HOME}/comp_space/testing")
 set (CTEST_BINARY_DIRECTORY "")
 set (CTEST_MODEL            "Experimental")
-set (SHARED_SOURCE          0)
+set (SHARED_SOURCE          FALSE)
 set (COMMON_SITE_PREFIXES)
 
 # ----------------------------------------------------------------------------
@@ -243,19 +249,25 @@ set (CTEST_CMAKE_GENERATOR     "Unix Makefiles")
 set (CTEST_BUILD_CONFIGURATION "Release")
 set (CTEST_CMAKE_OPTIONS)
 
-set (WITH_MEMCHECK 0) # whether to perform memory checks
-set (WITH_COVERAGE 0) # whether to perform coverage analysis
+set (WITH_MEMCHECK FALSE) # whether to perform memory checks
+set (WITH_COVERAGE FALSE) # whether to perform coverage analysis
 
 #set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "config/valgrind.sup")
 
 # ----------------------------------------------------------------------------
 # test execution
-SET (CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE)
+set (CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE)
 set (CTEST_TEST_OPTIONS)
+
+set (FORCE_BUILD    FALSE)
+set (FORCE_TEST     FALSE)
+set (FORCE_MEMCHECK FALSE)
 
 # ----------------------------------------------------------------------------
 # installation directories
 
+# install project files after successful test execution
+set (WITH_INSTALL FALSE)
 # output directory for built Doxygen documentation
 set (INSTALL_DOXYGEN_DIR)
 
@@ -265,9 +277,9 @@ set (INSTALL_DOXYGEN_DIR)
 
 macro (set_bool_option VAR)
   if (VALUE)
-    set (FAILURE 1)
+    set (FAILURE TRUE)
   else ()
-    set (${VAR} 1)
+    set (${VAR} TRUE)
   endif ()
 endmacro ()
 
@@ -275,7 +287,7 @@ macro (set_option VAR)
   if (VALUE)
     set (${VAR} "${VALUE}")
   else ()
-    set (FAILURE 1)
+    set (FAILURE TRUE)
   endif ()
 endmacro ()
 
@@ -283,13 +295,13 @@ macro (append_option VAR)
   if (VALUE)
     list (APPEND ${VAR} "${VALUE}")
   else ()
-    set (FAILURE 1)
+    set (FAILURE TRUE)
   endif ()
 endmacro ()
 
 string (REPLACE "," ";" ARGV "${CTEST_SCRIPT_ARG}")
 foreach (ARG ${ARGV})
-  set (FAILURE 0)
+  set (FAILURE FALSE)
   set (OPTION "")
   set (VALUE  "")
 
@@ -322,6 +334,8 @@ foreach (ARG ${ARGV})
       set_bool_option (WITH_COVERAGE)
     elseif (${OPTION} STREQUAL "tmpbin")
       set_bool_option (TMPBIN)
+    elseif (${OPTION} STREQUAL "install")
+      set_bool_option (WITH_INSTALL)
     elseif (${OPTION} STREQUAL "doxygen")
       if (VALUE)
         set_option (INSTALL_DOXYGEN_DIR)
@@ -337,10 +351,13 @@ foreach (ARG ${ARGV})
     elseif (${OPTION} STREQUAL "force")
       set_bool_option (FORCE_BUILD)
       set_bool_option (FORCE_TEST)
+      set_bool_option (FORCE_MEMCHECK)
     elseif (${OPTION} STREQUAL "force-build")
       set_bool_option (FORCE_BUILD)
     elseif (${OPTION} STREQUAL "force-test")
       set_bool_option (FORCE_TEST)
+    elseif (${OPTION} STREQUAL "force-memcheck")
+      set_bool_option (FORCE_MEMCHECK)
     elseif (${OPTION} STREQUAL "version")
       print_version ()
       return ()
@@ -352,7 +369,7 @@ foreach (ARG ${ARGV})
       return ()
     else ()
       if (NOT VALUE)
-        set (FAILURE 1)
+        set (FAILURE TRUE)
       else ()
         string (TOUPPER "${OPTION}" OPTION_UPPER)
         list (FIND KNOWN_CTEST_TEST_OPTIONS "${OPTION_UPPER}" IDX)
@@ -364,7 +381,7 @@ foreach (ARG ${ARGV})
       endif ()
     endif ()
   else ()
-    set (FAILURE 1)
+    set (FAILURE TRUE)
   endif ()
 
   if (FAILURE)
@@ -385,8 +402,8 @@ string (TOLOWER "${CTEST_PROJECT_NAME}" CTEST_PROJECT_NAME_LOWER)
 string (TOUPPER "${CTEST_PROJECT_NAME}" CTEST_PROJECT_NAME_UPPER)
 
 if (CTEST_MODEL MATCHES "Nightly|Experimental")
-  set (FORCE_BUILD 1)
-  set (FORCE_TEST 1)
+  set (FORCE_BUILD TRUE)
+  set (FORCE_TEST  TRUE)
 endif ()
 
 # ============================================================================
@@ -568,7 +585,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
     # ------------------------------------------------------------------------
     # run tests
-    ctest_test (${CTEST_TEST_OPTIONS})
+    ctest_test (${CTEST_TEST_OPTIONS} RETURN_VALUE TEST_RESULT)
 
     # --------------------------------------------------------------------------
     # perform coverage analysis
@@ -578,8 +595,24 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
     # --------------------------------------------------------------------------
     # perform memory checks
-    if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
+    if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND AND (FORCE_MEMCHECK OR TEST_RESULT EQUAL 0))
       ctest_memcheck (${CTEST_TEST_OPTIONS})
+    endif ()
+
+    # ---------------------------------------------------------------------------
+    # perform installation
+    if (WITH_INSTALL AND TEST_RESULT EQUAL 0)
+      execute_process (
+        COMMAND make install
+        RESULT_VARIABLE INSTALL_RESULT
+        OUTPUT_FILE "${CTEST_BINARY_DIRECTORY}/install.log"
+        ERROR_FILE  "${CTEST_BINARY_DIRECTORY}/install.log"
+      )
+
+      if (NOT INSTALL_RESULT EQUAL 0 AND EXISTS "${CTEST_BINARY_DIRECTORY}/install.log")
+        ctest_upload ("${CTEST_BINARY_DIRECTORY}/install.log")
+      endif ()
+
     endif ()
 
   endif ()
