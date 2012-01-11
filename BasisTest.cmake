@@ -54,12 +54,15 @@ elseif (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake")
     "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
     COPYONLY
   )
-elseif (EXISTS "${BASIS_TEMPLATE_DIR}/CTestCustom.cmake.in")
-  configure_file (
-    "${BASIS_TEMPLATE_DIR}/CTestCustom.cmake.in"
-    "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
-    @ONLY
-  )
+else ()
+  basis_get_relative_path (CONFIG_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_CONFIG_DIR}")
+  if (EXISTS "${BASIS_TEMPLATE_DIR}/${CONFIG_DIR}/CTestCustom.cmake.in")
+    configure_file (
+      "${BASIS_TEMPLATE_DIR}/${CONFIG_DIR}/CTestCustom.cmake.in"
+      "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
+      @ONLY
+    )
+  endif ()
 endif ()
 
 # ============================================================================
