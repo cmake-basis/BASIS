@@ -92,9 +92,11 @@ Options:
                          No coverage analysis is performed by default.
   install                Perform installation after successful test execution.
                          Set CMAKE_INSTALL_PREFIX to change the default installation
-                         prefix used by the project (or CMake).
-                         Note: Currently just runs \"make install\", i.e.,
-                               only works on Unix with CMake Makefile generator.
+                         prefix used by the project (or CMake). Moreover, the
+                         DESTDIR environment variable can be set to change the
+                         root directory used for installations.
+                         Note: Currently this script just executes \"make install\",
+                               i.e., it only works with the CMake Makefile generator.
   doxygen[=<path>]       If specified, the API documentation is build
                          and the built HTML documentation copied to the
                          specified directory. If this option is given without
