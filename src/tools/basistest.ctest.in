@@ -412,7 +412,7 @@ if (NOT CTEST_COVERAGE_COMMAND AND WITH_COVERAGE)
   message (FATAL_ERROR "Cannot perform coverage analysis without gcov")
 endif ()
 if (NOT CTEST_MEMORYCHECK_COMMAND AND WITH_MEMCHECK)
-  message (FATAL_ERROR "Cannot perform coverage analysis without valgrind")
+  message (FATAL_ERROR "Cannot perform memory checks without valgrind")
 endif ()
 
 # ----------------------------------------------------------------------------
