@@ -664,13 +664,6 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Initialize project, calls CMake's project() command.
 #
-# @par Default documentation:
-# Each BASIS project has to have a README.txt file in the top directory of the
-# software component. This file is the root documentation file which refers the
-# user to the further documentation files in @c PROJECT_DOC_DIR.
-# The same applies to the COPYING.txt file with the copyright and license
-# notices which must be present in the top directory of the source tree as well.
-#
 # @sa basis_project()
 # @sa basis_project_impl()
 #
@@ -695,6 +688,43 @@ endmacro ()
 #                                          - "revision 42" (if version is 0.0.0)
 #                                          - "version unknown" (otherwise)
 macro (basis_project_initialize)
+  # --------------------------------------------------------------------------
+  # CMake version and policies
+  cmake_minimum_required (VERSION 2.8.4)
+
+  # Add policies introduced with CMake versions newer than the one specified
+  # above. These policies would otherwise trigger a policy not set warning by
+  # newer CMake versions.
+
+  if (POLICY CMP0016)
+    cmake_policy (SET CMP0016 NEW)
+  endif ()
+
+  if (POLICY CMP0017)
+    cmake_policy (SET CMP0017 NEW)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # reset
+
+  # only set if not set by top-level project before configuring a module
+  basis_set_if_empty (PROJECT_IS_MODULE FALSE)
+
+  # hide it here to avoid that it shows up in the GUI on error
+  set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
+
+  # --------------------------------------------------------------------------
+  # project meta-data
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
+    set (BASIS_basis_project_CALLED FALSE)
+    include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
+    if (NOT BASIS_basis_project_CALLED)
+      message (FATAL_ERROR "Missing basis_project() command in BasisProject.cmake!")
+    endif ()
+  else ()
+    message (FATAL_ERROR "Missing BasisProject.cmake file!")
+  endif ()
+
   # --------------------------------------------------------------------------
   # Slicer extension
 
@@ -743,6 +773,11 @@ macro (basis_project_initialize)
   # note that SlicerConfig.cmake will invoke project() by itself
   if (NOT Slicer_FOUND)
     project ("${PROJECT_NAME}")
+  endif ()
+
+  # work-around for issue with CMAKE_PROJECT_NAME always being set to 'Project'
+  if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+    set_property (CACHE CMAKE_PROJECT_NAME PROPERTY VALUE "${PROJECT_NAME}")
   endif ()
 
   # convert project name to upper and lower case only, respectively
@@ -829,8 +864,47 @@ macro (basis_project_initialize)
   endif ()
 
   # --------------------------------------------------------------------------
-  # settings
+  # reset project properties - *after* PROJECT_NAME was set
 
+  # The following variables are used across BASIS macros and functions. They
+  # in particular remember information added by one function or macro which
+  # is required by another function or macro.
+  #
+  # These variables need to be properties such that they can be set in
+  # subdirectories. Moreover, they have to be assigned with the project's
+  # root source directory such that a top-level project's properties are restored
+  # after this subproject is finalized such that the top-level project itself can
+  # be finalized properly.
+  #
+  # Attention: In particular the IMPORTED_* properties are already used
+  #            during the import of targets when including the use files of
+  #            external packages. Hence, this property has to be reset before.
+
+  # see basis_add_imported_target()
+  basis_set_project_property (PROPERTY IMPORTED_TARGETS "")
+  basis_set_project_property (PROPERTY IMPORTED_TYPES "")
+  basis_set_project_property (PROPERTY IMPORTED_LOCATIONS "")
+  basis_set_project_property (PROPERTY IMPORTED_RANKS "")
+  # see basis_include_directories()
+  basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS "")
+  # see add_executable(), add_library()
+  basis_set_project_property (PROPERTY TARGETS "")
+  # see basis_add_*() functions
+  basis_set_project_property (PROPERTY EXPORT_TARGETS "")
+  basis_set_project_property (PROPERTY CUSTOM_EXPORT_TARGETS "")
+  basis_set_project_property (PROPERTY TEST_EXPORT_TARGETS "")
+  # see basis_add_script()
+  basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES FALSE)
+  basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES   FALSE)
+  basis_set_project_property (PROPERTY PROJECT_USES_BASH_UTILITIES   FALSE)
+  # yet unused
+  basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES   FALSE)
+  basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES FALSE)
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Initialize project settings.
+macro (basis_initialize_settings)
   # configure and include BASIS directory structure
   configure_file (
     "${BASIS_MODULE_PATH}/Directories.cmake.in"
@@ -1092,79 +1166,8 @@ endmacro ()
 # @ingroup CMakeAPI
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
-  # CMake version and policies
-  cmake_minimum_required (VERSION 2.8.4)
-
-  # Add policies introduced with CMake versions newer than the one specified
-  # above. These policies would otherwise trigger a policy not set warning by
-  # newer CMake versions.
-
-  if (POLICY CMP0016)
-    cmake_policy (SET CMP0016 NEW)
-  endif ()
-
-  if (POLICY CMP0017)
-    cmake_policy (SET CMP0017 NEW)
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # reset
-
-  # only set if not set by top-level project before configuring a module
-  basis_set_if_empty (PROJECT_IS_MODULE FALSE)
-
-  # hide it here to avoid that it shows up in the GUI on error
-  set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
-
-  # --------------------------------------------------------------------------
-  # project meta-data
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
-    set (BASIS_basis_project_CALLED FALSE)
-    include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
-    if (NOT BASIS_basis_project_CALLED)
-      message (FATAL_ERROR "Missing basis_project() command in BasisProject.cmake!")
-    endif ()
-  else ()
-    message (FATAL_ERROR "Missing BasisProject.cmake file!")
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # reset project properties - *after* PROJECT_NAME was set
-
-  # The following variables are used across BASIS macros and functions. They
-  # in particular remember information added by one function or macro which
-  # is required by another function or macro.
-  #
-  # These variables need to be properties such that they can be set in
-  # subdirectories. Moreover, they have to be assigned with the project's
-  # root source directory such that a top-level project's properties are restored
-  # after this subproject is finalized such that the top-level project itself can
-  # be finalized properly.
-  #
-  # Attention: In particular the IMPORTED_* properties are already used
-  #            during the import of targets when including the use files of
-  #            external packages. Hence, this property has to be reset before.
-
-  # see basis_add_imported_target()
-  basis_set_project_property (PROPERTY IMPORTED_TARGETS "")
-  basis_set_project_property (PROPERTY IMPORTED_TYPES "")
-  basis_set_project_property (PROPERTY IMPORTED_LOCATIONS "")
-  basis_set_project_property (PROPERTY IMPORTED_RANKS "")
-  # see basis_include_directories()
-  basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS "")
-  # see add_executable(), add_library()
-  basis_set_project_property (PROPERTY TARGETS "")
-  # see basis_add_*() functions
-  basis_set_project_property (PROPERTY EXPORT_TARGETS "")
-  basis_set_project_property (PROPERTY CUSTOM_EXPORT_TARGETS "")
-  basis_set_project_property (PROPERTY TEST_EXPORT_TARGETS "")
-  # see basis_add_script()
-  basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES FALSE)
-  basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES   FALSE)
-  basis_set_project_property (PROPERTY PROJECT_USES_BASH_UTILITIES   FALSE)
-  # yet unused
-  basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES   FALSE)
-  basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES FALSE)
+  # initialize project
+  basis_project_initialize ()
 
   # --------------------------------------------------------------------------
   # load information of modules
@@ -1192,8 +1195,8 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
-  # initialize project
-  basis_project_initialize ()
+  # initialize settings
+  basis_initialize_settings ()
 
   # --------------------------------------------------------------------------
   # assertions
