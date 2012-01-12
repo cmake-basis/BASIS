@@ -78,14 +78,9 @@ EOF-OPTIONS
 # options
 # ============================================================================
 
-if [ $# -eq 0 ]; then
-    print_help
-    exit 1
-fi
-
-cmd=''    # subcommand to run
-args=()   # options of subcommand
-verbose=0 # verbosity of output messages
+cmd='slave' # subcommand to run
+args=()     # options of subcommand
+verbose=0   # verbosity of output messages
 
 if [ -n "$1" ]; then
     if match "$1" '^(cron|master|slave|svn)$'; then

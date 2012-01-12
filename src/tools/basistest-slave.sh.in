@@ -36,21 +36,20 @@ get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
 function print_options
 {
     cat - << EOF-OPTIONS
-Required options:
-  -p [ --project ]   The name of the BASIS project to be tested.
-
 Options:
-  -b [ --branch ]    The branch to be tested, e.g., "tags/1.0.0".
-                     Default: "trunk".
-  -m [ --model ]     The name of the dashboard model, i.e., either "Nightly",
-                     "Continuous", or "Experimental". Default: "Experimental".
-  -S [ --script ]    CTest script which performs the testing.
-                     Default: basistest.ctest script of BASIS.
-  -a [ --args ]      Additional arguments for the CTest script.
-  -v [ --verbose ]   Increases verbosity of output messages. Can be given multiple times.
-  -h [ --help ]      Print help and exit.
-  -u [ --usage ]     Print short help and exit.
-  -V [ --version ]   Print version information and exit.
+  --project, -p   The name of the project to be tested.
+  --branch, -b    The branch to be tested, e.g., "tags/1.0.0".
+                  Default: "trunk".
+  --model, -m     The name of the dashboard model, i.e., either "Nightly",
+                  "Continuous", or "Experimental".
+                  Default: "Experimental".
+  --script, -S    CTest script which performs the testing.
+                  Default: basistest.ctest script of BASIS.
+  --args, -a      Additional arguments for the CTest script. See below.
+  --verbose, -v   Increases verbosity of output messages. Can be given multiple times.
+  --help, -h      Print help and exit.
+  --helpshort     Print short help and exit.
+  --version       Print version information and exit.
 EOF-OPTIONS
 }
 
@@ -65,17 +64,43 @@ function print_help
     echo
     cat - << EOF-DESCRIPTION
 Description:
-  This program performs the testing of specified BASIS project at SBIA.
+  This program performs the testing of a BASIS project.
 EOF-DESCRIPTION
     echo
     print_options
     echo
+    echo "Arguments of CTest script:"
+    which ctest &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "  Missing ctest command!" 1>&2
+    else
+        if [ ! -f "${ctest_script}" ]; then
+            echo "  Missing CTest script ${ctest_script}" 1>&2
+        else
+            helpstr=`ctest -S "${ctest_script},helpoptions"`
+            helpstr="${helpstr%CMake Error*}"
+            echo -n "${helpstr}"
+        fi
+    fi
+    echo
     cat - << EOF-EXAMPLES
 Examples:
-  ${_EXEC_NAME} -p BASIS -a coverage,memcheck
+  ${_EXEC_NAME}
 
-    Performs the testing of the project BASIS itself, including coverage
-    analysis and memory checks.
+    Run this command in the build tree of your BASIS project to run the tests
+    with submission of the test results to the Experimental dashboard.
+
+  ${_EXEC_NAME} --args memcheck
+
+    Run this command in the build tree of your BASIS project to run the memory
+    checks with the submission of the results to the Experimental dashboard.
+
+  ${_EXEC_NAME} --project BASIS --args coverage
+
+    Performs the testing of the project BASIS. The project source files are
+    first download into the source directory, then the build tree is configured
+    and the project is build. When these steps were successful, the tests are run,
+    including coverage analysis.
 EOF-EXAMPLES
     echo
     print_contact
@@ -162,9 +187,10 @@ while [ $# -gt 0 ]; do
 
         # standard options
 		-h|--help)    print_help; exit 0; ;;
-		-u|--usage)   print_helpshort; exit 0; ;;
-        -V|--version) print_version "@NAME@"; exit 0; ;;
+		--helpshort)  print_helpshort; exit 0; ;;
+        --version)    print_version "@NAME@"; exit 0; ;;
         -v|--verbose) ((verbosity++)); ;;
+        -vv)          verbosity=$((${verbosity} + 2));;
 
         # invalid option
         *)
@@ -176,14 +202,6 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
-
-# check options
-if [ -z "${project}" ]; then
-    print_helpshort
-    echo
-    echo "No project specified!" 1>&2
-    exit 1
-fi
 
 # ============================================================================
 # main
@@ -212,8 +230,11 @@ if [ ${verbosity} -gt 1 ]; then
 elif [ ${verbosity} -gt 0 ]; then
     cmd="${cmd} -V"
 fi
-cmd="${cmd} -S ${ctest_script},project=${project},branch=${branch},model=${model}"
-if [ ! -z "${args}" ]; then cmd="${cmd},${args}"; fi
+cmd="${cmd} -S ${ctest_script}"
+if [ -n "${project}" ]; then cmd="${cmd},project=${project}"; fi
+if [ -n "${branch}"  ]; then cmd="${cmd},branch=${branch}"; fi
+if [ -n "${model}"   ]; then cmd="${cmd},model=${model}"; fi
+if [ ! -z "${args}"  ]; then cmd="${cmd},${args}"; fi
 cmd="${cmd}"
 
 # run test
