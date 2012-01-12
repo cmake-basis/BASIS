@@ -567,9 +567,10 @@ if (FORCE_BUILD OR UPDATED_FILES)
     ctest_build (TARGET doc RETURN_VALUE RT)
     if (RT EQUAL 0)
       if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
-        file (
-          INSTALL     "${CTEST_BINARY_DIRECTORY}/doc/api/html"
-          DESTINATION "${INSTALL_DOXYGEN_DIR}"
+        execute_process (
+          COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                      "${CTEST_BINARY_DIRECTORY}/doc/api/html"
+                      "${INSTALL_DOXYGEN_DIR}/html"
         )
         message (STATUS "Installed API documentation to ${INSTALL_DOXYGEN_DIR}.")
       else ()
