@@ -510,12 +510,14 @@ bool Subprocess::wait()
     } else return false;
 #else
     pid_t pid = waitpid(_info.pid, &_status, 0);
-    #ifdef NDEBUG
+    /*
+    #ifdef _DEBUG
         // ignore as for some reason the returned pid in Debug mode
         // is not equal to the pid of the child process
         // TODO figure out why
         return true;
     #endif 
+    */
     return pid == _info.pid;
 #endif
 }
