@@ -329,14 +329,23 @@ basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 # ============================================================================
 
 ## @brief List of all available/supported build configurations.
-set (
-  CMAKE_CONFIGURATION_TYPES
-    "Debug"
-    "Coverage"
-    "MemCheck"
-    "Release"
-  CACHE INTERNAL "Build configurations." FORCE
-)
+if (UNIX)
+  set (
+    CMAKE_CONFIGURATION_TYPES
+      "Debug"
+      "Coverage"
+      "MemCheck"
+      "Release"
+    CACHE INTERNAL "Build configurations." FORCE
+  )
+else ()
+  set (
+    CMAKE_CONFIGURATION_TYPES
+      "Debug"
+      "Release"
+    CACHE INTERNAL "Build configurations." FORCE
+  )
+endif ()
 
 ## @brief List of debug configurations.
 #
@@ -347,7 +356,8 @@ set (DEBUG_CONFIGURATIONS "Debug")
 mark_as_advanced (CMAKE_CONFIGURATION_TYPES)
 mark_as_advanced (DEBUG_CONFIGURATIONS)
 
-if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$|^Coverage$|^MemCheck$|^Release$")
+list (FIND CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" IDX)
+if (IDX EQUAL -1)
   if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
     message ("Invalid build type ${CMAKE_BUILD_TYPE}! Setting CMAKE_BUILD_TYPE to Release.")
   endif ()
@@ -359,12 +369,12 @@ set (
   CMAKE_BUILD_TYPE
     "${CMAKE_BUILD_TYPE}"
   CACHE STRING
-    "Current build configuration. Specify either \"Debug\", \"Coverage\", \"MemCheck\", or \"Release\"."
+    "Current build configuration. Specify either one of ${CMAKE_CONFIGURATION_TYPES}."
   FORCE
 )
 
 # set the possible values of build type for cmake-gui
-set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Coverage" "MemCheck" "Release")
+set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${CMAKE_CONFIGURATION_TYPES})
 
 # ----------------------------------------------------------------------------
 # disabled configurations
@@ -473,6 +483,10 @@ set (
 # This build configuration enables coverage analysis.
 #
 # Note: The option -DNDEBUG disables assertions.
+#
+# TODO How can we do code coverage analysis on Windows?
+
+if (UNIX)
 
 # compiler flags
 set (CMAKE_C_FLAGS_COVERAGE "" CACHE INTERNAL "" FORCE)
@@ -496,6 +510,8 @@ set (
   CACHE STRING "Flags used by the linker during coverage builds."
 )
 
+endif ()
+
 # ----------------------------------------------------------------------------
 # MemCheck
 # ----------------------------------------------------------------------------
@@ -508,6 +524,10 @@ set (
 #
 # To debug detected memory leaks, consider the use of the Debug build
 # configuration instead.
+#
+# TODO How can we do memory checks on Windows?
+
+if (UNIX)
 
 # compiler flags for  configuration
 set (CMAKE_C_FLAGS_MEMCHECK "" CACHE INTERNAL "" FORCE)
@@ -530,6 +550,8 @@ set (
   CMAKE_SHARED_LINKER_FLAGS_MEMCHECK ""
   CACHE STRING "Flags used by the linker during memcheck builds."
 )
+
+endif ()
 
 # ----------------------------------------------------------------------------
 # mark variables as advanced
