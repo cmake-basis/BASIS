@@ -9,26 +9,28 @@
  */
 
 
-#include <sbia/basis/config.h> // WINDOWS, UNIX,... macros
+#include <sbia/basis/config.h> // WINDOWS, UNIX, MACOS... macros
 
 #include <iostream>
 
 #include <cstdlib>
-#include <cassert>   // assert
-#include <cstring>   // strlen
-#include <algorithm> // for_each
+#include <cassert>         // assert
+#include <cstring>         // strlen
+#include <algorithm>       // for_each
 
 #if UNIX
-#  include <sys/wait.h>  // waitpid
-#  include <signal.h>    // kill
-#  include <sys/errno.h> // errno, ECHILD
-#  include <stdio.h>     // strerror_r
+#    include <sys/wait.h>  // waitpid
+#    include <signal.h>    // kill
+#    include <sys/errno.h> // errno, ECHILD
+#    include <stdio.h>     // strerror_r
+#endif
+#if MACOS
+#    include <vproc.h>     // vproc_transaction_begin, required for work-around
+                           // of a bug in libgcov in Mac OS X Snow Leopard
 #endif
 
 #include <sbia/basis/except.h>
 #include <sbia/basis/subprocess.h>
-
-
 
 
 using namespace std;
@@ -203,7 +205,7 @@ Subprocess::~Subprocess ()
         CloseHandle(_info.hThread);
     }
 #else
-    if (_info.pid != 0) kill();
+    if (_info.pid > 0) kill();
     if (_stdin  != -1) close(_stdin);
     if (_stdout != -1) close(_stdout);
     if (_stderr != -1) close(_stderr);
@@ -221,12 +223,11 @@ bool Subprocess::popen(const CommandLine& args,
                        const RedirectMode rm_err,
                        const Environment* env)
 {
-#if WINDOWS
-    if (_info.hProcess != 0 && !poll()) {
+    if (!poll()) {
         cerr << "Subprocess::popen(): Previously opened process not terminated yet!" << endl;
         return false;
     }
-
+#if WINDOWS
     ZeroMemory(&_info, sizeof(_info));
     if (_stdin)  CloseHandle(_stdin);
     if (_stdout) CloseHandle(_stdout);
@@ -253,18 +254,18 @@ bool Subprocess::popen(const CommandLine& args,
     }
 
     if (rm_out == RM_PIPE && CreatePipe(&hStdOut[0], &hStdOut[1], &saAttr, 0) == 0) {
+        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         CloseHandle(hStdIn[0]);
         CloseHandle(hStdIn[1]);
-        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         return false;
     }
 
     if (rm_err == RM_PIPE && CreatePipe(&hStdErr[0], &hStdErr[1], &saAttr, 0) == 0) {
+        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         CloseHandle(hStdIn[0]);
         CloseHandle(hStdIn[1]);
         CloseHandle(hStdOut[0]);
         CloseHandle(hStdOut[1]);
-        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         return false;
     }
 
@@ -272,13 +273,13 @@ bool Subprocess::popen(const CommandLine& args,
     if ((hStdIn[1] != INVALID_HANDLE_VALUE && !SetHandleInformation(hStdIn[1], HANDLE_FLAG_INHERIT, 0)) ||
             (hStdOut[0] != INVALID_HANDLE_VALUE && !SetHandleInformation(hStdOut[0], HANDLE_FLAG_INHERIT, 0)) ||
             (hStdErr[0] != INVALID_HANDLE_VALUE && !SetHandleInformation(hStdErr[0], HANDLE_FLAG_INHERIT, 0))) {
+        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         CloseHandle(hStdIn[0]);
         CloseHandle(hStdIn[1]);
         CloseHandle(hStdOut[0]);
         CloseHandle(hStdOut[1]);
         CloseHandle(hStdErr[0]);
         CloseHandle(hStdErr[1]);
-        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         return false;
     }
 
@@ -300,13 +301,13 @@ bool Subprocess::popen(const CommandLine& args,
     if (szCmdline) {
         MultiByteToWideChar(CP_UTF8, 0, cmd.c_str(), -1, szCmdline, n);
     } else {
+        cerr << "Subprocess::popen(): Failed to allocate memory!" << endl;
         CloseHandle(hStdIn[0]);
         CloseHandle(hStdIn[1]);
         CloseHandle(hStdOut[0]);
         CloseHandle(hStdOut[1]);
         CloseHandle(hStdErr[0]);
         CloseHandle(hStdErr[1]);
-        cerr << "Subprocess::popen(): Failed to allocate memory!" << endl;
         return false;
     }
 #else
@@ -324,13 +325,13 @@ bool Subprocess::popen(const CommandLine& args,
                        NULL,         // use parent's current directory 
                        &siStartInfo, // STARTUPINFO pointer 
                        &_info)) {    // receives PROCESS_INFORMATION
+        cerr << "Subprocess::popen(): Failed to fork process!" << endl;
         CloseHandle(hStdIn[0]);
         CloseHandle(hStdIn[1]);
         CloseHandle(hStdOut[0]);
         CloseHandle(hStdOut[1]);
         CloseHandle(hStdErr[0]);
         CloseHandle(hStdErr[1]);
-        cerr << "Subprocess::popen(): Failed to fork process!" << endl;
         return false;
     }
  
@@ -348,11 +349,6 @@ bool Subprocess::popen(const CommandLine& args,
 
     return true;
 #else
-    if (_info.pid != -1 && !poll()) {
-        cerr << "Subprocess::popen(): Previously opened process not terminated yet!" << endl;
-        return false;
-    }
-
     _info.pid = -1;
     if (_stdin  != -1) close(_stdin);
     if (_stdout != -1) close(_stdout);
@@ -373,32 +369,38 @@ bool Subprocess::popen(const CommandLine& args,
     }
 
     if (rm_out == RM_PIPE && pipe(fdsout) == -1) {
+        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         if (fdsin[0] != -1) close(fdsin[0]);
         if (fdsin[1] != -1) close(fdsin[1]);
-        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         return false;
     }
 
     if (rm_err == RM_PIPE && pipe(fdserr) == -1) {
+        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         if (fdsin[0]  != -1) close(fdsin[0]);
         if (fdsin[1]  != -1) close(fdsin[1]);
         if (fdsout[0] != -1) close(fdsout[0]);
         if (fdsout[1] != -1) close(fdsout[1]);
-        cerr << "Subprocess::popen(): Failed to create pipe!" << endl;
         return false;
     }
 
     // fork this process
     if ((_info.pid = fork()) == -1) {
+        cerr << "Subprocess::popen(): Failed to fork process!" << endl;
         if (fdsin[0]  != -1) close(fdsin[0]);
         if (fdsin[1]  != -1) close(fdsin[1]);
         if (fdsout[0] != -1) close(fdsout[0]);
         if (fdsout[1] != -1) close(fdsout[1]);
         if (fdserr[0] != -1) close(fdserr[0]);
         if (fdserr[1] != -1) close(fdserr[1]);
-        cerr << "Subprocess::popen(): Failed to fork process!" << endl;
         return false;
     }
+
+    // On Mac OS X Snow Leopard, there is a bug in the libgcov library which
+    // is nicely traced and described at http://rachelbythebay.com/w/2011/07/12/forkcrash/
+    #if MACOS
+    vproc_transaction_begin(0);
+    #endif
 
     if (_info.pid == 0) {
 
@@ -474,59 +476,58 @@ bool Subprocess::popen(const CommandLine& args,
 bool Subprocess::poll() const
 {
 #if WINDOWS
-    DWORD dwStatus = 0;
-    if (GetExitCodeProcess(_info.hProcess, &dwStatus)) {
-        _status = static_cast<int>(dwStatus);
-        return _status != STILL_ACTIVE;
-/*
-        This should have been more save in case 259 is used as exit code
-        by the process. However, it did not seem to work as expected.
-
+    if (_info.hProcess) {
+        DWORD dwStatus = 0;
+        if (!GetExitCodeProcess(_info.hProcess, &dwStatus)) {
+            BASIS_THROW(runtime_error, "GetExitCodeProcess() failed with error code " << GetLastError());
+        }
+        // see terminate() for an explanation on why we keep the 130 here
+        if (_status != 130) _status = static_cast<int>(dwStatus);
+        // safely determine whether process is actually still active
         if (_status == STILL_ACTIVE) {
             // if the process is terminated, this would return WAIT_OBJECT_0
             return WaitForSingleObject(_info.hProcess, 0) != WAIT_TIMEOUT;
         } else {
-            return false;
+            return true;
         }
-*/
     }
-    BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
 #else
-    // TODO Put the following two lines in a mutex locked section to make
-    //      it thread-safe.
-    pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
-    int errnum = errno;
-
-    if (pid == -1 && errnum != ECHILD) {
-        char errormsg[256];
-        strerror_r(errnum, errormsg, sizeof(errormsg));
-        BASIS_THROW(runtime_error, "waitpid() failed with error: " << errormsg << " (" << errnum << ")");
+    if (_info.pid > 0) {
+        pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
+        if (pid == -1 && errno != ECHILD) {
+            char errormsg[256];
+            strerror_r(errno, errormsg, sizeof(errormsg));
+            BASIS_THROW(runtime_error, "waitpid() failed with error: " << errormsg << " (" << errno << ")");
+        }
+        return WIFEXITED(_status) || WIFSIGNALED(_status);
     }
-
-    return WIFEXITED(_status) || WIFSIGNALED(_status);
 #endif
+    return true;
 }
 
 // ---------------------------------------------------------------------------
 bool Subprocess::wait()
 {
 #if WINDOWS
-    if (WaitForSingleObject(_info.hProcess, INFINITE) == WAIT_FAILED) {
-        return false;
+    if (_info.hProcess && WaitForSingleObject(_info.hProcess, INFINITE) != WAIT_FAILED) {
+        DWORD dwStatus = 0;
+        if (GetExitCodeProcess(_info.hProcess, &dwStatus)) {
+            // see terminate() for an explanation on why we keep the 130 here
+            if (_status != 130) _status = static_cast<int>(dwStatus);
+            ZeroMemory(&_info, sizeof(_info));
+            return true;
+        }
     }
-    DWORD dwStatus = 0;
-    BOOL bSuccess = GetExitCodeProcess(_info.hProcess, &dwStatus);
-    if (bSuccess) {
-        _status = static_cast<int>(dwStatus);
-        return true;
-    } else return false;
 #else
-    // TODO Put the following two lines in a mutex locked section to make
-    //      it thread-safe.
-    pid_t pid = waitpid(_info.pid, &_status, 0);
-    int errnum = errno;
-    return pid != -1 || errnum == ECHILD;
+    if (_info.pid > 0) {
+        pid_t pid = waitpid(_info.pid, &_status, 0);
+        if (pid != -1 || errno == ECHILD) {
+            _info.pid = -1;
+            return true;
+        }
+    }
 #endif
+    return false;
 }
 
 // ---------------------------------------------------------------------------
@@ -537,7 +538,7 @@ bool Subprocess::send_signal(int signal)
     if (signal == 15) return terminate();
     return false;
 #else
-    return ::kill(_info.pid, signal) == 0;
+    return _info.pid > 0 && ::kill(_info.pid, signal) == 0;
 #endif
 }
 
@@ -546,9 +547,22 @@ bool Subprocess::terminate()
 {
 #if WINDOWS
     // note: 130 is the exit code used by Unix shells to indicate CTRL + C
-    return TerminateProcess(_info.hProcess, 130) != 0;
+    if (TerminateProcess(_info.hProcess, 130) == 0) return false;
+    // Unfortunately, the exit code reported by GetExitCodeProcess() is not
+    // always set correctly to the value given as second argument to
+    // TerminateProcess(). Instead it is often just set to 0
+    // (at least on Windows XP) which would suggest the process finished its
+    // job successfully. Thus, we use this work-around to set the exit code
+    // here and not use GetExitCode() if the process' status is 130, which
+    // means the process has been terminated already.
+    //
+    // See also the discussion at
+    // http://stackoverflow.com/questions/2061735/42-passed-to-terminateprocess-sometimes-getexitcodeprocess-returns-0
+    _status = 130;
+    Sleep(10); // give Windows some time to actually cleanup the process
+    return true;
 #else
-    return ::kill(_info.pid, SIGTERM) == 0;
+    return send_signal(SIGTERM);
 #endif
 }
 
@@ -558,7 +572,7 @@ bool Subprocess::kill()
 #if WINDOWS
     return terminate();
 #else
-    return ::kill(_info.pid, SIGKILL) == 0;
+    return send_signal(SIGKILL);
 #endif
 }
 
@@ -566,22 +580,28 @@ bool Subprocess::kill()
 bool Subprocess::signaled() const
 {
 #if WINDOWS
-    DWORD dwStatus = 0;
-    if (GetExitCodeProcess(_info.hProcess, &dwStatus)) {
+/*
+    See terminate() for an explanation why this is not used.
+
+    if (_info.hProcess) {
+        DWORD dwStatus = 0;
+        if (!GetExitCodeProcess(_info.hProcess, &dwStatus)) {
+            BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
+        }
         _status = static_cast<int>(dwStatus);
-        return _status == 130;
     }
-    BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
+*/
+    return _status == 130;
 #else
-    pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
-    int errnum = errno;
-
-    if (pid == -1 && errnum != ECHILD) {
-        char errormsg[256];
-        strerror_r(errnum, errormsg, sizeof(errormsg));
-        BASIS_THROW(runtime_error, "waitpid() failed with error: " << errormsg << " (" << errnum << ")");
+    if (_info.pid > 0) {
+        pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
+        int errnum = errno;
+        if (pid == -1 && errnum != ECHILD) {
+            char errormsg[256];
+            strerror_r(errnum, errormsg, sizeof(errormsg));
+            BASIS_THROW(runtime_error, "waitpid() failed with error: " << errormsg << " (" << errnum << ")");
+        }
     }
-
     return WIFSIGNALED(_status);
 #endif
 }
