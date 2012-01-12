@@ -19,12 +19,16 @@
 #include <algorithm> // for_each
 
 #if UNIX
-#  include <sys/wait.h>
-#  include <signal.h>
+#  include <sys/wait.h>  // waitpid
+#  include <signal.h>    // kill
+#  include <sys/errno.h> // errno, ECHILD
+#  include <stdio.h>     // strerror_r
 #endif
 
 #include <sbia/basis/except.h>
 #include <sbia/basis/subprocess.h>
+
+
 
 
 using namespace std;
@@ -488,9 +492,17 @@ bool Subprocess::poll() const
     }
     BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
 #else
-    if (waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED) == _info.pid) {
-        BASIS_THROW(runtime_error, "waitpid() failed");
+    // TODO Put the following two lines in a mutex locked section to make
+    //      it thread-safe.
+    pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
+    int errnum = errno;
+
+    if (pid == -1 && errnum != ECHILD) {
+        char errormsg[256];
+        strerror_r(errnum, errormsg, sizeof(errormsg));
+        BASIS_THROW(runtime_error, "waitpid() failed with error: " << errormsg << " (" << errnum << ")");
     }
+
     return WIFEXITED(_status) || WIFSIGNALED(_status);
 #endif
 }
@@ -509,16 +521,11 @@ bool Subprocess::wait()
         return true;
     } else return false;
 #else
+    // TODO Put the following two lines in a mutex locked section to make
+    //      it thread-safe.
     pid_t pid = waitpid(_info.pid, &_status, 0);
-    /*
-    #ifdef _DEBUG
-        // ignore as for some reason the returned pid in Debug mode
-        // is not equal to the pid of the child process
-        // TODO figure out why
-        return true;
-    #endif 
-    */
-    return pid == _info.pid;
+    int errnum = errno;
+    return pid != -1 || errnum == ECHILD;
 #endif
 }
 
@@ -566,9 +573,15 @@ bool Subprocess::signaled() const
     }
     BASIS_THROW(runtime_error, "GetExitCodeProcess() failed");
 #else
-    if (waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED) == _info.pid) {
-        BASIS_THROW(runtime_error, "waitpid() failed");
+    pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
+    int errnum = errno;
+
+    if (pid == -1 && errnum != ECHILD) {
+        char errormsg[256];
+        strerror_r(errnum, errormsg, sizeof(errormsg));
+        BASIS_THROW(runtime_error, "waitpid() failed with error: " << errormsg << " (" << errnum << ")");
     }
+
     return WIFSIGNALED(_status);
 #endif
 }
