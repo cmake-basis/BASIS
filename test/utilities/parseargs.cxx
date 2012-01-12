@@ -50,13 +50,12 @@ int main(int argc, char* argv[])
     SwitchArg gaussian(                          // option switch
         "g", "gaussian",                         // short and long option name
         "Smooth image using a Gaussian filter.", // argument help
-        false,                                   // required?
         false);                                  // default value
 
     SwitchArg anisotropic(                       // option switch
         "a", "anisotropic",                      // short and long option name
         "Smooth image using anisotropic diffusion filter.", // argument help
-        false);                                  // required?
+        false);                                  // default value
 
     MultiUIntArg gaussian_radius(                // unsigned integer values
         "r", "radius",                           // short and long option name
