@@ -333,8 +333,9 @@ set (
   CMAKE_CONFIGURATION_TYPES
     "Debug"
     "Coverage"
+    "MemCheck"
     "Release"
-  CACHE STRING "Build configurations." FORCE
+  CACHE INTERNAL "Build configurations." FORCE
 )
 
 ## @brief List of debug configurations.
@@ -346,7 +347,7 @@ set (DEBUG_CONFIGURATIONS "Debug")
 mark_as_advanced (CMAKE_CONFIGURATION_TYPES)
 mark_as_advanced (DEBUG_CONFIGURATIONS)
 
-if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$|^Coverage$|^Release$")
+if (NOT CMAKE_BUILD_TYPE MATCHES "^Debug$|^Coverage$|^MemCheck$|^Release$")
   if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
     message ("Invalid build type ${CMAKE_BUILD_TYPE}! Setting CMAKE_BUILD_TYPE to Release.")
   endif ()
@@ -358,12 +359,12 @@ set (
   CMAKE_BUILD_TYPE
     "${CMAKE_BUILD_TYPE}"
   CACHE STRING
-    "Current build configuration. Specify either \"Debug\", \"Coverage\", or \"Release\"."
+    "Current build configuration. Specify either \"Debug\", \"Coverage\", \"MemCheck\", or \"Release\"."
   FORCE
 )
 
 # set the possible values of build type for cmake-gui
-set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "Coverage")
+set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Coverage" "MemCheck" "Release")
 
 # ----------------------------------------------------------------------------
 # disabled configurations
@@ -381,12 +382,6 @@ foreach (C MINSIZEREL RELWITHDEBINFO)
   set_property (CACHE CMAKE_SHARED_LINKER_FLAGS_${C} PROPERTY TYPE INTERNAL)
 endforeach ()
 
-# disable support for plain C
-set_property (CACHE CMAKE_C_FLAGS PROPERTY TYPE INTERNAL)
-foreach (C DEBUG RELEASE)
-  set_property (CACHE CMAKE_C_FLAGS_${C} PROPERTY TYPE INTERNAL)
-endforeach ()
-
 unset (C)
 
 # ----------------------------------------------------------------------------
@@ -394,49 +389,161 @@ unset (C)
 # ----------------------------------------------------------------------------
 
 # common compiler flags
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set (CMAKE_C_FLAGS "" CACHE INTERNAL "" FORCE)
+
+set (
+  CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
+  CACHE STRING "Flags used by the compiler for all builds."
+)
 
 # common linker flags
-set (CMAKE_EXE_LINKER_FLAGS    "${CMAKE_LINKER_FLAGS}")
-set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}")
-set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}")
+set (
+  CMAKE_EXE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}"
+  CACHE STRING "Flags used by the linker."
+)
+set (
+  CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}"
+  CACHE STRING "Flags used by the linker for the creation of modules."
+)
+set (
+  CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}"
+  CACHE STRING "Flags used by the linker for the creation of dll's."
+)
 
 # ----------------------------------------------------------------------------
 # Debug
 # ----------------------------------------------------------------------------
 
-# compiler flags of Debug configuration
-set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+# This build configuration is suitable for debugging programs.
 
-# linker flags of Debug configuration
-set (CMAKE_EXE_LINKER_FLAGS_DEBUG    "${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
-set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}")
-set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG}")
+# compiler flags
+set (CMAKE_C_FLAGS_DEBUG "" CACHE INTERNAL "" FORCE)
+
+set (
+  CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}"
+  CACHE STRING "Flags used by the compiler for debug builds."
+)
+
+# linker flags
+set (
+  CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG}"
+  CACHE STRING "Flags used by the linker for the debug builds."
+)
+set (
+  CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}"
+  CACHE STRING "Flags used by the linker for the debug builds."
+)
+set (
+  CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG}"
+  CACHE STRING "Flags used by the linker for the debug builds."
+)
 
 # ----------------------------------------------------------------------------
 # Release
 # ----------------------------------------------------------------------------
 
-# compiler flags of Release configuration
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+# This build configuration produces binaries for deployment of the software.
 
-# linker flags of Release configuration
-set (CMAKE_EXE_LINKER_FLAGS_RELEASE    "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
-set (CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE}")
-set (CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
+# compiler flags
+set (CMAKE_C_FLAGS_RELEASE "" CACHE INTERNAL "" FORCE)
+
+set (
+  CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
+  CACHE STRING "Flags used by the compiler for release builds."
+)
+
+# linker flags
+set (
+  CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
+  CACHE STRING "Flags used by the linker for the release builds."
+)
+set (
+  CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE}"
+  CACHE STRING "Flags used by the linker for the release builds."
+)
+set (
+  CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}"
+  CACHE STRING "Flags used by the linker for the release builds."
+)
 
 # ----------------------------------------------------------------------------
 # Coverage
 # ----------------------------------------------------------------------------
 
-# compiler flags for Coverage configuration
+# This build configuration enables coverage analysis.
+#
+# Note: The option -DNDEBUG disables assertions.
+
+# compiler flags
 set (CMAKE_C_FLAGS_COVERAGE "" CACHE INTERNAL "" FORCE)
-set (CMAKE_CXX_FLAGS_COVERAGE "-O0 -DNDEBUG -Wall -W -fprofile-arcs -ftest-coverage")
+
+set (
+  CMAKE_CXX_FLAGS_COVERAGE "-DNDEBUG -fprofile-arcs -ftest-coverage"
+  CACHE STRING "Flags used by the compiler during coverage builds."
+)
+
+# linker flags
+set (
+  CMAKE_EXE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage"
+  CACHE STRING "Flags used by the linker during coverage builds."
+)
+set (
+  CMAKE_MODULE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage"
+  CACHE STRING "Flags used by the linker during coverage builds."
+)
+set (
+  CMAKE_SHARED_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage"
+  CACHE STRING "Flags used by the linker during coverage builds."
+)
+
+# ----------------------------------------------------------------------------
+# MemCheck
+# ----------------------------------------------------------------------------
+
+# This build configuration enables memory checks using, for example, valgrind.
+#
+# Note: The use of -O1 results in better performance while line numbers are yet
+#       reasonably close to the actual line. Higher optimization should never
+#       be used. The -g option is required such that line numbers can be reported.
+#
+# To debug detected memory leaks, consider the use of the Debug build
+# configuration instead.
+
+# compiler flags for  configuration
+set (CMAKE_C_FLAGS_MEMCHECK "" CACHE INTERNAL "" FORCE)
+
+set (
+  CMAKE_CXX_FLAGS_MEMCHECK "-g -O1"
+  CACHE STRING "Flags used by the compiler during memcheck builds."
+)
 
 # linker flags for Coverage configuration
-set (CMAKE_EXE_LINKER_FLAGS_COVERAGE    "-fprofile-arcs -ftest-coverage")
-set (CMAKE_MODULE_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
-set (CMAKE_SHARED_LINKER_FLAGS_COVERAGE "-fprofile-arcs -ftest-coverage")
+set (
+  CMAKE_EXE_LINKER_FLAGS_MEMCHECK ""
+  CACHE STRING "Flags used by the linker during memcheck builds."
+)
+set (
+  CMAKE_MODULE_LINKER_FLAGS_MEMCHECK ""
+  CACHE STRING "Flags used by the linker during memcheck builds."
+)
+set (
+  CMAKE_SHARED_LINKER_FLAGS_MEMCHECK ""
+  CACHE STRING "Flags used by the linker during memcheck builds."
+)
+
+# ----------------------------------------------------------------------------
+# mark variables as advanced
+# ----------------------------------------------------------------------------
+
+foreach (C IN LISTS CMAKE_CONFIGURATION_TYPES)
+  string (TOUPPER "${C}" U)
+  mark_as_advanced (CMAKE_CXX_FLAGS_${U})
+  mark_as_advanced (CMAKE_EXE_LINKER_FLAGS_${U})
+  mark_as_advanced (CMAKE_MODULE_LINKER_FLAGS_${U})
+  mark_as_advanced (CMAKE_SHARED_LINKER_FLAGS_${U})
+endforeach ()
+unset (C)
+unset (U)
 
 # ============================================================================
 # common options
