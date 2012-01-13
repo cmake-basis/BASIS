@@ -367,7 +367,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     }
     // required arguments
     for (int i = 0; static_cast<unsigned int>(i) < reqxors.size(); i++) {
-        s += " {";
+        s += " (";
         for (TCLAP::ArgVectorIterator it = reqxors[i].begin();
                 it != reqxors[i].end(); it++) {
             id = getArgumentID(*it);
@@ -377,7 +377,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
             }
             s += "|";
         }
-        s[s.length() - 1] = '}';
+        s[s.length() - 1] = ')';
     }
     for (TCLAP::ArgListIterator it = reqargs.begin(); it != reqargs.end(); it++) {
         id = getArgumentID(*it);
