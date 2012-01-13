@@ -415,13 +415,13 @@ endmacro ()
 ## @brief Configure public header files.
 #
 # Copy public header files to build tree using the same relative paths
-# as will be used for the installation. We need to use configure_file()
-# here such that the header files in the build tree are updated whenever
-# the source header file was modified. Moreover, this gives us a chance to
+# as will be used for the installation. Moreover, this gives us a chance to
 # configure header files with the .in suffix.
 #
 # @note This function configures also the public header files of the modules
 #       already. Hence, it must not be called if this project is a module.
+#
+# @sa BASIS_CONFIGURE_INCLUDES
 function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # settings
@@ -586,17 +586,6 @@ function (basis_configure_public_headers)
       DEPENDS ${CHECK_HEADERS_TARGET} "${CMAKE_FILE}.updated"
       SOURCES ${PUBLIC_HEADERS}
     )
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # add directory of configured headers to include search path
-  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
-
-  # Attention: BASIS includes public header files which are named the
-  #            same as system-wide header files. Therefore, avoid to add
-  #            include/sbia/basis/ to the include search path.
-  if (NOT PROJECT_NAME MATCHES "^BASIS$")
-    basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}")
   endif ()
 endfunction ()
 
@@ -1085,7 +1074,11 @@ macro (basis_project_finalize)
     if (BASIS_UTILITIES_PUBLIC_HEADERS)
       set (PUBLIC_HEADERS)
       if (PROJECT_INCLUDE_DIR AND NOT BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
-        file (GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/*.h")
+        if (BASIS_CONFIGURE_INCLUDES)
+          file (GLOB_RECURSE PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*.h")
+        else ()
+          file (GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/*.h")
+        endif ()
       endif ()
       set (REGEX)
       foreach (P ${BASIS_UTILITIES_PUBLIC_HEADERS})
@@ -1217,8 +1210,22 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # public header files
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
-  if (NOT PROJECT_IS_MODULE OR BASIS_USE_MODULE_NAMESPACES)
+  if (BASIS_CONFIGURE_INCLUDES AND
+      (NOT PROJECT_IS_MODULE OR BASIS_USE_MODULE_NAMESPACES))
     basis_configure_public_headers ()
+    set (INCLUDE_DIR "${BINARY_INCLUDE_DIR}")
+  else ()
+    set (INCLUDE_DIR "${PROJECT_INCLUDE_DIR}")
+  endif ()
+
+  # add directory of configured headers to include search path
+  basis_include_directories (BEFORE "${INCLUDE_DIR}")
+
+  # Attention: BASIS includes public header files which are named the
+  #            same as system-wide header files. Therefore, avoid to add
+  #            include/sbia/basis/ to the include search path.
+  if (NOT PROJECT_NAME MATCHES "^BASIS$")
+    basis_include_directories (BEFORE "${INCLUDE_DIR}/${INCLUDE_PREFIX}")
   endif ()
 
   # --------------------------------------------------------------------------

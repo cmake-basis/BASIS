@@ -357,7 +357,7 @@ basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 # project name in lower case only.
 #
 # @sa basis_configure_public_headers()
-basis_set_if_empty (BASIS_CONFIGURE_INCLUDES TRUE)
+set (BASIS_CONFIGURE_INCLUDES TRUE)
 
 # ============================================================================
 # build configuration(s)
