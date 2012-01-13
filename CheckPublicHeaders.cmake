@@ -32,8 +32,8 @@ if (NOT PROJECT_INCLUDE_DIRS)
   message (FATAL_ERROR "Missing argument PROJECT_INCLUDE_DIRS!")
 endif ()
 
-if (NOT ERRORMSG)
-  set (ERRORMSG "File ${OUTPUT_FILE} differs from ${REFERENCE_FILE}")
+if (NOT VARIABLE_NAME)
+  set (VARIABLE_NAME "PUBLIC_HEADERS")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -52,34 +52,31 @@ else ()
 endif ()
 
 # ----------------------------------------------------------------------------
-# remove deprecated public headers
-if (OUTPUT_FILE_DIFFERS)
-  set (PUBLIC_HEADERS)
+# remove obsolete public headers
+if (OUTPUT_FILE_DIFFERS AND REMOVE_OBSOLETE_FILES)
+  set (${VARIABLE_NAME})
   include ("${OUTPUT_FILE}")
-  if (NOT PUBLIC_HEADERS)
-    message (FATAL_ERROR "Expected PUBLIC_HEADERS to be set by ${OUTPUT_FILE}!")
-  endif ()
-  set (CURRENT_HEADERS "${PUBLIC_HEADERS}")
+  set (CURRENT_HEADERS "${${VARIABLE_NAME}}")
+  set (${VARIABLE_NAME})
   include ("${REFERENCE_FILE}")
-  if (NOT PUBLIC_HEADERS)
-    message (FATAL_ERROR "Expected PUBLIC_HEADERS to be set by ${REFERENCE_FILE}!")
-  endif ()
   foreach (H IN LISTS CURRENT_HEADERS)
-    list (FIND PUBLIC_HEADERS "${H}" IDX)
+    list (FIND ${VARIABLE_NAME} "${H}" IDX)
     if (IDX EQUAL -1)
-      foreach (D IN LISTS PROJECT_INCLUDE_DIRS)
-        if (H MATCHES "^${D}")
-          file (RELATIVE_PATH H "${D}" "${H}")
-          break ()
-        endif ()
-      endforeach ()
+      string (REGEX REPLACE "^.*/include/" "" H "${H}")
       file (REMOVE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${H}")
     endif ()
   endforeach ()
 endif ()
 
 # ----------------------------------------------------------------------------
+# remove files if different
+if (OUTPUT_FILE_DIFFERS AND REMOVE_FILES_IF_DIFFERENT)
+  file (REMOVE "${OUTPUT_FILE}")
+  file (REMOVE "${REFERENCE_FILE}")
+endif ()
+
+# ----------------------------------------------------------------------------
 # fatal error if files added/removed
-if (OUTPUT_FILE_DIFFERS)
+if (OUTPUT_FILE_DIFFERS AND ERRORMSG)
   message (FATAL_ERROR "${ERRORMSG}")
 endif ()

@@ -453,32 +453,41 @@ function (basis_configure_public_headers)
     endforeach ()
   endif ()
 
-  # dump currently defined CMake variables such that these can be used in .h.in files
+  # dump currently defined CMake variables such that these can be used in .in files
   basis_dump_variables ("${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake")
 
   # --------------------------------------------------------------------------
-  # clean up last run before the error because a file was added/removed
-
-  file (REMOVE "${CMAKE_FILE}")
-  file (REMOVE "${CMAKE_FILE}.tmp")
-  file (REMOVE "${CMAKE_FILE}.updated")
+  # common arguments to following commands
+  # Attention: Arguments which have a CMake list as value cannot be set this way,
+  #            i.e., the arguments PROJECTS_INCLUDE_DIRS and EXTENSIONS.
+  set (COMMON_ARGS
+    -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+    -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
+    -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
+    -D "VARIABLE_NAME=PUBLIC_HEADERS"
+  )
 
   # --------------------------------------------------------------------------
-  # configure public header files already during the configure step
+  # clean up last run before the error because a file was added/removed
+  file (REMOVE "${CMAKE_FILE}.tmp")
+  file (REMOVE "${CMAKE_FILE}.updated")
+  if (EXISTS "${CMAKE_FILE}")
+    # required to be able to remove now obsolete files from the build tree
+    file (RENAME "${CMAKE_FILE}" "${CMAKE_FILE}.tmp")
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # configure public header files
   if (BASIS_VERBOSE)
     message (STATUS "Configuring public header files...")
   endif ()
 
   execute_process (
-    COMMAND "${CMAKE_COMMAND}"
-            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
-            -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+    COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
-            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
-            -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
             -D "EXTENSIONS=${EXTENSIONS}"
+            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
             -D "CMAKE_FILE=${CMAKE_FILE}"
-            -D "VARIABLE_NAME=PUBLIC_HEADERS"
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
     RESULT_VARIABLE RT
   )
@@ -493,6 +502,29 @@ function (basis_configure_public_headers)
 
   if (NOT EXISTS "${CMAKE_FILE}")
     message (FATAL_ERROR "File ${CMAKE_FILE} not generated as it should have been!")
+  endif ()
+
+  # remove header files from build tree which were copied there before but
+  # are part of a now disabled module or were simply removed from the source tree
+  if (EXISTS "${CMAKE_FILE}.tmp")
+    execute_process (
+      # Compare current list of headers to list of previously configured files.
+      # If the lists differ, this command removes files which have been removed
+      # from the directory tree with root PROJECT_INCLUDE_DIR also from the
+      # tree with root directory BINARY_INCLUDE_DIR.
+      COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
+              -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+              -D "OUTPUT_FILE=${CMAKE_FILE}.tmp"
+              -D "REFERENCE_FILE=${CMAKE_FILE}"
+              -D "REMOVE_OBSOLETE_FILES=TRUE"
+              -P "${BASIS_MODULE_PATH}/CheckPublicHeaders.cmake"
+      VERBATIM
+    )
+    file (REMOVE "${CMAKE_FILE}.tmp")
+    if (NOT RT EQUAL 0)
+      message (FATAL_ERROR "Failed to remove obsolete header files from build tree."
+                           " Remove the ${BINARY_INCLUDE_DIR} directory and rerun CMake.")
+    endif ()
   endif ()
 
   if (BASIS_VERBOSE)
@@ -522,14 +554,10 @@ function (basis_configure_public_headers)
   # custom command which globs the files in the project's include directory
   add_custom_command (
     OUTPUT  "${CMAKE_FILE}.tmp"
-    COMMAND "${CMAKE_COMMAND}"
-            -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+    COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
-            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
-            -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
             -D "EXTENSIONS=${EXTENSIONS}"
             -D "CMAKE_FILE=${CMAKE_FILE}.tmp"
-            -D "VARIABLE_NAME=PUBLIC_HEADERS"
             -D "PREVIEW=TRUE" # do not actually configure the files
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
     COMMENT "Checking if public header files were added or removed"
@@ -543,16 +571,14 @@ function (basis_configure_public_headers)
     # trigger execution of custom command that generates the list
     # of current files in the project's include directory
     DEPENDS "${CMAKE_FILE}.tmp"
-    # compare current list of header to list of previously configured files
-    # if the lists differ, remove the CMAKE_FILE which was included in
-    # this function such that CMake re-configures the build system
-    COMMAND "${CMAKE_COMMAND}"
+    # Compare current list of headers to list of previously configured files.
+    # If the lists differ, the build of this target fails with the given error message.
+    COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
+            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "OUTPUT_FILE=${CMAKE_FILE}"
             -D "REFERENCE_FILE=${CMAKE_FILE}.tmp"
-            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
-            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
-            -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
             -D "ERRORMSG=${ERRORMSG}"
+            -D "REMOVE_FILES_IF_DIFFERENT=TRUE" # triggers reconfigure on next build
             -P "${BASIS_MODULE_PATH}/CheckPublicHeaders.cmake"
     # remove temporary file again to force its regeneration
     COMMAND "${CMAKE_COMMAND}" -E remove "${CMAKE_FILE}.tmp"
@@ -566,13 +592,10 @@ function (basis_configure_public_headers)
       OUTPUT  "${CMAKE_FILE}.updated" # do not use same file as included
                                       # before otherwise CMake will re-configure
                                       # the build system next time
-      COMMAND "${CMAKE_COMMAND}"
-              -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
-              -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
+      COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
               -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
-              -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
-              -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
               -D "EXTENSIONS=${EXTENSIONS}"
+              -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
               -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
       COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
       DEPENDS ${PUBLIC_HEADERS}
