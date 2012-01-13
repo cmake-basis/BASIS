@@ -553,7 +553,7 @@ endif ()
 
 # Note: The build name given in the .xml files will be replaced by this script
 #       before the submission once the used compiler could be determined.
-set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-unknown_compiler")
+set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-<compiler>")
 
 # ----------------------------------------------------------------------------
 # directories
