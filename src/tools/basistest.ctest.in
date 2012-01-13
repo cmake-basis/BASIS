@@ -539,9 +539,21 @@ if (NOT CTEST_SITE)
   endif ()
 endif ()
 
+# ----------------------------------------------------------------------------
+# build information
+if (NOT CTEST_BUILD_TYPE)
+  if (WITH_COVERAGE)
+    set (CTEST_BUILD_TYPE "Coverage")
+  elseif (WITH_MEMCHECK)
+    set (CTEST_BUILD_TYPE "MemCheck")
+  else ()
+    set (CTEST_BUILD_TYPE "Release")
+  endif ()
+endif ()
+
 # Note: The build name given in the .xml files will be replaced by this script
 #       before the submission once the used compiler could be determined.
-set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-unknown")
+set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-unknown_compiler")
 
 # ----------------------------------------------------------------------------
 # directories
@@ -578,16 +590,6 @@ endif ()
 # ----------------------------------------------------------------------------
 # test commands
 string (CONFIGURE "${CTEST_SVN_URL}" CTEST_SVN_URL @ONLY)
-
-if (NOT CTEST_BUILD_TYPE)
-  if (WITH_COVERAGE)
-    set (CTEST_BUILD_TYPE "Coverage")
-  elseif (WITH_MEMCHECK)
-    set (CTEST_BUILD_TYPE "MemCheck")
-  else ()
-    set (CTEST_BUILD_TYPE "Release")
-  endif ()
-endif ()
 
 if (NOT EXISTS "${CTEST_SOURCE_DIRECTORY}")
   file (MAKE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}")
@@ -643,7 +645,6 @@ endif ()
 set (UPDATED_FILES TRUE)
 
 if (NOT MANUAL_MODE)
-  message ("Updating files of source tree")
   ctest_update (RETURN_VALUE NUM_FILES)
 
   if (NUM_FILES EQUAL -1)
@@ -677,7 +678,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # build and install API documentation
   if (CONFIGURE_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
-    message ("Build documentation")
+    message (STATUS "Build documentation")
     ctest_build (TARGET doc RETURN_VALUE RT)
     if (RT EQUAL 0)
       if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
@@ -718,7 +719,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
     # ---------------------------------------------------------------------------
     # perform installation
     if (WITH_INSTALL AND TEST_RESULT EQUAL 0)
-      message ("Install project files")
+      message (STATUS "Install project files")
 
       execute_process (
         COMMAND           make install
@@ -774,7 +775,7 @@ if (SUBMIT_RESULTS)
 
   # replace intermediate build name
   if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
-    message ("Change the build name to ${BUILDNAME}")
+    message (STATUS "Change the build name to ${BUILDNAME}")
     # glob XML files
     file (GLOB_RECURSE FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
     # replace build name
