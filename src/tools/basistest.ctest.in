@@ -771,7 +771,7 @@ if (SUBMIT_RESULTS)
   endif ()
 
   # assemble desired build name
-  set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${COMPILER_NAME}")
+  set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-${COMPILER_NAME}")
 
   # replace intermediate build name
   if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
