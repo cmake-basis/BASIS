@@ -321,8 +321,43 @@ set (BASIS_SCRIPT_CONFIG_FILE "${BASIS_MODULE_PATH}/ScriptConfig.cmake.in")
 # of changelogs.
 set (BASIS_SVN_USERS_FILE "${BASIS_MODULE_PATH}/SubversionUsers.txt")
 
-# TODO Figure how it is used and see if it can be removed or document it
+## @brief Force installation of public header files of BASIS C++ utilities.
+#
+# If this variable is set to FALSE, each header file in the @c PROJECT_INCLUDE_DIR
+# is scanned for an include statement which includes one of the public header
+# files of the BASIS C++ utilities. If such include statement was found in
+# a public header file of the project, the public header files of the BASIS
+# C++ utilities are also installed as the project's public header files depend
+# on them. You can set this variable to TRUE in the Settings.cmake file of your
+# project to force the installation of the public header files of the
+# project-specific BASIS C++ utilities.
+#
+# @sa basis_project_finalize()
 basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
+
+## @brief Enable/Disable configuration of public header files.
+#
+# By default, BASIS copies the public header files which were found in the
+# @c PROJECT_INCLUDE_DIR to the corresponding include directory in the build
+# tree using the same relative paths as will be used for the installation.
+# Moreover, header files with the .in suffix are configured using CMake's
+# configure_file() command with the <tt>\@ONLY</tt> option.
+#
+# As the copying of header files adds some additional complexity and results
+# in the file path reported by the compiler in error messages and warnings which
+# will name the corresponding copy of the header file in the build tree, causing
+# potential confusion and editing of the copy by mistake, this feature was made
+# optional. A project can disable it in the Settings.cmake file by setting the
+# CMake variable @c BASIS_CONFIGURE_INCLUDES to FALSE.
+#
+# If disabled, the relative path of header files is no longer adjusted to match
+# the actual installation. Therefore, in this case, the project developer
+# themself must maintain the <tt>sbia/&lt:project&gt;</tt> subdirectory structure
+# in the @c PROJECT_INCLUDE_DIR directory tree, where &lt;project&gt; is the
+# project name in lower case only.
+#
+# @sa basis_configure_public_headers()
+basis_set_if_empty (BASIS_CONFIGURE_INCLUDES TRUE)
 
 # ============================================================================
 # build configuration(s)
