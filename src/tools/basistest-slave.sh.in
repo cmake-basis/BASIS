@@ -207,8 +207,10 @@ done
 # main
 # ============================================================================
 
-echo "${_EXEC_NAME} running on host $(hostname)"
-echo
+if [ ${verbosity} -gt 0 ]; then
+    echo "${_EXEC_NAME} running on host $(hostname)"
+    echo
+fi
 
 # see if ctest can be found
 which ctest &> /dev/null
@@ -225,9 +227,9 @@ fi
 
 # compose command
 cmd='ctest'
-if [ ${verbosity} -gt 1 ]; then
+if [ ${verbosity} -gt 0 ]; then
     cmd="${cmd} -VV"
-elif [ ${verbosity} -gt 0 ]; then
+else
     cmd="${cmd} -V"
 fi
 cmd="${cmd} -S ${ctest_script}"
