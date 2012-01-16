@@ -117,7 +117,8 @@ void RegisterRequiredFactories()
 // Then the function has been modified such that first of all the function
 // prototype matches the one of the corresponding function of the ITK 4
 // TestKernel module and furthermore the generation of the reports is
-// identical as well.
+// identical as well. This includes the extraction of the center slice instead
+// of the first slice to generate PNG images for inclusion in the report.
 int RegressionTestImage (const char* testImageFilename,
                          const char* baselineImageFilename,
                          int reportErrors,
@@ -230,14 +231,21 @@ int RegressionTestImage (const char* testImageFilename,
     rescale->SetInput(diff->GetOutput());
     rescale->UpdateLargestPossibleRegion();
 
-    RegionType region;
-    region.SetIndex(index);
-    
+    //Note: This modification has been applied to the ImageCompareCommand
+    //      implementation of the ITK 3.18 vs. ITK 4.0
+    //
+    //Get the center slice of the image,  In 3D, the first slice
+    //is often a black slice with little debugging information.
     size = rescale->GetOutput()->GetLargestPossibleRegion().GetSize();
     for (unsigned int i = 2; i < ITK_TEST_DIMENSION_MAX; i++)
       {
+      index[i] = size[i] / 2; //NOTE: Integer Divide used to get approximately
+                              // the center slice
       size[i] = 0;
       }
+
+    RegionType region;
+    region.SetIndex(index);
     region.SetSize(size);
 
     ExtractType::Pointer extract = ExtractType::New();
