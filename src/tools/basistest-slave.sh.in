@@ -227,7 +227,7 @@ fi
 
 # compose command
 cmd='ctest'
-if [ ${verbosity} -gt 0 ]; then
+if [ ${verbosity} -gt 1 ]; then
     cmd="${cmd} -VV"
 else
     cmd="${cmd} -V"
