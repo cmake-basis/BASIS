@@ -9,6 +9,8 @@
  */
 
 
+#include <vector>
+
 #include <sbia/basis/config.h> // platform macros - must be first
 
 #include <stdlib.h>            // malloc() & free(), _splitpath_s() (WINDOWS)
@@ -17,8 +19,9 @@
 #  include <direct.h>          // _getcwd()
 #  include <windows.h>         // GetModuleFileName()
 #else
-#  include <unistd.h>          // getcwd()
+#  include <unistd.h>          // getcwd(), rmdir()
 #  include <sys/stat.h>        // stat(), lstat()
+#  include <dirent.h>          // opendir()
 #endif
 #if MACOS
 #  include <mach-o/dyld.h>     // _NSGetExecutablePath()
@@ -631,6 +634,93 @@ bool is_symlink(const string& path)
     struct stat info;
     if (lstat(path.c_str(), &info) != 0) return false;
     return S_ISLNK(info.st_mode);
+#endif
+}
+
+// ===========================================================================
+// make/remove directory
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+bool make_directory(const string& path, bool parent)
+{
+    if (path.empty() || is_file(path)) return false;
+    vector<string> dirs;
+    string         dir(path);
+    if (parent) {
+        while (!dir.empty() && !exists(dir)) {
+            dirs.push_back(dir);
+            dir = get_file_directory(dir);
+        }
+    } else if (!exists(dir)) {
+        dirs.push_back(dir);
+    }
+    for (vector<string>::reverse_iterator it = dirs.rbegin(); it != dirs.rend(); ++it) {
+#if WINDOWS
+        if (CreateDirectory(it->c_str(), NULL) != 0) return false;
+#else
+        if (mkdir(it->c_str(), 0755) != 0) return false;
+#endif
+    }
+    return true;
+}
+
+// ---------------------------------------------------------------------------
+bool remove_directory(const string& path, bool recursive)
+{
+    string subpath; // either subdirectory or file path
+
+    // -----------------------------------------------------------------------
+    // remove files and subdirectories - recursive implementation
+    if (recursive) {
+#if WINDOWS
+        WIN32_FIND_DATA info;
+        HANDLE hFile = ::FindFirstFile(join_paths(path, "*.*").c_str(), &info);
+        if (hFile != INVALID_HANDLE_VALUE) {
+            do {
+                // skip '.' and '..'
+                if (strncmp(info.cFileName, ".", 2) == 0 || strncmp(info.cFileName, "..", 3) == 0) {
+                    continue;
+                }
+                // remove subdirectory or file, respectively
+                subpath = join_paths(path, info.cFileName);
+                if(info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                    if (!remove_directory(subpath, true)) return false;
+                } else {
+                    if (::SetFileAttributes(subpath.c_str(), FILE_ATTRIBUTE_NORMAL) == FALSE ||
+                        ::DeleteFile(subpath.c_str()) == FALSE) return false;
+                }
+            } while (::FindNextFile(hFile, &info) == TRUE);
+            ::FindClose(hFile);
+        }
+#else
+        struct dirent *p = NULL;
+        DIR *d = opendir(path.c_str());
+        if (d != NULL) {
+            while ((p = readdir(d)) != NULL) {
+                // skip '.' and '..'
+                if (strncmp(p->d_name, ".", 2) == 0 || strncmp(p->d_name, "..", 3) == 0) {
+                    continue;
+                }
+                // remove subdirectory or file, respectively
+                subpath = join_paths(path, p->d_name);
+                if (is_dir(subpath)) {
+                    remove_directory(subpath.c_str());
+                } else {
+                    unlink(subpath.c_str());
+                }
+            }
+            closedir(d);
+        }
+#endif
+    }
+    // -----------------------------------------------------------------------
+    // remove (empty) directory
+#if WINDOWS
+    return (::SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_NORMAL) == FALSE) &&
+           (::RemoveDirectory(path.c_str()) == FALSE);
+#else
+    return rmdir(path.c_str()) != 0;
 #endif
 }
 

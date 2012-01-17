@@ -492,6 +492,33 @@ bool is_dir(const std::string path);
 bool is_symlink(const std::string& path);
 
 // ===========================================================================
+// make directory
+// ===========================================================================
+
+/**
+ * @brief Make directory optionally including parent directories.
+ *
+ * @param path   Path of the directory.
+ * @param parent Whether to also create parent directories if none existent.
+ *
+ * @returns Whether the directory was created successfully.
+ *          Note that on Unix, the created directories are created using
+ *          mode 0755. On Windows, the default security descriptor is passed
+ *          on to the CreateDirectory() function.
+ */
+bool make_directory(const std::string& path, bool parent = true);
+
+/**
+ * @brief Remove directory.
+ *
+ * @param path      Path of the directory.
+ * @param recursive Remove subdirectories and files inside the directory.
+ *
+ * @returns Whether the directory was removed successfully.
+ */
+bool remove_directory(const std::string& path, bool recursive = false);
+
+// ===========================================================================
 // symbolic links
 // ===========================================================================
 
