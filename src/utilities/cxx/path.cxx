@@ -657,7 +657,7 @@ bool make_directory(const string& path, bool parent)
     }
     for (vector<string>::reverse_iterator it = dirs.rbegin(); it != dirs.rend(); ++it) {
 #if WINDOWS
-        if (CreateDirectory(it->c_str(), NULL) != 0) return false;
+        if (CreateDirectory(it->c_str(), NULL) == FALSE) return false;
 #else
         if (mkdir(it->c_str(), 0755) != 0) return false;
 #endif

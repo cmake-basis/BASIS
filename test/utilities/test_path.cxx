@@ -582,11 +582,11 @@ TEST (Path, MakeRemoveDirectory)
     EXPECT_TRUE(make_directory(cwd)) << "make directory " << cwd;
     // directory without non-existent parents
     dir = join_paths(cwd, "test_path_directory");
-    EXPECT_TRUE(make_directory(dir)) << "make directory " << dir;
+    ASSERT_TRUE(make_directory(dir)) << "make directory " << dir;
     EXPECT_TRUE(remove_directory(dir)) << "remove directory " << dir;
     // directory with non-existent parent
     dir = join_paths(cwd, "test_path/directory/subdirectory");
-    EXPECT_TRUE(make_directory(dir)) << "make directory " << dir;
+    ASSERT_TRUE(make_directory(dir)) << "make directory " << dir;
     dir = join_paths(cwd, "test_path");
     EXPECT_FALSE(remove_directory(dir, false))
             << "try to non-recursively remove non-empty directory " << dir;
