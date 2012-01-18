@@ -30,7 +30,7 @@ using namespace std;
 
 // ---------------------------------------------------------------------------
 // Tests the validation of a path string
-TEST (Path, is_valid_path)
+TEST (Path, IsValidPath)
 {
     // test with valid Unix-style paths
     EXPECT_TRUE (is_valid_path ("/"));
@@ -85,7 +85,7 @@ TEST (Path, is_valid_path)
 
 // ---------------------------------------------------------------------------
 // Tests the cleaning/simplifying of a path
-TEST (Path, clean_path)
+TEST (Path, CleanPath)
 {
     // test with (almost) already clean paths
     EXPECT_STREQ ("/usr",          clean_path ("/usr").c_str ());
@@ -125,7 +125,7 @@ TEST (Path, clean_path)
 
 // ---------------------------------------------------------------------------
 // Tests the conversion of a path to Unix-style
-TEST (Path, to_unix_path)
+TEST (Path, ToUnixPath)
 {
     EXPECT_STREQ ("/etc",       to_unix_path ("\\usr/..\\etc").c_str ());
     EXPECT_STREQ ("/etc/",      to_unix_path ("\\usr/..\\etc\\").c_str ());
@@ -145,7 +145,7 @@ TEST (Path, to_unix_path)
 
 // ---------------------------------------------------------------------------
 // Tests the conversion of a path to Windows-style
-TEST (Path, to_windows_path)
+TEST (Path, ToWindowsPath)
 {
     EXPECT_STREQ ("C:\\WINDOWS",          to_windows_path ("/WINDOWS").c_str ());
     EXPECT_STREQ ("C:\\WINDOWS",          to_windows_path ("C:\\WINDOWS").c_str ());
@@ -161,7 +161,7 @@ TEST (Path, to_windows_path)
 
 // ---------------------------------------------------------------------------
 // Tests the conversion of a path to the native style of the used OS
-TEST (Path, to_native_path)
+TEST (Path, ToNativePath)
 {
 #if WINDOWS
     EXPECT_STREQ ("C:\\tmp", to_native_path ("/tmp").c_str ());
@@ -176,7 +176,7 @@ TEST (Path, to_native_path)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the current working directory
-TEST (Path, get_working_directory)
+TEST (Path, GetWorkingDirectory)
 {
     // get working directory
     string wd;
@@ -201,7 +201,7 @@ TEST (Path, get_working_directory)
 
 // ---------------------------------------------------------------------------
 // Tests the splitting of a path into its components
-TEST (Path, split_path)
+TEST (Path, SplitPath)
 {
     string root, dir, fname, ext;
 
@@ -303,7 +303,7 @@ TEST (Path, split_path)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the file root
-TEST (Path, get_file_root)
+TEST (Path, GetFileRoot)
 {
     // relative Unix-style path
     EXPECT_STREQ ("./", get_file_root ("readme.txt").c_str ());
@@ -373,7 +373,7 @@ TEST (Path, get_file_root)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the directory component - see also split_path() test
-TEST (Path, get_file_directory)
+TEST (Path, GetFileDirectory)
 {
 #if WINDOWS
 	EXPECT_STREQ ("C:/etc", get_file_directory ("/etc/config").c_str ());
@@ -393,7 +393,7 @@ TEST (Path, get_file_directory)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the file name component - see also split_path() test
-TEST (Path, get_file_name)
+TEST (Path, GetFileName)
 {
     EXPECT_STREQ ("word.doc",      get_file_name ("/Users/andreas/word.doc").c_str ());
     EXPECT_STREQ ("README",        get_file_name ("doc/README").c_str ());
@@ -405,7 +405,7 @@ TEST (Path, get_file_name)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the file name component - see also split_path() test
-TEST (Path, get_file_name_without_extension)
+TEST (Path, GetFileNameWithoutExtension)
 {
     EXPECT_STREQ ("word",      get_file_name_without_extension ("/Users/andreas/word.doc").c_str ());
     EXPECT_STREQ ("README",    get_file_name_without_extension ("doc/README").c_str ());
@@ -426,7 +426,7 @@ TEST (Path, get_file_name_without_extension)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the extension component - see also split_path() test
-TEST (Path, get_file_name_extension)
+TEST (Path, GetFileNameExtension)
 {
     EXPECT_STREQ (".doc", get_file_name_extension ("/Users/andreas/word.doc").c_str ());
     EXPECT_STREQ ("",     get_file_name_extension ("doc/README").c_str ());
@@ -451,7 +451,7 @@ TEST (Path, get_file_name_extension)
 
 // ---------------------------------------------------------------------------
 // Tests the check whether a path is absolute or not
-TEST (Path, is_absolute)
+TEST (Path, IsAbsolute)
 {
     // test with Unix-style relative paths
     EXPECT_FALSE (is_absolute ("readme.txt"));
@@ -484,7 +484,7 @@ TEST (Path, is_absolute)
 
 // ---------------------------------------------------------------------------
 // Tests the check whether a path is relative or not
-TEST (Path, is_relative)
+TEST (Path, IsRelative)
 {
     // test with Unix-style relative paths
     EXPECT_TRUE (is_relative ("readme.txt"));
@@ -517,7 +517,7 @@ TEST (Path, is_relative)
 
 // ---------------------------------------------------------------------------
 // Tests the conversion of a path to an absolute path
-TEST (Path, to_absolute_path)
+TEST (Path, ToAbsolutePath)
 {
 #if WINDOWS
     EXPECT_STREQ ("C:/usr/local",  to_absolute_path ("/usr",   "local").c_str ());
@@ -548,7 +548,7 @@ TEST (Path, to_absolute_path)
 
 // ---------------------------------------------------------------------------
 // Tests the conversion of a path to a relative path
-TEST (Path, to_relative_path)
+TEST (Path, ToRelativePath)
 {
     EXPECT_STREQ (".",             to_relative_path ("/usr",        "/usr").c_str ());
     EXPECT_STREQ ("..",            to_relative_path ("/usr/local",  "/usr").c_str ());
@@ -560,7 +560,7 @@ TEST (Path, to_relative_path)
 
 // ---------------------------------------------------------------------------
 // Tests the joining of two paths.
-TEST (Path, join_paths)
+TEST (Path, JoinPaths)
 {
     EXPECT_STREQ ("./usr",          join_paths (".", "usr").c_str ());
     EXPECT_STREQ ("/etc",           join_paths ("/usr/local", "/etc").c_str ());
@@ -569,12 +569,40 @@ TEST (Path, join_paths)
 }
 
 // ===========================================================================
+// make / remove directory
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Tests the creation of new directories and their removal.
+TEST (Path, MakeRemoveDirectory)
+{
+    string dir;
+    // already existing directory
+    string cwd = get_working_directory();
+    EXPECT_TRUE(make_directory(cwd)) << "make directory " << cwd;
+    // directory without non-existent parents
+    dir = join_paths(cwd, "test_path_directory");
+    EXPECT_TRUE(make_directory(dir)) << "make directory " << dir;
+    EXPECT_TRUE(remove_directory(dir)) << "remove directory " << dir;
+    // directory with non-existent parent
+    dir = join_paths(cwd, "test_path/directory/subdirectory");
+    EXPECT_TRUE(make_directory(dir)) << "make directory " << dir;
+    dir = join_paths(cwd, "test_path");
+    EXPECT_FALSE(remove_directory(dir, false))
+            << "try to non-recursively remove non-empty directory " << dir;
+    EXPECT_FALSE(remove_directory(dir))
+            << "default removal option should be the safe non-recursive way...";
+    EXPECT_TRUE(remove_directory(dir, true))
+            << "recursively remove non-empty directory " << dir;
+}
+
+// ===========================================================================
 // symbolic links
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
 // Tests the check whether a given file is a symbolic link
-TEST (Path, is_symlink)
+TEST (Path, IsSymlink)
 {
 #if WINDOWS
     EXPECT_FALSE (is_symlink ("/proc/exe"));
@@ -602,7 +630,7 @@ TEST (Path, is_symlink)
 
 // ---------------------------------------------------------------------------
 // Tests the reading of a symbolic link's value
-TEST (Path, read_symlink)
+TEST (Path, ReadSymlink)
 {
     std::string value;
 #if WINDOWS
@@ -640,7 +668,7 @@ TEST (Path, read_symlink)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of an actual absolute path with symbolic links resolved
-TEST (Path, get_real_path)
+TEST (Path, GetRealPath)
 {
 #if WINDOWS
 #else
@@ -675,7 +703,7 @@ TEST (Path, get_real_path)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the current executable's path
-TEST (Path, get_executable_path)
+TEST (Path, GetExecutablePath)
 {
     string path;
     EXPECT_NO_THROW (path = get_executable_path ());
@@ -685,7 +713,7 @@ TEST (Path, get_executable_path)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the current executable's directory
-TEST (Path, get_executable_directory)
+TEST (Path, GetExecutableDirectory)
 {
     string path;
     EXPECT_NO_THROW (path = get_executable_directory ());
@@ -695,7 +723,7 @@ TEST (Path, get_executable_directory)
 
 // ---------------------------------------------------------------------------
 // Tests the retrieval of the current executable's name
-TEST (Path, get_executable_name)
+TEST (Path, GetExecutableName)
 {
     string name;
     EXPECT_NO_THROW (name = get_executable_name ());

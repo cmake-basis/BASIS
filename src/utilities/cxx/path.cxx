@@ -673,6 +673,7 @@ bool remove_directory(const string& path, bool recursive)
     // -----------------------------------------------------------------------
     // remove files and subdirectories - recursive implementation
     if (recursive) {
+        bool ok = true;
 #if WINDOWS
         WIN32_FIND_DATA info;
         HANDLE hFile = ::FindFirstFile(join_paths(path, "*.*").c_str(), &info);
@@ -685,10 +686,10 @@ bool remove_directory(const string& path, bool recursive)
                 // remove subdirectory or file, respectively
                 subpath = join_paths(path, info.cFileName);
                 if(info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    if (!remove_directory(subpath, true)) return false;
+                    if (!remove_directory(subpath, true)) ok = false;
                 } else {
                     if (::SetFileAttributes(subpath.c_str(), FILE_ATTRIBUTE_NORMAL) == FALSE ||
-                        ::DeleteFile(subpath.c_str()) == FALSE) return false;
+                        ::DeleteFile(subpath.c_str()) == FALSE) ok = false;
                 }
             } while (::FindNextFile(hFile, &info) == TRUE);
             ::FindClose(hFile);
@@ -705,22 +706,23 @@ bool remove_directory(const string& path, bool recursive)
                 // remove subdirectory or file, respectively
                 subpath = join_paths(path, p->d_name);
                 if (is_dir(subpath)) {
-                    remove_directory(subpath.c_str());
+                    if (!remove_directory(subpath, true)) ok = false;
                 } else {
-                    unlink(subpath.c_str());
+                    if (unlink(subpath.c_str()) != 0) ok = false;
                 }
             }
             closedir(d);
         }
 #endif
+        if (!ok) return false;
     }
     // -----------------------------------------------------------------------
     // remove (empty) directory
 #if WINDOWS
-    return (::SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_NORMAL) == FALSE) &&
-           (::RemoveDirectory(path.c_str()) == FALSE);
+    return (::SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_NORMAL) == TRUE) &&
+           (::RemoveDirectory(path.c_str()) == TRUE);
 #else
-    return rmdir(path.c_str()) != 0;
+    return rmdir(path.c_str()) == 0;
 #endif
 }
 
