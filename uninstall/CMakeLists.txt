@@ -28,7 +28,7 @@ install (
 if (INSTALL_SINFIX)
   set (UNINSTALLER_NAME "uninstall")
 else ()
-  set (UNINSTALLER_NAME "uninstall_${PROJECT_NAME}")
+  set (UNINSTALLER_NAME "uninstall_${PROJECT_NAME_LOWER}")
 endif ()
 if (WIN32)
   set (UNINSTALLER_NAME "${UNINSTALLER_NAME}.bat")
