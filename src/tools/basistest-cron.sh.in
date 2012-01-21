@@ -67,7 +67,15 @@ ctest="${_EXEC_DIR}/@MODULES_DIR@/basistest.ctest"
 master="${_EXEC_DIR}/basistest-master"
 
 ## @brief Test execution command.
-slave="${_EXEC_DIR}/basistest-slave -v -S ${ctest} --args shared-source,site=sbia-cluster-centos5"
+#
+# Note: We use a fixed site name for the tests. This allows the test job to be
+#       run on any compute node with the same system installation without
+#       having CDash list submissions from these different notes as separate.
+#       In particular, the numbers of how many tests are now succeeding compared
+#       to previous runs, or how many are now failing would otherwise be confusing
+#       when the tests are not regularly run at one and the same site, but
+#       different sites which represent the same operating system and configuration.
+slave="${_EXEC_DIR}/basistest-slave -v -S ${ctest} --args site=sbia-cluster-centos5"
 
 # ============================================================================
 # main
