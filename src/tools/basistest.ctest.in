@@ -120,6 +120,8 @@ function (print_options)
                          i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
   shared-source          Specify that each test site should use the same copy of
                          the sources. By default, each test site uses its own copy.
+  shared-build           Specify that each test site should use the same binary
+                         directories. By default, each test site uses its own copy.
   common-site=<prefix>   Do not distinguish between different sites with a common
                          prefix in the name. Useful when the test jobs are executed
                          on a commonly configured cluster.
@@ -281,6 +283,7 @@ set (CTEST_SOURCE_DIRECTORY "")
 set (CTEST_BINARY_DIRECTORY "")
 set (CTEST_MODEL            "Experimental")
 set (SHARED_SOURCE          FALSE)
+set (SHARED_BUILD           FALSE)
 set (COMMON_SITE_PREFIXES)
 
 # ----------------------------------------------------------------------------
@@ -390,6 +393,8 @@ foreach (ARG ${ARGV})
       endif ()
     elseif (${OPTION} STREQUAL "shared-source")
       set_bool_option (SHARED_SOURCE)
+    elseif (${OPTION} STREQUAL "shared-build")
+      set_bool_option (SHARED_BUILD)
     elseif (${OPTION} STREQUAL "common-site")
       append_option (COMMON_SITE_PREFIXES)
     elseif (${OPTION} STREQUAL "site")
@@ -560,13 +565,17 @@ set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-<compiler>")
 if (NOT MANUAL_MODE)
   if (NOT CTEST_SOURCE_DIRECTORY)
     if (SHARED_SOURCE)
-      set (CTEST_SOURCE_DIRECTORY "${CTEST_BASE_DIRECTORY}/${CTEST_MODEL}/shared/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
+      set (CTEST_SOURCE_DIRECTORY "${CTEST_BASE_DIRECTORY}/${CTEST_MODEL}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
     else ()
       set (CTEST_SOURCE_DIRECTORY "${CTEST_BASE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-source/${CTEST_SVN_BRANCH}")
     endif ()
   endif ()
   if (NOT CTEST_BINARY_DIRECTORY)
-    set (CTEST_BINARY_DIRECTORY "${CTEST_BASE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-build/${CTEST_SVN_BRANCH}/${CTEST_BUILD_TYPE}")
+    if (SHARED_BUILD)
+      set (CTEST_BINARY_DIRECTORY "${CTEST_BASE_DIRECTORY}/${CTEST_MODEL}/${CTEST_PROJECT_NAME}-build/${CTEST_SVN_BRANCH}/${CTEST_BUILD_TYPE}")
+    else ()
+      set (CTEST_BINARY_DIRECTORY "${CTEST_BASE_DIRECTORY}/${CTEST_MODEL}/${CTEST_SITE}/${CTEST_PROJECT_NAME}-build/${CTEST_SVN_BRANCH}/${CTEST_BUILD_TYPE}")
+    endif ()
   endif ()
 endif ()
 
