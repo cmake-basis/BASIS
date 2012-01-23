@@ -75,7 +75,7 @@ master="${_EXEC_DIR}/basistest-master"
 #       to previous runs, or how many are now failing would otherwise be confusing
 #       when the tests are not regularly run at one and the same site, but
 #       different sites which represent the same operating system and configuration.
-slave="${_EXEC_DIR}/basistest-slave -v -S ${ctest} --args site=sbia-cluster-centos5,shared-source,shared-build"
+slave="${_EXEC_DIR}/basistest-slave -v -S ${ctest} --args site=sbia-cluster-centos5,shared-source,shared-build,tmpbin"
 
 # ============================================================================
 # main
