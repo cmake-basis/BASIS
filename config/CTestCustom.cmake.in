@@ -150,34 +150,26 @@ set (
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
 foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "@PROJECT_SOURCE_DIR@/${CODE_DIR}/*${E}"
+    "${CODE_DIR}/*${E}"
+  )
+endforeach ()
+foreach (E IN ITEMS .txx .hxx .inl .inc)
+  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+    "${INCLUDE_DIR}/*${E}"
   )
 endforeach ()
 set (BASIS_CONFIGURE_INCLUDES "@BASIS_CONFIGURE_INCLUDES@")
-if (BASIS_CONFIGURE_INCLUDES)
-  foreach (E IN ITEMS .txx .hxx .inl .inc)
-    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "@PROJECT_BINARY_DIR@/${INCLUDE_DIR}/*${E}"
-    )
-  endforeach ()
-else ()
-  foreach (E IN ITEMS .txx .hxx .inl .inc)
-    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "@PROJECT_SOURCE_DIR@/${INCLUDE_DIR}/*${E}"
-    )
-  endforeach ()
-endif ()
 foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
   if (NOT BASIS_CONFIGURE_INCLUDES)
     foreach (E IN ITEMS .txx .hxx .inl .inc)
       list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-        "@PROJECT_SOURCE_DIR@/${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
+        "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
       )
     endforeach ()
   endif ()
   foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "@PROJECT_SOURCE_DIR@/${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
+      "${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
     )
   endforeach ()
 endforeach ()
