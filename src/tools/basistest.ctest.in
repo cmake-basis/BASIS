@@ -118,6 +118,7 @@ function (print_options)
                          specified directory. If this option is given without
                          argument, the default web server location at SBIA is used,
                          i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
+  nosubmit               Do not submit test results to the dashboard.
   shared-source          Specify that each test site should use the same copy of
                          the sources. By default, each test site uses its own copy.
   shared-build           Specify that each test site should use the same binary
@@ -284,7 +285,10 @@ set (CTEST_BINARY_DIRECTORY "")
 set (CTEST_MODEL            "Experimental")
 set (SHARED_SOURCE          FALSE)
 set (SHARED_BUILD           FALSE)
+set (SUBMIT_RESULTS         TRUE)
 set (COMMON_SITE_PREFIXES)
+
+set (CTEST_EXTRA_SUBMIT_FILES) # additional files for submission to the dashboard
 
 # ----------------------------------------------------------------------------
 # project attributes
@@ -294,14 +298,14 @@ set (CTEST_SVN_BRANCH   "trunk")
 
 # ----------------------------------------------------------------------------
 # build configuration
-set (CTEST_CMAKE_GENERATOR "Unix Makefiles")
-set (CTEST_BUILD_TYPE      "")
+set (CTEST_CMAKE_GENERATOR "Unix Makefiles") # CMake generator
+set (CTEST_BUILD_TYPE      "")               # build type/configuration
+set (CTEST_COMPILER_FLAGS  "")               # additional compiler flags
+set (CTEST_LINKER_FLAGS    "")               # additional linker flags
 set (CTEST_CMAKE_OPTIONS)
-
-set (WITH_MEMCHECK FALSE) # whether to perform memory checks
-set (WITH_COVERAGE FALSE) # whether to perform coverage analysis
-
-#set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "config/valgrind.sup")
+set (WITH_MEMCHECK         FALSE)            # enable/disable memory checks
+set (WITH_COVERAGE         FALSE)            # enable/disable coverage analysis
+set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE)    # memory checks suppressions
 
 # ----------------------------------------------------------------------------
 # test execution
@@ -322,19 +326,19 @@ set (INSTALL_DOXYGEN_DIR)
 # options
 # ============================================================================
 
-macro (set_bool_option VAR)
-  if (VALUE)
-    set (FAILURE TRUE)
-  else ()
-    set (${VAR} TRUE)
-  endif ()
-endmacro ()
-
 macro (set_option VAR)
-  if (VALUE)
-    set (${VAR} "${VALUE}")
+  if (${ARGC} EQUAL 1)
+    if (VALUE)
+      set (${VAR} "${VALUE}")
+    else ()
+      set (FAILURE TRUE)
+    endif ()
   else ()
-    set (FAILURE TRUE)
+    if (VALUE)
+      set (FAILURE TRUE)
+    else ()
+      set (${VAR} "${ARGN}")
+    endif ()
   endif ()
 endmacro ()
 
@@ -378,13 +382,13 @@ foreach (ARG ${ARGV})
     elseif (${OPTION} STREQUAL "branch")
       set_option (CTEST_SVN_BRANCH)
     elseif (${OPTION} STREQUAL "memcheck")
-      set_bool_option (WITH_MEMCHECK)
+      set_option (WITH_MEMCHECK TRUE)
     elseif (${OPTION} STREQUAL "coverage")
-      set_bool_option (WITH_COVERAGE)
+      set_option (WITH_COVERAGE TRUE)
     elseif (${OPTION} STREQUAL "tmpbin")
-      set_bool_option (TMPBIN)
+      set_option (TMPBIN TRUE)
     elseif (${OPTION} STREQUAL "install")
-      set_bool_option (WITH_INSTALL)
+      set_option (WITH_INSTALL TRUE)
     elseif (${OPTION} STREQUAL "doxygen")
       if (VALUE)
         set_option (INSTALL_DOXYGEN_DIR)
@@ -392,20 +396,24 @@ foreach (ARG ${ARGV})
         set (INSTALL_DOXYGEN_DIR "/sbia/web/software/doxygen/\@CTEST_PROJECT_NAME_LOWER\@/\@CTEST_SVN_BRANCH\@")
       endif ()
     elseif (${OPTION} STREQUAL "shared-source")
-      set_bool_option (SHARED_SOURCE)
+      set_option (SHARED_SOURCE TRUE)
     elseif (${OPTION} STREQUAL "shared-build")
-      set_bool_option (SHARED_BUILD)
+      set_option (SHARED_BUILD TRUE)
+    elseif (${OPTION} STREQUAL "submit")
+      set_option (SUBMIT_RESULTS TRUE)
+    elseif (${OPTION} STREQUAL "nosubmit")
+      set_option (SUBMIT_RESULTS FALSE)
     elseif (${OPTION} STREQUAL "common-site")
       append_option (COMMON_SITE_PREFIXES)
     elseif (${OPTION} STREQUAL "site")
         set_option (CTEST_SITE)
     elseif (${OPTION} STREQUAL "force")
-      set_bool_option (FORCE_BUILD)
-      set_bool_option (FORCE_TEST)
+      set_option (FORCE_BUILD TRUE)
+      set_option (FORCE_TEST  TRUE)
     elseif (${OPTION} STREQUAL "force-build")
-      set_bool_option (FORCE_BUILD)
+      set_option (FORCE_BUILD TRUE)
     elseif (${OPTION} STREQUAL "force-test")
-      set_bool_option (FORCE_TEST)
+      set_option (FORCE_TEST TRUE)
     elseif (${OPTION} STREQUAL "version")
       print_version ()
       return ()
@@ -504,25 +512,9 @@ endif ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# testing tools
-find_program (
-  CTEST_SVN_COMMAND
-  NAMES basistest-svn
-  HINTS "${CMAKE_CURRENT_LIST_DIR}/@RUNTIME_DIR@"
-)
-find_program (CTEST_SVN_COMMAND         NAMES svn)
-find_program (CTEST_COVERAGE_COMMAND    NAMES gcov)
-find_program (CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
-
-if (NOT CTEST_SVN_COMMAND)
-  message (FATAL_ERROR "Could not find \"basistest-svn\" or \"svn\" command!")
-endif ()
-
-if (NOT CTEST_COVERAGE_COMMAND AND WITH_COVERAGE)
-  message (FATAL_ERROR "Cannot perform coverage analysis without gcov")
-endif ()
-if (NOT CTEST_MEMORYCHECK_COMMAND AND WITH_MEMCHECK)
-  message (FATAL_ERROR "Cannot perform memory checks without valgrind")
+# build type
+if (NOT CTEST_BUILD_TYPE AND (WITH_COVERAGE OR WITH_MEMCHECK))
+  set (CTEST_BUILD_TYPE "Debug")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -546,19 +538,18 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # build information
-if (NOT CTEST_BUILD_TYPE)
-  if (WITH_COVERAGE)
-    set (CTEST_BUILD_TYPE "Coverage")
-  elseif (WITH_MEMCHECK)
-    set (CTEST_BUILD_TYPE "MemCheck")
-  else ()
-    set (CTEST_BUILD_TYPE "Release")
-  endif ()
-endif ()
 
-# Note: The build name given in the .xml files will be replaced by this script
-#       before the submission once the used compiler could be determined.
-set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-<compiler>")
+# Note: The @COMPILER@ pattern in the build name as written to the .xml files
+#       will be replaced by this script before the submission once the used
+#       compiler is known from the CMake cache.
+set (CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}-\@COMPILER_NAME\@")
+if (WITH_COVERAGE AND WITH_MEMCHECK)
+  set (CTEST_BUILD_NAME "${CTEST_BUILD_NAME} (Coverage & MemCheck)")
+elseif (WITH_COVERAGE)
+  set (CTEST_BUILD_NAME "${CTEST_BUILD_NAME} (Coverage)")
+elseif (WITH_MEMCHECK)
+  set (CTEST_BUILD_NAME "${CTEST_BUILD_NAME} (MemCheck)")
+endif ()
 
 # ----------------------------------------------------------------------------
 # directories
@@ -578,6 +569,8 @@ if (NOT MANUAL_MODE)
     endif ()
   endif ()
 endif ()
+string (REGEX REPLACE "/$" "" CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
+string (REGEX REPLACE "/$" "" CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}")
 
 string (CONFIGURE "${INSTALL_DOXYGEN_DIR}" INSTALL_DOXYGEN_DIR)
 
@@ -588,28 +581,79 @@ else ()
 endif ()
 
 # ----------------------------------------------------------------------------
-# memory check suppressions file
-if (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE AND NOT IS_ABSOLUTE "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
-  set (
-    CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
-      "${CTEST_SOURCE_DIRECTORY}/${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}"
-  )
+# checkout / update
+find_program (
+  CTEST_SVN_COMMAND
+  NAMES basistest-svn
+  HINTS "${CMAKE_CURRENT_LIST_DIR}/@RUNTIME_DIR@"
+)
+find_program (CTEST_SVN_COMMAND NAMES svn)
+
+if (NOT CTEST_SVN_COMMAND)
+  message (FATAL_ERROR "Could not find \"basistest-svn\" or \"svn\" command!")
 endif ()
 
-# ----------------------------------------------------------------------------
-# test commands
 string (CONFIGURE "${CTEST_SVN_URL}" CTEST_SVN_URL @ONLY)
 
 if (NOT EXISTS "${CTEST_SOURCE_DIRECTORY}")
   file (MAKE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}")
   set (CTEST_CHECKOUT_COMMAND "${CTEST_SVN_COMMAND} co \"${CTEST_SVN_URL}/${CTEST_SVN_BRANCH}\" ${CTEST_SOURCE_DIRECTORY}")
 endif ()
-
 set (CTEST_UPDATE_COMMAND "${CTEST_SVN_COMMAND}")
 
+# ----------------------------------------------------------------------------
+# coverage analysis
+if (WITH_COVERAGE)
+  find_program (CTEST_COVERAGE_COMMAND NAMES gcov)
+  if (NOT CTEST_COVERAGE_COMMAND)
+    message (FATAL_ERROR "Could not find gcov! Only gcc and gcov supported to perform coverage analysis.")
+  endif ()
+  set (CTEST_COMPILER_FLAGS "${CTEST_COMPILER_FLAGS} -O0 -fprofile-arcs -ftest-coverage")
+endif ()
+
+# ----------------------------------------------------------------------------
+# memory check
+if (WITH_MEMCHECK)
+  # TODO Consider switching to AddressSanitizer instead, which requires the
+  #      use of the clang compiler, however, with the compiler flag
+  #      -faddress-sanitizer.
+  find_program (CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
+  if (NOT CTEST_MEMORYCHECK_COMMAND)
+    message (FATAL_ERROR "Could not find valgrind! Only valgrind supported as memory error detector.")
+  endif ()
+  if (NOT WITH_COVERAGE)
+    set (CTEST_COMPILER_FLAGS "${CTEST_COMPILER_FLAGS} -O1")
+  endif ()
+  set (CTEST_COMPILER_FLAGS "${CTEST_COMPILER_FLAGS} -fno-omit-frame-pointer")
+  if (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE)
+    if (NOT IS_ABSOLUTE "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
+      set (
+        CTEST_MEMORYCHECK_SUPPRESSIONS_FILE
+          "${CTEST_SOURCE_DIRECTORY}/${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}"
+      )
+    endif ()
+    if (NOT EXISTS "${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE}")
+      message ("Memory check suppressions file ${CTEST_MEMORYCHECK_SUPPRESSIONS_FILE} not found!")
+    endif ()
+  endif ()
+endif ()
+
+# ----------------------------------------------------------------------------
+# configuration / build
 set (CTEST_CONFIGURE_COMMAND "\"${CMAKE_COMMAND}\"")
 if (CTEST_BUILD_TYPE)
   set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DCMAKE_BUILD_TYPE:STRING=${CTEST_BUILD_TYPE}")
+endif ()
+if (CTEST_COMPILER_FLAGS)
+  string (STRIP "${CTEST_COMPILER_FLAGS}" CTEST_COMPILER_FLAGS)
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-DCMAKE_C_FLAGS:STRING=${CTEST_COMPILER_FLAGS}\"")
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-DCMAKE_CXX_FLAGS:STRING=${CTEST_COMPILER_FLAGS}\"")
+endif ()
+if (CTEST_LINKER_FLAGS)
+  string (STRIP "${CTEST_LINKER_FLAGS}" CTEST_LINKER_FLAGS)
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-DCMAKE_EXE_LINKER_FLAGS:STRING=${CTEST_LINKER_FLAGS}\"")
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-DCMAKE_MODULE_LINKER_FLAGS:STRING=${CTEST_LINKER_FLAGS}\"")
+  set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-DCMAKE_SHARED_LINKER_FLAGS:STRING=${CTEST_LINKER_FLAGS}\"")
 endif ()
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_TESTING:BOOL=ON")
 if (INSTALL_DOXYGEN_DIR)
@@ -630,7 +674,15 @@ set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECT
 set (CONFIGURE_RESULT 1)   # whether configuration was successful (0 if it was)
 set (BUILD_RESULT     1)   # whether build was successful (0 if it was)
 
-set (SUBMIT_RESULTS FALSE) # whether to submit the results to the dashboard
+# ----------------------------------------------------------------------------
+# in manual mode, preserve CMake cache to be able to restore it later
+if (MANUAL_MODE AND EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
+  execute_process (
+    COMMAND "${CMAKE_COMMAND}" -E copy
+        "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt"
+        "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt.bak"
+  )
+endif ()
 
 # ----------------------------------------------------------------------------
 # empty the binary directory
@@ -656,17 +708,16 @@ set (UPDATED_FILES TRUE)
 if (NOT MANUAL_MODE)
   ctest_update (RETURN_VALUE NUM_FILES)
 
-  if (NUM_FILES EQUAL -1)
-    set (SUBMIT_RESULTS TRUE)
-  elseif (NOT CTEST_CHECKOUT_COMMAND AND NUM_FILES EQUAL 0)
+  if (NOT CTEST_CHECKOUT_COMMAND AND NUM_FILES EQUAL 0)
     set (UPDATED_FILES FALSE)
+    if (NOT FORCE_BUILD)
+      set (SUBMIT_RESULTS FALSE)
+    endif ()
   endif ()
 endif ()
 
 # perform other test stages and submit results only if required
 if (FORCE_BUILD OR UPDATED_FILES)
-
-  set (SUBMIT_RESULTS TRUE)
 
   # --------------------------------------------------------------------------
   # configure build
@@ -739,8 +790,8 @@ if (FORCE_BUILD OR UPDATED_FILES)
         ERROR_FILE        "${CTEST_BINARY_DIRECTORY}/install.log"
       )
 
-      if (NOT INSTALL_RESULT EQUAL 0 AND COMMAND ctest_upload)
-        ctest_upload (FILES "${CTEST_BINARY_DIRECTORY}/install.log")
+      if (NOT INSTALL_RESULT EQUAL 0)
+        list (APPEND CTEST_EXTRA_SUBMIT_FILES "${CTEST_BINARY_DIRECTORY}/install.log")
       endif ()
     endif ()
 
@@ -748,64 +799,90 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
 endif ()
 
+# ----------------------------------------------------------------------------
+# adjust information attached to test results
+if (WIN32)
+  set (NAME_COMPONENT "NAME_WE")
+else ()
+  set (NAME_COMPONENT "NAME")
+endif ()
+# get compiler name
+if (UNIX OR BORLAND)
+  read_cmake_cache_value (CMAKE_CXX_COMPILER)
+  set (COMPILER "${CMAKE_CXX_COMPILER}")
+  get_filename_component (COMPILER_NAME "${CMAKE_CXX_COMPILER}" ${NAME_COMPONENT})
+else ()
+  read_cmake_cache_value (CMAKE_BUILD_TOOL)
+  set (COMPILER "${CMAKE_BUILD_TOOL}")
+  get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
+endif ()
+if (COMPILER_NAME MATCHES "msdev")
+  set (COMPILER_NAME "vs60")
+elseif (COMPILER_NAME MATCHES "devenv")
+  read_cmake_cache_value (CMAKE_GENERATOR)
+  string (REGEX REPLACE "Visual Studio ([0-9][0-9]?)($|.*)" "\\1" NUMBER "${CMAKE_GENERATOR}") 
+  if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio 7 .NET 2003")
+    set (COMPILER_NAME "vs71")
+  else ()
+    set (COMPILER_NAME "vs${NUMBER}")
+  endif ()
+endif ()
+# replace <compiler> pattern in build name
+string (CONFIGURE "${CTEST_BUILD_NAME}" BUILDNAME @ONLY)
+message ("Change build name to ${BUILDNAME}")
+# modify submission files
+file (GLOB_RECURSE SUBMISSION_FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
+foreach (SUBMISSION_FILE IN LISTS SUBMISSION_FILES)
+  # read submission file
+  file (READ "${SUBMISSION_FILE}" XML)
+  # set compiler name if necessary
+  string (REPLACE "CompilerName=\"\"" "CompilerName=\"${COMPILER}\"" XML "${XML}")
+  string (REPLACE "<CompilerName></CompilerName>" "<CompilerName>${COMPILER}</CompilerName>" XML "${XML}")
+  # replace intermediate build name
+  string (REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+  string (REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+  # write modified submission file
+  file (WRITE "${SUBMISSION_FILE}" "${XML}")
+endforeach ()
+
+# -----------------------------------------------------------------------------
+# submit results
 if (SUBMIT_RESULTS)
-
-  # --------------------------------------------------------------------------
-  # adjust build name
-
-  # get compiler name
-  if (WIN32)
-    set (NAME_COMPONENT "NAME_WE")
-  else ()
-    set (NAME_COMPONENT "NAME")
-  endif ()
-  if (UNIX OR BORLAND)
-    read_cmake_cache_value (CMAKE_CXX_COMPILER)
-    set (COMPILER "${CMAKE_CXX_COMPILER}")
-    get_filename_component (COMPILER_NAME "${CMAKE_CXX_COMPILER}" ${NAME_COMPONENT})
-  else ()
-    read_cmake_cache_value (CMAKE_BUILD_TOOL)
-    set (COMPILER "${CMAKE_BUILD_TOOL}")
-    get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
-  endif ()
-  if (COMPILER_NAME MATCHES "msdev")
-    set (COMPILER_NAME "vs60")
-  elseif (COMPILER_NAME MATCHES "devenv")
-    read_cmake_cache_value (CMAKE_GENERATOR)
-    string (REGEX REPLACE "Visual Studio ([0-9][0-9]?)($|.*)" "\\1" NUMBER "${CMAKE_GENERATOR}") 
-    if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio 7 .NET 2003")
-      set (COMPILER_NAME "vs71")
-    else ()
-      set (COMPILER_NAME "vs${NUMBER}")
-    endif ()
-  endif ()
-  # assemble desired build name
-  set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-${COMPILER_NAME}")
-  # modify submission files
-  file (GLOB_RECURSE SUBMISSION_FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
-  foreach (SUBMISSION_FILE IN LISTS SUBMISSION_FILES)
-    # read submission file
-    file (READ "${SUBMISSION_FILE}" XML)
-    # set compiler name if necessary
-    string (REGEX REPLACE "CompilerName=\"\"" "CompilerName=\"${COMPILER}\"" XML "${XML}")
-    string (REGEX REPLACE "<CompilerName></CompilerName>" "<CompilerName>${COMPILER}</CompilerName>" XML "${XML}")
-    # replace intermediate build name
-    if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
-      string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
-      string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-    endif ()
-    # write modified submission file
-    file (WRITE "${SUBMISSION_FILE}" "${XML}")
-  endforeach ()
-
-  # ---------------------------------------------------------------------------
-  # submit results
-  ctest_submit (RETURN_VALUE SUBMIT_RESULT)
-
+  ctest_submit ()
 endif ()
 
 # -----------------------------------------------------------------------------
-# remove temporary build tree
+# clean up
 if (TMPBIN)
   file (REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+else ()
+  if (MANUAL_MODE AND EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt.bak")
+    execute_process (
+      COMMAND "${CMAKE_COMMAND}" -E compare_files 
+          "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt"
+          "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt.bak"
+      RESULT_VARIABLE RT
+      OUTPUT_QUIET
+      ERROR_QUIET
+    )
+    if (RT EQUAL 0)
+      file (REMOVE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt.bak")
+    else ()
+      message ("Restoring build system configuration...")
+      file (
+        RENAME "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt.bak"
+               "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt"
+      )
+      execute_process (
+        COMMAND "${CMAKE_COMMAND}" "${CTEST_BINARY_DIRECTORY}"
+        OUTPUT_QUIET
+        RESULT_VARIABLE RT
+      )
+      if (RT EQUAL 0)
+        message ("Restoring build system configuration... - done")
+      else ()
+        message ("Restoring build system configuration... - failed")
+      endif ()
+    endif ()
+  endif ()
 endif ()
