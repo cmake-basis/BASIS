@@ -119,7 +119,6 @@ set (
 # coverage
 # ----------------------------------------------------------------------------
 
-set (BASIS_CONFIGURE_INCLUDES "@BASIS_CONFIGURE_INCLUDES@")
 
 # get relative paths for use in globbing expression
 #
@@ -149,35 +148,36 @@ set (
 # Note that the expressions here are globbing expression as interpreted
 # by CMake's file(GLOB) command, not regular expressions.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (E IN ITEMS c cc cpp cxx txx hxx inl inc)
+foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "@PROJECT_SOURCE_DIR@/${CODE_DIR}/*.${E}"
+    "@PROJECT_SOURCE_DIR@/${CODE_DIR}/*${E}"
   )
 endforeach ()
+set (BASIS_CONFIGURE_INCLUDES "@BASIS_CONFIGURE_INCLUDES@")
 if (BASIS_CONFIGURE_INCLUDES)
-  foreach (E IN ITEMS txx hxx inl inc)
+  foreach (E IN ITEMS .txx .hxx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "@PROJECT_BINARY_DIR@/${INCLUDE_DIR}/*.${E}"
+      "@PROJECT_BINARY_DIR@/${INCLUDE_DIR}/*${E}"
     )
   endforeach ()
 else ()
-  foreach (E IN ITEMS txx hxx inl inc)
+  foreach (E IN ITEMS .txx .hxx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "@PROJECT_SOURCE_DIR@/${INCLUDE_DIR}/*.${E}"
+      "@PROJECT_SOURCE_DIR@/${INCLUDE_DIR}/*${E}"
     )
   endforeach ()
 endif ()
 foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
   if (NOT BASIS_CONFIGURE_INCLUDES)
-    foreach (E IN ITEMS txx hxx inl inc)
+    foreach (E IN ITEMS .txx .hxx .inl .inc)
       list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-        "@PROJECT_SOURCE_DIR@/${MODULES_DIR}/${M}/${INCLUDE_DIR}/*.${E}"
+        "@PROJECT_SOURCE_DIR@/${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
       )
     endforeach ()
   endif ()
-  foreach (E IN ITEMS c cc cpp cxx txx hxx inl inc)
+  foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "@PROJECT_SOURCE_DIR@/${MODULES_DIR}/${M}/${CODE_DIR}/*.${E}"
+      "@PROJECT_SOURCE_DIR@/${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
     )
   endforeach ()
 endforeach ()
@@ -225,4 +225,3 @@ set (CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "1048576")
 #
 # See:  http://public.kitware.com/pipermail/cdash/2009-November/000589.html
 set (CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "102400")
-
