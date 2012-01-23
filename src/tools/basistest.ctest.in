@@ -766,7 +766,6 @@ if (SUBMIT_RESULTS)
     read_cmake_cache_value (CMAKE_BUILD_TOOL)
     get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
   endif ()
-
   if (COMPILER_NAME MATCHES "msdev")
     set (COMPILER_NAME "vs60")
   elseif (COMPILER_NAME MATCHES "devenv")
@@ -778,23 +777,24 @@ if (SUBMIT_RESULTS)
       set (COMPILER_NAME "vs${NUMBER}")
     endif ()
   endif ()
-
   # assemble desired build name
   set (BUILDNAME "${CMAKE_SYSTEM_NAME}-${CTEST_BUILD_TYPE}-${COMPILER_NAME}")
-
-  # replace intermediate build name
-  if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
-    message (STATUS "Change the build name to ${BUILDNAME}")
-    # glob XML files
-    file (GLOB_RECURSE FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
-    # replace build name
-    foreach (FILENAME ${FILES})
-      file (READ "${FILENAME}" XML)
+  # modify submission files
+  file (GLOB_RECURSE SUBMISSION_FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
+  foreach (SUBMISSION_FILE IN LISTS SUBMISSION_FILES)
+    # read submission file
+    file (READ "${SUBMISSION_FILE}" XML)
+    # set compiler name if necessary
+    string (REGEX REPLACE "CompilerName=\"\"" "CompilerName=\"${COMPILER_NAME}\"" XML "${XML}")
+    string (REGEX REPLACE "<CompilerName></CompilerName>" "<CompilerName>${COMPILER_NAME}</CompilerName>" XML "${XML}")
+    # replace intermediate build name
+    if (NOT "${BUILDNAME}" STREQUAL "${CTEST_BUILD_NAME}")
       string (REGEX REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
       string (REGEX REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-      file (WRITE "${FILENAME}" "${XML}")
-    endforeach ()
-  endif ()
+    endif ()
+    # write modified submission file
+    file (WRITE "${SUBMISSION_FILE}" "${XML}")
+  endforeach ()
 
   # ---------------------------------------------------------------------------
   # submit results
