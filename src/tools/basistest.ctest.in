@@ -738,7 +738,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # build and install API documentation
   if (CONFIGURE_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
-    message (STATUS "Build documentation")
+    message ("Build documentation")
     ctest_build (TARGET doc RETURN_VALUE RT)
     if (RT EQUAL 0)
       if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
@@ -747,10 +747,10 @@ if (FORCE_BUILD OR UPDATED_FILES)
                       "${CTEST_BINARY_DIRECTORY}/doc/api/html"
                       "${INSTALL_DOXYGEN_DIR}/html"
         )
-        message (STATUS "Copied API documentation to ${INSTALL_DOXYGEN_DIR}.")
+        message ("Copied API documentation to ${INSTALL_DOXYGEN_DIR}.")
       else ()
-        message (STATUS "Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
-        message (STATUS "Skipped copying of API documentation.")
+        message ("Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
+        message ("Skipped copying of API documentation.")
       endif ()
     endif ()
   endif ()
@@ -767,6 +767,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
     # --------------------------------------------------------------------------
     # perform coverage analysis
     if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
+      message ("Extra coverage glob: ${CTEST_EXTRA_COVERAGE_GLOB}")
       ctest_coverage ()
     endif ()
 
@@ -779,7 +780,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
     # ---------------------------------------------------------------------------
     # perform installation
     if (WITH_INSTALL AND TEST_RESULT EQUAL 0)
-      message (STATUS "Install project files")
+      message ("Install project files")
 
       execute_process (
         COMMAND           make install
