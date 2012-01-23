@@ -200,7 +200,11 @@ function (basis_update_imported_location TARGET PROPERTY LOCATION)
   list (GET TYPES ${IDX} TYPE)
   list (GET RANKS ${IDX} CURRENT_RANK)
   # decide whether current information shall be overwritten
-  string (TOUPPER "${CMAKE_BUILD_TYPE}" C)
+  if (CMAKE_BUILD_TYPE)
+    string (TOUPPER "${CMAKE_BUILD_TYPE}" C)
+  else ()
+    set (C "NOCONFIG")
+  endif ()
   set (
     RANKING
       # first pick
