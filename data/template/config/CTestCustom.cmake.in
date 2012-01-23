@@ -151,12 +151,21 @@ foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
     "${CODE_DIR}/*${E}"
   )
 endforeach ()
-foreach (E IN ITEMS .txx .hxx .inl .inc)
-  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "${INCLUDE_DIR}/*${E}"
-  )
-endforeach ()
 set (BASIS_CONFIGURE_INCLUDES "@BASIS_CONFIGURE_INCLUDES@")
+if (BASIS_CONFIGURE_INCLUDES)
+  # shall only match paths of configured files in the build tree
+  foreach (E IN ITEMS .txx .hxx .inl .inc)
+    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+      "${INCLUDE_DIR}/@INCLUDE_PREFIX@*${E}"
+    )
+  endforeach ()
+else ()
+  foreach (E IN ITEMS .txx .hxx .inl .inc)
+    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+      "${INCLUDE_DIR}/*${E}"
+    )
+  endforeach ()
+endif ()
 foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
   if (NOT BASIS_CONFIGURE_INCLUDES)
     foreach (E IN ITEMS .txx .hxx .inl .inc)
