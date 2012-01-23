@@ -146,7 +146,7 @@ set (
 # Note that the expressions here are globbing expression as interpreted
 # by CMake's file(GLOB) command, not regular expressions.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
+foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
     "${CODE_DIR}/*${E}"
   )
@@ -154,13 +154,13 @@ endforeach ()
 set (BASIS_CONFIGURE_INCLUDES "@BASIS_CONFIGURE_INCLUDES@")
 if (BASIS_CONFIGURE_INCLUDES)
   # shall only match paths of configured files in the build tree
-  foreach (E IN ITEMS .txx .hxx .inl .inc)
+  foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
       "${INCLUDE_DIR}/@INCLUDE_PREFIX@*${E}"
     )
   endforeach ()
 else ()
-  foreach (E IN ITEMS .txx .hxx .inl .inc)
+  foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
       "${INCLUDE_DIR}/*${E}"
     )
@@ -168,13 +168,13 @@ else ()
 endif ()
 foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
   if (NOT BASIS_CONFIGURE_INCLUDES)
-    foreach (E IN ITEMS .txx .hxx .inl .inc)
+    foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
       list (APPEND CTEST_EXTRA_COVERAGE_GLOB
         "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
       )
     endforeach ()
   endif ()
-  foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
+  foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
       "${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
     )
