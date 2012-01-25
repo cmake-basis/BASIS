@@ -1452,25 +1452,20 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       else ()
         set (U "NOCONFIG")
       endif ()
-
       get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${U}")
-
       # 2. Try IMPORTED_LOCATION
       if (NOT LOCATION)
         get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION")
       endif ()
-
       # 3. Prefer Release over all other configurations
       if (NOT LOCATION)
         get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_RELEASE")
       endif ()
-
-      # 4. Try any of the IMPORTED_LOCATION_<CONFIG> where <CONFIG> in list of
-      #    BASIS supported configurations
+      # 4. Just use any of the imported configurations
       if (NOT LOCATION)
-        foreach (C ${CMAKE_CONFIGURATION_TYPES})
-          string (TOUPPER "${C}" U)
-          get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${U}")
+        get_property (CONFIGS TARGET "${TARGET_UID}" PROPERTY IMPORTED_CONFIGURATIONS)
+        foreach (C IN LISTS CONFIGS)
+          get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${C}")
           if (LOCATION)
             break ()
           endif ()
