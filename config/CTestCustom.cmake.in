@@ -153,14 +153,10 @@ foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
     "${CODE_DIR}/*${E}"
   )
 endforeach ()
-set (BASIS_CONFIGURE_INCLUDES "@BASIS_CONFIGURE_INCLUDES@")
-if (BASIS_CONFIGURE_INCLUDES)
-  # shall only match paths of configured files in the build tree
-  foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
-    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "${INCLUDE_DIR}/@INCLUDE_PREFIX@*${E}"
-    )
-  endforeach ()
+set (BASIS_AUTO_PREFIX_INCLUDES "@BASIS_AUTO_PREFIX_INCLUDES@")
+if (BASIS_AUTO_PREFIX_INCLUDES)
+  # TODO Files in build tree are yet never considered by CTest
+  #      as long as they are uncovered.
 else ()
   foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
@@ -169,7 +165,7 @@ else ()
   endforeach ()
 endif ()
 foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
-  if (NOT BASIS_CONFIGURE_INCLUDES)
+  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
     foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
       list (APPEND CTEST_EXTRA_COVERAGE_GLOB
         "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"

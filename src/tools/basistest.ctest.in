@@ -767,7 +767,6 @@ if (FORCE_BUILD OR UPDATED_FILES)
     # --------------------------------------------------------------------------
     # perform coverage analysis
     if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
-      message ("Extra coverage glob: ${CTEST_EXTRA_COVERAGE_GLOB}")
       ctest_coverage ()
     endif ()
 
