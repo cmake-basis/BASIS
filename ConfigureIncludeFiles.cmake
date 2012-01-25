@@ -130,7 +130,13 @@ foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
             message (WARNING "Public header file ${HEADER} should have"
                              " the path prefix\n"
                              "\t${INCLUDE_DIR}/${INCLUDE_PREFIX}\n"
-                             "to avoid conflicts with other projects!")
+                             "to avoid conflicts with other projects!\n"
+                             "If you were using a pre-release version of BASIS"
+                             " or want BASIS to auto-prefix the path of public"
+                             " header files, which requires copying them to the"
+                             " build tree with the modified file path,"
+                             " set BASIS_AUTO_PREFIX_INCLUDES to"
+                             " TRUE in the projects Settings.cmake file.")
           endif ()
         endif ()
         if (HEADER MATCHES "\\.in$")
