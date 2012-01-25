@@ -414,12 +414,10 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Configure public header files.
 #
-# Copy public header files to build tree using the same relative paths
-# as will be used for the installation. Moreover, this gives us a chance to
-# configure header files with the .in suffix.
-#
-# @note This function configures also the public header files of the modules
-#       already. Hence, it must not be called if this project is a module.
+# Configure public header files whose file name ends with the .in.
+# Moreover, if @c BASIS_COPY_INCLUDES_TO_BINARY_DIR is @c TRUE, this function
+# copies all other files to the build tree as well, using the same relative
+# paths as will be used for the installation.
 #
 # @sa BASIS_CONFIGURE_INCLUDES
 function (basis_configure_public_headers)
@@ -427,7 +425,9 @@ function (basis_configure_public_headers)
   # settings
 
   # log file which lists the configured header files
-  set (CMAKE_FILE "${CMAKE_CURRENT_BINARY_DIR}/PublicHeaders.cmake")
+  set (CMAKE_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}PublicHeaders.cmake")
+  # cache of currently defined CMake variables
+  set (CACHE_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}PublicHeadersCache.txt")
 
   # considered extensions
   set (
@@ -444,26 +444,19 @@ function (basis_configure_public_headers)
   # considered include directories
   basis_get_relative_path (INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
   set (INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/${INCLUDE_DIR}")
-  if (NOT PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
-    # If module namespace are used, each module is taking care of its own headers.
-    # Otherwise, the top-level project collects the headers and puts them into its
-    # namespace. Note that INCLUDE_PREFIX is set in the BASIS Settings.cmake file.
-    foreach (M IN LISTS PROJECT_MODULES_ENABLED)
-      list (APPEND INCLUDE_DIRS "${MODULE_${M}_SOURCE_DIR}/${INCLUDE_DIR}")
-    endforeach ()
-  endif ()
 
-  # dump currently defined CMake variables such that these can be used in .in files
-  basis_dump_variables ("${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake")
+  # dump currently defined CMake variables such that these can be used to
+  # configure the .in header files during the build step
+  basis_dump_variables ("${CACHE_FILE}")
 
   # --------------------------------------------------------------------------
   # common arguments to following commands
   # Attention: Arguments which have a CMake list as value cannot be set this way,
   #            i.e., the arguments PROJECTS_INCLUDE_DIRS and EXTENSIONS.
   set (COMMON_ARGS
-    -D "BASE_INCLUDE_DIR=${PROJECT_INCLUDE_DIR}"
     -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
     -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
+    -D "AUTO_PREFIX_INCLUDES=${BASIS_AUTO_PREFIX_INCLUDES}"
     -D "VARIABLE_NAME=PUBLIC_HEADERS"
   )
 
@@ -486,7 +479,8 @@ function (basis_configure_public_headers)
     COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "EXTENSIONS=${EXTENSIONS}"
-            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
+            -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
+            -D "INCLUDE_FILE=${CACHE_FILE}"
             -D "CMAKE_FILE=${CMAKE_FILE}"
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
     RESULT_VARIABLE RT
@@ -516,14 +510,13 @@ function (basis_configure_public_headers)
               -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
               -D "OUTPUT_FILE=${CMAKE_FILE}.tmp"
               -D "REFERENCE_FILE=${CMAKE_FILE}"
-              -D "REMOVE_OBSOLETE_FILES=TRUE"
               -P "${BASIS_MODULE_PATH}/CheckPublicHeaders.cmake"
       VERBATIM
     )
     file (REMOVE "${CMAKE_FILE}.tmp")
     if (NOT RT EQUAL 0)
       message (FATAL_ERROR "Failed to remove obsolete header files from build tree."
-                           " Remove the ${BINARY_INCLUDE_DIR} directory and rerun CMake.")
+                           " Remove the ${BINARY_INCLUDE_DIR} directory and re-run CMake.")
     endif ()
   endif ()
 
@@ -545,29 +538,41 @@ function (basis_configure_public_headers)
 
   # error message displayed when a file was added or removed which requires
   # a reconfiguration of the build system
-  set (ERRORMSG "You have either added, removed, or renamed a public header file. "
-                "Therefore, the build system needs to be re-configured. "
-                "Either try to build again which will trigger CMake to "
-                "re-configure the build system or run CMake manually.")
+  set (ERRORMSG "You have either added, removed, or renamed a public header file")
+  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
+    list (APPEND ERRORMSG " with a .in suffix in the file name")
+  endif ()
+  list (APPEND ERRORMSG ". Therefore, the build system needs to be"
+                        " re-configured. Either try to build again which will"
+                        " trigger CMake and re-configure the build system or"
+                        " run CMake manually.")
   basis_list_to_string (ERRORMSG ${ERRORMSG})
 
   # custom command which globs the files in the project's include directory
+  set (COMMENT "Checking if public header files were added or removed")
+  if (PROJECT_IS_MODULE)
+    set (COMMENT "${COMMENT} to ${PROJECT_NAME} module")
+  endif ()
   add_custom_command (
     OUTPUT  "${CMAKE_FILE}.tmp"
     COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "EXTENSIONS=${EXTENSIONS}"
+            -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
             -D "CMAKE_FILE=${CMAKE_FILE}.tmp"
             -D "PREVIEW=TRUE" # do not actually configure the files
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
-    COMMENT "Checking if public header files were added or removed"
+    COMMENT "${COMMENT}"
     VERBATIM
   )
 
   # custom target to detect whether a file was added or removed
   basis_make_target_uid (CHECK_HEADERS_TARGET headers_check)
+  if (PROJECT_IS_MODULE)
+    set (CHECK_HEADERS_TARGET "${CHECK_HEADERS_TARGET}_${PROJECT_NAME_LOWER}")
+  endif ()
   add_custom_target (
-    ${CHECK_HEADERS_TARGET}
+    ${CHECK_HEADERS_TARGET} ALL
     # trigger execution of custom command that generates the list
     # of current files in the project's include directory
     DEPENDS "${CMAKE_FILE}.tmp"
@@ -584,10 +589,17 @@ function (basis_configure_public_headers)
     COMMAND "${CMAKE_COMMAND}" -E remove "${CMAKE_FILE}.tmp"
     VERBATIM
   )
+  if (PROJECT_IS_MODULE)
+    basis_add_dependencies (headers_check ${CHECK_HEADERS_TARGET})
+  endif ()
 
   # --------------------------------------------------------------------------
   # add build command to re-configure public header files
   if (PUBLIC_HEADERS)
+    set (COMMENT "Configuring public header files")
+    if (PROJECT_IS_MODULE)
+      set (COMMENT "${COMMENT} of ${PROJECT_NAME} module")
+    endif ()
     add_custom_command (
       OUTPUT  "${CMAKE_FILE}.updated" # do not use same file as included
                                       # before otherwise CMake will re-configure
@@ -595,20 +607,42 @@ function (basis_configure_public_headers)
       COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
               -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
               -D "EXTENSIONS=${EXTENSIONS}"
-              -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/PublicHeadersVariables.cmake"
+              -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
+              -D "INCLUDE_FILE=${CACHE_FILE}"
               -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
       COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
       DEPENDS ${PUBLIC_HEADERS}
-      COMMENT "Configuring public header files"
+      COMMENT "${COMMENT}"
       VERBATIM
     )
-
     basis_make_target_uid (CONFIGURE_HEADERS_TARGET headers)
+    if (PROJECT_IS_MODULE)
+      set (CONFIGURE_HEADERS_TARGET "${CONFIGURE_HEADERS_TARGET}_${PROJECT_NAME_LOWER}")
+    endif ()
     add_custom_target (
       ${CONFIGURE_HEADERS_TARGET} ALL
       DEPENDS ${CHECK_HEADERS_TARGET} "${CMAKE_FILE}.updated"
       SOURCES ${PUBLIC_HEADERS}
     )
+    if (PROJECT_IS_MODULE)
+      basis_add_dependencies (headers ${CONFIGURE_HEADERS_TARGET})
+    endif ()
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # add include directories
+  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
+    basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
+  endif ()
+  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
+  # Attention: BASIS includes public header files which are named the
+  #            same as system-wide header files. Therefore, avoid to add
+  #            include/sbia/basis/ to the include search path.
+  if (NOT PROJECT_NAME MATCHES "^BASIS$")
+    basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}")
+    if (NOT BASIS_AUTO_PREFIX_INCLUDES)
+      basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}/${INCLUDE_PREFIX}")
+    endif ()
   endif ()
 endfunction ()
 
@@ -1233,23 +1267,7 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # public header files
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
-  if (BASIS_CONFIGURE_INCLUDES AND
-      (NOT PROJECT_IS_MODULE OR BASIS_USE_MODULE_NAMESPACES))
-    basis_configure_public_headers ()
-    set (INCLUDE_DIR "${BINARY_INCLUDE_DIR}")
-  else ()
-    set (INCLUDE_DIR "${PROJECT_INCLUDE_DIR}")
-  endif ()
-
-  # add directory of configured headers to include search path
-  basis_include_directories (BEFORE "${INCLUDE_DIR}")
-
-  # Attention: BASIS includes public header files which are named the
-  #            same as system-wide header files. Therefore, avoid to add
-  #            include/sbia/basis/ to the include search path.
-  if (NOT PROJECT_NAME MATCHES "^BASIS$")
-    basis_include_directories (BEFORE "${INCLUDE_DIR}/${INCLUDE_PREFIX}")
-  endif ()
+  basis_configure_public_headers ()
 
   # --------------------------------------------------------------------------
   # pre-configure C++ utilities

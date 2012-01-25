@@ -335,9 +335,9 @@ set (BASIS_SVN_USERS_FILE "${BASIS_MODULE_PATH}/SubversionUsers.txt")
 # @sa basis_project_finalize()
 basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 
-## @brief Enable/Disable configuration of public header files.
+## @brief Enable/Disable copying of all public header files to the build tree.
 #
-# By default, BASIS copies the public header files which were found in the
+# If enabled, BASIS copies the public header files which were found in the
 # @c PROJECT_INCLUDE_DIR to the corresponding include directory in the build
 # tree using the same relative paths as will be used for the installation.
 # Moreover, header files with the .in suffix are configured using CMake's
@@ -347,17 +347,32 @@ basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 # in the file path reported by the compiler in error messages and warnings which
 # will name the corresponding copy of the header file in the build tree, causing
 # potential confusion and editing of the copy by mistake, this feature was made
-# optional. A project can disable it in the Settings.cmake file by setting the
-# CMake variable @c BASIS_CONFIGURE_INCLUDES to FALSE.
+# optional. Further, the inclusion of uncovered files works only if the file
+# is in the source tree, not the build tree. This is a restriction of CTest.
+# A bug report has been submitted (#12910). A project can enable the copying
+# of public header files in the Settings.cmake file by setting this
+# CMake variable to TRUE. The advantage is that the files in the source
+# tree need not to be organized in subdirectories.
 #
-# If disabled, the relative path of header files is no longer adjusted to match
+# If disabled, the relative path of header files is not adjusted to match
 # the actual installation. Therefore, in this case, the project developer
-# themself must maintain the <tt>sbia/&lt:project&gt;</tt> subdirectory structure
-# in the @c PROJECT_INCLUDE_DIR directory tree, where &lt;project&gt; is the
-# project name in lower case only.
+# themself must maintain the <tt>sbia/&lt:project&gt;</tt> subdirectory
+# structure in the @c PROJECT_INCLUDE_DIR directory tree, where
+# &lt;project&gt; is the project name in lower case only.
+set (BASIS_AUTO_PREFIX_INCLUDES FALSE)
+
+## @brief Specify public header files which are excluded from check
+#         whether their path is prefixed by the @c INCLUDE_PREFIX.
 #
-# @sa basis_configure_public_headers()
-set (BASIS_CONFIGURE_INCLUDES TRUE)
+# If @c BASIS_AUTO_PREFIX_INCLUDES is @c FALSE and a public header
+# file is encountered whose path is not prefixed by @c INCLUDE_PREFIX,
+# a warning is output by BASIS. This warning can be suppressed for certain
+# public header files using this variable. If the path of the public header
+# file relative to @c PROJECT_INCLUDE_DIR matches either one of the listed
+# regular expressions, the warning is not displayed. Note that special
+# characters in the regular expressions will have to be escaped twice, e.g.,
+# "\\\\." corresponds to the regular expression "\.", i.e., matches a dot (.).
+set (BASIS_INCLUDES_CHECK_EXCLUDE "")
 
 # ============================================================================
 # common options

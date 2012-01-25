@@ -53,7 +53,7 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # remove obsolete public headers
-if (OUTPUT_FILE_DIFFERS AND REMOVE_OBSOLETE_FILES)
+if (OUTPUT_FILE_DIFFERS)
   set (${VARIABLE_NAME})
   include ("${OUTPUT_FILE}")
   set (CURRENT_HEADERS "${${VARIABLE_NAME}}")
@@ -63,16 +63,22 @@ if (OUTPUT_FILE_DIFFERS AND REMOVE_OBSOLETE_FILES)
     list (FIND ${VARIABLE_NAME} "${H}" IDX)
     if (IDX EQUAL -1)
       string (REGEX REPLACE "^.*/include/" "" H "${H}")
-      file (REMOVE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${H}")
+      string (REGEX REPLACE "\\.in$"       "" H "${H}")
+      if (AUTO_PREFIX_INCLUDES)
+        file (REMOVE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${H}")
+      else ()
+        file (REMOVE "${BINARY_INCLUDE_DIR}/${H}")
+      endif ()
     endif ()
   endforeach ()
 endif ()
 
 # ----------------------------------------------------------------------------
 # remove files if different
-if (OUTPUT_FILE_DIFFERS AND REMOVE_FILES_IF_DIFFERENT)
+if (OUTPUT_FILE_DIFFERS)
   file (REMOVE "${OUTPUT_FILE}")
   file (REMOVE "${REFERENCE_FILE}")
+  file (REMOVE "${REFERENCE_FILE}.update")
 endif ()
 
 # ----------------------------------------------------------------------------

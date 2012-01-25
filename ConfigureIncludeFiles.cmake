@@ -2,11 +2,11 @@
 # @file  ConfigureIncludeFiles.cmake
 # @brief CMake script used to configure and copy the public header files.
 #
-# Besides configuring the files, this script in particular copies the header
+# Besides configuring the files, this script optionally copies the header
 # files to the build tree using the final relative path as used for the
 # installation. This could be done directly during the configure step of
 # CMake by code executed as part of the CMakeLists.txt files, but then
-# whenever a header file is modified, CMake reconfigure the build system.
+# whenever a header file is modified, CMake reconfigures the build system.
 # Instead, this script is executed using execute_process() during the
 # configure step of CMake and a custom build target is added which rebuilds
 # whenever a header file was modified. Thus, only this script is re-executed,
@@ -26,17 +26,13 @@
 ##############################################################################
 
 # ----------------------------------------------------------------------------
-# requires fixed get_filename_component() of BASIS tools
+# requires bug fixed get_filename_component() of BASIS tools
 include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
 
 # ----------------------------------------------------------------------------
 # check arguments
 if (NOT PROJECT_INCLUDE_DIRS)
   message (FATAL_ERROR "Missing argument PROJECT_INCLUDE_DIR!")
-endif ()
-
-if (NOT BASE_INCLUDE_DIR)
-  list (GET PROJECT_INCLUDE_DIRS 0 BASE_INCLUDE_DIR)
 endif ()
 
 if (NOT BINARY_INCLUDE_DIR)
@@ -64,48 +60,97 @@ endif ()
 # ----------------------------------------------------------------------------
 # configure header files
 set (_CONFIGURED_HEADERS)
+get_filename_component (INCLUDE_PREFIX_DIR "${INCLUDE_PREFIX}" PATH)
+basis_sanitize_for_regex (INCLUDE_PREFIX_REGEX "${INCLUDE_PREFIX}")
+basis_sanitize_for_regex (INCLUDE_PREFIX_DIR_REGEX "${INCLUDE_PREFIX_DIR}")
 foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
   # glob header files
   set (GLOB_EXPR)
   foreach (E IN LISTS EXTENSIONS)
-    list (APPEND GLOB_EXPR "${INCLUDE_DIR}/*${E}")
     list (APPEND GLOB_EXPR "${INCLUDE_DIR}/*${E}.in")
+  endforeach ()
+  foreach (E IN LISTS EXTENSIONS)
+    list (APPEND GLOB_EXPR "${INCLUDE_DIR}/*${E}")
   endforeach ()
   file (GLOB_RECURSE _HEADERS RELATIVE "${INCLUDE_DIR}" ${GLOB_EXPR})
   # configure file if not run in PREVIEW mode which is used to determine
   # whether or not files were added/removed from the source directory
   if (NOT PREVIEW)
     foreach (HEADER IN LISTS _HEADERS)
-      # note: BASE_INCLUDE_DIR may not exist, thus simplify path here
       get_filename_component (TEMPLATE "${INCLUDE_DIR}/${HEADER}" ABSOLUTE)
-      get_filename_component (DIR "${HEADER}" PATH)
-      if (HEADER MATCHES "\\.in$")
-        get_filename_component (NAME "${HEADER}" NAME_WE)
-        set (MODE "@ONLY")
+      if (AUTO_PREFIX_INCLUDES)
+        if (HEADER MATCHES "^${INCLUDE_PREFIX_REGEX}")
+          if (HEADER MATCHES "\\.in$")
+            string (REGEX REPLACE "\\.in$" "" HEADER "${HEADER}")
+            set (MODE "@ONLY")
+          else ()
+            set (MODE "COPYONLY")
+          endif ()
+          configure_file (
+            "${TEMPLATE}"
+            "${BINARY_INCLUDE_DIR}/${HEADER}"
+            ${MODE}
+          )
+        else ()
+          get_filename_component (DIR "${HEADER}" PATH)
+          if (HEADER MATCHES "\\.in$")
+            get_filename_component (NAME "${HEADER}" NAME_WE)
+            set (MODE "@ONLY")
+          else ()
+            get_filename_component (NAME "${HEADER}" NAME)
+            set (MODE "COPYONLY")
+          endif ()
+          if (INCLUDE_PREFIX MATCHES "/$")
+            configure_file (
+              "${TEMPLATE}"
+              "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${DIR}/${NAME}"
+              ${MODE}
+            )
+          else ()
+            configure_file (
+              "${TEMPLATE}"
+              "${BINARY_INCLUDE_DIR}/${DIR}/${INCLUDE_PREFIX}${NAME}"
+              ${MODE}
+            )
+          endif ()
+        endif ()
+        list (APPEND _CONFIGURED_HEADERS "${TEMPLATE}")
       else ()
-       get_filename_component (NAME "${HEADER}" NAME)
-       set (MODE "COPYONLY")
+        if (NOT HEADER MATCHES "^${INCLUDE_PREFIX_REGEX}")
+          set (WARN TRUE)
+          if (INCLUDES_CHECK_EXCLUDE)
+            foreach (REGEX IN LISTS INCLUDES_CHECK_EXCLUDE)
+              if (HEADER MATCHES "${REGEX}")
+                set (WARN FALSE)
+                break ()
+              endif ()
+            endforeach ()
+          endif ()
+          if (WARN)
+            message (WARNING "Public header file ${HEADER} should have"
+                             " the path prefix\n"
+                             "\t${INCLUDE_DIR}/${INCLUDE_PREFIX}\n"
+                             "to avoid conflicts with other projects!")
+          endif ()
+        endif ()
+        if (HEADER MATCHES "\\.in$")
+          string (REGEX REPLACE "\\.in$" "" HEADER "${HEADER}")
+          configure_file (
+            "${TEMPLATE}"
+            "${BINARY_INCLUDE_DIR}/${HEADER}"
+            @ONLY
+          )
+          list (APPEND _CONFIGURED_HEADERS "${TEMPLATE}")
+        endif ()
       endif ()
-      if (INCLUDE_PREFIX MATCHES "/$")
-        configure_file (
-          "${TEMPLATE}"
-          "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${DIR}/${NAME}"
-          ${MODE}
-        )
-      else ()
-        configure_file (
-          "${TEMPLATE}"
-          "${BINARY_INCLUDE_DIR}/${DIR}/${INCLUDE_PREFIX}${NAME}"
-          ${MODE}
-        )
-      endif ()
-      list (APPEND _CONFIGURED_HEADERS "${TEMPLATE}")
     endforeach ()
   else ()
     # accumulate header files for output in ascending order later on
     foreach (HEADER IN LISTS _HEADERS)
-      get_filename_component (TEMPLATE "${INCLUDE_DIR}/${HEADER}" ABSOLUTE)
-      list (APPEND _CONFIGURED_HEADERS "${TEMPLATE}")
+      if (AUTO_PREFIX_INCLUDES OR HEADER MATCHES "\\.in$")
+        get_filename_component (TEMPLATE "${INCLUDE_DIR}/${HEADER}" ABSOLUTE)
+        list (APPEND _CONFIGURED_HEADERS "${TEMPLATE}")
+      endif ()
     endforeach ()
   endif ()
 endforeach ()
