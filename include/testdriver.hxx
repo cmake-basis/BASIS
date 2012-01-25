@@ -136,12 +136,12 @@ void testdriversetup(int* argc, char** argv[])
     #endif
     hostname[255] = '\0';
 
-    cout << "<DartMeasurement name=\"HostName\" type=\"string\">";
+    cout << "<DartMeasurement name=\"Host Name\" type=\"string\">";
     cout << hostname;
     cout <<  "</DartMeasurement>" << endl;
 
     #ifdef ITK_VERSION
-    cout << "<DartMeasurement name=\"ITKVersion\" type=\"string\">";
+    cout << "<DartMeasurement name=\"ITK Version\" type=\"string\">";
     cout << ITK_VERSION;
     cout <<  "</DartMeasurement>" << endl;
     #endif
