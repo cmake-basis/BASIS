@@ -25,7 +25,7 @@
 #ifndef TCLAP_ARGUMENT_H
 #define TCLAP_ARGUMENT_H
 
-#include <@INCLUDE_PREFIX@config.h>
+#include <sbia/basis/config.h>
 
 #include <string>
 #include <vector>
@@ -44,11 +44,11 @@ typedef std::istrstream istringstream;
 #error "Need a stringstream (sstream or strstream) to compile!"
 #endif
 
-#include <@INCLUDE_PREFIX@tclap/ArgException.h>
-#include <@INCLUDE_PREFIX@tclap/Visitor.h>
-#include <@INCLUDE_PREFIX@tclap/CmdLineInterface.h>
-#include <@INCLUDE_PREFIX@tclap/ArgTraits.h>
-#include <@INCLUDE_PREFIX@tclap/StandardTraits.h>
+#include <sbia/tclap/ArgException.h>
+#include <sbia/tclap/Visitor.h>
+#include <sbia/tclap/CmdLineInterface.h>
+#include <sbia/tclap/ArgTraits.h>
+#include <sbia/tclap/StandardTraits.h>
 
 namespace TCLAP {
 

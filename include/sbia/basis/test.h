@@ -44,8 +44,8 @@
 #endif
 
 
-#include <sbia/basis/gtest/gtest.h>
-#include <sbia/basis/gmock/gmock.h>
+#include <sbia/gtest/gtest.h>
+#include <sbia/gmock/gmock.h>
 
 
 #endif // _SBIA_BASIS_TEST_H

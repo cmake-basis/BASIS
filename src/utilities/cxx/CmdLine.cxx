@@ -11,12 +11,12 @@
 
 #include <set>
 
-#include <sbia/basis/tclap/Arg.h>
-#include <sbia/basis/tclap/ArgException.h>
-#include <sbia/basis/tclap/StdOutput.h>
-#include <sbia/basis/tclap/Visitor.h>
-#include <sbia/basis/tclap/VersionVisitor.h>
-#include <sbia/basis/tclap/XorHandler.h>
+#include <sbia/tclap/Arg.h>
+#include <sbia/tclap/ArgException.h>
+#include <sbia/tclap/StdOutput.h>
+#include <sbia/tclap/Visitor.h>
+#include <sbia/tclap/VersionVisitor.h>
+#include <sbia/tclap/XorHandler.h>
 
 #include <sbia/basis/path.h>   // get_executable_name()
 #include <sbia/basis/except.h> // BASIS_THROW, runtime_error

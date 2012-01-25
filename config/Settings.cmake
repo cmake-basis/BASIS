@@ -55,6 +55,20 @@ set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/matlab")
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
 
 # ============================================================================
+# general settings
+# ============================================================================
+
+# do not copy public header files to build tree
+set (BASIS_AUTO_PREFIX_INCLUDES FALSE)
+# specify regular expressions of public header files which are excluded
+# from the check whether their path is prefixed by INCLUDE_PREFIX
+set (BASIS_INCLUDES_CHECK_EXCLUDE
+  "^sbia/gtest/"
+  "^sbia/gmock/"
+  "^sbia/tclap/"
+)
+
+# ============================================================================
 # utilities
 # ============================================================================
 

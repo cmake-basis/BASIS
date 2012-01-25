@@ -1,7 +1,8 @@
+// -*- Mode: c++; c-basic-offset: 4; tab-width: 4; -*-
 
 /****************************************************************************** 
  * 
- *  file:  HelpVisitor.h
+ *  file:  VersionVisitor.h
  * 
  *  Copyright (c) 2003, Michael E. Smoot .
  *  All rights reverved.
@@ -19,32 +20,33 @@
  *  
  *****************************************************************************/ 
 
-#ifndef TCLAP_HELP_VISITOR_H
-#define TCLAP_HELP_VISITOR_H
 
-#include <@INCLUDE_PREFIX@tclap/CmdLineInterface.h>
-#include <@INCLUDE_PREFIX@tclap/CmdLineOutput.h>
-#include <@INCLUDE_PREFIX@tclap/Visitor.h>
+#ifndef TCLAP_VERSION_VISITOR_H
+#define TCLAP_VERSION_VISITOR_H
+
+#include <sbia/tclap/CmdLineInterface.h>
+#include <sbia/tclap/CmdLineOutput.h>
+#include <sbia/tclap/Visitor.h>
 
 namespace TCLAP {
 
 /**
- * A Visitor object that calls the usage method of the given CmdLineOutput
- * object for the specified CmdLine object.
+ * A Vistor that will call the version method of the given CmdLineOutput
+ * for the specified CmdLine object and then exit.
  */
-class HelpVisitor: public Visitor
+class VersionVisitor: public Visitor
 {
 	private:
 		/**
-		 * Prevent accidental copying.
+		 * Prevent accidental copying
 		 */
-		HelpVisitor(const HelpVisitor& rhs);
-		HelpVisitor& operator=(const HelpVisitor& rhs);
+		VersionVisitor(const VersionVisitor& rhs);
+		VersionVisitor& operator=(const VersionVisitor& rhs);
 
 	protected:
 
 		/**
-		 * The CmdLine the output will be generated for. 
+		 * The CmdLine of interest.
 		 */
 		CmdLineInterface* _cmd;
 
@@ -57,18 +59,21 @@ class HelpVisitor: public Visitor
 
 		/**
 		 * Constructor.
-		 * \param cmd - The CmdLine the output will be generated for.
+		 * \param cmd - The CmdLine the output is generated for. 
 		 * \param out - The type of output. 
 		 */
-		HelpVisitor(CmdLineInterface* cmd, CmdLineOutput** out) 
+		VersionVisitor( CmdLineInterface* cmd, CmdLineOutput** out ) 
 				: Visitor(), _cmd( cmd ), _out( out ) { }
 
 		/**
-		 * Calls the usage method of the CmdLineOutput for the 
+		 * Calls the version method of the output object using the
 		 * specified CmdLine.
 		 */
-		void visit() { (*_out)->usage(*_cmd); throw ExitException(0); }
-		
+		void visit() { 
+		    (*_out)->version(*_cmd); 
+		    throw ExitException(0); 
+		}
+
 };
 
 }

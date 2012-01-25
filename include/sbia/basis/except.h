@@ -17,7 +17,7 @@
 #include <stdexcept> // use standard STL exceptions where possible
 #include <string>    // used to store error messages
 
-#include <sbia/basis/tclap/ArgException.h> // command-line parsing
+#include <sbia/tclap/ArgException.h> // command-line parsing
 
 
 namespace sbia

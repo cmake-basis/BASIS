@@ -15,8 +15,8 @@
 #define _SBIA_BASIS_CMDLINE_H
 
 
-#include <sbia/basis/tclap/CmdLine.h> // TCLAP implementation
-#include <sbia/basis/CmdArgs.h>       // commonly used arguments
+#include <sbia/tclap/CmdLine.h> // TCLAP implementation
+#include <sbia/basis/CmdArgs.h> // commonly used arguments
 
 
 namespace sbia

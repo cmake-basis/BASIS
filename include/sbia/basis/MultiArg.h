@@ -17,7 +17,7 @@
 #define _SBIA_BASIS_MULTIARG_H
 
 
-#include "tclap/MultiArg.h"
+#include <sbia/tclap/MultiArg.h>
 
 
 namespace sbia

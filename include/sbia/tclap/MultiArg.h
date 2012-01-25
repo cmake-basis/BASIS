@@ -26,8 +26,8 @@
 #include <string>
 #include <vector>
 
-#include <@INCLUDE_PREFIX@tclap/Arg.h>
-#include <@INCLUDE_PREFIX@tclap/Constraint.h>
+#include <sbia/tclap/Arg.h>
+#include <sbia/tclap/Constraint.h>
 
 namespace TCLAP {
 /**

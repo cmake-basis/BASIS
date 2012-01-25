@@ -17,11 +17,11 @@
 #define _SBIA_BASIS_CMDARGS_H
 
 
-#include <sbia/basis/tclap/SwitchArg.h>
-#include <sbia/basis/tclap/MultiSwitchArg.h>
-#include <sbia/basis/tclap/ValueArg.h>
-#include <sbia/basis/tclap/UnlabeledValueArg.h>
-#include <sbia/basis/tclap/UnlabeledMultiArg.h>
+#include <sbia/tclap/SwitchArg.h>
+#include <sbia/tclap/MultiSwitchArg.h>
+#include <sbia/tclap/ValueArg.h>
+#include <sbia/tclap/UnlabeledValueArg.h>
+#include <sbia/tclap/UnlabeledMultiArg.h>
 
 #include <sbia/basis/MultiArg.h>
 
