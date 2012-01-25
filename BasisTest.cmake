@@ -305,7 +305,7 @@ function (basis_add_test_driver TESTDRIVER_NAME)
       PROPERTIES
         COMPILE_DEFINITIONS
           TESTDRIVER_NAME=\"${TESTDRIVER_NAME}\"
-          ITK_VERSION=\"${ITK_VERSION}\"
+          ITK_VERSION=\"${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}.${ITK_VERSION_PATCH}\"
           ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}
     )
   else ()
