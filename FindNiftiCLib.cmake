@@ -58,7 +58,7 @@
 # <table border="0">
 #   <tr>
 #     @tp @b niftiio @endtp
-#     <td>The library target of the nifticlib library.</td>
+#     <td>The library target of the @c nifticlib library.</td>
 #   </tr>
 # </table>
 #
@@ -102,54 +102,54 @@ endif ()
 # find paths/files
 if (NiftiCLib_DIR)
 
-    find_path (
-      NiftiCLib_INCLUDE_DIR
-        NAMES         nifti1_io.h
-        HINTS         ${NiftiCLib_DIR}
-        PATH_SUFFIXES include include/nifti
-        DOC           "Path of directory containing nifti1.h"
-        NO_DEFAULT_PATH
-    )
+  find_path (
+    NiftiCLib_INCLUDE_DIR
+      NAMES         nifti1_io.h
+      HINTS         ${NiftiCLib_DIR}
+      PATH_SUFFIXES "include" "include/nifti"
+      DOC           "Path of directory containing nifti1.h file."
+      NO_DEFAULT_PATH
+  )
 
-    find_library (
-      NiftiCLib_LIBRARY
-        NAMES         niftiio
-        HINTS         ${NiftiCLib_DIR}
-        PATH_SUFFIXES lib
-        DOC           "Path of niftiio library"
-        NO_DEFAULT_PATH
-    )
+  find_library (
+    NiftiCLib_LIBRARY
+      NAMES         niftiio
+      HINTS         ${NiftiCLib_DIR}
+      PATH_SUFFIXES lib
+      DOC           "Path of niftiio library"
+      NO_DEFAULT_PATH
+  )
 
-    find_library (
-      NiftiCLib_znz_LIBRARY
-        NAMES znz
-        HINTS ENV LD_LIBRARY_PATH
-        DOC   "Path of niftiio library"
-    )
+  find_library (
+    NiftiCLib_znz_LIBRARY
+      NAMES znz
+      HINTS ENV LD_LIBRARY_PATH
+      DOC   "Path of znz library"
+  )
 
 else ()
 
-    find_path (
-      NiftiCLib_INCLUDE_DIR
-        NAMES         nifti1_io.h
-        HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-        PATH_SUFFIXES nifti
-        DOC           "Path of directory containing nifti1.h"
-    )
+  find_path (
+    NiftiCLib_INCLUDE_DIR
+      NAMES         nifti1_io.h
+      HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+      PATH_SUFFIXES nifti
+      DOC           "Path of directory containing nifti1.h file."
+  )
 
-    find_library (
-      NiftiCLib_LIBRARY
-        NAMES niftiio
-        HINTS ENV LD_LIBRARY_PATH
-        DOC   "Path of niftiio library"
-    )
+  find_library (
+    NiftiCLib_LIBRARY
+      NAMES niftiio
+      HINTS ENV LD_LIBRARY_PATH
+      DOC   "Path of niftiio library"
+  )
 
-    find_library (
-      NiftiCLib_znz_LIBRARY
-        NAMES znz
-        HINTS ENV LD_LIBRARY_PATH
-        DOC   "Path of niftiio library"
-    )
+  find_library (
+    NiftiCLib_znz_LIBRARY
+      NAMES znz
+      HINTS ENV LD_LIBRARY_PATH
+      DOC   "Path of znz library"
+  )
 
 endif ()
 
