@@ -809,7 +809,10 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # build project
   if (CONFIGURE_RESULT EQUAL 0)
-    ctest_build (RETURN_VALUE BUILD_RESULT)
+    ctest_build (NUMBER_ERRORS NUMBER_OF_ERRORS RETURN_VALUE BUILD_RESULT)
+    if (NUMBER_OF_ERRORS GREATER 0)
+      set (BUILD_RESULT "${NUMBER_OF_ERRORS}")
+    endif ()
   endif ()
 
   # --------------------------------------------------------------------------
