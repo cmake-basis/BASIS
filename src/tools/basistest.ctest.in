@@ -272,22 +272,12 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Adjust information attached to test results using CMakeCache.txt.
 #
-# @param [in] BUILDNAME Template of new build name. This string is configured
-#                       using string(CONFIGURE). The substring "@COMPILER_NAME@",
-#                       for example, will be replaced by the actual name of
-#                       the compiler.
-# @param [in] ARGV      List of XML test report files without directory path.
-#                       If omitted, this function globs for all XML files in
-#                       the Testing/<tag>/ directory.
-function (adjust_test_info BUILDNAME)
+# @param [in] ARGN List of XML test report files without directory path.
+#                  If omitted, this function globs for all XML files in
+#                  the Testing/<tag>/ directory.
+function (adjust_test_info)
+  # get compiler information from CMake cache
   if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
-    # get tag, i.e., subdirectory name required by adjust_test_info()
-    if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
-      file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
-    else ()
-      set (TAG ".")
-    endif ()
-    # get compiler name
     if (WIN32)
       set (NAME_COMPONENT "NAME_WE")
     else ()
@@ -313,35 +303,41 @@ function (adjust_test_info BUILDNAME)
         set (COMPILER_NAME "vs${NUMBER}")
       endif ()
     endif ()
-    # replace COMPILER_NAME in build name
-    string (CONFIGURE "${BUILDNAME}" BUILDNAME @ONLY)
-    message ("Change build name to ${BUILDNAME}")
-    # modify submission files
-    if (ARGC EQUAL 0)
-      file (
-        GLOB_RECURSE
-          ARGV
-        RELATIVE_PATH
-          "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}"
-          "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml"
-      )
-    endif ()
-    foreach (SUBMISSION_FILE IN LISTS ARGV)
-      set (SUBMISSION_FILE "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/${SUBMISSION_FILE}")
-      # read submission file
-      file (READ "${SUBMISSION_FILE}" XML)
-      # set compiler name if necessary
-      string (REPLACE "CompilerName=\"\"" "CompilerName=\"${COMPILER}\"" XML "${XML}")
-      string (REPLACE "<CompilerName></CompilerName>" "<CompilerName>${COMPILER}</CompilerName>" XML "${XML}")
-      # replace intermediate build name
-      string (REPLACE "BuildName=\"\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
-      string (REPLACE "<BuildName></BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-      string (REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
-      string (REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-      # write modified submission file
-      file (WRITE "${SUBMISSION_FILE}" "${XML}")
-    endforeach ()
   endif ()
+  # replace COMPILER_NAME in build name
+  string (CONFIGURE "${BUILDNAME}" BUILDNAME @ONLY)
+  message ("Change build name to ${BUILDNAME}")
+  # get tag, i.e., subdirectory name required by adjust_test_info()
+  if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
+    file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
+  else ()
+    set (TAG ".")
+  endif ()
+  # modify submission files
+  if (ARGC EQUAL 0)
+    file (
+      GLOB_RECURSE
+        ARGV
+      RELATIVE_PATH
+        "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}"
+        "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml"
+    )
+  endif ()
+  foreach (SUBMISSION_FILE IN LISTS ARGN)
+    set (SUBMISSION_FILE "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/${SUBMISSION_FILE}")
+    # read submission file
+    file (READ "${SUBMISSION_FILE}" XML)
+    # set compiler name if necessary
+    string (REPLACE "CompilerName=\"\"" "CompilerName=\"${COMPILER}\"" XML "${XML}")
+    string (REPLACE "<CompilerName></CompilerName>" "<CompilerName>${COMPILER}</CompilerName>" XML "${XML}")
+    # replace intermediate build name
+    string (REPLACE "BuildName=\"\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+    string (REPLACE "<BuildName></BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+    string (REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+    string (REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+    # write modified submission file
+    file (WRITE "${SUBMISSION_FILE}" "${XML}")
+  endforeach ()
 endfunction ()
 
 # ============================================================================
@@ -820,7 +816,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
   if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
     # submit build results of previous build first, before they get overwritten
     if (SUBMIT_RESULTS)
-      adjust_test_info ("${CTEST_BUILD_NAME}" Build.xml)
+      adjust_test_info (Build.xml)
       ctest_submit (PARTS Build)
     endif ()
     # build documentation
@@ -887,10 +883,11 @@ if (FORCE_BUILD OR UPDATED_FILES)
 endif ()
 
 # -----------------------------------------------------------------------------
-# submit results
+# adjust test result meta-data - even if these will not be submitted yet
+adjust_test_info ()
 
-# Note: Adjust test result info also if no submission is done at the moment.
-adjust_test_info ("${CTEST_BUILD_NAME}")
+# -----------------------------------------------------------------------------
+# submit results
 if (SUBMIT_RESULTS)
   ctest_submit ()
 endif ()
