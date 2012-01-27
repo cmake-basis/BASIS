@@ -271,7 +271,15 @@ endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Adjust information attached to test results using CMakeCache.txt.
-function (adjust_test_info)
+#
+# @param [in] BUILDNAME Template of new build name. This string is configured
+#                       using string(CONFIGURE). The substring "@COMPILER_NAME@",
+#                       for example, will be replaced by the actual name of
+#                       the compiler.
+# @param [in] ARGV      List of XML test report files without directory path.
+#                       If omitted, this function globs for all XML files in
+#                       the Testing/<tag>/ directory.
+function (adjust_test_info BUILDNAME)
   if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     # get tag, i.e., subdirectory name required by adjust_test_info()
     if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
@@ -306,11 +314,20 @@ function (adjust_test_info)
       endif ()
     endif ()
     # replace COMPILER_NAME in build name
-    string (CONFIGURE "${CTEST_BUILD_NAME}" BUILDNAME @ONLY)
+    string (CONFIGURE "${BUILDNAME}" BUILDNAME @ONLY)
     message ("Change build name to ${BUILDNAME}")
     # modify submission files
-    file (GLOB_RECURSE SUBMISSION_FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
-    foreach (SUBMISSION_FILE IN LISTS SUBMISSION_FILES)
+    if (ARGC EQUAL 0)
+      file (
+        GLOB_RECURSE
+          ARGV
+        RELATIVE_PATH
+          "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}"
+          "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml"
+      )
+    endif ()
+    foreach (SUBMISSION_FILE IN LISTS ARGV)
+      set (SUBMISSION_FILE "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/${SUBMISSION_FILE}")
       # read submission file
       file (READ "${SUBMISSION_FILE}" XML)
       # set compiler name if necessary
@@ -800,12 +817,12 @@ if (FORCE_BUILD OR UPDATED_FILES)
   if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
     # submit build results of previous build first, before they get overwritten
     if (SUBMIT_RESULTS)
-      adjust_test_info ()
+      adjust_test_info ("${CTEST_BUILD_NAME}" Build.xml)
       ctest_submit (PARTS Build)
     endif ()
     # build documentation
     message ("Build documentation")
-    ctest_build (TARGET doc RETURN_VALUE RT)
+    ctest_build (TARGET doc RETURN_VALUE RT APPEND)
     # install documentation
     if (RT EQUAL 0)
       if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
@@ -870,7 +887,7 @@ endif ()
 # submit results
 
 # Note: Adjust test result info also if no submission is done at the moment.
-adjust_test_info ()
+adjust_test_info ("${CTEST_BUILD_NAME}")
 if (SUBMIT_RESULTS)
   ctest_submit ()
 endif ()
