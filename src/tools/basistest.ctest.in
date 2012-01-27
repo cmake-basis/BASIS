@@ -269,6 +269,64 @@ function (read_cmake_cache_value VAR)
   set (${VAR} "${VALUE}" PARENT_SCOPE)
 endfunction ()
 
+# ----------------------------------------------------------------------------
+## @brief Adjust information attached to test results using CMakeCache.txt.
+function (adjust_test_info)
+  if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
+    # get tag, i.e., subdirectory name required by adjust_test_info()
+    if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
+      file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
+    else ()
+      set (TAG ".")
+    endif ()
+    # get compiler name
+    if (WIN32)
+      set (NAME_COMPONENT "NAME_WE")
+    else ()
+      set (NAME_COMPONENT "NAME")
+    endif ()
+    if (UNIX OR BORLAND)
+      read_cmake_cache_value (CMAKE_CXX_COMPILER)
+      set (COMPILER "${CMAKE_CXX_COMPILER}")
+      get_filename_component (COMPILER_NAME "${CMAKE_CXX_COMPILER}" ${NAME_COMPONENT})
+    else ()
+      read_cmake_cache_value (CMAKE_BUILD_TOOL)
+      set (COMPILER "${CMAKE_BUILD_TOOL}")
+      get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
+    endif ()
+    if (COMPILER_NAME MATCHES "msdev")
+      set (COMPILER_NAME "vs60")
+    elseif (COMPILER_NAME MATCHES "devenv")
+      read_cmake_cache_value (CMAKE_GENERATOR)
+      string (REGEX REPLACE "Visual Studio ([0-9][0-9]?)($|.*)" "\\1" NUMBER "${CMAKE_GENERATOR}") 
+      if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio 7 .NET 2003")
+        set (COMPILER_NAME "vs71")
+      else ()
+        set (COMPILER_NAME "vs${NUMBER}")
+      endif ()
+    endif ()
+    # replace COMPILER_NAME in build name
+    string (CONFIGURE "${CTEST_BUILD_NAME}" BUILDNAME @ONLY)
+    message ("Change build name to ${BUILDNAME}")
+    # modify submission files
+    file (GLOB_RECURSE SUBMISSION_FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
+    foreach (SUBMISSION_FILE IN LISTS SUBMISSION_FILES)
+      # read submission file
+      file (READ "${SUBMISSION_FILE}" XML)
+      # set compiler name if necessary
+      string (REPLACE "CompilerName=\"\"" "CompilerName=\"${COMPILER}\"" XML "${XML}")
+      string (REPLACE "<CompilerName></CompilerName>" "<CompilerName>${COMPILER}</CompilerName>" XML "${XML}")
+      # replace intermediate build name
+      string (REPLACE "BuildName=\"\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+      string (REPLACE "<BuildName></BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+      string (REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
+      string (REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
+      # write modified submission file
+      file (WRITE "${SUBMISSION_FILE}" "${XML}")
+    endforeach ()
+  endif ()
+endfunction ()
+
 # ============================================================================
 # settings
 # ============================================================================
@@ -703,13 +761,6 @@ endif ()
 # start a new test run
 ctest_start ("${CTEST_MODEL}")
 
-# get tag, i.e., subdirectory name required later to update build name
-if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
-  file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
-else ()
-  set (TAG ".")
-endif ()
-
 # ----------------------------------------------------------------------------
 # update working copy
 set (UPDATED_FILES TRUE)
@@ -749,6 +800,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
   if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
     # submit build results of previous build first, before they get overwritten
     if (SUBMIT_RESULTS)
+      adjust_test_info ()
       ctest_submit (PARTS Build)
     endif ()
     # build documentation
@@ -814,56 +866,11 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
 endif ()
 
-# ----------------------------------------------------------------------------
-# adjust information attached to test results
-if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
-  if (WIN32)
-    set (NAME_COMPONENT "NAME_WE")
-  else ()
-    set (NAME_COMPONENT "NAME")
-  endif ()
-  # get compiler name
-  if (UNIX OR BORLAND)
-    read_cmake_cache_value (CMAKE_CXX_COMPILER)
-    set (COMPILER "${CMAKE_CXX_COMPILER}")
-    get_filename_component (COMPILER_NAME "${CMAKE_CXX_COMPILER}" ${NAME_COMPONENT})
-  else ()
-    read_cmake_cache_value (CMAKE_BUILD_TOOL)
-    set (COMPILER "${CMAKE_BUILD_TOOL}")
-    get_filename_component (COMPILER_NAME "${CMAKE_BUILD_TOOL}" ${NAME_COMPONENT})
-  endif ()
-  if (COMPILER_NAME MATCHES "msdev")
-    set (COMPILER_NAME "vs60")
-  elseif (COMPILER_NAME MATCHES "devenv")
-    read_cmake_cache_value (CMAKE_GENERATOR)
-    string (REGEX REPLACE "Visual Studio ([0-9][0-9]?)($|.*)" "\\1" NUMBER "${CMAKE_GENERATOR}") 
-    if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio 7 .NET 2003")
-      set (COMPILER_NAME "vs71")
-    else ()
-      set (COMPILER_NAME "vs${NUMBER}")
-    endif ()
-  endif ()
-  # replace <compiler> pattern in build name
-  string (CONFIGURE "${CTEST_BUILD_NAME}" BUILDNAME @ONLY)
-  message ("Change build name to ${BUILDNAME}")
-  # modify submission files
-  file (GLOB_RECURSE SUBMISSION_FILES "" "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml")
-  foreach (SUBMISSION_FILE IN LISTS SUBMISSION_FILES)
-    # read submission file
-    file (READ "${SUBMISSION_FILE}" XML)
-    # set compiler name if necessary
-    string (REPLACE "CompilerName=\"\"" "CompilerName=\"${COMPILER}\"" XML "${XML}")
-    string (REPLACE "<CompilerName></CompilerName>" "<CompilerName>${COMPILER}</CompilerName>" XML "${XML}")
-    # replace intermediate build name
-    string (REPLACE "BuildName=\"${CTEST_BUILD_NAME}\"" "BuildName=\"${BUILDNAME}\"" XML "${XML}")
-    string (REPLACE "<BuildName>${CTEST_BUILD_NAME}</BuildName>" "<BuildName>${BUILDNAME}</BuildName>" XML "${XML}")
-    # write modified submission file
-    file (WRITE "${SUBMISSION_FILE}" "${XML}")
-  endforeach ()
-endif ()
-
 # -----------------------------------------------------------------------------
 # submit results
+
+# Note: Adjust test result info also if no submission is done at the moment.
+adjust_test_info ()
 if (SUBMIT_RESULTS)
   ctest_submit ()
 endif ()
