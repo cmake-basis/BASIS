@@ -78,5 +78,5 @@ BUILDING THE SOFTWARE FROM SOURCES
 REFERENCES
 ==========
 
-  [1] Visit https://www.rad.upenn.edu/sbia/software/installation.html or see
+  [1] Visit http://www.rad.upenn.edu/sbia/software/installation.html or see
       INSTALL-basis.txt document in "doc/" directory of the BASIS installation.
