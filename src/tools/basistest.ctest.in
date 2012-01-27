@@ -746,7 +746,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
 
   # --------------------------------------------------------------------------
   # build and install API documentation
-  if (CONFIGURE_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
+  if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
     # submit build results of previous build first, before they get overwritten
     if (SUBMIT_RESULTS)
       ctest_submit (PARTS Build)
