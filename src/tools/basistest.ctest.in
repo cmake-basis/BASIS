@@ -738,8 +738,14 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # build and install API documentation
   if (CONFIGURE_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
+    # submit build results of previous build first, before they get overwritten
+    if (SUBMIT_RESULTS)
+      ctest_submit (PARTS Build)
+    endif ()
+    # build documentation
     message ("Build documentation")
     ctest_build (TARGET doc RETURN_VALUE RT)
+    # install documentation
     if (RT EQUAL 0)
       if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
         execute_process (
