@@ -305,7 +305,7 @@ function (adjust_test_info)
     endif ()
   endif ()
   # replace COMPILER_NAME in build name
-  string (CONFIGURE "${BUILDNAME}" BUILDNAME @ONLY)
+  string (CONFIGURE "${CTEST_BUILD_NAME}" BUILDNAME @ONLY)
   message ("Change build name to ${BUILDNAME}")
   # get tag, i.e., subdirectory name required by adjust_test_info()
   if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
