@@ -733,7 +733,11 @@ function (basis_add_doc TARGET_NAME)
 
     # add target as dependency to doc target
     if (NOT TARGET doc)
-      add_custom_target (doc)
+      if (BUILD_DOCUMENTATION)
+        add_custom_target (doc ALL)
+      else ()
+        add_custom_target (doc)
+      endif ()
     endif ()
 
     add_dependencies (doc ${TARGET_UID})
@@ -903,7 +907,12 @@ function (basis_add_doc TARGET_NAME)
 
     # add target as dependency to changelog target
     if (NOT TARGET changelog)
-      add_custom_target(changelog)
+      option (BUILD_CHANGELOG "Request build and/or installation of the ChangeLog." OFF)
+      if (BUILD_CHANGELOG)
+        add_custom_target(changelog ALL)
+      else ()
+        add_custom_target(changelog)
+      endif ()
     endif ()
 
     add_dependencies (changelog ${TARGET_UID})
