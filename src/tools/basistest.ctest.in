@@ -321,9 +321,9 @@ function (adjust_test_info)
     file (
       GLOB_RECURSE
         ARGN
-      RELATIVE_PATH
+      RELATIVE
         "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}"
-        "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml"
+      "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml"
     )
   endif ()
   foreach (SUBMISSION_FILE IN LISTS ARGN)
