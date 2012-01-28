@@ -278,7 +278,7 @@ endfunction ()
 # @param [in] ARGN List of XML test report files without directory path.
 #                  If omitted, this function globs for all XML files in
 #                  the Testing/<tag>/ directory.
-function (adjust_test_info)
+function (update_metadata)
   # get compiler information from CMake cache
   if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     if (WIN32)
@@ -313,23 +313,23 @@ function (adjust_test_info)
   # replace COMPILER_NAME in build name
   string (CONFIGURE "${CTEST_BUILD_NAME}" BUILDNAME @ONLY)
   message ("Change build name to ${BUILDNAME}")
-  # get tag, i.e., subdirectory name required by adjust_test_info()
+  # get tag, i.e., subdirectory name required by update_metadata()
   if (EXISTS "${CTEST_BINARY_DIRECTORY}/Testing/TAG")
     file (STRINGS "${CTEST_BINARY_DIRECTORY}/Testing/TAG" TAG LIMIT_COUNT 1)
   else ()
     set (TAG ".")
   endif ()
   # modify submission files
-  if (ARGC EQUAL 0)
+  if (NOT ARGV)
     file (
       GLOB_RECURSE
-        ARGN
+        ARGV
       RELATIVE
         "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}"
       "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml"
     )
   endif ()
-  foreach (SUBMISSION_FILE IN LISTS ARGN)
+  foreach (SUBMISSION_FILE IN LISTS ARGV)
     set (SUBMISSION_FILE "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/${SUBMISSION_FILE}")
     # read submission file
     file (READ "${SUBMISSION_FILE}" XML)
@@ -820,15 +820,6 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # build and install API documentation
   if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
-    # submit build results of previous build first, before they get overwritten
-    if (SUBMIT_RESULTS)
-      adjust_test_info (Build.xml)
-      ctest_submit (PARTS Build)
-    endif ()
-    # build documentation
-    message ("Build documentation")
-    ctest_build (TARGET doc RETURN_VALUE RT APPEND)
-    # install documentation
     if (RT EQUAL 0)
       if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
         execute_process (
@@ -890,7 +881,7 @@ endif ()
 
 # -----------------------------------------------------------------------------
 # adjust test result meta-data - even if these will not be submitted yet
-adjust_test_info ()
+update_metadata ()
 
 # -----------------------------------------------------------------------------
 # submit results

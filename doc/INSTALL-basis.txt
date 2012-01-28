@@ -278,6 +278,10 @@ BUILDING THE SOFWARE FROM SOURCES
 
        $ make doc
 
+     If the BUILD_DOCUMENTATION option has been set to ON before, the doc target
+     has already been build as part of the software build itself, i.e., when
+     running make as in step 3.
+
      The advanced INSTALL_APIDOC_DIR CMake variable can be set to an absolute
      path or a path relative to the INSTALL_PREFIX directory in order to modify
      the installation directory for the API documentation which is generated
