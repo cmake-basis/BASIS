@@ -18,6 +18,9 @@
 if (POLICY CMP0007)
   cmake_policy(SET CMP0007 NEW)
 endif ()
+if (POLICY CMP0009)
+  cmake_policy(SET CMP0009 NEW)
+endif ()
 
 # ============================================================================
 # constants - define at first
@@ -317,7 +320,7 @@ function (adjust_test_info)
   if (ARGC EQUAL 0)
     file (
       GLOB_RECURSE
-        ARGV
+        ARGN
       RELATIVE_PATH
         "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}"
         "${CTEST_BINARY_DIRECTORY}/Testing/${TAG}/*.xml"
