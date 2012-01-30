@@ -179,4 +179,3 @@ SBIA Contribution and Software License Agreement ("Agreement")
   of The Commonwealth of Pennsylvania without regard to principles of conflicts
   of law. This Agreement shall supercede and replace any license terms that you
   may have agreed to previously with respect to Software from SBIA.
-
