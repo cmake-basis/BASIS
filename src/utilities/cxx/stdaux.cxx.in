@@ -48,7 +48,7 @@ void print_version(const char* name, const char* copyright, const char* license)
         cout << copyright << endl;
     }
     if (license == NULL) {
-        cout << "See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file." << endl;
+        cout << "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file." << endl;
     } else if (*license != '\0') {
         cout << license << endl;
     }
