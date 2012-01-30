@@ -6,7 +6,7 @@
 #       the file CTestCustom.cmake.in which is part of this source package.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
@@ -146,33 +146,20 @@ set (
 # Note that the expressions here are globbing expression as interpreted
 # by CMake's file(GLOB) command, not regular expressions.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
+foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "${CODE_DIR}/*${E}"
+    "./${CODE_DIR}/*${E}"
   )
 endforeach ()
-set (BASIS_AUTO_PREFIX_INCLUDES "@BASIS_AUTO_PREFIX_INCLUDES@")
-if (BASIS_AUTO_PREFIX_INCLUDES)
-  # TODO Files in build tree are yet never considered by CTest
-  #      as long as they are uncovered.
-else ()
-  foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
+foreach (E IN ITEMS .txx .hxx .inl .inc)
+  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+    "./${INCLUDE_DIR}/*${E}"
+  )
+endforeach ()
+foreach (M IN LISTS @PROJECT_MODULES_ENABLED@)
+  foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "${INCLUDE_DIR}/*${E}"
-    )
-  endforeach ()
-endif ()
-foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
-  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
-    foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
-      list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-        "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
-      )
-    endforeach ()
-  endif ()
-  foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
-    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
+      "./${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
     )
   endforeach ()
 endforeach ()
