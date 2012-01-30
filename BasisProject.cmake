@@ -29,7 +29,7 @@
 
 basis_project (
   NAME        "BASIS"
-  VERSION     "0.0.0"
+  VERSION     "1.0.0"
   DESCRIPTION "This package implements and supports the development of "
               "software which follows the SBIA Build system And Software "
               "Implementation Standard (BASIS)."
