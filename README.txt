@@ -175,8 +175,8 @@ PACKAGE OVERVIEW
   Binary Package
   --------------
 
-  For details on where the built executables and libraries, the auxiliary data,
-  and the documentation files are installed, please refer to the INSTALL file.
+  Please refer to the INSTALL file for details on where the built executables
+  and libraries, the auxiliary data, and the documentation files are installed.
 
 
 
