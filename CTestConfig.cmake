@@ -38,4 +38,3 @@ set (CTEST_DROP_SITE_CDASH TRUE)
 #
 # See documentation of CTest.cmake module.
 set (CTEST_USE_LAUNCHERS 0)
-
