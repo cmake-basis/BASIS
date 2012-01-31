@@ -1120,13 +1120,27 @@ macro (basis_project_finalize)
   else ()
 
     # install public headers
+    if (NOT BASIS_AUTO_PREFIX_INCLUDES)
+      install (
+        DIRECTORY   "${PROJECT_INCLUDE_DIR}/"
+        DESTINATION "${INSTALL_INCLUDE_DIR}"
+        OPTIONAL
+        PATTERN     "*.in" EXCLUDE
+      )
+    endif ()
+    set (PUBLIC_HEADERS_EXCLUDE_PATTERNS)
+    foreach (P IN LISTS BASIS_UTILITIES_PUBLIC_HEADERS)
+      list (APPEND PUBLIC_HEADERS_EXCLUDE_PATTERNS "PATTERN" "${P}" EXCLUDE)
+    endforeach ()
     install (
       DIRECTORY   "${BINARY_INCLUDE_DIR}/"
       DESTINATION "${INSTALL_INCLUDE_DIR}"
       OPTIONAL
+      ${PUBLIC_HEADERS_EXCLUDE_PATTERNS}
       PATTERN     ".svn" EXCLUDE
       PATTERN     ".git" EXCLUDE
     )
+    unset (PUBLIC_HEADERS_EXCLUDE_PATTERNS)
     # "parse" public header files to check if C++ BASIS utilities are included
     if (BASIS_UTILITIES_PUBLIC_HEADERS)
       set (PUBLIC_HEADERS)
@@ -1138,7 +1152,7 @@ macro (basis_project_finalize)
         endif ()
       endif ()
       set (REGEX)
-      foreach (P ${BASIS_UTILITIES_PUBLIC_HEADERS})
+      foreach (P IN LISTS BASIS_UTILITIES_PUBLIC_HEADERS)
         basis_get_relative_path (H "${BINARY_INCLUDE_DIR}" "${P}")
         if (NOT REGEX)
           set (REGEX "#include +[<\"](${H}")
