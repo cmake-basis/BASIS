@@ -42,3 +42,6 @@ CONTRIBUTORS
                            directory structure.
   - Kayhan Batmanghelich   Tested and patiently debugged the build of executables
                            from MATLAB sources and the build of MEX-files.
+  - Luke Bloy              Provided many useful ideas to improve the usability and
+                           increase the acceptance of BASIS. Motivated and tested
+                           the implementation of the ITK4-style modularization.
