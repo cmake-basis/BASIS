@@ -1126,6 +1126,8 @@ macro (basis_project_finalize)
         DESTINATION "${INSTALL_INCLUDE_DIR}"
         OPTIONAL
         PATTERN     "*.in" EXCLUDE
+        PATTERN     ".svn" EXCLUDE
+        PATTERN     ".git" EXCLUDE
       )
     endif ()
     set (PUBLIC_HEADERS_EXCLUDE_PATTERNS)
