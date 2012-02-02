@@ -137,7 +137,7 @@ find_path (
     ENV OPENCV_DIR
   PATH_SUFFIXES
     "share/OpenCV"
-  DOC "Directory containing OpenCVConfig.cmake file."
+  DOC "Directory containing OpenCVConfig.cmake file or installation root directory."
 )
 
 # components
@@ -167,12 +167,16 @@ if (EXISTS "${OpenCV_DIR}")
   # otherwise
   else ()
 
+    # OpenCV_DIR is installation root directory
+    set (OpenCV_INSTALL_PATH "${OpenCV_DIR}")
+
     # find include directory
     find_path (
-      OpenCV_INCLUDE_DIR "cv.h"
-        PATHS         "${OpenCV_DIR}"
+      OpenCV_INCLUDE_DIR
+        NAMES         "cv.h"
+        PATHS         "${OpenCV_INSTALL_PATH}"
         PATH_SUFFIXES "include" "include/opencv"
-        DOC ""
+        DOC           "Path of directory containing cv.h file."
     )
 
     # set library version to look for
@@ -209,18 +213,30 @@ if (EXISTS "${OpenCV_DIR}")
     # find debug library
     find_library (
       OpenCV_${_OpenCV_LIB}_LIBRARY_DEBUG
-        NAMES         "${_OpenCV_LIB}${OpenCV_LIBRARY_SUFFIX}d"
-        PATHS         "${OpenCV_DIR}"
-        PATH_SUFFIXES "lib"
+        NAMES
+          "opencv_${_OpenCV_LIB}${OpenCV_LIBRARY_SUFFIX}d"
+          "${_OpenCV_LIB}${OpenCV_LIBRARY_SUFFIX}d"
+        PATHS
+          "${OpenCV_INSTALL_PATH}"
+        PATH_SUFFIXES
+          "lib"
+        DOC
+          "Debug version of OpenCV ${_OpenCV_LIB} library."
         NO_DEFAULT_PATH
     )
 
     # find release library
     find_library (
       OpenCV_${_OpenCV_LIB}_LIBRARY_RELEASE
-        NAMES "${_OpenCV_LIB}${OpenCV_LIBRARY_SUFFIX}"
-        PATHS "${OpenCV_DIR}"
-        PATH_SUFFIXES "lib"
+        NAMES
+          "opencv_${_OpenCV_LIB}${OpenCV_LIBRARY_SUFFIX}"
+          "${_OpenCV_LIB}${OpenCV_LIBRARY_SUFFIX}"
+        PATHS
+          "${OpenCV_INSTALL_PATH}"
+        PATH_SUFFIXES
+          "lib"
+        DOC
+          "Optimized version of OpenCV ${_OpenCV_LIB} library."
         NO_DEFAULT_PATH
     )
 
