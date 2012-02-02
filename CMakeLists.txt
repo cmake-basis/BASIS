@@ -76,15 +76,18 @@ set (
 # Find<Pkg>.cmake modules
 set (
   CMAKE_FIND_MODULES
-    "FindGMock.cmake"             # for Google Mock
-    "FindGTest.cmake"             # for Google Test
-    "FindITK.cmake"               # for ITK
-    "FindLIBLINEAR.cmake"         # for LIBLINEAR
-    "FindMATLAB.cmake"            # for MATLAB
-    "FindMatlabNiftiTools.cmake"  # for MATLAB Central NIfTI tools
-    "FindMOSEK.cmake"             # for MOSEK
-    "FindNiftiCLib.cmake"         # for nifticlib
-    "FindPerlLibs.cmake"          # for Perl libraries
+    "FindBLAS.cmake"
+    "FindBoostNumericBindings.cmake"
+    "FindGMock.cmake"
+    "FindGTest.cmake"
+    "FindITK.cmake"
+    "FindLIBLINEAR.cmake"
+    "FindMATLAB.cmake"
+    "FindMatlabNiftiTools.cmake"
+    "FindMOSEK.cmake"
+    "FindNiftiCLib.cmake"
+    "FindOpenCV.cmake"
+    "FindPerlLibs.cmake"
 )
 
 # ----------------------------------------------------------------------------
@@ -104,7 +107,7 @@ basis_install (
 )
 
 # ----------------------------------------------------------------------------
-# make sure that we did not forgot to install a file... very easy to forgot!
+# make sure that we did not forget to install a file... very easy to forget!
 file (GLOB MODULES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
 
 foreach (F IN LISTS MODULES)
