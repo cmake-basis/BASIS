@@ -192,7 +192,7 @@ if (EXISTS "${OpenCV_DIR}")
         set (OpenCV_VERSION_PATCH ${OpenCV_FIND_VERSION_PATCH})
       else ()
         set (OpenCV_VERSION_PATCH 0)
-      endif
+      endif ()
     endif ()
 
   endif ()
