@@ -74,9 +74,6 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # find paths/files
-message ("BoostNumericBindings_DIR: ${BoostNumericBindings_DIR}")
-message ("C_INCLUDE_PATH: $ENV{C_INCLUDE_PATH}")
-message ("CXX_INCLUDE_PATH: $ENV{CXX_INCLUDE_PATH}")
 if (BoostNumericBindings_DIR)
 
   find_path (
