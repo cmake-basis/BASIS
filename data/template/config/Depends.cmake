@@ -6,7 +6,7 @@
 # BasisProject.cmake file of the project and collected information about its
 # modules. Furthermore, it is included before it looks for the packages
 # specified as arguments to the basis_project() command. At this point, the
-# CMake project is not initialized yet and most BASIS varibles are not set.
+# CMake project is not initialized yet and most BASIS variables are not set.
 #
 # Use this file to find additional dependencies or dependencies which are
 # only required by a project if certain modules are enabled.
