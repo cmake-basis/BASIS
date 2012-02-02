@@ -143,10 +143,7 @@ if(_libraries_work)
   if (_CHECK_FORTRAN)
     check_fortran_function_exists("${_name}" ${_prefix}${_combined_name}_WORKS)
   else()
-    check_function_exists("${_name}" ${_prefix}${_combined_name}_WORKS)
-    if (NOT ${_prefix}${_combined_name}_WORKS)
-      check_function_exists("${_name}_" ${_prefix}${_combined_name}_WORKS)
-    endif ()
+    check_function_exists("${_name}_" ${_prefix}${_combined_name}_WORKS)
   endif()
   set(CMAKE_REQUIRED_LIBRARIES)
   mark_as_advanced(${_prefix}${_combined_name}_WORKS)
@@ -175,7 +172,7 @@ if (BLA_VENDOR STREQUAL "ATLAS" OR BLA_VENDOR STREQUAL "All")
   check_fortran_libraries(
   BLAS_LIBRARIES
   BLAS
-  cblas_dgemm
+  dgemm
   ""
   "cblas;f77blas;atlas"
   ""
