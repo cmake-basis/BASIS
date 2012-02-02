@@ -74,11 +74,14 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # find paths/files
+message ("BoostNumericBindings_DIR: ${BoostNumericBindings_DIR}")
+message ("C_INCLUDE_PATH: $ENV{C_INCLUDE_PATH}")
+message ("CXX_INCLUDE_PATH: $ENV{CXX_INCLUDE_PATH}")
 if (BoostNumericBindings_DIR)
 
   find_path (
     BoostNumericBindings_INCLUDE_DIR
-      NAMES         boost/numeric/bindings/atlas/cblas.h
+      NAMES         boost/numeric/bindings/atlas/cblas.hpp
       HINTS         ${BoostNumericBindings_DIR}
       DOC           "Root include directory of Boost Numeric Bindings."
       NO_DEFAULT_PATH
@@ -88,7 +91,7 @@ else ()
 
   find_path (
     BoostNumericBindings_INCLUDE_DIR
-      NAMES         boost/numeric/bindings/atlas/cblas.h
+      NAMES         boost/numeric/bindings/atlas/cblas.hpp
       HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
       DOC           "Root include directory of Boost Numeric Bindings."
   )
