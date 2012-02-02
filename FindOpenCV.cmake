@@ -132,8 +132,12 @@
 find_path (
   OpenCV_DIR
     "OpenCVConfig.cmake"
-  PATH_SUFFIXES "share/OpenCV"
-  DOC "Directory containing OpenCVConfig.cmake file or installation directory of OpenCV."
+  HINTS
+    ENV OpenCV_DIR
+    ENV OPENCV_DIR
+  PATH_SUFFIXES
+    "share/OpenCV"
+  DOC "Directory containing OpenCVConfig.cmake file."
 )
 
 # components
