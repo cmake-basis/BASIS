@@ -1017,7 +1017,6 @@ macro (basis_find_packages)
   #            Settings.cmake.in files were configured and included.
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
 
-
   # --------------------------------------------------------------------------
   # Slicer must be found before all others...
   if (PROJECT_DEPENDS          MATCHES "^Slicer(-[0-9.]+)?({})?" OR
