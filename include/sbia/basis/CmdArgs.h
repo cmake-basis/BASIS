@@ -25,6 +25,8 @@
 
 #include <sbia/basis/MultiArg.h>
 
+#include <sbia/tclap/Constraint.h>
+
 #include <sbia/basis/path.h> // exists()
 
 
@@ -148,42 +150,48 @@ typedef TCLAP::ValuesConstraint<std::string> StringValuesConstraint;
  * @brief Constrain argument values to negative values.
  */
 template<typename T>
-class NegativeValueConstraint : TCLAP::Constraint<T>
+class NegativeValueConstraint : public TCLAP::Constraint<T>
 {
 public:
-    NegativeValueConstraint() {}
+    NegativeValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
     virtual ~NegativeValueConstraint() {}
-    virtual std::string description() const { return "< 0"; }
-    virtual std::string shortID() const { return "< 0"; }
+    virtual std::string description() const { return "Value must be negative."; }
+    virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const T& value) const { return value < 0; }
+protected:
+    std::string _typeDesc;
 };
 
 /**
  * @brief Constrain argument values to non-zero values.
  */
 template<typename T>
-class NonZeroValueConstraint : TCLAP::Constraint<T>
+class NonZeroValueConstraint : public TCLAP::Constraint<T>
 {
 public:
-    NonZeroValueConstraint() {}
+    NonZeroValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
     virtual ~NonZeroValueConstraint() {}
-    virtual std::string description() const { return "!= 0"; }
-    virtual std::string shortID() const { return "!= 0"; }
+    virtual std::string description() const { return "Value must not be zero."; }
+    virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const T& value) const { return value != 0; }
+protected:
+    std::string _typeDesc;
 };
 
 /**
  * @brief Constrain argument values to positive values.
  */
 template<typename T>
-class PositiveValueConstraint : TCLAP::Constraint<T>
+class PositiveValueConstraint : public TCLAP::Constraint<T>
 {
 public:
-    PositiveValueConstraint() {}
+    PositiveValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
     virtual ~PositiveValueConstraint() {}
-    virtual std::string description() const { return "> 0"; }
-    virtual std::string shortID() const { return "> 0"; }
+    virtual std::string description() const { return "Value must be positive."; }
+    virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const T& value) const { return value > 0; }
+protected:
+    std::string _typeDesc;
 };
 
 // ---------------------------------------------------------------------------
@@ -193,27 +201,31 @@ public:
 /**
  * @brief Constrain argument values to paths of existing files.
  */
-class ExistentFileConstraint : TCLAP::Constraint<std::string>
+class ExistingFileConstraint : public TCLAP::Constraint<std::string>
 {
 public:
-    ExistentFileConstraint() {}
-    virtual ~ExistentFileConstraint() {}
-    virtual std::string description() const { return "file exists"; }
-    virtual std::string shortID() const { return "file exists"; }
+    ExistingFileConstraint(const std::string& typeDesc = "<file>") : _typeDesc(typeDesc) {}
+    virtual ~ExistingFileConstraint() {}
+    virtual std::string description() const { return "Value must name an existing file."; }
+    virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const std::string& value) const { return is_file(value); }
+protected:
+    std::string _typeDesc;
 };
 
 /**
  * @brief Constrain argument values to paths of existing directories.
  */
-class ExistentDirectoryConstraint : TCLAP::Constraint<std::string>
+class ExistingDirectoryConstraint : public TCLAP::Constraint<std::string>
 {
 public:
-    ExistentDirectoryConstraint() {}
-    virtual ~ExistentDirectoryConstraint() {}
-    virtual std::string description() const { return "directory exists"; }
-    virtual std::string shortID() const { return "dir exists"; }
+    ExistingDirectoryConstraint(const std::string& typeDesc = "<dir>") : _typeDesc(typeDesc) {}
+    virtual ~ExistingDirectoryConstraint() {}
+    virtual std::string description() const { return "Value must name an existing directory."; }
+    virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const std::string& value) const { return is_dir(value); }
+protected:
+    std::string _typeDesc;
 };
 
 
