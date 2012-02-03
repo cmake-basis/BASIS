@@ -25,6 +25,8 @@
 
 #include <sbia/basis/MultiArg.h>
 
+#include <sbia/basis/path.h> // exists()
+
 
 namespace sbia
 {
@@ -125,13 +127,94 @@ typedef TCLAP::UnlabeledValueArg<std::string> PositionalArg;
  */
 typedef TCLAP::UnlabeledMultiArg<std::string> PositionalArgs;
 
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // constraints
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// constraints on enumerations
+// ---------------------------------------------------------------------------
 
 /**
  * @brief Constrains string arguments to allow only predefined values.
  */
 typedef TCLAP::ValuesConstraint<std::string> StringValuesConstraint;
+
+// ---------------------------------------------------------------------------
+// constraints on numbers
+// ---------------------------------------------------------------------------
+
+/**
+ * @brief Constrain argument values to negative values.
+ */
+template<typename T>
+class NegativeValueConstraint : TCLAP::Constraint<T>
+{
+public:
+    NegativeValueConstraint() {}
+    virtual ~NegativeValueConstraint() {}
+    virtual std::string description() const { return "< 0"; }
+    virtual std::string shortID() const { return "< 0"; }
+    virtual bool check(const T& value) const { return value < 0; }
+};
+
+/**
+ * @brief Constrain argument values to non-zero values.
+ */
+template<typename T>
+class NonZeroValueConstraint : TCLAP::Constraint<T>
+{
+public:
+    NonZeroValueConstraint() {}
+    virtual ~NonZeroValueConstraint() {}
+    virtual std::string description() const { return "!= 0"; }
+    virtual std::string shortID() const { return "!= 0"; }
+    virtual bool check(const T& value) const { return value != 0; }
+};
+
+/**
+ * @brief Constrain argument values to positive values.
+ */
+template<typename T>
+class PositiveValueConstraint : TCLAP::Constraint<T>
+{
+public:
+    PositiveValueConstraint() {}
+    virtual ~PositiveValueConstraint() {}
+    virtual std::string description() const { return "> 0"; }
+    virtual std::string shortID() const { return "> 0"; }
+    virtual bool check(const T& value) const { return value > 0; }
+};
+
+// ---------------------------------------------------------------------------
+// constraints on paths
+// ---------------------------------------------------------------------------
+
+/**
+ * @brief Constrain argument values to paths of existing files.
+ */
+class ExistentFileConstraint : TCLAP::Constraint<std::string>
+{
+public:
+    ExistentFileConstraint() {}
+    virtual ~ExistentFileConstraint() {}
+    virtual std::string description() const { return "file exists"; }
+    virtual std::string shortID() const { return "file exists"; }
+    virtual bool check(const std::string& value) const { return is_file(value); }
+};
+
+/**
+ * @brief Constrain argument values to paths of existing directories.
+ */
+class ExistentDirectoryConstraint : TCLAP::Constraint<std::string>
+{
+public:
+    ExistentDirectoryConstraint() {}
+    virtual ~ExistentDirectoryConstraint() {}
+    virtual std::string description() const { return "directory exists"; }
+    virtual std::string shortID() const { return "dir exists"; }
+    virtual bool check(const std::string& value) const { return is_dir(value); }
+};
 
 
 /// @}
