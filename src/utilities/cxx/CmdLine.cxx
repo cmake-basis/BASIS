@@ -705,7 +705,8 @@ CmdLine::CmdLine(const std::string& name,
                  const std::string& version,
                  const std::string& copyright,
                  const std::string& license,
-                 const std::string& contact)
+                 const std::string& contact,
+                 bool               stdargs)
 :
     TCLAP::CmdLine(description, ' ', version, false),
     _name(name),
@@ -715,7 +716,7 @@ CmdLine::CmdLine(const std::string& name,
     _contact(contact)
 {
     if (example != "") _examples.push_back(example);
-    setup();
+    setup(stdargs);
 }
 
 // ---------------------------------------------------------------------------
@@ -726,7 +727,8 @@ CmdLine::CmdLine(const std::string&              name,
                  const std::string&              version,
                  const std::string&              copyright,
                  const std::string&              license,
-                 const std::string&              contact)
+                 const std::string&              contact,
+                 bool                            stdargs)
 :
     TCLAP::CmdLine(description, ' ', version, false),
     _name(name),
@@ -736,11 +738,11 @@ CmdLine::CmdLine(const std::string&              name,
     _license(license),
     _contact(contact)
 {
-    setup();
+    setup(stdargs);
 }
 
 // ---------------------------------------------------------------------------
-void CmdLine::setup()
+void CmdLine::setup(bool stdargs)
 {
     // replace output handler
     StdOutput* output = new StdOutput(this);
@@ -764,40 +766,42 @@ void CmdLine::setup()
     deleteOnExit(ignore);
     deleteOnExit(v);
 
-    v = new HelpVisitor(output, true);
-    TCLAP::SwitchArg* help = new TCLAP::SwitchArg(
-            "h", "help", "Display help and exit.", false, v);
-    add(help);
-    deleteOnExit(help);
-    deleteOnExit(v);
+    if (stdargs) {
+        v = new HelpVisitor(output, true);
+        TCLAP::SwitchArg* help = new TCLAP::SwitchArg(
+                "h", "help", "Display help and exit.", false, v);
+        add(help);
+        deleteOnExit(help);
+        deleteOnExit(v);
 
-    v = new HelpVisitor(output, false);
-    TCLAP::SwitchArg* helpshort = new TCLAP::SwitchArg(
-            "", "helpshort", "Display short help and exit.", false, v);
-    add(helpshort);
-    deleteOnExit(helpshort);
-    deleteOnExit(v);
+        v = new HelpVisitor(output, false);
+        TCLAP::SwitchArg* helpshort = new TCLAP::SwitchArg(
+                "", "helpshort", "Display short help and exit.", false, v);
+        add(helpshort);
+        deleteOnExit(helpshort);
+        deleteOnExit(v);
 
-    v = new XmlVisitor();
-    TCLAP::SwitchArg* helpxml = new TCLAP::SwitchArg(
-            "", "helpxml", "Display help in XML format and exit.", false, v);
-    add(helpxml);
-    deleteOnExit(helpxml);
-    deleteOnExit(v);
+        v = new XmlVisitor();
+        TCLAP::SwitchArg* helpxml = new TCLAP::SwitchArg(
+                "", "helpxml", "Display help in XML format and exit.", false, v);
+        add(helpxml);
+        deleteOnExit(helpxml);
+        deleteOnExit(v);
 
-    v = new ManPageVisitor();
-    TCLAP::SwitchArg* helpman = new TCLAP::SwitchArg(
-            "", "helpman", "Display help as man page and exit.", false, v);
-    add(helpman);
-    deleteOnExit(helpman);
-    deleteOnExit(v);
+        v = new ManPageVisitor();
+        TCLAP::SwitchArg* helpman = new TCLAP::SwitchArg(
+                "", "helpman", "Display help as man page and exit.", false, v);
+        add(helpman);
+        deleteOnExit(helpman);
+        deleteOnExit(v);
 
-    v = new TCLAP::VersionVisitor(this, &_output);
-    TCLAP::SwitchArg* vers = new TCLAP::SwitchArg(
-            "", "version", "Display version information and exit.", false, v);
-    add(vers);
-    deleteOnExit(vers);
-    deleteOnExit(v);
+        v = new TCLAP::VersionVisitor(this, &_output);
+        TCLAP::SwitchArg* vers = new TCLAP::SwitchArg(
+                "", "version", "Display version information and exit.", false, v);
+        add(vers);
+        deleteOnExit(vers);
+        deleteOnExit(v);
+    }
 }
 
 // Note: The following methods are mainly overwritten to include the

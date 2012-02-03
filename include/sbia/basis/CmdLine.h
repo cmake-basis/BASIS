@@ -55,6 +55,7 @@ public:
      * @param [in] copyright   Copyright notice.
      * @param [in] license     License information.
      * @param [in] contact     Contact information.
+     * @param [in] stdargs     Enable/disable handling of standard arguments.
      */
     CmdLine(const std::string& name,
             const std::string& project,
@@ -68,7 +69,8 @@ public:
                     "See http://www.rad.upenn.edu/sbia/software/license.html"
                     " or COPYING file.",
             const std::string& contact =
-                    "SBIA Group <sbia-software at uphs.upenn.edu>");
+                    "SBIA Group <sbia-software at uphs.upenn.edu>",
+            bool               stdargs = true);
 
     /**
      * @brief Constructor.
@@ -83,6 +85,7 @@ public:
      * @param [in] copyright   Copyright notice.
      * @param [in] license     License information.
      * @param [in] contact     Contact information.
+     * @param [in] stdargs     Enable/disable handling of standard arguments.
      */
     CmdLine(const std::string&              name,
             const std::string&              project,
@@ -96,7 +99,8 @@ public:
                     "See http://www.rad.upenn.edu/sbia/software/license.html"
                     " or COPYING file.",
             const std::string&              contact =
-                    "SBIA Group <sbia-software at uphs.upenn.edu>");
+                    "SBIA Group <sbia-software at uphs.upenn.edu>",
+            bool                            stdargs = true);
 
     /**
      * @brief Destructor.
@@ -220,7 +224,7 @@ protected:
     /**
      * @brief Set up command-line object.
      */
-    void setup();
+    void setup(bool stdargs);
 
     // -----------------------------------------------------------------------
     // unsupported
