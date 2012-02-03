@@ -120,6 +120,7 @@ set (
 # coverage
 # ----------------------------------------------------------------------------
 
+
 # get relative paths for use in globbing expression
 #
 # Note that all public include files are copied to the build tree and thus
@@ -129,9 +130,6 @@ file (RELATIVE_PATH CODE_DIR    "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
 file (RELATIVE_PATH INCLUDE_DIR "@PROJECT_BINARY_DIR@" "@BINARY_INCLUDE_DIR@")
 
 ## @brief Exclude certain files from coverage analysis.
-#
-# Note that the expression here are regular expressions, not globbing
-# expressions as in case of CTEST_EXTRA_COVERAGE_GLOB.
 set (
   CTEST_CUSTOM_COVERAGE_EXCLUDE
     ${CTEST_CUSTOM_COVERAGE_EXCLUDE} # keep current exclude expressions
@@ -139,6 +137,11 @@ set (
     "./test/.*"                      # exclude test implementations
     "./modules/.*/test/.*"           # exclude test implementations of modules
     # add further exclude expressions here
+    "/gtest/"                        # tested by Google
+    "/gmock/"                        # tested by Google
+    "test.cxx"                       # tested by Google
+    "test_main.cxx"                  # tested by Google
+    "/except.h"                      # only macro definitions
 )
 
 ## @brief Specify additional files which should be considered for coverage report.
@@ -146,20 +149,36 @@ set (
 # Note that the expressions here are globbing expression as interpreted
 # by CMake's file(GLOB) command, not regular expressions.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
+foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "./${CODE_DIR}/*${E}"
+    "${CODE_DIR}/*${E}"
   )
 endforeach ()
-foreach (E IN ITEMS .txx .hxx .inl .inc)
-  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "./${INCLUDE_DIR}/*${E}"
-  )
-endforeach ()
-foreach (M IN LISTS @PROJECT_MODULES_ENABLED@)
-  foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
+set (BASIS_AUTO_PREFIX_INCLUDES "@BASIS_AUTO_PREFIX_INCLUDES@")
+if (BASIS_AUTO_PREFIX_INCLUDES)
+  # TODO Files in build tree are yet never considered by CTest
+  #      as long as they are uncovered. This is due to a
+  #      bug in CTest itself.
+  #
+  #      See http://public.kitware.com/Bug/view.php?id=12910.
+else ()
+  foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "./${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
+      "${INCLUDE_DIR}/*${E}"
+    )
+  endforeach ()
+endif ()
+foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
+  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
+    foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
+      list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+        "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
+      )
+    endforeach ()
+  endif ()
+  foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
+    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+      "${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
     )
   endforeach ()
 endforeach ()

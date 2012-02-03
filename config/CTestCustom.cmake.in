@@ -78,6 +78,7 @@ set (
     "[0-9][0-9]*: ERROR "       # add match expressions on separate lines
     "[0-9][0-9]*: Error "
     "[0-9][0-9]*: error "
+    "No tests were found!!!"    # CTest error if their are no tests
 )
 
 ## @brief Match expressions for ignored error messages.
@@ -119,6 +120,7 @@ set (
 # coverage
 # ----------------------------------------------------------------------------
 
+
 # get relative paths for use in globbing expression
 #
 # Note that all public include files are copied to the build tree and thus
@@ -147,20 +149,36 @@ set (
 # Note that the expressions here are globbing expression as interpreted
 # by CMake's file(GLOB) command, not regular expressions.
 set (CTEST_EXTRA_COVERAGE_GLOB ${CTEST_EXTRA_COVERAGE_GLOB})
-foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
+foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
   list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "./${CODE_DIR}/.*${E}"
+    "${CODE_DIR}/*${E}"
   )
 endforeach ()
-foreach (E IN ITEMS .txx .hxx .inl .inc)
-  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-    "./${INCLUDE_DIR}/.*${E}"
-  )
-endforeach ()
-foreach (M IN LISTS @PROJECT_MODULES_ENABLED@)
-  foreach (E IN ITEMS .c .cc .cpp .cxx .txx .hxx .inl .inc)
+set (BASIS_AUTO_PREFIX_INCLUDES "@BASIS_AUTO_PREFIX_INCLUDES@")
+if (BASIS_AUTO_PREFIX_INCLUDES)
+  # TODO Files in build tree are yet never considered by CTest
+  #      as long as they are uncovered. This is due to a
+  #      bug in CTest itself.
+  #
+  #      See http://public.kitware.com/Bug/view.php?id=12910.
+else ()
+  foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "./${MODULES_DIR}/${M}/${CODE_DIR}/.*${E}"
+      "${INCLUDE_DIR}/*${E}"
+    )
+  endforeach ()
+endif ()
+foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
+  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
+    foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
+      list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+        "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
+      )
+    endforeach ()
+  endif ()
+  foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
+    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+      "${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
     )
   endforeach ()
 endforeach ()
@@ -208,4 +226,3 @@ set (CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "1048576")
 #
 # See:  http://public.kitware.com/pipermail/cdash/2009-November/000589.html
 set (CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "102400")
-
