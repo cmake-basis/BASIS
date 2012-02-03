@@ -58,6 +58,13 @@ namespace basis
 // exceptions
 // ===========================================================================
 
+/// @brief Exception thrown by command-line parsing library.
+typedef TCLAP::ArgException ArgException;
+
+/// @brief Exception thrown by command-line parsing library to indicate that
+///        program should exit with the given exit code.
+typedef TCLAP::ExitException ExitException;
+
 /// @brief Exception thrown on command-line argument parsing error.
 typedef TCLAP::ArgParseException ArgParseException;
 
