@@ -786,29 +786,21 @@ function (basis_add_changelog)
       set (POST_SVN2CL_CMD)
     endif ()
 
-    # add target
-    add_custom_target (
-      ${TARGET_UID} ${_ALL}
-      COMMAND "${BASIS_CMD_SVN2CL}"
-          "--output=${CHANGELOG_FILE}"
-          "--linelen=79"
-          "--reparagraph"
-          "--group-by-day"
-          "--include-actions"
-          "--separate-daylogs"
-          "${PROJECT_SOURCE_DIR}"
-      ${POST_SVN2CL_CMD}
-      WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
-      COMMENT "Generating ${TARGET_UID} from Subversion log..."
-    )
-
+    # using svn2cl command
     if (BASIS_CMD_SVN2CL)
-      basis_add_doc (
-        ${CHANGELOG_NAME}
-        GENERATOR        svn2cl
-        LINELEN          79
-        BREAK_BEFORE_MSG 2
-        GROUP_BY_DAY SEPARATE_DAYLOGS INCLUDE_ACTIONS REPARAGRAPH
+      add_custom_target (
+        ${TARGET_UID} ${_ALL}
+        COMMAND "${BASIS_CMD_SVN2CL}"
+            "--output=${CHANGELOG_FILE}"
+            "--linelen=79"
+            "--reparagraph"
+            "--group-by-day"
+            "--include-actions"
+            "--separate-daylogs"
+            "${PROJECT_SOURCE_DIR}"
+        ${POST_SVN2CL_CMD}
+        WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+        COMMENT "Generating ChangeLog from Subversion log (using svn2cl)..."
       )
     # otherwise, use svn log output directly
     else ()
@@ -819,7 +811,8 @@ function (basis_add_changelog)
             "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
             "-DOUTPUT_FILE=${CHANGELOG_FILE}"
             -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
-        COMMENT "Generating ChangeLog..."
+        ${POST_SVN2CL_CMD}
+        COMMENT "Generating ChangeLog from Subversion log..."
         VERBATIM
       )
     endif ()
@@ -834,7 +827,7 @@ function (basis_add_changelog)
           "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
           "-DOUTPUT_FILE=${CHANGELOG_FILE}"
           -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
-      COMMENT "Generating ChangeLog..."
+      COMMENT "Generating ChangeLog from Git log..."
       VERBATIM
     )
   else ()
