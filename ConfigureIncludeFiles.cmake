@@ -136,7 +136,7 @@ foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
                              " header files, which requires copying them to the"
                              " build tree with the modified file path,"
                              " set BASIS_AUTO_PREFIX_INCLUDES to"
-                             " TRUE in the projects Settings.cmake file.")
+                             " TRUE in the project's Settings.cmake file.")
           endif ()
         endif ()
         if (HEADER MATCHES "\\.in$")
