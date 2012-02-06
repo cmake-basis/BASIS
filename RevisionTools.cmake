@@ -1,19 +1,19 @@
 ##############################################################################
-# @file  SubversionTools.cmake
-# @brief CMake functions and macros related to Subversion.
+# @file  RevisionTools.cmake
+# @brief CMake functions and macros related to revision control systems.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup CMakeTools
 ##############################################################################
 
-if (__BASIS_SUBVERSIONTOOLS_INCLUDED)
+if (__BASIS_REVISIONTOOLS_INCLUDED)
   return ()
 else ()
-  set (__BASIS_SUBVERSIONTOOLS_INCLUDED TRUE)
+  set (__BASIS_REVISIONTOOLS_INCLUDED TRUE)
 endif ()
 
 
@@ -21,6 +21,8 @@ endif ()
 # required commands
 # ============================================================================
 
+# ----------------------------------------------------------------------------
+# Subversion
 find_package (Subversion)
 
 ## @brief The Subversion command (svn).
@@ -35,13 +37,29 @@ if (NOT BASIS_CMD_SVN)
   mark_as_advanced (BASIS_CMD_SVN)
 endif ()
 
+# ----------------------------------------------------------------------------
+# Git
+find_package (Git)
+
+## @brief The Git command (git).
+if (Git_FOUND)
+  set (BASIS_CMD_GIT "${Git_EXECUTABLE}")
+elseif (SVNCOMMAND)
+  set (BASIS_CMD_GIT "${GITCOMMAND}")
+endif ()
+
+if (NOT BASIS_CMD_GIT)
+  find_program (BASIS_CMD_GIT NAMES git DOC "Git command line client (git).")
+  mark_as_advanced (BASIS_CMD_GIT)
+endif ()
+
 
 ## @addtogroup CMakeUtilities
 #  @{
 
 
 # ============================================================================
-# retrieve SVN information
+# Subversion
 # ============================================================================
 
 # ----------------------------------------------------------------------------
@@ -159,6 +177,11 @@ function (basis_svn_status URL STATUS)
     set ("${STATUS}" "" PARENT_SCOPE)
   endif ()
 endfunction ()
+
+# ============================================================================
+# Git
+# ============================================================================
+
 
 
 ## @}

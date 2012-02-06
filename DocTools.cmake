@@ -21,13 +21,13 @@ endif ()
 # used programs
 # ============================================================================
 
-# Doxygen - API documentation
+# Doxygen - used by basis_add_doc()
 find_package (Doxygen)
 
 ## @brief Command svn2cl which is used to generate a ChangeLog from the Subversion log.
 find_program (
   BASIS_CMD_SVN2CL
-    NAMES svn2cl
+    NAMES svn2cl svn2cl.sh
     DOC   "The command line tool svn2cl."
 )
 mark_as_advanced (BASIS_CMD_SVN2CL)
@@ -276,85 +276,6 @@ endfunction ()
 # )
 # @endcode
 #
-# @par Generator: svn2cl
-# @n
-# Uses the <a href="http://arthurdejong.org/svn2cl/"><tt>svn2cl</tt></a> command-line
-# tool to generate a ChangeLog from the Subversion log. Herefore, the project
-# source tree must be a Subversion working copy and access to the Subversion
-# repository is required. Note that generating the ChangeLog from the Subversion
-# log is timely expensive and may require user interaction in order to provide
-# the credentials to the Subversion repository.
-# @n@n
-# <table border="0">
-#   <tr>
-#     @tp @b AUTHORS authors @endtp
-#     <td>Authors file for svn2cl which maps SVN user names to real names.
-#         On each line, this files must have an entry such as
-#         <tt>%schuha\@UPHS.PENNHEALTH.PRV:Andreas Schuh</tt>.
-#         Default: @c BASIS_SVN_USERS_FILE, which is part of BASIS and lists all
-#         SVN users at SBIA.</td>
-#   </tr>
-#   <tr>
-#     @tp @b BREAK_BEFORE_MSG num @endtp
-#     <td>Add n line breaks between the paths and the log message. Default: 1</td>
-#   </tr>
-#   <tr>
-#     @tp @b GROUP_BY_DAY @endtp
-#     <td>Group changelog entries by day.</td>
-#   </tr>
-#   <tr>
-#     @tp @b INCLUDE_ACTIONS @endtp
-#     <td>Add [ADD], [DEL], and [CPY] tags to files.</td>
-#   </tr>
-#   <tr>
-#     @tp @b INCLUDE_REV @endtp
-#     <td>Include revision numbers.</td>
-#   </tr>
-#   <tr>
-#     @tp @b LINELEN num @endtp
-#     <td>Maximum length of output lines.</td>
-#   </tr>
-#   <tr>
-#     @tp @b OUTPUT_NAME filename @endtp
-#     <td>Output changelog to file @c filename. Default: @c ChangeLog.</td>
-#   </tr>
-#   <tr>
-#     @tp @b PATH dir @endtp
-#     <td>Input directory path for <tt>svn log</tt>.</td>
-#   </tr>
-#   <tr>
-#     @tp @b REPARAGRAPH @endtp
-#     <td>Rewrap lines inside a paragraph.</td>
-#   </tr>
-#   <tr>
-#     @tp @b SEPARATE_DAYLOGS @endtp
-#     <td>Put a blank line between grouped by day entries.</td>
-#   </tr>
-#   <tr>
-#     @tp @b SVN_ARGS @endtp
-#     <td>Additional arguments for <tt>svn log</tt>.
-#         See <tt>svn2cl --help</tt> for a list of arguments that can be
-#         passed on to <tt>svn log</tt>.</td>
-#   </tr>
-# </table>
-# @n
-# See also <tt>svn2cl --help</tt> for a documentation of these options.
-# @n@n
-# Example:
-# @code
-# basis_add_doc (
-#   ChangeLog
-#   GENERATOR svn2cl
-#   LINELEN   80
-#   REPARAGRAPH
-#   AUTHORS   svnusers.txt
-#   GROUP_BY_DAY
-#   BREAK_BEFORE_MSG 1
-#   INCLUDE_ACTIONS
-#   COMPONENT dev
-# )
-# @endcode
-#
 # @returns Adds a custom target @p TARGET_NAME for the generation of the
 #          documentation or configures the given file in case of the @c None
 #          generator.
@@ -478,7 +399,7 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
     if (NOT DOXYGEN_EXECUTABLE)
-      message (${ERRMSGTYP} "Doxygen not found. Disabling build of ${TARGET_UID} documentation.")
+      message (${ERRMSGTYP} "Doxygen not found. Generation of ${TARGET_UID} documentation disabled.")
       if (BASIS_VERBOSE)
         message (STATUS "Adding documentation ${TARGET_UID}... - ${ERRMSG}")
       endif ()
@@ -819,124 +740,126 @@ function (basis_add_doc TARGET_NAME)
     endif ()
 
   # --------------------------------------------------------------------------
-  # generator: svn2cl
-  # --------------------------------------------------------------------------
-
-  elseif (ARGN_GENERATOR MATCHES "SVN2CL")
-
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_UID}...")
-    endif ()
-
-    # svn2cl found?
-    if (NOT BASIS_CMD_SVN2CL)
-      message (STATUS "svn2cl not found. Disabling build of ${TARGET_UID}.")
-      if (BASIS_VERBOSE)
-        message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
-      endif ()
-      return ()
-    endif ()
-
-    # source tree is a Subversion working copy?
-    basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" REV)
-
-    if (NOT REV)
-      message (STATUS "Project is not under SVN control. Skipping build of ${TARGET_UID}.")
-      if (BASIS_VERBOSE)
-        message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
-      endif ()
-      return ()
-    endif ()
-
-    # parse arguments
-    CMAKE_PARSE_ARGUMENTS (
-      SVN2CL
-        "INCLUDE_ACTIONS;INCLUDE_REV;REPARAGRAPH;GROUP_BY_DAY;SEPARATE_DAYLOGS"
-        "AUTHORS;BREAK_BEFORE_MSG;LINELEN;OUTPUT_NAME;PATH"
-        "SVN_ARGS"
-        ${ARGN_UNPARSED_ARGUMENTS}
-    )
-
-    if (SVN2CL_OUTPUT_NAME)
-      set (SVN2CL_OUTPUT "${PROJECT_BINARY_DIR}/${SVN2CL_OUTPUT_NAME}")
-    else ()
-      set (SVN2CL_OUTPUT "${PROJECT_BINARY_DIR}/${TARGET_NAME}")
-    endif ()
-
-    if (NOT SVN2CL_PATH)
-      set (SVN2CL_PATH "${PROJECT_SOURCE_DIR}")
-    endif ()
-    set (SVN2CL_ARGS "--output=${SVN2CL_OUTPUT}")
-    if (SVN2CL_LINELEN)
-      list (APPEND SVN2CL_ARGS "--linelen=${SVN2CL_LINELEN}")
-    endif ()
-    if (SVN2CL_REPARAGRAPH)
-      list (APPEND SVN2CL_ARGS "--reparagraph")
-    endif ()
-    if (SVN2CL_INCLUDE_ACTIONS)
-      list (APPEND SVN2CL_ARGS "--include-actions")
-    endif ()
-    if (SVN2CL_INCLUDE_REV)
-      list (APPEND SVN2CL_ARGS "--include-rev")
-    endif ()
-    if (SVN2CL_BREAK_BEFORE_MSG)
-      list (APPEND SVN2CL_ARGS "--break-before-msg=${SVN2CL_BREAK_BEFORE_MSG}")
-    endif ()
-    if (SVN2CL_GROUP_BY_DAY)
-      list (APPEND SVN2CL_ARGS "--group-by-day")
-    endif ()
-    if (SVN2CL_SEPARATE_DAY_LOGS)
-      list (APPEND SVN2CL_ARGS "--separate-daylogs")
-    endif ()
-    if (SVN2CL_AUTHORS)
-      list (APPEND SVN2CL_ARGS "--authors=${SVN2CL_AUTHORS}")
-    elseif (EXISTS "${BASIS_SVN_USERS_FILE}")
-      list (APPEND SVN2CL_ARGS "--authors=${BASIS_SVN_USERS_FILE}")
-    endif ()
-    if (SVN2CL_SVN_ARGS)
-      list (APPEND SVN2CL_ARGS ${SVN2CL_SVN_ARGS})
-    endif ()
-
-    # add target
-    add_custom_target (
-      ${TARGET_UID}
-      COMMAND           "${BASIS_CMD_SVN2CL}" ${SVN2CL_ARGS} "${SVN2CL_PATH}"
-      WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
-      COMMENT           "Generating ${TARGET_UID} from SVN log..."
-    )
-
-    # cleanup on "make clean"
-    set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${SVN2CL_OUTPUT}")
-
-    # add target as dependency to changelog target
-    if (NOT TARGET changelog)
-      option (BUILD_CHANGELOG "Request build and/or installation of the ChangeLog." OFF)
-      if (BUILD_CHANGELOG)
-        add_custom_target(changelog ALL)
-      else ()
-        add_custom_target(changelog)
-      endif ()
-    endif ()
-
-    add_dependencies (changelog ${TARGET_UID})
-
-    # install documentation
-    install (
-      FILES       "${SVN2CL_OUTPUT}"
-      DESTINATION "${ARGN_DESTINATION}"
-      COMPONENT   "${ARGN_COMPONENT}"
-      OPTIONAL
-    )
-
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_UID}... - done")
-    endif ()
-
-  # --------------------------------------------------------------------------
   # generator: unknown
   # --------------------------------------------------------------------------
 
   else ()
     message (FATAL_ERROR "Unknown documentation generator: ${ARGN_GENERATOR}.")
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Add target for generation of ChangeLog file.
+#
+# The ChangeLog is either generated from the Subversion or Git log depending
+# on which revision control system is used by the project. Moreover, the
+# project's source directory must be either a Subversion working copy or
+# the root of a Git repository, respectively. In case of Subversion, if the
+# command-line tool svn2cl(.sh) is installed, it is used to output a nicer
+# formatted change log.
+function (basis_add_changelog)
+  basis_make_target_uid (TARGET_UID "changelog")
+
+  option (BUILD_CHANGELOG "Request build and/or installation of the ChangeLog." OFF)
+  set (CHANGELOG_FILE "${PROJECT_BINARY_DIR}/ChangeLog")
+
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding ChangeLog...")
+  endif ()
+
+  if (BUILD_CHANGELOG)
+    set (_ALL "ALL")
+  else ()
+    set (_ALL)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # generate ChangeLog from Subversion history
+  if (BASIS_CMD_SVN AND EXISTS "${PROJECT_SOURCE_DIR}/.svn")
+
+    # post-processing
+    if (APPLE)
+      set (POST_SVN2CL_CMD COMMAND sed -i '' "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
+    elseif (UNIX)
+      set (POST_SVN2CL_CMD COMMAND sed -i "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
+    else ()
+      set (POST_SVN2CL_CMD)
+    endif ()
+
+    # add target
+    add_custom_target (
+      ${TARGET_UID} ${_ALL}
+      COMMAND "${BASIS_CMD_SVN2CL}"
+          "--output=${CHANGELOG_FILE}"
+          "--linelen=79"
+          "--reparagraph"
+          "--group-by-day"
+          "--include-actions"
+          "--separate-daylogs"
+          "${PROJECT_SOURCE_DIR}"
+      ${POST_SVN2CL_CMD}
+      WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+      COMMENT "Generating ${TARGET_UID} from Subversion log..."
+    )
+
+    if (BASIS_CMD_SVN2CL)
+      basis_add_doc (
+        ${CHANGELOG_NAME}
+        GENERATOR        svn2cl
+        LINELEN          79
+        BREAK_BEFORE_MSG 2
+        GROUP_BY_DAY SEPARATE_DAYLOGS INCLUDE_ACTIONS REPARAGRAPH
+      )
+    # otherwise, use svn log output directly
+    else ()
+      add_custom_target (
+        ${TARGET_UID} ${_ALL}
+        COMMAND "${CMAKE_COMMAND}"
+            "-DCOMMAND=${BASIS_CMD_SVN};log"
+            "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
+            "-DOUTPUT_FILE=${CHANGELOG_FILE}"
+            -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+        COMMENT "Generating ChangeLog..."
+        VERBATIM
+      )
+    endif ()
+
+  # --------------------------------------------------------------------------
+  # generate ChangeLog from Git log
+  elseif (BASIS_CMD_GIT AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    add_custom_target (
+      ${TARGET_UID} ${_ALL}
+      COMMAND "${CMAKE_COMMAND}"
+          "-DCOMMAND=${BASIS_CMD_GIT};log;--stat;--name-only;--date=short;--abbrev-commit"
+          "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
+          "-DOUTPUT_FILE=${CHANGELOG_FILE}"
+          -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+      COMMENT "Generating ChangeLog..."
+      VERBATIM
+    )
+  else ()
+    message (STATUS "Project is neither SVN working copy nor Git repository. Generation of ChangeLog disabled.")
+    set (BUILD_CHANGELOG OFF CACHE INTERNAL "" FORCE)
+    if (BASIS_VERBOSE)
+      message (STATUS "Adding ChangeLog... - skipped")
+    endif ()
+    return ()
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # cleanup on "make clean"
+  set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CHANGELOG_FILE}")
+
+  # --------------------------------------------------------------------------
+  # install ChangeLog
+  install (
+    FILES       "${CHANGELOG_FILE}"
+    DESTINATION "${INSTALL_DOC_DIR}"
+    COMPONENT   "${BASIS_RUNTIME_COMPONENT}"
+    OPTIONAL
+  )
+
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding ChangeLog... - done")
   endif ()
 endfunction ()

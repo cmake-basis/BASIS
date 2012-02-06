@@ -51,7 +51,7 @@
 #
 # Example:
 # @code
-# cmake -DCOMMAND='ls -l' -DWORKING_DIRECTORY='/' -DTIMEOUT=60
+# cmake -DCOMMAND='ls;-l' -DWORKING_DIRECTORY='/' -DTIMEOUT=60
 #       -P ExecuteProcess.cmake
 # @endcode
 #

@@ -1361,15 +1361,7 @@ macro (basis_project_impl)
 
   # ----------------------------------------------------------------------------
   # change log
-
-  # TODO Support change log generation from Git history as well.
-  basis_add_doc (
-    ChangeLog
-    GENERATOR        svn2cl
-    LINELEN          79
-    BREAK_BEFORE_MSG 2
-    GROUP_BY_DAY SEPARATE_DAYLOGS INCLUDE_ACTIONS REPARAGRAPH
-  )
+  basis_add_changelog ()
 
   # --------------------------------------------------------------------------
   # finalize

@@ -28,7 +28,7 @@ set (
     "InstallationTools.cmake"       # software installation
     "MatlabTools.cmake"             # MATLAB support
     "ProjectTools.cmake"            # main project/module helpers
-    "SubversionTools.cmake"         # Subversion support
+    "RevisionTools.cmake"           # revision control system support
     "TargetTools.cmake"             # addition of build targets
     "TopologicalSort.cmake"         # topological sorting of build dependencies
     "UtilitiesTools.cmake"          # generation/configuration of utilities
@@ -85,7 +85,6 @@ set (
     "FindMatlabNiftiTools.cmake"
     "FindMOSEK.cmake"
     "FindNiftiCLib.cmake"
-    "FindOpenCV.cmake"
     "FindPerlLibs.cmake"
 )
 
