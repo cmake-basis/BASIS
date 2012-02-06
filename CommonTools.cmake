@@ -168,7 +168,7 @@ macro (basis_find_package PACKAGE)
     elseif (ARGN_REQUIRED)
       list (APPEND FIND_ARGN "REQUIRED")
     endif ()
-    if ("${PKG}" MATCHES "^(BLAS|MFC|wxWidgets)$")
+    if ("${PKG}" MATCHES "^(MFC|wxWidgets)$")
       # if Find<Pkg>.cmake prints status message, don't do it here
       find_package (${PKG} ${VER} ${FIND_ARGN})
     else ()
