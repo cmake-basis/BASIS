@@ -63,7 +63,6 @@ set (
     "runmcc.m"                    # helper used by MatlabTools.cmake module
     "ScriptConfig.cmake.in"       # default script configuration file
     "ProjectSettings.cmake.in"    # default project-dependent settings
-    "SubversionUsers.txt"         # maps SVN users at SBIA to their real names
     "updatefile.py"               # helper used by BasisUpdate.cmake module
     "doxygen_sbia.css"            # stylesheet for Doxygen documentation
     "doxygen_header.html"         # header of Doxygen documentation
