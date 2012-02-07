@@ -1361,7 +1361,9 @@ macro (basis_project_impl)
 
   # ----------------------------------------------------------------------------
   # change log
-  basis_add_changelog ()
+  if (NOT PROJECT_IS_MODULE)
+    basis_add_changelog ()
+  endif ()
 
   # --------------------------------------------------------------------------
   # finalize
