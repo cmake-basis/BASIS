@@ -163,6 +163,22 @@ protected:
 };
 
 /**
+ * @brief Constrain argument values to zero or negative values.
+ */
+template<typename T>
+class ZeroOrNegativeValueConstraint : public TCLAP::Constraint<T>
+{
+public:
+    NegativeValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
+    virtual ~NegativeValueConstraint() {}
+    virtual std::string description() const { return "Value must be less or equal to zero."; }
+    virtual std::string shortID() const { return _typeDesc; }
+    virtual bool check(const T& value) const { return value <= 0; }
+protected:
+    std::string _typeDesc;
+};
+
+/**
  * @brief Constrain argument values to non-zero values.
  */
 template<typename T>
@@ -190,6 +206,22 @@ public:
     virtual std::string description() const { return "Value must be positive."; }
     virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const T& value) const { return value > 0; }
+protected:
+    std::string _typeDesc;
+};
+
+/**
+ * @brief Constrain argument values to zero or positive values.
+ */
+template<typename T>
+class ZeroOrPositiveValueConstraint : public TCLAP::Constraint<T>
+{
+public:
+    PositiveValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
+    virtual ~PositiveValueConstraint() {}
+    virtual std::string description() const { return "Value must be greater or equal to zero."; }
+    virtual std::string shortID() const { return _typeDesc; }
+    virtual bool check(const T& value) const { return value >= 0; }
 protected:
     std::string _typeDesc;
 };
