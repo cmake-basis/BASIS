@@ -169,8 +169,8 @@ template<typename T>
 class ZeroOrNegativeValueConstraint : public TCLAP::Constraint<T>
 {
 public:
-    NegativeValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
-    virtual ~NegativeValueConstraint() {}
+    ZeroOrNegativeValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
+    virtual ~ZeroOrNegativeValueConstraint() {}
     virtual std::string description() const { return "Value must be less or equal to zero."; }
     virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const T& value) const { return value <= 0; }
@@ -217,8 +217,8 @@ template<typename T>
 class ZeroOrPositiveValueConstraint : public TCLAP::Constraint<T>
 {
 public:
-    PositiveValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
-    virtual ~PositiveValueConstraint() {}
+    ZeroOrPositiveValueConstraint(const std::string& typeDesc) : _typeDesc(typeDesc) {}
+    virtual ~ZeroOrPositiveValueConstraint() {}
     virtual std::string description() const { return "Value must be greater or equal to zero."; }
     virtual std::string shortID() const { return _typeDesc; }
     virtual bool check(const T& value) const { return value >= 0; }
