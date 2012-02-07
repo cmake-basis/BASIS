@@ -36,7 +36,7 @@ get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
 function print_options
 {
     cat - << EOF-OPTIONS
-Options:
+Optional arguments:
   --project, -p   The name of the project to be tested.
   --branch, -b    The branch to be tested, e.g., "tags/1.0.0".
                   Default: "trunk".
@@ -46,10 +46,20 @@ Options:
   --script, -S    CTest script which performs the testing.
                   Default: basistest.ctest script of BASIS.
   --args, -a      Additional arguments for the CTest script. See below.
+                  Instead of using the --args option, the additional arguments
+                  can be given directly with only two dashes (--) prefixed.
+
+Standard arguments:
   --verbose, -v   Increases verbosity of output messages. Can be given multiple times.
   --help, -h      Print help and exit.
   --helpshort     Print short help and exit.
   --version       Print version information and exit.
+
+All other arguments are passed on as additional arguments to the CTest script
+without the leading two dashes (--). For example, the optional argument
+--coverage corresponds to supplying the option --args with the value 'coverage'.
+Both result in the argument 'coverage' being passed on to the CTest script.
+See below for a list of valid arguments of the CTest script.
 EOF-OPTIONS
 }
 
@@ -90,12 +100,12 @@ Examples:
     Run this command in the build tree of your BASIS project to run the tests
     with submission of the test results to the Experimental dashboard.
 
-  ${_EXEC_NAME} --args memcheck
+  ${_EXEC_NAME} --memcheck
 
     Run this command in the build tree of your BASIS project to run the memory
     checks with the submission of the results to the Experimental dashboard.
 
-  ${_EXEC_NAME} --project BASIS --args coverage
+  ${_EXEC_NAME} --project BASIS --coverage
 
     Performs the testing of the project BASIS. The project source files are
     first download into the source directory, then the build tree is configured
@@ -132,6 +142,15 @@ branch='trunk'       # the branch to test
 model='Experimental' # the dashboard model
 args=''              # additional CTest script arguments
 verbosity=0          # verbosity of output messages
+
+function add_arg
+{
+    if [ -n "${args}" ]; then
+        args="${args},$1"
+    else
+        args="$1"
+    fi
+}
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -174,11 +193,7 @@ while [ $# -gt 0 ]; do
         -a|--args)
             shift
             if [ $# -gt 0 ]; then
-                if [ -n "${args}" ]; then
-                    args="${args},$1"
-                else
-                    args=$1
-                fi
+                add_arg "$1"
             else
                 echo "Option --args requires an argument!" 1>&2
                 exit 1
@@ -192,12 +207,14 @@ while [ $# -gt 0 ]; do
         -v|--verbose) ((verbosity++)); ;;
         -vv)          verbosity=$((${verbosity} + 2));;
 
-        # invalid option
+        # pass all unknown options as arguments to the CTest script
         *)
-            print_helpshort
-            echo
-            echo "Invalid option $1!" 1>&2
-            exit 1
+            if [ "${1:0:2}" != '--' ]; then
+                echo "Invalid argument: $1" 1>&2
+                echo "Did you mean --$1 instead?" 1>&2
+                exit 1
+            fi
+            add_arg "${1:2}"
             ;;
     esac
     shift
