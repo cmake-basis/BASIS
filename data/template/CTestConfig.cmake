@@ -2,14 +2,14 @@
 # @file  CTestConfig.cmake
 # @brief Dashboard configuration file.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # set CTest/CDash project name
-set (CTEST_PROJECT_NAME "ReplaceByProjectName")
+set (CTEST_PROJECT_NAME "<project>")
 
 # start time of Nightly test model
 #

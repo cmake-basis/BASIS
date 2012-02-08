@@ -16,7 +16,7 @@
 # of the external package or the corresponding Find<Package>.cmake module,
 # add the related CMake code to the Settings.cmake file instead.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -24,15 +24,12 @@
 # @ingroup BasisSettings
 ##############################################################################
 
-# Note: The #Add*DependencyHere patterns are required by the basisproject tool
-#       and should be kept at the end of the corresponding line.
-
 basis_project (
-  NAME                  "ReplaceByProjectName"
-  VERSION               "0.0.0"
-  DESCRIPTION           "ReplaceByProjectDescription"
-  DEPENDS               #AddDependencyHere
-  OPTIONAL_DEPENDS      #AddOptionalDependencyHere
-  TEST_DEPENDS          #AddTestDependencyHere
-  OPTIONAL_TEST_DEPENDS #AddOptionalTestDependencyHere
+  NAME                  <project>
+  VERSION               0.0.0
+  DESCRIPTION           <description>
+  DEPENDS               #<dependency>
+  OPTIONAL_DEPENDS      #<optional-dependency>
+  TEST_DEPENDS          #<test-dependency>
+  OPTIONAL_TEST_DEPENDS #<optional-test-dependency>
 )

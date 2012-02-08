@@ -11,7 +11,7 @@
 #       valid even if a custom project-specific configuration is used and
 #       default values can further be overwritten in this file.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

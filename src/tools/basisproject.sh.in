@@ -16,14 +16,16 @@
 
 
 # ============================================================================
-# executable information
+# constants
 # ============================================================================
 
-get_executable_directory _EXEC_DIR
-get_executable_name      _EXEC_NAME
+get_executable_directory _EXEC_DIR  && readonly _EXEC_DIR
+get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
+
+year=`date +%Y` # current year, used for copyright in header of project files
 
 # ============================================================================
-# usage / help / version
+# help
 # ============================================================================
 
 # ----------------------------------------------------------------------------
@@ -278,33 +280,34 @@ fi
 # root directory of project template
 template="$_EXEC_DIR/@TEMPLATE_DIR@"
 
-root=""              # root directory of new project (defaults to `pwd`/$name)
-name=""              # name of the project to create
-description=""       # project description
-verbosity=0          # verbosity level of output messages
-dependencies=()     # names of packages the new project depends on
+root=""                 # root directory of new project (defaults to `pwd`/$name)
+name=""                 # name of the project to create
+description=""          # project description
+author="<author>"       # name of the original author
+verbosity=0             # verbosity level of output messages
+dependencies=()         # names of packages the new project depends on
 dependency_required=()  # whether the package at the same index in dependencies
-                     # is required or optional
-dependencies_num=0   # length of arrays dependencies and dependency_required
-update=1             # whether to update existing files
-force=0              # whether to force update or removal of files
-backup=1             # whether to backup project files before updating them
-clean=0              # whether to remove backup and other temporary files
-clean_all=0          # whether to remove all additional files
+                        # is required or optional
+dependencies_num=0      # length of arrays dependencies and dependency_required
+update=1                # whether to update existing files
+force=0                 # whether to force update or removal of files
+backup=1                # whether to backup project files before updating them
+clean=0                 # whether to remove backup and other temporary files
+clean_all=0             # whether to remove all additional files
 
-conf_settings=0      # add/remove project settings file
-conf_components=0    # add/remove components configuration file
-conf_package=0       # add/remove package configuration file
-conf_find=0          # add/remove find package configuration file
-conf_find_version=0  # add/remove find package configuration version file
-conf_script=0        # add/remove script configuration file
-conf_tests=0         # add/remove testing configuration file
-conf_use=0           # add/remove unit testing
-data=0               # add/remove auxiliary data files
-doc=0                # add/remove doc folder
-example=0            # add/remove example
-include=0            # add/remove public includes tree
-tests=0              # add/remove testing tree
+conf_settings=0         # add/remove project settings file
+conf_components=0       # add/remove components configuration file
+conf_package=0          # add/remove package configuration file
+conf_find=0             # add/remove find package configuration file
+conf_find_version=0     # add/remove find package configuration version file
+conf_script=0           # add/remove script configuration file
+conf_tests=0            # add/remove testing configuration file
+conf_use=0              # add/remove unit testing
+data=0                  # add/remove auxiliary data files
+doc=0                   # add/remove doc folder
+example=0               # add/remove example
+include=0               # add/remove public includes tree
+tests=0                 # add/remove testing tree
 
 # ----------------------------------------------------------------------------
 # select minimal project template
@@ -464,6 +467,20 @@ do
                 description="$1"
             else
                 echo "Option --description requires an argument!" 1>&2
+                exit 1
+            fi
+            ;;
+
+        --author)
+            if [ ! -z "${author}" ]; then
+                echo "Option --author may only be given once!" 1>&2
+                exit 1
+            fi
+            shift
+            if [ $# -gt 0 ]; then
+                author="$1"
+            else
+                echo "Option --author requires an argument!" 1>&2
                 exit 1
             fi
             ;;
@@ -745,9 +762,11 @@ use_default_template
 function alter
 {
     cat "$1" \
-        | sed "s/ReplaceByProjectName/$name/g" \
-        | sed "s/ReplaceByProjectDescription/$description/g" \
-        | sed "s/ReplaceByTemplateVersion/@TEMPLATE_VERSION@/g" \
+        | sed "s/<project>/$name/g" \
+        | sed "s/<description>/$description/g" \
+        | sed "s/<template-version>/@TEMPLATE_VERSION@/g" \
+        | sed "s/<year>/${year}/g" \
+        | sed "s/<author>/${author}/g" \
         > "$2"
 }
 
@@ -1087,9 +1106,9 @@ if [ ${dependencies_num} -gt 0 ]; then
         # Attention: The -i option of sed differs for Darwin and Linux version.
         # Note: The actual newline in the expression is intended.
         if [ "X${required}" == 'Xtrue' ]; then
-            sed "s/#AddDependencyHere/\"${dependency}\" #AddDependencyHere/g" "${config_file}" > "${config_file}.temp" || retval=1
+            sed "s/#<dependency>/\"${dependency}\" #<dependency>/g" "${config_file}" > "${config_file}.temp" || retval=1
         else
-            sed "s/#AddOptionalDependencyHere/\"${dependency}\" #AddOptionalDependencyHere/g" "${config_file}" > "${config_file}.temp" || retval=1
+            sed "s/#<optional-dependency>/\"${dependency}\" #<optional-dependency>/g" "${config_file}" > "${config_file}.temp" || retval=1
         fi
         if [ $? -eq 0 ]; then
             mv "${config_file}.temp" "${config_file}" || retval=1

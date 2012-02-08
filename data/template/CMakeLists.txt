@@ -2,7 +2,7 @@
 # @file  CMakeLists.txt
 # @brief Root build configuration file.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -14,7 +14,7 @@ cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
 # version of BASIS template used by this project
-set (TEMPLATE_VERSION "ReplaceByTemplateVersion")
+set (TEMPLATE_VERSION "<template-version>")
 
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
