@@ -338,6 +338,20 @@ endfunction ()
 # function if none of the specified source files has the suffix
 # <tt>-main</tt> or <tt>_main</tt> in the file name.
 #
+# Generator expressions as supported by CMake's
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test">
+# add_test()</a> command are also supported by basis_add_test() as arguments of
+# the test command. For the argument specifying the test command itself, however,
+# only the generator expression $<TARGET_FILE:tgt> is allowed. Alternatively,
+# for this special argument, the name of the executable target can be supplied
+# directly without the use of the $<TARGET_FILE:tgt> generator expression.
+#
+# Example:
+# @code
+# basis_add_test (COMMAND $<TARGET_FILE:basis.testdriver> $<TARGET_FILE:myexe> ...)
+# basis_add_test (COMMAND basis.testdriver $<TARGET_FILE:myexe> ...)
+# @endcode
+#
 # @param [in] TEST_NAME Name of the test. If a source file is given
 #                       as first argument, the test name is derived
 #                       from the name of this source file and the source
@@ -348,7 +362,9 @@ endfunction ()
 # <table border="0">
 #   <tr>
 #     @tp @b COMMAND cmd [arg1 [arg2 ...]] @endtp
-#     <td>The command to execute and optionally its arguments. Alternatively,
+#     <td>The command to execute and optionally its arguments. The command
+#         can be the name of an executable target (including imported targets),
+#         or the name or path of an executable. Alternatively,
 #         a test can be build from sources and the build executable
 #         used as command. In this case, specify the sources using the
 #         @p SOURCES argument. The command name @c cmd if given is used as
@@ -361,12 +377,14 @@ endfunction ()
 #   <tr>
 #     @tp @b ARGS arg1 [arg2 ...] @endtp
 #     <td>Arguments of the test command. If this option is given, the
-#         @p COMMAND option must only have one argument, the name or path
-#         of the test command.</td>
+#         specified arguments are appended to the arguments specified
+#         already as part of the @p COMMAND option, if any.</td>
 #   </tr>
 #   <tr>
 #     @tp @b WORKING_DIRECTORY dir @endtp
-#     <td>The working directory of the test command.
+#     <td>The working directory of the test command. The generator expression
+#         $<TARGET_FILE_DIR:tgt> can be used to specify a working directory
+#         which corresponds to the output directory of a given target file.
 #         Default: @c TESTING_OUTPUT_DIR / @p TEST_NAME. </td>
 #   </tr>
 #   <tr>
@@ -438,7 +456,7 @@ function (basis_add_test TEST_NAME)
     ${ARGN}
   )
 
-  if (BASIS_DEBUG)
+  if (BASIS_DEBUG AND BASIS_VERBOSE)
     message ("** basis_add_test():")
     message ("**   Test:      ${TEST_NAME}")
     message ("**   Command:   ${ARGN_COMMAND}")
@@ -447,12 +465,9 @@ function (basis_add_test TEST_NAME)
 
   list (LENGTH ARGN_COMMAND N)
   if (N GREATER 1)
-    if (ARGN_ARGS)
-      message (FATAL_ERROR "Specify test arguments using either COMMAND or ARGS option, not both!")
-    endif ()
     list (GET ARGN_COMMAND 0 CMD)
     list (REMOVE_AT ARGN_COMMAND 0)
-    set (ARGN_ARGS ${ARGN_COMMAND})
+    list (APPEND ARGN_ARGS ${ARGN_COMMAND})
     set (ARGN_COMMAND "${CMD}")
   endif ()
 
@@ -533,8 +548,21 @@ function (basis_add_test TEST_NAME)
   if (NOT ARGN_WORKING_DIRECTORY)
     set (ARGN_WORKING_DIRECTORY "${TESTING_OUTPUT_DIR}")
   endif ()
-  if (NOT IS_DIRECTORY "${ARGN_WORKING_DIRECTORY}")
-    file (MAKE_DIRECTORY "${ARGN_WORKING_DIRECTORY}")
+  if (ARGN_WORKING_DIRECTORY MATCHES "^\\$<(.*):(.*)>$")
+    if (NOT "${CMAKE_MATCH_1}" STREQUAL "TARGET_FILE_DIR")
+      message (FATAL_ERROR "Invalid generator expression used for working directory."
+                           " Only $<TARGET_FILE_DIR:tgt> is allowed as argument of"
+                           " the WORKING_DIRECTORY option.")
+    endif ()
+    if (NOT TARGET "${CMAKE_MATCH_2}")
+      message (FATAL_ERROR "Unknown target ${CMAKE_MATCH_2} used in $<TARGET_FILE_DIR:tgt>"
+                           " generator expression.")
+    endif ()
+    basis_get_target_location (ARGN_WORKING_DIRECTORY "${CMAKE_MATCH_1}" PATH)
+  else ()
+    if (NOT IS_DIRECTORY "${ARGN_WORKING_DIRECTORY}")
+      file (MAKE_DIRECTORY "${ARGN_WORKING_DIRECTORY}")
+    endif ()
   endif ()
   set (OPTS "WORKING_DIRECTORY" "${ARGN_WORKING_DIRECTORY}")
   if (ARGN_CONFIGURATIONS)
@@ -544,9 +572,22 @@ function (basis_add_test TEST_NAME)
     endforeach ()
   endif ()
 
-  basis_get_target_uid (COMMAND_UID "${ARGN_COMMAND}")
-  if (TARGET "${COMMAND_UID}")
-    basis_get_target_location (ARGN_COMMAND "${COMMAND_UID}" ABSOLUTE)
+  if (ARGN_COMMAND MATCHES "^\\$<(.*):(.*)>$")
+    if (NOT "${CMAKE_MATCH_1}" STREQUAL "TARGET_FILE")
+      message (FATAL_ERROR "Invalid generator expression used for test command."
+                           " Only $<TARGET_FILE:tgt> is allowed as first argument of"
+                           " the COMMAND option.")
+    endif ()
+    if (NOT TARGET "${CMAKE_MATCH_2}")
+      message (FATAL_ERROR "Unknown target ${CMAKE_MATCH_2} used in $<TARGET_FILE:tgt>"
+                           " generator expression.")
+    endif ()
+    basis_get_target_location (ARGN_COMMAND "${CMAKE_MATCH_1}" ABSOLUTE)
+  else ()
+    basis_get_target_uid (COMMAND_UID "${ARGN_COMMAND}")
+    if (TARGET "${COMMAND_UID}")
+      basis_get_target_location (ARGN_COMMAND "${COMMAND_UID}" ABSOLUTE)
+    endif ()
   endif ()
 
   add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
