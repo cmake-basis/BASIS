@@ -265,21 +265,15 @@ endforeach ()
 # prepand command to log file
 if (LOG_ARGS)
   if (OUTPUT_FILE)
-    set (TMP "Command: ${CMD}\n\n"
-             "Working directory: ${WORKING_DIRECTORY}\n\n"
-             "Timeout: ${TIMEOUT}\n\n"
-             "Output:\n\n"
-             "${STDOUT}")
+    set (TMP "Command: ${CMD}\n\nWorking directory: ${WORKING_DIRECTORY}\n\n")
+    set (TMP "${TMP}Timeout: ${TIMEOUT}\n\nOutput:\n\n${STDOUT}")
     file (WRITE "${OUTPUT_FILE}" "${TMP}")
     unset (TMP)
   endif ()
 
   if (ERROR_FILE AND NOT "${ERROR_FILE}" STREQUAL "${OUTPUT_FILE}")
-    set (TMP "Command: ${CMD}\n\n"
-             "Working directory: ${WORKING_DIRECTORY}\n\n"
-             "Timeout: ${TIMEOUT}\n\n"
-             "Output:\n\n"
-             "${STDERR}")
+    set (TMP "Command: ${CMD}\n\nWorking directory: ${WORKING_DIRECTORY}\n\n")
+    set (TMP "${TMP}Timeout: ${TIMEOUT}\n\nOutput:\n\n${STDERR}")
     file (WRITE "${ERROR_FILE}" "${TMP}")
     unset (TMP)
   endif ()
