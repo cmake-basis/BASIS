@@ -1596,17 +1596,24 @@ endfunction ()
 # target. Generator expressions are in particular supported by basis_add_test()
 #
 # @param [out] ARGS Name of output list variable.
-# @param [in]  ARGV List of arguments to process.
+# @param [in]  ARGN List of arguments to process.
 #
 # @sa basis_add_test()
 function (basis_process_generator_expressions ARGS)
   set (ARGS_OUT)
-  foreach (ARG IN LISTS ARGV)
-    string (REGEX MATCHALL "$<.*TARGET.*:.*>" EXPRS "${ARG}")
+  foreach (ARG IN LISTS ARGN)
+    string (REGEX MATCHALL "\\$<.*TARGET.*:.*>" EXPRS "${ARG}")
     foreach (EXPR IN LISTS EXPRS)
-      if (EXPR MATCHES "$<(.*):(.*)>")
+      if (EXPR MATCHES "\\$<(.*):(.*)>")
         basis_get_target_uid (TARGET_UID "${CMAKE_MATCH_2}")
         string (REPLACE "${EXPR}" "$<${CMAKE_MATCH_1}:${TARGET_UID}>" ARG "${ARG}")
+        if (BASIS_DEBUG AND BASIS_VERBOSE)
+          message ("** basis_process_generator_expressions():")
+          message ("**   Expression:  ${EXPR}")
+          message ("**   Keyword:     ${CMAKE_MATCH_1}")
+          message ("**   Argument:    ${CMAKE_MATCH_2}")
+          message ("**   Replaced by: $<${CMAKE_MATCH_1}:${TARGET_UID}>")
+        endif ()
       endif ()
     endforeach ()
     list (APPEND ARGS_OUT "${ARG}")

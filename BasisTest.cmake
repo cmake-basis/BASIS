@@ -551,14 +551,10 @@ function (basis_add_test TEST_NAME)
   if (ARGN_WORKING_DIRECTORY MATCHES "^\\$<(.*):(.*)>$")
     if (NOT "${CMAKE_MATCH_1}" STREQUAL "TARGET_FILE_DIR")
       message (FATAL_ERROR "Invalid generator expression used for working directory."
-                           " Only $<TARGET_FILE_DIR:tgt> is allowed as argument of"
-                           " the WORKING_DIRECTORY option.")
+                           " Only $<TARGET_FILE_DIR:tgt> can be used as argument"
+                           " of the WORKING_DIRECTORY option.")
     endif ()
-    if (NOT TARGET "${CMAKE_MATCH_2}")
-      message (FATAL_ERROR "Unknown target ${CMAKE_MATCH_2} used in $<TARGET_FILE_DIR:tgt>"
-                           " generator expression.")
-    endif ()
-    basis_get_target_location (ARGN_WORKING_DIRECTORY "${CMAKE_MATCH_1}" PATH)
+    basis_get_target_location (ARGN_WORKING_DIRECTORY "${CMAKE_MATCH_2}" PATH)
   else ()
     if (NOT IS_DIRECTORY "${ARGN_WORKING_DIRECTORY}")
       file (MAKE_DIRECTORY "${ARGN_WORKING_DIRECTORY}")
@@ -575,14 +571,10 @@ function (basis_add_test TEST_NAME)
   if (ARGN_COMMAND MATCHES "^\\$<(.*):(.*)>$")
     if (NOT "${CMAKE_MATCH_1}" STREQUAL "TARGET_FILE")
       message (FATAL_ERROR "Invalid generator expression used for test command."
-                           " Only $<TARGET_FILE:tgt> is allowed as first argument of"
-                           " the COMMAND option.")
+                           " Only $<TARGET_FILE:tgt> can be used as first"
+                           " argument of the COMMAND option.")
     endif ()
-    if (NOT TARGET "${CMAKE_MATCH_2}")
-      message (FATAL_ERROR "Unknown target ${CMAKE_MATCH_2} used in $<TARGET_FILE:tgt>"
-                           " generator expression.")
-    endif ()
-    basis_get_target_location (ARGN_COMMAND "${CMAKE_MATCH_1}" ABSOLUTE)
+    basis_get_target_location (ARGN_COMMAND "${CMAKE_MATCH_2}" ABSOLUTE)
   else ()
     basis_get_target_uid (COMMAND_UID "${ARGN_COMMAND}")
     if (TARGET "${COMMAND_UID}")
@@ -591,14 +583,15 @@ function (basis_add_test TEST_NAME)
   endif ()
 
   basis_process_generator_expressions (ARGN_ARGS ${ARGN_ARGS})
-  add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
 
   if (BASIS_DEBUG)
-    message ("** Added test ${TEST_UID}")
+    message ("** Add test ${TEST_UID}")
     message ("**   Command:    ${ARGN_COMMAND}")
     message ("**   Arguments:  ${ARGN_ARGS}")
     message ("**   Working in: ${ARGN_WORKING_DIRECTORY}")
   endif ()
+
+  add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
 
   if (BASIS_VERBOSE)
     message (STATUS "Adding test ${TEST_UID}... - done")
