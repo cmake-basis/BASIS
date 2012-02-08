@@ -93,8 +93,8 @@
 #
 # - Lists of strings are space separated, and a null value is the '~' char.
 #
-# Copyright 2008 Kate Ward.
-# Copyright 2011 University of Pennsylvania.
+# Copyright (c) 2008, Kate Ward.<br />
+# Copyright (c) 2011, University of Pennsylvania.<br />
 # All Rights Reserved.
 #
 # Released under the LGPL (GNU Lesser General Public License)

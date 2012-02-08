@@ -11,7 +11,7 @@
  *
  * Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen<br />
  * Copyright (c) Insight Software Consortium.<br />
- * Copyright (c) 2011 University of Pennsylvania.
+ * Copyright (c) 2011, University of Pennsylvania.
  *
  * Portions of this file are subject to the VTK Toolkit Version 3 copyright.
  *

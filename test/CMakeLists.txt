@@ -11,8 +11,8 @@
 # The test output shall be written to @c TESTING_OUTPUT_DIR. In most cases,
 # a subdirectory for each test should be created under this output directory.
 #
-# Copyright (c) University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################

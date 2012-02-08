@@ -9,7 +9,7 @@
  * This file is a modified version of the itkTestDriverBeforeTest.inc file
  * which is part of the TestKernel module of the ITK 4 project.
  *
- * Copyright (c) 2011 University of Pennsylvania.<br />
+ * Copyright (c) 2011, University of Pennsylvania.<br />
  * Copyright Insight Software Consortium.<br />
  * All rights reserved.
  *

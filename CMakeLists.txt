@@ -7,8 +7,8 @@
 # CMake modules which implement this standard. Therefore, these modules are
 # considered the cornerstone of BASIS.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################

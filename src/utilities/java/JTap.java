@@ -10,7 +10,7 @@
  *       part of the BASIS project at SBIA.
  *
  * Copyright (c) Patrick LeBoutillier.<br />
- * Copyright (c) 2011 University of Pennsylvania.<br />
+ * Copyright (c) 2011, University of Pennsylvania.<br />
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
