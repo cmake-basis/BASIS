@@ -841,8 +841,12 @@ macro (basis_project_initialize)
     set (PROJECT_NAME_INFIX "${PROJECT_NAME_LOWER}")
   endif ()
 
-  # get current revision of project
-  basis_svn_get_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
+  # get revision of project
+  #
+  # Note: Use revision when branch, i.e., either trunk, a branch, or a tag
+  #       has been modified last. For tags, this should in particular
+  #       correspond to the revision when the tag was created.
+  basis_svn_get_last_changed_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
 
   # extract version numbers from version string
   basis_version_numbers (
