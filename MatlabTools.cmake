@@ -68,12 +68,18 @@ set (
 
 ## @brief Timeout for building MATLAB Compiler targets.
 set (BASIS_MCC_TIMEOUT "600" CACHE STRING "Timeout for MATLAB Compiler execution")
+## @brief Maximum number of retries on MATLAB Compiler license checkout.
+set (BASIS_MCC_RETRY_ATTEMPTS "3" CACHE STRING "Maximum number of retries on MATLAB Compiler license checkout error.")
+## @brief Delay between retries to build MATLAB Compiler compiled targets on license checkout errors.
+set (BASIS_MCC_RETRY_DELAY "10" CACHE STRING "Delay between retries to build MATLAB Compiler compiled targets on license checkout error.")
 ## @brief Timeout for building MEX-file targets.
 set (BASIS_MEX_TIMEOUT "600" CACHE STRING "Timeout for MEX script execution")
 
 mark_as_advanced (BASIS_MCC_FLAGS)
-mark_as_advanced (BASIS_MEX_FLAGS)
 mark_as_advanced (BASIS_MCC_TIMEOUT)
+mark_as_advanced (BASIS_MCC_RETRY_ATTEMPTS)
+mark_as_advanced (BASIS_MCC_RETRY_DELAY)
+mark_as_advanced (BASIS_MEX_FLAGS)
 mark_as_advanced (BASIS_MEX_TIMEOUT)
 
 
@@ -1251,6 +1257,9 @@ function (basis_add_mcc_target_finalize TARGET_UID)
             "-DCOMMAND=${BUILD_CMD}"
             "-DWORKING_DIRECTORY=${WORKING_DIR}"
             "-DTIMEOUT=${BASIS_MCC_TIMEOUT}"
+            "-DRETRY_EXPRESSION=\"License checkout failed\""
+            "-DRETRY_ATTEMPTS=${BASIS_MCC_RETRY_ATTEMPTS}"
+            "-DRETRY_DELAY=${BASIS_MCC_RETRY_DELAY}"
             "-DERROR_EXPRESSION=[E|e]rror"
             "-DOUTPUT_FILE=${BUILD_LOG}"
             "-DERROR_FILE=${BUILD_LOG}"

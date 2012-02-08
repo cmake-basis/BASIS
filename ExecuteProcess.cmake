@@ -55,6 +55,17 @@
 #       -P ExecuteProcess.cmake
 # @endcode
 #
+# The output of the executed process can further be searched for error expressions
+# specified by the ERROR_EXPRESSION variable. If the process output matches
+# this expression, a fatal CMake error is raised.
+#
+# Certain errors may be temporary such as in particular a license checkout
+# error of the MATLAB Compiler. Such errors can be filtered out using the
+# RETRY_EXPRESSION variable. If such error is detected, this script sleeps for
+# RETRY_DELAY seconds and then executes the process again. This is done
+# at maximum RETRY_ATTEMPTS times. If the retry attempts are exceeded, a
+# fatal CMake error is raised instead.
+#
 # @sa http://www.cmake.org/cmake/help/cmake2.6docs.html#command:execute_process
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.
@@ -65,7 +76,8 @@
 # @ingroup CMakeUtilities
 ##############################################################################
 
-# parse arguments
+# ----------------------------------------------------------------------------
+# initialize arguments
 if (NOT COMMAND)
   message (FATAL_ERROR "No command specified for execute_process (): use -DCOMMAND='cmd'")
 endif ()
@@ -138,9 +150,17 @@ if (NOT ERROR_FILE)
   list (APPEND EXECUTE_PROCESS_ARGS "ERROR_VARIABLE"  "STDERR")
 endif ()
 
-# execute command
-set (CMD)
+if (NOT RETRY_ATTEMPTS)
+  set (RETRY_ATTEMPTS 0)
+endif ()
 
+if (NOT RETRY_DELAY)
+  set (RETRY_DELAY 60)
+endif ()
+
+# --------------------------------------------------------------------------
+# verbose message of command to execute
+set (CMD)
 foreach (ARG ${COMMAND})
   if (CMD)
     set (CMD "${CMD} ")
@@ -156,40 +176,115 @@ if (VERBOSE)
   message ("${CMD}")
 endif ()
 
-execute_process (${EXECUTE_PROCESS_ARGS})
+# ----------------------------------------------------------------------------
+# execute command
+set (RETRY TRUE) # execute process at least once
+while (RETRY)
+  # --------------------------------------------------------------------------
+  # whether retry is required is decided upon after process execution
+  set (RETRY FALSE)
 
-# read in output from log files
-if (OUTPUT_FILE)
-  file (READ "${OUTPUT_FILE}" STDOUT)
-endif ()
+  # --------------------------------------------------------------------------
+  # execute process
+  execute_process (${EXECUTE_PROCESS_ARGS})
 
-if (ERROR_FILE)
-  file (READ "${ERROR_FILE}" STDERR)
-endif ()
+  # --------------------------------------------------------------------------
+  # read in output from log files
+  if (OUTPUT_FILE)
+    file (READ "${OUTPUT_FILE}" STDOUT)
+  endif ()
 
+  if (ERROR_FILE)
+    file (READ "${ERROR_FILE}" STDERR)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # parse output for recoverable errors
+  foreach (EXPR IN LISTS ERROR_EXPRESSION)
+    if (STDOUT MATCHES "${EXPR}" OR STDERR MATCHES "${EXPR}")
+      if (RETRY_ATTEMPTS GREATER 0)
+        # retry
+        math (EXPR "${RETRY_ATTEMPTS} - 1")
+        set (RETRY TRUE)
+      else ()
+        # no retries left
+        set (RETVAL 1)
+      endif ()
+      break ()
+    endif ()
+  endforeach ()
+
+  # --------------------------------------------------------------------------
+  # sleep for given amount of seconds before retrying to execute process
+  if (RETRY)
+    # use sleep command if available, i.e., on Unix and also on Windows
+    # if the Windows 2003 Resource Kit is installed
+    find_program (SLEEP sleep)
+    if (SLEEP)
+      execute_process (
+        COMMAND "${SLEEP}" ${RETRY_DELAY}
+        TIMEOUT ${RETRY_DELAY}
+        ERROR_QUIET OUTPUT_QUIET
+      )
+    else ()
+      # work-around using ping command if sleep command not available, i.e.,
+      # on Windows where the Windows 2003 Resource Kit is not installed
+      # See http://malektips.com/dos0017.html
+      find_program (PING ping)
+      if (WINDOWS)
+        execute_process (
+          COMMAND ${PING} 127.0.0.1 -n ${RETRY_DELAY} -w 1000
+          TIMEOUT ${RETRY_DELAY}
+          ERROR_QUIET OUTPUT_QUIET
+        )
+      else ()
+        # usually not required as sleep command should be available
+        execute_process (
+          COMMAND ${PING} 127.0.0.1 -c ${RETRY_DELAY} -W 1000
+          TIMEOUT ${RETRY_DELAY}
+          ERROR_QUIET OUTPUT_QUIET
+        )
+      endif ()
+    else ()
+      message (WARNING "Cannot delay retries as neither sleep nor ping command is available!")
+    endif ()
+  endif ()
+endwhile ()
+
+# ----------------------------------------------------------------------------
 # parse output for errors
-foreach (EXPRESSION ${ERROR_EXPRESSION})
-  if (STDOUT MATCHES "${EXPRESSION}" OR STDERR MATCHES "${ERROR_EXPRESSION}")
+foreach (EXPR IN LISTS ERROR_EXPRESSION)
+  if (STDOUT MATCHES "${EXPR}" OR STDERR MATCHES "${EXPR}")
     set (RETVAL 1)
     break ()
   endif ()
 endforeach ()
 
+# ----------------------------------------------------------------------------
 # prepand command to log file
 if (LOG_ARGS)
   if (OUTPUT_FILE)
-    set (TMP "Command: ${CMD}\n\nWorking directory: ${WORKING_DIRECTORY}\n\nTimeout: ${TIMEOUT}\n\nOutput:\n\n${STDOUT}")
+    set (TMP "Command: ${CMD}\n\n"
+             "Working directory: ${WORKING_DIRECTORY}\n\n"
+             "Timeout: ${TIMEOUT}\n\n"
+             "Output:\n\n"
+             "${STDOUT}")
     file (WRITE "${OUTPUT_FILE}" "${TMP}")
-    set (TMP)
+    unset (TMP)
   endif ()
 
   if (ERROR_FILE AND NOT "${ERROR_FILE}" STREQUAL "${OUTPUT_FILE}")
-    set (TMP "Command: ${CMD}\n\nWorking directory: ${WORKING_DIRECTORY}\n\nTimeout: ${TIMEOUT}\n\nOutput:\n\n${STDERR}")
+    set (TMP "Command: ${CMD}\n\n"
+             "Working directory: ${WORKING_DIRECTORY}\n\n"
+             "Timeout: ${TIMEOUT}\n\n"
+             "Output:\n\n"
+             "${STDERR}")
     file (WRITE "${ERROR_FILE}" "${TMP}")
-    set (TMP)
+    unset (TMP)
   endif ()
 endif ()
 
+# ----------------------------------------------------------------------------
 # print error message (and exit with exit code 1) on error
 if (NOT RETVAL EQUAL 0)
   if ("${STDOUT}" STREQUAL "${STDERR}")
@@ -212,4 +307,3 @@ Output (stderr):
 ${STDERR}")
   endif ()
 endif ()
-
