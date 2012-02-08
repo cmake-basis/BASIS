@@ -590,6 +590,7 @@ function (basis_add_test TEST_NAME)
     endif ()
   endif ()
 
+  basis_process_generator_expressions (ARGN_ARGS ${ARGN_ARGS})
   add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
 
   if (BASIS_DEBUG)

@@ -1584,6 +1584,36 @@ function (basis_get_target_location VAR TARGET_NAME PART)
   set ("${VAR}" "${LOCATION}" PARENT_SCOPE)
 endfunction ()
 
+# ============================================================================
+# generator expressions
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Process generator expressions in arguments.
+#
+# This command maps the target names used in generator expressions such as
+# $<TARGET_FILE:tgt> to target UIDs. Otherwise, CMake may not recognize the
+# target. Generator expressions are in particular supported by basis_add_test()
+#
+# @param [out] ARGS Name of output list variable.
+# @param [in]  ARGV List of arguments to process.
+#
+# @sa basis_add_test()
+function (basis_process_generator_expressions ARGS)
+  set (ARGS_OUT)
+  foreach (ARG IN LISTS ARGV)
+    string (REGEX MATCHALL "$<.*TARGET.*:.*>" EXPRS "${ARG}")
+    foreach (EXPR IN LISTS EXPRS)
+      if (EXPR MATCHES "$<(.*):(.*)>")
+        basis_get_target_uid (TARGET_UID "${CMAKE_MATCH_2}")
+        string (REPLACE "${EXPR}" "$<${CMAKE_MATCH_1}:${TARGET_UID}>" ARG "${ARG}")
+      endif ()
+    endforeach ()
+    list (APPEND ARGS_OUT "${ARG}")
+  endforeach ()
+  set (${ARGS} "${ARGS_OUT}" PARENT_SCOPE)
+endfunction ()
+
 
 ## @}
 # end of Doxygen group
