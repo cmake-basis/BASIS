@@ -210,8 +210,12 @@ while [ $# -gt 0 ]; do
         # pass all unknown options as arguments to the CTest script
         *)
             if [ "${1:0:2}" != '--' ]; then
-                echo "Invalid argument: $1" 1>&2
-                echo "Did you mean --$1 instead?" 1>&2
+                if [ "${1:0:1}" == '-' ]; then
+                    echo "Invalid option: $1" 1>&2
+                else
+                    echo "Invalid argument: $1" 1>&2
+                    echo "Did you mean --$1 instead?" 1>&2
+                fi
                 exit 1
             fi
             add_arg "${1:2}"
