@@ -472,7 +472,7 @@ do
             ;;
 
         --author)
-            if [ ! -z "${author}" ]; then
+            if [ "${author}" != "<author>" ]; then
                 echo "Option --author may only be given once!" 1>&2
                 exit 1
             fi
@@ -763,7 +763,7 @@ function alter
 {
     cat "$1" \
         | sed "s/<project>/$name/g" \
-        | sed "s/<description>/$description/g" \
+        | sed "s/<description>/\"$description\"/g" \
         | sed "s/<template-version>/@TEMPLATE_VERSION@/g" \
         | sed "s/<year>/${year}/g" \
         | sed "s/<author>/${author}/g" \
