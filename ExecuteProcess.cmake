@@ -200,11 +200,12 @@ while (RETRY)
 
   # --------------------------------------------------------------------------
   # parse output for recoverable errors
-  foreach (EXPR IN LISTS ERROR_EXPRESSION)
+  foreach (EXPR IN LISTS RETRY_EXPRESSION)
     if (STDOUT MATCHES "${EXPR}" OR STDERR MATCHES "${EXPR}")
       if (RETRY_ATTEMPTS GREATER 0)
+        message ("Process output matches \"${EXPR}\", retry in ${RETRY_DELAY} seconds")
         # retry
-        math (EXPR "${RETRY_ATTEMPTS} - 1")
+        math (EXPR RETRY_ATTEMPTS "${RETRY_ATTEMPTS} - 1")
         set (RETRY TRUE)
       else ()
         # no retries left
