@@ -342,9 +342,7 @@ endfunction ()
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test">
 # add_test()</a> command are also supported by basis_add_test() as arguments of
 # the test command. For the argument specifying the test command itself, however,
-# only the generator expression $<TARGET_FILE:tgt> is allowed. Alternatively,
-# for this special argument, the name of the executable target can be supplied
-# directly without the use of the $<TARGET_FILE:tgt> generator expression.
+# only the generator expression $<TARGET_FILE:tgt> is allowed.
 #
 # Example:
 # @code
@@ -363,7 +361,7 @@ endfunction ()
 #   <tr>
 #     @tp @b COMMAND cmd [arg1 [arg2 ...]] @endtp
 #     <td>The command to execute and optionally its arguments. The command
-#         can be the name of an executable target (including imported targets),
+#         can be either the generator expression $<TARGET_FILE:tgt>,
 #         or the name or path of an executable. Alternatively,
 #         a test can be build from sources and the build executable
 #         used as command. In this case, specify the sources using the
@@ -583,11 +581,6 @@ function (basis_add_test TEST_NAME)
                            " generator expression.")
     endif ()
     basis_get_target_location (ARGN_COMMAND "${CMAKE_MATCH_1}" ABSOLUTE)
-  else ()
-    basis_get_target_uid (COMMAND_UID "${ARGN_COMMAND}")
-    if (TARGET "${COMMAND_UID}")
-      basis_get_target_location (ARGN_COMMAND "${COMMAND_UID}" ABSOLUTE)
-    endif ()
   endif ()
 
   add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
