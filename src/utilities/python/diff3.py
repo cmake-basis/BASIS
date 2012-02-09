@@ -125,7 +125,7 @@ def merge(yourtext, origtext, theirtext):
         else:
             res = _conflict_range(text3, r3, res)
         i2 = r3[6] + 1
-    for lineno in range(i2, len(text3[2])):
+    for lineno in range(i2, len(text3[2]) + 1):
         res['body'].append(text3[2][lineno - 1])
     return res
 
@@ -182,8 +182,10 @@ def _assoc_range(diff, diff_type):
 def _diff_heckel(text_a, text_b):
     """Two-way diff based on the algorithm by P. Heckel.
 
-    @param [in] text_a   Array of lines of first text.
-    @param [in] text_b   Array of lines of second text.
+    @param [in] text_a Array of lines of first text.
+    @param [in] text_b Array of lines of second text.
+
+    @returns TODO
 
     """
     d    = [];
