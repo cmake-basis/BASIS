@@ -1,201 +1,231 @@
-# -*- coding: iso-8859-1 -*-
-"""
-    This file is copied from the MoinMoin software package with only minor
-    modifications for use with BASIS by Andreas Schuh.
-
-    @copyright: 2002 by Florian Festi
-    @license: GNU GPL, see COPYING for details.
 """
 
-# ----------------------------------------------------------------------------
-def text_merge(old, other, new, allow_conflicts=1,
-               marker1='<<<<<<<<<<<<<<<<<<<<<<<<<\n',
-               marker2='=========================\n',
-               marker3='>>>>>>>>>>>>>>>>>>>>>>>>>\n'):
-    """ do line by line diff3 merge with three strings"""
-    result = merge(old.splitlines(1), other.splitlines(1), new.splitlines(1),
-                   allow_conflicts, marker1, marker2, marker3)
-    return ''.join(result)
+    @file  diff3.py
+    @brief Three-way file comparison algorithm.
+
+    This is a line-by-line translation of the Text::Diff3 Perl module version
+    0.10 written by MIZUTANI Tociyuki <tociyuki@gmail.com>.
+
+    The Text::Diff3 Perl module in turn was based on the diff3 program:
+
+    Three way file comparison program (diff3) for Project GNU.
+    Copyright (C) 1988, 1989, 1992, 1993, 1994 Free Software Foundation, Inc.
+    Written by Randy Smith
+
+    The two-way file comparison procedure was based on the article:
+    P. Heckel. ``A technique for isolating differences between files.''
+    Communications of the ACM, Vol. 21, No. 4, page 264, April 1978.
+
+    Copyright (c) 2012, University of Pennsylvania. All rights reserved.
+    See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+"""
+
+from operator import xor
+
 
 # ----------------------------------------------------------------------------
-def merge(old, other, new, allow_conflicts=1,
-          marker1='<<<<<<<<<<<<<<<<<<<<<<<<<\n',
-          marker2='=========================\n',
-          marker3='>>>>>>>>>>>>>>>>>>>>>>>>>\n'):
-    """ do line by line diff3 merge
-        input must be lists containing single lines   
+def diff3(yourtext, origtext, theirtext):
+    """Three-way diff based on the GNU diff3.c by R. Smith.
+
+    @param [in] yourtext   Array of lines of your text.
+    @param [in] origtext   Array of lines of original text.
+    @param [in] theirtext   Array of lines of their text.
+
+    @returns Array of tuples containing diff results. The tuples consist of
+             (cmd, loA, hiA, loB, hiB), where cmd is either one of
+             '0', '1', '2', or 'A'.
+
     """
-    old_nr, other_nr, new_nr = 0, 0, 0
-    old_len, other_len, new_len = len(old), len(other), len(new)
-    result = []
-    while old_nr < old_len and other_nr < other_len  and new_nr < new_len:
-        # unchanged
-        if old[old_nr] == other[other_nr] == new[new_nr]:
-            result.append(old[old_nr])
-            old_nr += 1
-            other_nr += 1
-            new_nr += 1
+    # diff result => [(cmd, loA, hiA, loB, hiB), ...]
+    d2 = (diff(origtext, yourtext), diff(origtext, theirtext))
+    d3 = []
+    r3 = [None,  0, 0,  0, 0,  0, 0]
+    while d2[0] or d2[1]:
+        # find a continual range in origtext lo2..hi2
+        # changed by yourtext or by theirtext.
+        #
+        #     d2[0]        222    222222222
+        #  origtext     ...L!!!!!!!!!!!!!!!!!!!!H...
+        #     d2[1]          222222   22  2222222
+        r2 = ([], [])
+        if not d2[0]: i = 1
         else:
-            new_match = find_match(old, new, old_nr, new_nr)
-            other_match = find_match(old, other, old_nr, other_nr)
-            # new is changed
-            if new_match != (old_nr, new_nr):
-                new_changed_lines = new_match[0] - old_nr
-                # other is unchanged
-                if match(old, other, old_nr, other_nr,
-                         new_changed_lines) == new_changed_lines:
-                    result.extend(new[new_nr:new_match[1]])
-                    old_nr = new_match[0]
-                    new_nr = new_match[1]
-                    other_nr += new_changed_lines
-                # both changed, conflict!
-                else:
-                    if not allow_conflicts: return None
-                    old_m, other_m, new_m = tripple_match(
-                        old, other, new, other_match, new_match)
-                    result.append(marker1)
-                    result.extend(other[other_nr:other_m])
-                    result.append(marker2)
-                    result.extend(new[new_nr:new_m])
-                    result.append(marker3)
-                    old_nr, other_nr, new_nr = old_m, other_m, new_m
-            # other is changed
-            else:
-                other_changed_lines = other_match[0] - other_nr
-                # new is unchanged
-                if match(old, new, old_nr, new_nr,
-                         other_changed_lines) == other_changed_lines:
-                    result.extend(other[other_nr:other_match[1]])
-                    old_nr = other_match[0]
-                    other_nr = other_match[1]
-                    new_nr += other_changed_lines
-                # both changed, conflict!
-                else:
-                    if not allow_conflicts: return None
-                    old_m, other_m, new_m = tripple_match(
-                        old, other, new, other_match, new_match)
-                    result.append(marker1)
-                    result.extend(other[other_nr:other_m])
-                    result.append(marker2)
-                    result.extend(new[new_nr:new_m])
-                    result.append(marker3)
-                    old_nr, other_nr, new_nr = old_m, other_m, new_m
-
-    # process tail
-    # all finished
-    if old_nr==old_len and other_nr==other_len  and new_nr==new_len:
-        pass
-    # new added lines
-    elif old_nr==old_len and other_nr==other_len:
-        result.extend(new[new_nr:])
-    # other added lines
-    elif old_nr==old_len and new_nr==new_len:
-        result.extend(other[other_nr])
-    # new deleted lines
-    elif (new_nr==new_len and (old_len-old_nr==other_len-other_nr) and
-          match(old, other, old_nr, other_nr, old_len-old_nr) ==
-          old_len-old_nr):
-        pass
-    # other deleted lines
-    elif (other_nr==other_len and (old_len-old_nr==new_len-new_nr) and
-          match(old, new, old_nr, new_nr, old_len-old_nr) ==
-          old_len-old_nr):
-        pass
-    # conflict
-    else:
-        if not allow_conflicts: return None
-        result.append(marker1)
-        result.extend(other[other_nr:])
-        result.append(marker2)
-        result.extend(new[new_nr:])
-        result.append(marker3)
-    return result
-
-# ----------------------------------------------------------------------------
-def tripple_match(old, other, new, other_match, new_match):
-    """find next matching pattern unchanged in both other and new
-       return the position in all three lists
-    """
-    while 1:
-        difference = new_match[0]-other_match[0]
-        # new changed more lines
-        if difference > 0:
-            match_len = match(old, other, other_match[0], other_match[1],
-                              difference)
-            if match_len == difference:
-                return (new_match[0], other_match[1]+difference, new_match[1])
-            else:
-                other_match =  find_match(old, other,
-                                          other_match[0] + match_len,
-                                          other_match[1] + match_len)
-        # other changed more lines
-        elif difference < 0:
-            difference = -difference
-            match_len = match(old, new, new_match[0], new_match[1],
-                              difference)
-            if match_len == difference:
-                return (other_match[0], other_match[1],
-                        new_match[0]+difference)
-            else:
-                new_match =  find_match(old, new,
-                                        new_match[0] + match_len,
-                                        new_match[1] + match_len)
-        # both conflicts change same number of lines
-        # or no match till the end
+            if not d2[1]: i = 0
+            else: 
+                if d2[0][0][1] <= d2[1][0][1]: i = 0
+                else: i = 1
+        j  = i
+        k  = xor(i, 1)
+        hi = d2[j][0][2]
+        r2[j].append(d2[j].pop(0))
+        while d2[k] and d2[k][0][1] <= hi + 1:
+            hi_k = d2[k][0][2]
+            r2[k].append(d2[k].pop(0))
+            if hi < hi_k:
+                hi = hi_k
+                j  = k
+                k  = xor(k, 1)
+        lo2 = r2[i][ 0][1]
+        hi2 = r2[j][-1][2]
+        # take the corresponding ranges in yourtext lo0..hi0
+        # and in theirtext lo1..hi1.
+        #
+        #   yourtext     ..L!!!!!!!!!!!!!!!!!!!!!!!!!!!!H...
+        #      d2[0]        222    222222222
+        #   origtext     ...00!1111!000!!00!111111...
+        #      d2[1]          222222   22  2222222
+        #  theirtext          ...L!!!!!!!!!!!!!!!!H...
+        if r2[0]:
+            lo0 = r2[0][ 0][3] - r2[0][ 0][1] + lo2
+            hi0 = r2[0][-1][4] - r2[0][-1][2] + hi2
         else:
-            return (new_match[0], other_match[1], new_match[1])
+            lo0 = r3[2] - r3[6] + lo2
+            hi0 = r3[2] - r3[6] + hi2
+        if r2[1]:
+            lo1 = r2[1][ 0][3] - r2[1][ 0][1] + lo2
+            hi1 = r2[1][-1][4] - r2[1][-1][2] + hi2
+        else:
+            lo1 = r3[4] - r3[6] + lo2
+            hi1 = r3[4] - r3[6] + hi2
+        # detect type of changes
+        if not r2[0]:
+            cmd = '1'
+        elif not r2[1]:
+            cmd = '0'
+        elif hi0 - lo0 != hi1 - lo1:
+            cmd = 'A'
+        else:
+            cmd = '2'
+            for d in range(0, hi0 - lo0 + 1):
+                (i0, i1) = (lo0 + d - 1, lo1 + d - 1)
+                ok0 = (0 <= i0 and i0 < len(yourtext))
+                ok1 = (0 <= i1 and i1 < len(theirtext))
+                if xor(ok0, ok1) or (ok0 and yourtext[i0] != theirtext[i1]):
+                    cmd = 'A'
+                    break
+        d3.append((cmd,  lo0, hi0,  lo1, hi1,  lo2, hi2))
+    return d3
 
 # ----------------------------------------------------------------------------
-def match(list1, list2, nr1, nr2, maxcount=3):
-    """ return the number matching items after the given positions
-        maximum maxcount lines are processed 
-    """
-    i = 0
-    len1 = len(list1)
-    len2 = len(list2)
-    while nr1 < len1 and nr2 < len2 and list1[nr1] == list2[nr2]:
-        nr1 += 1
-        nr2 += 1
-        i += 1
-        if i >= maxcount and maxcount > 0: break
-    return i
+def merge(yourtext, origtext, theirtext):
+    res = {'conflict': 0, 'body': []}
+    d3 = diff3(yourtext, origtext, theirtext)
+    text3 = (yourtext, theirtext, origtext)
+    i2 = 1
+    for r3 in d3:
+        for lineno in range(i2, r3[5]):
+            res['body'].append(text3[2][lineno - 1])
+        if r3[0] == '0':
+            for lineno in range(r3[1], r3[2] + 1):
+                res['body'].append(text3[0][lineno - 1])
+        elif r3[0] != 'A':
+            for lineno in range(r3[3], r3[4] + 1):
+                res['body'].append(text3[1][lineno - 1])
+        else:
+            res = _conflict_range(text3, r3, res)
+        i2 = r3[6] + 1
+    for lineno in range(i2, len(text3[2])):
+        res['body'].append(text3[2][lineno - 1])
+    return res
 
 # ----------------------------------------------------------------------------
-def find_match(list1, list2, nr1, nr2, mincount=3):
-    """searches next matching pattern with lenght mincount
-       if no pattern is found len of the both lists is returned
+def _conflict_range(text3, r3, res):
+    text_a = [] # their text
+    for i in range(r3[3], r3[4] + 1):
+        text_a.append(text3[1][i - 1])
+    text_b = [] # your text
+    for i in range(r3[1], r3[2] + 1):
+        text_b.append(text3[0][i - 1])
+    d = diff(text_a, text_b)
+    if _assoc_range(d, 'c') and r3[5] <= r3[6]:
+        res['conflict'] += 1
+        res['body'].append('<<<<<<<')
+        for lineno in range(r3[1], r3[2] + 1):
+            res['body'].append(text3[0][lineno - 1])
+        res['body'].append('|||||||')
+        for lineno in range(r3[5], r3[6] + 1):
+            res['body'].append(text3[2][lineno - 1])
+        res['body'].append('=======')
+        for lineno in range(r3[3], r3[4] + 1):
+            res['body'].append(text3[1][lineno - 1])
+        res['body'].append('>>>>>>>')
+        return res
+    ia = 1
+    for r2 in d:
+        for lineno in range(ia, r2[1]):
+            res['body'].append(text_a[lineno - 1])
+        if r2[0] == 'c':
+            res['conflict'] += 1
+            res['body'].append('<<<<<<<')
+            for lineno in range(r2[3], r2[4] + 1):
+                res['body'].append(text_b[lineno - 1])
+            res['body'].append('=======')
+            for lineno in range(r2[1], r2[2] + 1):
+                res['body'].append(text_a[lineno - 1])
+            res['body'].append('>>>>>>>')
+        elif r2[0] == 'a':
+            for lineno in range(r2[3], r2[4] + 1):
+                res['body'].append(text_b[lineno - 1])
+        ia = r2[2] + 1
+    for lineno in range(ia, len(text_a)):
+        res['body'].append(text_a[lineno - 1])
+    return res
+
+# ----------------------------------------------------------------------------
+def _assoc_range(diff, diff_type):
+    for d in diff:
+        if d[0] == diff_type: return d
+    return None
+
+# ----------------------------------------------------------------------------
+def _diff_heckel(text_a, text_b):
+    """Two-way diff based on the algorithm by P. Heckel.
+
+    @param [in] text_a   Array of lines of first text.
+    @param [in] text_b   Array of lines of second text.
+
     """
-    len1 = len(list1)
-    len2 = len(list2)
-    hit1 = None
-    hit2 = None
-    idx1 = nr1
-    idx2 = nr2
+    d    = [];
+    uniq = [(len(text_a), len(text_b))]
+    (freq, ap, bp) = ({}, {}, {})
+    for i in range(len(text_a)):
+        s = text_a[i]
+        freq[s] = freq.get(s, 0) + 2;
+        ap  [s] = i;
+    for i in range(len(text_b)):
+        s = text_b[i]
+        freq[s] = freq.get(s, 0) + 3;
+        bp  [s] = i;
+    for s, x in freq.items():
+        if x == 5: uniq.append((ap[s], bp[s]))
+    (freq, ap, bp) = ({}, {}, {})
+    uniq.sort(key=lambda x: x[0])
+    (a1, b1) = (0, 0)
+    while a1 < len(text_a) and b1 < len(text_b):
+        if text_a[a1] != text_b[b1]: break
+        a1 += 1
+        b1 += 1
+    for a_uniq, b_uniq in uniq:
+        if a_uniq < a1 or b_uniq < b1: continue
+        (a0, b0) = (a1, b1)
+        (a1, b1) = (a_uniq - 1, b_uniq - 1)
+        while a0 <= a1 and b0 <= b1:
+            if text_a[a1] != text_b[b1]: break
+            a1 -= 1
+            b1 -= 1
+        if a0 <= a1 and b0 <= b1:
+            d.append(('c', a0 + 1, a1 + 1, b0 + 1, b1 + 1))
+        elif a0 <= a1:
+            d.append(('d', a0 + 1, a1 + 1, b0 + 1, b0))
+        elif b0 <= b1:
+            d.append(('a', a0 + 1, a0, b0 + 1, b1 + 1))
+        (a1, b1) = (a_uniq + 1, b_uniq + 1)
+        while a1 < len(text_a) and b1 < len(text_b):
+            if text_a[a1] != text_b[b1]: break
+            a1 += 1
+            b1 += 1
+    return d
 
-    while ((idx1 < len1) or (idx2 < len2)):
-        i =  nr1
-        while i <= idx1:
-            hit_count = match(list1, list2, i, idx2, mincount)
-            if hit_count >= mincount:
-                hit1 = (i, idx2)
-                break
-            i = i + 1
-            
-        i = nr2
-        while i < idx2:
-            hit_count = match(list1, list2, idx1, i, mincount) 
-            if hit_count >= mincount:
-                hit2 = (idx1, i)
-                break
-            i = i + 1
-
-        if hit1 or hit2: break
-        if idx1 < len1: idx1 = idx1 + 1
-        if idx2 < len2: idx2 = idx2 + 1
-
-    if hit1 and hit2:
-        #XXXX which one?
-        return hit1
-    elif hit1: return hit1
-    elif hit2: return hit2
-    else: return (len1, len2)
+# ----------------------------------------------------------------------------
+diff = _diff_heckel # default two-way diff function used by diff3()
