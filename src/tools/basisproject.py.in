@@ -377,30 +377,30 @@ def alter(filename, args):
     return False
 
 # ----------------------------------------------------------------------------
-def add(template, root, path, args, isdir=False):
+def add(path, args, isdir=False):
     """Add or modify project directory or file.
 
-    @param [in] template   Root directory of project template.
-    @param [in] root       Root directory of project.
-    @param [in] path       The path of the directory or file relative to the
-                           template or project root, respectively.
-    @param [in] args       Namespace with command-line arguments.
-    @param [in] isdir      Whether @p path is a directory that may not have
-                           a corresponding template.
+    @param [in] path  The path of the directory or file relative to the
+                      template or project root, respectively.
+    @param [in] args  Namespace with command-line arguments.
+    @param [in] isdir Whether @p path is a directory that may not have
+                      a corresponding template.
 
-    @returns Whether the project file/directory was added successfully.
+    @retval -1 on error
+    @retval  0 if existing file is up-to-date
+    @retval  1 if project file has been added/updated
 
     """
-    ok = True
+    retval = 0
 
-    template_path = os.path.join(template, path)
-    initial_path  = os.path.join(root, '.basis', path)
-    project_path  = os.path.join(root, path)
+    template_path = os.path.join(args.template, path)
+    initial_path  = os.path.join(args.root, '.basis', path)
+    project_path  = os.path.join(args.root, path)
 
     # check existence of template
     if not isdir and not os.path.exists(template_path):
         print "E %s - template missing" % project_path
-        return False
+        return -1
 
     # handle case that path in project exists already
     if os.path.exists(project_path):
@@ -408,26 +408,26 @@ def add(template, root, path, args, isdir=False):
             if not os.path.isdir(project_path):
                 # template is directory, but there is a file in the project
                 print "E %s - not a directory" % project_path
-                return False
+                return -1
             else:
                 # directory already exists, nothing to do
-                return True
+                return 0
         elif os.path.isfile(template_path):
             if not os.path.isfile(project_path):
                 # template is file, but there is a directory in the project
                 print "E %s - not a file" % project_path
-                return False
+                return -1
             # skip file if update of existing files is disabled
             if not args.update:
                 print "S %s" % project_path
-                return True
+                return 0
 
     # create (intermediate) directory
     if isdir or os.path.isdir(template_path):
         path_dir = path
     else:
         path_dir = os.path.dirname(path)
-    project_dir = os.path.join(root, path_dir)
+    project_dir = os.path.join(args.root, path_dir)
     if not os.path.isdir(project_dir):
         try:
             os.makedirs(project_dir)
@@ -436,7 +436,7 @@ def add(template, root, path, args, isdir=False):
             sys.stderr.write("E %s - failed to make directory" % project_dir)
             if args.verbose > 0: sys.stderr.write(': ' + str(e))
             sys.stderr.write('\n')
-            return False
+            return -1
 
     # add/update file
     if os.path.isfile(template_path):
@@ -449,8 +449,16 @@ def add(template, root, path, args, isdir=False):
                 sys.stderr.write("E %s - failed to add file" % project_path)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
-                return False
-            # store copy of template in '.basis/' directory for three-way diff on update
+                return -1
+            # alter project file, e.g., substitute for project name
+            try:
+                alter(project_path, args)
+            except Exception as e:
+                sys.stderr.write("E %s - failed to alter file, edit file manually" % project_path)
+                if args.verbose > 0: sys.stderr.write(': ' + str(e))
+                sys.stderr.write('\n')
+                retval = -1
+            # store copy of template in '.basis/' directory to enable three-way diff
             if not os.path.isdir(os.path.dirname(initial_path)):
                 try:
                     os.makedirs(os.path.dirname(initial_path))
@@ -459,24 +467,20 @@ def add(template, root, path, args, isdir=False):
                     pass
             try:
                 shutil.copyfile(template_path, initial_path)
+            except Exception as e:
+                sys.stderr.write("W %s - file added successfully,"
+                        " but failed to copy template to %s/.basis/ directory"
+                        " (will not be able to update file later)" % (args.root, project_path))
+                if args.verbose > 0: sys.stderr.write(': ' + str(e))
+                sys.stderr.write('\n')
+                retval = -1
+            if retval != -1:
                 print "A %s" % project_path
-            except Exception as e:
-                sys.stderr.write("W %s - file added, but failed to copy template to '.basis'"
-                                 " (will not be able to update file later)" % project_path)
-                if args.verbose > 0: sys.stderr.write(': ' + str(e))
-                sys.stderr.write('\n')
-            # alter project file, e.g., substitute for project name
-            try:
-                if alter(project_path, args):
-                    print "M %s" % project_path
-            except Exception as e:
-                sys.stderr.write("E %s - failed to modify template" % project_path)
-                if args.verbose > 0: sys.stderr.write(': ' + str(e))
-                sys.stderr.write('\n')
+                retval = 1
         # project file exists already
         else:
             # update project file if copy of previous template exists
-            if os.path.isfile(os.path.join(root, '.basis', path)):
+            if os.path.isfile(os.path.join(args.root, '.basis', path)):
                 # alter new template
                 shutil.copyfile(template_path, project_path + '.template')
                 alter(project_path + '.template', args)
@@ -487,7 +491,7 @@ def add(template, root, path, args, isdir=False):
                 fp = open(project_path + '.template', 'rt')
                 template = fp.read()
                 fp.close()
-                fp = open(os.path.join(root, '.basis', path), 'rt')
+                fp = open(os.path.join(args.root, '.basis', path), 'rt')
                 initial = fp.read()
                 fp.close()
                 merge = diff3.merge(current, initial, template)
@@ -501,7 +505,7 @@ def add(template, root, path, args, isdir=False):
                             sys.stderr.write("E %s - failed to backup file" % project_path)
                             if args.verbose > 0: sys.stderr.write(': ' + str(e))
                             sys.stderr.write('\n')
-                            return False
+                            return -1
                     # otherwise, backup current project file using ~ suffix
                     elif args.backup:
                         try:
@@ -510,7 +514,7 @@ def add(template, root, path, args, isdir=False):
                             sys.stderr.write("E %s - failed to backup file" % project_path)
                             if args.verbose > 0: sys.stderr.write(': ' + str(e))
                             sys.stderr.write('\n')
-                            return False
+                            return -1
                     # replace project file by merged file
                     try:
                         fp = open(project_path, 'wt')
@@ -520,10 +524,16 @@ def add(template, root, path, args, isdir=False):
                         sys.stderr.write("E %s - failed to update file" % project_path)
                         if args.verbose > 0: sys.stderr.write(': ' + str(e))
                         sys.stderr.write('\n')
-                        return False
+                        return -1
                 # remove altered template again if update was successful
                 if not merge['conflict']:
-                    os.remove(project_path + '.template')
+                    try:
+                        os.remove(project_path + '.template')
+                    except Exception as e:
+                        sys.stderr.write("E %s - failed to remove temporary file" % project_path)
+                        if args.verbose > 0: sys.stderr.write(': ' + str(e))
+                        sys.stderr.write('\n')
+                        retval = -1
             # cannot update files without copy of original template
             else:
                 try:
@@ -535,10 +545,10 @@ def add(template, root, path, args, isdir=False):
                     if args.verbose > 0: sys.stderr.write(': ' + str(e))
                     sys.stderr.write('\n')
                 sys.stderr.write("S %s - cannot update file: missing previous template\n" % project_path)
-                ok = False
+                retval = -1
             # replace hidden template file
             #
-            # Note: This is done also if the project file was not really update.
+            # Note: This is done also if the project file was not really updated.
             #       Before another update of the project can be performed using this
             #       program, the project files have to be merged/updated manually.
             #       We always assume that the developer has manually updated the
@@ -547,17 +557,20 @@ def add(template, root, path, args, isdir=False):
             #       control system used to manage the project files, the files in
             #       the .basis/ directory should be reverted as well.
             try:
-                shutil.copyfile(template_path, os.path.join(root, '.basis', path))
-                if merge['conflict']: print "C %s" % project_path
-                else:                 print "U %s" % project_path
+                shutil.copyfile(template_path, os.path.join(args.root, '.basis', path))
             except Exception as e:
                 sys.stderr.write("W %s - updated file" % project_path)
                 if merge['conflict']: sys.stderr.write(" with conflicts")
                 sys.stderr.write(", but failed to update hidden template")
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
-    # everything went ok
-    return ok
+                retval = -1
+            if retval != -1:
+                if merge['conflict']: print "C %s" % project_path
+                else:                 print "U %s" % project_path
+                retval = 1
+    # done
+    return retval
 
 # ----------------------------------------------------------------------------
 def remove_directory(path):
@@ -572,29 +585,23 @@ def remove_directory(path):
     return False
 
 # ----------------------------------------------------------------------------
-def delete(template, root, path, args, isdir=False):
+def delete(path, args, isdir=False):
     """Delete file or empty directory.
 
-    @param [in] template   Root directory of project template.
-    @param [in] root       Root directory of project.
-    @param [in] path       Path relative to template or project root, respectively.
-    @param [in] args       Namespace with command-line arguments.
-    @param [in] isdir      Whether @p path is a directory path that may not have
-                           a corresponding template.
+    @param [in] path  Path relative to template or project root, respectively.
+    @param [in] args  Namespace with command-line arguments.
+    @param [in] isdir Whether @p path is a directory path that may not have
+                      a corresponding template.
 
-    @returns Whether the file/directory was removed successfully.
+    @retval -1 on error
+    @retval  0 if file/directory did not exist
+    @retval  1 if file/directory was removed
 
     """
-    ok = True
+    retval = 0
 
-    template_path = os.path.join(template, path)
-    initial_path  = os.path.join(root, '.basis', path)
-    project_path  = os.path.join(root, path)
-
-    # check existence of template
-    if not isdir and not os.path.exists(template_path):
-        print "E %s - template missing" % project_path
-        return False
+    initial_path = os.path.join(args.root, '.basis', path)
+    project_path = os.path.join(args.root, path)
 
     # delete existing directory
     if os.path.isdir(project_path):
@@ -605,7 +612,7 @@ def delete(template, root, path, args, isdir=False):
                 sys.stderr.write("E %s - failed to remove directory" % project_path)
                 if verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
-                return False
+                retval = -1
         else:
             try:
                 os.rmdir(project_path)
@@ -614,8 +621,10 @@ def delete(template, root, path, args, isdir=False):
                                  " use --force to force deletion of non-empty directory" % project_path)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
-                return False
-        print "D %s" % project_path
+                retval = -1
+        if retval != -1:
+            print "D %s" % project_path
+            retval = 1
     # delete existing file and copy of template
     elif os.path.isfile(project_path):
         # check if project file differs from template
@@ -627,7 +636,7 @@ def delete(template, root, path, args, isdir=False):
         fp.close()
         if current != template and not args.force:
             print "S %s - file was modified; use --force to force deletion" % project_path
-            return False
+            return -1
         # delete copy of template
         if os.path.exists(initial_path):
             try:
@@ -637,18 +646,18 @@ def delete(template, root, path, args, isdir=False):
                 sys.stderr.write("W %s - failed to remove copy of previous template" % initial_path)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
+                retval = -1
         # delete project file
         try:
             os.remove(project_path)
-            print "D %s" % project_path
         except Exception as e:
             sys.stderr.write("E %s - failed to remove file" % project_path)
             if args.verbose > 0: sys.stderr.write(': ' + str(e))
             sys.stderr.write('\n')
-            return False
+            return -1
         # remove now empty directories
         subdir = os.path.dirname(project_path)
-        while subdir != root:
+        while subdir != args.root:
             try:
                 if remove_directory(subdir):
                     print "D %s" % subdir
@@ -656,8 +665,9 @@ def delete(template, root, path, args, isdir=False):
                 sys.stderr.write("W %s - failed to remove directory" % subdir)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
+                retval = -1
         subdir = os.path.dirname(initial_path)
-        while subdir != root:
+        while subdir != args.root:
             try:
                 if remove_directory(subdir):
                     print "D %s" % subdir
@@ -665,32 +675,36 @@ def delete(template, root, path, args, isdir=False):
                 sys.stderr.write("W %s - failed to remove directory" % subdir)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
-    # everything went ok
-    return ok
+                retval = -1
+        if retval != -1:
+            print "D %s" % project_path
+            retval = 1
+    # done
+    return retval
 
 # ----------------------------------------------------------------------------
-def addordel(op, template, root, path, args, isdir=False):
-    """Add or delete file depending on option given.
+def addordel(op, path, args, isdir=False):
+    """Add/update or delete file or directory depending on operation specified.
 
-    @param [in] op         Operations. Either one of ADD, None, or DEL.
-    @param [in] template   Root directory of project template.
-    @param [in] root       Root directory of project.
-    @param [in] path       File path relative to tempate or project root, respectively.
-    @param [in] args       Namespace with command-line arguments.
-    @param [in] isdir      Whether @p path is a directory path that may not have
-                           a corresponding template.
+    @param [in] op    Operations. Either one of ADD, None, or DEL.
+    @param [in] path  File path relative to tempate or project root, respectively.
+    @param [in] args  Namespace with command-line arguments.
+    @param [in] isdir Whether @p path is a directory path that may not have
+                      a corresponding template.
 
-    @returns Whether the operation was successful.
+    @retval -1 on error
+    @retval  0 if nothing was done
+    @retval  1 if operation was successful
 
     """
     # add file/directory to project
     if op == ADD:
-        return add(template, root, path, args, isdir=isdir)
+        return add(path, args, isdir=isdir)
     # delete file/directory from project
     elif op == DEL:
-        return delete(template, root, path, args, isdir=isdir)
+        return delete(path, args, isdir=isdir)
     # nothing to do otherwise
-    return True
+    return 0
 
 # ============================================================================
 # argparse actions
@@ -720,6 +734,23 @@ class NoConfigAction(ConfigAction):
 # main
 # ============================================================================
 
+# ----------------------------------------------------------------------------
+class AccumulatorForNumbersOfChangesAndErrors(object):
+    """Helper class used to accumulate number of changes and errors when
+       calling either one of the add(), delete(), or addordel() functions.
+
+    """
+    changes = 0
+    errors  = 0
+
+    # ------------------------------------------------------------------------
+    def call(self, func, *args, **kwargs):
+        """Call the specified function with the given arguments."""
+        rt = func(*args, **kwargs)
+        if rt == -1: self.errors  += 1
+        else:        self.changes += 1
+
+# ----------------------------------------------------------------------------
 if __name__ == '__main__':
     ok = True
 
@@ -728,7 +759,7 @@ if __name__ == '__main__':
         print_help()
         sys.exit(1)
 
-    # ----------------------------------------------------------------------------
+    # ------------------------------------------------------------------------
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
 Description:
@@ -899,6 +930,8 @@ of the template files in the %(root)s/.basis/ subdirectory.
 
     # ------------------------------------------------------------------------
     # create/modify project
+    acc = AccumulatorForNumbersOfChangesAndErrors()
+
     if create:
         msg = "Creating project"
     else:
@@ -911,34 +944,34 @@ of the template files in the %(root)s/.basis/ subdirectory.
         # add/remove project files/directories
 
         # minimum required project files
-        add(args.template, args.root, "AUTHORS.txt", args)
-        add(args.template, args.root, "README.txt", args)
-        add(args.template, args.root, "INSTALL.txt", args)
-        add(args.template, args.root, "COPYING.txt", args)
-        add(args.template, args.root, "BasisProject.cmake", args)
-        add(args.template, args.root, "CMakeLists.txt", args)
-        add(args.template, args.root, "src/CMakeLists.txt", args)
+        acc.call(add, "AUTHORS.txt",        args)
+        acc.call(add, "README.txt",         args)
+        acc.call(add, "INSTALL.txt",        args)
+        acc.call(add, "COPYING.txt",        args)
+        acc.call(add, "BasisProject.cmake", args)
+        acc.call(add, "CMakeLists.txt",     args)
+        acc.call(add, "src/CMakeLists.txt", args)
         # additional configuration files
-        addordel(opts['conf_settings'], args.template, args.root, "config/Settings.cmake", args)
-        addordel(opts['conf_components'], args.template, args.root, "config/Components.cmake", args)
-        addordel(opts['conf_package'], args.template, args.root, "config/Package.cmake", args)
-        addordel(opts['conf_find'], args.template, args.root, "config/Config.cmake.in", args)
-        addordel(opts['conf_find'], args.template, args.root, "config/ConfigSettings.cmake", args)
-        addordel(opts['conf_find_version'], args.template, args.root, "config/ConfigVersion.cmake.in", args)
-        addordel(opts['conf_script'], args.template, args.root, "config/ScriptConfig.cmake.in", args)
-        addordel(opts['conf_tests'], args.template, args.root, "config/CTestCustom.cmake.in", args)
-        addordel(opts['conf_use'], args.template, args.root, "config/ConfigUse.cmake.in", args)
+        acc.call(addordel, opts['conf_settings'],     "config/Settings.cmake",         args)
+        acc.call(addordel, opts['conf_components'],   "config/Components.cmake",       args)
+        acc.call(addordel, opts['conf_package'],      "config/Package.cmake",          args)
+        acc.call(addordel, opts['conf_find'],         "config/Config.cmake.in",        args)
+        acc.call(addordel, opts['conf_find'],         "config/ConfigSettings.cmake",   args)
+        acc.call(addordel, opts['conf_find_version'], "config/ConfigVersion.cmake.in", args)
+        acc.call(addordel, opts['conf_script'],       "config/ScriptConfig.cmake.in",  args)
+        acc.call(addordel, opts['conf_tests'],        "config/CTestCustom.cmake.in",   args)
+        acc.call(addordel, opts['conf_use'],          "config/ConfigUse.cmake.in",     args)
         # software configuration data
-        addordel(opts['data'], args.template, args.root, "data/CMakeLists.txt", args)
+        acc.call(addordel, opts['data'], "data/CMakeLists.txt", args)
         # documentation
-        addordel(opts['doc'], args.template, args.root, "doc/CMakeLists.txt", args)
+        acc.call(addordel, opts['doc'], "doc/CMakeLists.txt", args)
         # public includes
-        addordel(opts['include'], args.template, args.root, "include", args, isdir=True)
+        acc.call(addordel, opts['include'], "include", args, isdir=True)
         # testing tree
-        addordel(opts['tests'], args.template, args.root, "CTestConfig.cmake", args)
-        addordel(opts['tests'], args.template, args.root, "test/CMakeLists.txt", args)
+        acc.call(addordel, opts['tests'], "CTestConfig.cmake", args)
+        acc.call(addordel, opts['tests'], "test/CMakeLists.txt", args)
         # example
-        addordel(opts['example'], args.template, args.root, "example/CMakeLists.txt", args)
+        acc.call(addordel, opts['example'], "example/CMakeLists.txt", args)
 
         print msg + '... - done'
     except Exception as e:
@@ -957,16 +990,24 @@ of the template files in the %(root)s/.basis/ subdirectory.
             sys.stderr.write("Removing %s... - failed" % basis_dir)
             if args.verbose > 0: sys.stderr.write(': ' + str(e))
             sys.stderr.write('\n')
-            ok = False
 
     # ------------------------------------------------------------------------
     # done
-    print
-    if create:
-        msg = "Project \"%s\" created" % args.name
-    else:
-        msg = "Project \"%s\" modified" % args.name
     if ok:
-        print msg + " successfully"
-    else:
-        sys.stderr.write(msg + " with errors\n")
+        if create:
+            sys.stdout.write("\nCreated project %s" % args.name)
+        else:
+            if acc.changes > 0:
+                sys.stdout.write("\nModified " + str(acc.changes) + " file")
+                if acc.changes > 1: sys.stdout.write('s')
+                sys.stdout.write(" of project %s" % args.name)
+            else:
+                sys.stdout.write("\nProject %s is up-to-date" % args.name)
+        sys.stdout.write('\n')
+        if acc.errors > 0:
+            sys.stderr.write("Encountered " + str(acc.errors) + " error")
+            if acc.errors > 1: sys.stderr.write('s')
+            sys.stderr.write(" while ")
+            if create: sys.stderr.write(" adding")
+            else:      sys.stderr.write(" updating")
+            sys.stderr.write("project files")
