@@ -486,13 +486,13 @@ def add(path, args, isdir=False):
                 alter(project_path + '.template', args)
                 # merge new template with project file using three-way diff
                 fp = open(project_path, 'rt')
-                current = fp.read()
+                current = fp.readlines()
                 fp.close()
                 fp = open(project_path + '.template', 'rt')
-                template = fp.read()
+                template = fp.readlines()
                 fp.close()
                 fp = open(os.path.join(args.root, '.basis', path), 'rt')
-                initial = fp.read()
+                initial = fp.readlines()
                 fp.close()
                 merge = diff3.merge(current, initial, template)
                 # check if anything has changed at all
@@ -518,13 +518,14 @@ def add(path, args, isdir=False):
                     # replace project file by merged file
                     try:
                         fp = open(project_path, 'wt')
-                        fp.write(merged)
+                        fp.writelines(merge['body'])
                         fp.close()
                     except Exception as e:
                         sys.stderr.write("E %s - failed to update file" % project_path)
                         if args.verbose > 0: sys.stderr.write(': ' + str(e))
                         sys.stderr.write('\n')
                         return -1
+                    if retval != -1: retval = 1
                 # remove altered template again if update was successful
                 if not merge['conflict']:
                     try:
@@ -565,10 +566,10 @@ def add(path, args, isdir=False):
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
                 retval = -1
-            if retval != -1:
+            # print status message if file was updated
+            if retval == 1:
                 if merge['conflict']: print "C %s" % project_path
                 else:                 print "U %s" % project_path
-                retval = 1
     # done
     return retval
 
@@ -811,6 +812,7 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
     parser.add_argument('--author', metavar='<author>')
     parser.add_argument('--update', action='store_true', default=False)
     parser.add_argument('--force', action='store_true', default=False)
+    parser.add_argument('--nobackup', action='store_false', default=True, dest='backup')
     parser.add_argument('--use', metavar='<pkg>', action='append', default=[])
     parser.add_argument('--useopt', '--optuse', metavar='<pkg>', action='append', default=[])
     #parser.add_argument('--minimal', type=Boolean, default=False)
@@ -921,6 +923,7 @@ so using the revert functionality of the revision control system that you are
 hopefully using to manage your project files. This will also revert the copies
 of the template files in the %(root)s/.basis/ subdirectory.
 """ % {'EXEC_NAME': _EXEC_NAME, 'root': args.root})
+                        sys.exit(1)
         if args.cleanup:
             if ok:
                 print "Cleaning up project... - done"
@@ -996,18 +999,23 @@ of the template files in the %(root)s/.basis/ subdirectory.
     if ok:
         sys.stdout.write('\n')
         if create:
-            sys.stdout.write("Created project" % args.name)
+            sys.stdout.write("Created project\n")
         else:
             if acc.changes > 0:
                 sys.stdout.write("Modified " + str(acc.changes) + " file")
                 if acc.changes > 1: sys.stdout.write('s')
-            else:
-                sys.stdout.write("Project is up-to-date")
-        sys.stdout.write('\n')
+                sys.stdout.write('\n')
+            elif acc.errors == 0:
+                if args.update:
+                    sys.stdout.write("Project is up-to-date")
+                else:
+                    sys.stdout.write("No project files added or removed,"
+                            " use --update option to enable update of existing files")
+                sys.stdout.write('\n')
         if acc.errors > 0:
             sys.stderr.write("Encountered " + str(acc.errors) + " error")
             if acc.errors > 1: sys.stderr.write('s')
-            sys.stderr.write(" while ")
+            sys.stderr.write(" while")
             if create: sys.stderr.write(" adding")
             else:      sys.stderr.write(" updating")
-            sys.stderr.write("project files\n")
+            sys.stderr.write(" project files\n")
