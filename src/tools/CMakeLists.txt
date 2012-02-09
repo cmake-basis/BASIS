@@ -10,9 +10,7 @@
 
 # ----------------------------------------------------------------------------
 # project management
-if (UNIX)
-  basis_add_executable (basisproject.sh)
-endif ()
+basis_add_executable (basisproject.py)
 
 # ----------------------------------------------------------------------------
 # basic command-line tools

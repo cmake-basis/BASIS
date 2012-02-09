@@ -25,11 +25,18 @@
 ##############################################################################
 
 basis_project (
-  NAME                  <project>
-  VERSION               0.0.0
-  DESCRIPTION           <description>
-  DEPENDS               #<dependency>
-  OPTIONAL_DEPENDS      #<optional-dependency>
-  TEST_DEPENDS          #<test-dependency>
-  OPTIONAL_TEST_DEPENDS #<optional-test-dependency>
+  NAME
+    "<project>"
+  VERSION
+    0.0.0
+  DESCRIPTION
+    "<description>"
+  DEPENDS
+    #<dependency>
+  OPTIONAL_DEPENDS
+    #<optional-dependency>
+  TEST_DEPENDS
+    #<test-dependency>
+  OPTIONAL_TEST_DEPENDS
+    #<optional-test-dependency>
 )

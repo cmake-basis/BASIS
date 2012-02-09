@@ -21,4 +21,6 @@ basis_install (
 
 # ----------------------------------------------------------------------------
 # Python modules
+basis_add_library (argparse.py MODULE)
+basis_add_library (diff3.py MODULE)
 basis_add_library (${PROJECT_CODE_DIR}/tools/which.py MODULE)
