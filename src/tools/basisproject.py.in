@@ -714,7 +714,7 @@ def addordel(op, path, args, isdir=False):
 # ----------------------------------------------------------------------------
 class ConfigAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string):
-        _update_config_option(ADD)
+        _update_config_options(ADD)
 
     def _update_config_options(op):
         namespace.opts['conf_settings']     = op
@@ -729,7 +729,7 @@ class ConfigAction(argparse.Action):
 # ----------------------------------------------------------------------------
 class NoConfigAction(ConfigAction):
     def __call__(self, parser, namespace, values, option_string):
-        _update_config_option(DEL)
+        _update_config_options(DEL)
 
 # ============================================================================
 # main
