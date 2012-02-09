@@ -1017,16 +1017,14 @@ template files in the .basis/ subdirectory.
                     sys.stdout.write("No project files added or removed,"
                             " use --update option to enable update of existing files")
                 sys.stdout.write('.\n')
+        if acc.errors > 0:
+            sys.stderr.write("Encountered " + str(acc.errors) + " error")
+            if acc.errors > 1: sys.stderr.write('s')
+            sys.stderr.write('.\n')
         if acc.conflicts > 0:
-            sys.stderr.write('\n')
             sys.stderr.write("Encountered " + str(acc.conflicts) + " conflict")
             if acc.conflicts > 1: sys.stderr.write('s')
             sys.stderr.write('.\n\n')
             sys.stderr.write('Resolve conflicts by editing the updated files manually,\n')
             sys.stderr.write('using the corresonding *.mine and *.template files as reference.\n')
             sys.stderr.write('Once a conflict is resolved, remove the *.mine and *.template files.\n')
-        if acc.errors > 0:
-            sys.stderr.write('\n')
-            sys.stderr.write("Encountered " + str(acc.errors) + " error")
-            if acc.errors > 1: sys.stderr.write('s')
-            sys.stderr.write('.\n')
