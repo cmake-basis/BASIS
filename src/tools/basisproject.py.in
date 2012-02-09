@@ -887,9 +887,8 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
 
     # print template and root path
     if args.verbose > 1:
-        print "Root directories:"
-        print "  Project:  " + args.root
-        print "  Template: " + args.template
+        print "Project:  " + args.root
+        print "Template: " + args.template
         print
 
     # ------------------------------------------------------------------------
