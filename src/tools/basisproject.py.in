@@ -748,7 +748,7 @@ class AccumulatorForNumbersOfChangesAndErrors(object):
         """Call the specified function with the given arguments."""
         rt = func(*args, **kwargs)
         if rt == -1: self.errors  += 1
-        else:        self.changes += 1
+        else:        self.changes += rt
 
 # ----------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -994,15 +994,15 @@ of the template files in the %(root)s/.basis/ subdirectory.
     # ------------------------------------------------------------------------
     # done
     if ok:
+        sys.stdout.write('\n')
         if create:
-            sys.stdout.write("\nCreated project %s" % args.name)
+            sys.stdout.write("Created project" % args.name)
         else:
             if acc.changes > 0:
-                sys.stdout.write("\nModified " + str(acc.changes) + " file")
+                sys.stdout.write("Modified " + str(acc.changes) + " file")
                 if acc.changes > 1: sys.stdout.write('s')
-                sys.stdout.write(" of project %s" % args.name)
             else:
-                sys.stdout.write("\nProject %s is up-to-date" % args.name)
+                sys.stdout.write("Project is up-to-date")
         sys.stdout.write('\n')
         if acc.errors > 0:
             sys.stderr.write("Encountered " + str(acc.errors) + " error")
@@ -1010,4 +1010,4 @@ of the template files in the %(root)s/.basis/ subdirectory.
             sys.stderr.write(" while ")
             if create: sys.stderr.write(" adding")
             else:      sys.stderr.write(" updating")
-            sys.stderr.write("project files")
+            sys.stderr.write("project files\n")
