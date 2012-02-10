@@ -609,19 +609,16 @@ project files to a newer template version is not feasible.""")
             help="""Name of external package used by this project.
 Note that the package name is case sensitive.""")
 
-    parser.add_argument('--opt-use', metavar='<pkg>', action='append',
-            dest='useopt', default=[],
+    parser.add_argument('--useopt', metavar='<pkg>', action='append', default=[],
             help="""Name of external package optionally used by this project.
 Note that the package name is case sensitive.""")
 
 
-    parser.add_argument('--test-use', metavar='<pkg>', action='append',
-            dest='usetest', default=[],
+    parser.add_argument('--usetest', metavar='<pkg>', action='append', default=[],
             help="""Name of external package required by tests of this project.
 Note that the package name is case sensitive.""")
 
-    parser.add_argument('--opt-test-use', metavar='<pkg>', action='append',
-            dest='useopttest', default=[],
+    parser.add_argument('--useopttest', metavar='<pkg>', action='append', default=[],
             help="""Name of external package optionally used by tests of this project.
 Note that the package name is case sensitive.""")
 
