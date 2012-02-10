@@ -225,7 +225,7 @@ def alter(filename, args, backup=True):
     if backup:
         try:
             shutil.copy(filename, filename + '~')
-        except Exception as e:
+        except Exception, e:
             sys.stderr.write("E %s - failed to backup file before altering it" % filename)
             if args.verbose > 0: sys.stderr.write(': ' + str(e))
             sys.stderr.write('\n')
@@ -295,7 +295,7 @@ def add(path, args, isdir=False):
         try:
             os.makedirs(project_dir)
             print "A %s" % project_dir
-        except Exception as e:
+        except Exception, e:
             sys.stderr.write("E %s - failed to make directory" % project_dir)
             if args.verbose > 0: sys.stderr.write(': ' + str(e))
             sys.stderr.write('\n')
@@ -308,7 +308,7 @@ def add(path, args, isdir=False):
             # copy template
             try:
                 shutil.copyfile(template_path, project_path)
-            except Exception as e:
+            except Exception, e:
                 sys.stderr.write("E %s - failed to add file" % project_path)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
@@ -317,7 +317,7 @@ def add(path, args, isdir=False):
             try:
                 if alter(project_path, args, backup=False) == -1:
                     retval = -1
-            except Exception as e:
+            except Exception, e:
                 retval = -1
             if retval != -1:
                 print "A %s" % project_path
@@ -335,7 +335,7 @@ def add(path, args, isdir=False):
                     shutil.copyfile(template_path, project_path + '.template')
                     if alter(project_path + '.template', args, backup=False) == -1:
                         raise Exception('failed to alter template file')
-                except Exception as e:
+                except Exception, e:
                     sys.stderr.write("E %s - failed to create temporary template" % project_path)
                     if args.verbose > 0: sys.stderr.write(': ' + str(e))
                     sys.stderr.write('\n')
@@ -357,7 +357,7 @@ def add(path, args, isdir=False):
                     if merge['conflict']:
                         try:
                             shutil.copy(project_path, project_path + '.mine')
-                        except Exception as e:
+                        except Exception, e:
                             sys.stderr.write("E %s - failed to backup file" % project_path)
                             if args.verbose > 0: sys.stderr.write(': ' + str(e))
                             sys.stderr.write('\n')
@@ -366,7 +366,7 @@ def add(path, args, isdir=False):
                     elif args.backup:
                         try:
                             shutil.copyfile(project_path, project_path + '~')
-                        except Exception as e:
+                        except Exception, e:
                             sys.stderr.write("E %s - failed to backup file" % project_path)
                             if args.verbose > 0: sys.stderr.write(': ' + str(e))
                             sys.stderr.write('\n')
@@ -376,7 +376,7 @@ def add(path, args, isdir=False):
                         fp = open(project_path, 'wt')
                         fp.writelines(merge['body'])
                         fp.close()
-                    except Exception as e:
+                    except Exception, e:
                         sys.stderr.write("E %s - failed to update file" % project_path)
                         if args.verbose > 0: sys.stderr.write(': ' + str(e))
                         sys.stderr.write('\n')
@@ -388,7 +388,7 @@ def add(path, args, isdir=False):
                 if not merge['conflict']:
                     try:
                         os.remove(project_path + '.template')
-                    except Exception as e:
+                    except Exception, e:
                         sys.stderr.write("E %s - failed to remove temporary file" % project_path)
                         if args.verbose > 0: sys.stderr.write(': ' + str(e))
                         sys.stderr.write('\n')
@@ -446,7 +446,7 @@ def delete(path, args, isdir=False):
         if args.force:
             try:
                 shutil.rmtree(project_path)
-            except Exception as e:
+            except Exception, e:
                 sys.stderr.write("E %s - failed to remove directory" % project_path)
                 if verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
@@ -454,7 +454,7 @@ def delete(path, args, isdir=False):
         else:
             try:
                 os.rmdir(project_path)
-            except Exception as e:
+            except Exception, e:
                 sys.stderr.write("E %s - failed to remove directory;"
                                  " use --force to force deletion of non-empty directory" % project_path)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
@@ -475,7 +475,7 @@ def delete(path, args, isdir=False):
                 shutil.copyfile(original_template_path, project_path + '.template')
                 if alter(project_path + '.template', args, backup=False) == -1:
                     raise Exception('failed to alter template file')
-            except Exception as e:
+            except Exception, e:
                 sys.stderr.write("E %s - failed to create temporary template,"
                                  " use --force to force deletion")
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
@@ -491,7 +491,7 @@ def delete(path, args, isdir=False):
             # remove altered template file
             try:
                 os.remove(project_path + '.template')
-            except Exception as e:
+            except Exception, e:
                 sys.stderr.write("E %s - failed to remove temporary file" % project_path)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
@@ -504,7 +504,7 @@ def delete(path, args, isdir=False):
         # delete project file
         try:
             os.remove(project_path)
-        except Exception as e:
+        except Exception, e:
             sys.stderr.write("E %s - failed to remove file" % project_path)
             if args.verbose > 0: sys.stderr.write(': ' + str(e))
             sys.stderr.write('\n')
@@ -519,7 +519,7 @@ def delete(path, args, isdir=False):
             try:
                 if remove_directory(subdir):
                     print "D %s" % subdir
-            except Exception as e:
+            except Exception, e:
                 sys.stderr.write("W %s - failed to remove directory" % subdir)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
@@ -960,7 +960,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                         try:
                             os.remove(file_path)
                             print "D %s" % file_path
-                        except Exception as e:
+                        except Exception, e:
                             sys.stderr.write("E %s - failed to remove file" % file_path)
                             if args.verbose > 0: sys.stderr.write(': ' + str(e))
                             sys.stderr.write('\n')
@@ -1023,7 +1023,7 @@ template files in the .basis/ subdirectory.
         # example
         acc.call(addordel, opts.get('example', None), 'example/CMakeLists.txt', args)
 
-    except Exception as e:
+    except Exception, e:
         sys.stderr.write("Failed to ")
         if create: sys.stderr.write("create")
         else:      sys.stderr.write("modify")
