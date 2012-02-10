@@ -35,6 +35,7 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Install content of current source directory excluding typical files.
 #
+# @param [in] DIR         Source directory.
 # @param [in] DESTINATION Destination directory.
 # @param [in] ARGN        Further arguments for CMake's
 #                         <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install">
@@ -43,9 +44,12 @@ endfunction ()
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
 #
 # @ingroup CMakeAPI
-function (basis_install_directory DESTINATION)
+function (basis_install_directory DIR DESTINATION)
+  if (NOT IS_ABSOLUTE "${DIR}")
+    set (DIR "${CMAKE_CURRENT_SOURCE_DIR}/${DIR}")
+  endif ()
   install (
-    DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/"
+    DIRECTORY   "${DIR}/"
     DESTINATION "${DESTINATION}"
     ${ARGN}
     PATTERN     CMakeLists.txt EXCLUDE
