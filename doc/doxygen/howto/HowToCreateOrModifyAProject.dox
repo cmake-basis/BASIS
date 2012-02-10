@@ -207,7 +207,30 @@ dependencies. Therefore, please edit the <tt>BasisProject.cmake</tt> file manual
 and simply remove all CMake code referring to the particular package you do no
 longer require or use.
 
-@section HowToUpgradeAProject How to Upgrade a Project
+@section HowToAddProjectModules How to Add Modules
+
+BASIS supports the modularization of a project similar to the ITK 4, where each
+module is itself a BASIS project which may depend on other modules of the
+top-level project or other external packages. As each module itself is a project,
+modules are created just the same way as projects are created. The only difference
+might be that modules may include differents sets of features
+(directories and files) than the top-level project. A project which uses such
+modularization in turn often does not include source files by its own, but is
+an collection of the projects (i.e., subprojects) which are its modules.
+
+Therefore, the top-level project often excludes the src/ subdirectory, but
+includes the modules/ directory instead, in which the project's modules
+reside. Thus, to create a modularized project, first create the top-level project
+as follows:
+
+@code
+basisproject --name MyToolkit --description "A modularized project." --toplevel
+@endcode
+
+To now add modules to your modularized project, i.e., one which has a modules/
+subdirectory, 
+
+@section HowToUpdateAProject How to Update a Project
 
 Occasionally, the project template of BASIS may be modified as the development
 of BASIS progresses. In such case, you may want or need to update the files of a
@@ -221,11 +244,86 @@ a merge conflict occurs which has to be resolved manually. In no case, however,
 the project tool will discard your changes. There will always be a backup of
 your current project file, before the automatic file merge is performed.
 
-To update the project files, run the command
+To update the project files, run the following command in the root directory
+of your project's source tree:
 @code
-basisproject --root <source> --update
+basisproject --update
 @endcode
 
 If the project template has not been changed since the last update, no files
 will be modified by this command.
+
+@subsection HowToResolveProjectUpdateConflicts Resolving Merge Conflicts
+
+When the same lines of the template file as well as the project file have
+been modified since the creation or last update of the project, you will
+get a merge conflict. A merge conflict results in a merged project file
+which contains the changes of both the template and your current project
+file. Markers such as the following are used to highlight the lines of
+the merged file which are in conflict with each other.
+
+<table border=0>
+  <tr>
+    <td>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</td>
+    <td>Marks the start of conflicting lines.
+        This marker is followed by your changes from the corresponding lines
+        of your project file.</td>
+  </tr>
+  <tr>
+    <td>|||||||</td>
+    <td>Marks the start of the corresponding lines from the original
+        template file which was used to create the project or which the
+        project has been updated to last.
+    </td>
+  </tr>
+  <tr>
+    <td>=======</td>
+    <td>Marks the start of the corresponding lines from the current
+        template file, i.e., the one the project file should be updated to.</td>
+  </tr>
+  <tr>
+    <td>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</td>
+    <td>Marks the end of the conflicting lines.</td>
+  </tr>
+</table>
+
+In order to resolve the conflicts in one file, you have to edit the merged
+project file manually. For reference, the project tool writes the new template
+file to a file named like the project file in conflict with this project file,
+using .template as file name suffix. It further keeps a backup of your current
+project file before the update. The file name suffix for this backup file is
+.mine. For example, if conflicts occured when updating the README.txt file,
+the following files are written to your project's directory.
+
+<table border=0>
+  <tr>
+    <td>README.txt.mine</td>
+    <td>A copy of the project file before the update.</td>
+  </tr>
+  <tr>
+    <td>README.txt.template</td>
+    <td>A copy of the current template file which differs from the
+        template file used to create the project or corresponds to the
+        version of the template file of the last update.
+    </td>
+  </tr>
+  <tr>
+    <td>README.txt</td>
+    <td>The file containing changes from both the README.txt.template
+        and README.txt.mine file, where conflicts have been highlighted
+        using above markers.
+  </tr>
+</table>
+
+After you edited the project files which contain conflicts, possibly using
+merge tools installed on your system, you need to remove the .template and
+.mine files to let the project tool know that the conflicts are resolved.
+Otherwise, when you run the update command again, it will fail with an
+error message indicating that there are unresolved merge conflicts.
+You can delete those files either manually or using the following command
+in the root directory of your project's source tree.
+
+@code
+basisproject --cleanup
+@endcode
 */

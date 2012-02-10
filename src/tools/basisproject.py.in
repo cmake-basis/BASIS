@@ -83,7 +83,7 @@ def get_standard_template_options(opts, overwrite=False):
             or (opts.get('src') == None and opts.get('modules') == None)
             or (opts.get('src') == None and opts.get('modules') == DEL)
             or (opts.get('src') == DEL  and opts.get('modules') == None)):
-        if overwrite or opts['src'] != DEL:
+        if overwrite or opts.get('src') != DEL:
             opts['src'] = ADD
             opts['modules'] = DEL
         else:
@@ -247,7 +247,7 @@ def add(path, args, isdir=False):
                       a corresponding template.
 
     @retval -1 on error
-    @retval  0 if existing file is up-to-date
+    @retval  0 if existing file is up to date
     @retval  1 if project file has been added/updated
     @retval  2 if project file has been updated, but with conflicts
 
@@ -655,7 +655,8 @@ using this option.""")
             help="""Root directory of project template. Defaults to the template
 corresponding to this BASIS installation.""")
 
-    parser.add_argument('--original', metavar='<dir>', type=os.path.abspath,
+    parser.add_argument('--original', metavar='<dir>',
+            type=os.path.abspath, dest='original_template',
             help="""Root directory of project template which the already existing project
 was created from or last updated to. By default, the version of the original template
 is extracted from the root CMakeLists.txt file of the project. Given this version,
@@ -712,6 +713,18 @@ Corresponds to:
 
     parser.add_argument('--full', nargs=0, action=FullTemplateAction,
             help="""Choose full-featured project template.""")
+
+    # --toplevel
+    class TopLevelTemplateAction(argparse.Action):
+        def __call__(self, parser, namespace, value, option_string):
+            opts = get_standard_template_options({})
+            opts['modules'] = ADD
+            opts['src']     = DEL
+            opts['test']    = DEL
+            setattr(namespace, 'opts', opts)
+
+    parser.add_argument('--toplevel', nargs=0, action=TopLevelTemplateAction,
+            help="""Choose top-level project template.""")
 
     # --module
     class ModuleTemplateAction(argparse.Action):
@@ -859,20 +872,36 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     # request to create new project
     if args.name:
         create = True
+        # create subdirectory in current working directory by default
         if not args.root:
             args.root = os.path.join(os.getcwd(), args.name)
-        if os.path.exists(args.root):
-            sys.stderr.write("Directory or file of name " + args.root + " exists already.\n")
-            sys.stderr.write("Please choose another project name or root directory using the --root option.\n")
-            sys.stderr.write("If you want to modify an existing project, please provide the root directory using the --root option.\n")
+        # ensure that root directory is empty
+        if os.path.exists(args.root) and len(os.listdir(args.root)) != 0:
+            sys.stderr.write("Directory " + args.root + " exists already and is not empty.\n")
+            sys.stderr.write("Please choose another project name or a different root directory using the --root option.\n")
+            sys.stderr.write('\n')
+            sys.stderr.write("If you want to modify an existing project, please specify the root directory\n")
+            sys.stderr.write("of the existing project using the --root option and remove the --name option.\n")
             sys.exit(1)
+        # require a project description
         if not args.description:
             sys.stderr.write("No project description given!\n")
             sys.exit(1)
+        # set path of original template to current template
         args.original_template = args.template
+        # verify that project name is valid
+        if not re.match(r'^[a-zA-Z0-9]+$', args.name):
+            sys.stderr.write("Invalid project name: " + args.name + "\n")
+            sys.stderr.write("Project name may only consist of alphanumeric characters!\n")
+            sys.stderr.write("If you are attempting to modify an existent project, check whether the\n")
+            sys.stderr.write("project name is correctly extracted from the root CMakeLists.txt file.\n")
+            sys.exit(1)
     # request to modify existing project
-    elif args.root:
+    else:
         create = False
+        # use current working directory if root not specified
+        if not args.root:
+            args.root = os.getcwd()
         # remove trailing slashes from root
         if args.root[-1] == '/' or args.root[-1] == '\\':
             args.root = args.root[0:-1]
@@ -904,24 +933,12 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                 sys.stderr.write("Failed to determine original template version!\n")
                 sys.exit(1)
             args.original_template = _template + '-' + original_template_version
-    # invalid usage
-    else:
-        sys.stderr.write("Either project name or project root must be specified!\n")
-        sys.exit(1)
-
-    # verify that project name is valid
-    if not re.match(r'^[a-zA-Z0-9]+$', args.name):
-        sys.stderr.write("Invalid project name: " + args.name + "\n")
-        sys.stderr.write("Project name may only consist of alphanumeric characters!\n")
-        sys.stderr.write("If you are attempting to modify an existent project, check whether the\n")
-        sys.stderr.write("project name is correctly extracted from the root CMakeLists.txt file.\n")
-        sys.exit(1)
 
     # print template and root path
     if args.verbose > 1:
-        print "Project:           " + args.root
-        print "Template:          " + args.template
-        print "Original template: " + args.original_template
+        print "Project:  " + args.root
+        print "Template: " + args.template
+        print "Original: " + args.original_template
         print
 
     # ------------------------------------------------------------------------
@@ -1025,7 +1042,7 @@ template files in the .basis/ subdirectory.
                 sys.stdout.write(" added (A), removed (D), or modified (G, C)\n")
             elif acc.errors == 0:
                 if args.update:
-                    sys.stdout.write("Project is up-to-date\n")
+                    sys.stdout.write("Project is up to date\n")
                 else:
                     sys.stdout.write("No project files added, removed, or modified\n")
         if acc.errors > 0:
