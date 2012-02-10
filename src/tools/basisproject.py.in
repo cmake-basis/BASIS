@@ -59,24 +59,36 @@ def get_template_options(op=None):
             'doc'                 : op, # add/remove documentation
             'example'             : op, # add/remove example
             'include'             : op, # add/remove public includes tree
+            'src'                 : op, # add/remove directory for source files
+            'modules'             : op, # add/remove support for modularization
             'tests'               : op} # add/remove testing configuration file
-    
+ 
 # ----------------------------------------------------------------------------
 def get_standard_template_options(opts, overwrite=False):
     """Select standard project template."""
-    if overwrite or opts.get('config-settings')     == None: opts['config-settings']     = DEL
-    if overwrite or opts.get('config-components')   == None: opts['config-components']   = DEL
-    if overwrite or opts.get('config-package')      == None: opts['config-package']      = DEL
-    if overwrite or opts.get('config-find')         == None: opts['config-find']         = DEL
+    if overwrite or opts.get('config-settings')     == None: opts['config-settings'] = DEL
+    if overwrite or opts.get('config-components')   == None: opts['config-components'] = DEL
+    if overwrite or opts.get('config-package')      == None: opts['config-package'] = DEL
+    if overwrite or opts.get('config-find')         == None: opts['config-find'] = DEL
     if overwrite or opts.get('config-find_version') == None: opts['config-find_version'] = DEL
-    if overwrite or opts.get('config-script')       == None: opts['config-script']       = DEL
-    if overwrite or opts.get('config-test')         == None: opts['config-test']         = DEL
-    if overwrite or opts.get('config-use')          == None: opts['config-use']          = DEL
-    if overwrite or opts.get('data')                == None: opts['data']                = DEL
-    if overwrite or opts.get('doc')                 == None: opts['doc']                 = ADD
-    if overwrite or opts.get('example')             == None: opts['example']             = ADD
-    if overwrite or opts.get('include')             == None: opts['include']             = DEL
-    if overwrite or opts.get('tests')               == None: opts['tests']               = ADD
+    if overwrite or opts.get('config-script')       == None: opts['config-script'] = DEL
+    if overwrite or opts.get('config-test')         == None: opts['config-test'] = DEL
+    if overwrite or opts.get('config-use')          == None: opts['config-use'] = DEL
+    if overwrite or opts.get('data')                == None: opts['data'] = DEL
+    if overwrite or opts.get('doc')                 == None: opts['doc'] = ADD
+    if overwrite or opts.get('example')             == None: opts['example'] = ADD
+    if overwrite or opts.get('include')             == None: opts['include'] = DEL
+    if overwrite or opts.get('tests')               == None: opts['tests'] = ADD
+    if (overwrite
+            or (opts.get('src') == None and opts.get('modules') == None)
+            or (opts.get('src') == None and opts.get('modules') == DEL)
+            or (opts.get('src') == DEL  and opts.get('modules') == None)):
+        if overwrite or opts['src'] != DEL:
+            opts['src'] = ADD
+            opts['modules'] = DEL
+        else:
+            opts['src'] = DEL
+            opts['modules'] = ADD
     return opts
 
 # ----------------------------------------------------------------------------
@@ -109,6 +121,8 @@ def get_default_template_options(root, opts, create):
         opts = _update_dflt_opt(root, opts, 'doc',     'doc')
         opts = _update_dflt_opt(root, opts, 'example', 'example')
         opts = _update_dflt_opt(root, opts, 'include', 'include')
+        opts = _update_dflt_opt(root, opts, 'src',     'src')
+        opts = _update_dflt_opt(root, opts, 'modules', 'modules')
         opts = _update_dflt_opt(root, opts, 'test',    'test')
     return opts
 
@@ -459,7 +473,8 @@ def delete(path, args, isdir=False):
             # alter new template
             try:
                 shutil.copyfile(original_template_path, project_path + '.template')
-                alter(project_path + '.template', args)
+                if alter(project_path + '.template', args, backup=False) == -1:
+                    raise Exception('failed to alter template file')
             except Exception as e:
                 sys.stderr.write("E %s - failed to create temporary template,"
                                  " use --force to force deletion")
@@ -677,15 +692,28 @@ Corresponds to:
             setattr(namespace, 'opts', get_template_options(ADD))
 
     parser.add_argument('--full', nargs=0, action=FullTemplateAction,
-            help="""Choose full project template.
-Corresponds to selecting all files.""")
+            help="""Choose full-featured project template.""")
+
+    # --module
+    class ModuleTemplateAction(argparse.Action):
+        def __call__(self, parser, namespace, value, option_string):
+            opts = get_template_options(DEL)
+            opts['include'] = ADD
+            opts['src']     = ADD
+            opts['test']    = ADD
+            setattr(namespace, 'opts', opts)
+
+    parser.add_argument('--module', nargs=0, action=ModuleTemplateAction,
+            help="""Choose project module template.""")
 
     # --[no]config
     class ConfigAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string):
-            setattr(namespace, 'opts', self._get_config_template_options(ADD))
+            if option_string == '--config': opts = self._get_options(ADD)
+            else:                           opts = self._get_options(DEL)
+            setattr(namespace, 'opts', opts)
 
-        def _get_config_template_options(self, op):
+        def _get_options(self, op):
             return {'config-settings':     op,
                     'config-components':   op,
                     'config-package':      op,
@@ -695,34 +723,20 @@ Corresponds to selecting all files.""")
                     'config-test':         op,
                     'config-use':          op}
 
-    class NoConfigAction(ConfigAction):
-        def __call__(self, parser, namespace, values, option_string):
-            setattr(namespace, 'opts', self._get_config_template_options(DEL))
+    parser.add_argument('--config', '--noconfig',
+            nargs=0, action=ConfigAction,
+            help="""Alias for
+    --[no]config-components
+    --[no]config-find
+    --[no]config-find-version
+    --[no]config-generate
+    --[no]config-package
+    --[no]config-script
+    --[no]config-settings
+    --[no]config-test
+    --[no]config-use""")
 
-    parser.add_argument('--config', nargs=0, action=ConfigAction,
-            help="""Include all config/ files. Alias for:
-    --config-components
-    --config-find
-    --config-find-version
-    --config-generate
-    --config-package
-    --config-script
-    --config-settings
-    --config-test
-    --config-use""")
-
-    parser.add_argument('--noconfig', nargs=0, action=NoConfigAction,
-            help="""Exclude all config/ files. Alias for:
-    --noconfig-components
-    --noconfig-find
-    --noconfig-find-version
-    --noconfig-generate
-    --noconfig-package
-    --noconfig-script
-    --noconfig-settings
-    --noconfig-test
-    --noconfig-use""")
-
+    # granular template options
     class OptAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string):
             if not hasattr(namespace, 'opts'):
@@ -735,65 +749,65 @@ Corresponds to selecting all files.""")
                 opt = option_string[2:]
             namespace.opts[opt] = op
 
-    parser.add_argument('--config-components', nargs=0, action=OptAction,
-            help="Include custom Components.cmake file.")
-    parser.add_argument('--noconfig-components', nargs=0, action=OptAction,
-            help="Exclude custom Components.cmake file.")
+    parser.add_argument('--config-components', '--noconfig-components',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom Components.cmake file.")
 
-    parser.add_argument('--config-find', nargs=0, action=OptAction,
-            help="Include custom Config.cmake.in file.")
-    parser.add_argument('--noconfig-find', nargs=0, action=OptAction,
-            help="Exclude custom Config.cmake.in file.")
+    parser.add_argument('--config-find', '--noconfig-find',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom Config.cmake.in file.")
 
-    parser.add_argument('--config-find-version', nargs=0, action=OptAction,
-            help="Include custom ConfigVersion.cmake.in file.")
-    parser.add_argument('--noconfig-find-version', nargs=0, action=OptAction,
-            help="Exclude custom ConfigVersion.cmake.in file.")
+    parser.add_argument('--config-find-version', '--noconfig-find-version',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom ConfigVersion.cmake.in file.")
 
-    parser.add_argument('--config-package', nargs=0, action=OptAction,
-            help="Include custom Package.cmake file.")
-    parser.add_argument('--noconfig-package', nargs=0, action=OptAction,
-            help="Exclude custom Package.cmake file.")
+    parser.add_argument('--config-package', '--noconfig-package',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom Package.cmake file.")
 
-    parser.add_argument('--config-script', nargs=0, action=OptAction,
-            help="Include custom ScriptConfig.cmake.in file.")
-    parser.add_argument('--noconfig-script', nargs=0, action=OptAction,
-            help="Exclude custom ScriptConfig.cmake.in file.")
+    parser.add_argument('--config-script', '--noconfig-script',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom ScriptConfig.cmake.in file.")
 
-    parser.add_argument('--config-settings', nargs=0, action=OptAction,
-            help="Include custom Settings.cmake file.")
-    parser.add_argument('--noconfig-settings', nargs=0, action=OptAction,
-            help="Exclude custom Settings.cmake file.")
+    parser.add_argument('--config-settings', '--noconfig-settings',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom Settings.cmake file.")
 
-    parser.add_argument('--config-test', nargs=0, action=OptAction,
-            help="Include custom CTestCustom.cmake.in file.")
-    parser.add_argument('--noconfig-test', nargs=0, action=OptAction,
-            help="Exclude custom CTestCustom.cmake.in file.")
+    parser.add_argument('--config-test', '--noconfig-test',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom CTestCustom.cmake.in file.")
 
-    parser.add_argument('--config-use', nargs=0, action=OptAction,
-            help="Include custom ConfigUse.cmake.in file.")
-    parser.add_argument('--noconfig-use', nargs=0, action=OptAction,
-            help="Exclude custom ConfigUse.cmake.in file.")
+    parser.add_argument('--config-use', '--noconfig-use',
+            nargs=0, action=OptAction,
+            help="Include/exclude custom ConfigUse.cmake.in file.")
 
-    parser.add_argument('--data', nargs=0, action=OptAction,
-            help="Add support for auxiliary data files.")
-    parser.add_argument('--nodata', nargs=0, action=OptAction,
-            help="Remove support for auxiliary data files.")
+    parser.add_argument('--data', '--nodata',
+            nargs=0, action=OptAction,
+            help="Add/remove directory for auxiliary data files.")
 
-    parser.add_argument('--example', nargs=0, action=OptAction,
-            help="Add support for example files.")
-    parser.add_argument('--noexample', nargs=0, action=OptAction,
-            help="Remove support for example files.")
+    parser.add_argument('--doc', '--nodoc',
+            nargs=0, action=OptAction,
+            help="Add/remove directory for documentation files.")
 
-    parser.add_argument('--include', nargs=0, action=OptAction,
-            help="Add support for public header files.")
-    parser.add_argument('--noinclude', nargs=0, action=OptAction,
-            help="Remove support for public header files.")
+    parser.add_argument('--example', '--noexample',
+            nargs=0, action=OptAction,
+            help="Add/remove directory for example files.")
 
-    parser.add_argument('--test', nargs=0, action=OptAction,
+    parser.add_argument('--include', '--noinclude',
+            nargs=0, action=OptAction,
+            help="Add/remove directory for public header files.")
+
+    parser.add_argument('--modules', '--nomodules',
+            nargs=0, action=OptAction,
+            help="Add/remove support for modularization.")
+
+    parser.add_argument('--src', '--nosrc',
+            nargs=0, action=OptAction,
+            help="Add directory for project source files.")
+
+    parser.add_argument('--test', '--notest',
+            nargs=0, action=OptAction,
             help="Add support for testing.")
-    parser.add_argument('--notest', nargs=0, action=OptAction,
-            help="Remove support for testing.")
 
     # --update
     parser.add_argument('-u', '--update', action='store_true', default=False,
@@ -954,35 +968,37 @@ template files in the .basis/ subdirectory.
         # ---------------------------------------------------------------------
         # add/remove project files/directories
 
-        # minimum required project files
-        acc.call(add, "AUTHORS.txt",        args)
-        acc.call(add, "README.txt",         args)
-        acc.call(add, "INSTALL.txt",        args)
-        acc.call(add, "COPYING.txt",        args)
-        acc.call(add, "BasisProject.cmake", args)
-        acc.call(add, "CMakeLists.txt",     args)
-        acc.call(add, "src/CMakeLists.txt", args)
+        # required project files
+        acc.call(add, 'AUTHORS.txt',        args)
+        acc.call(add, 'README.txt',         args)
+        acc.call(add, 'INSTALL.txt',        args)
+        acc.call(add, 'COPYING.txt',        args)
+        acc.call(add, 'BasisProject.cmake', args)
+        acc.call(add, 'CMakeLists.txt',     args)
         # additional configuration files
-        acc.call(addordel, opts.get('config-settings', None),     "config/Settings.cmake",         args)
-        acc.call(addordel, opts.get('config-components', None),   "config/Components.cmake",       args)
-        acc.call(addordel, opts.get('config-package', None),      "config/Package.cmake",          args)
-        acc.call(addordel, opts.get('config-find', None),         "config/Config.cmake.in",        args)
-        acc.call(addordel, opts.get('config-find', None),         "config/ConfigSettings.cmake",   args)
-        acc.call(addordel, opts.get('config-find_version', None), "config/ConfigVersion.cmake.in", args)
-        acc.call(addordel, opts.get('config-script', None),       "config/ScriptConfig.cmake.in",  args)
-        acc.call(addordel, opts.get('config-test', None),         "config/CTestCustom.cmake.in",   args)
-        acc.call(addordel, opts.get('config-use', None),          "config/ConfigUse.cmake.in",     args)
+        acc.call(addordel, opts.get('config-settings',     None), 'config/Settings.cmake',         args)
+        acc.call(addordel, opts.get('config-components',   None), 'config/Components.cmake',       args)
+        acc.call(addordel, opts.get('config-package',      None), 'config/Package.cmake',          args)
+        acc.call(addordel, opts.get('config-find',         None), 'config/Config.cmake.in',        args)
+        acc.call(addordel, opts.get('config-find',         None), 'config/ConfigSettings.cmake',   args)
+        acc.call(addordel, opts.get('config-find_version', None), 'config/ConfigVersion.cmake.in', args)
+        acc.call(addordel, opts.get('config-script',       None), 'config/ScriptConfig.cmake.in',  args)
+        acc.call(addordel, opts.get('config-test',         None), 'config/CTestCustom.cmake.in',   args)
+        acc.call(addordel, opts.get('config-use',          None), 'config/ConfigUse.cmake.in',     args)
         # software configuration data
-        acc.call(addordel, opts.get('data', None), "data/CMakeLists.txt", args)
+        acc.call(addordel, opts.get('data', None), 'data/CMakeLists.txt', args)
         # documentation
-        acc.call(addordel, opts.get('doc', None), "doc/CMakeLists.txt", args)
-        # public includes
-        acc.call(addordel, opts.get('include', None), "include", args, isdir=True)
+        acc.call(addordel, opts.get('doc', None), 'doc/CMakeLists.txt', args)
+        # modularization
+        acc.call(addordel, opts.get('modules', None), 'modules', args, isdir=True)
+        # source files
+        acc.call(addordel, opts.get('include', None), 'include', args, isdir=True)
+        acc.call(addordel, opts.get('src',     None), 'src/CMakeLists.txt', args)
         # testing tree
-        acc.call(addordel, opts.get('test', None), "CTestConfig.cmake", args)
-        acc.call(addordel, opts.get('test', None), "test/CMakeLists.txt", args)
+        acc.call(addordel, opts.get('test', None), 'CTestConfig.cmake', args)
+        acc.call(addordel, opts.get('test', None), 'test/CMakeLists.txt', args)
         # example
-        acc.call(addordel, opts.get('example', None), "example/CMakeLists.txt", args)
+        acc.call(addordel, opts.get('example', None), 'example/CMakeLists.txt', args)
 
     except Exception as e:
         sys.stderr.write("Failed to ")
