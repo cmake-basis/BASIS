@@ -582,7 +582,6 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------------
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
-Description:
   This command-line tool, also referred to as project tool, can be used to
   create a new project from the BASIS project template version @TEMPLATE_VERSION@ or to modify a
   previously created BASIS project.
@@ -615,12 +614,24 @@ Description:
   been resolved, the *.mine and *.template files must be removed before this
   tool can be used for another update of the project files. This can be done
   either manually or by running this program with the --cleanup option.""",
-        formatter_class=argparse.RawTextHelpFormatter)
+        formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=51))
+        #formatter_class=argparse.RawTextHelpFormatter)
 
     # ----------------------------------------------------------------------------
     # define command-line arguments
 
     parser.set_defaults(opts=get_template_options())
+
+    # --version
+    parser.add_argument('--version', action='version',
+            help="Show version information and exit.",
+            version="""%(prog)s (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@
+Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.
+See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
+
+    # --verbose
+    parser.add_argument('-v', '--verbose', action='count', default=0,
+            help="Increase verbosity of output messages.")
 
     # --name/--description/--author
     parser.add_argument('--name', metavar='<name>',
@@ -644,7 +655,7 @@ using this option.""")
             help="""Root directory of project template. Defaults to the template
 corresponding to this BASIS installation.""")
 
-    parser.add_argument('--original-template', metavar='<dir>', type=os.path.abspath,
+    parser.add_argument('--original', metavar='<dir>', type=os.path.abspath,
             help="""Root directory of project template which the already existing project
 was created from or last updated to. By default, the version of the original template
 is extracted from the root CMakeLists.txt file of the project. Given this version,
@@ -733,16 +744,7 @@ Corresponds to:
 
     parser.add_argument('--config', '--noconfig',
             nargs=0, action=ConfigAction,
-            help="""Alias for
-    --[no]config-components
-    --[no]config-find
-    --[no]config-find-version
-    --[no]config-generate
-    --[no]config-package
-    --[no]config-script
-    --[no]config-settings
-    --[no]config-test
-    --[no]config-use""")
+            help="""Include/exclude all custom configuration files.""")
 
     # granular template options
     class OptAction(argparse.Action):
@@ -844,18 +846,13 @@ same filename, but with the ~ character as suffix. If this option is given, such
 files are not made. In case of a merge conflict, however, existing project files are
 always backed-up, using .mine as suffix for the file name of the backup in this case.""")
 
-    # --verbose
-    parser.add_argument('-v', '--verbose', action='count', default=0,
-            help="Increase verbosity of output messages. Can be given multiple times.")
-
-    parser.add_argument('--version', action='version',
-            version="""%(prog)s (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@
-Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.
-See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
-
     # ----------------------------------------------------------------------------
     # parse command-line arguments
-    args = parser.parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    else:
+        args = parser.parse_args()
 
     # ------------------------------------------------------------------------
     # create new project or update existing one?
