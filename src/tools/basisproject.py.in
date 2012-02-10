@@ -850,16 +850,11 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
     # parse command-line arguments
     args = parser.parse_args()
 
-    create = (args.name != None)
-
-    if not hasattr(args, 'opts'):
-        setattr(args, 'opts', {})
-    opts = get_default_template_options(args.root, args.opts, create)
-
     # ------------------------------------------------------------------------
     # create new project or update existing one?
     # request to create new project
     if args.name:
+        create = True
         if not args.root:
             args.root = os.path.join(os.getcwd(), args.name)
         if os.path.exists(args.root):
@@ -873,6 +868,7 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
         args.original_template = args.template
     # request to modify existing project
     elif args.root:
+        create = False
         # remove trailing slashes from root
         if args.root[-1] == '/' or args.root[-1] == '\\':
             args.root = args.root[0:-1]
@@ -923,6 +919,12 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
         print "Template:          " + args.template
         print "Original template: " + args.original_template
         print
+
+    # ------------------------------------------------------------------------
+    # adjust template options
+    if not hasattr(args, 'opts'):
+        setattr(args, 'opts', {})
+    opts = get_default_template_options(args.root, args.opts, create)
 
     # ------------------------------------------------------------------------
     # do not update exiting project if previous conflicts are not resolved
