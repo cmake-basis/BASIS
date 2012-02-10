@@ -11,6 +11,7 @@
 /**
 @page HowToGuides How-to Guides
 
+- @subpage HowToCreateOrModifyAProject
 - @subpage HowToManageData
 - @subpage HowToDocument
 - @subpage HowToBranchAndRelease
