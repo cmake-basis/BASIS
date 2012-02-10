@@ -35,7 +35,7 @@ if (BUILD_CONFIG_SETTINGS)
     # CMake module path
     set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
     # project template
-    set (TEMPLATE_DIR_CONFIG "${PROJECT_DATA_DIR}/template")
+    set (TEMPLATE_DIR_CONFIG "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}")
     # paths to utilities templates files
     foreach (U CXX JAVA PYTHON PERL BASH MATLAB)
       string (TOLOWER "${U}" L)
@@ -52,7 +52,7 @@ endif ()
 # CMake module path
 set (MODULE_PATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_MODULES_DIR}")
 # project template
-set (TEMPLATE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_TEMPLATE_DIR}")
+set (TEMPLATE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_TEMPLATE_DIR}-${TEMPLATE_VERSION}")
 # paths to utilities templates files
 foreach (U CXX JAVA PYTHON PERL BASH MATLAB)
   set (${U}_TEMPLATES_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_${U}_TEMPLATES_DIR}")

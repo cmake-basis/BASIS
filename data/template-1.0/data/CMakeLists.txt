@@ -17,4 +17,4 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_install_directory ("${INSTALL_DATA_DIR}")
+basis_install_directory ("." "${INSTALL_DATA_DIR}")

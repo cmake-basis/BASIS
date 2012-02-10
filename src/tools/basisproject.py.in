@@ -122,6 +122,16 @@ def get_project_name(cmake_file):
     if m: return m.group('name')
     return None
 
+# ----------------------------------------------------------------------------
+def get_template_version(cmake_file):
+    """Extract template version from root CMakeLists.cmake file of existing project."""
+    fp = open(cmake_file, 'rt')
+    txt = fp.read()
+    fp.close()
+    m = re.search(r'\s*set\s*\(\s*TEMPLATE_VERSION\s+\"?(?P<version>[0-9.]+)\"?', txt)
+    if m: return m.group('version')
+    return None
+
 # ============================================================================
 # add / remove project file
 # ============================================================================
@@ -211,9 +221,9 @@ def add(path, args, isdir=False):
     """
     retval = 0
 
-    template_path = os.path.join(args.template, path)
-    initial_path  = os.path.join(args.root, '.basis', path)
-    project_path  = os.path.join(args.root, path)
+    template_path          = os.path.join(args.template, path)
+    original_template_path = os.path.join(args.original_template, path)
+    project_path           = os.path.join(args.root, path)
 
     # check existence of template
     if not isdir and not os.path.exists(template_path):
@@ -271,23 +281,7 @@ def add(path, args, isdir=False):
             try:
                 alter(project_path, args)
             except Exception as e:
-                sys.stderr.write("E %s - failed to alter file, edit file manually" % project_path)
-                if args.verbose > 0: sys.stderr.write(': ' + str(e))
-                sys.stderr.write('\n')
-                retval = -1
-            # store copy of template in '.basis/' directory to enable three-way diff
-            if not os.path.isdir(os.path.dirname(initial_path)):
-                try:
-                    os.makedirs(os.path.dirname(initial_path))
-                except Exception as e:
-                    if args.verbose > 0: sys.stderr.write(e + '\n')
-                    pass
-            try:
-                shutil.copyfile(template_path, initial_path)
-            except Exception as e:
-                sys.stderr.write("W %s - file added successfully,"
-                        " but failed to copy template to %s/.basis/ directory"
-                        " (will not be able to update file later)" % (args.root, project_path))
+                sys.stderr.write("E %s - failed to alter file, may require manual edits" % project_path)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
                 sys.stderr.write('\n')
                 retval = -1
@@ -297,7 +291,7 @@ def add(path, args, isdir=False):
         # project file exists already
         else:
             # update project file if copy of previous template exists
-            if os.path.isfile(os.path.join(args.root, '.basis', path)):
+            if os.path.isfile(original_template_path):
                 # alter new template
                 try:
                     shutil.copyfile(template_path, project_path + '.template')
@@ -314,7 +308,7 @@ def add(path, args, isdir=False):
                 fp = open(project_path + '.template', 'rt')
                 template = fp.readlines()
                 fp.close()
-                fp = open(os.path.join(args.root, '.basis', path), 'rt')
+                fp = open(original_template_path, 'rt')
                 initial = fp.readlines()
                 fp.close()
                 merge = diff3.merge(current, initial, template)
@@ -366,30 +360,9 @@ def add(path, args, isdir=False):
                     # copy current template for reference next to the corresponding
                     # project file
                     shutil.copyfile(template_path, project_path + '.template')
-                except Exception as e:
-                    sys.stderr.write("E %s - failed to write copy of new template" % project_path)
-                    if args.verbose > 0: sys.stderr.write(': ' + str(e))
-                    sys.stderr.write('\n')
-                sys.stderr.write("S %s - cannot update file: missing previous template\n" % project_path)
-                retval = -1
-            # replace hidden template file
-            #
-            # Note: This is done also if the project file was not really updated.
-            #       Before another update of the project can be performed using this
-            #       program, the project files have to be merged/updated manually.
-            #       We always assume that the developer has manually updated the
-            #       files rather than reverted the changes we made. If the changes
-            #       are reverted using the revert functionality of the revision
-            #       control system used to manage the project files, the files in
-            #       the .basis/ directory should be reverted as well.
-            try:
-                shutil.copyfile(template_path, os.path.join(args.root, '.basis', path))
-            except Exception as e:
-                sys.stderr.write("W %s - updated file" % project_path)
-                if merge['conflict']: sys.stderr.write(" with conflicts")
-                sys.stderr.write(", but failed to update hidden template")
-                if args.verbose > 0: sys.stderr.write(': ' + str(e))
-                sys.stderr.write('\n')
+                except:
+                    pass
+                sys.stderr.write("S %s - cannot update file: missing original template\n" % project_path)
                 retval = -1
             # print status message if file was updated
             if retval > 0:
@@ -426,7 +399,7 @@ def delete(path, args, isdir=False):
     """
     retval = 0
 
-    initial_path = os.path.join(args.root, '.basis', path)
+    original_template_path = os.path.join(args.original_template, path)
     project_path = os.path.join(args.root, path)
 
     # delete existing directory
@@ -455,13 +428,12 @@ def delete(path, args, isdir=False):
     elif os.path.isfile(project_path):
         # check if project file differs from template
         if not args.force:
-            template_path = os.path.join(args.root, '.basis', path)
-            if not os.path.isfile(template_path):
+            if not os.path.isfile(original_template_path):
                 sys.stderr.write("E %s - original template missing, use --force to force deletion\n" % project_path)
                 return -1
             # alter new template
             try:
-                shutil.copyfile(template_path, project_path + '.template')
+                shutil.copyfile(original_template_path, project_path + '.template')
                 alter(project_path + '.template', args)
             except Exception as e:
                 sys.stderr.write("E %s - failed to create temporary template,"
@@ -497,15 +469,6 @@ def delete(path, args, isdir=False):
             if args.verbose > 0: sys.stderr.write(': ' + str(e))
             sys.stderr.write('\n')
             return -1
-        # delete copy of template
-        if os.path.exists(initial_path):
-            try:
-                os.remove(initial_path)
-            except Exception as e:
-                sys.stderr.write("W %s - failed to remove copy of previous template" % initial_path)
-                if args.verbose > 0: sys.stderr.write(': ' + str(e))
-                sys.stderr.write('\n')
-                retval = -1
         # print status message
         if retval != -1:
             print "D %s" % project_path
@@ -516,17 +479,6 @@ def delete(path, args, isdir=False):
             try:
                 if remove_directory(subdir):
                     print "D %s" % subdir
-            except Exception as e:
-                sys.stderr.write("W %s - failed to remove directory" % subdir)
-                if args.verbose > 0: sys.stderr.write(': ' + str(e))
-                sys.stderr.write('\n')
-                retval = -1
-                break
-            subdir = os.path.dirname(subdir)
-        subdir = os.path.dirname(initial_path)
-        while subdir != args.root:
-            try:
-                remove_directory(subdir)
             except Exception as e:
                 sys.stderr.write("W %s - failed to remove directory" % subdir)
                 if args.verbose > 0: sys.stderr.write(': ' + str(e))
@@ -603,25 +555,18 @@ Description:
   however, only deleted if they were not modified by the project developer since
   their creation and hence do not contain project related changes. Similarly are
   directories deleted by this tool only if empty. The deletion of modified files
-  can be forced by using the --force option. Non-empty directories are yet kept
-  and have to be deleted manually.
+  can be forced by using the --force option.
 
   An additional feature of this tool is, that it can upgrade an existing project
   to a newer project template version, given that the existing directory structure
   and file names were preserved. User changes to previously added template files
   are preserved and merged with the changes of the template using a so-called
-  three-way diff using diff3 similar to the Subversion tool svn. Therefore, copies
-  of the template files which a project file was created from are stored in the hidden
-  '.basis' subdirectory. This directory should be kept and commited to the version
-  control system if it is intended to manage the project files using this tool in
-  the future, e.g., to upgrade to a newer template version. Otherwise, the option
-  --clean-all can be used to have this tool delete this directory from the project.
+  three-way diff similar to the Subversion tool svn.
 
   Besides the name of the new project and a brief description, names of external
   packages required or optionally used by this project can be specified. For each
-  such package, an entry in the list of dependencies given as argument to the
-  DEPENDS or DEPENDS_OPTIONAL option, respectively, of the basis_project() command
-  is added.""",
+  such package, an entry in the list of dependencies given as argument to either
+  one of the DEPENDS* options of the basis_project() command is added.""",
         formatter_class=argparse.RawTextHelpFormatter)
 
     # ----------------------------------------------------------------------------
@@ -647,24 +592,36 @@ an existing project, specify the root directory of this project
 using this option.""")
 
     parser.add_argument('--template', metavar='<dir>',
-            type=os.path.abspath, default=_template,
+            type=os.path.abspath, default=_template + '-@TEMPLATE_VERSION@',
             help="""Root directory of project template. Defaults to the template
 corresponding to this BASIS installation.""")
 
-    # --use*
+    parser.add_argument('--original-template', metavar='<dir>', type=os.path.abspath,
+            help="""Root directory of project template which the already existing project
+was created from or last updated to. By default, the version of the original template
+is extracted from the root CMakeLists.txt file of the project. Given this version,
+BASIS determines the path of the corresponding project template which is part of
+the BASIS installation. If the correct is not available, an automatic update of
+project files to a newer template version is not feasible.""")
+
+    # --use et al.
     parser.add_argument('--use', metavar='<pkg>', action='append', default=[],
             help="""Name of external package used by this project.
 Note that the package name is case sensitive.""")
 
-    parser.add_argument('--useopt', metavar='<pkg>', action='append', default=[],
+    parser.add_argument('--opt-use', metavar='<pkg>', action='append',
+            dest='useopt', default=[],
             help="""Name of external package optionally used by this project.
 Note that the package name is case sensitive.""")
 
-    parser.add_argument('--usetest', metavar='<pkg>', action='append', default=[],
+
+    parser.add_argument('--test-use', metavar='<pkg>', action='append',
+            dest='usetest', default=[],
             help="""Name of external package required by tests of this project.
 Note that the package name is case sensitive.""")
 
-    parser.add_argument('--useopttest', metavar='<pkg>', action='append', default=[],
+    parser.add_argument('--opt-test-use', metavar='<pkg>', action='append',
+            dest='useopttest', default=[],
             help="""Name of external package optionally used by tests of this project.
 Note that the package name is case sensitive.""")
 
@@ -844,19 +801,6 @@ file name. If this option is given, such backup files are not
 written. In case of a merge conflict, however, existing project
 files are always backuped with the .mine suffix in the file name.""")
 
-    # --discard-template
-    parser.add_argument('--discard-templates', action='store_true', default=False,
-            help="""Remove copies of template files stored in .basis/ subdirectory of
-project. These files are required for the update of existing
-project files. If the original template files have been removed,
-the corresponding project files have to be updated manually
-if the template changes. For releases of a software, an update
-will no longer be made and hence, the template files can be
-removed from the project release in this case. For example,
-if the project uses Subversion for revision control,
-the tagged branches of the software should exclude the .basis/
-subdirectory as these files may not be modified any more.""") 
-
     # --verbose
     parser.add_argument('-v', '--verbose', action='count', default=0,
             help="Increase verbosity of output messages. Can be given multiple times.")
@@ -890,6 +834,7 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
         if not args.description:
             sys.stderr.write("No project description given!\n")
             sys.exit(1)
+        args.original_template = args.template
     # request to modify existing project
     elif args.root:
         # remove trailing slashes from root
@@ -910,11 +855,19 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
             sys.stderr.write("Cannot modify description of existing project. Please edit file BasisProject.cmake.\n")
             sys.stderr.write("Do not use option --description when attempting to modify an existing project.\n")
             sys.exit(1)
+        # get project name
         if not args.name:
             args.name = get_project_name(os.path.join(args.root, 'BasisProject.cmake'))
             if not args.name:
-                sys.stderr.write("Failed to determine project name! Expected to find something like 'basis_project(NAME \"<project name>\"' in BasisProject.cmake file.\n")
+                sys.stderr.write("Failed to determine project name!\n")
                 sys.exit(1)
+        # get original template directory
+        if not args.original_template:
+            original_template_version = get_template_version(os.path.join(args.root, 'CMakeLists.txt'))
+            if not original_template_version:
+                sys.stderr.write("Failed to determine original template version!\n")
+                sys.exit(1)
+            args.original_template = _template + '-' + original_template_version
     # invalid usage
     else:
         sys.stderr.write("Either project name or project root must be specified!\n")
@@ -930,8 +883,9 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
 
     # print template and root path
     if args.verbose > 1:
-        print "Project:  " + args.root
-        print "Template: " + args.template
+        print "Project:           " + args.root
+        print "Template:          " + args.template
+        print "Original template: " + args.original_template
         print
 
     # ------------------------------------------------------------------------
@@ -1014,19 +968,6 @@ template files in the .basis/ subdirectory.
         else:      sys.stderr.write("modify")
         sys.stderr.write(" project: " + str(e) + '\n')
         ok = False
-
-    # ------------------------------------------------------------------------
-    # discard template files if requested
-    if args.discard_templates:
-        basis_dir = os.path.join(args.root, '.basis')
-        try:
-            print "Removing %s..." % basis_dir
-            shutil.rmtree(basis_dir)
-            print "Removing %s... - done" % basis_dir
-        except Exception as e:
-            sys.stderr.write("Removing %s... - failed" % basis_dir)
-            if args.verbose > 0: sys.stderr.write(': ' + str(e))
-            sys.stderr.write('\n')
 
     # ------------------------------------------------------------------------
     # done
