@@ -33,25 +33,52 @@ function (basis_install)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Install content of current source directory excluding typical files.
+## @brief Install content of source directory excluding typical files.
 #
-# @param [in] DIR         Source directory.
+# Files which are excluded are typical backup files, system files, files
+# from revision control systems, and CMakeLists.txt files.
+#
+# Example:
+# @code
+# basis_install_directory("${INSTALL_DATA_DIR}")
+# basis_install_directory(. "${INSTALL_DATA_DIR}")
+# basis_install_directory("${CMAKE_CURRENT_SOURCE_DIR}" "${INSTALL_DATA_DIR}")
+# basis_install_directory(images "${INSTALL_DATA_DIR}/images")
+# @endcode
+#
+# @param [in] SOURCE      Source directory. Defaults to current source directory
+#                         if only one argument, the @p DESTINATION, is given.
 # @param [in] DESTINATION Destination directory.
 # @param [in] ARGN        Further arguments for CMake's
 #                         <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install">
-#                         <tt>install(DIRECTORY)</tt></a> command.
+#                         <tt>install(DIRECTORY)</tt></a> command. In this case,
+#                         both @p SOURCE and @p DESTINATION arguments are
+#                         required.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
 #
 # @ingroup CMakeAPI
-function (basis_install_directory DIR DESTINATION)
-  if (NOT IS_ABSOLUTE "${DIR}")
-    set (DIR "${CMAKE_CURRENT_SOURCE_DIR}/${DIR}")
+function (basis_install_directory)
+  if (ARGC EQUAL 1)
+    set (SOURCE      "${CMAKE_CURRENT_SOURCE_DIR}")
+    set (DESTINATION "${ARGV0}")
+    set (OPTIONS     "${ARGV}")
+    list (REMOVE_AT OPTIONS 0)
+  elseif (ARGC GREATER 1)
+    set (SOURCE      "${ARGV0}")
+    set (DESTINATION "${ARGV1}")
+    set (OPTIONS     "${ARGV}")
+    list (REMOVE_AT OPTIONS 0 1)
+  else ()
+    message (FATAL_ERROR "Too few arguments given!")
+  endif ()
+  if (NOT IS_ABSOLUTE "${SOURCE}")
+    set (DIR "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
   endif ()
   install (
-    DIRECTORY   "${DIR}/"
+    DIRECTORY   "${SOURCE}/"
     DESTINATION "${DESTINATION}"
-    ${ARGN}
+    ${OPTIONS}
     PATTERN     CMakeLists.txt EXCLUDE
     PATTERN     *~             EXCLUDE
     PATTERN     .svn           EXCLUDE
