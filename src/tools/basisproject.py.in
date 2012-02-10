@@ -838,12 +838,11 @@ been edited since their creation are removed.""")
 
     # --nobackup
     parser.add_argument('--nobackup', action='store_false', default=True, dest='backup',
-            help="""Disable backup of existing project files. By default, whenever a
-project file is updated if the --update option is given, a backup
-of the existing project file is done with the suffix ~ in the
-file name. If this option is given, such backup files are not
-written. In case of a merge conflict, however, existing project
-files are always backuped with the .mine suffix in the file name.""")
+            help="""Disable backup of existing project files. By default, whenever an
+existing project file is modified, a backup of this file is made and saved under the
+same filename, but with the ~ character as suffix. If this option is given, such backup
+files are not made. In case of a merge conflict, however, existing project files are
+always backed-up, using .mine as suffix for the file name of the backup in this case.""")
 
     # --verbose
     parser.add_argument('-v', '--verbose', action='count', default=0,
