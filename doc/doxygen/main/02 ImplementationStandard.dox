@@ -9,7 +9,7 @@
  */
 
 /**
-@page ImplementationStandard Software Implementation Standard
+@page ImplementationStandard Implementation Standard
 
 - @subpage CmdLineParsing
 - @subpage CallingConventions

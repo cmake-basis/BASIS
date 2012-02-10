@@ -17,7 +17,7 @@ This how-to guide introduces the <tt>basisproject</tt> command-line tool which
 is installed as part of BASIS. This tool, also simply referred to as "project tool",
 is used to create a new project based on BASIS or to modify an existing BASIS
 project. The creation of a new project based on BASIS is occasionally also
-referred to as instantiating the BASIS project template.
+referred to as instantiating the @ref ProjectTemplate "BASIS project template".
 
 For a detailed description and overview of the available command options,
 please refer to the output of the following command:
@@ -195,7 +195,6 @@ module which we are using is included with BASIS. It improves the way CMake look
 a MATLAB installation and furthermore looks for executables required by BASIS,
 such as in particular <tt>matlab</tt>, <tt>mcc</tt>, and <tt>mex</tt>.
 Use the following command to add a dependency on MATLAB:
-
 @code
 basisproject --root <source> --use MATLAB
 @endcode
@@ -213,22 +212,25 @@ BASIS supports the modularization of a project similar to the ITK 4, where each
 module is itself a BASIS project which may depend on other modules of the
 top-level project or other external packages. As each module itself is a project,
 modules are created just the same way as projects are created. The only difference
-might be that modules may include differents sets of features
+might be that modules may include different sets of features
 (directories and files) than the top-level project. A project which uses such
 modularization in turn often does not include source files by its own, but is
 an collection of the projects (i.e., subprojects) which are its modules.
 
-Therefore, the top-level project often excludes the src/ subdirectory, but
-includes the modules/ directory instead, in which the project's modules
-reside. Thus, to create a modularized project, first create the top-level project
-as follows:
-
+Therefore, the top-level project often excludes the <tt>src/</tt> subdirectory,
+but includes the <tt>modules/</tt> directory instead, in which the project's modules
+reside. First create the top-level project as follows (or simply add a
+<tt>modules/</tt> directory to an existing project):
 @code
 basisproject --name MyToolkit --description "A modularized project." --toplevel
 @endcode
 
-To now add modules to your modularized project, i.e., one which has a modules/
-subdirectory, 
+To now add modules to your modularized project, i.e., one which has a
+<tt>modules/</tt> subdirectory, change to the modules/ subdirectory of the
+top-level project, and run the command:
+@code
+basisproject --name MyModule --description "A module of MyToolkit." --module
+@endcode
 
 @section HowToUpdateAProject How to Update a Project
 
