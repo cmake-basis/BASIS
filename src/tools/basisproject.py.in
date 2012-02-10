@@ -589,24 +589,32 @@ Description:
 
   Depending on the grade of customization or optional inclusion of template
   components, different subsets of the fully featured project template can be
-  selected. Additional template files and folders can be added to an existing
+  selected. Additional template files and directories can be added to an existing
   project at any time. Further, if the --no* options are given explicitly,
-  project files previously copied from the template are deleted. Files are,
-  however, only deleted if they were not modified by the project developer since
-  their creation and hence do not contain project related changes. Similarly are
-  directories deleted by this tool only if empty. The deletion of modified files
-  can be forced by using the --force option.
+  project files which were previously copied from the template are deleted.
+  Files are, however, only deleted if they were not modified by the project
+  developer since their creation and hence do not contain project related changes.
+  Similarly are directories deleted by this tool only if empty. The deletion of
+  modified files can be forced by supplying the --force option.
+
+  Besides the name of the new project and a brief description, names of external
+  packages required or optionally used by this project can be specified. For each
+  such package, an entry in the list of dependencies given as argument to either
+  one of the DEPENDS* options of the basis_project() command is added.
 
   An additional feature of this tool is, that it can upgrade an existing project
   to a newer project template version, given that the existing directory structure
   and file names were preserved. User changes to previously added template files
   are preserved and merged with the changes of the template using a so-called
-  three-way diff similar to the Subversion tool svn.
-
-  Besides the name of the new project and a brief description, names of external
-  packages required or optionally used by this project can be specified. For each
-  such package, an entry in the list of dependencies given as argument to either
-  one of the DEPENDS* options of the basis_project() command is added.""",
+  three-way diff similar to the Subversion tool svn. If the automatic file merge
+  is not successful, a copy of the original project file (*.mine) as well as the
+  new template file (*.template) are written to the project directory next to the
+  project file which has been overwritten with the merged content which includes
+  markers to indicate where the conflicts occurred. The project file has to be
+  edited manually in this case to resolve any conflicts. Once the conflicts have
+  been resolved, the *.mine and *.template files must be removed before this
+  tool can be used for another update of the project files. This can be done
+  either manually or by running this program with the --cleanup option.""",
         formatter_class=argparse.RawTextHelpFormatter)
 
     # ----------------------------------------------------------------------------
@@ -803,11 +811,11 @@ Corresponds to:
 
     parser.add_argument('--src', '--nosrc',
             nargs=0, action=OptAction,
-            help="Add directory for project source files.")
+            help="Add/remove directory for project source files.")
 
     parser.add_argument('--test', '--notest',
             nargs=0, action=OptAction,
-            help="Add support for testing.")
+            help="Add/remove support for testing.")
 
     # --update
     parser.add_argument('-u', '--update', action='store_true', default=False,
