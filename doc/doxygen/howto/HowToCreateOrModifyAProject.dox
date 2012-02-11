@@ -17,7 +17,7 @@ This how-to guide introduces the <tt>basisproject</tt> command-line tool which
 is installed as part of BASIS. This tool, also simply referred to as "project tool",
 is used to create a new project based on BASIS or to modify an existing BASIS
 project. The creation of a new project based on BASIS is occasionally also
-referred to as instantiating the @ref ProjectTemplate "BASIS project template".
+referred to as instantiating the @ref ProjectTemplate.
 
 For a detailed description and overview of the available command options,
 please refer to the output of the following command:
@@ -38,7 +38,7 @@ basisproject --name MyProject --description "This is a brief description of the 
 This will create a subdirectory called "MyProject" under the current working directory
 and populate it with the standard project directory structure and BASIS configuration.
 No CMake commands to resolve dependencies to other software packages will be added.
-These can be added later either manually or as described @HowToModifyAProject "below".
+These can be added later either manually or as described @ref HowToModifyAProject "below".
 However, if you know already that your project will depend, for example, on
 <a href="http://www.itk.org">ITK</a> and optionally make use of
 <a href="http://www.vtk.org">VTK</a> if available, you can specify these dependencies
@@ -60,7 +60,7 @@ The project tool allows a detailed selection of the features included in the pro
 template for a particular BASIS project. Which of these features are needed will
 often not be known during the creation of the project, but change during the work on
 the project. Therefore, an existing BASIS project which was created as
-@ref HowToCreateAProject "described" can be modified using the project tool
+described @ref HowToCreateAProject "above" can be modified using the project tool
 to add or remove certain project features and to conveniently add CMake commands to
 resolve further dependencies on other software packages. How this is done is
 described in the following.
@@ -264,27 +264,31 @@ which contains the changes of both the template and your current project
 file. Markers such as the following are used to highlight the lines of
 the merged file which are in conflict with each other.
 
-<table border=0>
+<table>
   <tr>
-    <td>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</td>
+    <th>Marker</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</td>
     <td>Marks the start of conflicting lines.
         This marker is followed by your changes from the corresponding lines
         of your project file.</td>
   </tr>
   <tr>
-    <td>|||||||</td>
+    <td style="padding-right: 1em">|||||||</td>
     <td>Marks the start of the corresponding lines from the original
         template file which was used to create the project or which the
         project has been updated to last.
     </td>
   </tr>
   <tr>
-    <td>=======</td>
+    <td style="padding-right: 1em">=======</td>
     <td>Marks the start of the corresponding lines from the current
         template file, i.e., the one the project file should be updated to.</td>
   </tr>
   <tr>
-    <td>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</td>
+    <td style="padding-right: 1em">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</td>
     <td>Marks the end of the conflicting lines.</td>
   </tr>
 </table>
@@ -297,20 +301,24 @@ project file before the update. The file name suffix for this backup file is
 .mine. For example, if conflicts occured when updating the README.txt file,
 the following files are written to your project's directory.
 
-<table border=0>
+<table>
   <tr>
-    <td>README.txt.mine</td>
+    <th>File Name</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em"><tt>README.txt.mine</tt></td>
     <td>A copy of the project file before the update.</td>
   </tr>
   <tr>
-    <td>README.txt.template</td>
+    <td style="padding-right: 1em"><tt>README.txt.template</tt></td>
     <td>A copy of the current template file which differs from the
         template file used to create the project or corresponds to the
         version of the template file of the last update.
     </td>
   </tr>
   <tr>
-    <td>README.txt</td>
+    <td style="padding-right: 1em"><tt>README.txt</tt></td>
     <td>The file containing changes from both the README.txt.template
         and README.txt.mine file, where conflicts have been highlighted
         using above markers.

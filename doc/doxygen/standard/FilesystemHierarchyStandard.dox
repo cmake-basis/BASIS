@@ -31,6 +31,12 @@ directories of a software project. These variables should be used either
 directly or indirectly where possible such that a change of the actual
 directory names does not require a modification of the software itself.
 
+The BASIS Filesystem Hierarchy Standard is in particular implemented by
+the @ref ProjectTemplate, which is the template for any software project
+which follows BASIS. See the @ref HowToCreateOrModifyAProject guide for
+details on how to create a new project which complies with this
+Filesystem Hierarchy Standard.
+
 @subsection Legend
 
 In the reminder, &lt;project&gt; is a placeholder for the project name in lowercase
@@ -54,49 +60,79 @@ referred to as &lt;url&gt;.
 
 @section RepositoryOrganization Repository Organization
 
-The URL of the project repository is "https://sbia-svn/projects/<Project>".
-The top-level directories "trunk", "branches", and "tags" of the project named
-&lt;Project&gt; are located here. No other directories may be located next to these
-three top-level directories.
+The URL of the project repository is "https://sbia-svn.uphs.upenn.edu/projects/<Project>".
+The top-level directories <tt>trunk/</tt>, <tt>branches/</tt>, and <tt>tags/</tt>
+of the project named &lt;Project&gt; are located here. No other directories may be
+located next to these three top-level directories.
 
-@verbatim
-- trunk/                      The current development version of the project.
-                              Most development is done in this master branch.
+<table>
+  <tr>
+    <th style="text-align: left">Relative Path</th>
+    <th style="text-align: left">Description</th>
+  </tr>
+  <tr>
+    <td style="white-space: nowrap; vertical-align: top">
+      <tt>trunk/</tt>
+    </td>
+    <td>
+      The current development version of the project.
+      Most development is done in this master branch.
+    </td>
+  </tr>
+  <tr>
+    <td style="white-space: nowrap; vertical-align: top">
+      <tt>branches/&lt;name&gt;/</tt>
+    </td>
+    <td>
+      Separate branches named <name> are developed in subdirectories under
+      the branches directory. One reason for branching is, for example, to
+      develop new features separate from the main development branch, i.e.,
+      the trunk, and merging the desired changes back to the trunk once the
+      new feature is implemented and tested.
+    </td>
+  </tr>
+  <tr>
+    <td style="white-space: nowrap; vertical-align: top">
+      <tt>branches/&lt;project&gt;-&lt;major&gt;.&lt;minor&gt;/</tt>
+    </td>
+    <td>
+      This particular branch is used prior to releasing a new version of
+      the project. This branch is commonly referred to as release candidate
+      of version &lt;major&gt;.&lt;minor&gt; of the project. It is used to
+      adjust the project files prior to tagging a particular release.
+      For example, to set the correct version number in the project files.
+      This branch is further be used to apply bug fixes to a previous
+      release of this version, in which case the patch number has to be
+      increased before tagging a new release of this software version.
+      See the @ref HowToBranchAndRelease how-to for further details.
+    </td>
+  </tr>
+  <tr>
+    <td style="white-space: nowrap; vertical-align: top">
+      <tt>tags/&lt;project&gt;-&lt;version&gt;/</tt>
+    </td>
+    <td>
+      Tagged release version of the project. The reason for including the
+      project name in the name of the tagged branch is, that revision
+      control systems often use the last URL part as name for the directory
+      to which the URL's content is checked out or exported if no name for this
+      directory is specified explicitly.
+      <br /><br />
+      In case of Subversion, the following command will export the released
+      software to a new directory underneath the current working
+      directory named <tt>&lt;project&gt;-&lt;version>&gt;</tt>.
 
-- branches/<name>/            Separate branches named <name> are developed in
-                              subdirectories under the branches directory.
-                              One reason for branching is, for example, to
-                              develop new features separate from the main
-                              development branch, i.e., the trunk, and merging
-                              the desired changes back to the trunk once the
-                              new feature is implemented and tested.
+        @code svn export <url>/tags/<project>-<version> @endcode
+    </td>
+  </tr>
+</table>
 
-- branches/release/           This particular branch is used prior to releasing
-                              a new version of the project. This branch is
-                              commonly referred to as release candidate.
-
-- tags/<project>-<version>/   Tagged release version of the project.
-                              The reason for including the project name in the
-                              name of the tagged branch is, that revision
-                              control systems often use the last URL part as
-                              name for the directory to which the URL's content
-                              is checked out or exported if no name for this
-                              directory is specified explicitly.
-
-                              In case of Subversion, the following command
-                              will export the released software to a new
-                              directory underneath the current working
-                              directory named <project>-<version>/.
-
-                                $ svn export <url>/tags/<project>-<version>
-@endverbatim
-
-See the "How to Branch and Release.txt" document for details on how to create
+See the @ref HowToBranchAndRelease how-to for details on how to create
 new branches and the process of releasing a new version of a software project.
 
 Underneath the trunk and the release branches, a version of the entire source
-tree has to be found. Other branches underneath the branches/ directory may
-only contain a subset of the trunk such as, for example, only the source code
+tree has to be found. Other branches underneath the <tt>branches/</tt> directory
+may only contain a subset of the trunk such as, for example, only the source code
 of the software but not the example or tests (see Source Tree).
 
 @section SourceTree Source Tree
@@ -142,42 +178,92 @@ BASIS are given, while on the right side the actual names of the directories
 are listed.
 
 @verbatim
-  - PROJECT_SOURCE_DIR              - <source>/
-      + PROJECT_CODE_DIR                + src/
-      + PROJECT_CONFIG_DIR              + config/
-      + PROJECT_DOC_DIR                 + doc/
-      + PROJECT_DATA_DIR                + data/
-      + PROJECT_EXAMPLE_DIR             + example/
-      + PROJECT_TESTING_DIR             + test/
+- PROJECT_SOURCE_DIR              - <source>/
+    + PROJECT_CODE_DIR                + src/
+    + PROJECT_CONFIG_DIR              + config/
+    + PROJECT_DOC_DIR                 + doc/
+    + PROJECT_DATA_DIR                + data/
+    + PROJECT_EXAMPLE_DIR             + example/
+    + PROJECT_TESTING_DIR             + test/
 @endverbatim
 
-@subsection SourceTreeDescription Description
+Following a description of the directories, where the names of the CMake
+variables defined by BASIS are used instead of the actual directory names:
 
-@verbatim
-  - PROJECT_SOURCE_DIR     Root directory of source tree.
-  - PROJECT_CONFIG_DIR     BASIS configuration files.
-  - PROJECT_CODE_DIR       All source code files.
-  - PROJECT_DATA_DIR       Software configuration files including
-                           auxiliary data such as medical atlases.
-  - PROJECT_EXAMPLE_DIR    Example application of software.
-  - PROJECT_DOC_DIR        Software documentation.
-  - PROJECT_TESTING_DIR    Implementation of tests and test data.
-@endverbatim
+<table>
+  <tr>
+    <th>Directory Variable</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c PROJECT_SOURCE_DIR</td>
+    <td>Root directory of source tree.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c PROJECT_CONFIG_DIR</td>
+    <td>BASIS configuration files.</td>
+  </tr>
+  <tr>
+   <td style="padding-right: 1em">@c PROJECT_CODE_DIR</td>
+   <td>All source code files.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c PROJECT_DATA_DIR</td>
+    <td>Software configuration files including auxiliary data such as medical
+        atlases.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c PROJECT_EXAMPLE_DIR</td>
+    <td>Example application of software.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c PROJECT_DOC_DIR</td>
+    <td>Software documentation.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c PROJECT_TESTING_DIR</td>
+    <td>Implementation of tests and test data.</td>
+  </tr>
+</table>
 
 @subsection CommonFiles Common Files
 
-@verbatim
-  - AUTHORS.txt            Lists names of people who actively contributed to
-                           the software package. The contributions of other
-                           kind shall be acknowledged in the readme file.
-  - COPYING.txt            Copyright notice and license notice.
-  - README.txt             Root documentation file (readme file).
-  - INSTALL.txt            Build and installation instructions.
-
-  - CMakeLists.txt         Build configuration files.
-  - CTestConfig.cmake      Dashboard configuration file.
-  - CTestCustom.cmake.in   Test configuration file.
-@endverbatim
+<table>
+  <tr>
+    <th>File Name</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c AUTHORS.txt</td>
+    <td>Lists names of people who actively contributed to
+        the software package. The contributions of other
+        kind shall be acknowledged in the readme file.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c COPYING.txt</td>
+    <td>Copyright notice and software license text.</td>
+  </tr>
+  <tr>
+   <td style="padding-right: 1em">@c README.txt</td>
+   <td>Root documentation file (readme file).</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c INSTALL.txt</td>
+    <td>Build and installation instructions.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c CMakeLists.txt</td>
+    <td>Build configuration files.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c CTestConfig.cmake</td>
+    <td>Dashboard configuration file.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c CTestCustom.cmake.in</td>
+    <td>Test configuration file.</td>
+  </tr>
+</table>
 
 @section BuildTree Build Tree
 
@@ -192,25 +278,48 @@ CMake itself.
 @subsection BuildTreeHierarchy Filesystem Hierarchy
 
 @verbatim
-  - PROJECT_BINARY_DIR              - <build>/
-      + RUNTIME_OUTPUT_DIRECTORY        + bin/
-      + LIBRARY_OUTPUT_DIRECTORY        + lib/
-      + ARCHIVE_OUTPUT_DIRECTORY        + lib/
-      + TESTING_RUNTIME_DIR             + Testing/bin/
-      + TESTING_LIBRARY_DIR             + Testing/lib/
-      + TESTING_OUTPUT_DIR              + Testing/Temporary/
+- PROJECT_BINARY_DIR              - <build>/
+    + RUNTIME_OUTPUT_DIRECTORY        + bin/
+    + LIBRARY_OUTPUT_DIRECTORY        + lib/
+    + ARCHIVE_OUTPUT_DIRECTORY        + lib/
+    + TESTING_RUNTIME_DIR             + Testing/bin/
+    + TESTING_LIBRARY_DIR             + Testing/lib/
+    + TESTING_OUTPUT_DIR              + Testing/Temporary/
 @endverbatim
 
-@subsection BuildTreeDescription Description
+Following a description of the directories, where the names of the CMake
+variables defined by BASIS are used instead of the actual directory names:
 
-@verbatim
-  - RUNTIME_OUTPUT_DIRECTORY   All executables and shared libraries (Windows).
-  - LIBRARY_OUTPUT_DIRECTORY   Shared libraries (UNIX).
-  - ARCHIVE_OUTPUT_DIRECTORY   Static libraries and import libraries (Windows).
-  - TESTING_RUNTIME_DIR        Directory of test executables.
-  - TESTING_LIBRARY_DIR        Directory of libraries only used for testing.
-  - TESTING_OUTPUT_DIR         Directory used for test results.
-@endverbatim
+<table>
+  <tr>
+    <th>Directory Variable</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c RUNTIME_OUTPUT_DIRECTORY</td>
+    <td>All executables and shared libraries (Windows).</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c LIBRARY_OUTPUT_DIRECTORY</td>
+    <td>Shared libraries (UNIX).</td>
+  </tr>
+  <tr>
+   <td style="padding-right: 1em">@c ARCHIVE_OUTPUT_DIRECTORY</td>
+   <td>Static libraries and import libraries (Windows).</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c TESTING_RUNTIME_DIR</td>
+    <td>Directory of test executables.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c TESTING_LIBRARY_DIR</td>
+    <td>Directory of libraries only used for testing.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c TESTING_OUTPUT_DIR</td>
+    <td>Directory used for test results.</td>
+  </tr>
+</table>
 
 @section InstallTree Installation Tree
 
@@ -218,22 +327,29 @@ When installing the software package by building either the install target,
 extracting a binary distribution package, or running an installer of a binary
 distribution package, the following directory structure is used.
 
-@subsection InstallTreeOptions Options
+<table>
+  <tr>
+    <th>Option</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">@c INSTALL_PREFIX</td>
+    <td>Installation directories prefix (&lt;prefix&gt;).
+        Defaults to "/usr/local" on UNIX-based systems
+        and "C:\Program Files\SBIA" on Windows.
 
-@verbatim
-  - INSTALL_PREFIX   Installation directories prefix (<prefix>).
-                     Defaults to "/usr/local" on UNIX-based systems
-                     and "C:\Program Files\SBIA" on Windows.
-
-                     Note that this variable is initialized by the value
-                     of CMAKE_INSTALL_PREFIX, the default variable used
-                     by CMake. Once it is initialized, the value of CMake's
-                     CMAKE_INSTALL_PREFIX variable is forced to always
-                     reflect the value of this variable.
-
-  - INSTALL_SINFIX   Installation directories suffix or infix, respectively
-                     (<sinfix>). Defaults to "@PROJECT_NAME_LOWER@".
-@endverbatim
+        Note that this variable is initialized by the value
+        of @c CMAKE_INSTALL_PREFIX, the default variable used
+        by CMake. Once it is initialized, the value of CMake's
+        @c CMAKE_INSTALL_PREFIX variable is forced to always
+        reflect the value of this variable.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">@c INSTALL_SINFIX</td>
+    <td>Installation directories suffix or infix, respectively
+        (&lt;sinfix&gt;). Defaults to "@PROJECT_NAME_LOWER@".</td>
+  </tr>
+</table>
 
 In order to install different versions of a software, choose an installation
 prefix that includes the package name and software version, for example,
@@ -245,17 +361,17 @@ INSTALL_SINFIX should be set to an empty string.
 Based on above options, the installation directories are set as follows:
 
 @verbatim
-  - INSTALL_PREFIX                 - <prefix>/
-      + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix>/ (UNIX) | cmake/ (Windows)
-      + INSTALL_RUNTIME_DIR            + bin/<sinfix>/
-      + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/ | bin/<sinfix>/ (Windows)
-      + INSTALL_LIBRARY_DIR            + lib/<sinfix>/
-      + INSTALL_ARCHIVE_DIR            + lib/<sinfix>/
-      + INSTALL_INCLUDE_DIR            + include/sbia/<project>/
-      + INSTALL_SHARE_DIR              + share/
-          + INSTALL_DOC_DIR                + <sinfix>/doc/
-          + INSTALL_EXAMPLE_DIR            + <sinfix>/example/
-          + INSTALL_MAN_DIR                + <sinfix>/man/
+- INSTALL_PREFIX                 - <prefix>/
+    + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix>/ (UNIX) | cmake/ (Windows)
+    + INSTALL_RUNTIME_DIR            + bin/<sinfix>/
+    + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/ | bin/<sinfix>/ (Windows)
+    + INSTALL_LIBRARY_DIR            + lib/<sinfix>/
+    + INSTALL_ARCHIVE_DIR            + lib/<sinfix>/
+    + INSTALL_INCLUDE_DIR            + include/sbia/<project>/
+    + INSTALL_SHARE_DIR              + share/
+        + INSTALL_DOC_DIR                + <sinfix>/doc/
+        + INSTALL_EXAMPLE_DIR            + <sinfix>/example/
+        + INSTALL_MAN_DIR                + <sinfix>/man/
 @endverbatim
 
 Note that the include directory by intention always ends in "sbia/<project>",
@@ -266,45 +382,105 @@ such that header files of a project have to be included as follows:
 @endcode
 
 Hence, the include directory which is added to the search path has to be set
-to &lt;prefix&gt;/include/. 
+to <tt>&lt;prefix&gt;/include/</tt>. 
 
-@subsection InstallTreeDescription Description
+Following a description of the directories, where the names of the CMake
+variables defined by BASIS are used instead of the actual directory names:
 
-@verbatim
-  - INSTALL_CONFIG_DIR    CMake configuration files, i.e., <Project>Config.cmake
-                          et al. files are installed here.
-  - INSTALL_RUNTIME_DIR   Main executables and shared libraries on Windows.
-  - INSTALL_LIBEXEC_DIR   Utility executables which are called by other
-                          executables only.
-  - INSTALL_LIBRARY_DIR   Shared libraries on UNIX and module libraries.
-  - INSTALL_ARCHIVE_DIR   Static and import libraries on Windows.
-  - INSTALL_INCLUDE_DIR   Public header files of libraries.
-  - INSTALL_DOC_DIR       Readme file, licensing information, authors file,
-                          and other documentation files including the user
-                          manual are installed here.
-  - INSTALL_EXAMPLE_DIR   All data required to follow example as described
-                          in User Manual.
-  - INSTALL_MAN_DIR       Man pages are installed to this directory.
-      + man1/             Man pages of main executables.
-      + man3/             Man pages of libraries.
-  - INSTALL_SHARE_DIR     Shared package files including auxiliary data files
-                          such as pre-computed lookup tables and medical atlases.
-@endverbatim
+<table>
+  <tr>
+    <th>Directory Variable</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_CONFIG_DIR
+    </td>
+    <td>CMake configuration files, i.e., &lt;Project&gt;Config.cmake
+        et al. files are installed here.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_RUNTIME_DIR
+    </td>
+    <td>Main executables and shared libraries on Windows.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_LIBEXEC_DIR
+    </td>
+    <td>Utility executables which are called by other executables only.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_LIBRARY_DIR
+    </td>
+    <td>Shared libraries on UNIX and module libraries.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_ARCHIVE_DIR
+    </td>
+    <td>Static and import libraries on Windows.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_INCLUDE_DIR
+    </td>
+    <td>Public header files of libraries.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_DOC_DIR
+    </td>
+    <td>Readme file, licensing information, authors file, and other
+        documentation files including the user manual are installed here.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_EXAMPLE_DIR
+    </td>
+    <td>All data required to follow example as described in User Manual.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_MAN_DIR
+    </td>
+    <td>Man pages are installed to this directory.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      <tt>INSTALL_MAN_DIR/man1/</tt>
+    </td>
+    <td>Man pages of main executables.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      <tt>INSTALL_MAN_DIR/man3/</tt>
+    </td>
+    <td>Man pages of libraries.</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding-right: 1em">
+      @c INSTALL_SHARE_DIR
+    </td>
+    <td>Shared package files including auxiliary data files
+        such as pre-computed lookup tables and medical atlases.</td>
+  </tr>
+</table>
 
 @subsection InstallTreeLinks Links
 
 On UNIX-based systems, the following symbolic links are created when the option
-INSTALL_LINKS is set to TRUE. Note that the link creation will fail if a
+@c INSTALL_LINKS is set to @c TRUE. Note that the link creation will fail if a
 file or directory with the links' name already exists.  This is desired and
 will simply be reported to the user. If a symbolic name of the same name
 already exists, it is replaced however.
 
-- If INSTALL_RUNTIME_DIR != "<prefix>/bin" create symbolic links
+- If @c INSTALL_RUNTIME_DIR != "<prefix>/bin" create symbolic links
   "<prefix>/bin/<exec>" -> "INSTALL_RUNTIME_DIR/<exec>".
-
-- If INSTALL_DOC_DIR != "<prefix>/share/doc/<sinfix>" create symbolic link
+- If @c INSTALL_DOC_DIR != "<prefix>/share/doc/<sinfix>" create symbolic link
   "<prefix>/share/doc/<sinfix>/" -> "INSTALL_DOC_DIR".
-
-- If INSTALL_MAN_DIR != "<prefix>/share/man" create symbolic links
+- If @c INSTALL_MAN_DIR != "<prefix>/share/man" create symbolic links
   "<prefix>/share/man/man?/<name>.?" -> "INSTALL_MAN_DIR/man?/<name>.?".
 */
