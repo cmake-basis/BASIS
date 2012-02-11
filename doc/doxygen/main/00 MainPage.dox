@@ -28,7 +28,9 @@ and greatly improved it. See the @ref ProjectTemplate page
 of the @ref BuildSystemStandard for a description of the template.
 
 See the @ref ImplementationStandard for details on the standard for
-implementing software. @ref HowToGuides which help to understand
+implementing software.
+
+@ref HowToGuides which help to understand
 the standard and how to comply with it can be found here as well.
 
 Projects following the standard include the @ref BasisModules
