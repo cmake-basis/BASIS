@@ -11,7 +11,7 @@
 # place them in proper subdirectories which will be copied to the
 # @c DESTINATION directory of the basis_install() function.
 #
-# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

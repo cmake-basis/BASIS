@@ -5,7 +5,7 @@
 # This file is included by the BasisPack module prior to the CPack module.
 # It can be used to overwrite or extend the default package configuration.
 #
-# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

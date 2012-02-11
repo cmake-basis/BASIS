@@ -20,7 +20,7 @@
 # @note The CMake code which is substituted for the \@BASIS_USE\@ variable
 #       contains an include guard.
 #
-# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

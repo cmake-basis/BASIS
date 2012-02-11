@@ -5,7 +5,7 @@
   3600 Market Street, Suite 380
   Philadelphia, PA 19104
 
-  Web:   https://www.rad.upenn.edu/sbia/software/
+  Web:   http://www.rad.upenn.edu/sbia/software/
   Email: sbia-software at uphs.upenn.edu
 
   Copyright (c) 2011, University of Pennsylvania. All rights reserved.

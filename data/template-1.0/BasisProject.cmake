@@ -2,10 +2,13 @@
 # @file  BasisProject.cmake
 # @brief Meta-data of this BASIS project.
 #
-# This file defines project meta-data, i.e., attributes, which are used by
-# BASIS to setup the project. Moreover, if the project is a module of another
-# BASIS project, the dependencies to other modules have to be specified here
-# such that the top-level project can analyze the inter-module dependencies.
+# This file defines project meta-data by calling the basis_project() function.
+# This meta-data is used by BASIS to setup the project. Moreover, if the
+# project is a module of another BASIS project, the dependencies to other
+# modules have to be specified here such that the top-level project can analyze
+# the inter-module dependencies
+# (see page Project Modularization of BASIS documentation).
+#
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to
 # resolve external dependencies is to add the corresponding basis_find_package()
@@ -16,7 +19,7 @@
 # of the external package or the corresponding Find<Package>.cmake module,
 # add the related CMake code to the Settings.cmake file instead.
 #
-# Copyright (c) <year>, University of Pennsylvania. All rights reserved.
+# Copyright (c) <year>, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

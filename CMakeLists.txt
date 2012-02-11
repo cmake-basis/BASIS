@@ -7,7 +7,7 @@
 # CMake modules which implement this standard. Therefore, these modules are
 # considered the cornerstone of BASIS.
 #
-# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -44,7 +44,7 @@ cmake_minimum_required (VERSION 2.8.4)
 # modified, which has to be done with care, however, in any case and should
 # be avoided.
 
-set (TEMPLATE_VERSION "1.0")
+set (TEMPLATE_VERSION 1.0)
 
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
