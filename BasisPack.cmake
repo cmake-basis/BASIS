@@ -26,8 +26,8 @@
 # @sa CPack.cmake
 # @sa http://www.vtk.org/Wiki/CMake:Component_Install_With_CPack#Component-Based_Installers_with_CPack
 #
-# Copyright (c) 2011 Univeristy of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011-2012 Univeristy of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #

@@ -28,11 +28,9 @@
 #     MY_C_EDGES     a b
 #
 #  With the involcation of topological_sort shown above and these
-#  variables, the resulting reverse topological ordering will be b, a,
-#  c.
+#  variables, the resulting reverse topological ordering will be b, a, c.
 #
-# @ingroup CMakeUtilities
-
+# @verbatim
 ##############################################################################
 # Modified from Boost Utilities
 #
@@ -66,6 +64,10 @@
 # FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
+##############################################################################
+# @endverbatim
+#
+# @ingroup CMakeUtilities
 ##############################################################################
 
 function(topological_sort LIST PREFIX SUFFIX)

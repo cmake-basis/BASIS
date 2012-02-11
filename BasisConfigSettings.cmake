@@ -6,7 +6,7 @@
 # substituted in the Config.cmake.in template file in order to distinguish
 # these variables from the build configuration.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+# Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
 # See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -27,6 +27,7 @@ if (INCLUDE_DIRS)
   list (REMOVE_DUPLICATES INCLUDE_DIRS)
 endif ()
 
+## @brief Include directories of dependencies.
 set (INCLUDE_DIRS_CONFIG "\${\${NS}INCLUDE_DIR}")
 foreach (D IN LISTS INCLUDE_DIRS)
   # exclude project own directories
@@ -41,6 +42,7 @@ if (LIBRARY_DIRS)
   list (REMOVE_DUPLICATES LIBRARY_DIRS)
 endif ()
 
+## @brief Directories of libraries this package depends on.
 set (LIBRARY_DIRS_CONFIG "\${\${NS}LIBRARY_DIR}")
 foreach (D IN LISTS LIBRARY_DIRS)
   # exclude project own directories
@@ -76,9 +78,15 @@ basis_get_relative_path (
     "${INSTALL_PREFIX}"
 )
 
+## @brief Installation prefix.
 set (INSTALL_PREFIX_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${INSTALL_PREFIX_CONFIG}")
+## @brief Include directories.
 set (INCLUDE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}")
+## @brief Directory where libraries are located.
 set (LIBRARY_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}")
+## @brief Directory of Python modules.
 set (PYTHON_LIBRARY_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_PYTHON_LIBRARY_DIR}")
+## @brief Directory of Perl modules.
 set (PERL_LIBRARY_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_PERL_LIBRARY_DIR}")
+## @brief Directory of CMake package configuration files of project modules.
 set (MODULES_DIR_CONFIG "${INSTALL_CONFIG_DIR}")

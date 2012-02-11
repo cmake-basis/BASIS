@@ -4,8 +4,8 @@
 #
 # @note The automatic file update works well and the implementation is fine.
 #       However, its use became more and more obsolete during the enhancement
-#       of BASIS and the development of a more advanced BASIS project
-#       management tool. Moreover, the update of project files during the
+#       of BASIS and the development of a more advanced project tool
+#       (basisproject.py). Moreover, the update of project files during the
 #       configuration of the build system was controversy.
 #
 # This file provides functions which implement the automatic file update
@@ -47,8 +47,8 @@
 # source directory in @c BASIS_UPDATE_EXCLUDE are excluded from the automatic file
 # update.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
@@ -79,7 +79,7 @@ mark_as_advanced (BASIS_UPDATE_AUTO)
 # ============================================================================
 
 include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/SubversionTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/RevisionTools.cmake")
 
 # ============================================================================
 # required commands

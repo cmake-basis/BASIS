@@ -20,13 +20,14 @@
 /**
 @defgroup BasisDirectories Project Directories
 @brief    CMake variables of project directories.
+          See @ref FilesystemHierarchyStandard of BASIS.
 
 @ingroup BasisModules
 */
 
 /**
 @defgroup BasisScriptConfig Script Configuration
-@brief    Script configuration as used for build of script targets.
+@brief    Script configuration as used for the @ref BuildOfScriptTargets.
 
 @ingroup BasisModules
 */

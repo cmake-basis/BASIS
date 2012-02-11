@@ -2,8 +2,8 @@
 # @file  CommonTools.cmake
 # @brief Definition of common CMake functions.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.
-# See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
@@ -919,6 +919,8 @@ endfunction ()
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
+#
+# @sa basis_get_target_uid()
 macro (basis_make_target_uid TARGET_UID TARGET_NAME)
   set ("${TARGET_UID}" "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
   # strip off top-level namespace part (optional)
@@ -1123,6 +1125,8 @@ endfunction ()
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
+#
+# @sa basis_get_test_uid()
 macro (basis_make_test_uid TEST_UID TEST_NAME)
   basis_make_target_uid ("${TEST_UID}" "${TEST_NAME}")
 endmacro ()
