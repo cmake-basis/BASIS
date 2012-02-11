@@ -1,5 +1,7 @@
-# - Find an ITK installation or build tree.
-
+##############################################################################
+# @file  FindITK.cmake
+# @brief Find an ITK installation or build tree.
+#
 # When ITK is found, the ITKConfig.cmake file is sourced to setup the
 # location and configuration of ITK.  Please read this file, or
 # ITKConfig.cmake.in from the ITK source tree for the full list of
@@ -7,51 +9,58 @@
 # that can be included to set the include directories, library directories,
 # and preprocessor macros.  In addition to the variables read from
 # ITKConfig.cmake, this find module also defines
-#  ITK_DIR  - The directory containing ITKConfig.cmake.  
-#             This is either the root of the build tree, 
-#             or the lib/InsightToolkit directory.  
-#             This is the only cache entry.
-#   
-#  ITK_FOUND - Whether ITK was found.  If this is true, 
-#              ITK_DIR is okay.
 #
-#  USE_ITK_FILE - The full path to the UseITK.cmake file.  
-#                 This is provided for backward 
-#                 compatability.  Use ITK_USE_FILE
-#                 instead.
-
-#=============================================================================
-#CMake - Cross Platform Makefile Generator
-#Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
-#All rights reserved.
+# @par Output variables:
+# <table border="0">
+#   <tr>
+#     @tp @b ITK_DIR @endtp
+#     <td>The directory containing ITKConfig.cmake.  
+#         This is either the root of the build tree, 
+#         or the lib/InsightToolkit directory.  
+#         This is the only cache entry.</td>
+#   </tr>
+#   <tr>
+#     @tp @b ITK_FOUND @endtp
+#     <td>Whether ITK was found.  If this is true, @c ITK_DIR is okay.</td>
+#   </tr>
+#   <tr>
+#     @tp @b USE_ITK_FILE @endtp
+#     <td>The full path to the <tt>UseITK.cmake</tt> file.  
+#         This is provided for backward 
+#         compatability. Use @c ITK_USE_FILE instead.</td>
 #
-#Redistribution and use in source and binary forms, with or without
-#modification, are permitted provided that the following conditions
-#are met:
+# @verbatim
+# CMake - Cross Platform Makefile Generator
+# Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
+# All rights reserved.
 #
-#* Redistributions of source code must retain the above copyright
-#  notice, this list of conditions and the following disclaimer.
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
 #
-#* Redistributions in binary form must reproduce the above copyright
-#  notice, this list of conditions and the following disclaimer in the
-#  documentation and/or other materials provided with the distribution.
+# * Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
 #
-#* Neither the names of Kitware, Inc., the Insight Software Consortium,
-#  nor the names of their contributors may be used to endorse or promote
-#  products derived from this software without specific prior written
-#  permission.
+# * Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-#"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-#LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-#A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-#HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-#SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-#LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-#DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-#THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-#(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-#OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# * Neither the names of Kitware, Inc., the Insight Software Consortium,
+#   nor the names of their contributors may be used to endorse or promote
+#   products derived from this software without specific prior written
+#   permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #------------------------------------------------------------------------------
 #
@@ -77,7 +86,10 @@
 #   Grant U54 EB005149.
 #
 # * Kitware, Inc.
-#=============================================================================
+# @endverbatim
+#
+# @ingroup CMakeFindModules
+##############################################################################
 
 # Use the Config mode of the find_package() command to find ITKConfig.
 # If this succeeds (possibly because ITK_DIR is already set), the

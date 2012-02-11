@@ -1,9 +1,17 @@
-# - Find BLAS library
+##############################################################################
+# @file  FindBLAS.cmake
+# @brief Find BLAS library.
+#
 # This module finds an installed fortran library that implements the BLAS
 # linear-algebra interface (see http://www.netlib.org/blas/).
 # The list of libraries searched for is taken
 # from the autoconf macro file, acx_blas.m4 (distributed at
 # http://ac-archive.sourceforge.net/ac-archive/acx_blas.html).
+#
+# Modified by Andreas Schuh to enable the use at SBIA, where an ATLAS C library
+# is installed which contains the symbols without trailing _ character, i.e.,
+# instead of checking the existence of the cblas_dgemm_ function, the
+# existence of the cblas_dgemm function has to be checked.
 #
 # This module sets the following variables:
 #  BLAS_FOUND - set to true if a library implementing the BLAS interface
@@ -20,13 +28,13 @@
 #  BLA_VENDOR  if set checks only the specified vendor, if not set checks
 #     all the possibilities
 #  BLA_F95     if set on tries to find the f95 interfaces for BLAS/LAPACK
-##########
-### List of vendors (BLA_VENDOR) valid in this module
-##  ATLAS, PhiPACK,CXML,DXML,SunPerf,SCSL,SGIMATH,IBMESSL,Intel10_32 (intel mkl v10 32 bit),Intel10_64lp (intel mkl v10 64 bit,lp thread model, lp64 model),
-##  Intel( older versions of mkl 32 and 64 bit), ACML,ACML_MP,Apple, NAS, Generic
+#
+# List of vendors (BLA_VENDOR) valid in this module
+# ATLAS, PhiPACK,CXML,DXML,SunPerf,SCSL,SGIMATH,IBMESSL,Intel10_32 (intel mkl v10 32 bit),Intel10_64lp (intel mkl v10 64 bit,lp thread model, lp64 model),
+# Intel( older versions of mkl 32 and 64 bit), ACML,ACML_MP,Apple, NAS, Generic
 # C/CXX should be enabled to use Intel mkl
-
-# ============================================================================
+#
+# @verbatim
 # Copyright 2007-2009 Kitware, Inc.
 # All rights reserved.
 #
@@ -57,14 +65,10 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# ============================================================================
-
-# ============================================================================
-# Modified by Andreas Schuh to enable the use at SBIA, where an ATLAS C library
-# is installed which contains the symbols without trailing _ character, i.e.,
-# instead of checking the existence of the cblas_dgemm_ function, the
-# existence of the cblas_dgemm function has to be checked.
-# ============================================================================
+# @endverbatim
+#
+# @ingroup CMakeFindModules
+##############################################################################
 
 include(CheckFunctionExists)
 include(CheckFortranFunctionExists)
