@@ -223,8 +223,9 @@ variables defined by BASIS are used instead of the actual directory names:
   </tr>
   <tr>
     <td style="padding-right: 1em">@c PROJECT_MODULES_DIR</td>
-    <td>Project modules, i.e., conceptual cohesive subprojects, each
-        residing in its own subdirectory named after the module.</td>
+    <td>@ref ProjectModules "Project Modules", i.e., conceptual
+        cohesive components, each residing in its own subdirectory
+        named after the module.</td>
   </tr>
   <tr>
     <td style="padding-right: 1em">@c PROJECT_TESTING_DIR</td>
