@@ -80,7 +80,8 @@ in the top directory of the source tree. Specifically, the argument for the
 Hence, in order to modify an existing project, the <tt>--name</tt> and
 <tt>--description</tt> options cannot be used. Instead, use the <tt>--root</tt>
 option to specify the root directory of the source tree of the project you want
-to modify.
+to modify or run the command without either of these options with the root directory
+as current working directory.
 
 @subsection HowToAddFeaturesToProject Adding Features
 
@@ -101,7 +102,7 @@ directory in which these auxiliary files should be stored in the source tree usi
 the command
 
 @code
-basisproject --root <source> --data
+basisproject --data
 @endcode
 
 As another example, if you want to extend the default
@@ -111,7 +112,7 @@ of scripts written in Python, Perl, BASH, or any other scripting language
 use the command
 
 @code
-basisproject --root <source> --config-script
+basisproject --config-script
 @endcode
 
 @subsection HowToRemoveFeaturesFromProject Removing Features
@@ -120,7 +121,7 @@ In order to remove the <tt>conf/Settings.cmake</tt> file and the <tt>example/</t
 directory tree, run the command
 
 @code
-basisproject --root <source> --noconfig-settings --noexample
+basisproject --noconfig-settings --noexample
 @endcode
 
 If any of the project files which were initially added during the project creation
@@ -163,7 +164,7 @@ on ITK, which also includes the so-called Use file of ITK (<tt>UseITK.cmake</tt>
 to import its build configuration, run the command
 
 @code
-basisproject --root <source> --use ITK
+basisproject --use ITK
 @endcode
 
 If your project can optionally make use of the features of a certain external software
@@ -180,7 +181,7 @@ Therefore, as CMake includes already a <tt>FindCUDA.cmake</tt> module, we can ru
 following command in order to have CMake look for an installation of the CUDA libraries.
 
 @code
-basisproject --root <source> --useopt CUDA
+basisproject --useopt CUDA
 @endcode
 
 If this search was successful, the CMake variable <tt>CUDA_FOUND</tt> will be TRUE,
@@ -196,7 +197,7 @@ a MATLAB installation and furthermore looks for executables required by BASIS,
 such as in particular <tt>matlab</tt>, <tt>mcc</tt>, and <tt>mex</tt>.
 Use the following command to add a dependency on MATLAB:
 @code
-basisproject --root <source> --use MATLAB
+basisproject --use MATLAB
 @endcode
 
 @subsection HowToRemoveDependencies Removing Dependencies
