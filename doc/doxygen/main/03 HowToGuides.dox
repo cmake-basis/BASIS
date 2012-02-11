@@ -16,4 +16,5 @@
 - @subpage HowToDocument
 - @subpage HowToBranchAndRelease
 - @subpage HowToPackage
+- @subpage HowToRunAutomatedTests
 */
