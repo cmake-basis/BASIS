@@ -181,9 +181,10 @@ are listed.
 - PROJECT_SOURCE_DIR              - <source>/
     + PROJECT_CODE_DIR                + src/
     + PROJECT_CONFIG_DIR              + config/
-    + PROJECT_DOC_DIR                 + doc/
     + PROJECT_DATA_DIR                + data/
+    + PROJECT_DOC_DIR                 + doc/
     + PROJECT_EXAMPLE_DIR             + example/
+    + PROJECT_MODULES_DIR             + modules/
     + PROJECT_TESTING_DIR             + test/
 @endverbatim
 
@@ -200,12 +201,12 @@ variables defined by BASIS are used instead of the actual directory names:
     <td>Root directory of source tree.</td>
   </tr>
   <tr>
-    <td style="padding-right: 1em">@c PROJECT_CONFIG_DIR</td>
-    <td>BASIS configuration files.</td>
-  </tr>
-  <tr>
    <td style="padding-right: 1em">@c PROJECT_CODE_DIR</td>
    <td>All source code files.</td>
+  </tr>
+  <tr>
+    <td style="padding-right: 1em">@c PROJECT_CONFIG_DIR</td>
+    <td>BASIS configuration files.</td>
   </tr>
   <tr>
     <td style="padding-right: 1em">@c PROJECT_DATA_DIR</td>
@@ -213,12 +214,17 @@ variables defined by BASIS are used instead of the actual directory names:
         atlases.</td>
   </tr>
   <tr>
+    <td style="padding-right: 1em">@c PROJECT_DOC_DIR</td>
+    <td>Software documentation.</td>
+  </tr>
+  <tr>
     <td style="padding-right: 1em">@c PROJECT_EXAMPLE_DIR</td>
     <td>Example application of software.</td>
   </tr>
   <tr>
-    <td style="padding-right: 1em">@c PROJECT_DOC_DIR</td>
-    <td>Software documentation.</td>
+    <td style="padding-right: 1em">@c PROJECT_MODULES_DIR</td>
+    <td>Project modules, i.e., conceptual cohesive subprojects, each
+        residing in its own subdirectory named after the module.</td>
   </tr>
   <tr>
     <td style="padding-right: 1em">@c PROJECT_TESTING_DIR</td>
