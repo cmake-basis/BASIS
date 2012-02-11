@@ -81,7 +81,7 @@ function print_contact
 # execute_process ls /not/existing
 # # to prevent this, provide the --allow_fail option
 # execute_process --allow_fail ls /not/existing
-# # to make it more explicit where the command-line to execute starts, use --
+# # to make it explicit where the command-line to execute starts, use --
 # execute_process --allow_fail -- ls /not/existing
 # @endcode
 #

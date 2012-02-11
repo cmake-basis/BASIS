@@ -94,12 +94,9 @@ function match
 # This function can be used inside functions to return values by assigning
 # them to a variable in the scope of the caller.
 #
-# @note For assigning multiple variables, use 'upvars'. Do NOT use multiple
-#       'upvar' calls, since one 'upvar' call might reassign a variable to
-#       be used by another 'upvar' call.
-#
-# @sa upvars()
-# @sa http://fvue.nl/wiki/Bash:_Passing_variables_by_reference
+# @note For assigning multiple variables, use upvars(). Do NOT use multiple
+#       upvar() calls, since one upvar() call might reassign a variable to
+#       be used by another upvar() call.
 #
 # Example:
 # @code
@@ -108,13 +105,13 @@ function match
 #     local "$1" && upvar $1 "Hello, World!"
 # }
 #
-# @todo Under some circumstances, the 'local "$1" &&' part of the
-#       usage example has to be skipped. It is not yet clear what
-#       the correct solution/usage really is...
-#
 # foo greeting
 # echo ${greeting}
 # @endcode
+#
+# @todo Under some circumstances, the 'local "$1" &&' part of the
+#       upvar() usage example has to be skipped. It is not yet clear what
+#       the correct solution/usage really is...
 #
 # @param [in] var    Variable name to assign value to
 # @param [in] values Value(s) to assign. If multiple values, an array is
@@ -124,6 +121,9 @@ function match
 #
 # @retval 0 On success.
 # @retval 1 On failure.
+#
+# @sa upvars()
+# @sa http://fvue.nl/wiki/Bash:_Passing_variables_by_reference
 function upvar
 {
     if unset -v "$1"; then           # Unset & validate varname
@@ -138,16 +138,18 @@ function upvar
 # ----------------------------------------------------------------------------
 ## @brief Assign variables one scope above the caller.
 #
-# @sa http://fvue.nl/wiki/Bash:_Passing_variables_by_reference
+# @par Synopsis
+# local varname [varname ...] && 
+# upvars [-v varname value] | [-aN varname [value ...]] ...
 #
-# Usage: local varname [varname ...] && 
-#        upvars [-v varname value] | [-aN varname [value ...]] ...
-# Available OPTIONS:
-#     -aN  Assign next N values to varname as array
-#     -v   Assign single value to varname
+# @par Options:
+# - -aN  Assign next N values to varname as array
+# - -v   Assign single value to varname#
 #
 # @retval 0 On success.
 # @retval 1 On failure.
+#
+# @sa http://fvue.nl/wiki/Bash:_Passing_variables_by_reference
 function upvars
 {
     if ! (( $# )); then
@@ -244,8 +246,8 @@ function basis_array_to_quoted_string
 # @code
 # str="'this' 'isn\'t' a \"simple example of \\\"a quoted\\\"\" 'string'"
 # basis_split array "${str}"
-# echo ${#array[@]} # 5
-# echo "${array[3]}"  # simple example of "a quoted"
+# echo ${#array[@]}  # 5
+# echo "${array[3]}" # simple example of "a quoted"
 # @endcode
 #
 # @param [out] var Result variable for array.
