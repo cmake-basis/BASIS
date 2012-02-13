@@ -212,7 +212,8 @@ The testing scripts described above are then installed in the directory
 @subsection UpdateOfAutomatedTestingInstallation Updating the BASIS Installation
 
 In order to update the testing scripts, run the following commands as
-the <tt>swtest</tt> user.
+the <tt>swtest</tt> user on <tt>olympus</tt> (this is important because the
+cron job which executes the tests will run on <tt>olympus</tt>).
 
 @code
 cd
