@@ -1,0 +1,168 @@
+#! /usr/bin/env python
+
+##############################################################################
+# @file  test_basisproject.py
+# @brief Test basisproject command-line tool.
+#
+# Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+import sys
+import re
+sys.path.insert(0, '@BINARY_PYTHON_LIBRARY_DIR@')
+sys.path.insert(0, '@TESTING_PYTHON_LIBRARY_DIR@')
+from sbia.basis.testaux import *
+
+# ============================================================================
+# tests
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# positive tests
+# ----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+def test_minimal_empty_project(verbose=0):
+    """Test creation of project based on minimal configuration."""
+    print "------------------------------------------------------------------------------"
+    print "test_minimal_empty_project:"
+    print
+    create_project('TestProject', '--minimal')
+    build_project(verbose)
+    print
+    print "SUCCESS"
+
+# ----------------------------------------------------------------------------
+def test_standard_empty_project(verbose=0):
+    """Test creation of project based on standard configuration."""
+    print "------------------------------------------------------------------------------"
+    print "test_standard_empty_project:"
+    print
+    create_project('TestProject', '--standard')
+    build_project(verbose)
+    print
+    print "SUCCESS"
+
+# ----------------------------------------------------------------------------
+def test_full_empty_project(verbose=0):
+    """Test creation of project based on full configuration."""
+    print "------------------------------------------------------------------------------"
+    print "test_full_empty_project:"
+    print
+    create_project('TestProject', '--full')
+    build_project(verbose)
+    print
+    print "SUCCESS"
+
+# ----------------------------------------------------------------------------
+def test_minimal_to_standard_empty_project(verbose=0):
+    """Update minimal to standard empty project."""
+    print "------------------------------------------------------------------------------"
+    print "test_minimal_to_standard_empty_project:"
+    print
+    create_project('TestProject', '--minimal')
+    update_project('TestProject', '--standard')
+    build_project(verbose)
+    print
+    print "SUCCESS"
+
+# ----------------------------------------------------------------------------
+def test_minimal_to_full_empty_project(verbose=0):
+    """Update minimal to full empty project."""
+    print "------------------------------------------------------------------------------"
+    print "test_minimal_to_full_empty_project:"
+    print
+    create_project('TestProject', '--minimal')
+    update_project('TestProject', '--full')
+    build_project(verbose)
+    print
+    print "SUCCESS"
+
+# ----------------------------------------------------------------------------
+def test_full_to_minimal_empty_project(verbose=0):
+    """Update full to minimal empty project."""
+    print "------------------------------------------------------------------------------"
+    print "test_full_to_minimal_empty_project:"
+    print
+    create_project('TestProject', '--full')
+    update_project('TestProject', '--minimal')
+    build_project(verbose)
+    print
+    print "SUCCESS"
+
+# ----------------------------------------------------------------------------
+def test_configuration_of_dependencies(verbose=0):
+    """Test configuration of dependencies."""
+    print "------------------------------------------------------------------------------"
+    print "test_configuration_of_dependencies:"
+    print
+    create_project('TestProject', '--full', use=['ITK'])
+    fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), 'rt')
+    code = fp.read()
+    fp.close()
+    if not re.search('\s+DEPENDS\s+ITK\s+#<dependency>', code):
+        sys.stderr.write("Failed to add required dependency to BasisProject.cmake file\n")
+        print
+        print "FAILED"
+        sys.exit(1)
+    update_project('TestProject', use=['VTK'], useopt=['CUDA'])
+    fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), 'rt')
+    code = fp.read()
+    fp.close()
+    if (not re.search('\s+DEPENDS\s+ITK\s+VTK\s+#<dependency>', code) or
+            not re.search('\s+OPTIONAL_DEPENDS\s+CUDA\s+#<optional-dependency>', code)):
+        sys.stderr.write("Failed to add required dependency to BasisProject.cmake file\n")
+        print
+        print "FAILED"
+        sys.exit(1)
+    print
+    print "SUCCESS"
+
+# ----------------------------------------------------------------------------
+# negative tests
+# ----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+def test_required_arguments(verbose=0):
+    """Test error when required arguments are missing."""
+    print "------------------------------------------------------------------------------"
+    print "test_required_arguments:"
+    print
+    if basis.execute_process('basis.basisproject',
+            allow_fail=True, verbose=True) == 0:
+        raise Exception('Expected non-zero return code')
+    if basis.execute_process('basis.basisproject --name TestProject',
+            allow_fail=True, verbose=True) == 0:
+        raise Exception('Expected non-zero return code')
+    if basis.execute_process('basis.basisproject --description noname',
+            allow_fail=True, verbose=True) == 0:
+        raise Exception('Expected non-zero return code')
+    print
+    print "SUCCESS"
+
+# ============================================================================
+# main
+# ============================================================================
+
+if __name__ == '__main__':
+    # parse arguments
+    verbose = 0
+    opts = parse_arguments()
+    for o, a in opts:
+        if o in ['--verbose', '-v']: verbose += 1
+        else: assert False, "Unhandled option " + o
+    # positive tests
+    test_minimal_empty_project(verbose=verbose)
+    test_standard_empty_project(verbose=verbose)
+    test_full_empty_project(verbose=verbose)
+    test_minimal_to_standard_empty_project(verbose=verbose)
+    test_minimal_to_full_empty_project(verbose=verbose)
+    test_full_to_minimal_empty_project(verbose=verbose)
+    test_configuration_of_dependencies(verbose=verbose)
+    # negative tests
+    test_required_arguments(verbose=verbose)
+    # clean up
+    cleanup()

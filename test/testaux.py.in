@@ -56,21 +56,42 @@ def parse_arguments(flags='v', options=['verbose'], allow_args=False):
     else: return opts
 
 # ----------------------------------------------------------------------------
-def create_project(name, description='Test project.', use=[], useopt=[]):
+def create_project(name, *args, **kwargs):
     "Create test project."
     print "Creating test project..."
+    description = kwargs.get('description', 'This is a test project.')
+    use = kwargs.get('use', [])
+    useopt = kwargs.get('useopt', [])
     if os.path.exists(SOURCE_DIR): shutil.rmtree(SOURCE_DIR)
     # attention: changing the project name will affect the tests!
     create_cmd = ['basis.basisproject',
             '--name', name,
             '--description', description,
             '--root', SOURCE_DIR]
+    create_cmd.extend(args)
     for pkg in use:
         create_cmd.extend(['--use', pkg])
     for pkg in useopt:
         create_cmd.extend(['--useopt', pkg])
     basis.execute_process(create_cmd, verbose=True)
     print "Creating test project... - done"
+
+# ----------------------------------------------------------------------------
+def update_project(name, *args, **kwargs):
+    "Update test project."
+    print "Updating test project..."
+    use = kwargs.get('use', [])
+    useopt = kwargs.get('useopt', [])
+    if not os.path.isdir(SOURCE_DIR):
+        raise Exception("Cannot update non-existing project in %s" % SOURCE_DIR)
+    update_cmd = ['basis.basisproject', '--root', SOURCE_DIR]
+    update_cmd.extend(args)
+    for pkg in use:
+        update_cmd.extend(['--use', pkg])
+    for pkg in useopt:
+        update_cmd.extend(['--useopt', pkg])
+    basis.execute_process(update_cmd, verbose=True)
+    print "Updating test project... - done"
 
 # ----------------------------------------------------------------------------
 def build_project(verbose=0):
@@ -121,9 +142,9 @@ def add_dependency(package, required=True):
     code = fp.read()
     fp.close()
     if required:
-        code = code.replace('#AddDependencyHere', package + ' #AddDependencyHere')
+        code = code.replace('#<dependency>', package + '\n    #<dependency>')
     else:
-        code = code.replace('#AddOptionalDependencyHere', package + ' #AddOptionalDependencyHere')
+        code = code.replace('#<optional-dependency>', package + '\n    #<optional-dependency>')
     fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "w")
     fp.write(code)
     fp.close()
