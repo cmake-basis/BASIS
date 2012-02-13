@@ -687,6 +687,8 @@ class ArgumentError(Exception):
     information about the argument that caused it.
     """
 
+    message = '' # to avoid deprecation warning since Python 2.6
+
     def __init__(self, argument, message):
         self.argument_name = _get_action_name(argument)
         self.message = message
