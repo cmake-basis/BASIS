@@ -820,18 +820,21 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # --------------------------------------------------------------------------
   # build and install API documentation
   if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
-    if (RT EQUAL 0)
-      if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
-        execute_process (
-          COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                      "${CTEST_BINARY_DIRECTORY}/doc/api/html"
-                      "${INSTALL_DOXYGEN_DIR}/html"
-        )
+    if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
+      execute_process (
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                    "${CTEST_BINARY_DIRECTORY}/doc/api/html"
+                    "${INSTALL_DOXYGEN_DIR}/html"
+        RETURN_VALUE RT
+      )
+      if (RT EQUAL 0)
         message ("Copied API documentation to ${INSTALL_DOXYGEN_DIR}.")
       else ()
-        message ("Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
-        message ("Skipped copying of API documentation.")
+        message ("Failed to install API documentation to ${INSTALL_DOXYGEN_DIR}!")
       endif ()
+    else ()
+      message ("Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
+      message ("Skipped installation of API documentation.")
     endif ()
   endif ()
 
