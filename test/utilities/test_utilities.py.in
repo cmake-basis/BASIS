@@ -32,8 +32,7 @@ if __name__ == '__main__':
         if o in ['--verbose', '-v']: verbose = verbose + 1
         else: assert False, "Unhandled option " + o
     # create project
-    create_project('UtilitiesTest',
-            description='Used to test the BASIS utilities.')
+    create_project('UtilitiesTest', description='Test of BASIS utilities.')
     # copy files to project
     add_file('helloworld.cxx', prefix='src') # example executable
     if '@TEST_CXX_UTILITIES@' == 'ON': # tests of C++ utilities

@@ -131,7 +131,10 @@ def add_file(file, prefix='.', name=None):
     
     """
     if not name: name = os.path.basename(file)
-    dst = os.path.join(SOURCE_DIR, prefix, os.path.dirname(file), name)
+    dstdir = os.path.join(SOURCE_DIR, prefix, os.path.dirname(file))
+    if not os.path.isdir(dstdir):
+        os.makedirs(dstdir)
+    dst = os.path.join(dstdir, name)
     shutil.copy(os.path.join(RESSOURCES_DIR, file), dst)
     print "Added file " + dst
 

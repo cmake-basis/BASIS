@@ -61,7 +61,7 @@ def get_template_options(op=None):
             'include'             : op, # add/remove public includes tree
             'src'                 : op, # add/remove directory for source files
             'modules'             : op, # add/remove support for modularization
-            'tests'               : op} # add/remove testing configuration file
+            'test'                : op} # add/remove testing configuration file
  
 # ----------------------------------------------------------------------------
 def get_standard_template_options(opts, overwrite=False):
@@ -78,7 +78,7 @@ def get_standard_template_options(opts, overwrite=False):
     if overwrite or opts.get('doc')                 == None: opts['doc'] = ADD
     if overwrite or opts.get('example')             == None: opts['example'] = ADD
     if overwrite or opts.get('include')             == None: opts['include'] = DEL
-    if overwrite or opts.get('tests')               == None: opts['tests'] = ADD
+    if overwrite or opts.get('test')                == None: opts['test'] = ADD
     if (overwrite
             or (opts.get('src') == None and opts.get('modules') == None)
             or (opts.get('src') == None and opts.get('modules') == DEL)
