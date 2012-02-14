@@ -80,13 +80,13 @@ sub print_version
     print $name, " (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@";
     # copyright notice
     if (defined $copyright) {
-        print $copyright, '\n' unless $copyright == '';
+        print $copyright, "\n" unless $copyright == '';
     } else {
         print "Copyright (c) University of Pennsylvania. All rights reserved.\n";
     }
     # license information
     if (defined $license) {
-        print $license, '\n' unless $license == '';
+        print $license, "\n" unless $license == '';
     } else {
         print "See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n";
     }
@@ -104,9 +104,9 @@ sub print_contact
     if (defined $contact) {
         print $contact
     } else {
-        print "SBIA Group <sbia-software at uphs.upenn.edu"
+        print "SBIA Group <sbia-software at uphs.upenn.edu>"
     }
-    print '\n';
+    print "\n";
 }
 
 # ============================================================================
@@ -138,8 +138,8 @@ sub print_contact
 #                        stdout of parent process.
 # @param [in] stdout     Whether to return the command output.
 # @param [in] allow_fail If true, does not raise an exception if return
-#                        value is non-zero. Otherwise, a SubprocessError is
-#                        raised by this function.
+#                        value is non-zero. Otherwise, an exception is
+#                        raised by this function using die.
 # @param [in] verbose    Verbosity of output messages.
 #                        Does not affect verbosity of executed command.
 # @param [in] simulate   Whether to simulate command execution only.
