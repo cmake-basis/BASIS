@@ -821,10 +821,14 @@ if (FORCE_BUILD OR UPDATED_FILES)
   # build and install API documentation
   if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
     if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
+      if (EXISTS "${INSTALL_DOXYGEN_DIR}/html")
+        file (REMOVE_RECURSE "${INSTALL_DOXYGEN_DIR}/html")
+      endif ()
       execute_process (
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory
+        COMMAND "${CMAKE_COMMAND}" "-E" "copy_directory"
                     "${CTEST_BINARY_DIRECTORY}/doc/api/html"
                     "${INSTALL_DOXYGEN_DIR}/html"
+        WORKING_DIRECTORY "${CTEST_BINARY_DIRECTORY}"
         RETURN_VALUE RT
       )
       if (RT EQUAL 0)
