@@ -180,7 +180,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
     int status = 0;
     Subprocess p;
     if (quiet && out == NULL) {
-        if (!p.popen(args, Subprocess::RM_NONE, Subprocess::RM_NONE, Subprocess::RM_NONE)) {
+        if (!p.popen(args, Subprocess::RM_NONE, Subprocess::RM_PIPE, Subprocess::RM_STDOUT)) {
             BASIS_THROW(SubprocessException, "execute_process(): Failed to create subprocess");
         }
     } else {
