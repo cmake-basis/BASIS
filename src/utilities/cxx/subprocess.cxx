@@ -448,9 +448,7 @@ bool Subprocess::popen(const CommandLine& args,
         }
         execvp(argv[0], argv);
 
-        cerr << "Subprocess::popen(): Failed to execute command!" << endl;
-
-        // we should have never got here...
+        // command not found
         delete [] argv;
 
         exit(EXIT_FAILURE);
