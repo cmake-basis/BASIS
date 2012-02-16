@@ -52,7 +52,7 @@ sub which {
                     IS_DOS
                     and
                     grep {
-                        $file =~ /$_\z/i
+                        $exec =~ /$_\z/i
                     } @PATHEXT[1..$#PATHEXT]
                 )
                 # DOSish systems don't pass -x on
