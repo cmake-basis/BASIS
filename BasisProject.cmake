@@ -18,6 +18,23 @@
 # of the external package or the corresponding Find<Package>.cmake module,
 # add the related CMake code to the Settings.cmake file instead.
 #
+# Example:
+# @code
+# basis_project (
+#   NAME        "MyProject"
+#   VERSION     "1.1.5"
+#   DESCRIPTION "This is the description of the project named"
+#               " MyProject which follows BASIS."
+#   DEPENDS
+#     NiftiCLib
+#     Python
+#   OPTIONAL_DEPENDS
+#     MPI
+#   TEST_DEPENDS
+#     Perl
+# )
+# @endcode
+#
 # Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
