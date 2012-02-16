@@ -11,6 +11,8 @@
 /**
 @page ImplementationStandard Implementation Standard
 
+The software implementation standard, i.e., the SI in BASIS, is documented
+in the following articles:
 - @subpage CmdLineParsing
 - @subpage CallingConventions
 */
