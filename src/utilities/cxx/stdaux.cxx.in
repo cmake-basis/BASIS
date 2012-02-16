@@ -16,6 +16,7 @@
 #include <sbia/basis/config.h>      // cProjectName, cVersionAndRevision
 #include <sbia/basis/path.h>
 #include <sbia/basis/except.h>
+#include <sbia/basis/assert.h>
 #include <sbia/basis/subprocess.h>
 #include "ExecutableTargetInfo.h"
 
@@ -39,9 +40,8 @@ namespace basis
 // ---------------------------------------------------------------------------
 void print_version(const char* name, const char* copyright, const char* license)
 {
-    if (name) cout << name;
-    else      cout << get_executable_name();
-    cout << " (" << cProjectName << ") " << cVersionAndRevision << endl;
+    assert(name != NULL);
+    cout << name << " (" << cProjectName << ") " << cVersionAndRevision << endl;
     if (copyright == NULL) {
         cout << "Copyright (c) University of Pennsylvania. All rights reserved." << endl;
     } else if (*copyright != '\0') {
