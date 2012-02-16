@@ -19,10 +19,10 @@
 
 #include <sbia/tclap/SwitchArg.h>
 #include <sbia/tclap/MultiSwitchArg.h>
-#include <sbia/tclap/ValueArg.h>
 #include <sbia/tclap/UnlabeledValueArg.h>
 #include <sbia/tclap/UnlabeledMultiArg.h>
 
+#include <sbia/basis/ValueArg.h>
 #include <sbia/basis/MultiArg.h>
 
 #include <sbia/tclap/Constraint.h>
@@ -57,24 +57,27 @@ typedef TCLAP::MultiSwitchArg MultiSwitchArg;
 // ---------------------------------------------------------------------------
 // single argument option
 
+// Note: Use full namespace on the left side to help Doxygen to create
+//       the proper references to the BASIS ValueArg class.
+
 /// String argument.
-typedef TCLAP::ValueArg<std::string> StringArg;
+typedef sbia::basis::ValueArg<std::string> StringArg;
 /// Signed 32-bit integer argument.
-typedef TCLAP::ValueArg<int> Int32Arg;
+typedef sbia::basis::ValueArg<int> Int32Arg;
 /// Unsigned 32-bit integer argument.
-typedef TCLAP::ValueArg<unsigned int> UInt32Arg;
+typedef sbia::basis::ValueArg<unsigned int> UInt32Arg;
 /// Signed 64-bit integer argument.
-typedef TCLAP::ValueArg<long> Int64Arg;
+typedef sbia::basis::ValueArg<long> Int64Arg;
 /// Unsigned 64-bit integer argument.
-typedef TCLAP::ValueArg<unsigned long> UInt64Arg;
+typedef sbia::basis::ValueArg<unsigned long> UInt64Arg;
 /// Alias for Int32Arg.
-typedef TCLAP::ValueArg<int> IntArg;
+typedef sbia::basis::ValueArg<int> IntArg;
 /// Alias for UInt32Arg.
-typedef TCLAP::ValueArg<unsigned int> UIntArg;
+typedef sbia::basis::ValueArg<unsigned int> UIntArg;
 /// Floating-point argument.
-typedef TCLAP::ValueArg<float> FloatArg;
+typedef sbia::basis::ValueArg<float> FloatArg;
 /// Floating-point argument (double precision).
-typedef TCLAP::ValueArg<double> DoubleArg;
+typedef sbia::basis::ValueArg<double> DoubleArg;
 
 // ---------------------------------------------------------------------------
 // multiple arguments option

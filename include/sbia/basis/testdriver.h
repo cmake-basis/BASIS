@@ -160,20 +160,20 @@ DoubleArg intensity_tolerance(
         " to use for the following regression tests."
         // default should be printed automatically
         " (default: 2.0)",
-        false, 2.0, "<float>");
+        false, 2.0, "<float>", true);
 
 UIntArg max_number_of_differences(
         "", "max-number-of-differences",
         "When comparing images specified with the following --compare option(s),"
         " allow the given number of image elements to differ.",
-        false, 0, "<n>");
+        false, 0, "<n>", true);
 
 UIntArg tolerance_radius(
         "", "tolerance-radius",
         "At most one image element in the neighborhood specified by the"
         " given radius has to fulfill the criteria of the following"
         " regression tests",
-        false, 0, "<int>");
+        false, 0, "<int>", true);
 
 // ---------------------------------------------------------------------------
 // test execution

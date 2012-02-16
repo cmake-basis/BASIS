@@ -71,11 +71,11 @@ public:
     MultiArg(const std::string& flag,
              const std::string& name,
              const std::string& desc,
-             bool req,
+             bool               req,
              const std::string& typeDesc,
-             unsigned int n = 1,
-             bool once = false,
-             TCLAP::Visitor* v = NULL);
+             unsigned int       n    = 1,
+             bool               once = false,
+             TCLAP::Visitor*    v    = NULL);
 
     /**
      * @brief Constructor.
@@ -96,15 +96,15 @@ public:
      * @param [in] v          An optional visitor. You probably should not
      *                        use this unless you have a very good reason.
      */
-    MultiArg(const std::string& flag, 
-             const std::string& name,
-             const std::string& desc,
-             bool req,
-             const std::string& typeDesc,
+    MultiArg(const std::string&       flag, 
+             const std::string&       name,
+             const std::string&       desc,
+             bool                     req,
+             const std::string&       typeDesc,
              TCLAP::CmdLineInterface& parser,
-             unsigned int n = 1,
-             bool once = false,
-             TCLAP::Visitor* v = NULL );
+             unsigned int             n    = 1,
+             bool                     once = false,
+             TCLAP::Visitor*          v    = NULL);
 
     /**
      * @brief Constructor.
@@ -122,14 +122,14 @@ public:
      * @param [in] v          An optional visitor. You probably should not
      *                        use this unless you have a very good reason.
      */
-    MultiArg(const std::string& flag,
-             const std::string& name,
-             const std::string& desc,
-             bool req,
+    MultiArg(const std::string&    flag,
+             const std::string&    name,
+             const std::string&    desc,
+             bool                  req,
              TCLAP::Constraint<T>* constraint,
-             unsigned int n = 1,
-             bool once = false,
-             TCLAP::Visitor* v = NULL );
+             unsigned int          n    = 1,
+             bool                  once = false,
+             TCLAP::Visitor*       v    = NULL);
 
     /**
      * @brief Constructor.
@@ -142,21 +142,21 @@ public:
      * @param [in] req        Whether the argument is required on the command-line.
      * @param [in] constraint A pointer to a Constraint object used
      *                        to constrain this Arg.
-     * @param [in] parser     A CmdLine parser object to add this Arg to
+     * @param [in] parser     A CmdLine parser object to add this Arg to.
      * @param [in] n          Number of values per argument occurrence.
      * @param [in] once       Accept argument only once.
      * @param [in] v          An optional visitor. You probably should not
      *                        use this unless you have a very good reason.
      */
-    MultiArg(const std::string& flag, 
-             const std::string& name,
-             const std::string& desc,
-             bool req,
-             TCLAP::Constraint<T>* constraint,
+    MultiArg(const std::string&       flag, 
+             const std::string&       name,
+             const std::string&       desc,
+             bool                     req,
+             TCLAP::Constraint<T>*    constraint,
              TCLAP::CmdLineInterface& parser,
-             unsigned int n = 1,
-             bool once = false,
-             TCLAP::Visitor* v = NULL );
+             unsigned int             n    = 1,
+             bool                     once = false,
+             TCLAP::Visitor*          v    = NULL);
  
     // -----------------------------------------------------------------------
     // parsing
@@ -327,18 +327,19 @@ bool MultiArg<T>::processArg(int *i, std::vector<std::string>& args)
     return true;
 }
 
-template<class T>
+template <class T>
 bool MultiArg<T>::isRequired() const
 {
     if (TCLAP::MultiArg<T>::_required) {
         if (TCLAP::MultiArg<T>::_acceptsMultipleValues
-                && TCLAP::MultiArg<T>::_values.size() > 1)
+                && TCLAP::MultiArg<T>::_values.size() > 1) {
             return false;
-        else
+        } else {
             return true;
-    }
-    else
+        }
+    } else {
         return false;
+    }
 }
 
 
