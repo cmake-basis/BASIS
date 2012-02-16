@@ -196,7 +196,7 @@ sub execute_process
     # prepend absolute path of found executable
     $args = $exec_path . $arguments;
     # some verbose output
-    if ($options{'verbose'}) {
+    if ($options{'verbose'} gt 0) {
         print "\$ ", $args;
         $options{'simulate'} and print " (simulated)";
         print "\n";
