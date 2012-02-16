@@ -77,6 +77,7 @@
 
 #include <sbia/basis/config.h>
 #include <sbia/basis/except.h>
+#include <sbia/basis/assert.h>
 #include <sbia/basis/path.h>    // get_file_name() - basistest-after-test.inc
 #include <sbia/basis/CmdLine.h> // parsing of command-line arguments
 
@@ -114,10 +115,36 @@ MultiStringArg add_before_env_with_sep(
 
 // ---------------------------------------------------------------------------
 // regression testing
+
+/// @brief Structure holding arguments to --compare option and currently
+///        set tolerances to be used for the regression test.
+struct RegressionTest {
+    string       test_image_file;
+    string       baseline_image_file;
+    float        intensity_tolerance;
+    unsigned int max_number_of_differences;
+    unsigned int tolerance_radius;
+};
+
+/// @brief Container storing added regression tests, one for each occurrence
+///        of the --compare option.
+vector<RegressionTest> regression_tests;
+
+/// @brief Visitor used to handle --compare option.
+class CompareVisitor : public TCLAP::Visitor
+{
+public:
+    CompareVisitor() {}
+    ~CompareVisitor() {}
+    void visit();
+};
+
+CompareVisitor compare_visitor;
+
 MultiStringArg compare(
         "", "compare",
         "Compare the <test> image to the <baseline> image using the"
-        " specified tolerances. If the test image should be compared to"
+        " current tolerances. If the test image should be compared to"
         " to more than one baseline image, specify the file name of"
         " the main baseline image and name the other baseline images"
         " similarly with only a numerical suffix appended to the"
@@ -125,24 +152,27 @@ MultiStringArg compare(
         " For example, name your baseline images baseline.nii,"
         " baseline.1.nii, baseline.2.nii,..., and specify baseline.nii"
         " second argument value.",
-        false, "<test> <baseline>", 2);
+        false, "<test> <baseline>", 2, false, &compare_visitor);
 
 DoubleArg intensity_tolerance(
         "", "intensity-tolerance",
-        "The accepted maximum difference between image intensities."
-        " (default: 2.0)", // should be printed automatically
+        "The accepted maximum difference between image intensities"
+        " to use for the following regression tests."
+        // default should be printed automatically
+        " (default: 2.0)",
         false, 2.0, "<float>");
 
 UIntArg max_number_of_differences(
         "", "max-number-of-differences",
-        "When comparing images with --compare, allow the given number"
-        " of image elements to differ.",
+        "When comparing images specified with the following --compare option(s),"
+        " allow the given number of image elements to differ.",
         false, 0, "<n>");
 
 UIntArg tolerance_radius(
         "", "tolerance-radius",
         "At most one image element in the neighborhood specified by the"
-        " given radius has to fulfill the test criteria.",
+        " given radius has to fulfill the criteria of the following"
+        " regression tests",
         false, 0, "<int>");
 
 // ---------------------------------------------------------------------------

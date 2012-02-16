@@ -158,6 +158,23 @@ void testdriversetup(int* argc, char** argv[])
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
+void CompareVisitor::visit()
+{
+    assert(compare.getValue().size() != 0);
+    assert((compare.getValue().size() % 2) == 0);
+
+    RegressionTest regression_test;
+
+    regression_test.test_image_file           = compare.getValue()[compare.getValue().size() - 2];
+    regression_test.baseline_image_file       = compare.getValue()[compare.getValue().size() - 1];
+    regression_test.intensity_tolerance       = intensity_tolerance.getValue();
+    regression_test.max_number_of_differences = max_number_of_differences.getValue();
+    regression_test.tolerance_radius          = tolerance_radius.getValue();
+
+    regression_tests.push_back(regression_test);
+}
+
+// ---------------------------------------------------------------------------
 vector<string> get_baseline_filenames(string filename_template)
 {
     vector<string> baselines;
