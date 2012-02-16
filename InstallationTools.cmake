@@ -46,14 +46,23 @@ endfunction ()
 # basis_install_directory(images "${INSTALL_DATA_DIR}/images")
 # @endcode
 #
-# @param [in] SOURCE      Source directory. Defaults to current source directory
-#                         if only one argument, the @p DESTINATION, is given.
-# @param [in] DESTINATION Destination directory.
-# @param [in] ARGN        Further arguments for CMake's
-#                         <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install">
-#                         <tt>install(DIRECTORY)</tt></a> command. In this case,
-#                         both @p SOURCE and @p DESTINATION arguments are
-#                         required.
+# @param [in] ARGN The first two arguments are extracted from the beginning
+#                  of this list in the named order (without option name),
+#                  and the remaining arguments are passed on to CMake's
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install">
+#                  <tt>install(DIRECTORY)</tt></a> command.
+# @par
+# <table border="0">
+#   <tr>
+#     @tp @b SOURCE @endtp
+#     <td>Source directory. Defaults to current source directory
+#         if only one argument, the @p DESTINATION, is given./td>
+#   </tr>
+#   <tr>
+#     @tp @b DESTINATION @endtp
+#     <td>Destination directory.</td>
+#   </tr>
+# </table>
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:install
 #
