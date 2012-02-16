@@ -1595,28 +1595,66 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Process generator expressions in arguments.
 #
-# This command maps the target names used in generator expressions such as
-# $<TARGET_FILE:tgt> to target UIDs. Otherwise, CMake may not recognize the
-# target. Generator expressions are in particular supported by basis_add_test()
+# This command evaluates the $&lt;TARGET_FILE:tgt&gt; and related generator
+# expressions also for custom targets such as scripts and MATLAB Compiler
+# targets. For other generator expressions whose argument is a target name,
+# this function replaces the target name by the target UID, i.e., the actual
+# CMake target name such that the expression can be evaluated by CMake.
+# The following generator expressions are directly evaluated by this function:
+# <table border=0>
+#   <tr>
+#     @tp <b><tt>$&lt;TARGET_FILE:tgt&gt;</tt></b> @endtp
+#     <td>Absolute file path of built target.</td>
+#   </tr>
+#   <tr>
+#     @tp <b><tt>$&lt;TARGET_FILE_POST_INSTALL:tgt&gt;</tt></b> @endtp
+#     <td>Absolute path of target file after installation using the
+#         current @c INSTALL_PREFIX.</td>
+#   </tr>
+#   <tr>
+#     @tp <b><tt>$&lt;TARGET_FILE_POST_INSTALL_RELATIVE:tgt&gt;</tt></b> @endtp
+#     <td>Path of target file after installation relative to @c INSTALL_PREFIX.</td>
+#   </tr>
+# </table>
+# Additionally, the suffix <tt>_NAME</tt> or <tt>_DIR</tt> can be appended
+# to the name of each of these generator expressions to get only the basename
+# of the target file including the extension or the corresponding directory
+# path, respectively.
+#
+# Generator expressions are in particular supported by basis_add_test().
 #
 # @param [out] ARGS Name of output list variable.
 # @param [in]  ARGN List of arguments to process.
 #
 # @sa basis_add_test()
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test
 function (basis_process_generator_expressions ARGS)
   set (ARGS_OUT)
   foreach (ARG IN LISTS ARGN)
     string (REGEX MATCHALL "\\$<.*TARGET.*:.*>" EXPRS "${ARG}")
     foreach (EXPR IN LISTS EXPRS)
       if (EXPR MATCHES "\\$<(.*):(.*)>")
-        basis_get_target_uid (TARGET_UID "${CMAKE_MATCH_2}")
-        string (REPLACE "${EXPR}" "$<${CMAKE_MATCH_1}:${TARGET_UID}>" ARG "${ARG}")
+        set (EXPR_NAME   "${CMAKE_MATCH_1}")
+        set (TARGET_NAME "${CMAKE_MATCH_2}")
+        # TARGET_FILE* expression, including custom targets
+        if (EXPR_NAME MATCHES "^TARGET_FILE(.*)")
+          if (NOT CMAKE_MATCH_1)
+            set (CMAKE_MATCH_1 "ABSOLUTE")
+          endif ()
+          string (REGEX REPLACE "^_" "" PART "${CMAKE_MATCH_1}")
+          basis_get_target_location (ARG "${TARGET_NAME}" ${PART})
+        # other generator expression supported by CMake
+        # only replace target name, but do not evaluate expression
+        else ()
+          basis_get_target_uid (TARGET_UID "${CMAKE_MATCH_2}")
+          string (REPLACE "${EXPR}" "$<${CMAKE_MATCH_1}:${TARGET_UID}>" ARG "${ARG}")
+        endif ()
         if (BASIS_DEBUG AND BASIS_VERBOSE)
           message ("** basis_process_generator_expressions():")
           message ("**   Expression:  ${EXPR}")
-          message ("**   Keyword:     ${CMAKE_MATCH_1}")
-          message ("**   Argument:    ${CMAKE_MATCH_2}")
-          message ("**   Replaced by: $<${CMAKE_MATCH_1}:${TARGET_UID}>")
+          message ("**   Keyword:     ${EXPR_NAME}")
+          message ("**   Argument:    ${TARGET_NAME}")
+          message ("**   Replaced by: ${ARG}")
         endif ()
       endif ()
     endforeach ()

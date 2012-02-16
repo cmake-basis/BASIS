@@ -345,6 +345,8 @@ endfunction ()
 # only the generator expression $<TARGET_FILE:tgt> is allowed. Alternatively,
 # for this special argument, the name of the executable target can be supplied
 # directly without the use of the $<TARGET_FILE:tgt> generator expression.
+# See documentation of basis_process_generator_expressions() for details on
+# the supported generator expressions.
 #
 # Example:
 # @code
@@ -434,7 +436,8 @@ endfunction ()
 # @returns Adds build target for test executable if test source files
 #          are given and/or adds a CTest test which executes the given
 #          test command.
-# 
+#
+# @sa basis_process_generator_expressions()
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_test
 #
 # @todo Make use of ExternalData module to fetch remote test data.
