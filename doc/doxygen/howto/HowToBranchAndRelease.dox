@@ -110,7 +110,7 @@
      @n@n
   -# Optionally, binary and source distribution packages are generated from the
      tagged release branch and uploaded to the public domain. See the
-     @ref SoftwarePackaging guide for details on how to create such distribution
+     @ref HowToPackage guide for details on how to create such distribution
      packages.
      @n@n
   -# Inform the users that a new release is available and update the SBIA Wiki
