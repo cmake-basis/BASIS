@@ -62,7 +62,7 @@
                                 regression_tests[i].max_number_of_differences,
                                 regression_tests[i].tolerance_radius);
                         if (status < beststatus) {
-                            bestmatch  = baseline_image_files[i];
+                            bestmatch  = baseline_image_files[j];
                             beststatus = status;
                         }
                         if (beststatus == 0) {
