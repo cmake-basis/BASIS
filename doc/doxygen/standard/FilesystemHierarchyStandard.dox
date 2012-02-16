@@ -84,7 +84,7 @@ located next to these three top-level directories.
       <tt>branches/&lt;name&gt;/</tt>
     </td>
     <td>
-      Separate branches named <name> are developed in subdirectories under
+      Separate branches named &lt;name&gt; are developed in subdirectories under
       the branches directory. One reason for branching is, for example, to
       develop new features separate from the main development branch, i.e.,
       the trunk, and merging the desired changes back to the trunk once the

@@ -42,8 +42,8 @@
   -# Then the trunk is copied to a branch which is used to apply release specific
      adjustments such as setting the version number or to apply bug fixes to
      this particular release version. Therefore, name this branch
-     <project>-<major>.<minor> (note that the patch number is excluded!) to
-     indicate that this branch represents the <major>.<minor> series of
+     "<project>-<major>.<minor>" (note that the patch number is excluded!) to
+     indicate that this branch represents the "<major>.<minor>" series of
      software releases.
      @n@n
      See @ref HowToBranch for details on how to create a new branch.

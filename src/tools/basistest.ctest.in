@@ -277,7 +277,7 @@ endfunction ()
 #
 # @param [in] ARGN List of XML test report files without directory path.
 #                  If omitted, this function globs for all XML files in
-#                  the Testing/<tag>/ directory.
+#                  the <tt>Testing/&lt;tag&gt;/</tt> directory.
 function (update_metadata)
   # get compiler information from CMake cache
   if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
