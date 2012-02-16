@@ -39,6 +39,35 @@ sub which {
 
 	return undef unless $exec;
 
+    # in case of absolute paths, return whether file exists or not
+    if (File::Spec->file_name_is_absolute($exec)) {
+        if (
+            # Executable, normal case
+            -x _
+            or (
+                # MacOS doesn't mark as executable so we check -e
+                IS_MAC
+                ||
+                (
+                    IS_DOS
+                    and
+                    grep {
+                        $file =~ /$_\z/i
+                    } @PATHEXT[1..$#PATHEXT]
+                )
+                # DOSish systems don't pass -x on
+                # non-exe/bat/com files. so we check -e.
+                # However, we don't want to pass -e on files
+                # that aren't in PATHEXT, like README.
+                and -e _
+            )
+        ) {
+            return $exec;
+        }
+        # absolute file path is not an executable file
+        return undef;
+    }
+
 	my $all = wantarray;
 	my @results = ();
 
@@ -223,9 +252,15 @@ For other issues, contact the maintainer.
 
 =head1 AUTHOR
 
+Andreas Schuh E<lt>andreas.schuh.84@googlemail.comE<gt>
+
 Adam Kennedy E<lt>adamk@cpan.orgE<gt>
 
 Per Einar Ellefsen E<lt>pereinar@cpan.orgE<gt>
+
+Changed for use in BASIS project at the Section of Biomedical Image Analysis,
+Department of Radiology, University of Pennsylvania.
+Modified in particular which() to deal with absolute paths differently.
 
 Originated in F<modperl-2.0/lib/Apache/Build.pm>. Changed for use in DocSet
 (for the mod_perl site) and Win32-awareness by me, with slight modifications
@@ -242,6 +277,7 @@ information.
 Copyright 2002 Per Einar Ellefsen.
 
 Some parts copyright 2009 Adam Kennedy.
+Some parts copyright 2012 University of Pennsylvania.
 
 This program is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
