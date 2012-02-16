@@ -1344,9 +1344,9 @@ macro (basis_project_impl)
     add_subdirectory ("${PROJECT_DATA_DIR}")
   endif ()
 
-  # build/install package documentation
-  if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
-    add_subdirectory ("${PROJECT_DOC_DIR}")
+  # build software tests
+  if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
+   add_subdirectory ("${PROJECT_TESTING_DIR}")
   endif ()
 
   # build/install example application
@@ -1354,9 +1354,9 @@ macro (basis_project_impl)
     add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
   endif ()
 
-  # build software tests
-  if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
-   add_subdirectory ("${PROJECT_TESTING_DIR}")
+  # build/install package documentation
+  if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
+    add_subdirectory ("${PROJECT_DOC_DIR}")
   endif ()
 
   if (BASIS_DEBUG)
