@@ -18,7 +18,7 @@ if (UNIX)
 endif ()
 
 basis_add_executable (parseargs.cxx)
-basis_add_test (parseargs-version COMMAND parseargs) # to test if there is no memory leak
+basis_add_test (parseargs COMMAND parseargs) # to test if there is no memory leak
 basis_add_test (parseargs-help COMMAND parseargs --help)
 basis_add_test (parseargs-helpshort COMMAND parseargs --helpshort)
 basis_add_test (parseargs-version COMMAND parseargs --version)
