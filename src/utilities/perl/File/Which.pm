@@ -41,6 +41,7 @@ sub which {
 
     # in case of absolute paths, return whether file exists or not
     if (File::Spec->file_name_is_absolute($exec)) {
+        stat($exec);
         if (
             # Executable, normal case
             -x _
