@@ -177,36 +177,31 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
         printf("\n");
     }
     // execute command
+    char buf[1024];
+    int  n;
     int status = 0;
     Subprocess p;
-    if (quiet && out == NULL) {
-        if (!p.popen(args, Subprocess::RM_NONE, Subprocess::RM_PIPE, Subprocess::RM_STDOUT)) {
-            BASIS_THROW(SubprocessException, "execute_process(): Failed to create subprocess");
-        }
-    } else {
-        char buf[1024];
-        int  n;
-        if (!p.popen(args, Subprocess::RM_NONE, Subprocess::RM_PIPE, Subprocess::RM_STDOUT)) {
-            BASIS_THROW(SubprocessException, "execute_process(): Failed to create subprocess");
-        }
+    if (!p.popen(args, Subprocess::RM_NONE, Subprocess::RM_PIPE, Subprocess::RM_PIPE)) {
+        BASIS_THROW(SubprocessException, "execute_process(): Failed to create subprocess");
+    }
+    // read child's stdout (blocking)
+    if (!quiet || out != NULL) {
         while ((n = p.read(buf, 1023)) > 0) {
             buf[n] = '\0';
             if (!quiet) printf("%s", buf);
             if (out) *out << buf;
         }
     }
+    // wait for child process
     if (!p.wait()) {
         BASIS_THROW(SubprocessException, "execute_process(): Failed to wait for subprocess");
     }
-    if (!quiet || out != NULL) {
-        char buf[1024];
-        int  n;
-        while ((n = p.read(buf, 1023)) > 0) {
-            buf[n] = '\0';
-            if (!quiet) printf("%s", buf);
-            if (out) *out << buf;
-        }
+    // write error messages to stderr of parent process
+    while ((n = p.read(buf, 1023, true)) > 0) {
+        buf[n] = '\0';
+        fprintf(stderr, "%s", buf);
     }
+    // get exit code
     status = p.returncode();
     // if command failed, throw an exception
     if (status != 0 && !allow_fail) {

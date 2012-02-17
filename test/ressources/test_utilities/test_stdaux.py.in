@@ -13,6 +13,7 @@
 import unittest
 import re
 import os
+import sys
 
 
 @BASIS_PYTHON_UTILITIES@
@@ -57,6 +58,32 @@ class TestProcessExecution(unittest.TestCase):
         self.assertRaises(SubprocessError, execute_process, 'basis.dummy_command --exit 1')
         self.assertRaises(SubprocessError, execute_process, 'basis.dummy_command --exit 1', allow_fail=False)
         self.assertEquals(1, execute_process('basis.dummy_command --exit 1', allow_fail=True))
+
+    # ------------------------------------------------------------------------
+    def test_redirection(self):
+        """Test redirection of STDOUT and STDERR."""
+        stdout = sys.stdout
+        stderr = sys.stderr
+        outlog = open('test_stdaux_py.stdout', 'w')
+        errlog = open('test_stdaux_py.stderr', 'w')
+        sys.stdout = outlog
+        sys.stderr = errlog
+        execute_process('basis.dummy_command --greet --warn', quiet=True)
+        sys.stdout = stdout
+        sys.stderr = stderr
+        outlog.close()
+        errlog.close()
+        outlog = open('test_stdaux_py.stdout', 'r')
+        log = outlog.readlines()
+        outlog.close()
+        os.remove('test_stdaux_py.stdout')
+        self.assertEquals(0, len(log))
+        errlog = open('test_stdaux_py.stderr', 'r')
+        log = errlog.readlines()
+        errlog.close()
+        os.remove('test_stdaux_py.stderr')
+        self.assertEquals(1, len(log))
+        self.assertEquals('WARNING: Cannot greet in other languages!', log[0].strip())
 
     # ------------------------------------------------------------------------
     def test_verbose(self):

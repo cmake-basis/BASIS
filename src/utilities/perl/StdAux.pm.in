@@ -206,7 +206,7 @@ sub execute_process
     my $status = 0;
     my $output = '';
     if (not $options{'simulate'}) {
-        open CMD, "$args 2>&1|" or die "$command: Failed to open subprocess";
+        open CMD, "$args |" or die "$command: Failed to open subprocess";
         while (<CMD>) {
             print $_ unless $options{'quiet'};
             $output .= $_ if $options{'stdout'};

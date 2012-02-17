@@ -20,7 +20,7 @@ source "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/s
 # plan
 # ============================================================================
  
-plan_tests 20;
+plan_tests 21;
 
 # ============================================================================
 # tests
@@ -65,6 +65,19 @@ match "$stdout" 'CONTINUED'
 is $? 0
 
 # ----------------------------------------------------------------------------
+# Test redirection of STDOUT and STDERR
+execute_process --quiet basis.dummy_command --greet --warn
+stdout=`execute_process basis.dummy_command --greet --warn 1> test_stdaux_sh.stdout 2> test_stdaux_sh.stderr`
+is $? 0
+match "$stdout" ''
+stdout=`cat test_stdaux_sh.stdout`
+match "$stdout" ''
+rm -f test_stdaux_sh.stdout
+stderr=`cat test_stdaux_sh.stderr`
+match "$stderr" 'WARNING: Cannot greet in other languages!'
+rm -f test_stdaux_sh.stderr
+
+# ----------------------------------------------------------------------------
 # Test --verbose option of execute_process().
 stdout=`execute_process 'basis.dummy_command'`
 is $? 0
@@ -77,6 +90,6 @@ is $? 0
 
 # ----------------------------------------------------------------------------
 # Test execution of some non-target command.
-stdout=`execute_process ls / &> /dev/null`
+stdout=`execute_process ls / > /dev/null`
 is $? 0
 is $stdout ''

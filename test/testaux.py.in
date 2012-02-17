@@ -103,6 +103,9 @@ def build_project(verbose=0):
     os.chdir(BUILD_DIR)
     build_cmd=['cmake',
             '-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@',
+            '-DBUILD_DOCUMENTATION:BOOL=OFF',
+            '-DBUILD_CHANGELOG:BOOL=OFF',
+            '-DBUILD_TESTING:BOOL=ON',
             '-DBASIS_DIR=' + BASIS_DIR]
     if verbose > 0:
         build_cmd.append('-DBASIS_VERBOSE=ON')

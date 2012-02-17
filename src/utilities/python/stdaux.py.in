@@ -170,8 +170,8 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
     if not simulate:
         try:
             # open subprocess
-            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            # read stdout/stderr until EOF
+            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # read stdout until EOF
             for line in process.stdout:
                 if stdout:
                     output = output + line
@@ -180,13 +180,8 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
                     sys.stdout.flush()
             # wait until subprocess terminated and set exit code
             (out, err) = process.communicate()
-            # print possibly remaining content in stdout
-            for line in out:
-                if stdout:
-                    output = output + line
-                if not quiet:
-                    print line.rstrip()
-                    sys.stdout.flush()
+            # print error messages of subprocess
+            for line in err: sys.stderr.write(line);
             # get exit code
             status = process.returncode
         except OSError, e:

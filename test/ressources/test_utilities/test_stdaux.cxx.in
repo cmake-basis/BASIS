@@ -14,6 +14,8 @@
 #include <sbia/basis/except.h> // SubprocessException
 #include <vector>
 #include <string>
+#include <stdio.h>             // remove(), freopen()
+#include <fstream>
 
 
 using namespace sbia;
@@ -44,10 +46,45 @@ TEST(StdAux, ExecuteTarget)
     args.clear();
     output.str("");
     args.push_back("basis.dummy_command");
-    args.push_back("--warn");
+    args.push_back("--greet");
     EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command --warn is 0";
-    EXPECT_STREQ("WARNING: Cannot greet in other languages!\n", output.str().c_str());
+    EXPECT_STREQ("Hello, BASIS!\n", output.str().c_str());
+}
+
+// ---------------------------------------------------------------------------
+// Test redirection of STDOUT and STDERR
+TEST(StdAux, Redirection)
+{
+    int status;
+#if WINDOWS
+    FAIL() << "Test not implemented for Windows yet!";
+#else
+    std::ifstream log;
+    char buf[1024];
+    FILE* original_stdout = stdout;
+    FILE* original_stderr = stderr;
+    ASSERT_EQ(stdout, freopen("test_stdaux.stdout", "w", stdout));
+    ASSERT_EQ(stderr, freopen("test_stdaux.stderr", "w", stderr));
+    EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet --warn", true));
+    EXPECT_EQ(0, status);
+    fclose(stdout);
+    stdout = original_stdout;
+    fclose(stderr);
+    stderr = original_stderr;
+    log.open("test_stdaux.stdout");
+    EXPECT_TRUE(log);
+    log.getline(buf, 1024);
+    log.close();
+    EXPECT_STREQ("", buf);
+    remove("test_stdaux.stdout");
+    log.open("test_stdaux.stderr");
+    EXPECT_TRUE(log);
+    log.getline(buf, 1024);
+    log.close();
+    EXPECT_STREQ("WARNING: Cannot greet in other languages!", buf);
+    remove("test_stdaux.stderr");
+#endif
 }
 
 // ---------------------------------------------------------------------------
