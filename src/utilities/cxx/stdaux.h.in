@@ -165,8 +165,8 @@ std::string get_executable_path(const std::string& target);
  *                         inside an argument as well as to escape a backslash
  *                         itself (required if backslash at end of double quoted
  *                         argument, e.g., "this argument \\").
- * @param [in]  quiet      Turns off output of stdout and stderr of child
- *                         process to stdout of parent process.
+ * @param [in]  quiet      Turns off output of stdout of child process to stdout
+ *                         of parent process.
  * @param [out] out        Output stream where command output is written to.
  * @param [in]  allow_fail If true, no exception is thrown if the exit code
  *                         of the child process is non-zero. Otherwise,
@@ -203,8 +203,8 @@ int execute_process(const std::string& cmd,
  *                            side effect, the first argument of the input vector
  *                            is replaced by the absolute path of the actual
  *                            executable file if applicable.
- * @param [in]     quiet      Turns off output of stdout and stderr of child
- *                            process to stdout of parent process.
+ * @param [in]     quiet      Turns off output of stdout of child process to
+ *                            stdout of parent process.
  * @param [out]    out        Output stream where command output is written to.
  * @param [in]     allow_fail If true, no exception is thrown if the exit code
  *                            of the child process is non-zero. Otherwise,
