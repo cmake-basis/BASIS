@@ -674,7 +674,7 @@ bool Subprocess::communicate(std::istream& in, std::ostream& out, std::ostream& 
         _stdout = -1;
 #endif
     }
-    // read stdout data and close pipe afterwards
+    // read stderr data and close pipe afterwards
 #if WINDOWS
     if (_stderr != INVALID_HANDLE_VALUE) {
 #else
