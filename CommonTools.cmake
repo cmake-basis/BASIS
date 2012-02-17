@@ -1351,6 +1351,12 @@ function (basis_configure_sources LIST_NAME)
   # configure source files
   set (CONFIGURED_SOURCES)
   foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
+    # the .in suffix is optional, add it here if a .in file exists for this
+    # source file, but only if the source file itself does not name an acutally
+    # existing source file
+    if (NOT SOURCE MATCHES "\\.in$" AND NOT EXISTS "${SOURCE}" AND EXISTS "${SOURCE}.in")
+      set (SOURCE "${SOURCE}.in")
+    endif ()
     if (SOURCE MATCHES "\\.in$")
       # if binary directory was given explicitly, use it
       if (ARGN_BINARY_DIRECTORY)
