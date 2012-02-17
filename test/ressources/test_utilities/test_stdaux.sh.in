@@ -20,7 +20,7 @@ source "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/s
 # plan
 # ============================================================================
  
-plan_tests 21;
+plan_tests 24;
 
 # ============================================================================
 # tests
@@ -29,67 +29,68 @@ plan_tests 21;
 # ----------------------------------------------------------------------------
 # Test exceptions when execute_process() is not used as intended.
 execute_process
-isnt $? 0
+isnt $? 0 'non-zero exit code when called with no arguments'
 execute_process ''
-isnt $? 0
+isnt $? 0 'non-zero exit code when called with empty string argument'
 
 # ----------------------------------------------------------------------------
 # Test execution of executable target.
 execute_process 'basis.dummy_command'
-is $? 0
+is $? 0 'exit code 0 when running dummy command by target name'
 stdout=`execute_process 'basis.dummy_command' --greet`
-is $? 0
+is $? 0 'exit code 0 when running dummy command by target name and with --greet'
 match "$stdout" '^Hello, BASIS!'
-is $? 0
+is $? 0 'greeting captured correctly'
 
 # ----------------------------------------------------------------------------
 # Test -- argument
 stdout=`execute_process -- ls`
-is $? 0
+is $? 0 'use of special -- option'
 stdout=`execute_process -- --allow_fail ls` # option considered as command
-isnt $? 0
+isnt $? 0 '--allow_fail ignored after -- option'
 
 # ----------------------------------------------------------------------------
 # Test --allow_fail option of execute_process().
 stdout=`execute_process 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
-isnt $? 0
+isnt $? 0 'exit code is non-zero'
 match "$stdout" 'CONTINUED'
-isnt $? 0
+isnt $? 0 'aborted when exit code is non-zero and --allow_fail not specified'
 stdout=`execute_process 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
-isnt $? 0
+isnt $? 0 'exit code is non-zero'
 match "$stdout" 'CONTINUED'
-isnt $? 0
+isnt $? 0 'exit code is non-zero'
 stdout=`execute_process --allow_fail 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
-is $? 0
+is $? 0 'exit code of echo command is 0'
 match "$stdout" 'CONTINUED'
-is $? 0
+is $? 0 'captured message after non-successful command which was allowed to fail'
 
 # ----------------------------------------------------------------------------
 # Test redirection of STDOUT and STDERR
-execute_process --quiet basis.dummy_command --greet --warn
-stdout=`execute_process basis.dummy_command --greet --warn 1> test_stdaux_sh.stdout 2> test_stdaux_sh.stderr`
-is $? 0
+stdout=`execute_process basis.dummy_command --greet --warn > test_stdaux_sh.stdout 2> test_stdaux_sh.stderr`
+is $? 0 'command run successful with redirection of STDOUT and STDERR'
 match "$stdout" ''
-stdout=`cat test_stdaux_sh.stdout`
-match "$stdout" ''
+is $? 0 'nothing returned due to redirection'
+grep 'Hello, BASIS!' 'test_stdaux_sh.stdout' > /dev/null
+is $? 0 'message to STDOUT captured correctly'
 rm -f test_stdaux_sh.stdout
 stderr=`cat test_stdaux_sh.stderr`
-match "$stderr" 'WARNING: Cannot greet in other languages!'
+grep 'WARNING: Cannot greet in other languages!' 'test_stdaux_sh.stderr' > /dev/null
+is $? 0 'message to STDERR captured correctly'
 rm -f test_stdaux_sh.stderr
 
 # ----------------------------------------------------------------------------
 # Test --verbose option of execute_process().
 stdout=`execute_process 'basis.dummy_command'`
-is $? 0
-is $stdout ''
+is $? 0 'execution of dummy command'
+is "$stdout" '' 'nothing output'
 stdout=`execute_process --verbose 'basis.dummy_command'`
-is $? 0
-isnt $stdout ''
+is $? 0 'execution of dummy command'
+isnt "$stdout" '' 'output not empty with --verbose enabled'
 match "$stdout" 'dummy_command'
-is $? 0
+is $? 0 'output of executed command when --verbose enabled'
 
 # ----------------------------------------------------------------------------
 # Test execution of some non-target command.
 stdout=`execute_process ls / > /dev/null`
-is $? 0
-is $stdout ''
+is $? 0 'execution of non-target command'
+is "$stdout" '' 'no output due to redirection of STDOUT to /dev/null'
