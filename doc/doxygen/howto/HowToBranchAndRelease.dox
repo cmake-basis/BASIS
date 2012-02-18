@@ -119,6 +119,6 @@
   -# Finally, make sure that all bug fixes which were applied to the release
      branch are merged back to the trunk where the development continues.
      Do not implement new features in the created release branch. This branch
-     will only be used for maintenance of the <major>.<minor> series of the
+     will only be used for maintenance of the "<major>.<minor>" series of the
      software.
 */
