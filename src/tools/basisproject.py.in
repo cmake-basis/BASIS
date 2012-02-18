@@ -660,9 +660,9 @@ corresponding to this BASIS installation.""")
             help="""Root directory of project template which the already existing project
 was created from or last updated to. By default, the version of the original template
 is extracted from the root CMakeLists.txt file of the project. Given this version,
-BASIS determines the path of the corresponding project template which is part of
-the BASIS installation. If the correct is not available, an automatic update of
-project files to a newer template version is not feasible.""")
+this tool determines the path of the corresponding project template which is part of
+the BASIS installation. If this previous template is not available, an automatic
+update of project files to a newer template version is not feasible.""")
 
     # --use et al.
     parser.add_argument('--use', metavar='<pkg>', action='append', default=[],
