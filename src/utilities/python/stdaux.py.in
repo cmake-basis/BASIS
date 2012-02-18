@@ -69,7 +69,7 @@ def print_version(name, copyright=None, license=None):
         sys.stdout.write('\n')
     # license information
     if not license:
-        sys.stdout.write("See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n")
+        sys.stdout.write("See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n")
     elif license != "":
         sys.stdout.write(license)
         sys.stdout.write('\n')

@@ -89,7 +89,7 @@ sub print_version
     if (defined $license) {
         print $license, "\n" unless $license == '';
     } else {
-        print "See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n";
+        print "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n";
     }
 }
 
