@@ -15,6 +15,9 @@
 
 source "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh"
 
+echo -n "<DartMeasurement name=\"Host Name\" type=\"string\">"
+echo -n `hostname`;
+echo    "</DartMeasurement>";
 
 # ============================================================================
 # plan

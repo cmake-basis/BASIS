@@ -10,11 +10,15 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
+use Sys::Hostname;
+print "<DartMeasurement name=\"Host Name\" type=\"string\">";
+print hostname;
+print "</DartMeasurement>\n";
+
 use Test::More tests => 20;
 
 
 @BASIS_PERL_UTILITIES@
-
 
 # ============================================================================
 # tests

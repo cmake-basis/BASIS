@@ -25,6 +25,7 @@ import os
 import sys
 import shutil
 import getopt
+import socket
 
 # ============================================================================
 # constants
@@ -43,6 +44,9 @@ BUILD_DIR      = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME + '-build')
 # ----------------------------------------------------------------------------
 def parse_arguments(flags='v', options=['verbose'], allow_args=False):
     "Parse test arguments."
+    sys.stdout.write("<DartMeasurement name=\"Host Name\" type=\"string\">");
+    sys.stdout.write(socket.gethostname());
+    sys.stdout.write("</DartMeasurement>\n");
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], flags, options)
         if not allow_args and len(args) > 0:

@@ -15,6 +15,10 @@ readonly _TEST_CORE_DIR=@BASIS_BASH___DIR__@
 source "${_TEST_CORE_DIR}/@BASIS_LIBRARY_DIR@/core.sh"  || exit 1
 source "${_TEST_CORE_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh" || exit 1
 
+echo -n "<DartMeasurement name=\"Host Name\" type=\"string\">"
+echo -n `hostname`;
+echo    "</DartMeasurement>";
+
 # ============================================================================
 # plan
 # ============================================================================
