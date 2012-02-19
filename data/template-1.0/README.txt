@@ -62,6 +62,13 @@ LICENSING
 
 
 
+INSTALLATION
+============
+
+  See build and installation instructions given in the INSTALL file.
+
+
+
 REFERENCES
 ==========
 
