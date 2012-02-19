@@ -69,6 +69,15 @@ INSTALLATION
 
 
 
+DOCUMENTATION
+=============
+
+  See the user manual ("<project> User Manual.pdf" or "UserManual.pdf")
+  for details on the software and an example application of how to apply the
+  software tools provided by this package.
+
+
+
 REFERENCES
 ==========
 
