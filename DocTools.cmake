@@ -499,7 +499,17 @@ function (basis_add_doc TARGET_NAME)
     list (SORT DOX_FILES) # alphabetic order
     list (APPEND DOXYGEN_INPUT ${DOX_FILES})
     # add .dox files of BASIS modules
-    list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Modules.dox")
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      set (FilesystemHierarchyStandardPageRef "@ref FilesystemHierarchyStandard")
+      set (BuildOfScriptTargetsPageRef        "@ref BuildOfScriptTargets")
+    else ()
+      set (FilesystemHierarchyStandardPageRef "Filesystem Hierarchy Standard")
+      set (BuildOfScriptTargetsPageRef        "build of script targets")
+    endif ()
+    configure_file(
+      "${BASIS_MODULE_PATH}/Modules.dox.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/BasisModules.dox" @ONLY)
+    list (APPEND DOXYGEN_INPUT "${CMAKE_CURRENT_BINARY_DIR}/BasisModules.dox")
     # add .dox files of used BASIS utilities
     list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/Utilities.dox")
     list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/CxxUtilities.dox")
