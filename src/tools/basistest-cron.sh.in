@@ -81,6 +81,8 @@ slave="${_EXEC_DIR}/basistest-slave -v -S ${ctest} --args site=sbia-cluster-cent
 # main
 # ============================================================================
 
+dry='false'
+
 while [ $# -gt 0 ]; do
     case "$1" in
         -h|--help)
@@ -91,6 +93,9 @@ while [ $# -gt 0 ]; do
             echo "  This command should be run regularly by a cron job. It contains"
             echo "  all the fixed settings for the execution of the basistest master"
             echo "  command, which is simply executed by this command."
+            echo
+            echo "Optional arguments:"
+            echo "  --dry   Dry run, i.e., do not actually invoke the test execution command."
             echo
             print_contact
             exit 0
@@ -107,6 +112,10 @@ while [ $# -gt 0 ]; do
         --version)
             print_version '@NAME@'
             exit 0
+            ;;
+
+        --dry)
+            dry='true';
             ;;
 
         *)
@@ -154,7 +163,11 @@ if [ ! -z "${log}" ]; then
 fi
 
 # run actual testing master
-${master} -c "${conf}" -s "${schedule}" -t "${slave}"
+if [ "$dry" == 'true' ]; then
+    ${master} '--dry' -c "${conf}" -s "${schedule}" -t "${slave}"
+else
+    ${master} -c "${conf}" -s "${schedule}" -t "${slave}"
+fi
 
 # remove SGE submission script (SGE copied it already)
 [ -n "${tmpslave}" ] && rm -f "${tmpslave}"
