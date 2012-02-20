@@ -490,20 +490,35 @@ while read line; do
     fi
 done < "${conf_file}"
 
-# write new schedule
-rm -f "${schedule_file}"
+# write new schedule to temporary file
 idx=0
 num=${#new_schedule[@]}
+if [ -f "${schedule_file}.temp" ]; then
+    rm -f "${schedule_file}.temp"
+fi
 while [ ${idx} -lt ${num} ]; do
-    echo ${new_schedule[${idx}]} >> "${schedule_file}"
+    echo ${new_schedule[${idx}]} >> "${schedule_file}.temp"
     if [ $? -ne 0 ]; then
-        echo "Failed to write schedule to file \"${schedule_file}\"!" 1&>2
-        break
+        echo "Failed to write schedule to temporary file \"${schedule_file}.temp\"!" 1&>2
+        exit 1;
     fi
     (( idx++ ))
 done
-if [ -f "${schedule_file}" ]; then
-    sort "${schedule_file}" -o "${schedule_file}"
+# sort schedule
+if [ -f "${schedule_file}.temp" ]; then
+    sort "${schedule_file}.temp" -o "${schedule_file}.temp"
+    if [ $? -ne 0 ]; then
+        echo "Failed to sort temporary schedule file \"${schedule_file}.temp\"!" 1&>2
+        exit 1
+    fi
+fi
+# and then replace previous schedule file
+if [ -f "${schedule_file}.temp" ]; then
+    mv -f "${schedule_file}.temp" "${schedule_file}"
+    if [ $? -ne 0 ]; then
+        echo "Failed to update schedule file \"${schedule_file}\"!" 1&>2
+        exit 1
+    fi
 fi
 
 # done
