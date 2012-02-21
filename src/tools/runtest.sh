@@ -19,7 +19,7 @@
 clean()
 {
     local root="$1"
-    find "${root}" -delete
+    `cd ${root} && find . -delete`
     if [ $? -ne 0 ]; then
         echo "Failed to clean directory ${root}" 1>&2
     fi

@@ -11,6 +11,7 @@
 """
 
 import os
+import sys
 import shutil
 import socket
 import subprocess
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     retval = 0
     cmd    = []
 
-    for i in range(0, len(sys.argv)):
+    for i in range(1, len(sys.argv)):
         if sys.argv[i] == '--clean-before':
             clean_before = True
         elif sys.argv[i] == '--clean-after':

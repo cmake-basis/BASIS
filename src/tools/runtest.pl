@@ -10,8 +10,6 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-use strict;
-
 use Cwd        qw(getcwd);
 use File::Path qw(rmtree);
 use Sys::Hostname;
@@ -26,19 +24,19 @@ use Sys::Hostname;
 sub clean
 {
     my $root = shift;
-    my $ok = eval {
-        opendir my($dh), $root or die "Failed to open directory $root: $!";
+    eval {
+        opendir my $dh, $root or die "Failed to open directory $root: $!";
         my @files = grep { !/^\.\.?$/ } readdir $dh;
         closedir $dh;
-        foreach my($f) (@files) {
+        foreach my $f (@files) {
             if (-d $f) {
                 rmtree $f;
             } else {
                 unlink $f;
             }
         }
-    }
-    print STDERR "Failed to clean directory $root: $@\n" if not $ok;
+    };
+    print STDERR "Failed to clean directory $root: $@\n" if $@;
 }
 
 # ----------------------------------------------------------------------------
