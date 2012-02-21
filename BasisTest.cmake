@@ -471,7 +471,7 @@ function (basis_add_test TEST_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-    "UNITTEST;NO_DEFAULT_MAIN;WITH_EXT"
+    "UNITTEST;NO_DEFAULT_MAIN;WITH_EXT;CLEAN_WORKING_DIRECTORY_BEFORE_TEST;CLEAN_WORKING_DIRECTORY_AFTER_TEST"
     "WORKING_DIRECTORY"
     "CONFIGURATIONS;SOURCES;LINK_DEPENDS;COMMAND;ARGS"
     ${ARGN}
@@ -615,7 +615,7 @@ function (basis_add_test TEST_NAME)
 
   if (BASIS_DEBUG)
     message ("** Add test ${TEST_UID}")
-    message ("**   Runner:     ${RUNTEST}"
+    message ("**   Runner:     ${RUNTEST}")
     message ("**   Command:    ${ARGN_COMMAND}")
     message ("**   Arguments:  ${ARGN_ARGS}")
     message ("**   Working in: ${ARGN_WORKING_DIRECTORY}")
