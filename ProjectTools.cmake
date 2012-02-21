@@ -956,6 +956,11 @@ endmacro ()
 ## @brief Initialize project settings.
 macro (basis_initialize_settings)
   # configure and include BASIS directory structure
+  if (PROJECT_NAME MATCHES "^BASIS$")
+    set (FilesystemHierarchyStandardPageRef "@ref FilesystemHierarchyStandard")
+  else ()
+    set (FilesystemHierarchyStandardPageRef "Filesystem Hierarchy Standard")
+  endif ()
   configure_file (
     "${BASIS_MODULE_PATH}/Directories.cmake.in"
     "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake"
