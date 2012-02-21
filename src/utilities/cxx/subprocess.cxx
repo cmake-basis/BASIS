@@ -643,7 +643,7 @@ bool Subprocess::communicate(std::istream& in, std::ostream& out, std::ostream& 
         while (!in.eof()) {
             in.read(buf, nbuf);
             if(in.bad()) return false;
-            write(buf, in.gcount());
+            write(buf, static_cast<size_t>(in.gcount()));
         }
 #if WINDOWS
         CloseHandle(_stdin);
