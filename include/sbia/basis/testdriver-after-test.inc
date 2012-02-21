@@ -44,7 +44,7 @@
             if (!regression_tests.empty() && verbose.getValue() > 0) {
                 cout << "Performing regression tests" << endl;
             }
-            for (size_t i = 0; i < regression_tests.size(); i += 2) {
+            for (size_t i = 0; i < regression_tests.size(); i++) {
                 const char*    test_image_file      = regression_tests[i].test_image_file.c_str();
                 const char*    baseline_image_file  = regression_tests[i].baseline_image_file.c_str();
                 vector<string> baseline_image_files = get_baseline_filenames(baseline_image_file);
