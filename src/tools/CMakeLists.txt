@@ -40,19 +40,8 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # testing tools
-if (UNIX)
-  basis_add_executable (runtest.sh)
-#elseif (PYTHON_EXECUTABLE)
-#  basis_add_executable (runtest.py)
-#elseif (PERL_EXECUTABLE)
-#  basis_add_executable (runtest.pl)
-else ()
-  basis_add_executable (runtest.bat)
-endif ()
-
 basis_add_executable (testdriver.cxx)
 basis_set_target_properties (testdriver PROPERTIES OUTPUT_NAME "basistest-driver")
-basis_target_link_libraries (testdriver ${ITK_LIBRARIES})
 if (WIN32)
   basis_target_link_libraries (testdriver Ws2_32)
 endif ()
@@ -66,6 +55,7 @@ if (ITK_FOUND)
         "ITK_VERSION=\"${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}.${ITK_VERSION_PATCH}\""
         "ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}"
   )
+  basis_target_link_libraries (testdriver ${ITK_LIBRARIES})
 else ()
   basis_set_target_properties (
     testdriver
