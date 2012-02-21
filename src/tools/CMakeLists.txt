@@ -33,7 +33,17 @@ if (PERL_FOUND AND PYTHONINTERP_FOUND)
 endif ()
 
 # ----------------------------------------------------------------------------
-# test driver
+# testing tools
+if (UNIX)
+  basis_add_executable (runtest.sh)
+#elseif (PYTHON_EXECUTABLE)
+#  basis_add_executable (runtest.py)
+#elseif (PERL_EXECUTABLE)
+#  basis_add_executable (runtest.pl)
+else ()
+  basis_add_executable (runtest.bat)
+endif ()
+
 basis_add_executable (testdriver.cxx)
 basis_set_target_properties (testdriver PROPERTIES OUTPUT_NAME "basistest-driver")
 basis_target_link_libraries (testdriver ${ITK_LIBRARIES})
