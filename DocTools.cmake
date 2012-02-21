@@ -71,7 +71,7 @@ function (basis_default_doxygen_filters FILTER_PATTERNS)
         list (APPEND PATTERNS "${ARG}=${FILTER_PATH}")
       endforeach ()
     else ()
-      message (WARNING "Failed to register Doxygen filter ${FILTER}.")
+      message (WARNING "Doxygen filter ${FILTER} not available.")
     endif ()
   endmacro ()
 
