@@ -21,15 +21,21 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # doxygen filters
-if (PERL_FOUND AND PYTHONINTERP_FOUND)
+if (PERL_FOUND)
   basis_add_executable (doxyfilter.pl        LIBEXEC)
-  basis_add_executable (doxyfilter-bash.py   LIBEXEC)
-  basis_add_executable (doxyfilter-cmake.py  LIBEXEC)
   basis_add_executable (doxyfilter-matlab.pl LIBEXEC)
-  basis_add_executable (doxyfilter-python.py LIBEXEC)
-
   basis_add_library ("DoxyGen/Filter.pm"     WITH_PATH)
   basis_add_library ("DoxyGen/PerlFilter.pm" WITH_PATH)
+else ()
+  message (WARNING "Perl not found. Not all Doxygen filters will be available.")
+endif ()
+
+if (PYTHONINTERP_FOUND)
+  basis_add_executable (doxyfilter-bash.py   LIBEXEC)
+  basis_add_executable (doxyfilter-cmake.py  LIBEXEC)
+  basis_add_executable (doxyfilter-python.py LIBEXEC)
+else ()
+  message (WARNING "Python not found. Not all Doxygen filters will be available.")
 endif ()
 
 # ----------------------------------------------------------------------------
