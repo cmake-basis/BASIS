@@ -354,14 +354,6 @@ endfunction ()
 # basis_add_test (COMMAND basis.testdriver $<TARGET_FILE:myexe> ...)
 # @endcode
 #
-# Note that this function may make use of a test runner script using a scripting
-# language for which an interpreter is installed (Python, Perl, BASH, or Batch)
-# which first cleans the working directory if the option
-# @p CLEAN_WORKING_DIRECTORY_BEFORE_TEST, outputs some special messages to
-# @c STDOUT such as the hostname for inclusion in the test report to CDash,
-# and cleans the working directory again after the test if the option
-# @p CLEAN_WORKING_DIRECTORY_AFTER is given and the test was successful.
-#
 # @param [in] TEST_NAME Name of the test. If a source file is given
 #                       as first argument, the test name is derived
 #                       from the name of this source file and the source
@@ -396,16 +388,6 @@ endfunction ()
 #         $<TARGET_FILE_DIR:tgt> can be used to specify a working directory
 #         which corresponds to the output directory of a given target file.
 #         Default: @c TESTING_OUTPUT_DIR / @p TEST_NAME. </td>
-#   </tr>
-#   <tr>
-#     @tp @b CLEAN_WORKING_DIRECTORY_BEFORE_TEST @endtp
-#     <td>If this option is specified, all files in the working directory are
-#         removed before the execution of the test.</td>
-#   </tr>
-#   <tr>
-#     @tp @b CLEAN_WORKING_DIRECTORY_AFTER_TEST @endtp
-#     <td>If this option is specified, all files in the working directory are
-#         removed after the execution of the test if test was successful.</td>
 #   </tr>
 #   <tr>
 #     @tp @b CONFIGURATIONS @endtp
@@ -605,23 +587,14 @@ function (basis_add_test TEST_NAME)
 
   basis_process_generator_expressions (ARGN_ARGS ${ARGN_ARGS})
 
-  set (RUNTEST "basis.runtest")
-  if (ARGN_CLEAN_WORKING_DIRECTORY_BEFORE_TEST)
-    list (APPEND RUNTEST "--clean-before")
-  endif ()
-  if (ARGN_CLEAN_WORKING_DIRECTORY_AFTER_TEST)
-    list (APPEND RUNTEST "--clean-after")
-  endif ()
-
   if (BASIS_DEBUG)
     message ("** Add test ${TEST_UID}")
-    message ("**   Runner:     ${RUNTEST}")
     message ("**   Command:    ${ARGN_COMMAND}")
     message ("**   Arguments:  ${ARGN_ARGS}")
     message ("**   Working in: ${ARGN_WORKING_DIRECTORY}")
   endif ()
 
-  add_test (NAME ${TEST_UID} COMMAND ${RUNTEST} -- ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
+  add_test (NAME ${TEST_UID} COMMAND ${ARGN_COMMAND} ${ARGN_ARGS} ${OPTS})
 
   if (BASIS_VERBOSE)
     message (STATUS "Adding test ${TEST_UID}... - done")
