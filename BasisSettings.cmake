@@ -63,7 +63,7 @@ endif ()
 # used by tests to disable these checks
 if (NOT BASIS_NO_SYSTEM_CHECKS)
   include (CheckTypeSize)
-  include (CheckIncludeFile)
+  include (CheckIncludeFileCXX)
 
   # check if type long long is supported
   CHECK_TYPE_SIZE ("long long" LONG_LONG)
