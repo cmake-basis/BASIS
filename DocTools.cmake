@@ -414,7 +414,7 @@ function (basis_add_doc TARGET_NAME)
         "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH"
         ${ARGN_UNPARSED_ARGUMENTS}
     )
- 
+
     if (NOT DOXYGEN_DOXYFILE)
       set (DOXYGEN_DOXYFILE "${BASIS_DOXYGEN_DOXYFILE}")
     endif ()
@@ -783,65 +783,92 @@ function (basis_add_changelog)
     set (_ALL)
   endif ()
 
+  set (DISABLE_BUILD_CHANGELOG FALSE)
+
   # --------------------------------------------------------------------------
   # generate ChangeLog from Subversion history
-  if (BASIS_CMD_SVN AND EXISTS "${PROJECT_SOURCE_DIR}/.svn")
+  if (EXISTS "${PROJECT_SOURCE_DIR}/.svn")
+    if (BASIS_CMD_SVN)
 
-    # post-processing
-    if (APPLE)
-      set (POST_SVN2CL_CMD COMMAND sed -i '' "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
-    elseif (UNIX)
-      set (POST_SVN2CL_CMD COMMAND sed -i "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
-    else ()
-      set (POST_SVN2CL_CMD)
-    endif ()
+      # post-processing
+      if (APPLE)
+        set (POST_SVN2CL_CMD COMMAND sed -i '' "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
+      elseif (UNIX)
+        set (POST_SVN2CL_CMD COMMAND sed -i "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
+      else ()
+        set (POST_SVN2CL_CMD)
+      endif ()
 
-    # using svn2cl command
-    if (BASIS_CMD_SVN2CL)
-      add_custom_target (
-        ${TARGET_UID} ${_ALL}
-        COMMAND "${BASIS_CMD_SVN2CL}"
-            "--output=${CHANGELOG_FILE}"
-            "--linelen=79"
-            "--reparagraph"
-            "--group-by-day"
-            "--include-actions"
-            "--separate-daylogs"
-            "${PROJECT_SOURCE_DIR}"
-        ${POST_SVN2CL_CMD}
-        WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
-        COMMENT "Generating ChangeLog from Subversion log (using svn2cl)..."
-      )
-    # otherwise, use svn log output directly
+      # using svn2cl command
+      if (BASIS_CMD_SVN2CL)
+        add_custom_target (
+          ${TARGET_UID} ${_ALL}
+          COMMAND "${BASIS_CMD_SVN2CL}"
+              "--output=${CHANGELOG_FILE}"
+              "--linelen=79"
+              "--reparagraph"
+              "--group-by-day"
+              "--include-actions"
+              "--separate-daylogs"
+              "${PROJECT_SOURCE_DIR}"
+          ${POST_SVN2CL_CMD}
+          WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+          COMMENT "Generating ChangeLog from Subversion log (using svn2cl)..."
+        )
+      # otherwise, use svn log output directly
+      else ()
+        add_custom_target (
+          ${TARGET_UID} ${_ALL}
+          COMMAND "${CMAKE_COMMAND}"
+              "-DCOMMAND=${BASIS_CMD_SVN};log"
+              "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
+              "-DOUTPUT_FILE=${CHANGELOG_FILE}"
+              -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+          ${POST_SVN2CL_CMD}
+          COMMENT "Generating ChangeLog from Subversion log..."
+          VERBATIM
+        )
+      endif ()
+
     else ()
-      add_custom_target (
-        ${TARGET_UID} ${_ALL}
-        COMMAND "${CMAKE_COMMAND}"
-            "-DCOMMAND=${BASIS_CMD_SVN};log"
-            "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
-            "-DOUTPUT_FILE=${CHANGELOG_FILE}"
-            -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
-        ${POST_SVN2CL_CMD}
-        COMMENT "Generating ChangeLog from Subversion log..."
-        VERBATIM
-      )
+      message (STATUS "Project is SVN working copy but Subversion executable was not found."
+                      " Generation of ChangeLog disabled.")
+      set (DISABLE_BUILD_CHANGELOG TRUE)
     endif ()
 
   # --------------------------------------------------------------------------
   # generate ChangeLog from Git log
-  elseif (BASIS_CMD_GIT AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-    add_custom_target (
-      ${TARGET_UID} ${_ALL}
-      COMMAND "${CMAKE_COMMAND}"
-          "-DCOMMAND=${BASIS_CMD_GIT};log;--stat;--name-only;--date=short;--abbrev-commit"
-          "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
-          "-DOUTPUT_FILE=${CHANGELOG_FILE}"
-          -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
-      COMMENT "Generating ChangeLog from Git log..."
-      VERBATIM
-    )
+  elseif (EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    if (BASIS_CMD_GIT)
+
+      add_custom_target (
+        ${TARGET_UID} ${_ALL}
+        COMMAND "${CMAKE_COMMAND}"
+            "-DCOMMAND=${BASIS_CMD_GIT};log;--stat;--name-only;--date=short;--abbrev-commit"
+            "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
+            "-DOUTPUT_FILE=${CHANGELOG_FILE}"
+            -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+        COMMENT "Generating ChangeLog from Git log..."
+        VERBATIM
+      )
+
+    else ()
+      message (STATUS "Project is Git repository but Git executable was not found."
+                      " Generation of ChangeLog disabled.")
+      set (DISABLE_BUILD_CHANGELOG TRUE)
+    endif ()
+
+  # --------------------------------------------------------------------------
+  # neither SVN nor Git repository
   else ()
-    message (STATUS "Project is neither SVN working copy nor Git repository. Generation of ChangeLog disabled.")
+    message (STATUS "Project is neither SVN working copy nor Git repository."
+                    " Generation of ChangeLog disabled.")
+    set (DISABLE_BUILD_CHANGELOG TRUE)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # disable changelog target
+  if (DISABLE_BUILD_CHANGELOG)
     set (BUILD_CHANGELOG OFF CACHE INTERNAL "" FORCE)
     if (BASIS_VERBOSE)
       message (STATUS "Adding ChangeLog... - skipped")
