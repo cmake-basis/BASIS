@@ -518,6 +518,16 @@ bool make_directory(const std::string& path, bool parent = true);
  */
 bool remove_directory(const std::string& path, bool recursive = false);
 
+/**
+ * @brief Remove files and directories from directory.
+ *
+ * @param path Path of the directory.
+ *
+ * @returns Whether the directory was cleared successfully, i.e., leaving
+ *          the directory @p path empty.
+ */
+bool clear_directory(const std::string& path);
+
 // ===========================================================================
 // symbolic links
 // ===========================================================================

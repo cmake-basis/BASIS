@@ -668,62 +668,64 @@ bool make_directory(const string& path, bool parent)
 // ---------------------------------------------------------------------------
 bool remove_directory(const string& path, bool recursive)
 {
-    string subpath; // either subdirectory or file path
-
-    // -----------------------------------------------------------------------
     // remove files and subdirectories - recursive implementation
-    if (recursive) {
-        bool ok = true;
-#if WINDOWS
-        WIN32_FIND_DATA info;
-        HANDLE hFile = ::FindFirstFile(join_paths(path, "*.*").c_str(), &info);
-        if (hFile != INVALID_HANDLE_VALUE) {
-            do {
-                // skip '.' and '..'
-                if (strncmp(info.cFileName, ".", 2) == 0 || strncmp(info.cFileName, "..", 3) == 0) {
-                    continue;
-                }
-                // remove subdirectory or file, respectively
-                subpath = join_paths(path, info.cFileName);
-                if(info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    if (!remove_directory(subpath, true)) ok = false;
-                } else {
-                    if (::SetFileAttributes(subpath.c_str(), FILE_ATTRIBUTE_NORMAL) == FALSE ||
-                        ::DeleteFile(subpath.c_str()) == FALSE) ok = false;
-                }
-            } while (::FindNextFile(hFile, &info) == TRUE);
-            ::FindClose(hFile);
-        }
-#else
-        struct dirent *p = NULL;
-        DIR *d = opendir(path.c_str());
-        if (d != NULL) {
-            while ((p = readdir(d)) != NULL) {
-                // skip '.' and '..'
-                if (strncmp(p->d_name, ".", 2) == 0 || strncmp(p->d_name, "..", 3) == 0) {
-                    continue;
-                }
-                // remove subdirectory or file, respectively
-                subpath = join_paths(path, p->d_name);
-                if (is_dir(subpath)) {
-                    if (!remove_directory(subpath, true)) ok = false;
-                } else {
-                    if (unlink(subpath.c_str()) != 0) ok = false;
-                }
-            }
-            closedir(d);
-        }
-#endif
-        if (!ok) return false;
-    }
-    // -----------------------------------------------------------------------
-    // remove (empty) directory
+    if (recursive && !clear_directory(path)) return false;
+    // remove this directory
 #if WINDOWS
     return (::SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_NORMAL) == TRUE) &&
            (::RemoveDirectory(path.c_str()) == TRUE);
 #else
     return rmdir(path.c_str()) == 0;
 #endif
+}
+
+// ---------------------------------------------------------------------------
+bool clear_directory(const string& path)
+{
+    bool ok = true;
+    string subpath; // either subdirectory or file path
+
+#if WINDOWS
+    WIN32_FIND_DATA info;
+    HANDLE hFile = ::FindFirstFile(join_paths(path, "*.*").c_str(), &info);
+    if (hFile != INVALID_HANDLE_VALUE) {
+        do {
+            // skip '.' and '..'
+            if (strncmp(info.cFileName, ".", 2) == 0 || strncmp(info.cFileName, "..", 3) == 0) {
+                continue;
+            }
+            // remove subdirectory or file, respectively
+            subpath = join_paths(path, info.cFileName);
+            if(info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                if (!remove_directory(subpath, true)) ok = false;
+            } else {
+                if (::SetFileAttributes(subpath.c_str(), FILE_ATTRIBUTE_NORMAL) == FALSE ||
+                    ::DeleteFile(subpath.c_str()) == FALSE) ok = false;
+            }
+        } while (::FindNextFile(hFile, &info) == TRUE);
+        ::FindClose(hFile);
+    }
+#else
+    struct dirent *p = NULL;
+    DIR *d = opendir(path.c_str());
+    if (d != NULL) {
+        while ((p = readdir(d)) != NULL) {
+            // skip '.' and '..'
+            if (strncmp(p->d_name, ".", 2) == 0 || strncmp(p->d_name, "..", 3) == 0) {
+                continue;
+            }
+            // remove subdirectory or file, respectively
+            subpath = join_paths(path, p->d_name);
+            if (is_dir(subpath)) {
+                if (!remove_directory(subpath, true)) ok = false;
+            } else {
+                if (unlink(subpath.c_str()) != 0) ok = false;
+            }
+        }
+        closedir(d);
+    }
+#endif
+    return ok;
 }
 
 // ===========================================================================
