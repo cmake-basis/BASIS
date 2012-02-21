@@ -73,6 +73,8 @@ void testdriversetup(int* argc, char** argv[])
 
         cmd.add(add_before_libpath);
         cmd.add(add_before_env);
+        cmd.add(clean_cwd_before_test);
+        cmd.add(clean_cwd_after_test);
         cmd.add(compare);
         cmd.add(max_number_of_differences);
         cmd.add(intensity_tolerance);

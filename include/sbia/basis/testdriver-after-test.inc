@@ -87,6 +87,10 @@
                 cout << "</DartMeasurement>" << std::endl;
                 result += beststatus;
             }
+            // empty current working directory
+            if (clean_cwd_after_test.getValue()) {
+                clear_directory(get_working_directory().c_str());
+            }
         }
 
     // catch any exceptions

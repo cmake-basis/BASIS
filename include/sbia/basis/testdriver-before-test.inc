@@ -43,6 +43,10 @@
             oldcoutbuf  = cout.rdbuf();
             cout.rdbuf(redirectbuf);
         }
+        // empty current working directory
+        if (clean_cwd_before_test.getValue()) {
+            clear_directory(get_working_directory().c_str());
+        }
         // remove all test output images if existent from previous test run
         if (testcmd.isSet()) {
             for (size_t i = 0; i < regression_tests.size(); i++) {

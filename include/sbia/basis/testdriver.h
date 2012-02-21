@@ -201,6 +201,22 @@ MultiSwitchArg verbose(
 
 // ---------------------------------------------------------------------------
 // test / test command
+SwitchArg clean_cwd_before_test(
+        "", "clean-cwd-before",
+        "Request the removal of all files and directories from the current"
+        " working directory before the execution of the test. This option is"
+        " in particular useful if the test writes any results to the current"
+        " working directory.",
+        false);
+
+SwitchArg clean_cwd_after_test(
+        "", "clean-cwd-after",
+        "Request the removal of all files and directories from the current"
+        " working directory after the successful execution of the test."
+        " This option is in particular useful if the test writes any results"
+        " to the current working directory.",
+        false);
+
 #ifdef BASIS_STANDALONE_TESTDRIVER
 
 PositionalArgs testcmd(
