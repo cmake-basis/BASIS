@@ -1254,7 +1254,7 @@ endfunction ()
 # code files are written. If no common programming language could be determined,
 # "AMBIGUOUS" is returned. If none of the following programming languages
 # could be determined, "UNKNOWN" is returned: CXX (i.e., C++), JAVA,
-# JAVASCRIPT, PYTHON, PERL, BASH, MATLAB.
+# JAVASCRIPT, PYTHON, PERL, BASH, BATCH, MATLAB.
 #
 # @param [out] LANGUAGE Detected programming language.
 # @param [in]  ARGN     List of source code files.
@@ -1282,6 +1282,9 @@ function (basis_get_source_language LANGUAGE)
     # BASH
     elseif (SOURCE_FILE MATCHES "\\.sh$")
       set (LANG "BASH")
+    # Batch
+    elseif (SOURCE_FILE MATCHES "\\.bat$")
+      set (LANG "BATCH")
     # MATLAB
     elseif (SOURCE_FILE MATCHES "\\.m$")
       set (LANG "MATLAB")
