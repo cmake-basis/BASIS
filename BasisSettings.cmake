@@ -84,14 +84,15 @@ if (NOT BASIS_NO_SYSTEM_CHECKS)
   endif ()
 
   # check if tr/tuple header file is available
-  CHECK_INCLUDE_FILE_CXX ("tr1/tuple" HAVE_TR1_TUPLE)
-
-  if (HAVE_TR1_TUPLE OR
-      # Visual Studio compiler supports C++0x since version 10
-      CMAKE_GENERATOR MATCHES "Visual Studio [1-9][0-9]+")
+  if (CMAKE_GENERATOR MATCHES "Visual Studio [1-9][0-9]+")
     set (HAVE_TR1_TUPLE 1)
   else ()
-    set (HAVE_TR1_TUPLE 0)
+    CHECK_INCLUDE_FILE_CXX ("tr1/tuple" HAVE_TR1_TUPLE)
+    if (HAVE_TR1_TUPLE)
+      set (HAVE_TR1_TUPLE 1)
+    else ()
+      set (HAVE_TR1_TUPLE 0)
+    endif ()
   endif ()
 
   # check for availibility of pthreads library
