@@ -55,7 +55,7 @@
                         }
                     } else {
                         cerr << "Warning: Failed to remove already existing output image "
-                             << test_filename << endl;
+                             << test_image_file << endl;
                     }
                 }
             }
