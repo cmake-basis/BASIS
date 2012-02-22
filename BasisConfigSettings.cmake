@@ -21,14 +21,15 @@
 basis_sanitize_for_regex (RS "${CMAKE_SOURCE_DIR}")
 basis_sanitize_for_regex (RB "${CMAKE_BINARY_DIR}")
 
-# include directories of dependencies
+# ----------------------------------------------------------------------------
+## @brief Include directories of dependencies.
+set (INCLUDE_DIRS_CONFIG)
+
 get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
 if (INCLUDE_DIRS)
   list (REMOVE_DUPLICATES INCLUDE_DIRS)
 endif ()
 
-## @brief Include directories of dependencies.
-set (INCLUDE_DIRS_CONFIG "\${\${NS}INCLUDE_DIR}")
 foreach (D IN LISTS INCLUDE_DIRS)
   # exclude project own directories
   if (NOT D MATCHES "^${RS}|^${RB}")
@@ -36,14 +37,15 @@ foreach (D IN LISTS INCLUDE_DIRS)
   endif ()
 endforeach ()
 
-# link directories of dependencies
+# ----------------------------------------------------------------------------
+## @brief Directories of libraries this package depends on.
+set (LIBRARY_DIRS_CONFIG)
+
 get_directory_property (LIBRARY_DIRS LINK_DIRECTORIES)
 if (LIBRARY_DIRS)
   list (REMOVE_DUPLICATES LIBRARY_DIRS)
 endif ()
 
-## @brief Directories of libraries this package depends on.
-set (LIBRARY_DIRS_CONFIG "\${\${NS}LIBRARY_DIR}")
 foreach (D IN LISTS LIBRARY_DIRS)
   # exclude project own directories
   if (NOT D MATCHES "^${RS}|^${RB}")

@@ -108,14 +108,6 @@ set (BUILD_CONFIG_SETTINGS 1)
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisConfigSettings.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
-if (INCLUDE_DIR_CONFIG)
-  list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
-endif ()
-
-if (LIBRARY_CONFIG)
-  list (REMOVE_DUPLICATES LIBRARY_CONFIG)
-endif ()
-
 # ----------------------------------------------------------------------------
 # configure project configuration file for build tree
 
@@ -128,14 +120,6 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 set (BUILD_CONFIG_SETTINGS 0)
 include ("${CMAKE_CURRENT_LIST_DIR}/BasisConfigSettings.cmake")
 include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
-
-if (INCLUDE_DIR_CONFIG)
-  list (REMOVE_DUPLICATES INCLUDE_DIR_CONFIG)
-endif ()
-
-if (LIBRARY_CONFIG)
-  list (REMOVE_DUPLICATES LIBRARY_CONFIG)
-endif ()
 
 # ----------------------------------------------------------------------------
 # configure project configuration file for install tree

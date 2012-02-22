@@ -25,6 +25,23 @@ macro (basis_set_config NAME)
   set (${NS}${NAME} ${ARGN})
 endmacro ()
 
+# ----------------------------------------------------------------------------
+macro (basis_copy_config NAME SRC)
+  set (${NS}${NAME} ${${NS}${SRC}})
+endmacro ()
+
+# ----------------------------------------------------------------------------
+macro (basis_append_config NAME)
+  list (APPEND ${NS}${NAME} ${ARGN})
+endmacro ()
+
+# ----------------------------------------------------------------------------
+macro (basis_remove_duplicates_config NAME)
+  if (${NS}${NAME})
+    list (REMOVE_DUPLICATES ${NS}${NAME})
+  endif ()
+endmacro ()
+
 # ============================================================================
 # general
 # ============================================================================
@@ -44,12 +61,20 @@ basis_set_config (USE_FILE "${CMAKE_CURRENT_LIST_DIR}/@USE_FILE@")
 basis_set_config (INCLUDE_PREFIX "@INCLUDE_PREFIX@")
 
 ## @brief Directory of header files.
-basis_set_config (INCLUDE_DIR  "@INCLUDE_DIR_CONFIG@")
-basis_set_config (INCLUDE_DIRS "@INCLUDE_DIRS_CONFIG@")
+basis_set_config (INCLUDE_DIR "@INCLUDE_DIR_CONFIG@")
+
+## @brief Directory of header files including dependencies.
+basis_set_config    (INCLUDE_DIRS) # to have a set recognized by Doxygen filter
+basis_copy_config   (INCLUDE_DIRS INCLUDE_DIR)
+basis_append_config (INCLUDE_DIRS "@INCLUDE_DIRS_CONFIG@")
 
 ## @brief Directory of libraries.
-basis_set_config (LIBRARY_DIR  "@LIBRARY_DIR_CONFIG@")
-basis_set_config (LIBRARY_DIRS "@LIBRARY_DIRS_CONFIG@")
+basis_set_config (LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
+
+## @brief Directory of libraries including dependencies.
+basis_set_config    (LIBRARY_DIRS) # to have a set recognized by Doxygen filter
+basis_copy_config   (LIBRARY_DIRS LIBRARY_DIR)
+basis_append_config (LIBRARY_DIRS "@LIBRARY_DIRS_CONFIG@")
 
 ## @brief Search path for Python package.
 basis_set_config (PYTHON_LIBRARY_DIR "@PYTHON_LIBRARY_DIR_CONFIG@")
@@ -97,16 +122,21 @@ if (NOT @PROJECT_IS_MODULE@)
     unset (${${NS}MODULE}_CONFIG_PREFIX)
     # append include directories
     if (${NS}${${NS}MODULE}_INCLUDE_DIRS)
-      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIRS})
+      basis_append_config (INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIRS})
     elseif (${NS}${M}_INCLUDE_DIR)
-      list (APPEND ${NS}INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIR})
+      basis_append_config (INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIR})
     endif ()
     # append library directories
     if (${NS}${${NS}MODULE}_LIBRARY_DIRS)
-      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIRS})
+      basis_append_config (LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIRS})
     elseif (${NS}${${NS}MODULE}_LIBARY_DIR)
-      list (APPEND ${NS}LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIR})
+      basis_append_config (LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIR})
     endif ()
   endforeach ()
   unset (${NS}MODULE)
 endif ()
+
+basis_remove_duplicates_config (INCLUDE_DIR)
+basis_remove_duplicates_config (INCLUDE_DIRS)
+basis_remove_duplicates_config (LIBRARY_DIR)
+basis_remove_duplicates_config (LIBRARY_DIRS)
