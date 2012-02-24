@@ -34,8 +34,8 @@ import socket
 TEST_NAME      = os.path.basename(basis.get_executable_name())
 BASIS_DIR      = '@TESTING_BASIS_DIR@'
 RESSOURCES_DIR = os.path.join('@PROJECT_TESTING_DIR@/ressources', TEST_NAME)
-SOURCE_DIR     = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME)
-BUILD_DIR      = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME + '-build')
+SOURCE_DIR     = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME, 'source')
+BUILD_DIR      = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME, 'build')
 
 # ============================================================================
 # helpers
