@@ -549,7 +549,7 @@ function (basis_add_test TEST_NAME)
   endif ()
 
   if (NOT ARGN_WORKING_DIRECTORY)
-    set (ARGN_WORKING_DIRECTORY "${TESTING_OUTPUT_DIR}")
+    set (ARGN_WORKING_DIRECTORY "${TESTING_OUTPUT_DIR}/${TEST_NAME}")
   endif ()
   if (ARGN_WORKING_DIRECTORY MATCHES "^\\$<(.*):(.*)>$")
     if (NOT "${CMAKE_MATCH_1}" STREQUAL "TARGET_FILE_DIR")
