@@ -398,6 +398,17 @@ else ()
   set (INSTALL_LINKS OFF)
 endif ()
 
+# ============================================================================
+# build configuration
+# ============================================================================
+
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS AND NOT CMAKE_C_FLAGS)
+  set (
+    CMAKE_BUILD_TYPE "Release"
+    CACHE STRING "Choose the type of build, options are: None (CMAKE_C_FLAGS and CMAKE_CXX_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
+  )
+endif ()
+
 
 ## @}
 # end of Doxygen group
