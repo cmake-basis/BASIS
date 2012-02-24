@@ -14,15 +14,10 @@ import unittest
 import re
 import os
 import sys
-import socket
 
 
 @BASIS_PYTHON_UTILITIES@
 
-
-sys.stdout.write("<DartMeasurement name=\"Host Name\" type=\"string\">");
-sys.stdout.write(socket.gethostname());
-sys.stdout.write("</DartMeasurement>\n");
 
 # ============================================================================
 # tests
