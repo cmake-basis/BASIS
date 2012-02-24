@@ -75,7 +75,7 @@ like (Basis::get_executable_name ('basis.basisproject'),
 
 # directory of this executable
 like (Basis::get_executable_directory (),
-    qr/\/Testing\/Temporary\/test_utilities-build\/Testing\/bin/,
+    qr/\/Testing\/Temporary\/test_utilities/build\/Testing\/bin/,
     "directory of this executable");
 # directory of executable built by some target
 like (Basis::get_executable_directory ('basis.basisproject'),

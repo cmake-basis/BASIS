@@ -106,7 +106,7 @@ like "${name}" 'basisproject(\.sh)?' 'name of other executable'
 # directory of this executable
 get_executable_directory dir
 is $? 0 'return value is 0'
-like "${dir}" '/Testing/Temporary/test_utilities-build/Testing/bin' 'directory of this executable'
+like "${dir}" '/Testing/Temporary/test_utilities/build/Testing/bin' 'directory of this executable'
 
 # directory of executable built by other target
 get_executable_directory dir 'basis.basisproject'

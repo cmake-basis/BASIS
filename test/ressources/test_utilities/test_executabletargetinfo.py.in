@@ -72,7 +72,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
     def test_get_executable_directory(self):
         # directory of this executable
         self.assertTrue (re.search (
-                    r"/Testing/Temporary/test_utilities-build/Testing/bin",
+                    r"/Testing/Temporary/test_utilities/build/Testing/bin",
                     basis.get_executable_directory ()))
         # directory of executable built by some target
         self.assertTrue (re.match (
