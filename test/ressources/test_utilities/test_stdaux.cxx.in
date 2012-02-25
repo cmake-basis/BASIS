@@ -18,6 +18,17 @@
 #include <stdio.h>             // remove(), freopen()
 #include <fstream>
 
+// stdout/stderr redirection - dup(), dup2(), fileno(), close()
+#if WINDOWS
+#  include <io.h>
+#  define dup _dup
+#  define dup2 _dup2
+#  define fileno _fileno
+#  define close _close
+#else
+#  include <unistd.h>   
+#endif
+
 
 using namespace sbia;
 using namespace std;
@@ -65,35 +76,68 @@ TEST(StdAux, ExecuteTarget)
 // Test redirection of STDOUT and STDERR
 TEST(StdAux, Redirection)
 {
-    int status;
-#if WINDOWS
-    FAIL() << "Test not implemented for Windows yet!";
-#else
-    std::ifstream log;
-    char buf[1024];
-    FILE* original_stdout = stdout;
-    FILE* original_stderr = stderr;
-    ASSERT_EQ(stdout, freopen("test_stdaux.stdout", "w", stdout));
-    ASSERT_EQ(stderr, freopen("test_stdaux.stderr", "w", stderr));
+    // The redirection of stderr and stdout using rdbuf() only works for
+    // output to cerr and cout, respectively, but not for output to
+    // stderr and stdout using fprintf() or printf(). Therefore, freopen()
+    // has to be used, which captures both output written to cerr or cout,
+    // and output written via fprintf() or printf().
+#if 0
+    // redirect stdout and stderr to log files
+    ofstream outlog("test_stdaux.stdout");
+    ASSERT_TRUE(outlog.is_open());
+    ofstream errlog("test_stdaux.stderr");
+    ASSERT_TRUE(errlog.is_open());
+    streambuf* outbuf = cout.rdbuf(outlog.rdbuf());
+    streambuf* errbuf = cerr.rdbuf(errlog.rdbuf());
+    // execute subprocess
+    int status = 0;
     EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet --warn", true));
     EXPECT_EQ(0, status);
-    fclose(stdout);
-    stdout = original_stdout;
-    fclose(stderr);
-    stderr = original_stderr;
+    // restore stdout and stderr output streams
+    outlog.close();
+    errlog.close();
+    cout.rdbuf(outbuf);
+    cerr.rdbuf(errbuf);
+#else
+    // redirect stdout and stderr to log files
+    int stdout_dup = _dup(1);
+    int stderr_dup = _dup(2);
+    FILE* outlog = fopen("test_stdaux.stdout", "w");
+    FILE* errlog = fopen("test_stdaux.stderr", "w");
+    ASSERT_TRUE(outlog);
+    ASSERT_TRUE(errlog);
+    dup2(_fileno(outlog), 1);
+    dup2(_fileno(errlog), 2);
+    // execute subprocess
+    int status = 0;
+    EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet --warn", true));
+    EXPECT_EQ(0, status);
+    // restore stdout and stderr output streams
+    dup2(stdout_dup, 1);
+    dup2(stdout_dup, 2);
+    close(stdout_dup);
+    close(stderr_dup);
+    fclose(outlog);
+    fclose(errlog);
+#endif
+    ifstream log;
+    char buf[1024];
+    // read stdout log files and verify expected content
     log.open("test_stdaux.stdout");
     EXPECT_TRUE(log);
     log.getline(buf, 1024);
     log.close();
+    log.clear();
     EXPECT_STREQ("", buf);
     remove("test_stdaux.stdout");
+    // read stderr log files and verify expected content
     log.open("test_stdaux.stderr");
     EXPECT_TRUE(log);
     log.getline(buf, 1024);
     log.close();
+    if (buf[strlen(buf) - 1] = '\r') buf[strlen(buf) - 1] = '\0';
     EXPECT_STREQ("WARNING: Cannot greet in other languages!", buf);
     remove("test_stdaux.stderr");
-#endif
 }
 
 // ---------------------------------------------------------------------------
