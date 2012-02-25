@@ -614,8 +614,7 @@ if __name__ == '__main__':
   been resolved, the *.mine and *.template files must be removed before this
   tool can be used for another update of the project files. This can be done
   either manually or by running this program with the --cleanup option.""",
-        formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=51))
-        #formatter_class=argparse.RawTextHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # ----------------------------------------------------------------------------
     # define command-line arguments
