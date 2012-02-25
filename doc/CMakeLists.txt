@@ -52,9 +52,3 @@ basis_add_doc (
 basis_add_doc ("INSTALL-basis.txt") # common installation instructions
 
 basis_add_doc ("tutorials") # tutorial presentations
-
-# ============================================================================
-# other documentation
-# ============================================================================
-
-basis_add_doc ("tclap")
