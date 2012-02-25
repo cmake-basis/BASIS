@@ -749,10 +749,11 @@ int Subprocess::write(const void* buf, size_t nbuf)
 int Subprocess::read(void* buf, size_t nbuf, bool err)
 {
 #if WINDOWS
-    DWORD n;
+    DWORD n = 0;
     HANDLE h = _stdout;
     if (err && _stderr != INVALID_HANDLE_VALUE) h = _stderr;
-    return ReadFile(h, static_cast<char*>(buf), nbuf, &n, NULL) && n > 0;
+    if (!ReadFile(h, static_cast<char*>(buf), nbuf, &n, NULL)) return -1;
+    return n;
 #else
     int fds = _stdout;
     if (err && _stderr != -1) fds = _stderr;
