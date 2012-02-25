@@ -55,7 +55,7 @@ basis_project (
   OPTIONAL_DEPENDS
     PythonInterp
     Perl
-    PerlLibs
+    BASH
     ITK-4{ITKTestKernel}
     ITK
   OPTIONAL_TEST_DEPENDS
