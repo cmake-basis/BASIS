@@ -419,6 +419,12 @@ function (basis_configure_auxiliary_modules)
         MODULE
           BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       )
+      basis_set_target_properties (
+        ${TARGET_NAME}
+        PROPERTIES
+          OUTPUT_NAME "${MODULE}"
+          SUFFIX      ".py"
+      )
     endforeach ()
   endif ()
 
@@ -438,6 +444,12 @@ function (basis_configure_auxiliary_modules)
         MODULE
           BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       )
+      basis_set_target_properties (
+        ${TARGET_NAME}
+        PROPERTIES
+          OUTPUT_NAME "${MODULE}"
+          SUFFIX      ".pm"
+      )
     endforeach ()
   endif ()
 
@@ -455,6 +467,12 @@ function (basis_configure_auxiliary_modules)
         ${TARGET_NAME} "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh"
         MODULE
           BINARY_DIRECTORY "${BINARY_CODE_DIR}"
+      )
+      basis_set_target_properties (
+        ${TARGET_NAME}
+        PROPERTIES
+          OUTPUT_NAME "${MODULE}"
+          SUFFIX      ".sh"
       )
     endforeach ()
   endif ()
@@ -579,6 +597,20 @@ function (basis_configure_ExecutableTargetInfo)
     list (GET BUILD_LOCATIONS    ${I} BUILD_LOCATION)
     list (GET INSTALL_LOCATIONS  ${I} INSTALL_LOCATION)
 
+    # insert $(IntDir) for Visual Studio build location
+    if (CMAKE_GENERATOR MATCHES "Visual Studio")
+      basis_get_target_type (TYPE ${TARGET_UID})
+      if (TYPE MATCHES "^EXECUTABLE$")
+        get_filename_component (DIRECTORY "${BUILD_LOCATION}" PATH)
+        get_filename_component (FILENAME  "${BUILD_LOCATION}" NAME)
+        set (BUILD_LOCATION_WITH_INTDIR "${DIRECTORY}/$(IntDir)/${FILENAME}")
+      else ()
+        set (BUILD_LOCATION_WITH_INTDIR "${BUILD_LOCATION}")
+      endif ()
+    else ()
+      set (BUILD_LOCATION_WITH_INTDIR "${BUILD_LOCATION}")
+    endif ()
+
     # installation path relative to different library paths
     foreach (L LIBRARY PYTHON_LIBRARY PERL_LIBRARY)
       file (
@@ -613,7 +645,7 @@ function (basis_configure_ExecutableTargetInfo)
 
     # Python
     if (PYTHON)
-      set (PY_B "${PY_B}        '${ALIAS}' : '${BUILD_LOCATION}',\n")
+      set (PY_B "${PY_B}        '${ALIAS}' : '${BUILD_LOCATION_WITH_INTDIR}',\n")
       set (PY_I "${PY_I}        '${ALIAS}' : '../../${INSTALL_LOCATION_REL2PYTHON_LIBRARY}',\n")
     endif ()
 
@@ -622,7 +654,7 @@ function (basis_configure_ExecutableTargetInfo)
       if (PL_B)
         set (PL_B "${PL_B},\n")
       endif ()
-      set (PL_B "${PL_B}    '${ALIAS}' => '${BUILD_LOCATION}'")
+      set (PL_B "${PL_B}    '${ALIAS}' => '${BUILD_LOCATION_WITH_INTDIR}'")
       if (PL_I)
         set (PL_I "${PL_I},\n")
       endif ()
@@ -699,6 +731,12 @@ function (basis_configure_ExecutableTargetInfo)
         BINARY_DIRECTORY "${BINARY_CODE_DIR}"
         CONFIG "${CONFIG}"
     )
+    basis_set_target_properties (
+      ${TARGET_NAME}
+      PROPERTIES
+        OUTPUT_NAME "executabletargetinfo"
+        SUFFIX      ".py"
+    )
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -721,6 +759,12 @@ function (basis_configure_ExecutableTargetInfo)
       MODULE
         BINARY_DIRECTORY "${BINARY_CODE_DIR}"
         CONFIG "${CONFIG}"
+    )
+    basis_set_target_properties (
+      ${TARGET_NAME}
+      PROPERTIES
+        OUTPUT_NAME "ExecutableTargetInfo"
+        SUFFIX      ".pm"
     )
   endif ()
 
@@ -746,6 +790,12 @@ function (basis_configure_ExecutableTargetInfo)
       MODULE
         BINARY_DIRECTORY "${BINARY_CODE_DIR}"
         CONFIG "${CONFIG}"
+    )
+    basis_set_target_properties (
+      ${TARGET_NAME}
+      PROPERTIES
+        OUTPUT_NAME "executabletargetinfo"
+        SUFFIX      ".sh"
     )
   endif ()
 

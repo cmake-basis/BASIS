@@ -1524,10 +1524,12 @@ endfunction ()
 # is added at the top and bottom of executable Python and Perl scripts which
 # calls the Python or Perl interpreter with the script file and the given
 # script arguments as command-line arguments. The file name extension of
-# such modified scripts is by default set to .cmd, the common extension for
-# Windows NT Command Scripts. Scripts in other languages are not specifically
-# modified. In case of script modules, the script file name extension is
-# preserved in any case.
+# such modified scripts is by default set to <tt>.cmd</tt>, the common
+# extension for Windows NT Command Scripts. Scripts in other languages are
+# not specifically modified. In case of script modules, the script file name
+# extension is preserved in any case. When the @c WITH_EXT option is given,
+# executable scripts are not modified as described and their file name
+# extension is preserved.
 #
 # Example:
 # @code
@@ -1612,8 +1614,12 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b WITH_EXT @endtp
-#     <td>Specify that the filename extension should be kept also in case of
-#         an executable script which is built on Unix.</td>
+#     <td>Specify that the existing filename extension should be kept also
+#         in case of an executable script. No shebang directive is added to
+#         the top of the script automatically if this option is given.
+#         On Windows, on the other side, this prevents the addition of Batch
+#         code to execute the script and no <tt>.cmd</tt> file name extension
+#         is used for executable scripts build with this option.</td>
 #   </tr>
 #   <tr>
 #     @tp @b NO_EXPORT @endtp
@@ -1665,40 +1671,6 @@ function (basis_add_script TARGET_NAME)
     set (COMPILE "${BASIS_COMPILE_SCRIPTS}")
   endif ()
 
-  list (LENGTH ARGN_UNPARSED_ARGUMENTS LEN)
-  if (LEN EQUAL 0)
-    set (ARGN_SCRIPT)
-  elseif (LEN EQUAL 1)
-    list (GET ARGN_UNPARSED_ARGUMENTS 0 ARGN_SCRIPT)
-  else ()
-    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Too many arguments! Only one script can be built by a script target.")
-  endif ()
-
-  if (NOT ARGN_SCRIPT)
-    set (ARGN_SCRIPT "${TARGET_NAME}")
-    if (ARGN_MODULE)
-      basis_get_source_target_name (TARGET_NAME "${ARGN_SCRIPT}" NAME)
-    else ()
-      basis_get_source_target_name (TARGET_NAME "${ARGN_SCRIPT}" NAME_WE)
-    endif ()
-  endif ()
-
-  # determine path part which is optionally prepended to the binary directory
-  if (ARGN_WITH_PATH)
-    get_filename_component (SCRIPT_PATH "${ARGN_SCRIPT}" PATH)
-    if (IS_ABSOLUTE "${SCRIPT_PATH}")
-      if (SCRIPT_PATH MATCHES "^${PROJECT_SOURCE_DIR}")
-        basis_get_relative_path (SCRIPT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${SCRIPT_PATH}")
-      else ()
-        set (SCRIPT_PATH)
-      endif ()
-    endif ()
-  endif ()
-
-  if (ARGN_MODULE AND ARGN_LIBEXEC)
-    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Script cannot be MODULE and LIBEXEC at the same time!")
-  endif ()
-
   if (ARGN_TEST)
     set (ARGN_NO_EXPORT TRUE)
   endif ()
@@ -1717,6 +1689,77 @@ function (basis_add_script TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
 
+  # get script file and script name
+  list (LENGTH ARGN_UNPARSED_ARGUMENTS LEN)
+  if (LEN EQUAL 0)
+    set (ARGN_SCRIPT)
+  elseif (LEN EQUAL 1)
+    list (GET ARGN_UNPARSED_ARGUMENTS 0 ARGN_SCRIPT)
+  else ()
+    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Too many arguments! Only one script can be built by a script target.")
+  endif ()
+  if (NOT ARGN_SCRIPT)
+    set (ARGN_SCRIPT "${TARGET_NAME}")
+    set (TARGET_NAME) # set below from ARGN_SCRIPT
+  endif ()
+  get_filename_component (ARGN_SCRIPT "${ARGN_SCRIPT}" ABSOLUTE)
+  if (NOT EXISTS "${ARGN_SCRIPT}")
+    set (ARGN_SCRIPT "${ARGN_SCRIPT}.in")
+  endif ()
+  if (NOT EXISTS "${ARGN_SCRIPT}")
+    message (FATAL_ERROR "basis_add_script(): Missing script file ${ARGN_SCRIPT}!")
+  endif ()
+  get_filename_component (SCRIPT_NAME "${ARGN_SCRIPT}" NAME)
+  string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME}")
+  get_filename_component (SCRIPT_NAME_WE "${SCRIPT_NAME}" NAME_WE)
+  get_filename_component (SCRIPT_EXT "${SCRIPT_NAME}" EXT)
+
+  # determine path part which is optionally prepended to the binary directory
+  if (ARGN_WITH_PATH)
+    get_filename_component (SCRIPT_PATH "${ARGN_SCRIPT}" PATH)
+    if (IS_ABSOLUTE "${SCRIPT_PATH}")
+      if (SCRIPT_PATH MATCHES "^${PROJECT_SOURCE_DIR}")
+        basis_get_relative_path (SCRIPT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${SCRIPT_PATH}")
+      else ()
+        set (SCRIPT_PATH)
+      endif ()
+    endif ()
+  endif ()
+
+  # get script language
+  basis_get_source_language (SCRIPT_LANGUAGE "${ARGN_SCRIPT}")
+
+  # set output name and target name (if not set yet)
+  set (OUTPUT_PREFIX "")
+  set (OUTPUT_NAME   "")
+  set (OUTPUT_SUFFIX "")
+  if (TARGET_NAME)
+    set (OUTPUT_NAME "${TARGET_NAME}")
+  else ()
+    set (OUTPUT_NAME "${SCRIPT_NAME_WE}")
+    if (ARGN_MODULE)
+      basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME}" NAME)
+    else ()
+      basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME}" NAME_WE)
+    endif ()
+  endif ()
+  # use output name extension for modules,
+  # for executables also on Windows, and if WITH_EXT option is given
+  if (ARGN_MODULE OR ARGN_WITH_EXT)
+    set (OUTPUT_SUFFIX "${SCRIPT_EXT}")
+  elseif (WIN32)
+    if (SCRIPT_LANGUAGE MATCHES "PYTHON|PERL")
+      set (OUTPUT_SUFFIX ".cmd")
+    else ()
+      set (OUTPUT_SUFFIX "${SCRIPT_EXT}")
+    endif ()
+  endif ()
+  # SUFFIX and PREFIX used by CMake only for libraries
+  if (NOT ARGN_MODULE)
+    set (OUTPUT_NAME "${OUTPUT_PREFIX}${OUTPUT_NAME}${OUTPUT_SUFFIX}")
+    set (OUTPUT_PREFIX "")
+    set (OUTPUT_SUFFIX "")
+  endif ()
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -1729,21 +1772,15 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
 
+  if (ARGN_MODULE AND ARGN_LIBEXEC)
+    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Script cannot be MODULE and LIBEXEC at the same time!")
+  endif ()
+
   # directory for build system files
   set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
 
   # dump CMake variables for "build" of script
   basis_dump_variables ("${BUILD_DIR}/variables.cmake")
-
-  # make script file path absolute
-  get_filename_component (ARGN_SCRIPT "${ARGN_SCRIPT}" ABSOLUTE)
-
-  if (NOT EXISTS "${ARGN_SCRIPT}")
-    set (ARGN_SCRIPT "${ARGN_SCRIPT}.in")
-  endif ()
-  if (NOT EXISTS "${ARGN_SCRIPT}")
-    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Missing script file ${ARGN_SCRIPT}!")
-  endif ()
 
   # "parse" script to check if BASIS utilities are used and hence required
   file (READ "${ARGN_SCRIPT}" SCRIPT)
@@ -1754,26 +1791,6 @@ function (basis_add_script TARGET_NAME)
     basis_set_project_property (PROPERTY PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE)
   endif ()
   set (SCRIPT)
-
-  # get scripting language
-  basis_get_source_language (SCRIPT_LANGUAGE "${ARGN_SCRIPT}")
-
-  # get script name without ".in"
-  get_filename_component (SCRIPT_NAME "${ARGN_SCRIPT}" NAME)
-  string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME}")
-
-  # output name of script file
-  set (OUTPUT_NAME "${SCRIPT_NAME}")
-  if (NOT ARGN_MODULE)
-    if (WIN32)
-      if (SCRIPT_LANGUAGE MATCHES "PYTHON|PERL")
-        get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
-        set (OUTPUT_NAME "${OUTPUT_NAME}.cmd")
-      endif ()
-    elseif (NOT ARGN_WITH_EXT)
-      get_filename_component (OUTPUT_NAME "${OUTPUT_NAME}" NAME_WE)
-    endif ()
-  endif ()
 
   # binary directory
   if (ARGN_BINARY_DIRECTORY)
@@ -1893,14 +1910,15 @@ function (basis_add_script TARGET_NAME)
       RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
       LIBRARY_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
       OUTPUT_NAME               "${OUTPUT_NAME}"
-      PREFIX                    ""
-      SUFFIX                    ""
+      PREFIX                    "${OUTPUT_PREFIX}"
+      SUFFIX                    "${OUTPUT_SUFFIX}"
       COMPILE_DEFINITIONS       "${ARGN_CONFIG}"
       LINK_DEPENDS              "${ARGN_CONFIG_FILE}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
       NO_EXPORT                 "${ARGN_NO_EXPORT}"
       COMPILE                   "${COMPILE}"
+      WITH_EXT                  "${ARGN_WITH_EXT}"
   )
 
   if (ARGN_TEST)
@@ -1989,6 +2007,7 @@ function (basis_add_script_finalize TARGET_UID)
       "TEST"
       "NO_EXPORT"
       "COMPILE"
+      "WITH_EXT"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -2069,16 +2088,29 @@ function (basis_add_script_finalize TARGET_UID)
 
   
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # look for required interpreter executable
+  if (BASIS_LANGUAGE MATCHES "PYTHON")
+    basis_find_package (PythonInterp QUIET)
+    if (NOT PythonInterp_FOUND)
+      message (FATAL_ERROR "Python interpreter not found. It is required to"
+                           " execute the script file target ${TARGET_UID}.")
+    endif ()
+  elseif (BASIS_LANGUAGE MATCHES "PERL")
+    basis_find_package (Perl QUIET)
+    if (NOT Perl_FOUND)
+      message (FATAL_ERROR "Perl interpreter not found. It is required to"
+                           " execute the script file target ${TARGET_UID}.")
+    endif ()
+  elseif (BASIS_LANGUAGE MATCHES "BASH")
+    basis_find_package (BASH QUIET)
+    if (NOT BASH_FOUND)
+      message (FATAL_ERROR "BASH interpreter not found. It is required to"
+                           " execute the script file target ${TARGET_UID}.")
+    endif ()
+  endif ()
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # common variables and functions used by build scripts
-  if (NOT PYTHON_EXECUTABLE)
-    set (PYTHON_EXECUTABLE "python")
-  endif ()
-  if (NOT PERL_EXECUTABLE)
-    set (PERL_EXECUTABLE "perl")
-  endif ()
-  if (NOT BASH_EXECUTABLE)
-    set (BASH_EXECUTABLE "bash")
-  endif ()
   set (C "${C}\n")
   set (C "${C}# set script attributes\n")
   set (C "${C}set (LANGUAGE \"${BASIS_LANGUAGE}\")\n")
@@ -2097,21 +2129,19 @@ function (basis_add_script_finalize TARGET_UID)
   set (C "${C}    string (CONFIGURE \"\${SCRIPT}\" SCRIPT \${MODE})\n")
   set (C "${C}    string (CONFIGURE \"\${SCRIPT}\" SCRIPT \${MODE})\n")
   set (C "${C}  endif ()\n")
-  if (NOT MODULE)
-  set (C "${C}  if (NOT UNIX OR NOT SCRIPT MATCHES \"^#!\")\n")
+  if (NOT MODULE AND NOT WITH_EXT)
+  set (C "${C}  if (WIN32)\n")
   set (C "${C}    if (LANGUAGE MATCHES \"PYTHON\")\n")
-  set (C "${C}      if (WIN32)\n")
-  set (C "${C}        set (SCRIPT \"@setlocal enableextensions & ${PYTHON_EXECUTABLE} -x %~f0 %* & goto :EOF\\n\${SCRIPT}\")\n")
-  set (C "${C}      else ()\n")
-  set (C "${C}        set (SCRIPT \"#! ${PYTHON_EXECUTABLE}\\n\${SCRIPT}\")\n")
-  set (C "${C}      endif ()\n")
+  set (C "${C}      set (SCRIPT \"@setlocal enableextensions & ${PYTHON_EXECUTABLE} -x %~f0 %* & goto :EOF\\n\${SCRIPT}\")\n")
   set (C "${C}    elseif (LANGUAGE MATCHES \"PERL\")\n")
-  set (C "${C}      if (WIN32)\n")
-  set (C "${C}        set (SCRIPT \"@goto = \\\"START_OF_BATCH\\\" ;\\n@goto = ();\\n\\n\${SCRIPT}\")\n")
-  set (C "${C}        set (SCRIPT \"\${SCRIPT}\\n\\n__END__\\n\\n:\\\"START_OF_BATCH\\\"\\n@${PERL_EXECUTABLE} -w -S %~f0 %*\")\n")
-  set (C "${C}      else ()\n")
-  set (C "${C}        set (SCRIPT \"#! ${PERL_EXECUTABLE} -w\\n\${SCRIPT}\")\n")
-  set (C "${C}      endif ()\n")
+  set (C "${C}      set (SCRIPT \"@goto = \\\"START_OF_BATCH\\\" ;\\n@goto = ();\\n\\n\${SCRIPT}\")\n")
+  set (C "${C}      set (SCRIPT \"\${SCRIPT}\\n\\n__END__\\n\\n:\\\"START_OF_BATCH\\\"\\n@${PERL_EXECUTABLE} -w -S %~f0 %*\")\n")
+  set (C "${C}    endif ()\n")
+  set (C "${C}  elseif (NOT SCRIPT MATCHES \"^#!\")\n")
+  set (C "${C}    if (LANGUAGE MATCHES \"PYTHON\")\n")
+  set (C "${C}      set (SCRIPT \"#! ${PYTHON_EXECUTABLE}\\n\${SCRIPT}\")\n")
+  set (C "${C}    elseif (LANGUAGE MATCHES \"PERL\")\n")
+  set (C "${C}      set (SCRIPT \"#! ${PERL_EXECUTABLE} -w\\n\${SCRIPT}\")\n")
   set (C "${C}    elseif (LANGUAGE MATCHES \"BASH\")\n")
   set (C "${C}      set (SCRIPT \"#! ${BASH_EXECUTABLE}\\n\${SCRIPT}\")\n")
   set (C "${C}    endif ()\n")
