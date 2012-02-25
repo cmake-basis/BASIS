@@ -72,7 +72,7 @@ END
     exit 1;
 }
 
-open (FILE, "<$ARGV[0]");
+open (FILE, "<$ARGV[0]") or die "Failed to open file $ARGV[0]\n";
 my $filehead = "";
 for (my $line = 0; ($line < 3) && ($_ = <FILE>); $line++) {
     $filehead .= $_;
@@ -84,7 +84,7 @@ if ($ARGV[0] =~ /\.([a-z]+)$/i) {
     $ext = lc ($1);
 }
 
-my $filter;
+my $filter = undef;
 
 # Perl
 if (grep ($_ eq $ext, "pl", "pm", "perl") || $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/) {
@@ -93,20 +93,25 @@ if (grep ($_ eq $ext, "pl", "pm", "perl") || $filehead =~ /^#!\s*(\/usr\/bin\/pe
 # Python
 } elsif ($ext eq "py" || $filehead =~ /^#!\s*(\/usr\/bin\/python|\/bin\/python|\/usr\/bin\/env\s+python)/) {
     print STDERR "Treating file as Python\n" if ($verbose);
-    exec (Basis::get_executable_path ('doxyfilter-python'), @ARGV);
+    unshift (@ARGV, 'doxyfilter-python');
 # BASH
 } elsif ($ext eq "sh" || $filehead =~ /^#!\s*(\/usr\/bin\/bash|\/bin\/bash|\/usr\/bin\/env\s+bash)/) {
     print STDERR "Treating file as BASH\n" if ($verbose);
-    exec (Basis::get_executable_path ('doxyfilter-bash'), @ARGV);
+    unshift (@ARGV, 'doxyfilter-bash');
 # CMake
 } elsif ($ext eq "cmake" or $ext eq "ctest") {
     print STDERR "Treating file as CMake\n" if ($verbose);
-    exec (Basis::get_executable_path ('doxyfilter-cmake'), @ARGV);
-}
-
-if ($filter) {
-    $filter->filter ($ARGV [0]);
+    unshift (@ARGV, 'doxyfilter-cmake');
+# otherwise
 } else {
     print STDERR "passing file through\n" if ($verbose);
     print <>;
+    exit 0;
+}
+
+# execute filter instance or external command
+if ($filter) {
+    $filter->filter ($ARGV [0]);
+} else {
+    Basis::execute_process (\@ARGV);
 }
