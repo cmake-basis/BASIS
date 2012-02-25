@@ -39,7 +39,9 @@ set (TEST_BASH_UTILITIES "${BUILD_UTILITIES_FOR_BASH}")
 # utilities
 # ============================================================================
 
-basis_add_library (testaux.py)
+if (BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
+  basis_add_library (testaux.py)
+endif ()
 
 # ============================================================================
 # subdirectories

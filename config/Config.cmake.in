@@ -55,6 +55,9 @@ basis_set_config (TEMPLATE_DIR "@TEMPLATE_DIR_CONFIG@")
 # utilities
 # ============================================================================
 
+## @brief List of enabled BASIS utilities.
+basis_set_config (UTILITIES_ENABLED "@UTILITIES_ENABLED")
+
 ## @brief Absolute path to C++ utilities files.
 basis_set_config (CXX_TEMPLATES_DIR "@CXX_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to Java utilities files.

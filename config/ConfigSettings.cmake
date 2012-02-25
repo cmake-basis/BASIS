@@ -23,6 +23,9 @@
 # common settings
 # ============================================================================
 
+## @brief List of enabled BASIS utilities.
+set (UTILITIES_ENABLED ${BASIS_UTILITIES_ENABLED})
+
 basis_get_fully_qualified_target_uid (UTILITIES_LIBRARY_CONFIG "${BASIS_UTILITIES_LIBRARY}")
 basis_get_fully_qualified_target_uid (TEST_LIBRARY_CONFIG      "${BASIS_TEST_LIBRARY}")
 basis_get_fully_qualified_target_uid (TEST_MAIN_LIBRARY_CONFIG "${BASIS_TEST_MAIN_LIBRARY}")

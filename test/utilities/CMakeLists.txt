@@ -10,19 +10,26 @@
 
 # ----------------------------------------------------------------------------
 # project independent utilities
-basis_add_test (test_path.cxx UNITTEST)
-basis_add_test (test_subprocess.cxx UNITTEST)
-if (UNIX)
+if (BUILD_UTILITIES_FOR_CXX)
+  basis_add_test (test_path.cxx UNITTEST)
+  basis_add_test (test_subprocess.cxx UNITTEST)
+endif ()
+
+if (BUILD_UTILITIES_FOR_BASH)
   basis_add_test (test_core.sh UNITTEST)
   basis_add_test (test_shtap.sh UNITTEST)
 endif ()
 
-basis_add_executable (parseargs.cxx)
-basis_add_test (parseargs COMMAND parseargs foo) # to test if there is no memory leak
-basis_add_test (parseargs-help COMMAND parseargs --help)
-basis_add_test (parseargs-helpshort COMMAND parseargs --helpshort)
-basis_add_test (parseargs-version COMMAND parseargs --version)
+if (BUILD_UTILITIES_FOR_CXX)
+  basis_add_executable (parseargs.cxx)
+  basis_add_test (parseargs COMMAND parseargs foo) # to test if there is no memory leak
+  basis_add_test (parseargs-help COMMAND parseargs --help)
+  basis_add_test (parseargs-helpshort COMMAND parseargs --helpshort)
+  basis_add_test (parseargs-version COMMAND parseargs --version)
+endif ()
 
 # ----------------------------------------------------------------------------
 # project-specific utilities
-basis_add_test (test_utilities.py)
+if (BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
+  basis_add_test (test_utilities.py)
+endif ()

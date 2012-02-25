@@ -26,14 +26,25 @@
 # options
 # ============================================================================
 
-option (BUILD_UTILITIES_FOR_CXX "Whether to build the C++ utilities." ON)
-option (BUILD_UTILITIES_FOR_PYTHON "Whether to build the Python utilities." ON)
-option (BUILD_UTILITIES_FOR_PERL "Whether to build the Perl utilities." ON)
+option (USE_CXX "Enable use of C++ utilities" ON)
 
-if (UNIX)
-  option (BUILD_UTILITIES_FOR_BASH "Whether to build the BASH utilities." ON)
-else ()
-  set (BUILD_UTILITIES_FOR_BASH OFF)
+set (BUILD_UTILITIES_FOR_CXX    ${USE_CXX})            # USE_CXX option
+set (BUILD_UTILITIES_FOR_PYTHON ${PythonInterp_FOUND}) # USE_PythonInterp option
+set (BUILD_UTILITIES_FOR_PERL   ${Perl_FOUND})         # USE_Perl option
+set (BUILD_UTILITIES_FOR_BASH   ${BASH_FOUND})         # USE_BASH option
+
+set (BASIS_UTILITIES_ENABLED) # set in BASISConfig.cmake for other projects
+if (BUILD_UTILITIES_FOR_CXX)
+  list (APPEND BASIS_UTILITIES_ENABLED CXX)
+endif ()
+if (BUILD_UTILITIES_FOR_PYTHON)
+  list (APPEND BASIS_UTILITIES_ENABLED PYTHON)
+endif ()
+if (BUILD_UTILITIES_FOR_PERL)
+  list (APPEND BASIS_UTILITIES_ENABLED PERL)
+endif ()
+if (BUILD_UTILITIES_FOR_BASH)
+  list (APPEND BASIS_UTILITIES_ENABLED BASH)
 endif ()
 
 # ============================================================================
@@ -74,11 +85,21 @@ set (BASIS_INCLUDES_CHECK_EXCLUDE
 
 # configure all BASIS utilities such that they are included in API
 # documentation even if BASIS does not use them itself
-basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES   TRUE)
-basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES TRUE)
-basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES   TRUE)
-basis_set_project_property (PROPERTY PROJECT_USES_BASH_UTILITIES   TRUE)
-basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES TRUE)
+if (BUILD_UTILITIES_FOR_JAVA)
+  basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES TRUE)
+endif ()
+if (BUILD_UTILITIES_FOR_PYTHON)
+  basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES TRUE)
+endif ()
+if (BUILD_UTILITIES_FOR_PERL)
+  basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES TRUE)
+endif ()
+if (BUILD_UTILITIES_FOR_BASH)
+  basis_set_project_property (PROPERTY PROJECT_USES_BASH_UTILITIES TRUE)
+endif ()
+if (BUILD_UTILITIES_FOR_MATLAB)
+  basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES TRUE)
+endif ()
 
 # target UIDs of BASIS libraries; these would be set by the package configuration
 # file if this BASIS project would not be BASIS itself
