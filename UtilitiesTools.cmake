@@ -406,6 +406,12 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # Python
   if (PYTHON)
+    if (NOT BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
+      message (FATAL_ERROR "BASIS Python utilities required by this package"
+                           " but BASIS was built without Python utilities."
+                           " Rebuild BASIS with Python utilities enabled.")
+    endif ()
+
     foreach (MODULE basis stdaux)
       basis_get_source_target_name (TARGET_NAME "${MODULE}.py" NAME)
       basis_add_library (
@@ -419,6 +425,12 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # Perl
   if (PERL)
+    if (NOT BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
+      message (FATAL_ERROR "BASIS Perl utilities required by this package"
+                           " but BASIS was built without Perl utilities."
+                           " Rebuild BASIS with Perl utilities enabled.")
+    endif ()
+
     foreach (MODULE Basis StdAux)
       basis_get_source_target_name (TARGET_NAME "${MODULE}.pm" NAME)
       basis_add_library (
@@ -432,6 +444,11 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # BASH
   if (BASH)
+    if (NOT UNIX)
+      message (FATAL_ERROR "Package uses BASIS BASH utilities but is build"
+                           " on a non-Unix system.")
+    endif ()
+
     foreach (MODULE basis stdaux)
       basis_get_source_target_name (TARGET_NAME "${MODULE}.sh" NAME)
       basis_add_library (
