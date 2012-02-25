@@ -58,7 +58,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         self.assertEquals (basis.get_executable_name (), 'test_executabletargetinfo.py')
         # name of executable built by some target
         self.assertTrue (re.match (
-                    r"basisproject(\.sh)?",
+                    r"basisproject(\.cmd)?",
                     basis.get_executable_name ('basis.basisproject'))) 
     
     # ------------------------------------------------------------------------

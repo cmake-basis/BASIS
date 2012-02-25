@@ -72,7 +72,7 @@ TEST(ExecutableTargetInfo, GetExecutableName)
 {
     const basis::ExecutableTargetInfo& info = basis::ExecutableTargetInfo::instance();
 #if WINDOWS
-    EXPECT_STREQ("basisproject", info.get_executable_name("basis.basisproject").c_str())
+    EXPECT_STREQ("basisproject.cmd", info.get_executable_name("basis.basisproject").c_str())
 #else
     EXPECT_STREQ("basisproject", info.get_executable_name("basis.basisproject").c_str())
 #endif
@@ -93,7 +93,7 @@ TEST(ExecutableTargetInfo, GetBuildDirectory)
     EXPECT_TRUE(dir != "") << "returned string is empty";
     EXPECT_NE(string::npos, idx = dir.rfind ("/"))
         << "returned directory does not contain a slash (/)";
-    EXPECT_STREQ("/bin", dir.substr(idx).c_str())
+    EXPECT_TRUE(dir.find("/bin") != string::npos)
         << "basis.basisproject does not live in a 'bin' directory";
 
     EXPECT_STREQ("", info.get_build_directory("unknown").c_str())
@@ -113,7 +113,7 @@ TEST(ExecutableTargetInfo, GetInstallationDirectory)
     dir = info.get_installation_directory("basis.basisproject");
     cout << "Installation directory of basis.basisproject is '" << dir << "'" << endl;
     EXPECT_TRUE(dir != "") << "returned string is empty";
-    EXPECT_STREQ(dir.c_str(), info.get_build_directory("basis.basisproject").c_str())
+    EXPECT_STREQ(dir.c_str(), info.get_build_directory("basis.basisproject").substr(0, dir.size()).c_str())
         << "build and installation directory are not the same for external executable";
 
     dir = info.get_installation_directory("helloworld");

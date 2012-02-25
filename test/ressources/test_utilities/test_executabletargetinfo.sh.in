@@ -93,7 +93,7 @@ is "${name}" 'test_executabletargetinfo.sh' 'name of this executable'
 # name of executable built by other target
 get_executable_name name 'basis.basisproject'
 is $? 0 'return value is 0'
-like "${name}" 'basisproject(\.sh)?' 'name of other executable'
+like "${name}" 'basisproject(\.cmd)?' 'name of other executable'
 
 # ----------------------------------------------------------------------------
 # test get_executable_directory()

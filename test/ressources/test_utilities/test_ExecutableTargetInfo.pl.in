@@ -61,7 +61,7 @@ like (Basis::get_executable_name (),
     "name of this executable");
 # name of executable built by some target
 like (Basis::get_executable_name ('basis.basisproject'),
-    qr/^basisproject(\.sh)?$/,
+    qr/^basisproject(\.cmd)?$/,
     "name of basis.basisproject executable");
 
 # ----------------------------------------------------------------------------

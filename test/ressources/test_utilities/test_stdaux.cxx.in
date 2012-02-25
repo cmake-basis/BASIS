@@ -42,12 +42,14 @@ TEST(StdAux, ExecuteTarget)
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command is 0";
     EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet", true, &output));
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command --greet is 0";
+    output.flush();
     EXPECT_STREQ("Hello, BASIS!\n", output.str().c_str());
     args.clear();
     output.str("");
     args.push_back("basis.dummy_command");
     args.push_back("--greet");
     EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
+    output.flush();
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command --warn is 0";
     EXPECT_STREQ("Hello, BASIS!\n", output.str().c_str());
 }
@@ -92,13 +94,13 @@ TEST(StdAux, Redirection)
 TEST(StdAux, ExecuteCommand)
 {
 #if WINDOWS
-    const string args = "dir C:/";
+    const string args = "dir C:\\";
 #else
     const string args = "ls /";
 #endif
-    int status;
+    int status = 0;
     std::ostringstream output;
-    EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
+    ASSERT_NO_THROW(status = basis::execute_process(args, true, &output));
     EXPECT_EQ(0, status) << "exit code of dir or ls is 0";
     EXPECT_STRNE("", output.str().c_str()) << "output of dir or ls is not empty";
 }

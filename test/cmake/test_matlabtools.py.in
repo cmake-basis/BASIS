@@ -46,9 +46,4 @@ if __name__ == '__main__':
     # build project
     build_project(verbose)
     # run tests
-    os.chdir(BUILD_DIR)
-    test_cmd=['@CMAKE_CTEST_COMMAND@', '-V']
-    if verbose > 0:
-        test_cmd.append('-V')
-    test_cmd.extend(sys.argv[1:])
-    basis.execute_process(test_cmd, verbose=True)
+    run_tests(verbose)

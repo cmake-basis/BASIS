@@ -112,15 +112,37 @@ def build_project(verbose=0):
     basis.execute_process(config_cmd, verbose=True)
     print "Configuring test project... - done"
     print "Building test project..."
-    if sys.platform == 'win32' and os.path.exists(TEST_NAME + ".sln"):
-        build_cmd = ['devenv', '/build']
-        if '@TESTING_BUILD_TYPE@' != '': build_cmd.append('@TESTING_BUILD_TYPE@')
-        else: build_cmd.append('Release')
-    else:
+    build_cmd = None
+    if sys.platform == 'win32':
+        solution_file = False
+        for f in os.listdir(BUILD_DIR):
+            if f.endswith('.sln'):
+                solution_file = os.path.join(BUILD_DIR, f)
+                break
+        if solution_file:
+            build_cmd = ['devenv', solution_file, '/build']
+            if '@TESTING_BUILD_TYPE@' != '': build_cmd.append('@TESTING_BUILD_TYPE@')
+            else: build_cmd.append('Release')
+    if not build_cmd:
         build_cmd = ['make']
         if verbose > 0: build_cmd.append('VERBOSE=1')
     basis.execute_process(build_cmd, verbose=True)
     print "Building test project... - done"
+    os.chdir(wd)
+
+# ----------------------------------------------------------------------------
+def run_tests(verbose=0):
+    """Run tests by invoking CTest in the build directory."""
+    wd=os.getcwd()
+    os.chdir(BUILD_DIR)
+    test_cmd=['@CMAKE_CTEST_COMMAND@', '-V']
+    if verbose > 0: test_cmd.append('-V')
+    if sys.platform == 'win32':
+        test_cmd.append('-C')
+        if '@TESTING_BUILD_TYPE@' != '': test_cmd.append('@TESTING_BUILD_TYPE@')
+        else: test_cmd.append('Release')
+    test_cmd.extend(sys.argv[1:])
+    basis.execute_process(test_cmd, verbose=True)
     os.chdir(wd)
 
 # ----------------------------------------------------------------------------
