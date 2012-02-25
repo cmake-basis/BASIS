@@ -90,6 +90,7 @@ macro (basis_find_package PACKAGE)
     "COMPONENTS"
     ${ARGN}
   )
+  # --------------------------------------------------------------------------
   # extract components from PACKAGE
   if (PKG MATCHES "^([^ ]+)[ \\n\\t]*{(.*)}$")
     set (PKG "${CMAKE_MATCH_1}")
@@ -113,9 +114,11 @@ macro (basis_find_package PACKAGE)
     set (PKG "${CMAKE_MATCH_1}")
     set (VER "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
   endif ()
+  # --------------------------------------------------------------------------
   # preserve <PKG>_DIR variable which might get reset if different versions
-  # of the package are searched
+  # of the package are searched or if package is optional and deselected
   set (PKG_DIR "${${PKG}_DIR}")
+  # --------------------------------------------------------------------------
   # some debugging output
   if (BASIS_DEBUG)
     message ("** basis_find_package()")
@@ -127,6 +130,8 @@ macro (basis_find_package PACKAGE)
     message ("**     Components: [${ARGN_COMPONENTS}]")
     endif ()
   endif ()
+  # --------------------------------------------------------------------------
+  # find other modules of same project
   if (PROJECT_IS_MODULE)
     # allow modules to specify top-level project as dependency
     if (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
@@ -151,8 +156,19 @@ macro (basis_find_package PACKAGE)
       endif ()
     endif ()
   endif ()
+  # --------------------------------------------------------------------------
+  # hide or show already defined <PKG>_DIR cache entry
+  if (DEFINED ${PKG}_DIR AND DEFINED USE_${PKG})
+    if (USE_${PKG})
+      mark_as_advanced (CLEAR ${PKG}_DIR)
+    else ()
+      mark_as_advanced (FORCE ${PKG}_DIR)
+    endif ()
+  endif ()
+  # --------------------------------------------------------------------------
+  # find external packages
   string (TOUPPER "${PKG}" PKG_UPPER)
-  if (NOT ${PKG}_FOUND)
+  if (NOT ${PKG}_FOUND AND (NOT DEFINED USE_${PKG} OR USE_${PKG}))
     # circumvent issue with CMake's find_package() interpreting these variables
     # relative to the current binary directory instead of the top-level directory
     if (${PKG}_DIR AND NOT IS_ABSOLUTE "${${PKG}_DIR}")
@@ -192,39 +208,32 @@ macro (basis_find_package PACKAGE)
         set (${PKG}_FOUND TRUE)
       endif ()
       if (${PKG}_FOUND)
-        message (STATUS "Looking for ${MSG}... - found")
+        if (DEFINED ${PKG}_DIR)
+          message (STATUS "Looking for ${MSG}... - found: ${${PKG}_DIR}")
+        elseif (DEFINED ${PKG_UPPER}_DIR)
+          message (STATUS "Looking for ${MSG}... - found: ${${PKG_UPPER}_DIR}")
+        else ()
+          message (STATUS "Looking for ${MSG}... - found")
+        endif ()
       else ()
         message (STATUS "Looking for ${MSG}... - not found")
       endif ()
     endif ()
+    # provide option which allows users to disable use of not required packages
+    if (NOT ARGN_REQUIRED AND ${PKG}_FOUND)
+      option (USE_${PKG} "Enable/disable use of package ${PKG}." ON)
+      if (NOT USE_${PKG})
+        set (${PKG}_FOUND       FALSE)
+        set (${PKG_UPPER}_FOUND FALSE)
+      endif ()
+    endif ()
   endif ()
-  # reset <PKG>_DIR variable for possible next find with differing version
+  # --------------------------------------------------------------------------
+  # reset <PKG>_DIR variable for possible search of different package version
   if (PKG_DIR AND NOT ${PKG}_DIR)
-    if (DEFINED "${PKG}_DIR")
-      get_property (PKG_DIR_IS_CACHED CACHE "${PKG}_DIR" PROPERTY VALUE DEFINED)
-    else ()
-      set (PKG_DIR_IS_CACHED FALSE)
-    endif ()
-    if (PKG_DIR_IS_CACHED)
-      set_property (CACHE "${PKG}_DIR" PROPERTY VALUE "${PKG_DIR}")
-    else ()
-      set (${PKG}_DIR "${PKG_DIR}")
-    endif ()
-    unset (PKG_DIR_IS_CACHED)
+    basis_set_or_update_cache (${PKG}_DIR "${PKG_DIR}")
   endif ()
-  # provide option which allows users to disable use of not required packages
-  if (NOT ARGN_REQUIRED AND ${PKG}_FOUND)
-    if (VER)
-      set (USE_PKG_OPTION "USE_${PKG}-${VER}")
-    else ()
-      set (USE_PKG_OPTION "USE_${PKG}")
-    endif ()
-    option (${USE_PKG_OPTION} "Enable/disable use of package ${PKG}." ON)
-    if (NOT ${USE_PKG_OPTION})
-      set (${PKG}_FOUND       FALSE)
-      set (${PKG_UPPER}_FOUND FALSE)
-    endif ()
-  endif ()
+  # --------------------------------------------------------------------------
   # unset locally used variables
   unset (PACKAGE_DIR)
   unset (PKG)
@@ -554,6 +563,41 @@ endfunction ()
 # ============================================================================
 # set
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Set variable.
+#
+# If the variable is cached, this function will update the cache value,
+# otherwise, it simply sets the CMake variable uncached to the given value(s).
+function (basis_set_or_update_cache VAR)
+  if (DEFINED "${VAR}")
+    get_property (CACHED CACHE "${VAR}" PROPERTY VALUE DEFINED)
+  else ()
+    set (CACHED FALSE)
+  endif ()
+  if (CACHED)
+    if (ARGC GREATER 1)
+      set_property (CACHE "${VAR}" PROPERTY VALUE ${ARGN})
+    else ()
+      set ("${VAR}" "" CACHE INTERNAL "" FORCE)
+    endif ()
+  else ()
+    set ("${VAR}" ${ARGN} PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Update cache variable.
+function (basis_update_cache VAR)
+  if (DEFINED "${VAR}")
+    get_property (CACHED CACHE "${VAR}" PROPERTY VALUE DEFINED)
+  else ()
+    set (CACHED FALSE)
+  endif ()
+  if (CACHED)
+    set_property (CACHE "${VAR}" PROPERTY VALUE ${ARGN})
+  endif ()
+endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Set value of variable only if variable is not set already.
