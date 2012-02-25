@@ -172,9 +172,13 @@ TEST(Subprocess, Terminate)
     EXPECT_TRUE(p.poll());
 #if WINDOWS
     EXPECT_EQ(130, p.returncode());
-#endif
+    EXPECT_TRUE(p.signaled());
+    EXPECT_EQ(-1, p.read(buf, 2));
+#else
+    EXPECT_EQ(0, p.returncode());
     EXPECT_TRUE(p.signaled());
     EXPECT_EQ(0, p.read(buf, 2));
+#endif
 }
 
 // ---------------------------------------------------------------------------
