@@ -46,8 +46,12 @@ class TestProcessExecution(unittest.TestCase):
     def test_target_execution(self):
         """Test execution of executable target."""
         self.assertEquals(0, execute_process(['basis.dummy_command']))
+        if sys.platform == 'win32':
+            msg = 'Hello, BASIS!\r\n'
+        else:
+            msg = 'Hello, BASIS!\n'
         self.assertEquals(
-                (0, 'Hello, BASIS!\n'),
+                (0, msg),
                 execute_process(['basis.dummy_command', '--greet'],
                         stdout=True, quiet=True))
 
@@ -97,12 +101,13 @@ class TestProcessExecution(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_command_execution(self):
         """Test execution of some non-target command."""
+        directory = basis.get_executable_directory()
         if (os.name == 'posix'):
-            self.assertEquals(0, execute_process(['ls', '/'], quiet=True))
-            self.assertEquals(0, execute_process('ls /', quiet=True))
+            self.assertEquals(0, execute_process(['ls', directory], quiet=True))
+            self.assertEquals(0, execute_process('ls ' + directory, quiet=True))
         else:
-            self.assertEquals(0, execute_process(['dir', 'C:/'], quiet=True))
-            self.assertEquals(0, execute_process('dir C:/', quiet=True))
+            self.assertEquals(0, execute_process(['dir', directory], quiet=True))
+            self.assertEquals(0, execute_process('dir "' + directory + '"', quiet=True))
 
 # ============================================================================
 # main

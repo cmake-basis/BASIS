@@ -21,6 +21,7 @@
 // stdout/stderr redirection - dup(), dup2(), fileno(), close()
 #if WINDOWS
 #  define _CRT_SECURE_NO_DEPRECATE
+#  define _CRT_SECURE_NO_WARNINGS
 #  include <io.h>
 #else
 #  include <unistd.h>   
@@ -105,8 +106,8 @@ TEST(StdAux, Redirection)
     int stderr_dup = _dup(2);
     FILE* outlog = fopen("test_stdaux.stdout", "w");
     FILE* errlog = fopen("test_stdaux.stderr", "w");
-    ASSERT_TRUE(outlog);
-    ASSERT_TRUE(errlog);
+    ASSERT_TRUE(outlog != NULL);
+    ASSERT_TRUE(errlog != NULL);
     _dup2(_fileno(outlog), 1);
     _dup2(_fileno(errlog), 2);
     // execute subprocess
@@ -125,7 +126,7 @@ TEST(StdAux, Redirection)
     char buf[1024];
     // read stdout log files and verify expected content
     log.open("test_stdaux.stdout");
-    EXPECT_TRUE(log);
+    EXPECT_TRUE(log.good());
     log.getline(buf, 1024);
     log.close();
     log.clear();
@@ -133,7 +134,7 @@ TEST(StdAux, Redirection)
     remove("test_stdaux.stdout");
     // read stderr log files and verify expected content
     log.open("test_stdaux.stderr");
-    EXPECT_TRUE(log);
+    EXPECT_TRUE(log.good());
     log.getline(buf, 1024);
     log.close();
     if (buf[strlen(buf) - 1] == '\r') buf[strlen(buf) - 1] = '\0';

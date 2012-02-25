@@ -55,7 +55,9 @@ class TestExecutableTargetInfo(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_get_executable_name(self):
         # name of this executable
-        self.assertEquals (basis.get_executable_name (), 'test_executabletargetinfo.py')
+        self.assertTrue (re.match (
+                    r"test_executabletargetinfo_py(\.cmd)?",
+                    basis.get_executable_name ()))
         # name of executable built by some target
         self.assertTrue (re.match (
                     r"basisproject(\.cmd)?",
@@ -64,12 +66,13 @@ class TestExecutableTargetInfo(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_get_executable_directory(self):
         # directory of this executable
+        print "Executable directory: " + basis.get_executable_directory ()
         self.assertTrue (re.search (
-                    r"/Testing/Temporary/test_utilities/build/Testing/bin",
+                    r"[/\\]Testing[/\\]Temporary[/\\]test_utilities[/\\]build[/\\]Testing[/\\]bin",
                     basis.get_executable_directory ()))
         # directory of executable built by some target
         self.assertTrue (re.match (
-                    r"/.*/bin(/basis)?",
+                    r"([a-zA-Z]:)?[/\\].*[/\\]bin([/\\]basis)?",
                     basis.get_executable_directory ('basis.basisproject')))
     
     # ------------------------------------------------------------------------
@@ -84,11 +87,11 @@ class TestExecutableTargetInfo(unittest.TestCase):
         # path of some system command
         if (os.name != 'posix'):
             target   = 'regedit'
-            expected = 'C:\\Windows\\regedit.exe'
+            expected = 'c:\\windows\\regedit.exe'
         else:
             target = 'ls'
             expected = '/bin/ls'
-        self.assertEquals (basis.get_executable_path (target), expected)
+        self.assertEquals(basis.get_executable_path (target).lower(), expected)
 
 # ============================================================================
 # main

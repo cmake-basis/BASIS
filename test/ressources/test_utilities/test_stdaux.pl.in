@@ -50,7 +50,7 @@ is scalar @retval, 2, 'exit code and captured STDOUT returned when stdout is tru
 is Basis::execute_process(['basis.dummy_command']), 0, 'execution of command by target name using array notation';
 eval { @retval = Basis::execute_process(['basis.dummy_command', '--greet'], stdout => 1, quiet => 1); };
 is $retval[0], 0, 'exit code is 0';
-like $retval[1], qr/^Hello, BASIS!\s*\n/, 'messages to STDOUT properly returned even though quiet is true';
+like $retval[1], qr/^Hello, BASIS!\s*\r?\n/, 'messages to STDOUT properly returned even though quiet is true';
 
 # ----------------------------------------------------------------------------
 # Test allow_fail keyword argument of execute_process().
@@ -94,10 +94,11 @@ is $retval[1], '', 'verbose message of execute_process() printed to STDOUT of pa
 
 # ----------------------------------------------------------------------------
 # Test execution of some non-target command.
+my $directory = Basis::get_executable_directory();
 if ($^O eq 'MSWin32') {
-    is Basis::execute_process(['dir', 'C:/'], quiet => 1), 0, 'execution of non-target command using array argument';
-    is Basis::execute_process('dir C:/', quiet => 1), 0, 'execution of non-target command using string argument';
+    is Basis::execute_process(['dir', $directory], quiet => 1), 0, 'execution of non-target command using array argument';
+    is Basis::execute_process('dir ' . $directory, quiet => 1), 0, 'execution of non-target command using string argument';
 } else {
-    is Basis::execute_process(['ls', '/'], quiet => 1), 0, 'execution of non-target command using array argument';
-    is Basis::execute_process('ls /', quiet => 1), 0, 'execution of non-target command using string argument';
+    is Basis::execute_process(['ls', $directory], quiet => 1), 0, 'execution of non-target command using array argument';
+    is Basis::execute_process('ls ' . $directory, quiet => 1), 0, 'execution of non-target command using string argument';
 }

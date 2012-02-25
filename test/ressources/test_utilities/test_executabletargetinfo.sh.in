@@ -88,12 +88,12 @@ isnt $? 0 'some unknown target'
 # name of this executable
 get_executable_name name
 is $? 0 'return value is 0'
-is "${name}" 'test_executabletargetinfo.sh' 'name of this executable'
+is "${name}" 'test_executabletargetinfo_sh' 'name of this executable'
 
 # name of executable built by other target
 get_executable_name name 'basis.basisproject'
 is $? 0 'return value is 0'
-like "${name}" 'basisproject(\.cmd)?' 'name of other executable'
+like "${name}" 'basisproject' 'name of other executable'
 
 # ----------------------------------------------------------------------------
 # test get_executable_directory()

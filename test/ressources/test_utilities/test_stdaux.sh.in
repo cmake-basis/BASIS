@@ -89,6 +89,7 @@ is $? 0 'output of executed command when --verbose enabled'
 
 # ----------------------------------------------------------------------------
 # Test execution of some non-target command.
-stdout=`execute_process ls / > /dev/null`
+get_executable_directory directory
+stdout=`execute_process ls "${directory}" > /dev/null`
 is $? 0 'execution of non-target command'
 is "$stdout" '' 'no output due to redirection of STDOUT to /dev/null'

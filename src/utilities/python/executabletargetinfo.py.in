@@ -28,8 +28,8 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 # modules
 # ============================================================================
 
-import os  # path functions
-import sys # argv[0]
+import os.path # path functions
+import sys     # argv[0]
 
 from sbia.basis.which import which, WhichError
 
@@ -154,6 +154,13 @@ def get_executable_path(target=None):
             uid = uid[1:]
         if uid is not None and uid in _locations:
             path = os.path.normpath(os.path.join(_module_dir, _locations[uid]))
+            if '$(IntDir)' in path:
+                for intdir in ['Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel']:
+                    tmppath = path.replace('$(IntDir)', intdir)
+                    if os.path.exists(tmppath):
+                        path = tmppath
+                        break
+                path = path.replace('$(IntDir)', '')
         else:
             try:
                 path = which (target)

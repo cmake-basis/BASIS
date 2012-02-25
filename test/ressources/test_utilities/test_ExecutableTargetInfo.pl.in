@@ -57,7 +57,7 @@ ok (!Basis::is_known_target ('hammer.hammer'),
 
 # name of this executable
 like (Basis::get_executable_name (),
-    qr/^test_ExecutableTargetInfo\.pl?$/,
+    qr/^test_ExecutableTargetInfo_pl(\.cmd)?$/,
     "name of this executable");
 # name of executable built by some target
 like (Basis::get_executable_name ('basis.basisproject'),
@@ -69,11 +69,11 @@ like (Basis::get_executable_name ('basis.basisproject'),
 
 # directory of this executable
 like (Basis::get_executable_directory (),
-    qr/\/Testing\/Temporary\/test_utilities\/build\/Testing\/bin/,
+    qr/[\/\\]Testing[\/\\]Temporary[\/\\]test_utilities[\/\\]build[\/\\]Testing[\/\\]bin/,
     "directory of this executable");
 # directory of executable built by some target
 like (Basis::get_executable_directory ('basis.basisproject'),
-    qr/^\/.*\/bin(\/basis)?$/,
+    qr/^([A-Z]:)?[\/\\].*[\/\\]bin([\/\\]basis)?$/,
     "directory of basis.basisproject executable");
 
 # ----------------------------------------------------------------------------
@@ -91,9 +91,9 @@ is (Basis::get_executable_path ($target),
 # path of some system command
 if ($^O =~ m/MSWin32/) {
     $target   = 'regedit';
-    $expected = 'C:\\Windows\\regedit.exe';
+    $expected = 'c:\\windows\\regedit.exe';
 } else {
     $target = 'ls';
     $expected = '/bin/ls';
 }
-is (Basis::get_executable_path ($target), $expected);
+is (lc(Basis::get_executable_path ($target)), $expected);

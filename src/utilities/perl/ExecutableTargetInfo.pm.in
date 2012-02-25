@@ -176,8 +176,25 @@ sub get_executable_path
         defined $uid and $uid =~ s/^[.]?(.*)/$1/;
         if (defined $uid and exists $_location->{$uid}) {
             $path = $_location->{$uid};
-            $path = File::Spec->rel2abs ($path, dirname (__FILE__));
-            $path = realpath ($path);
+            if ($path =~ m/\$\(IntDir\)/) {
+                my $tmppath = '';
+                my $intdir = '';
+                foreach $intdir ('Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel') {
+                    $tmppath = $path;
+                    $tmppath =~ s/\$\(IntDir\)/$intdir/g;
+                    if (-e $tmppath) {
+                        $path = $tmppath;
+                        last;
+                    }
+                }
+                $path =~ s/\$\(IntDir\)//g;
+            }
+            # the realpath() function only works for existing paths
+            if (-e $path) {
+                $path = realpath ($path);
+            } else {
+                $path = File::Spec->rel2abs ($path, dirname (__FILE__));
+            }
         } else {
             $path = which ($_[0])
         }
