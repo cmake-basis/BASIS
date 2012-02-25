@@ -12,6 +12,7 @@
 #include "stdaux.h"            // testee
 
 #include <sbia/basis/except.h> // SubprocessException
+#include <sbia/basis/path.h>   // get_executable_directory()
 #include <vector>
 #include <string>
 #include <stdio.h>             // remove(), freopen()
@@ -42,16 +43,22 @@ TEST(StdAux, ExecuteTarget)
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command is 0";
     EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet", true, &output));
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command --greet is 0";
-    output.flush();
+#if WINDOWS
+    EXPECT_STREQ("Hello, BASIS!\r\n", output.str().c_str());
+#else
     EXPECT_STREQ("Hello, BASIS!\n", output.str().c_str());
+#endif
     args.clear();
     output.str("");
     args.push_back("basis.dummy_command");
     args.push_back("--greet");
     EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
-    output.flush();
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command --warn is 0";
+#if WINDOWS
+    EXPECT_STREQ("Hello, BASIS!\r\n", output.str().c_str());
+#else
     EXPECT_STREQ("Hello, BASIS!\n", output.str().c_str());
+#endif
 }
 
 // ---------------------------------------------------------------------------
@@ -94,10 +101,12 @@ TEST(StdAux, Redirection)
 TEST(StdAux, ExecuteCommand)
 {
 #if WINDOWS
-    const string args = "dir C:\\";
+    string args = "dir";
 #else
-    const string args = "ls /";
+    string args = "ls";
 #endif
+    args += " ";
+    args += basis::get_executable_directory();
     int status = 0;
     std::ostringstream output;
     ASSERT_NO_THROW(status = basis::execute_process(args, true, &output));
