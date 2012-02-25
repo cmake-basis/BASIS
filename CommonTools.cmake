@@ -1676,6 +1676,8 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       endif ()
       if (SUFFIX)
         set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
+      elseif (WIN32 AND TYPE MATCHES "^EXECUTABLE$")
+        set (TARGET_FILE "${TARGET_FILE}.exe")
       endif ()
 
       if (PART MATCHES "^POST_INSTALL$")
