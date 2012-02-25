@@ -14,6 +14,7 @@
 #include <sbia/basis/config.h> // platform macros - must be first
 
 #include <stdlib.h>            // malloc() & free(), _splitpath_s() (WINDOWS)
+#include <string.h>            // strncmp()
 
 #if WINDOWS
 #  include <direct.h>          // _getcwd()

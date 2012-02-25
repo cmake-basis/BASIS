@@ -172,9 +172,9 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
     if (!exec_path.empty()) args[0] = exec_path;
     // some verbose output
     if (verbose > 0) {
-        printf("$ %s", Subprocess::tostring(args).c_str());
-        if (simulate) printf(" (simulated)");
-        printf("\n");
+        cout << "$ " << Subprocess::tostring(args);
+        if (simulate) cout << " (simulated)";
+        cout << endl;
     }
     // execute command
     char buf[1024];
@@ -188,7 +188,10 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
     if (!quiet || out != NULL) {
         while ((n = p.read(buf, 1023)) > 0) {
             buf[n] = '\0';
-            if (!quiet) cout << buf;
+            if (!quiet) {
+                cout << buf;
+                cout.flush();
+            }
             if (out) *out << buf;
         }
     }

@@ -208,10 +208,14 @@ sub execute_process
     my $output = '';
     if (not $options{'simulate'}) {
         open CMD, "$args |" or die "$command: Failed to open subprocess";
+        my $ofh = select STDOUT;
+        $|++;
         while (<CMD>) {
             print $_ unless $options{'quiet'};
             $output .= $_ if $options{'stdout'};
         }
+        $|--;
+        select $ofh;
         close CMD;
         $status = $?;
     }
