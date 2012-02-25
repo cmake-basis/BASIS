@@ -121,7 +121,7 @@ MultiStringArg add_before_env_with_sep(
 struct RegressionTest {
     string       test_image_file;
     string       baseline_image_file;
-    float        intensity_tolerance;
+    double       intensity_tolerance;
     unsigned int max_number_of_differences;
     unsigned int tolerance_radius;
 };
