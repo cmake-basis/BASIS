@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  basistest-master.sh
 # @brief Test master which can be run as a cron job.

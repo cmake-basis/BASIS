@@ -1,6 +1,4 @@
-#! /usr/bin/env python
-
-##
+##############################################################################
 # @file  doxyfilter-cmake.py
 # @brief Doxygen filter for CMake and CTest scripts.
 #
@@ -10,6 +8,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup Tools
+##############################################################################
 
 import sys
 import re

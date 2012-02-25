@@ -1,6 +1,4 @@
-#! /usr/bin/env bash
-
-##
+##############################################################################
 # @file  basistest.sh
 # @brief Common wrapper for the basistest subcommands.
 #
@@ -8,6 +6,9 @@
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup Tools
+##############################################################################
 
 @BASIS_BASH_UTILITIES@
 

@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-##
+##############################################################################
 # @file  doxyfilter-python.py
 # @brief Doxygen filter for Python scripts.
 #
@@ -9,9 +7,11 @@
 # @sa http://i31www.ira.uka.de/~baas/pydoxy/
 #
 # @ingroup Tools
+##############################################################################
 
+##############################################################################
 # pythfilter.py v1.5.5, written by Matthias Baas (baas@ira.uka.de)
-
+#
 # Doxygen filter which can be used to document Python source code.
 # Classes (incl. methods) and functions can be documented.
 # Every comment that begins with ## is literally turned into an
@@ -64,9 +64,9 @@
 #             TODO: "from ... import *" vs "from ... import names"
 #             TODO: Using normal imports: name.name -> name::name
 # 20.01.2002: #includes will be placed in front of the namespace
-
-######################################################################
-
+#
+##############################################################################
+#
 # The program is written as a state machine with the following states:
 #
 # - OUTSIDE               The current position is outside any comment,

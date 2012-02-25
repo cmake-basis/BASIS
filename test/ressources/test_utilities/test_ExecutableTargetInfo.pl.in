@@ -1,5 +1,3 @@
-#! /usr/bin/env perl
-
 ##############################################################################
 # @file  test_ExecutableTargetInfo.pl
 # @brief Test ExecutableTargetInfo.pm module.

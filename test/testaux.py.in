@@ -1,13 +1,6 @@
-#! /usr/bin/env python
-
 ##############################################################################
-# @file  test_matlabtools.py
-# @brief Test CMake MATLAB tools.
-#
-# This test first builds the test project which is based on BASIS and uses
-# the CMake MATLAB tools to build the executables and libraries. Then it
-# triggers the execution of the separate tests which are built as part
-# of this test project.
+# @file  testaux.py
+# @brief Utilities for test implementations.
 #
 # Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 ##############################################################################
 # @file  test_executabletargetinfo.py
 # @brief Test executabletargetinfo.py module.

@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  test_shtap.sh
 # @brief Test shtap.sh module.

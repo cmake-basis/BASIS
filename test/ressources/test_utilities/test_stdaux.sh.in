@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  test_stdaux.sh
 # @brief Test stdaux.sh module.

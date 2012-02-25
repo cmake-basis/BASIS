@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  test_core.sh
 # @brief Test core.sh module.

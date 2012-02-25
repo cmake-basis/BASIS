@@ -11,6 +11,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup BasisPerlUtilities
+##############################################################################
 
 package SBIA::@PROJECT_NAME@::StdAux;
 

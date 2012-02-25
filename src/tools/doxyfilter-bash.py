@@ -1,6 +1,4 @@
-#! /usr/bin/env python
-
-##
+##############################################################################
 # @file  doxyfilter-bash.py
 # @brief Doxygen filter for BASH scripts.
 #
@@ -10,6 +8,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup Tools
+##############################################################################
 
 import sys
 import re

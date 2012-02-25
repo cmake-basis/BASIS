@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 ##############################################################################
 # @file  basisproject.py
 # @brief Project tool used to create and/or modify a BASIS project.

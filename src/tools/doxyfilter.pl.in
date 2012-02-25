@@ -1,7 +1,6 @@
-#! /usr/bin/env perl
-
-## @file  doxyfilter.pl
-#  @brief Doxygen input filter.
+##############################################################################
+# @file  doxyfilter.pl
+# @brief Doxygen input filter.
 #
 # This Perl script is used as pre-processor for input files to Doxygen.
 # Depending on the file extension, it invokes the corresponding Doxygen
@@ -17,6 +16,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup Tools
+##############################################################################
 
 # =======================================================================
 # Doxygen Pre-Processor for Perl

@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  make_html_verbatim.sh
 # @brief Auxiliary script used to convert plain text file such that the

@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ##############################################################################
 # @file  test_executable_target_info.sh
 # @brief Test executable_target_info.sh module.

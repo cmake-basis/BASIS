@@ -1,5 +1,3 @@
-#! /usr/bin/env perl
-
 ##############################################################################
 # @file  test_stdaux.pl
 # @brief Test stdaux.pl module.

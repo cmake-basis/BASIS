@@ -1,7 +1,6 @@
-#! /usr/bin/env perl
-
-## @file  doxyfilter-matlab.pl
-#  @brief Doxygen filter for MATLAB scripts.
+##############################################################################
+# @file  doxyfilter-matlab.pl
+# @brief Doxygen filter for MATLAB scripts.
 #
 # This is the Doxygen filter implementation of Fabrice which is available
 # on MATLAB Central.
@@ -9,6 +8,7 @@
 # @sa http://www.mathworks.com/matlabcentral/fileexchange/25925-using-doxygen-with-matlab
 #
 # @ingroup Tools
+##############################################################################
 
 if ($#ARGV != 0)
 {
