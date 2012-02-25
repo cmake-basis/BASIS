@@ -11,7 +11,7 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <cstdio> // printf for faster output than <iostream>
+#include <iostream>
 
 #include <sbia/basis/config.h>      // cProjectName, cVersionAndRevision
 #include <sbia/basis/path.h>
@@ -188,7 +188,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
     if (!quiet || out != NULL) {
         while ((n = p.read(buf, 1023)) > 0) {
             buf[n] = '\0';
-            if (!quiet) printf("%s", buf);
+            if (!quiet) cout << buf;
             if (out) *out << buf;
         }
     }
@@ -199,7 +199,7 @@ int execute_process(vector<string>& args, bool quiet, ostream* out,
     // write error messages to stderr of parent process
     while ((n = p.read(buf, 1023, true)) > 0) {
         buf[n] = '\0';
-        fprintf(stderr, "%s", buf);
+        cerr << buf;
     }
     // get exit code
     status = p.returncode();
