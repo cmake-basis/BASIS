@@ -55,6 +55,7 @@ set (
     "ConfigUse.cmake.in"          # default <Pkg>Use.cmake template
     "GenerateConfig.cmake"        # generation/configuration of <Pkg>Config.cmake et al.
     # other
+    "buildtimestamp.cmd"          # get build timestamp on Windows
     "CheckPublicHeaders.cmake"    # check if header files were added/removed
     "cmake_uninstall.cmake.in"    # uninstall script
     "ConfigureIncludeFiles.cmake" # used to configure public header files

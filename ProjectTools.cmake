@@ -708,6 +708,38 @@ macro (basis_configure_root_documentation_files)
 endmacro ()
 
 # ----------------------------------------------------------------------------
+## @brief Get build time stamp.
+#
+# The build time stamp is used as an alternative to the version and revision
+# information in @c PROJECT_VERSION_AND_REVISION if version is invalid, i.e.,
+# set to 0.0.0 as is the case for development branches, and now revision
+# from a revision control system is available.
+function (basis_get_build_timestamp TIMESTAMP)
+  if (WIN32)
+    execute_process (
+      COMMAND "${BASIS_MODULE_PATH}/buildtimestamp.cmd"
+      RESULT_VARIABLE RT
+      OUTPUT_VARIABLE BUILD_TIMESTAMP
+      ERROR_QUIET
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  else ()
+    execute_process (
+      COMMAND "date" -u "+%Y.%m.%d (%H:%M UTC)"
+      RESULT_VARIABLE RT
+      OUTPUT_VARIABLE BUILD_TIMESTAMP
+      ERROR_QUIET
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  endif ()
+  if (RT EQUAL 0)
+    set (${TIMESTAMP} "${BUILD_TIMESTAMP}" PARENT_SCOPE)
+  else ()
+    set (${TIMESTAMP} PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Initialize project, calls CMake's project() command.
 #
 # @sa basis_project()
@@ -863,19 +895,9 @@ macro (basis_project_initialize)
     if (PROJECT_REVISION)
       set (PROJECT_VERSION_AND_REVISION "revision ${PROJECT_REVISION}")
     else ()
-      if (UNIX)
-        execute_process (
-          COMMAND "date" -u "+%Y.%m.%d (%H:%M UTC)"
-          RESULT_VARIABLE RT
-          OUTPUT_VARIABLE BUILD
-          ERROR_QUIET
-          OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        if (RT EQUAL 0)
-          set (PROJECT_VERSION_AND_REVISION "build ${BUILD}")
-        else ()
-          set (PROJECT_VERSION_AND_REVISION "version unknown")
-        endif ()
+      basis_get_build_timestamp (BUILD_TIMESTAMP)
+      if (BUILD_TIMESTAMP)
+        set (PROJECT_VERSION_AND_REVISION "build ${BUILD_TIMESTAMP}")
       else ()
         set (PROJECT_VERSION_AND_REVISION "version unknown")
       endif ()
@@ -903,14 +925,8 @@ macro (basis_project_initialize)
   # print project information
   if (BASIS_VERBOSE AND NOT PROJECT_IS_MODULE)
     message (STATUS "Project:")
-    message (STATUS "  Name      = ${PROJECT_NAME}")
-    message (STATUS "  Version   = ${PROJECT_VERSION}")
-    message (STATUS "  SoVersion = ${PROJECT_SOVERSION}")
-    if (PROJECT_REVISION)
-      message (STATUS "  Revision  = ${PROJECT_REVISION}")
-    else ()
-      message (STATUS "  Revision  = n/a")
-    endif ()
+    message (STATUS "  Name:    ${PROJECT_NAME}")
+    message (STATUS "  Version: ${PROJECT_VERSION_AND_REVISION}")
   endif ()
 
   # --------------------------------------------------------------------------
