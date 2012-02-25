@@ -198,7 +198,7 @@ def whichgen(command, path=None, verbose=0, exts=None):
                 if ext.lower() == ".exe":
                     break
             else:
-                exts = ['.COM', '.EXE', '.BAT']
+                exts = ['.CMD', '.COM', '.EXE', '.BAT']
         elif not isinstance(exts, list):
             raise TypeError("'exts' argument must be a list or None")
     else:
