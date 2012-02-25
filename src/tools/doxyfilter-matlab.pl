@@ -19,35 +19,35 @@ else
   $fname=$ARGV[0];
 }
 
-# If we have a .m file inside a (@)-folder with the same name :
-# we will read each file of this folder
-if ($fname =~ /^(.*)\@([\d\w-_]*)[\/\\](\2)\.m/)
+@listeFic = ();
+
+# if we have a .m file inside a (@)-folder with the same name
+if ($fname =~ m/^(.*)\@([-_\d\w]*)[\/\\](\2)\.m/)
 {
+  # read each file in class folder
   $name = $2;
   $nameExt = $name.".m";
   $dir = $1."@".$name."/\*.m";
   @fic = glob($dir);
   $i = 0;
-  @listeFic[0] = $fname;
+  $listeFic[0] = $fname;
   foreach $my_test (@fic)
   {
     if (!($my_test =~ $nameExt))
     {
       $i++;
-      @listeFic[$i] = $my_test;
+      $listeFic[$i] = $my_test;
     }
   }
-}
-# otherwise @-folder, but .m with a different name : ignore it
-elsif ($fname =~ /^(.*)\@([\d\w-_]*)[\/\\](.*)\.m/)
-{
-}
+# otherwise @-folder, but .m with a different name
+} elsif ($fname =~ /^(.*)\@([-_\d\w]*)[\/\\](.*)\.m/) {
+    # ignore it
 # otherwise
-else
-{
-  @listeFic[0] = $fname;
+} else {
+  $listeFic[0] = $fname;
 }
-$output = "";
+
+$output = '';
 foreach $my_fic (@listeFic)
 {
 
@@ -58,6 +58,7 @@ foreach $my_fic (@listeFic)
   $inAbstractMethodBlock = 0;
   $listeProperties = 0;
   $listeEnumeration = 0;
+  $listeEvents = 0;
 
   $methodAttribute = "";
 
@@ -178,9 +179,9 @@ foreach $my_fic (@listeFic)
     # inheritance for classes
     if (/(^\s*classdef)\s*(\s*\([\{\}\?\w,=\s]+\s*\))?\s*([\w\d_]+)\s*<?\s*([\s\w\d_&]+)?(.*)/) 
     {
+      #$classAttributes = $2;
       $className = $3;
       $classInheritance = $4;
-      $classAttributes = $2;
       if (!($classInheritance =~ /^$/))
       {
         $classInheritance =~ s/&/,public /g;
