@@ -20,13 +20,14 @@
 
 // stdout/stderr redirection - dup(), dup2(), fileno(), close()
 #if WINDOWS
+#  define _CRT_SECURE_NO_DEPRECATE
 #  include <io.h>
-#  define dup _dup
-#  define dup2 _dup2
-#  define fileno _fileno
-#  define close _close
 #else
 #  include <unistd.h>   
+#  define _dup dup
+#  define _dup2 dup2
+#  define _fileno fileno
+#  define _close close
 #endif
 
 
@@ -106,17 +107,17 @@ TEST(StdAux, Redirection)
     FILE* errlog = fopen("test_stdaux.stderr", "w");
     ASSERT_TRUE(outlog);
     ASSERT_TRUE(errlog);
-    dup2(_fileno(outlog), 1);
-    dup2(_fileno(errlog), 2);
+    _dup2(_fileno(outlog), 1);
+    _dup2(_fileno(errlog), 2);
     // execute subprocess
     int status = 0;
     EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet --warn", true));
     EXPECT_EQ(0, status);
     // restore stdout and stderr output streams
-    dup2(stdout_dup, 1);
-    dup2(stdout_dup, 2);
-    close(stdout_dup);
-    close(stderr_dup);
+    _dup2(stdout_dup, 1);
+    _dup2(stdout_dup, 2);
+    _close(stdout_dup);
+    _close(stderr_dup);
     fclose(outlog);
     fclose(errlog);
 #endif
@@ -135,7 +136,7 @@ TEST(StdAux, Redirection)
     EXPECT_TRUE(log);
     log.getline(buf, 1024);
     log.close();
-    if (buf[strlen(buf) - 1] = '\r') buf[strlen(buf) - 1] = '\0';
+    if (buf[strlen(buf) - 1] == '\r') buf[strlen(buf) - 1] = '\0';
     EXPECT_STREQ("WARNING: Cannot greet in other languages!", buf);
     remove("test_stdaux.stderr");
 }
