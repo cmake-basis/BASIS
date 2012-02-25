@@ -240,6 +240,13 @@ BUILDING THE SOFWARE FROM SOURCES
      - INSTALL_LINKS         Whether (symbolic) links should be created (see Step 5).
      - INSTALL_PREFIX        Prefix used for package installation (see Step 5).
      - INSTALL_SINFIX        Whether to use suffix/infix for installation (see Step 5).
+     - USE_<Pkg>             If the software you are building has declared
+                             optional dependencies, i.e., software packages which
+                             it makes use of if available, for each such optional
+                             package a USE_<Pkg> option is added by BASIS if this
+                             package was found on your system. It can be set to
+                             OFF in order to disable the use of this optional
+                             dependency by this software.
 
      Note that INSTALL_PREFIX is initialized by the value of CMAKE_INSTALL_PREFIX,
      the default used by CMake to specify the installation prefix. Then, the
