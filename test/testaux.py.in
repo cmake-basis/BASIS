@@ -24,7 +24,7 @@ import socket
 # constants
 # ============================================================================
 
-TEST_NAME      = os.path.basename(basis.get_executable_name())
+TEST_NAME      = os.path.splitext(os.path.basename(basis.get_executable_name()))[0]
 BASIS_DIR      = '@TESTING_BASIS_DIR@'
 RESSOURCES_DIR = os.path.join('@PROJECT_TESTING_DIR@/ressources', TEST_NAME)
 SOURCE_DIR     = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME, 'source')
@@ -98,24 +98,28 @@ def build_project(verbose=0):
     os.makedirs(BUILD_DIR)
     wd=os.getcwd()
     os.chdir(BUILD_DIR)
-    build_cmd=['cmake',
+    config_cmd=['@CMAKE_COMMAND@',
             '-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@',
             '-DBUILD_DOCUMENTATION:BOOL=OFF',
             '-DBUILD_CHANGELOG:BOOL=OFF',
             '-DBUILD_TESTING:BOOL=ON',
             '-DBASIS_DIR=' + BASIS_DIR]
     if verbose > 0:
-        build_cmd.append('-DBASIS_VERBOSE=ON')
+        config_cmd.append('-DBASIS_VERBOSE=ON')
     if verbose > 1:
-        build_cmd.append('-DBASIS_DEBUG=ON')
-    build_cmd.append(SOURCE_DIR)
-    basis.execute_process(build_cmd, verbose=True)
+        config_cmd.append('-DBASIS_DEBUG=ON')
+    config_cmd.append(SOURCE_DIR)
+    basis.execute_process(config_cmd, verbose=True)
     print "Configuring test project... - done"
     print "Building test project..."
-    if verbose > 0:
-        basis.execute_process(['make', 'VERBOSE=1'], verbose=True)
+    if sys.platform == 'win32' and os.path.exists(TEST_NAME + ".sln"):
+        build_cmd = ['devenv', '/build']
+        if '@TESTING_BUILD_TYPE@' != '': build_cmd.append('@TESTING_BUILD_TYPE@')
+        else: build_cmd.append('Release')
     else:
-        basis.execute_process('make', verbose=True)
+        build_cmd = ['make']
+        if verbose > 0: build_cmd.append('VERBOSE=1')
+    basis.execute_process(build_cmd, verbose=True)
     print "Building test project... - done"
     os.chdir(wd)
 
