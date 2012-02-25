@@ -14,8 +14,7 @@
 For the parsing of command-line arguments in C++, BASIS includes a slightly
 extended version of the <a href="http://tclap.sourceforge.net/">
 Templatized C++ Command Line Parser (TCLAP) Library</a>. For details and
-usage of this library, please refer to the TCLAP documentation which is
-also included with BASIS and can be found in the <tt>doc/</tt> directory.
+usage of this library, please refer to the TCLAP documentation.
 It is in particular recommended to read the
 <a href="http://tclap.sourceforge.net/manual.html">user manual</a>.
 Further, the <a href="http://tclap.sourceforge.net/html/index.html">
