@@ -780,6 +780,14 @@ function (basis_add_changelog)
   endif ()
 
   if (BUILD_CHANGELOG)
+    message ("Generation of ChangeLog enabled as part of ALL."
+             " Be aware that, in particular in case of Subversion,"
+             " the ChangeLog generation can take several minutes"
+             " and may require the input of your Subversion"
+             " credentials during the build. If you would like to"
+             " build the ChangeLog separate from the rest of the"
+             " software package, disable the option BUILD_CHANGELOG."
+             " You can then build the changelog target separate from ALL.")
     set (_ALL "ALL")
   else ()
     set (_ALL)
@@ -794,9 +802,9 @@ function (basis_add_changelog)
 
       # post-processing
       if (APPLE)
-        set (POST_SVN2CL_CMD COMMAND sed -i '' "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
+        set (POST_SVN2CL_CMD COMMAND sed -i '' "s/\\(\\w\\w*\\)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
       elseif (UNIX)
-        set (POST_SVN2CL_CMD COMMAND sed -i "s/(\\w\\w*)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
+        set (POST_SVN2CL_CMD COMMAND sed -i "s/\\(\\w\\w*\\)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
       else ()
         set (POST_SVN2CL_CMD)
       endif ()
