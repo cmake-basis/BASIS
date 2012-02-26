@@ -2091,13 +2091,13 @@ function (basis_add_script_finalize TARGET_UID)
   # look for required interpreter executable
   if (BASIS_LANGUAGE MATCHES "PYTHON")
     find_package (PythonInterp QUIET)
-    if (NOT PythonInterp_FOUND)
+    if (NOT PYTHONINTERP_FOUND)
       message (FATAL_ERROR "Python interpreter not found. It is required to"
                            " execute the script file target ${TARGET_UID}.")
     endif ()
   elseif (BASIS_LANGUAGE MATCHES "PERL")
     find_package (Perl QUIET)
-    if (NOT Perl_FOUND)
+    if (NOT PERL_FOUND)
       message (FATAL_ERROR "Perl interpreter not found. It is required to"
                            " execute the script file target ${TARGET_UID}.")
     endif ()
