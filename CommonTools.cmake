@@ -220,7 +220,7 @@ macro (basis_find_package PACKAGE)
       endif ()
     endif ()
     # provide option which allows users to disable use of not required packages
-    if (NOT ARGN_REQUIRED AND ${PKG}_FOUND)
+    if (${PKG}_FOUND AND NOT ARGN_REQUIRED AND NOT ARGN_QUIET)
       option (USE_${PKG} "Enable/disable use of package ${PKG}." ON)
       if (NOT USE_${PKG})
         set (${PKG}_FOUND       FALSE)
