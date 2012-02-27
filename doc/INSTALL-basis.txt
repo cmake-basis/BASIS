@@ -223,6 +223,19 @@ BUILDING THE SOFWARE FROM SOURCES
 
      The common CMake variables which configure the build and installation are:
 
+     - BUILD_CHANGELOG       Request build of ChangeLog as part of the ALL target.
+                             Note that the ChangeLog is generated either from the
+                             Subversion history if the source tree is a SVN
+                             working copy, or from the Git history if it is a
+                             Git repository. Otherwise, the ChangeLog cannot be
+                             generated and this option is disabled again by BASIS.
+                             In case of Subversion, be aware that the generation
+                             of the ChangeLog takes several minutes and may require
+                             the input of user credentials for access to the
+                             Subversion repository. It is recommended to leave
+                             this option disabled and to build the "changelog" target
+                             separate from the rest of the software package instead
+                             (see step 4 below).
      - BUILD_DOCUMENTATION   Whether build and installation instructions for the
                              documentation should be added. If OFF, the
                              build configuration of the doc/ directory is skipped.
@@ -295,14 +308,18 @@ BUILDING THE SOFWARE FROM SOURCES
      from the in-source comments. This can be useful, for example, to install
      the documentation in the document directory of a web server.
 
-     If you have access to the Subversion repository of the project, a change
-     log can be generated from the Subversion history by building the "changelog"
-     target, i.e.,
+     If the source tree is a Subversion working copy and you have access to the
+     Subversion repository of the project or if the project source tree is a Git
+     repository, a ChangeLog file can be generated from the commit history by
+     building the "changelog" target, i.e.,
 
        $ make changelog
 
-     Note that this target is only available when the required svn2cl command
-     is installed on your system.
+     In case of Subversion, be aware that the generation of the ChangeLog takes
+     several minutes and may require the input of your user credentials for access
+     to the Subversion repository. Moreover, if the command svn2cl [2] is installed
+     on your system, it will be used to format the ChangeLog. Otherwise, the plain
+     output of the "svn log" command is used.
 
   5. Install the package (optional)
 
@@ -465,3 +482,4 @@ REFERENCES
 ==========
 
   [1] http://www.rad.upenn.edu/sbia/software/installation.html
+  [2] http://arthurdejong.org/svn2cl/
