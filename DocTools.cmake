@@ -780,14 +780,6 @@ function (basis_add_changelog)
   endif ()
 
   if (BUILD_CHANGELOG)
-    message ("Generation of ChangeLog enabled as part of ALL."
-             " Be aware that, in particular in case of Subversion,"
-             " the ChangeLog generation can take several minutes"
-             " and may require the input of your Subversion"
-             " credentials during the build. If you would like to"
-             " build the ChangeLog separate from the rest of the"
-             " software package, disable the option BUILD_CHANGELOG."
-             " You can then build the changelog target separate from ALL.")
     set (_ALL "ALL")
   else ()
     set (_ALL)
@@ -800,13 +792,15 @@ function (basis_add_changelog)
   if (EXISTS "${PROJECT_SOURCE_DIR}/.svn")
     if (BASIS_CMD_SVN)
 
-      # post-processing
-      if (APPLE)
-        set (POST_SVN2CL_CMD COMMAND sed -i '' "s/\\(\\w\\w*\\)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
-      elseif (UNIX)
-        set (POST_SVN2CL_CMD COMMAND sed -i "s/\\(\\w\\w*\\)\\@UPHS\\.PENNHEALTH\\.PRV/\\1/g" "${CHANGELOG_FILE}")
-      else ()
-        set (POST_SVN2CL_CMD)
+      if (_ALL)
+        message ("Generation of ChangeLog enabled as part of ALL."
+                 " Be aware that the ChangeLog generation from the Subversion"
+                 " commit history can take several minutes and may require the"
+                 " input of your Subversion repository credentials during the"
+                 " build. If you would like to build the ChangeLog separate"
+                 " from the rest of the software package, disable the option"
+                 " BUILD_CHANGELOG. You can then build the changelog target"
+                 " separate from ALL.")
       endif ()
 
       # using svn2cl command
@@ -821,7 +815,9 @@ function (basis_add_changelog)
               "--include-actions"
               "--separate-daylogs"
               "${PROJECT_SOURCE_DIR}"
-          ${POST_SVN2CL_CMD}
+          COMMAND "${CMAKE_COMMAND}"
+              "-DCHANGELOG_FILE:FILE=${CHANGELOG_FILE}" -DINPUTFORMAT=SVN2CL
+              -P "${BASIS_MODULE_PATH}/PostprocessChangeLog.cmake"
           WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
           COMMENT "Generating ChangeLog from Subversion log (using svn2cl)..."
         )
@@ -834,7 +830,9 @@ function (basis_add_changelog)
               "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
               "-DOUTPUT_FILE=${CHANGELOG_FILE}"
               -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
-          ${POST_SVN2CL_CMD}
+          COMMAND "${CMAKE_COMMAND}"
+              "-DCHANGELOG_FILE:FILE=${CHANGELOG_FILE}" -DINPUTFORMAT=SVN
+              -P "${BASIS_MODULE_PATH}/PostprocessChangeLog.cmake"
           COMMENT "Generating ChangeLog from Subversion log..."
           VERBATIM
         )
@@ -854,10 +852,13 @@ function (basis_add_changelog)
       add_custom_target (
         ${TARGET_UID} ${_ALL}
         COMMAND "${CMAKE_COMMAND}"
-            "-DCOMMAND=${BASIS_CMD_GIT};log;--stat;--name-only;--date=short;--abbrev-commit"
+            "-DCOMMAND=${BASIS_CMD_GIT};log;--date-order;--date=short;--pretty=format:%ad\ %an%n%n%w(79,4,6)* %s%n%n%b%n"
             "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
             "-DOUTPUT_FILE=${CHANGELOG_FILE}"
             -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+        COMMAND "${CMAKE_COMMAND}"
+            "-DCHANGELOG_FILE=${CHANGELOG_FILE}" -DINPUTFORMAT=GIT
+            -P "${BASIS_MODULE_PATH}/PostprocessChangeLog.cmake"
         COMMENT "Generating ChangeLog from Git log..."
         VERBATIM
       )

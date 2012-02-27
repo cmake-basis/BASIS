@@ -63,6 +63,7 @@ set (
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
     "runmcc.m"                    # helper used by MatlabTools.cmake module
     "ScriptConfig.cmake.in"       # default script configuration file
+    "PostprocessChangeLog.cmake"  # used to postprocess generated ChangeLog
     "ProjectSettings.cmake.in"    # default project-dependent settings
     "updatefile.py"               # helper used by BasisUpdate.cmake module
     "doxygen_sbia.css"            # stylesheet for Doxygen documentation
