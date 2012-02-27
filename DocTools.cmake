@@ -852,7 +852,7 @@ function (basis_add_changelog)
       add_custom_target (
         ${TARGET_UID} ${_ALL}
         COMMAND "${CMAKE_COMMAND}"
-            "-DCOMMAND=${BASIS_CMD_GIT};log;--date-order;--date=short;--pretty=format:%ad\ %an%n%n%w(79,4,6)* %s%n%n%b%n"
+            "-DCOMMAND=${BASIS_CMD_GIT};log;--date-order;--date=short;--pretty=format:%ad\ \ %an%n%n%w(79,8,10)* %s%n%n%b%n"
             "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
             "-DOUTPUT_FILE=${CHANGELOG_FILE}"
             -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
