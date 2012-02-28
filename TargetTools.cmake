@@ -109,7 +109,7 @@ function (basis_set_target_properties)
       message ("**   -> ${PROPERTY} = [${VALUE}]")
     endif ()
     # check property name
-    if ("${PROPERTY}" STREQUAL "")
+    if (PROPERTY MATCHES "^$") # remember: STREQUAL is buggy and evil!
       message (FATAL_ERROR "Empty property name given!")
     endif ()
     # set target property
