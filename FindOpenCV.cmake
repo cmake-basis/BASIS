@@ -48,9 +48,10 @@
 # 
 #----------------------------------------------------------
 
-
 # ----------------------------------------------------------------------------
 # initialize search
+set (OpenCV_FOUND FALSE)
+
 find_path (
   OpenCV_DIR "OpenCVConfig.cmake"
   DOC "Directory containing OpenCVConfig.cmake file or installation prefix of OpenCV."
@@ -170,47 +171,51 @@ if (EXISTS "${OpenCV_DIR}")
 
     endforeach ()
 
-else ()
-  set (ERR_MSG "Please specify OpenCV directory using OpenCV_DIR environment variable")
-endif ()
-
-# ----------------------------------------------------------------------------
-# handle the QUIETLY and REQUIRED arguments and set *_FOUND to TRUE
-# if all listed variables are found or TRUE
-include (FindPackageHandleStandardArgs)
-
-set (OpenCV_REQUIRED_COMPONENTS_FOUND TRUE)
-set (OpenCV_COMPONENTS_NOT_FOUND)
-foreach (__CVLIB IN LISTS OpenCV_COMPONENTS_REQUIRED)
-  list (FIND OpenCV_LIB_COMPONENTS ${__CVLIB} IDX)
-  if (IDX EQUAL -1)
-    set (OpenCV_REQUIRED_COMPONENTS_FOUND FALSE)
-    list (APPEND OpenCV_COMPONENTS_NOT_FOUND ${__CVLIB})
   endif ()
-endforeach ()
 
-if (NOT OpenCV_REQUIRED_COMPONENTS_FOUND)
-  if (NOT OpenCV_FIND_QUIET AND OpenCV_FIND_REQUIRED)
-    message (FATAL_ERROR "The following required OpenCV components"
-                         " were not found: ${OpenCV_COMPONENTS_NOT_FOUND}")
+  # --------------------------------------------------------------------------
+  # handle the QUIETLY and REQUIRED arguments and set *_FOUND to TRUE
+  # if all listed variables are found or TRUE
+  include (FindPackageHandleStandardArgs)
+
+  set (OpenCV_REQUIRED_COMPONENTS_FOUND TRUE)
+  set (OpenCV_COMPONENTS_NOT_FOUND)
+  foreach (__CVLIB IN LISTS OpenCV_COMPONENTS_REQUIRED)
+    list (FIND OpenCV_LIB_COMPONENTS ${__CVLIB} IDX)
+    if (IDX EQUAL -1)
+      set (OpenCV_REQUIRED_COMPONENTS_FOUND FALSE)
+      list (APPEND OpenCV_COMPONENTS_NOT_FOUND ${__CVLIB})
+    endif ()
+  endforeach ()
+
+  if (NOT OpenCV_REQUIRED_COMPONENTS_FOUND)
+    if (NOT OpenCV_FIND_QUIET AND OpenCV_FIND_REQUIRED)
+      message (FATAL_ERROR "The following required OpenCV components"
+                           " were not found: ${OpenCV_COMPONENTS_NOT_FOUND}")
+    endif ()
   endif ()
+
+  find_package_handle_standard_args (
+    OpenCV
+    REQUIRED_VARS
+      OpenCV_INCLUDE_DIR
+      OpenCV_LIBS
+      OpenCV_REQUIRED_COMPONENTS_FOUND
+    VERSION_VAR
+      OpenCV_VERSION
+  )
+
+  set (OpenCV_FOUND "${OPENCV_FOUND}")
+
+  # --------------------------------------------------------------------------
+  # (backward) compatibility
+  if (OpenCV_FOUND)
+    set (OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}")
+    set (OpenCV_LIBRARIES    "${OpenCV_LIBS}")
+  endif ()
+
+elseif (NOT OpenCV_FIND_QUIET AND OpenCV_FIND_REQUIRED)
+  message (FATAL_ERROR "Please specify the OpenCV directory using OpenCV_DIR (environment) variable.")
 endif ()
 
-find_package_handle_standard_args (
-  OpenCV
-  REQUIRED_VARS
-    OpenCV_INCLUDE_DIR
-    OpenCV_LIBS
-    OpenCV_REQUIRED_COMPONENTS_FOUND
-  VERSION_VAR
-    OpenCV_VERSION
-)
 
-set (OpenCV_FOUND "${OPENCV_FOUND}")
-
-# ----------------------------------------------------------------------------
-# (backward) compatibility
-if (OpenCV_FOUND)
-  set (OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}")
-  set (OpenCV_LIBRARIES    "${OpenCV_LIBS}")
-endif ()
