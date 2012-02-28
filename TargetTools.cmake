@@ -2075,7 +2075,7 @@ function (basis_add_script_finalize TARGET_UID)
   # final output script file for build tree
   set (OUTPUT_FILE "${CONFIGURED_FILE}")
   # configured script file for install tree
-  set (CONFIGURED_INSTALL_FILE "${SCRIPT_FILE}")
+  set (CONFIGURED_INSTALL_FILE "${CONFIGURED_FILE}")
   # final output script file for install tree
   set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
   set (INSTALL_NAME "${OUTPUT_NAME}")
