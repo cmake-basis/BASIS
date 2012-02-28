@@ -582,7 +582,9 @@ function (basis_add_mex_target_finalize TARGET_UID)
   extract (CLIBS)
   extract (CXXLIBS)
   extract (LD)
+  extract (LDXX)
   extract (LDFLAGS)
+  extract (LDCXXFLAGS)
 
   if (LINK_FLAGS)
     set (LDFLAGS "${LDFLAGS} ${LINK_FLAGS}")
@@ -608,10 +610,16 @@ function (basis_add_mex_target_finalize TARGET_UID)
     set (CXXFLAGS "-fPIC ${CXXFLAGS}")
   endif ()
   if (NOT LD)
-    set (LD "${CMAKE_LINKER}")
+    set (LD "${CMAKE_C_COMPILER}")
+  endif ()
+  if (NOT LDCXX)
+    set (LDCXX "${CMAKE_CXX_COMPILER}")
   endif ()
   if (NOT LDFLAGS)
     set (LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+  endif ()
+  if (NOT LDCXXFLAGS)
+    set (LDCXXFLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
   endif ()
 
   # We chose to use CLIBS and CXXLIBS instead of the -L and -l switches
@@ -631,7 +639,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   # assemble MEX switches
   set (MEX_ARGS)
 
-  list (APPEND MEX_ARGS "CC=${CC}" "CFLAGS=${CFLAGS}")         # C compiler and flags
+  list (APPEND MEX_ARGS "CC=${CC}" "CFLAGS=${CFLAGS}")           # C compiler and flags
   if (CLIBS)
     list (APPEND MEX_ARGS "CLIBS=${CLIBS}")                      # C link libraries
   endif ()
@@ -640,10 +648,16 @@ function (basis_add_mex_target_finalize TARGET_UID)
     list (APPEND MEX_ARGS "CXXLIBS=${CXXLIBS}")                  # C++ link libraries
   endif ()
   if (LD)
-    list (APPEND MEX_ARGS "LD=${LD}")
+    list (APPEND MEX_ARGS "LD=${LD}")                            # C linker
   endif ()
   if (LDFLAGS)
-    list (APPEND MEX_ARGS "LDFLAGS=${LDFLAGS}")
+    list (APPEND MEX_ARGS "LDFLAGS=${LDFLAGS}")                  # C link flags
+  endif ()
+  if (LDCXX)
+    list (APPEND MEX_ARGS "LDCXX=${LDCXX}")                      # C++ linker
+  endif ()
+  if (LDCXXFLAGS)
+    list (APPEND MEX_ARGS "LDCXXFLAGS=${LDCXXFLAGS}")            # C++ link flags
   endif ()
   list (APPEND MEX_ARGS "-outdir" "${BUILD_DIR}")                # output directory
   list (APPEND MEX_ARGS "-output" "${OUTPUT_NAME_WE}")           # output name (w/o extension)
