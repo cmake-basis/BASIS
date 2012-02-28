@@ -20,22 +20,22 @@ INTRODUCTION
 
   For general build and installation instructions which apply to any software
   developed on top of the SBIA Build system And Software Implementation Standard
-  (BASIS), please refer to the INSTALL-basis document which can be either found
-  in the doc/ directory of your BASIS installation or online at [1].
+  (BASIS) [1], please refer to the INSTALL-basis document which can be either found
+  in the doc/ directory of your BASIS installation or online at [2].
 
 
 
 OBTAINING A COPY OF THE SOFTWARE
 ================================
 
-  Please see corresponding section in the INSTALL-basis document [1].
+  Please see corresponding section in the INSTALL-basis document [2].
 
 
 
 INSTALLING A BINARY DISTRIBUTION PACKAGE
 ========================================
 
-  Please see corresponding section in the INSTALL-basis document [1].
+  Please see corresponding section in the INSTALL-basis document [2].
 
 
 
@@ -53,13 +53,19 @@ BUILDING THE SOFTWARE FROM SOURCES
   available to configure this software package are summarized. For a list of
   general build dependencies and step-by-step instructions on how to use CMake
   and GNU Make to build and install the software, please refer to the
-  corresponding section in the INSTALL-basis document [1].
+  corresponding section in the INSTALL-basis document [2].
 
 
   Build Dependencies
   ------------------
 
-  (no additional build dependencies required by this package)
+  - BASIS 1.0 or greater
+
+    Web Site: http://sourceforge.net/projects/sbia-basis/
+    Download: http://sourceforge.net/projects/sbia-basis/files/
+
+    This project is based on BASIS, a meta-project developed at SBIA to
+    standardize and simplify the software development.
 
 
   CMake Options
@@ -78,5 +84,6 @@ BUILDING THE SOFTWARE FROM SOURCES
 REFERENCES
 ==========
 
-  [1] Visit http://www.rad.upenn.edu/sbia/software/installation.html or see
+  [1] http://sourceforge.net/projects/sbia-basis/
+  [2] Visit http://www.rad.upenn.edu/sbia/software/installation.html or see
       the INSTALL-basis document in the doc/ directory of the BASIS installation.

@@ -140,23 +140,20 @@ BUILDING THE SOFWARE FROM SOURCES
 
   - GNU Compiler Collection
 
-    Web:      http://gcc.gnu.org/
+    Web Site: http://gcc.gnu.org/
     Download: http://gcc.gnu.org/install/
-
     Ubuntu:   g++
 
   - GNU Make
 
-    Web:      http://www.gnu.org/
+    Web Site: http://www.gnu.org/
     Download: http://www.gnu.org/software/software.html
-
     Ubuntu:   (pre-installed)
 
   - CMake >= 2.8.4
 
-    Web:      http://www.cmake.org/
+    Web Site: http://www.cmake.org/
     Download: http://www.cmake.org/cmake/resources/software.html
-
     Ubuntu:   cmake, cmake-curses-gui
 
     If your operating system such as certain Linux distributions do not
@@ -171,8 +168,8 @@ BUILDING THE SOFWARE FROM SOURCES
 
   - BASIS
 
-    Web:      n/a
-    Download: n/a
+    Web Site: http://sourceforge.net/projects/sbia-basis/
+    Download: http://sourceforge.net/projects/sbia-basis/files/
 
     The Build system And Software Implementation Standard (BASIS) among other
     features defines the project directory structure and provides CMake
