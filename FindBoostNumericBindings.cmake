@@ -58,7 +58,7 @@ if (NOT BoostNumericBindings_DIR)
       BoostNumericBindings_DIR
         "$ENV{BOOSTNUMERICBINDINGS_DIR}"
       CACHE PATH
-        "Installation prefix for Boost Numeric Bindings."
+        "Installation prefix of boost-numeric-bindings."
       FORCE
     )
   else ()
@@ -66,7 +66,7 @@ if (NOT BoostNumericBindings_DIR)
       BoostNumericBindings_DIR
         "$ENV{BoostNumericBindings_DIR}"
       CACHE PATH
-        "Installation prefix for Boost Numeric Bindings."
+        "Installation prefix of boost-numeric-bindings."
       FORCE
     )
   endif ()
@@ -80,7 +80,7 @@ if (BoostNumericBindings_DIR)
     BoostNumericBindings_INCLUDE_DIR
       NAMES         boost/numeric/bindings/atlas/cblas.hpp
       HINTS         ${BoostNumericBindings_DIR}
-      PATH_SUFFIXES boost-numeric-bindings
+      PATH_SUFFIXES "include" "include/boost-numeric-bindings"
       DOC           "Root include directory of Boost Numeric Bindings."
       NO_DEFAULT_PATH
   )
