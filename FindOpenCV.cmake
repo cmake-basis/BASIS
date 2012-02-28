@@ -82,9 +82,15 @@ if (EXISTS "${OpenCV_DIR}")
     # Note that OpenCV 2.0.0 does only call the command include_directories()
     # but does not set OpenCV_INCLUDE_DIRS. This variable was added to
     # OpenCVConfig.cmake since version 2.1.0 of OpenCV.
-
-    find_path (OpenCV_INCLUDE_DIR "cv.h" DOC "Directory of cv.h header file." NO_DEFAULT_PATH)
+    get_directory_property (__INCLUDE_DIRS PROPERTY INCLUDE_DIRECTORIES)
+    find_path (
+      OpenCV_INCLUDE_DIR "cv.h"
+      HINTS ${__INCLUDE_DIRS}
+      DOC "Directory of cv.h header file."
+      NO_DEFAULT_PATH
+    )
     mark_as_advanced (OpenCV_INCLUDE_DIR)
+    unset (__INCLUDE_DIRS)
 
   # --------------------------------------------------------------------------
   # OpenCV 1
