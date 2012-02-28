@@ -705,6 +705,7 @@ if (WITH_COVERAGE)
     message (FATAL_ERROR "Could not find gcov! Only gcc and gcov supported to perform coverage analysis.")
   endif ()
   set (CTEST_COMPILER_FLAGS "${CTEST_COMPILER_FLAGS} -O0 -fprofile-arcs -ftest-coverage")
+  set (CTEST_LINKER_FLAGS "${CTEST_LINKER_FLAGS} -fprofile-arcs")
 endif ()
 
 # ----------------------------------------------------------------------------

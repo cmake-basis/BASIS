@@ -104,8 +104,16 @@ def build_project(verbose=0):
             '-DBUILD_TESTING:BOOL=ON',
             '-DBASIS_DIR:PATH=' + BASIS_DIR,
             '-DCMAKE_BUILD_TYPE:STRING=@TESTING_BUILD_TYPE@']
+    if '@TESTING_C_FLAGS@' != '':
+        config_cmd.append('-DCMAKE_C_FLAGS:STRING=@TESTING_C_FLAGS@')
     if '@TESTING_CXX_FLAGS@' != '':
         config_cmd.append('-DCMAKE_CXX_FLAGS:STRING=@TESTING_CXX_FLAGS@')
+    if '@TESTING_EXE_LINKER_FLAGS@' != '':
+        config_cmd.append('-DCMAKE_EXE_LINKER_FLAGS:STRING=@TESTING_EXE_LINKER_FLAGS@')
+    if '@TESTING_SHARED_LINKER_FLAGS@' != '':
+        config_cmd.append('-DCMAKE_SHARED_LINKER_FLAGS:STRING=@TESTING_SHARED_LINKER_FLAGS@')
+    if '@TESTING_MODULE_LINKER_FLAGS@' != '':
+        config_cmd.append('-DCMAKE_MODULE_LINKER_FLAGS:STRING=@TESTING_MODULE_LINKER_FLAGS@')
     if verbose > 0:
         config_cmd.append('-DBASIS_VERBOSE:BOOL=ON')
     if verbose > 1:

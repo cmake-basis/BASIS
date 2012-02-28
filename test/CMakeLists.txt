@@ -23,10 +23,19 @@
 
 ## @brief Directory of BASIS used by tests to build test projects.
 set (TESTING_BASIS_DIR "${PROJECT_BINARY_DIR}")
+
 ## @brief Build type used to build test projects.
 set (TESTING_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
-## @brief Compiler flags to use when build test projects.
-set (TESTING_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+## @brief Compiler flags to use for build of test projects.
+set (TESTING_C_FLAGS "${CMAKE_C_FLAGS}")
+## @brief Compiler flags to use for build of test projects.
+set (TESTING_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+## @brief Linker flags to use for build of test projects.
+set (TESTING_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+## @brief Linker flags to use for build of test projects.
+set (TESTING_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+## @brief Linker flags to use for build of test projects.
+set (TESTING_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}")
 
 ## @brief Whether C++ utilities are build.
 set (TEST_CXX_UTILITIES "${BUILD_UTILITIES_FOR_CXX}")
