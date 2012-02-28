@@ -79,6 +79,9 @@ if (EXISTS "${OpenCV_DIR}")
       list (APPEND OpenCV_COMPONENTS_REQUIRED "${__CVLIB}")
     endforeach ()
 
+    # compatibility with OpenCV 1
+    set (OpenCV_INCLUDE_DIR "${OpenCV_INCLUDE_DIR}")
+
   # --------------------------------------------------------------------------
   # OpenCV 1
   else ()
@@ -189,6 +192,9 @@ if (EXISTS "${OpenCV_DIR}")
     # restore library suffixes
     set (OpenCV_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
 
+    # compatibility with OpenCV 2
+    set (OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}")
+
   endif ()
 
   # --------------------------------------------------------------------------
@@ -228,8 +234,7 @@ if (EXISTS "${OpenCV_DIR}")
   # --------------------------------------------------------------------------
   # (backward) compatibility
   if (OpenCV_FOUND)
-    set (OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}")
-    set (OpenCV_LIBRARIES    "${OpenCV_LIBS}")
+    set (OpenCV_LIBRARIES "${OpenCV_LIBS}")
   endif ()
 
 elseif (NOT OpenCV_FIND_QUIET AND OpenCV_FIND_REQUIRED)
