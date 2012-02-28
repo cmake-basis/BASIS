@@ -83,6 +83,9 @@ if (EXISTS "${OpenCV_DIR}")
   # OpenCV 1
   else ()
 
+    # will be adjusted on Unix to find the correct library version
+    set (OpenCV_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+
     # library components
     set (OpenCV_LIB_COMPONENTS cxcore cv ml highgui cvaux)
 
@@ -123,7 +126,19 @@ if (EXISTS "${OpenCV_DIR}")
       string (REGEX REPLACE ".*#define CV_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_MINOR ${OpenCV_VERSIONS_TMP})
       string (REGEX REPLACE ".*#define CV_SUBMINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_PATCH ${OpenCV_VERSIONS_TMP})
       set (OpenCV_VERSION "${OpenCV_VERSION_MAJOR}.${OpenCV_VERSION_MINOR}.${OpenCV_VERSION_PATCH}")
-      set (OpenCV_CVLIB_NAME_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+      # file name suffixes
+      if (UNIX)
+        set (OpenCV_CVLIB_NAME_SUFFIX)
+        set (CMAKE_FIND_LIBRARY_SUFFIXES)
+        foreach (SUFFIX IN LISTS OpenCV_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES)
+          if (NOT SUFFIX MATCHES "${OpenCV_VERSION_MAJOR}\.${OpenCV_VERSION_MINOR}\.${OpenCV_VERSION_PATCH}$")
+            set (SUFFIX "${SUFFIX}.${OpenCV_VERSION}")
+          endif ()
+          list (APPEND CMAKE_FIND_LIBRARY_SUFFIXES "${SUFFIX}")
+        endforeach ()
+      else ()
+        set (OpenCV_CVLIB_NAME_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+      endif ()
     endif ()
 
     # find libraries of components
@@ -171,6 +186,9 @@ if (EXISTS "${OpenCV_DIR}")
 
     endforeach ()
 
+    # restore library suffixes
+    set (OpenCV_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+
   endif ()
 
   # --------------------------------------------------------------------------
@@ -217,5 +235,3 @@ if (EXISTS "${OpenCV_DIR}")
 elseif (NOT OpenCV_FIND_QUIET AND OpenCV_FIND_REQUIRED)
   message (FATAL_ERROR "Please specify the OpenCV directory using OpenCV_DIR (environment) variable.")
 endif ()
-
-
