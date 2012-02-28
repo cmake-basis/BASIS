@@ -79,8 +79,12 @@ if (EXISTS "${OpenCV_DIR}")
       list (APPEND OpenCV_COMPONENTS_REQUIRED "${__CVLIB}")
     endforeach ()
 
-    # compatibility with OpenCV 1
-    set (OpenCV_INCLUDE_DIR "${OpenCV_INCLUDE_DIRS}")
+    # Note that OpenCV 2.0.0 does only call the command include_directories()
+    # but does not set OpenCV_INCLUDE_DIRS. This variable was added to
+    # OpenCVConfig.cmake since version 2.1.0 of OpenCV.
+
+    find_path (OpenCV_INCLUDE_DIR "cv.h" DOC "Directory of cv.h header file." NO_DEFAULT_PATH)
+    mark_as_advanced (OpenCV_INCLUDE_DIR)
 
   # --------------------------------------------------------------------------
   # OpenCV 1
@@ -195,6 +199,13 @@ if (EXISTS "${OpenCV_DIR}")
     # compatibility with OpenCV 2
     set (OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}")
 
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # set OpenCV_INCLUDE_DIRS - required for OpenCV before version 2.1.0
+  if (OpenCV_INCLUDE_DIR MATCHES "/opencv$" AND NOT OpenCV_INCLUDE_DIRS)
+    get_filename_component (OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}" PATH)
+    list (APPEND OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}")
   endif ()
 
   # --------------------------------------------------------------------------
