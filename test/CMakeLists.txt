@@ -25,6 +25,8 @@
 set (TESTING_BASIS_DIR "${PROJECT_BINARY_DIR}")
 ## @brief Build type used to build test projects.
 set (TESTING_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+## @brief Compiler flags to use when build test projects.
+set (TESTING_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
 
 ## @brief Whether C++ utilities are build.
 set (TEST_CXX_UTILITIES "${BUILD_UTILITIES_FOR_CXX}")

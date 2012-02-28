@@ -99,15 +99,17 @@ def build_project(verbose=0):
     wd=os.getcwd()
     os.chdir(BUILD_DIR)
     config_cmd=['@CMAKE_COMMAND@',
-            '-DCMAKE_BUILD_TYPE=@TESTING_BUILD_TYPE@',
             '-DBUILD_DOCUMENTATION:BOOL=OFF',
             '-DBUILD_CHANGELOG:BOOL=OFF',
             '-DBUILD_TESTING:BOOL=ON',
-            '-DBASIS_DIR=' + BASIS_DIR]
+            '-DBASIS_DIR:PATH=' + BASIS_DIR,
+            '-DCMAKE_BUILD_TYPE:STRING=@TESTING_BUILD_TYPE@']
+    if '@TESTING_CXX_FLAGS@' != '':
+        config_cmd.append('-DCMAKE_CXX_FLAGS:STRING=@TESTING_CXX_FLAGS@')
     if verbose > 0:
-        config_cmd.append('-DBASIS_VERBOSE=ON')
+        config_cmd.append('-DBASIS_VERBOSE:BOOL=ON')
     if verbose > 1:
-        config_cmd.append('-DBASIS_DEBUG=ON')
+        config_cmd.append('-DBASIS_DEBUG:BOOL=ON')
     config_cmd.append(SOURCE_DIR)
     basis.execute_process(config_cmd, verbose=True)
     print "Configuring test project... - done"
