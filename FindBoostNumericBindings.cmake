@@ -80,6 +80,7 @@ if (BoostNumericBindings_DIR)
     BoostNumericBindings_INCLUDE_DIR
       NAMES         boost/numeric/bindings/atlas/cblas.hpp
       HINTS         ${BoostNumericBindings_DIR}
+      PATH_SUFFIXES boost-numeric-bindings
       DOC           "Root include directory of Boost Numeric Bindings."
       NO_DEFAULT_PATH
   )
@@ -90,6 +91,7 @@ else ()
     BoostNumericBindings_INCLUDE_DIR
       NAMES         boost/numeric/bindings/atlas/cblas.hpp
       HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+      PATH_SUFFIXES boost-numeric-bindings
       DOC           "Root include directory of Boost Numeric Bindings."
   )
 
