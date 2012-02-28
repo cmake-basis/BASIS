@@ -217,7 +217,7 @@ REFERENCES
    [1] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/index.html
    [2] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/ProjectTemplate.html
    [3] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/FilesystemHierarchyStandard.html
-   [4] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__CMakeModules.html
+   [4] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__BasisModules.html
    [5] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__BasisUtilities.html
    [6] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/ImplementationStandard.html
    [7] http://www.vtk.org/Wiki/ITK/Release_4/Modularization
