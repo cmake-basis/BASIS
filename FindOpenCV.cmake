@@ -80,7 +80,7 @@ if (EXISTS "${OpenCV_DIR}")
     endforeach ()
 
     # compatibility with OpenCV 1
-    set (OpenCV_INCLUDE_DIR "${OpenCV_INCLUDE_DIR}")
+    set (OpenCV_INCLUDE_DIR "${OpenCV_INCLUDE_DIRS}")
 
   # --------------------------------------------------------------------------
   # OpenCV 1
