@@ -108,7 +108,7 @@ if (EXISTS "${OpenCV_DIR}")
       PATHS "${OpenCV_DIR}"
       PATH_SUFFIXES "include" "include/opencv"
       DOC "Directory of cv.h header file."
-      NO_DEFAULT_PATHS
+      NO_DEFAULT_PATH
     )
 
     mark_as_advanced (OpenCV_INCLUDE_DIR)
