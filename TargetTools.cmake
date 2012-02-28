@@ -1861,6 +1861,12 @@ function (basis_add_script TARGET_NAME)
   set (INSTALL_DIR "${ARGN_DESTINATION}")
 
   if (ARGN_SCRIPT MATCHES "\\.in$")
+    # reference to BASIS doxygen page documenting the script configuration
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      set (BuildOfScriptTargetsPageRef "@ref BuildOfScriptTargets")
+    else ()
+      set (BuildOfScriptTargetsPageRef "Build of Script Targets")
+    endif ()
     # Configure script configuration files using configure_file()
     # to have CMake create build rules to update the configured
     # file if the script configuration was modified.

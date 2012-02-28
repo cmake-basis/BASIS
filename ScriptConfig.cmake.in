@@ -16,7 +16,7 @@
 # @c CONFIG_FILE option of the basis_add_executable() or basis_add_library()
 # command, respectively.
 #
-# See @ref BuildOfScriptTargets for more details.
+# See @BuildOfScriptTargetsPageRef@ for more details.
 #
 # Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
