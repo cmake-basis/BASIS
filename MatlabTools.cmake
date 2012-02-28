@@ -610,17 +610,12 @@ function (basis_add_mex_target_finalize TARGET_UID)
     set (CXXFLAGS "-fPIC ${CXXFLAGS}")
   endif ()
   if (NOT LD)
-    set (LD "${CMAKE_C_COMPILER}")
-  endif ()
-  if (NOT LDCXX)
-    set (LDCXX "${CMAKE_CXX_COMPILER}")
+    set (LD "${CMAKE_CXX_COMPILER}") # use C++ compiler instead of CMAKE_LINKER
   endif ()
   if (NOT LDFLAGS)
     set (LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
   endif ()
-  if (NOT LDCXXFLAGS)
-    set (LDCXXFLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-  endif ()
+  # do not set LDCXX or LDCXXFLAGS by default
 
   # We chose to use CLIBS and CXXLIBS instead of the -L and -l switches
   # to add also link libraries added via basis_target_link_libraries ()
