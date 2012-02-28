@@ -77,7 +77,7 @@ if (EXISTS "${OpenCV_DIR}")
         set (__CVLIB "opencv_${__CVLIB}")
       endif ()
       list (APPEND OpenCV_COMPONENTS_REQUIRED "${__CVLIB}")
-    endif ()
+    endforeach ()
 
   # --------------------------------------------------------------------------
   # OpenCV 1
@@ -97,7 +97,7 @@ if (EXISTS "${OpenCV_DIR}")
                                " directory containing the OpenCVConfig.cmake file.")
         endif ()
         list (APPEND OpenCV_COMPONENTS_REQUIRED "${__CVLIB__}")
-      endif ()
+      endforeach ()
     else ()
       set (OpenCV_COMPONENTS_REQUIRED ${OpenCV_LIB_COMPONENTS})
     endif ()
