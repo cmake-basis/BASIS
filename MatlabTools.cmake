@@ -607,6 +607,12 @@ function (basis_add_mex_target_finalize TARGET_UID)
   if (NOT CXXFLAGS MATCHES "( |^)-fPIC( |$)")
     set (CXXFLAGS "-fPIC ${CXXFLAGS}")
   endif ()
+  if (NOT LD)
+    set (LD "${CMAKE_LINKER}")
+  endif ()
+  if (NOT LDFLAGS)
+    set (LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+  endif ()
 
   # We chose to use CLIBS and CXXLIBS instead of the -L and -l switches
   # to add also link libraries added via basis_target_link_libraries ()
