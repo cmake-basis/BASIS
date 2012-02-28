@@ -88,6 +88,7 @@ set (
     "FindMatlabNiftiTools.cmake"
     "FindMOSEK.cmake"
     "FindNiftiCLib.cmake"
+    "FindOpenCV.cmake"
     "FindPerlLibs.cmake"
 )
 
