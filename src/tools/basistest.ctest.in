@@ -840,7 +840,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
                     "${CTEST_BINARY_DIRECTORY}/doc/api/html"
                     "${INSTALL_DOXYGEN_DIR}/html"
         WORKING_DIRECTORY "${CTEST_BINARY_DIRECTORY}"
-        RETURN_VALUE RT
+        RESULT_VARIABLE RT
       )
       if (RT EQUAL 0)
         message ("Copied API documentation to ${INSTALL_DOXYGEN_DIR}.")
