@@ -1,0 +1,89 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   http://www.rad.upenn.edu/sbia/
+  Email: sbia-software at uphs.upenn.edu
+
+  Copyright (c) <year>, University of Pennsylvania. All rights reserved.
+  See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+INTRODUCTION
+============
+
+  This document contains the build and installation instructions.
+
+  For general build and installation instructions which apply to any software
+  developed on top of the SBIA Build system And Software Implementation Standard
+  (BASIS) [1], please refer to the INSTALL-basis document which can be either found
+  in the doc/ directory of your BASIS installation or online at [2].
+
+
+
+OBTAINING A COPY OF THE SOFTWARE
+================================
+
+  Please see corresponding section in the INSTALL-basis document [2].
+
+
+
+INSTALLING A BINARY DISTRIBUTION PACKAGE
+========================================
+
+  Please see corresponding section in the INSTALL-basis document [2].
+
+
+
+RUNTIME REQUIREMENTS
+====================
+
+  This software has no runtime dependencies.
+
+
+
+BUILDING THE SOFTWARE FROM SOURCES
+==================================
+
+  In the following, only the additional build dependencies and CMake settings
+  available to configure this software package are summarized. For a list of
+  general build dependencies and step-by-step instructions on how to use CMake
+  and GNU Make to build and install the software, please refer to the
+  corresponding section in the INSTALL-basis document [2].
+
+
+  Build Dependencies
+  ------------------
+
+  - BASIS 1.0 or greater
+
+    Web Site: http://sourceforge.net/projects/sbia-basis/
+    Download: http://sourceforge.net/projects/sbia-basis/files/
+
+    This project is based on BASIS, a meta-project developed at SBIA to
+    standardize and simplify the software development.
+
+
+  CMake Options
+  -------------
+
+  (no additional CMake options considered by this package)
+
+
+  Advanced CMake Options
+  ----------------------
+
+  (no additional advanced CMake options considered by this package)
+
+
+
+REFERENCES
+==========
+
+  [1] http://sourceforge.net/projects/sbia-basis/
+  [2] Visit http://www.rad.upenn.edu/sbia/software/installation.html or see
+      the INSTALL-basis document in the doc/ directory of the BASIS installation.

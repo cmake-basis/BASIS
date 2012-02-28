@@ -44,7 +44,7 @@ cmake_minimum_required (VERSION 2.8.4)
 # modified, which has to be done with care, however, in any case and should
 # be avoided.
 
-set (TEMPLATE_VERSION 1.1)
+set (TEMPLATE_VERSION 1.2)
 
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
