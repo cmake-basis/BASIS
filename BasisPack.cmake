@@ -139,6 +139,7 @@ set (
     "${CPACK_SOURCE_IGNORE_FILES}"
 	"/CVS/"
 	"/\\\\.svn/"
+	"/\\\\.git/"
 	"\\\\.swp$"
 	"\\\\.#"
 	"/#"
