@@ -9,3 +9,4 @@
 ##############################################################################
 
 basis_install_directory ("template-1.0" "${INSTALL_TEMPLATE_DIR}-1.0")
+basis_install_directory ("template-1.1" "${INSTALL_TEMPLATE_DIR}-1.1")

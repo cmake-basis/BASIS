@@ -1,0 +1,39 @@
+
+  Section of Biomedical Image Analysis
+  Department of Radiology
+  University of Pennsylvania
+  3600 Market Street, Suite 380
+  Philadelphia, PA 19104
+
+  Web:   http://www.rad.upenn.edu/sbia/
+  Email: sbia-software at uphs.upenn.edu
+
+  Copyright (c) <year>, University of Pennsylvania. All rights reserved.
+  See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+INTRODUCTION
+============
+
+  This document lists the authors of this software and further people who
+  significantly contributed to it.
+
+  See the README and COPYING documents for general information,
+  acknowledgements of contributions other kind, and licensing.
+
+
+
+AUTHORS
+=======
+
+  The original authors of this software are:
+
+  - <author>
+
+
+
+CONTRIBUTORS
+============
+
+  Listed below are the names of the ones who contributed notably to this software.

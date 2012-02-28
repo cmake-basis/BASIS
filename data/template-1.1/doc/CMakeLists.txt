@@ -36,4 +36,6 @@ basis_add_doc (api GENERATOR Doxygen)
 #
 # See basis_add_doc()
 
-
+if (EXISTS UserManual.pdf)
+  basis_add_doc (UserManual.pdf OUTPUT_NAME "${PROJECT_NAME} User Manual.pdf")
+endif ()

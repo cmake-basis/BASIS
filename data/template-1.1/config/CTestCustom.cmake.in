@@ -137,11 +137,6 @@ set (
     "./test/.*"                      # exclude test implementations
     "./modules/.*/test/.*"           # exclude test implementations of modules
     # add further exclude expressions here
-    "/gtest/"                        # tested by Google
-    "/gmock/"                        # tested by Google
-    "test.cxx"                       # tested by Google
-    "test_main.cxx"                  # tested by Google
-    "/except.h"                      # only macro definitions
 )
 
 ## @brief Specify additional files which should be considered for coverage report.
