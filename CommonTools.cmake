@@ -343,7 +343,11 @@ macro (basis_use_package PACKAGE)
         if ("${PKG}" STREQUAL "OpenCV")
           # the cv.h may be found as part of PerlLibs, the include path of
           # which is added at first by BASISConfig.cmake
-          basis_include_directories (BEFORE ${OpenCV_INCLUDE_DIRS})
+          if (OpenCV_INCLUDE_DIRS)
+            basis_include_directories (BEFORE ${OpenCV_INCLUDE_DIRS})
+          elseif (OpenCV_INCLUDE_DIR)
+            basis_include_directories (BEFORE ${OpenCV_INCLUDE_DIR})
+          endif ()
         # generic
         else ()
           if (${PKG}_INCLUDE_DIRS OR ${PKG_UPPER}_INCLUDE_DIRS)
