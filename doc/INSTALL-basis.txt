@@ -150,7 +150,7 @@ BUILDING THE SOFWARE FROM SOURCES
     Download: http://www.gnu.org/software/software.html
     Ubuntu:   (pre-installed)
 
-  - CMake >= 2.8.4
+  - CMake 2.8.4 or greater
 
     Web Site: http://www.cmake.org/
     Download: http://www.cmake.org/cmake/resources/software.html
@@ -168,8 +168,8 @@ BUILDING THE SOFWARE FROM SOURCES
 
   - BASIS
 
-    Web Site: http://sourceforge.net/projects/sbia-basis/
-    Download: http://sourceforge.net/projects/sbia-basis/files/
+    Web Site: http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/
+    Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
 
     The Build system And Software Implementation Standard (BASIS) among other
     features defines the project directory structure and provides CMake
