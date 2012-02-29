@@ -52,10 +52,18 @@
 # initialize search
 set (OpenCV_FOUND FALSE)
 
-find_path (
-  OpenCV_DIR "OpenCVConfig.cmake"
-  DOC "Directory containing OpenCVConfig.cmake file or installation prefix of OpenCV."
-)
+if (NOT OpenCV_DIR)
+  if (DEFINED ENV{OpenCV_DIR})
+    set (OpenCV_DIR "$ENV{OpenCV_DIR}")
+  elseif (DEFINED ENV{OPENCV_DIR})
+    set (OpenCV_DIR "$ENV{OPENCV_DIR}")
+  else ()
+    find_path (
+      OpenCV_DIR "OpenCVConfig.cmake"
+      DOC "Directory containing OpenCVConfig.cmake file or installation prefix of OpenCV."
+    )
+  endif ()
+endif ()
 
 set (OpenCV_LIBS)                # found libraries
 set (OpenCV_COMPONENTS_REQUIRED) # requested components
