@@ -54,9 +54,9 @@ set (OpenCV_FOUND FALSE)
 
 if (NOT OpenCV_DIR)
   if (DEFINED ENV{OpenCV_DIR})
-    set (OpenCV_DIR "$ENV{OpenCV_DIR}" CACHE PATH "Installation prefix of OpenCV Library.")
+    set (OpenCV_DIR "$ENV{OpenCV_DIR}" CACHE PATH "Installation prefix of OpenCV Library." FORCE)
   elseif (DEFINED ENV{OPENCV_DIR})
-    set (OpenCV_DIR "$ENV{OPENCV_DIR}" CACHE PATH "Installation prefix of OpenCV Library.")
+    set (OpenCV_DIR "$ENV{OPENCV_DIR}" CACHE PATH "Installation prefix of OpenCV Library." FORCE)
   else ()
     find_path (
       OpenCV_DIR "OpenCVConfig.cmake"
