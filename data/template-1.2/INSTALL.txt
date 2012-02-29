@@ -59,10 +59,10 @@ BUILDING THE SOFTWARE FROM SOURCES
   Build Dependencies
   ------------------
 
-  - BASIS 1.0 or greater
+  - BASIS 1.2 or greater
 
-    Web Site: http://sourceforge.net/projects/sbia-basis/
-    Download: http://sourceforge.net/projects/sbia-basis/files/
+    Web Site: http://www.rad.upenn.edu/sbia/software/doxygen/basis/1.2/html/
+    Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-1.2.0-source.tar.gz
 
     This project is based on BASIS, a meta-project developed at SBIA to
     standardize and simplify the software development.
