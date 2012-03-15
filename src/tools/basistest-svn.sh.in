@@ -20,8 +20,14 @@
 @BASIS_BASH_UTILITIES@
 
 args=()
+verbose=0
+
 while [ $# -gt 0 ]; do
     case "$1" in
+        --verbose|-v)
+            (( verbose++ ))
+            ;;
+
         --help|-h)
             get_executable_name exec_name
             echo "Usage:"
@@ -69,4 +75,8 @@ while [ $# -gt 0 ]; do
 done
 
 # simply call the wrapper script with the password encoded as svnuser
-exec sudo -u svnuser /bin/sh /sbia/home/svn/bin/svnwrap "${args[@]}"
+cmd=(sudo -u svnuser /bin/sh /sbia/home/svn/bin/svnwrap "${args[@]}")
+if [ $verbose -gt 0 ]; then
+    echo "$ ${cmd[@]}"
+fi
+exec "${cmd[@]}"
