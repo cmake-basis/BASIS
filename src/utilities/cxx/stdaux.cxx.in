@@ -70,7 +70,7 @@ void print_contact(const char* contact)
 bool executing_in_build_tree()
 {
     // get executable path relative to top directory of build tree
-    string rel_path = to_relative_path(cBuildRoot, get_executable_directory());
+    string rel_path = to_relative_path(get_real_path(cBuildRoot), get_executable_directory());
     // return whether executable directory is inside the build tree or not
     return !(rel_path == "" || rel_path == "." ||
             (rel_path.substr(0, 2) == ".." && (rel_path.size() == 2 || rel_path[2] == '/')));
