@@ -28,6 +28,7 @@
 #  include <mach-o/dyld.h>     // _NSGetExecutablePath()
 #endif
 
+#include <sbia/basis/assert.h> // debug assertions
 #include <sbia/basis/except.h> // to throw exceptions
 #include <sbia/basis/path.h>   // declarations and BASIS configuration
 
@@ -777,30 +778,46 @@ bool read_symlink(const string& link, string& value)
 // ---------------------------------------------------------------------------
 string get_real_path(const string& path)
 {
-    // make path just absolute if it is no symbolic link
-    if (!is_symlink(path)) {
-        return to_absolute_path(path);
-    }
-    string curr_path(path);
+    string curr_path = to_absolute_path(path);
+#if UNIX
+    // use stringstream and std::getline() to split absolute path at slashes (/)
+    stringstream ss(curr_path);
+    curr_path.clear();
+    string fname;
+    string prev_path;
     string next_path;
-    // for safety reasons, restrict the depth of symbolic links followed
-    for (unsigned int i = 0; i < 100; i++) {
-        if (read_symlink(curr_path, next_path)) {
-            next_path = to_absolute_path(get_file_directory(curr_path), next_path);
-            if (!is_symlink(next_path)) {
-                return next_path;
+    char slash;
+    ss >> slash; // root slash
+    assert(slash == '/');
+    while (getline(ss, fname, '/')) {
+        // current absolute path
+        curr_path += '/';
+        curr_path += fname;
+        // if current path is a symbolic link, follow it
+        if (is_symlink(curr_path)) {
+            // for safety reasons, restrict the depth of symbolic links followed
+            for (unsigned int i = 0; i < 100; i++) {
+                if (read_symlink(curr_path, next_path)) {
+                    curr_path = to_absolute_path(prev_path, next_path);
+                    if (!is_symlink(next_path)) break;
+                } else {
+                    // if real path could not be determined because of permissions
+                    // or invalid path, return the original path
+                    break;
+                }
             }
-            curr_path = next_path;
-        } else {
-            // if real path could not be determined because of permissions
-            // or invalid path, return the original path
-            break;
+            // if real path could not be determined with the given maximum number
+            // of loop iterations (endless cycle?) or one of the symbolic links
+            // could not be read, just return original path as clean absolute path
+            if (is_symlink(next_path)) {
+                return to_absolute_path(path);
+            }
         }
+        // memorize previous path used as base for to_absolute_path()
+        prev_path = curr_path;
     }
-    // if real path could not be determined with the given maximum number of
-    // loop iterations (endless cycle?) or one of the symbolic links could
-    // not be read, just return original path as clean absolute path
-    return to_absolute_path(path);
+#endif
+    return curr_path;
 }
 
 // ===========================================================================
