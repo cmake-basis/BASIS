@@ -18,43 +18,10 @@
 # common configuration settings
 # ============================================================================
 
-basis_sanitize_for_regex (RS "${CMAKE_SOURCE_DIR}")
-basis_sanitize_for_regex (RB "${CMAKE_BINARY_DIR}")
-
-# ----------------------------------------------------------------------------
 ## @brief Include directories of dependencies.
 set (INCLUDE_DIRS_CONFIG)
-
-get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
-if (INCLUDE_DIRS)
-  list (REMOVE_DUPLICATES INCLUDE_DIRS)
-endif ()
-
-foreach (D IN LISTS INCLUDE_DIRS)
-  # exclude project own directories
-  if (NOT D MATCHES "^${RS}|^${RB}")
-    list (APPEND INCLUDE_DIRS_CONFIG "${D}")
-  endif ()
-endforeach ()
-
-# ----------------------------------------------------------------------------
 ## @brief Directories of libraries this package depends on.
 set (LIBRARY_DIRS_CONFIG)
-
-get_directory_property (LIBRARY_DIRS LINK_DIRECTORIES)
-if (LIBRARY_DIRS)
-  list (REMOVE_DUPLICATES LIBRARY_DIRS)
-endif ()
-
-foreach (D IN LISTS LIBRARY_DIRS)
-  # exclude project own directories
-  if (NOT D MATCHES "^${RS}|^${RB}")
-    list (APPEND LIBRARY_DIRS_CONFIG "${D}")
-  endif ()
-endforeach ()
-
-unset (RS)
-unset (RB)
 
 # ============================================================================
 # build tree configuration settings
