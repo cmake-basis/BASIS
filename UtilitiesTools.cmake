@@ -39,12 +39,12 @@ def _basis_init_sys_path():
     import os
     import sys
     module_dir  = os.path.dirname(os.path.realpath(__file__))
-    sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@PYTHON_LIBRARY_DIR\@'))
-    if sitelib_dir not in sys.path:
-        sys.path.append(sitelib_dir)
     sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@BASIS_PYTHON_LIBRARY_DIR\@'))
     if sitelib_dir not in sys.path:
-        sys.path.append(sitelib_dir)
+        sys.path.insert(0, sitelib_dir)
+    sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@PYTHON_LIBRARY_DIR\@'))
+    if sitelib_dir not in sys.path:
+        sys.path.insert(0, sitelib_dir)
 
 _basis_init_sys_path()
 from \@PROJECT_NAMESPACE_PYTHON\@ import basis
