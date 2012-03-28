@@ -224,7 +224,12 @@ int image_regression_test(const char*  imagefile,
                                    tolerance_radius);
     #else
         BASIS_THROW(runtime_error,
-                    "Not implemented yet! Use ITK implementation instead.");
+                    "Not implemented yet! Use ITK implementation instead, i.e.,"
+                    << " install ITK 3.14 or greater (including versions after 4.0)"
+                    << " and reconfigure the build tree of " << cProjectName << ". Ensure that"
+                    << " the ITK_DIR variable is set to the directory of the ITKConfig.cmake file"
+                    << " and that the variable USE_ITK is set to ON. Then rebuild " << cProjectName
+                    << " and optionally install it again.");
     #endif
 }
 
