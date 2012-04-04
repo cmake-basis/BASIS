@@ -136,7 +136,7 @@ endif ()
 # @ingroup BasisSettings
 set (
   CPACK_SOURCE_IGNORE_FILES
-    "${CPACK_SOURCE_IGNORE_FILES}"
+    ${CPACK_SOURCE_IGNORE_FILES}
 	"/CVS/"
 	"/\\\\.svn/"
 	"/\\\\.git/"
