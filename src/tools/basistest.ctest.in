@@ -99,7 +99,7 @@ function (print_options)
                          \"<basedir>/<model>/<site>/<project>-build/<branch>/\".
   url=<url>              Base URL of the project's SVN repository.
                          Only used if the project option was specified.
-                         Default: \"https://sbia-svn/projects/<project>\".
+                         Default: \"https://sbia-svn.uphs.upenn.edu/projects/<project>\".
   branch=<name>          Name of the SVN branch to test, e.g., \"tags/1.0.0\".
                          Default: \"trunk\".
   model=<model>          Name of the dashboard model, i.e., one of
@@ -370,7 +370,7 @@ set (CTEST_EXTRA_SUBMIT_FILES) # additional files for submission to the dashboar
 # ----------------------------------------------------------------------------
 # project attributes
 set (CTEST_PROJECT_NAME "")
-set (CTEST_SVN_URL      "https://sbia-svn/projects/\@CTEST_PROJECT_NAME\@")
+set (CTEST_SVN_URL      "https://sbia-svn.uphs.upenn.edu/projects/\@CTEST_PROJECT_NAME\@")
 set (CTEST_SVN_BRANCH   "trunk")
 
 # ----------------------------------------------------------------------------
