@@ -1211,15 +1211,12 @@ function (basis_check_target_name TARGET_NAME)
   endif ()
 
   # invalid target name ?
-  if (NOT TARGET_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9._+]|-)*$")
-    message (FATAL_ERROR "Target name '${TARGET_NAME}' is invalid.\nChoose a target name "
-                         " which only contains alphanumeric characters, "
-                         "'_', '-', '+', or '.', and starts with a letter.\n")
-  endif ()
-
-  if (TARGET_NAME MATCHES "\\.")
-    message (FATAL_ERROR "Target name '${TARGET_NAME}' is invalid. Target names cannot"
-                         " contain dots (.). Consider using underscores (_) instead.")
+  if (NOT TARGET_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9_+]|-)*$|^__init__(_py)?$")
+    message (FATAL_ERROR "Target name '${TARGET_NAME}' is invalid.\nChoose a target name"
+                         " which only contains alphanumeric characters,"
+                         " '_', '-', or '+', and starts with a letter."
+                         " The only exception from this rule is __init__[_py] for"
+                         " a __init__.py script.\n")
   endif ()
 
   # unique ?
@@ -1346,15 +1343,10 @@ function (basis_check_test_name TEST_NAME)
     message (FATAL_ERROR "Test name \"${TEST_NAME}\" is reserved and cannot be used.")
   endif ()
 
-  if (NOT TEST_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9_+.]|-)*$")
+  if (NOT TEST_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9_+]|-)*$")
     message (FATAL_ERROR "Test name ${TEST_NAME} is invalid.\nChoose a test name "
-                         " which only contains alphanumeric characters, "
-                         "'_', '-', '+', or '.', and starts with a letter.\n")
-  endif ()
-
-  if (TEST_NAME MATCHES "\\.")
-    message (FATAL_ERROR "Test name ${TEST_NAME} is invalid. Test names cannot"
-                         " contain dots (.). Consider using underscores (_) instead.")
+                         " which only contains alphanumeric characters,"
+                         " '_', '-', or '+', and starts with a letter.\n")
   endif ()
 endfunction ()
 
