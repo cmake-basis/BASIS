@@ -67,10 +67,11 @@ from \@PROJECT_NAMESPACE_PYTHON\@ import basis
 #
 # @ingroup BasisPerlUtilities
 set (BASIS_PERL_UTILITIES "
+use Cwd qw(realpath);
 use File::Basename;
-use lib dirname (__FILE__) . '/\@BASIS_PERL_LIBRARY_DIR\@';
-use lib dirname (__FILE__) . '/\@PERL_LIBRARY_DIR\@';
-use lib dirname (__FILE__);
+use lib realpath(dirname(realpath(__FILE__)) . '/\@BASIS_PERL_LIBRARY_DIR\@');
+use lib realpath(dirname(realpath(__FILE__)) . '/\@PERL_LIBRARY_DIR\@');
+use lib dirname(realpath(__FILE__));
 
 package Basis;
 use \@PROJECT_NAMESPACE_PERL\@::Basis qw(:everything);
