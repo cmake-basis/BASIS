@@ -49,7 +49,7 @@ superceded by the @c BUILD_ALL_MODULES option if this option is set to @c ON,
 however.
 
 Besides adding these options, the basis_project_modules()
-function ensures that the modules are configured and build in the righ order,
+function ensures that the modules are configured and build in the right order,
 such that a module which is needed by another module is build prior to this
 dependent module. Moreover, it helps the basis_find_package() function to find
 the other modules, in particular their configured package configuration files,
