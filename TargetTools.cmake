@@ -1707,7 +1707,8 @@ function (basis_add_script TARGET_NAME)
     set (ARGN_SCRIPT "${ARGN_SCRIPT}.in")
   endif ()
   if (NOT EXISTS "${ARGN_SCRIPT}")
-    message (FATAL_ERROR "basis_add_script(): Missing script file ${ARGN_SCRIPT}!")
+    string (REGEX REPLACE "\\.in$" "" ARGN_SCRIPT "${ARGN_SCRIPT}")
+    message (FATAL_ERROR "basis_add_script(): Missing script file ${ARGN_SCRIPT}[.in]!")
   endif ()
   get_filename_component (SCRIPT_NAME "${ARGN_SCRIPT}" NAME)
   string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME}")
@@ -2327,35 +2328,6 @@ function (basis_add_script_finalize TARGET_UID)
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # create __init__.py files in build tree Python package
-  set (INSTALL_INIT_PY)
-  if (MODULE AND BASIS_LANGUAGE MATCHES "PYTHON")
-    set (ROOT)
-    if (LIBRARY_OUTPUT_DIRECTORY MATCHES "^${BINARY_PYTHON_LIBRARY_DIR}/.+")
-      set (ROOT "${BINARY_PYTHON_LIBRARY_DIR}")
-    elseif (LIBRARY_OUTPUT_DIRECTORY MATCHES "^${TESTING_PYTHON_LIBRARY_DIR}/.+")
-      set (ROOT "${TESTING_PYTHON_LIBRARY_DIR}")
-    endif ()
-    if (ROOT)
-      set (D "${LIBRARY_OUTPUT_DIRECTORY}")
-      while (NOT "${D}" STREQUAL "${ROOT}")
-        set (C "${C}file (WRITE \"${D}/__init__.py\" \"from pkgutil import extend_path\\n__path__ = extend_path(__path__, __name__)\\n\")\n")
-        if (COMPILE)
-          basis_set_if_empty (INSTALL_INIT_PY "${D}/__init__.pyc")
-        else ()
-          basis_set_if_empty (INSTALL_INIT_PY "${D}/__init__.py")
-        endif ()
-        list (APPEND OUTPUT_FILES "${D}/__init__.py")
-        if (COMPILE)
-          set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${D}/__init__.py')\")\n")
-          list (APPEND OUTPUT_FILES "${D}/__init__.pyc")
-        endif ()
-        get_filename_component (D "${D}" PATH)
-      endwhile ()
-    endif ()
-  endif ()
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # setup build commands
 
   # write/update build script
@@ -2419,18 +2391,6 @@ function (basis_add_script_finalize TARGET_UID)
         DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
         COMPONENT   "${LIBRARY_COMPONENT}"
       )
-
-      if (INSTALL_INIT_PY)
-        set (D "${LIBRARY_INSTALL_DIRECTORY}")
-        while (NOT "${D}" STREQUAL "${INSTALL_PYTHON_LIBRARY_DIR}")
-          install (
-            FILES       "${INSTALL_INIT_PY}"
-            DESTINATION "${D}"
-            COMPONENT   "${LIBRARY_COMPONENT}"
-          )
-          get_filename_component (D "${D}" PATH)
-        endwhile ()
-      endif ()
     endif ()
   else ()
     if (RUNTIME_INSTALL_DIRECTORY)
@@ -2446,6 +2406,145 @@ function (basis_add_script_finalize TARGET_UID)
   if (BASIS_VERBOSE)
     message (STATUS "Adding build command for script ${TARGET_UID}... - done")
   endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+# @brief Add target to build/install __init__.py files.
+function (basis_add_init_py_target)
+  # constants
+  set (BUILD_DIR "${PROJECT_BINARY_DIR}/CMakeFiles/_initpy.dir")
+  basis_sanitize_for_regex (BINARY_PYTHON_LIBRARY_DIR_REGEX  "${BINARY_PYTHON_LIBRARY_DIR}")
+  basis_sanitize_for_regex (TESTING_PYTHON_LIBRARY_DIR_REGEX "${TESTING_PYTHON_LIBRARY_DIR}")
+  basis_sanitize_for_regex (INSTALL_PYTHON_LIBRARY_DIR_REGEX "${INSTALL_PYTHON_LIBRARY_DIR}")
+  # collect build tree directories requiring a __init__.py file
+  set (DIRS)            # directories for which to generate a __init__.py file
+  set (EXCLUDE)         # exclude these directories
+  set (INSTALL_EXCLUDE) # exclude these directories on installation
+  set (COMPONENTS)      # installation components
+  basis_get_project_property (TARGETS PROPERTY TARGETS)
+  foreach (TARGET_UID ${TARGETS})
+    get_target_property (BASIS_TYPE     ${TARGET_UID} "BASIS_TYPE")
+    get_target_property (BASIS_LANGUAGE ${TARGET_UID} "BASIS_LANGUAGE")
+    if (BASIS_TYPE MATCHES "^MODULE_SCRIPT$" AND BASIS_LANGUAGE MATCHES "PYTHON")
+      # get absolute path of built Python module
+      basis_get_target_location (LOCATION         ${TARGET_UID} ABSOLUTE)
+      basis_get_target_location (INSTALL_LOCATION ${TARGET_UID} POST_INSTALL_RELATIVE)
+      # get component (used by installation rule)
+      get_target_property (COMPONENT ${TARGET_UID} "LIBRARY_COMPONENT")
+      list (FIND COMPONENTS "${COMPONENT}" IDX)
+      if (IDX EQUAL -1)
+        list (APPEND COMPONENTS "${COMPONENT}")
+        set (INSTALL_DIRS_${COMPONENT}) # list of directories for which to install
+                                        # __init__.py for this component
+      endif ()
+      # directories for which to build a __init__.py file
+      basis_get_filename_component (DIR "${LOCATION}" PATH)
+      if (LOCATION MATCHES "/__init__.py$")
+        list (APPEND EXCLUDE "${DIR}")
+      else ()
+        if (DIR MATCHES "^${BINARY_PYTHON_LIBRARY_DIR_REGEX}/.+")
+          while (NOT "${DIR}" MATCHES "^${BINARY_PYTHON_LIBRARY_DIR_REGEX}$")
+            list (APPEND DIRS "${DIR}")
+            get_filename_component (DIR "${DIR}" PATH)
+          endwhile ()
+        elseif (DIR MATCHES "^${TESTING_PYTHON_LIBRARY_DIR_REGEX}/.+")
+          while (NOT "${DIR}" MATCHES "^${TESTING_PYTHON_LIBRARY_DIR_REGEX}$")
+            list (APPEND DIRS "${DIR}")
+            get_filename_component (DIR "${DIR}" PATH)
+          endwhile ()
+        endif ()
+      endif ()
+      # directories for which to install a __init__.py file
+      basis_get_filename_component (DIR "${INSTALL_LOCATION}" PATH)
+      if (INSTALL_LOCATION MATCHES "/__init__.py$")
+        list (APPEND INSTALL_EXCLUDE "${DIR}")
+      else ()
+        if (DIR MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR_REGEX}/.+")
+          while (NOT "${DIR}" MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR_REGEX}$")
+            list (APPEND INSTALL_DIRS_${COMPONENT} "${DIR}")
+            get_filename_component (DIR "${DIR}" PATH)
+          endwhile ()
+        endif ()
+      endif ()
+    endif ()
+  endforeach ()
+  # return if no Python module is being build
+  if (NOT DIRS)
+    return ()
+  endif ()
+  list (REMOVE_DUPLICATES DIRS)
+  if (EXCLUDE)
+    list (REMOVE_DUPLICATES EXCLUDE)
+  endif ()
+  if (INSTALL_EXCLUDE)
+    list (REMOVE_DUPLICATES INSTALL_EXCLUDE)
+  endif ()
+  # generate build script
+  set (C)
+  set (OUTPUT_FILES)
+  foreach (DIR IN LISTS DIRS)
+    list (FIND EXCLUDE "${DIR}" IDX)
+    if (IDX EQUAL -1)
+      set (C "${C}configure_file (\"${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in\" \"${DIR}/__init__.py\" @ONLY)\n")
+      list (APPEND OUTPUT_FILES "${DIR}/__init__.py")
+      if (BASIS_COMPILE_SCRIPTS)
+        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${DIR}/__init__.py')\")\n")
+        list (APPEND OUTPUT_FILES "${DIR}/__init__.pyc")
+      endif ()
+    endif ()
+  endforeach ()
+  set (C "${C}configure_file (\"${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in\" \"${BUILD_DIR}/__init__.py\" @ONLY)\n")
+  list (APPEND OUTPUT_FILES "${BUILD_DIR}/__init__.py")
+  if (BASIS_COMPILE_SCRIPTS)
+    set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${BUILD_DIR}/__init__.py')\")\n")
+    list (APPEND OUTPUT_FILES "${BUILD_DIR}/__init__.pyc")
+  endif ()
+  # write/update build script
+  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
+  if (EXISTS "${BUILD_SCRIPT}")
+    file (WRITE "${BUILD_SCRIPT}.tmp" "${C}")
+    execute_process (
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+          "${BUILD_SCRIPT}.tmp" "${BUILD_SCRIPT}"
+    )
+    file (REMOVE "${BUILD_SCRIPT}.tmp")
+  else ()
+    file (WRITE "${BUILD_SCRIPT}" "${C}")
+  endif ()
+  # add custom build command
+  add_custom_command (
+    OUTPUT  ${OUTPUT_FILES}
+    COMMAND "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
+    COMMENT "Building __init__.py modules..."
+  )
+  # add custom target which triggers execution of build script
+  add_custom_target (_initpy ALL DEPENDS ${OUTPUT_FILES})
+  if (TARGET scripts)
+    add_dependencies (scripts _initpy)
+  endif ()
+  # cleanup on "make clean"
+  set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
+  # add install rules
+  if (BASIS_COMPILE_SCRIPTS)
+    set (INSTALL_INIT_FILE "${BUILD_DIR}/__init__.pyc")
+  else ()
+    set (INSTALL_INIT_FILE "${BUILD_DIR}/__init__.py")
+  endif ()
+  foreach (COMPONENT IN LISTS COMPONENTS)
+    if (INSTALL_DIRS_${COMPONENT})
+      list (REMOVE_DUPLICATES INSTALL_DIRS_${COMPONENT})
+    endif ()
+    foreach (DIR IN LISTS INSTALL_DIRS_${COMPONENT})
+      list (FIND INSTALL_EXCLUDE "${DIR}" IDX)
+      if (IDX EQUAL -1)
+        install (
+          FILES       "${INSTALL_INIT_FILE}"
+          DESTINATION "${DIR}"
+          COMPONENT   "${COMPONENT}"
+        )
+      endif ()
+    endforeach ()
+  endforeach ()
 endfunction ()
 
 # ----------------------------------------------------------------------------

@@ -1212,6 +1212,7 @@ macro (basis_project_finalize)
     basis_configure_ExecutableTargetInfo ()
     # finalize addition of custom targets
     basis_add_custom_finalize ()
+    basis_add_init_py_target ()
     # generate configuration files
     include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
     # package software
