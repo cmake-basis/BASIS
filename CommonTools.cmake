@@ -1461,6 +1461,10 @@ function (basis_configure_sources LIST_NAME)
   # configure source files
   set (CONFIGURED_SOURCES)
   foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
+    # make path absolute, otherwise EXISTS check will not work
+    if (NOT IS_ABSOLUTE "${SOURCE}")
+      set (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
+    endif ()
     # the .in suffix is optional, add it here if a .in file exists for this
     # source file, but only if the source file itself does not name an acutally
     # existing source file
