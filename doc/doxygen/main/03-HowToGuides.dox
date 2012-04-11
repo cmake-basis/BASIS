@@ -2,7 +2,7 @@
  * @file  03-HowToGuides.dox
  * @brief Overview of how-to guides.
  *
- * Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -16,5 +16,6 @@
 - @subpage HowToDocument
 - @subpage HowToBranchAndRelease
 - @subpage HowToPackage
+- @subpage HowToInstall
 - @subpage HowToRunAutomatedTests
 */

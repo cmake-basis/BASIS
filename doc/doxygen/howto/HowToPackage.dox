@@ -2,18 +2,39 @@
  * @file  HowToPackage.dox
  * @brief How to create source and binary packages.
  *
- * Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 /**
-@page HowToPackage How to Package Software
+@page HowToPackage How to Package the Software
 
 @section HowToPackageIntro Introduction
 
-  This document describes the packaging of BASIS projects.
+This document describes the packaging of BASIS projects.
 
-  @todo This how-to guide has to be written yet.
+@section GenerateSourcePackage How to Package Source Files
+
+A source package for distribution, which only includes basic tests and
+selected modules, is generated using
+<a href="http://www.cmake.org/cmake/help/cpack-2-8-docs.html">CPack</a>.
+In particular, the build target @c package_source is used to generate
+a <tt>.tar.gz</tt> file with the source files of the distribution package.
+This package will include all source files except those which match one
+of the patterns in the @c CPACK_SOURCE_IGNORE_FILES CMake list which
+is set to common default patterns in the BasisPack.cmake module.
+Additional exclude patterns for a particular package shall be added to the
+Settings.cmake file of the project. Moreover, if the project contains
+different @ref ProjectModules "modules", only the modules which were enabled
+while the build tree has been configured are included.
+For general steps on how to configure a build tree, see the
+<a href="http://www.rad.upenn.edu/sbia/software/installation.html">
+common build instructions</a>. Given a configured build tree with a
+generated @c Makefile, run the following command to generate the source
+distribution package:
+@code
+make package_source
+@endcode
 */

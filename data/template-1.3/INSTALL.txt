@@ -19,23 +19,23 @@ INTRODUCTION
   This document contains the build and installation instructions.
 
   For general build and installation instructions which apply to any software
-  developed on top of the SBIA Build system And Software Implementation Standard
-  (BASIS) [1], please refer to the INSTALL-basis document which can be either found
-  in the doc/ directory of your BASIS installation or online at [2].
+  developed on top of the SBIA Build system And Software Implementation
+  Standard (BASIS) [1], please refer to the respective how-to guide of the
+  BASIS documentation [2].
 
 
 
 OBTAINING A COPY OF THE SOFTWARE
 ================================
 
-  Please see corresponding section in the INSTALL-basis document [2].
+  Please see the corresponding section of the BASIS how-to guide [2].
 
 
 
 INSTALLING A BINARY DISTRIBUTION PACKAGE
 ========================================
 
-  Please see corresponding section in the INSTALL-basis document [2].
+  Please see the corresponding section of the BASIS how-to guide [2].
 
 
 
@@ -53,7 +53,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   available to configure this software package are summarized. For a list of
   general build dependencies and step-by-step instructions on how to use CMake
   and GNU Make to build and install the software, please refer to the
-  corresponding section in the INSTALL-basis document [2].
+  corresponding section of the BASIS how-to guide [2].
 
 
   Build Dependencies
@@ -61,7 +61,7 @@ BUILDING THE SOFTWARE FROM SOURCES
 
   - BASIS 1.2 or greater
 
-    Web Site: http://www.rad.upenn.edu/sbia/software/index.html#basis
+    Web Site: http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/
     Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
 
     This project is based on BASIS, a meta-project developed at SBIA to
@@ -86,5 +86,4 @@ REFERENCES
 
   [1] http://www.rad.upenn.edu/sbia/software/index.html#basis
 
-  [2] Visit http://www.rad.upenn.edu/sbia/software/installation.html or see
-      the INSTALL-basis document in the doc/ directory of the BASIS installation.
+  [2] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/HowToInstall.html

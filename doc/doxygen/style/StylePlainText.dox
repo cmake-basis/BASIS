@@ -2,7 +2,7 @@
  * @file  HowToDocument.dox
  * @brief How to document software.
  *
- * Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -26,7 +26,7 @@ project shall be formatted.
   Web:   http://www.rad.upenn.edu/sbia/
   Email: sbia-software at uphs.upenn.edu
 
-  Copyright (c) 2011, University of Pennsylvania. All rights reserved.
+  Copyright (c) 2011 University of Pennsylvania. All rights reserved.
   See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 
@@ -60,7 +60,7 @@ HEADER
   Web:   http://www.rad.upenn.edu/sbia/
   Email: sbia-software at uphs.upenn.edu
 
-  Copyright (c) <year>, University of Pennsylvania. All rights reserved.
+  Copyright (c) <year> University of Pennsylvania. All rights reserved.
   See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 

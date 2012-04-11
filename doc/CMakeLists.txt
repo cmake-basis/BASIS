@@ -25,10 +25,17 @@
 #
 # See basis_add_doc()
 
+# modify template file which shall also be included in documentation such that
+# it will not cause a Doxygen warning because of unrecognized xml/html tags
+file (READ "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}/config/Depends.cmake" TEMPLATE)
+string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
+file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
+unset (TEMPLATE)
+
 basis_add_doc (
   api
   GENERATOR        Doxygen
-  INPUT            "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}/config/Depends.cmake"
+  INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
                    "*/gmock/*"            # Google Mock
                    "*/gtest/*"            # Google Test
@@ -40,8 +47,6 @@ basis_add_doc (
                    # files in binary source tree
                    "cmake_install.cmake"
                    "CTestTestfile.cmake"
-                   # template files
-                   "data/template*"
 )
 
 # ============================================================================
@@ -52,7 +57,5 @@ basis_add_doc (
 # using the macro basis_add_doc ().
 #
 # See basis_add_doc()
-
-basis_add_doc ("INSTALL-basis.txt") # common installation instructions
 
 basis_add_doc ("tutorials") # tutorial presentations
