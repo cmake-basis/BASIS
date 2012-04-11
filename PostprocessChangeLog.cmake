@@ -5,7 +5,7 @@
 # Usage: cmake -DCHANGELOG_FILE=<file> -DINPUTFORMAT=[SVN|SVN2CL|GIT]
 #                   -P PostprocessChangeLog.cmake
 #
-# Copyright (c) 2012, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

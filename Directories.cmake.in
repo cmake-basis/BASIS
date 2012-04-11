@@ -24,7 +24,7 @@
 # the current module. Otherwise, the modules add their name to the paths such
 # that the files of the modules are separated by subdirectories.
 #
-# Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
