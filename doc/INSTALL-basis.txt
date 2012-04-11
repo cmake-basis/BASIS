@@ -265,8 +265,33 @@ BUILDING THE SOFWARE FROM SOURCES
 
      The advanced CMake settings are:
 
-     - INSTALL_APIDOC_DIR    Installation directory of the API documentation
-                             relative to the INSTALL_PREFIX.
+     - BASIS_COMPILE_SCRIPTS      Enable compilation of Python modules. If this option
+                                  is enabled, only the compiled .pyc files are installed.
+     - BASIS_DEBUG                Enable debugging messages during build configuration.
+     - BASIS_INSTALL_SINFIX       The sinfix to use for the installation if INSTALL_SINFIX
+                                  is set to ON. Otherwise, this values is ignored.
+     - BASIS_MCC_FLAGS            Additional flags for MATLAB Compiler.
+     - BASIS_MCC_MATLAB_MODE      Whether to call the MATLAB Compiler in MATLAB mode.
+                                  If ON, the MATLAB Compiler is called from within a
+                                  MATLAB interpreter session, which results in the
+                                  immediate release of the MATLAB Compiler license
+                                  once the compilation is done. Otherwise, the license
+                                  is reserved for a fixed amount of time (e.g. 30 min).
+     - BASIS_MCC_RETRY_ATTEMPTS   Number of times the compilation of MATLAB Compiler
+                                  target is repeated in case of a license checkout
+                                  error.
+     - BASIS_MCC_RETRY_DELAY      Delay in seconds between retries to build MATLAB
+                                  Compiler targets after a license checkout error
+                                  has occurred.
+     - BASIS_MCC_TIMEOUT          Timeout in seconds for the build of a MATLAB Compiler
+                                  target. If the build of the target could not be
+                                  finished within the specified time, the build is
+                                  interrupted.
+     - BASIS_MEX_FLAGS            Additional flags for the MEX script.
+     - BASIS_MEX_TIMEOUT          Timeout in seconds for the build of MEX-files.
+     - BASIS_VERBOSE              Enable verbose messages during build configuration.
+     - INSTALL_APIDOC_DIR         Installation directory of the API documentation
+                                  relative to the INSTALL_PREFIX.
 
      Please refer also to the package specific build instructions given in the
      INSTALL file of the corresponding package which is located in the root directory
