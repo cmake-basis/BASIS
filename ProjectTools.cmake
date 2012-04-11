@@ -1145,7 +1145,7 @@ macro (basis_project_finalize)
 
     # install public headers
     if (NOT BASIS_AUTO_PREFIX_INCLUDES)
-      basis_install_directory ("${PROJECT_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}")
+      basis_install_directory ("${PROJECT_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" OPTIONAL)
     endif ()
     set (PUBLIC_HEADERS_EXCLUDE_PATTERNS)
     foreach (P IN LISTS BASIS_UTILITIES_PUBLIC_HEADERS)
