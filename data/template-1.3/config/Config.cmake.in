@@ -37,6 +37,12 @@
 
 @BASIS_CONFIG@
 
+# ============================================================================
+# @PROJECT_NAME@ configuration
+# ============================================================================
+
+# Add further package configuration settings here.
+
 
 ## @}
 # end of Doxygen group - keep at end of file
