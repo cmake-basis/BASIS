@@ -878,7 +878,32 @@ if (FORCE_BUILD OR UPDATED_FILES)
     # perform installation
     if (WITH_INSTALL AND TEST_RESULT EQUAL 0)
       message ("Install project files")
-
+      # First deinstall previously installed files to ensure that obsolete
+      # files are removed. These obsolete files could otherwise be used by
+      # other projects and the test would not reveal that the projects are
+      # actually no longer compatible.
+      read_cmake_cache_value (CMAKE_INSTALL_PREFIX)
+      set (UNINSTALLER "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/uninstall_${CTEST_PROJECT_NAME_LOWER}")
+      if (EXISTS "${UNINSTALLER}")
+        execute_process (
+          COMMAND           "${UNINSTALLER}"
+          WORKING_DIRECTORY "${CTEST_BINARY_DIRECTORY}"
+          TIMEOUT           1800 # 30 minutes
+          RESULT_VARIABLE   UNINSTALL_RESULT
+          OUTPUT_FILE       "${CTEST_BINARY_DIRECTORY}/install.log"
+          ERROR_FILE        "${CTEST_BINARY_DIRECTORY}/install.log"
+        )
+      else ()
+        execute_process (
+          COMMAND           make uninstall
+          WORKING_DIRECTORY "${CTEST_BINARY_DIRECTORY}"
+          TIMEOUT           1800 # 30 minutes
+          RESULT_VARIABLE   UNINSTALL_RESULT
+          OUTPUT_FILE       "${CTEST_BINARY_DIRECTORY}/install.log"
+          ERROR_FILE        "${CTEST_BINARY_DIRECTORY}/install.log"
+        )
+      endif ()
+      # install new files
       execute_process (
         COMMAND           make install
         WORKING_DIRECTORY "${CTEST_BINARY_DIRECTORY}"
@@ -887,8 +912,8 @@ if (FORCE_BUILD OR UPDATED_FILES)
         OUTPUT_FILE       "${CTEST_BINARY_DIRECTORY}/install.log"
         ERROR_FILE        "${CTEST_BINARY_DIRECTORY}/install.log"
       )
-
-      if (NOT INSTALL_RESULT EQUAL 0)
+      # submit log file in case of errors to dashboard
+      if (NOT UNINSTALL_RESULT EQUAL 0 OR NOT INSTALL_RESULT EQUAL 0)
         list (APPEND CTEST_EXTRA_SUBMIT_FILES "${CTEST_BINARY_DIRECTORY}/install.log")
       endif ()
     endif ()
