@@ -19,7 +19,7 @@
 # of the external package or the corresponding Find<Package>.cmake module,
 # add the related CMake code to the Settings.cmake file instead.
 #
-# Copyright (c) <year>, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) <year> University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

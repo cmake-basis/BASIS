@@ -9,7 +9,7 @@
 # where developers who are responsible for maintaining the software
 # may be provided with even more detailed documentation of the implementation.
 #
-# Copyright (c) <year>, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) <year> University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

@@ -5,7 +5,7 @@
 # By default, all content of the example folder is simply copied to the
 # example directory of the installation tree.
 #
-# Copyright (c) <year>, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) <year> University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
