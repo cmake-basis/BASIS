@@ -38,25 +38,33 @@
 @BASIS_CONFIG@
 
 # ============================================================================
-# CMake modules
+# @PROJECT_NAME@ configuration
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# CMake modules
 
 ## @brief Absolute path to CMake modules.
 basis_set_config (MODULE_PATH "@MODULE_PATH_CONFIG@")
 
-# ============================================================================
+# ----------------------------------------------------------------------------
 # project template
-# ============================================================================
 
 ## @brief Top directory of project template.
 basis_set_config (TEMPLATE_DIR "@TEMPLATE_DIR_CONFIG@")
 
-# ============================================================================
+# ----------------------------------------------------------------------------
 # utilities
-# ============================================================================
 
 ## @brief List of enabled BASIS utilities.
 basis_set_config (UTILITIES_ENABLED "@UTILITIES_ENABLED@")
+
+## @brief Python interpreter used to build/configure BASIS Python modules.
+basis_set_config (PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@")
+## @brief Perl interpreter used to build/configure BASIS Perl modules.
+basis_set_config (PERL_EXECUTABLE "@PERL_EXECUTABLE@")
+## @brief BASH executable used to build/configure BASIS BASH modules.
+basis_set_config (BASH_EXECUTABLE "@BASH_EXECUTABLE@")
 
 ## @brief Absolute path to C++ utilities files.
 basis_set_config (CXX_TEMPLATES_DIR "@CXX_TEMPLATES_DIR_CONFIG@")
@@ -84,9 +92,8 @@ basis_set_config (LIBRARIES
   ${${NS}TEST_LIBRARY}
 )
 
-# ============================================================================
+# ----------------------------------------------------------------------------
 # CMake tools
-# ============================================================================
 
 include ("${${NS}MODULE_PATH}/BasisTools.cmake")
 include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
