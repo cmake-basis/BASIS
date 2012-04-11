@@ -166,12 +166,15 @@ def add_dependencies(txt, deps, required=True, test=False):
     return txt
 
 # ----------------------------------------------------------------------------
-def alter(filename, args, backup=True):
+def alter(filename, args, backup=True, update=False):
     """Alter project file, i.e., substitute placeholders.
 
     @param [in] filename Path of text file to alter.
     @param [in] args     Command-line arguments.
     @param [in] backup   Whether to backup file before overwriting it.
+    @param [in] update   Whether template file is generated for the update
+                         of an existing project file. In this case, certain
+                         modifications should not be applied to avoid conflicts.
 
     @retval -1 on error
     @retval  0 if file was not modified
@@ -202,11 +205,13 @@ def alter(filename, args, backup=True):
             authors = ('\n' + out[linestart:start]).join(authors)
             out = out.replace('<author>', authors)
     # <year>
+    year = None
     if hasattr(args, 'year') and args.year:
         year = args.year
-    else:
+    elif not update:
         year = datetime.datetime.now().year
-    out = out.replace('<year>', str(year))
+    if year:
+        out = out.replace('<year>', str(year))
     # dependencies
     if filename.endswith('BasisProject.cmake'):
         if hasattr(args, 'use') and args.use:
@@ -331,7 +336,7 @@ def add(path, args, isdir=False):
                 # alter new template
                 try:
                     shutil.copyfile(template_path, project_path + '.template')
-                    if alter(project_path + '.template', args, backup=False) == -1:
+                    if alter(project_path + '.template', args, backup=False, update=True) == -1:
                         raise Exception('failed to alter template file')
                 except Exception, e:
                     sys.stderr.write("E %s - failed to create temporary template" % project_path)
