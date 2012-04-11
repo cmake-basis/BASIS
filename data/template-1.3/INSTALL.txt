@@ -61,8 +61,8 @@ BUILDING THE SOFTWARE FROM SOURCES
 
   - BASIS 1.2 or greater
 
-    Web Site: http://www.rad.upenn.edu/sbia/software/doxygen/basis/1.2/html/
-    Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-1.2.0-source.tar.gz
+    Web Site: http://www.rad.upenn.edu/sbia/software/index.html#basis
+    Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
 
     This project is based on BASIS, a meta-project developed at SBIA to
     standardize and simplify the software development.
