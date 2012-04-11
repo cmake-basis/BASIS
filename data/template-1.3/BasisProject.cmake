@@ -27,6 +27,10 @@
 # @ingroup BasisSettings
 ##############################################################################
 
+# Note: The #<*dependency> patterns are required by the basisproject tool
+#       and should be kept on a separate line as last commented argument of
+#       the corresponding options of the basis_project() command.
+
 basis_project (
   NAME
     "<project>"
