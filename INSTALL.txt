@@ -59,7 +59,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   Build Dependencies
   ------------------
 
-  - ITK >= 3.14 (optional)
+  - ITK 3.14 or greater (optional)
 
     Web:      http://www.itk.org
     Download: http://www.itk.org/ITK/resources/software.html
