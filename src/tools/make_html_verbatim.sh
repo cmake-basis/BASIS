@@ -3,7 +3,7 @@
 # @brief Auxiliary script used to convert plain text file such that the
 #        content can be pasted into the body of a HTML &lt;verbatim&gt; tag.
 #
-# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

@@ -5,7 +5,7 @@
  *
  * @note Based on cmake.php file of GeSHi release version 1.0.8.10.
  *
- * Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>

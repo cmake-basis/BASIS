@@ -5,7 +5,7 @@
  * Instead of throwing an exception if an argument is set more than once,
  * this argument type optionally allows the value to be overwritten.
  *
- * Copyright (c) 2012, University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>

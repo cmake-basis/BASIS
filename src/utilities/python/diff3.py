@@ -16,7 +16,7 @@
     P. Heckel. ``A technique for isolating differences between files.''
     Communications of the ACM, Vol. 21, No. 4, page 264, April 1978.
 
-    Copyright (c) 2012, University of Pennsylvania. All rights reserved.
+    Copyright (c) 2012 University of Pennsylvania. All rights reserved.
     See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 """

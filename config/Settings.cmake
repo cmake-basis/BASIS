@@ -14,7 +14,7 @@
 # dependency can be set here if the basis_use_package() command was enable
 # to import the required configuration of a particular external package.
 #
-# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

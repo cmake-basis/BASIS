@@ -17,7 +17,7 @@
  * work for most of the use cases in software written at SBIA. If not, please
  * contact the maintainer of the BASIS package.
  *
- * Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>

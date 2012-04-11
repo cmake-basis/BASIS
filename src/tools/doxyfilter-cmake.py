@@ -2,7 +2,7 @@
 # @file  doxyfilter-cmake.py
 # @brief Doxygen filter for CMake and CTest scripts.
 #
-# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>

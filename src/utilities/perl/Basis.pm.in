@@ -9,7 +9,7 @@
 # utility functions. Hence, it is sufficient to only use this module.
 # This is done by the @c &#64;BASIS_PERL_UTILITIES&#64; code.
 #
-# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
