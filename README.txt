@@ -8,7 +8,7 @@
   Web:   http://www.rad.upenn.edu/sbia/
   Email: sbia-software at uphs.upenn.edu
 
-  Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.
+  Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.
   See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 

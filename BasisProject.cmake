@@ -21,10 +21,13 @@
 # Example:
 # @code
 # basis_project (
-#   NAME        "MyProject"
-#   VERSION     "1.1.5"
-#   DESCRIPTION "This is the description of the project named"
-#               " MyProject which follows BASIS."
+#   NAME
+#     "MyProject"
+#   VERSION
+#     1.1.5
+#   DESCRIPTION
+#     "This is the description of the project named"
+#     " MyProject which follows BASIS."
 #   DEPENDS
 #     NiftiCLib
 #     Python
@@ -35,7 +38,7 @@
 # )
 # @endcode
 #
-# Copyright (c) 2011, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -43,21 +46,31 @@
 # @ingroup BasisSettings
 ##############################################################################
 
-# Note: The #Add*DependencyHere patterns are required by the basisproject tool
-#       and should be kept at the end of the corresponding line.
+# Note: The #<*dependency> patterns are required by the basisproject tool
+#       and should be kept on a separate line as last commented argument of
+#       the corresponding options of the basis_project() command.
 
 basis_project (
-  NAME        "BASIS"
-  VERSION     "0.0.0"
-  DESCRIPTION "This package implements and supports the development of "
-              "software which follows the SBIA Build system And Software "
-              "Implementation Standard (BASIS)."
+  NAME
+    "BASIS"
+  VERSION
+    0.0.0
+  DESCRIPTION
+    "This package implements and supports the development of "
+    "software which follows the SBIA Build system And Software "
+    "Implementation Standard (BASIS)."
+  DEPENDS
+    #<dependency>
   OPTIONAL_DEPENDS
     PythonInterp
     Perl
     BASH
     ITK-4{ITKTestKernel}
     ITK
+    #<optional-dependency>
+  TEST_DEPENDS
+    #<test-dependency>
   OPTIONAL_TEST_DEPENDS
     MATLAB
+    #<optional-test-dependency>
 )

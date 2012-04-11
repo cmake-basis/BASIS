@@ -7,7 +7,7 @@
 # CMake modules which implement this standard. Therefore, these modules are
 # considered the cornerstone of BASIS.
 #
-# Copyright (c) 2011-2012, University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -29,11 +29,9 @@
 cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
-# version of BASIS template this project was instantiated from
+# version of BASIS template used by this project
+set (TEMPLATE_VERSION 1.3)
 
-# The version of the template this project was instantiated from.
-# This information might be used by BASIS to maintain backwards compatibility.
-#
 # Note that this version in case of the BASIS project itself defines the
 # current version of the project template. Thus, this version number has to
 # be changed whenever the project template was modified.
@@ -43,8 +41,6 @@ cmake_minimum_required (VERSION 2.8.4)
 # become of importance in case the project template is noticably extended or
 # modified, which has to be done with care, however, in any case and should
 # be avoided.
-
-set (TEMPLATE_VERSION 1.3)
 
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
