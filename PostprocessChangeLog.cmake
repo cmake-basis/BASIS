@@ -2,7 +2,7 @@
 # @file  PostprocessChangeLog.cmake
 # @brief Script used to postprocess ChangeLog generated from commit history.
 #
-# Usage: cmake -DCHANGELOG_FILE=<file> -DINPUTFORMAT=[SVN|SVN2CL|GIT]
+# Usage: cmake -DCHANGELOG_FILE=file -DINPUTFORMAT=[SVN|SVN2CL|GIT]
 #                   -P PostprocessChangeLog.cmake
 #
 # Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
