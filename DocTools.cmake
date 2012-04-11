@@ -26,11 +26,11 @@ find_package (Doxygen)
 
 ## @brief Command svn2cl which is used to generate a ChangeLog from the Subversion log.
 find_program (
-  BASIS_CMD_SVN2CL
+  SVN2CL_EXECUTABLE
     NAMES svn2cl svn2cl.sh
     DOC   "The command line tool svn2cl."
 )
-mark_as_advanced (BASIS_CMD_SVN2CL)
+mark_as_advanced (SVN2CL_EXECUTABLE)
 
 # ============================================================================
 # settings
@@ -790,7 +790,8 @@ function (basis_add_changelog)
   # --------------------------------------------------------------------------
   # generate ChangeLog from Subversion history
   if (EXISTS "${PROJECT_SOURCE_DIR}/.svn")
-    if (BASIS_CMD_SVN)
+    find_package (Subversion QUIET)
+    if (Subversion_FOUND)
 
       if (_ALL)
         message ("Generation of ChangeLog enabled as part of ALL."
@@ -804,10 +805,10 @@ function (basis_add_changelog)
       endif ()
 
       # using svn2cl command
-      if (BASIS_CMD_SVN2CL)
+      if (SVN2CL_EXECUTABLE)
         add_custom_target (
           ${TARGET_UID} ${_ALL}
-          COMMAND "${BASIS_CMD_SVN2CL}"
+          COMMAND "${SVN2CL_EXECUTABLE}"
               "--output=${CHANGELOG_FILE}"
               "--linelen=79"
               "--reparagraph"
@@ -826,7 +827,7 @@ function (basis_add_changelog)
         add_custom_target (
           ${TARGET_UID} ${_ALL}
           COMMAND "${CMAKE_COMMAND}"
-              "-DCOMMAND=${BASIS_CMD_SVN};log"
+              "-DCOMMAND=${Subversion_SVN_EXECUTABLE};log"
               "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
               "-DOUTPUT_FILE=${CHANGELOG_FILE}"
               -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"
@@ -847,12 +848,13 @@ function (basis_add_changelog)
   # --------------------------------------------------------------------------
   # generate ChangeLog from Git log
   elseif (EXISTS "${PROJECT_SOURCE_DIR}/.git")
-    if (BASIS_CMD_GIT)
+    find_package (Git QUIET)
+    if (GIT_FOUND)
 
       add_custom_target (
         ${TARGET_UID} ${_ALL}
         COMMAND "${CMAKE_COMMAND}"
-            "-DCOMMAND=${BASIS_CMD_GIT};log;--date-order;--date=short;--pretty=format:%ad\ \ %an%n%n%w(79,8,10)* %s%n%n%b%n"
+            "-DCOMMAND=${GIT_EXECUTABLE};log;--date-order;--date=short;--pretty=format:%ad\ \ %an%n%n%w(79,8,10)* %s%n%n%b%n"
             "-DWORKING_DIRECTORY=${PROJECT_SOURCE_DIR}"
             "-DOUTPUT_FILE=${CHANGELOG_FILE}"
             -P "${BASIS_SCRIPT_EXECUTE_PROCESS}"

@@ -616,7 +616,7 @@ function (basis_update_template REL TEMPLATE RETVAL)
     # if template URL is SVN repository, export file using SVN client
     if ("${SRC}" MATCHES "^https://sbia-svn.*")
       execute_process (
-        COMMAND         "${BASIS_CMD_SVN}" export "${SRC}" "${TEMPLATE}"
+        COMMAND         "${Subversion_SVN_EXECUTABLE}" export "${SRC}" "${TEMPLATE}"
         TIMEOUT         30
         RESULT_VARIABLE RET
         OUTPUT_QUIET

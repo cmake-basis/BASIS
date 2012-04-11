@@ -21,37 +21,8 @@ endif ()
 # required commands
 # ============================================================================
 
-# ----------------------------------------------------------------------------
-# Subversion
 find_package (Subversion)
-
-## @brief The Subversion command (svn).
-if (Subversion_FOUND)
-  set (BASIS_CMD_SVN "${Subversion_SVN_EXECUTABLE}")
-elseif (SVNCOMMAND)
-  set (BASIS_CMD_SVN "${SVNCOMMAND}")
-endif ()
-
-if (NOT BASIS_CMD_SVN)
-  find_program (BASIS_CMD_SVN NAMES svn DOC "Subversion command line client (svn).")
-  mark_as_advanced (BASIS_CMD_SVN)
-endif ()
-
-# ----------------------------------------------------------------------------
-# Git
 find_package (Git)
-
-## @brief The Git command (git).
-if (Git_FOUND)
-  set (BASIS_CMD_GIT "${Git_EXECUTABLE}")
-elseif (SVNCOMMAND)
-  set (BASIS_CMD_GIT "${GITCOMMAND}")
-endif ()
-
-if (NOT BASIS_CMD_GIT)
-  find_program (BASIS_CMD_GIT NAMES git DOC "Git command line client (git).")
-  mark_as_advanced (BASIS_CMD_GIT)
-endif ()
 
 
 ## @addtogroup CMakeUtilities
@@ -70,20 +41,20 @@ endif ()
 #                   automatically removed such that the svn command treats it as a
 #                   local path.
 # @param [out] REV  The revision number of URL. If URL is not under revision
-#                   control or BASIS_CMD_SVN is invalid, "0" is returned.
+#                   control or Subversion_SVN_EXECUTABLE is invalid, "0" is returned.
 #
 # @returns Sets @p REV to the revision of the working copy/repository
 #          at URL @p URL.
 function (basis_svn_get_revision URL REV)
   set (OUT "0")
 
-  if (BASIS_CMD_SVN)
+  if (Subversion_SVN_EXECUTABLE)
     # remove "file://" from URL
     string (REGEX REPLACE "file://" "" TMP "${URL}")
 
     # retrieve SVN info
     execute_process (
-      COMMAND         "${BASIS_CMD_SVN}" info "${TMP}"
+      COMMAND         "${Subversion_SVN_EXECUTABLE}" info "${TMP}"
       OUTPUT_VARIABLE OUT
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -114,7 +85,7 @@ endfunction ()
 #                   automatically removed such that the svn command treats it as a
 #                   local path.
 # @param [out] REV  Revision number when URL was last modified. If URL is not
-#                   under Subversion control or BASIS_CMD_SVN is invalid,
+#                   under Subversion control or Subversion_SVN_EXECUTABLE is invalid,
 #                   "0" is returned.
 #
 # @returns Sets @p REV to revision number at which the working copy/repository
@@ -122,13 +93,13 @@ endfunction ()
 function (basis_svn_get_last_changed_revision URL REV)
   set (OUT "0")
 
-  if (BASIS_CMD_SVN)
+  if (Subversion_SVN_EXECUTABLE)
     # remove "file://" from URL
     string (REGEX REPLACE "file://" "" TMP "${URL}")
 
     # retrieve SVN info
     execute_process (
-      COMMAND         "${BASIS_CMD_SVN}" info "${TMP}"
+      COMMAND         "${Subversion_SVN_EXECUTABLE}" info "${TMP}"
       OUTPUT_VARIABLE OUT
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -156,17 +127,17 @@ endfunction ()
 # @param [out] STATUS The status of URL as returned by 'svn status'.
 #                     If the local directory or file is unmodified, an
 #                     empty string is returned. An empty string is also
-#                     returned when BASIS_CMD_SVN is invalid.
+#                     returned when Subversion_SVN_EXECUTABLE is invalid.
 #
 # @returns Sets @p STATUS to the output of the <tt>svn info</tt> command.
 function (basis_svn_status URL STATUS)
-  if (BASIS_CMD_SVN)
+  if (Subversion_SVN_EXECUTABLE)
     # remove "file://" from URL
     string (REGEX REPLACE "file://" "" TMP "${URL}")
 
     # retrieve SVN status of URL
     execute_process (
-      COMMAND         "${BASIS_CMD_SVN}" status "${TMP}"
+      COMMAND         "${Subversion_SVN_EXECUTABLE}" status "${TMP}"
       OUTPUT_VARIABLE OUT
       ERROR_QUIET
     )
