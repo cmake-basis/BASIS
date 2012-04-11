@@ -86,4 +86,4 @@ REFERENCES
 
   [1] http://www.rad.upenn.edu/sbia/software/index.html#basis
 
-  [2] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/HowToInstall.html
+  [2] http://www.rad.upenn.edu/sbia/software/installation.html
