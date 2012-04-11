@@ -29,7 +29,7 @@
 #    Note that local directories must be prefixed by "file://".
 #
 # 3. The Python interpreter "python" was found and thus the variable
-#    @c BASIS_CMD_PYTHON is set.
+#    @c PYTHON_EXECUTABLE is set.
 #
 # 4. The script used to merge the content of the template with the existing
 #    project files has to be in the same directory as this CMake module.
@@ -84,10 +84,6 @@ include ("${CMAKE_CURRENT_LIST_DIR}/RevisionTools.cmake")
 # ============================================================================
 # required commands
 # ============================================================================
-
-## @brief The Python interpreter command.
-find_program (BASIS_CMD_PYTHON NAMES python DOC "Python interpreter (python).")
-mark_as_advanced (BASIS_CMD_PYTHON)
 
 ## @brief Script used to perform the update of a file.
 set (BASIS_UPDATE_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/updatefile.py")
@@ -153,7 +149,7 @@ function (basis_update_initialize)
   if (
         BASIS_UPDATE             # 1. update is enabled
     AND BASIS_TEMPLATE_URL_VALID # 2. valid template root dir
-    AND BASIS_CMD_PYTHON         # 3. python interpreter found
+    AND PYTHON_EXECUTABLE         # 3. python interpreter found
     AND BASIS_UPDATE_SCRIPT      # 4. update script found
     AND PROJECT_REVISION         # 5. project is under revision control
   )
@@ -177,14 +173,14 @@ function (basis_update_initialize)
 
   BASIS_UPDATE        : ${BASIS_UPDATE}
   BASIS_UPDATE_AUTO   : ${BASIS_UPDATE_AUTO}
-  BASIS_CMD_PYTHON    : ${BASIS_CMD_PYTHON}
+  PYTHON_EXECUTABLE    : ${PYTHON_EXECUTABLE}
   BASIS_UPDATE_SCRIPT : ${BASIS_UPDATE_SCRIPT}
   BASIS_TEMPLATE_URL  : ${BASIS_TEMPLATE_URL}
   PROJECT_REVISION    : ${PROJECT_REVISION}
 ")
       endif ()
 
-      if (NOT BASIS_CMD_PYTHON)
+      if (NOT PYTHON_EXECUTABLE)
         message ("=> Python interpreter not found.")
       endif ()
 	  if (NOT BASIS_UPDATE_SCRIPT)
@@ -298,7 +294,7 @@ function (basis_update FILENAME)
   if (EXISTS "${CUR}")
     execute_process (
       COMMAND
-        "${BASIS_CMD_PYTHON}" "${BASIS_UPDATE_SCRIPT}" -i "${CUR}" -t "${TMP}"
+        "${PYTHON_EXECUTABLE}" "${BASIS_UPDATE_SCRIPT}" -i "${CUR}" -t "${TMP}"
       RESULT_VARIABLE
         RETVAL
       OUTPUT_QUIET
@@ -411,7 +407,7 @@ function (basis_update_finalize)
 
         execute_process (
           COMMAND
-            "${BASIS_CMD_PYTHON}" "${BASIS_UPDATE_SCRIPT}" -f -i "${CUR}" -t "${TMP}" -o "${CUR}"
+            "${PYTHON_EXECUTABLE}" "${BASIS_UPDATE_SCRIPT}" -f -i "${CUR}" -t "${TMP}" -o "${CUR}"
           RESULT_VARIABLE
             RETVAL
           OUTPUT_QUIET
@@ -727,7 +723,7 @@ function (basis_update_files)
 
           execute_process (
             COMMAND
-              "${BASIS_CMD_PYTHON}" "${BASIS_UPDATE_SCRIPT}" -f -i "${CUR}" -t "${TMP}" -o "${CUR}"
+              "${PYTHON_EXECUTABLE}" "${BASIS_UPDATE_SCRIPT}" -f -i "${CUR}" -t "${TMP}" -o "${CUR}"
             RESULT_VARIABLE
               RETVAL
             OUTPUT_QUIET
