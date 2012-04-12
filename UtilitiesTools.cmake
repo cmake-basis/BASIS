@@ -432,7 +432,7 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # Perl
   if (PERL)
-    if (NOT BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
+    if (NOT BASIS_UTILITIES_ENABLED MATCHES "PERL")
       message (FATAL_ERROR "BASIS Perl utilities required by this package"
                            " but BASIS was built without Perl utilities."
                            " Rebuild BASIS with Perl utilities enabled.")
