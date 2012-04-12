@@ -9,3 +9,4 @@
 ##############################################################################
 
 basis_add_test (test_basisproject.py)
+basis_set_tests_properties (test_basisproject PROPERTIES TIMEOUT 2700)

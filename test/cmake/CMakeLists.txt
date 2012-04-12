@@ -2,7 +2,7 @@
 # @file  CMakeLists.txt
 # @brief Build configuration of tests of CMake modules.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -34,8 +34,7 @@ cmake_test (test_string_manipulation)
 
 # ----------------------------------------------------------------------------
 # test use MATLAB Compiler and MEX-script
-if (UNIX AND MATLAB_FOUND)
-  # TODO Implement basisproject tool in Python such that it can be used
-  #      by these tests also on Windows.
+if (MATLAB_FOUND)
   basis_add_test (test_matlabtools.py)
+  basis_set_tests_properties (test_matlabtools PROPERTIES TIMEOUT 1500)
 endif ()

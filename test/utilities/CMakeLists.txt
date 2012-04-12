@@ -32,4 +32,5 @@ endif ()
 # project-specific utilities
 if (BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
   basis_add_test (test_utilities.py)
+  basis_set_tests_properties (test_utilities PROPERTIES TIMEOUT 1500)
 endif ()
