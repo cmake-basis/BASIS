@@ -1,118 +1,169 @@
 ##############################################################################
 # @file  FindPythonInterp.cmake
-# @brief Find Python interpreter.
+# @brief Find python interpreter.
 #
-# This module finds an installed Python interpreter and determines where the
-# executable is located. This code sets the following variables:
+# This module finds if Python interpreter is installed and determines where the
+# executables are. This code sets the following variables:
 #
-# @par Input variables:
-# <table border="0">
-#   <tr>
-#     @tp @b Python_ADDITIONAL_VERSIONS @endtp
-#     <td>List of additional Python versions to search for.</td>
-#   </tr>
-# </table>
+#  PYTHONINTERP_FOUND         - Was the Python executable found
+#  PYTHON_EXECUTABLE          - path to the Python interpreter
 #
-# @par Output variables:
-# <table border="0">
-#   <tr>
-#     @tp @b PythonInterp_FOUND @endtp
-#     <td>Whether a Python interpreter was found.</td>
-#   </tr>
-#   <tr>
-#     @tp @b PYTHONINTERP_FOUND @endtp
-#     <td>Compatibility with official FindPythonInterp.cmake module.</td>
-#   </tr>
-#   <tr>
-#     @tp @b PYTHON_EXECUTABLE @endtp
-#     <td>Absolute path of the Python interpreter executable.</td>
-#   </tr>
-# </table>
+#  PYTHON_VERSION_STRING      - Python version found e.g. 2.5.2
+#  PYTHON_VERSION_MAJOR       - Python major version found e.g. 2
+#  PYTHON_VERSION_MINOR       - Python minor version found e.g. 5
+#  PYTHON_VERSION_PATCH       - Python patch version found e.g. 2
 #
-# Copyright (c) 2012 University of Pennsylvania. All rights reserved.
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# The Python_ADDITIONAL_VERSIONS variable can be used to specify a list of
+# version numbers that should be taken into account when searching for Python.
+# You need to set this variable before calling find_package(PythonInterp).
 #
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# @note This module has been copied from the Git repository of CMake on
+#       4/12/2012, i.e., before the release of CMake 2.8.8. Once CMake 2.8.8
+#       or any version is available for all major platforms, consider to
+#       remove this module from the BASIS package.
 ##############################################################################
 
-# ----------------------------------------------------------------------------
-# initialization
+#=============================================================================
+# Copyright 2005-2010 Kitware, Inc.
+# Copyright 2011 Bjoern Ricks <bjoern.ricks@gmail.com>
+# Copyright 2012 Rolf Eike Beer <eike@sf-mail.de>
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# * Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+#
+# * Neither the names of Kitware, Inc., the Insight Software Consortium,
+#   nor the names of their contributors may be used to endorse or promote
+#   products derived from this software without specific prior written
+#   permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#=============================================================================
 
-# 1. Look for explicitly requested version.
-if (_PythonInterp_FIND_VERSION)
-  list (APPEND _PythonInterp_VERSIONS ${_PythonInterp_FIND_VERSION})
-endif ()
-# 2. Look for "python" executable without version suffix
-list (APPEND _PythonInterp_VERSIONS 0.0)
-# 3. Look for "python" executable with version suffix
-if (NOT _PythonInterp_FIND_VERSION_EXACT)
-  set (_PythonInterp_DEFAULT_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0 1.6 1.5)
-  foreach (_PythonInterp_VERSION IN LISTS Python_ADDITIONAL_VERSIONS _PythonInterp_DEFAULT_VERSIONS)
-    if (NOT _PythonInterp_FIND_VERSION OR NOT _PythonInterp_VERSION VERSION_LESS _PythonInterp_FIND_VERSION)
-      list (APPEND _PythonInterp_VERSIONS ${_PythonInterp_VERSION})
-    endif ()
-  endforeach ()
-endif ()
+unset(_Python_NAMES)
 
-set (_PythonInterp_DOC "The Python interpreter.")
+set(_PYTHON1_VERSIONS 1.6 1.5)
+set(_PYTHON2_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
+set(_PYTHON3_VERSIONS 3.3 3.2 3.1 3.0)
 
-# ----------------------------------------------------------------------------
-# find python interpreter
-foreach (_PythonInterp_VERSION IN LISTS _PythonInterp_VERSIONS)
-  if (_PythonInterp_VERSION VERSION_EQUAL 0.0)
-    find_program (PYTHON_EXECUTABLE NAMES python DOC "${_PythonInterp_DOC}")
-    if (PYTHON_EXECUTABLE)
-      # get version of found Python interpreter
-      execute_process (
-        COMMAND "${PYTHON_EXECUTABLE}" --version
-        ERROR_VARIABLE _PythonInterp_VERSION
-        ERROR_STRIP_TRAILING_WHITESPACE
-      )
-      if (_PythonInterp_VERSION MATCHES "Python ([1-9][0-9]*\\.[0-9]+)\\.[0-9]")
-        set (_PythonInterp_VERSION ${CMAKE_MATCH_1})
-      endif ()
-      # reset PYTHON_EXECUTABLE if the wrong version was found
-      if (_PythonInterp_FIND_VERSION)
-        if (_PythonInterp_VERSION VERSION_LESS _PythonInterp_FIND_VERSION)
-          set_property (CACHE PYTHON_EXECUTABLE PROPERTY VALUE "PYTHON_EXECUTABLE-NOTFOUND")
-        elseif (_PythonInterp_FIND_VERSION_EXACT AND NOT _PythonInterp_VERSION VERSION_EQUAL _PythonInterp_FIND_VERSION)
-          set_property (CACHE PYTHON_EXECUTABLE PROPERTY VALUE "PYTHON_EXECUTABLE-NOTFOUND")
-        endif ()
-      endif ()
-    endif ()
-  else ()
-    set (_PythonInterp_NAMES python${_PythonInterp_VERSION})
-    set (_PythonInterp_PATHS)
-    if (WIN32)
-      list (APPEND _PythonInterp_NAMES python)
-      list (APPEND _PythonInterp_PATHS PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_PythonInterp_VERSION}\\InstallPath]")
-    endif ()
-    find_program (
-      PYTHON_EXECUTABLE
+if(PythonInterp_FIND_VERSION)
+    if(PythonInterp_FIND_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+.*)?$")
+        string(REGEX REPLACE "^([0-9]+\\.[0-9]+).*" "\\1" _PYTHON_FIND_MAJ_MIN "${PythonInterp_FIND_VERSION}")
+        string(REGEX REPLACE "^([0-9]+).*" "\\1" _PYTHON_FIND_MAJ "${_PYTHON_FIND_MAJ_MIN}")
+        list(APPEND _Python_NAMES python${_PYTHON_FIND_MAJ_MIN} python${_PYTHON_FIND_MAJ})
+        unset(_PYTHON_FIND_OTHER_VERSIONS)
+        if(NOT PythonInterp_FIND_VERSION_EXACT)
+            foreach(_PYTHON_V ${_PYTHON${_PYTHON_FIND_MAJ}_VERSIONS})
+                if(NOT _PYTHON_V VERSION_LESS _PYTHON_FIND_MAJ_MIN)
+                    list(APPEND _PYTHON_FIND_OTHER_VERSIONS ${_PYTHON_V})
+                endif()
+             endforeach()
+        endif(NOT PythonInterp_FIND_VERSION_EXACT)
+        unset(_PYTHON_FIND_MAJ_MIN)
+        unset(_PYTHON_FIND_MAJ)
+    else(PythonInterp_FIND_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+.*)?$")
+        list(APPEND _Python_NAMES python${PythonInterp_FIND_VERSION})
+        set(_PYTHON_FIND_OTHER_VERSIONS ${_PYTHON${PythonInterp_FIND_VERSION}_VERSIONS})
+    endif(PythonInterp_FIND_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+.*)?$")
+else(PythonInterp_FIND_VERSION)
+    set(_PYTHON_FIND_OTHER_VERSIONS ${_PYTHON3_VERSIONS} ${_PYTHON2_VERSIONS} ${_PYTHON1_VERSIONS})
+endif(PythonInterp_FIND_VERSION)
+
+list(APPEND _Python_NAMES python)
+
+# Search for the current active python version first
+find_program(PYTHON_EXECUTABLE NAMES ${_Python_NAMES})
+
+# Set up the versions we know about, in the order we will search. Always add
+# the user supplied additional versions to the front.
+set(_Python_VERSIONS
+  ${Python_ADDITIONAL_VERSIONS}
+  ${_PYTHON_FIND_OTHER_VERSIONS}
+  )
+
+unset(_PYTHON_FIND_OTHER_VERSIONS)
+unset(_PYTHON1_VERSIONS)
+unset(_PYTHON2_VERSIONS)
+unset(_PYTHON3_VERSIONS)
+
+# Search for newest python version if python executable isn't found
+if(NOT PYTHON_EXECUTABLE)
+    foreach(_CURRENT_VERSION ${_Python_VERSIONS})
+      set(_Python_NAMES python${_CURRENT_VERSION})
+      if(WIN32)
+        list(APPEND _Python_NAMES python)
+      endif()
+      find_program(PYTHON_EXECUTABLE
         NAMES ${_Python_NAMES}
-        ${_PythonInterp_PATHS}
-        DOC "${_PythonInterp_DOC}"
-    )
-  endif ()
-  if (PYTHON_EXECUTABLE)
-    set (_PythonInterp_FOUND_VERSION ${_PythonInterp_VERSION})
-    break ()
-  endif ()
-endforeach ()
+        PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]
+        )
+    endforeach()
+endif()
 
-mark_as_advanced (PYTHON_EXECUTABLE)
+# determine python version string
+if(PYTHON_EXECUTABLE)
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+                            "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
+                    OUTPUT_VARIABLE _VERSION
+                    RESULT_VARIABLE _PYTHON_VERSION_RESULT
+                    ERROR_QUIET)
+    if(NOT _PYTHON_VERSION_RESULT)
+        string(REPLACE ";" "." PYTHON_VERSION_STRING "${_VERSION}")
+        list(GET _VERSION 0 PYTHON_VERSION_MAJOR)
+        list(GET _VERSION 1 PYTHON_VERSION_MINOR)
+        list(GET _VERSION 2 PYTHON_VERSION_PATCH)
+        if(PYTHON_VERSION_PATCH EQUAL 0)
+            # it's called "Python 2.7", not "2.7.0"
+            string(REGEX REPLACE "\\.0$" "" PYTHON_VERSION_STRING "${PYTHON_VERSION_STRING}")
+        endif()
+    else()
+        # sys.version predates sys.version_info, so use that
+        execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "import sys; sys.stdout.write(sys.version)"
+                        OUTPUT_VARIABLE _VERSION
+                        RESULT_VARIABLE _PYTHON_VERSION_RESULT
+                        ERROR_QUIET)
+        if(NOT _PYTHON_VERSION_RESULT)
+            string(REGEX REPLACE " .*" "" PYTHON_VERSION_STRING "${_VERSION}")
+            string(REGEX REPLACE "^([0-9]+)\\.[0-9]+.*" "\\1" PYTHON_VERSION_MAJOR "${PYTHON_VERSION_STRING}")
+            string(REGEX REPLACE "^[0-9]+\\.([0-9])+.*" "\\1" PYTHON_VERSION_MINOR "${PYTHON_VERSION_STRING}")
+            if(PYTHON_VERSION_STRING MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+.*")
+                string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" PYTHON_VERSION_PATCH "${PYTHON_VERSION_STRING}")
+            else()
+                set(PYTHON_VERSION_PATCH "0")
+            endif()
+        else()
+            # sys.version was first documented for Python 1.5, so assume
+            # this is older.
+            set(PYTHON_VERSION_STRING "1.4")
+            set(PYTHON_VERSION_MAJOR "1")
+            set(PYTHON_VERSION_MAJOR "4")
+            set(PYTHON_VERSION_MAJOR "0")
+        endif()
+    endif()
+    unset(_PYTHON_VERSION_RESULT)
+    unset(_VERSION)
+endif(PYTHON_EXECUTABLE)
 
-# ----------------------------------------------------------------------------
 # handle the QUIETLY and REQUIRED arguments and set PYTHONINTERP_FOUND to TRUE if
 # all listed variables are TRUE
-include (FindPackageHandleStandardArgs)
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(PythonInterp REQUIRED_VARS PYTHON_EXECUTABLE VERSION_VAR PYTHON_VERSION_STRING)
 
-find_package_handle_standard_args (
-  PythonInterp
-  REQUIRED_VARS
-    PYTHON_EXECUTABLE
-  VERSION_VAR
-    _PythonInterp_FOUND_VERSION
-)
-
-set (PythonInterp_FOUND "${PYTHONINTERP_FOUND}")
+mark_as_advanced(PYTHON_EXECUTABLE)
