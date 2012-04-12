@@ -90,6 +90,7 @@ set (
     "FindNiftiCLib.cmake"
     "FindOpenCV.cmake"
     "FindPerlLibs.cmake"
+    "FindPythonInterp.cmake"
 )
 
 # ----------------------------------------------------------------------------
