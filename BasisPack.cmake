@@ -145,7 +145,7 @@ set (
 	"/#"
 	"\\\\.*~"
 	"cscope\\\\.*"
-	"[b|B]uild"
+	"/[b|B]uild/"
 )
 
 # exclude diabled modules from source package
