@@ -581,12 +581,18 @@ will be substituted by the corresponding package specific values.
 </table>
 
 After the package was configured successfully, the executables and
-auxiliary files can be installed using the command
+auxiliary files can be installed using the either the command
 @code
 make install
 @endcode
-in the root directory of the build tree. This will copy the installation
-files into the directories specified during the configuration step.
+or
+@code
+make install/strip
+@endcode
+in the root directory of the build tree. The available install targets
+copy the files intended for installation to the directories specified during
+the configuration step. The install/strip target additionally strips installed
+binary executable and shared object files, which can save disk space.
  
 The package files are installed in the following locations:
 
