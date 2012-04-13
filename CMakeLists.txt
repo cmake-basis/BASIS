@@ -30,11 +30,11 @@ cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
 # version of BASIS template used by this project
-set (TEMPLATE_VERSION 1.3)
+set (TEMPLATE_VERSION 1.4)
 
 # Note that this version in case of the BASIS project itself defines the
 # current version of the project template. Thus, this version number has to
-# be changed whenever the project template was modified.
+# be changed whenever a new (modified) project template was added.
 #
 # A patch version number is not used here because subtle changes of the
 # template files do not need to be tracked. This version number may only

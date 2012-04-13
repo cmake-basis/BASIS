@@ -19,7 +19,14 @@ macro (basis_install_template VERSION)
   )
 endmacro ()
 
+# Attention: Whenever a template file is modified, added, or removed,
+#            the previous project template has to be copied to a new
+#            directory with an updated template version! Otherwise, the
+#            three-way diff merge used by the basisproject tool to update
+#            existing projects to this newer template will fail.
+
 basis_install_template (1.0)
 basis_install_template (1.1)
 basis_install_template (1.2)
 basis_install_template (1.3)
+basis_install_template (1.4)
