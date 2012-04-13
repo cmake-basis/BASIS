@@ -34,37 +34,37 @@
 # @PROJECT_NAME@ configuration
 # ============================================================================
 
-# The following statements ensure that all Perl/Python scripts and modules
-# are configured/compiled using the same version of the interpreter to
-# avoid incompatibilities.
+# The following statements ensure that all scripts and modules are
+# configured/compiled using the same version of the interpreters.
+# Yet, the user can modify these variables, though this is not recommended.
 
-# Note: The PYTHON_EXECUTABLE, PERL_EXECUTABLE, and BASH_EXECUTABLE variables
-#       have to be cached such that the FindPythonInterpr.cmake, FindPerl.cmake,
-#       and FindBASH.cmake modules find the respective executable.
-
-## @brief Python interpreter configured when building BASIS.
-set (
-  PYTHON_EXECUTABLE
-    "${BASIS_PYTHON_EXECUTABLE}"
-  CACHE INTERNAL
-    "The Python interpreter."
-  FORCE
-)
+# Note: The PERL_EXECUTABLE, and BASH_EXECUTABLE variables have to be cached
+#       such that the FindPerl.cmake, and FindBASH.cmake modules find the
+#       respective executable.
+#
+# Attention: DO NOT set PYTHON_EXECUTABLE here. In case of a Slicer Extension,
+#            the UseSlicer.cmake file requires us not to set PYTHON_EXECUTABLE
+#            before including this file. As the @USE_FILE@ file is included
+#            before any other dependency, the PYTHON_EXECUTABLE variable is
+#            set in the CMake function basis_find_packages() which in turn
+#            is invoked by the basis_project_impl() macro.
 
 ## @brief Perl interpreter configured when building BASIS.
 set (
   PERL_EXECUTABLE
     "${BASIS_PERL_EXECUTABLE}"
-  CACHE INTERNAL
+  CACHE PATH
     "The Perl interpreter."
-  FORCE
 )
+
+mark_as_advanced (PERL_EXECUTABLE)
 
 ## @brief BASH executable configured when building BASIS.
 set (
   BASH_EXECUTABLE
     "${BASIS_BASH_EXECUTABLE}"
-  CACHE INTERNAL
+  CACHE PATH
     "The BASH executable."
-  FORCE
 )
+
+mark_as_advanced (BASH_EXECUTABLE)
