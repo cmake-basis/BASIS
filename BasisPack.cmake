@@ -132,30 +132,32 @@ endif ()
 # source package
 # ============================================================================
 
+basis_get_relative_path (_TEST_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_TESTING_DIR}")
+
 ## @brief Patterns to be ignored when creating source package.
 # @ingroup BasisSettings
-set (
-  CPACK_SOURCE_IGNORE_FILES
-    ${CPACK_SOURCE_IGNORE_FILES}
-	"/CVS/"
-	"/\\\\.svn/"
-	"/\\\\.git/"
-	"\\\\.swp$"
-	"\\\\.#"
-	"/#"
-	"\\\\.*~"
-	"cscope\\\\.*"
-	"/[b|B]uild/"
+list (APPEND CPACK_SOURCE_IGNORE_FILES
+  "/CVS/"
+  "/\\\\.svn/"
+  "/\\\\.git/"
+  "\\\\.swp$"
+  "\\\\.#"
+  "/#"
+  "\\\\.*~"
+  "cscope\\\\.*"
+  "/[b|B]uild/"
+  "/${_TEST_DIR}/internal/"
 )
 
-# exclude diabled modules from source package
+unset (_TEST_DIR)
+
+# exclude disabled modules from source package
 if (PROJECT_MODULES_DISABLED)
-  set (P)
+  basis_get_relative_path (_MODULES_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_MODULES_DIR}")
   foreach (M ${PROJECT_MODULES_DISABLED})
-    list (APPEND P "/${M}/")
+    list (APPEND CPACK_SOURCE_IGNORE_FILES "/${_MODULES_DIR}/${M}/")
   endforeach ()
-  set (CPACK_SOURCE_IGNORE_FILES "${CPACK_SOURCE_IGNORE_FILES}" "${P}")
-  unset (P)
+  unset (_MODULES_DIR)
 endif ()
 
 # ============================================================================
