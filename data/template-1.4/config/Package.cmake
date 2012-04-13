@@ -28,10 +28,7 @@
 # Pattern of files in the source tree that will not be packaged when building
 # a source package. This is a list of patterns, e.g., "/CVS/", "/\\.svn/",
 # ".swp$", ".#", "/#", "*~", and "cscope*", which are ignored by default.
-
-set (
-  CPACK_SOURCE_IGNORE_FILES
-    "${CPACK_SOURCE_IGNORE_FILES}" # default ignore patterns
-	# add further ignore patterns here
-)
-
+# Moreover, the directory PROJECT_TESTING_DIR/internal/ is excluded.
+# Ignore additional patterns by appending to CPACK_SOURCE_IGNORE_FILE.
+#
+# Example: list (APPEND CPACK_SOURCE_IGNORE_FILE "<exclude_regex>")
