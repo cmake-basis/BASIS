@@ -57,8 +57,25 @@ elseif (EXISTS "${PROJECT_CONFIG_DIR}/CTestCustom.cmake")
 else ()
   basis_get_relative_path (CONFIG_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_CONFIG_DIR}")
   if (EXISTS "${BASIS_TEMPLATE_DIR}/${CONFIG_DIR}/CTestCustom.cmake.in")
+    # to avoid a Doxygen warning, we need to replace certain patterns used by
+    # the basisproject tool to replace them with project related information
+    #
+    # Note: Do this only on the first pass, otherwise configure_file() will
+    #       retrigger CMake every time b/c the modification timestamp of the
+    #       source file is newer than the previously configured file.
+    #       The use of the "cmake -E copy_if_different" command could be used
+    #       here instead, but as we do not expect the CTestCustom.cmake.in
+    #       file of the BASIS project template to change, it is sufficient
+    #       to only check if we copied the template file already.
+    if (NOT EXISTS "${PROJECT_BINARY_DIR}/CTestCustom.cmake.in")
+      file (READ "${BASIS_TEMPLATE_DIR}/${CONFIG_DIR}/CTestCustom.cmake.in" _TEMPLATE)
+      string (REGEX REPLACE "<year>" "" _TEMPLATE "${_TEMPLATE}")
+      file (WRITE "${PROJECT_BINARY_DIR}/CTestCustom.cmake.in" "${_TEMPLATE}")
+      unset (_TEMPLATE)
+    endif ()
+    # configure the modified template file
     configure_file (
-      "${BASIS_TEMPLATE_DIR}/${CONFIG_DIR}/CTestCustom.cmake.in"
+      "${PROJECT_BINARY_DIR}/CTestCustom.cmake.in"
       "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
       @ONLY
     )
