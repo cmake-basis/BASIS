@@ -165,12 +165,6 @@ macro (basis_find_package PACKAGE)
       set (${PKG}_DIR "${CMAKE_BINARY_DIR}/${${PKG}_DIR}")
       get_filename_component (${PKG}_DIR "${${PKG}_DIR}" ABSOLUTE)
     endif ()
-    # set EXTENSION_NAME in case of Slicer if not set
-    if (PKG MATCHES "^Slicer$")
-      if (NOT EXTENSION_NAME)
-        set (EXTENSION_NAME "${PROJECT_NAME}")
-      endif ()
-    endif ()
     # now look for the package
     set (FIND_ARGN)
     if (ARGN_EXACT)

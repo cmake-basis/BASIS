@@ -13,7 +13,71 @@
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Defines project meta-data, i.e., attributes.
+## @brief Check meta-data and set defaults.
+#
+# @sa basis_project()
+# @sa basis_slicer_module()
+macro (basis_project_check_metadata)
+  if (NOT PROJECT_NAME)
+    message (FATAL_ERROR "basis_project(): Project name not specified!")
+  endif ()
+  if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
+    message (FATAL_ERROR "basis_project(): Invalid project name!\n\n"
+                         "Please choose a project name with either only captial "
+                         "letters in case of an acronym or a name with mixed case, "
+                         "but starting with a captial letter.\n\n"
+                         "Note that numbers are allowed, but not as first character. "
+                         "Further, do not use characters such as '_' or '-' to "
+                         "separate parts of the project name. Instead, use the "
+                         "upper camel case notation "
+                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_NAME "${PROJECT_NAME}")
+  endif ()
+
+  if (PROJECT_VERSION)
+    if (NOT PROJECT_VERSION MATCHES "^[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(rc[0-9]+|[a-z])?$")
+      message (FATAL_ERROR "basis_project(): Invalid version ${PROJECT_VERSION}!")
+    endif ()
+    if (PROJECT_IS_MODULE)
+      if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?$")
+        set (PROJECT_VERSION "${BASIS_PROJECT_VERSION}")
+      endif ()
+    else ()
+      set (BASIS_PROJECT_VERSION "${PROJECT_VERSION}")
+    endif ()
+  else ()
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_VERSION "${BASIS_PROJECT_VERSION}")
+    else ()
+      message (FATAL_ERROR "basis_project(): Project version not specified!")
+    endif ()
+  endif ()
+
+  if (PROJECT_DESCRIPTION)
+    basis_list_to_string (PROJECT_DESCRIPTION ${PROJECT_DESCRIPTION})
+  else ()
+    set (PROJECT_DESCRIPTION "")
+  endif ()
+
+  if (PROJECT_PACKAGE_VENDOR)
+    basis_list_to_string (PROJECT_PACKAGE_VENDOR ${PROJECT_PACKAGE_VENDOR})
+    if (NOT PROJECT_IS_MODULE)
+      set (BASIS_PROJECT_PACKAGE_VENDOR "${PROJECT_PACKAGE_VENDOR}")
+    endif ()
+  elseif (PROJECT_IS_MODULE)
+    set (PROJECT_PACKAGE_VENDOR "${BASIS_PROJECT_PACKAGE_VENDOR}")
+  else ()
+    set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
+  endif ()
+
+  # let basis_project_impl() know that basis_project() was called
+  set (BASIS_basis_project_CALLED TRUE)
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Define project meta-data, i.e., attributes.
 #
 # Any BASIS project has to call this macro in the file BasisProject.cmake
 # located in the top level directory of the source tree in order to define
@@ -107,72 +171,38 @@
 #
 # @ingroup CMakeAPI
 macro (basis_project)
-  # parse arguments and/or include project settings file
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
       ""
-      "NAME;VERSION"
-      "DESCRIPTION;PACKAGE_VENDOR;DEPENDS;OPTIONAL_DEPENDS;TEST_DEPENDS;OPTIONAL_TEST_DEPENDS"
+      "${BASIS_METADATA_LIST_SINGLE}"
+      "${BASIS_METADATA_LIST_MULTI}"
     ${ARGN}
   )
+  basis_project_check_metadata ()
+endmacro ()
 
-  # check required project attributes or set default values
-  if (NOT PROJECT_NAME)
-    message (FATAL_ERROR "basis_project(): Project name not specified!")
-  endif ()
-  if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
-    message (FATAL_ERROR "basis_project(): Invalid project name!\n\n"
-                         "Please choose a project name with either only captial "
-                         "letters in case of an acronym or a name with mixed case, "
-                         "but starting with a captial letter.\n\n"
-                         "Note that numbers are allowed, but not as first character. "
-                         "Further, do not use characters such as '_' or '-' to "
-                         "separate parts of the project name. Instead, use the "
-                         "upper camel case notation "
-                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
-  endif ()
-  if (NOT PROJECT_IS_MODULE)
-    set (BASIS_PROJECT_NAME "${PROJECT_NAME}")
-  endif ()
-
-  if (PROJECT_VERSION)
-    if (NOT PROJECT_VERSION MATCHES "^[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(rc[0-9]+|[a-z])?$")
-      message (FATAL_ERROR "basis_project(): Invalid version ${PROJECT_VERSION}!")
-    endif ()
-    if (PROJECT_IS_MODULE)
-      if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?$")
-        set (PROJECT_VERSION "${BASIS_PROJECT_VERSION}")
-      endif ()
-    else ()
-      set (BASIS_PROJECT_VERSION "${PROJECT_VERSION}")
-    endif ()
-  else ()
-    if (PROJECT_IS_MODULE)
-      set (PROJECT_VERSION "${BASIS_PROJECT_VERSION}")
-    else ()
-      message (FATAL_ERROR "basis_project(): Project version not specified!")
-    endif ()
-  endif ()
-
-  if (PROJECT_DESCRIPTION)
-    basis_list_to_string (PROJECT_DESCRIPTION ${PROJECT_DESCRIPTION})
-  else ()
-    set (PROJECT_DESCRIPTION "")
-  endif ()
-
-  if (PROJECT_PACKAGE_VENDOR)
-    basis_list_to_string (PROJECT_PACKAGE_VENDOR ${PROJECT_PACKAGE_VENDOR})
-    if (NOT PROJECT_IS_MODULE)
-      set (BASIS_PROJECT_PACKAGE_VENDOR "${PROJECT_PACKAGE_VENDOR}")
-    endif ()
-  elseif (PROJECT_IS_MODULE)
-    set (PROJECT_PACKAGE_VENDOR "${BASIS_PROJECT_PACKAGE_VENDOR}")
-  else ()
-    set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
-  endif ()
-
-  # let basis_project_impl() know that basis_project() was called
-  set (BASIS_basis_project_CALLED TRUE)
+# ----------------------------------------------------------------------------
+## @brief Define project meta-data of Slicer module.
+#
+# This macro should be used instead of basis_project() for a Slicer module.
+# It extends the considered meta-data by some additional variables that
+# have to be set for a Slicer module and identifies this project as a Slicer
+# module.
+#
+# @ingroup CMakeAPI
+macro (basis_slicer_module)
+  CMAKE_PARSE_ARGUMENTS (
+    PROJECT
+      ""
+      "${BASIS_METADATA_LIST_SINGLE};${BASIS_SLICER_METADATA_LIST_SINGLE}"
+      "${BASIS_METADATA_LIST_MULTI};${BASIS_SLICER_METADATA_LIST_MULTI}"
+    ${ARGN}
+  )
+  foreach (_L IN LISTS BASIS_SLICER_METADATA_LIST_MULTI)
+    basis_list_to_string (PROJECT_${_L} ${PROJECT_${_L}})
+  endforeach ()
+  set (PROJECT_IS_SLICER_MODULE TRUE)
+  basis_project_check_metadata ()
 endmacro ()
 
 
@@ -276,6 +306,17 @@ macro (basis_project_modules)
     set (${PROJECT_NAME}_TEST_DEPENDS "${PROJECT_TEST_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS "${PROJECT_OPTIONAL_TEST_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_DECLARED TRUE PARENT_SCOPE)
+    # remember if module depends on Slicer - used by basis_find_packages()
+    if (PROJECT_IS_SLICER_MODULE)
+      foreach (_D IN LISTS BASIS_SLICER_METADATA_LIST)
+          if (DEFINED PROJECT_${_D})
+            set (${PROJECT_NAME}_${_D} "${PROJECT_${_D}}" PARENT_SCOPE)
+          endif ()
+      endforeach ()
+      set (${PROJECT_NAME}_IS_SLICER_MODULE TRUE PARENT_SCOPE)
+    else ()
+      set (${PROJECT_NAME}_IS_SLICER_MODULE FALSE PARENT_SCOPE)
+    endif ()
     # do not use MODULE instead of PROJECT_NAME in this function as it is not
     # set in the scope of this function but its parent scope only
     set (MODULE "${PROJECT_NAME}" PARENT_SCOPE)
@@ -705,6 +746,7 @@ macro (basis_configure_root_documentation_files)
       message (FATAL_ERROR "Project requires a ${F}.txt file in ${PROJECT_SOURCE_DIR}!")
     endif ()
   endforeach ()
+  set (PROJECT_LICENSE_FILE "${PROJECT_COPYING_FILE}") # compatibility with Slicer
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -803,55 +845,16 @@ macro (basis_project_initialize)
     message (FATAL_ERROR "Missing BasisProject.cmake file!")
   endif ()
 
-  # --------------------------------------------------------------------------
-  # Slicer extension
-
-  # Unfortunately, Slicer invokes the project() command in the SlicerConfig.cmake
-  # file. Furthermore, it must be the first package to be included. Therefore,
-  # scan dependencies for Slicer, which is an indicator that this project is
-  # an extension for Slicer and look for it here already.
-
-  list (FIND PROJECT_DEPENDS "Slicer" IDX)
-  if (IDX EQUAL -1)
-    # A module that only optionally can be a Slicer Extension by itself
-    # shall not be build as Slicer Extension if this project is not an
-    # extension for Slicer. Only a project can be a Slicer Extension.
-    if (NOT PROJECT_IS_MODULE)
-      list (FIND PROJECT_OPTIONAL_DEPENDS "Slicer" IDX)
-      if (NOT IDX EQUAL -1)
-        basis_find_package ("Slicer" QUIET)
-        if (Slicer_FOUND)
-          basis_use_package ("Slicer")
-        endif ()
-      endif ()
-    endif ()
+  if (PROJECT_DEPENDS MATCHES "Slicer(-[0-9.]+)?({})?" OR
+      PROJECT_OPTIONAL_DEPENDS MATCHES "Slicer(-[0-9.]+)?({})?")
+    set (PROJECT_USES_SLICER TRUE)
   else ()
-    # If a module requires Slicer, the top-level project must be a
-    # Slicer Extension and hence specify Slicer as a dependency.
-    if (PROJECT_IS_MODULE AND NOT Slicer_FOUND)
-      message (FATAL_ERROR "Module ${PROJECT_NAME} requires Slicer, which "
-                           "indicates it is a Slicer Extension. Therefore, "
-                           "the top-level project must be a Slicer Extension "
-                           "as well and declare Slicer as a dependency such "
-                           "that the configuration file of the Slicer package "
-                           "is included before the modules are being configured.")
-    endif ()
-    basis_find_package ("Slicer" REQUIRED)
-    if (Slicer_FOUND)
-      basis_use_package ("Slicer")
-    else ()
-      message (FATAL_ERROR "Package Slicer not found!")
-      return ()
-    endif ()
+    set (PROJECT_USES_SLICER FALSE)
   endif ()
 
   # --------------------------------------------------------------------------
   # project()
-
-  # note that SlicerConfig.cmake will invoke project() by itself
-  if (NOT Slicer_FOUND)
-    project ("${PROJECT_NAME}")
-  endif ()
+  project ("${PROJECT_NAME}")
 
   # work-around for issue with CMAKE_PROJECT_NAME always being set to 'Project'
   if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
@@ -1024,31 +1027,81 @@ macro (basis_find_packages)
   set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})
 
   # --------------------------------------------------------------------------
+  # Slicer Extension
+  if (NOT PROJECT_IS_MODULE)
+    set (_N 0)
+    foreach (_M IN LISTS PROJECT_MODULES_ENABLED)
+      if (${_M}_IS_SLICER_MODULE)
+        foreach (_D IN LISTS BASIS_SLICER_METADATA_LIST)
+          if (DEFINED ${_M}_${_D})
+            set (MODULE_${_D} "${${_M}_${_D}}")
+          endif ()
+        endforeach ()
+        math (EXPR _N "${_N} + 1")
+      endif ()
+    endforeach ()
+    if (PROJECT_IS_SLICER_MODULE)
+      if (_N GREATER 0)
+        message (FATAL_ERROR "BASIS does not support projects with multiple Slicer modules!")
+      endif ()
+      set (_FIND_SLICER TRUE)
+    elseif (_N GREATER 0)
+      if (_N GREATER 1)
+        message (FATAL_ERROR "BASIS does not support projects with multiple Slicer modules!")
+      endif ()
+      set (_FIND_SLICER TRUE)
+    else ()
+      set (_FIND_SLICER FALSE)
+    endif ()
+    if (_FIND_SLICER)
+      set (MODULE_DESCRIPTION   "${PROJECT_DESCRIPTION}")
+      set (MODULE_NAME          "${PROJECT_NAME}")
+      set (MODULE_README_FILE   "${PROJECT_SOURCE_DIR}/README.txt")
+      set (MODULE_LICENSE_FILE  "${PROJECT_SOURCE_DIR}/COPYING.txt")
+      set (MODULE_MAJOR_VERSION "${PROJECT_VERSION_MAJOR}")
+      set (MODULE_MINOR_VERSION "${PROJECT_VERSION_MINOR}")
+      set (MODULE_PATCH_VERSION "${PROJECT_VERSION_PATCH}")
+      basis_find_package (Slicer)
+      basis_use_package  (Slicer)
+    endif ()
+    unset (_M)
+    unset (_N)
+    unset (_FIND_SLICER)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # PYTHON_EXECUTABLE
+
+  # In case of a Slicer Extension, the UseSlicer.cmake file of Slicer (>= 4.0)
+  # will set PYTHON_EXECUTABLE and requires us not to set this variable before
+  # the UseSlicer.cmake file has been included. Hence, we set this variable
+  # here only if it has not been set by Slicer, but before any PythonInterp
+  # dependency declared by this package such that the Python interpreter
+  # configured while building BASIS is used to avoid conflicts of different
+  # versions used to compile the Python utilities (if BASIS_COMPILE_SCRIPTS
+  # was set to ON) and the one used to configure/build this package.
+  #
+  # Note: The PYTHON_EXECUTABLE variable has to be cached such that
+  #       PythonInterp.cmake does not look for the interpreter itself.
+  set (
+    PYTHON_EXECUTABLE
+      "${BASIS_PYTHON_EXECUTABLE}"
+    CACHE PATH
+      "The Python interpreter."
+  )
+  mark_as_advanced (PYTHON_EXECUTABLE)
+
+  # Note that PERL_EXECUTABLE and BASH_EXECUTABLE are set in BASISUse.cmake.
+
+  # --------------------------------------------------------------------------
   # Depends.cmake
 
   # This file is in particular of interest if a dependency is required if
   # certain modules are enabled, but not others.
-  #
-  # For example, if a module is a Slicer extension which integrates the tools
-  # of other modules as extension for Slicer, the package configuration of
-  # Slicer has to be included first and hence, in this case Slicer must be
-  # added as dependency of the top-level project. Not so, however, if the Slicer
-  # extension module is not enabled. Thus, the top-level project can look for
-  # Slicer using basis_find_package() only if the Slicer Extension module
-  # is enabled. It can check for this using the variable <Module>_ENABLED or
-  # the list PROJECT_MODULES_ENABLED.
 
   # Attention: This function is used before the Directories.cmake.in and
   #            Settings.cmake.in files were configured and included.
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
-
-  # --------------------------------------------------------------------------
-  # Slicer must be found before all others...
-  if (PROJECT_DEPENDS          MATCHES "^Slicer(-[0-9.]+)?({})?" OR
-      PROJECT_OPTIONAL_DEPENDS MATCHES "^Slicer(-[0-9.]+)?({})?")
-    basis_find_package ("Slicer${CMAKE_MATCH_1}")
-    basis_use_package  ("Slicer")
-  endif ()
 
   # --------------------------------------------------------------------------
   # optional dependencies - first in case a newer version of a package

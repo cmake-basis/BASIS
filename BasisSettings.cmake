@@ -109,6 +109,60 @@ if (NOT BASIS_NO_SYSTEM_CHECKS)
 endif ()
 
 # ============================================================================
+# meta-data lists
+# ============================================================================
+
+## @brief Names of project meta-data with only one argument.
+set (
+  BASIS_METADATA_LIST_SINGLE
+    NAME
+    VERSION
+)
+
+## @brief Names of project meta-data with multiple arguments.
+set (
+  BASIS_METADATA_LIST_MULTI
+    DESCRIPTION
+    PACKAGE_VENDOR
+    DEPENDS
+    OPTIONAL_DEPENDS
+    TEST_DEPENDS
+    OPTIONAL_TEST_DEPENDS
+)
+
+## @brief Names of project meta-data.
+set (
+  BASIS_METADATA_LIST
+    ${BASIS_METADATA_LIST_SINGLE}
+    ${BASIS_METADATA_LIST_MULTI}
+)
+
+## @brief Names of additional meta-data for Slicer modules with only one argument.
+set (
+  BASIS_SLICER_METADATA_LIST_SINGLE
+     HOMEPAGE
+     CATEGORY
+     ICONURL
+     STATUS
+     SCREENSHOTURLS
+)
+
+## @brief Names of additional meta-data for Slicer modules with multiple arguments.
+set (
+  BASIS_SLICER_METADATA_LIST_MULTI
+     ACKNOWLEDGEMENTS
+     CONTRIBUTORS
+     LICENSE_SHORT_DESCRIPTION
+)
+
+## @brief Names of additional meta-data for Slicer modules.
+set (
+  BASIS_SLICER_METADATA_LIST
+    ${BASIS_SLICER_METADATA_LIST_SINGLE}
+    ${BASIS_SLICER_METADATA_LIST_MULTI}
+)
+
+# ============================================================================
 # constants and global settings
 # ============================================================================
 
