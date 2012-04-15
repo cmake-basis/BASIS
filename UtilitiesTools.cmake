@@ -40,7 +40,7 @@ def _basis_init_sys_path():
     import os
     import sys
     module_dir  = os.path.dirname(os.path.realpath(__file__))
-    sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@BASIS_PYTHON_LIBRARY_DIR\@'))
+    sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@_BASIS_PYTHON_LIBRARY_DIR\@'))
     if sitelib_dir not in sys.path:
         sys.path.insert(0, sitelib_dir)
     sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@PYTHON_LIBRARY_DIR\@'))
@@ -70,7 +70,7 @@ from \@PROJECT_NAMESPACE_PYTHON\@ import basis
 set (BASIS_PERL_UTILITIES "
 use Cwd qw(realpath);
 use File::Basename;
-use lib realpath(dirname(realpath(__FILE__)) . '/\@BASIS_PERL_LIBRARY_DIR\@');
+use lib realpath(dirname(realpath(__FILE__)) . '/\@_BASIS_PERL_LIBRARY_DIR\@');
 use lib realpath(dirname(realpath(__FILE__)) . '/\@PERL_LIBRARY_DIR\@');
 use lib dirname(realpath(__FILE__));
 
