@@ -35,6 +35,7 @@
 #
 # @ingroup BasisPythonUtilities
 set (BASIS_PYTHON_UTILITIES "
+# ----------------------------------------------------------------------------
 def _basis_init_sys_path():
     import os
     import sys
