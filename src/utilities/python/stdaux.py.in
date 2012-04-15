@@ -129,8 +129,11 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
                            Does not affect verbosity of executed command.
     @param [in] simulate   Whether to simulate command execution only.
     
-    @return Exit code of executed command. If @p stdout is True, a tuple
-            consisting of the exit code and command output is returned.
+    @return A tuple consisting of exit code of executed command and command
+            output if both @p stdout and @p allow_fail are True.
+            If only @p stdout is True, only the command output is returned.
+            If only @p allow_fail is True, only the exit code is returned.
+            Otherwise, this function always returns 0.
     
     @throws SubprocessError If command execution failed. This exception is not
                             raised if the command executed with non-zero exit
@@ -195,10 +198,12 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
     if status != 0 and not allow_fail:
         raise SubprocessError("Command " + ' '.join(['"' + i + '"' for i in args[0:]]) + " failed")
     # return
-    if stdout:
+    if stdout and allow_fail:
         return (status, output)
+    elif stdout:
+        return output
     else:
-        return status
+        return 0
 
 
 ## @}

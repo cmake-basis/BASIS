@@ -146,8 +146,11 @@ sub print_contact
 #                        Does not affect verbosity of executed command.
 # @param [in] simulate   Whether to simulate command execution only.
 #
-# @return Exit code of executed command. If @p stdout is true, a tuple
-#         consisting of the exit code and command output is returned.
+# @return A tuple consisting of exit code of executed command and command
+#         output if both @p stdout and @p allow_fail are True.
+#         If only @p stdout is True, only the command output is returned.
+#         If only @p allow_fail is True, only the exit code is returned.
+#         Otherwise, this function always returns 0.
 #
 # @throws die If command execution failed. This exception is not raised
 #             if the command executed with non-zero exit code but
@@ -224,10 +227,12 @@ sub execute_process
         die "Command $args failed";
     }
     # return
-    if ($options{'stdout'}) {
+    if ($options{'stdout'} and $options{'allow_fail'}) {
         return ($status, $output);
+    } elsif ($options{'stdout'}) {
+        return $output;
     } else {
-        return $status;
+        return 0;
     }
 }
 
