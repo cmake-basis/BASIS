@@ -323,7 +323,7 @@ macro (basis_project_modules)
   endfunction ()
 
   set (PROJECT_MODULES)
-  foreach (F ${MODULE_INFO_FILES})
+  foreach (F IN LISTS MODULE_INFO_FILES)
     basis_module_info (${F})
     list (APPEND PROJECT_MODULES ${MODULE})
     get_filename_component (${MODULE}_BASE ${F} PATH)
