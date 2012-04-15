@@ -1890,7 +1890,7 @@ function (basis_add_script TARGET_NAME)
   elseif (ARGN_CONFIG OR ARGN_CONFIG_FILE)
     message (WARNING "Provided script configuration for ${TARGET_UID} but the script file "
                      "is missing a .in suffix. Will ignore script configuration and just "
-                     "copy the script file as is without configuring it.")
+                     "copy the script file without configuring it.")
     set (ARGN_CONFIG)
     set (ARGN_CONFIG_FILE)
   endif ()
