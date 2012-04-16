@@ -34,8 +34,8 @@ readonly _BASIS_DIR=@BASIS_BASH___DIR__@
 # ============================================================================
 
 # non-project specific
-source "${_BASIS_DIR}/@BASIS_LIBRARY_DIR@/core.sh"    # core utilities
-source "${_BASIS_DIR}/@BASIS_LIBRARY_DIR@/shflags.sh" # command-line parsing library
+source "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"    # core utilities
+source "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/shflags.sh" # command-line parsing library
 
 # project specific
 source "${_BASIS_DIR}/executabletargetinfo.sh" # info about executable targets
