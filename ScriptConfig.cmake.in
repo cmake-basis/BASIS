@@ -138,6 +138,12 @@ set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
 # ============================================================================
 
 if ("@PROJECT_NAME@" STREQUAL "BASIS")
+  basis_set_script_path (_BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
+else ()
+  basis_set_script_path (_BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
+endif ()
+
+if ("@PROJECT_NAME@" STREQUAL "BASIS")
   basis_set_script_path (_BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
 else ()
   basis_set_script_path (_BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@")
