@@ -26,7 +26,7 @@ _SBIA_@NAMESPACE_UPPER@_BASIS_INCLUDED=1
 # constants
 # ============================================================================
 
-## @brief Absolute directory path of Basis.sh module.
+## @brief Absolute directory path of basis.sh module.
 readonly _BASIS_DIR=@BASIS_BASH___DIR__@
 
 # ============================================================================

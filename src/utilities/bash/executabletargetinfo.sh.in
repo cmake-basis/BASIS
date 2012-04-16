@@ -28,7 +28,7 @@ readonly _EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
 # modules
 # ============================================================================
 
-source "${_EXECUTABLETARGETINFO_DIR}/@BASIS_LIBRARY_DIR@/core.sh" # upvar()
+source "${_EXECUTABLETARGETINFO_DIR}/@_BASIS_LIBRARY_DIR@/core.sh" # upvar()
 
 # ============================================================================
 # public functions
