@@ -199,7 +199,7 @@ macro (basis_slicer_module)
     ${ARGN}
   )
   foreach (_L IN LISTS BASIS_SLICER_METADATA_LIST_MULTI)
-    if (_L MATCHES "CONTRIBUTORS")
+    if (_L MATCHES "^(CATEGORY|CONTRIBUTORS)$")
       basis_list_to_delimited_string (PROJECT_${_L} ", " ${PROJECT_${_L}})
     else ()
       basis_list_to_string (PROJECT_${_L} ${PROJECT_${_L}})
