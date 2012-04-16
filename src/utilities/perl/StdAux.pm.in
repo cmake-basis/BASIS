@@ -232,7 +232,7 @@ sub execute_process
     } elsif ($options{'stdout'}) {
         return $output;
     } else {
-        return 0;
+        return $status;
     }
 }
 
