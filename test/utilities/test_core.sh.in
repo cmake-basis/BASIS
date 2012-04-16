@@ -10,8 +10,8 @@
 
 readonly _TEST_CORE_DIR=@BASIS_BASH___DIR__@
 
-source "${_TEST_CORE_DIR}/@BASIS_LIBRARY_DIR@/core.sh"  || exit 1
-source "${_TEST_CORE_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh" || exit 1
+source "${_TEST_CORE_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"  || exit 1
+source "${_TEST_CORE_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh" || exit 1
 
 echo -n "<DartMeasurement name=\"Host Name\" type=\"string\">"
 echo -n `hostname`;
@@ -52,16 +52,13 @@ is $? 0 'more complex pattern with groups and alternatives'
 
 # ----------------------------------------------------------------------------
 # test basis_array_to_quoted_string()
-basis_array=()
 basis_array_to_quoted_string str
 is $? 0 'conversion of empty array to quoted string was successful'
 is "${str}" '' 'empty array converted to empty string'
-basis_array=('a')
-basis_array_to_quoted_string str
+basis_array_to_quoted_string str a
 is $? 0 'conversion of single element array to quoted string was successful'
 is "${str}" 'a' 'single element array converted to simple string'
-basis_array=('this' "isn't" a 'simple example of "a quoted"' 'string')
-basis_array_to_quoted_string str
+basis_array_to_quoted_string str 'this' "isn't" a 'simple example of "a quoted"' 'string'
 is $? 0 'conversion of complex array to quoted string was successful'
 is "${str}" "this \"isn't\" a \"simple example of \\\"a quoted\\\"\" string" \
     'complex array with quotations in elements was converted correctly'

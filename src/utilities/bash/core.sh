@@ -109,10 +109,6 @@ function match
 # echo ${greeting}
 # @endcode
 #
-# @todo Under some circumstances, the 'local "$1" &&' part of the
-#       upvar() usage example has to be skipped. It is not yet clear what
-#       the correct solution/usage really is...
-#
 # @param [in] var    Variable name to assign value to
 # @param [in] values Value(s) to assign. If multiple values, an array is
 #                    assigned, otherwise a single value is assigned.
@@ -220,11 +216,12 @@ There is NO WARRANTY, to the extent permitted by law."
 # @returns Nothing.
 function basis_array_to_quoted_string
 {
-    local i=0
     local str=''
     local element=''
-    while [ $i -lt ${#basis_array[@]} ]; do
-        element=${basis_array[$i]}
+    local args=("$@")
+    local i=1
+    while [ $i -lt ${#args[@]} ]; do
+        element="${args[$i]}"
         # escape double quotes
         element=`echo -n "${element}" | sed "s/\"/\\\\\\\\\"/g"`
         # surround element by double quotes if it contains single quotes or whitespaces
@@ -232,6 +229,7 @@ function basis_array_to_quoted_string
         # append element
         [ -n "${str}" ] && str="${str} "
         str="${str}${element}"
+        # next argument
         (( i++ ))
     done
     local "$1" && upvar $1 "${str}"
@@ -272,10 +270,7 @@ function basis_split
         _basis_split_str="${BASH_REMATCH[4]}"
     done
     # return
-    # attention: using
-    #local "$1" && upvar $1 "${_basis_split_array[@]}"
-    # did not work
-    upvar $1 "${_basis_split_array[@]}"
+    local "$1" && upvar $1 "${_basis_split_array[@]}"
 }
 
 

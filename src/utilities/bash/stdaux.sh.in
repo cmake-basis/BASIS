@@ -167,9 +167,9 @@ function execute_process
         echo "${command}: Either unknown build target or command not found" 1>&2
         exit 1
     fi
+    local argsstr && basis_array_to_quoted_string argsstr "$@"
     # some verbose output
     if [ ${verbose} -gt 0 ]; then
-        local argsstr && basis_array_to_quoted_string args "$@"
         echo "\$ ${exec_path} ${argsstr}"
     fi
     # execute command
