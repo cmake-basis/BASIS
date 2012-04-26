@@ -21,8 +21,8 @@ endif ()
 # required commands
 # ============================================================================
 
-find_package (Subversion)
-find_package (Git)
+find_package (Subversion QUIET)
+find_package (Git        QUIET)
 
 
 ## @addtogroup CMakeUtilities
