@@ -29,7 +29,8 @@ set (
     "MatlabTools.cmake"             # MATLAB support
     "ProjectTools.cmake"            # main project/module helpers
     "RevisionTools.cmake"           # revision control system support
-    "TargetTools.cmake"             # addition of build targets
+    "SlicerTools.cmake"             # support build of Slicer Extensions
+    "TargetTools.cmake"             # addition of build target
     "TopologicalSort.cmake"         # topological sorting of build dependencies
     "UtilitiesTools.cmake"          # generation/configuration of utilities
 )
