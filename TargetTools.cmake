@@ -2422,7 +2422,7 @@ function (basis_add_init_py_target)
   set (INSTALL_EXCLUDE) # exclude these directories on installation
   set (COMPONENTS)      # installation components
   basis_get_project_property (TARGETS PROPERTY TARGETS)
-  foreach (TARGET_UID ${TARGETS})
+  foreach (TARGET_UID IN LISTS TARGETS)
     get_target_property (BASIS_TYPE     ${TARGET_UID} "BASIS_TYPE")
     get_target_property (BASIS_LANGUAGE ${TARGET_UID} "BASIS_LANGUAGE")
     if (BASIS_TYPE MATCHES "^MODULE_SCRIPT$" AND BASIS_LANGUAGE MATCHES "PYTHON")

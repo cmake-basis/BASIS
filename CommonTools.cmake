@@ -1611,7 +1611,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # libraries
 
-      if (TYPE MATCHES "LIBRARY|MEX")
+      if (TYPE MATCHES "LIBRARY|MODULE|MEX")
 
         if (TYPE MATCHES "STATIC")
           if (PART MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
@@ -1620,7 +1620,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
           if (NOT DIRECTORY)
             get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_OUTPUT_DIRECTORY")
           endif ()
-          get_target_property (FNAME     "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
+          get_target_property (FNAME "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
         else ()
           if (PART MATCHES "^POST_INSTALL$|^POST_INSTALL_RELATIVE$")
             get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_INSTALL_DIRECTORY")
