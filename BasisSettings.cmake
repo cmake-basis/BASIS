@@ -389,7 +389,7 @@ set (BASIS_SVN_USERS_FILE "${BASIS_MODULE_PATH}/SubversionUsers.txt")
 # project to force the installation of the public header files of the
 # project-specific BASIS C++ utilities.
 #
-# @sa basis_project_finalize()
+# @sa basis_install_public_headers()
 basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 
 ## @brief Enable/Disable copying of all public header files to the build tree.

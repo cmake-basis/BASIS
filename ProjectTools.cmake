@@ -1060,6 +1060,113 @@ endmacro ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+## @brief Add installation rules for public header files.
+macro (basis_install_public_headers)
+  set (_PUBLIC_HEADERS_EXCLUDE_PATTERNS)
+  # install public header files from source tree
+  if (NOT BASIS_AUTO_PREFIX_INCLUDES AND EXISTS "${PROJECT_INCLUDE_DIR}")
+    basis_install_directory (
+      "${PROJECT_INCLUDE_DIR}"
+      "${INSTALL_INCLUDE_DIR}"
+      PATTERN "*.in" EXCLUDE
+    )
+  endif ()
+  # install configured/generated public header files, excluding BASIS utilities
+  set (_REGEX)
+  foreach (_P IN LISTS BASIS_UTILITIES_PUBLIC_HEADERS)
+    # regular expression to match each found header file against
+    basis_sanitize_for_regex (_REGEX "${_P}")
+    if (_REGEX)
+      set (_REGEX "${_REGEX}|")
+    endif ()
+    set (_REGEX "${_REGEX}^${_P}$")
+    # exclude patterns for install(DIRECTORY) command
+    basis_get_relative_path (_H "${BINARY_INCLUDE_DIR}" "${_P}")
+    list (APPEND _PUBLIC_HEADERS_EXCLUDE_PATTERNS PATTERN "${_H}" EXCLUDE)
+  endforeach ()
+  set (_AT_LEAST_ONE_FILE_TO_INSTALL FALSE)
+  file (GLOB_RECURSE _PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*")
+  if (_REGEX)
+    foreach (_P IN LISTS _PUBLIC_HEADERS)
+      if (NOT _P MATCHES "${_REGEX}")
+        set (_AT_LEAST_ONE_FILE_TO_INSTALL TRUE)
+        break ()
+      endif ()
+    endforeach ()
+  elseif (_PUBLIC_HEADERS)
+    set (_AT_LEAST_ONE_FILE_TO_INSTALL TRUE)
+  endif ()
+  unset (_PUBLIC_HEADERS)
+  if (_AT_LEAST_ONE_FILE_TO_INSTALL)
+    basis_install_directory (
+      "${BINARY_INCLUDE_DIR}"
+      "${INSTALL_INCLUDE_DIR}"
+      ${_PUBLIC_HEADERS_EXCLUDE_PATTERNS}
+    )
+  endif ()
+  # "parse" public header files to check if C++ BASIS utilities are included
+  if (BASIS_UTILITIES_PUBLIC_HEADERS)
+    if (NOT BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
+      # get list of all public header files of project
+      set (_PUBLIC_HEADERS)
+      if (BASIS_CONFIGURE_INCLUDES)
+        file (GLOB_RECURSE _PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*.h")
+      else ()
+        file (GLOB_RECURSE _PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/*.h")
+      endif ()
+      # create regular expression which matches any include statement of
+      # a public header file of the BASIS C++ utilities
+      set (_REGEX)
+      foreach (_P IN LISTS BASIS_UTILITIES_PUBLIC_HEADERS)
+        basis_get_relative_path (_H "${BINARY_INCLUDE_DIR}" "${_P}")
+        basis_get_filename_component (_N "${_H}" NAME)
+        if (_REGEX)
+          set (_REGEX "${_REGEX}|")
+        endif ()
+        set (_REGEX "${_REGEX}#include +<${_H}>|#include +\"${_N}\"")
+      endforeach ()
+      if (BASIS_DEBUG AND BASIS_VERBOSE)
+        message ("** basis_install_public_headers():")
+        message ("**   Regular Expression: (${_REGEX})")
+      endif ()
+      # check if any public header file of the project includes a public header
+      # file of the BASIS C++ utilities
+      if (_REGEX AND _PUBLIC_HEADERS)
+        foreach (_P IN LISTS _PUBLIC_HEADERS)
+          file (READ "${_P}" _CODE)
+          if (_CODE MATCHES "${_REGEX}")
+            if (BASIS_DEBUG)
+              message ("** basis_install_public_headers():")
+              message ("**   Public header file ${_P}")
+              message ("**   includes a public header file of the BASIS C++ utilities.")
+              message ("**   Therefore, setting BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES to TRUE.")
+            endif ()
+            set (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES TRUE)
+            break ()
+          endif ()
+        endforeach ()
+      endif ()
+    endif ()
+    # install public headers of BASIS C++ utilities if required
+    if (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
+      install (
+        FILES       ${BASIS_UTILITIES_PUBLIC_HEADERS}
+        DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
+        COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
+      )
+    endif ()
+  endif ()
+  # clean up
+  unset (_P)
+  unset (_H)
+  unset (_CODE)
+  unset (_REGEX)
+  unset (_PUBLIC_HEADERS)
+  unset (_PUBLIC_HEADERS_EXCLUDE_PATTERNS)
+  unset (_AT_LEAST_ONE_FILE_TO_INSTALL)
+endmacro ()
+
+# ----------------------------------------------------------------------------
 ## @brief Finalize build configuration of project.
 #
 # This macro has to be called at the end of the root CMakeLists.txt file of
@@ -1099,58 +1206,7 @@ macro (basis_project_finalize)
   else ()
 
     # install public headers
-    if (NOT BASIS_AUTO_PREFIX_INCLUDES)
-      basis_install_directory ("${PROJECT_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" OPTIONAL)
-    endif ()
-    set (PUBLIC_HEADERS_EXCLUDE_PATTERNS)
-    foreach (P IN LISTS BASIS_UTILITIES_PUBLIC_HEADERS)
-      list (APPEND PUBLIC_HEADERS_EXCLUDE_PATTERNS "PATTERN" "${P}" EXCLUDE)
-    endforeach ()
-    basis_install_directory (
-      "${BINARY_INCLUDE_DIR}"
-      "${INSTALL_INCLUDE_DIR}"
-      OPTIONAL
-      ${PUBLIC_HEADERS_EXCLUDE_PATTERNS}
-    )
-    unset (PUBLIC_HEADERS_EXCLUDE_PATTERNS)
-    # "parse" public header files to check if C++ BASIS utilities are included
-    if (BASIS_UTILITIES_PUBLIC_HEADERS)
-      set (PUBLIC_HEADERS)
-      if (PROJECT_INCLUDE_DIR AND NOT BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
-        if (BASIS_CONFIGURE_INCLUDES)
-          file (GLOB_RECURSE PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*.h")
-        else ()
-          file (GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/*.h")
-        endif ()
-      endif ()
-      set (REGEX)
-      foreach (P IN LISTS BASIS_UTILITIES_PUBLIC_HEADERS)
-        basis_get_relative_path (H "${BINARY_INCLUDE_DIR}" "${P}")
-        if (NOT REGEX)
-          set (REGEX "#include +[<\"](${H}")
-        else ()
-          set (REGEX "${REGEX}|${H}")
-        endif ()
-      endforeach ()
-      if (REGEX AND PUBLIC_HEADERS)
-        set (REGEX "${REGEX})[>\"]")
-        foreach (P ${PUBLIC_HEADERS})
-          file (READ "${P}" C)
-          if (C MATCHES "${REGEX}")
-            set (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES TRUE)
-            break ()
-          endif ()
-        endforeach ()
-      endif ()
-      # install public headers of C++ utilities
-      if (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
-        install (
-          FILES       ${BASIS_UTILITIES_PUBLIC_HEADERS}
-          DESTINATION "${INSTALL_INCLUDE_DIR}/sbia/${PROJECT_NAME_LOWER}"
-          COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-        )
-      endif ()
-    endif ()
+    basis_install_public_headers()
     # inherit PROJECT_USES_*_UTILITIES properties from modules
     foreach (L IN ITEMS PYTHON PERL BASH)
       foreach (M IN LISTS PROJECT_MODULES_ENABLED)
