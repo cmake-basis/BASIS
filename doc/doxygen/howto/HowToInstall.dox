@@ -740,15 +740,15 @@ is generated and installed in &lt;prefix&gt;/lib/cmake/&lt;package&gt;/.
 If INSTALL_SINFIX was set to ON during the installation, a shell script
 named "uninstall" was written to the &lt;prefix&gt;/bin/&lt;sinfix&gt;/
 directory on Unix and a corresponding Batch file on Windows. Additionally,
-if INSTALL_LINKS was set to ON, a symbolic link named "uninstall_<package>"
+if INSTALL_LINKS was set to ON, a symbolic link named "uninstall-<package>"
 was created in &lt;prefix&gt;/bin/. Otherwise, if INSTALL_SINFIX was set to OFF,
-the uninstaller is located in &lt;prefix&gt;/bin/ and named "uninstall_<package>".
+the uninstaller is located in &lt;prefix&gt;/bin/ and named "uninstall-<package>".
 
 Hence, in order to remove all files installed by this package as well
 as the empty directories left behind inside the installation root directory
 given by &lt;prefix&gt;, run the command
 @code
-uninstall_<package>
+uninstall-<package>
 @endcode
 assuming that you added &lt;prefix&gt;/bin/ to your PATH environment variable.
 
