@@ -29,6 +29,11 @@ set (LIBRARY_DIRS_CONFIG)
 
 if (BUILD_CONFIG_SETTINGS)
   set (INSTALL_PREFIX_CONFIG "${PROJECT_BINARY_DIR}")
+  if (BUILD_EXAMPLE)
+    set (EXAMPLE_DIR_CONFIG "${PROJECT_EXAMPLE_DIR}")
+  else ()
+    set (EXAMPLE_DIR_CONFIG)
+  endif ()
   set (INCLUDE_DIR_CONFIG "${BINARY_INCLUDE_DIR};${PROJECT_INCLUDE_DIR}")
   set (LIBRARY_DIR_CONFIG "${BINARY_LIBRARY_DIR}")
   set (PYTHON_LIBRARY_DIR_CONFIG "${BINARY_PYTHON_LIBRARY_DIR}")
@@ -49,6 +54,12 @@ basis_get_relative_path (
 
 ## @brief Installation prefix.
 set (INSTALL_PREFIX_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${INSTALL_PREFIX_CONFIG}")
+## @brief Directory of example files.
+if (BUILD_EXAMPLE)
+  set (EXAMPLE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_EXAMPLE_DIR}")
+else ()
+  set (EXAMPLE_DIR_CONFIG)
+endif ()
 ## @brief Include directories.
 set (INCLUDE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}")
 ## @brief Directory where libraries are located.
