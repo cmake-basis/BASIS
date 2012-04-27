@@ -28,7 +28,7 @@ install (
 if (INSTALL_SINFIX)
   set (UNINSTALLER_NAME "uninstall")
 else ()
-  set (UNINSTALLER_NAME "uninstall_${PROJECT_NAME_LOWER}")
+  set (UNINSTALLER_NAME "uninstall-${PROJECT_NAME_LOWER}")
 endif ()
 if (WIN32)
   set (UNINSTALLER_NAME "${UNINSTALLER_NAME}.bat")
@@ -54,7 +54,7 @@ install (
 if (INSTALL_SINFIX AND INSTALL_LINKS)
   basis_install_link (
     "${INSTALL_RUNTIME_DIR}/${UNINSTALLER_NAME}"
-    "bin/uninstall_${PROJECT_NAME_LOWER}"
+    "bin/uninstall-${PROJECT_NAME_LOWER}"
   )
 endif ()
 
