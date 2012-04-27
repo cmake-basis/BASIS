@@ -118,25 +118,6 @@ macro (basis_slicer_module_initialize)
     unset (_N)
     unset (_FIND_SLICER)
   endif ()
-  # In case of a Slicer Extension, the UseSlicer.cmake file of Slicer (>= 4.0)
-  # will set PYTHON_EXECUTABLE and requires us not to set this variable before
-  # the UseSlicer.cmake file has been included. Hence, we set this variable
-  # here only if it has not been set by Slicer, but before any PythonInterp
-  # dependency declared by this package such that the Python interpreter
-  # configured while building BASIS is used to avoid conflicts of different
-  # versions used to compile the Python utilities (if BASIS_COMPILE_SCRIPTS
-  # was set to ON) and the one used to configure/build this package.
-  #
-  # Note: The PYTHON_EXECUTABLE variable has to be cached such that
-  #       PythonInterp.cmake does not look for the interpreter itself.
-  set (
-    PYTHON_EXECUTABLE
-      "${BASIS_PYTHON_EXECUTABLE}"
-    CACHE PATH
-      "The Python interpreter."
-  )
-  mark_as_advanced (PYTHON_EXECUTABLE)
-  # Note that PERL_EXECUTABLE and BASH_EXECUTABLE are set in BASISUse.cmake.
 endmacro ()
 
 # ============================================================================

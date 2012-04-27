@@ -1221,6 +1221,29 @@ macro (basis_project_impl)
   basis_slicer_module_initialize ()
 
   # --------------------------------------------------------------------------
+  # Python
+
+  # In case of a Slicer Extension, the UseSlicer.cmake file of Slicer (>= 4.0)
+  # will set PYTHON_EXECUTABLE and requires us not to set this variable before
+  # the UseSlicer.cmake file has been included. Hence, we set this variable
+  # here only if it has not been set by Slicer, but before any PythonInterp
+  # dependency declared by this package such that the Python interpreter
+  # configured while building BASIS is used to avoid conflicts of different
+  # versions used to compile the Python utilities (if BASIS_COMPILE_SCRIPTS
+  # was set to ON) and the one used to configure/build this package.
+  #
+  # Note: The PYTHON_EXECUTABLE variable has to be cached such that
+  #       PythonInterp.cmake does not look for the interpreter itself.
+  set (
+    PYTHON_EXECUTABLE
+      "${BASIS_PYTHON_EXECUTABLE}"
+    CACHE PATH
+      "The Python interpreter."
+  )
+  mark_as_advanced (PYTHON_EXECUTABLE)
+  # Note that PERL_EXECUTABLE and BASH_EXECUTABLE are set in BASISUse.cmake.
+
+  # --------------------------------------------------------------------------
   # find packages
 
   # any package use file must be included after PROJECT_NAME was set as the
@@ -1253,6 +1276,10 @@ macro (basis_project_impl)
   if (NOT PROJECT_IS_MODULE)
     include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
     basis_disable_testing_if_no_tests ()
+    if (BUILD_TESTING AND NOT EXISTS "${PROJECT_SOURCE_DIR}/CTestConfig.cmake")
+      message (WARNING "Missing CTestConfig.cmake file in top directory of source tree!"
+                       " You will not be able to submit test results to the CDash dashboard.")
+    endif ()
   endif ()
 
   # --------------------------------------------------------------------------
