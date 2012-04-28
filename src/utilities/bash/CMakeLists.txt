@@ -22,5 +22,6 @@ basis_install (
 # ----------------------------------------------------------------------------
 # modules
 basis_add_library (core.sh)    # core utilities
+basis_add_library (path.sh)    # path manipulation functions
 basis_add_library (shflags.sh) # command-line parsing library
 basis_add_library (shtap.sh)   # unit testing framework

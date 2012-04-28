@@ -553,8 +553,8 @@ bool read_symlink(const std::string& link, std::string& value);
  *
  * @param [in] path Path.
  *
- * @return Canonical file path without duplicate slashes, ".", "..", and
- *         symbolic links.
+ * @return Canonical file path without duplicate slashes, ".", "..",
+ *         and symbolic links.
  */
 std::string get_real_path(const std::string& path);
 

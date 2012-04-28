@@ -28,7 +28,8 @@ readonly _EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
 # modules
 # ============================================================================
 
-source "${_EXECUTABLETARGETINFO_DIR}/@_BASIS_LIBRARY_DIR@/core.sh" # upvar()
+source "${_EXECUTABLETARGETINFO_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"
+source "${_EXECUTABLETARGETINFO_DIR}/@_BASIS_LIBRARY_DIR@/path.sh"
 
 # ============================================================================
 # public functions
@@ -183,7 +184,7 @@ function get_executable_path
 
     # if no target name given, get path of this executable
     if [ $# -lt 2 ]; then
-        path="`realpath "$0"`"
+        path="`get_real_path "$0"`"
     # otherwise, get path of executable built by named target
     else
         # get UID of target
@@ -194,7 +195,7 @@ function get_executable_path
             _executabletargetinfo_get path "${uid}" LOCATION
             if [ -n "${path}" ]; then
                 # make path absolute
-                _executabletargetinfo_to_absolute_path path "${path}" "${_EXECUTABLETARGETINFO_DIR}"
+                path=`to_absolute_path "${path}" "${_EXECUTABLETARGETINFO_DIR}"`
                 [ $? -eq 0 ] || return 1
             else
                 path=`/usr/bin/which "$2" 2> /dev/null`
@@ -303,43 +304,6 @@ function _executabletargetinfo_get
     eval "local value=\${__EXECUTABLETARGETINFO_${name}_${key}}"
 
     local "$1" && upvar $1 "${value}"
-}
-
-# ----------------------------------------------------------------------------
-## @brief Make relative path absolute.
-#
-# @attention The directory component of the path must be an existent directory.
-#
-# @todo Implement this function without the use of cd such that non-existent
-#       paths can be simplified as well.
-#
-# @param [out] simplified Simplified @p path.
-# @param [in]  path       Absolute or relative path.
-# @param [in]  base       Base path used for relative paths.
-#
-# @returns Nothing.
-#
-# @retval 0 On success.
-# @retval 1 On failure.
-function _executabletargetinfo_to_absolute_path
-{
-    [ $# -eq 2 ] || [ $# -eq 3 ] || return 1
-
-    local path="$2"
-    local base="$3"
-
-    [ -n "${path}" ] || return 1
-
-    local dir=`dirname ${path}`
-
-    if [ -d "${base}" -a -d "${base}/${dir}" ]; then
-        dir=`cd ${base}; cd ${dir}; pwd`
-        [ $? -eq 0 ] || return 1
-        path=${dir}/`basename ${path}`
-        [ $? -eq 0 ] || return 1
-    fi
-
-    local "$1" && upvar $1 "${path}"
 }
 
 # ----------------------------------------------------------------------------
