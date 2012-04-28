@@ -111,58 +111,6 @@ set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pw
 set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
 
 # ----------------------------------------------------------------------------
-## @brief Definition of realpath() function.
-#
-# Example:
-# @code
-# #! /usr/bin/env bash
-# @BASIS_BASH_FUNCTION_realpath@
-# exec_dir=$(realpath $0)
-# @endcode
-#
-# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-#
-# @ingroup BasisBashUtilities
-set (BASIS_BASH_FUNCTION_realpath "
-# ----------------------------------------------------------------------------
-## @brief Get real path of given file or directory.
-#
-# @note This function was substituted by BASIS either for the string
-#       \\\@BASIS_BASH_UTILITIES\\\@ or \\\@BASIS_BASH_FUNCTION_realpath\\\@.
-#
-# Example:
-# @code
-# exec_dir=`realpath $0`
-# @endcode
-#
-# @param [in] path File or directory path.
-#
-# @returns Canonical path.
-#
-# @sa http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script
-function realpath
-{
-    local path=$1
-
-    local linkdir=''
-    local symlink=''
-
-    while [ -h \${path} ]; do
-        # 1) change to directory of the symbolic link
-        # 2) change to directory where the symbolic link points to
-        # 3) get the current working directory
-        # 4) append the basename
-        linkdir=$(dirname -- \"\${path}\")
-        symlink=$(readlink \${path})
-        path=$(cd \"\${linkdir}\" && cd $(dirname -- \"\${symlink}\") && pwd)/$(basename -- \"\${symlink}\")
-    done
-
-    echo -n \"$(cd -P -- \"$(dirname \"\${path}\")\" && pwd -P)/$(basename -- \"\${path}\")\"
-}
-"
-)
-
-# ----------------------------------------------------------------------------
 ## @brief Include BASIS utilities for BASH.
 #
 # Example:
@@ -177,6 +125,12 @@ function realpath
 #
 # @ingroup BasisBashUtilities
 set (BASIS_BASH_UTILITIES "
+# ============================================================================
+# BASIS_BASH_UTILITIES
+# ============================================================================
+# {
+
+# ----------------------------------------------------------------------------
 # constants used by the shflags.sh module
 HELP_COMMAND='\@NAME\@ (\@PROJECT_NAME\@)'
 HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
@@ -184,9 +138,36 @@ HELP_VERSION='\@PROJECT_VERSION_AND_REVISION\@'
 HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
 See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 
-${BASIS_BASH_FUNCTION_realpath}
-readonly _\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_DIR=\"$(dirname -- \"$(realpath \"${BASIS_BASH___FILE__}\")\")\"
+# ----------------------------------------------------------------------------
+# simplified realpath() function, use get_real_path() once the path.sh module
+# of the BASIS utilities are included as that function is more general
+function realpath
+{
+    local path=\"$1\"
+    local i=0
+    local cur=\"\${path}\"
+    while [ -h \"\${cur}\" ] && [ \$i -lt 100 ]; do
+        dir=`dirname -- \"\${cur}\"`
+        cur=`readlink -- \"\${cur}\"`
+        cur=`cd \"\${dir}\" && cd $(dirname -- \"\${cur}\") && pwd`/`basename -- \"\${cur}\"`
+        (( i++ ))
+    done
+    # If symbolic link could entirely be resolved in less than 100 iterations,
+    # return the obtained resolved file path. Otherwise, return the original
+    # link which could not be resolved due to some probable cycle.
+    if [ \$i -lt 100 ]; then path=\"\${cur}\"; fi
+    # return path
+    echo -n \"\${path}\"
+}
+
+# ----------------------------------------------------------------------------
+# include other BASIS Utilities modules
+readonly _\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_FILE=\"${BASIS_BASH___FILE__}\"
+readonly _\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_DIR=\"$(dirname -- \"$(realpath \"\${_\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_FILE}\")\")\"
 source \"\${_\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_DIR}/\@LIBRARY_DIR\@/basis.sh\" || exit 1
+
+# }
+# ============================================================================
 "
 )
 
