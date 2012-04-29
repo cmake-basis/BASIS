@@ -59,7 +59,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   Build Dependencies
   ------------------
 
-  - BASIS 1.2 or greater
+  - BASIS 1.3 or greater
 
     Web Site: http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/
     Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
