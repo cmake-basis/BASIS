@@ -1290,13 +1290,15 @@ macro (basis_project_impl)
   #
   # Note: The PYTHON_EXECUTABLE variable has to be cached such that
   #       PythonInterp.cmake does not look for the interpreter itself.
-  set (
-    PYTHON_EXECUTABLE
-      "${BASIS_PYTHON_EXECUTABLE}"
-    CACHE PATH
-      "The Python interpreter."
-  )
-  mark_as_advanced (PYTHON_EXECUTABLE)
+  if (BASIS_PYTHON_EXECUTABLE)
+    set (
+      PYTHON_EXECUTABLE
+        "${BASIS_PYTHON_EXECUTABLE}"
+      CACHE PATH
+        "The Python interpreter."
+    )
+    mark_as_advanced (PYTHON_EXECUTABLE)
+  endif ()
   # Note that PERL_EXECUTABLE and BASH_EXECUTABLE are set in BASISUse.cmake.
 
   # --------------------------------------------------------------------------
