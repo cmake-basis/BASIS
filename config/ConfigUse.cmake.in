@@ -46,25 +46,27 @@
 #            the UseSlicer.cmake file requires us not to set PYTHON_EXECUTABLE
 #            before including this file. As the @USE_FILE@ file is included
 #            before any other dependency, the PYTHON_EXECUTABLE variable is
-#            set in the CMake function basis_find_packages() which in turn
-#            is invoked by the basis_project_impl() macro.
+#            set by the basis_project_impl() macro.
 
 ## @brief Perl interpreter configured when building BASIS.
-set (
-  PERL_EXECUTABLE
-    "${BASIS_PERL_EXECUTABLE}"
-  CACHE PATH
-    "The Perl interpreter."
-)
-
-mark_as_advanced (PERL_EXECUTABLE)
+if (BASIS_PERL_EXECUTABLE)
+  set (
+    PERL_EXECUTABLE
+      "${BASIS_PERL_EXECUTABLE}"
+    CACHE PATH
+      "The Perl interpreter."
+  )
+  mark_as_advanced (PERL_EXECUTABLE)
+endif ()
 
 ## @brief BASH executable configured when building BASIS.
-set (
-  BASH_EXECUTABLE
-    "${BASIS_BASH_EXECUTABLE}"
-  CACHE PATH
-    "The BASH executable."
-)
+if (BASIS_BASH_EXECUTABLE)
+  set (
+    BASH_EXECUTABLE
+      "${BASIS_BASH_EXECUTABLE}"
+    CACHE PATH
+      "The BASH executable."
+  )
 
-mark_as_advanced (BASH_EXECUTABLE)
+  mark_as_advanced (BASH_EXECUTABLE)
+endif ()
