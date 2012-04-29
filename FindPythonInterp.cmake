@@ -43,6 +43,8 @@
 #       4/12/2012, i.e., before the release of CMake 2.8.8. Once CMake 2.8.8
 #       or any version is available for all major platforms, consider to
 #       remove this module from the BASIS package.
+#
+# @ingroup CMakeFindModules
 ##############################################################################
 
 #=============================================================================
