@@ -11,7 +11,7 @@
 @BASIS_BASH_UTILITIES@
 
 
-source "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_DIR}/@BASIS_LIBRARY_DIR@/shtap.sh"
+source "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh"
 
 
 # ============================================================================

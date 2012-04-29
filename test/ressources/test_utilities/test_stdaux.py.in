@@ -8,18 +8,15 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
+@BASIS_PYTHON_UTILITIES@
+
 import unittest
 import re
 import os
 import sys
 
-
-@BASIS_PYTHON_UTILITIES@
-
-
 SubprocessError = basis.SubprocessError
 execute_process = basis.execute_process
-
 
 # ============================================================================
 # tests
@@ -39,8 +36,11 @@ class TestProcessExecution(unittest.TestCase):
     def test_return_type(self):
         """Test type of return value of execute_process()."""
         self.assertEquals(int, type(execute_process('basis.dummy_command')))
+        self.assertEquals(int, type(execute_process('basis.dummy_command', allow_fail=False)))
+        self.assertEquals(int, type(execute_process('basis.dummy_command', allow_fail=True)))
         self.assertEquals(int, type(execute_process('basis.dummy_command', stdout=False)))
-        self.assertEquals(tuple, type(execute_process('basis.dummy_command', stdout=True)))
+        self.assertEquals(str, type(execute_process('basis.dummy_command', stdout=True)))
+        self.assertEquals(tuple, type(execute_process('basis.dummy_command', allow_fail=True, stdout=True)))
  
     # ------------------------------------------------------------------------
     def test_target_execution(self):
@@ -51,7 +51,7 @@ class TestProcessExecution(unittest.TestCase):
         else:
             msg = 'Hello, BASIS!\n'
         self.assertEquals(
-                (0, msg),
+                msg,
                 execute_process(['basis.dummy_command', '--greet'],
                         stdout=True, quiet=True))
 
@@ -91,10 +91,10 @@ class TestProcessExecution(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_verbose(self):
         """Test verbose keyword argument of execute_process()."""
-        (status, stdout) = execute_process('basis.dummy_command', verbose=True, quiet=True, stdout=True)
+        (status, stdout) = execute_process('basis.dummy_command', verbose=True, quiet=True, stdout=True, allow_fail=True)
         self.assertEquals(0, status)
         self.assertEquals('', stdout)
-        (status, stdout) = execute_process('basis.dummy_command', verbose=2, quiet=True, stdout=True)
+        (status, stdout) = execute_process('basis.dummy_command', verbose=2, quiet=True, stdout=True, allow_fail=True)
         self.assertEquals(0, status)
         self.assertEquals('', stdout)
 

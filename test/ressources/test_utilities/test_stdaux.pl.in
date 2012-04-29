@@ -9,11 +9,9 @@
 ##############################################################################
 
 
-use Test::More tests => 26;
-
-
 @BASIS_PERL_UTILITIES@
 
+use Test::More tests => 28;
 
 # ============================================================================
 # tests
@@ -43,12 +41,15 @@ is $@, '', 'no exception when running dummy command with stdout option false';
 is scalar @retval, 1, 'only exit code returned when stdout is false';
 eval { @retval = Basis::execute_process('basis.dummy_command', stdout => 1); };
 is $@, '', 'no exception when running dummy command with stdout option true';
-is scalar @retval, 2, 'exit code and captured STDOUT returned when stdout is true';
+is scalar @retval, 1, 'STDOUT returned when stdout is true';
+eval { @retval = Basis::execute_process('basis.dummy_command', stdout => 1, allow_fail => 1); };
+is $@, '', 'no exception when running dummy command with stdout and allow_fail options true';
+is scalar @retval, 2, 'exit code and STDOUT returned when allow_fail and stdout are true';
 
 # ----------------------------------------------------------------------------
 # Test execution of executable target.
 is Basis::execute_process(['basis.dummy_command']), 0, 'execution of command by target name using array notation';
-eval { @retval = Basis::execute_process(['basis.dummy_command', '--greet'], stdout => 1, quiet => 1); };
+eval { @retval = Basis::execute_process(['basis.dummy_command', '--greet'], stdout => 1, quiet => 1, allow_fail => 1); };
 is $retval[0], 0, 'exit code is 0';
 like $retval[1], qr/^Hello, BASIS!\s*\r?\n/, 'messages to STDOUT properly returned even though quiet is true';
 
@@ -85,10 +86,10 @@ unlink 'test_stdaux.stderr';
 
 # ----------------------------------------------------------------------------
 # Test verbose keyword argument of execute_process().
-eval { @retval = Basis::execute_process('basis.dummy_command', verbose => 1, quiet => 1, stdout => 1); };
+eval { @retval = Basis::execute_process('basis.dummy_command', verbose => 1, quiet => 1, stdout => 1, allow_fail => 1); };
 is $retval[0], 0, 'exit code is 0 when running dummy command';
 is $retval[1], '', 'verbose message of execute_process() printed to STDOUT of parent, not child';
-eval { @retval = Basis::execute_process('basis.dummy_command', verbose => 2, quiet => 1, stdout => 1); };
+eval { @retval = Basis::execute_process('basis.dummy_command', verbose => 2, quiet => 1, stdout => 1, allow_fail => 1); };
 is $retval[0], 0, 'exit code is 0 when running dummy command';
 is $retval[1], '', 'verbose message of execute_process() printed to STDOUT of parent, not child';
 
