@@ -1,21 +1,43 @@
 ##############################################################################
 # @file  FindPythonInterp.cmake
-# @brief Find python interpreter.
+# @brief Find Python interpreter.
 #
-# This module finds if Python interpreter is installed and determines where the
-# executables are. This code sets the following variables:
+# @par Input variables:
+# <table border="0">
+#   <tr>
+#     @tp @b Python_ADDITIONAL_VERSIONS @endtp
+#     <td>List of version numbers that should be taken into account when
+#         searching for Python.</td>
+#   </tr>
+# </table>
 #
-#  PYTHONINTERP_FOUND         - Was the Python executable found
-#  PYTHON_EXECUTABLE          - path to the Python interpreter
-#
-#  PYTHON_VERSION_STRING      - Python version found e.g. 2.5.2
-#  PYTHON_VERSION_MAJOR       - Python major version found e.g. 2
-#  PYTHON_VERSION_MINOR       - Python minor version found e.g. 5
-#  PYTHON_VERSION_PATCH       - Python patch version found e.g. 2
-#
-# The Python_ADDITIONAL_VERSIONS variable can be used to specify a list of
-# version numbers that should be taken into account when searching for Python.
-# You need to set this variable before calling find_package(PythonInterp).
+# @par Output variables:
+# <table border="0">
+#   <tr>
+#     @tp @b PYTHONINTERP_FOUND @endtp
+#     <td>Was the Python executable found.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PYTHON_EXECUTABLE @endtp
+#     <td>Path to the Python interpreter.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PYTHON_VERSION_STRING @endtp
+#     <td>Python version found e.g. 2.5.2.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PYTHON_VERSION_MAJOR @endtp
+#     <td>Python major version found e.g. 2.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PYTHON_VERSION_MINOR @endtp
+#     <td>Python minor version found e.g. 5.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PYTHON_VERSION_PATCH @endtp
+#     <td>Python patch version found e.g. 2.</td>
+#   </tr>
+# </table>
 #
 # @note This module has been copied from the Git repository of CMake on
 #       4/12/2012, i.e., before the release of CMake 2.8.8. Once CMake 2.8.8
