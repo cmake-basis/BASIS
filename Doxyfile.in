@@ -686,7 +686,11 @@ IMAGE_PATH             =
 # If FILTER_PATTERNS is specified, this tag will be 
 # ignored.
 
-INPUT_FILTER           = @DOXYGEN_INPUT_FILTER@
+# Note: It seems like using a file path with a space character for the input
+#       filter does not work, at least with Doxygen version 1.7.4. Therefore,
+#       and because INPUT_FILTER is ignored when FILTER_PATTERNS are given,
+#       use a filter pattern of "*=<filter>" instead.
+INPUT_FILTER           = 
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern 
 # basis. 

@@ -49,70 +49,6 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 
 
 # ============================================================================
-# helper
-# ============================================================================
-
-## @addtogroup CMakeUtilities
-#  @{
-
-
-# ----------------------------------------------------------------------------
-## @brief Get default Doxygen filter patterns.
-#
-# @param [out] FILTER_PATTERNS List of default Doxygen filter patterns.
-function (basis_default_doxygen_filters FILTER_PATTERNS)
-  set (PATTERNS)
-
-  macro (register_filter FILTER)
-    basis_get_target_uid (TARGET_UID "${BASIS_NAMESPACE_LOWER}.${FILTER}")
-    if (TARGET "${TARGET_UID}")
-      basis_get_target_location (FILTER_PATH "${TARGET_UID}" ABSOLUTE)
-      foreach (ARG ${ARGN})
-        list (APPEND PATTERNS "${ARG}=${FILTER_PATH}")
-      endforeach ()
-    elseif (BASIS_VERBOSE)
-      message (WARNING "Doxygen filter ${FILTER} not available.")
-    endif ()
-  endmacro ()
-
-  register_filter (
-    basis.doxyfilter-cmake
-      "CMakeLists.txt"
-      "*.cmake"
-      "*.cmake.in"
-      "*.ctest"
-      "*.ctest.in"
-  )
-
-  register_filter (
-    basis.doxyfilter-bash
-      "*.sh"
-      "*.sh.in"
-  )
-
-  register_filter (
-    basis.doxyfilter-matlab
-      "*.m"
-      "*.m.in"
-  )
-
-  # TODO Python filer disabled because it does not work properly
-#  register_filter (
-#    basis.doxyfilter-python
-#      "*.py"
-#      "*.py.in"
-#  )
-
-  # return
-  set ("${FILTER_PATTERNS}" "${PATTERNS}" PARENT_SCOPE)
-endfunction ()
-
-
-## @}
-# end of Doxygen group
-
-
-# ============================================================================
 # adding / generating documentation
 # ============================================================================
 
@@ -205,15 +141,18 @@ endfunction ()
 #     @tp @b INPUT_FILTER filter @endtp
 #     <td>
 #       Value for Doxygen's @c INPUT_FILTER tag which can be used to
-#       specify a default filter for all input files. Set to either one of
-#       @c None, @c NONE, or @c none to use no input filter.@n
+#       specify a default filter for all input files. If additional
+#       @b FILTER_PATTERNS are given, this filter is appended to the list
+#       of filter patterns and applied for the pattern '*', i.e., used to
+#       process any input file which has not yet been processed by another
+#       input filter.@n
 #       Default: @c doxyfilter of BASIS.
 #     </td>
 #   <tr>
 #     @tp @b FILTER_PATTERNS pattern1 [pattern2...] @endtp
 #     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
 #         specify filters on a per file pattern basis.@n
-#         Default: BASIS Doxygen filter patterns.</td>
+#         Default: None.</td>
 #   </tr>
 #   <tr>
 #     @tp @b INCLUDE_PATH path1 [path2...] @endtp
@@ -555,12 +494,11 @@ function (basis_add_doc TARGET_NAME)
       if (TARGET "${DOXYFILTER}")
         basis_get_target_location (DOXYGEN_INPUT_FILTER "${DOXYFILTER}" ABSOLUTE)
       endif ()
+    else ()
+      set (DOXYFILTER)
     endif ()
-    if (DOXYGEN_INPUT_FILTER MATCHES "^(None|NONE|none)$")
-      set (DOXYGEN_INPUT_FILTER)
-    endif ()
-    if (NOT DOXYGEN_FILTER_PATTERNS)
-      basis_default_doxygen_filters (DOXYGEN_FILTER_PATTERNS)
+    if (DOXYGEN_INPUT_FILTER)
+      list (APPEND DOXYGEN_FILTER_PATTERNS "*=${DOXYGEN_INPUT_FILTER}")
     endif ()
     basis_list_to_delimited_string (
       DOXYGEN_FILTER_PATTERNS "\"\nFILTER_PATTERNS       += \"" ${DOXYGEN_FILTER_PATTERNS}
@@ -682,6 +620,9 @@ function (basis_add_doc TARGET_NAME)
     endif ()
     if (TARGET scripts)
       add_dependencies (${TARGET_UID} scripts)
+    endif ()
+    if (TARGET "${DOXYFILTER}")
+      add_dependencies (${TARGET_UID} ${DOXYFILTER})
     endif ()
 
     # install documentation
