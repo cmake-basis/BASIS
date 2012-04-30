@@ -1217,10 +1217,10 @@ macro (basis_project_finalize)
         endif ()
       endforeach ()
     endforeach ()
-    # configure auxiliary modules
-    basis_configure_auxiliary_modules ()
     # configure ExecutableTargetInfo modules
     basis_configure_ExecutableTargetInfo ()
+    # configure auxiliary modules
+    basis_configure_auxiliary_modules ()
     # finalize addition of custom targets
     basis_add_custom_finalize ()
     basis_add_init_py_target ()

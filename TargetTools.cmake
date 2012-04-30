@@ -1783,14 +1783,19 @@ function (basis_add_script TARGET_NAME)
   # dump CMake variables for "build" of script
   basis_dump_variables ("${BUILD_DIR}/variables.cmake")
 
-  # "parse" script to check if BASIS utilities are used and hence required
+  # "parse" script to check which BASIS utilities are used and hence required
   file (READ "${ARGN_SCRIPT}" SCRIPT)
-  if (SCRIPT MATCHES "@BASIS_([A-Z]+)_UTILITIES@")
-    if (BASIS_DEBUG)
-      message ("** Target ${TARGET_UID} uses BASIS ${CMAKE_MATCH_1} utilities.")
+  foreach (LANG PYTHON PERL BASH)
+    if (SCRIPT MATCHES "@BASIS_${LANG}_UTILITIES@")
+      if (BASIS_DEBUG)
+        message ("** Target ${TARGET_UID} uses BASIS ${LANG} utilities.")
+      endif ()
+      set (SCRIPT_USES_${LANG}_UTILITIES TRUE)
+      basis_set_project_property (PROPERTY PROJECT_USES_${LANG}_UTILITIES TRUE)
+    else ()
+      set (SCRIPT_USES_${LANG}_UTILITIES FALSE)
     endif ()
-    basis_set_project_property (PROPERTY PROJECT_USES_${CMAKE_MATCH_1}_UTILITIES TRUE)
-  endif ()
+  endforeach ()
   set (SCRIPT)
 
   # binary directory
@@ -1897,6 +1902,22 @@ function (basis_add_script TARGET_NAME)
 
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${ARGN_SCRIPT})
+
+  if (SCRIPT_USES_PYTHON_UTILITIES)
+    basis_get_source_target_name (PYTHON_UTILITIES_TARGET "basis.py" NAME)
+    basis_get_target_uid (PYTHON_UTILITIES_TARGET ${PYTHON_UTILITIES_TARGET})
+    add_dependencies (${TARGET_UID} ${PYTHON_UTILITIES_TARGET})
+  endif ()
+  if (SCRIPT_USES_PERL_UTILITIES)
+    basis_get_source_target_name (PERL_UTILITIES_TARGET "Basis.pm" NAME)
+    basis_get_target_uid (PERL_UTILITIES_TARGET ${PERL_UTILITIES_TARGET})
+    add_dependencies (${TARGET_UID} ${PERL_UTILITIES_TARGET})
+  endif ()
+  if (SCRIPT_USES_BASH_UTILITIES)
+    basis_get_source_target_name (BASH_UTILITIES_TARGET "basis.sh" NAME)
+    basis_get_target_uid (BASH_UTILITIES_TARGET ${BASH_UTILITIES_TARGET})
+    add_dependencies (${TARGET_UID} ${BASH_UTILITIES_TARGET})
+  endif ()
 
   # set target properties required by basis_add_script_finalize ()
   if (ARGN_MODULE)

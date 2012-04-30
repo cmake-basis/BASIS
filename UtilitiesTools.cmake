@@ -389,74 +389,100 @@ function (basis_configure_auxiliary_modules)
   # --------------------------------------------------------------------------
   # Python
   if (PYTHON)
+    # utilities available?
     if (NOT BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
       message (FATAL_ERROR "BASIS Python utilities required by this package"
                            " but BASIS was built without Python utilities."
                            " Rebuild BASIS with Python utilities enabled.")
     endif ()
-
+    # add project-specific utilities
     foreach (MODULE basis stdaux)
-      basis_get_source_target_name (TARGET_NAME "${MODULE}.py" NAME)
+      basis_get_source_target_name (PYTHON_UTILITIES_${MODULE} "${MODULE}.py" NAME)
       basis_add_library (
-        ${TARGET_NAME} "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py"
+        ${PYTHON_UTILITIES_${MODULE}}
+          "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py"
         MODULE
           BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       )
       basis_set_target_properties (
-        ${TARGET_NAME}
+        ${PYTHON_UTILITIES_${MODULE}}
         PROPERTIES
           OUTPUT_NAME "${MODULE}"
           SUFFIX      ".py"
       )
     endforeach ()
+    # dependencies
+    foreach (MODULE stdaux executabletargetinfo)
+      basis_get_source_target_name (PYTHON_UTILITIES_${MODULE} "${MODULE}.py" NAME)
+      basis_add_dependencies (${PYTHON_UTILITIES_basis} ${PYTHON_UTILITIES_${MODULE}})
+    endforeach ()
+    basis_add_dependencies (${PYTHON_UTILITIES_basis} _initpy)
   endif ()
 
   # --------------------------------------------------------------------------
   # Perl
   if (PERL)
+    # utilities available?
     if (NOT BASIS_UTILITIES_ENABLED MATCHES "PERL")
       message (FATAL_ERROR "BASIS Perl utilities required by this package"
                            " but BASIS was built without Perl utilities."
                            " Rebuild BASIS with Perl utilities enabled.")
     endif ()
-
+    # add project-specific utilities
     foreach (MODULE Basis StdAux)
-      basis_get_source_target_name (TARGET_NAME "${MODULE}.pm" NAME)
+      basis_get_source_target_name (PERL_UTILITIES_${MODULE} "${MODULE}.pm" NAME)
       basis_add_library (
-        ${TARGET_NAME} "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm"
+        ${PERL_UTILITIES_${MODULE}}
+          "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm"
         MODULE
           BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       )
       basis_set_target_properties (
-        ${TARGET_NAME}
+        ${PERL_UTILITIES_${MODULE}}
         PROPERTIES
           OUTPUT_NAME "${MODULE}"
           SUFFIX      ".pm"
       )
+    endforeach ()
+    # dependencies
+    foreach (MODULE StdAux ExecutableTargetInfo)
+      basis_get_source_target_name (PERL_UTILITIES_${MODULE} "${MODULE}.pm" NAME)
+      basis_add_dependencies (${PERL_UTILITIES_Basis} ${PERL_UTILITIES_${MODULE}})
     endforeach ()
   endif ()
 
   # --------------------------------------------------------------------------
   # BASH
   if (BASH)
+    # utilities available?
     if (NOT UNIX)
       message (FATAL_ERROR "Package uses BASIS BASH utilities but is build"
                            " on a non-Unix system.")
     endif ()
-
+    # add project-specific utilities
     foreach (MODULE basis stdaux)
-      basis_get_source_target_name (TARGET_NAME "${MODULE}.sh" NAME)
+      basis_get_source_target_name (BASH_UTILITIES_${MODULE} "${MODULE}.sh" NAME)
       basis_add_library (
-        ${TARGET_NAME} "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh"
+        ${BASH_UTILITIES_${MODULE}}
+          "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh"
         MODULE
           BINARY_DIRECTORY "${BINARY_CODE_DIR}"
       )
       basis_set_target_properties (
-        ${TARGET_NAME}
+        ${BASH_UTILITIES_${MODULE}}
         PROPERTIES
           OUTPUT_NAME "${MODULE}"
           SUFFIX      ".sh"
       )
+    endforeach ()
+    # dependencies
+    foreach (MODULE stdaux executabletargetinfo)
+      basis_get_source_target_name (BASH_UTILITIES_${MODULE} "${MODULE}.sh" NAME)
+      basis_add_dependencies (${BASH_UTILITIES_basis} ${BASH_UTILITIES_${MODULE}})
+    endforeach ()
+    foreach (MODULE core path)
+      basis_get_target_uid (BASH_UTILITIES_${MODULE} "${BASIS_NAMESPACE_LOWER}.basis.${MODULE}")
+      basis_add_dependencies (${BASH_UTILITIES_basis} ${BASH_UTILITIES_${MODULE}})
     endforeach ()
   endif ()
 
@@ -703,7 +729,6 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}else ()\n")
     set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${PY_B}\")\n")
     set (CONFIG "${CONFIG}endif ()\n")
-
     # add module
     set (TEMPLATE_FILE "${BASIS_PYTHON_TEMPLATES_DIR}/executabletargetinfo.py")
     basis_get_source_target_name (TARGET_NAME "${TEMPLATE_FILE}" NAME)
@@ -720,6 +745,9 @@ function (basis_configure_ExecutableTargetInfo)
         OUTPUT_NAME "executabletargetinfo"
         SUFFIX      ".py"
     )
+    # dependencies
+    basis_get_target_uid (TARGET_which "${BASIS_NAMESPACE_LOWER}.basis.which_py")
+    basis_add_dependencies (${TARGET_NAME} ${TARGET_which})
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -732,7 +760,6 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}else ()\n")
     set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${PL_B}\")\n")
     set (CONFIG "${CONFIG}endif ()\n")
-
     # add module
     set (TEMPLATE_FILE "${BASIS_PERL_TEMPLATES_DIR}/ExecutableTargetInfo.pm")
     basis_get_source_target_name (TARGET_NAME "${TEMPLATE_FILE}" NAME)
@@ -749,6 +776,9 @@ function (basis_configure_ExecutableTargetInfo)
         OUTPUT_NAME "ExecutableTargetInfo"
         SUFFIX      ".pm"
     )
+    # dependencies
+    basis_get_target_uid (TARGET_which "${BASIS_NAMESPACE_LOWER}.basis.Which_pm")
+    basis_add_dependencies (${TARGET_NAME} ${TARGET_which})
   endif ()
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -763,7 +793,6 @@ function (basis_configure_ExecutableTargetInfo)
     set (CONFIG "${CONFIG}  set (EXECUTABLE_TARGET_INFO \"${SH_B}\")\n")
     set (CONFIG "${CONFIG}  set (EXECUTABLE_ALIASES \"${SH_A}\n\n# define short aliases for this project's targets\n${SH_S}\")\n")
     set (CONFIG "${CONFIG}endif ()\n")
-
     # add module
     set (TEMPLATE_FILE "${BASIS_BASH_TEMPLATES_DIR}/executabletargetinfo.sh")
     basis_get_source_target_name (TARGET_NAME "${TEMPLATE_FILE}" NAME)
