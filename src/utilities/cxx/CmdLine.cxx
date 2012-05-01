@@ -431,7 +431,6 @@ void StdOutput::printArguments(ostream& os, bool all) const
     for (TCLAP::ArgListIterator it = args.begin(); it != args.end(); it++) {
         if (_stdargs.find((*it)->getName()) != _stdargs.end()) {
             (*it)->addToList(stdargs);
-            stdargs.push_front(*it);
         } else if (!xorhandler.contains((*it))) {
             if ((*it)->isRequired()) {
                 (*it)->addToList(reqargs);
