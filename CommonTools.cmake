@@ -1449,16 +1449,27 @@ function (basis_configure_sources LIST_NAME)
   # configure source files
   set (CONFIGURED_SOURCES)
   foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
-    # make path absolute, otherwise EXISTS check will not work
-    if (NOT IS_ABSOLUTE "${SOURCE}")
-      set (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
-    endif ()
-    # the .in suffix is optional, add it here if a .in file exists for this
+    # The .in suffix is optional, add it here if a .in file exists for this
     # source file, but only if the source file itself does not name an acutally
-    # existing source file
-    if (NOT SOURCE MATCHES "\\.in$" AND NOT EXISTS "${SOURCE}" AND EXISTS "${SOURCE}.in")
-      set (SOURCE "${SOURCE}.in")
+    # existing source file.
+    #
+    # If the source file path is relative, prefer possibly already configured
+    # sources in build tree such as the test driver source file created by
+    # create_test_sourcelist() or a manual use of configure_file().
+    #
+    # Note: Make path absolute, otherwise EXISTS check will not work!
+    if (NOT IS_ABSOLUTE "${SOURCE}")
+      if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}")
+        set (SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}")
+      elseif (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}.in")
+        set (SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}.in")
+      elseif (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
+        set (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
+      elseif (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}.in")
+        set (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}.in")
+      endif ()
     endif ()
+    # configure source file if filename ends in .in suffix
     if (SOURCE MATCHES "\\.in$")
       # if binary directory was given explicitly, use it
       if (ARGN_BINARY_DIRECTORY)
@@ -1490,27 +1501,17 @@ function (basis_configure_sources LIST_NAME)
       configure_file ("${SOURCE}" "${CONFIGURED_SOURCE}" @ONLY)
       if (BASIS_DEBUG)
         message ("** Configured source file with .in extension")
-        message ("**     Source:            ${SOURCE}")
-        message ("**     Configured source: ${CONFIGURED_SOURCE}")
       endif ()
+    # otherwise, skip configuration of this source file
     else ()
-      # if the source file path is relative, prefer possibly already
-      # configured sources in build tree such as the test driver source file
-      # created by create_test_sourcelist() or a manual use of configure_file()
-      if (IS_ABSOLUTE "${SOURCE}")
-        set (CONFIGURED_SOURCE "${SOURCE}")
-      else ()
-        if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}")
-          set (CONFIGURED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}")
-        else ()
-          get_filename_component (CONFIGURED_SOURCE "${SOURCE}" ABSOLUTE)
-        endif ()
-      endif ()
+      set (CONFIGURED_SOURCE "${SOURCE}")
       if (BASIS_DEBUG)
         message ("** Skipped configuration of source file")
-        message ("**     Source:            ${SOURCE}")
-        message ("**     Configured source: ${CONFIGURED_SOURCE}")
       endif ()
+    endif ()
+    if (BASIS_DEBUG)
+      message ("**     Source:            ${SOURCE}")
+      message ("**     Configured source: ${CONFIGURED_SOURCE}")
     endif ()
     list (APPEND CONFIGURED_SOURCES "${CONFIGURED_SOURCE}")
   endforeach ()
