@@ -87,22 +87,26 @@ if ($ARGV[0] =~ /\.([a-z]+)$/i) {
 my $filter = undef;
 
 # Perl
-if (grep ($_ eq $ext, "pl", "pm", "perl") || $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/) {
+if ($ext eq 'pl' or $ext eq 'pm' or $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\/perl|\/usr\/bin\/env\s+perl)/) {
     print STDERR "treating file as Perl\n" if ($verbose);
     $filter = SBIA::BASIS::DoxyGen::PerlFilter->new (\*STDOUT);
 # Python
-} elsif ($ext eq "py" || $filehead =~ /^#!\s*(\/usr\/bin\/python|\/bin\/python|\/usr\/bin\/env\s+python)/) {
+} elsif ($ext eq 'py' or $filehead =~ /^#!\s*(\/usr\/bin\/python|\/bin\/python|\/usr\/bin\/env\s+python)/) {
     print STDERR "Treating file as Python\n" if ($verbose);
     unshift (@ARGV, 'doxyfilter-python');
     push (@ARGV, '-f');
 # BASH
-} elsif ($ext eq "sh" || $filehead =~ /^#!\s*(\/usr\/bin\/bash|\/bin\/bash|\/usr\/bin\/env\s+bash)/) {
+} elsif ($ext eq 'sh' or $filehead =~ /^#!\s*(\/usr\/bin\/bash|\/bin\/bash|\/usr\/bin\/env\s+bash)/) {
     print STDERR "Treating file as BASH\n" if ($verbose);
     unshift (@ARGV, 'doxyfilter-bash');
 # CMake
-} elsif ($ext eq "cmake" or $ext eq "ctest") {
+} elsif ($ext eq 'cmake' or $ext eq 'ctest') {
     print STDERR "Treating file as CMake\n" if ($verbose);
     unshift (@ARGV, 'doxyfilter-cmake');
+# MATLAB
+} elsif ($ext eq 'm') {
+    print STDERR "Treating file as MATLAB\n" if ($verbose);
+    unshift (@ARGV, 'doxyfilter-matlab');
 # otherwise
 } else {
     print STDERR "passing file through\n" if ($verbose);
