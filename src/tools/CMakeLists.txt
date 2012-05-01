@@ -76,7 +76,7 @@ endif ()
 # automated testing
 basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
 
-if (BASIS_FOUND)
+if (BASH_FOUND)
   basis_add_executable (basistest-svn.sh)    # wraps svn command
   basis_add_executable (basistest-slave.sh)  # executes test task
   basis_add_executable (basistest-master.sh) # executes scheduled tests
