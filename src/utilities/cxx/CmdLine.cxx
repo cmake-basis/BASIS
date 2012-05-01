@@ -323,7 +323,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     for (int i = 0; static_cast<unsigned int>(i) < xors.size(); i++) {
         if (xors[i].size() > 0) {
             if (xors[i][0]->isRequired()) reqxors.push_back(xors[i]);
-            else                           optxors.push_back(xors[i]);
+            else                          optxors.push_back(xors[i]);
         }
     }
     list<TCLAP::Arg*> reqargs;
@@ -332,9 +332,9 @@ void StdOutput::printUsage(ostream& os, bool heading) const
         if (_stdargs.find((*it)->getName()) == _stdargs.end()
                 && !xorhandler.contains((*it))) {
             if ((*it)->isRequired()) {
-                reqargs.push_front(*it);
+                (*it)->addToList(reqargs);
             } else {
-                optargs.push_front(*it);
+                (*it)->addToList(optargs);
             }
         }
     }
@@ -430,12 +430,13 @@ void StdOutput::printArguments(ostream& os, bool all) const
     list<TCLAP::Arg*> stdargs;
     for (TCLAP::ArgListIterator it = args.begin(); it != args.end(); it++) {
         if (_stdargs.find((*it)->getName()) != _stdargs.end()) {
+            (*it)->addToList(stdargs);
             stdargs.push_front(*it);
         } else if (!xorhandler.contains((*it))) {
             if ((*it)->isRequired()) {
-                reqargs.push_front(*it);
+                (*it)->addToList(reqargs);
             } else {
-                optargs.push_front(*it);
+                (*it)->addToList(optargs);
             }
         }
     }
