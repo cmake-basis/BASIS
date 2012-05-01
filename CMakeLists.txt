@@ -61,6 +61,7 @@ set (
     "cmake_uninstall.cmake.in"    # uninstall script
     "ConfigureIncludeFiles.cmake" # used to configure public header files
     "Directories.cmake.in"        # project directory structure
+    "doxyfilter.bat.in"           # wraps Doxygen filter command on Windows
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
     "runmcc.m"                    # helper used by MatlabTools.cmake module
     "ScriptConfig.cmake.in"       # default script configuration file

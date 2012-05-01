@@ -1,0 +1,13 @@
+rem @file  doxyfilter.bat
+rem @brief Wrapper Batch program for Doxygen input filter.
+rem
+rem This Batch program simply calls the actual Doxygen filter executable.
+rem It is required on Windows because Doxygen (at least up to version 1.8.0)
+rem seems to have a problem with filter executables which have a space
+rem character in their file path.
+rem
+rem Copyright (c) 2012 University of Pennsylvania. All rights reserved.
+rem See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+rem
+rem Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+@"@DOXYGEN_INPUT_FILTER@" %*
