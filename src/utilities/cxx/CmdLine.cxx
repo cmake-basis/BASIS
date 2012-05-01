@@ -396,7 +396,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     int offset = static_cast<int>(exec_name.length()) + 1;
     if (offset > 75 / 2) offset = 8;
     spacePrint(os, s, 75, 4, offset);
-    spacePrint(os, exec_name + " [-h|--help|--helpshort|--helpxml|--helpman|--version]", 75, 4, 0);
+    spacePrint(os, exec_name + " [-h|--help|--helpshort|--helpxml|--helpman|--version]", 75, 4, offset);
 }
 
 // ---------------------------------------------------------------------------
