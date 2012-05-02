@@ -709,6 +709,7 @@ CmdLine::CmdLine(const std::string& name,
                  bool               stdargs)
 :
     TCLAP::CmdLine(description, ' ', version, false),
+    _xorHandler(XorHandler()),
     _name(name),
     _project(project),
     _copyright(copyright),
@@ -731,6 +732,7 @@ CmdLine::CmdLine(const std::string&              name,
                  bool                            stdargs)
 :
     TCLAP::CmdLine(description, ' ', version, false),
+    _xorHandler(XorHandler()),
     _name(name),
     _project(project),
     _examples(examples),
@@ -751,7 +753,7 @@ void CmdLine::setup(bool stdargs)
 
     // remove arguments added by TCLAP::CmdLine (ignore)
     ClearContainer(_argDeleteOnExitList);
-	ClearContainer(_visitorDeleteOnExitList);
+    ClearContainer(_visitorDeleteOnExitList);
     TCLAP::CmdLine::_argList.clear();
 
     // add standard arguments
@@ -804,9 +806,6 @@ void CmdLine::setup(bool stdargs)
     }
 }
 
-// Note: The following methods are mainly overwritten to include the
-//       documentation in the API documentation of the BASIS class.
-
 // -----------------------------------------------------------------------
 void CmdLine::add(Arg& a)
 {
@@ -829,10 +828,9 @@ void CmdLine::xorAdd(Arg& a, Arg& b)
 }
 
 // -----------------------------------------------------------------------
-void CmdLine::xorAdd(std::vector<Arg*>& xors)
+void CmdLine::xorAdd(vector<Arg*>& xors)
 {
-    TCLAP::CmdLine::_xorHandler.add(xors);
-
+    _xorHandler.add(xors);
     bool required = false;
     for (TCLAP::ArgVectorIterator it = xors.begin(); it != xors.end(); ++it) {
         if ((*it)->isRequired()) required = true;
@@ -840,20 +838,75 @@ void CmdLine::xorAdd(std::vector<Arg*>& xors)
     for (TCLAP::ArgVectorIterator it = xors.begin(); it != xors.end(); ++it) {
         if (required) (*it)->forceRequired();
         (*it)->setRequireLabel("OR required");
-        add( *it );
+        add(*it);
     }
 }
 
 // -----------------------------------------------------------------------
-void CmdLine::parse(int argc, const char* const* argv)
+void CmdLine::parse(int argc, const char * const * argv)
 {
-    TCLAP::CmdLine::parse(argc, argv);
+    vector<string> args(argc);
+    for (int i = 0; i < argc; i++) args[i] = argv[i];
+    parse(args);
 }
 
 // -----------------------------------------------------------------------
-void CmdLine::parse(std::vector<std::string>& args)
+void CmdLine::parse(vector<string>& args)
 {
-    TCLAP::CmdLine::parse(args);
+    bool shouldExit = false;
+    int estat = 0;
+
+    try {
+        _progName = basis::get_executable_name();
+        args.erase(args.begin());
+
+        int requiredCount = 0;
+        for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++) {
+            bool matched = false;
+            for (TCLAP::ArgListIterator it = _argList.begin(); it != _argList.end(); it++) {
+                if ((*it)->processArg(&i, args)) {
+                    requiredCount += _xorHandler.check(*it);
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched && _emptyCombined(args[i])) matched = true;
+            if (!matched && !TCLAP::Arg::ignoreRest()) {
+                throw TCLAP::CmdLineParseException("Couldn't find match for argument", args[i]);
+            }
+        }
+
+        if (requiredCount < _numRequired) {
+            string args;
+            for (TCLAP::ArgListIterator it = _argList.begin(); it != _argList.end(); it++) {
+                if ((*it)->isRequired() && !(*it)->isSet()) {
+                    args += (*it)->getName();
+                    args += ", ";
+                }
+            }
+            args = args.substr(0, args.length() - 2);
+            string msg = string("Not all required arguments specified, missing: ") + args;
+            throw CmdLineParseException(msg);
+        }
+        if (requiredCount > _numRequired) {
+            throw TCLAP::CmdLineParseException("Too many arguments given!");
+        }
+
+    } catch (TCLAP::ArgException& e) {
+        if (!_handleExceptions) throw;
+        try {
+            _output->failure(*this, e);
+        } catch (TCLAP::ExitException& ee) {
+            estat = ee.getExitStatus();
+            shouldExit = true;
+        }
+    } catch (TCLAP::ExitException& ee) {
+        if (!_handleExceptions) throw;
+        estat = ee.getExitStatus();
+        shouldExit = true;
+    }
+
+    if (shouldExit) exit(estat);
 }
 
 
