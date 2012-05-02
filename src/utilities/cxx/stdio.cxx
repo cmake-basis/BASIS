@@ -116,8 +116,9 @@ ostream& print_wrapped(ostream&      os,
         }
         // next line
         start += line_length;
-        // so we don't start a line with a space
-        while (text[start + line_length] == ' ' && start < text_length) start++;
+        // skip space characters so next line does not start with
+        // a further indentation besides the one specified by the indent
+        while (text[start] == ' ' && start < text_length) start++;
     }
 
     return os;
