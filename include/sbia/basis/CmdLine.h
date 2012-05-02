@@ -187,6 +187,20 @@ public:
     void xorAdd(std::vector<Arg*>& xors);
 
     // -----------------------------------------------------------------------
+    // help
+public:
+
+    /**
+     * @brief Print short help, i.e., usage information.
+     */
+    void print_usage() const;
+
+    /**
+     * @brief Print help.
+     */
+    void print_help() const;
+
+    // -----------------------------------------------------------------------
     // parse command-line arguments
 public:
 

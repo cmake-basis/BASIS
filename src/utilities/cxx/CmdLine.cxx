@@ -847,6 +847,20 @@ void CmdLine::xorAdd(Arg& a, Arg& b)
 }
 
 // -----------------------------------------------------------------------
+void CmdLine::print_usage() const
+{
+    _output->usage(*const_cast<CmdLine*>(this));
+}
+
+// -----------------------------------------------------------------------
+void CmdLine::print_help() const
+{
+    StdOutput* output = dynamic_cast<StdOutput*>(_output);
+    if (output) output ->help (*const_cast<CmdLine*>(this));
+    else        _output->usage(*const_cast<CmdLine*>(this));
+}
+
+// -----------------------------------------------------------------------
 void CmdLine::xorAdd(vector<Arg*>& xors)
 {
     _xorHandler.add(xors);
