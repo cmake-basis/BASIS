@@ -137,8 +137,24 @@ string get_executable_path(const string& target)
     const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
     // get name of executable and check if target name is known
     string exec_name = info.get_executable_name(target);
-    // is this target known?
-    if (exec_name.empty()) return "";
+    // if target is not known, try to get path using which command
+    // TODO better would be a platform-independent C++ implementation of which...
+    if (exec_name.empty()) {
+        vector<string> which(2);
+        which[0] = "sbia.basis.which";
+        which[1] = target;
+        ostringstream oss;
+        if (execute_process(which, true, &oss, true) == 0) {
+            exec_name = oss.str();
+            const string::size_type end = exec_name.find_last_not_of(" \t\n\r");
+            if (end == string::npos) {
+                exec_name = "";
+            } else {
+                exec_name.erase(end + 1);
+            }
+        }
+        return exec_name;
+    }
     // prepend either build tree directory or installation directory
     if (executing_in_build_tree()) {
         return join_paths(info.get_build_directory(target), exec_name);
