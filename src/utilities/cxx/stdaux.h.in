@@ -132,17 +132,23 @@ std::string get_data_directory();
  * This function uses the static instance of the class ExecutableTargetInfo
  * in order to obtain the required information to be able to determine the
  * absolute path of the executable file which was built and/or installed as
- * the specified build target.
+ * the specified build target. If @p target does not name a known build target,
+ * this function tries to obtain the absolute path of the executable file of
+ * the named command using the @c which command. Note that BASIS includes a
+ * Python implementation of @c which such that this also works on Windows
+ * given that Python is installed.
  *
  * @note The BASIS path module provides a function also named get_executable_path()
- *       which can be used to get the canonical path of the calling executable.
+ *       without arguments which can be used to get the canonical path of the
+ *       calling executable.
  *
  * @sa ExecutableTargetInfo
  *
- * @param [in] target Name/UID of build target.
+ * @param [in] target Name/UID of build target or command name.
  *
- * @return Absolute path of executable file or an empty string if the build
- *         target is not known.
+ * @return Absolute path of executable file or an empty string if the given
+ *         string is not a known build target and the command was not found
+ *         in the PATH.
  */
 std::string get_executable_path(const std::string& target);
 
