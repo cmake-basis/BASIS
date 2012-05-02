@@ -26,52 +26,6 @@ namespace basis
 {
 
 
-// ===========================================================================
-// class: XorHandler
-// ===========================================================================
-
-/**
- * @brief Handles lists of Arg's that are to be XOR'd on the command-line.
- *
- * This subclass of the TCLAP::XorHandler overloads the check() method such
- * that XOR'd arguments where none of the arguments is required are handled
- * correctly. The TCLA::XorHandler and TCLAP::CmdLine implementations imply
- * that all XOR'd arguments are required, i.e., that one of the mutual
- * exclusive arguments need to be specified. The sbia::basis::XorHandler and
- * sbia::basis::CmdLine implementations, on the other side, do not require
- * that any of the XOR'd arguments be given on the command-line if none of
- * the XOR'd arguments is required.
- */
-class XorHandler : public TCLAP::XorHandler
-{
-public:
-
-    /**
-     * @brief Constructor.
-     */
-    XorHandler() {}
-
-    /**
-     * @brief Checks whether the specified Arg is in one of the xor lists.
-     *
-     * If the argument does match one, this function returns the size of the xor
-     * list that the Arg matched if the Arg is required. If the Arg matches,
-     * then it also sets the rest of the Arg's in the list.
-     *
-     * @param a The Arg to be checked.
-     */
-    int check(const Arg* a)
-    {
-        int n = TCLAP::XorHandler::check(a);
-        return (!a->isRequired() && n > 0) ? 1 : n;
-    }
-
-}; // class XorHandler
-
-// ===========================================================================
-// class: CmdLine
-// ===========================================================================
-
 /**
  * @brief Manages command line definition and parsing of arguments.
  *
@@ -84,6 +38,48 @@ public:
  */
 class CmdLine : public TCLAP::CmdLine
 {
+    // -----------------------------------------------------------------------
+    // XorHandler
+protected:
+
+    /**
+     * @brief Handles lists of Arg's that are to be XOR'd on the command-line.
+     *
+     * This subclass of the TCLAP::XorHandler overloads the check() method such
+     * that XOR'd arguments where none of the arguments is required are handled
+     * correctly. The TCLA::XorHandler and TCLAP::CmdLine implementations imply
+     * that all XOR'd arguments are required, i.e., that one of the mutual
+     * exclusive arguments need to be specified. The sbia::basis::XorHandler and
+     * sbia::basis::CmdLine implementations, on the other side, do not require
+     * that any of the XOR'd arguments be given on the command-line if none of
+     * the XOR'd arguments is required.
+     */
+    class XorHandler : public TCLAP::XorHandler
+    {
+    public:
+
+        /**
+         * @brief Constructor.
+         */
+        XorHandler() {}
+
+        /**
+         * @brief Checks whether the specified Arg is in one of the xor lists.
+         *
+         * If the argument does match one, this function returns the size of the xor
+         * list that the Arg matched if the Arg is required. If the Arg matches,
+         * then it also sets the rest of the Arg's in the list.
+         *
+         * @param a The Arg to be checked.
+         */
+        int check(const Arg* a)
+        {
+            int n = TCLAP::XorHandler::check(a);
+            return a->isRequired() ? n : 0;
+        }
+
+    }; // class XorHandler
+
     // -----------------------------------------------------------------------
     // construction / destruction
 public:
