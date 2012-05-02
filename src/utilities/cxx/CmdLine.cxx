@@ -11,6 +11,7 @@
 
 #include <set>
 
+
 #include <sbia/tclap/Arg.h>
 #include <sbia/tclap/ArgException.h>
 #include <sbia/tclap/StdOutput.h>
@@ -18,8 +19,15 @@
 #include <sbia/tclap/VersionVisitor.h>
 #include <sbia/tclap/XorHandler.h>
 
+#include <sbia/basis/config.h> // LINUX, WINDOWS macros
 #include <sbia/basis/path.h>   // get_executable_name()
 #include <sbia/basis/except.h> // BASIS_THROW, runtime_error
+
+#if WINDOWS
+#  include <windows.h>    // GetConsoleScreenBufferInfo()
+#else
+#  include <sys/ioctl.h>  // ioctl() to size of terminal window
+#endif
 
 #include <sbia/basis/CmdLine.h>
 
@@ -93,6 +101,11 @@ public:
     // -----------------------------------------------------------------------
     // helpers
 protected:
+
+    /**
+     * @brief Update information about terminal size.
+     */
+    void updateTerminalInfo();
 
     /**
      * @brief Determine whether an argument has a label or not.
@@ -175,6 +188,7 @@ protected:
 
     CmdLine*    _cmd;     ///< The command-line with additional attributes.
     set<string> _stdargs; ///< Names of standard arguments.
+    int         _columns; ///< Maximum number of columns to use for output.
 
 }; // class StdOutput
 
@@ -185,7 +199,8 @@ protected:
 // ---------------------------------------------------------------------------
 StdOutput::StdOutput(CmdLine* cmd)
 :
-    _cmd(cmd)
+    _cmd(cmd),
+    _columns(75)
 {
     _stdargs.insert("ignore_rest");
     _stdargs.insert("verbose");
@@ -203,6 +218,7 @@ StdOutput::StdOutput(CmdLine* cmd)
 // ---------------------------------------------------------------------------
 void StdOutput::usage(TCLAP::CmdLineInterface&)
 {
+    updateTerminalInfo();
     cout << endl;
     printUsage(cout, false);
     //printArguments(cout, false);
@@ -212,6 +228,7 @@ void StdOutput::usage(TCLAP::CmdLineInterface&)
 // ---------------------------------------------------------------------------
 void StdOutput::help(TCLAP::CmdLineInterface&)
 {
+    updateTerminalInfo();
     cout << endl;
     printUsage(cout);
     printDescription(cout);
@@ -252,6 +269,31 @@ void StdOutput::failure(TCLAP::CmdLineInterface&, TCLAP::ArgException& e)
 // ---------------------------------------------------------------------------
 // helpers
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+inline void StdOutput::updateTerminalInfo()
+{
+    int columns = 0;
+    // get width of terminal using system call
+    #if WINDOWS
+        CONSOLE_SCREEN_BUFFER_INFO csbi;
+        if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+            columns = csbi.dwSize.X;
+        }
+    #else
+        struct winsize w;
+        if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
+            columns = w.ws_col;
+        }
+    #endif
+    // otherwise, use COLUMNS environment variable if set
+    if (columns == 0) {
+        const char* COLUMNS = getenv("COLUMNS");
+        if (COLUMNS) columns = atoi(COLUMNS);
+    }
+    // update member variable, but maintain minimum number of columns
+    if (columns > 40) _columns = columns;
+}
 
 // ---------------------------------------------------------------------------
 inline bool StdOutput::isUnlabeledArg(TCLAP::Arg* arg) const
@@ -295,17 +337,16 @@ inline string StdOutput::getArgumentID(TCLAP::Arg* arg, bool all) const
 
 // ---------------------------------------------------------------------------
 inline
-void StdOutput
-::printArgumentHelp(ostream& os, TCLAP::Arg* arg, bool indentFirstLine) const
+void StdOutput::printArgumentHelp(ostream& os, TCLAP::Arg* arg, bool indentFirstLine) const
 {
     string id   = getArgumentID(arg, true);
     string desc = arg->getDescription();
     if (desc.compare (0, 12, "(required)  ")    == 0) desc.erase(0, 12);
     if (desc.compare (0, 15, "(OR required)  ") == 0) desc.erase(0, 15);
-    if (indentFirstLine) spacePrint(os, id, 75, 8, 0);
-    else                 spacePrint(os, id, 75, 0, 8);
+    if (indentFirstLine) spacePrint(os, id, _columns, 8, 0);
+    else                 spacePrint(os, id, _columns, 0, 8);
     if (!desc.empty()) {
-        spacePrint(os, desc, 75, 15, 0);
+        spacePrint(os, desc, _columns, 15, 0);
     }
 }
 
@@ -394,9 +435,9 @@ void StdOutput::printUsage(ostream& os, bool heading) const
         os << "SYNOPSIS" << endl;
     }
     int offset = static_cast<int>(exec_name.length()) + 1;
-    if (offset > 75 / 2) offset = 8;
-    spacePrint(os, s, 75, 4, offset);
-    spacePrint(os, exec_name + " [-h|--help|--helpshort|--helpxml|--helpman|--version]", 75, 4, offset);
+    if (offset > _columns / 2) offset = 8;
+    spacePrint(os, s, _columns, 4, offset);
+    spacePrint(os, exec_name + " [-h|--help|--helpshort|--helpxml|--helpman|--version]", _columns, 4, offset);
 }
 
 // ---------------------------------------------------------------------------
@@ -405,7 +446,7 @@ void StdOutput::printDescription(ostream& os) const
     if (_cmd->getMessage() != "") {
         os << endl;
         os << "DESCRIPTION" << endl;
-        spacePrint(os, _cmd->getMessage(), 75, 4, 0);
+        spacePrint(os, _cmd->getMessage(), _columns, 4, 0);
     }
 }
 
@@ -523,7 +564,7 @@ void StdOutput::printExample(ostream& os) const
             while ((pos = example.find("EXECNAME", pos)) != string::npos) {
                 example.replace(pos, 8, exec_name);
             }
-            spacePrint(os, example, 75, 4, 4);
+            spacePrint(os, example, _columns, 4, 4);
         }
     }
 }
@@ -534,7 +575,7 @@ void StdOutput::printContact(ostream& os) const
     if (_cmd->getContact() != "") {
         os << endl;
         os << "CONTACT" << endl;
-        spacePrint(os, _cmd->getContact(), 75, 4, 0);
+        spacePrint(os, _cmd->getContact(), _columns, 4, 0);
     }
 }
 
