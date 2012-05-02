@@ -157,7 +157,7 @@ endfunction ()
 ## @brief Set a property of the tests.
 #
 # This function replaces CMake's
-# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property">
+# <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_properties">
 # set_tests_properties()</a> command.
 #
 # @note Due to a bug in CMake (http://www.cmake.org/Bug/view.php?id=12303),
@@ -165,12 +165,12 @@ endfunction ()
 #       only properties listed in @c BASIS_PROPERTIES_ON_TESTS can be set.
 #
 # @param [in] ARGN List of arguments for
-#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property">
+#                  <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_properties">
 #                  set_tests_properties()</a>.
 #
 # @returns Sets the given properties of the specified test.
 #
-# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_property
+# @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:set_tests_properties
 #
 # @ingroup CMakeAPI
 function (basis_set_tests_properties)
