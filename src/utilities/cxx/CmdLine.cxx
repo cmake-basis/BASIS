@@ -19,15 +19,9 @@
 #include <sbia/tclap/VersionVisitor.h>
 #include <sbia/tclap/XorHandler.h>
 
-#include <sbia/basis/config.h> // LINUX, WINDOWS macros
 #include <sbia/basis/path.h>   // get_executable_name()
 #include <sbia/basis/except.h> // BASIS_THROW, runtime_error
-
-#if WINDOWS
-#  include <windows.h>    // GetConsoleScreenBufferInfo()
-#else
-#  include <sys/ioctl.h>  // ioctl() to size of terminal window
-#endif
+#include <sbia/basis/term.h>   // get_terminal_columns()
 
 #include <sbia/basis/CmdLine.h>
 
@@ -273,24 +267,8 @@ void StdOutput::failure(TCLAP::CmdLineInterface&, TCLAP::ArgException& e)
 // ---------------------------------------------------------------------------
 inline void StdOutput::updateTerminalInfo()
 {
-    int columns = 0;
-    // get width of terminal using system call
-    #if WINDOWS
-        CONSOLE_SCREEN_BUFFER_INFO csbi;
-        if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-            columns = csbi.dwSize.X;
-        }
-    #else
-        struct winsize w;
-        if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
-            columns = w.ws_col;
-        }
-    #endif
-    // otherwise, use COLUMNS environment variable if set
-    if (columns == 0) {
-        const char* COLUMNS = getenv("COLUMNS");
-        if (COLUMNS) columns = atoi(COLUMNS);
-    }
+    // get maximum number of columns
+    int columns = get_terminal_columns();
     // update member variable, but maintain minimum number of columns
     if (columns > 40) _columns = columns;
 }
