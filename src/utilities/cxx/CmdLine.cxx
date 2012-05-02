@@ -861,6 +861,12 @@ void CmdLine::print_help() const
 }
 
 // -----------------------------------------------------------------------
+void CmdLine::print_version() const
+{
+    _output->version(*const_cast<CmdLine*>(this));
+}
+
+// -----------------------------------------------------------------------
 void CmdLine::xorAdd(vector<Arg*>& xors)
 {
     _xorHandler.add(xors);

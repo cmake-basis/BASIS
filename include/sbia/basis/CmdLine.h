@@ -187,7 +187,7 @@ public:
     void xorAdd(std::vector<Arg*>& xors);
 
     // -----------------------------------------------------------------------
-    // help
+    // help / version
 public:
 
     /**
@@ -199,6 +199,11 @@ public:
      * @brief Print help.
      */
     void print_help() const;
+
+    /**
+     * @brief Print version information.
+     */ 
+    void print_version() const;
 
     // -----------------------------------------------------------------------
     // parse command-line arguments
