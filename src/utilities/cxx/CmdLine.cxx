@@ -21,7 +21,7 @@
 
 #include <sbia/basis/path.h>   // get_executable_name()
 #include <sbia/basis/except.h> // BASIS_THROW, runtime_error
-#include <sbia/basis/term.h>   // get_terminal_columns()
+#include <sbia/basis/stdio.h>  // get_terminal_columns(), print_wrapped()
 
 #include <sbia/basis/CmdLine.h>
 
@@ -44,7 +44,7 @@ namespace basis
 /**
  * @brief Prints help, version information, and command-line errors.
  */
-class StdOutput : public TCLAP::StdOutput
+class StdOutput : public TCLAP::CmdLineOutput
 {
     // -----------------------------------------------------------------------
     // construction / destruction
@@ -321,10 +321,10 @@ void StdOutput::printArgumentHelp(ostream& os, TCLAP::Arg* arg, bool indentFirst
     string desc = arg->getDescription();
     if (desc.compare (0, 12, "(required)  ")    == 0) desc.erase(0, 12);
     if (desc.compare (0, 15, "(OR required)  ") == 0) desc.erase(0, 15);
-    if (indentFirstLine) spacePrint(os, id, _columns, 8, 0);
-    else                 spacePrint(os, id, _columns, 0, 8);
+    if (indentFirstLine) print_wrapped(os, id, _columns, 8, 0);
+    else                 print_wrapped(os, id, _columns, 0, 8);
     if (!desc.empty()) {
-        spacePrint(os, desc, _columns, 15, 0);
+        print_wrapped(os, desc, _columns, 15, 0);
     }
 }
 
@@ -414,8 +414,8 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     }
     int offset = static_cast<int>(exec_name.length()) + 1;
     if (offset > _columns / 2) offset = 8;
-    spacePrint(os, s, _columns, 4, offset);
-    spacePrint(os, exec_name + " [-h|--help|--helpshort|--helpxml|--helpman|--version]", _columns, 4, offset);
+    print_wrapped(os, s, _columns, 4, offset);
+    print_wrapped(os, exec_name + " [-h|--help|--helpshort|--helpxml|--helpman|--version]", _columns, 4, offset);
 }
 
 // ---------------------------------------------------------------------------
@@ -424,7 +424,7 @@ void StdOutput::printDescription(ostream& os) const
     if (_cmd->getMessage() != "") {
         os << endl;
         os << "DESCRIPTION" << endl;
-        spacePrint(os, _cmd->getMessage(), _columns, 4, 0);
+        print_wrapped(os, _cmd->getMessage(), _columns, 4, 0);
     }
 }
 
@@ -542,7 +542,7 @@ void StdOutput::printExample(ostream& os) const
             while ((pos = example.find("EXECNAME", pos)) != string::npos) {
                 example.replace(pos, 8, exec_name);
             }
-            spacePrint(os, example, _columns, 4, 4);
+            print_wrapped(os, example, _columns, 4, 4);
         }
     }
 }
@@ -553,7 +553,7 @@ void StdOutput::printContact(ostream& os) const
     if (_cmd->getContact() != "") {
         os << endl;
         os << "CONTACT" << endl;
-        spacePrint(os, _cmd->getContact(), _columns, 4, 0);
+        print_wrapped(os, _cmd->getContact(), _columns, 4, 0);
     }
 }
 

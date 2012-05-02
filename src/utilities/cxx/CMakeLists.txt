@@ -31,7 +31,7 @@ basis_add_library (
   ${UTILITIES} STATIC
     "path.cxx"       # utility path functions
     "subprocess.cxx" # subprocess execution
-    "term.cxx"       # terminal utilities
+    "stdio.cxx"      # standard I/O functions
     "CmdLine.cxx"    # command-line parsing
 )
 
