@@ -43,9 +43,9 @@ if (NOT HAVE_TR1_TUPLE)
 endif ()
 
 basis_get_target_name (TESTLIB  "${BASIS_TEST_LIBRARY}")
-basis_get_target_name (TESTMAIN "${BASIS_TEST_MAIN_LIBRARY}")
-
 basis_add_library (${TESTLIB}  STATIC "test.cxx")
-basis_add_library (${TESTMAIN} STATIC "test_main.cxx")
-
 basis_set_target_properties (${TESTLIB}  PROPERTIES OUTPUT_NAME "test")
+
+basis_get_target_name (TESTMAIN "${BASIS_TEST_MAIN_LIBRARY}")
+basis_add_library (${TESTMAIN} STATIC "test_main.cxx")
+basis_target_link_libraries (${TESTMAIN} ${TESTLIB})
