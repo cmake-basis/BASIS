@@ -344,6 +344,7 @@ void split_path(const string&path, string* root, string* dir, string* fname,
         // first test user supplied extension
         if (exts && exts->size() > 0) {
             for (set<string>::const_iterator i = exts->begin(); i != exts->end(); ++i) {
+                if (name.size() < i->size()) continue;
                 size_t start = name.size() - i->size();
                 if (start < pos && name.compare(start, i->size(), *i) == 0) {
                     pos = start;
