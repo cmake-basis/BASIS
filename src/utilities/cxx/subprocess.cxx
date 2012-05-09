@@ -1,5 +1,5 @@
 /**
- * @file subprocess.cxx
+ * @file  subprocess.cxx
  * @brief Definition of module used to execute subprocesses.
  *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
