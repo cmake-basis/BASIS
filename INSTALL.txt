@@ -62,7 +62,9 @@ BUILDING THE SOFTWARE FROM SOURCES
   5. Install the built files.
 
   On Unix-like systems with GNU Make as build tool, these build steps can be
-  summarized by the following sequence of commands executed in a shell:
+  summarized by the following sequence of commands executed in a shell,
+  where $package and $version are shell variables which represent the name
+  of this package and the obtained version of the software.
 
   $ tar xzf $package-$version-source.tar.gz
   $ mkdir $package-$version-build
