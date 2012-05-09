@@ -49,11 +49,42 @@ RUNTIME REQUIREMENTS
 BUILDING THE SOFTWARE FROM SOURCES
 ==================================
 
-  In the following, only the additional build dependencies and CMake settings
-  available to configure this software package are summarized. For a list of
-  general build dependencies and step-by-step instructions on how to use CMake
-  and GNU Make to build and install the software, please refer to the
-  corresponding section of the BASIS how-to guide [2].
+  Build Steps
+  -----------
+
+  The common steps to build a project based on CMake, i.e., this software,
+  are as follows:
+
+  1. Extract source files.
+  2. Create build directory and change to it.
+  3. Run CMake to configure the build tree.
+  4. Build the software using selected build tool.
+  5. Install the built files.
+
+  On Unix-like systems with GNU Make as build tool, these build steps can be
+  summarized by the following sequence of commands executed in a shell:
+
+  $ tar xzf $package-$version-source.tar.gz
+  $ mkdir $package-$version-build
+  $ cd $package-$version-build
+  $ ccmake ../$package-$version-source
+
+    - Press 'c' to configure the build system and 'e' to ignore warnings.
+    - Set INSTALL_PREFIX and other CMake variables and options.
+    - Continue pressing 'c' until the option 'g' is available.
+    - Then press 'g' to generate the configuration files for GNU Make.
+
+  $ make
+  $ make install
+
+  An exhaustive list of minimum build dependencies including the build tools
+  along detailed step-by-step build and installation instructions can be found
+  in the corresponding "Building the Software from Sources" section of the
+  BASIS how-to guide on software installation [2].
+
+  In the following, only the additional/specific build dependencies of this
+  software package and the package-specific CMake settings available to
+  configure the build of this software are summarized.
 
 
   Build Dependencies
