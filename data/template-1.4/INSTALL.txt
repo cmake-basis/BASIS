@@ -49,6 +49,18 @@ RUNTIME REQUIREMENTS
 BUILDING THE SOFTWARE FROM SOURCES
 ==================================
 
+  Build Dependencies
+  ------------------
+
+  - BASIS 1.3 or greater
+
+    Web Site: http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/
+    Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
+
+    This project is based on BASIS, a meta-project developed at SBIA to
+    standardize and simplify the software development.
+
+
   Build Steps
   -----------
 
@@ -84,21 +96,8 @@ BUILDING THE SOFTWARE FROM SOURCES
   in the corresponding "Building the Software from Sources" section of the
   BASIS how-to guide on software installation [2].
 
-  In the following, only the additional/specific build dependencies of this
-  software package and the package-specific CMake settings available to
+  In the following, only package-specific CMake settings available to
   configure the build of this software are documented.
-
-
-  Build Dependencies
-  ------------------
-
-  - BASIS 1.3 or greater
-
-    Web Site: http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/
-    Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
-
-    This project is based on BASIS, a meta-project developed at SBIA to
-    standardize and simplify the software development.
 
 
   CMake Options
