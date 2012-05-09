@@ -295,6 +295,12 @@ The common CMake variables which configure the build and installation are:
     <th>Descripion</th>
   </tr>
   <tr>
+    @tp @b BASIS_DIR @endtp
+    <td>
+      Directory where the BASISConfig.cmake file is located.
+    </td>
+  </tr>
+  <tr>
     @tp @b BUILD_CHANGELOG @endtp
     <td>
       Request build of ChangeLog as part of the ALL target. Note that the ChangeLog
