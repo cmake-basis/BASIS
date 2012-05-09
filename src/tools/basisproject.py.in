@@ -606,6 +606,7 @@ class AccumulatorForNumbersOfChangesAndErrors(object):
         else:
             if rt  > 0: self.changes   += 1
             if rt == 2: self.conflicts += 1
+        sys.stdout.flush()
 
 # ============================================================================
 # main
