@@ -59,7 +59,7 @@ INTRODUCTION
   (http://www.kitware.com/products/html/BuildingExternalProjectsWithCMake2.8.html).
   This super-build methodology, which gains more and more attraction in the CMake
   community, is further utilized by BASIS to not only ease the development and
-  maintenance of separately managed software projects, but also enable the fusion
+  maintenance of separately managed software projects, but also enables the fusion
   of these more or less independently developed software packages into so-called
   superprojects. In this context, the separately managed software packages are
   considered components of the superproject.
