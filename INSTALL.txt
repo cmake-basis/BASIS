@@ -86,7 +86,7 @@ BUILDING THE SOFTWARE FROM SOURCES
 
   In the following, only the additional/specific build dependencies of this
   software package and the package-specific CMake settings available to
-  configure the build of this software are summarized.
+  configure the build of this software are documented.
 
 
   Build Dependencies
