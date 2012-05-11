@@ -21,6 +21,19 @@ _SBIA_@NAMESPACE_UPPER@_STDAUX_INCLUDED=1
 
 
 # ============================================================================
+# constants
+# ============================================================================
+
+## @brief Absolute directory path of stdaux.sh module.
+readonly _STDAUX_DIR=@BASIS_BASH___DIR__@
+
+# ============================================================================
+# modules
+# ============================================================================
+
+source "${_STDAUX_DIR}/@_BASIS_LIBRARY_DIR@/core.sh" # match()
+
+# ============================================================================
 # version / contact
 # ============================================================================
 
@@ -120,8 +133,13 @@ function print_contact
 #         called to terminate the current shell.</td>
 #   </tr>
 #   <tr>
-#     @tp <b>--verbose, -v</b> @endtp
-#     <td>Print command-line to stdout before execution.</td>
+#     @tp <b>--verbose, -v</b> [<int>] @endtp
+#     <td>Print command-line to stdout before execution. Optionally, as it is
+#         sometimes more convenient to pass in the value of another variable
+#         which controls the verbosity of the parent process itself, a verbosity
+#         value can be specified following the option flag. If this verbosity
+#         less or equal to zero, the command-line of the subprocess is not
+#         printed to stdout, otherwise it is.</td>
 #   </tr>
 #   <tr>
 #     @tp @b --simulate @endtp
@@ -143,7 +161,13 @@ function execute_process
                 allow_fail='true'
                 ;;
             --verbose|-v)
-                ((verbose++))
+                match "$2" '^[0-9]+$'
+                if [ $? -eq 0 ]; then
+                    verbose=$2
+                    shift
+                else
+                    ((verbose++))
+                fi
                 ;;
             --simulate)
                 simulate='true'

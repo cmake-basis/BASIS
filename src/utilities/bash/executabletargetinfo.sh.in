@@ -21,7 +21,7 @@ _SBIA_BASIS_EXECUTABLETARGETINFO_INCLUDED=1
 # constants
 # ============================================================================
 
-## @brief Absolute directory path of ExecutableTargetInfo.sh module.
+## @brief Absolute directory path of executabletargetinfo.sh module.
 readonly _EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
 
 # ============================================================================
