@@ -161,7 +161,7 @@ function execute_process
                 allow_fail='true'
                 ;;
             --verbose|-v)
-                match "$2" '^[0-9]+$'
+                match "$2" '^-?[0-9]+$'
                 if [ $? -eq 0 ]; then
                     verbose=$2
                     shift
