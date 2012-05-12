@@ -203,6 +203,7 @@ function execute_process
     local status=$?
     # if command failed, exit
     [ ${status} -eq 0 -o "X${allow_fail}" == "Xtrue" ] || {
+        echo
         echo "Command ${exec_path} ${argsstr} failed" 1>&2
         exit 1
     }
