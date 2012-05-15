@@ -39,13 +39,10 @@ if __name__ == '__main__':
     if '@TEST_BASH_UTILITIES@'.upper() in true_values:
         use.append('BASH')
     create_project('UtilitiesTest', description='Test of BASIS utilities.', use=use)
-    if '@TEST_CXX_UTILITIES@'.upper() in true_values:
-        use.append('CXX') # dummy package name
     # copy files to project
     add_file('helloworld.cxx', prefix='src') # example executable
-    if 'CXX' in use:
-        add_file('test_ExecutableTargetInfo.cxx.in', prefix='test')
-        add_file('test_stdaux.cxx.in', prefix='test')
+    add_file('test_ExecutableTargetInfo.cxx.in', prefix='test')
+    add_file('test_stdaux.cxx.in', prefix='test')
     if 'PythonInterp' in use:
         add_file('test_executabletargetinfo.py.in', prefix='test')
         add_file('test_stdaux.py.in', prefix='test')
@@ -56,10 +53,9 @@ if __name__ == '__main__':
         add_file('test_executabletargetinfo.sh.in', prefix='test')
         add_file('test_stdaux.sh.in', prefix='test')
     # edit CMakeLists.txt files
-    add_cmake_code('src/CMakeLists.txt', 'basis_add_executable(helloworld.cxx)')
-    if 'CXX' in use:
-        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_ExecutableTargetInfo.cxx UNITTEST)')
-        add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.cxx UNITTEST)')
+    add_cmake_code('src/CMakeLists.txt',  'basis_add_executable(helloworld.cxx)')
+    add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_ExecutableTargetInfo.cxx UNITTEST)')
+    add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.cxx UNITTEST)')
     if 'PythonInterp' in use:
         add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_executabletargetinfo_py test_executabletargetinfo.py)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_executabletargetinfo_py COMMAND test_executabletargetinfo_py)')

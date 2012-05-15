@@ -26,17 +26,11 @@
 # options
 # ============================================================================
 
-option (USE_CXX "Enable use of C++ utilities" ON)
-
-set (BUILD_UTILITIES_FOR_CXX    ${USE_CXX})            # USE_CXX option
 set (BUILD_UTILITIES_FOR_PYTHON ${PythonInterp_FOUND}) # USE_PythonInterp option
 set (BUILD_UTILITIES_FOR_PERL   ${Perl_FOUND})         # USE_Perl option
 set (BUILD_UTILITIES_FOR_BASH   ${BASH_FOUND})         # USE_BASH option
 
-set (BASIS_UTILITIES_ENABLED) # set in BASISConfig.cmake for other projects
-if (BUILD_UTILITIES_FOR_CXX)
-  list (APPEND BASIS_UTILITIES_ENABLED CXX)
-endif ()
+set (BASIS_UTILITIES_ENABLED CXX) # set in BASISConfig.cmake for other projects
 if (BUILD_UTILITIES_FOR_PYTHON)
   list (APPEND BASIS_UTILITIES_ENABLED PYTHON)
 endif ()

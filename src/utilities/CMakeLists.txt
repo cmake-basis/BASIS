@@ -10,9 +10,7 @@
 
 # ----------------------------------------------------------------------------
 # C++ utilities
-if (BUILD_UTILITIES_FOR_CXX)
-  add_subdirectory (cxx)
-endif ()
+add_subdirectory (cxx)
 
 # ----------------------------------------------------------------------------
 # Java utilities

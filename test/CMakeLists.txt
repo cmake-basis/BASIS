@@ -37,8 +37,6 @@ set (TESTING_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
 ## @brief Linker flags to use for build of test projects.
 set (TESTING_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}")
 
-## @brief Whether C++ utilities are build.
-set (TEST_CXX_UTILITIES "${BUILD_UTILITIES_FOR_CXX}")
 ## @brief Whether Python utilities are build.
 set (TEST_PYTHON_UTILITIES "${BUILD_UTILITIES_FOR_PYTHON}")
 ## @brief Whether Perl utilities are build.
