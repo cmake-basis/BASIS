@@ -34,23 +34,16 @@
 # @endcode
 #
 # @ingroup BasisPythonUtilities
-set (BASIS_PYTHON_UTILITIES "
-# ----------------------------------------------------------------------------
-def _basis_init_sys_path():
-    import os
-    import sys
-    module_dir  = os.path.dirname(os.path.realpath(__file__))
-    sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@_BASIS_PYTHON_LIBRARY_DIR\@'))
-    if sitelib_dir not in sys.path:
-        sys.path.insert(0, sitelib_dir)
-    sitelib_dir = os.path.normpath(os.path.join(module_dir, '\@PYTHON_LIBRARY_DIR\@'))
-    if sitelib_dir not in sys.path:
-        sys.path.insert(0, sitelib_dir)
-
-_basis_init_sys_path()
-from \@PROJECT_NAMESPACE_PYTHON\@ import basis
-"
+set (BASIS_PYTHON_UTILITIES
+"import os, sys
+sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\@_BASIS_PYTHON_LIBRARY_DIR\@')))
+sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\@PYTHON_LIBRARY_DIR\@')))
+from \@PROJECT_NAMESPACE_PYTHON\@ import basis"
 )
+
+# Reduce BASIS_PYTHON_UTILITIES to single line such that resulting script
+# files do not increase in line numbers. Otherwise, error messages are misleading.
+string (REPLACE "\n" "; " BASIS_PYTHON_UTILITIES "${BASIS_PYTHON_UTILITIES}")
 
 # ============================================================================
 # Perl utilities
@@ -67,18 +60,20 @@ from \@PROJECT_NAMESPACE_PYTHON\@ import basis
 # @endcode
 #
 # @ingroup BasisPerlUtilities
-set (BASIS_PERL_UTILITIES "
-use Cwd qw(realpath);
+set (BASIS_PERL_UTILITIES
+"use Cwd qw(realpath);
 use File::Basename;
 use lib realpath(dirname(realpath(__FILE__)) . '/\@_BASIS_PERL_LIBRARY_DIR\@');
 use lib realpath(dirname(realpath(__FILE__)) . '/\@PERL_LIBRARY_DIR\@');
 use lib dirname(realpath(__FILE__));
-
 package Basis;
 use \@PROJECT_NAMESPACE_PERL\@::Basis qw(:everything);
-package main;
-"
+package main;"
 )
+
+# Reduce BASIS_PERL_UTILITIES to single line such that resulting script
+# files do not increase in line numbers. Otherwise, error messages are misleading.
+string (REPLACE "\n" " " BASIS_PERL_UTILITIES "${BASIS_PERL_UTILITIES}")
 
 # ============================================================================
 # BASH utilities
@@ -124,52 +119,28 @@ set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd
 # @endcode
 #
 # @ingroup BasisBashUtilities
-set (BASIS_BASH_UTILITIES "
-# ============================================================================
-# BASIS_BASH_UTILITIES
-# ============================================================================
-# {
-
-# ----------------------------------------------------------------------------
-# constants used by the shflags.sh module
-HELP_COMMAND='\@NAME\@ (\@PROJECT_NAME\@)'
+set (BASIS_BASH_UTILITIES
+"HELP_COMMAND='\@NAME\@ (\@PROJECT_NAME\@)'
 HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
 HELP_VERSION='\@PROJECT_VERSION_AND_REVISION\@'
-HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.
-See https://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
-
-# ----------------------------------------------------------------------------
-# simplified realpath() function, use get_real_path() once the path.sh module
-# of the BASIS utilities are included as that function is more general
-function realpath
-{
-    local path=\"$1\"
-    local i=0
-    local cur=\"\${path}\"
-    while [ -h \"\${cur}\" ] && [ \$i -lt 100 ]; do
-        dir=`dirname -- \"\${cur}\"`
-        cur=`readlink -- \"\${cur}\"`
-        cur=`cd \"\${dir}\" && cd $(dirname -- \"\${cur}\") && pwd`/`basename -- \"\${cur}\"`
-        (( i++ ))
-    done
-    # If symbolic link could entirely be resolved in less than 100 iterations,
-    # return the obtained resolved file path. Otherwise, return the original
-    # link which could not be resolved due to some probable cycle.
-    if [ \$i -lt 100 ]; then path=\"\${cur}\"; fi
-    # return path
-    echo -n \"\${path}\"
-}
-
-# ----------------------------------------------------------------------------
-# include other BASIS Utilities modules
-readonly _\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_FILE=\"${BASIS_BASH___FILE__}\"
-readonly _\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_DIR=\"$(dirname -- \"$(realpath \"\${_\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_FILE}\")\")\"
-source \"\${_\@PROJECT_NAMESPACE_BASH\@_\@NAMESPACE_UPPER\@_DIR}/\@LIBRARY_DIR\@/basis.sh\" || exit 1
-
-# }
-# ============================================================================
-"
+HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.\\nSee http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
+path=\"${BASIS_BASH___FILE__}\"
+i=0
+cur=\"\${path}\"
+while [ -h \"\${cur}\" ] && [ \$i -lt 100 ]
+do  dir=`dirname -- \"\${cur}\"`
+    cur=`readlink -- \"\${cur}\"`
+    cur=`cd \"\${dir}\" && cd $(dirname -- \"\${cur}\") && pwd`/`basename -- \"\${cur}\"`
+    (( i++ ))
+done
+if [ \$i -lt 100 ]; then path=\"\${cur}\"; fi
+source \"$(dirname -- \"\${path}\")/\@LIBRARY_DIR\@/basis.sh\" || exit 1
+unset -v i path dir cur"
 )
+
+# Reduce BASIS_BASH_UTILITIES to single line such that resulting script
+# files do not increase in line numbers. Otherwise, error messages are misleading.
+string (REPLACE "\n" "; " BASIS_BASH_UTILITIES "${BASIS_BASH_UTILITIES}")
 
 # ============================================================================
 # auxiliary sources
