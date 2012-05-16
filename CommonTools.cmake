@@ -239,6 +239,7 @@ macro (basis_find_package PACKAGE)
     # provide option which allows users to disable use of not required packages
     if (${PKG}_FOUND AND NOT ARGN_REQUIRED)
       option (USE_${PKG} "Enable/disable use of package ${PKG}." ON)
+      mark_as_advanced (USE_${PKG})
       if (NOT USE_${PKG})
         set (${PKG}_FOUND       FALSE)
         set (${PKG_UPPER}_FOUND FALSE)
