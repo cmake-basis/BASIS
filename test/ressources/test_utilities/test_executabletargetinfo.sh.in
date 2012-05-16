@@ -10,8 +10,8 @@
 
 @BASIS_BASH_UTILITIES@
 
-
-source "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh"
+readonly _TEST_EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
+source "${_TEST_EXECUTABLETARGETINFO_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh"
 
 
 # ============================================================================
