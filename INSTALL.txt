@@ -68,14 +68,6 @@ BUILDING THE SOFTWARE FROM SOURCES
     If BASIS has been built without the basistest-driver, these packages have
     to be build with BUILD_TESTING option set to OFF.
 
-    If you install BASIS for use with different projects which depend on it
-    and if you want to be flexible regarding the ITK version used by each of
-    these projects, it is required to link BASIS to a static build of the ITK,
-    i.e., a build where BUILD_SHARED_LIBRARIES was set to OFF during the
-    configuration of the ITK build tree. Otherwise, all projects which make use
-    of BASIS have to link against the same version of ITK, which is no problem
-    for systems with only one version of ITK installed, however.
-
 
   Build Steps
   -----------
