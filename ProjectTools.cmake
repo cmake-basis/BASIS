@@ -1036,9 +1036,7 @@ macro (basis_find_packages)
     foreach (P IN LISTS PROJECT_TEST_DEPENDS)
       basis_find_package ("${P}") # do not use REQUIRED here to be able to show
       basis_use_package ("${P}")  # error message below
-      if (P MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
-        set (P "${CMAKE_MATCH_1}")
-      endif ()
+      basis_tokenize_dependency ("${P}" P VER CMPS)
       string (TOUPPER "${P}" U)
       if (NOT ${P}_FOUND AND NOT ${U}_FOUND)
         message (FATAL_ERROR "Could not find package ${P}! It is required by "
@@ -1047,6 +1045,9 @@ macro (basis_find_packages)
                              "disable testing by setting BUILD_TESTING to OFF.")
         
       endif ()
+      unset (U)
+      unset (VER)
+      unset (CMPS)
     endforeach ()
   endif ()
 

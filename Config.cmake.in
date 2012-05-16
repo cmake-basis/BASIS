@@ -143,3 +143,9 @@ basis_remove_duplicates_config (INCLUDE_DIR)
 basis_remove_duplicates_config (INCLUDE_DIRS)
 basis_remove_duplicates_config (LIBRARY_DIR)
 basis_remove_duplicates_config (LIBRARY_DIRS)
+
+# ============================================================================
+# dependencies
+# ============================================================================
+
+@DEPENDS_CONFIG@

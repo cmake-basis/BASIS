@@ -23,6 +23,28 @@ set (INCLUDE_DIRS_CONFIG)
 ## @brief Directories of libraries this package depends on.
 set (LIBRARY_DIRS_CONFIG)
 
+## @brief Code to set cached &lt;Pkg&gt;_DIR variables in package configuration.
+set (DEPENDS_CONFIG)
+
+set (PKGS)
+foreach (DEP IN LISTS PROJECT_DEPENDS PROJECT_OPTIONAL_DEPENDS)
+  basis_tokenize_dependency ("${DEP}" PKG VER CMPS)
+  if (NOT DEFINED ${PKG}_DIR)
+    string (TOUPPER "${PKG}" PKG)
+  endif ()
+  if (DEFINED ${PKG}_DIR)
+    list (APPEND PKGS ${PKG})
+  endif ()
+endforeach ()
+
+if (PKGS)
+  list (REMOVE_DUPLICATES PKGS)
+endif ()
+
+foreach (PKG IN LISTS PKGS)
+  set (DEPENDS_CONFIG "${DEPENDS_CONFIG}# ${PKG}\nset (\n  ${PKG}_DIR \"${${PKG}_DIR}\"\n  CACHE PATH \"Package ${PKG} configuration directory or installation prefix.\"\n)\n")
+endforeach ()
+
 # ============================================================================
 # build tree configuration settings
 # ============================================================================

@@ -34,6 +34,50 @@ macro (find_package)
 endmacro ()
 
 # ----------------------------------------------------------------------------
+## @brief Tokenize dependency specification.
+#
+# This function parses a dependency specification such as
+# "ITK-4.1{TestKernel,IO}" into the package name, i.e., ITK, the requested
+# (minimum) package version, i.e., 4.1, and a list of package components, i.e.,
+# TestKernel and IO. A valid dependency specification must specify the package
+# name of the dependency (case-sensitive). The version and components
+# specification are optional. Note that the components specification may
+# be separated by an arbitrary number of whitespace characters including
+# newlines. The same applies to the specification of the components themselves.
+# This allows one to format the dependency specification as follows, for example:
+# @code
+# ITK {
+#   TestKernel,
+#   IO
+# }
+# @endcode
+#
+# @param [in]  DEP Dependency specification, i.e., <Pkg>[-<version>][{<Component1>[,...]}].
+# @param [out] PKG Package name.
+# @param [out] VER Package version.
+# @param [out] CMP List of package components.
+function (basis_tokenize_dependency DEP PKG VER CMP)
+  set (CMPS)
+  if (DEP MATCHES "^([^ ]+)[ \\n\\t]*{([^}]*)}$")
+    set (DEP "${CMAKE_MATCH_1}")
+    string (REPLACE "," ";" COMPONENTS "${CMAKE_MATCH_2}")
+    foreach (C IN LISTS COMPONENTS)
+      string (STRIP "${C}" C)
+      list (APPEND CMPS ${C})
+    endforeach ()
+  endif ()
+  if (DEP MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
+    set (${PKG} "${CMAKE_MATCH_1}" PARENT_SCOPE)
+    set (${VER} "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}" PARENT_SCOPE)
+    set (${CMP} "${CMPS}" PARENT_SCOPE)
+  else ()
+    set (${PKG} "${DEP}" PARENT_SCOPE)
+    set (${VER} ""       PARENT_SCOPE)
+    set (${CMP} ""       PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Find external software package or other project module.
 #
 # This function replaces CMake's
@@ -71,8 +115,6 @@ endmacro ()
 # @ingroup CMakeAPI
 macro (basis_find_package PACKAGE)
   # parse arguments
-  set (PKG "${PACKAGE}")
-  set (VER)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
     "EXACT;QUIET;REQUIRED"
@@ -81,28 +123,15 @@ macro (basis_find_package PACKAGE)
     ${ARGN}
   )
   # --------------------------------------------------------------------------
-  # extract components from PACKAGE
-  if (PKG MATCHES "^([^ ]+)[ \\n\\t]*{(.*)}$")
-    set (PKG "${CMAKE_MATCH_1}")
-    string (REPLACE "," ";" CMPS "${CMAKE_MATCH_2}")
-    foreach (CMP IN LISTS CMPS)
-      string (STRIP "${CMP}" CMP)
-      list (APPEND ARGN_COMPONENTS ${CMP})
-    endforeach ()
-    unset (CMP)
-    unset (CMPS)
-  endif ()
-  # split PACKAGE into package name and version number
-  if (ARGN_UNPARSED_ARGUMENTS MATCHES "^[0-9]+(\\.[0-9]+)*$")
+  # tokenize dependency specification
+  basis_tokenize_dependency ("${PACKAGE}" PKG VER CMPS)
+  list (APPEND ARGN_COMPONENTS ${CMPS})
+  unset (CMPS)
+  if (ARGN_UNPARSED_ARGUMENTS MATCHES "^[0-9]+(\\.[0-9]+)*$" AND VER)
+    message (FATAL_ERROR "Cannot use both version specification as part of "
+                         "package name and explicit version argument.")
+  else ()
     set (VER "${CMAKE_MATCH_0}")
-  endif ()
-  if (PKG MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
-    if (VER)
-      message (FATAL_ERROR "Cannot use both version specification as part of "
-                           "package name and explicit version argument.")
-    endif ()
-    set (PKG "${CMAKE_MATCH_1}")
-    set (VER "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}")
   endif ()
   # --------------------------------------------------------------------------
   # preserve <PKG>_DIR variable which might get reset if different versions
@@ -263,15 +292,8 @@ endmacro ()
 #
 # @ingroup CMakeAPI
 macro (basis_use_package PACKAGE)
-  set (PKG "${PACKAGE}")
-  # extract components from PACKAGE
-  if (PKG MATCHES "^([^ ]+){.*}$")
-    set (PKG "${CMAKE_MATCH_1}")
-  endif ()
-  # split PACKAGE into package name and version number
-  if (PKG MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
-    set (PKG "${CMAKE_MATCH_1}")
-  endif ()
+  # tokenize package specification
+  basis_tokenize_dependency ("${PACKAGE}" PKG VER CMPS)
   # use package
   foreach (A IN ITEMS "WORKAROUND FOR NOT BEING ABLE TO USE RETURN")
     if (BASIS_DEBUG)
