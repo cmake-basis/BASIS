@@ -67,7 +67,7 @@ set (
 )
 
 ## @brief Timeout for building MATLAB Compiler targets.
-set (BASIS_MCC_TIMEOUT "600" CACHE STRING "Timeout for MATLAB Compiler execution")
+set (BASIS_MCC_TIMEOUT "1800" CACHE STRING "Timeout for MATLAB Compiler execution")
 ## @brief Maximum number of retries on MATLAB Compiler license checkout.
 set (BASIS_MCC_RETRY_ATTEMPTS "4" CACHE STRING "Maximum number of retries on MATLAB Compiler license checkout error.")
 ## @brief Delay between retries to build MATLAB Compiler compiled targets on license checkout errors.
