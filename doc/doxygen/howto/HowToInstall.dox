@@ -301,20 +301,6 @@ The common CMake variables which configure the build and installation are:
     </td>
   </tr>
   <tr>
-    @tp @b BUILD_CHANGELOG @endtp
-    <td>
-      Request build of ChangeLog as part of the ALL target. Note that the ChangeLog
-      is generated either from the Subversion history if the source tree is a SVN
-      working copy, or from the Git history if it is a Git repository. Otherwise,
-      the ChangeLog cannot be generated and this option is disabled again by BASIS.
-      In case of Subversion, be aware that the generation of the ChangeLog takes
-      several minutes and may require the input of user credentials for access to the
-      Subversion repository. It is recommended to leave this option disabled and to
-      build the "changelog" target separate from the rest of the software package
-      instead (see step 4 below).
-    </td>
-  </tr>
-  <tr>
     @tp @b BUILD_DOCUMENTATION @endtp
     <td>
       Whether build and installation instructions for the documentation should
@@ -453,6 +439,20 @@ The advanced CMake settings are:
     @tp @b BASIS_VERBOSE @endtp
     <td>
       Enable verbose messages during build configuration.
+    </td>
+  </tr>
+  <tr>
+    @tp @b BUILD_CHANGELOG @endtp
+    <td>
+      Request build of ChangeLog as part of the ALL target. Note that the ChangeLog
+      is generated either from the Subversion history if the source tree is a SVN
+      working copy, or from the Git history if it is a Git repository. Otherwise,
+      the ChangeLog cannot be generated and this option is disabled again by BASIS.
+      In case of Subversion, be aware that the generation of the ChangeLog takes
+      several minutes and may require the input of user credentials for access to the
+      Subversion repository. It is recommended to leave this option disabled and to
+      build the "changelog" target separate from the rest of the software package
+      instead (see step 4 below).
     </td>
   </tr>
   <tr>
