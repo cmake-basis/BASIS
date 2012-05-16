@@ -52,7 +52,7 @@ endmacro ()
 # }
 # @endcode
 #
-# @param [in]  DEP Dependency specification, i.e., <Pkg>[-<version>][{<Component1>[,...]}].
+# @param [in]  DEP Dependency specification, i.e., "<Pkg>[-<version>][{<Component1>[,...]}]".
 # @param [out] PKG Package name.
 # @param [out] VER Package version.
 # @param [out] CMP List of package components.
