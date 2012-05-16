@@ -731,6 +731,7 @@ function (basis_add_changelog)
   basis_make_target_uid (TARGET_UID "changelog")
 
   option (BUILD_CHANGELOG "Request build and/or installation of the ChangeLog." OFF)
+  mark_as_advanced (BUILD_CHANGELOG)
   set (CHANGELOG_FILE "${PROJECT_BINARY_DIR}/ChangeLog")
 
   if (BASIS_VERBOSE)
