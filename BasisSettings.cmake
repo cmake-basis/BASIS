@@ -451,6 +451,7 @@ if (UNIX)
 else ()
   set (INSTALL_LINKS OFF)
 endif ()
+mark_as_advanced (INSTALL_LINKS)
 
 # ============================================================================
 # build configuration
