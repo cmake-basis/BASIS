@@ -345,12 +345,6 @@ The common CMake variables which configure the build and installation are:
     </td>
   </tr>
   <tr>
-    @tp @b INSTALL_LINKS @endtp
-    <td>
-      Whether (symbolic) links should be created (see step 5).
-    </td>
-  </tr>
-  <tr>
     @tp @b INSTALL_PREFIX @endtp
     <td>
       Prefix used for package installation (see step 5).
@@ -465,6 +459,12 @@ The advanced CMake settings are:
     @tp @b INSTALL_APIDOC_DIR @endtp
     <td>
       Installation directory of the API documentation relative to the INSTALL_PREFIX.
+    </td>
+  </tr>
+  <tr>
+    @tp @b INSTALL_LINKS @endtp
+    <td>
+      Whether (symbolic) links should be created (see step 5).
     </td>
   </tr>
 </table>
