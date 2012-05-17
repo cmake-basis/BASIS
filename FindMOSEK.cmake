@@ -110,6 +110,10 @@
 ##############################################################################
 
 # ----------------------------------------------------------------------------
+# remember CMAKE_FIND_LIBRARY_SUFFIXES to be able to restore it
+set (_MOSEK_CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+
+# ----------------------------------------------------------------------------
 # versions - library suffixes
 
 # known MOSEK versions, all entries have to be specified in descending order!
@@ -260,7 +264,7 @@ if (WIN32)
 else ()
   set (MOSEK_LIBRARY_NAMES "${MOSEK_LIBRARY_NAME}")
   if (_MOSEK_FIND_VERSIONS)
-    set (CMAKE_FIND_LIBRARY)
+    set (CMAKE_FIND_LIBRARY_SUFFIXES)
     foreach (_MOSEK_VERSION IN LISTS _MOSEK_FIND_VERSIONS)
       if (APPLE)
         list (APPEND CMAKE_FIND_LIBRARY_SUFFIXES .${_MOSEK_VERSION}.dylib)
@@ -501,3 +505,6 @@ find_package_handle_standard_args (
 # VARIABLES
     ${MOSEK_REQUIRED_VARS}
 )
+
+set (CMAKE_FIND_LIBRARY_SUFFIXES "${_MOSEK_CMAKE_FIND_LIBRARY_SUFFIXES}")
+unset (_MOSEK_CMAKE_FIND_LIBRARY_SUFFIXES)
