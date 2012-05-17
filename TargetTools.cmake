@@ -1050,7 +1050,7 @@ function (basis_add_executable_target TARGET_NAME)
 
   get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
   if (NOT SOURCES OR EXISTS "${S}" OR EXISTS "${S}.in")
-    list (APPEND SOURCES "${TARGET_NAME}")
+    list (INSERT SOURCES 0 "${TARGET_NAME}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
 
@@ -1328,7 +1328,7 @@ function (basis_add_library_target TARGET_NAME)
 
   get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
   if (NOT SOURCES OR EXISTS "${S}")
-    list (APPEND SOURCES "${TARGET_NAME}")
+    list (INSERT SOURCES 0 "${TARGET_NAME}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   endif ()
 
