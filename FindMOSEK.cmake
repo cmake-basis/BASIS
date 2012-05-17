@@ -270,9 +270,9 @@ else ()
     endforeach ()
     if (NOT MOSEK_FIND_VERSION)
       if (APPLE)
-        set (CMAKE_FIND_LIBRARY_SUFFIXES .dylib)
+        list (APPEND CMAKE_FIND_LIBRARY_SUFFIXES .dylib)
       else ()
-        set (CMAKE_FIND_LIBRARY_SUFFIXES .so)
+        list (APPEND CMAKE_FIND_LIBRARY_SUFFIXES .so)
       endif ()
     endif ()
   endif ()
@@ -299,44 +299,73 @@ endif ()
 unset (_MOSEK_FIND_VERSIONS)
 
 #-------------------------------------------------------------
-# find paths/files
-if (MOSEK_DIR)
+# find include files and library
+foreach (_MOSEK_I IN ITEMS 1 2) # try twice in case MOSEK_DIR
+                                # was not set, but known in
+                                # second iteration
 
-  find_path (
-    MOSEK_INCLUDE_DIR
-      NAMES         mosek.h
-      HINTS         "${MOSEK_DIR}"
-      PATH_SUFFIXES "${MOSEK_TOOLS_SUFFIX}/h"
-      DOC           "Include directory for MOSEK libraries."
-      NO_DEFAULT_PATH
-  )
+  # find files
+  if (MOSEK_DIR)
 
-  find_library (
-    MOSEK_LIBRARY
-      NAMES         ${MOSEK_LIBRARY_NAMES}
-      HINTS         "${MOSEK_DIR}"
-      PATH_SUFFIXES "${MOSEK_TOOLS_SUFFIX}/bin"
-      DOC           "MOSEK link library."
-      NO_DEFAULT_PATH
-  )
+    find_path (
+      MOSEK_INCLUDE_DIR
+        NAMES         mosek.h
+        HINTS         "${MOSEK_DIR}"
+        PATH_SUFFIXES "${MOSEK_TOOLS_SUFFIX}/h"
+        DOC           "Include directory for MOSEK libraries."
+        NO_DEFAULT_PATH
+    )
 
-else ()
+    find_library (
+      MOSEK_LIBRARY
+        NAMES         ${MOSEK_LIBRARY_NAMES}
+        HINTS         "${MOSEK_DIR}"
+        PATH_SUFFIXES "${MOSEK_TOOLS_SUFFIX}/bin"
+        DOC           "MOSEK link library."
+        NO_DEFAULT_PATH
+    )
 
-  find_path (
-    MOSEK_INCLUDE_DIR
-      NAMES mosek.h
-      HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-      DOC   "Include directory for MOSEK libraries."
-  )
+  else ()
 
-  find_library (
-    MOSEK_LIBRARY
-      NAMES ${MOSEK_LIBRARY_NAMES}
-      HINTS ENV LD_LIBRARY_PATH
-      DOC   "MOSEK link library."
-  )
+    find_path (
+      MOSEK_INCLUDE_DIR
+        NAMES mosek.h
+        HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+        DOC   "Include directory for MOSEK libraries."
+    )
 
-endif ()
+    find_library (
+      MOSEK_LIBRARY
+        NAMES ${MOSEK_LIBRARY_NAMES}
+        HINTS ENV LD_LIBRARY_PATH
+        DOC   "MOSEK link library."
+    )
+
+  endif ()
+
+  # derive MOSEK_DIR
+  if (NOT MOSEK_DIR)
+    if (COMMAND basis_sanitize_for_regex)
+      basis_sanitize_for_regex (_MOSEK_TOOLS_SUFFIX_REGEX "${MOSEK_TOOLS_SUFFIX}")
+    else ()
+      set (_MOSEK_TOOLS_SUFFIX_REGEX "${MOSEK_TOOLS_SUFFIX}")
+    endif ()
+    if (MOSEK_INCLUDE_DIR)
+      string (REGEX REPLACE "${_MOSEK_TOOLS_SUFFIX_REGEX}/.*$" "" _MOSEK_DIR "${MOSEK_INCLUDE_DIR}")
+      set (MOSEK_DIR "${_MOSEK_DIR}" CACHE PATH "Installation prefix for MOSEK." FORCE)
+    elseif (MOSEK_LIBRARY)
+      string (REGEX REPLACE "${_MOSEK_TOOLS_SUFFIX_REGEX}/.*$" "" _MOSEK_DIR "${MOSEK_LIBRARY}")
+      set (MOSEK_DIR "${_MOSEK_DIR}" CACHE PATH "Installation prefix for MOSEK." FORCE)
+    endif ()
+    unset (_MOSEK_TOOLS_SUFFIX_REGEX)
+    unset (_MOSEK_DIR)
+  endif ()
+
+  # skip second iteration if both found already
+  if (MOSEL_INCLUDE_DIR AND MOSEK_LIBRARY)
+    break ()
+  endif ()
+endforeach ()
 
 mark_as_advanced (MOSEK_INCLUDE_DIR)
 mark_as_advanced (MOSEK_LIBRARY)
@@ -450,6 +479,7 @@ endif ()
 include (FindPackageHandleStandardArgs)
 
 set (MOSEK_REQUIRED_VARS
+  MOSEK_DIR
   MOSEK_INCLUDE_DIR
   MOSEK_LIBRARY
 )
@@ -471,11 +501,3 @@ find_package_handle_standard_args (
 # VARIABLES
     ${MOSEK_REQUIRED_VARS}
 )
-
-# ----------------------------------------------------------------------------
-# set MOSEK_DIR
-if (NOT MOSEK_DIR AND MOSEK_FOUND)
-  string (REGEX REPLACE "${MOSEK_TOOLS_SUFFIX}/h/?" "" MOSEK_PREFIX "${MOSEK_INCLUDE_DIR}")
-  set (MOSEK_DIR "${MOSEK_PREFIX}" CACHE PATH "Installation prefix for MOSEK." FORCE)
-  unset (MOSEK_PREFIX)
-endif ()
