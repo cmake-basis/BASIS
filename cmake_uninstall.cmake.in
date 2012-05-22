@@ -75,22 +75,42 @@ list (REVERSE MANIFEST)
 
 # ----------------------------------------------------------------------------
 # remove installed files
-foreach (F ${MANIFEST})
+set (PYTHON_BASE_PACKAGE_DIR "@BASIS_NAMESPACE_LOWER@")
+string (REPLACE "." "/" PYTHON_BASE_PACKAGE_DIR "${PYTHON_BASE_PACKAGE_DIR}")
+
+foreach (F ${MANIFEST}) # skip empty entries, i.e., blank lines
   set (F "$ENV{DESTDIR}${F}") # support change of root
   if (EXISTS "${F}")
-    message (STATUS "Uninstalling: ${F}")
-    execute_process (COMMAND "${CMAKE_COMMAND}" -E remove -f "${F}" RESULT_VARIABLE RT)
-    if (NOT RT EQUAL 0)
-      set (OK FALSE)
-      message (STATUS "Failed to uninstall ${F}")
+    set (FILE_IN_USE FALSE)
+    # do not remove __init__.py files in lib/python/sbia/ if still in use
+    if (F MATCHES "(.*)/${PYTHON_BASE_PACKAGE_DIR}/__init__.pyc?$")
+      set (PYTHONPATH "${CMAKE_MATCH_1}")
+      file (GLOB_RECURSE PYFILES "${PYTHONPATH}/*.py" "${PYTHONPATH}/*.pyc")
+      foreach (PYFILE IN LISTS PYFILES)
+        list (FIND MANIFEST "${PYFILE}" IDX)
+        if (IDX EQUAL -1)
+          set (FILE_IN_USE TRUE)
+          break ()
+        endif ()
+      endforeach ()
     endif ()
-    # remove .pyc files of .py files
-    if (F MATCHES "\\.py$" AND EXISTS "${F}c")
-      message (STATUS "Uninstalling: ${F}c")
-      execute_process (COMMAND "${CMAKE_COMMAND}" -E remove -f "${F}c" RESULT_VARIABLE RT)
+    if (NOT FILE_IN_USE)
+      message (STATUS "Uninstalling: ${F}")
+      execute_process (COMMAND "${CMAKE_COMMAND}" -E remove -f "${F}" RESULT_VARIABLE RT)
       if (NOT RT EQUAL 0)
-        message (STATUS "Failed to uninstall ${F}c")
+        set (OK FALSE)
+        message (STATUS "Failed to uninstall ${F}")
       endif ()
+      # remove .pyc files of .py files
+      if (F MATCHES "\\.py$" AND EXISTS "${F}c")
+        message (STATUS "Uninstalling: ${F}c")
+        execute_process (COMMAND "${CMAKE_COMMAND}" -E remove -f "${F}c" RESULT_VARIABLE RT)
+        if (NOT RT EQUAL 0)
+          message (STATUS "Failed to uninstall ${F}c")
+        endif ()
+      endif ()
+    else ()
+      message (STATUS "File-in-use:  ${F}")
     endif ()
   else ()
     message (STATUS "Non-existent: ${F}")
@@ -140,7 +160,7 @@ list (APPEND EXCLUDE_DIRS "${D}")
 
 string (REPLACE "." "\\." INSTALL_PREFIX_REGEX "$ENV{DESTDIR}${INSTALL_PREFIX}")
 
-foreach (F ${MANIFEST})
+foreach (F ${MANIFEST}) # skip empty entries, i.e., blank lines
   # remove directories only if file was installed inside the installation root
   if (F MATCHES "^${INSTALL_PREFIX_REGEX}")
     get_filename_component (D "$ENV{DESTDIR}${F}" PATH)
