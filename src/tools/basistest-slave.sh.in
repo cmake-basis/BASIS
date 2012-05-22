@@ -151,7 +151,7 @@ function add_arg
 }
 
 while [ $# -gt 0 ]; do
-	case "$1" in
+    case "$1" in
         -p|--project)
             shift
             if [ $# -gt 0 ]; then
@@ -199,8 +199,8 @@ while [ $# -gt 0 ]; do
             ;;
 
         # standard options
-		-h|--help)    print_help; exit 0; ;;
-		--helpshort)  print_helpshort; exit 0; ;;
+        -h|--help)    print_help; exit 0; ;;
+        --helpshort)  print_helpshort; exit 0; ;;
         --version)    print_version "@NAME@"; exit 0; ;;
         -v|--verbose) ((verbosity++)); ;;
         -vv)          verbosity=$((${verbosity} + 2));;

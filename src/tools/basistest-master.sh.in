@@ -327,7 +327,7 @@ verbose=0                               # verbosity of output messages
 dry=0                                   # whether this is a dry testing run
 
 while [ $# -gt 0 ]; do
-	case "$1" in
+    case "$1" in
         -c|--conf)
             shift
             if [ $# -gt 0 ]; then
@@ -358,8 +358,8 @@ while [ $# -gt 0 ]; do
         --dry) dry=1; ;;
 
         # standard options
-		-h|--help)    print_help; exit 0; ;;
-		-u|--usage)   print_helpshort; exit 0; ;;
+        -h|--help)    print_help; exit 0; ;;
+        -u|--usage)   print_helpshort; exit 0; ;;
         -V|--version) print_version "@NAME@"; exit 0; ;;
         -v|--verbose) (( verbose++ )); ;;
 
