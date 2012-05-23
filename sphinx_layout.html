@@ -1,0 +1,41 @@
+{% extends "!layout.html" %}
+
+{# overwrite settings #}
+{% set reldelim1 = '' %}
+{% set reldelim2 = '' %}
+
+{# top navigation bar - logos #}
+{% block relbar1 %}
+<div id="titlearea">
+    <table id="titletable" cellspacing="0" cellpadding="0">
+        <tbody>
+            <tr style="height: 56px">
+                <td id="projectlogo"><a href="{{ pathto('index') }}"><img alt="{{ project }} Logo" src="{{ pathto('_static/logo.png', 1) }}" /></a></td>
+                <td id="projectid"><div id="projectname">{{ project }}&#160;<span id="projectversion">{{ version }}</span></div></td>
+            </tr>
+       </tbody>
+   </table>
+   <div id="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
+   <div id="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
+   <div class="clearer"></div>
+</div>
+{{ super() }}
+{% endblock %}
+
+{# top navigation bar - links #}
+{% block rootrellink %}
+    {% for name, page in pages.items() %}
+        {% if pathto(page)=="#" %}
+            <li><a class="current" href="{{ pathto(page) }}">{{ name }}</a></li>
+        {% else %}
+            <li><a href="{{ pathto(page) }}">{{ name }}</a></li>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{# bottom navigation bar - disabled #}
+{% block relbar2 %}{% endblock %}
+
+{# put the sidebar before the body #}
+{% block sidebar1 %}{{ sidebar() }}{% endblock %}
+{% block sidebar2 %}{% endblock %}
