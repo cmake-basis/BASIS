@@ -245,22 +245,13 @@ div.center img {
     border: 0px;
 }
 
-address.footer {
+div.footer {
+    background-color: #F3F1E9;
+    color: #86989B;
+    padding: 3px 8px 3px 0;
+    clear: both;
+    font-size: 0.8em;
     text-align: right;
-    padding-right: 12px;
-    float: right;
-}
-
-img.footer {
-    border: 0px;
-    vertical-align: middle;
-}
-
-div.copyright {
-    border: 0px;
-    text-align: left;
-    padding-left: 12px;
-    float: left;
 }
 
 /* @group Code Colorization */
