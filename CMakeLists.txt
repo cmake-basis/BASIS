@@ -54,6 +54,15 @@ set (
     "ConfigVersion.cmake.in"      # default <Pkg>ConfigVersion.cmake template
     "ConfigUse.cmake.in"          # default <Pkg>Use.cmake template
     "GenerateConfig.cmake"        # generation/configuration of <Pkg>Config.cmake et al.
+    # documentation generation
+    "doxygen_header.html"         # header of Doxygen documentation
+    "doxygen_footer.html"         # footer of Doxygen documentation
+    "doxygen_sbia.css"            # stylesheet for Doxygen documentation
+    "sphinx_conf.py.in"           # Sphinx configuration template
+    "sphinx_layout.html"          # layout for Sphinx documentation
+    "sphinx_sbia.cxx"             # stylesheet for Sphinx documentation
+    "logo_sbia.png"               # the logo of SBIA
+    "logo_penn.gif"               # the logo of UPenn
     # other
     "buildtimestamp.cmd"          # get build timestamp on Windows
     "CheckPublicHeaders.cmake"    # check if header files were added/removed
@@ -67,11 +76,6 @@ set (
     "PostprocessChangeLog.cmake"  # used to postprocess generated ChangeLog
     "ProjectSettings.cmake.in"    # default project-dependent settings
     "updatefile.py"               # helper used by BasisUpdate.cmake module
-    "doxygen_sbia.css"            # stylesheet for Doxygen documentation
-    "doxygen_header.html"         # header of Doxygen documentation
-    "doxygen_footer.html"         # footer of Doxygen documentation
-    "logo_sbia.png"               # the logo of SBIA
-    "logo_penn.gif"               # the logo of UPenn
 )
 
 # ----------------------------------------------------------------------------
