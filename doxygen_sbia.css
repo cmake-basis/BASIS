@@ -183,9 +183,18 @@ div.groupText {
 }
 
 body {
-    background: white;
     color: black;
-        margin: 0;
+    background-color: #F3F1E9;
+    padding: 0;
+    margin: 0px 80px 0px 80px;
+    min-width: 740px;
+}
+
+#main {
+    background-color: white;
+    border: 1px solid #AAAAAA;
+    padding: 0px 0px 30px 0px;
+    margin-top: 8px;
 }
 
 div.contents {
@@ -873,7 +882,7 @@ dl.bug
 #titlearea
 {
     padding: 20px 0px 10px 0px;
-    margin: 8px 0px 0px 0px;
+    margin: 0;
     width: 100%;
     border-bottom: 1px solid #5373B4;
     background-color: #660000;
