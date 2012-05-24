@@ -10,8 +10,10 @@
     <table id="titletable" cellspacing="0" cellpadding="0">
         <tbody>
             <tr style="height: 56px">
+                {% if html_logo %}
                 <td id="projectlogo"><a href="{{ pathto('index') }}"><img alt="{{ project }} Logo" src="{{ pathto('_static/logo.png', 1) }}" /></a></td>
-                <td id="projectid"><div id="projectname">{{ project }}&#160;<span id="projectversion">{{ version }}</span></div></td>
+                {% endif %}
+                <td id="projectid"><div id="projectname">{{ project }}&#160;<span id="projectversion">{{ release }}</span></div></td>
             </tr>
        </tbody>
    </table>

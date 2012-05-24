@@ -60,7 +60,7 @@ set (
     "doxygen_sbia.css"            # stylesheet for Doxygen documentation
     "sphinx_conf.py.in"           # Sphinx configuration template
     "sphinx_layout.html"          # layout for Sphinx documentation
-    "sphinx_sbia.cxx"             # stylesheet for Sphinx documentation
+    "sphinx_sbia.css"             # stylesheet for Sphinx documentation
     "logo_sbia.png"               # the logo of SBIA
     "logo_penn.gif"               # the logo of UPenn
     # other
@@ -96,6 +96,7 @@ set (
     "FindOpenCV.cmake"
     "FindPerlLibs.cmake"
     "FindPythonInterp.cmake"
+    "FindSphinx.cmake"
 )
 
 # ----------------------------------------------------------------------------

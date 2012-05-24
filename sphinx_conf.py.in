@@ -35,16 +35,16 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = 'DRAMMS'
-copyright = '2012, University of Pennsylvania'
+project = '@PROJECT_NAME@'
+copyright = '@COPYRIGHT@'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '1.0'
+version = '@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@'
 # The full version, including alpha/beta/rc tags.
-release = '1.0.0'
+release = '@PROJECT_VERSION_AND_REVISION@'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -57,7 +57,7 @@ unused_docs = []
 
 # List of directories, relative to source directories, that shouldn't be searched
 # for source files.
-exclude_dirs = ['.svn', '.git']
+exclude_dirs = ['.svn', '.git', 'CMakeFiles']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 default_role = None
@@ -83,7 +83,7 @@ pygments_style = 'sphinx'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = '@SPHINX_HTML_STYLE@'
+html_style = 'default.css'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -93,14 +93,14 @@ html_title = '@PROJECT_NAME@'
 # used to link to this page in the navigation bar and the corresponding value
 # the name of the page, i.e., the file path relative to the site root without
 # file name extension.
-html_context = {'pages': @SPHINX_HTML_PAGES@}
+html_context = {'pages': @PAGES@}
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
 
 # The name of an image file (within the static path) to place at the top of
 # the sidebar.
-html_logo = @SPHINX_HTML_LOGO@
+html_logo = @LOGO@
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -145,10 +145,10 @@ html_copy_source = True
 html_use_opensearch = ''
 
 # If nonempty, this is the file name suffix for HTML files (e.g. ".xhtml").
-html_file_suffix = ''
+html_file_suffix = '.html'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'dramms_doc'
+htmlhelp_basename = '@PROJECT_NAME_LOWER@_doc'
 
 
 # Options for LaTeX output
@@ -163,7 +163,7 @@ latex_font_size = '10pt'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'DRAMMS.tex', 'DRAMMS Documentation',
+  ('index', '@PROJECT_NAME_LOWER@.tex', '@PROJECT_NAME@ Documentation',
    'Section of Biomedical Image Analysis, Department of Radiology, University of Pennsylvania', 'manual'),
 ]
 
