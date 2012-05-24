@@ -93,14 +93,14 @@ html_title = '@PROJECT_NAME@'
 # used to link to this page in the navigation bar and the corresponding value
 # the name of the page, i.e., the file path relative to the site root without
 # file name extension.
-html_context = {'pages': @PAGES@}
+html_context = {'pages': @PAGES@, 'project_logo': @LOGO@}
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
 
 # The name of an image file (within the static path) to place at the top of
 # the sidebar.
-html_logo = @LOGO@
+html_logo = None
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

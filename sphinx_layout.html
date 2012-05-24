@@ -10,8 +10,8 @@
     <table id="titletable" cellspacing="0" cellpadding="0">
         <tbody>
             <tr style="height: 56px">
-                {% if html_logo %}
-                <td id="projectlogo"><a href="{{ pathto('index') }}"><img alt="{{ project }} Logo" src="{{ pathto('_static/logo.png', 1) }}" /></a></td>
+                {% if project_logo %}
+                <td id="projectlogo"><a href="{{ pathto('index') }}"><img alt="{{ project }} Logo" src="{{ pathto(project_logo, 1) }}" /></a></td>
                 {% endif %}
                 <td id="projectid"><div id="projectname">{{ project }}&#160;<span id="projectversion">{{ release }}</span></div></td>
             </tr>
@@ -26,7 +26,7 @@
 
 {# top navigation bar - links #}
 {% block rootrellink %}
-    {% for name, page in pages.items() %}
+    {% for (name, page) in pages %}
         {% if pathto(page)=="#" %}
             <li><a class="current" href="{{ pathto(page) }}">{{ name }}</a></li>
         {% else %}
