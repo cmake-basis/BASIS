@@ -17,7 +17,7 @@ function (cmake_test TEST)
   while (ARGN)
     list (GET ARGN 0 VAR)
     list (GET ARGN 1 VALUE)
-    list (ARGS APPEND "-D" "${VAR}=${VALUE}")
+    list (APPEND ARGS "-D" "${VAR}=${VALUE}")
     list (REMOVE_AT ARGN 0 1)
   endwhile ()
   basis_add_test (
