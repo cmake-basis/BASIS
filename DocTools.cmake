@@ -102,7 +102,7 @@ function (basis_add_doc TARGET_NAME)
   elseif (ARGN_GENERATOR MATCHES "DOXYGEN")
     basis_add_doxygen_doc (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
   elseif (ARGN_GENERATOR MATCHES "SPHINX")
-    basis_add_sphinx_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
+    basis_add_sphinx_doc (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
   else ()
     message (FATAL_ERROR "Unknown documentation generator: ${ARGN_GENERATOR}.")
   endif ()
@@ -912,6 +912,15 @@ function (basis_add_sphinx_doc TARGET_NAME)
     WORKING_DIRECTORY "${BUILD_DIR}"
     COMMENT "Building documentation ${TARGET_UID}..."
   )
+  # add target as dependency to doc target
+  if (NOT TARGET doc)
+    if (BUILD_DOCUMENTATION)
+      add_custom_target (doc ALL)
+    else ()
+      add_custom_target (doc)
+    endif ()
+  endif ()
+  add_dependencies (doc ${TARGET_UID})
   # cleanup on "make clean"
   set_property (
     DIRECTORY
@@ -920,6 +929,8 @@ function (basis_add_sphinx_doc TARGET_NAME)
         "${BUILD_DIR}/doctrees"
         "${ARGN_OUTPUT_DIRECTORY}/html"
   )
+  # install documentation
+  # TODO
 endfunction ()
 
 # ============================================================================
