@@ -711,12 +711,14 @@ macro (basis_configure_root_documentation_files)
         endif ()
         set (N "${N}${E}")
         # install file
-        install (
-          FILES       "${PROJECT_BINARY_DIR}/${F}.txt"
-          DESTINATION "${INSTALL_DOC_DIR}"
-          RENAME      "${N}"
-          OPTIONAL
-        )
+        if (F MATCHES "COPYING")
+          install (
+            FILES       "${PROJECT_BINARY_DIR}/${F}.txt"
+            DESTINATION "${INSTALL_DOC_DIR}"
+            RENAME      "${N}"
+            OPTIONAL
+          )
+        endif ()
       endif ()
     elseif (NOT F MATCHES "WELCOME" AND NOT PROJECT_IS_MODULE)
       message (FATAL_ERROR "Project requires a ${F}.txt file in ${PROJECT_SOURCE_DIR}!")

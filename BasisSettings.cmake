@@ -342,6 +342,31 @@ set (BASIS_PROPERTIES_ON_TARGETS
 # convert list of property names into regular expression
 basis_list_to_regex (BASIS_PROPERTIES_ON_TARGETS_REGEX ${BASIS_PROPERTIES_ON_TARGETS})
 
+## @brief Whether BASIS shall use fully-qualified target UIDs.
+#
+# If this option is OFF, the namespace of the top-level BASIS project is
+# not prepended to the actual CMake build target names.
+#
+# For example, instead of the fully-qualified target UID
+# "sbia.@PROJECT_NAME_LOWER@.target", the CMake target name will simply
+# be "target". Only when the target is referenced from another project,
+# the fully-qualified target UID is usually required.
+basis_set_if_empty (BASIS_USE_FULLY_QUALIFIED_UIDS OFF)
+
+## @brief Whether BASIS should use a separate namespace for each module.
+#
+# If this option is ON, BASIS will use a separate namespace for each module.
+# Otherwise, all modules of a project reside dirctly in the namespace of the
+# top-level project itself.
+basis_set_if_empty (BASIS_USE_MODULE_NAMESPACES OFF)
+
+## @brief Global namespace of BASIS projects.
+if (NOT DEFINED BASIS_NAMESPACE)
+  set (BASIS_NAMESPACE "SBIA")
+endif ()
+string (TOLOWER "${BASIS_NAMESPACE}" BASIS_NAMESPACE_LOWER)
+string (TOUPPER "${BASIS_NAMESPACE}" BASIS_NAMESPACE_UPPER)
+
 ## @brief Default component used for library targets when no component is specified.
 #
 # The default component a library target and its auxiliary files
