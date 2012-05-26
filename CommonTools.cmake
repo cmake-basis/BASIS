@@ -953,16 +953,26 @@ endfunction ()
 # @param [in]  DELIM Delimiter used to separate list elements.
 #                    Each element which contains the delimiter as substring
 #                    is surrounded by double quotes (") in the output string.
-# @param [in]  ARGN  Input list.
+# @param [in]  ARGN  Input list. If this list starts with the argument
+#                    @c NOAUTOQUOTE, the automatic quoting of list elements
+#                    which contain the delimiter is disabled.
 #
 # @returns Sets @p STR to the resulting string.
 function (basis_list_to_delimited_string STR DELIM)
   set (OUT)
+  set (AUTOQUOTE TRUE)
+  if (ARGN)
+    list (GET ARGN 0 FIRST)
+    if (FIRST MATCHES "^NOAUTOQUOTE$")
+      list (REMOVE_AT ARGN 0)
+      set (AUTOQUOTE FALSE)
+    endif ()
+  endif ()
   foreach (ELEM ${ARGN})
     if (OUT)
       set (OUT "${OUT}${DELIM}")
     endif ()
-    if (ELEM MATCHES "${DELIM}")
+    if (AUTOQUOTE AND ELEM MATCHES "${DELIM}")
       set (OUT "${OUT}\"${ELEM}\"")
     else ()
       set (OUT "${OUT}${ELEM}")
