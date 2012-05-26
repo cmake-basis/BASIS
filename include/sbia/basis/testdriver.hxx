@@ -67,9 +67,7 @@ void testdriversetup(int* argc, char** argv[])
                 " Compares the image produced by the test to the reference"
                 " image named baseline.nii with default intensity tolerance.",
                 // version information
-                cVersionAndRevision,
-                "Copyright (c) 2011 University of Pennsylvania."
-                " All rights reserved.");
+                cRelease, "Copyright 2011, 2012, University of Pennsylvania.");
 
         cmd.add(add_before_libpath);
         cmd.add(add_before_env);
