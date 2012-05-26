@@ -358,9 +358,24 @@ endif ()
 ## @brief Path of installation directory for man pages
 #         relative to @c INSTALL_PREFIX.
 if (UNIX)
-  set (INSTALL_MAN_DIR "${INSTALL_SHARE_DIR}/man")
+  if (INSTALL_SHARE_DIR MATCHES ".*/sbia/")
+    set (INSTALL_MAN_DIR "${CMAKE_MATCH_0}/man")
+  else ()
+    set (INSTALL_MAN_DIR "${INSTALL_SHARE_DIR}/man")
+  endif ()
 else ()
   set (INSTALL_MAN_DIR "man")
+endif ()
+
+## @brief Path of Texinfo files relative to @c INSTALL_PREFIX.
+if (UNIX)
+  if (INSTALL_SHARE_DIR MATCHES ".*/sbia/")
+    set (INSTALL_TEXINFO_DIR "${CMAKE_MATCH_0}/info")
+  else ()
+    set (INSTALL_TEXINFO_DIR "${INSTALL_SHARE_DIR}/info")
+  endif ()
+else ()
+  set (INSTALL_TEXINFO_DIR "info")
 endif ()
 
 # prepend installation sinfix
