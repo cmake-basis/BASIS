@@ -182,7 +182,7 @@ extern const char* cVersion;
 extern const unsigned int cRevision;
 
 /// @brief Complete version information as output by --version option.
-extern const char* cVersionAndRevision;
+extern const char* cRelease;
 
 // ---------------------------------------------------------------------------
 // paths - build tree

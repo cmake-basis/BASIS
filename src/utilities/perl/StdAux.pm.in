@@ -79,7 +79,7 @@ sub print_version
     my ($name, $copyright, $license) = @_;
     # version
     die "print_version(): Executable name not specified!\n" unless defined($name);
-    print $name, " (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@\n";
+    print $name, " (@PROJECT_NAME@) @PROJECT_RELEASE@\n";
     # copyright notice
     if (defined $copyright) {
         print $copyright, "\n" unless $copyright == '';

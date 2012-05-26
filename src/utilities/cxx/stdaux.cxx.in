@@ -41,7 +41,7 @@ namespace basis
 void print_version(const char* name, const char* copyright, const char* license)
 {
     assert(name != NULL);
-    cout << name << " (" << cProjectName << ") " << cVersionAndRevision << endl;
+    cout << name << " (" << cProjectName << ") " << cRelease << endl;
     if (copyright == NULL) {
         cout << "Copyright (c) University of Pennsylvania. All rights reserved." << endl;
     } else if (*copyright != '\0') {
