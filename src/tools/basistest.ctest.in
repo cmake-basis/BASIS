@@ -116,11 +116,10 @@ function (print_options)
                          root directory used for installations.
                          Note: Currently this script just executes \"make install\",
                                i.e., it only works with the CMake Makefile generator.
-  doxygen[=<path>]       If specified, the API documentation is build
+  apidoc[=<path>]        If specified, the API documentation is build
                          and the built HTML documentation copied to the
                          specified directory. If this option is given without
-                         argument, the default web server location at SBIA is used,
-                         i.e., \"/sbia/web/software/doxygen/<project>/<branch>\".
+                         argument, the default installation directory is used.
   nosubmit               Do not submit test results to the dashboard.
   shared-source          Specify that each test site should use the same copy of
                          the sources. By default, each test site uses its own copy.
@@ -380,6 +379,7 @@ set (CTEST_BUILD_TYPE      "")               # build type/configuration
 set (CTEST_COMPILER_FLAGS  "")               # additional compiler flags
 set (CTEST_LINKER_FLAGS    "")               # additional linker flags
 set (CTEST_CMAKE_OPTIONS)
+set (WITH_APIDOC           FALSE)            # enable/disable build of API documentation
 set (WITH_MEMCHECK         FALSE)            # enable/disable memory checks
 set (WITH_COVERAGE         FALSE)            # enable/disable coverage analysis
 set (CTEST_MEMORYCHECK_SUPPRESSIONS_FILE)    # memory checks suppressions
@@ -397,7 +397,7 @@ set (FORCE_TEST     FALSE)
 # install project files after successful test execution
 set (WITH_INSTALL FALSE)
 # output directory for built Doxygen documentation
-set (INSTALL_DOXYGEN_DIR)
+set (INSTALL_APIDOC_DIR)
 
 # ============================================================================
 # options
@@ -466,11 +466,10 @@ foreach (ARG ${ARGV})
       set_option (TMPBIN TRUE)
     elseif (${OPTION} STREQUAL "install")
       set_option (WITH_INSTALL TRUE)
-    elseif (${OPTION} STREQUAL "doxygen")
+    elseif (${OPTION} STREQUAL "apidoc")
+      set (WITH_APIDOC TRUE)
       if (VALUE)
-        set_option (INSTALL_DOXYGEN_DIR)
-      else ()
-        set (INSTALL_DOXYGEN_DIR "/sbia/web/software/doxygen/\@CTEST_PROJECT_NAME_LOWER\@/\@CTEST_SVN_BRANCH\@")
+        set_option (INSTALL_APIDOC_DIR)
       endif ()
     elseif (${OPTION} STREQUAL "shared-source")
       set_option (SHARED_SOURCE TRUE)
@@ -668,7 +667,7 @@ endif ()
 string (REGEX REPLACE "/$" "" CTEST_BINARY_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 string (REGEX REPLACE "/$" "" CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}")
 
-string (CONFIGURE "${INSTALL_DOXYGEN_DIR}" INSTALL_DOXYGEN_DIR)
+string (CONFIGURE "${INSTALL_APIDOC_DIR}" INSTALL_APIDOC_DIR)
 
 if (MANUAL_MODE)
   set (CTEST_START_WITH_EMPTY_BINARY_DIRECTORY FALSE)
@@ -753,8 +752,11 @@ if (CTEST_LINKER_FLAGS)
   set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"-DCMAKE_SHARED_LINKER_FLAGS:STRING=${CTEST_LINKER_FLAGS}\"")
 endif ()
 set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_TESTING:BOOL=ON")
-if (INSTALL_DOXYGEN_DIR)
+if (WITH_APIDOC)
   set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=ON -DBASIS_ALL_DOC:BOOL=ON")
+  if (INSTALL_APIDOC_DIR)
+    set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DINSTALL_APIDOC_DIR:PATH=${INSTALL_APIDOC_DIR}")
+  endif ()
 else ()
   set (CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} -DBUILD_DOCUMENTATION:BOOL=OFF")
 endif ()
@@ -829,30 +831,6 @@ if (FORCE_BUILD OR UPDATED_FILES)
   endif ()
 
   # --------------------------------------------------------------------------
-  # build and install API documentation
-  if (BUILD_RESULT EQUAL 0 AND INSTALL_DOXYGEN_DIR)
-    if (EXISTS "${CTEST_BINARY_DIRECTORY}/doc/api/html")
-      if (EXISTS "${INSTALL_DOXYGEN_DIR}/html")
-        file (REMOVE_RECURSE "${INSTALL_DOXYGEN_DIR}/html")
-      endif ()
-      execute_process (
-        COMMAND "${CMAKE_COMMAND}" "-E" "copy_directory"
-                    "${CTEST_BINARY_DIRECTORY}/doc/api/html"
-                    "${INSTALL_DOXYGEN_DIR}/html"
-        WORKING_DIRECTORY "${CTEST_BINARY_DIRECTORY}"
-        RESULT_VARIABLE RT
-      )
-      if (RT EQUAL 0)
-        message ("Copied API documentation to ${INSTALL_DOXYGEN_DIR}.")
-      else ()
-        message ("Failed to install API documentation to ${INSTALL_DOXYGEN_DIR}!")
-      endif ()
-    else ()
-      message ("Directory ${CTEST_BINARY_DIRECTORY}/doc/api/html/ does not exist.")
-      message ("Skipped installation of API documentation.")
-    endif ()
-  endif ()
-
   # perform tests only if required
   if (BUILD_RESULT EQUAL 0 AND (FORCE_TEST OR UPDATED_FILES))
 
