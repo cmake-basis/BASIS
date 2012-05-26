@@ -108,9 +108,7 @@ int main(int argc, char* argv[])
                 // example usage
                 examples,
                 // version information
-                cVersionAndRevision,
-                "Copyright (c) 2011 University of Pennsylvania."
-                " All rights reserved.");
+                cRelease, "Copyright 2011, 2012, University of Pennsylvania.");
 
         cmd.xorAdd(gaussian, anisotropic);
         cmd.add(gaussian_std);
