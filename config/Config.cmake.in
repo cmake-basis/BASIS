@@ -95,6 +95,8 @@ basis_set_config (LIBRARIES
 # ----------------------------------------------------------------------------
 # Sphinx
 
+## @brief Path of Sphinx extensions.
+basis_set_config (SPHINX_EXTENSIONS_PATH "@SPHINX_EXTENSIONS_PATH_CONFIG@")
 ## @brief Path of Sphinx HTML themes.
 basis_set_config (SPHINX_HTML_THEME_PATH "@SPHINX_HTML_THEME_PATH_CONFIG@")
 

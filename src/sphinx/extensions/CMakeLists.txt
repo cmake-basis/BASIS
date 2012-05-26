@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  CMakeLists.txt
-# @brief Build configuration of Sphinx extensions and themes.
+# @brief Build configuration of Sphinx extensions.
 #
 # Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -8,6 +8,5 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_install_directory (themes "${INSTALL_SPHINX_THEMES_DIR}")
-
-add_subdirectory (extensions)
+basis_add_library (breathe  DESTINATION "${INSTALL_SPHINX_EXTENSIONS_DIR}")
+basis_add_library (doxylink DESTINATION "${INSTALL_SPHINX_EXTENSIONS_DIR}")

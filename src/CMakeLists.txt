@@ -22,6 +22,7 @@
 
 add_subdirectory (cmake)     # CMake modules
 add_subdirectory (utilities) # implementation utilities
+add_subdirectory (sphinx)    # Sphinx extensions and themes
 
 # ============================================================================
 # executable target(s)
@@ -34,9 +35,3 @@ add_subdirectory (utilities) # implementation utilities
 # BASH, and MATLAB.
 
 add_subdirectory (tools)
-
-# ============================================================================
-# ressources
-# ============================================================================
-
-add_subdirectory (sphinx)

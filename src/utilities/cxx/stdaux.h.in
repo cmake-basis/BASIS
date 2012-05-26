@@ -167,7 +167,7 @@ std::string get_executable_path(const std::string& target);
  *
  * @param [in] cmd         Command-line given as double quoted string. Arguments
  *                         containing whitespaces have to be quoted using double
- *                         quotes. Use a backslash (\) to escape double quotes
+ *                         quotes. Use a backslash (\\) to escape double quotes
  *                         inside an argument as well as to escape a backslash
  *                         itself (required if backslash at end of double quoted
  *                         argument, e.g., "this argument \\").
