@@ -166,13 +166,14 @@ set (
 # constants and global settings
 # ============================================================================
 
-## @brief List of names used for special purpose targets.
+## @brief List of name patterns used for special purpose targets.
 #
-# Contains a list of target names that are used by the BASIS functions for
-# special purposes and are hence not to be used for project targets.
+# Contains a list of target name patterns that are used by the BASIS functions
+# for special purposes and are hence not to be used for project targets.
 set (
   BASIS_RESERVED_TARGET_NAMES
     "all"
+
     "bundle"
     "bundle_source"
     "changelog"

@@ -1229,11 +1229,11 @@ endfunction ()
 # @returns Nothing.
 function (basis_check_target_name TARGET_NAME)
   # reserved target name ?
-  list (FIND BASIS_RESERVED_TARGET_NAMES "${TARGET_NAME}" IDX)
-  if (NOT IDX EQUAL -1)
-    message (FATAL_ERROR "Target name \"${TARGET_NAME}\" is reserved and cannot be used.")
-  endif ()
-
+  foreach (PATTERN IN LISTS BASIS_RESERVED_TARGET_NAMES)
+    if (TARGET_NAME MATCHES "^${PATTERN}$")
+      message (FATAL_ERROR "Target name \"${TARGET_NAME}\" is reserved and cannot be used.")
+    endif ()
+  endforeach ()
   # invalid target name ?
   if (NOT TARGET_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9_+]|-)*$|^__init__(_py)?$")
     message (FATAL_ERROR "Target name '${TARGET_NAME}' is invalid.\nChoose a target name"
@@ -1362,11 +1362,13 @@ endmacro ()
 #
 # @returns Nothing.
 function (basis_check_test_name TEST_NAME)
-  list (FIND BASIS_RESERVED_TEST_NAMES "${TEST_NAME}" IDX)
-  if (NOT IDX EQUAL -1)
-    message (FATAL_ERROR "Test name \"${TEST_NAME}\" is reserved and cannot be used.")
-  endif ()
-
+  # reserved test name ?
+  foreach (PATTERN IN LISTS BASIS_RESERVED_TARGET_NAMES)
+    if (TARGET_NAME MATCHES "^${PATTERN}$")
+      message (FATAL_ERROR "Test name \"${TARGET_NAME}\" is reserved and cannot be used.")
+    endif ()
+  endforeach ()
+  # invalid test name ?
   if (NOT TEST_NAME MATCHES "^[a-zA-Z]([a-zA-Z0-9_+]|-)*$")
     message (FATAL_ERROR "Test name ${TEST_NAME} is invalid.\nChoose a test name "
                          " which only contains alphanumeric characters,"
