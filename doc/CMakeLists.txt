@@ -53,7 +53,7 @@ basis_add_doc (
 set (OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
 
 foreach (N IN ITEMS Manual UserManual SoftwareManual UserGuide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}")
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
     basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
     break ()
   endif ()
@@ -77,7 +77,7 @@ basis_add_doc ("tutorials")
 set (OUTPUT_NAME "${PROJECT_NAME}_Developer's_Guide")
 
 foreach (N IN ITEMS DeveloperGuide DeveloperManual)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}")
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
     basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
     break ()
   endif ()
