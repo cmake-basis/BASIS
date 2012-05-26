@@ -51,11 +51,12 @@ endif ()
 # </table>
 #
 # @param [in] TARGET_NAME Name of the documentation target or file.
-# @param [in] GENERATOR   Documentation generator, where the case of the
-#                         generator name is ignored, i.e., @c Doxygen, @c DOXYGEN,
-#                         @c doxYgen are all valid arguments which select the
-#                         @c Doxygen generator. Defaults to the @c None generator.</td>
-# @param [in] ARGN        Additional arguments for the particular generator.
+# @param [in] ARGN        Documentation generator as "GENERATOR generator" option
+#                         and additional arguments for the particular generator.
+#                         The case of the generator name is ignored, i.e.,
+#                         @c Doxygen, @c DOXYGEN, @c doxYgen are all valid arguments
+#                         which select the @c Doxygen generator. The default generator
+#                         is the @c None generator.</td>
 #
 # @returns Adds a custom target @p TARGET_NAME for the generation of the
 #          documentation.
