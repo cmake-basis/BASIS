@@ -433,6 +433,36 @@ set (BASIS_AUTO_PREFIX_INCLUDES FALSE)
 set (BASIS_INCLUDES_CHECK_EXCLUDE "")
 
 # ============================================================================
+# documentation
+# ============================================================================
+
+## @brief Option to request build of Doxygen targets as part of @c ALL target.
+option (BASIS_ALL_DOXYGEN "Request build of Doxygen documentation targets as part of ALL target." OFF)
+mark_as_advanced (BASIS_ALL_DOXYGEN)
+
+## @brief Option to request build of Sphinx targets as part of @c ALL target.
+option (BASIS_ALL_SPHINX  "Request build of Sphinx documentation targets as part of ALL target."  OFF)
+mark_as_advanced (BASIS_ALL_SPHINX)
+
+## @brief Default Doxygen configuration.
+set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
+
+## @brief Default Sphinx configuration.
+set (BASIS_SPHINX_CONFIG "${CMAKE_CURRENT_LIST_DIR}/sphinx_conf.py.in")
+
+## @brief Default Sphinx theme.
+set (BASIS_SPHINX_HTML_THEME "sbia")
+
+## @brief Default Sphinx theme options.
+set (BASIS_SPHINX_HTML_THEME_OPTIONS
+  PROJECT_LOGO   None
+  SHOW_SBIA_LOGO true
+  SHOW_PENN_LOGO true
+  SHOW_RELBAR2   false
+  ROOT_RELLINKS  "[('home', 'index')]"
+)
+
+# ============================================================================
 # common options
 # ============================================================================
 

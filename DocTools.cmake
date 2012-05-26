@@ -18,31 +18,6 @@ endif ()
 
 
 # ============================================================================
-# settings
-# ============================================================================
-
-## @addtogroup CMakeUtilities
-#  @{
-
-
-## @brief Default Doxygen configuration.
-set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
-
-## @brief Default Sphinx configuration.
-set (BASIS_SPHINX_CONFIG "${CMAKE_CURRENT_LIST_DIR}/sphinx_conf.py")
-
-## @brief Default Sphinx layout.
-set (BASIS_SPHINX_LAYOUT "${CMAKE_CURRENT_LIST_DIR}/sphinx_layout.html")
-
-## @brief Default Sphinx style.
-set (BASIS_SPHINX_STYLE "${CMAKE_CURRENT_LIST_DIR}/sphinx_sbia.css")
-
-
-## @}
-# end of Doxygen group
-
-
-# ============================================================================
 # adding / generating documentation
 # ============================================================================
 
