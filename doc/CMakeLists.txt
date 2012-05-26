@@ -101,6 +101,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
   basis_add_doc (
     site
     GENERATOR     Sphinx
+    BUILDER       html dirhtml pdf man
+    MAN_SECTION   7
     SHOW_RELEASE  false
     ROOT_RELLINKS download examples help publications
     COPYRIGHT     "2012 University of Pennsylvania"
