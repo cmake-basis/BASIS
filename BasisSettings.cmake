@@ -447,13 +447,9 @@ set (BASIS_INCLUDES_CHECK_EXCLUDE "")
 # documentation
 # ============================================================================
 
-## @brief Option to request build of Doxygen targets as part of @c ALL target.
-option (BASIS_ALL_DOXYGEN "Request build of Doxygen documentation targets as part of ALL target." OFF)
-mark_as_advanced (BASIS_ALL_DOXYGEN)
-
-## @brief Option to request build of Sphinx targets as part of @c ALL target.
-option (BASIS_ALL_SPHINX  "Request build of Sphinx documentation targets as part of ALL target."  OFF)
-mark_as_advanced (BASIS_ALL_SPHINX)
+## @brief Advanced option to request build of documentation targets as part of ALL target.
+option (BASIS_ALL_DOC  "Request build of documentation targets as part of ALL target."  OFF)
+mark_as_advanced (BASIS_ALL_DOC)
 
 ## @brief Default Doxygen configuration.
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")

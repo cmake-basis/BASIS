@@ -548,9 +548,12 @@ function (basis_add_doxygen_doc TARGET_NAME)
       COMMENT "Copying logos to ${DOXYGEN_OUTPUT_DIRECTORY}/html/..."
     )
   endif ()
-
+  set (OPTALL)
+  if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)
+    set (OPTALL "ALL")
+  endif ()
   add_custom_target (
-    ${TARGET_UID} "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}"
+    ${TARGET_UID} ${OPTALL} "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}"
     DEPENDS ${LOGOS}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     COMMENT "Building documentation ${TARGET_UID}..."
@@ -821,7 +824,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
   endif ()
   # add target to build documentation
   set (OPTALL)
-  if (BUILD_DOCUMENTATION AND BASIS_SPHINX_ALL)
+  if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)
     set (OPTALL "ALL")
   endif ()
   set (OPTIONS -a -N -n)
