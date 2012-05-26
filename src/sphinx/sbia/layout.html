@@ -1,0 +1,73 @@
+{#
+    sbia/layout.html
+    ~~~~~~~~~~~~~~~~
+
+    Sphinx layout template for the SBIA theme.
+
+    :copyright: Copyright 2012, University of Pennsylvania.
+    :license: See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#}
+
+{% extends "basic/layout.html" %}
+
+{# overwrite settings #}
+{% set reldelim1 = '' %}
+{% set reldelim2 = '' %}
+
+{# top navigation bar - logos #}
+{% block relbar1 %}
+<div id="titlearea">
+  <table id="titletable" cellspacing="0" cellpadding="0">
+    <tbody>
+      <tr style="height: 56px">
+        {% if theme_project_logo %}
+          <td id="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_project_logo, 1) }}" /></a></td>
+        {% endif %}
+        <td id="projectid">
+          <div id="projectname">{{ project }}
+            {% if theme_show_release|tobool %}
+              &#160;
+              <span id="projectversion">{{ release }}</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% if theme_show_penn_logo|tobool %}
+    <div id="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
+  {% endif %}
+  {% if theme_show_sbia_logo|tobool %}
+    <div id="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
+  {% endif %}
+  <div class="clearer"></div>
+</div>
+{{ super() }}
+{% endblock %}
+
+{# top navigation bar - links #}
+{% block rootrellink %}
+  {% if pathto('index')=="#" %}
+    <li><a class="current" href="{{ pathto('index') }}">home</a></li>
+  {% else %}
+    <li><a href="{{ pathto('index') }}">home</a></li>
+  {% endif %}
+  {% for rellink in theme_root_rellinks %}
+    {% if pathto(rellink) %}
+      {% if pathto(rellink)=="#" %}
+        <li><a class="current" href="{{ pathto(rellink) }}">{{ rellink|e }}</a></li>
+      {% else %}
+        <li><a href="{{ pathto(rellink) }}">{{ rellink|e }}</a></li>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+
+{# bottom navigation bar - disabled #}
+{% if not show_relbar2|tobool %}
+  {% block relbar2 %}{% endblock %}
+{% endif %}
+
+{# put the sidebar before the body #}
+{% block sidebar1 %}{{ sidebar() }}{% endblock %}
+{% block sidebar2 %}{% endblock %}

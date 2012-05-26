@@ -51,6 +51,8 @@ if (BUILD_CONFIG_SETTINGS)
       string (TOLOWER "${U}" L)
       set (${U}_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/${L}")
     endforeach ()
+    # Sphinx
+    set (SPHINX_HTML_THEME_PATH_CONFIG "${PROJECT_CODE_DIR}/sphinx")
 
     return ()
 endif ()
@@ -67,3 +69,5 @@ set (TEMPLATE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_TEMPLATE_DIR}-${TEM
 foreach (U CXX JAVA PYTHON PERL BASH MATLAB)
   set (${U}_TEMPLATES_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_${U}_TEMPLATES_DIR}")
 endforeach ()
+# Sphinx
+set (SPHINX_HTML_THEME_PATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_SPHINX_THEMES_DIR}")

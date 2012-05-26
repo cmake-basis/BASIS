@@ -34,3 +34,9 @@ add_subdirectory (utilities) # implementation utilities
 # BASH, and MATLAB.
 
 add_subdirectory (tools)
+
+# ============================================================================
+# ressources
+# ============================================================================
+
+add_subdirectory (sphinx)

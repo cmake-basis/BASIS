@@ -93,6 +93,12 @@ basis_set_config (LIBRARIES
 )
 
 # ----------------------------------------------------------------------------
+# Sphinx
+
+## @brief Path of Sphinx HTML themes.
+basis_set_config (SPHINX_HTML_THEME_PATH "@SPHINX_HTML_THEME_PATH_CONFIG@")
+
+# ----------------------------------------------------------------------------
 # CMake tools
 
 include ("${${NS}MODULE_PATH}/BasisTools.cmake")
