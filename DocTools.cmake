@@ -657,7 +657,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
       if (EXISTS \"${DOXYGEN_TAGFILE}\")
         get_filename_component (DOXYGEN_TAGFILE_NAME \"${DOXYGEN_TAGFILE}\" NAME)
         execute_process (
-          COMMAND \"${CMAKE_COMMAND}\" -E copy
+          COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
             \"${DOXYGEN_TAGFILE}\"
             \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\"
         )
