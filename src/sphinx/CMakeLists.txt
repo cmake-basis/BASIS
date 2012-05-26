@@ -8,4 +8,4 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_install_directory (sbia "${INSTALL_SPHINX_THEMES_DIR}")
+basis_install_directory (. "${INSTALL_SPHINX_THEMES_DIR}")

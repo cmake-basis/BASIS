@@ -60,7 +60,7 @@ set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/matlab")
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
 
 # installation directory of Sphinx themes
-set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx")
+set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/themes/sphinx")
 
 # ============================================================================
 # general settings
