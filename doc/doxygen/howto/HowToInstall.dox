@@ -367,6 +367,13 @@ The advanced CMake settings are:
     <th>Descripion</th>
   </tr>
   <tr>
+    @tp @b BASIS_ALL_DOC @endtp
+    <td>
+      Request the build of all documentation targets as part of the @c ALL target
+      if @c BUILD_DOCUMENTATION is @c ON.
+    </td>
+  </tr>
+  <tr>
     @tp @b BASIS_COMPILE_SCRIPTS @endtp
     <td>
       Enable compilation of Python modules. If this option is enabled, only the
