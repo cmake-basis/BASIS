@@ -187,6 +187,17 @@ set (
     "scripts"
     "test"
     "uninstall"
+    # basis_add_sphinx_doc()
+    ".*_all"
+    ".*_html"
+    ".*_dirhtml"
+    ".*_singlehtml"
+    ".*_latex"
+    ".*_pdf"
+    ".*_texinfo"
+    ".*_man"
+    ".*_text"
+    ".*_linkcheck"
 )
 
 ## @brief Names of recognized properties on targets.
