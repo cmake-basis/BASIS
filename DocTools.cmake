@@ -238,22 +238,6 @@ endfunction ()
 #     <td>Number of columns in alphabetical index if @p GENERATE_HTML is @c YES.
 #         Default: 3.</td>
 #   </tr>
-#   <tr>
-#     @tp @b GENERATE_HTML @endtp
-#     <td>If given, Doxygen's @c GENERATE_HTML tag is set to YES, otherwise NO.</td>
-#   </tr>
-#   <tr>
-#     @tp @b GENERATE_LATEX @endtp
-#     <td>If given, Doxygen's @c GENERATE_LATEX tag is set to YES, otherwise NO.</td>
-#   </tr>
-#   <tr>
-#     @tp @b GENERATE_RTF @endtp
-#     <td>If given, Doxygen's @c GENERATE_RTF tag is set to YES, otherwise NO.</td>
-#   </tr>
-#   <tr>
-#     @tp @b GENERATE_MAN @endtp
-#     <td>If given, Doxygen's @c GENERATE_MAN tag is set to YES, otherwise NO.</td>
-#   </tr>
 # </table>
 # @n
 # See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
@@ -263,7 +247,7 @@ endfunction ()
 # Example:
 # @code
 # basis_add_doxygen_doc (
-#   api
+#   apidoc
 #   DOXYFILE        "Doxyfile.in"
 #   PROJECT_NAME    "${PROJECT_NAME}"
 #   PROJECT_VERSION "${PROJECT_VERSION}"
@@ -297,22 +281,10 @@ function (basis_add_doxygen_doc TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     DOXYGEN
       "GENERATE_HTML;GENERATE_LATEX;GENERATE_RTF;GENERATE_MAN"
-      "COMPONENT;DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX"
+      "COMPONENT;DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION"
       "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH"
       ${ARGN_UNPARSED_ARGUMENTS}
   )
-  # default destination
-  if (NOT DOXYGEN_DESTINATION)
-    if (NOT INSTALL_APIDOC_DIR)
-      set (
-        INSTALL_APIDOC_DIR "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}"
-        CACHE PATH
-          "Installation directory of API documentation."
-      )
-      mark_as_advanced (INSTALL_APIDOC_DIR)
-    endif ()
-    set (DOXYGEN_DESTINATION "${INSTALL_APIDOC_DIR}")
-  endif ()
   # default component
   if (NOT DOXYGEN_COMPONENT)
     set (DOXYGEN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
@@ -488,6 +460,10 @@ function (basis_add_doxygen_doc TARGET_NAME)
     DOXYGEN_EXCLUDE_PATTERNS "\"\nEXCLUDE_PATTERNS      += \"" ${DOXYGEN_EXCLUDE_PATTERNS}
   )
   set (DOXYGEN_EXCLUDE_PATTERNS "\"${DOXYGEN_EXCLUDE_PATTERNS}\"")
+  # section for man pages
+  if (NOT DOXYGEN_MAN_SECTION)
+    set (DOXYGEN_MAN_SECTION 3)
+  endif ()
   # outputs
   if (NOT DOXYGEN_OUTPUT_DIRECTORY)
     set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}")
@@ -553,10 +529,11 @@ function (basis_add_doxygen_doc TARGET_NAME)
   if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)
     set (OPTALL "ALL")
   endif ()
+  file (MAKE_DIRECTORY "${DOXYGEN_OUTPUT_DIRECTORY}")
   add_custom_target (
     ${TARGET_UID} ${OPTALL} "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}"
     DEPENDS ${LOGOS}
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    WORKING_DIRECTORY "${DOXYGEN_OUTPUT_DIRECTORY}"
     COMMENT "Building documentation ${TARGET_UID}..."
   )
   # cleanup on "make clean"
@@ -602,22 +579,49 @@ function (basis_add_doxygen_doc TARGET_NAME)
   install (
     CODE
       "
-      set (INSTALL_PREFIX \"${DOXYGEN_DESTINATION}\")
-      if (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
-        set (INSTALL_PREFIX \"${INSTALL_PREFIX}/\${INSTALL_PREFIX}\")
-      endif ()
+      set (APIDOC_DESTINATION \"${INSTALL_APIDOC_DIR}\")
+      set (DESTINATION        \"${DOXYGEN_DESTINATION}\")
+      set (HTML_DESTINATION   \"${DOXYGEN_HTML_DESTINATION}\")
+      set (MAN_DESTINATION    \"${DOXYGEN_MAN_DESTINATION}\")
 
-      macro (install_doxydoc DIR)
+      function (install_doxydoc FMT)
+        string (TOUPPER \"\${FMT}\" FMT_UPPER)
+        if (\${FMT_UPPER}_DESTINATION)
+          set (INSTALL_PREFIX \"\${\${FMT_UPPER}_DESTINATION}\")
+        elseif (DESTINATION)
+          set (INSTALL_PREFIX \"\${DESTINATION}\")
+        elseif (APIDOC_DESTINATION)
+          set (INSTALL_PREFIX \"\${APIDOC_DESTINATION}\")
+        elseif (FMT MATCHES \"html\")
+          set (INSTALL_PREFIX \"${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}\")
+        elseif (FMT MATCHES \"man\")
+          set (INSTALL_PREFIX \"${INSTALL_MAN_DIR}/man${DOXYGEN_MAN_SECTION}\")
+        else ()
+          set (INSTALL_PREFIX \"${INSTALL_DOC_DIR}\")
+        endif ()
+        if (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
+          set (INSTALL_PREFIX \"${INSTALL_PREFIX}/\${INSTALL_PREFIX}\")
+        endif ()
+        set (EXT)
+        set (DIR \"\${FMT}\")
+        if (FMT MATCHES \".pdf\")
+          set (EXT \".pdf\")
+          set (DIR \"latex\")
+        elseif (FMT MATCHES \".rtf\")
+          set (EXT \".rtf\")
+        elseif (FMT MATCHES \"man\")
+          set (EXT \".?\")
+        endif ()
         file (
           GLOB_RECURSE
             FILES
-          RELATIVE \"${DOXYGEN_OUTPUT_DIRECTORY}\"
-            \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}/*\"
+          RELATIVE \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}\"
+            \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}/*\${EXT}\"
         )
         foreach (F IN LISTS FILES)
           execute_process (
             COMMAND \"${CMAKE_COMMAND}\" -E compare_files
-                \"${DOXYGEN_OUTPUT_DIRECTORY}/\${F}\"
+                \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}/\${F}\"
                 \"\${INSTALL_PREFIX}/\${F}\"
             RESULT_VARIABLE RC
             OUTPUT_QUIET
@@ -629,7 +633,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
             message (STATUS \"Installing: \${INSTALL_PREFIX}/\${F}\")
             execute_process (
               COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
-                  \"${DOXYGEN_OUTPUT_DIRECTORY}/\${F}\"
+                  \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}/\${F}\"
                   \"\${INSTALL_PREFIX}/\${F}\"
               RESULT_VARIABLE RC
               OUTPUT_QUIET
@@ -642,22 +646,20 @@ function (basis_add_doxygen_doc TARGET_NAME)
             endif ()
           endif ()
         endforeach ()
-      endmacro ()
+        if (FMT MATCHES \"html\" AND EXISTS \"${DOXYGEN_TAGFILE}\")
+          get_filename_component (DOXYGEN_TAGFILE_NAME \"${DOXYGEN_TAGFILE}\" NAME)
+          execute_process (
+            COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
+              \"${DOXYGEN_TAGFILE}\"
+              \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\"
+          )
+          list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\")
+        endif ()
+      endfunction ()
 
-      install_doxydoc (html)
-      install_doxydoc (latex)
-      install_doxydoc (rtf)
-      install_doxydoc (man)
-
-      if (EXISTS \"${DOXYGEN_TAGFILE}\")
-        get_filename_component (DOXYGEN_TAGFILE_NAME \"${DOXYGEN_TAGFILE}\" NAME)
-        execute_process (
-          COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
-            \"${DOXYGEN_TAGFILE}\"
-            \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\"
-        )
-        list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\")
-      endif ()
+      foreach (FMT IN ITEMS html pdf rtf man)
+        install_doxydoc (\${FMT})
+      endforeach ()
       "
   )
   # done
@@ -861,6 +863,13 @@ function (basis_add_sphinx_doc TARGET_NAME)
       COMMENT "Building documentation ${TARGET_UID} (${BUILDER})..."
     )
     add_dependencies (${TARGET_UID}_all ${TARGET_UID}_${BUILDER})
+    # cleanup on "make clean"
+    set_property (
+      DIRECTORY
+      APPEND PROPERTY
+        ADDITIONAL_MAKE_CLEAN_FILES
+          "${SPHINX_OUTPUT_DIRECTORY}"
+    )
   endforeach ()
   # add general target which depends on first builder only
   list (GET SPHINX_BUILDERS 0 BUILDER)
@@ -872,7 +881,6 @@ function (basis_add_sphinx_doc TARGET_NAME)
     APPEND PROPERTY
       ADDITIONAL_MAKE_CLEAN_FILES
         "${SPHINX_CONFIG_DIRECTORY}/doctrees"
-        "${SPHINX_OUTPUT_DIRECTORY}"
   )
   # install documentation
   install (
@@ -909,6 +917,8 @@ function (basis_add_sphinx_doc TARGET_NAME)
         set (EXT)
         if (BUILDER MATCHES \"pdf\")
           set (EXT \".pdf\")
+        elseif (BUILDER MATCHES \"man\")
+          set (EXT \".?\")
         elseif (BUILDER MATCHES \"texinfo\")
           set (EXT \".info\")
         endif ()
