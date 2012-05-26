@@ -15,5 +15,5 @@ rem get the time in the format HH:MM
 for /f "tokens=1-5 delims=%time_sep% " %%d in ("%time%") do (set build_time=%%d:%%e)
 for /f "tokens=1-5 delims=%time_sep%" %%d in ("%time%") do (set build_time_with_leading_space=%%d:%%e)
 if /i "%build_time_with_leading_space%" neq "%build_time%" (set build_time=0%build_time%)
-rem print build timestamp as used as alternative for PROJECT_VERSION_AND_REVISION
+rem print build timestamp as used as alternative for PROJECT_RELEASE
 echo %build_date% (%build_time%)

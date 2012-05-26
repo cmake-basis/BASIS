@@ -729,9 +729,9 @@ endmacro ()
 ## @brief Get build time stamp.
 #
 # The build time stamp is used as an alternative to the version and revision
-# information in @c PROJECT_VERSION_AND_REVISION if version is invalid, i.e.,
-# set to 0.0.0 as is the case for development branches, and now revision
-# from a revision control system is available.
+# information in @c PROJECT_RELEASE if version is invalid, i.e., set to 0.0.0
+# as is the case for development branches, and now revision from a revision
+# control system is available.
 function (basis_get_build_timestamp TIMESTAMP)
   if (WIN32)
     execute_process (
@@ -764,25 +764,25 @@ endfunction ()
 # @sa basis_project_impl()
 #
 # @returns Sets the following non-cached CMake variables:
-# @retval PROJECT_NAME_LOWER             Project name in all lowercase letters.
-# @retval PROJECT_NAME_UPPER             Project name in all uppercase letters.
-# @retval PROJECT_NAME_INFIX             Project name used as infix for installation
-#                                        directories and namespace identifiers.
-#                                        In particular, the project name in either
-#                                        all lowercase or mixed case starting with
-#                                        an uppercase letter depending on whether
-#                                        the @c PROJECT_NAME has mixed case or not.
-# @retval PROJECT_REVISION               Revision number of Subversion controlled
-#                                        source tree or 0 if the source tree is
-#                                        not under revision control.
-# @retval PROJECT_VERSION_AND_REVISION   A string of project version and revision
-#                                        that can be used for the output of
-#                                        version information. The format of this
-#                                        string is either one of the following:
-#                                          - "version 1.0.0 (revision 42)"
-#                                          - "version 1.0.0" (if revision unknown)
-#                                          - "revision 42" (if version is 0.0.0)
-#                                          - "version unknown" (otherwise)
+# @retval PROJECT_NAME_LOWER Project name in all lowercase letters.
+# @retval PROJECT_NAME_UPPER Project name in all uppercase letters.
+# @retval PROJECT_NAME_INFIX Project name used as infix for installation
+#                            directories and namespace identifiers.
+#                            In particular, the project name in either
+#                            all lowercase or mixed case starting with
+#                            an uppercase letter depending on whether
+#                            the @c PROJECT_NAME has mixed case or not.
+# @retval PROJECT_REVISION   Revision number of Subversion controlled
+#                            source tree or 0 if the source tree is
+#                            not under revision control.
+# @retval PROJECT_RELEASE    A string of project version and revision
+#                            that can be used for the output of
+#                            version information. The format of this
+#                            string is either one of the following:
+#                            - "v1.0.0 (r42)"
+#                            - "v1.0.0" (if revision unknown)
+#                            - "r42"    (if version is 0.0.0)
+#                            - ""       (otherwise)
 macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # CMake version and policies
@@ -865,21 +865,23 @@ macro (basis_project_initialize)
   # version information string
   if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?")
     if (PROJECT_REVISION)
-      set (PROJECT_VERSION_AND_REVISION "revision ${PROJECT_REVISION}")
+      set (PROJECT_RELEASE "r${PROJECT_REVISION}")
     else ()
       basis_get_build_timestamp (BUILD_TIMESTAMP)
       if (BUILD_TIMESTAMP)
-        set (PROJECT_VERSION_AND_REVISION "build ${BUILD_TIMESTAMP}")
+        set (PROJECT_RELEASE "b${BUILD_TIMESTAMP}")
       else ()
-        set (PROJECT_VERSION_AND_REVISION "version unknown")
+        set (PROJECT_RELEASE "")
       endif ()
     endif ()
   else ()
-    set (PROJECT_VERSION_AND_REVISION "version ${PROJECT_VERSION}")
+    set (PROJECT_RELEASE "v${PROJECT_VERSION}")
     if (PROJECT_REVISION)
-      set (PROJECT_VERSION_AND_REVISION "${PROJECT_VERSION_AND_REVISION} (revision ${PROJECT_REVISION})")
+      set (PROJECT_RELEASE "${PROJECT_RELEASE} (r${PROJECT_REVISION})")
     endif ()
   endif ()
+
+  set (PROJECT_VERSION_AND_REVISION "${PROJECT_RELEASE}") # backwards compatibility to BASIS < 1.3
 
   # version number for use in Perl modules
   set (PROJECT_VERSION_PERL "${PROJECT_VERSION_MAJOR}")
@@ -898,7 +900,7 @@ macro (basis_project_initialize)
   if (BASIS_VERBOSE AND NOT PROJECT_IS_MODULE)
     message (STATUS "Project:")
     message (STATUS "  Name:    ${PROJECT_NAME}")
-    message (STATUS "  Version: ${PROJECT_VERSION_AND_REVISION}")
+    message (STATUS "  Release: ${PROJECT_RELEASE}")
   endif ()
 
   # --------------------------------------------------------------------------

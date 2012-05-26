@@ -122,7 +122,7 @@ set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd
 set (BASIS_BASH_UTILITIES
 "HELP_COMMAND='\@NAME\@ (\@PROJECT_NAME\@)'
 HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
-HELP_VERSION='\@PROJECT_VERSION_AND_REVISION\@'
+HELP_VERSION='\@PROJECT_RELEASE\@'
 HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.\\nSee http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
 path=\"${BASIS_BASH___FILE__}\"
 i=0

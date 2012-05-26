@@ -212,7 +212,7 @@ endfunction ()
 #     @tp @b PROJECT_NUMBER version @endtp
 #     <td>Value for Doxygen's @c PROJECT_NUMBER tag which is used
 #         to specify the project version number.@n
-#         Default: @c PROJECT_VERSION_AND_REVISION.</td>
+#         Default: @c PROJECT_RELEASE.</td>
 #   </tr>
 #   <tr>
 #     @tp @b INPUT path1 [path2 ...] @endtp
@@ -356,7 +356,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
     set (DOXYGEN_PROJECT_NAME "${PROJECT_NAME}")
   endif ()
   if (NOT DOXYGEN_PROJECT_NUMBER)
-    set (DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION_AND_REVISION}")
+    set (DOXYGEN_PROJECT_NUMBER "${PROJECT_RELEASE}")
   endif ()
   # standard input files
   list (APPEND DOXYGEN_INPUT "${PROJECT_SOURCE_DIR}/BasisProject.cmake")
