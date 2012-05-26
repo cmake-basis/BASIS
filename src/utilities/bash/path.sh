@@ -32,7 +32,7 @@ _SBIA_PATH_INCLUDED=1
 function clean_path
 {
     # split path into parts, discarding redundant slashes
-    local dirs=()
+    local dirs= # attention: do not set to ()
     while [ -n "${path}" ]; do
         dirs=(`basename -- "${path}"` "${dirs[@]}")
         path=`dirname -- "${path}"`
@@ -109,7 +109,7 @@ function get_real_path
     # link which could not be resolved due to some probable cycle.
     if [ $i -lt 100 ]; then path="${cur}"; fi
     # return
-    echo -n ${path}
+    echo -n "${path}"
 }
 
 
