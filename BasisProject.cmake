@@ -67,6 +67,8 @@ basis_project (
     BASH
     ITK-4{ITKTestKernel}
     ITK
+    Doxygen
+    Sphinx
     #<optional-dependency>
   TEST_DEPENDS
     #<test-dependency>
