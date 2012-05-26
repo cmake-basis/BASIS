@@ -62,11 +62,12 @@ endforeach ()
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual/index.rst")
   basis_add_doc (
     manual
-    GENERATOR   Sphinx
-    BUILDER     pdf
-    OUTPUT_NAME "${OUTPUT_NAME}"
-    COPYRIGHT   "2012 University of Pennsylvania"
-    AUTHOR      "Andreas Schuh"
+    GENERATOR        Sphinx
+    BUILDER          pdf html
+    OUTPUT_NAME      "${OUTPUT_NAME}"
+    HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
+    COPYRIGHT        "2012 University of Pennsylvania"
+    AUTHOR           "Andreas Schuh"
   )
 endif ()
 
