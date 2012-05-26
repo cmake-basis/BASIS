@@ -49,7 +49,7 @@ basis_add_doc (
 )
 
 # ----------------------------------------------------------------------------
-# user guide
+# software manual
 set (OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
 
 foreach (N IN ITEMS Manual UserManual SoftwareManual UserGuide)
@@ -73,7 +73,7 @@ endif ()
 basis_add_doc ("tutorials")
 
 # ----------------------------------------------------------------------------
-# developer guide (optional)
+# developer's guide (optional)
 set (OUTPUT_NAME "${PROJECT_NAME}_Developer's_Guide")
 
 foreach (N IN ITEMS DeveloperGuide DeveloperManual)
@@ -96,7 +96,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/developer/index.rst")
 endif ()
 
 # ----------------------------------------------------------------------------
-# project web site (optional)
+# web site (optional)
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
   basis_add_doc (
     site

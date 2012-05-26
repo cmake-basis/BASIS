@@ -493,20 +493,39 @@ using the command:
 cmake -D BUILD_DOCUMENTATION=ON ~/$pkg-build
 @endcode
 
-The documentation is build by building the "doc" target, i.e.,
+Each software package provides different documentation. In general, however,
+each software has a manual, which by default is being build by the "manual"
+target, i.e.,
 @code
-make doc
+make manual
 @endcode
+Often, the software manual is, however, included as PDF document in which case
+it does not need to be build. The PDF file will simply be copied (and renamed)
+during the installation.
 
-If the BUILD_DOCUMENTATION option has been set to ON before, the doc target
-has already been build as part of the software build itself, i.e., when
-running make as in step 3.
-
+If the software provides a software library for use in your software, the
+API documentation can be build using the "apidoc" target, i.e.,
+@code
+make apidoc
+@endcode
 The advanced INSTALL_APIDOC_DIR CMake variable can be set to an absolute
 path or a path relative to the INSTALL_PREFIX directory in order to modify
 the installation directory for the API documentation which is generated
 from the in-source comments. This can be useful, for example, to install
 the documentation in the document directory of a web server.
+
+Some software packages further generate a project web site from text files
+marked up using a lightweight markup language such as reStructuredText.
+This web site can be build using the "site" target, i.e.,
+@code
+make site
+@endcode
+
+For maintainers of the software, a developer's guide may be provided which
+might be build by the "guide" target if not included as PDF document, i.e.,
+@code
+make guide
+@endcode
 
 If the source tree is a Subversion working copy and you have access to the
 Subversion repository of the project or if the project source tree is a Git
@@ -522,6 +541,10 @@ to the Subversion repository. Moreover, if the command
 <a href="http://arthurdejong.org/svn2cl/">svn2cl</a> is installed on your system,
 it will be used to format the ChangeLog. Otherwise, the plain output of the
 <tt>svn log</tt> command is used.
+
+@note Not all of the above build targets may be provided by the particular
+      software package a copy of which you obtained. You can see a list of
+      available build targets by running "make help".
 
 @subsubsection InstallBuiltFiles 5. Install the package (optional)
 

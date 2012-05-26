@@ -26,7 +26,7 @@
 basis_add_doc (apidoc GENERATOR Doxygen)
 
 # ----------------------------------------------------------------------------
-# user guide
+# software manual
 set (OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
 
 foreach (N IN ITEMS Manual UserManual SoftwareManual UserGuide)
@@ -48,7 +48,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual/index.rst")
 endif ()
 
 # ----------------------------------------------------------------------------
-# developer guide (optional)
+# developer's guide (optional)
 set (OUTPUT_NAME "${PROJECT_NAME}_Developer's_Guide")
 
 foreach (N IN ITEMS DeveloperGuide DeveloperManual)
@@ -71,7 +71,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/developer/index.rst")
 endif ()
 
 # ----------------------------------------------------------------------------
-# project web site (optional)
+# web site (optional)
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
   basis_add_doc (
     site
