@@ -549,9 +549,8 @@ to the Subversion repository. Moreover, if the command
 it will be used to format the ChangeLog. Otherwise, the plain output of the
 <tt>svn log</tt> command is used.
 
-@note Not all of the above build targets may be provided by the particular
-      software package a copy of which you obtained. You can see a list of
-      available build targets by running "make help".
+@note Not all of the above build targets are provided by each software package.
+      You can see a list of available build targets by running "make help".
 
 @subsubsection InstallBuiltFiles 5. Install the package (optional)
 
