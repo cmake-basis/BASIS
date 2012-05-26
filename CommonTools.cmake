@@ -1035,16 +1035,19 @@ endfunction ()
 #
 # @param [out] TARGET_NAME Target name.
 # @param [in]  SOURCE_FILE Source file.
-# @param [in]  COMPONENT   Third argument to get_filename_component().
+# @param [in]  ARGN        Third argument to get_filename_component().
+#                          If not specified, the given path is only sanitized.
 #
 # @returns Target name derived from @p SOURCE_FILE.
-function (basis_get_source_target_name TARGET_NAME SOURCE_FILE COMPONENT)
+function (basis_get_source_target_name TARGET_NAME SOURCE_FILE)
   # remove ".in" suffix from file name
-  string (REGEX REPLACE "\\.in$" "" SOURCE_FILE "${SOURCE_FILE}")
+  string (REGEX REPLACE "\\.in$" "" OUT "${SOURCE_FILE}")
   # get name component
-  get_filename_component (OUT "${SOURCE_FILE}" ${COMPONENT})
+  if (ARGC GREATER 2)
+    get_filename_component (OUT "${OUT}" ${ARGV2})
+  endif ()
   # replace special characters
-  string (REPLACE "." "_" OUT "${OUT}")
+  string (REGEX REPLACE "[./\\]" "_" OUT "${OUT}")
   # return
   set (${TARGET_NAME} "${OUT}" PARENT_SCOPE)
 endfunction ()

@@ -24,11 +24,10 @@ endif ()
 # ----------------------------------------------------------------------------
 ## @brief Add documentation target.
 #
-# This function is especially used to add a custom target to the "doc" target
-# which is used to generate documentation from input files such as in
-# particular source code files and documentation files marked up using one
-# of the supported lightweight markup languages. Other documentation files
-# such as HTML, Word, or PDF documents can be added as well using this function.
+# This function is used to add a software documentation files to the project
+# which are either just copied to the installation or generated from input
+# files such as in particular source code files and documentation files
+# marked up using one of the supported lightweight markup languages.
 #
 # The supported generators are:
 # <table border="0">
@@ -216,6 +215,7 @@ endfunction ()
 #       specify a default filter for all input files.@n
 #       Default: @c doxyfilter of BASIS.
 #     </td>
+#   </tr>
 #   <tr>
 #     @tp @b FILTER_PATTERNS pattern1 [pattern2...] @endtp
 #     <td>Value for Doxygen's @c FILTER_PATTERNS tag which can be used to
@@ -238,6 +238,11 @@ endfunction ()
 #         Default: No exclude patterns.</td>
 #   </tr>
 #   <tr>
+#     @tp @b OUTPUT fmt @endtp
+#     <td>Specify output formats in which to generate the documentation.
+#         Currently, only @c html and @c xml are supported.</td>
+#   </tr>
+#   <tr>
 #     @tp @b OUTPUT_DIRECTORY dir @endtp
 #     <td>Value for Doxygen's @c OUTPUT_DIRECTORY tag which can be used to
 #         specify the output directory. The output files are written to
@@ -246,14 +251,12 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b COLS_IN_ALPHA_INDEX n @endtp
-#     <td>Number of columns in alphabetical index if @p GENERATE_HTML is @c YES.
-#         Default: 3.</td>
+#     <td>Number of columns in alphabetical index. Default: 3.</td>
 #   </tr>
 # </table>
 # @n
 # See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
-# documentation of the Doxygen tags. If none of the <tt>GENERATE_&lt;*&gt;</tt>
-# options is given, @c GENERATE_HTML is set to @c YES.
+# documentation of the Doxygen tags.
 # @n@n
 # Example:
 # @code
@@ -292,9 +295,9 @@ function (basis_add_doxygen_doc TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     DOXYGEN
-      "GENERATE_HTML;GENERATE_LATEX;GENERATE_RTF;GENERATE_MAN"
+      ""
       "COMPONENT;DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION"
-      "INPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH"
+      "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH"
       ${ARGN_UNPARSED_ARGUMENTS}
   )
   # default component
@@ -485,20 +488,20 @@ function (basis_add_doxygen_doc TARGET_NAME)
   else ()
     set (DOXYGEN_TAGFILE "${DOXYGEN_OUTPUT_DIRECTORY}/doxygen.tags")
   endif ()
-  set (NUMBER_OF_OUTPUTS 0)
-  foreach (FMT HTML LATEX RTF MAN)
-    set (VAR DOXYGEN_GENERATE_${FMT})
-    if (${VAR})
-      set (${VAR} "YES")
-      math (EXPR NUMBER_OF_OUTPUTS "${NUMBER_OF_OUTPUTS} + 1")
-    else ()
-      set (${VAR} "NO")
-    endif ()
-  endforeach ()
-  if (NUMBER_OF_OUTPUTS EQUAL 0)
-    set (DOXYGEN_GENERATE_HTML "YES")
-    set (NUMBER_OF_OUTPUTS 1)
+  if (NOT DOXYGEN_OUTPUT)
+    set (DOXYGEN_OUTPUT html)
   endif ()
+  foreach (F IN ITEMS HTML XML RTF LATEX MAN)
+    set (DOXYGEN_GENERATE_${F} NO)
+  endforeach ()
+  foreach (f IN LISTS DOXYGEN_OUTPUT)
+    if (NOT f MATCHES "^(html|xml)$")
+      message (FATAL_ERROR "Invalid/Unsupported Doxygen output format: ${f}")
+    endif ()
+    string (TOUPPER "${f}" F)
+    set (DOXYGEN_GENERATE_${F} YES)  # enable generation of this output
+    set (DOXYGEN_${F}_OUTPUT "${f}") # relative output directory
+  endforeach ()
   # other settings
   if (NOT DOXYGEN_COLS_IN_ALPHA_INDEX OR DOXYGEN_COLS_IN_ALPHA_INDEX MATCHES "[^0-9]")
     set (DOXYGEN_COLS_IN_ALPHA_INDEX 3)
@@ -507,34 +510,46 @@ function (basis_add_doxygen_doc TARGET_NAME)
   set (DOXYGEN_HTML_STYLESHEET "${BASIS_MODULE_PATH}/doxygen_sbia.css")
   set (DOXYGEN_HTML_HEADER     "${BASIS_MODULE_PATH}/doxygen_header.html")
   set (DOXYGEN_HTML_FOOTER     "${BASIS_MODULE_PATH}/doxygen_footer.html")
-  # set output paths relative to DOXYGEN_OUTPUT_DIRECTORY
-  set (DOXYGEN_HTML_OUTPUT  "html")
-  set (DOXYGEN_LATEX_OUTPUT "latex")
-  set (DOXYGEN_RTF_OUTPUT   "rtf")
-  set (DOXYGEN_MAN_OUTPUT   "man")
   # click & jump in emacs and Visual Studio
   if (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
     set (DOXYGEN_WARN_FORMAT "\"$file($line) : $text \"")
   else ()
     set (DOXYGEN_WARN_FORMAT "\"$file:$line: $text \"")
   endif ()
+  # installation directories
+  foreach (f IN LISTS DOXYGEN_OUTPUT)
+    string (TOUPPER "${f}" F)
+    if (NOT DOXYGEN_${F}_DESTINATION)
+      if (DOXYGEN_DESTINATION)
+        set (DOXYGEN_${F}_DESTINATION "${DOXYGEN_DESTINATION}") # common destination
+      elseif (INSTALL_${TARGET_NAME_UPPER}_DIR)
+        set (DOXYGEN_${F}_DESTINATION "${INSTALL_${TARGET_NAME_UPPER}_DIR}") # global setting
+      elseif (f MATCHES "man")
+        if (INSTALL_MAN_DIR)
+          set (DOXYGEN_${F}_DESTINATION "${INSTALL_MAN_DIR}/man${DOXYGEN_MAN_SECTION}") # default for manual pages
+        endif ()
+      elseif (NOT f MATCHES "html") # do not install excludes by default
+        set (DOXYGEN_${F}_DESTINATION "${INSTALL_DOC_DIR}") # default destination
+      endif ()
+    endif ()
+  endforeach ()
   # configure Doxyfile
   set (DOXYFILE "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.${TARGET_NAME_LOWER}")
   configure_file ("${DOXYGEN_DOXYFILE}" "${DOXYFILE}" @ONLY)
   # add target
   set (LOGOS)
-  if (DOXYGEN_HTML_OUTPUT)
-    set (LOGOS "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_sbia.png"
-               "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_penn.png")
+  if (DOXYGEN_GENERATE_HTML)
+    set (LOGOS "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_sbia.png"
+               "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_penn.png")
     add_custom_command (
       OUTPUT   ${LOGOS}
-      COMMAND "${CMAKE_COMMAND}" -E copy
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
                 "${BASIS_MODULE_PATH}/logo_sbia.png"
-                "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_sbia.png"
-      COMMAND "${CMAKE_COMMAND}" -E copy
+                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_sbia.png"
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
                 "${BASIS_MODULE_PATH}/logo_penn.gif"
-                "${DOXYGEN_OUTPUT_DIRECTORY}/html/logo_penn.gif"
-      COMMENT "Copying logos to ${DOXYGEN_OUTPUT_DIRECTORY}/html/..."
+                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_penn.gif"
+      COMMENT "Copying logos to ${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/..."
     )
   endif ()
   set (OPTALL)
@@ -548,17 +563,35 @@ function (basis_add_doxygen_doc TARGET_NAME)
     WORKING_DIRECTORY "${DOXYGEN_OUTPUT_DIRECTORY}"
     COMMENT "Building documentation ${TARGET_UID}..."
   )
-  # cleanup on "make clean"
-  set_property (
-    DIRECTORY
-    APPEND PROPERTY
-      ADDITIONAL_MAKE_CLEAN_FILES
-        "${DOXYGEN_OUTPUT_DIRECTORY}/html"
-        "${DOXYGEN_OUTPUT_DIRECTORY}/latex"
-        "${DOXYGEN_OUTPUT_DIRECTORY}/rtf"
-        "${DOXYGEN_OUTPUT_DIRECTORY}/man"
+  # memorize certain settings which might be useful to know by other functions
+  # in particular, in case of the use of the XML output by other documentation
+  # build tools such as Sphinx, the function that wants to make use of this
+  # output can check if the Doxygen target has been configured properly and
+  # further requires to know the location of the XML output
+  set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      BASIS_TYPE       Doxygen
+      OUTPUT_DIRECTORY "${DOXYGEN_OUTPUT_DIRECTORY}"
+      DOXYFILE         "${DOXYGEN_DOXYFILE}"
+      TAGFILE          "${DOXYGEN_TAGFILE}"
+      OUTPUT           "${DOXYGEN_OUTPUT}"
   )
-  # clean up / install tags file
+  foreach (f IN LISTS DOXYGEN_OUTPUT)
+    string (TOUPPER "${f}" F)
+    set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        ${F}_INSTALL_DIRECTORY "${DOXYGEN_${F}_DESTINATION}"
+        ${F}_OUTPUT_DIRECTORY  "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_${F}_OUTPUT}"
+    )
+    set_property (
+      DIRECTORY
+      APPEND PROPERTY
+        ADDITIONAL_MAKE_CLEAN_FILES
+          "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_${F}_OUTPUT}"
+    )
+  endforeach ()
   if (DOXYGEN_TAGFILE)
     set_property (
       DIRECTORY
@@ -591,32 +624,15 @@ function (basis_add_doxygen_doc TARGET_NAME)
   install (
     CODE
       "
-      set (DESTINATION        \"${DOXYGEN_DESTINATION}\")
-      set (TARGET_DESTINATION \"${INSTALL_${TARGET_NAME_UPPER}_DIR}\")
-      set (HTML_DESTINATION   \"${DOXYGEN_HTML_DESTINATION}\")
-      set (MAN_DESTINATION    \"${DOXYGEN_MAN_DESTINATION}\")
-      set (MAN_PREFIX         \"${INSTALL_MAN_DIR}\")
+      set (HTML_DESTINATION \"${DOXYGEN_HTML_DESTINATION}\")
+      set (MAN_DESTINATION  \"${DOXYGEN_MAN_DESTINATION}\")
 
       function (install_doxydoc FMT)
         string (TOUPPER \"\${FMT}\" FMT_UPPER)
-        if (\${FMT_UPPER}_DESTINATION)
-          set (INSTALL_PREFIX \"\${\${FMT_UPPER}_DESTINATION}\")
-        elseif (DESTINATION)
-          set (INSTALL_PREFIX \"\${DESTINATION}\")
-        elseif (TARGET_DESTINATION)
-          set (INSTALL_PREFIX \"\${TARGET_DESTINATION}\")
-        elseif (FMT MATCHES \"html\")
-          return () # do not install if no destination specified
-        elseif (FMT MATCHES \"man\")
-          if (MAN_PREFIX)
-            set (INSTALL_PREFIX \"\${MAN_PREFIX}/man${DOXYGEN_MAN_SECTION}\")
-          else ()
-            return ()
-          endif ()
-        else ()
-          set (INSTALL_PREFIX \"${INSTALL_DOC_DIR}\")
-        endif ()
-        if (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
+        set (INSTALL_PREFIX \"\${\${FMT_UPPER}_DESTINATION}\")
+        if (NOT INSTALL_PREFIX)
+          return ()
+        elseif (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
           set (INSTALL_PREFIX \"${INSTALL_PREFIX}/\${INSTALL_PREFIX}\")
         endif ()
         set (EXT)
@@ -707,6 +723,22 @@ endfunction ()
 #         @c INSTALL_&ltTARGET&gt;_DIR in case of HTML output if set.
 #         Otherwise, the generated HTML files are not installed.</td>
 #   </tr>
+#   <tr>
+#     @tp @b BREATHE target... @endtp
+#     <td>Adds a project for the breathe extension which allows the
+#         inclusion of in-source code documentation extracted by Doxygen.
+#         For this to work, the specified Doxygen target has to be
+#         configured with the XML output enabled.</td>
+#   </tr>
+#   <tr>
+#     @tp @b DOXYLINK target... @endtp
+#     <td>Adds a role for the doxylink extension which allows to cross-reference
+#         generated HTML API documentation generated by Doxygen.</td>
+#   </tr>
+#   <tr>
+#     @tp @b DOXYDOC target... @endtp
+#     <td>Alias for both @c BREATHE and @c DOXYLINK options.</td>
+#   </tr>
 # </table>
 #
 # @todo Document parameters.
@@ -725,14 +757,19 @@ function (basis_add_sphinx_doc TARGET_NAME)
   # parse arguments
   set (ONE_ARG_OPTIONS
     COMPONENT
+    DEFAUL_BUILDER
     DESTINATION HTML_DESTINATION MAN_DESTINATION TEXINFO_DESTINATION
     CONFIG_FILE
     SOURCE_DIRECTORY OUTPUT_DIRECTORY OUTPUT_NAME TAG
-    COPYRIGHT TEMPLATES_PATH
+    COPYRIGHT TEMPLATES_PATH MASTER_DOC
     HTML_TITLE HTML_THEME HTML_LOGO HTML_STATIC_PATH HTML_THEME_PATH
     LATEX_DOCUMENT_CLASS
     MAN_SECTION
+    DOXYLINK_PREFIX DOXYLINK_SUFFIX
   )
+  # note that additional multiple value arguments are parsed later on below
+  # this is necessary b/c all unparsed arguments are considered to be options
+  # of the used HTML theme
   CMAKE_PARSE_ARGUMENTS (SPHINX "" "${ONE_ARG_OPTIONS}" "" ${ARGN})
   # component
   if (NOT SPHINX_COMPONENT)
@@ -753,65 +790,20 @@ function (basis_add_sphinx_doc TARGET_NAME)
     endif ()
     return ()
   endif ()
-  # source directory
-  if (NOT SPHINX_SOURCE_DIRECTORY)
-    if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
-      set (SPHINX_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
-    else ()
-      set (SPHINX_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
-    endif ()
-  elseif (NOT IS_ABSOLUTE "${SPHINX_SOURCE_DIRECTORY}")
-    get_filename_component (SPHINX_SOURCE_DIRECTORY "${SPHINX_SOURCE_DIRECTORY}" ABSOLUTE)
-  endif ()
-  # output
-  if (NOT SPHINX_OUTPUT_NAME)
-    set (SPHINX_OUTPUT_NAME "${PROJECT_NAME_LOWER}")
-  endif ()
-  if (NOT SPHINX_OUTPUT_DIRECTORY)
-    if (IS_ABSOLUTE "${SPHINX_OUTPUT_NAME}")
-      get_filename_component (SPHINX_OUTPUT_DIRECTORY "${SPHINX_OUTPUT_NAME}" PATH)
-    else ()
-      basis_get_relative_path (SPHINX_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" "${SPHINX_SOURCE_DIRECTORY}")
-    endif ()
-  endif ()
-  if (NOT IS_ABSOLUTE "${SPHINX_OUTPUT_DIRECTORY}")
-    set (SPHINX_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${SPHINX_OUTPUT_DIRECTORY}")
-  endif ()
-  if (IS_ABSOLUTE "${SPHINX_OUTPUT_NAME}")
-    basis_get_relative_path (SPHINX_OUTPUT_NAME "${SPHINX_OUTPUT_DIRECTORY}" NAME_WE)
-  endif ()
-  # configuration directory
-  basis_get_relative_path (SPHINX_CONFIG_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" "${SPHINX_SOURCE_DIRECTORY}")
-  set (SPHINX_CONFIG_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${SPHINX_CONFIG_DIRECTORY}")
-  # build configuration
-  if (NOT SPHINX_TEMPLATES_PATH AND EXISTS "${SPHINX_SOURCE_DIRECTORY}/templates")
-    set (SPHINX_TEMPLATES_PATH "${SPHINX_SOURCE_DIRECTORY}/templates")
-  endif ()
-  if (NOT SPHINX_HTML_STATIC_PATH AND EXISTS "${SPHINX_SOURCE_DIRECTORY}/static")
-    set (SPHINX_HTML_STATIC_PATH "${SPHINX_SOURCE_DIRECTORY}/static")
-  endif ()
-  if (NOT SPHINX_HTML_THEME)
-    set (SPHINX_HTML_THEME "${BASIS_SPHINX_HTML_THEME}")
-  endif ()
-  if (NOT SPHINX_UNPARSED_ARGUMENTS AND SPHINX_HTML_THEME STREQUAL BASIS_SPHINX_HTML_THEME)
-    set (SPHINX_UNPARSED_ARGUMENTS ${BASIS_SPHINX_HTML_THEME_OPTIONS})
-  endif () 
-  if (NOT SPHINX_LATEX_DOCUMENTCLASS)
-    set (SPHINX_LATEX_DOCUMENTCLASS "howto")
-  endif ()
-  if (NOT SPHINX_MAN_SECTION)
-    set (SPHINX_MAN_SECTION 1)
-  endif ()
-  # parse remaining arguments manually
+  # parse remaining arguments
   set (SPHINX_HTML_THEME_OPTIONS)
   set (SPHINX_BUILDERS)
   set (SPHINX_AUTHORS)
+  set (SPHINX_EXTENSIONS)
+  set (SPHINX_BREATHE_TARGETS)
+  set (SPHINX_DOXYLINK_TARGETS)
+  set (SPHINX_DEPENDS)
   set (OPTION_NAME)
   set (OPTION_VALUE)
   foreach (ARG IN LISTS SPHINX_UNPARSED_ARGUMENTS)
     if (NOT OPTION_NAME OR ARG MATCHES "^[A-Z_]+$")
-      # append parsed option setting to SPHINX_HTML_THEME_OPTIONS
-      if (OPTION_NAME AND NOT OPTION_NAME MATCHES "^(authors?|builders?)$")
+      # SPHINX_HTML_THEME_OPTIONS
+      if (OPTION_NAME AND NOT OPTION_NAME MATCHES "^(authors?|builders?|extensions|breathe|doxylink|doxydoc)$")
         if (NOT OPTION_VALUE)
           message (FATAL_ERROR "Option ${OPTION_NAME} is missing an argument!")
         endif ()
@@ -835,7 +827,27 @@ function (basis_add_sphinx_doc TARGET_NAME)
     # AUTHORS option
     elseif (OPTION_NAME MATCHES "^authors?$")
       list (APPEND SPHINX_AUTHORS "'${ARG}'")
-    # collect values of current option
+    # EXTENSIONS option
+    elseif (OPTION_NAME MATCHES "^extensions$")
+      # built-in extension
+      if (ARG MATCHES "^(autodoc|autosummary|doctest|intersphinx|pngmath|jsmath|mathjax|graphvis|inheritance_graph|ifconfig|coverage|todo|extlinks|viewcode)$")
+        set (ARG "sphinx.ext.${CMAKE_MATCH_0}")
+      # map originial name of extensions included with BASIS
+      elseif (ARG MATCHES "^sphinx-contrib.(doxylink)$")
+        set (ARG "${CMAKE_MATCH_1}")
+      endif ()
+      list (APPEND SPHINX_EXTENSIONS "'${ARG}'")
+    # DOXYDOC
+    elseif (OPTION_NAME MATCHES "^doxydoc$")
+      list (APPEND SPHINX_BREATHE_TARGETS  "${ARG}")
+      list (APPEND SPHINX_DOXYLINK_TARGETS "${ARG}")
+    # BREATHE
+    elseif (OPTION_NAME MATCHES "^breathe$")
+      list (APPEND SPHINX_BREATHE_TARGETS "${ARG}")
+    # DOXYLINK
+    elseif (OPTION_NAME MATCHES "^doxylink$")
+      list (APPEND SPHINX_DOXYLINK_TARGETS "${ARG}")
+    # value of theme option
     else ()
       if (ARG MATCHES "^(TRUE|FALSE)$")
         string (TOLOWER "${ARG}" "${ARG}")
@@ -858,8 +870,182 @@ function (basis_add_sphinx_doc TARGET_NAME)
     endif ()
     list (APPEND SPHINX_HTML_THEME_OPTIONS "'${OPTION_NAME}': ${OPTION_VALUE}")
   endif ()
+  # default builders
+  if (NOT SPHINX_BUILDERS)
+    set (SPHINX_BUILDERS html dirhtml singlehtml man pdf texinfo text linkcheck)
+  endif ()
+  if (SPHINX_DEFAULT_BUILDER)
+    list (FIND SPHINX_BUILDERS "${SPHINX_DEFAULT_BUILDER}" IDX)
+    if (IDX EQUAL -1)
+      list (INSERT SPHINX_BUILDERS 0 "${SPHINX_DEFAULT_BUILDER}")
+    endif ()
+  else ()
+    list (GET SPHINX_BUILDERS 0 SPHINX_DEFAULT_BUILDER)
+  endif ()
+  # source directory
+  if (NOT SPHINX_SOURCE_DIRECTORY)
+    if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
+      set (SPHINX_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
+    else ()
+      set (SPHINX_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif ()
+  elseif (NOT IS_ABSOLUTE "${SPHINX_SOURCE_DIRECTORY}")
+    get_filename_component (SPHINX_SOURCE_DIRECTORY "${SPHINX_SOURCE_DIRECTORY}" ABSOLUTE)
+  endif ()
+  # output directories
+  if (NOT SPHINX_OUTPUT_NAME)
+    set (SPHINX_OUTPUT_NAME "${PROJECT_NAME_LOWER}")
+  endif ()
+  if (NOT SPHINX_OUTPUT_DIRECTORY)
+    if (IS_ABSOLUTE "${SPHINX_OUTPUT_NAME}")
+      get_filename_component (SPHINX_OUTPUT_DIRECTORY "${SPHINX_OUTPUT_NAME}" PATH)
+    else ()
+      basis_get_relative_path (SPHINX_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" "${SPHINX_SOURCE_DIRECTORY}")
+    endif ()
+  endif ()
+  if (NOT IS_ABSOLUTE "${SPHINX_OUTPUT_DIRECTORY}")
+    set (SPHINX_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${SPHINX_OUTPUT_DIRECTORY}")
+  endif ()
+  foreach (b IN LISTS SPHINX_BUILDERS)
+    string (TOUPPER "${b}" B)
+    if (SPHINX_${B}_OUTPUT_DIRECTORY)
+      if (NOT IS_ABSOLUTE "${SPHINX_${B}_OUTPUT_DIRECTORY}")
+        set (SPHINX_${B}_OUTPUT_DIRECTORY "${SPHINX_OUTPUT_DIRECTORY}/${SPHINX_${B}_OUTPUT_DIRECTORY}")
+      endif ()
+    else ()
+      set (SPHINX_${B}_OUTPUT_DIRECTORY "${SPHINX_OUTPUT_DIRECTORY}/${b}")
+    endif ()
+  endforeach ()
+  if (IS_ABSOLUTE "${SPHINX_OUTPUT_NAME}")
+    basis_get_relative_path (SPHINX_OUTPUT_NAME "${SPHINX_OUTPUT_DIRECTORY}" NAME_WE)
+  endif ()
+  # configuration directory
+  basis_get_relative_path (SPHINX_CONFIG_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" "${SPHINX_SOURCE_DIRECTORY}")
+  set (SPHINX_CONFIG_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${SPHINX_CONFIG_DIRECTORY}")
+  # build configuration
+  if (NOT SPHINX_MASTER_DOC)
+    set (SPHINX_MASTER_DOC "index")
+  endif ()
+  if (NOT SPHINX_TEMPLATES_PATH AND EXISTS "${SPHINX_SOURCE_DIRECTORY}/templates")
+    set (SPHINX_TEMPLATES_PATH "${SPHINX_SOURCE_DIRECTORY}/templates")
+  endif ()
+  if (NOT SPHINX_HTML_STATIC_PATH AND EXISTS "${SPHINX_SOURCE_DIRECTORY}/static")
+    set (SPHINX_HTML_STATIC_PATH "${SPHINX_SOURCE_DIRECTORY}/static")
+  endif ()
+  if (NOT SPHINX_HTML_THEME)
+    set (SPHINX_HTML_THEME "${BASIS_SPHINX_HTML_THEME}")
+  endif ()
+  if (NOT SPHINX_UNPARSED_ARGUMENTS AND SPHINX_HTML_THEME STREQUAL BASIS_SPHINX_HTML_THEME)
+    set (SPHINX_UNPARSED_ARGUMENTS ${BASIS_SPHINX_HTML_THEME_OPTIONS})
+  endif () 
+  if (NOT SPHINX_LATEX_DOCUMENTCLASS)
+    set (SPHINX_LATEX_DOCUMENTCLASS "howto")
+  endif ()
+  if (NOT SPHINX_MAN_SECTION)
+    set (SPHINX_MAN_SECTION 1)
+  endif ()
+  # installation directories
+  foreach (b IN LISTS SPHINX_BUILDERS)
+    string (TOUPPER "${b}" B)
+    if (NOT SPHINX_${B}_DESTINATION)
+      if (SPHINX_DESTINATION)                           
+        set (SPHINX_${B}_DESTINATION "${DESTINATION}") # common destination
+      elseif (INSTALL_${TARGET_NAME_UPPER}_DIR)
+        set (SPHINX_${B}_DESTINATION "${INSTALL_${TARGET_NAME_UPPER}_DIR}") # global setting
+      elseif (BUILDER MATCHES "text")
+        set (SPHINX_${B}_DESTINATION "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}")
+      elseif (BUILDER MATCHES "man")
+        if (INSTALL_MAN_DIR)
+          set (SPHINX_${B}_DESTINATION "${INSTALL_MAN_DIR}/man${SPHINX_MAN_SECTION}") # default for manual pages
+        endif ()
+      elseif (BUILDER MATCHES "texinfo")
+        if (INSTALL_TEXINFO_DIR)
+          set (SPHINX_${B}_DESTINATION "${INSTALL_TEXINFO_DIR}") # default for Texinfo files
+        endif ()
+      elseif (NOT BUILDER MATCHES "html") # do not install excludes by default
+        set (SPHINX_${B}_DESTINATION "${INSTALL_DOC_DIR}") # default location
+      endif ()
+    endif ()
+  endforeach ()
+  if (SPHINX_HTML_DESTINATION)
+    foreach (b IN LISTS SPHINX_BUILDERS)
+      if (b MATCHES "(dir|single)html")
+        string (TOUPPER "${b}" B)
+        if (NOT SPHINX_${B}_DESTINATION)
+          set (SPHINX_${B}_DESTINATION "${SPHINX_HTML_DESTINATION}")
+        endif ()
+      endif ()
+    endforeach ()
+  endif ()
+  # enable required extension
+  if (SPHINX_DOXYLINK_TARGETS AND NOT SPHINX_EXTENSIONS MATCHES "(^|;)?doxylink(;|$)?")
+    list (APPEND SPHINX_EXTENSIONS "'doxylink'")
+  endif ()
+  if (SPHINX_BREATHE_TARGETS AND NOT SPHINX_EXTENSIONS MATCHES "(^|;)?breathe(;|$)?")
+    list (APPEND SPHINX_EXTENSIONS "'breathe'")
+  endif ()
+  # doxylink configuration
+  foreach (TARGET IN LISTS SPHINX_DOXYLINK_TARGETS)
+    basis_get_target_uid (UID "${TARGET}")
+    get_target_property (TYPE ${UID} BASIS_TYPE)
+    if (NOT TYPE MATCHES "Doxygen")
+      message (FATAL_ERROR "Invalid argument for DOXYLINK: Target ${UID} either unknown or it is not a Doxygen target!")
+    endif ()
+    get_target_property (DOXYGEN_OUTPUT ${UID} OUTPUT)
+    if (NOT DOXYGEN_OUTPUT MATCHES "html")
+      message (FATAL_ERROR "Doxygen target ${UID} was not configured to generate HTML output! This output is required by the doxylink Sphinx extension.")
+    endif ()
+    get_target_property (DOXYGEN_TAGFILE        ${UID} TAGFILE)
+    get_target_property (DOXYGEN_HTML_DIRECTORY ${UID} HTML_INSTALL_DIRECTORY)
+    set (DOXYLINK_BASE_DIR)
+    if (DOXYGEN_HTML_DIRECTORY)
+      if (SPHINX_DOXYLINK_BASE_DIR)
+        set (DOXYLINK_BASE_DIR "${SPHINX_DOXYLINK_BASE_DIR}")
+      elseif (SPHINX_HTML_INSTALL_DIRECTORY)
+        set (DOXYLINK_BASE_DIR "${SPHINX_HTML_INSTALL_DIRECTORY}")
+      endif ()
+    else ()
+      get_target_property (DOXYGEN_HTML_DIRECTORY ${UID} HTML_OUTPUT_DIRECTORY)
+      if (SPHINX_DOXYLINK_BASE_DIR)
+        set (DOXYLINK_BASE_DIR "${SPHINX_DOXYLINK_BASE_DIR}")
+      else ()
+        set (DOXYLINK_BASE_DIR "${SPHINX_HTML_OUTPUT_DIRECTORY}")
+      endif ()
+    endif ()
+    if (DOXYLINK_BASE_DIR)
+      basis_get_relative_path (DOXYLINK_PATH "${DOXYLINK_BASE_DIR}" "${DOXYGEN_HTML_DIRECTORY}")
+    else ()
+      set (DOXYLINK_PATH "${TARGET}") # safe fall back
+    endif ()
+    list (APPEND SPHINX_DOXYLINK "'${TARGET}': ('${DOXYGEN_TAGFILE}', '${DOXYLINK_PATH}')")
+    list (APPEND SPHINX_DEPENDS ${UID})
+  endforeach ()
+  # breathe configuration
+  set (SPHINX_BREATHE_PROJECTS)
+  set (SPHINX_BREATHE_DEFAULT_PROJECT)
+  foreach (TARGET IN LISTS SPHINX_BREATHE_TARGETS)
+    basis_get_target_uid (UID "${TARGET}")
+    get_target_property (TYPE ${UID} BASIS_TYPE)
+    if (NOT TYPE MATCHES "Doxygen")
+      message (FATAL_ERROR "Invalid argument for BREATHE_PROJECTS: Target ${UID} either unknown or it is not a Doxygen target!")
+    endif ()
+    get_target_property (DOXYGEN_OUTPUT ${UID} OUTPUT)
+    if (NOT DOXYGEN_OUTPUT MATCHES "xml")
+      message (FATAL_ERROR "Doxygen target ${UID} was not configured to generate XML output! This output is required by the Sphinx extension breathe.")
+    endif ()
+    get_target_property (DOXYGEN_OUTPUT_DIRECTORY ${UID} XML_OUTPUT_DIRECTORY)
+    list (APPEND SPHINX_BREATHE_PROJECTS "'${TARGET}': '${DOXYGEN_OUTPUT_DIRECTORY}'")
+    if (NOT SPHINX_BREATHE_DEFAULT_PROJECT)
+      set (SPHINX_BREATHE_DEFAULT_PROJECT "${TARGET}")
+    endif ()
+    list (APPEND SPHINX_DEPENDS ${UID})
+  endforeach ()
+  # turn CMake lists into Python lists
+  basis_list_to_delimited_string (SPHINX_EXTENSIONS         ", " NOAUTOQUOTE ${SPHINX_EXTENSIONS})
   basis_list_to_delimited_string (SPHINX_HTML_THEME_OPTIONS ", " NOAUTOQUOTE ${SPHINX_HTML_THEME_OPTIONS})
-  basis_list_to_delimited_string (SPHINX_AUTHORS ", " NOAUTOQUOTE ${SPHINX_AUTHORS})
+  basis_list_to_delimited_string (SPHINX_AUTHORS            ", " NOAUTOQUOTE ${SPHINX_AUTHORS})
+  basis_list_to_delimited_string (SPHINX_DOXYLINK           ", " NOAUTOQUOTE ${SPHINX_DOXYLINK})
+  basis_list_to_delimited_string (SPHINX_BREATHE_PROJECTS   ", " NOAUTOQUOTE ${SPHINX_BREATHE_PROJECTS})
   # configuration file
   if (NOT SPHINX_CONFIG_FILE)
     set (SPHINX_CONFIG_FILE "${BASIS_SPHINX_CONFIG}")
@@ -884,9 +1070,6 @@ function (basis_add_sphinx_doc TARGET_NAME)
   foreach (TAG IN LISTS SPHINX_TAG)
     list (APPEND OPTIONS "-t" "${TAG}")
   endforeach ()
-  if (NOT SPHINX_BUILDERS)
-    set (SPHINX_BUILDERS html dirhtml singlehtml man pdf texinfo text linkcheck)
-  endif ()
   add_custom_target (${TARGET_UID}_all) # target to run all builders
   foreach (BUILDER IN LISTS SPHINX_BUILDERS)
     set (SPHINX_BUILDER "${BUILDER}")
@@ -906,9 +1089,13 @@ function (basis_add_sphinx_doc TARGET_NAME)
               "${SPHINX_SOURCE_DIRECTORY}"
               "${SPHINX_OUTPUT_DIRECTORY}/${SPHINX_BUILDER}"
           ${SPHINX_POST_COMMAND}
+          ${OPTDEPENDS}
       WORKING_DIRECTORY "${SPHINX_CONFIG_DIRECTORY}"
       COMMENT "Building documentation ${TARGET_UID} (${BUILDER})..."
     )
+    if (SPHINX_DEPENDS)
+      add_dependencies (${TARGET_UID}_${BUILDER} ${SPHINX_DEPENDS})
+    endif ()
     add_dependencies (${TARGET_UID}_all ${TARGET_UID}_${BUILDER})
     # cleanup on "make clean"
     set_property (
@@ -918,10 +1105,23 @@ function (basis_add_sphinx_doc TARGET_NAME)
           "${SPHINX_OUTPUT_DIRECTORY}"
     )
   endforeach ()
-  # add general target which depends on first builder only
-  list (GET SPHINX_BUILDERS 0 BUILDER)
+  # add general target which depends on default builder only
   add_custom_target (${TARGET_UID})
-  add_dependencies (${TARGET_UID} ${TARGET_UID}_${BUILDER})
+  add_dependencies (${TARGET_UID} ${TARGET_UID}_${SPHINX_DEFAULT_BUILDER})
+  # memorize important target properties
+  set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      BASIS_TYPE       Sphinx
+      BUILDERS         "${SPHINX_BUILDERS}"
+      SOURCE_DIRECTORY "${SPHINX_SOURCE_DIRECTORY}"
+      OUTPUT_DIRECTORY "${SPHINX_OUTPUT_DIRECTORY}"
+      CONFIG_DIRECTORY "${SPHINX_CONFIG_DIRECTORY}"
+  )
+  foreach (b IN LISTS SPHINX_BUILDERS)
+    string (TOUPPER ${b} B)
+    set_target_properties (${TARGET_UID} PROPERTIES ${B}_INSTALL_DIRECTORY "${SPHINX_${B}_DESTINATION}")
+  endforeach ()
   # cleanup on "make clean"
   set_property (
     DIRECTORY
@@ -933,13 +1133,12 @@ function (basis_add_sphinx_doc TARGET_NAME)
   install (
     CODE
       "
-      set (DESTINATION         \"${SPHINX_DESTINATION}\")
-      set (TARGET_DESTINATION  \"${INSTALL_${TARGET_NAME_UPPER}_DIR}\")
       set (HTML_DESTINATION    \"${SPHINX_HTML_DESTINATION}\")
+      set (PDF_DESTINATION     \"${SPHINX_PDF_DESTINATION}\")
+      set (LATEX_DESTINATION   \"${SPHINX_LATEX_DESTINATION}\")
       set (MAN_DESTINATION     \"${SPHINX_MAN_DESTINATION}\")
       set (TEXINFO_DESTINATION \"${SPHINX_TEXINFO_DESTINATION}\")
-      set (MAN_PREFIX          \"${INSTALL_MAN_DIR}\")
-      set (TEXINFO_PREFIX      \"${INSTALL_TEXINFO_DIR}\")
+      set (TEXT_DESTINATION    \"${SPHINX_TEXT_DESTINATION}\")
 
       function (install_sphinx_doc BUILDER)
         if (BUILDER MATCHES \"pdf\")
@@ -948,32 +1147,10 @@ function (basis_add_sphinx_doc TARGET_NAME)
           set (SPHINX_BUILDER \"\${BUILDER}\")
         endif ()
         string (TOUPPER \"\${BUILDER}\" BUILDER_UPPER)
-        if (\${BUILDER_UPPER}_DESTINATION)
-          set (INSTALL_PREFIX \"\${\${BUILDER_UPPER}_DESTINATION}\")
-        elseif (DESTINATION)
-          set (INSTALL_PREFIX \"\${DESTINATION}\")
-        elseif (TARGET_DESTINATION)
-          set (INSTALL_PREFIX \"\${TARGET_DESTINATION}\")
-        elseif (BUILDER MATCHES \"html\")
-          return () # do not install if destination not specified
-        elseif (BUILDER MATCHES \"text\")
-          set (INSTALL_PREFIX \"${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}\")
-        elseif (BUILDER MATCHES \"man\")
-          if (MAN_PREFIX)
-            set (INSTALL_PREFIX \"\${MAN_PREFIX}/man${SPHINX_MAN_SECTION}\")
-          else ()
-            return ()
-          endif ()
-        elseif (BUILDER MATCHES \"texinfo\")
-          if (TEXINFO_PREFIX)
-            set (INSTALL_PREFIX \"\${TEXINFO_PREFIX}\")
-          else ()
-            return ()
-          endif ()
-        else ()
-          set (INSTALL_PREFIX \"${INSTALL_DOC_DIR}\")
-        endif ()
-        if (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
+        set (INSTALL_PREFIX \"\${\${BUILDER_UPPER}_DESTINATION}\")
+        if (NOT INSTALL_PREFIX)
+          return ()
+        elseif (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
           set (INSTALL_PREFIX \"${INSTALL_PREFIX}/\${INSTALL_PREFIX}\")
         endif ()
         set (EXT)

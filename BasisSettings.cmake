@@ -323,20 +323,50 @@ set (BASIS_PROPERTIES_ON_TARGETS
   WIN32_EXECUTABLE
   XCODE_ATTRIBUTE_<an-attribute>
   # BASIS
-  BASIS_INCLUDE_DIRECTORIES # include directories
-  BASIS_LANGUAGE            # language of source files
-  BASIS_LINK_DIRECTORIES    # link directories
-  BASIS_TYPE                # BASIS type of target
-  COMPILE                   # enable/disable compilation of script
-  LIBEXEC                   # whether the target is an auxiliary executable
-  ARCHIVE_INSTALL_DIRECTORY # installation directory of library
-  LIBRARY_INSTALL_DIRECTORY # installation directory of library
-  RUNTIME_INSTALL_DIRECTORY # installation directory of runtime
-  LIBRARY_COMPONENT         # package component of the library component
-  MFILE                     # documentation file of MEX-file
-  NO_EXPORT                 # enable/disable export of target
-  RUNTIME_COMPONENT         # package component of the runtime component
-  TEST                      # whether the target is a test
+  BASIS_INCLUDE_DIRECTORIES    # include directories
+  BASIS_LANGUAGE               # language of source files
+  BASIS_LINK_DIRECTORIES       # link directories
+  BASIS_TYPE                   # BASIS type of target
+  COMPILE                      # enable/disable compilation of script
+  LIBEXEC                      # whether the target is an auxiliary executable
+  ARCHIVE_INSTALL_DIRECTORY    # installation directory of library
+  LIBRARY_INSTALL_DIRECTORY    # installation directory of library
+  RUNTIME_INSTALL_DIRECTORY    # installation directory of runtime
+  LIBRARY_COMPONENT            # package component of the library component
+  MFILE                        # documentation file of MEX-file
+  NO_EXPORT                    # enable/disable export of target
+  RUNTIME_COMPONENT            # package component of the runtime component
+  TEST                         # whether the target is a test
+  OUTPUT_DIRECTORY             # output directory for generated files
+  INSTALL_DIRECTORY            # installation directory for generated files
+  HTML_OUTPUT_DIRECTORY        # Doxygen/Sphinx HTML output directory
+  HTML_INSTALL_DIRECTORY       # Doxygen/Sphinx HTML installation directory
+  DIRHTML_OUTPUT_DIRECTORY     # Sphinx HTML output directory
+  DIRHTML_INSTALL_DIRECTORY    # Sphinx HTML installation directory
+  SINGLEHTML_OUTPUT_DIRECTORY  # Sphinx HTML output directory
+  SINGLEHTML_INSTALL_DIRECTORY # Sphinx HTML installation directory
+  LINKCHECK_OUTPUT_DIRECTORY   # Sphinx linkcheck output directory
+  LINKCHECK_INSTALL_DIRECTORY  # Sphinx linkcheck installation directory
+  XML_OUTPUT_DIRECTORY         # Doxygen XML output directory
+  XML_INSTALL_DIRECTORY        # Doxygen XML installation directory
+  MAN_OUTPUT_DIRECTORY         # Doxygen/Sphinx MAN output directory
+  MAN_INSTALL_DIRECTORY        # Doxygen/Sphinx MAN installation directory
+  TEXT_OUTPUT_DIRECTORY        # Sphinx text output directory
+  TEXT_INSTALL_DIRECTORY       # Sphinx text installation directory
+  TEXINFO_OUTPUT_DIRECTORY     # Sphinx Texinfo output directory
+  TEXINFO_INSTALL_DIRECTORY    # Sphinx Texinfo installation directory
+  LATEX_OUTPUT_DIRECTORY       # Doxygen/Sphinx LaTeX output directory
+  LATEX_INSTALL_DIRECTORY      # Doxygen/Sphinx LaTeX installation directory
+  PDF_OUTPUT_DIRECTORY         # Doxygen/Sphinx PDF output directory
+  PDF_INSTALL_DIRECTORY        # Doxygen/Sphinx PDF installation directory
+  RTF_OUTPUT_DIRECTORY         # Doxygen RTF output directory
+  RTF_INSTALL_DIRECTORY        # Doxygen RTF installation directory
+  DOXYFILE                     # Doxygen configuration file
+  OUTPUT                       # Doxygen output formats
+  TAGFILE                      # Doxygen tag file
+  CONFIG_DIRECTORY             # Sphinx configuration directory
+  SOURCE_DIRECTORY             # Sphinx source directory
+  BUILDERS                     # Sphinx builders
 )
 
 # convert list of property names into regular expression

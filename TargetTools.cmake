@@ -750,6 +750,11 @@ endfunction ()
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
 #                         from the name of this source file.
+#                         If the specified target name is a directory within
+#                         the current source directory, all source files with
+#                         known extension, e.g., .cxx, .py, .pm, and .m, are
+#                         globbed and separate library targets added for each
+#                         module.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted:
 # @par
@@ -795,6 +800,45 @@ endfunction ()
 #
 # @ingroup CMakeAPI
 function (basis_add_library TARGET_NAME)
+  # --------------------------------------------------------------------------
+  # process all files with known extensions within specified directory
+  if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
+    # C++ library
+    file (
+      GLOB_RECURSE SOURCES
+      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.cxx.in"
+    )
+    if (SOURCES)
+      basis_add_library_target (${TARGET_NAME} ${SOURCES} ${ARGN})
+    else ()
+      basis_check_target_name ("${TARGET_NAME}")
+      basis_make_target_uid (TARGET_UID ${TARGET_NAME})
+      add_custom_target (${TARGET_UID} ALL)
+    endif ()
+    # script modules
+    file (
+      GLOB_RECURSE MODULES
+      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.py.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.pm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.pm.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.m"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.m.in"
+    )
+    foreach (M IN LISTS MODULES)
+      basis_get_filename_component (N "${M}" NAME_WE)
+      basis_get_source_target_name (T "${M}")
+      basis_add_script (${T} "${M}" MODULE WITH_PATH ${ARGN})
+      basis_set_target_properties (${T} PROPERTIES OUTPUT_NAME ${N})
+      basis_add_dependencies (${TARGET_NAME} ${T})
+    endforeach ()
+    # done
+    return ()
+  endif ()
+
   # --------------------------------------------------------------------------
   # determine language
   CMAKE_PARSE_ARGUMENTS (
