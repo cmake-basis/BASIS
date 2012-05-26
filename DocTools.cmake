@@ -594,16 +594,6 @@ function (basis_add_doxygen_doc TARGET_NAME)
       add_dependencies (${TARGET_UID} ${_UID})
     endif ()
   endforeach ()
-  # add common apidoc/doc target
-  if (DOXYGEN_COMPONENT STREQUAL BASIS_LIBRARY_COMPONENT)
-    set (PARENT_TARGET "apidoc")
-  else ()
-    set (PARENT_TARGET "doc")
-  endif ()
-  if (NOT TARGET ${PARENT_TARGET})
-    add_custom_target (${PARENT_TARGET})
-  endif ()
-  add_dependencies (${PARENT_TARGET} ${TARGET_UID})
   # install documentation
   install (
     CODE
@@ -872,16 +862,6 @@ function (basis_add_sphinx_doc TARGET_NAME)
   list (GET SPHINX_BUILDERS 0 BUILDER)
   add_custom_target (${TARGET_UID})
   add_dependencies (${TARGET_UID} ${TARGET_UID}_${BUILDER})
-  # add common apidoc/doc target
-  if (SPHINX_COMPONENT STREQUAL BASIS_LIBRARY_COMPONENT)
-    set (PARENT_TARGET "apidoc")
-  else ()
-    set (PARENT_TARGET "doc")
-  endif ()
-  if (NOT TARGET ${PARENT_TARGET})
-    add_custom_target (${PARENT_TARGET})
-  endif ()
-  add_dependencies (${PARENT_TARGET} ${TARGET_UID})
   # cleanup on "make clean"
   set_property (
     DIRECTORY
