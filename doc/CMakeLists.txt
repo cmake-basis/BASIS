@@ -32,7 +32,7 @@ file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
 unset (TEMPLATE)
 
 basis_add_doc (
-  api
+  apidoc
   GENERATOR        Doxygen
   INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
@@ -85,7 +85,7 @@ endforeach ()
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/developer/index.rst")
   basis_add_doc (
-    manual_developer
+    guide
     GENERATOR        Sphinx
     BUILDER          pdf
     SOURCE_DIRECTORY developer

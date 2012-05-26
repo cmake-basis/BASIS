@@ -23,7 +23,7 @@
 
 # ----------------------------------------------------------------------------
 # API documentation (in-source code comments)
-basis_add_doc (api GENERATOR Doxygen)
+basis_add_doc (apidoc GENERATOR Doxygen)
 
 # ----------------------------------------------------------------------------
 # user guide
@@ -60,7 +60,7 @@ endforeach ()
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/developer/index.rst")
   basis_add_doc (
-    manual_developer
+    guide
     GENERATOR        Sphinx
     BUILDER          pdf
     SOURCE_DIRECTORY developer
