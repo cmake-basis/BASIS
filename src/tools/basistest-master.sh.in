@@ -184,9 +184,7 @@ function run_test
     if [ ${verbose} -gt 0 ]; then
         echo "Run ${cmd}"
     fi
-    if [ "${dry}" == 'true' ]; then
-        echo ${cmd}
-    else
+    if [ "${dry}" == 'false' ]; then
         if [ ${verbose} -gt 0 ]; then
             ${cmd}
         else
