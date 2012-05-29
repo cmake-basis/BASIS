@@ -184,7 +184,9 @@ function run_test
     if [ ${verbose} -gt 0 ]; then
         echo "Run ${cmd}"
     fi
-    if [ ${dry} -eq 0 ]; then
+    if [ "${dry}" == 'true' ]; then
+        echo ${cmd}
+    else
         if [ ${verbose} -gt 0 ]; then
             ${cmd}
         else
@@ -324,7 +326,7 @@ function schedule_test
 
 test_cmd="${_EXEC_DIR}/basistest-slave" # command used to run tests
 verbose=0                               # verbosity of output messages
-dry=0                                   # whether this is a dry testing run
+dry='false'                             # whether this is a dry testing run
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -355,7 +357,7 @@ while [ $# -gt 0 ]; do
                 exit 1
             fi
             ;;
-        --dry) dry=1; ;;
+        --dry) dry='true'; ;;
 
         # standard options
         -h|--help)    print_help; exit 0; ;;
