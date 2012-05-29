@@ -140,7 +140,7 @@ if [ ${sge} -ne 0 ]; then
     echo "${slave} \"\$@\"" >> "${tmpslave}"
     if [ ${verbose} -gt 0 ]; then
         echo "Wrote temporary SGE submission script ${tmpslave} with command:"
-        echo "\t${slave} \"\$@\""
+        echo "    ${slave} \"\$@\""
     fi
     submit='qsub -cwd'
     if [ ! -z "${queue}" ]; then submit="${submit} -l ${queue}"; fi
@@ -165,7 +165,7 @@ if [ ! -z "${log}" ]; then
     if [ "${log_dir_ok}" == 'true' ]; then
         if [ ${verbose} -gt 0 ]; then
             echo "Removing old log files using command"
-            echo "\tfind \"${log_dir}\" -mtime \"+${max_log_mtime}\" -exec rm -f '{}' ';' 2> /dev/null"
+            echo "    find \"${log_dir}\" -mtime \"+${max_log_mtime}\" -exec rm -f '{}' ';' 2> /dev/null"
         fi
         find "${log_dir}" -mtime "+${max_log_mtime}" -exec rm -f '{}' ';' 2> /dev/null
     else
@@ -175,14 +175,10 @@ if [ ! -z "${log}" ]; then
 fi
 
 # run actual testing master
-if [ ${verbose} -gt 0 ]; then
-    echo "${master} -c \"${conf}\" -s \"${schedule}\" -t \"${slave}\""
-fi
-if [ "$dry" == 'true' ]; then
-    ${master} '--dry' -c "${conf}" -s "${schedule}" -t "${slave}"
-else
-    ${master} -c "${conf}" -s "${schedule}" -t "${slave}"
-fi
+cmd=(${master} -c "${conf}" -s "${schedule}" -t "${slave}")
+[ ${dry} == 'true' ] && cmd=("${cmd[@]}" --dry)
+[ ${verbose} -gt 0 ] && cmd=("${cmd[@]}" -v) && echo "$ ${cmd[@]}"
+"${cmd[@]}"
 
 # remove SGE submission script (SGE copied it already)
 [ -n "${tmpslave}" ] && rm -f "${tmpslave}"

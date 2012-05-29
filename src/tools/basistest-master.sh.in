@@ -182,7 +182,7 @@ function run_test
     cmd="${cmd} --project $1 --branch $2 --model $3"
     if [ ! -z "$4" ]; then cmd="${cmd} --args $4"; fi
     if [ ${verbose} -gt 0 ]; then
-        echo "Run ${cmd}"
+        echo "$ ${cmd}"
     fi
     if [ "${dry}" == 'false' ]; then
         if [ ${verbose} -gt 0 ]; then
