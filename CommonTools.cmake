@@ -1491,7 +1491,7 @@ function (basis_configure_sources LIST_NAME)
   set (CONFIGURED_SOURCES)
   foreach (SOURCE ${ARGN_UNPARSED_ARGUMENTS})
     # The .in suffix is optional, add it here if a .in file exists for this
-    # source file, but only if the source file itself does not name an acutally
+    # source file, but only if the source file itself does not name an actually
     # existing source file.
     #
     # If the source file path is relative, prefer possibly already configured
@@ -1508,6 +1508,10 @@ function (basis_configure_sources LIST_NAME)
         set (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
       elseif (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}.in")
         set (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}.in")
+      endif ()
+    else ()
+      if (NOT EXISTS "${SOURCE}" AND EXISTS "${SOURCE}.in")
+        set (SOURCE "${SOURCE}.in")
       endif ()
     endif ()
     # configure source file if filename ends in .in suffix
