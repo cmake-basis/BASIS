@@ -133,7 +133,7 @@ function print_contact
 #         called to terminate the current shell.</td>
 #   </tr>
 #   <tr>
-#     @tp <b>--verbose, -v</b> [<int>] @endtp
+#     @tp <b>--verbose, -v</b> [int] @endtp
 #     <td>Print command-line to stdout before execution. Optionally, as it is
 #         sometimes more convenient to pass in the value of another variable
 #         which controls the verbosity of the parent process itself, a verbosity
