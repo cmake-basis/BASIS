@@ -637,11 +637,11 @@ The package files are installed in the following locations:
     <th>Installed Files</th>
   </tr>
   <tr>
-    @tp <b>&lt;prefix&gt;/bin/&lt;prefix&gt;/</b> @endtp
+    @tp <b>&lt;prefix&gt;/bin/&lt;sinfix&gt;/</b> @endtp
     <td>Main executable files.</td>
   </tr>
   <tr>
-    @tp <b>&lt;prefix&gt;/etc/&lt;prefix&gt;/</b> @endtp
+    @tp <b>&lt;prefix&gt;/etc/&lt;sinfix&gt;/</b> @endtp
     <td>Package configuration files.</td>
   </tr>
   <tr>
@@ -652,7 +652,7 @@ The package files are installed in the following locations:
     </td>
   </tr>
   <tr>
-    @tp <b>&lt;prefix&gt;/lib/&lt;prefix&gt;/</b> @endtp
+    @tp <b>&lt;prefix&gt;/lib/&lt;sinfix&gt;/</b> @endtp
     <td>Libraries and auxiliary executables.</td>
   </tr>
   <tr>
@@ -676,7 +676,7 @@ The package files are installed in the following locations:
     <td>Man pages of main executables.</td>
   </tr>
   <tr>
-    @tp <b>&lt;prefix&gt;/share/&lt;prefix&gt;/man/man.3</b> @endtp
+    @tp <b>&lt;prefix&gt;/share/&lt;sinfix&gt;/man/man.3</b> @endtp
     <td>Man pages of library functions.</td>
   </tr>
 </table>
