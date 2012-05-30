@@ -33,12 +33,15 @@ function clean_path
 {
     local path="$1"
     # split path into parts, discarding redundant slashes
-    local dirs=()
+    local dirs= # Attention: do NOT use '()' for initialization as this does
+                #            set dirs to the string '()' instead of an empy
+                #            list using GNU bash, version 3.00.15(1)-release
+                #            (x86_64-redhat-linux-gnu).
     while [ -n "${path}" ]; do
-        if [ ${#dirs[@]} -gt 0 ]; then
-            dirs=("`basename -- "${path}"`" "${dirs[@]}")
-        else
+        if [ -z "${#dirs[@]}" ]; then
             dirs=("`basename -- "${path}"`")
+        else
+            dirs=("`basename -- "${path}"`" "${dirs[@]}")
         fi
         path="`dirname -- "${path}"`"
         if [ "${path}" == '/' ]; then
