@@ -50,7 +50,9 @@
 {% block rootrellink %}
   <li><a {% if pathto(master_doc)=="#" %}class="current"{% endif %} href="{{ pathto(master_doc) }}">home</a></li>
   {% for rellink in theme_rellinks %}
-    <li><a {% if pathto(rellink)=="#" %}class="current"{% endif %} href="{{ pathto(rellink) }}" title="{{ rellink|striptags|e }}">{{ rellink }}</a></li>
+    {% if pathto(rellink) %}
+      <li><a {% if pathto(rellink)=="#" %}class="current"{% endif %} href="{{ pathto(rellink) }}" title="{{ rellink|striptags|e }}">{{ rellink }}</a></li>
+    {% endif %}
   {% endfor %}
 {% endblock %}
 
