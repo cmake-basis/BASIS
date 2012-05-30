@@ -5,6 +5,8 @@
  * for Werkzeug, and adapted by Georg Brandl.
  */
 
+@import url("basic.css");
+
 div.title
 {
     padding: 20px 0px 10px 0px;
@@ -103,7 +105,6 @@ body {
     background-color: #F3F1E9; 
     color: black;
     padding: 0;
-    /*border: 1px solid #aaa;*/
     margin: 0px 80px 0px 80px;
     min-width: 740px;
 }
@@ -114,7 +115,6 @@ a {
 }
 
 a:hover {
-    /*color: #2491CF;*/
     color: #383D44;
 }
 
@@ -210,8 +210,7 @@ dd {
     color: #060;
 }
 
-dt:target,
-.highlight {
+dt:target, .highlight {
     background-color: #fbe54e;
 }
 
@@ -251,12 +250,6 @@ div.document {
     background-repeat: repeat-x;
 }
 
-/*
-div.documentwrapper {
-    width: 100%;
-}
-*/
-
 div.related h3 {
     display: none;
 }
@@ -272,7 +265,6 @@ div.related ul {
 }
 
 div.related ul li {
-    /*border: 1px solid red;*/
     color: #E7E3D9;
     margin: 0;
     padding: 0;
@@ -285,7 +277,6 @@ div.related ul li.right {
 }
 
 div.related ul li a {
-    /*border: 1px solid white;*/
     margin: 0;
     padding: 12px 20px 12px 20px;
     height: 36px;
@@ -327,7 +318,7 @@ div.body {
 }
 
 div.bodywrapper {
-    margin: 0 240px 0 0;
+    margin: 0 {{ theme_sidebarwidth|toint + 20 }}px 0 0;
     border-right: 1px solid #ccc;
 }
 
@@ -338,10 +329,9 @@ div.body a {
 div.sphinxsidebar {
     margin: 0;
     padding: 0.5em 15px 15px 0;
-    width: 210px;
+    width: {{ theme_sidebarwidth|toint }}px;
     float: right;
     text-align: left;
-/*    margin-left: -100%; */
 }
 
 div.sphinxsidebar h4, div.sphinxsidebar h3 {

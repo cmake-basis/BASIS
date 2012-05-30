@@ -9,7 +9,6 @@
 #}
 
 {% extends "basic/layout.html" %}
-{% set css_files = css_files + ["_static/sbia.css"] %}
 
 {# overwrite settings #}
 {% set reldelim1 = '' %}
@@ -21,8 +20,8 @@
   <table class="title" cellspacing="0" cellpadding="0">
     <tbody>
       <tr style="height: 56px">
-        {% if theme_project_logo %}
-          <td class="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_project_logo, 1) }}" /></a></td>
+        {% if theme_projectlogo %}
+          <td class="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_projectlogo, 1) }}" /></a></td>
         {% endif %}
         <td class="projectid">
           <div class="projectname">
@@ -36,10 +35,10 @@
       </tr>
     </tbody>
   </table>
-  {% if theme_show_penn_logo|tobool %}
+  {% if theme_pennlogo|tobool %}
     <div class="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
   {% endif %}
-  {% if theme_show_sbia_logo|tobool %}
+  {% if theme_sbialogo|tobool %}
     <div class="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
   {% endif %}
   <div class="clearer"></div>
@@ -49,19 +48,9 @@
 
 {# top navigation bar - links #}
 {% block rootrellink %}
-  {% if pathto('index')=="#" %}
-    <li><a class="current" href="{{ pathto('index') }}">home</a></li>
-  {% else %}
-    <li><a href="{{ pathto('index') }}">home</a></li>
-  {% endif %}
-  {% for rellink in theme_root_rellinks %}
-    {% if pathto(rellink) %}
-      {% if pathto(rellink)=="#" %}
-        <li><a class="current" href="{{ pathto(rellink) }}">{{ rellink|e }}</a></li>
-      {% else %}
-        <li><a href="{{ pathto(rellink) }}">{{ rellink|e }}</a></li>
-      {% endif %}
-    {% endif %}
+  <li><a {% if pathto(master_doc)=="#" %}class="current"{% endif %} href="{{ pathto(master_doc) }}">home</a></li>
+  {% for rellink in theme_rellinks %}
+    <li><a {% if pathto(rellink)=="#" %}class="current"{% endif %} href="{{ pathto(rellink) }}" title="{{ rellink|striptags|e }}">{{ rellink }}</a></li>
   {% endfor %}
 {% endblock %}
 
