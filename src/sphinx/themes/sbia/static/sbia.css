@@ -5,7 +5,7 @@
  * for Werkzeug, and adapted by Georg Brandl.
  */
 
-#titlearea
+div.title
 {
     padding: 20px 0px 10px 0px;
     margin: 8px 0px 0px 0px;
@@ -14,14 +14,14 @@
     background-color: #660000;
 }
 
-#titletable
+table.title
 {
     float: left;
     background-color: #660000;
     margin: 0px 12px;
 }
 
-#projectlogo
+td.projectlogo
 {
     text-align: center;
     vertical-align: bottom;
@@ -29,7 +29,7 @@
     background-color: #660000;
 }
  
-#projectlogo img
+td.projectlogo img
 { 
     border: 0px none;
     width: 60px;
@@ -37,7 +37,7 @@
     background-color: #660000;
 }
  
-#projectname
+div.projectname
 {
     font: 300% Tahoma, Arial,sans-serif;
     color: #fff;
@@ -47,7 +47,7 @@
     text-shadow: #C1C7DD 1px 1px 2px;
 }
 
-#projectversion
+div.projectname .projectversion
 {
     font: 50% Tahoma, Arial,sans-serif;
     color: #fff;
@@ -56,13 +56,17 @@
     background-color: #660000;
 }
 
-#sbialogo
+div.projectname a {
+    color: white;
+}
+
+div.sbialogo
 {
     vertical-align: bottom;
     border-collapse: separate;
 }
 
-#sbialogo img
+div.sbialogo img
 {
     float: right;
     border: 0px none;
@@ -72,7 +76,7 @@
     margin-right: 20px;
 }
 
-#pennlogo
+div.pennlogo
 {
     float: right;
     vertical-align: bottom;
@@ -84,7 +88,7 @@
     background-color: #660000;
 }
 
-#pennlogo img
+div.pennlogo img
 {
     border: 0px none;
     background-color: #660000;
@@ -616,4 +620,8 @@ ul.search li div.context {
 
 ul.keywordmatches li.goodmatch a {
     font-weight: bold;
+}
+
+.figure {
+    margin: 2em;
 }

@@ -17,18 +17,19 @@
 
 {# top navigation bar - logos #}
 {% block relbar1 %}
-<div id="titlearea">
-  <table id="titletable" cellspacing="0" cellpadding="0">
+<div class="title">
+  <table class="title" cellspacing="0" cellpadding="0">
     <tbody>
       <tr style="height: 56px">
         {% if theme_project_logo %}
-          <td id="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_project_logo, 1) }}" /></a></td>
+          <td class="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_project_logo, 1) }}" /></a></td>
         {% endif %}
-        <td id="projectid">
-          <div id="projectname">{{ project }}
+        <td class="projectid">
+          <div class="projectname">
+            <a href="{{ pathto('index') }}">{{ project }}</a>
             {% if theme_show_release|tobool %}
               &#160;
-              <span id="projectversion">{{ release }}</span>
+              <span class="projectversion">{{ release }}</span>
             {% endif %}
           </div>
         </td>
@@ -36,10 +37,10 @@
     </tbody>
   </table>
   {% if theme_show_penn_logo|tobool %}
-    <div id="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
+    <div class="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
   {% endif %}
   {% if theme_show_sbia_logo|tobool %}
-    <div id="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
+    <div class="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
   {% endif %}
   <div class="clearer"></div>
 </div>
