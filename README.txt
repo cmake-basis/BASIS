@@ -214,17 +214,17 @@ DOCUMENTATION
 REFERENCES
 ==========
 
-   [1] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/index.html
-   [2] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/ProjectTemplate.html
-   [3] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/FilesystemHierarchyStandard.html
-   [4] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__BasisModules.html
-   [5] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__BasisUtilities.html
-   [6] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/ImplementationStandard.html
+   [1] http://www.rad.upenn.edu/sbia/software/basis/apidoc/
+   [2] http://www.rad.upenn.edu/sbia/software/basis/apidoc/ProjectTemplate.html
+   [3] http://www.rad.upenn.edu/sbia/software/basis/apidoc/FilesystemHierarchyStandard.html
+   [4] http://www.rad.upenn.edu/sbia/software/basis/apidoc/group__BasisModules.html
+   [5] http://www.rad.upenn.edu/sbia/software/basis/apidoc/group__BasisUtilities.html
+   [6] http://www.rad.upenn.edu/sbia/software/basis/apidoc/ImplementationStandard.html
    [7] http://www.vtk.org/Wiki/ITK/Release_4/Modularization
-   [8] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/HowToCreateOrModifyAProject.html
-   [9] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/group__Tools.html
-  [10] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/HowToRunAutomatedTests.html
-  [11] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/UtilitiesTools_8cmake.html
-  [12] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/CmdLineParsing.html
-  [13] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/CallingConventions.html
-  [14] http://www.rad.upenn.edu/sbia/software/doxygen/basis/trunk/html/pages.html
+   [8] http://www.rad.upenn.edu/sbia/software/basis/apidoc/HowToCreateOrModifyAProject.html
+   [9] http://www.rad.upenn.edu/sbia/software/basis/apidoc/group__Tools.html
+  [10] http://www.rad.upenn.edu/sbia/software/basis/apidoc/HowToRunAutomatedTests.html
+  [11] http://www.rad.upenn.edu/sbia/software/basis/apidoc/UtilitiesTools_8cmake.html
+  [12] http://www.rad.upenn.edu/sbia/software/basis/apidoc/CmdLineParsing.html
+  [13] http://www.rad.upenn.edu/sbia/software/basis/apidoc/CallingConventions.html
+  [14] http://www.rad.upenn.edu/sbia/software/basis/apidoc/pages.html

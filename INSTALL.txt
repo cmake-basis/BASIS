@@ -111,25 +111,24 @@ BUILDING THE SOFTWARE FROM SOURCES
   CMake Options
   -------------
 
-  Depending on which language interpreters are installed on your system,
-  the following CMake options are available:
-
-  USE_CXX            Whether to build/enable the C++ utilities.
-  USE_PythonInterp   Whether to build/enable the Python utilities.
-  USE_Perl           Whether to build/enable the Perl utilities.
-  USE_BASH           Whether to build/enable the BASH utilities.
+  (no additional CMake options considered by this package)
 
 
   Advanced CMake Options
   ----------------------
 
-  (no additional advanced CMake options considered by this package)
+  Depending on which language interpreters are installed on your system,
+  the following CMake options are available:
+
+  USE_PythonInterp   Whether to build/enable the Python utilities.
+  USE_Perl           Whether to build/enable the Perl utilities.
+  USE_BASH           Whether to build/enable the BASH utilities.
 
 
 
 REFERENCES
 ==========
 
-  [1] http://www.rad.upenn.edu/sbia/software/index.html#basis
+  [1] http://www.rad.upenn.edu/sbia/software/basis/
 
   [2] http://www.rad.upenn.edu/sbia/software/installation.html
