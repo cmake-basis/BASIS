@@ -39,7 +39,7 @@ project = '@PROJECT_NAME@'
 version = '@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@'
 release = '@PROJECT_RELEASE@'
 
-copyright = '@COPYRIGHT@'
+copyright = '@SPHINX_COPYRIGHT@'
 if not copyright:
     import datetime
     now = datetime.datetime.now()
