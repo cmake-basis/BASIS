@@ -195,7 +195,7 @@ function get_executable_path
             _executabletargetinfo_get path "${uid}" LOCATION
             if [ -n "${path}" ]; then
                 # make path absolute
-                path=`to_absolute_path "${path}" "${_EXECUTABLETARGETINFO_DIR}"`
+                path=`to_absolute_path "${_EXECUTABLETARGETINFO_DIR}" "${path}"`
                 [ $? -eq 0 ] || return 1
             else
                 path=`/usr/bin/which "$2" 2> /dev/null`

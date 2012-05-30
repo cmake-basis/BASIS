@@ -31,11 +31,16 @@ _SBIA_PATH_INCLUDED=1
 # @return Cleaned path.
 function clean_path
 {
+    local path="$1"
     # split path into parts, discarding redundant slashes
-    local dirs= # attention: do not set to ()
+    local dirs=()
     while [ -n "${path}" ]; do
-        dirs=(`basename -- "${path}"` "${dirs[@]}")
-        path=`dirname -- "${path}"`
+        if [ ${#dirs[@]} -gt 0 ]; then
+            dirs=("`basename -- "${path}"`" "${dirs[@]}")
+        else
+            dirs=("`basename -- "${path}"`")
+        fi
+        path="`dirname -- "${path}"`"
         if [ "${path}" == '/' ]; then
             path=''
         fi
@@ -68,8 +73,8 @@ function clean_path
 # @return Absolute path.
 function to_absolute_path
 {
-    local path="$1"
-    local base="$2"
+    local base="$1"
+    local path="$2"
     if [ "${base:0:1}" != '/' ]; then
         base="`pwd`/${base}"
     fi
