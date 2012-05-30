@@ -118,8 +118,9 @@ function (print_options)
                                i.e., it only works with the CMake Makefile generator.
   apidoc[=<path>]        If specified, the API documentation is build
                          and the built HTML documentation copied to the
-                         specified directory. If this option is given without
-                         argument, the default installation directory is used.
+                         specified directory if the install option is given as well.
+                         If this option is given without argument, the default
+                         installation directory is used.
   nosubmit               Do not submit test results to the dashboard.
   shared-source          Specify that each test site should use the same copy of
                          the sources. By default, each test site uses its own copy.
@@ -840,18 +841,6 @@ if (FORCE_BUILD OR UPDATED_FILES)
       ctest_test (${CTEST_TEST_OPTIONS} RETURN_VALUE TEST_RESULT)
     endif ()
 
-    # --------------------------------------------------------------------------
-    # perform coverage analysis
-    if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
-      ctest_coverage ()
-    endif ()
-
-    # --------------------------------------------------------------------------
-    # perform memory checks
-    if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
-      ctest_memcheck (${CTEST_TEST_OPTIONS})
-    endif ()
-
     # ---------------------------------------------------------------------------
     # perform installation
     if (WITH_INSTALL AND TEST_RESULT EQUAL 0)
@@ -892,8 +881,20 @@ if (FORCE_BUILD OR UPDATED_FILES)
       )
       # submit log file in case of errors to dashboard
       if (NOT UNINSTALL_RESULT EQUAL 0 OR NOT INSTALL_RESULT EQUAL 0)
-        list (APPEND CTEST_EXTRA_SUBMIT_FILES "${CTEST_BINARY_DIRECTORY}/install.log")
+        list (APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/install.log")
       endif ()
+    endif ()
+
+    # --------------------------------------------------------------------------
+    # perform coverage analysis
+    if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
+      ctest_coverage ()
+    endif ()
+
+    # --------------------------------------------------------------------------
+    # perform memory checks
+    if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
+      ctest_memcheck (${CTEST_TEST_OPTIONS})
     endif ()
 
   endif ()
