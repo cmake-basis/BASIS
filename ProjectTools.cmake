@@ -227,7 +227,7 @@ macro (basis_installtree_asserts)
   string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
   string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
   string (TOLOWER "${INSTALL_PREFIX}"   INSTALL_ROOT)
-  if ("${INSTALL_ROOT}" MATCHES "${BUILD_ROOT}|${SOURCE_ROOT}")
+  if ("${INSTALL_ROOT}" STREQUAL "${BUILD_ROOT}" OR "${INSTALL_ROOT}" STREQUAL "${SOURCE_ROOT}")
     message (FATAL_ERROR "The current INSTALL_PREFIX points at the source or build tree:\n"
                          "  ${INSTALL_PREFIX}\n"
                          "This is not permitted by this project. "
