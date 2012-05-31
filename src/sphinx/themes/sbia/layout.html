@@ -8,59 +8,66 @@
     :license: See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #}
 
-{% extends "basic/layout.html" %}
+{%- extends "basic/layout.html" %}
+{%- set reldelim2 = '' %}
 
-{# overwrite settings #}
-{% set reldelim1 = '' %}
-{% set reldelim2 = '' %}
+{%- block relbar1 %}
+  <div class="title">
+    <table class="title" cellspacing="0" cellpadding="0">
+      <tbody>
+        <tr style="height: 56px">
+          {%- if theme_projectlogo %}
+            <td class="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_projectlogo, 1) }}" /></a></td>
+          {%- endif %}
+          <td class="projectid">
+            <div class="projectname">
+              <a href="{{ pathto('index') }}">{{ project }}</a>
+              {%- if theme_show_release|tobool %}
+                &#160;
+                <span class="projectversion">{{ release }}</span>
+              {%- endif %}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    {%- if theme_pennlogo|tobool %}
+      <div class="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
+    {%- endif %}
+    {%- if theme_sbialogo|tobool %}
+      <div class="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
+    {%- endif %}
+    <div class="clearer"></div>
+  </div>
 
-{# top navigation bar - logos #}
-{% block relbar1 %}
-<div class="title">
-  <table class="title" cellspacing="0" cellpadding="0">
-    <tbody>
-      <tr style="height: 56px">
-        {% if theme_projectlogo %}
-          <td class="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_projectlogo, 1) }}" /></a></td>
-        {% endif %}
-        <td class="projectid">
-          <div class="projectname">
-            <a href="{{ pathto('index') }}">{{ project }}</a>
-            {% if theme_show_release|tobool %}
-              &#160;
-              <span class="projectversion">{{ release }}</span>
-            {% endif %}
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  {% if theme_pennlogo|tobool %}
-    <div class="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
-  {% endif %}
-  {% if theme_sbialogo|tobool %}
-    <div class="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
-  {% endif %}
-  <div class="clearer"></div>
-</div>
-{{ super() }}
-{% endblock %}
+  <div class="related">
+    <h3>{{ _('Navigation') }}</h3>
+    <ul>
+      {%- block rootrellink %}
+        {%- set iscurrent = pathto(master_doc) == "#" or (parents and pathto(master_doc) == parents[0].link|e) %}
+        <li><a {% if iscurrent %}class="current"{% endif %} href="{{ pathto(master_doc) }}" {{ accesskey("H") }}>home</a>{{ reldelim2 }}</li>
+      {%- endblock %}
+      {%- block relbaritems %}
+        {%- for rellink in theme_rellinks %}
+          {%- set rellink_path = pathto(rellink) %}
+          {%- if rellink_path %}
+            {%- set iscurrent = (rellink_path == "#" or (parents and rellink_path == parents[0].link|e)) %}
+            <li><a {% if iscurrent %}class="current"{% endif %} href="{{ rellink_path }}" title="{{ rellink|striptags|e }}">{{ rellink }}</a>{{ reldelim2 }}</li>
+          {%- endif %}
+        {%- endfor %}
+      {%- endblock %}
+    </ul>
+    {%- if parents %}
+      <ul class="parents">
+        {%- for parent in parents %}
+          <li><a href="{{ parent.link|e }}" {% if loop.last %}{{ accesskey("U") }}{% endif %}>{{ parent.title }}</a>{{ reldelim1 }}</li>
+        {%- endfor %}
+      </ul>
+    {%- endif %}
+  </div>
+{%- endblock %}
 
-{# top navigation bar - links #}
-{% block rootrellink %}
-  <li><a {% if pathto(master_doc)=="#" %}class="current"{% endif %} href="{{ pathto(master_doc) }}">home</a></li>
-  {% for rellink in theme_rellinks %}
-    {% if pathto(rellink) %}
-      <li><a {% if pathto(rellink)=="#" %}class="current"{% endif %} href="{{ pathto(rellink) }}" title="{{ rellink|striptags|e }}">{{ rellink }}</a></li>
-    {% endif %}
-  {% endfor %}
-{% endblock %}
+{%- block relbar2 %}{% endblock %}
 
-{# bottom navigation bar - disabled #}
-{% if not show_relbar2|tobool %}
-  {% block relbar2 %}{% endblock %}
-{% endif %}
-
-{# put the sidebar before the body #}
-{% block sidebar1 %}{{ sidebar() }}{% endblock %}
-{% block sidebar2 %}{% endblock %}
+{%- block sidebar1 %}{{ sidebar() }}{% endblock %}
+{%- block sidebar2 %}{% endblock %}
