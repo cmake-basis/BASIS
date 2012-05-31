@@ -57,6 +57,7 @@ html_theme_path = ['@SPHINX_HTML_THEME_PATH@', '@BASIS_SPHINX_HTML_THEME_PATH@']
 if html_theme_path[0] == '': html_theme_path.pop(0)
 
 html_theme_options = {@SPHINX_HTML_THEME_OPTIONS@}
+html_sidebars = {'**': [@SPHINX_HTML_SIDEBARS@]}
 
 html_logo = '@SPHINX_HTML_LOGO@'
 if html_logo == '': html_logo = None
