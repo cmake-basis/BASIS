@@ -72,12 +72,11 @@ function (basis_tokenize_dependency DEP PKG VER CMP)
   if (DEP MATCHES "^(.*)-([0-9]+)(\\.[0-9]+)?(\\.[0-9]+)?(\\.[0-9]+)?$")
     set (${PKG} "${CMAKE_MATCH_1}" PARENT_SCOPE)
     set (${VER} "${CMAKE_MATCH_2}${CMAKE_MATCH_3}${CMAKE_MATCH_4}${CMAKE_MATCH_5}" PARENT_SCOPE)
-    set (${CMP} "${CMPS}" PARENT_SCOPE)
   else ()
     set (${PKG} "${DEP}" PARENT_SCOPE)
     set (${VER} ""       PARENT_SCOPE)
-    set (${CMP} ""       PARENT_SCOPE)
   endif ()
+  set (${CMP} "${CMPS}" PARENT_SCOPE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
