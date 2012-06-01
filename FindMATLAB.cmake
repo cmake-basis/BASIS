@@ -158,7 +158,7 @@ if (_MATLAB_EXECUTABLE_NAMES)
         find_program (
           MATLAB_EXECUTABLE
             NAMES matlab
-            PATHS "${MATLAB_DIR}/bin"
+            HINTS "${MATLAB_DIR}/bin"
             DOC   "The MATLAB application (matlab)."
         )
         mark_as_advanced (MATLAB_EXECUTABLE)
@@ -167,7 +167,7 @@ if (_MATLAB_EXECUTABLE_NAMES)
         find_program (
           MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE
             NAMES "${_MATLAB_EXE}"
-            PATHS "${MATLAB_DIR}/bin"
+            HINTS "${MATLAB_DIR}/bin"
             DOC   "The MATLAB application ${_MATLAB_EXE}."
         )
         mark_as_advanced (MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE)
@@ -206,7 +206,7 @@ if (_MATLAB_LIBRARY_NAMES)
     find_path (
       MATLAB_INCLUDE_DIR
         NAMES mex.h
-        PATHS "${MATLAB_DIR}/extern/include"
+        HINTS "${MATLAB_DIR}/extern/include"
         DOC   "Include directory for MATLAB libraries."
         NO_DEFAULT_PATH
     )
@@ -215,7 +215,7 @@ if (_MATLAB_LIBRARY_NAMES)
       find_library (
         MATLAB_${_MATLAB_LIB}_LIBRARY
           NAMES         "${_MATLAB_LIB}" "lib${_MATLAB_LIB}"
-          PATHS         "${MATLAB_DIR}"
+          HINTS         "${MATLAB_DIR}"
           PATH_SUFFIXES ${MATLAB_PATH_SUFFIXES}
           DOC           "MATLAB ${_MATLAB_LIB} link library."
           NO_DEFAULT_PATH
