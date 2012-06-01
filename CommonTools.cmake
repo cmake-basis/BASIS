@@ -31,11 +31,12 @@ macro (find_package)
     message ("find_package(${ARGV})")
   endif ()
   # attention: find_package() can be recursive. Hence, use "stack" to keep
-  #            track of library suffixes
-  list (APPEND _BASIS_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+  #            track of library suffixes. Further note that we need to
+  #            maintain a list of lists, which is not supported by CMake.
+  list (APPEND _BASIS_FIND_LIBRARY_SUFFIXES "{${CMAKE_FIND_LIBRARY_SUFFIXES}}")
   _find_package(${ARGV})
-  list (GET _BASIS_FIND_LIBRARY_SUFFIXES 0 CMAKE_FIND_LIBRARY_SUFFIXES)
-  list (REMOVE_AT _BASIS_FIND_LIBRARY_SUFFIXES -1)
+  string (REGEX REPLACE ";?{([^}]*)}$" "" _BASIS_FIND_LIBRARY_SUFFIXES "${_BASIS_FIND_LIBRARY_SUFFIXES}")
+  set (CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_MATCH_1}")
 endmacro ()
 
 # ----------------------------------------------------------------------------
