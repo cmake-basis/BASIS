@@ -54,16 +54,34 @@
 # initialize search
 set (OpenCV_FOUND FALSE)
 
+# 1. set OpenCV_DIR from environment variables
 if (NOT OpenCV_DIR)
   if (DEFINED ENV{OpenCV_DIR})
     set (OpenCV_DIR "$ENV{OpenCV_DIR}" CACHE PATH "Installation prefix of OpenCV Library." FORCE)
   elseif (DEFINED ENV{OPENCV_DIR})
     set (OpenCV_DIR "$ENV{OPENCV_DIR}" CACHE PATH "Installation prefix of OpenCV Library." FORCE)
-  else ()
-    find_path (
-      OpenCV_DIR "OpenCVConfig.cmake"
-      DOC "Directory containing OpenCVConfig.cmake file or installation prefix of OpenCV."
-    )
+  endif ()
+endif ()
+# 2. otherwise, try to derive it from include path
+if (NOT OpenCV_DIR)
+  # a) look for include path which might be easily found using system default
+  #    paths such as C_INCLUDE_PATH or CXX_INCLUDE_PATH
+  find_path (
+    OpenCV_INCLUDE_DIR "cv.h"
+    PATH_SUFFIXES "include" "include/opencv"
+    DOC "Directory of cv.h header file."
+  )
+  mark_as_advanced (OpenCV_INCLUDE_DIR)
+  # b) derive OpenCV_DIR from include path
+  if (OpenCV_INCLUDE_DIR)
+    # OpenCV 1
+    string (REGEX REPLACE "/include/.*$" "" OpenCV_DIR "${OpenCV_INCLUDE_DIR}")
+    # OpenCV >= 2
+    if (EXISTS "${OpenCV_DIR}/share/opencv/OpenCVConfig.cmake")
+      set (OpenCV_DIR "${OpenCV_DIR}/share/opencv")
+    endif ()
+    # cache it such that users can view/correct it
+    set (OpenCV_DIR "${OpenCV_DIR}" CACHE PATH "Installation prefix of OpenCV Library." FORCE)
   endif ()
 endif ()
 
