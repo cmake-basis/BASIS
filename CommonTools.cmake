@@ -30,10 +30,12 @@ macro (find_package)
   if (BASIS_DEBUG)
     message ("find_package(${ARGV})")
   endif ()
-  set (_BASIS_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+  # attention: find_package() can be recursive. Hence, use "stack" to keep
+  #            track of library suffixes
+  list (APPEND _BASIS_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
   _find_package(${ARGV})
-  set (CMAKE_FIND_LIBRARY_SUFFIXES "${_BASIS_FIND_LIBRARY_SUFFIXES}")
-  unset (_BASIS_FIND_LIBRARY_SUFFIXES)
+  list (GET _BASIS_FIND_LIBRARY_SUFFIXES 0 CMAKE_FIND_LIBRARY_SUFFIXES)
+  list (REMOVE_AT _BASIS_FIND_LIBRARY_SUFFIXES -1)
 endmacro ()
 
 # ----------------------------------------------------------------------------
