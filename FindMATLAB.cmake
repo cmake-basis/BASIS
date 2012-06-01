@@ -26,7 +26,7 @@
 #         By default, this find module tries to determine the path suffix
 #         from the CMake variables which describe the system. For example,
 #         on 64-bit Unix-based systems, the libraries are searched in
-#         @p MATLAB_DIR/bin/glna64. Set this variable before the
+#         @p MATLAB_DIR/bin/glnxa64. Set this variable before the
 #         find_package() command if this find module fails to
 #         determine the correct location of the MATLAB libraries within
 #         the root directory.</td>
@@ -157,20 +157,18 @@ if (_MATLAB_EXECUTABLE_NAMES)
       if (_MATLAB_EXE MATCHES "matlab")
         find_program (
           MATLAB_EXECUTABLE
-            NAMES         matlab
-            HINTS         "${MATLAB_DIR}"
-            PATH_SUFFIXES "bin"
-            DOC           "The MATLAB application (matlab)."
+            NAMES matlab
+            PATHS "${MATLAB_DIR}/bin"
+            DOC   "The MATLAB application (matlab)."
         )
         mark_as_advanced (MATLAB_EXECUTABLE)
       else ()
         string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_UPPER)
         find_program (
           MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE
-            NAMES         "${_MATLAB_EXE}"
-            HINTS         "${MATLAB_DIR}"
-            PATH_SUFFIXES "bin"
-            DOC           "The MATLAB application ${_MATLAB_EXE}."
+            NAMES "${_MATLAB_EXE}"
+            PATHS "${MATLAB_DIR}/bin"
+            DOC   "The MATLAB application ${_MATLAB_EXE}."
         )
         mark_as_advanced (MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE)
       endif ()
@@ -207,10 +205,9 @@ if (_MATLAB_LIBRARY_NAMES)
 
     find_path (
       MATLAB_INCLUDE_DIR
-        NAMES         mex.h
-        HINTS         "${MATLAB_DIR}"
-        PATH_SUFFIXES "extern/include"
-        DOC           "Include directory for MATLAB libraries."
+        NAMES mex.h
+        PATHS "${MATLAB_DIR}/extern/include"
+        DOC   "Include directory for MATLAB libraries."
         NO_DEFAULT_PATH
     )
 
@@ -218,7 +215,7 @@ if (_MATLAB_LIBRARY_NAMES)
       find_library (
         MATLAB_${_MATLAB_LIB}_LIBRARY
           NAMES         "${_MATLAB_LIB}" "lib${_MATLAB_LIB}"
-          HINTS         "${MATLAB_DIR}"
+          PATHS         "${MATLAB_DIR}"
           PATH_SUFFIXES ${MATLAB_PATH_SUFFIXES}
           DOC           "MATLAB ${_MATLAB_LIB} link library."
           NO_DEFAULT_PATH
