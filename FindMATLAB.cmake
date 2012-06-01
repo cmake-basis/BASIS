@@ -305,4 +305,9 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # unset private variables
-unset (_MATLAB_REQUIRED_VARS _MATLAB_EXECUTABLE_NAMES _MATLAB_LIBRARY_NAMES _MATLAB_PREFIX _MATLAB_LIB _MATLAB_EXE)
+unset (_MATLAB_REQUIRED_VARS)
+unset (_MATLAB_EXECUTABLE_NAMES)
+unset (_MATLAB_LIBRARY_NAMES)
+unset (_MATLAB_PREFIX)
+unset (_MATLAB_LIB)
+unset (_MATLAB_EXE)
