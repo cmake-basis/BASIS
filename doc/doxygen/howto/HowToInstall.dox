@@ -497,21 +497,26 @@ In order to build the documentation, the BUILD_DOCUMENTATION variable
 has to be set to ON. If not done before, this option can be enabled by
 using the command:
 @code
-cmake -D BUILD_DOCUMENTATION=ON ~/$pkg-build
+cmake -D BUILD_DOCUMENTATION:BOOL=ON ~/$pkg-build
 @endcode
+Note that the build of the documentation may require the build of the software
+beforehand. If the software was not build before, the build of the documentation
+will also trigger the build of the software.
 
 Each software package provides different documentation. In general, however,
 each software has a manual, which by default is being build by the "manual"
-target, i.e.,
+target if the software manual is not already included as PDF document. In the
+latter case, the manual does not have to be build. Instead, the PDF file will
+simply be copied (and renamed) during the installation. Otherwise, in order
+to build the manual from source files such as reStructuredText or LaTeX, run
+the command
 @code
 make manual
 @endcode
-Often, the software manual is, however, included as PDF document in which case
-it does not need to be build. The PDF file will simply be copied (and renamed)
-during the installation.
 
-If the software provides a software library for use in your software, the
-API documentation can be build using the "apidoc" target, i.e.,
+If the software provides a software library for use in your own code,
+the API documentation may be useful which can be build using the "apidoc" target,
+i.e.,
 @code
 make apidoc
 @endcode
@@ -527,6 +532,19 @@ This web site can be build using the "site" target, i.e.,
 @code
 make site
 @endcode
+This will generate the HTML pages and corresponding static files of the
+web site in doc/site/html/. If you prefer a single directory per document
+which results in prettier URLs without the <tt>.html</tt> extension, run
+the following command instead
+@code
+make site_dirhtml
+@endcode
+The resulting web site can then be found in doc/site/dirhtml/.
+Optionally, the advanced INSTALL_SITE_DIR CMake variable can be set to an
+absolute path or a path relative to the INSTALL_PREFIX directory in order
+to modify the installation directory for the generated web site. This can
+be useful, for example, to install the web site in the document directory
+of a web server.
 
 For maintainers of the software, a developer's guide may be provided which
 might be build by the "guide" target if not included as PDF document, i.e.,
@@ -551,13 +569,15 @@ it will be used to format the ChangeLog. Otherwise, the plain output of the
 
 @note Not all of the above build targets are provided by each software package.
       You can see a list of available build targets by running "make help".
+      All available documentation targets, except the ChangeLog, can be build
+      by executing the command "make doc".
 
 @subsubsection InstallBuiltFiles 5. Install the package (optional)
 
 First, make sure that the CMake variables INSTALL_PREFIX and
 INSTALL_SINFIX are set properly by running CMake as follows:
 @code
-cmake -D "INSTALL_PREFIX=<prefix>" -D "INSTALL_SINFIX=ON|OFF" ~/$pkg-build
+cmake -D "INSTALL_PREFIX:PATH=<prefix>" -D "INSTALL_SINFIX:BOOL=ON|OFF" ~/$pkg-build
 @endcode
 
 This can be omitted if these variables were set already during the
