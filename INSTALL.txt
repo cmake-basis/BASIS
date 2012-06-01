@@ -89,7 +89,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   $ tar xzf $package-$version-source.tar.gz
   $ mkdir $package-$version-build
   $ cd $package-$version-build
-  $ ccmake -D BASIS_DIR:PATH=/path/to/lib/cmake/basis ../$package-$version-source
+  $ ccmake ../$package-$version-source
 
     - Press 'c' to configure the build system and 'e' to ignore warnings.
     - Set INSTALL_PREFIX and other CMake variables and options.
