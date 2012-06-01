@@ -18,7 +18,7 @@
 #     <td>The @c COMPONENTS argument(s) of the find_package() command can
 #         be used to only look for specific MATLAB executables and libraries.
 #         Valid component values are "matlab", "mcc", "mexext", "mex",
-#         "mx", and "eng".</td>
+#         "libmex", "mx" or "libmx", and "eng" or "libeng".</td>
 #   </tr>
 #   <tr>
 #     @tp @b MATLAB_PATH_SUFFIXES @endtp
@@ -133,14 +133,11 @@ endif ()
 
 set (_MATLAB_LIBRARY_NAMES)
 if (MATLAB_FIND_COMPONENTS)
-  foreach (_MATLAB_COMPONENT IN LISTS MATLAB_FIND_COMPONTENS)
+  foreach (_MATLAB_COMPONENT IN LISTS MATLAB_FIND_COMPONENTS)
     string (TOLOWER "${_MATLAB_COMPONENT}" _MATLAB_COMPONENT)
-    if (_MATLAB_COMPONENT MATCHES "^(matlab|mcc|mexext)$")
+    if (_MATLAB_COMPONENT MATCHES "^(matlab|mcc|mexext|mex)$")
       list (APPEND _MATLAB_EXECUTABLE_NAMES ${_MATLAB_COMPONENT})
-    elseif (_MATLAB_COMPONENT MATCHES "^mex$")
-      list (APPEND _MATLAB_EXECUTABLE_NAMES ${_MATLAB_COMPONENT})
-      list (APPEND _MATLAB_LIBRARY_NAMES    ${_MATLAB_COMPONENT})
-    elseif (_MATLAB_COMPONENT MATCHES "^(mx|eng)$")
+    elseif (_MATLAB_COMPONENT MATCHES "^(libmex|libmx|libeng|mx|eng)$")
       list (APPEND _MATLAB_LIBRARY_NAMES ${_MATLAB_COMPONENT})
     else ()
       message (FATAL_ERROR "Unknown MATLAB component: ${_MATLAB_COMPONENT}")
@@ -275,8 +272,12 @@ include (FindPackageHandleStandardArgs)
 set (_MATLAB_REQUIRED_VARS)
 
 foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES)
-  string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXECUTABLE)
-  list (APPEND _MATLAB_REQUIRED_VARS MATLAB_${_MATLAB_EXECUTABLE}_EXECUTABLE)
+  if (_MATLAB_EXE MATCHES "matlab")
+    list (APPEND _MATLAB_REQUIRED_VARS MATLAB_EXECUTABLE)
+  else ()
+    string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXECUTABLE)
+    list (APPEND _MATLAB_REQUIRED_VARS MATLAB_${_MATLAB_EXECUTABLE}_EXECUTABLE)
+  endif ()
 endforeach ()
 
 if (_MATLAB_LIBRARY_NAMES)
@@ -294,11 +295,13 @@ if (_MATLAB_REQUIRED_VARS)
   # VARIABLES
       ${_MATLAB_REQUIRED_VARS}
   )
+else ()
+  set (MATLAB_FOUND TRUE)
 endif ()
 
 # ----------------------------------------------------------------------------
 # set MATLAB_DIR
-if (NOT MATLAB_DIR AND MATLAB_FOUND)
+if (NOT MATLAB_DIR AND MATLAB_INCLUDE_DIR)
   string (REGEX REPLACE "extern/include/?" "" _MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
   set (MATLAB_DIR "${_MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
 endif ()
