@@ -73,6 +73,6 @@ basis_project (
   TEST_DEPENDS
     #<test-dependency>
   OPTIONAL_TEST_DEPENDS
-    MATLAB
+    MATLAB{matlab, mex, mexext}
     #<optional-test-dependency>
 )
