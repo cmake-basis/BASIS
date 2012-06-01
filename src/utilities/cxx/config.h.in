@@ -184,6 +184,10 @@ extern const unsigned int cRevision;
 /// @brief Complete version information as output by --version option.
 extern const char* cRelease;
 
+/// @brief Deprecated complete version information for version output.
+/// @deprecated Use cRelease instead.
+extern const char* cVersionAndRevision;
+
 // ---------------------------------------------------------------------------
 // paths - build tree
 

@@ -30,6 +30,7 @@ const char* cProjectNameLower = "@PROJECT_NAME_LOWER@";
 const char* cProjectNameUpper = "@PROJECT_NAME_UPPER@";
 const char* cVersion          = "@PROJECT_VERSION@";
 const char* cRelease          = "@PROJECT_RELEASE@";
+const char* cVersionAndRevision = cRelease; // deprecated
 
 const unsigned int cVersionMajor = @PROJECT_VERSION_MAJOR@;
 const unsigned int cVersionMinor = @PROJECT_VERSION_MINOR@;
