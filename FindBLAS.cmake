@@ -70,6 +70,11 @@
 # @ingroup CMakeFindModules
 ##############################################################################
 
+set(BLAS_LIBRARIES_VARS) # set by check_fortran_libraries() to a list of
+                         # variable names of each searched library such
+                         # that these libraries can be made non-advanced
+                         # in case no library was found
+
 include(CheckFunctionExists)
 include(CheckFortranFunctionExists)
 
@@ -136,6 +141,7 @@ foreach(_library ${_list})
     )
    endif( APPLE )
     mark_as_advanced(${_prefix}_${_library}_LIBRARY)
+    list (APPEND BLAS_LIBRARIES_VARS ${_prefix}_${_library}_LIBRARY)
     set(${LIBRARIES} ${${LIBRARIES}} ${${_prefix}_${_library}_LIBRARY})
     set(_libraries_work ${${_prefix}_${_library}_LIBRARY})
   endif(_libraries_work)
@@ -582,8 +588,10 @@ else(BLA_F95)
       message(STATUS "A library with BLAS API found.")
     else(BLAS_FOUND)
       if(BLAS_FIND_REQUIRED)
+        mark_as_advanced (CLEAR ${BLAS_LIBRARIES_VARS})
         message(FATAL_ERROR
-        "A required library with BLAS API not found. Please specify library location."
+        "A required library with BLAS API not found. Please specify library location"
+        " by setting at least one of the following variables: [${BLAS_LIBRARIES_VARS}]."
         )
       else(BLAS_FIND_REQUIRED)
         message(STATUS
@@ -593,3 +601,5 @@ else(BLA_F95)
     endif(BLAS_FOUND)
   endif(NOT BLAS_FIND_QUIETLY)
 endif(BLA_F95)
+
+unset(BLAS_LIBRARIES_VARS)
