@@ -111,7 +111,14 @@ BUILDING THE SOFTWARE FROM SOURCES
   CMake Options
   -------------
 
-  (no additional CMake options considered by this package)
+  - ITK_DIR      Specify directory of ITKConfig.cmake file. The ITK library is
+                 used by the basistest-driver executable if available. See
+                 Build Dependencies for more details.
+  - MATLAB_DIR   Specify installation root directory of MATLAB. This variable
+                 is only available if BUILD_TESTING was set to ON and setting
+                 it can be omitted. If a MATLAB installation was specified,
+                 however, the tests for the build of binaries using the MATLAB
+                 Compiler or the MEX script respectively can be run.
 
 
   Advanced CMake Options
@@ -120,6 +127,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   Depending on which language interpreters are installed on your system,
   the following CMake options are available:
 
+  USE_ITK            Whether to utilize the found ITK.
   USE_PythonInterp   Whether to build/enable the Python utilities.
   USE_Perl           Whether to build/enable the Perl utilities.
   USE_BASH           Whether to build/enable the BASH utilities.
