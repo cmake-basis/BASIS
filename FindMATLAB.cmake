@@ -14,6 +14,13 @@
 #     <td>Alternative environment variable for @p MATLAB_DIR.</td>
 #   </tr>
 #   <tr>
+#     @tp @b MATLAB_FIND_COMPONENTS @endtp
+#     <td>The @c COMPONENTS argument(s) of the find_package() command can
+#         be used to only look for specific MATLAB executables and libraries.
+#         Valid component values are "matlab", "mcc", "mexext", "mex",
+#         "mx", and "eng".</td>
+#   </tr>
+#   <tr>
 #     @tp @b MATLAB_PATH_SUFFIXES @endtp
 #     <td>Path suffixes which are used to find the proper MATLAB libraries.
 #         By default, this find module tries to determine the path suffix
@@ -124,162 +131,178 @@ if (NOT MATLAB_PATH_SUFFIXES)
   endif ()
 endif ()
 
-set (MATLAB_LIBRARY_NAMES "mex" "mx" "eng")
+set (_MATLAB_LIBRARY_NAMES)
+if (MATLAB_FIND_COMPONENTS)
+  foreach (_MATLAB_COMPONENT IN LISTS MATLAB_FIND_COMPONTENS)
+    string (TOLOWER "${_MATLAB_COMPONENT}" _MATLAB_COMPONENT)
+    if (_MATLAB_COMPONENT MATCHES "^(matlab|mcc|mexext)$")
+      list (APPEND _MATLAB_EXECUTABLE_NAMES ${_MATLAB_COMPONENT})
+    elseif (_MATLAB_COMPONENT MATCHES "^mex$")
+      list (APPEND _MATLAB_EXECUTABLE_NAMES ${_MATLAB_COMPONENT})
+      list (APPEND _MATLAB_LIBRARY_NAMES    ${_MATLAB_COMPONENT})
+    elseif (_MATLAB_COMPONENT MATCHES "^(mx|eng)$")
+      list (APPEND _MATLAB_LIBRARY_NAMES ${_MATLAB_COMPONENT})
+    else ()
+      message (FATAL_ERROR "Unknown MATLAB component: ${_MATLAB_COMPONENT}")
+    endif ()
+  endforeach ()
+else ()
+  set (_MATLAB_EXECUTABLE_NAMES matlab mcc mex mexext)
+  set (_MATLAB_LIBRARY_NAMES    mex mx eng)
+endif ()
 
 # ----------------------------------------------------------------------------
 # find MATLAB executables
-if (MATLAB_DIR)
-  find_program (
-    MATLAB_EXECUTABLE
-      NAMES         matlab
-      HINTS         "${MATLAB_DIR}"
-      PATH_SUFFIXES "bin"
-      DOC           "The MATLAB application (matlab)."
-  )
+if (_MATLAB_EXECUTABLE_NAMES)
+  if (MATLAB_DIR)
 
-  find_program (
-    MATLAB_MCC_EXECUTABLE
-      NAMES         mcc
-      HINTS         "${MATLAB_DIR}"
-      PATH_SUFFIXES "bin"
-      DOC           "The MATLAB Compiler (mcc)."
-  )
+    foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES)
+      if (_MATLAB_EXE MATCHES "matlab")
+        find_program (
+          MATLAB_EXECUTABLE
+            NAMES         matlab
+            HINTS         "${MATLAB_DIR}"
+            PATH_SUFFIXES "bin"
+            DOC           "The MATLAB application (matlab)."
+        )
+        mark_as_advanced (MATLAB_EXECUTABLE)
+      else ()
+        string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_UPPER)
+        find_program (
+          MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE
+            NAMES         "${_MATLAB_EXE}"
+            HINTS         "${MATLAB_DIR}"
+            PATH_SUFFIXES "bin"
+            DOC           "The MATLAB application ${_MATLAB_EXE}."
+        )
+        mark_as_advanced (MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE)
+      endif ()
+    endforeach ()
 
-  find_program (
-    MATLAB_MEX_EXECUTABLE
-      NAMES         mex
-      HINTS         "${MATLAB_DIR}"
-      PATH_SUFFIXES "bin"
-      DOC           "The MEX-file generator of MATLAB (mex)."
-  )
+  else ()
 
-  find_program (
-    MATLAB_MEXEXT_EXECUTABLE
-      NAMES         mexext
-      HINTS         "${MATLAB_DIR}"
-      PATH_SUFFIXES "bin"
-      DOC           "The MEXEXT script of MATLAB (mexext)."
-  )
-else ()
-  find_program (
-    MATLAB_EXECUTABLE
-      NAMES matlab
-      DOC "The MATLAB application (matlab)."
-  )
+    foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES)
+      if (_MATLAB_EXE MATCHES "matlab")
+        find_program (
+          MATLAB_EXECUTABLE
+            NAMES matlab
+            DOC   "The MATLAB application (matlab)."
+        )
+        mark_as_advanced (MATLAB_EXECUTABLE)
+      else ()
+        string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_UPPER)
+        find_program (
+          MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE
+            NAMES "${_MATLAB_EXE}"
+            DOC   "The MATLAB application ${_MATLAB_EXE}."
+        )
+        mark_as_advanced (MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE)
+      endif ()
+    endforeach ()
 
-  find_program (
-    MATLAB_MCC_EXECUTABLE
-      NAMES mcc
-      DOC "The MATLAB Compiler (mcc)."
-  )
-
-  find_program (
-    MATLAB_MEX_EXECUTABLE
-      NAMES mex
-      DOC "The MEX-file generator of MATLAB (mex)."
-  )
-
-  find_program (
-    MATLAB_MEXEXT_EXECUTABLE
-      NAMES mexext
-      DOC "The MEXEXT script of MATLAB (mexext)."
-  )
+  endif ()
 endif ()
-
-mark_as_advanced (MATLAB_EXECUTABLE)
-mark_as_advanced (MATLAB_MCC_EXECUTABLE)
-mark_as_advanced (MATLAB_MEX_EXECUTABLE)
-mark_as_advanced (MATLAB_MEXEXT_EXECUTABLE)
 
 # ----------------------------------------------------------------------------
 # find paths/files
-if (MATLAB_DIR)
+if (_MATLAB_LIBRARY_NAMES)
+  if (MATLAB_DIR)
 
-  find_path (
-    MATLAB_INCLUDE_DIR
-      NAMES         mex.h
-      HINTS         "${MATLAB_DIR}"
-      PATH_SUFFIXES "extern/include"
-      DOC           "Include directory for MATLAB libraries."
-      NO_DEFAULT_PATH
-  )
-
-  foreach (LIB ${MATLAB_LIBRARY_NAMES})
-    find_library (
-      MATLAB_${LIB}_LIBRARY
-        NAMES         ${LIB} lib${LIB}
+    find_path (
+      MATLAB_INCLUDE_DIR
+        NAMES         mex.h
         HINTS         "${MATLAB_DIR}"
-        PATH_SUFFIXES ${MATLAB_PATH_SUFFIXES}
-        DOC           "MATLAB ${LIB} link library."
+        PATH_SUFFIXES "extern/include"
+        DOC           "Include directory for MATLAB libraries."
         NO_DEFAULT_PATH
     )
-  endforeach ()
 
-else ()
+    foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+      find_library (
+        MATLAB_${_MATLAB_LIB}_LIBRARY
+          NAMES         "${_MATLAB_LIB}" "lib${_MATLAB_LIB}"
+          HINTS         "${MATLAB_DIR}"
+          PATH_SUFFIXES ${MATLAB_PATH_SUFFIXES}
+          DOC           "MATLAB ${_MATLAB_LIB} link library."
+          NO_DEFAULT_PATH
+      )
+    endforeach ()
 
-  find_path (
-    MATLAB_INCLUDE_DIR
-      NAMES mex.h
-      HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-      DOC   "Include directory for MATLAB libraries."
-  )
+  else ()
 
-  foreach (LIB ${MATLAB_LIBRARY_NAMES})
-    find_library (
-      MATLAB_${LIB}_LIBRARY
-        NAMES         ${LIB}
-        HINTS ENV LD_LIBRARY_PATH
-        DOC           "MATLAB ${LIB} link library."
+    find_path (
+      MATLAB_INCLUDE_DIR
+        NAMES mex.h
+        HINTS ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
+        DOC   "Include directory for MATLAB libraries."
     )
+
+    foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+      find_library (
+        MATLAB_${_MATLAB_LIB}_LIBRARY
+          NAMES "${_MATLAB_LIB}"
+          HINTS ENV LD_LIBRARY_PATH
+          DOC   "MATLAB ${_MATLAB_LIB} link library."
+      )
+    endforeach ()
+
+  endif ()
+  # mark variables as advanced
+  mark_as_advanced (MATLAB_INCLUDE_DIR)
+  foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+    mark_as_advanced (MATLAB_${_MATLAB_LIB}_LIBRARY)
   endforeach ()
+  # list of all libraries
+  set (MATLAB_LIBRARY)
+  foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+    if (MATLAB_${_MATLAB_LIB}_LIBRARY)
+      list (APPEND MATLAB_LIBRARY "${MATLAB_${_MATLAB_LIB}_LIBRARY}")
+    endif ()
+  endforeach ()
+  # prerequisite libraries
+  set (MATLAB_INCLUDES  "${MATLAB_INCLUDE_DIR}")
+  set (MATLAB_LIBRARIES "${MATLAB_LIBRARY}")
+  # aliases / backwards compatibility
+  set (MATLAB_INCLUDE_DIRS "${MATLAB_INCLUDES}")
 
 endif ()
-
-mark_as_advanced (MATLAB_INCLUDE_DIR)
-foreach (LIB ${MATLAB_LIBRARY_NAMES})
-  mark_as_advanced (MATLAB_${LIB}_LIBRARY)
-endforeach ()
-
-set (MATLAB_LIBRARY)
-foreach (LIB ${MATLAB_LIBRARY_NAMES})
-  if (MATLAB_${LIB}_LIBRARY)
-    list (APPEND MATLAB_LIBRARY "${MATLAB_${LIB}_LIBRARY}")
-  endif ()
-endforeach ()
-
-# ----------------------------------------------------------------------------
-# prerequisite libraries
-set (MATLAB_INCLUDES  "${MATLAB_INCLUDE_DIR}")
-set (MATLAB_LIBRARIES "${MATLAB_LIBRARY}")
-
-# ----------------------------------------------------------------------------
-# aliases / backwards compatibility
-set (MATLAB_INCLUDE_DIRS "${MATLAB_INCLUDES}")
 
 # ----------------------------------------------------------------------------
 # handle the QUIETLY and REQUIRED arguments and set *_FOUND to TRUE
 # if all listed variables are found or TRUE
 include (FindPackageHandleStandardArgs)
 
-set (MATLAB_LIBRARY_VARS)
-foreach (LIB ${MATLAB_LIBRARY_NAMES})
-  list (APPEND MATLAB_LIBRARY_VARS "MATLAB_${LIB}_LIBRARY")
+set (_MATLAB_REQUIRED_VARS)
+
+foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES)
+  string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXECUTABLE)
+  list (APPEND _MATLAB_REQUIRED_VARS MATLAB_${_MATLAB_EXECUTABLE}_EXECUTABLE)
 endforeach ()
 
-find_package_handle_standard_args (
-  MATLAB
-# MESSAGE
-    DEFAULT_MSG
-# VARIABLES
-    MATLAB_EXECUTABLE
-    MATLAB_INCLUDE_DIR
-    ${MATLAB_LIBRARY_VARS}
-)
+if (_MATLAB_LIBRARY_NAMES)
+  list (APPEND _MATLAB_REQUIRED_VARS MATLAB_INCLUDE_DIR)
+  foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+    list (APPEND _MATLAB_REQUIRED_VARS MATLAB_${_MATLAB_LIB}_LIBRARY)
+  endforeach ()
+endif ()
+
+if (_MATLAB_REQUIRED_VARS)
+  find_package_handle_standard_args (
+    MATLAB
+  # MESSAGE
+      DEFAULT_MSG
+  # VARIABLES
+      ${_MATLAB_REQUIRED_VARS}
+  )
+endif ()
 
 # ----------------------------------------------------------------------------
 # set MATLAB_DIR
 if (NOT MATLAB_DIR AND MATLAB_FOUND)
-  string (REGEX REPLACE "extern/include/?" "" MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
-  set (MATLAB_DIR "${MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
-  unset (MATLAB_PREFIX)
+  string (REGEX REPLACE "extern/include/?" "" _MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
+  set (MATLAB_DIR "${_MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
 endif ()
+
+# ----------------------------------------------------------------------------
+# unset private variables
+unset (_MATLAB_REQUIRED_VARS _MATLAB_EXECUTABLE_NAMES _MATLAB_LIBRARY_NAMES _MATLAB_PREFIX _MATLAB_LIB _MATLAB_EXE)
