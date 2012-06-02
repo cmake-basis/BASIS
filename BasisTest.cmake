@@ -623,7 +623,7 @@ function (basis_add_test TEST_NAME)
   # especially in case of C++ unit tests, if the linkage of the tests is done
   # incorrectly, no tests are actually run and the unit test passes
   # therefore, add this fail regular expression to identify such issues
-  set_tests_properties (${TEST_UID} PROPERTIES FAIL_REGULAR_EXPRESSION "(\\[ *PASSED *\\]|Ran) 0 tests")
+  set_tests_properties (${TEST_UID} PROPERTIES FAIL_REGULAR_EXPRESSION "(\\[ *PASSED *\\]|Ran) 0 tests|No tests were found!!!")
 
   if (BASIS_VERBOSE)
     message (STATUS "Adding test ${TEST_UID}... - done")
