@@ -46,4 +46,4 @@ if __name__ == '__main__':
     # build project
     build_project(verbose)
     # run tests
-    run_tests(verbose)
+    #run_tests(verbose)
