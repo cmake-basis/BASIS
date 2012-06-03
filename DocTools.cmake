@@ -866,8 +866,8 @@ function (basis_add_sphinx_doc TARGET_NAME)
     DESTINATION HTML_DESTINATION MAN_DESTINATION TEXINFO_DESTINATION
     CONFIG_FILE
     SOURCE_DIRECTORY OUTPUT_DIRECTORY OUTPUT_NAME TAG
-    COPYRIGHT TEMPLATES_PATH MASTER_DOC
-    HTML_TITLE HTML_THEME HTML_LOGO HTML_STATIC_PATH HTML_THEME_PATH
+    COPYRIGHT MASTER_DOC
+    HTML_TITLE HTML_THEME HTML_LOGO HTML_THEME_PATH
     LATEX_DOCUMENT_CLASS
     MAN_SECTION
     DOXYLINK_PREFIX DOXYLINK_SUFFIX
@@ -903,13 +903,17 @@ function (basis_add_sphinx_doc TARGET_NAME)
   set (SPHINX_BREATHE_TARGETS)
   set (SPHINX_DOXYLINK_TARGETS)
   set (SPHINX_HTML_SIDEBARS)
+  set (SPHINX_TEMPLATES_PATH)
+  set (SPHINX_HTML_STATIC_PATH)
+  set (SPHINX_EXCLUDE_PATTERNS)
   set (SPHINX_DEPENDS)
   set (OPTION_NAME)
   set (OPTION_VALUE)
+  set (OPTION_PATTERN "(authors?|builders?|extensions|breathe|doxylink|doxydoc|html_sidebars|templates_path|html_static_path|exclude_patterns)")
   foreach (ARG IN LISTS SPHINX_UNPARSED_ARGUMENTS)
     if (NOT OPTION_NAME OR ARG MATCHES "^[A-Z_]+$")
       # SPHINX_HTML_THEME_OPTIONS
-      if (OPTION_NAME AND NOT OPTION_NAME MATCHES "^(authors?|builders?|extensions|breathe|doxylink|doxydoc|html_sidebars)$")
+      if (OPTION_NAME AND NOT OPTION_NAME MATCHES "^${OPTION_PATTERN}$")
         if (NOT OPTION_VALUE)
           message (FATAL_ERROR "Option ${OPTION_NAME} is missing an argument!")
         endif ()
@@ -959,6 +963,15 @@ function (basis_add_sphinx_doc TARGET_NAME)
         set (ARG "${ARG}.html")
       endif ()
       list (APPEND SPHINX_HTML_SIDEBARS "'${ARG}'")
+    # TEMPLATES_PATH
+    elseif (OPTION_NAME MATCHES "^templates_path$")
+      list (APPEND SPHINX_TEMPLATES_PATH "'${ARG}'")
+    # HTML_STATIC_PATH
+    elseif (OPTION_NAME MATCHES "^html_static_path$")
+      list (APPEND SPHINX_HTML_STATIC_PATH "'${ARG}'")
+    # EXCLUDE_PATTERNS
+    elseif (OPTION_NAME MATCHES "^exclude_patterns$")
+      list (APPEND SPHINX_EXCLUDE_PATTERNS "'${ARG}'")
     # value of theme option
     else ()
       if (ARG MATCHES "^(TRUE|FALSE)$")
@@ -971,7 +984,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     endif ()
   endforeach ()
   # append parsed option setting to SPHINX_HTML_THEME_OPTIONS
-  if (OPTION_NAME AND NOT OPTION_NAME MATCHES "^(authors?|builders?)$")
+  if (OPTION_NAME AND NOT OPTION_NAME MATCHES "^${OPTION_PATTERN}$")
     if (NOT OPTION_VALUE)
       message (FATAL_ERROR "Option ${OPTION_NAME} is missing an argument!")
     endif ()
@@ -1161,6 +1174,9 @@ function (basis_add_sphinx_doc TARGET_NAME)
   basis_list_to_delimited_string (SPHINX_DOXYLINK           ", " NOAUTOQUOTE ${SPHINX_DOXYLINK})
   basis_list_to_delimited_string (SPHINX_BREATHE_PROJECTS   ", " NOAUTOQUOTE ${SPHINX_BREATHE_PROJECTS})
   basis_list_to_delimited_string (SPHINX_HTML_SIDEBARS      ", " NOAUTOQUOTE ${SPHINX_HTML_SIDEBARS})
+  basis_list_to_delimited_string (SPHINX_TEMPLATES_PATH     ", " NOAUTOQUOTE ${SPHINX_TEMPLATES_PATH})
+  basis_list_to_delimited_string (SPHINX_HTML_STATIC_PATH   ", " NOAUTOQUOTE ${SPHINX_HTML_STATIC_PATH})
+  basis_list_to_delimited_string (SPHINX_EXCLUDE_PATTERNS   ", " NOAUTOQUOTE ${SPHINX_EXCLUDE_PATTERNS})
   # configuration file
   if (NOT SPHINX_CONFIG_FILE)
     set (SPHINX_CONFIG_FILE "${BASIS_SPHINX_CONFIG}")

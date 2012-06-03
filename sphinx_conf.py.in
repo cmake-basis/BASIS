@@ -27,9 +27,9 @@ today     = ''
 today_fmt = '%B %d, %Y'
 
 exclude_patterns = ['**/.svn', '**/.git', '**/CMakeFiles/**', '**/CMakeLists.txt']
+exclude_patterns.extend([@SPHINX_EXCLUDE_PATTERNS@])
 
-templates_path = ['@SPHINX_TEMPLATES_PATH@']
-if templates_path[0] == '': templates_path = []
+templates_path = [@SPHINX_TEMPLATES_PATH@]
 
 source_suffix = '.rst'
 master_doc = '@SPHINX_MASTER_DOC@'
@@ -48,8 +48,7 @@ if not copyright:
 # Options for HTML output
 # -----------------------
 
-html_static_path = ['@SPHINX_HTML_STATIC_PATH@']
-if html_static_path[0] == '': html_static_path = []
+html_static_path = [@SPHINX_HTML_STATIC_PATH@]
 
 html_theme = '@SPHINX_HTML_THEME@'
 html_theme_path = ['@SPHINX_HTML_THEME_PATH@', '@BASIS_SPHINX_HTML_THEME_PATH@']
