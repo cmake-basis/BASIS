@@ -1,5 +1,5 @@
 ##############################################################################
-# @file FindOpenCV.cmake
+# @file  FindOpenCV.cmake
 # @brief Find OpenCV Library (http://sourceforge.net/projects/opencvlibrary/)
 #
 # @par 1. Setup
