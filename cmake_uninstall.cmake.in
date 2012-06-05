@@ -74,6 +74,17 @@ string (REGEX REPLACE "\n" ";" MANIFEST "${MANIFEST}")
 list (REVERSE MANIFEST)
 
 # ----------------------------------------------------------------------------
+# remove package from CMake package registry
+if (WINDOWS)
+  # note: string(MD5) only available since CMake 2.8.7
+  set (PKGUID "@BASIS_NAMESPACE_LOWER@-@PROJECT_NAME_LOWER@-@PROJECT_VERSION@")
+  execute_process (
+    COMMAND reg delete
+      "HKEY_CURRENT_USER//Software//Kitware//CMake//Packages//@PROJECT_NAME@" /v ${PKGUID} /f
+  )
+endif ()
+
+# ----------------------------------------------------------------------------
 # remove installed files
 set (PYTHON_BASE_PACKAGE_DIR "@BASIS_NAMESPACE_LOWER@")
 string (REPLACE "." "/" PYTHON_BASE_PACKAGE_DIR "${PYTHON_BASE_PACKAGE_DIR}")
@@ -159,10 +170,13 @@ get_filename_component (D "$ENV{DESTDIR}${INSTALL_PREFIX}" PATH)
 list (APPEND EXCLUDE_DIRS "${D}")
 
 string (REPLACE "." "\\." INSTALL_PREFIX_REGEX "$ENV{DESTDIR}${INSTALL_PREFIX}")
+string (REPLACE "." "\\." CMAKE_REGISTRY_PREFIX_REGEX "$ENV{HOME}/.cmake")
 
 foreach (F ${MANIFEST}) # skip empty entries, i.e., blank lines
   # remove directories only if file was installed inside the installation root
-  if (F MATCHES "^${INSTALL_PREFIX_REGEX}")
+  # or the CMake package registration on Unix
+  if (F MATCHES "^${INSTALL_PREFIX_REGEX}" OR
+        (UNIX AND F MATCHES "^${CMAKE_REGISTRY_PREFIX_REGEX}"))
     get_filename_component (D "$ENV{DESTDIR}${F}" PATH)
     while (D)
       # skip directory if we removed it already

@@ -224,6 +224,42 @@ function (basis_install_links)
 endfunction ()
 
 # ============================================================================
+# Package registration
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Register installed package with CMake.
+#
+# This function adds an entry to the CMake registry for packages with the
+# path of the directory where the package configuration file is located in
+# order to help CMake find the package.
+#
+# The uninstaller whose template can be found in cmake_uninstaller.cmake.in
+# is responsible for removing the registry entry again.
+function (basis_register_package)
+  set (PKGDIR "${INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}")
+  # note: string(MD5) only available since CMake 2.8.7
+  #string (MD5 PKGUID "${PKGDIR}")
+  set (PKGUID "${BASIS_NAMESPACE_LOWER}-${PROJECT_NAME_LOWER}-${PROJECT_VERSION}")
+  if (WINDOWS)
+    install (CODE
+      "execute_process (
+         COMMAND reg add
+                    \"HKEY_CURRENT_USER//Software//Kitware//CMake//Packages//${PROJECT_NAME}\"
+                    /v \"${PKGUID}\" /d \"${PKGDIR}\" /t REG_SZ /f
+       )"
+    )
+  elseif (IS_DIRECTORY "$ENV{HOME}")
+    file (WRITE "${BINARY_CONFIG_DIR}/${PROJECT_NAME}RegistryFile" "${PKGDIR}")
+    install (
+      FILES       "${BINARY_CONFIG_DIR}/${PROJECT_NAME}RegistryFile"
+      DESTINATION "$ENV{HOME}/.cmake/packages/${PROJECT_NAME_LOWER}"
+      RENAME      "${PKGUID}"
+    )
+  endif ()
+endfunction ()
+
+# ============================================================================
 # Deinstallation
 # ============================================================================
 
