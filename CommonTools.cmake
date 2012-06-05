@@ -192,12 +192,18 @@ macro (basis_find_package PACKAGE)
   # --------------------------------------------------------------------------
   # find external packages
   string (TOUPPER "${PKG}" PKG_UPPER)
+  string (TOUPPER "${PKG}" PKG_LOWER)
   if (NOT ${PKG}_FOUND AND (NOT DEFINED USE_${PKG} OR USE_${PKG}))
     # circumvent issue with CMake's find_package() interpreting these variables
     # relative to the current binary directory instead of the top-level directory
     if (${PKG}_DIR AND NOT IS_ABSOLUTE "${${PKG}_DIR}")
       set (${PKG}_DIR "${CMAKE_BINARY_DIR}/${${PKG}_DIR}")
       get_filename_component (${PKG}_DIR "${${PKG}_DIR}" ABSOLUTE)
+    endif ()
+    # moreover, users tend to specify the installation prefix instead of the
+    # actual directory containing the package configuration file
+    if (IS_DIRECTORY "${${PKG}_DIR}")
+      list (INSERT CMAKE_PREFIX_PATH 0 "${${PKG}_DIR}")
     endif ()
     # now look for the package
     set (FIND_ARGN)
