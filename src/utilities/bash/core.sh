@@ -218,10 +218,13 @@ function basis_array_to_quoted_string
 {
     local str=''
     local element=''
-    args=("$@")
     # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
     # turns the array into a single string value if local is used
-    [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ] && local args
+    if [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ]; then
+        local args=("$@")
+    else
+        args=("$@")
+    fi
     local i=1
     while [ $i -lt ${#args[@]} ]; do
         element="${args[$i]}"
