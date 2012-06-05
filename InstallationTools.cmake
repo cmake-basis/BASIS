@@ -90,6 +90,7 @@ function (basis_install_directory)
   if ("${DESTINATION_ABSDIR}" MATCHES "^${REGEX}")
     message (FATAL_ERROR "Installation directory ${DESTINATION_ABSDIR} is inside the project source tree!")
   endif ()
+  string (REGEX REPLACE "/+$" "" SOURCE "${SOURCE}")
   install (
     DIRECTORY   "${SOURCE}/"
     DESTINATION "${DESTINATION}"

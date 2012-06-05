@@ -144,7 +144,7 @@ function (basis_install_doc SOURCE)
 
   if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
     basis_install_directory (
-      "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}/"
+      "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}"
       "${ARGN_DESTINATION}/${ARGN_OUTPUT_NAME}"
       COMPONENT "${ARGN_COMPONENT}"
     )
