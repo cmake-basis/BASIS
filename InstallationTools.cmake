@@ -242,13 +242,20 @@ function (basis_register_package)
   # note: string(MD5) only available since CMake 2.8.7
   #string (MD5 PKGUID "${PKGDIR}")
   set (PKGUID "${BASIS_NAMESPACE_LOWER}-${PROJECT_NAME_LOWER}-${PROJECT_VERSION}")
-  if (WINDOWS)
+  if (WIN32)
     install (CODE
       "execute_process (
-         COMMAND reg add
-                    \"HKEY_CURRENT_USER//Software//Kitware//CMake//Packages//${PROJECT_NAME}\"
-                    /v \"${PKGUID}\" /d \"${PKGDIR}\" /t REG_SZ /f
-       )"
+         COMMAND reg add \"HKCU\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_NAME}\" /v \"${PKGUID}\" /d \"${PKGDIR}\" /t REG_SZ /f
+         RESULT_VARIABLE RT
+         ERROR_VARIABLE  ERR
+         OUTPUT_QUIET
+       )
+       if (RT EQUAL 0)
+         message (STATUS \"Register:   Add HKEY_CURRENT_USER\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_NAME}\\\\${PKGUID}\")
+       else ()
+         string (STRIP \"\${ERR}\" ERR)
+         message (STATUS \"Register:   Failed to add registry entry: \${ERR}\")
+       endif ()"
     )
   elseif (IS_DIRECTORY "$ENV{HOME}")
     file (WRITE "${BINARY_CONFIG_DIR}/${PROJECT_NAME}RegistryFile" "${PKGDIR}")

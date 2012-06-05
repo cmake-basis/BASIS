@@ -75,13 +75,19 @@ list (REVERSE MANIFEST)
 
 # ----------------------------------------------------------------------------
 # remove package from CMake package registry
-if (WINDOWS)
-  # note: string(MD5) only available since CMake 2.8.7
+if (WIN32)
   set (PKGUID "@BASIS_NAMESPACE_LOWER@-@PROJECT_NAME_LOWER@-@PROJECT_VERSION@")
   execute_process (
-    COMMAND reg delete
-      "HKEY_CURRENT_USER//Software//Kitware//CMake//Packages//@PROJECT_NAME@" /v ${PKGUID} /f
+    COMMAND reg delete "HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_NAME@" /v "${PKGUID}" /f
+    RESULT_VARIABLE RT
+    ERROR_VARIABLE ERR
   )
+  if (RT EQUAL 0)
+    message (STATUS "Deregister:   Remove HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_NAME@\\${PKGUID}")
+  else ()
+    string (STRIP "${ERR}" ERR)
+    message (STATUS "Deregister:   Failed to remove key from registry: ${ERR}")
+  endif ()
 endif ()
 
 # ----------------------------------------------------------------------------
