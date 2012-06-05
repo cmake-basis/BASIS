@@ -14,8 +14,8 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_SBIA_CORE_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_CORE_INCLUDED=1
+[ "${_SBIA_BASIS_CORE_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_BASIS_CORE_INCLUDED=1
 
 
 ## @addtogroup BasisBashUtilities
@@ -68,7 +68,7 @@ function match
             # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
             # throws an error when a regular expression with groups
             # such as in '^(a|b|c)' is used. Here, quotes are required.
-            if [ ${BASH_VERSION_MINOR} -eq 0 ]; then
+            if [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -eq 0 ]; then
                 [[ "${value}" =~ "${pattern}" ]]
             # GNU bash, version 3.2.25(1)-release (x86_64-redhat-linux-gnu)
             # works with either quotes or not. However, on Mac OS Snow Leopard,
@@ -218,7 +218,10 @@ function basis_array_to_quoted_string
 {
     local str=''
     local element=''
-    local args=("$@")
+    args=("$@")
+    # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
+    # turns the array into a single string value if local is used
+    [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ] && local args
     local i=1
     while [ $i -lt ${#args[@]} ]; do
         element="${args[$i]}"

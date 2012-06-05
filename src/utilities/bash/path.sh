@@ -9,8 +9,18 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_SBIA_PATH_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_PATH_INCLUDED=1
+[ "${_SBIA_BASIS_PATH_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_BASIS_PATH_INCLUDED=1
+
+
+# use local definitions instead of those in core.sh to keep module independent
+_PATH_BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
+_PATH_BASH_VERSION_MINOR=${BASH_VERSION#*.}
+_PATH_BASH_VERSION_MINOR=${_PATH_BASH_VERSION_MINOR%%.*}
+
+readonly _PATH_BASH_VERSION_MAJOR
+readonly _PATH_BASH_VERSION_MINOR
+
 
 
 ## @addtogroup BasisBashUtilities
@@ -33,7 +43,12 @@ function clean_path
 {
     local path="$1"
     # split path into parts, discarding redundant slashes
-    local dirs=()
+    dirs=()
+    # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
+    # turns the array into a single string value if local is used
+    [ ${_PATH_BASH_VERSION_MAJOR} -gt 3 ] || \
+            [ ${_PATH_BASH_VERSION_MAJOR} -eq 3 -a \
+              ${_PATH_BASH_VERSION_MINOR} -gt 0 ] && local dirs
     while [ -n "${path}" ]; do
         if [ ${#dirs[@]} -eq 0 ]; then
             dirs=("`basename -- "${path}"`")
