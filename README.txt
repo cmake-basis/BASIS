@@ -162,6 +162,7 @@ PACKAGE OVERVIEW
   - src/cmake/                 CMake implementations and corresponding auxiliary files.
   - src/geshi/                 A language file written in PHP for the use with GeSHi,
                                a source code highlighting extension for MediaWiki.
+  - src/sphinx/                Themes and extensions for the Sphinx documentation tool.
   - src/tools/                 Source code of command-line tools.
   - src/utilities/             Source code of utility functions.
   - test/                      Tests of the implementations in src/.
