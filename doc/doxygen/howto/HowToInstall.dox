@@ -698,6 +698,10 @@ The package files are installed in the following locations on Unix-based systems
     <td>Libraries and auxiliary executables.</td>
   </tr>
   <tr>
+    @tp <b>&lt;prefix&gt;/lib/cmake/&lt;package&gt;/</b> @endtp
+    <td>CMake package configuration files.</td>
+  </tr>
+  <tr>
     @tp <b>&lt;prefix&gt;/lib/python/sbia/&lt;package&gt;</b> @endtp
     <td>Python modules.</td>
   </tr>
@@ -758,6 +762,10 @@ On Windows, the installation directories are named as follows instead:
   <tr>
     @tp <b>&lt;prefix&gt;/Bin/&lt;sinfix&gt;/</b> @endtp
     <td>Main executable files.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/CMake/</b> @endtp
+    <td>CMake package configuration files.</td>
   </tr>
   <tr>
     @tp <b>&lt;prefix&gt;/Config/&lt;sinfix&gt;/</b> @endtp
