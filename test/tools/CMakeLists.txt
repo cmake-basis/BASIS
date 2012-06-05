@@ -8,5 +8,7 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-basis_add_test (test_basisproject.py)
-basis_set_tests_properties (test_basisproject PROPERTIES TIMEOUT 2700)
+if (PythonInterp_FOUND)
+  basis_add_test (test_basisproject.py)
+  basis_set_tests_properties (test_basisproject PROPERTIES TIMEOUT 2700)
+endif ()
