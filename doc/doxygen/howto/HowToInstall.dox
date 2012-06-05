@@ -24,7 +24,8 @@ please follow the installation instructions corresponding to your operating
 system. The build step can be omitted in this case.
 
 In case of problems to build, install, or use the software, please contact
-the SBIA Group at the University of Pennsylvania, PA.
+the SBIA Group at the University of Pennsylvania, PA, at
+&lt;sbia-software at uphs.upenn.edu&gt;.
 
 @note The commands given in this guide have to be entered in a terminal, in particular,
       the <a href="http://www.gnu.org/software/bash/">Bourne Again Shell (BASH)</a>.
@@ -211,11 +212,12 @@ are based on <a href="http://www.gnu.org/">GNU Make</a> and the
           <td style="border:0;margin:0;padding:0">cmake, cmake-curses-gui</td>
         </tr>
       </table>
-      <p>If your operating system such as certain Linux distributions do not
-      support CMake 2.8.4 or greater yet, you need to download a more recent
-      CMake version from the download page noted above and install it manually.
-      Often this is easiest accomplished by using the CMake version supported
-      by your platform itself to configure the build system for the more
+      <p>If your operating system such as certain Linux distributions does not
+      include pre-build binary packages of CMake 2.8.4 or greater yet, you need
+      to download a more recent CMake version from the download page noted above
+      and install it manually.
+      Often this is easiest accomplished by using the CMake version provided
+      by the Linux distribution itself to configure the build system for the more
       recent CMake version. In order to not conflict with the CMake installation
       of your particular Linux distribution, it is recommended to install your
       own build of CMake in a different directory or to at least remove the
@@ -287,7 +289,17 @@ the repeated execution of CMake's configure step, press "g". This will generate 
 configuration files for the selected build tool (i.e., GNU Make Makefiles in our case)
 and exit CMake.
 
-The common CMake variables which configure the build and installation are:
+Variables which specify the location of other required or optionally used packages
+if available are named &lt;Pkg&gt;_DIR. These variables usually have to
+be set to the directory which contains a file named &lt;Pkg&gt;Config.cmake
+or &lt;pkg&gt;-config.cmake. Alternatively, or if the package does not
+provide such CMake package configuration file, the installation prefix, i.e.,
+root directory should be specified. See the build instructions of the particular
+software package you are building for more details on the particular
+&lt;Pkg&gt;_DIR variables that may have to be set if the packages were
+not found automatically by CMake.
+
+Further common CMake variables which configure the build and installation are:
 
 <table>
   <tr>
@@ -297,7 +309,8 @@ The common CMake variables which configure the build and installation are:
   <tr>
     @tp @b BASIS_DIR @endtp
     <td>
-      Directory where the BASISConfig.cmake file is located.
+      Directory where the BASISConfig.cmake file is located. Alternatively, the
+      installation prefix used to install BASIS can be specified instead.
     </td>
   </tr>
   <tr>
@@ -440,6 +453,15 @@ The advanced CMake settings are:
     @tp @b BASIS_MEX_TIMEOUT @endtp
     <td>
       Timeout in seconds for the build of MEX-files.
+    </td>
+  </tr>
+  <tr>
+    @tp @b BASIS_REGISTER @endtp
+    <td>
+      Enable/disable registration of installed package in
+      <a href="http://www.cmake.org/Wiki/index.php?title=CMake/Tutorials/Package_Registry">
+      CMake's package registry</a>. This option is enabled by default such that
+      packages are found by CMake when required by other packages based on this build tool.
     </td>
   </tr>
   <tr>
@@ -649,7 +671,7 @@ copy the files intended for installation to the directories specified during
 the configuration step. The install/strip target additionally strips installed
 binary executable and shared object files, which can save disk space.
  
-The package files are installed in the following locations:
+The package files are installed in the following locations on Unix-based systems:
 
 <table>
   <tr>
@@ -705,11 +727,6 @@ where &lt;prefix&gt; is the value of INSTALL_PREFIX and &lt;sinfix&gt; is an emp
 string if INSTALL_SINFIX is OFF and the package name in lowercase otherwise preceded
 by the common infix "sbia/" (the default).
 
-If more than one version of a software package shall be installed,
-include the package version in the &lt;prefix&gt; by setting INSTALL_PREFIX
-to "/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@", for example,
-and disable the use of the &lt;sinfix&gt; by setting INSTALL_SINFIX to OFF.
-
 Additionally, if both INSTALL_SINFIX and INSTALL_LINKS are ON (the default),
 the following (symbolic) links are created on UNIX-based systems:
 <table>
@@ -731,23 +748,86 @@ the following (symbolic) links are created on UNIX-based systems:
   </tr>
 </table>
 
-After the successful installation, the build tree can be deleted.
+On Windows, the installation directories are named as follows instead:
+
+<table>
+  <tr>
+    <th>Directory</th>
+    <th>Installed Files</th>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Bin/&lt;sinfix&gt;/</b> @endtp
+    <td>Main executable files.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Config/&lt;sinfix&gt;/</b> @endtp
+    <td>Package configuration files.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Doc/&lt;sinfix&gt;/</b> @endtp
+    <td>Package documentation files.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Example/&lt;sinfix&gt;/</b> @endtp
+    <td>Files required to run example as described in the Software Manual.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Include/sbia/&lt;package&gt;/</b> @endtp
+    <td>
+      Include files, where &lt;prefix&gt;/Include/ is the directory that
+      needs to be in the search path for include files.
+    </td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Library/&lt;sinfix&gt;/</b> @endtp
+    <td>Libraries and auxiliary executables.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Library/Python/sbia/&lt;package&gt;</b> @endtp
+    <td>Python modules.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Library/Perl5/SBIA/&lt;Package&gt;</b> @endtp
+    <td>Perl modules.</td>
+  </tr>
+  <tr>
+    @tp <b>&lt;prefix&gt;/Share/&lt;sinfix&gt;/</b> @endtp
+    <td>Shared files of this software package.</td>
+  </tr>
+</table>
+
+where &lt;sinfix&gt; is an empty string if INSTALL_SINFIX is OFF and the package
+name otherwise (the default).
+
+If more than one version of a software package shall be installed,
+include the package version in the &lt;prefix&gt; by setting INSTALL_PREFIX
+to "/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@", for example,
+and disable the use of the &lt;sinfix&gt; by setting INSTALL_SINFIX to OFF.
+
+Besides the installation of the built files of the software package to the
+named locations, the directory where the CMake configuration file of the package
+was installed is added to CMake's package registry if the advanced option
+BASIS_REGISTER is set to ON (the default). This helps CMake to find the installed
+package when used by another software package based on CMake.
+
+After the successful installation, the build tree can be deleted. It should
+be verified before, however, that the installation indeed was successful.
 
 @subsubsection SetupEnvironment 6. Setup your environment (optional)
 
 In order to ease the execution of the main executable files, we suggest to
 add either the path ~/$pkg-build/bin/ or &lt;prefix&gt;/bin/ to the search path
 for executable files, i.e., the PATH environment variable. This is, however,
-generally no requirement for the correct functioning of the software.
+generally not requirement for the correct functioning of the software.
 
 For example,
 @code
 export PATH="<prefix>/bin/:<prefix>/bin/<sinfix>/:${PATH}"
 @endcode
 
-To be able to use the Python modules of a SBIA software package in your
-own Python scripts, you need to add the path &lt;prefix&gt;/python/ to the
-search path for Python modules, e.g.,
+To be able to use the provided Python modules of the software package if any
+in your own Python scripts, you need to add the path &lt;prefix&gt;/python/
+to the search path for Python modules, e.g.,
 @code
 export PYTHONPATH="${PYTHONPATH}:<prefix>/lib/python/"
 @endcode
@@ -759,9 +839,9 @@ sys.path.append('<prefix>/lib/python/')
 from sbia.<package> import <module>
 @endcode
 
-To be able to use the Perl modules of a SBIA software package in your own
-Perl scripts, you need to add the path &lt;prefix&gt;/perl5/ to the search path
-for Perl modules, e.g.,
+To be able to use the provided Perl modules of the software package if any
+in your own Perl scripts, you need to add the path &lt;prefix&gt;/perl5/ to
+the search path for Perl modules, e.g.,
 @code
 export PERL5LIB="${PERL5LIB}:<prefix>/lib/perl5/"
 @endcode
