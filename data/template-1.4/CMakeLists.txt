@@ -25,6 +25,11 @@ if (BASIS_DIR AND NOT IS_ABSOLUTE "${BASIS_DIR}")
   set (BASIS_DIR "${CMAKE_BINARY_DIR}/${BASIS_DIR}")
   get_filename_component (BASIS_DIR "${BASIS_DIR}" ABSOLUTE)
 endif ()
+# moreover, users tend to specify the installation prefix instead of the
+# actual directory containing the package configuration file
+if (IS_DIRECTORY "${BASIS_DIR}")
+  list (INSERT CMAKE_PREFIX_PATH 0 "${BASIS_DIR}")
+endif ()
 
 find_package (BASIS REQUIRED)
 
