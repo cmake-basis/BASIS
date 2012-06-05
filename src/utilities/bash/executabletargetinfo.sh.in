@@ -13,8 +13,8 @@
 ##############################################################################
 
 # return if already loaded
-[ "${_SBIA_BASIS_EXECUTABLETARGETINFO_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_BASIS_EXECUTABLETARGETINFO_INCLUDED=1
+[ "${_SBIA_@NAMESPACE_UPPER@_EXECUTABLETARGETINFO_INCLUDED:-0}" -eq 1 ] && return 0
+_SBIA_@NAMESPACE_UPPER@_EXECUTABLETARGETINFO_INCLUDED=1
 
 
 # ============================================================================
