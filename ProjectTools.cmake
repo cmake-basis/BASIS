@@ -1230,7 +1230,9 @@ macro (basis_project_finalize)
     basis_add_custom_finalize ()
     basis_add_init_py_target ()
     # add installation rule to register package with CMake
-    basis_register_package ()
+    if (BASIS_REGISTER)
+      basis_register_package ()
+    endif ()
     # generate configuration files
     include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
     # package software

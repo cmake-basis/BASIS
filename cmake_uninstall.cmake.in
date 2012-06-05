@@ -75,7 +75,8 @@ list (REVERSE MANIFEST)
 
 # ----------------------------------------------------------------------------
 # remove package from CMake package registry
-if (WIN32)
+set (REGISTERED "@BASIS_REGISTER@")
+if (WIN32 AND REGISTERED)
   set (PKGUID "@BASIS_NAMESPACE_LOWER@-@PROJECT_NAME_LOWER@-@PROJECT_VERSION@")
   execute_process (
     COMMAND reg delete "HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_NAME@" /v "${PKGUID}" /f
@@ -83,10 +84,10 @@ if (WIN32)
     ERROR_VARIABLE ERR
   )
   if (RT EQUAL 0)
-    message (STATUS "Deregister:   Remove HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_NAME@\\${PKGUID}")
+    message (STATUS "Deregister:   Removed HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_NAME@\\${PKGUID}")
   else ()
     string (STRIP "${ERR}" ERR)
-    message (STATUS "Deregister:   Failed to remove key from registry: ${ERR}")
+    message (STATUS "Deregister:   Failed to remove package from registry: ${ERR}")
   endif ()
 endif ()
 

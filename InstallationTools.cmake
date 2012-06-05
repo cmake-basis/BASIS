@@ -251,7 +251,7 @@ function (basis_register_package)
          OUTPUT_QUIET
        )
        if (RT EQUAL 0)
-         message (STATUS \"Register:   Add HKEY_CURRENT_USER\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_NAME}\\\\${PKGUID}\")
+         message (STATUS \"Register:   Added HKEY_CURRENT_USER\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_NAME}\\\\${PKGUID}\")
        else ()
          string (STRIP \"\${ERR}\" ERR)
          message (STATUS \"Register:   Failed to add registry entry: \${ERR}\")

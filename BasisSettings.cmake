@@ -498,6 +498,10 @@ set (BASIS_AUTO_PREFIX_INCLUDES FALSE)
 # "\\\\." corresponds to the regular expression "\.", i.e., matches a dot (.).
 set (BASIS_INCLUDES_CHECK_EXCLUDE "")
 
+## @brief Enable/disable registration of installed package in CMake registry.
+option (BASIS_REGISTER "Request registration of installed package in CMake package registry." ON)
+mark_as_advanced (BASIS_REGISTER)
+
 # ============================================================================
 # documentation
 # ============================================================================
