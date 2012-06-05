@@ -232,7 +232,7 @@ while (RETRY)
       # on Windows where the Windows 2003 Resource Kit is not installed
       # See http://malektips.com/dos0017.html
       find_program (PING ping)
-      if (WINDOWS)
+      if (WIN32)
         execute_process (
           COMMAND ${PING} 127.0.0.1 -n ${RETRY_DELAY} -w 1000
           TIMEOUT ${RETRY_DELAY}
