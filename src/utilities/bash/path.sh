@@ -42,13 +42,14 @@ readonly _PATH_BASH_VERSION_MINOR
 function clean_path
 {
     local path="$1"
-    # split path into parts, discarding redundant slashes
-    dirs=()
     # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
     # turns the array into a single string value if local is used
-    [ ${_PATH_BASH_VERSION_MAJOR} -gt 3 ] || \
-            [ ${_PATH_BASH_VERSION_MAJOR} -eq 3 -a \
-              ${_PATH_BASH_VERSION_MINOR} -gt 0 ] && local dirs
+    if [ ${_PATH_BASH_VERSION_MAJOR} -gt 3 ] || [ ${_PATH_BASH_VERSION_MAJOR} -eq 3 -a ${_PATH_BASH_VERSION_MINOR} -gt 0 ]; then
+        local dirs=()
+    else
+        dirs=()
+    fi
+    # split path into parts, discarding redundant slashes
     while [ -n "${path}" ]; do
         if [ ${#dirs[@]} -eq 0 ]; then
             dirs=("`basename -- "${path}"`")
