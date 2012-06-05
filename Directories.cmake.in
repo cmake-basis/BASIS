@@ -218,7 +218,7 @@ if (NOT PROJECT_IS_MODULE)
   if (UNIX)
     set (INSTALL_CONFIG_DIR "lib/cmake/@PROJECT_NAME_INFIX@")
   else ()
-    set (INSTALL_CONFIG_DIR "cmake")
+    set (INSTALL_CONFIG_DIR "CMake")
   endif ()
 else ()
   set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/@PROJECT_NAME_INFIX@")
@@ -229,14 +229,18 @@ endif ()
 
 ## @brief Path of installation directory for runtime executables and shared
 #         libraries on Windows relative to @c INSTALL_PREFIX.
-set (INSTALL_RUNTIME_DIR "bin")
+if (UNIX)
+  set (INSTALL_RUNTIME_DIR "bin")
+else ()
+  set (INSTALL_RUNTIME_DIR "Bin")
+endif ()
 
 ## @brief Path of installation directory for auxiliary executables
 #         relative to @c INSTALL_PREFIX.
-if (WIN32)
-  set (INSTALL_LIBEXEC_DIR "bin")
-else ()
+if (UNIX)
   set (INSTALL_LIBEXEC_DIR "lib")
+else ()
+  set (INSTALL_LIBEXEC_DIR "Bin")
 endif ()
 
 # prepend installation sinfix
@@ -263,15 +267,27 @@ endif ()
 #
 # @note If the @c INCLUDE_PREFIX specifies subdirectories, these will be
 #       created underneath this directory during the installation.
-set (INSTALL_INCLUDE_DIR "include")
+if (UNIX)
+  set (INSTALL_INCLUDE_DIR "include")
+else ()
+  set (INSTALL_INCLUDE_DIR "Include")
+endif ()
 
 ## @brief Path of installation directory for shared libraries on Unix-based
 #         systems and module libraries relative to @c INSTALL_PREFIX.
-set (INSTALL_LIBRARY_DIR "lib")
+if (UNIX)
+  set (INSTALL_LIBRARY_DIR "lib")
+else ()
+  set (INSTALL_LIBRARY_DIR "Library")
+endif ()
 
 ## @brief Path of installation directory for static and import libraries
 #         relative to @c INSTALL_PREFIX.
-set (INSTALL_ARCHIVE_DIR "lib")
+if (UNIX)
+  set (INSTALL_ARCHIVE_DIR "lib")
+else ()
+  set (INSTALL_ARCHIVE_DIR "Library")
+endif ()
 
 # prepend installation sinfix
 if (INSTALL_SINFIX)
@@ -310,10 +326,18 @@ endif ()
 # that the modules are installed as part of the right packages.
 
 ## @brief Path of installation directory for Python modules relative to @c INSTALL_PREFIX.
-set (INSTALL_PYTHON_LIBRARY_DIR "lib/python")
+if (UNIX)
+  set (INSTALL_PYTHON_LIBRARY_DIR "lib/python")
+else ()
+  set (INSTALL_PYTHON_LIBRARY_DIR "Library/Python")
+endif ()
 
 ## @brief Path of installation directory for Perl modules relative to @c INSTALL_PREFIX.
-set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
+if (UNIX)
+  set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
+else ()
+  set (INSTALL_PERL_LIBRARY_DIR "Library/Perl5")
+endif ()
 
 # ----------------------------------------------------------------------------
 # shared data
@@ -323,7 +347,7 @@ set (INSTALL_PERL_LIBRARY_DIR "lib/perl5")
 if (UNIX)
   set (INSTALL_SHARE_DIR "share")
 else ()
-  set (INSTALL_SHARE_DIR "Common")
+  set (INSTALL_SHARE_DIR "Share")
 endif ()
 if (INSTALL_SINFIX)
   set (INSTALL_SHARE_DIR "${INSTALL_SHARE_DIR}/${BASIS_INSTALL_SINFIX}")
@@ -351,7 +375,7 @@ endif ()
 if (UNIX)
   set (INSTALL_DOC_DIR "share/doc")
 else ()
-  set (INSTALL_DOC_DIR "Documentation")
+  set (INSTALL_DOC_DIR "Doc")
 endif ()
 if (INSTALL_SINFIX)
   set (INSTALL_DOC_DIR "${INSTALL_DOC_DIR}/${BASIS_INSTALL_SINFIX}")

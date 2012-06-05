@@ -839,7 +839,7 @@ macro (basis_project_initialize)
   # This variable is in particular used in the Directories.cmake.in template
   # file to separate the files of modules of a project from each other
   # if BASIS_USE_MODULE_NAMESPACES is set to ON.
-  if (WINDOWS)
+  if (WIN32)
     # Windows users prefer mixed case directory names
     set (PROJECT_NAME_INFIX "${PROJECT_NAME}")
   else ()
