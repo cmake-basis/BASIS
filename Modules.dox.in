@@ -1,10 +1,10 @@
 /**
-@defgroup BasisModules BASIS CMake
+@defgroup BasisModules BASIS Modules
 @brief    BASIS CMake modules.
 */
 
 /**
-@defgroup BasisSettings BASIS Settings
+@defgroup BasisSettings Settings
 @brief    CMake modules defining settings for BASIS.
 
 @ingroup BasisModules
