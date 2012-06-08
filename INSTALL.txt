@@ -52,9 +52,9 @@ BUILDING THE SOFTWARE FROM SOURCES
   Build Dependencies
   ------------------
 
-  The following (not optional) software has to be installed.
+  The following software has to be installed (if not optional).
 
-  - ITK 3.14 or greater (optional)
+  - ITK >= 3.14 (optional)
 
     Web:      http://www.itk.org
     Download: http://www.itk.org/ITK/resources/software.html
@@ -72,14 +72,15 @@ BUILDING THE SOFTWARE FROM SOURCES
   Build Steps
   -----------
 
-  The common steps to build a project based on CMake, i.e., this software,
-  are as follows:
+  The common steps to build, test, and install software based on CMake,
+  including this software, are as follows:
 
   1. Extract source files.
   2. Create build directory and change to it.
   3. Run CMake to configure the build tree.
   4. Build the software using selected build tool.
-  5. Install the built files.
+  5. Test the built software.
+  6. Install the built files.
 
   On Unix-like systems with GNU Make as build tool, these build steps can be
   summarized by the following sequence of commands executed in a shell,
@@ -97,15 +98,24 @@ BUILDING THE SOFTWARE FROM SOURCES
     - Then press 'g' to generate the configuration files for GNU Make.
 
   $ make
-  $ make install
+  $ make test    (optional)
+  $ make install (optional)
 
-  An exhaustive list of minimum build dependencies including the build tools
-  along detailed step-by-step build and installation instructions can be found
-  in the corresponding "Building the Software from Sources" section of the
-  BASIS how-to guide on software installation [2].
+  An exhaustive list of minimum build dependencies, including the build tools
+  along detailed step-by-step build, test, and installation instructions can
+  be found in the corresponding "Building from Sources" section of the BASIS
+  how-to guide on software installation [2].
 
-  In the following, only the package-specific CMake settings available to
-  configure the build of this software are documented.
+  Please refer to this guide first if you are uncertain about above steps or
+  have problems to build, test, or install the software on your system.
+  If this guide does not help you resolve the issue, please contact us at
+  <sbia-software at uphs.upenn.edu>. In case of failing tests, please attach
+  the output of the following command to your email:
+ 
+  $ ctest -V
+
+  In the following, only package-specific CMake settings available to
+  configure the build and installation of this software are documented.
 
 
   CMake Options
@@ -139,4 +149,4 @@ REFERENCES
 
   [1] http://www.rad.upenn.edu/sbia/software/basis/
 
-  [2] http://www.rad.upenn.edu/sbia/software/installation.html
+  [2] http://www.rad.upenn.edu/sbia/software/basis/howto/install/
