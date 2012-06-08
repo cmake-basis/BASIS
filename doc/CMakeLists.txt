@@ -71,8 +71,6 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual/index.rst")
   )
 endif ()
 
-basis_add_doc ("tutorials")
-
 # ----------------------------------------------------------------------------
 # developer's guide (optional)
 set (OUTPUT_NAME "${PROJECT_NAME}_Developer's_Guide")
@@ -101,12 +99,15 @@ endif ()
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
   basis_add_doc (
     site
-    GENERATOR    Sphinx
-    BUILDER      html dirhtml pdf man
-    MAN_SECTION  7
-    SHOW_RELEASE false
-    RELLINKS     news download examples help publications
-    COPYRIGHT    "2012 University of Pennsylvania"
-    AUTHOR       "Andreas Schuh"
+    GENERATOR     Sphinx
+    BUILDER       html dirhtml pdf man
+    MAN_SECTION   7
+    SHOW_RELEASE  false
+    INDEXLINK     Software
+    RELLINKS      download installation documentation tutorials
+    HTML_SIDEBARS localtoc relations sourcelink
+    DOXYLINK      apidoc
+    COPYRIGHT     "2011, 2012 University of Pennsylvania"
+    AUTHOR        "Andreas Schuh"
   )
 endif ()

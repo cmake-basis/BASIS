@@ -1,0 +1,11 @@
+==================
+Managing Test Data
+==================
+
+.. todo::
+    This how-to guide has to be written yet.
+
+This document describes how example and test data can be stored outside the source tree.
+
+.. seealso:: http://www.cmake.org/Wiki/ITK/Git/Develop/Data#ExternalData
+.. seealso:: http://vtk.org/Wiki/ITK_Release_4/Testing_Data

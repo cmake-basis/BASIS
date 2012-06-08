@@ -1,12 +1,27 @@
+// ===========================================================================
+// Main Page
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
 /**
- * @file  00-DoxygenGroups.dox
- * @brief Definition of Doxygen groups.
- *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
- * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
- */
+@mainpage
+
+@section Introduction
+
+This is the API documentation of the
+<a href="http://www.rad.upenn.edu/sbia/software/basis/">Build system And
+Software Implementation Standard (BASIS)</a>.
+
+Projects following the standard include the @ref BasisModules and make use
+of the @ref BasisUtilities. They are hence dependent on the BASIS package,
+similarly to a software implemented in C++ depends on third-party libraries
+used by this implementation, for example. Therefore, in order to be able
+to build a BASIS project, the BASIS package has to be installed first.
+Note, however, that BASIS is not necessarily required during the
+runtime, i.e., for executing the software. This depends on which
+utilities are used by the project.
+*/
+
 
 // ===========================================================================
 // CMake Modules
