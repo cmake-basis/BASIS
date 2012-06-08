@@ -177,15 +177,28 @@ tt.xref {
     border: 0;
 }
 
+tt.download {
+    font-weight: normal;
+    font-size: 1.1em;
+}
+
 a tt {
     background-color: transparent;
-    font-weight: bold;
+    font-weight: normal;
     border: 0;
-    color: #CA7900;
+    color: #28428F;
+}
+
+a tt.download {
+    background-color: transparent;
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+    font-weight: normal;
+    border: 0;
+    color: #28428F;
 }
 
 a tt:hover {
-    color: #2491CF;
+    color: #CA7900;
 }
 
 dl {
