@@ -292,23 +292,23 @@ project file before the update. The file name suffix for this backup file is
 ``.mine``. For example, if conflicts occured when updating the ``README.txt``
 file, the following files are written to your project's directory.
 
-===================   ========================================================
-    File Name                                 Description
-===================   ========================================================
-README.txt.mine       A copy of the project file before the update.
-README.txt.template   A copy of the current template file which differs from
-                      the template file used to create the project or
-                      corresponds to the version of the template file of the
-                      last update.
-README.txt            The file containing changes from both the
-                      README.txt.template and README.txt.mine file, where
-                      conflicts have been highlighted using above markers.
-===================   ========================================================
+=======================   ==========================================================
+      File Name                                 Description
+=======================   ==========================================================
+``README.txt.mine``       A copy of the project file before the update.
+``README.txt.template``   A copy of the current template file which differs from
+                          the template file used to create the project or
+                          corresponds to the version of the template file of the
+                          last update.
+``README.txt``            The file containing changes from both the
+                          ``README.txt.template`` and ``README.txt.mine`` file,
+                          where conflicts have been highlighted using above markers.
+=======================   ==========================================================
 
 
 After you edited the project files which contain conflicts, possibly using
-merge tools installed on your system, you need to remove the .template and
-.mine files to let the project tool know that the conflicts are resolved.
+merge tools installed on your system, you need to remove the ``.template`` and
+``.mine`` files to let the project tool know that the conflicts are resolved.
 Otherwise, when you run the update command again, it will fail with an
 error message indicating that there are unresolved merge conflicts.
 You can delete those files either manually or using the following command
