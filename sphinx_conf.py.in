@@ -18,7 +18,7 @@ import os
 # ---------------------
 
 sys.path.insert(0, '@BASIS_SPHINX_EXTENSIONS_PATH@')
-extensions = [@SPHINX_EXTENSIONS@]
+extensions = ['sphinx.ext.todo'] + [@SPHINX_EXTENSIONS@]
 
 authors = [@SPHINX_AUTHORS@]
 output_name = '@SPHINX_OUTPUT_NAME@'.replace(' ', '_') # otherwise generated Makefile's do not work
