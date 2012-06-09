@@ -420,18 +420,23 @@ function (basis_add_doxygen_doc TARGET_NAME)
       list (APPEND DOXYGEN_INPUT "${BASIS_MODULE_PATH}/${L}Utilities.dox")
     endif ()
   endforeach ()
-  # include path
-  basis_get_project_property (INCLUDE_DIRS PROPERTY PROJECT_INCLUDE_DIRS)
-  foreach (D IN LISTS INCLUDE_DIRS)
-    list (FIND DOXYGEN_INPUT "${D}" IDX)
-    if (IDX EQUAL -1)
-      list (APPEND DOXYGEN_INCLUDE_PATH "${D}")
-    endif ()
-  endforeach ()
-  basis_list_to_delimited_string (
-    DOXYGEN_INCLUDE_PATH "\"\nINCLUDE_PATH          += \"" ${DOXYGEN_INCLUDE_PATH}
-  )
-  set (DOXYGEN_INCLUDE_PATH "\"${DOXYGEN_INCLUDE_PATH}\"")
+  # include path - Disabled as this increases the runtime of Doxygen but
+  #                generally the source of third-party packages are not
+  #                really referenced. Only the source files of this
+  #                project have to be considered. This code is kept as it
+  #                might be used again at a later point once it is figured
+  #                how Doxygen can be only rerun if necessary.
+  #basis_get_project_property (INCLUDE_DIRS PROPERTY PROJECT_INCLUDE_DIRS)
+  #foreach (D IN LISTS INCLUDE_DIRS)
+  #  list (FIND DOXYGEN_INPUT "${D}" IDX)
+  #  if (IDX EQUAL -1)
+  #    list (APPEND DOXYGEN_INCLUDE_PATH "${D}")
+  #  endif ()
+  #endforeach ()
+  #basis_list_to_delimited_string (
+  #  DOXYGEN_INCLUDE_PATH "\"\nINCLUDE_PATH          += \"" ${DOXYGEN_INCLUDE_PATH}
+  #)
+  #set (DOXYGEN_INCLUDE_PATH "\"${DOXYGEN_INCLUDE_PATH}\"")
   # make string from DOXYGEN_INPUT - after include path was set
   basis_list_to_delimited_string (
     DOXYGEN_INPUT "\"\nINPUT                 += \"" ${DOXYGEN_INPUT}
