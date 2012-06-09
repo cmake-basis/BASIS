@@ -418,7 +418,8 @@ set (BASIS_NO_BASIS_UTILITIES FALSE)
 #
 # If this option is @c TRUE, the revision information is not included in the
 # @c PROJECT_RELEASE information.
-set (BASIS_NO_REVISION_INFO FALSE)
+option (BASIS_NO_REVISION_INFO "Disable use of the revision information of the revision control software." FALSE)
+mark_as_advanced (BASIS_NO_REVISION_INFO)
 
 ## @brief Enable compilation of scripts if supported by the language.
 #
@@ -426,7 +427,7 @@ set (BASIS_NO_REVISION_INFO FALSE)
 # only the compiled modules are installed.
 #
 # @sa basis_add_script()
-option (BASIS_COMPILE_SCRIPTS FALSE)
+option (BASIS_COMPILE_SCRIPTS "Enable compilation of scripts if supported by the language." FALSE)
 mark_as_advanced (BASIS_COMPILE_SCRIPTS)
 
 ## @brief Script used to execute a process in CMake script mode.
