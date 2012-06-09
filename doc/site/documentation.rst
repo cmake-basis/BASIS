@@ -20,21 +20,153 @@ API Documentation
 The `API documentation <apidoc/>`_ is generated from in-source comments using
 Doxygen_ and the filters provided by BASIS for languages other than C++.
 
-* `Tools <apidoc/group__Tools.html>`_
-* `Modules <apidoc/group__BasisModules.html>`_
+* `Tools <apidoc/latest/group__Tools.html>`_
+  |Tools v1.3|_ |Tools v1.2|_ |Tools v1.1|_ |Tools v1.0|_
+* `Modules <apidoc/latest/group__BasisModules.html>`_
+  |Modules v1.3|_ |Modules v1.2|_ |Modules v1.1|_ |Modules v1.0|_
 
-  - `Public CMake Functions <apidoc/group__CMakeAPI.html>`_
-  - `Find Package Modules <apidoc/group__CMakeFindModules.html>`_
-  - `Settings <apidoc/group__BasisSettings.html>`_
-  - `Package Configuration <apidoc/group__BasisConfig.html>`_
-  - `Project Directories <apidoc/group__BasisDirectories.html>`_
-  - `Script Configuration <apidoc/group__BasisScriptConfig.html>`_
+  - `Public CMake Functions <apidoc/latest/group__CMakeAPI.html>`_
+    |CMake API v1.3|_ |CMake API v1.2|_ |CMake API v1.1|_ |CMake API v1.0|_
+  - `Find Package Modules <apidoc/latest/group__CMakeFindModules.html>`_
+    |Find Modules v1.3|_ |Find Modules v1.2|_ |Find Modules v1.1|_ |Find Modules v1.0|_
+  - `Settings <apidoc/latest/group__BasisSettings.html>`_
+    |Settings v1.3|_ |Settings v1.2|_ |Settings v1.1|_ |Settings v1.0|_
+  - `Package Configuration <apidoc/latest/group__BasisConfig.html>`_
+    |Config v1.3|_ |Config v1.2|_ |Config v1.1|_ |Config v1.0|_
+  - `Project Directories <apidoc/latest/group__BasisDirectories.html>`_
+    |Directories v1.3|_ |Directories v1.2|_ |Directories v1.1|_ |Directories v1.0|_
+  - `Script Configuration <apidoc/latest/group__BasisScriptConfig.html>`_
+    |ScriptConfig v1.3|_ |ScriptConfig v1.2|_ |ScriptConfig v1.1|_ |ScriptConfig v1.0|_
 
-* `Utilities <apidoc/group__BasisUtilities.html>`_
+* `Utilities <apidoc/latest/group__BasisUtilities.html>`_
+  |Utilities v1.3|_ |Utilities v1.2|_ |Utilities v1.1|_ |Utilities v1.0|_
 
-  - `C++ Utilities <apidoc/group__BasisCxxUtilities.html>`_
-  - `Python Utilities <apidoc/group__BasisPythonUtilities.html>`_
-  - `Perl Utilities <apidoc/group__BasisPerlUtilities.html>`_
-  - `BASH Utilities <apidoc/group__BasisBashUtilities.html>`_
+  - `C++ Utilities <apidoc/latest/group__BasisCxxUtilities.html>`_
+    |C++ Utilities v1.3|_ |C++ Utilities v1.2|_ |C++ Utilities v1.1|_ |C++ Utilities v1.0|_
+  - `Python Utilities <apidoc/latest/group__BasisPythonUtilities.html>`_
+    |Python Utilities v1.3|_ |Python Utilities v1.2|_ |Python Utilities v1.1|_ |Python Utilities v1.0|_
+  - `Perl Utilities <apidoc/latest/group__BasisPerlUtilities.html>`_
+    |Perl Utilities v1.3|_ |Perl Utilities v1.2|_ |Perl Utilities v1.1|_ |Perl Utilities v1.0|_
+  - `BASH Utilities <apidoc/latest/group__BasisBashUtilities.html>`_
+    |BASH Utilities v1.3|_ |BASH Utilities v1.2|_ |BASH Utilities v1.1|_ |BASH Utilities v1.0|_
+
+.. role:: apilink
+    :class: apilink
+
+.. |Tools v1.3|              replace:: :apilink:`1.3`
+.. |Modules v1.3|            replace:: :apilink:`1.3`
+.. |CMake API v1.3|          replace:: :apilink:`1.3`
+.. |Find Modules v1.3|       replace:: :apilink:`1.3`
+.. |Settings v1.3|           replace:: :apilink:`1.3`
+.. |Config v1.3|             replace:: :apilink:`1.3`
+.. |Directories v1.3|        replace:: :apilink:`1.3`
+.. |ScriptConfig v1.3|       replace:: :apilink:`1.3`
+.. |Utilities v1.3|          replace:: :apilink:`1.3`
+.. |C++ Utilities v1.3|      replace:: :apilink:`1.3`
+.. |Python Utilities v1.3|   replace:: :apilink:`1.3`
+.. |Perl Utilities v1.3|     replace:: :apilink:`1.3`
+.. |BASH Utilities v1.3|     replace:: :apilink:`1.3`
+
+.. _Tools v1.3:              apidoc/v1.3/group__Tools.html
+.. _Modules v1.3:            apidoc/v1.3/group__BasisModules.html
+.. _CMake API v1.3:          apidoc/v1.3/group__CMakeAPI.html
+.. _Find Modules v1.3:       apidoc/v1.3/group__CMakeFindModules.html
+.. _Settings v1.3:           apidoc/v1.3/group__BasisSettings.html
+.. _Config v1.3:             apidoc/v1.3/group__BasisConfig.html
+.. _Directories v1.3:        apidoc/v1.3/group__BasisDirectories.html
+.. _ScriptConfig v1.3:       apidoc/v1.3/group__BasisScriptConfig.html
+.. _Utilities v1.3:          apidoc/v1.3/group__BasisUtilities.html
+.. _C++ Utilities v1.3:      apidoc/v1.3/group__BasisCxxUtilities.html
+.. _Python Utilities v1.3:   apidoc/v1.3/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.3:     apidoc/v1.3/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.3:     apidoc/v1.3/group__BasisBASHUtilities.html
+
+
+.. |Tools v1.2|              replace:: :apilink:`1.2`
+.. |Modules v1.2|            replace:: :apilink:`1.2`
+.. |CMake API v1.2|          replace:: :apilink:`1.2`
+.. |Find Modules v1.2|       replace:: :apilink:`1.2`
+.. |Settings v1.2|           replace:: :apilink:`1.2`
+.. |Config v1.2|             replace:: :apilink:`1.2`
+.. |Directories v1.2|        replace:: :apilink:`1.2`
+.. |ScriptConfig v1.2|       replace:: :apilink:`1.2`
+.. |Utilities v1.2|          replace:: :apilink:`1.2`
+.. |C++ Utilities v1.2|      replace:: :apilink:`1.2`
+.. |Python Utilities v1.2|   replace:: :apilink:`1.2`
+.. |Perl Utilities v1.2|     replace:: :apilink:`1.2`
+.. |BASH Utilities v1.2|     replace:: :apilink:`1.2`
+
+.. _Tools v1.2:              apidoc/v1.2/group__Tools.html
+.. _Modules v1.2:            apidoc/v1.2/group__BasisModules.html
+.. _CMake API v1.2:          apidoc/v1.2/group__CMakeAPI.html
+.. _Find Modules v1.2:       apidoc/v1.2/group__CMakeFindModules.html
+.. _Settings v1.2:           apidoc/v1.2/group__BasisSettings.html
+.. _Config v1.2:             apidoc/v1.2/group__BasisConfig.html
+.. _Directories v1.2:        apidoc/v1.2/group__BasisDirectories.html
+.. _ScriptConfig v1.2:       apidoc/v1.2/group__BasisScriptConfig.html
+.. _Utilities v1.2:          apidoc/v1.2/group__BasisUtilities.html
+.. _C++ Utilities v1.2:      apidoc/v1.2/group__BasisCxxUtilities.html
+.. _Python Utilities v1.2:   apidoc/v1.2/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.2:     apidoc/v1.2/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.2:     apidoc/v1.2/group__BasisBASHUtilities.html
+
+
+.. |Tools v1.1|              replace:: :apilink:`1.1`
+.. |Modules v1.1|            replace:: :apilink:`1.1`
+.. |CMake API v1.1|          replace:: :apilink:`1.1`
+.. |Find Modules v1.1|       replace:: :apilink:`1.1`
+.. |Settings v1.1|           replace:: :apilink:`1.1`
+.. |Config v1.1|             replace:: :apilink:`1.1`
+.. |Directories v1.1|        replace:: :apilink:`1.1`
+.. |ScriptConfig v1.1|       replace:: :apilink:`1.1`
+.. |Utilities v1.1|          replace:: :apilink:`1.1`
+.. |C++ Utilities v1.1|      replace:: :apilink:`1.1`
+.. |Python Utilities v1.1|   replace:: :apilink:`1.1`
+.. |Perl Utilities v1.1|     replace:: :apilink:`1.1`
+.. |BASH Utilities v1.1|     replace:: :apilink:`1.1`
+
+.. _Tools v1.1:              apidoc/v1.1/group__Tools.html
+.. _Modules v1.1:            apidoc/v1.1/group__BasisModules.html
+.. _CMake API v1.1:          apidoc/v1.1/group__CMakeAPI.html
+.. _Find Modules v1.1:       apidoc/v1.1/group__CMakeFindModules.html
+.. _Settings v1.1:           apidoc/v1.1/group__BasisSettings.html
+.. _Config v1.1:             apidoc/v1.1/group__BasisConfig.html
+.. _Directories v1.1:        apidoc/v1.1/group__BasisDirectories.html
+.. _ScriptConfig v1.1:       apidoc/v1.1/group__BasisScriptConfig.html
+.. _Utilities v1.1:          apidoc/v1.1/group__BasisUtilities.html
+.. _C++ Utilities v1.1:      apidoc/v1.1/group__BasisCxxUtilities.html
+.. _Python Utilities v1.1:   apidoc/v1.1/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.1:     apidoc/v1.1/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.1:     apidoc/v1.1/group__BasisBASHUtilities.html
+
+
+.. |Tools v1.0|              replace:: :apilink:`1.0`
+.. |Modules v1.0|            replace:: :apilink:`1.0`
+.. |CMake API v1.0|          replace:: :apilink:`1.0`
+.. |Find Modules v1.0|       replace:: :apilink:`1.0`
+.. |Settings v1.0|           replace:: :apilink:`1.0`
+.. |Config v1.0|             replace:: :apilink:`1.0`
+.. |Directories v1.0|        replace:: :apilink:`1.0`
+.. |ScriptConfig v1.0|       replace:: :apilink:`1.0`
+.. |Utilities v1.0|          replace:: :apilink:`1.0`
+.. |C++ Utilities v1.0|      replace:: :apilink:`1.0`
+.. |Python Utilities v1.0|   replace:: :apilink:`1.0`
+.. |Perl Utilities v1.0|     replace:: :apilink:`1.0`
+.. |BASH Utilities v1.0|     replace:: :apilink:`1.0`
+
+.. _Tools v1.0:              apidoc/v1.0/group__Tools.html
+.. _Modules v1.0:            apidoc/v1.0/group__BasisModules.html
+.. _CMake API v1.0:          apidoc/v1.0/group__CMakeAPI.html
+.. _Find Modules v1.0:       apidoc/v1.0/group__CMakeFindModules.html
+.. _Settings v1.0:           apidoc/v1.0/group__BasisSettings.html
+.. _Config v1.0:             apidoc/v1.0/group__BasisConfig.html
+.. _Directories v1.0:        apidoc/v1.0/group__BasisDirectories.html
+.. _ScriptConfig v1.0:       apidoc/v1.0/group__BasisScriptConfig.html
+.. _Utilities v1.0:          apidoc/v1.0/group__BasisUtilities.html
+.. _C++ Utilities v1.0:      apidoc/v1.0/group__BasisCxxUtilities.html
+.. _Python Utilities v1.0:   apidoc/v1.0/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.0:     apidoc/v1.0/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.0:     apidoc/v1.0/group__BasisBASHUtilities.html
+
 
 .. _Doxygen: http://www.stack.nl/~dimitri/doxygen/

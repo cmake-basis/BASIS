@@ -668,3 +668,7 @@ ul.keywordmatches li.goodmatch a {
 .figure {
     margin: 2em;
 }
+
+.apilink {
+    font-size: 75%;
+}

@@ -1,12 +1,8 @@
 .. title:: Home
 
-.. toctree::
-    :hidden:
-
-    download
-    installation
-    documentation
-    tutorials
+=====
+BASIS
+=====
 
 Overview
 ========
@@ -40,6 +36,16 @@ are used by the software.
 
 A Power Point :download:`presentation introducing BASIS <BASIS Introduction.pptx>`
 explains the purpose and the parts it is made of.
+
+------------------------------------------------------------------------------
+
+.. toctree::
+    :hidden:
+
+    download
+    installation
+    documentation
+    tutorials
 
 
 .. _CMake: http://www.cmake.org
