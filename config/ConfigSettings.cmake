@@ -64,7 +64,7 @@ endif ()
 
 ## @brief Directory of BASIS CMake modules.
 set (MODULE_PATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_MODULES_DIR}")
-## @brief Dirctory of @ref ProjectTemplate.
+## @brief Dirctory of project template.
 set (TEMPLATE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_TEMPLATE_DIR}-${TEMPLATE_VERSION}")
 # paths to templates files of utilities
 foreach (U CXX JAVA PYTHON PERL BASH MATLAB)

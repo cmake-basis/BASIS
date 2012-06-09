@@ -6,7 +6,9 @@
 # This meta-data is used by BASIS to setup the project. Moreover, if the
 # project is a module of another BASIS project, the dependencies to other
 # modules have to be specified here such that the top-level project can analyze
-# the inter-module dependencies (see @ref ProjectModules).
+# the inter-module dependencies.
+#
+# @sa http://www.rad.upenn.edu/sbia/software/basis/standard/modules/
 #
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to

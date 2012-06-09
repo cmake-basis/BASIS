@@ -29,8 +29,6 @@ namespace basis
 /**
  * @brief Manages command line definition and parsing of arguments.
  *
- * See @ref CxxCmdLineParsing for an example use of this class.
- *
  * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *

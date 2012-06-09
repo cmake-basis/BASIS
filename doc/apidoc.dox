@@ -85,8 +85,6 @@ such that CMake cannot find the package by default in config-mode.
 @defgroup CxxCmdLine Command-line Parsing Library
 @brief    Command-line parsing library for C++.
 
-See @ref CxxCmdLineParsing for details on how to use this library.
-
 @ingroup BasisCxxUtilities
 */
 
