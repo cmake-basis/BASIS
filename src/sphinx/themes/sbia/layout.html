@@ -47,7 +47,12 @@
         {%- if pathto('index') == '#' %}
           {%- set parent_path = '..' %}
         {%- else %}
-          {%- set parent_path = pathto('index').replace('index.html', '..') %}
+          {%- set parent_path = pathto('index') %}
+          {%- if parent_path and parent_path[-1] == '/' %}
+            {%- set parent_path = parent_path + '..' %}
+          {%- else %}
+            {%- set parent_path = parent_path.replace('index.html', '..') %}
+          {%- endif %}
         {%- endif %}
         <li class="right"><a href="{{ parent_path }}" title="{{ theme_indexlink|striptags|e }}">{{ theme_indexlink }}</a></li>
       {%- endif %}
