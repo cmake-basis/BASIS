@@ -1,0 +1,18 @@
+{#
+    sbia/sourcepdflink.html
+    ~~~~~~~~~~~~~~~~~~~~~~~
+
+    Sphinx sidebar template: "show source" and "show pdf" links.
+
+    :copyright: Copyright 2007-2011 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+#}
+<h3>{{ _('This Page') }}</h3>
+<ul class="this-page-menu">
+  <li><a href="{{ pathto('_downloads/' + project + '.pdf', true)|e }}"
+         rel="nofollow">{{ _('Show PDF') }}</a></li>
+  {%- if show_source and has_source and sourcename %}
+    <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}"
+           rel="nofollow">{{ _('Show Source') }}</a></li>
+  {%- endif %}
+</ul>
