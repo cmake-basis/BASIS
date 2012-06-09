@@ -218,17 +218,16 @@ C++
 ---
 
 For C++ programs, the BASIS C++ utilities provide the function
-`get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#gaf4f56530755f7a5825f789b4d5f995de>`
+`get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#gaf4f56530755f7a5825f789b4d5f995de>`_
 which maps a build target name to the absolute path of the executable file
 built by this target. This function makes use of the static instance of the class
-`sbia::basis::ExecutableTargetInfo <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/classsbia_1_1basis_1_1ExecutableTargetInfo.html>`
-whose constructor is automatically generated during the configuration of a project.
-This constructor initializes the data structures required for the mapping of
-target names to absolute file paths. Note that BASIS generates different
-implementations of this module for different projects.
+:apidoc:`sbia::basis::ExecutableTargetInfo` whose constructor is automatically
+generated during the configuration of a project. This constructor initializes the
+data structures required for the mapping of target names to absolute file paths.
+Note that BASIS generates different implementations of this module for different projects.
 
 The project implementations will, however, mainly make use of the
-`execute_process() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#ga8947d83def8523a37c0e58948428dd7d>`
+`execute_process() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#ga8947d83def8523a37c0e58948428dd7d>`_
 function which accepts either an actual executable file
 path or a build target name as first argument of the command-line to execute.
 This function shall be used in C++ code as a substitution for the commonly
@@ -245,8 +244,7 @@ to each BASIS project build.
 Java
 ----
 
-.. todo::
-    The Java programming language is not yet supported by BASIS.
+The Java programming language is not yet supported by BASIS.
 
 
 .. _PythonCallingConventionsImpl:

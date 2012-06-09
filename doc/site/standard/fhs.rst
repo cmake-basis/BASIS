@@ -54,11 +54,14 @@ referred to as ``<url>``.
 Repository Organization
 =======================
 
-The URL of the project repository at SBIA is
-``https://sbia-svn.uphs.upenn.edu/projects/<Project>`` (internal link). The top-level
-directories ``trunk/``, ``branches/``, and ``tags`` of the project named ``<Project>`` are
-located here. No other directories may be located next to these three top-level
-directories.
+Each Subversion_ (SVN) repository contains the top-level directories ``trunk/``,
+``branches/``, and ``tags/``. No other directories may be located next to these three
+top-level directories.
+
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{7.25cm}|p{8.25cm}|
 
 =======================================   ========================================================
              Repository Path                                    Description
@@ -86,17 +89,9 @@ directories.
                                           further details.
 ``tags/<project>-<version>/``             Tagged release version of the project. The reason for
                                           including the project name in the name of the tagged
-                                          branch is, that revision control systems often use
-                                          the last URL part as name for the directory to which
-                                          the URL's content is checked out or exported if no
-                                          name for this directory is specified explicitly.
-
-                                          In case of Subversion, the following command will export
-                                          the released software to a new directory underneath the
-                                          current working directory named ``<project>-<version>``.
-
-                                              ``svn export <url>/tags/<project>-<version>``
-
+                                          branch is, that SVN uses the last URL part as name for
+                                          the directory to which the URL's content is checked out
+                                          or exported to if no name for this directory is specified.
 =======================================   ========================================================
 
 See the :doc:`/howto/branch-and-release` guide for details on how to create
@@ -167,21 +162,21 @@ are listed::
 Following a description of the directories, where the names of the CMake
 variables defined by BASIS are used instead of the actual directory names:
 
-=======================   =====================================================
+
+=========================   =====================================================
    Directory Variable                        Description
-=======================   =====================================================
-``PROJECT_SOURCE_DIR``    Root directory of source tree.
-``PROJECT_CODE_DIR``      All source code files.
-``PROJECT_CONFIG_DIR``    BASIS configuration files.
-``PROJECT_DATA_DIR``      Software configuration files including auxiliary data
-                          such as medical atlases.
-``PROJECT_DOC_DIR``       Software documentation.
-``PROJECT_EXAMPLE_DIR``   Example application of software.
-``PROJECT_MODULES_DIR``   :doc:`Project Modules <modules>`, i.e., conceptual
-                          cohesive components, each residing in its own
-                          subdirectory named after the module.
-``PROJECT_TESTING_DIR``   Implementation of tests and test data.
-=======================   =====================================================
+=========================   =====================================================
+``PROJECT_SOURCE_DIR``      Root directory of source tree.
+``PROJECT_CODE_DIR``        All source code files.
+``PROJECT_CONFIG_DIR``      BASIS configuration files.
+``PROJECT_DATA_DIR``        Software configuration files including auxiliary data
+                            such as medical atlases.
+``PROJECT_DOC_DIR``         Software documentation.
+``PROJECT_EXAMPLE_DIR``     Example application of software.
+``PROJECT_MODULES_DIR``     :doc:`Project Modules <modules>`, each residing in
+                            its own subdirectory.
+``PROJECT_TESTING_DIR``     Implementation of tests and test data.
+=========================   =====================================================
 
 
 .. _BuildTree:
@@ -235,13 +230,17 @@ When installing the software package by building either the install target,
 extracting a binary distribution package, or running an installer of a binary
 distribution package, the following directory structure is used.
 
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{3cm}|p{12.5cm}|
+
 ==================   ======================================================
      Option                           Description
 ==================   ======================================================
 ``INSTALL_PREFIX``   Installation directories prefix (``<prefix>``).
                      Defaults to ``/usr/local`` on Unix-like systems
                      and ``C:\Program Files\SBIA`` on Windows.
-
                      Note that this variable is initialized by the value
                      of ``CMAKE_INSTALL_PREFIX``, the default variable used
                      by CMake. Once it is initialized, the value of CMake's
@@ -291,21 +290,18 @@ variables defined by BASIS are used instead of the actual directory names:
 =========================   ===================================================================
   Directory Variable                                 Description
 =========================   ===================================================================
-``INSTALL_CONFIG_DIR``      CMake configuration files, i.e., ``<Project>Config.cmake``
-                            et al. files, are installed here.
+``INSTALL_CONFIG_DIR``      CMake package configuration files.
 ``INSTALL_RUNTIME_DIR``     Main executables and shared libraries on Windows.
 ``INSTALL_LIBEXEC_DIR``     Utility executables which are called by other executables only.
 ``INSTALL_LIBRARY_DIR``     Shared libraries on Unix and module libraries.
 ``INSTALL_ARCHIVE_DIR``     Static and import libraries on Windows.
 ``INSTALL_INCLUDE_DIR``     Public header files of libraries.
-``INSTALL_DOC_DIR``         Readme file, licensing information, authors file, and other
-                            documentation files including the user manual are installed here.
-``INSTALL_EXAMPLE_DIR``     All data required to follow example as described in Software Manual.
+``INSTALL_DOC_DIR``         Documentation files including the software manual in particular.
+``INSTALL_EXAMPLE_DIR``     All data required to follow example as described in manuals.
 ``INSTALL_MAN_DIR``         Man pages are installed to this directory.
 ``INSTALL_MAN_DIR/man1/``   Man pages of main executables.
 ``INSTALL_MAN_DIR/man3/``   Man pages of libraries.
-``INSTALL_SHARE_DIR``       Shared package files including auxiliary data files
-                            such as pre-computed lookup tables and medical atlases.
+``INSTALL_SHARE_DIR``       Shared package files including required auxiliary data files.
 =========================   ===================================================================
 
 
@@ -317,12 +313,17 @@ is set to ``ON``. Note that the link creation will fail if a file or directory w
 the links' name already exists. This is desired and will simply be reported to the
 user. If a symbolic name of the same name already exists, it is replaced however.
 
-``<prefix>/bin/<exec> -> INSTALL_RUNTIME_DIR/<exec>``
-    if ``INSTALL_RUNTIME_DIR != <prefix>/bin``
-``<prefix>/share/doc/<sinfix>/ -> INSTALL_DOC_DIR``
-    if ``INSTALL_DOC_DIR != <prefix>/share/doc/<sinfix>``
-``<prefix>/share/man/man?/<name>.? -> INSTALL_MAN_DIR/man?/<name>.?``
-    if ``INSTALL_MAN_DIR != <prefix>/share/man``
+.. The tabularcolumns directive is required such that table is not too wide in PDF.
 
+.. tabularcolumns:: |p{6.8cm}|p{8.7cm}|
+
+=====================================   ==============================================
+                Link                                    Target
+=====================================   ==============================================
+``<prefix>/bin/<exec>``                 ``INSTALL_RUNTIME_DIR/<exec>``
+``<prefix>/share/doc/<sinfix>/``        ``INSTALL_DOC_DIR``
+``<prefix>/share/man/man.?/<name>.?``   ``INSTALL_MAN_DIR/man.?/<name>.?``
+=====================================   ==============================================
 
 .. _Filesystem Hierarchy Standard of Linux: http://proton.pathname.com/fhs/
+.. _Subversion: http://subversion.tigris.org/

@@ -24,7 +24,8 @@ of the new project and a brief project description as arguments:
 
 .. code-block:: bash
 
-    basisproject --name MyProject --description "This is a brief description of the project."
+    basisproject --name MyProject \
+            --description "This is a brief description of the project."
 
 This will create a subdirectory called ``MyProject`` under the current working directory
 and populate it with the standard project directory structure and BASIS configuration.
@@ -36,7 +37,9 @@ when creating the project using the ``--use`` or ``--useopt`` option, respectivl
 
 .. code-block:: bash
 
-    basisproject --name MyProject --description "This is a brief description of the project." --use ITK --useopt VTK
+    basisproject --name MyProject \
+            --description "This is a brief description of the project." \
+            --use ITK --useopt VTK
 
 The basisproject tool will in turn modify the ``BasisProject.cmake`` file to add the
 named packages to the corresponding lists of dependencies.
@@ -269,6 +272,11 @@ which contains the changes of both the template and your current project
 file. Markers such as the following are used to highlight the lines of
 the merged file which are in conflict with each other.
 
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{1.75cm}|p{13.75cm}|
+
 ===========   =================================================================
   Marker                                Description
 ===========   =================================================================
@@ -291,6 +299,11 @@ using .template as file name suffix. It further keeps a backup of your current
 project file before the update. The file name suffix for this backup file is
 ``.mine``. For example, if conflicts occured when updating the ``README.txt``
 file, the following files are written to your project's directory.
+
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{4cm}|p{11.5cm}|
 
 =======================   ==========================================================
       File Name                                 Description

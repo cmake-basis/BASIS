@@ -196,17 +196,26 @@ installed locally for use by the ``swtest`` user.
 Executing the following commands as this testing user will install BASIS
 locally in its home directory.
 
-1. Check-out the BASIS sources into the directory ``~swtest/src/``::
+1. Check-out the BASIS sources into the directory ``~swtest/src/``:
 
-    cd && svn --username <your own username> co "https://sbia-svn/projects/BASIS/trunk" src
+.. code-block:: bash
+
+    cd
+    svn --username <your own username> co "https://sbia-svn/projects/BASIS/trunk" src
 
 2. Create a directory for the build tree and configure it such that BASIS
-will be installed in the home directory of the ``swtest``` user::
+will be installed in the home directory of the ``swtest``` user:
+
+.. code-block:: bash
 
     mkdir build
     cd build
-    ccmake -DINSTALL_PREFIX:PATH=~ -DINSTALL_SINFIX:BOOL=OFF -DINSTALL_LINKS:BOOL=OFF \
-        -DBUILD_DOCUMENTATION:BOOL=OFF -DBUILD_EXAMPLE:BOOL=OFF -DBUILD_TESTING:BOOL=OFF ../src
+    ccmake -DINSTALL_PREFIX:PATH=~ -DINSTALL_SINFIX:BOOL=OFF \
+            -DINSTALL_LINKS:BOOL=OFF \
+            -DBUILD_DOCUMENTATION:BOOL=OFF \
+            -DBUILD_EXAMPLE:BOOL=OFF \
+            -DBUILD_TESTING:BOOL=OFF \
+            ../src
 
 3. Build and install BASIS with ``~swtest`` as installation prefix::
 
@@ -225,7 +234,7 @@ In order to update the testing scripts, run the following commands as
 the ``swtest`` user on ``olympus`` (this is important because the cron job which
 executes the tests will run on ``olympus``).
 
-::
+.. code-block:: bash
 
     cd
     svn up src
@@ -279,19 +288,23 @@ following example lines of the ``~swtest/.bashrc``:
 
     # root directory for installation of project files after successful test execution
     #
-    # Note: When logged in on olympus, we usually want to configure the setup of the test environment
-    #       such as updating the BASIS installation used by the automated testing infrastructure itself.
-    #       In this case, we actually want to install the files in ~swtest/ and not in the DESTDIR set here.
+    # Note: When logged in on olympus, we usually want to configure
+    #       the setup of the test environment such as updating the BASIS
+    #       installation used by the automated testing infrastructure itself.
+    #       In this case, we actually want to install the files in ~swtest/
+    #       and not in the DESTDIR set here.
     if ! [[ `hostname` =~ "olympus" ]]; then
             export DESTDIR="${HOME}/comp_space/destdir"
     fi
 
-    # Set <Project>_DIR environment variables such that the most recent installations in DESTDIR are used.
-    # If a particular installation is not available yet, the default installation as loaded by the module
+    # Set <Project>_DIR environment variables such that the most recent
+    # installations in DESTDIR are used. If a particular installation is
+    # not available yet, the default installation as loaded by the module
     # commands above will be used instead.
     export BASIS_DIR="${DESTDIR}/usr/local/lib/cmake/basis"
 
 .. note::
+
     The environment set up this way is common for the build of all tested projects.
     Hence, all projects which use ITK will use ITK version 3.20 in this example.
     If certain projects would require a different ITK version, the environment for these
@@ -323,6 +336,7 @@ Another difference can be static vs. dynamic linking. Thus, generally consider t
 run separate test jobs for coverage analysis and memory checking.
 
 .. note::
+
     At least one test job should use the **Release** build configuration.
 
 
@@ -346,24 +360,25 @@ script after each execution of the test master.
 An example test jobs configuration file is given below::
 
     # MM HH DD   Project Name      Branch   Dashboard   Arguments
-    #                                                   (e.g., for the configuration of the build system)
-    # ---------------------------------------------------------------------------------------------------
-    # Note: The destination directory for installations is specified by the DESTDIR environment variable
-    #       as set in the ~swtest/.bashrc file as well as the default CMAKE_INSTALL_PREFIX.
-    # ---------------------------------------------------------------------------------------------------
+    #                                                   (e.g., build configuration)
+    # -----------------------------------------------------------------------------------
+    # Note: The destination directory for installations is specified by the DESTDIR
+    #       environment variable as set in the ~swtest/.bashrc file as well as the
+    #       default CMAKE_INSTALL_PREFIX.
+    # -----------------------------------------------------------------------------------
       0  1  0    BASIS             trunk    Continuous
       0  0  1    BASIS             trunk    Nightly     doxygen,coverage,memcheck,install
-    # ---------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
       0  6  0    DRAMMS            trunk    Continuous
       0  0  1    DRAMMS            trunk    Nightly     doxygen,coverage,memcheck,install
-    # ---------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
       0  0  1    GLISTR            trunk    Continuous  include=sbia
-      0  0  7    GLISTR            trunk    Nightly     doxygen,memcheck,coverage,install,include=sbia
+      0  0  7    GLISTR            trunk    Nightly     doxygen,memcheck,coverage,install
       0  0 61    GLISTR            trunk    Nightly     exclude=sbia  # non-parallel
-    # ---------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
       0  1  0    HardiTk           trunk    Continuous  BUILD_ALL_MODULES=ON
-      0  0  1    HardiTk           trunk    Nightly     doxygen,memcheck,coverage,install,BUILD_ALL_MODULES=ON
-    # ---------------------------------------------------------------------------------------------------
+      0  0  1    HardiTk           trunk    Nightly     install,BUILD_ALL_MODULES=ON
+    # -----------------------------------------------------------------------------------
       0  0  1    MICO              trunk    Continuous
       0  0  7    MICO              trunk    Nightly     doxygen,memcheck,coverage,install
 
@@ -394,6 +409,7 @@ of BASIS itself which is used by the other projects should be executed first
 such that the updated BASIS installation is already used by the other tests.
 
 .. note::
+
     As the test schedule file is generated by the :ref:`BasisTestMaster` script,
     run either this script or the :ref:`BasisTestCron` script with the ``--dry``
     option if this file is missing or was not generated yet. This will skip 
@@ -408,9 +424,9 @@ The following is an example of such test schedule file::
     2012-01-12 03:00:00 BASIS trunk Nightly doxygen,coverage,memcheck,install
     2012-01-12 02:00:00 DRAMMS trunk Nightly doxygen,coverage,memcheck,install
     2012-01-12 12:55:04 GLISTR trunk Continuous include=sbia
-    2012-01-12 02:00:00 HardiTk trunk Nightly doxygen,memcheck,coverage,install,BUILD_ALL_MODULES=ON
+    2012-01-12 02:00:00 HardiTk trunk Nightly install,BUILD_ALL_MODULES=ON
     2012-01-12 12:55:05 MICO trunk Continuous
-    2012-01-18 03:30:00 GLISTR trunk Nightly doxygen,memcheck,coverage,install,include=sbia
+    2012-01-18 03:30:00 GLISTR trunk Nightly doxygen,memcheck,coverage,install
     2012-01-18 03:30:00 MICO trunk Nightly doxygen,memcheck,coverage,install
     2012-03-12 03:30:00 GLISTR trunk Nightly exclude=sbia
 

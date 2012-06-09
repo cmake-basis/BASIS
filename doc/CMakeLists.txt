@@ -106,7 +106,9 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
     INDEXLINK     Software
     RELLINKS      download installation documentation tutorials
     HTML_SIDEBARS localtoc relations sourcelink
+    LATEX_TITLE   ${PROJECT_NAME}
     DOXYLINK      apidoc
+    DOXYLINK_URL  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
     COPYRIGHT     "2011, 2012 University of Pennsylvania"
     AUTHOR        "Andreas Schuh"
   )
