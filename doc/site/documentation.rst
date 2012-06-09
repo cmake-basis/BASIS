@@ -2,7 +2,7 @@
 Documentation
 =============
 
-A :download:`PDF Version <BASIS v1.3.0.pdf>` of this documentation is available online and
+A :download:`PDF Version <BASIS.pdf>` of this documentation is available online and
 included with the distribution package.
 
 Software Manual
