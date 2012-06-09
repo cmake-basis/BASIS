@@ -189,8 +189,8 @@ this software can be build from its sources.
 Optional Packages
 ~~~~~~~~~~~~~~~~~
 
-The packages named in the following table are used only if installed on your system, but their presence
-is general no requirement and you will likely be able to use the basic components of the software without
+The packages named in the following table are used only if installed on your system, and their presence
+is generally no requirement and you will likely be able to use the basic components of the software without
 these. See the ``INSTALL`` file of the software package for details and which packages are indeed made
 use of or required by this software.
 
