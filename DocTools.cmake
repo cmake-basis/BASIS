@@ -1166,7 +1166,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
       set (DOXYLINK_PATH "${SPHINX_DOXYLINK_PREFIX}${DOXYLINK_PATH}${SPHINX_DOXYLINK_SUFFIX}")
     endif ()
     list (APPEND SPHINX_DOXYLINK "'${TARGET}': ('${DOXYGEN_TAGFILE}', '${DOXYLINK_PATH}')")
-    #list (APPEND SPHINX_DEPENDS ${UID}) # Doxygen re-runs every time...
+    list (APPEND SPHINX_DEPENDS ${UID})
   endforeach ()
   # breathe configuration
   set (SPHINX_BREATHE_PROJECTS)
@@ -1186,7 +1186,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     if (NOT SPHINX_BREATHE_DEFAULT_PROJECT)
       set (SPHINX_BREATHE_DEFAULT_PROJECT "${TARGET}")
     endif ()
-    #list (APPEND SPHINX_DEPENDS ${UID}) # Doxygen re-runs every time...
+    list (APPEND SPHINX_DEPENDS ${UID})
   endforeach ()
   # turn CMake lists into Python lists
   basis_list_to_delimited_string (SPHINX_EXTENSIONS         ", " NOAUTOQUOTE ${SPHINX_EXTENSIONS})
