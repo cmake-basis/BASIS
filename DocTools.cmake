@@ -1145,7 +1145,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
       set (DOXYLINK_PATH "${TARGET}") # safe fall back
     endif ()
     list (APPEND SPHINX_DOXYLINK "'${TARGET}': ('${DOXYGEN_TAGFILE}', '${DOXYLINK_PATH}')")
-    list (APPEND SPHINX_DEPENDS ${UID})
+    #list (APPEND SPHINX_DEPENDS ${UID}) # Doxygen re-runs every time...
   endforeach ()
   # breathe configuration
   set (SPHINX_BREATHE_PROJECTS)
@@ -1165,7 +1165,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     if (NOT SPHINX_BREATHE_DEFAULT_PROJECT)
       set (SPHINX_BREATHE_DEFAULT_PROJECT "${TARGET}")
     endif ()
-    list (APPEND SPHINX_DEPENDS ${UID})
+    #list (APPEND SPHINX_DEPENDS ${UID}) # Doxygen re-runs every time...
   endforeach ()
   # turn CMake lists into Python lists
   basis_list_to_delimited_string (SPHINX_EXTENSIONS         ", " NOAUTOQUOTE ${SPHINX_EXTENSIONS})
@@ -1190,10 +1190,6 @@ function (basis_add_sphinx_doc TARGET_NAME)
     message (FATAL_ERROR "Missing Sphinx configuration file ${SPHINX_CONFIG_FILE}!")
   endif ()
   # add target to build documentation
-  set (OPTALL)
-  if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)
-    set (OPTALL "ALL")
-  endif ()
   set (OPTIONS -a -N -n)
   if (NOT BASIS_VERBOSE)
     list (APPEND OPTIONS "-q")
@@ -1212,7 +1208,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
       set (SPHINX_POST_COMMAND COMMAND make -C "${SPHINX_OUTPUT_DIRECTORY}/${SPHINX_BUILDER}")
     endif ()
     add_custom_target (
-      ${TARGET_UID}_${BUILDER} ${OPTALL}
+      ${TARGET_UID}_${BUILDER}
           "${Sphinx-build_EXECUTABLE}" ${OPTIONS}
               -b ${SPHINX_BUILDER}
               -c "${SPHINX_CONFIG_DIRECTORY}"
@@ -1237,7 +1233,11 @@ function (basis_add_sphinx_doc TARGET_NAME)
     )
   endforeach ()
   # add general target which depends on default builder only
-  add_custom_target (${TARGET_UID})
+  if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)
+    add_custom_target (${TARGET_UID} ALL)
+  else ()
+    add_custom_target (${TARGET_UID} ALL)
+  endif ()
   add_dependencies (${TARGET_UID} ${TARGET_UID}_${SPHINX_DEFAULT_BUILDER})
   # add general "doc" target
   if (NOT TARGET doc)
