@@ -31,7 +31,7 @@ This depends on which utilities are used by the software.
 
 The :download:`BASIS Introduction <BASIS Introduction.pptx>` slides
 further explain its purpose and the parts it is made of
-(`ref <http://www.rad.upenn.edu/sbia/software/basis/>`_).
+(`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Introduction.pptx>`__).
 
 .. The ref link is required for the PDF version as the download directive in
    this case does not translate to a hyperlink, but text only.

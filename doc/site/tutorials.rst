@@ -9,8 +9,8 @@ on getting you started as quickly as possible without all the details. Therefore
 recommended to first have a look at the quick start guides and, if questions remain,
 to follow the corresponding tutorial.
 
-.. The ref links below are required for the PDF version as the download directive in
-   this case does not translate to a hyperlink, but text only.
+.. The ref links below are required for the LaTeX/PDF version as the download directive
+   in this case does not translate to a hyperlink, but text only.
 
 .. _QuickStartGuides:
 
@@ -18,7 +18,7 @@ Quick Start Guides
 ==================
 
 1. :download:`Getting Started <tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`
-   (`ref <http://www.rad.upenn.edu/sbia/software/basis/tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`_)
+   (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Quick%20Start%20Guide%20-%2001%20Getting%20Started.pptx>`__)
 
 
 .. _Tutorials:
@@ -27,4 +27,4 @@ Tutorials
 =========
 
 1. :download:`Getting Started <tutorials/BASIS Tutorial - 01 Getting Started.pptx>`
-   (`ref <http://www.rad.upenn.edu/sbia/software/basis/tutorials/BASIS Tutorial - 01 Getting Started.pptx>`_)
+   (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
