@@ -1582,7 +1582,8 @@ endfunction ()
 # @endcode
 #
 # Certain CMake variables within the script are replaced during the configure step.
-# See @ref ScriptTargets for details.
+#
+# @sa http://www.rad.upenn.edu/sbia/software/basis/scripttargets/
 #
 # Note that this function only configures the script file if it ends in the ".in"
 # suffix and adds a custom target which stores all information required to setup

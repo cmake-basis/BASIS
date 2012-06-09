@@ -20,14 +20,17 @@
 /**
 @defgroup BasisDirectories Project Directories
 @brief    CMake variables of project directories.
-          See @FilesystemHierarchyStandardPageRef@ of BASIS.
+
+@sa http://www.rad.upenn.edu/sbia/software/basis/standard/fhs/
 
 @ingroup BasisModules
 */
 
 /**
 @defgroup BasisScriptConfig Script Configuration
-@brief    Script configuration as used for the @BuildOfScriptTargetsPageRef@.
+@brief    Script configuration as used for the build of script targets.
+
+@sa http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets/
 
 @ingroup BasisModules
 */

@@ -40,7 +40,7 @@ set (
   CMAKE_MODULES_AUXILIARY_FILES
     # API documentation
     "Doxyfile.in"                 # default Doxygen configuration template
-    "Modules.dox.in"              # documentation of BASIS modules groups
+    "Modules.dox"                 # documentation of BASIS modules groups
     "Utilities.dox"               # documentation of BASIS Utilities group
     "CxxUtilities.dox"            # documentation of C++ Utilities group
     "JavaUtilities.dox"           # documentation of Java Utilities group
