@@ -218,7 +218,7 @@ C++
 ---
 
 For C++ programs, the BASIS C++ utilities provide the function
-`get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#gaf4f56530755f7a5825f789b4d5f995de>`_
+`get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#gaf4f56530755f7a5825f789b4d5f995de>`__
 which maps a build target name to the absolute path of the executable file
 built by this target. This function makes use of the static instance of the class
 :apidoc:`sbia::basis::ExecutableTargetInfo` whose constructor is automatically
@@ -227,7 +227,7 @@ data structures required for the mapping of target names to absolute file paths.
 Note that BASIS generates different implementations of this module for different projects.
 
 The project implementations will, however, mainly make use of the
-`execute_process() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#ga8947d83def8523a37c0e58948428dd7d>`_
+`execute_process() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#ga8947d83def8523a37c0e58948428dd7d>`__
 function which accepts either an actual executable file
 path or a build target name as first argument of the command-line to execute.
 This function shall be used in C++ code as a substitution for the commonly
@@ -284,9 +284,9 @@ BASH
 For BASH_, the module executabletargetinfo.sh_ immidates associative arrays
 to store the location of the built executable files relative to this module.
 The functions
-`get_executable_name() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#ga76e85c979664b54dc50b5ba49b52579c>`_,
-`get_executable_directory() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#gac2e93af7862fa2cb2416763d002d8b82>`_,
-and `get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#ga8fd09ab9bd29a0213325a341c385510d>`_
+`get_executable_name() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#ga76e85c979664b54dc50b5ba49b52579c>`__,
+`get_executable_directory() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#gac2e93af7862fa2cb2416763d002d8b82>`__,
+and `get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#ga8fd09ab9bd29a0213325a341c385510d>`__
 can be used to get the name, directory, or path, respectively, of the
 executable file built by the specified target. If no target is specified,
 the name, directory, or path of the calling executable itself is returned.
