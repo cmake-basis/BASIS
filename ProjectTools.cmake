@@ -852,7 +852,11 @@ macro (basis_project_initialize)
   # Note: Use revision when branch, i.e., either trunk, a branch, or a tag
   #       has been modified last. For tags, this should in particular
   #       correspond to the revision when the tag was created.
-  basis_svn_get_last_changed_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
+  if (BASIS_NO_REVISION_INFO)
+    set (PROJECT_REVISION)
+  else ()
+    basis_svn_get_last_changed_revision ("${PROJECT_SOURCE_DIR}" PROJECT_REVISION)
+  endif ()
 
   # extract version numbers from version string
   basis_version_numbers (

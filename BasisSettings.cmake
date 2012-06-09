@@ -413,6 +413,13 @@ set (BASIS_RUNTIME_COMPONENT "Runtime")
 #         as dependency of an executable.
 set (BASIS_NO_BASIS_UTILITIES FALSE)
 
+## @brief Disable use of the revision information obtained from the revision
+#         control software such as Subversion.
+#
+# If this option is @c TRUE, the revision information is not included in the
+# @c PROJECT_RELEASE information.
+set (BASIS_NO_REVISION_INFO FALSE)
+
 ## @brief Enable compilation of scripts if supported by the language.
 #
 # In particular, Python modules are compiled if this option is enabled and
