@@ -26,6 +26,13 @@
 #include <string>   // C++ string class
 
 
+namespace sbia
+{
+
+namespace basis
+{
+
+
 /// @addtogroup BasisCxxUtilities
 /// @{
 
@@ -73,6 +80,11 @@ std::ostream& print_wrapped(std::ostream&      os,
 
 /// @}
 // Doxygen group
+
+
+} // namespace basis
+
+} // namespace sbia
 
 
 #endif // _SBIA_BASIS_STDIO_H
