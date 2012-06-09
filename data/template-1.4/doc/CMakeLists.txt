@@ -76,14 +76,15 @@ endif ()
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
   basis_add_doc (
     site
-    GENERATOR    Sphinx
-    BUILDER      html dirhtml pdf man
-    MAN_SECTION  7
-    SHOW_RELEASE false
+    GENERATOR     Sphinx
+    BUILDER       html dirhtml pdf man
+    MAN_SECTION   7
+    SHOW_RELEASE  false
     INDEXLINK     "SBIA Software"
-    RELLINKS     download installation documentation examples publications
-    LATEX_TITLE  "${PROJECT_NAME}"
-    COPYRIGHT    "<year> University of Pennsylvania"
-    AUTHOR       "<author>"
+    RELLINKS      download installation documentation examples publications
+    HTML_SIDEBARS localtoc relations sourcelink
+    LATEX_TITLE   "${PROJECT_NAME}"
+    COPYRIGHT     "<year> University of Pennsylvania"
+    AUTHOR        "<author>"
   )
 endif ()
