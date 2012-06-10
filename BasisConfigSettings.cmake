@@ -42,7 +42,7 @@ if (PKGS)
 endif ()
 
 foreach (PKG IN LISTS PKGS)
-  set (DEPENDS_CONFIG "${DEPENDS_CONFIG}# ${PKG}\nset (\n  ${PKG}_DIR \"${${PKG}_DIR}\"\n  CACHE PATH \"Package ${PKG} configuration directory or installation prefix.\"\n)")
+  set (DEPENDS_CONFIG "${DEPENDS_CONFIG}# ${PKG}\nset (${PKG}_DIR \"${${PKG}_DIR}\")")
 endforeach ()
 
 # ============================================================================

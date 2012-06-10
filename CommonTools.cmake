@@ -181,6 +181,17 @@ macro (basis_find_package PACKAGE)
     endif ()
   endif ()
   # --------------------------------------------------------------------------
+  # Note that some <Pkg>_DIR variables are set in the package configuration
+  # of found (BASIS-based) packages such as in particular BASIS itself. These
+  # are marked as INTERNAL as the packages may not even be used by the project
+  # that uses that package. If this project, however, looks for any of these
+  # packages itself, the variables should be made visible for the user.
+  if (DEFINED ${PKG}_DIR)
+    basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
+  elseif (DEFINED ${PKG_UPPER}_DIR)
+    basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
+  endif ()
+  # --------------------------------------------------------------------------
   # hide or show already defined <PKG>_DIR cache entry
   if (DEFINED ${PKG}_DIR AND DEFINED USE_${PKG})
     if (USE_${PKG})
@@ -233,6 +244,7 @@ macro (basis_find_package PACKAGE)
       if (${PKG_UPPER}_FOUND)
         set (${PKG}_FOUND TRUE)
       endif ()
+      # verbose output of information about found package
       if (BASIS_VERBOSE)
         if (${PKG}_FOUND)
           if (DEFINED ${PKG}_DIR)
@@ -260,7 +272,7 @@ macro (basis_find_package PACKAGE)
   # --------------------------------------------------------------------------
   # reset <PKG>_DIR variable for possible search of different package version
   if (PKG_DIR AND NOT ${PKG}_DIR)
-    basis_set_or_update_cache (${PKG}_DIR "${PKG_DIR}")
+    basis_set_or_update_value (${PKG}_DIR "${PKG_DIR}")
   endif ()
   # --------------------------------------------------------------------------
   # unset locally used variables
@@ -591,39 +603,77 @@ endfunction ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Set variable.
+## @brief Determine if cache entry exists.
+#
+# @param [out] VAR   Name of boolean result variable.
+# @param [in]  ENTRY Name of cache entry.
+macro (basis_is_cached VAR ENTRY)
+  if (DEFINED ${ENTRY})
+    get_property (${VAR} CACHE ${ENTRY} PROPERTY TYPE SET)
+  else ()
+    set (${VAR} FALSE)
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Set type of variable.
+#
+# If the variable is cached, the type is updated, otherwise, a cache entry
+# of the given type with the current value of the variable is added.
+#
+# @param [in] VAR  Name of variable.
+# @param [in] TYPE Desired type of variable.
+# @param [in] ARGN Optional DOC string used if variable was not cached before.
+macro (basis_set_or_update_type VAR TYPE)
+  basis_is_cached (_CACHED ${VAR})
+  if (_CACHED)
+    set_property (CACHE ${VAR} PROPERTY TYPE ${TYPE})
+  else ()
+    set (${VAR} "${${VAR}}" CACHE ${TYPE} "${ARGN}" FORCE)
+  endif ()
+  unset (_CACHED)
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Change type of cached variable.
+#
+# If the variable is not cached, nothing is done.
+macro (basis_update_type_of_variable VAR TYPE)
+  basis_is_cached (_CACHED ${VAR})
+  if (_CACHED)
+    set_property (CACHE ${VAR} PROPERTY TYPE ${TYPE})
+  endif ()
+  unset (_CACHED)
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Set variable value.
 #
 # If the variable is cached, this function will update the cache value,
 # otherwise, it simply sets the CMake variable uncached to the given value(s).
-function (basis_set_or_update_cache VAR)
-  if (DEFINED "${VAR}")
-    get_property (CACHED CACHE "${VAR}" PROPERTY VALUE DEFINED)
-  else ()
-    set (CACHED FALSE)
-  endif ()
-  if (CACHED)
+macro (basis_set_or_update_value VAR)
+  basis_is_cached (_CACHED ${VAR})
+  if (_CACHED)
     if (ARGC GREATER 1)
-      set_property (CACHE "${VAR}" PROPERTY VALUE ${ARGN})
+      set_property (CACHE ${VAR} PROPERTY VALUE ${ARGN})
     else ()
-      set ("${VAR}" "" CACHE INTERNAL "" FORCE)
+      set (${VAR} "" CACHE INTERNAL "" FORCE)
     endif ()
   else ()
-    set ("${VAR}" ${ARGN} PARENT_SCOPE)
+    set (${VAR} ${ARGN})
   endif ()
-endfunction ()
+  unset (_CACHED)
+endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Update cache variable.
-function (basis_update_cache VAR)
-  if (DEFINED "${VAR}")
-    get_property (CACHED CACHE "${VAR}" PROPERTY VALUE DEFINED)
-  else ()
-    set (CACHED FALSE)
+macro (basis_update_value VAR)
+  basis_is_cached (_CACHED ${VAR})
+  if (_CACHED)
+    set_property (CACHE ${VAR} PROPERTY VALUE ${ARGN})
   endif ()
-  if (CACHED)
-    set_property (CACHE "${VAR}" PROPERTY VALUE ${ARGN})
-  endif ()
-endfunction ()
+  unset (_CACHED)
+endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Set value of variable only if variable is not set already.
@@ -633,8 +683,8 @@ endfunction ()
 #
 # @returns Sets @p VAR if its value was not valid before.
 macro (basis_set_if_empty VAR)
-  if (NOT "${VAR}")
-    set ("${VAR}" ${ARGN})
+  if (NOT ${VAR})
+    set (${VAR} ${ARGN})
   endif ()
 endmacro ()
 
