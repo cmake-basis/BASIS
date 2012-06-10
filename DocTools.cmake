@@ -1276,7 +1276,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
   if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)
     add_custom_target (${TARGET_UID} ALL)
   else ()
-    add_custom_target (${TARGET_UID} ALL)
+    add_custom_target (${TARGET_UID})
   endif ()
   add_dependencies (${TARGET_UID} ${TARGET_UID}_${SPHINX_DEFAULT_BUILDER})
   # add general "doc" target
