@@ -16,7 +16,7 @@ and thus required by BASIS. The project template therefore follows this
 standard regarding the directory structure. The further purpose of the
 software project template is to provide template files concerned with
 the configuration of the build, testing, installation, and packaging.
-In the following, the prupose of each template file is summarized.
+In the following, the role of each template file is summarized.
 
 
 Required Project Files
@@ -26,32 +26,41 @@ The following files have to be part of any project which follows the :doc:`fhs`.
 These are thus the minimal set of project files which need to be selected
 when instantiating a new software project. Besides these files, a project
 will have either a ``src/`` directory or a ``modules/`` directory,
-or both of them. See below for a description of these directories.
+or even both of them. See below for a description of these directories.
+
+.. _README:
 
 README.txt
     This is the main (root) documentation file. Every user is
-    supposed to first read this file, which in turn will refer
+    assumed to first read this file, which in turn will refer
     them to the more extensive documentation. This file in
     particular introduces the software package shortly, including a
     summary of the package files. Moreover, it refers to the
-    ``INSTALL.txt`` and ``COPYING.txt`` files for details on
-    the build and installation and software license, respectively.
-    Furthermore, references to scientific articles related to the
-    software package shall be included in this file.
+    :ref:`INSTALL.txt <INSTALL>` and :ref:`COPYING.txt <COYPING>`
+    files for details on the build and installation and software license,
+    respectively. Furthermore, references to scientific articles related
+    to the software package shall be included in this file.
 
 AUTHORS.txt
     Names the authors of the software package. Moreover, people who
     notably contributed to the software directly shall be named
     here as well, even if they did not actually edit any project
     file. Others, who mostly contributed indirectly should be
-    named in the ``README.txt`` file instead.
+    named in the :ref:`README.txt <README>` file instead. No author names shall
+    be given in any particular source code file, as these are generally
+    edited by multiple persons and updating the authors information
+    within each source file is tedious.
+
+.. _COPYING:
 
 COPYING.txt
     Contains copyright and license information. If some files
     of the project were copied from other sources, the copyright
-    and license of these files shall be included in this file
+    and license information of these files shall be stated here
     as well. It is important to clearly state which copyright
-    and license text corresponds to which project file.
+    and license text corresponds to which project files.
+
+.. _INSTALL:
 
 INSTALL.txt
     Contains build and installation instructions. As the build
@@ -59,12 +68,14 @@ INSTALL.txt
     file shall only describe additional steps/CMake variables
     which are not described in the :doc:`/howto/install` guide.
 
+.. _BasisProject:
+
 :apidoc:`BasisProject.cmake`
     This file contains the meta-data of the project such as
-    the project name, its brief description which is used for
-    the packaging, and the dependencies. Note that additional
+    the project name and release version, its brief description which
+    is used for the packaging, and the dependencies. Note that additional
     dependencies may be given by the CMake code in the
-    config/Depends.cmake file, if such file is present.
+    :ref:`config/Depends.cmake <Depends>` file, if such file is present.
     This file mainly consists of a call to the
     :apidoc:`basis_project()` command. If the project is a module
     of another project, this file is read by the top-level project
@@ -81,6 +92,8 @@ CTestConfig.cmake
     The CTest_ configuration file. This file in particular
     specifies the URL of the CDash_ dashboard of the project
     where test results should be submitted to.
+
+.. _Settings:
 
 config/Settings.cmake
     This is the main CMake script file used to configure the build
@@ -100,9 +113,10 @@ data/CMakeLists.txt
 
 doc/CMakeLists.txt
     This CMake configuration file adds rules to build the documentation
-    form, for example, the in-source comments using Doxygen_. Moreover,
-    for every documentation file, such as the user manual, the
-    :apidoc:`basis_add_doc()` command has to be added to this file.
+    from, for example, the in-source comments using Doxygen_ or reStructuredText_
+    sources using Sphinx_. Moreover, for every documentation file, such as the
+    software manual, the :apidoc:`basis_add_doc()` command has to be added to
+    this file.
 
 example/CMakeLists.txt
     This CMake configuration file contains by default code to install every
@@ -154,6 +168,8 @@ config/Components.cmake
     are not very well supported by BASIS, and hence this file
     is mostly unused and is yet subject to change.
 
+.. _Config_in:
+
 config/Config.cmake.in
     This is the template of the package configuration file.
     When the project is configured/installed using CMake,
@@ -173,13 +189,13 @@ config/Config.cmake.in
 
 config/ConfigSettings.cmake
     This file sets CMake variables for use in the
-    ``config/Config.cmake.in`` file. As the package configuration
+    :ref:`config/Config.cmake.in <Config_in>` file. As the package configuration
     for the final installation differs from the one of the build tree,
     this file has to contain CMake code to set the variables used in the
-    ``config/Config.cmake.in`` file differently depending on whether
+    :ref:`config/Config.cmake.in  <Config_in>` file differently depending on whether
     the variables are being set for use within the build tree or the
     installation tree. This file only needs to be present if the project
-    uses a custom ``config/Config.cmake.in`` file, which in turn
+    uses a custom :ref:`config/Config.cmake.in  <Config_in>` file, which in turn
     contains CMake variables whose value differs between build tree and
     installation.
 
@@ -187,31 +203,34 @@ config/ConfigUse.cmake.in
     This file is provided for convenience of the user of the
     software package. It contains CMake code which uses the
     variables set by the package configuration file (i.e.,
-    the file generated from the file ``config/Config.cmake.in``)
+    the file generated from the file :ref:`config/Config.cmake.in <Config_in>`)
     in order to configure the build system of packages which
     use this software packages properly such that they can
     make use of this software. For example, the package
     configuration sets a variable ``<Pkg>_INCLUDE_DIRS``
     to a list of include directories which have to be added
     to the include search path. Then, this file would contain
-    CMake instructions such as the line
-    ``include_directories(${<Pkg>_INCLUDE_DIRS})``
-    to actually add these directories to the search path for
-    header files.
+    CMake instructions such as the line ``include_directories(${<Pkg>_INCLUDE_DIRS})``
+    to actually add these directories to the search path for header files.
 
 config/ConfigVersion.cmake.in
     This file accompanies the package configuration file
-    generated from the ``config/Config.cmake.in`` file. It is used
+    generated from the :ref:`config/Config.cmake.in  <Config_in>` file. It is used
     by CMake's `find_package()`_ command to identify versions of this software
     package which are compatible with the version requested by the dependent
     project. This file needs almost never be customized by a project
-    and thus should not be included in a project's source tree.
+    and thus should generally not be included in a project's source tree.
+
+.. _Depends:
 
 config/Depends.cmake
-    If the generic code used by BASIS is not sufficient to resolve the
-    dependencies on external packages properly, add this file to your
-    project. It can contain CMake code to find and make use of external
-    software packages.
+    If the generic code used by BASIS to resolve the dependencies on external
+    packages is not sufficient, add this file to your project. CMake code required
+    to find and make use of external software packages properly shall be added
+    to this file. In order to only make use of the variables set by the package
+    configuration of the found dependency, consider to add a dependency entry
+    to the :ref:`BasisProject.cmake <BasisProject>` file instead and code to use
+    these variables to :ref:`config/Settings.cmake <Settings>`.
 
 config/Package.cmake
     Configures CPack_, the package generator of CMake.
@@ -228,4 +247,6 @@ CTestCustom.cmake.in
 .. _CTest: http://www.cmake.org/cmake/help/v2.8.8/ctest.html
 .. _CPack: http://www.cmake.org/cmake/help/v2.8.8/cpack.html
 .. _Doxygen: http://www.stack.nl/~dimitri/doxygen/
+.. _Sphinx: http://sphinx.pocoo.org/
+.. _reStructuredText: http://docutils.sourceforge.net/rst.html
 .. _find_package(): http://www.cmake.org/cmake/help/v2.8.8/cmake.html#command:find_package

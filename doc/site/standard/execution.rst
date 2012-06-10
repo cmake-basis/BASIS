@@ -3,14 +3,13 @@ Calling Conventions
 ===================
 
 This document discusses and describes the conventions for calling other
-executables from within an executable. The calling conventions address the
-question whether to use relative or absolute file paths when calling
-other executables and introduce a name mapping from build target names
-to actual executable file names. These calling conventions are, however,
-hidden to the developer through automatically generated utility functions
-for each supported programming language.
-See :ref:`CallingConventionsImpl` for details on the specific implementations
-in the different languages.
+executables from a program. The calling conventions address the question
+whether to use relative or absolute file paths when calling executables
+and introduce a name mapping from build target names to actual executable
+file paths. These calling conventions are, however, hidden to the developer
+through automatically generated utility functions for each supported
+programming language. See :ref:`CallingConventionsImpl` for details on the
+specific implementations in the different languages.
 
 
 .. _RelVsAbsExecPath:

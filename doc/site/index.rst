@@ -13,7 +13,7 @@ cross-platform, open-source build system. The previously used CMake Project
 Template was entirely reworked and became a major component of BASIS.
 In fact, the BASIS project evolved from this initial project template
 and greatly improved it. See the :doc:`standard/template` of the
-:doc:`standard/buildsystem` for a details on the template.
+:doc:`standard/buildsystem` for details on the template.
 
 See the :doc:`standard/implementation` for details on the standard for
 implementing software.
