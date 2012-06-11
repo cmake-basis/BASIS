@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 ##############################################################################
 # @file  basisproject.py
 # @brief Project tool used to create and/or modify a BASIS project.
@@ -14,13 +16,13 @@
 # modules
 # ============================================================================
 
-@BASIS_PYTHON_UTILITIES@
-
 import os                       # file manipulation
 import sys                      # system functions
 import re                       # regular expressions
 import datetime                 # now(), to get current year for copyright
 import shutil                   # copyfile()
+
+from sbia.basis import basis    # basic utilities
 from sbia.basis import argparse # command-line parsing
 from sbia.basis import diff3    # three-way diff algorithm
 

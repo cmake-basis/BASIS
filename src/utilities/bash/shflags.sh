@@ -1,5 +1,3 @@
-# vim:et:ft=sh:sts=2:sw=2
-
 ##############################################################################
 # @file   shflags.sh
 # @author Kate Ward <kate.ward at forestent.com>, Andreas Schuh
@@ -43,7 +41,7 @@
 # Example script hello.sh(.in):
 # @code
 # #! /bin/sh
-# @BASIS_BASH_UTILITIES@
+# . ${BASIS_SOURCE} || exit 1
 #
 # DEFINE_string name 'world' "somebody's name" n
 #

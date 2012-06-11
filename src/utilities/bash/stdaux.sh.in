@@ -31,7 +31,7 @@ readonly _STDAUX_DIR=@BASIS_BASH___DIR__@
 # modules
 # ============================================================================
 
-source "${_STDAUX_DIR}/@_BASIS_LIBRARY_DIR@/core.sh" # match()
+. "${_STDAUX_DIR}/@_BASIS_LIBRARY_DIR@/core.sh" # match()
 
 # ============================================================================
 # version / contact

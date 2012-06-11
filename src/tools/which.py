@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 # Copyright (c) 2002-2007 ActiveState Software Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a

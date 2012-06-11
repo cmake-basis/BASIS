@@ -1,3 +1,5 @@
+#! /bin/bash
+
 ##############################################################################
 # @file  basistest-cron.sh
 # @brief Script intended to be run as cron job to perform automated testing.
@@ -21,7 +23,7 @@
 # @ingroup Tools
 ##############################################################################
 
-@BASIS_BASH_UTILITIES@
+. ${BASIS_SOURCE} || exit 1
 
 # ============================================================================
 # constants

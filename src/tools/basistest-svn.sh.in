@@ -1,3 +1,5 @@
+#! /bin/bash
+
 ##############################################################################
 # @file  basistest-svn.sh
 # @brief Wrapper script for Subversion svn command.
@@ -17,7 +19,7 @@
 # @ingroup Tools
 ##############################################################################
 
-@BASIS_BASH_UTILITIES@
+. ${BASIS_SOURCE} || exit 1
 
 args=()
 verbose=0

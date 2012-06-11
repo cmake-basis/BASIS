@@ -1,3 +1,5 @@
+#! /usr/bin/env perl
+
 ##############################################################################
 # @file  doxyfilter.pl
 # @brief Doxygen input filter.
@@ -44,9 +46,8 @@
 # 
 # =======================================================================
 
-@BASIS_PERL_UTILITIES@
-
 use Cwd qw(realpath);
+use SBIA::BASIS::Basis;
 use SBIA::BASIS::DoxyGen::PerlFilter;
 use Getopt::Long;
 
@@ -118,5 +119,5 @@ if ($ext eq 'pl' or $ext eq 'pm' or $filehead =~ /^#!\s*(\/usr\/bin\/perl|\/bin\
 if ($filter) {
     $filter->filter ($ARGV [0]);
 } else {
-    Basis::execute_process (\@ARGV);
+    SBIA::BASIS::Basis::execute_process (\@ARGV);
 }
