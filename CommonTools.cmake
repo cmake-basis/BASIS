@@ -186,10 +186,10 @@ macro (basis_find_package PACKAGE)
   # are marked as INTERNAL as the packages may not even be used by the project
   # that uses that package. If this project, however, looks for any of these
   # packages itself, the variables should be made visible for the user.
-  if (DEFINED ${PKG}_DIR)
+  if (${PKG}_DIR)
     basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
-  elseif (DEFINED ${PKG_UPPER}_DIR)
-    basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
+  elseif (${PKG_UPPER}_DIR)
+    basis_set_or_update_type (${PKG_UPPER}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
   endif ()
   # --------------------------------------------------------------------------
   # hide or show already defined <PKG>_DIR cache entry
