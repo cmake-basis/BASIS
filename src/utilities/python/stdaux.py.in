@@ -44,12 +44,13 @@ from @PROJECT_NAMESPACE_PYTHON@.executabletargetinfo import get_executable_path
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-def print_version(name, copyright=None, license=None):
+def print_version(name, project='@PROJECT_NAME@', copyright=None, license=None):
     """
     Print version information including copyright and license notices.
      
     @param [in] name      Name of executable. Should not be set programmatically
                           to the first argument to the __main__ module.
+    @param [in] project   Name of project this executable belongs to.
     @param [in] copyright The copyright notice. If None, the official default
                           copyright is used without year, which is not desired.
                           If an empty string is given, no copyright notice is
@@ -60,17 +61,20 @@ def print_version(name, copyright=None, license=None):
     
     """
     # version
-    sys.stdout.write(name + " (@PROJECT_NAME@) @PROJECT_RELEASE@\n")
+    sys.stdout.write(name)
+    if project:
+        sys.stdout.write(' (' + project + ')')
+    sys.stdout.write(' @PROJECT_RELEASE@\n')
     # copyright notice
     if not copyright:
-        sys.stdout.write("Copyright (c) University of Pennsylvania. All rights reserved.\n")
-    elif copyright != "":
+        sys.stdout.write('Copyright (c) University of Pennsylvania. All rights reserved.\n')
+    elif copyright != '':
         sys.stdout.write(copyright)
         sys.stdout.write('\n')
     # license information
     if not license:
-        sys.stdout.write("See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n")
-    elif license != "":
+        sys.stdout.write('See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n')
+    elif license != '':
         sys.stdout.write(license)
         sys.stdout.write('\n')
 
