@@ -1829,20 +1829,51 @@ function (basis_add_script TARGET_NAME)
   # dump CMake variables for "build" of script
   basis_dump_variables ("${BUILD_DIR}/variables.cmake")
 
-  # "parse" script to check which BASIS utilities are used and hence required
+  # "parse" script to check which BASIS utilities are used
+  set (SCRIPT_USES_BASIS_UTILITIES FALSE)
   file (READ "${ARGN_SCRIPT}" SCRIPT)
+  set (BASIS_UTILITIES_REGEX)
+  if (SCRIPT_LANGUAGE MATCHES "PYTHON")
+    basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
+    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+${PYTHON_PACKAGE}\\.basis([ \\t]*#.*)?")                # e.g., "import sbia.project.basis"
+    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+\\.\\.?basis")                                          # e.g., "import .basis", "import ..basis"
+    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis([ \\t]*#.*)?") # e.g., "from sbia.project import basis"
+    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis([ \\t]*#.*)?")           # e.g., "from . import basis", "from .. import basis"
+    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*([ \\t]*#.*)?")          # e.g., "from .basis import which, WhichError", "form ..basis import which"
+  elseif (SCRIPT_LANGUAGE MATCHES "PERL")
+    set (BASIS_UTILITIES_REGEX "use[ \\t]+${PROJECT_NAMESPACE_PERL}::Basis([ \\t]+.*)?([ \\t]*#.*)?")        # e.g., "use SBIA::Project::Basis qw(:everything);"
+  elseif (SCRIPT_LANGUAGE MATCHES "BASH")
+    set (BASIS_UTILITIES_REGEX "(source|\\.)[ \\t]+\\\${?BASIS_SOURCE}?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?")       # e.g., ". ${BASIS_SOURCE} || exit 1"
+  endif ()
+  if (BASIS_UTILITIES_REGEX)
+    basis_list_to_delimited_string (BASIS_UTILITIES_REGEX "|" NOAUTOQUOTE ${BASIS_UTILITIES_REGEX})
+    if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${BASIS_UTILITIES_REGEX})[ \t]*(;|\n|$)")
+      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+      basis_set_project_property (PROPERTY PROJECT_USES_${SCRIPT_LANGUAGE}_UTILITIES TRUE)
+    endif ()
+  endif ()
+  # deprecated utilities macros
   foreach (LANG PYTHON PERL BASH)
-    if (SCRIPT MATCHES "@BASIS_${LANG}_UTILITIES@")
-      if (BASIS_DEBUG)
-        message ("** Target ${TARGET_UID} uses BASIS ${LANG} utilities.")
+    if (BASIS_LANGUAGE MATCHES "${LANG}" AND SCRIPT MATCHES "(^|\n|;)[ \t]*@BASIS_${LANG}_UTILITIES@")
+      if (SCRIPT_LANGUAGE MATCHES "PYTHON")
+        set (MSG "Replace macro by\nfrom ${PROJECT_NAMESPACE_PYTHON} import basis")
+      elseif (SCRIPT_LANGUAGE MATCHES "PERL")
+        set (MSG "Replace macro by\npackage Basis; use ${PROJECT_NAMESPACE_PERL}::Basis; package main;")
+      elseif (SCRIPT_LANGUAGE MATCHES "BASH")
+        set (MSG "Replace macro by\n. \${BASIS_SOURCE} || exit 1")
+      else ()
+        set (MSG "See BASIS documentation for information on how to replace this macro.")
       endif ()
-      set (SCRIPT_USES_${LANG}_UTILITIES TRUE)
+      message (WARNING "Script ${ARGN_SCRIPT} uses the deprecated BASIS macro @BASIS_${LANG}_UTILITIES@! ${MSG}")
+      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
       basis_set_project_property (PROPERTY PROJECT_USES_${LANG}_UTILITIES TRUE)
-    else ()
-      set (SCRIPT_USES_${LANG}_UTILITIES FALSE)
     endif ()
   endforeach ()
-  set (SCRIPT)
+  # debug output
+  if (BASIS_DEBUG AND SCRIPT_USES_BASIS_UTILITIES)
+    message ("** Target ${TARGET_UID} uses BASIS utilities.")
+  endif ()
+  unset (SCRIPT)
 
   # binary directory
   if (ARGN_BINARY_DIRECTORY)
@@ -1958,20 +1989,16 @@ function (basis_add_script TARGET_NAME)
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${ARGN_SCRIPT})
 
-  if (SCRIPT_USES_PYTHON_UTILITIES)
-    basis_get_source_target_name (PYTHON_UTILITIES_TARGET "basis.py" NAME)
-    basis_get_target_uid (PYTHON_UTILITIES_TARGET ${PYTHON_UTILITIES_TARGET})
-    add_dependencies (${TARGET_UID} ${PYTHON_UTILITIES_TARGET})
-  endif ()
-  if (SCRIPT_USES_PERL_UTILITIES)
-    basis_get_source_target_name (PERL_UTILITIES_TARGET "Basis.pm" NAME)
-    basis_get_target_uid (PERL_UTILITIES_TARGET ${PERL_UTILITIES_TARGET})
-    add_dependencies (${TARGET_UID} ${PERL_UTILITIES_TARGET})
-  endif ()
-  if (SCRIPT_USES_BASH_UTILITIES)
-    basis_get_source_target_name (BASH_UTILITIES_TARGET "basis.sh" NAME)
-    basis_get_target_uid (BASH_UTILITIES_TARGET ${BASH_UTILITIES_TARGET})
-    add_dependencies (${TARGET_UID} ${BASH_UTILITIES_TARGET})
+  if (SCRIPT_USES_BASIS_UTILITIES)
+    if (SCRIPT_LANGUAGE MATCHES "PYTHON")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.py" NAME)
+    elseif (SCRIPT_LANGUAGE MATCHES "PERL")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "Basis.pm" NAME)
+    elseif (SCRIPT_LANGUAGE MATCHES "BASH")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.sh" NAME)
+    endif ()
+    basis_get_target_uid (BASIS_UTILITIES_TARGET ${BASIS_UTILITIES_TARGET})
+    add_dependencies (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
 
   # set target properties required by basis_add_script_finalize ()
@@ -2168,6 +2195,7 @@ function (basis_add_script_finalize TARGET_UID)
   set (DEPENDS ${LINK_DEPENDS} "${BUILD_SCRIPT}")
 
   set (C "# DO NOT edit. This file was automatically generated by BASIS.\n")
+  set (C "${C}cmake_minimum_required (VERSION 2.8.4)\n")
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # look for required interpreter executable
@@ -2194,6 +2222,9 @@ function (basis_add_script_finalize TARGET_UID)
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # common variables and functions used by build scripts
   set (C "${C}\n")
+  set (C "${C}# definitions of utility functions\n")
+  set (C "${C}include (\"${BASIS_MODULE_PATH}/CommonTools.cmake\")\n")
+  set (C "${C}\n")
   set (C "${C}# set script attributes\n")
   set (C "${C}set (LANGUAGE \"${BASIS_LANGUAGE}\")\n")
   set (C "${C}set (NAME \"${OUTPUT_NAME}\")\n")
@@ -2204,31 +2235,83 @@ function (basis_add_script_finalize TARGET_UID)
   set (C "${C}string (TOUPPER \"\${NAMESPACE}\" NAMESPACE_UPPER)\n")
   set (C "${C}string (TOLOWER \"\${NAMESPACE}\" NAMESPACE_LOWER)\n")
   set (C "${C}\n")
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # function to configure script/module
+  #
+  # This function automatically prepends the module search paths such that
+  # the modules of this package are found (and preferred in case of potential
+  # name conflict with other installation/package). Moreover, it adds/replaces
+  # the shebang directive on Unix or converts the script into a Windows
+  # Command on Windows, respectively.
+  #
+  # Note: Every line of code added will introduce a mismatch between error
+  #       messages of the interpreter and the original script file. To not
+  #       confuse/mislead developers too much, keep number of lines added
+  #       before actual script code at a minimum.
   set (C "${C}# function used by build script to generate script for this platform\n")
   set (C "${C}function (basis_configure_script SCRIPT_FILE CONFIGURED_FILE MODE)\n")
   set (C "${C}  file (READ \"\${SCRIPT_FILE}\" SCRIPT)\n")
+  # remove existing shebang directive
+  set (C "${C}  file (STRINGS \"\${SCRIPT_FILE}\" FIRST_LINE LIMIT_COUNT 1)\n")
+  set (C "${C}  if (FIRST_LINE MATCHES \"^#!\")\n")
+  set (C "${C}    basis_sanitize_for_regex (FIRST_LINE_REGEX \"\${FIRST_LINE}\")\n")
+  set (C "${C}    string (REGEX REPLACE \"^\${FIRST_LINE_REGEX}\\n?\" \"\" SCRIPT \"\${SCRIPT}\")\n")
+  set (C "${C}  endif ()\n")
+  # replace CMake variables used in script
   set (C "${C}  if (NOT MODE MATCHES \"COPYONLY\")\n")
   set (C "${C}    string (CONFIGURE \"\${SCRIPT}\" SCRIPT \${MODE})\n")
   set (C "${C}    string (CONFIGURE \"\${SCRIPT}\" SCRIPT \${MODE})\n")
   set (C "${C}  endif ()\n")
-  if (NOT MODULE AND NOT WITH_EXT)
-  set (C "${C}  if (WIN32)\n")
-  set (C "${C}    if (LANGUAGE MATCHES \"PYTHON\")\n")
-  set (C "${C}      set (SCRIPT \"@setlocal enableextensions & \\\"${PYTHON_EXECUTABLE}\\\" -x \\\"%~f0\\\" %* & goto :EOF\\n\${SCRIPT}\")\n")
-  set (C "${C}    elseif (LANGUAGE MATCHES \"PERL\")\n")
-  set (C "${C}      set (SCRIPT \"@goto = \\\"START_OF_BATCH\\\" ;\\n@goto = ();\\n\\n\${SCRIPT}\")\n")
-  set (C "${C}      set (SCRIPT \"\${SCRIPT}\\n\\n__END__\\n\\n:\\\"START_OF_BATCH\\\"\\n@\\\"${PERL_EXECUTABLE}\\\" -w -S \\\"%~f0\\\" %*\")\n")
-  set (C "${C}    endif ()\n")
-  set (C "${C}  elseif (NOT SCRIPT MATCHES \"^#!\")\n")
-  set (C "${C}    if (LANGUAGE MATCHES \"PYTHON\")\n")
-  set (C "${C}      set (SCRIPT \"#! ${PYTHON_EXECUTABLE}\\n\${SCRIPT}\")\n")
-  set (C "${C}    elseif (LANGUAGE MATCHES \"PERL\")\n")
-  set (C "${C}      set (SCRIPT \"#! ${PERL_EXECUTABLE} -w\\n\${SCRIPT}\")\n")
-  set (C "${C}    elseif (LANGUAGE MATCHES \"BASH\")\n")
-  set (C "${C}      set (SCRIPT \"#! ${BASH_EXECUTABLE}\\n\${SCRIPT}\")\n")
-  set (C "${C}    endif ()\n")
-  set (C "${C}  endif ()\n")
+  # prepend module search path of this project
+  if (NOT MODULE)
+    if (BASIS_LANGUAGE MATCHES "PYTHON")
+      set (C "${C}  string (REGEX REPLACE \"^[ \\t]*\\n\" \"\" SCRIPT \"\${SCRIPT}\")\n")
+      set (C "${C}  set (SCRIPT \"import sys; import os.path; sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\${PYTHON_LIBRARY_DIR}')))\\n\${SCRIPT}\")\n")
+    elseif (BASIS_LANGUAGE MATCHES "PERL")
+      set (C "${C}  string (REGEX REPLACE \"^[ \\t]*\\n\" \"\" SCRIPT \"\${SCRIPT}\")\n")
+      set (C "${C}  set (SCRIPT \"use Cwd qw(realpath); use File::Basename; use lib realpath(dirname(realpath(__FILE__)) . '/\${PERL_LIBRARY_DIR}'); use lib dirname(realpath(__FILE__));\\n\${SCRIPT}\")\n")
+    elseif (BASIS_LANGUAGE MATCHES "BASH")
+      set (BASH_CODE
+"BASIS_SOURCE=\\\"$(cd -P -- \\\"$(dirname -- \\\"$BASH_SOURCE\\\")\\\" && pwd -P)/$(basename -- \\\"$BASH_SOURCE\\\")\\\"
+i=0
+cur=\\\"$BASIS_SOURCE\\\"
+while [ -h \\\"$cur\\\" ] && [ $i -lt 100 ]
+do  dir=`dirname -- \\\"$cur\\\"`
+ cur=`readlink -- \\\"$cur\\\"`
+ cur=`cd \\\"$dir\\\" && cd $(dirname -- \\\"$cur\\\") && pwd`/`basename -- \\\"$cur\\\"`
+ (( i++ ))
+done
+if [ $i -lt 100 ]; then path=\\\"$cur\\\"; fi
+BASIS_SOURCE=\\\"$(dirname -- \\\"$BASIS_SOURCE\\\")/\\\${LIBRARY_DIR}/basis.sh\\\"
+unset -v i dir cur"
+      )
+      string (REPLACE "\n" "; " BASH_CODE "${BASH_CODE}")
+      set (C "${C}  string (REGEX REPLACE \"^[ \\t]*\\n\" \"\" SCRIPT \"\${SCRIPT}\")\n")
+      set (C "${C}  set (SCRIPT \"${BASH_CODE}\\n\${SCRIPT}\")\n")
+      unset (BASH_CODE)
+    endif ()
   endif ()
+  # add shebang directive/Windows Command code
+  if (NOT MODULE AND NOT WITH_EXT)
+    if (BASIS_LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
+      if (WIN32)
+        set (C "${C}  set (SCRIPT \"@setlocal enableextensions & \\\"${PYTHON_EXECUTABLE}\\\" -x \\\"%~f0\\\" %* & goto :EOF\\n\${SCRIPT}\")\n")
+      else ()
+        set (C "${C}  set (SCRIPT \"#! ${PYTHON_EXECUTABLE}\\n\${SCRIPT}\")\n")
+      endif ()
+    elseif (BASIS_LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
+      if (WIN32)
+        set (C "${C} set (SCRIPT \"@goto = \\\"START_OF_BATCH\\\" ;\\n@goto = ();\\n\${SCRIPT}\")\n")
+        set (C "${C} set (SCRIPT \"\${SCRIPT}\\n\\n__END__\\n\\n:\\\"START_OF_BATCH\\\"\\n@\\\"${PERL_EXECUTABLE}\\\" -w -S \\\"%~f0\\\" %*\")\n")
+      else ()
+        set (C "${C} set (SCRIPT \"#! ${PERL_EXECUTABLE} -w\\n\${SCRIPT}\")\n")
+      endif ()
+    elseif (BASIS_LANGUAGE MATCHES "BASH" AND BASH_EXECUTABLE)
+      set (C "${C}  set (SCRIPT \"#! ${BASH_EXECUTABLE}\\n\${SCRIPT}\")\n")
+    endif ()
+  endif ()
+  # write configured script
   set (C "${C}  file (WRITE \"\${CONFIGURED_FILE}\" \"\${SCRIPT}\")\n")
   set (C "${C}endfunction ()\n")
 
@@ -2270,9 +2353,6 @@ function (basis_add_script_finalize TARGET_UID)
     # common code for build of build tree and install tree version
 
     # tools for use in script configuration
-    set (C "${C}\n")
-    set (C "${C}# definitions of utility functions\n")
-    set (C "${C}include (\"${BASIS_MODULE_PATH}/CommonTools.cmake\")\n")
     set (C "${C}\n")
     set (C "${C}function (basis_set_script_path VAR PATH)\n")
     set (C "${C}  if (ARGC GREATER 3)\n")

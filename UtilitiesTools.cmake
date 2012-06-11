@@ -33,7 +33,9 @@
 # ...
 # @endcode
 #
-# @ingroup BasisPythonUtilities
+# @deprecated This macro should no longer be used. Instead, simply import the
+#             sbia.&lt;project&gt;.basis module, e.g.,
+#             "from sbia.<project> import basis".
 set (BASIS_PYTHON_UTILITIES
 "import os, sys
 sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\@_BASIS_PYTHON_LIBRARY_DIR\@')))
@@ -59,7 +61,10 @@ string (REPLACE "\n" "; " BASIS_PYTHON_UTILITIES "${BASIS_PYTHON_UTILITIES}")
 # ...
 # @endcode
 #
-# @ingroup BasisPerlUtilities
+# @deprecated This macro should no longer be used. Instead add the code
+#             "package Basis; use SBIA::<Project>::Basis qw(:everything); package main;"
+#             to your script. The package instructions can be omitted if the
+#             BASIS functions shall not be placed in the Basis package.
 set (BASIS_PERL_UTILITIES
 "use Cwd qw(realpath);
 use File::Basename;
@@ -118,7 +123,8 @@ set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd
 # echo "The executable ${exec_name} is located in ${exec_dir}."
 # @endcode
 #
-# @ingroup BasisBashUtilities
+# @deprecated This macro should not be used any longer. Instead, simply add
+#             the code "source ${BASIS_MODULE} || exit 1" to your script.
 set (BASIS_BASH_UTILITIES
 "HELP_COMMAND='\@NAME\@ (\@PROJECT_NAME\@)'
 HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
