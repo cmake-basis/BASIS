@@ -138,6 +138,8 @@ macro (basis_find_package PACKAGE)
   else ()
     set (VER "${CMAKE_MATCH_0}")
   endif ()
+  string (TOUPPER "${PKG}" PKG_UPPER)
+  string (TOUPPER "${PKG}" PKG_LOWER)
   # --------------------------------------------------------------------------
   # preserve <PKG>_DIR variable which might get reset if different versions
   # of the package are searched or if package is optional and deselected
@@ -202,8 +204,6 @@ macro (basis_find_package PACKAGE)
   endif ()
   # --------------------------------------------------------------------------
   # find external packages
-  string (TOUPPER "${PKG}" PKG_UPPER)
-  string (TOUPPER "${PKG}" PKG_LOWER)
   if (NOT ${PKG}_FOUND AND (NOT DEFINED USE_${PKG} OR USE_${PKG}))
     # circumvent issue with CMake's find_package() interpreting these variables
     # relative to the current binary directory instead of the top-level directory
