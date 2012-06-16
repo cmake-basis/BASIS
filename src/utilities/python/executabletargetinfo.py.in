@@ -6,7 +6,7 @@
 #       BASIS from the template file executabletargetinfo.py.in which is
 #       part of the BASIS installation.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -17,7 +17,7 @@
 """
 Provides information about executables built by BASIS.
 
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -25,23 +25,16 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 """
 
 # ============================================================================
-# modules
+# globals
 # ============================================================================
 
-import os.path # path functions
-import sys     # argv[0]
-
-from sbia.basis.which import which, WhichError
-
-# ============================================================================
-# global variables
-# ============================================================================
+import os.path
 
 _module_dir = os.path.realpath(os.path.dirname(__file__))
 _locations  = None
 
 # ============================================================================
-# public function
+# public
 # ============================================================================
 
 ## @addtogroup BasisPythonUtilities
@@ -52,31 +45,27 @@ _locations  = None
 def get_target_uid(target):
     """
     Get UID of build target.
-    
+
     The UID of a build target is its name prepended by a namespace identifier
     which should be unique for each project.
-    
+
     This function further initializes the dictionaries storing the information
     about the executable targets upon the first invocation. Reason to do it
     here is that every access to the dictionaries first calls this function
     to get the UID of a build target. Moreover, also this function needs to
     have the already initialized dictionaries to ensure that an already valid
     target identifier is not modified.
-    
+
     """
     global _locations
-    
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
-    if _locations is None:
-        _initialize()
+    if _locations is None: _initialize()
     # handle invalid arguments
-    if target is None or target == "":
-        return None
+    if target is None or target == "": return None
     # in case of a leading namespace separator, do not modify target name
-    if target.startswith('.'):
-        return target
+    if target.startswith('.'): return target
     # project namespace
     prefix = '@PROJECT_NAMESPACE_CMAKE@'
     # try prepending namespace or parts of it until target is known
@@ -85,8 +74,7 @@ def get_target_uid(target):
         if separator.join([prefix, target]) in _locations:
             return separator.join([prefix, target])
         parts = prefix.split(separator, 1)
-        if len(parts) == 1:
-            break
+        if len(parts) == 1: break
         prefix = parts[0]
     # otherwise, return target name unchanged
     return target
@@ -103,83 +91,54 @@ def is_known_target(target):
     return uid in _locations
 
 # ----------------------------------------------------------------------------
+def get_executable_path(target):
+    """
+    Get absolute path of file built by specified executable build target.
+
+    This function determines the absolute file path of an executable built
+    by the specified executable build target. If the given argument is not a
+    known build target name, None is returned.
+
+    """
+    uid = get_target_uid(target)
+    if uid is None: return None
+    if uid.startswith('.'): uid = uid[1:]
+    global _locations
+    global _module_dir
+    path = os.path.normpath(os.path.join(_module_dir, _locations[uid]))
+    if '$(IntDir)' in path:
+        for intdir in ['Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel']:
+            tmppath = path.replace('$(IntDir)', intdir)
+            if os.path.exists(tmppath):
+                path = tmppath
+                break
+        path = path.replace('$(IntDir)', '')
+    return path
+
+# ----------------------------------------------------------------------------
 def get_executable_name(target=None):
-    """
-    Get name of executable file built by given target. If no target is
-    specified, the name of this executable is returned.
-    
-    """
+    """Get name of executable file built by specified target."""
     path = get_executable_path(target)
-    if path is None:
-        return None
+    if path is None: return None
     return os.path.basename(path)
 
 # ----------------------------------------------------------------------------
 def get_executable_directory(target=None):
-    """
-    Get directory of executable file built by given target. If no target is
-    specified, the directory of this executable is returned.
-    
-    """
+    """Get directory of executable file built by specified target."""
     path = get_executable_path(target)
-    if path is None:
-        return None
+    if path is None: return None
     return os.path.dirname(path)
-
-# ----------------------------------------------------------------------------
-def get_executable_path(target=None):
-    """
-    Get absolute path of executable file.
-    
-    This function determines the absolute file path of an executable. If no
-    arguments are given, the absolute path of this executable is returned.
-    If the given argument is a known build target name, the absolute path
-    of the executable built by this target is returned. Otherwise, the named
-    command is searched in the system PATH and it's absolute path returned
-    if found. If the given argument is neither the name of a known build target
-    nor an executable found on the PATH, undef is returned.
-    
-    """
-    global _module_dir
-    global _locations
-    
-    path = None
-    if target is None:
-        path = os.path.realpath(sys.argv [0])
-        if os.path.isdir(path):
-            path += "/<stdin>" # interactive shell
-    else:
-        uid = get_target_uid(target)
-        if uid is not None and uid.startswith('.'):
-            uid = uid[1:]
-        if uid is not None and uid in _locations:
-            path = os.path.normpath(os.path.join(_module_dir, _locations[uid]))
-            if '$(IntDir)' in path:
-                for intdir in ['Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel']:
-                    tmppath = path.replace('$(IntDir)', intdir)
-                    if os.path.exists(tmppath):
-                        path = tmppath
-                        break
-                path = path.replace('$(IntDir)', '')
-        else:
-            try:
-                path = which (target)
-            except WhichError:
-                pass
-    
-    return path
 
 
 ## @}
 # end of Doxygen group
 
 # ============================================================================
-# private functions
+# private
 # ============================================================================
 
 # ----------------------------------------------------------------------------
 def _initialize():
     """Initialize dictionaries with information about executable targets."""
     global _locations
-    
     @EXECUTABLE_TARGET_INFO@

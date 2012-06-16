@@ -1,15 +1,11 @@
 ##############################################################################
 # @file  basis.py
-# @brief Main module of BASIS Python Utilities.
+# @brief BASIS utilities of @PROJECT_NAME@.
 #
 # @note The basis.py module is automatically created by BASIS from the
 #       template file basis.py.in which is part of the BASIS installation.
 #
-# This module imports the modules of the BASIS Python Utilities. Hence, it is
-# sufficient to only import this module. This is done by the
-# @c &#64;BASIS_PYTHON_UTILITIES&#64; code.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -18,20 +14,25 @@
 ##############################################################################
 
 """
-Main module of BASIS Python Utilities.
+BASIS utilities of @PROJECT_NAME@.
 
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+This module defines the BASIS utility function which have been customized
+by BASIS for the project @PROJECT_NAME@. The none-customized utility
+functions are available either by importing the utilities module of BASIS
+itself, or as utilities submodule imported by this module.
+
+Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 """
 
-from sbia.basis.which import WhichError, which, whichall, whichgen
+import os.path
 
-from @PROJECT_NAMESPACE_PYTHON@.stdaux import print_contact, print_version, \
+from sbia.basis import utilities
+from . import executabletargetinfo
+
+from .stdaux import print_contact, print_version, \
+        get_executable_path, get_executable_name, get_executable_directory, \
         execute_process, SubprocessError
-
-from @PROJECT_NAMESPACE_PYTHON@.executabletargetinfo import get_target_uid, \
-        is_known_target, get_executable_name, get_executable_directory, \
-        get_executable_path

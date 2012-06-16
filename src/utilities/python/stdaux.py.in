@@ -1,11 +1,11 @@
 ##############################################################################
 # @file  stdaux.py
-# @brief Standard auxiliary functions.
+# @brief Standard auxiliary functions for @PROJECT_NAME@.
 #
 # @note The stdaux.py module is automatically created by BASIS from the
 #       template file stdaux.py.in which is part of the BASIS installation.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -14,25 +14,14 @@
 ##############################################################################
 
 """
-Standard utility functions.
+Standard auxiliary functions for @PROJECT_NAME@.
 
-Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
 
 Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 """
-
-# ============================================================================
-# imports
-# ============================================================================
-
-import sys        # system-specific functionality
-import subprocess # execution of external command
-import shlex      # used to split() quoted command-line
-import re         # to see if string contains whitespaces
-
-from @PROJECT_NAMESPACE_PYTHON@.executabletargetinfo import get_executable_path
 
 
 ## @addtogroup BasisPythonUtilities
@@ -40,80 +29,76 @@ from @PROJECT_NAMESPACE_PYTHON@.executabletargetinfo import get_executable_path
 
 
 # ============================================================================
-# version / contact
+# imports
+# ============================================================================
+
+from os         import path                 as _path
+from sbia.basis import utilities            as _utilities
+from .          import executabletargetinfo as _executabletargetinfo
+
+# ============================================================================
+# executable information
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-def print_version(name, project='@PROJECT_NAME@', copyright=None, license=None):
-    """
-    Print version information including copyright and license notices.
-     
-    @param [in] name      Name of executable. Should not be set programmatically
-                          to the first argument to the __main__ module.
-    @param [in] project   Name of project this executable belongs to.
-    @param [in] copyright The copyright notice. If None, the official default
-                          copyright is used without year, which is not desired.
-                          If an empty string is given, no copyright notice is
-                          printed.
-    @param [in] license   Information regarding licensing. If None, the official
-                          software license of SBIA is used. If an empty string
-                          is given, no license information is printed.
-    
-    """
-    # version
-    sys.stdout.write(name)
-    if project:
-        sys.stdout.write(' (' + project + ')')
-    sys.stdout.write(' @PROJECT_RELEASE@\n')
-    # copyright notice
-    if not copyright:
-        sys.stdout.write('Copyright (c) University of Pennsylvania. All rights reserved.\n')
-    elif copyright != '':
-        sys.stdout.write(copyright)
-        sys.stdout.write('\n')
-    # license information
-    if not license:
-        sys.stdout.write('See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n')
-    elif license != '':
-        sys.stdout.write(license)
-        sys.stdout.write('\n')
+print_contact = _utilities.print_contact
 
 # ----------------------------------------------------------------------------
-def print_contact(contact=None):
+def print_version(name, copyright=None, license=None):
+    """Print version information including copyright and license notices.
+
+    @param [in] name      Name of executable. Should not be set programmatically
+                          to the first argument to the __main__ module.
+    @param [in] copyright The copyright notice. If None, the default copyright
+                          without year is used, which is not recommended as the
+                          copyright years should always be included. If an
+                          empty string is given, no copyright notice is printed.
+    @param [in] license   Information regarding licensing. If None, the default
+                          software license is used. If an empty string is given,
+                          no license information is printed.
+
     """
-    Print contact information.
-    
-    @param [in] contact Name of contact. If None, the default contact of SBIA
-                        is used, which is recommended.
-    
+    _utilities.print_version(name, '@PROJECT_RELEASE@', project='@PROJECT_NAME@', copyright=copyright, license=license)
+
+# ----------------------------------------------------------------------------
+def get_executable_path(name=None):
+    """Get absolute path of executable file."""
+    path = _executabletargetinfo.get_executable_path(name)
+    if not path: path = _utilities.get_executable_path(name)
+    return path
+
+# ----------------------------------------------------------------------------
+def get_executable_name(name=None):
+    """Get name of executable file.
+
+    If no name is specified, the name of this executable is returned.
+
     """
-    sys.stdout.write("Contact:\n  ")
-    if not contact:
-        sys.stdout.write("SBIA Group <sbia-software at uphs.upenn.edu>")
-    else:
-        sys.stdout.write(contact)
-    sys.stdout.write('\n')
+    path = get_executable_path(name)
+    if path is None: return None
+    return _path.basename(path)
+
+# ----------------------------------------------------------------------------
+def get_executable_directory(name=None):
+    """Get directory of executable file.
+
+    If no executable is specified, the directory of this executable is returned.
+
+    """
+    path = get_executable_path(name)
+    if path is None: return None
+    return _path.dirname(path)
 
 # ============================================================================
 # command execution
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-class SubprocessError(Exception):
-    """Exception thrown when command execution failed."""
-
-    def __init__(self, msg):
-        """Initialize exception, i.e., set message describing failure."""
-        self._message = msg
-
-    def __str__(self):
-        """Return string representation of exception message."""
-        return self._message
+SubprocessError = _utilities.SubprocessError
 
 # ----------------------------------------------------------------------------
 def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
-    """
-    Execute command as subprocess.
+    """Execute command as subprocess.
     
     @param [in] args       Command with arguments given either as single quoted
                            string or array of command name and arguments.
@@ -145,69 +130,17 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
     
     """
     # convert args to list of strings
-    if type(args) is list:
-        args = [str(i) for i in args]
-    elif type(args) is str:
-        args = shlex.split(args)
-    else:
-        raise SubprocessError("execute_process(): Argument args must be either list or string")
-    if len(args) == 0:
-        raise SubprocessError("execute_process(): No command specified")
-    # map build target name to executable file path
+    args = _utilities.to_array_of_strings(args)
+    # get absolute path of executable
     path = get_executable_path(args[0])
-    if not path:
-        raise SubprocessError(args[0] + ': Either unknown build target or command not found')
+    if not path: raise SubprocessError(args[0] + ": Command not found")
     args[0] = path
-    # some verbose output
-    if verbose > 0:
-        sys.stdout.write('$')
-        re_whitespace = re.compile('\s');
-        for arg in args:
-            sys.stdout.write(' ')
-            if re_whitespace.search(arg):
-                sys.stdout.write('"' + arg + '"')
-            else:
-                sys.stdout.write(arg)
-        if simulate:
-            sys.stdout.write(" (simulated)")
-        sys.stdout.write('\n')
-    # execute command
-    status = 0
-    output = ''
-    if not simulate:
-        try:
-            # open subprocess
-            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # read stdout until EOF
-            for line in process.stdout:
-                if stdout:
-                    output = output + line
-                if not quiet:
-                    print line.rstrip()
-                    sys.stdout.flush()
-            # wait until subprocess terminated and set exit code
-            (out, err) = process.communicate()
-            # print error messages of subprocess
-            for line in err: sys.stderr.write(line);
-            # get exit code
-            status = process.returncode
-        except OSError, e:
-            raise SubprocessError(args[0] + ': ' + str(e))
-        except Exception, e:
-            msg  = "Exception while executing \"" + args[0] + "\"!\n"
-            msg += "\tArguments: " + ' '.join(['"' + i + '"' for i in args[1:]]) + '\n'
-            msg += '\t' + str(e)
-            raise SubprocessError(msg)
-    # if command failed, throw an exception
-    if status != 0 and not allow_fail:
-        raise SubprocessError("Command " + ' '.join(['"' + i + '"' for i in args[0:]]) + " failed")
-    # return
-    if stdout and allow_fail:
-        return (status, output)
-    elif stdout:
-        return output
-    else:
-        return status
+    # execute subprocess
+    _utilities.execute_process(args, quiet=quiet,
+                                     stdout=stdout,
+                                     allow_fail=allow_fail,
+                                     verbose=verbose,
+                                     simulate=simulate)
 
 
 ## @}
