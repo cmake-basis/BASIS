@@ -345,6 +345,10 @@ function (basis_configure_utilities)
                 endif ()"
     )
     basis_set_target_properties (Basis_pm PROPERTIES OUTPUT_NAME "Basis")
+    # dependencies
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      basis_add_dependencies (Basis_pm Utilities_pm)
+    endif ()
   endif ()
   # --------------------------------------------------------------------------
   # Bash
@@ -376,7 +380,7 @@ function (basis_configure_utilities)
     basis_set_target_properties (basis_sh PROPERTIES OUTPUT_NAME basis)
     # dependencies
     if (PROJECT_NAME MATCHES "^BASIS$")
-      basis_add_dependencies (basis_sh core_sh path_sh utilities_sh shflags_sh)
+      basis_add_dependencies (basis_sh utilities_sh)
     endif ()
   endif ()
 
