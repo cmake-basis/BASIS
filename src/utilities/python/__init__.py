@@ -20,5 +20,9 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 """
 
-from .utilities import *
+from .utilities import get_real_path, clean_path, join_paths, get_file_directory, get_file_name, \
+                       get_file_name_extension, exists, is_known_target, get_target_uid, \
+                       get_executable_path, get_executable_name, get_executable_directory, \
+                       to_quoted_string, split_quoted_string, execute_process, SubprocessError
+
 from .utilities import __all__

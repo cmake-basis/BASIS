@@ -65,7 +65,8 @@ CONTACT = "SBIA Group <sbia-software at uphs.upenn.edu>"
 # ============================================================================
 
 __all__.extend(['get_real_path', 'clean_path', 'join_paths',
-                'get_file_directory', 'get_file_name', 'exists'])
+                'get_file_directory', 'get_file_name', 'get_file_name_extension',
+                'exists'])
 
 # import os.path functions with names used by BASIS utilities for other
 # programming languages such as C++ (see sbia/basis/path.h). In general,
@@ -79,7 +80,7 @@ from os.path import \
         exists
 
 # ----------------------------------------------------------------------------
-def get_file_name_extension(filename, exts=None):
+def get_file_name_extension(path, exts=None):
     """Get file name extension.
 
     @sa split_path()
@@ -99,11 +100,15 @@ def get_file_name_extension(filename, exts=None):
     """
     maxlen = 0
     usrext = None
-    for ext in exts:
-        if filename.endswith(ext) and (not usrext or len(ext) > maxlen)): usrext = ext
-    if usrext: return usrext
-    import os.path.splitext
-    return os.path.splitext(filename)[1]
+    if exts:
+        for ext in exts:
+            if (path.endswith(ext) and (not usrext or len(ext) > len(usrext))):
+                usrext = ext
+    if usrext is None:
+        from os.path import splitext
+        return splitext(path)[1]
+    else:
+        return usrext
 
 # ============================================================================
 # executable information
