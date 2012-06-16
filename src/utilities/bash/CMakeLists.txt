@@ -12,10 +12,7 @@
 # template files
 basis_install (
   FILES
-    config.sh.in               # configuration of utilities
-    executabletargetinfo.sh.in # information about executable targets
-    stdaux.sh.in               # standard auxiliary functions
-    basis.sh.in                # main module to be imported
+    basis.sh.in # project-specific utilities
   DESTINATION
     "${INSTALL_BASH_TEMPLATES_DIR}"
 )
@@ -23,8 +20,9 @@ basis_install (
 # ----------------------------------------------------------------------------
 # modules
 basis_add_library (core.sh)      # fundamental core functions
+basis_add_library (path.sh)      # path manipulation functions
 basis_add_library (utilities.sh) # project independent utilities
 basis_add_library (shflags.sh)   # command-line parsing library
 basis_add_library (shtap.sh)     # unit testing framework
 
-basis_add_dependencies (utilities_sh core_sh)
+basis_add_dependencies (utilities_sh core_sh path_sh shflags_sh)

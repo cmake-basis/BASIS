@@ -13,13 +13,21 @@
 # the submodules used by it are generated from template modules which are
 # customized for the particular project that is being build.
 #
-# The default values used by the functions defined by this module are defined
-# in the config.sh module. See this module for details on how to customize the
-# utility functions.
-#
 # Besides the utility functions which are common to all implementations for
 # the different programming languages, does this module further provide
 # fundamental functions for the development in Bash.
+#
+# @note In Bash, there is no concept of namespaces. Hence, the utility functions
+#       are all defined by the utilities.sh module which is part of the BASIS
+#       installation. By simply setting the constants to the project specific
+#       values, these utility functions are customized for this particular
+#       package. This, however, also means that the BASIS utilities of two
+#       different packages cannot be used within a Bash script at the same
+#       time in general. The order in which the basis.sh modules are sourced
+#       matters. Therefore, in Bash, care must be taken which modules of a
+#       BASIS-based package are being sourced and whether these in turn
+#       source either the utilities.sh module of BASIS or the basis.sh module
+#       which has been configured/customized for this particular package.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -27,9 +35,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# return if already loaded
-[ "${_SBIA_BASIS_UTILITIES_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_BASIS_UTILITIES_INCLUDED=1
+[ "${_SBIA_BASIS_UTILITIES_INCLUDED}" == 'true' ] || {
+_SBIA_BASIS_UTILITIES_INCLUDED='true'
 
 
 ## @addtogroup BasisBashUtilities
@@ -40,121 +47,32 @@ _SBIA_BASIS_UTILITIES_INCLUDED=1
 # constants
 # ============================================================================
 
-## @brief Absolute directory path of utilities.sh module.
-readonly _BASIS_UTILITIES_DIR=`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd -P`
-
-. "${_BASIS_UTILITIES_DIR}/config.sh" || return 1
-. "${_BASIS_UTILITIES_DIR}/core.sh"   || return 1
+readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd -P`"
 
 # ============================================================================
-# path manipulation
+# modules
 # ============================================================================
 
-# ----------------------------------------------------------------------------
-## @brief Clean path, i.e., remove occurences of "./", duplicate slashes,...
-#
-# This function removes single periods (.) enclosed by slashes or backslashes,
-# duplicate slashes (/) or backslashes (\), and further tries to reduce the
-# number of parent directory references.
-#
-# For example, "../bla//.//.\bla\\\\\bla/../.." is convert to "../bla".
-#
-# @param [in] path Path.
-#
-# @return Cleaned path.
-function clean_path
-{
-    local _basis_cp_path="$1"
-    # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
-    # turns the array into a single string value if local is used
-    if [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ]; then
-        local _basis_cp_dirs=()
-    else
-        _basis_cp_dirs=()
-    fi
-    # split path into parts, discarding redundant slashes
-    while [ -n "${_basis_cp_path}" ]; do
-        if [ ${#_basis_cp_dirs[@]} -eq 0 ]; then
-            _basis_cp_dirs=("`basename -- "${_basis_cp_path}"`")
-        else
-            _basis_cp_dirs=("`basename -- "${_basis_cp_path}"`" "${_basis_cp_dirs[@]}")
-        fi
-        _basis_cp_path="`dirname -- "${_basis_cp_path}"`"
-        if [ "${_basis_cp_path}" == '/' ]; then
-            _basis_cp_path=''
-        fi
-    done
-    # build up path again from the beginning,
-    # discarding dots ('.') and stepping one level up for each '..' 
-    local _basis_cp_i=0
-    while [ ${_basis_cp_i} -lt ${#_basis_cp_dirs[@]} ]; do
-        if [ "${_basis_cp_dirs[${_basis_cp_i}]}" != '.' ]; then
-            if [ "${_basis_cp_dirs[${_basis_cp_i}]}" == '..' ]; then
-                _basis_cp_path=`dirname -- "${_basis_cp_path}"`
-            else
-                _basis_cp_path="${_basis_cp_path}/${_basis_cp_dirs[${_basis_cp_i}]}"
-            fi
-        fi
-        let _basis_cp_i++
-    done
-    # return
-    echo -n "${_basis_cp_path}"
-}
+. "${_BASIS_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"    || exit 1 # core utilities
+. "${_BASIS_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/path.sh"    || exit 1 # file path manipulation
+. "${_BASIS_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/shflags.sh" || exit 1 # command-line parsing library
 
-# ----------------------------------------------------------------------------
-## @brief Get absolute path given a relative path.
-#
-# This function converts a relative path to an absolute path. If the given
-# path is already absolute, this path is passed through unchanged.
-#
-# @param [in] path Absolute or relative path.
-#
-# @return Absolute path.
-function to_absolute_path
-{
-    local _basis_tap_base="$1"
-    local _basis_tap_path="$2"
-    if [ "${_basis_tap_base:0:1}" != '/' ]; then
-        _basis_tap_base="`pwd`/${_basis_tap_base}"
-    fi
-    if [ "${_basis_tap_path:0:1}" != '/' ]; then
-        _basis_tap_path="${_basis_tap_base}/${_basis_tap_path}"
-    fi
-    clean_path "${_basis_tap_path}"
-}
+# ============================================================================
+# configuration
+# ============================================================================
 
-# ----------------------------------------------------------------------------
-## @brief Get canonical file path.
-#
-# This function resolves symbolic links and returns a cleaned path.
-#
-# @param [in] path Path.
-#
-# @return Canonical file path without duplicate slashes, ".", "..",
-#         and symbolic links.
-function get_real_path
-{
-    # make path absolute and resolve '..' references
-    local _basis_grp_path=`to_absolute_path "$1"`
-    if ! [ -e "${_basis_grp_path}" ]; then echo -n "${_basis_grp_path}"; return; fi
-    # resolve symbolic links within path
-    _basis_grp_path=`cd -P -- $(dirname -- "${_basis_grp_path}") && pwd -P`/`basename -- "${_basis_grp_path}"`
-    # if path itself is a symbolic link, follow it
-    local _basis_grp_i=0
-    local _basis_grp_cur="${_basis_grp_path}"
-    while [ -h "${_basis_grp_cur}" ] && [ ${_basis_grp_i} -lt 100 ]; do
-        _basis_grp_dir=`dirname -- "${_basis_grp_cur}"`
-        _basis_grp_cur=`readlink -- "${_basis_grp_cur}"`
-        _basis_grp_cur=`cd "${_basis_grp_dir}" && cd $(dirname -- "${_basis_grp_cur}") && pwd`/`basename -- "${_basis_grp_cur}"`
-        let _basis_grp_i++
-    done
-    # If symbolic link could entirely be resolved in less than 100 iterations,
-    # return the obtained canonical file path. Otherwise, return the original
-    # link which could not be resolved due to some probable cycle.
-    if [ ${_basis_grp_i} -lt 100 ]; then _basis_grp_path="${_basis_grp_cur}"; fi
-    # return
-    echo -n "${_basis_grp_path}"
-}
+## @brief Project name.
+PROJECT=''
+## @brief Project version.
+VERSION=''
+## @brief Project release.
+RELEASE=''
+## @brief Default copyright of executables.
+COPYRIGHT="University of Pennsylvania"
+## @brief Default license of executables.
+LICENSE="See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+## @brief Default contact to use for help output of executables.
+CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
 
 # ============================================================================
 # executable information
@@ -163,12 +81,10 @@ function get_real_path
 # ----------------------------------------------------------------------------
 ## @brief Print contact information.
 #
-# @param [in] contact Name of contact. If not specified or an empty string,
-#                     defaults to the global @c CONTACT variable defined by
-#                     the config.sh module.
+# @param [in] contact Name of contact. Defaults to <tt>${CONTACT}</tt>.
 #
 # @returns Nothing.
-function print_contact
+print_contact()
 {
     [ -n "$1" ] && echo -e "Contact:\n  $1" || echo -e "Contact:\n  ${CONTACT}"
 }
@@ -180,35 +96,34 @@ function print_contact
 # @param [in] name      Name of executable. Should not be set programmatically
 #                       to the first argument of the main script, but a string
 #                       literal instead.
-# @param [in] version   Version of executable, e.g., release of project
-#                       this executable belongs to.
+# @param [in] version   Version of executable. Defaults to <tt>${RELEASE}</tt>
+#                       if defined, otherwise this argument is required.
 # @par Options:
 # <table border="0">
 #   <tr>
 #     @tp @b -p,  @b --project &lt;name&gt; @endtp
 #     <td>Name of project this executable belongs to.
-#         If not specified, no project information is printed.</td>
+#         Defaults to <tt>${PROJECT}</tt> if defined.
+#         If 'none', no project information is printed.</td>
 #   </tr>
 #   <tr>
 #     @tp @b -c  @b --copyright &lt;copyright&gt; @endtp
-#     <td>The copyright notice. Defaults to the global @c COPYRIGHT initially
-#         defined by the config.sh module. If 'none', no copyright notice is
-#         printed.</td>
+#     <td>The copyright notice. Defaults to <tt>${COPYRIGHT}</tt>.
+#         If 'none', no copyright notice is printed.</td>
 #   </tr>
 #   <tr>
 #     @tp @b -l  @b --license &lt;license&gt; @endtp
-#     <td>Information regarding licensing. Defaults to the global @c LICENSE
-#         initially defined by the config.sh module. If 'none', no license
-#         information is printed.</td>
+#     <td>Information regarding licensing. Defaults to <tt>${LICENSE}</tt>.
+#         If 'none', no license information is printed.</td>
 #   </tr>
 # </table>
 #
 # @returns Nothing.
-function print_version
+print_version()
 {
     local _basis_pv_name=''
-    local _basis_pv_version=''
-    local _basis_pv_project=''
+    local _basis_pv_version="${RELEASE}"
+    local _basis_pv_project="${PROJECT}"
     local _basis_pv_copyright="${COPYRIGHT:-}"
     local _basis_pv_license="${LICENSE:-}"
     while [ $# -gt 0 ]; do
@@ -252,10 +167,80 @@ function print_version
     [ -n "${_basis_pv_name}"    ] || { echo "print_version(): Missing name argument"    1>&2; return 1; }
     [ -n "${_basis_pv_version}" ] || { echo "print_version(): Missing version argument" 1>&2; return 1; }
     echo -n "${_basis_pv_name}"
-    [ -n "${_basis_pv_project}" ] && echo -n " (${_basis_pv_project})"
+    [ -n "${_basis_pv_project}" ] && [ "${_basis_pv_project}" != 'none' ] && {
+        echo -n " (${_basis_pv_project})"
+    }
     echo " ${_basis_pv_version}"
-    [ -n "${_basis_pv_copyright}" ] && echo -e "Copyright (c) ${_basis_pv_copyright}"
-    [ -n "${_basis_pv_license}"   ] && echo -e "${_basis_pv_license}"
+    [ -n "${_basis_pv_copyright}" ] && [ "${_basis_pv_copyright}" != 'none' ] && {
+        echo -e "Copyright (c) ${_basis_pv_copyright}. All rights reserved."
+    }
+    [ -n "${_basis_pv_license}"   ] && [ "${_basis_pv_license}"   != 'none' ] && {
+        echo -e "${_basis_pv_license}"
+    }
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get UID of build target.
+#
+# The UID of a build target is its name prepended by a namespace identifier
+# which should be unique for each project.
+#
+# This function further initializes the dictionaries storing the information
+# about the executable targets upon the first invocation. Reason to do it
+# here is that every access to the dictionaries first calls this function
+# to get the UID of a build target. Moreover, also this function needs to
+# have the already initialized dictionaries to ensure that an already valid
+# target identifier is not modified.
+#
+# @param [out] uid  UID of named build target.
+# @param [in]  name Name of build target.
+#
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
+get_target_uid()
+{
+    [ -n "$1" ] && [ $# -eq 2 ] || return 1
+    local _basis_gtu_target="$2"
+    # initialize module if not done yet - this is only done here because
+    # whenever information is looked up about an executable target, this
+    # function is invoked first
+    if [ "${_EXECUTABLETARGETINFO_INITIALIZED}" != 'true' ]; then
+        _executabletargetinfo_initialize || return 1
+    fi
+    # empty string as input remains unchanged
+    [ -z "${_basis_gtu_target}" ] && local "$1" && upvar $1 '' && return 0
+    # in case of a leading namespace separator, do not modify target name
+    [ "${_basis_gtu_target:0:1}" == '.' ] && local "$1" && upvar $1 "${_basis_gtu_target}" && return 0
+    # project namespace
+    local _basis_gtu_prefix="@PROJECT_NAMESPACE_CMAKE@.DUMMY"
+    # try prepending namespace or parts of it until target is known
+    local _basis_gtu_path=''
+    while [ "${_basis_gtu_prefix/\.*/}" != "${_basis_gtu_prefix}" ]; do
+        _basis_gtu_prefix="${_basis_gtu_prefix%\.*}"
+        _executabletargetinfo_get _basis_gtu_path "${_basis_gtu_prefix}.${_basis_gtu_target}" LOCATION
+        if [ -n "${_basis_gtu_path}" ]; then
+            local "$1" && upvar $1 "${_basis_gtu_prefix}.${_basis_gtu_target}"
+            return 0
+        fi
+    done
+    # otherwise, return target name unchanged
+    local "$1" && upvar $1 "${_basis_gtu_target}"
+}
+
+# ----------------------------------------------------------------------------
+## @brief Determine whether a given build target is known.
+#
+# @param [in] target Name of build target.
+#
+# @returns Whether the named target is a known executable target.
+is_known_target()
+{
+    local _basis_ikt_uid && get_target_uid _basis_ikt_uid "$1"
+    [ -n "${_basis_ikt_uid}" ] || return 1
+    local _basis_ikt_path && _executabletargetinfo_get _basis_ikt_path "${_basis_ikt_uid}" LOCATION
+    [ -n "${_basis_ikt_path}" ]
 }
 
 # ----------------------------------------------------------------------------
@@ -263,26 +248,48 @@ function print_version
 #
 # This function determines the absolute file path of an executable. If no
 # arguments are given, the absolute path of this executable is returned.
-# Otherwise, the named command is searched in the system @c PATH and its
-# absolute path returned if found. If the executable is not found, an empty
-# string is returned.
+# If the given argument is a known build target name, the absolute path
+# of the executable built by this target is returned. Otherwise, the named
+# command is searched in the system PATH and it's absolute path returned
+# if found. If the given argument is neither the name of a known build target
+# nor an executable found on the PATH, an empty string is returned and
+# the return value is 1.
 #
-# @param [out] path Absolute path of executable or empty string if not found.
-#                   If @p name is not given, the path of this executable is returned.
-# @param [in]  name Name of command or an empty string.
+# @param [out] path   Absolute path of executable file.
+# @param [in]  target Name/UID of build target. If no argument is given,
+#                     the file path of the calling executable is returned.
 #
-# @returns Whether or not the command was found.
+# @returns Nothing.
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-function get_executable_path
+get_executable_path()
 {
     [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
+    local _basis_gep_path=''
+    # if no target name given, get path of this executable
     if [ $# -lt 2 ]; then
-        local _basis_gep_path="`get_real_path "$0"`"
+        _basis_gep_path="`get_real_path "$0"`"
+    # otherwise, get path of executable built by named target
     else
-        local _basis_gep_path=`/usr/bin/which "$2" 2> /dev/null`
+        # get UID of target
+        local _basis_gep_uid && get_target_uid _basis_gep_uid "$2"
+        [ "${_basis_gep_uid:0:1}" == '.' ] && _basis_gep_uid=${_basis_gep_uid:1}
+        if [ -n "${_basis_gep_uid}" ]; then
+            # get path relative to this module
+            _executabletargetinfo_get _basis_gep_path "${_basis_gep_uid}" LOCATION
+            if [ -n "${_basis_gep_path}" ]; then
+                # make path absolute
+                _basis_gep_path=`to_absolute_path "${_BASIS_DIR}" "${path}"`
+                [ $? -eq 0 ] || return 1
+            else
+                _basis_gep_path=`/usr/bin/which "$2" 2> /dev/null`
+            fi
+        else
+            _basis_gep_path=`/usr/bin/which "$2" 2> /dev/null`
+        fi
     fi
+    # return path
     local "$1" && upvar $1 "${_basis_gep_path}"
     [ $? -eq 0 ] && [ -n "${_basis_gep_path}" ]
 }
@@ -298,7 +305,7 @@ function get_executable_path
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-function get_executable_name
+get_executable_name()
 {
     [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
     local _basis_gen_path && get_executable_path _basis_gen_path
@@ -318,7 +325,7 @@ function get_executable_name
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-function get_executable_directory
+get_executable_directory()
 {
     [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
     local _basis_ged_path && get_executable_path _basis_ged_path
@@ -345,7 +352,7 @@ function get_executable_directory
 #                       elements of the array to convert.
 #
 # @returns Nothing.
-function to_quoted_string
+to_quoted_string()
 {
     local _basis_tqs_str=''
     local _basis_tqs_element=''
@@ -389,7 +396,7 @@ function to_quoted_string
 # @param [in]  str Quoted string.
 #
 # @returns Nothing.
-function split_quoted_string
+split_quoted_string()
 {
     [ $# -eq 2 ] || return 1
     # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
@@ -479,7 +486,7 @@ function split_quoted_string
 # </table>
 #
 # @returns Exit code of subprocess.
-function execute_process
+execute_process()
 {
     # parse arguments
     local _basis_ep_allow_fail='false'
@@ -531,3 +538,115 @@ function execute_process
 
 ## @}
 # end of Doxygen group
+
+# ============================================================================
+# private
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Sanitize string for use in variable name.
+#
+# @param [out] out Sanitized string.
+# @param [in]  str String to be sanitized.
+#
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
+_executabletargetinfo_sanitize()
+{
+    [ $# -eq 2 ] || return 1
+    [ -n "$2" ] || {
+        upvar $1 ''
+        return 0
+    }
+    local sane="`echo -n "$2" | tr [:space:] '_' | tr -c [:alnum:] '_'`"
+    [ -n "${sane}" ] || {
+        echo "_executabletargetinfo_sanitize(): Failed to sanitize string '$2'" 1>&2
+        exit 1
+    }
+    local "$1" && upvar $1 "${sane}"
+}
+
+# ----------------------------------------------------------------------------
+## @brief Add (key, value) pair to executable target info "hash".
+#
+# @param [in] key   Hash key.
+# @param [in] name  Name of the hash table.
+# @param [in] value Value associated with the given hash key.
+#
+# @returns Sets a readonly variable that represents the (key, value) entry.
+#
+# @sa _executabletargetinfo_get()
+_executabletargetinfo_add()
+{
+    [ $# -eq 3 ] || return 1
+
+    local key  && _executabletargetinfo_sanitize key  "$1"
+    local name && _executabletargetinfo_sanitize name "$2"
+    [ -n "${key}" ] && [ -n "${name}" ] || {
+        if [ -z "${key}" ] && [ -z "${name}" ]; then
+            echo "_executabletargetinfo_add(): Neither lookup table nor key specified" 1>&2
+        elif [ -z "${key}" ]; then
+            echo "_executabletargetinfo_add(): No key specified for addition to hash table '${name}'" 1>&2
+        else
+            echo "_executabletargetinfo_add(): No lookup table given for addition of key '${key}'" 1>&2
+        fi
+        exit 1
+    }
+    eval "readonly __EXECUTABLETARGETINFO_${name}_${key}='$3'"
+    if [ $? -ne 0 ]; then
+        echo "Failed to add ${name} of key ${key} to executable target info map!" 1>&2
+        echo "This may be caused by two CMake build target names being converted to the same key." 1>&2
+        exit 1
+    fi
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get value from executable target info "hash".
+#
+# @param [out] value Value corresponding to given @p key
+#                    or an empty string if key is unknown.
+# @param [in]  key   Hash key.
+# @param [in]  name  Name of the hash table.
+#
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
+#
+# @sa _executabletargetinfo_add()
+_executabletargetinfo_get()
+{
+    [ $# -eq 3 ] || return 1
+
+    local key  && _executabletargetinfo_sanitize key  "$2"
+    local name && _executabletargetinfo_sanitize name "$3"
+    [ -n "${key}" ] && [ -n "${name}" ] || {
+        if [ -z "${key}" ] && [ -z "${name}" ]; then
+            echo "_executabletargetinfo_get(): Neither lookup table nor key specified" 1>&2
+        elif [ -z "${key}" ]; then
+            echo "_executabletargetinfo_get(): No key specified for lookup in hash table '${name}'" 1>&2
+        else
+            echo "_executabletargetinfo_get(): No lookup table given for lookup of key '${key}'" 1>&2
+        fi
+        exit 1
+    }
+    eval "local value=\${__EXECUTABLETARGETINFO_${name}_${key}}"
+
+    local "$1" && upvar $1 "${value}"
+}
+
+_executabletargetinfo_initialize()
+{
+    [ $# -eq 0 ] || return 1
+    _EXECUTABLETARGETINFO_INITIALIZED='true'
+    return 0
+}
+
+# used to make relative paths in get_executable_path() absolute
+# attention: only set if not set already by the basis.sh module
+[ -z "${_BASIS_DIR}" ] && _BASIS_DIR="${_BASIS_UTILITIES_DIR}"
+
+
+} # _SBIA_BASIS_UTILITIES_INCLUDED

@@ -1,12 +1,25 @@
 ##############################################################################
 # @file  basis.sh
-# @brief Main module of BASIS Bash Utilities.
+# @brief BASIS Bash Utilities of @PROJECT_NAME@ package.
 #
-# This module sources the modules of the BASIS Bash Utilities. Hence, it is
-# sufficient to only source this module.
-#
-# @note The basis.sh module is automatically created by BASIS from the
+# @note The basis.sh module was automatically created by BASIS from the
 #       template file basis.sh.in which is part of the BASIS installation.
+#
+# This module sources the modules of the project-independent BASIS Bash Utilities
+# which are part of the BASIS installation. Hence, it is sufficient to only
+# source this module.
+#
+# @note In Bash, there is no concept of namespaces. Hence, the utility functions
+#       are all defined by the utilities.sh module which is part of the BASIS
+#       installation. By simply setting the constants to the project specific
+#       values, these utility functions are customized for this particular
+#       package. This, however, also means that the BASIS utilities of two
+#       different packages cannot be used within a Bash script at the same
+#       time in general. The order in which the basis.sh modules are sourced
+#       matters. Therefore, in Bash, care must be taken which modules of a
+#       BASIS-based package are being sourced and whether these in turn
+#       source either the utilities.sh module of BASIS or the basis.sh module
+#       which has been configured/customized for this particular package.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -16,31 +29,83 @@
 # @ingroup BasisBashUtilities
 ##############################################################################
 
-[ "${_SBIA_@NAMESPACE_UPPER@_BASIS_INCLUDED}" == 'true' ] || {
-_SBIA_@NAMESPACE_UPPER@_BASIS_INCLUDED='true'
+[ "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED}" == 'true' ] || {
+_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED='true'
 
 
 # ============================================================================
-# constants
+# source implementations of utility functions
 # ============================================================================
 
-## @brief Absolute directory path of basis.sh module.
-readonly _BASIS_DIR=@BASIS_BASH___DIR__@
+readonly _BASIS_DIR="@BASIS_BASH___DIR__@/@_BASIS_LIBRARY"
+
+. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh"
 
 # ============================================================================
-# modules
+# configuration of utilities
 # ============================================================================
 
-# non-project specific
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"      # core utilities
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/path.sh"      # file path manipulation
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh" # basic utility functions
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/shflags.sh"   # command-line parsing library
-
-# project specific
-. "${_BASIS_DIR}/config.sh"               # project configuration
-. "${_BASIS_DIR}/executabletargetinfo.sh" # info about executable targets
-. "${_BASIS_DIR}/stdaux.sh"               # standard higher-level utilities
+## @addtogroup BasisBashUtilities
+# @{
 
 
-} # basis.sh
+## @brief Project name.
+PROJECT="@PROJECT_NAME@"
+## @brief Project version.
+VERSION="@PROJECT_VERSION@"
+## @brief Project release.
+RELEASE="@PROJECT_RELEASE@"
+## @brief Default copyright of executables.
+COPYRIGHT="University of Pennsylvania"
+## @brief Default license of executables.
+LICENSE="See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+## @brief Default contact to use for help output of executables.
+CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
+
+
+## @{
+# end of Doxygen group
+
+# ============================================================================
+# initialize executable target information
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Initialize executable target information.
+#
+# This function initializes the structures of information about the executable
+# build targets. If this function is executed another time, it does nothing
+# because the structures are initialized already. In order to reduce the start
+# time of applications that do not make use of this module, the initialization
+# is only performed on demand.
+#
+# The initialization is done in get_target_uid() as this function is always
+# called first before any lookup of information.
+#
+# @returns Nothing.
+#
+# @retval 0 On success.
+# @retval 1 On failure.
+_executabletargetinfo_initialize()
+{
+    [ $# -eq 0 ] || return 1
+
+    @EXECUTABLE_TARGET_INFO@
+
+    _EXECUTABLETARGETINFO_INITIALIZED='true'
+    return 0
+}
+
+# ============================================================================
+# aliases (optional)
+# ============================================================================
+
+if [ "${basis_use_executable_aliases}" == 'true' ]; then
+    # define aliases of build target names to executable file paths
+    @EXECUTABLE_ALIASES@
+    # enable expansion of aliases also in non-interactive shells
+    shopt -s expand_aliases
+fi
+
+
+} # _@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED
