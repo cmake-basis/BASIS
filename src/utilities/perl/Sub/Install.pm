@@ -1,4 +1,8 @@
-package Sub::Install;
+# Original package Sub::Install downloaded from CPAN on 6/15/2012. This module
+# has been modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+# of the SBIA namespace.
+
+package SBIA::Sub::Install;
 
 use warnings;
 use strict;
@@ -8,7 +12,7 @@ use Scalar::Util ();
 
 =head1 NAME
 
-Sub::Install - install subroutines into packages easily
+SBIA::Sub::Install - install subroutines into packages easily
 
 =head1 VERSION
 
@@ -20,9 +24,9 @@ our $VERSION = '0.926';
 
 =head1 SYNOPSIS
 
-  use Sub::Install;
+  use SBIA::Sub::Install;
 
-  Sub::Install::install_sub({
+  SBIA::Sub::Install::install_sub({
     code => sub { ... },
     into => $package,
     as   => $subname
@@ -38,7 +42,7 @@ see them.
 
 =head2 install_sub
 
-  Sub::Install::install_sub({
+  SBIA::Sub::Install::install_sub({
    code => \&subroutine,
    into => "Finance::Shady",
    as   => 'launder',
@@ -57,12 +61,12 @@ package named in the C<from> parameter.  If C<from> is not given, it will look
 in the calling package.
 
 If C<as> is not given, and if C<code> is a name, C<as> will default to C<code>.
-If C<as> is not given, but if C<code> is a code ref, Sub::Install will try to
+If C<as> is not given, but if C<code> is a code ref, SBIA::Sub::Install will try to
 find the name of the given code ref and use that as C<as>.
 
 That means that this code:
 
-  Sub::Install::install_sub({
+  SBIA::Sub::Install::install_sub({
     code => 'twitch',
     from => 'Person::InPain',
     into => 'Person::Teenager',
@@ -73,7 +77,7 @@ is the same as:
 
   package Person::Teenager;
 
-  Sub::Install::install_sub({
+  SBIA::Sub::Install::install_sub({
     code => Person::InPain->can('twitch'),
     as   => 'dance',
   });
@@ -209,23 +213,23 @@ BEGIN {
 
 =head2 install_installers
 
-This routine is provided to allow Sub::Install compatibility with
-Sub::Installer.  It installs C<install_sub> and C<reinstall_sub> methods into
+This routine is provided to allow SBIA::Sub::Install compatibility with
+SBIA::Sub::Installer.  It installs C<install_sub> and C<reinstall_sub> methods into
 the package named by its argument.
 
- Sub::Install::install_installers('Code::Builder'); # just for us, please
+ SBIA::Sub::Install::install_installers('Code::Builder'); # just for us, please
  Code::Builder->install_sub({ name => $code_ref });
 
- Sub::Install::install_installers('UNIVERSAL'); # feeling lucky, punk?
+ SBIA::Sub::Install::install_installers('UNIVERSAL'); # feeling lucky, punk?
  Anything::At::All->install_sub({ name => $code_ref });
 
 The installed installers are similar, but not identical, to those provided by
-Sub::Installer.  They accept a single hash as an argument.  The key/value pairs
+SBIA::Sub::Installer.  They accept a single hash as an argument.  The key/value pairs
 are used as the C<as> and C<code> parameters to the C<install_sub> routine
 detailed above.  The package name on which the method is called is used as the
 C<into> parameter.
 
-Unlike Sub::Installer's C<install_sub> will not eval strings into code, but
+Unlike SBIA::Sub::Installer's C<install_sub> will not eval strings into code, but
 will look for named code in the calling package.
 
 =cut
@@ -239,7 +243,7 @@ sub install_installers {
       my ($caller) = caller(0);
       my $return;
       for (my ($name, $sub) = %$subs) {
-        $return = Sub::Install->can($method)->({
+        $return = SBIA::Sub::Install->can($method)->({
           code => $sub,
           from => $caller,
           into => $package,
@@ -254,18 +258,18 @@ sub install_installers {
 
 =head1 EXPORTS
 
-Sub::Install exports C<install_sub> and C<reinstall_sub> only if they are
+SBIA::Sub::Install exports C<install_sub> and C<reinstall_sub> only if they are
 requested.
 
 =head2 exporter
 
-Sub::Install has a never-exported subroutine called C<exporter>, which is used
+SBIA::Sub::Install has a never-exported subroutine called C<exporter>, which is used
 to implement its C<import> routine.  It takes a hashref of named arguments,
 only one of which is currently recognize: C<exports>.  This must be an arrayref
 of subroutines to offer for export.
 
-This routine is mainly for Sub::Install's own consumption.  Instead, consider
-L<Sub::Exporter>.
+This routine is mainly for SBIA::Sub::Install's own consumption.  Instead, consider
+L<SBIA::Sub::Exporter>.
 
 =cut
 
@@ -290,17 +294,17 @@ BEGIN { *import = exporter({ exports => [ qw(install_sub reinstall_sub) ] }); }
 
 =over
 
-=item L<Sub::Installer>
+=item L<SBIA::Sub::Installer>
 
-This module is (obviously) a reaction to Damian Conway's Sub::Installer, which
+This module is (obviously) a reaction to Damian Conway's SBIA::Sub::Installer, which
 does the same thing, but does it by getting its greasy fingers all over
 UNIVERSAL.  I was really happy about the idea of making the installation of
 coderefs less ugly, but I couldn't bring myself to replace the ugliness of
 typeglobs and loosened strictures with the ugliness of UNIVERSAL methods.
 
-=item L<Sub::Exporter>
+=item L<SBIA::Sub::Exporter>
 
-This is a complete Exporter.pm replacement, built atop Sub::Install.
+This is a complete Exporter.pm replacement, built atop SBIA::Sub::Install.
 
 =back
 
@@ -310,6 +314,9 @@ Ricardo Signes, C<< <rjbs@cpan.org> >>
 
 Several of the tests are adapted from tests that shipped with Damian Conway's
 Sub-Installer distribution.
+
+Modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+of the SBIA namespace for inclusion with the BASIS package.
 
 =head1 BUGS
 

@@ -1,23 +1,27 @@
+# Original package Data::OptList downloaded from CPAN on 6/15/2012. This module
+# has been modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+# of the SBIA namespace.
+
 use strict;
 use warnings;
-package Data::OptList;
+package SBIA::Data::OptList;
 BEGIN {
-  $Data::OptList::VERSION = '0.107';
+  $SBIA::Data::OptList::VERSION = '0.107';
 }
 # ABSTRACT: parse and validate simple name/value option pairs
 
 use List::Util ();
-use Params::Util ();
-use Sub::Install 0.921 ();
+use SBIA::Params::Util ();
+use SBIA::Sub::Install 0.921 ();
 
 
 my %test_for;
 BEGIN {
   %test_for = (
-    CODE   => \&Params::Util::_CODELIKE,  ## no critic
-    HASH   => \&Params::Util::_HASHLIKE,  ## no critic
-    ARRAY  => \&Params::Util::_ARRAYLIKE, ## no critic
-    SCALAR => \&Params::Util::_SCALAR0,   ## no critic
+    CODE   => \&SBIA::Params::Util::_CODELIKE,  ## no critic
+    HASH   => \&SBIA::Params::Util::_HASHLIKE,  ## no critic
+    ARRAY  => \&SBIA::Params::Util::_ARRAYLIKE, ## no critic
+    SCALAR => \&SBIA::Params::Util::_SCALAR0,   ## no critic
   );
 }
 
@@ -29,7 +33,7 @@ sub __is_a {
   return defined (
     exists($test_for{$expected})
     ? $test_for{$expected}->($got)
-    : Params::Util::_INSTANCE($got, $expected) ## no critic
+    : SBIA::Params::Util::_INSTANCE($got, $expected) ## no critic
   );
 }
 
@@ -39,7 +43,7 @@ sub mkopt {
   my ($moniker, $require_unique, $must_be); # the old positional args
   my $name_test;
 
-  if (@_ == 1 and Params::Util::_HASHLIKE($_[0])) {
+  if (@_ == 1 and SBIA::Params::Util::_HASHLIKE($_[0])) {
     my $arg = $_[0];
     ($moniker, $require_unique, $must_be, $name_test)
       = @$arg{ qw(moniker require_unique must_be name_test) };
@@ -98,7 +102,7 @@ sub mkopt_hash {
 
 
 BEGIN {
-  *import = Sub::Install::exporter {
+  *import = SBIA::Sub::Install::exporter {
     exports => [qw(mkopt mkopt_hash)],
   };
 }
@@ -110,7 +114,7 @@ __END__
 
 =head1 NAME
 
-Data::OptList - parse and validate simple name/value option pairs
+SBIA::Data::OptList - parse and validate simple name/value option pairs
 
 =head1 VERSION
 
@@ -118,9 +122,9 @@ version 0.107
 
 =head1 SYNOPSIS
 
-  use Data::OptList;
+  use SBIA::Data::OptList;
 
-  my $options = Data::OptList::mkopt([
+  my $options = SBIA::Data::OptList::mkopt([
     qw(key1 key2 key3 key4),
     key5 => { ... },
     key6 => [ ... ],
@@ -168,9 +172,9 @@ and thinking is even worse than typing... and it's got a bug!  It looked right,
 didn't it?  Well, the C<< xyz => { ... } >> gets consumed by the map, and we
 don't get the data we wanted.
 
-With Data::OptList, you can do this instead:
+With SBIA::Data::OptList, you can do this instead:
 
-  $values = Data::OptList::mkopt([
+  $values = SBIA::Data::OptList::mkopt([
     qw(foo bar baz),
     xyz => { ... },
   ]);
@@ -182,7 +186,7 @@ following a name is its value.
 
 =head2 mkopt
 
-  my $opt_list = Data::OptList::mkopt($input, \%arg);
+  my $opt_list = SBIA::Data::OptList::mkopt($input, \%arg);
 
 Valid arguments are:
 
@@ -198,7 +202,7 @@ Values will be either "undef" or a reference.
 Positional parameters may be used for compability with the old C<mkopt>
 interface:
 
-  my $opt_list = Data::OptList::mkopt($input, $moniker, $req_uni, $must_be);
+  my $opt_list = SBIA::Data::OptList::mkopt($input, $moniker, $req_uni, $must_be);
 
 Valid values for C<$input>:
 
@@ -219,7 +223,7 @@ The C<must_be> parameter is either a scalar or array of scalars; it defines
 what kind(s) of refs may be values.  If an invalid value is found, an exception
 is thrown.  If no value is passed for this argument, any reference is valid.
 If C<must_be> specifies that values must be CODE, HASH, ARRAY, or SCALAR, then
-Params::Util is used to check whether the given value can provide that
+SBIA::Params::Util is used to check whether the given value can provide that
 interface.  Otherwise, it checks that the given value is an object of the kind.
 
 In other words:
@@ -232,7 +236,7 @@ Means:
 
 =head2 mkopt_hash
 
-  my $opt_hash = Data::OptList::mkopt_hash($input, $moniker, $must_be);
+  my $opt_hash = SBIA::Data::OptList::mkopt_hash($input, $moniker, $must_be);
 
 Given valid C<L</mkopt>> input, this routine returns a reference to a hash.  It
 will throw an exception if any name has more than one value.
@@ -244,6 +248,9 @@ Both C<mkopt> and C<mkopt_hash> may be exported on request.
 =head1 AUTHOR
 
 Ricardo Signes <rjbs@cpan.org>
+
+Modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+of the SBIA namespace for inclusion with the BASIS package.
 
 =head1 COPYRIGHT AND LICENSE
 

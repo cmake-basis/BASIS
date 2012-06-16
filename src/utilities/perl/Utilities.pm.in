@@ -34,7 +34,11 @@ package @PROJECT_NAMESPACE_PERL@::Utilities;
     $@PROJECT_NAMESPACE_PERL@::Utilities::VERSION = @PROJECT_VERSION_PERL@;
 }
 
-use File::Which qw(which);
+
+use Cwd                   qw(realpath);
+use File::Basename        qw(dirname basename);
+use File::Spec::Functions qw(catfile);
+use SBIA::File::Which     qw(which);
 
 
 ## @addtogroup BasisPerlUtilities
@@ -58,8 +62,9 @@ use constant CONTACT => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
 # Note: The generators are defined at the end of this file.
 
-use Sub::Exporter -setup => {
+use SBIA::Sub::Exporter -setup => {
     exports => [
+        qw(to_quoted_string split_quoted_string),
         print_contact            => \&_build_print_contact,
         print_version            => \&_build_print_version,
         get_target_uid           => \&_build_executabletargetinfo_function,
@@ -67,10 +72,18 @@ use Sub::Exporter -setup => {
         get_executable_path      => \&_build_executabletargetinfo_function,
         get_executable_name      => \&_build_executabletargetinfo_function,
         get_executable_directory => \&_build_executabletargetinfo_function,
-        qw(to_quoted_string split_quoted_string),
         execute_process          => \&_build_execute_process],
     groups => {
-        default => [ qw(print_contact print_version) ]
+        default => [ qw(print_contact print_version
+                        get_executable_path get_executable_name get_executable_directory
+                        execute_process)
+        ],
+        everything => [ qw(print_contact print_version
+                           get_target_uid is_known_target
+                           get_executable_path get_executable_name get_executable_directory
+                           to_quoted_string split_quoted_string
+                           execute_process)
+        ]
     }
 };
 
@@ -142,17 +155,18 @@ sub print_contact
 #                       no license information is printed.
 sub print_version
 {
-    my $name = undef;
+    my $name    = undef;
     my $version = undef;
-    if (@_ != 0 and $_[0] !~ /^(name|version|project|copyright|license)$/) {
+    if (@_ != 0 and (not defined $_[0] or $_[0] !~ /^(name|version|project|copyright|license)$/)) {
         $name = $_[0];
         shift;
     }
-    if (@_ != 0 and $_[0] !~ /^(name|version|project|copyright|license)$/) {
+    if (@_ != 0 and (not defined $_[0] or $_[0] !~ /^(name|version|project|copyright|license)$/)) {
         $version = $_[0];
         shift;
     }
-    my %defaults = (version => undef, project => undef, copyright => COPYRIGHT, license => LICENSE);
+    die "print_version(): Invalid number of arguments" if scalar(@_) % 2 == 1;
+    my %defaults = (name => undef, version => undef, project => undef, copyright => COPYRIGHT, license => LICENSE);
     my %options  = (%defaults, @_);
     die "print_version(): Name argument given twice"    if defined $options{'name'}    and defined $name;
     die "print_version(): Version argument given twice" if defined $options{'version'} and defined $version;
@@ -549,13 +563,28 @@ sub _build_print_version
 {
     my ($class, $fn, $args) = @_;
     return sub {
-        my $name     = shift;
-        my %defaults = (version   => $args->{version},
+        my $name    = undef || $args->{name};
+        my $version = undef || $args->{version};
+        if (@_ != 0 and (not defined $_[0] or $_[0] !~ /^(name|version|project|copyright|license)$/)) {
+            $name = $_[0];
+            shift;
+        }
+        if (@_ != 0 and (not defined $_[0] or $_[0] !~ /^(name|version|project|copyright|license)$/)) {
+            $version = $_[0];
+            shift;
+        }
+        die "print_version(): Invalid number of arguments" if scalar(@_) % 2 == 1;
+        my %defaults = (name      => $args->{name},
+                        version   => $args->{version},
                         project   => $args->{project},
                         copyright => $args->{copyright},
                         license   => $args->{license});
         my %options  = (%defaults, @_);
-        print_version($name, %options);
+        die "print_version(): Name argument given twice"    if defined $options{'name'}    and defined $name;
+        die "print_version(): Version argument given twice" if defined $options{'version'} and defined $version;
+        $options{'name'}    = $name    if $name;
+        $options{'version'} = $version if $version;
+        print_version(%options);
     }
 }
 

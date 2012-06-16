@@ -1,18 +1,22 @@
-package Params::Util;
+# Original package Params::Util downloaded from CPAN on 6/15/2012. This module
+# has been modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+# of the SBIA namespace.
+
+package SBIA::Params::Util;
 
 =pod
 
 =head1 NAME
 
-Params::Util - Simple, compact and correct param-checking functions
+SBIA::Params::Util - Simple, compact and correct param-checking functions
 
 =head1 SYNOPSIS
 
   # Import some functions
-  use Params::Util qw{_SCALAR _HASH _INSTANCE};
+  use SBIA::Params::Util qw{_SCALAR _HASH _INSTANCE};
   
   # If you are lazy, or need a lot of them...
-  use Params::Util ':ALL';
+  use SBIA::Params::Util ':ALL';
   
   sub foo {
       my $object  = _INSTANCE(shift, 'Foo') or return undef;
@@ -23,7 +27,7 @@ Params::Util - Simple, compact and correct param-checking functions
 
 =head1 DESCRIPTION
 
-C<Params::Util> provides a basic set of importable functions that makes
+C<SBIA::Params::Util> provides a basic set of importable functions that makes
 checking parameters a hell of a lot easier
 
 While they can be (and are) used in other contexts, the main point
@@ -32,10 +36,10 @@ and Do The Right Thing, so they are most useful when you are getting
 params passed into your code from someone and/or somewhere else
 and you can't really trust the quality.
 
-Thus, C<Params::Util> is of most use at the edges of your API, where
+Thus, C<SBIA::Params::Util> is of most use at the edges of your API, where
 params and data are coming in from outside your code.
 
-The functions provided by C<Params::Util> check in the most strictly
+The functions provided by C<SBIA::Params::Util> check in the most strictly
 correct manner known, are documented as thoroughly as possible so their
 exact behaviour is clear, and heavily tested so make sure they are not
 fooled by weird data and Really Bad Things.
@@ -43,13 +47,13 @@ fooled by weird data and Really Bad Things.
 To use, simply load the module providing the functions you want to use
 as arguments (as shown in the SYNOPSIS).
 
-To aid in maintainability, C<Params::Util> will B<never> export by
+To aid in maintainability, C<SBIA::Params::Util> will B<never> export by
 default.
 
 You must explicitly name the functions you want to export, or use the
 C<:ALL> param to just have it export everything (although this is not
 recommended if you have any _FOO functions yourself with which future
-additions to C<Params::Util> may clash)
+additions to C<SBIA::Params::Util> may clash)
 
 =head1 FUNCTIONS
 
@@ -85,7 +89,7 @@ $VERSION   = '1.07';
 
 eval {
 	local $ENV{PERL_DL_NONLAZY} = 0 if $ENV{PERL_DL_NONLAZY};
-	bootstrap Params::Util $VERSION;
+	bootstrap SBIA::Params::Util $VERSION;
 	1;
 } unless $ENV{PERL_PARAMS_UTIL_PP};
 
@@ -268,7 +272,7 @@ The C<_NUMBER> function is intended to be imported into your
 package, and provides a convenient way to test to see if a value is
 a number. That is, it is defined and perl thinks it's a number.
 
-This function is basically a Params::Util-style wrapper around the
+This function is basically a SBIA::Params::Util-style wrapper around the
 L<Scalar::Util> C<looks_like_number> function.
 
 Returns the value as a convience, or C<undef> if the value is not a
@@ -600,7 +604,7 @@ sub _INVOCANT($) {
 		or      
 		# We used to check for stash definedness, but any class-like name is a
 		# valid invocant for UNIVERSAL methods, so we stopped. -- rjbs, 2006-07-02
-		Params::Util::_CLASS($_[0]))
+		SBIA::Params::Util::_CLASS($_[0]))
 	) ? $_[0] : undef;
 }
 END_PERL
@@ -848,6 +852,9 @@ For other issues, contact the author.
 =head1 AUTHOR
 
 Adam Kennedy E<lt>adamk@cpan.orgE<gt>
+
+Modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+of the SBIA namespace for inclusion with the BASIS package.
 
 =head1 SEE ALSO
 

@@ -20,7 +20,7 @@
 use strict;
 use warnings;
 
-package @PROJECT_NAMESPACE_PERL@::Basis
+package @PROJECT_NAMESPACE_PERL@::Basis;
 {
     $@PROJECT_NAMESPACE_PERL@::Basis::VERSION = @PROJECT_VERSION_PERL@;
 }
@@ -34,7 +34,27 @@ package @PROJECT_NAMESPACE_PERL@::Basis
 # exports
 # ============================================================================
 
-
+use SBIA::Sub::Exporter -setup => {
+    exports => [
+        qw(print_contact print_version
+           get_target_uid is_known_target
+           get_executable_path get_executable_name get_executable_directory
+           to_quoted_string split_quoted_string
+           execute_process)
+    ],
+    groups => {
+        default => [ qw(print_contact print_version
+                        get_executable_path get_executable_name get_executable_directory
+                        execute_process)
+        ],
+        everything => [ qw(print_contact print_version
+                           get_target_uid is_known_target
+                           get_executable_path get_executable_name get_executable_directory
+                           to_quoted_string split_quoted_string
+                           execute_process)
+        ]
+    }
+};
 
 # ============================================================================
 # configuration

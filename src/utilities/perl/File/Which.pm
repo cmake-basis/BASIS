@@ -1,4 +1,8 @@
-package File::Which;
+# Original package File::Which downloaded from CPAN on 6/15/2012. This module
+# has been modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+# of the SBIA namespace.
+
+package SBIA::File::Which;
 
 use 5.004;
 use strict;
@@ -159,12 +163,12 @@ __END__
 
 =head1 NAME
 
-File::Which - Portable implementation of the `which' utility
+SBIA::File::Which - Portable implementation of the `which' utility
 
 =head1 SYNOPSIS
 
-  use File::Which;                  # exports which()
-  use File::Which qw(which where);  # exports which() and where()
+  use SBIA::File::Which;                  # exports which()
+  use SBIA::File::Which qw(which where);  # exports which() and where()
   
   my $exe_path = which('perldoc');
   
@@ -174,16 +178,19 @@ File::Which - Portable implementation of the `which' utility
 
 =head1 DESCRIPTION
 
-C<File::Which> was created to be able to get the paths to executable programs
+C<SBIA::File::Which> was created to be able to get the paths to executable programs
 on systems under which the `which' program wasn't implemented in the shell.
 
-C<File::Which> searches the directories of the user's C<PATH> (as returned by
+C<SBIA::File::Which> searches the directories of the user's C<PATH> (as returned by
 C<File::Spec-E<gt>path()>), looking for executable files having the name
 specified as a parameter to C<which()>. Under Win32 systems, which do not have a
 notion of directly executable files, but uses special extensions such as C<.exe>
-and C<.bat> to identify them, C<File::Which> takes extra steps to assure that
+and C<.bat> to identify them, C<SBIA::File::Which> takes extra steps to assure that
 you will find the correct file (so for example, you might be searching for
 C<perl>, it'll try F<perl.exe>, F<perl.bat>, etc.)
+
+Original package is File::Which downloaded from CPAN. This module has been modified
+by Andreas Schuh on 6/15/2012 in order to make it a subpackage of the SBIA namespace.
 
 =head1 Steps Used on Win32, DOS, OS2 and VMS
 
@@ -191,7 +198,7 @@ C<perl>, it'll try F<perl.exe>, F<perl.bat>, etc.)
 
 Windows NT has a special environment variable called C<PATHEXT>, which is used
 by the shell to look for executable files. Usually, it will contain a list in
-the form C<.EXE;.BAT;.COM;.JS;.VBS> etc. If C<File::Which> finds such an
+the form C<.EXE;.BAT;.COM;.JS;.VBS> etc. If C<SBIA::File::Which> finds such an
 environment variable, it parses the list and uses it as the different
 extensions.
 
@@ -199,7 +206,7 @@ extensions.
 
 This set of operating systems don't have the C<PATHEXT> variable, and usually
 you will find executable files there with the extensions C<.exe>, C<.bat> and
-(less likely) C<.com>. C<File::Which> uses this hardcoded list if it's running
+(less likely) C<.com>. C<SBIA::File::Which> uses this hardcoded list if it's running
 under Win32 but does not find a C<PATHEXT> variable.
 
 =head2 VMS
@@ -259,13 +266,13 @@ Adam Kennedy E<lt>adamk@cpan.orgE<gt>
 
 Per Einar Ellefsen E<lt>pereinar@cpan.orgE<gt>
 
-Changed for use in BASIS project at the Section of Biomedical Image Analysis,
-Department of Radiology, University of Pennsylvania.
-Modified in particular which() to deal with absolute paths differently.
+Modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
+of the SBIA namespace for inclusion with the BASIS package. Moreover,
+changed which() function to deal with given absolute file paths differently.
 
 Originated in F<modperl-2.0/lib/Apache/Build.pm>. Changed for use in DocSet
 (for the mod_perl site) and Win32-awareness by me, with slight modifications
-by Stas Bekman, then extracted to create C<File::Which>.
+by Stas Bekman, then extracted to create C<SBIA::File::Which>.
 
 Version 0.04 had some significant platform-related changes, taken from
 the Perl Power Tools C<`which'> implementation by Abigail with
