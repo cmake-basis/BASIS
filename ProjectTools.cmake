@@ -1226,7 +1226,7 @@ macro (basis_project_finalize)
         endif ()
       endforeach ()
     endforeach ()
-    # configure ExecutableTargetInfo modules
+    # configure ExecutableTargetInfo modules - *before* auxiliary modules
     basis_configure_ExecutableTargetInfo ()
     # configure auxiliary modules
     basis_configure_auxiliary_modules ()

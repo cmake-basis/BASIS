@@ -88,48 +88,85 @@ set (BASIS_BASH_UTILITIES ". \${BASIS_BASH_UTILITIES} || exit 1")
 # @param [out] VAR         Whether the BASIS utilites are used by the @p SCRIPT_FILE.
 # @param [in]  SCRIPT_FILE Path of script file to check.
 function (basis_utilities_check VAR SCRIPT_FILE)
-  set (SCRIPT_USES_BASIS_UTILITIES FALSE)
+  set (SCRIPT_USES_UTILITIES FALSE)
   basis_get_source_language (SCRIPT_LANGUAGE "${SCRIPT_FILE}")
-  file (READ "${SCRIPT_FILE}" SCRIPT)
-  set (BASIS_UTILITIES_REGEX)
+  # --------------------------------------------------------------------------
+  # Python
   if (SCRIPT_LANGUAGE MATCHES "PYTHON")
-    basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
-    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+${PYTHON_PACKAGE}\\.basis([ \\t]*#.*)?")                # e.g., "import sbia.project.basis"
-    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+\\.\\.?basis")                                          # e.g., "import .basis", "import ..basis"
-    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis([ \\t]*#.*)?") # e.g., "from sbia.project import basis"
-    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis([ \\t]*#.*)?")           # e.g., "from . import basis", "from .. import basis"
-    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*([ \\t]*#.*)?")          # e.g., "from .basis import which, WhichError", "form ..basis import which"
+    # read script file
+    file (READ "${SCRIPT_FILE}" SCRIPT)
     # deprecated BASIS_PYTHON_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PYTHON_UTILITIES\@")
       message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_PYTHON_UTILITIES\@!"
                        " Replace macro by\nfrom ${PROJECT_NAMESPACE_PYTHON} import basis")
-      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+      set (SCRIPT_USES_UTILITIES TRUE)
     endif ()
+    # match import statements
+    if (NOT SCRIPT_USES_UTILITIES)
+      basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
+      foreach (M IN ITEMS basis config stdaux executabletargetinfo)
+        foreach (RE IN ITEMS
+          "import[ \\t]+${PYTHON_PACKAGE}\\.${M}([ \\t]*#.*)?"                # e.g., "import sbia.project.basis"
+          "import[ \\t]+\\.\\.?${M}"                                          # e.g., "import .basis", "import ..basis"
+          "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+${M}([ \\t]*#.*)?" # e.g., "from sbia.project import basis"
+          "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+${M}([ \\t]*#.*)?"           # e.g., "from . import basis", "from .. import basis"
+          "from[ \\t]+\\.\\.?${M}[ \\t]+import[ \\t].*([ \\t]*#.*)?"          # e.g., "from .basis import which, WhichError", "form ..basis import which"
+        )
+          set (RE "(^|\\n|;)[ \\t]*${RE}[ \\t]*(;|\\n|$)")
+          if (SCRIPT MATCHES "${RE}")
+            set (SCRIPT_USES_UTILITIES TRUE)
+            break ()
+          endif ()
+        endforeach ()
+        if (SCRIPT_USES_UTILITIES)
+          break ()
+        endif ()
+      endforeach ()
+    endif ()
+  # --------------------------------------------------------------------------
+  # Perl
   elseif (SCRIPT_LANGUAGE MATCHES "PERL")
-    set (BASIS_UTILITIES_REGEX "use[ \\t]+${PROJECT_NAMESPACE_PERL}::Basis([ \\t]+.*)?([ \\t]*#.*)?")        # e.g., "use SBIA::Project::Basis qw(:everything);"
+    # read script file
+    file (READ "${SCRIPT_FILE}" SCRIPT)
     # deprecated BASIS_PERL_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PERL_UTILITIES\@")
       message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_PERL_UTILITIES\@!"
                        " Replace macro by\nuse ${PROJECT_NAMESPACE_PERL}::Basis")
-      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+      set (SCRIPT_USES_UTILITIES TRUE)
     endif ()
+    # match use/require statements
+    if (NOT SCRIPT_USES_UTILITIES)
+      foreach (M IN ITEMS Basis Config StdAux ExecutableTargetInfo)
+        set (RE "(use|require)[ \\t]+${PROJECT_NAMESPACE_PERL}::${M}([ \\t]+.*)?([ \\t]*#.*)?") # e.g., "use SBIA::Project::Basis qw(:everything);"
+        set (RE "(^|\\n|;)[ \\t]*${RE}[ \\t]*(;|\\n|$)")
+        if (SCRIPT MATCHES "${RE}")
+          set (SCRIPT_USES_UTILITIES TRUE)
+          break ()
+        endif ()
+      endforeach ()
+    endif ()
+  # --------------------------------------------------------------------------
+  # Bash
   elseif (SCRIPT_LANGUAGE MATCHES "BASH")
-    set (BASIS_UTILITIES_REGEX "(source|\\.)[ \\t]+\\\${?BASIS_SOURCE}?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?")       # e.g., ". ${BASIS_SOURCE} || exit 1"
+    # read script file
+    file (READ "${SCRIPT_FILE}" SCRIPT)
     # deprecated BASIS_BASH_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_BASH_UTILITIES\@")
       message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_BASH_UTILITIES\@!"
                        " Replace macro by\n. \${BASIS_BASH_UTILITIES} || exit 1")
-      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+      set (SCRIPT_USES_UTILITIES TRUE)
     endif ()
-  endif ()
-  if (NOT SCRIPT_USES_BASIS_UTILITIES AND BASIS_UTILITIES_REGEX)
-    basis_list_to_delimited_string (BASIS_UTILITIES_REGEX "|" NOAUTOQUOTE ${BASIS_UTILITIES_REGEX})
-    if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${BASIS_UTILITIES_REGEX})[ \t]*(;|\n|$)")
-      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+    # match source/. built-ins
+    if (NOT SCRIPT_USES_UTILITIES)
+      set (RE "(source|\\.)[ \\t]+\\\${?BASIS_BASH_UTILITIES}?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?") # e.g., ". ${BASIS_BASH_UTILITIES} || exit 1"
+      set (RE "(^|\\n|;)[ \\t]*(${RE})[ \\t]*(;|\\n|$)")
+      if (SCRIPT MATCHES "${RE}")
+        set (SCRIPT_USES_UTILITIES TRUE)
+      endif ()
     endif ()
   endif ()
   # return
-  set (${RETVAL} "${SCRIPT_USES_BASIS_UTILITIES}" PARENT_SCOPE)
+  set (${RETVAL} "${SCRIPT_USES_UTILITIES}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
@@ -334,6 +371,10 @@ endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Configure auxiliary modules for scripting languages.
+#
+# @note The ExecutableTargetInfo modules are configured by
+#       basis_configure_executabletargetinfo() instead, which must be invoked
+#       before this function in order to add the corresponding build targets.
 function (basis_configure_auxiliary_modules)
   basis_get_project_property (PYTHON PROPERTY PROJECT_USES_PYTHON_UTILITIES)
   basis_get_project_property (PERL   PROPERTY PROJECT_USES_PERL_UTILITIES)
@@ -357,27 +398,45 @@ function (basis_configure_auxiliary_modules)
                            " Rebuild BASIS with Python utilities enabled.")
     endif ()
     # add project-specific utilities
-    foreach (MODULE basis stdaux)
+    foreach (MODULE basis config executabletargetinfo stdaux)
       basis_get_source_target_name (PYTHON_UTILITIES_${MODULE} "${MODULE}.py" NAME)
-      basis_add_library (
-        ${PYTHON_UTILITIES_${MODULE}}
-          "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py"
-        MODULE
-          BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-      )
-      basis_set_target_properties (
-        ${PYTHON_UTILITIES_${MODULE}}
-        PROPERTIES
-          OUTPUT_NAME "${MODULE}"
-          SUFFIX      ".py"
-      )
+      if (NOT MODULE MATCHES "executabletargetinfo")
+        basis_add_library (
+          ${PYTHON_UTILITIES_${MODULE}}
+            "${BASIS_PYTHON_TEMPLATES_DIR}/${MODULE}.py"
+          MODULE
+            BINARY_DIRECTORY "${BINARY_CODE_DIR}"
+        )
+        basis_set_target_properties (
+          ${PYTHON_UTILITIES_${MODULE}}
+          PROPERTIES
+            OUTPUT_NAME "${MODULE}"
+            SUFFIX      ".py"
+        )
+      endif ()
     endforeach ()
     # dependencies
-    foreach (MODULE stdaux executabletargetinfo)
-      basis_get_source_target_name (PYTHON_UTILITIES_${MODULE} "${MODULE}.py" NAME)
-      basis_add_dependencies (${PYTHON_UTILITIES_basis} ${PYTHON_UTILITIES_${MODULE}})
-    endforeach ()
-    basis_add_dependencies (${PYTHON_UTILITIES_basis} _initpy)
+    basis_add_dependencies (
+      ${PYTHON_UTILITIES_basis}
+        ${PYTHON_UTILITIES_config}
+        ${PYTHON_UTILITIES_executabletargetinfo}
+        ${PYTHON_UTILITIES_stdaux}
+        _initpy
+    )
+    basis_add_dependencies (
+      ${PYTHON_UTILITIES_executabletargetinfo}
+        _initpy
+    )
+    basis_add_dependencies (
+      ${PYTHON_UTILITIES_stdaux}
+        ${PYTHON_UTILITIES_config}
+        ${PYTHON_UTILITIES_executabletargetinfo}
+        _initpy
+    )
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      basis_get_target_uid (PYTHON_UTILITIES_utilities "${PROJECT_NAMESPACE_CMAKE}.utilities_py")
+      basis_add_dependencies (${PYTHON_UTILITIES_stdaux} ${PYTHON_UTILITIES_utilities})
+    endif ()
   endif ()
 
   # --------------------------------------------------------------------------
@@ -390,26 +449,43 @@ function (basis_configure_auxiliary_modules)
                            " Rebuild BASIS with Perl utilities enabled.")
     endif ()
     # add project-specific utilities
-    foreach (MODULE Basis StdAux)
+    foreach (MODULE Basis Config ExecutableTargetInfo StdAux)
       basis_get_source_target_name (PERL_UTILITIES_${MODULE} "${MODULE}.pm" NAME)
-      basis_add_library (
-        ${PERL_UTILITIES_${MODULE}}
-          "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm"
-        MODULE
-          BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-      )
-      basis_set_target_properties (
-        ${PERL_UTILITIES_${MODULE}}
-        PROPERTIES
-          OUTPUT_NAME "${MODULE}"
-          SUFFIX      ".pm"
-      )
+      if (NOT MODULE MATCHES "ExecutableTargetInfo")
+        basis_add_library (
+          ${PERL_UTILITIES_${MODULE}}
+            "${BASIS_PERL_TEMPLATES_DIR}/${MODULE}.pm"
+          MODULE
+            BINARY_DIRECTORY "${BINARY_CODE_DIR}"
+        )
+        basis_set_target_properties (
+          ${PERL_UTILITIES_${MODULE}}
+          PROPERTIES
+            OUTPUT_NAME "${MODULE}"
+            SUFFIX      ".pm"
+        )
+      endif ()
     endforeach ()
     # dependencies
-    foreach (MODULE StdAux ExecutableTargetInfo)
-      basis_get_source_target_name (PERL_UTILITIES_${MODULE} "${MODULE}.pm" NAME)
-      basis_add_dependencies (${PERL_UTILITIES_Basis} ${PERL_UTILITIES_${MODULE}})
-    endforeach ()
+    basis_add_dependencies (
+      ${PERL_UTILITIES_Basis}
+        ${PERL_UTILITIES_Config}
+        ${PERL_UTILITIES_ExecutableTargetInfo}
+        ${PERL_UTILITIES_StdAux}
+    )
+    basis_add_dependencies (
+      ${PERL_UTILITIES_ExecutableTargetInfo}
+        ${PERL_UTILITIES_Config}
+    )
+    basis_add_dependencies (
+      ${PERL_UTILITIES_StdAux}
+        ${PERL_UTILITIES_Config}
+        ${PERL_UTILITIES_ExecutableTargetInfo}
+    )
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      basis_get_target_uid (PERL_UTILITIES_Utilities "${PROJECT_NAMESPACE_CMAKE}.Utilities_pm")
+      basis_add_dependencies (${PERL_UTILITIES_StdAux} ${PERL_UTILITIES_Utilities})
+    endif ()
   endif ()
 
   # --------------------------------------------------------------------------
@@ -421,30 +497,50 @@ function (basis_configure_auxiliary_modules)
                            " on a non-Unix system.")
     endif ()
     # add project-specific utilities
-    foreach (MODULE basis stdaux)
+    foreach (MODULE basis config executabletargetinfo stdaux)
       basis_get_source_target_name (BASH_UTILITIES_${MODULE} "${MODULE}.sh" NAME)
-      basis_add_library (
-        ${BASH_UTILITIES_${MODULE}}
-          "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh"
-        MODULE
-          BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-      )
-      basis_set_target_properties (
-        ${BASH_UTILITIES_${MODULE}}
-        PROPERTIES
-          OUTPUT_NAME "${MODULE}"
-          SUFFIX      ".sh"
-      )
+      if (NOT MODULE MATCHES "executabletargetinfo")
+        basis_add_library (
+          ${BASH_UTILITIES_${MODULE}}
+            "${BASIS_BASH_TEMPLATES_DIR}/${MODULE}.sh"
+          MODULE
+            BINARY_DIRECTORY "${BINARY_CODE_DIR}"
+        )
+        basis_set_target_properties (
+          ${BASH_UTILITIES_${MODULE}}
+          PROPERTIES
+            OUTPUT_NAME "${MODULE}"
+            SUFFIX      ".sh"
+        )
+      endif ()
     endforeach ()
     # dependencies
-    foreach (MODULE stdaux executabletargetinfo)
-      basis_get_source_target_name (BASH_UTILITIES_${MODULE} "${MODULE}.sh" NAME)
-      basis_add_dependencies (${BASH_UTILITIES_basis} ${BASH_UTILITIES_${MODULE}})
-    endforeach ()
-    foreach (MODULE core path)
-      basis_get_target_uid (BASH_UTILITIES_${MODULE} "${BASIS_NAMESPACE_LOWER}.basis.${MODULE}")
-      basis_add_dependencies (${BASH_UTILITIES_basis} ${BASH_UTILITIES_${MODULE}})
-    endforeach ()
+    basis_add_dependencies (
+      ${BASH_UTILITIES_basis}
+        ${BASH_UTILITIES_config}
+        ${BASH_UTILITIES_executabletargetinfo}
+        ${BASH_UTILITIES_stdaux}
+    )
+    basis_add_dependencies (
+      ${BASH_UTILITIES_stdaux}
+        ${BASH_UTILITIES_config}
+        ${BASH_UTILITIES_executabletargetinfo}
+    )
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      basis_get_target_uid (BASH_UTILITIES_core      "${PROJECT_NAMESPACE_CMAKE}.core_sh")
+      basis_get_target_uid (BASH_UTILITIES_path      "${PROJECT_NAMESPACE_CMAKE}.path_sh")
+      basis_get_target_uid (BASH_UTILITIES_utilities "${PROJECT_NAMESPACE_CMAKE}.utilities_sh")
+      basis_add_dependencies (
+        ${BASH_UTILITIES_executabletargetinfo}
+          ${BASH_UTILITIES_core}
+          ${BASH_UTILITIES_path}
+      )
+      basis_add_dependencies (
+        ${BASH_UTILITIES_stdaux}
+          ${BASH_UTILITIES_core}
+          ${BASH_UTILITIES_utilities}
+      )
+    endif ()
   endif ()
 
   if (BASIS_VERBOSE)
@@ -465,7 +561,7 @@ endfunction ()
 # after all targets have been added and finalized (in case of custom targets).
 #
 # @returns Nothing.
-function (basis_configure_ExecutableTargetInfo)
+function (basis_configure_executabletargetinfo)
   # --------------------------------------------------------------------------
   # ExecutableTargetInfo not used?
 
