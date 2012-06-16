@@ -155,6 +155,8 @@ else ()
   basis_set_script_path (_BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@")
 endif ()
 
+set (_BASIS_CPAN_LIBRARY_DIR "${_BASIS_PERL_LIBRARY_DIR}/@BASIS_NAMESPACE@")
+
 
 ## @}
 # end of Doxygen group
