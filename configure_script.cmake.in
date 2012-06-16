@@ -102,7 +102,7 @@ function (basis_configure_script SCRIPT_FILE CONFIGURED_FILE)
       set (SCRIPT "import sys; import os.path; sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '${_BASIS_PYTHON_LIBRARY_DIR}'))); sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '${PYTHON_LIBRARY_DIR}')))\n${SCRIPT}")
     elseif (LANGUAGE MATCHES "PERL")
       string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}")
-      set (SCRIPT "use Cwd qw(realpath); use File::Basename; use lib realpath(dirname(realpath(__FILE__)) . '/${_BASIS_CPAN_LIBRARY_DIR}'); use lib realpath(dirname(realpath(__FILE__)) . '/${_BASIS_PERL_LIBRARY_DIR}'); use lib realpath(dirname(realpath(__FILE__)) . '/${PERL_LIBRARY_DIR}'); use lib dirname(realpath(__FILE__));\n${SCRIPT}")
+      set (SCRIPT "use Cwd qw(realpath); use File::Basename; use lib realpath(dirname(realpath(__FILE__)) . '/${_BASIS_PERL_LIBRARY_DIR}'); use lib realpath(dirname(realpath(__FILE__)) . '/${PERL_LIBRARY_DIR}'); use lib dirname(realpath(__FILE__));\n${SCRIPT}")
     elseif (LANGUAGE MATCHES "BASH")
       string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}")
       set (BASH_CODE
