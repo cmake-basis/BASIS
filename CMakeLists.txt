@@ -66,6 +66,7 @@ set (
     "CheckPublicHeaders.cmake"    # check if header files were added/removed
     "cmake_uninstall.cmake.in"    # uninstall script
     "ConfigureIncludeFiles.cmake" # used to configure public header files
+    "configure_script.cmake.in"   # template script for build of script targets
     "Directories.cmake.in"        # project directory structure
     "doxyfilter.bat.in"           # wraps Doxygen filter command on Windows
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function

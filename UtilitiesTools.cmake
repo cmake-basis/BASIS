@@ -15,70 +15,64 @@
 
 
 # ============================================================================
-# Python utilities
+# determine which utilities are used
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for Python.
+## @brief Check which BASIS utilities are used within given script.
 #
-# The substituted Python code appends the root directory of the build or
-# installed Python modules to the search path and then imports the 'basis'
-# module of this project. Note that every BASIS project has its own 'basis'
-# module, which belong to different packages, however.
+# This function matches the script code against specific import patterns which
+# are all valid imports of the BASIS utilities for the respective programming
+# language of the specified script file. If the BASIS utilities are used within
+# the specified script, the variable @p RETVAL is set to @c TRUE, and @c FALSE
+# otherwise.
 #
-# Example:
-# @code
-# #! /usr/bin/env python
-# @BASIS_PYTHON_UTILITIES@
-# ...
-# @endcode
-#
-# @deprecated This macro should no longer be used. Instead, simply import the
-#             sbia.&lt;project&gt;.basis module, e.g.,
-#             "from sbia.<project> import basis".
-set (BASIS_PYTHON_UTILITIES
-"import os, sys
-sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\@_BASIS_PYTHON_LIBRARY_DIR\@')))
-sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\@PYTHON_LIBRARY_DIR\@')))
-from \@PROJECT_NAMESPACE_PYTHON\@ import basis"
-)
-
-# Reduce BASIS_PYTHON_UTILITIES to single line such that resulting script
-# files do not increase in line numbers. Otherwise, error messages are misleading.
-string (REPLACE "\n" "; " BASIS_PYTHON_UTILITIES "${BASIS_PYTHON_UTILITIES}")
-
-# ============================================================================
-# Perl utilities
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for Perl.
-#
-# Example:
-# @code
-# #! /usr/bin/env perl
-# @BASIS_PERL_UTILITIES@
-# ...
-# @endcode
-#
-# @deprecated This macro should no longer be used. Instead add the code
-#             "package Basis; use SBIA::<Project>::Basis qw(:everything); package main;"
-#             to your script. The package instructions can be omitted if the
-#             BASIS functions shall not be placed in the Basis package.
-set (BASIS_PERL_UTILITIES
-"use Cwd qw(realpath);
-use File::Basename;
-use lib realpath(dirname(realpath(__FILE__)) . '/\@_BASIS_PERL_LIBRARY_DIR\@');
-use lib realpath(dirname(realpath(__FILE__)) . '/\@PERL_LIBRARY_DIR\@');
-use lib dirname(realpath(__FILE__));
-package Basis;
-use \@PROJECT_NAMESPACE_PERL\@::Basis qw(:everything);
-package main;"
-)
-
-# Reduce BASIS_PERL_UTILITIES to single line such that resulting script
-# files do not increase in line numbers. Otherwise, error messages are misleading.
-string (REPLACE "\n" " " BASIS_PERL_UTILITIES "${BASIS_PERL_UTILITIES}")
+# @param [out] VAR         Whether the BASIS utilites are used by the @p SCRIPT_FILE.
+# @param [in]  SCRIPT_FILE Path of script file to check.
+function (basis_utilities_check VAR SCRIPT_FILE)
+  set (SCRIPT_USES_BASIS_UTILITIES FALSE)
+  basis_get_source_language (SCRIPT_LANGUAGE "${SCRIPT_FILE}")
+  file (READ "${SCRIPT_FILE}" SCRIPT)
+  set (BASIS_UTILITIES_REGEX)
+  if (SCRIPT_LANGUAGE MATCHES "PYTHON")
+    basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
+    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+${PYTHON_PACKAGE}\\.basis([ \\t]*#.*)?")                # e.g., "import sbia.project.basis"
+    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+\\.\\.?basis")                                          # e.g., "import .basis", "import ..basis"
+    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis([ \\t]*#.*)?") # e.g., "from sbia.project import basis"
+    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis([ \\t]*#.*)?")           # e.g., "from . import basis", "from .. import basis"
+    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*([ \\t]*#.*)?")          # e.g., "from .basis import which, WhichError", "form ..basis import which"
+    # deprecated BASIS_PYTHON_UTILITIES macro
+    if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PYTHON_UTILITIES\@")
+      message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_PYTHON_UTILITIES\@!"
+                       " Replace macro by\nfrom ${PROJECT_NAMESPACE_PYTHON} import basis")
+      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+    endif ()
+  elseif (SCRIPT_LANGUAGE MATCHES "PERL")
+    set (BASIS_UTILITIES_REGEX "use[ \\t]+${PROJECT_NAMESPACE_PERL}::Basis([ \\t]+.*)?([ \\t]*#.*)?")        # e.g., "use SBIA::Project::Basis qw(:everything);"
+    # deprecated BASIS_PERL_UTILITIES macro
+    if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PERL_UTILITIES\@")
+      message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_PERL_UTILITIES\@!"
+                       " Replace macro by\npackage Basis; use ${PROJECT_NAMESPACE_PERL}::Basis; package main;")
+      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+    endif ()
+  elseif (SCRIPT_LANGUAGE MATCHES "BASH")
+    set (BASIS_UTILITIES_REGEX "(source|\\.)[ \\t]+\\\${?BASIS_SOURCE}?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?")       # e.g., ". ${BASIS_SOURCE} || exit 1"
+    # deprecated BASIS_BASH_UTILITIES macro
+    if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_BASH_UTILITIES\@")
+      message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_BASH_UTILITIES\@!"
+                       " Replace macro by\n. \${BASIS_BASH_UTILITIES} || exit 1")
+      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+    endif ()
+  endif ()
+  if (NOT SCRIPT_USES_BASIS_UTILITIES AND BASIS_UTILITIES_REGEX)
+    basis_list_to_delimited_string (BASIS_UTILITIES_REGEX "|" NOAUTOQUOTE ${BASIS_UTILITIES_REGEX})
+    if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${BASIS_UTILITIES_REGEX})[ \t]*(;|\n|$)")
+      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
+    endif ()
+  endif ()
+  # return
+  set (${RETVAL} "${SCRIPT_USES_BASIS_UTILITIES}" PARENT_SCOPE)
+endfunction ()
 
 # ============================================================================
 # BASH utilities
@@ -109,44 +103,6 @@ set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pw
 #
 # @ingroup BasisBashUtilities
 set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for BASH.
-#
-# Example:
-# @code
-# #! /usr/bin/env bash
-# @BASIS_BASH_UTILITIES@
-# get_executable_directory exec_dir
-# get_executable_name      exec_name
-#
-# echo "The executable ${exec_name} is located in ${exec_dir}."
-# @endcode
-#
-# @deprecated This macro should not be used any longer. Instead, simply add
-#             the code "source ${BASIS_MODULE} || exit 1" to your script.
-set (BASIS_BASH_UTILITIES
-"HELP_COMMAND='\@NAME\@ (\@PROJECT_NAME\@)'
-HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
-HELP_VERSION='\@PROJECT_RELEASE\@'
-HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.\\nSee http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
-path=\"${BASIS_BASH___FILE__}\"
-i=0
-cur=\"\${path}\"
-while [ -h \"\${cur}\" ] && [ \$i -lt 100 ]
-do  dir=`dirname -- \"\${cur}\"`
-    cur=`readlink -- \"\${cur}\"`
-    cur=`cd \"\${dir}\" && cd $(dirname -- \"\${cur}\") && pwd`/`basename -- \"\${cur}\"`
-    (( i++ ))
-done
-if [ \$i -lt 100 ]; then path=\"\${cur}\"; fi
-source \"$(dirname -- \"\${path}\")/\@LIBRARY_DIR\@/basis.sh\" || exit 1
-unset -v i path dir cur"
-)
-
-# Reduce BASIS_BASH_UTILITIES to single line such that resulting script
-# files do not increase in line numbers. Otherwise, error messages are misleading.
-string (REPLACE "\n" "; " BASIS_BASH_UTILITIES "${BASIS_BASH_UTILITIES}")
 
 # ============================================================================
 # auxiliary sources
@@ -794,6 +750,106 @@ function (basis_configure_ExecutableTargetInfo)
     message (STATUS "Configuring ExecutableTargetInfo... - done")
   endif ()
 endfunction ()
+
+# ============================================================================
+# deprecated "macros"
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for Python.
+#
+# The substituted Python code appends the root directory of the build or
+# installed Python modules to the search path and then imports the 'basis'
+# module of this project. Note that every BASIS project has its own 'basis'
+# module, which belong to different packages, however.
+#
+# Example:
+# @code
+# #! /usr/bin/env python
+# @BASIS_PYTHON_UTILITIES@
+# ...
+# @endcode
+#
+# @deprecated This macro should no longer be used. Instead, simply import the
+#             sbia.&lt;project&gt;.basis module, e.g.,
+#             "from sbia.<project> import basis".
+set (BASIS_PYTHON_UTILITIES
+"import os, sys
+sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\@_BASIS_PYTHON_LIBRARY_DIR\@')))
+sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\@PYTHON_LIBRARY_DIR\@')))
+from \@PROJECT_NAMESPACE_PYTHON\@ import basis"
+)
+
+# Reduce BASIS_PYTHON_UTILITIES to single line such that resulting script
+# files do not increase in line numbers. Otherwise, error messages are misleading.
+string (REPLACE "\n" "; " BASIS_PYTHON_UTILITIES "${BASIS_PYTHON_UTILITIES}")
+
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for Perl.
+#
+# Example:
+# @code
+# #! /usr/bin/env perl
+# @BASIS_PERL_UTILITIES@
+# ...
+# @endcode
+#
+# @deprecated This macro should no longer be used. Instead add the code
+#             "package Basis; use SBIA::<Project>::Basis qw(:everything); package main;"
+#             to your script. The package instructions can be omitted if the
+#             BASIS functions shall not be placed in the Basis package.
+set (BASIS_PERL_UTILITIES
+"use Cwd qw(realpath);
+use File::Basename;
+use lib realpath(dirname(realpath(__FILE__)) . '/\@_BASIS_PERL_LIBRARY_DIR\@');
+use lib realpath(dirname(realpath(__FILE__)) . '/\@PERL_LIBRARY_DIR\@');
+use lib dirname(realpath(__FILE__));
+package Basis;
+use \@PROJECT_NAMESPACE_PERL\@::Basis qw(:everything);
+package main;"
+)
+
+# Reduce BASIS_PERL_UTILITIES to single line such that resulting script
+# files do not increase in line numbers. Otherwise, error messages are misleading.
+string (REPLACE "\n" " " BASIS_PERL_UTILITIES "${BASIS_PERL_UTILITIES}")
+
+# ----------------------------------------------------------------------------
+## @brief Include BASIS utilities for BASH.
+#
+# Example:
+# @code
+# #! /usr/bin/env bash
+# @BASIS_BASH_UTILITIES@
+# get_executable_directory exec_dir
+# get_executable_name      exec_name
+#
+# echo "The executable ${exec_name} is located in ${exec_dir}."
+# @endcode
+#
+# @deprecated This macro should not be used any longer. Instead, simply add
+#             the code "source ${BASIS_MODULE} || exit 1" to your script.
+set (BASIS_BASH_UTILITIES
+"HELP_COMMAND='\@NAME\@ (\@PROJECT_NAME\@)'
+HELP_CONTACT='SBIA Group <sbia-software at uphs.upenn.edu>'
+HELP_VERSION='\@PROJECT_RELEASE\@'
+HELP_COPYRIGHT='Copyright (c) University of Pennsylvania. All rights reserved.\\nSee http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.'
+path=\"${BASIS_BASH___FILE__}\"
+i=0
+cur=\"\${path}\"
+while [ -h \"\${cur}\" ] && [ \$i -lt 100 ]
+do  dir=`dirname -- \"\${cur}\"`
+    cur=`readlink -- \"\${cur}\"`
+    cur=`cd \"\${dir}\" && cd $(dirname -- \"\${cur}\") && pwd`/`basename -- \"\${cur}\"`
+    (( i++ ))
+done
+if [ \$i -lt 100 ]; then path=\"\${cur}\"; fi
+source \"$(dirname -- \"\${path}\")/\@LIBRARY_DIR\@/basis.sh\" || exit 1
+unset -v i path dir cur"
+)
+
+# Reduce BASIS_BASH_UTILITIES to single line such that resulting script
+# files do not increase in line numbers. Otherwise, error messages are misleading.
+string (REPLACE "\n" "; " BASIS_BASH_UTILITIES "${BASIS_BASH_UTILITIES}")
 
 
 ## @}

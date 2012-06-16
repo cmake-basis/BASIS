@@ -1830,50 +1830,13 @@ function (basis_add_script TARGET_NAME)
   basis_dump_variables ("${BUILD_DIR}/variables.cmake")
 
   # "parse" script to check which BASIS utilities are used
-  set (SCRIPT_USES_BASIS_UTILITIES FALSE)
-  file (READ "${ARGN_SCRIPT}" SCRIPT)
-  set (BASIS_UTILITIES_REGEX)
-  if (SCRIPT_LANGUAGE MATCHES "PYTHON")
-    basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
-    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+${PYTHON_PACKAGE}\\.basis([ \\t]*#.*)?")                # e.g., "import sbia.project.basis"
-    list (APPEND BASIS_UTILITIES_REGEX "import[ \\t]+\\.\\.?basis")                                          # e.g., "import .basis", "import ..basis"
-    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis([ \\t]*#.*)?") # e.g., "from sbia.project import basis"
-    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis([ \\t]*#.*)?")           # e.g., "from . import basis", "from .. import basis"
-    list (APPEND BASIS_UTILITIES_REGEX "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*([ \\t]*#.*)?")          # e.g., "from .basis import which, WhichError", "form ..basis import which"
-  elseif (SCRIPT_LANGUAGE MATCHES "PERL")
-    set (BASIS_UTILITIES_REGEX "use[ \\t]+${PROJECT_NAMESPACE_PERL}::Basis([ \\t]+.*)?([ \\t]*#.*)?")        # e.g., "use SBIA::Project::Basis qw(:everything);"
-  elseif (SCRIPT_LANGUAGE MATCHES "BASH")
-    set (BASIS_UTILITIES_REGEX "(source|\\.)[ \\t]+\\\${?BASIS_SOURCE}?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?")       # e.g., ". ${BASIS_SOURCE} || exit 1"
-  endif ()
-  if (BASIS_UTILITIES_REGEX)
-    basis_list_to_delimited_string (BASIS_UTILITIES_REGEX "|" NOAUTOQUOTE ${BASIS_UTILITIES_REGEX})
-    if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${BASIS_UTILITIES_REGEX})[ \t]*(;|\n|$)")
-      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
-      basis_set_project_property (PROPERTY PROJECT_USES_${SCRIPT_LANGUAGE}_UTILITIES TRUE)
+  basis_utilities_check (SCRIPT_USES_BASIS_UTILITIES "${ARGN_SCRIPT}")
+  if (SCRIPT_USES_BASIS_UTILITIES)
+    basis_set_project_property (PROPERTY PROJECT_USES_${SCRIPT_LANGUAGE}_UTILITIES TRUE)
+    if (BASIS_DEBUG)
+      message ("** Target ${TARGET_UID} uses BASIS utilities.")
     endif ()
   endif ()
-  # deprecated utilities macros
-  foreach (LANG PYTHON PERL BASH)
-    if (BASIS_LANGUAGE MATCHES "${LANG}" AND SCRIPT MATCHES "(^|\n|;)[ \t]*@BASIS_${LANG}_UTILITIES@")
-      if (SCRIPT_LANGUAGE MATCHES "PYTHON")
-        set (MSG "Replace macro by\nfrom ${PROJECT_NAMESPACE_PYTHON} import basis")
-      elseif (SCRIPT_LANGUAGE MATCHES "PERL")
-        set (MSG "Replace macro by\npackage Basis; use ${PROJECT_NAMESPACE_PERL}::Basis; package main;")
-      elseif (SCRIPT_LANGUAGE MATCHES "BASH")
-        set (MSG "Replace macro by\n. \${BASIS_SOURCE} || exit 1")
-      else ()
-        set (MSG "See BASIS documentation for information on how to replace this macro.")
-      endif ()
-      message (WARNING "Script ${ARGN_SCRIPT} uses the deprecated BASIS macro @BASIS_${LANG}_UTILITIES@! ${MSG}")
-      set (SCRIPT_USES_BASIS_UTILITIES TRUE)
-      basis_set_project_property (PROPERTY PROJECT_USES_${LANG}_UTILITIES TRUE)
-    endif ()
-  endforeach ()
-  # debug output
-  if (BASIS_DEBUG AND SCRIPT_USES_BASIS_UTILITIES)
-    message ("** Target ${TARGET_UID} uses BASIS utilities.")
-  endif ()
-  unset (SCRIPT)
 
   # binary directory
   if (ARGN_BINARY_DIRECTORY)
@@ -2074,25 +2037,20 @@ endfunction ()
 function (basis_add_script_finalize TARGET_UID)
   # if used within (sub-)project itself, allow user to specify "local" target name
   basis_get_target_uid (TARGET_UID "${TARGET_UID}")
-
   # already finalized before ?
   if (TARGET "_${TARGET_UID}")
     return ()
   endif ()
-
   # does this target exist ?
   if (NOT TARGET "${TARGET_UID}")
     message (FATAL_ERROR "Unknown target ${TARGET_UID}.")
     return ()
   endif ()
-
   if (BASIS_VERBOSE)
     message (STATUS "Adding build command for script ${TARGET_UID}...")
   endif ()
-
   # get target properties
   basis_get_target_name (TARGET_NAME ${TARGET_UID})
-
   set (
     PROPERTIES
       "BASIS_TYPE"
@@ -2119,26 +2077,21 @@ function (basis_add_script_finalize TARGET_UID)
       "COMPILE"
       "WITH_EXT"
   )
-
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
-
   # check target type
   if (NOT BASIS_TYPE MATCHES "^EXECUTABLE_SCRIPT$|^MODULE_SCRIPT$")
     message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
-
   if (BASIS_TYPE MATCHES "^MODULE_SCRIPT$")
     set (MODULE 1)
   else ()
     set (MODULE 0)
   endif ()
-
   # build directory (note that CMake returns basename of build directory as first element of SOURCES list)
   list (GET SOURCES 0 BUILD_DIR)
   set (BUILD_DIR "${BUILD_DIR}.dir")
-
   # binary directory
   if (NOT BINARY_DIRECTORY)
     message (FATAL_ERROR "basis_add_script_finalize(${TARGET_UID}): BINARY_DIRECTORY property not set!")
@@ -2146,14 +2099,11 @@ function (basis_add_script_finalize TARGET_UID)
   if (NOT BINARY_DIRECTORY MATCHES "^${PROJECT_BINARY_DIR}")
     message (FATAL_ERROR "basis_add_script_finalize(${TARGET_UID}): BINARY_DIRECTORY must be inside of build tree!")
   endif ()
-
   # extract script file from SOURCES
   list (GET SOURCES 1 SCRIPT_FILE)
-
   # get script name without ".in"
   get_filename_component (SCRIPT_NAME "${SCRIPT_FILE}" NAME)
   string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME}")
-
   # output name
   if (NOT OUTPUT_NAME)
     set (OUTPUT_NAME "${TARGET_NAME}")
@@ -2164,40 +2114,53 @@ function (basis_add_script_finalize TARGET_UID)
   if (SUFFIX)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # create build script
-  #
-  # Note: If the script is configured, this is done twice, once for the build tree
-  #       and once for the installation. The build tree version of the configured
-  #       script is written to the runtime output directory in the build tree.
-  #       The version configured for the installation, is written to the binary
-  #       directory that corresponds to the source directory of the script.
-  #       If a documentation is generated automatically from the sources, the
-  #       latter, i.e., the script which will be installed is used as input file.
-  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
-  # configured script file for build tree
+  # configured output files
   if (MODULE)
     set (CONFIGURED_FILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   else ()
     set (CONFIGURED_FILE "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   endif ()
-  # final output script file for build tree
-  set (OUTPUT_FILE "${CONFIGURED_FILE}")
-  # configured script file for install tree
-  set (CONFIGURED_INSTALL_FILE "${CONFIGURED_FILE}")
-  # final output script file for install tree
-  set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
-  set (INSTALL_NAME "${OUTPUT_NAME}")
-  # output files of build command
+  set (CONFIGURED_INSTALL_FILE)
+  if (SCRIPT_FILE MATCHES "\\.in$")
+    if ((MODULE AND LIBRARY_INSTALL_DIRECTORY) OR (NOT MODULE AND RUNTIME_INSTALL_DIRECTORY))
+      set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
+    endif ()
+  endif ()
+  set (OUTPUT_FILE "${CONFIGURED_FILE}") # main output file used for command message
   set (OUTPUT_FILES "${OUTPUT_FILE}")
+  if (CONFIGURED_INSTALL_FILE)
+    list (APPEND OUTPUT_FILES "${CONFIGURED_INSTALL_FILE}")
+  endif ()
+  # additional compiled output files
+  if (MODULE AND COMPILE)
+    if (BASIS_LANGUAGE MATCHES "PYTHON")
+      get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
+      get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
+      set (OUTPUT_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
+      list (APPEND OUTPUT_FILES "${OUTPUT_FILE}")
+    endif ()
+    if (CONFIGURED_INSTALL_FILE)
+      if (BASIS_LANGUAGE MATCHES "PYTHON")
+        get_filename_component (MODULE_PATH "${CONFIGURED_INSTALL_FILE}" PATH)
+        get_filename_component (MODULE_NAME "${CONFIGURED_INSTALL_FILE}" NAME_WE)
+        list (APPEND OUTPUT_FILES "${MODULE_PATH}/${MODULE_NAME}.pyc")
+      endif ()
+    endif ()
+  endif ()
   # files this script and its build depends on
   set (DEPENDS ${LINK_DEPENDS} "${BUILD_SCRIPT}")
-
-  set (C "# DO NOT edit. This file was automatically generated by BASIS.\n")
-  set (C "${C}cmake_minimum_required (VERSION 2.8.4)\n")
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if (SCRIPT_FILE MATCHES "\\.in$")
+    list (APPEND DEPENDS "${BUILD_DIR}/variables.cmake")
+    if (EXISTS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
+      list (APPEND DEPENDS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
+    endif ()
+    if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+      list (APPEND DEPENDS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+    endif ()
+    if (EXISTS "${BUILD_DIR}/ScriptConfig.cmake")
+      list (APPEND DEPENDS "${BUILD_DIR}/ScriptConfig.cmake")
+    endif ()
+  endif ()
   # look for required interpreter executable
   if (BASIS_LANGUAGE MATCHES "PYTHON")
     find_package (PythonInterp QUIET)
@@ -2218,318 +2181,35 @@ function (basis_add_script_finalize TARGET_UID)
                            " execute the script file target ${TARGET_UID}.")
     endif ()
   endif ()
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # common variables and functions used by build scripts
-  set (C "${C}\n")
-  set (C "${C}# definitions of utility functions\n")
-  set (C "${C}include (\"${BASIS_MODULE_PATH}/CommonTools.cmake\")\n")
-  set (C "${C}\n")
-  set (C "${C}# set script attributes\n")
-  set (C "${C}set (LANGUAGE \"${BASIS_LANGUAGE}\")\n")
-  set (C "${C}set (NAME \"${OUTPUT_NAME}\")\n")
-  set (C "${C}string (TOUPPER \"\${NAME}\" NAME_UPPER)\n")
-  set (C "${C}string (TOLOWER \"\${NAME}\" NAME_LOWER)\n")
-  set (C "${C}get_filename_component (NAMESPACE \"\${NAME}\" NAME_WE)\n")
-  set (C "${C}string (REGEX REPLACE \"[^a-zA-Z0-9]\" \"_\" NAMESPACE \"\${NAMESPACE}\")\n")
-  set (C "${C}string (TOUPPER \"\${NAMESPACE}\" NAMESPACE_UPPER)\n")
-  set (C "${C}string (TOLOWER \"\${NAMESPACE}\" NAMESPACE_LOWER)\n")
-  set (C "${C}\n")
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # function to configure script/module
-  #
-  # This function automatically prepends the module search paths such that
-  # the modules of this package are found (and preferred in case of potential
-  # name conflict with other installation/package). Moreover, it adds/replaces
-  # the shebang directive on Unix or converts the script into a Windows
-  # Command on Windows, respectively.
-  #
-  # Note: Every line of code added will introduce a mismatch between error
-  #       messages of the interpreter and the original script file. To not
-  #       confuse/mislead developers too much, keep number of lines added
-  #       before actual script code at a minimum.
-  set (C "${C}# function used by build script to generate script for this platform\n")
-  set (C "${C}function (basis_configure_script SCRIPT_FILE CONFIGURED_FILE MODE)\n")
-  set (C "${C}  file (READ \"\${SCRIPT_FILE}\" SCRIPT)\n")
-  # remove existing shebang directive
-  set (C "${C}  file (STRINGS \"\${SCRIPT_FILE}\" FIRST_LINE LIMIT_COUNT 1)\n")
-  set (C "${C}  if (FIRST_LINE MATCHES \"^#!\")\n")
-  set (C "${C}    basis_sanitize_for_regex (FIRST_LINE_REGEX \"\${FIRST_LINE}\")\n")
-  set (C "${C}    string (REGEX REPLACE \"^\${FIRST_LINE_REGEX}\\n?\" \"\" SCRIPT \"\${SCRIPT}\")\n")
-  set (C "${C}  endif ()\n")
-  # replace CMake variables used in script
-  set (C "${C}  if (NOT MODE MATCHES \"COPYONLY\")\n")
-  set (C "${C}    string (CONFIGURE \"\${SCRIPT}\" SCRIPT \${MODE})\n")
-  set (C "${C}    string (CONFIGURE \"\${SCRIPT}\" SCRIPT \${MODE})\n")
-  set (C "${C}  endif ()\n")
-  # prepend module search path of this project
-  if (NOT MODULE)
-    if (BASIS_LANGUAGE MATCHES "PYTHON")
-      set (C "${C}  string (REGEX REPLACE \"^[ \\t]*\\n\" \"\" SCRIPT \"\${SCRIPT}\")\n")
-      set (C "${C}  set (SCRIPT \"import sys; import os.path; sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '\${PYTHON_LIBRARY_DIR}')))\\n\${SCRIPT}\")\n")
-    elseif (BASIS_LANGUAGE MATCHES "PERL")
-      set (C "${C}  string (REGEX REPLACE \"^[ \\t]*\\n\" \"\" SCRIPT \"\${SCRIPT}\")\n")
-      set (C "${C}  set (SCRIPT \"use Cwd qw(realpath); use File::Basename; use lib realpath(dirname(realpath(__FILE__)) . '/\${PERL_LIBRARY_DIR}'); use lib dirname(realpath(__FILE__));\\n\${SCRIPT}\")\n")
-    elseif (BASIS_LANGUAGE MATCHES "BASH")
-      set (BASH_CODE
-"BASIS_SOURCE=\\\"$(cd -P -- \\\"$(dirname -- \\\"$BASH_SOURCE\\\")\\\" && pwd -P)/$(basename -- \\\"$BASH_SOURCE\\\")\\\"
-i=0
-cur=\\\"$BASIS_SOURCE\\\"
-while [ -h \\\"$cur\\\" ] && [ $i -lt 100 ]
-do  dir=`dirname -- \\\"$cur\\\"`
- cur=`readlink -- \\\"$cur\\\"`
- cur=`cd \\\"$dir\\\" && cd $(dirname -- \\\"$cur\\\") && pwd`/`basename -- \\\"$cur\\\"`
- (( i++ ))
-done
-if [ $i -lt 100 ]; then path=\\\"$cur\\\"; fi
-BASIS_SOURCE=\\\"$(dirname -- \\\"$BASIS_SOURCE\\\")/\\\${LIBRARY_DIR}/basis.sh\\\"
-unset -v i dir cur"
-      )
-      string (REPLACE "\n" "; " BASH_CODE "${BASH_CODE}")
-      set (C "${C}  string (REGEX REPLACE \"^[ \\t]*\\n\" \"\" SCRIPT \"\${SCRIPT}\")\n")
-      set (C "${C}  set (SCRIPT \"${BASH_CODE}\\n\${SCRIPT}\")\n")
-      unset (BASH_CODE)
-    endif ()
-  endif ()
-  # add shebang directive/Windows Command code
-  if (NOT MODULE AND NOT WITH_EXT)
-    if (BASIS_LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
-      if (WIN32)
-        set (C "${C}  set (SCRIPT \"@setlocal enableextensions & \\\"${PYTHON_EXECUTABLE}\\\" -x \\\"%~f0\\\" %* & goto :EOF\\n\${SCRIPT}\")\n")
-      else ()
-        set (C "${C}  set (SCRIPT \"#! ${PYTHON_EXECUTABLE}\\n\${SCRIPT}\")\n")
-      endif ()
-    elseif (BASIS_LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
-      if (WIN32)
-        set (C "${C} set (SCRIPT \"@goto = \\\"START_OF_BATCH\\\" ;\\n@goto = ();\\n\${SCRIPT}\")\n")
-        set (C "${C} set (SCRIPT \"\${SCRIPT}\\n\\n__END__\\n\\n:\\\"START_OF_BATCH\\\"\\n@\\\"${PERL_EXECUTABLE}\\\" -w -S \\\"%~f0\\\" %*\")\n")
-      else ()
-        set (C "${C} set (SCRIPT \"#! ${PERL_EXECUTABLE} -w\\n\${SCRIPT}\")\n")
-      endif ()
-    elseif (BASIS_LANGUAGE MATCHES "BASH" AND BASH_EXECUTABLE)
-      set (C "${C}  set (SCRIPT \"#! ${BASH_EXECUTABLE}\\n\${SCRIPT}\")\n")
-    endif ()
-  endif ()
-  # write configured script
-  set (C "${C}  file (WRITE \"\${CONFIGURED_FILE}\" \"\${SCRIPT}\")\n")
-  set (C "${C}endfunction ()\n")
-
-  if (SCRIPT_FILE MATCHES "\\.in$")
-    # make (configured) script configuration files a dependency
-    list (APPEND DEPENDS "${BUILD_DIR}/variables.cmake")
-    if (EXISTS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
-      list (APPEND DEPENDS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
-    endif ()
-    if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
-      list (APPEND DEPENDS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
-    endif ()
-    if (EXISTS "${BUILD_DIR}/ScriptConfig.cmake")
-      list (APPEND DEPENDS "${BUILD_DIR}/ScriptConfig.cmake")
-    endif ()
-
-    # additional output files
-    if (RUNTIME_INSTALL_DIRECTORY)
-      set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
-      set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
-      list (APPEND OUTPUT_FILES "${CONFIGURED_INSTALL_FILE}")
-    endif ()
-    if (MODULE AND COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
-      # Python modules get optionally compiled
-      get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
-      get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
-      set (OUTPUT_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
-      list (APPEND OUTPUT_FILES "${OUTPUT_FILE}")
-      # and the compiled module installed
-      if (RUNTIME_INSTALL_DIRECTORY)
-        get_filename_component (MODULE_PATH "${CONFIGURED_INSTALL_FILE}" PATH)
-        get_filename_component (MODULE_NAME "${CONFIGURED_INSTALL_FILE}" NAME_WE)
-        set (INSTALL_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
-        list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
-      endif ()
-    endif ()
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # common code for build of build tree and install tree version
-
-    # tools for use in script configuration
-    set (C "${C}\n")
-    set (C "${C}function (basis_set_script_path VAR PATH)\n")
-    set (C "${C}  if (ARGC GREATER 3)\n")
-    set (C "${C}    message (FATAL_ERROR \"Too many arguments given for function basis_set_script_path()\")\n")
-    set (C "${C}  endif ()\n")
-    set (C "${C}  if (ARGC EQUAL 3 AND BUILD_INSTALL_SCRIPT)\n")
-    set (C "${C}    set (PREFIX \"${INSTALL_PREFIX}\")\n")
-    set (C "${C}    set (PATH   \"\${ARGV2}\")\n")
-    set (C "${C}  else ()\n")
-    set (C "${C}    set (PREFIX \"${PROJECT_SOURCE_DIR}\")\n")
-    set (C "${C}  endif ()\n")
-    set (C "${C}  if (NOT IS_ABSOLUTE \"\${PATH}\")\n")
-    set (C "${C}    set (PATH \"\${PREFIX}/\${PATH}\")\n")
-    set (C "${C}  endif ()\n")
-    set (C "${C}  basis_get_relative_path (PATH \"\${DIR}\" \"\${PATH}\")\n")
-    set (C "${C}  if (NOT PATH)\n")
-    set (C "${C}    set (PATH \".\")\n")
-    set (C "${C}  endif ()\n")
-    set (C "${C}  string (REGEX REPLACE \"/$\" \"\" PATH \"\${PATH}\")\n")
-    set (C "${C}  set (\${VAR} \"\${PATH}\" PARENT_SCOPE)\n")
-    set (C "${C}endfunction ()\n")
-
-    # variables dumped by basis_add_script()
-    set (C "${C}\n")
-    set (C "${C}# dumped CMake variables\n")
-    set (C "${C}include (\"\${CMAKE_CURRENT_LIST_DIR}/variables.cmake\")\n")
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # build script for build tree
-
-    # script configuration code
-    set (C "${C}\n")
-    set (C "${C}# build script for use in build tree\n")
-    set (C "${C}set (BUILD_INSTALL_SCRIPT 0)\n")
-    if (MODULE)
-      set (C "${C}set (DIR \"${LIBRARY_OUTPUT_DIRECTORY}\")\n")
-    else ()
-      set (C "${C}set (DIR \"${RUNTIME_OUTPUT_DIRECTORY}\")\n")
-    endif ()
-    set (C "${C}set (FILE \"\${DIR}/\${NAME}\")\n")
-    set (C "${C}\n")
-    set (C "${C}include (\"${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake\")\n")
-    set (C "${C}include (\"${BINARY_CONFIG_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
-    set (C "${C}include (\"${BUILD_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
-    set (C "${C}\n")
-    if (COMPILE_DEFINITIONS)
-      set (C "${C}${COMPILE_DEFINITIONS}\n")
-    endif ()
-    # configure script for build tree
-    set (C "${C}basis_configure_script (\"${SCRIPT_FILE}\" \"${CONFIGURED_FILE}\" @ONLY)\n")
-    if (MODULE)
-      # compile module if applicable
-      if (COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
-        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_FILE}')\")\n")
-        get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
-        get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
-        set (OUTPUT_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
-        list (APPEND OUTPUT_FILES "${OUTPUT_FILE}")
-      endif ()
-    else ()
-      # or set executable bit on Unix
-      set (C "${C}\n")
-      set (C "${C}if (UNIX)\n")
-      set (C "${C}  execute_process (COMMAND /bin/chmod +x \"${CONFIGURED_FILE}\")\n")
-      set (C "${C}endif ()\n")
-    endif ()
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # build script for installation tree (optional)
-
-    if (MODULE)
-      set (INSTALL_DIR "${LIBRARY_INSTALL_DIRECTORY}")
-    else ()
-      set (INSTALL_DIR "${RUNTIME_INSTALL_DIRECTORY}")
-    endif ()
-
-    if (INSTALL_DIR)
-      # script configuration code
-      set (C "${C}\n")
-      set (C "${C}# build script for use in installation tree\n")
-      set (C "${C}set (BUILD_INSTALL_SCRIPT 1)\n")
-      set (C "${C}set (DIR \"${INSTALL_PREFIX}/${INSTALL_DIR}\")\n")
-      set (C "${C}set (FILE \"\${DIR}/\${NAME}\")\n")
-      set (C "${C}\n")
-      set (C "${C}include (\"${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake\")\n")
-      set (C "${C}include (\"${BINARY_CONFIG_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
-      set (C "${C}include (\"${BUILD_DIR}/ScriptConfig.cmake\" OPTIONAL)\n")
-      set (C "${C}\n")
-      if (COMPILE_DEFINITIONS)
-        set (C "${C}${COMPILE_DEFINITIONS}\n")
-      endif ()
-      # configure script for installation tree
-      set (C "${C}basis_configure_script (\"${SCRIPT_FILE}\" \"${CONFIGURED_INSTALL_FILE}\" @ONLY)\n")
-      # compile module if applicable
-      if (MODULE AND COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
-        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_INSTALL_FILE}')\")\n")
-        get_filename_component (MODULE_PATH "${CONFIGURED_INSTALL_FILE}" PATH)
-        get_filename_component (MODULE_NAME "${CONFIGURED_INSTALL_FILE}" NAME_WE)
-        set (INSTALL_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
-        string (REGEX REPLACE "\\.py$" ".pyc" INSTALL_NAME "${INSTALL_NAME}")
-        list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
-      endif ()
-    endif ()
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # otherwise, just copy script file
-  else ()
-
-    set (C "${C}\nbasis_configure_script (\"${SCRIPT_FILE}\" \"${CONFIGURED_FILE}\" COPYONLY)\n")
-    # compile module if applicable
-    if (MODULE)
-      if (COMPILE AND BASIS_LANGUAGE MATCHES "PYTHON")
-        set (C "${C}execute_process (COMMAND \"${PYTHON_EXECUTABLE}\" -c \"import py_compile;py_compile.compile('${CONFIGURED_FILE}')\")\n")
-        get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
-        get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
-        set (OUTPUT_FILE  "${MODULE_PATH}/${MODULE_NAME}.pyc")
-        list (APPEND OUTPUT_FILES "${OUTPUT_FILE}")
-        set (INSTALL_FILE "${OUTPUT_FILE}")
-        string (REGEX REPLACE "\\.py$" ".pyc" INSTALL_NAME "${INSTALL_NAME}")
-      endif ()
-    # or set executable bit on Unix
-    else ()
-      set (C "${C}\n")
-      set (C "${C}if (UNIX)\n")
-      set (C "${C}  execute_process (COMMAND /bin/chmod +x \"${CONFIGURED_FILE}\")\n")
-      set (C "${C}endif ()\n")
-    endif ()
-
-  endif ()
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # setup build commands
-
-  # write/update build script
-  if (EXISTS "${BUILD_SCRIPT}")
-    file (WRITE "${BUILD_SCRIPT}.tmp" "${C}")
-    execute_process (
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-          "${BUILD_SCRIPT}.tmp" "${BUILD_SCRIPT}"
-    )
-    file (REMOVE "${BUILD_SCRIPT}.tmp")
-  else ()
-    file (WRITE "${BUILD_SCRIPT}" "${C}")
-  endif ()
-
+  # configure build script
+  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
+  configure_file ("${BASIS_MODULE_PATH}/configure_script.cmake.in" "${BUILD_SCRIPT}" @ONLY)
   # add custom target to execute build script
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${OUTPUT_FILE}")
-
   add_custom_command (
-    OUTPUT  ${OUTPUT_FILES}
+    OUTPUT          ${OUTPUT_FILES}
     MAIN_DEPENDENCY "${SCRIPT_FILE}"
-    DEPENDS ${DEPENDS}
-    COMMAND "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
-    COMMENT "Building script ${REL}..."
+    DEPENDS         ${DEPENDS}
+    COMMAND         "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
+    COMMENT         "Building script ${REL}..."
   )
-
   if (TARGET "_${TARGET_UID}")
     message (FATAL_ERROR "There is another target named _${TARGET_UID}. "
                          "BASIS uses target names starting with an underscore "
                          "for custom targets which are required to build script files. "
                          "Do not use leading underscores in target names.")
   endif ()
-
   # add custom target which triggers execution of build script
   add_custom_target (_${TARGET_UID} DEPENDS ${OUTPUT_FILES})
   add_dependencies (${TARGET_UID} _${TARGET_UID})
-
   # Provide target to build all scripts. In particular, scripts need to be build
   # before the doc target which thus depends on this target.
   if (NOT TARGET scripts)
     add_custom_target (scripts)
   endif ()
   add_dependencies (scripts _${TARGET_UID})
-
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
-
   # install script
   if (NOT ARGN_NO_EXPORT)
     if (TEST)
@@ -2538,12 +2218,22 @@ unset -v i dir cur"
       basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
     endif ()
   endif ()
-
+  if (CONFIGURED_INSTALL_FILE)
+    set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
+  else ()
+    set (INSTALL_FILE "${CONFIGURED_FILE}")
+  endif ()
   if (MODULE)
+    if (COMPILE)
+      if (BASIS_LANGUAGE MATCHES "PYTHON")
+        get_filename_component (MODULE_PATH "${INSTALL_FILE}" PATH)
+        get_filename_component (MODULE_NAME "${INSTALL_FILE}" NAME_WE)
+        set (INSTALL_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
+      endif ()
+    endif ()
     if (LIBRARY_INSTALL_DIRECTORY)
       install (
         FILES       "${INSTALL_FILE}"
-        RENAME      "${INSTALL_NAME}"
         DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
         COMPONENT   "${LIBRARY_COMPONENT}"
       )
@@ -2552,13 +2242,13 @@ unset -v i dir cur"
     if (RUNTIME_INSTALL_DIRECTORY)
       install (
         PROGRAMS    "${INSTALL_FILE}"
-        RENAME      "${INSTALL_NAME}"
+        RENAME      "${OUTPUT_NAME}"
         DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
         COMPONENT   "${RUNTIME_COMPONENT}"
       )
     endif ()
   endif ()
-
+  # done
   if (BASIS_VERBOSE)
     message (STATUS "Adding build command for script ${TARGET_UID}... - done")
   endif ()
