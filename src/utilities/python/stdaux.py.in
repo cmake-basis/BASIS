@@ -41,7 +41,7 @@ from .          import executabletargetinfo as _executabletargetinfo
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-print_contact = _utilities.print_contact
+from sbia.basis.utilities import print_contact
 
 # ----------------------------------------------------------------------------
 def print_version(name, copyright=None, license=None):
@@ -94,7 +94,7 @@ def get_executable_directory(name=None):
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-SubprocessError = _utilities.SubprocessError
+from sbia.basis.utilities import SubprocessError
 
 # ----------------------------------------------------------------------------
 def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
