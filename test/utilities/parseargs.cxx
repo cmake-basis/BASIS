@@ -101,14 +101,14 @@ int main(int argc, char* argv[])
 
         CmdLine cmd(
                 // program identification
-                "smoothimage", cProjectName,
+                "smoothimage", PROJECT,
                 // description
                 "This program smooths an input image using either a Gaussian "
                 "filter or an anisotropic diffusion filter.",
                 // example usage
                 examples,
                 // version information
-                cRelease, "Copyright 2011, 2012, University of Pennsylvania.");
+                RELEASE, "2011, 2012 University of Pennsylvania");
 
         cmd.xorAdd(gaussian, anisotropic);
         cmd.add(gaussian_std);

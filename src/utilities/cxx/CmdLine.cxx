@@ -247,7 +247,9 @@ void StdOutput::version(TCLAP::CmdLineInterface&)
     cout << " " << version;
     cout << endl;
     // print copyright and license information
-    if (!copyright.empty()) cout << copyright << endl;
+    if (!copyright.empty()) {
+        cout << "Copyright (c) " << copyright << ". All rights reserved." << endl;
+    }
     if (!license.empty()) cout << license << endl;
 }
 

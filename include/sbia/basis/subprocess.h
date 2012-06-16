@@ -2,7 +2,7 @@
  * @file  subprocess.h
  * @brief Module used to execute subprocesses.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -13,10 +13,12 @@
 #define _SBIA_BASIS_SUBPROCESS_H
 
 
+#include <sbia/basis/config.h> // platform macros - must be first
+
 #include <vector>
 #include <string>
 
-#if (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
+#if WINDOWS
 #  include <windows.h>
 #else
 #  include <sys/types.h>
@@ -47,14 +49,14 @@ public:
 private:
 
     /// Type used for file handles of pipes between processes.
-#if (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
+#if WINDOWS
     typedef HANDLE PipeHandle;
 #else
     typedef int    PipeHandle;
 #endif
 
     /// Information structure required by system to identify subprocess.
-#if (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
+#if WINDOWS
     typedef PROCESS_INFORMATION Information;
 #else
     struct Information

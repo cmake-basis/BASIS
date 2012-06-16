@@ -2,7 +2,7 @@
  * @file  except.h
  * @brief Basic exceptions and related helper macros.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -73,20 +73,6 @@ typedef TCLAP::CmdLineParseException CmdLineParseException;
 
 /// @brief Exception thrown when command-line specification is wrong.
 typedef TCLAP::SpecificationException CmdLineException;
-
-/**
- * @class SubprocessException
- * @brief Exception type thrown by execute_process().
- */
-class SubprocessException : public ::std::exception
-{
-public:
-    SubprocessException(const ::std::string& msg) : msg_(msg) {}
-    ~SubprocessException() throw () {}
-
-private:
-    ::std::string msg_; ///< Error message.
-}; // class SubprocessException
 
 
 } // namespace basis

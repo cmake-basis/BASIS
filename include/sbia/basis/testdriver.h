@@ -75,16 +75,13 @@
 #include <cstdio> // remove() - removes a file
 #include <limits> // used in basistest-after-test.inc
 
-#include <sbia/basis/config.h>
-#include <sbia/basis/except.h>
-#include <sbia/basis/assert.h>
-#include <sbia/basis/path.h>    // get_file_name() - basistest-after-test.inc
-#include <sbia/basis/CmdLine.h> // parsing of command-line arguments
+#include <sbia/basis/basis.h>
 
 
 // acceptable in test driver includes
 using namespace std;
 using namespace sbia::basis;
+using namespace sbia::basis::basis;
 
  
 // ===========================================================================

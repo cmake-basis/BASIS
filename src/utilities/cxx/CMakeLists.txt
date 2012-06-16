@@ -12,13 +12,8 @@
 # template files
 basis_install (
   FILES
-    "config.h.in"                # build configuration and other macros
-    "config.cxx.in"
-    "ExecutableTargetInfo.h.in"  # information about executable build targets
-    "ExecutableTargetInfo.cxx.in"
-    "stdaux.h.in"                # standard auxiliary functions
-    "stdaux.cxx.in"
-    "basis.h.in"                 # main include file
+    "basis.h.in"
+    "basis.cxx.in"
   DESTINATION
     "${INSTALL_CXX_TEMPLATES_DIR}"
 )

@@ -24,12 +24,8 @@
 #endif
 
 #ifdef ITK_VERSION
-#  include "testdriver-itk.hxx"
+#  include <sbia/basis/testdriver-itk.hxx>
 #endif
-
-
-// acceptable in .cxx file of test driver
-using namespace sbia::basis;
 
 
 // ===========================================================================
@@ -55,7 +51,7 @@ void testdriversetup(int* argc, char** argv[])
         // construct command-line
         CmdLine cmd(
                 // program identification
-                name, cProjectName,
+                name, PROJECT,
                 // description
                 "This program alters the environment, runs a test and "
                 "compares the output image to one or more baseline images.",
@@ -67,7 +63,7 @@ void testdriversetup(int* argc, char** argv[])
                 " Compares the image produced by the test to the reference"
                 " image named baseline.nii with default intensity tolerance.",
                 // version information
-                cRelease, "Copyright 2011, 2012, University of Pennsylvania.");
+                RELEASE, "2011, 2012 University of Pennsylvania");
 
         cmd.add(add_before_libpath);
         cmd.add(add_before_env);
