@@ -20,10 +20,5 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 """
 
-from .utilities import print_contact, print_version, \
-        get_executable_path, get_executable_name, get_executable_directory, \
-        execute_process, SubprocessError
-
-__all__ = ['print_contact', 'print_version',
-           'get_executable_path', 'get_executable_name', 'get_executable_directory',
-           'execute_process', 'SubprocessError']
+from .utilities import *
+from .utilities import __all__

@@ -1,8 +1,8 @@
 ##############################################################################
 # @file  basis.py
-# @brief BASIS utilities of @PROJECT_NAME@.
+# @brief BASIS utilities of @PROJECT_NAME@ package.
 #
-# @note The basis.py module is automatically created by BASIS from the
+# @note The basis.py module was automatically created by BASIS from the
 #       template file basis.py.in which is part of the BASIS installation.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
@@ -14,12 +14,16 @@
 ##############################################################################
 
 """
-BASIS utilities of @PROJECT_NAME@.
+BASIS utilities of @PROJECT_NAME@ package.
 
-This module defines the BASIS utility function which have been customized
-by BASIS for the project @PROJECT_NAME@. The none-customized utility
-functions are available either by importing the utilities module of BASIS
-itself, or as utilities submodule imported by this module.
+This module defines BASIS Utilities for Python for the @PROJECT_NAME@ package,
+i.e., some functions such as print_version() are customized and hence particular
+to this software package.
+
+@note Only this module should be imported in scripts and modules of the
+      @PROJECT_NAME@ package. For use of these utility functions outside a
+      particular BASIS-based project, use the project-independent utilities
+      defined by the sbia.basis.utilities module.
 
 Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.
 See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
@@ -28,11 +32,404 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 
 """
 
-import os.path
+import sys
+import subprocess
 
-from sbia.basis import utilities
-from . import executabletargetinfo
 
-from .stdaux import print_contact, print_version, \
-        get_executable_path, get_executable_name, get_executable_directory, \
-        execute_process, SubprocessError
+__all__ = [] # extended below within each section
+
+
+## @addtogroup BasisPythonUtilities
+# @{
+
+
+# ============================================================================
+# constants
+# ============================================================================
+
+## @brief Project name.
+PROJECT = '@PROJECT_NAME@'
+## @brief Project version.
+VERSION = '@PROJECT_VERSION@'
+## @brief Project version string used by print_version().
+RELEASE = '@PROJECT_RELEASE@'
+## @brief Default copyright of executables.
+COPYRIGHT = "University of Pennsylvania"
+## @brief Default license of executables.
+LICENSE = "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+## @brief Default contact to use for help output of executables.
+CONTACT = "SBIA Group <sbia-software at uphs.upenn.edu>"
+
+# ============================================================================
+# path manipulation
+# ============================================================================
+
+__all__.extend(['get_real_path', 'clean_path', 'join_paths',
+                'get_file_directory', 'get_file_name', 'exists'])
+
+# import os.path functions with names used by BASIS utilities for other
+# programming languages such as C++ (see sbia/basis/path.h). In general,
+# however, the use of the os.path functions directly is recommended.
+from os.path import \
+        realpath as get_real_path, \
+        normpath as clean_path, \
+        join     as join_paths, \
+        dirname  as get_file_directory, \
+        basename as get_file_name, \
+        exists
+
+# ----------------------------------------------------------------------------
+def get_file_name_extension(filename, exts=None):
+    """Get file name extension.
+
+    @sa split_path()
+    @sa is_valid_path()
+ 
+    @param [in] path Path.
+    @param [in] exts Set of recognized extensions. Note that the given set
+                     can contain extensions with dots (.) as part of the
+                     extension, e.g., ".nii.gz". If None or an empty set is
+                     given, the part after the last dot (including the dot)
+                     is considered to be the file name extension. Otherwise,
+                     the longest extension from the given set which is equal
+                     to the end of the file path is returned.
+
+    @returns File name extension including leading period (.).
+
+    """
+    maxlen = 0
+    usrext = None
+    for ext in exts:
+        if filename.endswith(ext) and (not usrext or len(ext) > maxlen)): usrext = ext
+    if usrext: return usrext
+    import os.path.splitext
+    return os.path.splitext(filename)[1]
+
+# ============================================================================
+# executable information
+# ============================================================================
+
+__all__.extend(['print_contact', 'print_version', 'is_known_target', 'get_target_uid',
+                'get_executable_path', 'get_executable_name', 'get_executable_directory'])
+
+# ----------------------------------------------------------------------------
+def print_contact(contact=None):
+    """Print contact information.
+
+    @param [in] contact Name of contact. If @c None, CONTACT is used.
+
+    """
+    if not contact: contact = CONTACT
+    sys.stdout.write("Contact:\n  " + contact + "\n")
+
+# ----------------------------------------------------------------------------
+def print_version(name, version, project=None, copyright=None, license=None):
+    """Print version information including copyright and license notices.
+
+    @param [in] name      Name of executable. Should not be set programmatically
+                          to the first argument of the @c __main__ module, but
+                          a string literal instead.
+    @param [in] version   Version of executable, e.g., release of project
+                          this executable belongs to. Defaults to RELEASE.
+    @param [in] project   Name of project this executable belongs to.
+                          If @c None, defaults to PROJECT. If an empty string,
+                          no project information is printed.
+    @param [in] copyright The copyright notice, excluding the common prefix
+                          "Copyright (c) " and suffix ". All rights reserved.".
+                          If @c None, COPYRIGHT is used. If an empty string,
+                          no copyright notice is printed.
+    @param [in] license   Information regarding licensing. If @c None, LICENSE
+                          is used. If an empty string, no license information
+                          is printed.
+
+    """
+    # defaults, must be set here instead of the argument list such that a change
+    # of these global variables is possible after the function was defined
+    if not version:       version   = RELEASE
+    if project   is None: project   = PROJECT
+    if copyright is None: copyright = COPYRIGHT
+    if license   is None: license   = LICENSE
+    if not version: raise Exception("print_version(): Missing version argument")
+    # program identification
+    sys.stdout.write(name)
+    if project != '':
+        sys.stdout.write(' (')
+        sys.stdout.write(project)
+        sys.stdout.write(')')
+    sys.stdout.write(' ')
+    sys.stdout.write(version)
+    sys.stdout.write('\n')
+    # copyright notice
+    if copyright != '':
+        sys.stdout.write("Copyright (c) ");
+        sys.stdout.write(copyright)
+        sys.stdout.write(". All rights reserved.\n")
+    # license information
+    if license != '':
+        sys.stdout.write(license)
+        sys.stdout.write('\n')
+
+# ----------------------------------------------------------------------------
+def get_target_uid(name):
+    """Get UID of build target.
+
+    The UID of a build target is its name prepended by a namespace identifier
+    which should be unique for each project.
+
+    @param [in] name Name of build target.
+
+    @returns UID of named build target.
+
+    """
+    # handle invalid arguments
+    if name is None or name == '': return None
+    # in case of a leading namespace separator, do not modify target name
+    if name.startswith('.'): return name
+    # common target UID prefix of project
+    prefix = _TARGET_UID_PREFIX
+    if prefix is None: return name
+    # try prepending namespace or parts of it until target is known
+    separator = '.'
+    while True:
+        if separator.join([prefix, name]) in _EXECPATHS:
+            return separator.join([prefix, name])
+        parts = prefix.split(separator, 1)
+        if len(parts) == 1: break
+        prefix = parts[0]
+    # otherwise, return target name unchanged
+    return name
+
+# ----------------------------------------------------------------------------
+def is_known_target(name):
+    """Determine whether a given build target is known.
+
+    @param [in] name Name of build target.
+
+    @returns Whether the named target is a known executable target.
+
+    """
+    uid = get_target_uid(name)
+    if uid is None or uid == '':
+        return False
+    if uid.startswith('.'):
+        uid = uid[1:]
+    return uid in _EXECPATHS
+
+# ----------------------------------------------------------------------------
+def get_executable_path(name=None):
+    """Get absolute path of executable file.
+
+    This function determines the absolute file path of an executable. If no
+    arguments are given, the absolute path of this executable is returned.
+    If the command names a known executable build target, the absolute path to
+    the corresonding built (and installed) executable file is returned.
+    Otherwise, the named command is searched in the system @c PATH and its
+    absolute path returned if found. If the executable is not found, @c None
+    is returned.
+
+    @param [in] name Name of command or @c None.
+
+    @returns Absolute path of executable or @c None if not found.
+             If @p name is @c None, the path of this executable is returned.
+
+    """
+    path = None
+    if name is None:
+        path = get_real_path(sys.argv[0])
+    elif is_known_target(name):
+        uid = get_target_uid(name)
+        if uid.startswith('.'): uid = uid[1:]
+        path = clean_path(join_paths(_MODULEDIR, _EXECPATHS[uid]))
+        if '$(IntDir)' in path:
+            for intdir in ['Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel']:
+                tmppath = path.replace('$(IntDir)', intdir)
+                if exists(tmppath):
+                    path = tmppath
+                    break
+            path = path.replace('$(IntDir)', '')
+    else:
+        from .which import which, WhichError
+        try:
+            path = which(name)
+        except WhichError:
+            pass
+    return path
+
+# ----------------------------------------------------------------------------
+def get_executable_name(name=None):
+    """Get name of executable file.
+
+    @param [in] name Name of command or @c None.
+
+    @returns Name of executable file or @c None if not found.
+             If @p name is @c None, the name of this executable is returned.
+
+    """
+    path = get_executable_path(name)
+    if path is None: return None
+    return get_file_name(path)
+
+# ----------------------------------------------------------------------------
+def get_executable_directory(name=None):
+    """Get directory of executable file.
+
+    @param [in] name Name of command or @c None.
+
+    @returns Absolute path of directory containing executable or @c None if not found.
+             If @p name is @c None, the directory of this executable is returned.
+
+    """
+    path = get_executable_path(name)
+    if path is None: return None
+    return get_file_directory(path)
+
+# ============================================================================
+# command execution
+# ============================================================================
+
+__all__.extend(['to_quoted_string', 'split_quoted_string', 'execute_process', 'SubprocessError'])
+
+# ----------------------------------------------------------------------------
+class SubprocessError(Exception):
+    """Exception thrown when command execution failed."""
+
+    def __init__(self, msg):
+        """Initialize exception, i.e., set message describing failure."""
+        self._message = msg
+
+    def __str__(self):
+        """Return string representation of exception message."""
+        return self._message
+
+# ----------------------------------------------------------------------------
+def to_quoted_string(args):
+    """Convert array of arguments to quoted string.
+
+    @param [in] args Array of arguments.
+
+    @returns Double quoted string, i.e., string where arguments are separated
+             by a space character and surrounded by double quotes if necessary.
+             Double quotes within an argument are escaped with a backslash.
+
+    @sa split_quoted_string()
+
+    """
+    qargs = []
+    re_quote_or_not = re.compile(r"'|\s")
+    for arg in args:
+        # escape double quotes
+        arg = arg.replace('"', '\\"')
+        # surround element by double quotes if necessary
+        if re_quote_or_not.search(arg): qargs.append(''.join(['"', arg, '"']))
+        else:                           qargs.append(arg)
+    return ' '.join(qargs)
+
+# ----------------------------------------------------------------------------
+def split_quoted_string(args):
+    """Split quoted string of arguments.
+
+    @param [in] args Quoted string of arguments.
+
+    @returns Array of arguments.
+
+    @sa to_quoted_string()
+
+    """
+    from shlex import split
+    return split(args)
+
+# ----------------------------------------------------------------------------
+def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
+    """Execute command as subprocess.
+
+    @param [in] args       Command with arguments given either as quoted string
+                           or array of command name and arguments. In the latter
+                           case, the array elements are converted to strings
+                           using the built-in str() function. Hence, any type
+                           which can be converted to a string is permitted.
+                           The first argument must be the name or path of the
+                           executable of the command.
+    @param [in] quiet      Turns off output of @c stdout of child process to
+                           stdout of parent process.
+    @param [in] stdout     Whether to return the command output.
+    @param [in] allow_fail If true, does not raise an exception if return
+                           value is non-zero. Otherwise, a @c SubprocessError is
+                           raised by this function.
+    @param [in] verbose    Verbosity of output messages.
+                           Does not affect verbosity of executed command.
+    @param [in] simulate   Whether to simulate command execution only.
+
+    @return The exit code of the subprocess if @p stdout is false (the default).
+            Otherwise, if @p stdout is true, a tuple consisting of exit code
+            command output is returned. Note that if @p allow_fail is false,
+            the returned exit code will always be 0.
+
+    @throws SubprocessError If command execution failed. This exception is not
+                            raised if the command executed with non-zero exit
+                            code but @p allow_fail set to @c True.
+
+    """
+    # convert args to list of strings
+    if   type(args) is list: args = [str(i) for i in args]
+    elif type(args) is str:  args = split_quoted_string(args);
+    else: raise Exception("execute_process(): Argument args must be either list or string")
+    # get absolute path of executable
+    path = get_executable_path(args[0])
+    if not path: raise SubprocessError(args[0] + ": Command not found")
+    args[0] = path
+    # some verbose output
+    if verbose > 0:
+        sys.stdout.write('$ ')
+        sys.stdout.write(to_quoted_string(args))
+        if simulate: sys.stdout.write(' (simulated)')
+        sys.stdout.write('\n')
+    # execute command
+    status = 0
+    output = ''
+    if not simulate:
+        try:
+            # open subprocess
+            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # read stdout until EOF
+            for line in process.stdout:
+                if stdout:
+                    output = output + line
+                if not quiet:
+                    print line.rstrip()
+                    sys.stdout.flush()
+            # wait until subprocess terminated and set exit code
+            (out, err) = process.communicate()
+            # print error messages of subprocess
+            for line in err: sys.stderr.write(line);
+            # get exit code
+            status = process.returncode
+        except OSError, e:
+            raise SubprocessError(args[0] + ': ' + str(e))
+        except Exception, e:
+            msg  = "Exception while executing \"" + args[0] + "\"!\n"
+            msg += "\tArguments: " + to_quoted_string(args[1:]) + '\n'
+            msg += '\t' + str(e)
+            raise SubprocessError(msg)
+    # if command failed, throw an exception
+    if status != 0 and not allow_fail:
+        raise SubprocessError("** Failed: " + to_quoted_string(args))
+    # return
+    if stdout: return (status, output)
+    else:      return status
+
+
+## @}
+# end of Doxygen group
+
+# ============================================================================
+# private
+# ============================================================================
+
+# prefix used to convert target names into target UIDs
+_TARGET_UID_PREFIX = '@PROJECT_NAMESPACE_CMAKE@'
+# directory of this module, used to make paths in _EXECPATHS absolute
+_MODULEDIR = get_real_path(get_file_directory(__file__))
+# paths of executables build by the targets of this project relative to this module
+_EXECPATHS = {
+    @EXECUTABLE_TARGET_INFO@
+}
