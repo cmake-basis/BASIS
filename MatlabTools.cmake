@@ -347,7 +347,7 @@ endfunction ()
 #     <td>MATLAB source file with function prototype and documentation of MEX-file.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_EXPORT @endtp
+#     @tp @b NOEXPORT @endtp
 #     <td>Do not export the target.</td>
 #   </tr>
 # </table>
@@ -361,14 +361,14 @@ function (basis_add_mex_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "NO_EXPORT"
+      "NOEXPORT"
       "COMPONENT;MFILE"
       ""
     ${ARGN}
   )
 
-  if (NOT ARGN_NO_EXPORT)
-    set (ARGN_NO_EXPORT FALSE)
+  if (NOT ARGN_NOEXPORT)
+    set (ARGN_NOEXPORT FALSE)
   endif ()
 
   if (NOT ARGN_COMPONENT)
@@ -442,7 +442,7 @@ function (basis_add_mex_target TARGET_NAME)
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
       MFILE                     "${ARGN_MFILE}"
       TEST                      "0" # MEX-files cannot be used for testing only yet
-      NO_EXPORT                 "${ARGN_NO_EXPORT}"
+      NOEXPORT                 "${ARGN_NOEXPORT}"
   )
 
   # add target to list of targets
@@ -512,7 +512,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
       "LIBRARY_COMPONENT"
       "MFILE"
       "TEST"
-      "NO_EXPORT"
+      "NOEXPORT"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -766,7 +766,7 @@ function (basis_add_mex_target_finalize TARGET_UID)
   )
 
   # install MEX-file
-  if (NOT NO_EXPORT)
+  if (NOT NOEXPORT)
     if (TEST)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
     else ()
@@ -815,7 +815,7 @@ endfunction ()
 # @note If this function is used within the @c PROJECT_TESTING_DIR, the built
 #       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
 #       Moreover, no installation rules are added. Test executables are further
-#       not exported, regardless of whether NO_EXPORT is given or not.
+#       not exported, regardless of whether NOEXPORT is given or not.
 #
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
@@ -850,7 +850,7 @@ endfunction ()
 #         called by other executables only.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_EXPORT @endtp
+#     @tp @b NOEXPORT @endtp
 #     <td>Do not export the target.</td>
 #   </tr>
 # </table>
@@ -866,7 +866,7 @@ function (basis_add_mcc_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;TEST;NO_EXPORT"
+      "LIBEXEC;TEST;NOEXPORT"
       "TYPE;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT"
       ""
     ${ARGN}
@@ -884,10 +884,10 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
 
   if (ARGN_TEST)
-    set (ARGN_NO_EXPORT TRUE)
+    set (ARGN_NOEXPORT TRUE)
   endif ()
-  if (NOT ARGN_NO_EXPORT)
-    set (ARGN_NO_EXPORT FALSE)
+  if (NOT ARGN_NOEXPORT)
+    set (ARGN_NOEXPORT FALSE)
   endif ()
 
   if (NOT ARGN_TYPE)
@@ -1016,7 +1016,7 @@ function (basis_add_mcc_target TARGET_NAME)
       LINK_DEPENDS              ""
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
-      NO_EXPORT                 "${ARGN_NO_EXPORT}"
+      NOEXPORT                 "${ARGN_NOEXPORT}"
   )
 
   if (ARGN_LIBEXEC)
@@ -1102,7 +1102,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
       "LIBRARY_COMPONENT"
       "LIBEXEC"
       "TEST"
-      "NO_EXPORT"
+      "NOEXPORT"
   )
 
   foreach (PROPERTY ${PROPERTIES})
@@ -1332,7 +1332,7 @@ function (basis_add_mcc_target_finalize TARGET_UID)
   endif ()
 
   # export target
-  if (NOT NO_EXPORT)
+  if (NOT NOEXPORT)
     if (TEST)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
     else ()

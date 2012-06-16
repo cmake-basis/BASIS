@@ -561,12 +561,12 @@ endfunction ()
 #         which is only called by other executables.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_BASIS_UTILITIES @endtp
-#     <td>Do not add the BASIS C++ utilities as link dependency.</td>
+#     @tp @b NOEXPORT @endtp
+#     <td>Do not export the target.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_EXPORT @endtp
-#     <td>Do not export the target.</td>
+#     @tp @b NOUTILITIES @endtp
+#     <td>Do not add the BASIS utilities to the link dependencies.</td>
 #   </tr>
 #   <tr>
 #     @tp @b WITH_PATH , @b WITH_EXT @endtp
@@ -603,7 +603,7 @@ function (basis_add_executable TARGET_NAME)
 
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "LIBEXEC;MODULE;WITH_PATH;WITH_EXT;NO_BASIS_UTILITIES;NO_EXPORT"
+      "LIBEXEC;MODULE;WITH_PATH;WITH_EXT;NOUTILITIES;NOEXPORT"
       "BINARY_DIRECTORY;DESTINATION;COMPONENT;CONFIG;CONFIG_FILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
@@ -783,8 +783,12 @@ endfunction ()
 #         @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_EXPORT @endtp
+#     @tp @b NOEXPORT @endtp
 #     <td>Do not export build target.</td>
+#   </tr>
+#   <tr>
+#     @tp @b NOUTILITIES @endtp
+#     <td>Do not add the BASIS utilities to the link dependencies.</td>
 #   </tr>
 # </table>
 #
@@ -853,7 +857,7 @@ function (basis_add_library TARGET_NAME)
 
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "STATIC;SHARED;MODULE;MEX;WITH_PATH;NO_EXPORT"
+      "STATIC;SHARED;MODULE;MEX;WITH_PATH;NOUTILITIES;NOEXPORT"
       "BINARY_DIRECTORY;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;CONFIG;CONFIG_SCRIPT;MFILE"
       ""
       ${ARGN_UNPARSED_ARGUMENTS}
@@ -1010,7 +1014,57 @@ function (add_library TARGET)
 endfunction ()
 
 # ----------------------------------------------------------------------------
+## @brief Add build target for BASIS utilities library.
+function (basis_add_utilities_library)
+  if (BASIS_USE_FULLY_QUALIFIED_UIDS)
+    set (TARGET_UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.basis")
+  else ()
+    set (TARGET_UID basis)
+  endif ()
+  if (NOT BASIS_UTILITIES_ENABLED MATCHES "CXX")
+    message (FATAL_ERROR "A build target makes use of the BASIS C++ utilities"
+                         " but BASIS was build without C++ utilities enabled."
+                         " Either specify the option NOUTILITIES or rebuild"
+                         " BASIS with C++ utilities enabled.")
+  endif ()
+  if (NOT TARGET ${TARGET_UID} AND EXISTS "${BINARY_CODE_DIR}/basis.cxx")
+    add_library (${TARGET_UID} STATIC "${BINARY_CODE_DIR}/basis.cxx")
+    string (REGEX REPLACE "^.*\\." "" OUTPUT_NAME "${TARGET_UID}")
+
+    # define dependency on non-project specific utilities as the order in
+    # which static libraries are listed on the command-line for the linker
+    # matters; this will tell CMake to get the order right
+    target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
+
+    _set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        BASIS_TYPE               "STATIC_LIBRARY"
+        OUTPUT_NAME              "${OUTPUT_NAME}"
+        ARCHIVE_OUTPUT_DIRECTORY "${BASIS_BINARY_ARCHIVE_DIR}"
+    )
+
+    install (
+      TARGETS ${TARGET_UID}
+      EXPORT  ${BASIS_PROJECT_NAME}
+      ARCHIVE
+        DESTINATION "${BASIS_INSTALL_ARCHIVE_DIR}"
+        COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
+    )
+    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
+
+    if (BASIS_DEBUG)
+      message ("** Added BASIS utilities library ${TARGET_UID}")
+    endif ()
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Adds an executable target built from C++ source code.
+#
+# @note This function should not be used directly. Instead, it is called
+#       by basis_add_executable() if the (detected) programming language
+#       of the given source code files is @c CXX (i.e., C/C++).
 #
 # This function adds an executable target for the build of an executable from
 # C++ source code files. Refer to the documentation of basis_add_executable()
@@ -1018,16 +1072,14 @@ endfunction ()
 #
 # By default, the BASIS C++ utilities library is added as link dependency of
 # the executable target. If none of the BASIS C++ utilities are used by the
-# executable, the option NO_BASIS_UTILITIES can be given. To enable this option
-# by default, set the variable @c BASIS_NO_BASIS_UTILITIES to TRUE before the
+# executable, the option NOUTILITIES can be given. To enable this option
+# by default, set the variable @c BASIS_NO_UTILITIES to TRUE before the
 # basis_add_executable() commands, i.e., best in the Settings.cmake file located
 # in the @c PROJECT_CONFIG_DIR. Note, however, that the utilities library is a
 # static library and thus the linker would simply not include any of the BASIS
 # utilities object code in the final binary executable file if not used.
-#
-# @note This function should not be used directly. Instead, it is called
-#       by basis_add_executable() if the (detected) programming language
-#       of the given source code files is @c CXX (i.e., C/C++).
+# The only advantage is that if no target uses the utilities, the BASIS
+# utilities library is not being build.
 #
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
@@ -1056,11 +1108,11 @@ endfunction ()
 #         which is only called by other executable.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_BASIS_UTILITIES @endtp
-#     <td>Do not add the BASIS C++ utilities as link dependency.</td>
+#     @tp @b NOUTILITIES @endtp
+#     <td>Do not add the BASIS utilities as link dependency.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_EXPORT @endtp
+#     @tp @b NOEXPORT @endtp
 #     <td>Do not export the target.</td>
 #   </tr>
 # </table>
@@ -1073,7 +1125,7 @@ function (basis_add_executable_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-    "LIBEXEC;TEST;BASIS_UTILITIES;NO_BASIS_UTILITIES;NO_EXPORT"
+    "LIBEXEC;TEST;NOUTILITIES;NOEXPORT"
     "DESTINATION;COMPONENT"
     ""
     ${ARGN}
@@ -1102,15 +1154,6 @@ function (basis_add_executable_target TARGET_NAME)
   basis_check_target_name (${TARGET_NAME})
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
 
-  # whether or not to link to BASIS utilities
-  set (NO_BASIS_UTILITIES "${BASIS_NO_BASIS_UTILITIES}")
-  if (ARGN_NO_BASIS_UTILITIES)
-    set (NO_BASIS_UTILITIES TRUE)
-  endif ()
-  if (ARGN_BASIS_UTILITIES)
-    set (NO_BASIS_UTILITIES FALSE)
-  endif ()
-
   # component
   if (NOT ARGN_COMPONENT)
     set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
@@ -1129,50 +1172,18 @@ function (basis_add_executable_target TARGET_NAME)
     message (STATUS "Adding executable ${TARGET_UID}...")
   endif ()
 
-  # add standard auxiliary library
-  if (NOT NO_BASIS_UTILITIES)
+  # add BASIS utilities library target
+  if (NOT ARGN_NOUTILITIES)
+    set (ARGN_NOUTILITIES "${BASIS_NO_UTILITIES}")
+  endif ()
+  if (NOT NOUTILITIES)
     if (NOT BASIS_UTILITIES_ENABLED MATCHES "CXX")
       message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
                            " but BASIS was build without C++ utilities enabled."
-                           " Either specify the option NO_BASIS_UTILITIES or rebuild"
+                           " Either specify the option NOUTILITIES or rebuild"
                            " BASIS with C++ utilities enabled.")
     endif ()
-    set (BASIS_UTILITIES_TARGET "basis")
-    if (BASIS_USE_FULLY_QUALIFIED_UIDS)
-      set (BASIS_UTILITIES_TARGET "${BASIS_PROJECT_NAMESPACE_CMAKE}.${BASIS_UTILITIES_TARGET}")
-    endif ()
-    if (NOT TARGET ${BASIS_UTILITIES_TARGET} AND BASIS_UTILITIES_SOURCES)
-      add_library (${BASIS_UTILITIES_TARGET} STATIC ${BASIS_UTILITIES_SOURCES})
-      string (REGEX REPLACE "^.*\\." "" OUTPUT_NAME "${BASIS_UTILITIES_TARGET}")
-
-      # define dependency on non-project specific utilities as the order in
-      # which static libraries are listed on the command-line for the linker
-      # matters; this will tell CMake to get the order right
-      target_link_libraries (${BASIS_UTILITIES_TARGET} ${BASIS_UTILITIES_LIBRARY})
-
-      _set_target_properties (
-        ${BASIS_UTILITIES_TARGET}
-        PROPERTIES
-          BASIS_TYPE  "STATIC_LIBRARY"
-          OUTPUT_NAME "${OUTPUT_NAME}"
-          # make sure that this library is always output to the 'lib' directory
-          # even if only test executables use it; see CMakeLists.txt in 'test'
-          # subdirectory, which (re-)sets the CMAKE_*_OUTPUT_DIRECTORY variables.
-          ARCHIVE_OUTPUT_DIRECTORY "${BASIS_BINARY_ARCHIVE_DIR}"
-      )
-
-      install (
-        TARGETS ${BASIS_UTILITIES_TARGET}
-        EXPORT  ${BASIS_PROJECT_NAME}
-        ARCHIVE
-          DESTINATION "${BASIS_INSTALL_ARCHIVE_DIR}"
-          COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-      )
-
-      if (BASIS_DEBUG)
-        message ("** Added BASIS utilities library ${BASIS_UTILITIES_TARGET}")
-      endif ()
-    endif ()
+    basis_add_utilities_library ()
   endif ()
 
   # configure .in source files
@@ -1241,11 +1252,11 @@ function (basis_add_executable_target TARGET_NAME)
   endif ()
 
   # add default link dependencies
-  if (NOT ARGN_NO_BASIS_UTILITIES)
+  if (NOT ARGN_NOUTILITIES)
     # non-project specific utilities build as part of BASIS
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
     # project specific utilities build as part of this project
-    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
+    basis_target_link_libraries (${TARGET_UID} basis)
   endif ()
 
   # install executable and/or export target
@@ -1253,13 +1264,13 @@ function (basis_add_executable_target TARGET_NAME)
 
     # TODO install (selected?) tests
 
-    if (NOT ARGN_NO_EXPORT)
+    if (NOT ARGN_NOEXPORT)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
     endif ()
 
   else ()
 
-    if (ARGN_NO_EXPORT)
+    if (ARGN_NOEXPORT)
       set (EXPORT_OPT)
     else ()
       set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
@@ -1287,14 +1298,25 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Add build target for library built from C++ source code.
 #
-# This function adds a library target which builds a library from C++ source
-# code files. Refer to the documentation of basis_add_library() for a
-# description of the general options for adding a library target.
-#
 # @note This function should not be used directly. Instead, it is called
 #       by basis_add_library() if the (detected) programming language
 #       of the given source code files is @c CXX (i.e., C/C++) and the
 #       option @c MEX is not given.
+#
+# This function adds a library target which builds a library from C++ source
+# code files. Refer to the documentation of basis_add_library() for a
+# description of the general options for adding a library target.
+#
+# By default, the BASIS C++ utilities library is added as link dependency of
+# the executable target. If none of the BASIS C++ utilities are used by the
+# executable, the option NOUTILITIES can be given. To enable this option
+# by default, set the variable @c BASIS_NO_UTILITIES to TRUE before the
+# basis_add_executable() commands, i.e., best in the Settings.cmake file located
+# in the @c PROJECT_CONFIG_DIR. Note, however, that the utilities library is a
+# static library and thus the linker would simply not include any of the BASIS
+# utilities object code in the final binary executable file if not used.
+# The only advantage is that if no target uses the utilities, the BASIS
+# utilities library is not being build.
 #
 # @param [in] TARGET_NAME Name of the target. If a source file is given
 #                         as first argument, the build target name is derived
@@ -1345,7 +1367,11 @@ endfunction ()
 #         @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_EXPORT @endtp
+#     @tp @b NOUTILITIES @endtp
+#     <td>Do not add the BASIS utilities as link dependency.</td>
+#   </tr>
+#   <tr>
+#     @tp @b NOEXPORT @endtp
 #     <td>Do not export build target.</td>
 #   </tr>
 # </table>
@@ -1355,7 +1381,7 @@ function (basis_add_library_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "STATIC;SHARED;MODULE;NO_EXPORT"
+      "STATIC;SHARED;MODULE;NOUTILITIES;NOEXPORT"
       "DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT"
       ""
     ${ARGN}
@@ -1408,7 +1434,7 @@ function (basis_add_library_target TARGET_NAME)
   if (ARGN_STATIC OR ARGN_RUNTIME_DESTINATION MATCHES "^none$|^None$|^NONE$")
     set (ARGN_RUNTIME_DESTINATION)
   endif ()
-  if (ARGN_NO_EXPORT OR ARGN_LIBRARY_DESTINATION MATCHES "^none$|^None$|^NONE$")
+  if (ARGN_NOEXPORT OR ARGN_LIBRARY_DESTINATION MATCHES "^none$|^None$|^NONE$")
     set (ARGN_LIBRARY_DESTINATION)
   endif ()
 
@@ -1457,6 +1483,20 @@ function (basis_add_library_target TARGET_NAME)
     set (TYPE "MODULE")
   endif ()
 
+  # add BASIS utilities library target
+  if (NOT ARGN_NOUTILITIES)
+    set (ARGN_NOUTILITIES "${BASIS_NO_UTILITIES}")
+  endif ()
+  if (NOT ARGN_NOUTILITIES)
+    if (NOT BASIS_UTILITIES_ENABLED MATCHES "CXX")
+      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
+                           " but BASIS was build without C++ utilities enabled."
+                           " Either specify the option NOUTILITIES or rebuild"
+                           " BASIS with C++ utilities enabled.")
+    endif ()
+    basis_add_utilities_library ()
+  endif ()
+
   # configure .in source files
   basis_configure_sources (SOURCES ${SOURCES})
 
@@ -1494,6 +1534,14 @@ function (basis_add_library_target TARGET_NAME)
     )
   endif ()
 
+  # add default link dependencies
+  if (NOT ARGN_NOUTILITIES)
+    # non-project specific utilities build as part of BASIS
+    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
+    # project specific utilities build as part of this project
+    basis_target_link_libraries (${TARGET_UID} basis)
+  endif ()
+
   # target version information
   #
   # Note:      On UNIX-based systems this only creates annoying files with the
@@ -1511,11 +1559,11 @@ function (basis_add_library_target TARGET_NAME)
     #      install selected tests, the shared libraries they depend on
     #      need to be installed as well.
 
-    if (NOT ARGN_NO_EXPORT)
+    if (NOT ARGN_NOEXPORT)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
     endif ()
   else ()
-    if (ARGN_NO_EXPORT)
+    if (ARGN_NOEXPORT)
       set (EXPORT_OPT)
     else ()
       set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
@@ -1595,7 +1643,7 @@ endfunction ()
 # @note If this function is used within the @c PROJECT_TESTING_DIR, the built
 #       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
 #       Moreover, no installation rules are added. Test executables are further
-#       not exported, regardless of whether NO_EXPORT is given or not.
+#       not exported, regardless of whether NOEXPORT is given or not.
 #
 # @note This function should not be used directly. Instead, the functions
 #       basis_add_executable() and basis_add_library() should be used which in
@@ -1667,7 +1715,7 @@ endfunction ()
 #         is used for executable scripts build with this option.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NO_EXPORT @endtp
+#     @tp @b NOEXPORT @endtp
 #     <td>Do not export build target.</td>
 #   </tr>
 #   <tr>
@@ -1691,7 +1739,7 @@ function (basis_add_script TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NO_EXPORT;COMPILE;NOCOMPILE"
+      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NOEXPORT;COMPILE;NOCOMPILE"
       "BINARY_DIRECTORY;CONFIG;CONFIG_FILE;COMPONENT;DESTINATION"
       ""
     ${ARGN}
@@ -1717,10 +1765,10 @@ function (basis_add_script TARGET_NAME)
   endif ()
 
   if (ARGN_TEST)
-    set (ARGN_NO_EXPORT TRUE)
+    set (ARGN_NOEXPORT TRUE)
   endif ()
-  if (NOT ARGN_NO_EXPORT)
-    set (ARGN_NO_EXPORT FALSE)
+  if (NOT ARGN_NOEXPORT)
+    set (ARGN_NOEXPORT FALSE)
   endif ()
 
   if (NOT ARGN_COMPONENT)
@@ -1785,9 +1833,13 @@ function (basis_add_script TARGET_NAME)
   else ()
     set (OUTPUT_NAME "${SCRIPT_NAME_WE}")
     if (ARGN_MODULE)
-      basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME}" NAME)
+      if (ARGN_WITH_PATH)
+        basis_get_source_target_name (TARGET_NAME "${SCRIPT_PATH}/${SCRIPT_NAME}")
+      else ()
+        basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME}")
+      endif ()
     else ()
-      basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME}" NAME_WE)
+      basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME_WE}")
     endif ()
   endif ()
   # use output name extension for modules,
@@ -1855,9 +1907,11 @@ function (basis_add_script TARGET_NAME)
       set (ARGN_DESTINATION)
     elseif (ARGN_MODULE)
       if (SCRIPT_LANGUAGE MATCHES "^PYTHON$")
-        set (ARGN_DESTINATION "${INSTALL_PYTHON_LIBRARY_DIR}/${BASIS_NAMESPACE_LOWER}/${PROJECT_NAME_LOWER}")
+        string (REPLACE "." "/" DIR "${PROJECT_NAMESPACE_PYTHON}")
+        set (ARGN_DESTINATION "${INSTALL_PYTHON_LIBRARY_DIR}/${DIR}")
       elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
-        set (ARGN_DESTINATION "${INSTALL_PERL_LIBRARY_DIR}/${BASIS_NAMESPACE_UPPER}/${PROJECT_NAME}")
+        string (REPLACE "::" "/" DIR "${PROJECT_NAMESPACE_PERL}")
+        set (ARGN_DESTINATION "${INSTALL_PERL_LIBRARY_DIR}/${DIR}")
       else ()
         set (ARGN_DESTINATION "${INSTALL_LIBRARY_DIR}")
       endif ()
@@ -1872,9 +1926,11 @@ function (basis_add_script TARGET_NAME)
   if (ARGN_TEST)
     if (ARGN_MODULE)
       if (SCRIPT_LANGUAGE MATCHES "PYTHON")
-        set (OUTPUT_DIRECTORY "${TESTING_PYTHON_LIBRARY_DIR}/${BASIS_NAMESPACE_LOWER}/${PROJECT_NAME_LOWER}")
+        string (REPLACE "." "/" DIR "${PROJECT_NAMESPACE_PYTHON}")
+        set (OUTPUT_DIRECTORY "${TESTING_PYTHON_LIBRARY_DIR}/${DIR}")
       elseif (SCRIPT_LANGUAGE MATCHES "PERL")
-        set (OUTPUT_DIRECTORY "${TESTING_PERL_LIBRARY_DIR}/${BASIS_NAMESPACE_UPPER}/${PROJECT_NAME}")
+        string (REPLACE "::" "/" DIR "${PROJECT_NAMESPACE_PERL}")
+        set (OUTPUT_DIRECTORY "${TESTING_PERL_LIBRARY_DIR}/${DIR}")
       else ()
         set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
       endif ()
@@ -1989,7 +2045,7 @@ function (basis_add_script TARGET_NAME)
       LINK_DEPENDS              "${ARGN_CONFIG_FILE}"
       RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
       LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
-      NO_EXPORT                 "${ARGN_NO_EXPORT}"
+      NOEXPORT                  "${ARGN_NOEXPORT}"
       COMPILE                   "${COMPILE}"
       WITH_EXT                  "${ARGN_WITH_EXT}"
   )
@@ -2073,7 +2129,7 @@ function (basis_add_script_finalize TARGET_UID)
       "LIBRARY_COMPONENT"
       "LIBEXEC"
       "TEST"
-      "NO_EXPORT"
+      "NOEXPORT"
       "COMPILE"
       "WITH_EXT"
   )
@@ -2120,11 +2176,10 @@ function (basis_add_script_finalize TARGET_UID)
   else ()
     set (CONFIGURED_FILE "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   endif ()
-  set (CONFIGURED_INSTALL_FILE)
-  if (SCRIPT_FILE MATCHES "\\.in$")
-    if ((MODULE AND LIBRARY_INSTALL_DIRECTORY) OR (NOT MODULE AND RUNTIME_INSTALL_DIRECTORY))
-      set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
-    endif ()
+  if ((MODULE AND LIBRARY_INSTALL_DIRECTORY) OR (NOT MODULE AND RUNTIME_INSTALL_DIRECTORY))
+    set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
+  else ()
+    set (CONFIGURED_INSTALL_FILE)
   endif ()
   set (OUTPUT_FILE "${CONFIGURED_FILE}") # main output file used for command message
   set (OUTPUT_FILES "${OUTPUT_FILE}")
@@ -2211,7 +2266,7 @@ function (basis_add_script_finalize TARGET_UID)
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
   # install script
-  if (NOT ARGN_NO_EXPORT)
+  if (NOT ARGN_NOEXPORT)
     if (TEST)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
     else ()
@@ -2386,6 +2441,7 @@ function (basis_add_init_py_target)
         install (
           FILES       "${INSTALL_INIT_FILE}"
           DESTINATION "${DIR}"
+      
           COMPONENT   "${COMPONENT}"
         )
       endif ()

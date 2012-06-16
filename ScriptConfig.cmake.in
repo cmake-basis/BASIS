@@ -134,7 +134,7 @@ set (PERL_LIBRARY_DIR_SUFFIX "${PERL_LIBRARY_DIR_SUFFIX}")
 set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
 
 # ============================================================================
-# CMake variables required by BASIS_*_UTILITIES code
+# paths to project-independent BASIS utilities
 # ============================================================================
 
 if ("@PROJECT_NAME@" STREQUAL "BASIS")
