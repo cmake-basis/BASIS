@@ -17,61 +17,60 @@
 # @ingroup BasisPerlUtilities
 ##############################################################################
 
-package @PROJECT_NAMESPACE_PERL@::Basis;
+use strict;
+use warnings;
+
+package @PROJECT_NAMESPACE_PERL@::Basis
+{
+    $@PROJECT_NAMESPACE_PERL@::Basis::VERSION = @PROJECT_VERSION_PERL@;
+}
+
+
+## @addtogroup BasisPerlUtilities
+# @{
+
 
 # ============================================================================
 # exports
 # ============================================================================
 
-our ($VERSION, @ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS);
 
-BEGIN {
-    use Exporter();
-    use @PROJECT_NAMESPACE_PERL@::Config qw(VERSION);
-
-    $VERSION = VERSION;
-    @ISA     = qw(Exporter);
-
-    %EXPORT_TAGS = (
-        default => [qw(
-            print_contact
-            print_version
-            get_executable_path
-            get_executable_name
-            get_executable_directory
-            execute_process
-        )],
-
-        everything => [qw(
-            print_contact
-            print_version
-            get_executable_path
-            get_executable_name
-            get_executable_directory
-            is_known_target
-            get_target_uid
-            execute_process
-        )]
-    );
-
-    Exporter::export_ok_tags('everything');
-}
 
 # ============================================================================
-# modules
+# configuration
 # ============================================================================
 
-package @PROJECT_NAMESPACE_PERL@::Basis::Utilities;
-use SBIA::BASIS::Utilities qw(:everything);
-package @PROJECT_NAMESPACE_PERL@::Basis;
+## @brief Project name.
+use constant PROJECT => '@PROJECT_NAME@';
+## @brief Project release.
+use constant RELEASE => '@PROJECT_RELEASE@';
+## @brief Default copyright of executables.
+use constant COPYRIGHT => "University of Pennsylvania";
+## @brief Default license of executables.
+use constant LICENSE => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
+## @brief Default contact to use for help output of executables.
+use constant CONTACT => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
-package @PROJECT_NAMESPACE_PERL@::Basis::ExecutableTargetInfo;
-use @PROJECT_NAMESPACE_PERL@::ExecutableTargetInfo qw(:everything);
-package @PROJECT_NAMESPACE_PERL@::Basis;
+# ============================================================================
+# custom utilities
+# ============================================================================
 
-use @PROJECT_NAMESPACE_PERL@::Config qw(:everything);
-use @PROJECT_NAMESPACE_PERL@::ExecutableTargetInfo qw(is_known_target get_target_uid);
-use @PROJECT_NAMESPACE_PERL@::StdAux qw(:everything);
+my $_TARGET_PREFIX = '@PROJECT_NAMESPACE_CMAKE@';
+
+my $_EXECUTABLE_TARGETS = {
+    @EXECUTABLE_TARGET_INFO@
+};
+
+use SBIA::BASIS::Utilities
+        print_contact            => { contact   => CONTACT },
+        print_version            => { project   => PROJECT,   version => RELEASE,
+                                      copyright => COPYRIGHT, license => LICENSE },
+        get_target_uid           => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        is_known_target          => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        get_executable_path      => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        get_executable_name      => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        get_executable_directory => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        execute_process          => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS };
 
 
 1; # indicate success of module loading

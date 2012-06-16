@@ -1,0 +1,595 @@
+##############################################################################
+# @file  Utilities.pm
+# @brief BASIS utilities for Perl.
+#
+# This module defines the BASIS utility functions. It uses the Sub::Exporter
+# module to enable the generation of these functions customized to the request
+# of the particular project they are used in. This is, for example, used by
+# the @BASIS_NAMESPACE@::&lt;Project&gt;::Basis module that is specifically
+# configured for each BASIS-based project. The default utility functions
+# defined by this module, i.e., without any customizaton are intended for use
+# in Perl scripts that are not build as part of a particular package. In case
+# of a BASIS package, the already customized project-specific implementations
+# should be used instead, i.e., those defined by the
+# @BASIS_NAMESPACE@::&lt;Project&gt;::Basis module of the project.
+#
+# @note This module exports also all other BASIS utility functions that are
+#       defined in other Perl modules. Therefore, only this module or the
+#       @BASIS_NAMESPACE@::&lt;Project&gt;::Basis module, respectively,
+#       should be used.
+#
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisPerlUtilities
+##############################################################################
+
+use strict;
+use warnings;
+
+package @PROJECT_NAMESPACE_PERL@::Utilities;
+{
+    $@PROJECT_NAMESPACE_PERL@::Utilities::VERSION = @PROJECT_VERSION_PERL@;
+}
+
+use File::Which qw(which);
+
+
+## @addtogroup BasisPerlUtilities
+# @{
+
+
+# ============================================================================
+# constants
+# ============================================================================
+
+## @brief Default copyright of executables.
+use constant COPYRIGHT => "University of Pennsylvania";
+## @brief Default license of executables.
+use constant LICENSE => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
+## @brief Default contact to use for help output of executables.
+use constant CONTACT => "SBIA Group <sbia-software at uphs.upenn.edu>";
+
+# ============================================================================
+# exports
+# ============================================================================
+
+# Note: The generators are defined at the end of this file.
+
+use Sub::Exporter -setup => {
+    exports => [
+        print_contact            => \&_build_print_contact,
+        print_version            => \&_build_print_version,
+        get_target_uid           => \&_build_executabletargetinfo_function,
+        is_known_target          => \&_build_executabletargetinfo_function,
+        get_executable_path      => \&_build_executabletargetinfo_function,
+        get_executable_name      => \&_build_executabletargetinfo_function,
+        get_executable_directory => \&_build_executabletargetinfo_function,
+        qw(to_quoted_string split_quoted_string),
+        execute_process          => \&_build_execute_process],
+    groups => {
+        default => [ qw(print_contact print_version) ]
+    }
+};
+
+# ============================================================================
+# executable information
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Print contact information.
+#
+# @param [in] contact Name of contact. If @c undef, the default contact is used.
+sub print_contact
+{
+    my $contact = shift;
+    $contact = CONTACT unless $contact;
+    print "Contact:\n  $contact\n";
+}
+
+# ----------------------------------------------------------------------------
+## @brief Print version information including copyright and license notices.
+#
+# @note This function can be customized when importing it in order to set
+#       default values for its parameters, which is in particular done by
+#       the Basis module.
+#
+# Example:
+# @code
+# use @PROJECT_NAMESPACE_PERL@::Utilities qw(print_version);
+# print_version('foo', '1.0');
+# print_version('foo', version => '1.0');
+# print_version(name => 'foo', version => '1.0');
+# @endcode
+#
+# Example:
+# @code
+# use @PROJECT_NAMESPACE_PERL@::Utilities
+#     print_version => {project   => 'FooBar',
+#                       version   => '1.0',
+#                       copyright => '2012 Andreas Schuh',
+#                       license   => 'Licensed under the Apache License, Version 2.0'};
+# print_version('foo');
+# @endcode
+# which results in the output
+# @verbatim
+# foo (FooBar) 1.0
+# Copyright (c) 2012 Andreas Schuh. All rights reserved.
+# Licensed under the Apache License, Version 2.0
+# @endverbatim
+#
+# @param [in] name      Name of executable. Should not be set programmatically
+#                       to the first argument of the main script, but a string
+#                       literal instead. This argument is required if no default
+#                       has been set during customization. The argument can be
+#                       either given as first argument or as keyword argument
+#                       as in "name => 'foo'".
+# @param [in] version   Version of executable, e.g., release of project this
+#                       executable belongs to. This argument is required if no
+#                       default has been set during customization. The argument
+#                       can be either given as second argument or as keyword
+#                       argument as in "version => '1.0'".
+# @param [in] project   Name of project this executable belongs to.
+#                       If @c undef or an empty string is given, no project
+#                       information is included in output.
+# @param [in] copyright The copyright notice. If @c undef, the default copyright
+#                       is used. If an empty string is given, no copyright notice
+#                       is printed.
+# @param [in] license   Information regarding licensing. If @c undef, the default
+#                       software license is used. If an empty string is given,
+#                       no license information is printed.
+sub print_version
+{
+    my $name = undef;
+    my $version = undef;
+    if (@_ != 0 and $_[0] !~ /^(name|version|project|copyright|license)$/) {
+        $name = $_[0];
+        shift;
+    }
+    if (@_ != 0 and $_[0] !~ /^(name|version|project|copyright|license)$/) {
+        $version = $_[0];
+        shift;
+    }
+    my %defaults = (version => undef, project => undef, copyright => COPYRIGHT, license => LICENSE);
+    my %options  = (%defaults, @_);
+    die "print_version(): Name argument given twice"    if defined $options{'name'}    and defined $name;
+    die "print_version(): Version argument given twice" if defined $options{'version'} and defined $version;
+    $name    = $options{'name'}    unless $name;
+    $version = $options{'version'} unless $version;
+    die "print_version(): Missing name argument"    unless $name;
+    die "print_version(): Missing version argument" unless $version;
+    # program identification
+    print $name;
+    print " ($options{'project'})" if $options{'project'};
+    print " ", $version, "\n";
+    # copyright notice
+    print "Copyright (c) ", $options{'copyright'}, ". All rights reserved.\n" if $options{'copyright'};
+    # license information
+    print $options{'license'}, "\n" if $options{'license'};
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get UID of build target.
+#
+# @note This function can be customized when importing it in order to set
+#       default values for @p prefix and @p targets, which is in particular
+#       done by the Basis module.
+#
+# This function prepends the default namespace used for targets build as
+# part of the project this module belongs to if the given target name is yet
+# neither known nor fully-qualified, i.e., in the form <namespace>::<target>.
+#
+# @param [in] target  Name of build target.
+# @param [in] prefix  Common target name prefix. If @c undef, the given
+#                     target name must match excactly. Otherwise, targets
+#                     within the specified namespace are considered.
+# @param [in] targets Reference to hash which maps known build targets to
+#                     executable file paths. If not specified, this function
+#                     always returns the input target name unchanged.
+#
+# @returns Fully-qualified build target name or @c undef if @p target is
+#          @c undef or an empty string.
+sub get_target_uid
+{
+    my $target  = shift;
+    my $prefix  = shift;
+    my $targets = shift;
+    # handle invalid arguments
+    return undef unless defined $target and length($target) > 0;
+    # in case of a leading namespace separator or if no lookup table
+    # of executable build target is provided, do not modify target name
+    return $target if $target =~ /^\./ or not defined $targets;
+    # project namespace
+    $prefix = '' unless defined $prefix;
+    $prefix = $prefix . '.DUMMY'; # simplifies while loop
+    # try prepending namespace or parts of it until target is known
+    while ($prefix =~ s/(.*)\.[^.]*/$1/) {
+        if (exists $targets->{$prefix . '.' . $target}) {
+            return $prefix . '.' . $target;
+        }
+    }
+    # otherwise, return target name unchanged
+    return $target;
+}
+
+# ----------------------------------------------------------------------------
+## @brief Determine whether a given target is known.
+#
+# @note This function can be customized when importing it in order to set
+#       default values for @p prefix and @p targets, which is in particular
+#       done by the Basis module.
+#
+# @param [in] target  Name of build target.
+# @param [in] prefix  Common target name prefix. If @c undef, the given
+#                     target name must match excactly. Otherwise, targets
+#                     within the specified namespace are considered.
+# @param [in] targets Reference to hash which maps known build targets to
+#                     executable file paths. If not specified, this function
+#                     always returns false.
+#
+# @returns Whether the given build target is known by this module.
+sub is_known_target
+{
+    my $target  = shift;
+    my $prefix  = shift;
+    my $targets = shift;
+    if (defined $targets) {
+        my $uid = get_target_uid($target, $prefix, $targets);
+        defined $uid or return 0;
+        $uid =~ s/^[.]?(.*)/$1/;
+        exists $targets->{$uid};
+    } else {
+        return 0;
+    }
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get absolute path of executable file.
+#
+# @note This function can be customized when importing it in order to set
+#       default values for @p prefix and @p targets, which is in particular
+#       done by the Basis module.
+#
+# This function determines the absolute file path of an executable. If no
+# arguments are given, the absolute path of this executable is returned.
+# Otherwise, the named command is searched in the system PATH and its
+# absolute path returned if found. If the executable is not found, @c undef
+# is returned.
+#
+# @param [in] name    Name of command or @c undef.
+# @param [in] prefix  Common target name prefix. If @c undef, the given
+#                     target name must match excactly. Otherwise, targets
+#                     within the specified namespace are considered.
+# @param [in] targets Reference to hash which maps known build targets to
+#                     executable file paths. If not specified, this function
+#                     always returns false.
+#
+# @returns Absolute path of executable or @c undef if not found.
+#          If @p name is @c undef, the path of this executable is returned.
+sub get_executable_path
+{
+    my $name    = shift;
+    my $prefix  = shift;
+    my $targets = shift;
+    my $path    = undef;
+    if (not defined $name) {
+        $path = realpath($0);
+    } elsif (defined $targets) {
+        my $uid = get_target_uid($name, $prefix, $targets);
+        defined $uid and $uid =~ s/^[.]?(.*)/$1/;
+        if (defined $uid and exists $targets->{$uid}) {
+            $path = $targets->{$uid};
+            if ($path =~ m/\$\(IntDir\)/) {
+                my $tmppath = '';
+                my $intdir = '';
+                foreach $intdir ('Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel') {
+                    $tmppath = $path;
+                    $tmppath =~ s/\$\(IntDir\)/$intdir/g;
+                    if (-e $tmppath) {
+                        $path = $tmppath;
+                        last;
+                    }
+                }
+                $path =~ s/\$\(IntDir\)//g;
+            }
+            $path = File::Spec->rel2abs($path, dirname(__FILE__));
+            # the realpath() function only works for existing paths
+            $path = realpath($path) if -e $path;
+        }
+    }
+    $path = which($name) unless defined $path;
+    return $path;
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get name of executable file.
+#
+# @note This function can be customized when importing it in order to set
+#       default values for @p prefix and @p targets, which is in particular
+#       done by the Basis module.
+#
+# @param [in] name    Name of command or @c undef.
+# @param [in] prefix  Common target name prefix. If @c undef, the given
+#                     target name must match excactly. Otherwise, targets
+#                     within the specified namespace are considered.
+# @param [in] targets Reference to hash which maps known build targets to
+#                     executable file paths. If not specified, this function
+#                     always returns false.
+#
+# @returns Name of executable file or @c undef if not found.
+#          If @p name is @c undef, the path of this executable is returned.
+sub get_executable_name
+{
+    my $path = get_executable_path(@_);
+    defined $path or return undef;
+    return basename($path);
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get directory of executable file.
+#
+# @note This function can be customized when importing it in order to set
+#       default values for @p prefix and @p targets, which is in particular
+#       done by the Basis module.
+#
+# @param [in] name    Name of command or @c undef.
+# @param [in] prefix  Common target name prefix. If @c undef, the given
+#                     target name must match excactly. Otherwise, targets
+#                     within the specified namespace are considered.
+# @param [in] targets Reference to hash which maps known build targets to
+#                     executable file paths. If not specified, this function
+#                     always returns false.
+#
+# @returns Absolute path of directory containing executable or @c undef if not found.
+#          If @p name is @c undef, the directory of this executable is returned.
+sub get_executable_directory
+{
+    my $path = get_executable_path(@_);
+    defined $path or return undef;
+    return dirname($path);
+}
+
+# ============================================================================
+# command execution
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Convert list to double quoted string.
+#
+# @param [in] args Array of arguments.
+#
+# @returns Double quoted string, i.e., string where array elements are separated
+#          by a space character and surrounded by double quotes if necessary.
+#          Double quotes within an array element are escaped with a backslash.
+sub to_quoted_string
+{
+    my $str = '';
+    if (ref($_[0]) eq 'ARRAY') {
+        my $args = $_[0];
+        for my $arg (@$_[0]) {
+            $arg =~ s/"/\\"/g;                          # escape double quotes
+            $arg = '"' . $arg . '"' if $arg =~ m/'|\s/; # quote if necessary
+            $str .= ' ' if $str != '';
+            $str .= $arg;
+        }
+    } else {
+        $str = $_[0];
+        $str =~ s/"/\\"/g;                          # escape double quotes
+        $str = '"' . $str . '"' if $str =~ m/'|\s/; # quote if necessary
+    }
+    return $str;
+}
+
+# ----------------------------------------------------------------------------
+## @brief Split quoted string.
+#
+# @param [in] str Quoted string.
+sub split_quoted_string
+{
+    my $str  = shift;
+    my $max  = shift;
+    my $arg  = '';
+    my @args = ();
+    LOOP: {
+        while ($str =~ /[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\")*[^\\]\"|[^ ]+)(.*)/) {
+            $arg = $1;                           # matched element including quotes
+            $str = $4;                           # continue with residual command-line
+            $arg =~ s/^['\"]|(^|[^\\])['\"]$//g; # remove quotes
+            $arg =~ s/[\\]('|\")/$1/g;           # unescape quotes
+            push @args, $arg;                    # add to resulting array
+            last LOOP if defined $max and scalar(@args) >= $max;
+        }
+    }
+    if (defined $max) {
+        if ($max eq 1) { return ($args[0], $str); }
+        else           { return (@args, $str); }
+    } else             { return @args; }
+}
+
+# ----------------------------------------------------------------------------
+## @brief Split/Convert quoted string or array of arguments into command name
+#         and quoted string of command arguments.
+#
+# @param [in] args Array of command name and arguments or quoted string.
+#
+# @returns Tuple of command name and quoted string of command arguments.
+sub split_command_and_arguments
+{
+    my $args      = $_[0];
+    my $command   = '';
+    my $arguments = '';
+    if (ref($args) eq 'ARRAY') {
+        $command   = shift @$args or die "execute_process(): No command specified for execution";
+        $arguments = to_quoted_string($args);
+    } elsif (ref($args) eq '') {
+        ($command, $arguments) = split_quoted_string($args, 1);
+    } else {
+        die "Argument must be either array reference or string";
+    }
+    return ($command, $arguments);
+}
+
+# ----------------------------------------------------------------------------
+## @brief Execute command as subprocess.
+#
+# @note This function can be customized when importing it in order to set
+#       default values for @p prefix and @p targets, which is in particular
+#       done by the Basis module.
+#
+# This command takes either an array reference or a string as first argument.
+# All other arguments are keyword arguments using hash notation.
+#
+# Example:
+# @code
+# # only returns exit code of command but does not output anything
+# my $status = execute_process(['ls', '/'], quiet => 1);
+# # returns exit code of command and returns command output w/o printing to stdout
+# my ($status, $stdout) = execute_process('ls /', quiet => 1, stdout => 1);
+# @endcode
+#
+# @param [in] args       Command with arguments given either as single quoted
+#                        string or array of command name and arguments.
+# @param [in] quiet      Turns off output of @c stdout of child process to
+#                        @c stdout of parent process.
+# @param [in] stdout     Whether to return the command output.
+# @param [in] allow_fail If true, does not raise an exception if return
+#                        value is non-zero. Otherwise, an exception is
+#                        raised by this function using die.
+# @param [in] verbose    Verbosity of output messages.
+#                        Does not affect verbosity of executed command.
+# @param [in] simulate   Whether to simulate command execution only.
+# @param [in] prefix     Common target name prefix. If @c undef, the given
+#                        target name must match excactly. Otherwise, targets
+#                        within the specified namespace are considered.
+# @param [in] targets    Reference to hash which maps known build targets to
+#                        executable file paths. If not specified, this function
+#                        always returns false.
+#
+# @return The exit code of the subprocess if @p stdout is false (the default).
+#         Otherwise, if @p stdout is true, a tuple consisting of exit code
+#         command output is returned. Note that if @p allow_fail is false,
+#         the returned exit code will always be 0.
+#
+# @throws die If command execution failed. This exception is not raised
+#             if the command executed with non-zero exit code but
+#             @p allow_fail is true.
+sub execute_process
+{
+    # arguments
+    my $args = shift or die "execute_process(): No command specified for execution";
+    if ($args =~ m/^(quiet|stdout|allow_fail|verbose|simulate|prefix|targets)$/) {
+        warn "First argument matches option name. Missing args argument?";
+    }
+    my %defaults = (quiet   => 0,  stdout   => 0, allow_fail => 0,
+                    verbose => 0,  simulate => 0,
+                    prefix  => undef, targets  => undef);
+    my %options  = (%defaults, @_);
+    # get absolute path of executable
+    my ($command, $arguments) = split_command_and_arguments($args);
+    my $exec_path = get_executable_path($command, $options{'prefix'}, $options{'targets'});
+    defined $exec_path or die "$command: Command not found";
+    $exec_path = '"' . $exec_path . '"' if $exec_path =~ m/'|\s/; # quote if necessary
+    $args = $exec_path . $arguments;
+    # some verbose output
+    if ($options{'verbose'} gt 0) {
+        print "\$ ", $args;
+        $options{'simulate'} and print " (simulated)";
+        print "\n";
+    }
+    # execute command
+    my $status = 0;
+    my $output = '';
+    if (not $options{'simulate'}) {
+        open CMD, "$args |" or die "$command: Failed to open subprocess";
+        my $ofh = select STDOUT;
+        $|++;
+        while (<CMD>) {
+            print $_ unless $options{'quiet'};
+            $output .= $_ if $options{'stdout'};
+        }
+        $|--;
+        select $ofh;
+        close CMD;
+        $status = $?;
+    }
+    # if command failed, throw an exception
+    if ($status != 0 and not $options{'allow_fail'}) {
+        die "Command $args failed";
+    }
+    # return
+    if ($options{'stdout'}) { return ($status, $output); }
+    else                    { return $status; }
+}
+
+
+## @}
+# end of Doxygen group
+
+
+# ============================================================================
+# exports
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# builder of customized print_contact()
+sub _build_print_contact
+{
+    my ($class, $fn, $args) = @_;
+    return sub {
+        my $contact = shift || $args->{contact};
+        print_contact($contact);
+    }
+}
+
+# ----------------------------------------------------------------------------
+# builder of customized print_version()
+sub _build_print_version
+{
+    my ($class, $fn, $args) = @_;
+    return sub {
+        my $name     = shift;
+        my %defaults = (version   => $args->{version},
+                        project   => $args->{project},
+                        copyright => $args->{copyright},
+                        license   => $args->{license});
+        my %options  = (%defaults, @_);
+        print_version($name, %options);
+    }
+}
+
+# ----------------------------------------------------------------------------
+# builder of customized functions related to executable target information
+sub _build_executabletargetinfo_function
+{
+    my ($class, $fn, $args) = @_;
+    return sub {
+        my $target  = shift;
+        my $prefix  = shift || $args->{prefix};
+        my $targets = shift || $args->{targets};
+        eval "$fn(\$target, \$prefix, \$targets)";
+    }
+}
+
+# ----------------------------------------------------------------------------
+# builder of customized execute_process()
+sub _build_execute_process
+{
+    my ($class, $fn, $args) = @_;
+    return sub {
+        my $args     = shift;
+        my %defaults = (quiet      => $args->{quiet},
+                        stdout     => $args->{stdout},
+                        allow_fail => $args->{allow_fail},
+                        verbose    => $args->{verbose},
+                        simulate   => $args->{simulate},
+                        prefix     => $args->{prefix},
+                        targets    => $args->{targets});
+        my %options  = (%defaults, @_);
+        execute_process($args, %options);
+    }
+}
+
+
+1; # indicate success of module loading

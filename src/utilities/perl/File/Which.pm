@@ -1,4 +1,4 @@
-package SBIA::BASIS::Which; # originally, File::Which
+package File::Which;
 
 use 5.004;
 use strict;
