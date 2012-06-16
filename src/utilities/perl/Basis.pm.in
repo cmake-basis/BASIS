@@ -2,14 +2,14 @@
 # @file  Basis.pm
 # @brief BASIS utilities for Perl.
 #
-# @note The Basis.pm module is automatically created by BASIS from the
+# @note The Basis.pm module was automatically created by BASIS from the
 #       template file Basis.pm.in which is part of the BASIS installation.
 #
-# This module uses the modules of the BASIS Perl Utilities and exports the
-# utility functions. Hence, it is sufficient to only use this module.
-# This is done by the @c &#64;BASIS_PERL_UTILITIES&#64; code.
+# This module imports the modules of the BASIS Perl Utilities and exports the
+# utility functions as part of its own package scope. Hence, it is sufficient
+# to only use this module.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -17,10 +17,7 @@
 # @ingroup BasisPerlUtilities
 ##############################################################################
 
-package SBIA::@PROJECT_NAME@::Basis;
-
-use strict;
-use warnings;
+package @PROJECT_NAMESPACE_PERL@::Basis;
 
 # ============================================================================
 # exports
@@ -29,46 +26,52 @@ use warnings;
 our ($VERSION, @ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS);
 
 BEGIN {
-    use Exporter ();
+    use Exporter();
+    use @PROJECT_NAMESPACE_PERL@::Config qw(VERSION);
 
-    $VERSION = @PROJECT_VERSION_PERL@;
-    @ISA     = qw (Exporter);
+    $VERSION = VERSION;
+    @ISA     = qw(Exporter);
 
     %EXPORT_TAGS = (
-        default => [qw (
-            which
+        default => [qw(
+            print_contact
+            print_version
+            get_executable_path
             get_executable_name
             get_executable_directory
-            get_executable_path
-            print_version
-            print_contact
             execute_process
         )],
 
-        everything => [qw (
-            which
-            where
+        everything => [qw(
+            print_contact
+            print_version
+            get_executable_path
             get_executable_name
             get_executable_directory
-            get_executable_path
             is_known_target
             get_target_uid
-            print_version
-            print_contact
             execute_process
         )]
     );
 
-    Exporter::export_ok_tags ('everything');
+    Exporter::export_ok_tags('everything');
 }
 
 # ============================================================================
 # modules
 # ============================================================================
 
-use SBIA::BASIS::File::Which qw(which);
-use SBIA::@PROJECT_NAME@::ExecutableTargetInfo qw(:everything);
-use SBIA::@PROJECT_NAME@::StdAux qw(:everything);
+package @PROJECT_NAMESPACE_PERL@::Basis::Utilities;
+use SBIA::BASIS::Utilities qw(:everything);
+package @PROJECT_NAMESPACE_PERL@::Basis;
+
+package @PROJECT_NAMESPACE_PERL@::Basis::ExecutableTargetInfo;
+use @PROJECT_NAMESPACE_PERL@::ExecutableTargetInfo qw(:everything);
+package @PROJECT_NAMESPACE_PERL@::Basis;
+
+use @PROJECT_NAMESPACE_PERL@::Config qw(:everything);
+use @PROJECT_NAMESPACE_PERL@::ExecutableTargetInfo qw(is_known_target get_target_uid);
+use @PROJECT_NAMESPACE_PERL@::StdAux qw(:everything);
 
 
 1; # indicate success of module loading

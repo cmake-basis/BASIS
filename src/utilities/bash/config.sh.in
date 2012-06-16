@@ -1,0 +1,37 @@
+##############################################################################
+# @file  config.sh
+# @brief Configuration of BASIS utilities of @PROJECT_NAME@ package.
+#
+# @note The Config.pm module was automatically created by BASIS from the
+#       template file Config.pm.in which is part of the BASIS installation.
+#
+# Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
+# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+#
+# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+##############################################################################
+
+# ============================================================================
+# project attributes
+# ============================================================================
+
+## @addtogroup BasisBashUtilities
+# @{
+
+
+## @brief Project name.
+PROJECT="@PROJECT_NAME@"
+## @brief Project release.
+RELEASE="@PROJECT_RELEASE@"
+## @brief Project version.
+VERSION="@PROJECT_VERSION@"
+## @brief Default copyright of executables.
+COPYRIGHT="University of Pennsylvania. All rights reserved."
+## @brief Default license of executables.
+LICENSE="See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+## @brief Default contact to use for help output of executables.
+CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
+
+
+## @}
+# end of Doxygen group

@@ -35,6 +35,7 @@ Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 from os         import path                 as _path
 from sbia.basis import utilities            as _utilities
 from .          import executabletargetinfo as _executabletargetinfo
+from .config    import PROJECT, RELEASE, COPYRIGHT, LICENSE
 
 # ============================================================================
 # executable information
@@ -44,25 +45,37 @@ from .          import executabletargetinfo as _executabletargetinfo
 from sbia.basis.utilities import print_contact
 
 # ----------------------------------------------------------------------------
-def print_version(name, copyright=None, license=None):
+def print_version(name, copyright=COPYRIGHT, license=LICENSE):
     """Print version information including copyright and license notices.
 
     @param [in] name      Name of executable. Should not be set programmatically
                           to the first argument to the __main__ module.
-    @param [in] copyright The copyright notice. If None, the default copyright
-                          without year is used, which is not recommended as the
-                          copyright years should always be included. If an
-                          empty string is given, no copyright notice is printed.
-    @param [in] license   Information regarding licensing. If None, the default
-                          software license is used. If an empty string is given,
-                          no license information is printed.
+    @param [in] copyright The copyright notice. If None or an empty string is
+                          given, no copyright notice is printed.
+    @param [in] license   Information regarding licensing. If None or an empty
+                          string is given, no license information is printed.
 
     """
-    _utilities.print_version(name, '@PROJECT_RELEASE@', project='@PROJECT_NAME@', copyright=copyright, license=license)
+    _utilities.print_version(name, RELEASE, project=PROJECT, copyright=copyright, license=license)
 
 # ----------------------------------------------------------------------------
 def get_executable_path(name=None):
-    """Get absolute path of executable file."""
+    """Get absolute path of executable file.
+
+    This function determines the absolute file path of an executable. If no
+    arguments are given, the absolute path of this executable is returned.
+    If the command names a known executable build target, the absolute path to
+    the corresonding built (and installed) executable file is returned.
+    Otherwise, the named command is searched in the system @c PATH and its
+    absolute path returned if found. If the executable is not found, @c None
+    is returned.
+
+    @param [in] name Name of command or @c None.
+
+    @returns Absolute path of executable or @c None if not found.
+             If @p name is @c None, the path of this executable is returned.
+
+    """
     path = _executabletargetinfo.get_executable_path(name)
     if not path: path = _utilities.get_executable_path(name)
     return path
@@ -71,7 +84,10 @@ def get_executable_path(name=None):
 def get_executable_name(name=None):
     """Get name of executable file.
 
-    If no name is specified, the name of this executable is returned.
+    @param [in] name Name of command or @c None.
+
+    @returns Name of executable file or @c None if not found.
+             If @p name is @c None, the name of this executable is returned.
 
     """
     path = get_executable_path(name)
@@ -82,7 +98,10 @@ def get_executable_name(name=None):
 def get_executable_directory(name=None):
     """Get directory of executable file.
 
-    If no executable is specified, the directory of this executable is returned.
+    @param [in] name Name of command or @c None.
+
+    @returns Absolute path of directory containing executable or @c None if not found.
+             If @p name is @c None, the directory of this executable is returned.
 
     """
     path = get_executable_path(name)
@@ -100,14 +119,15 @@ from sbia.basis.utilities import SubprocessError
 def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
     """Execute command as subprocess.
     
-    @param [in] args       Command with arguments given either as single quoted
-                           string or array of command name and arguments.
-                           In the latter case, the array elements are converted
-                           to strings using the built-in str() function.
-                           Hence, any type which can be converted to a string
-                           can be used. The first argument must be the name
-                           or path of the executable of the command or the
-                           name of the corresponding build target.
+    @param [in] args       Command with arguments given either as quoted string
+                           or array of command name and arguments. In the latter
+                           case, the array elements are converted to strings
+                           using the built-in str() function. Hence, any type
+                           which can be converted to a string is permitted.
+                           The first argument must be the name or path of the
+                           executable of the command. If it names a known
+                           executable build target, the executable built
+                           (and installed) by this target is executed.
     @param [in] quiet      Turns off output of stdout of child process to
                            stdout of parent process.
     @param [in] stdout     Whether to return the command output.
@@ -136,11 +156,11 @@ def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0
     if not path: raise SubprocessError(args[0] + ": Command not found")
     args[0] = path
     # execute subprocess
-    _utilities.execute_process(args, quiet=quiet,
-                                     stdout=stdout,
-                                     allow_fail=allow_fail,
-                                     verbose=verbose,
-                                     simulate=simulate)
+    return _utilities.execute_process(args, quiet=quiet,
+                                            stdout=stdout,
+                                            allow_fail=allow_fail,
+                                            verbose=verbose,
+                                            simulate=simulate)
 
 
 ## @}

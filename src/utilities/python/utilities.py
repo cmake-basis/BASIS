@@ -43,41 +43,36 @@ import sys
 import os.path
 import subprocess
 
+from .config import COPYRIGHT, LICENSE, CONTACT
+
 # ============================================================================
 # executable information
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-def print_contact(contact=None):
-    """
-    Print contact information.
+def print_contact(contact=CONTACT):
+    """Print contact information.
 
-    @param [in] contact Name of contact. If None, the default contact is used.
+    @param [in] contact Name of contact.
 
     """
-    sys.stdout.write("Contact:\n  ")
-    if not contact: contact = 'SBIA Group <sbia-software at uphs.upenn.edu>'
-    sys.stdout.write(contact)
-    sys.stdout.write('\n')
+    sys.stdout.write("Contact:\n  " + contact + "\n")
 
 # ----------------------------------------------------------------------------
-def print_version(name, version, project=None, copyright=None, license=None):
-    """
-    Print version information including copyright and license notices.
+def print_version(name, version, project=None, copyright=COYRIGHT, license=LICENSE):
+    """Print version information including copyright and license notices.
 
     @param [in] name      Name of executable. Should not be set programmatically
-                          to the first argument of the __main__ module, but
+                          to the first argument of the @c __main__ module, but
                           a string literal instead.
-    @param [in] version   Version of executable, e.g., release of package
+    @param [in] version   Version of executable, e.g., release of project
                           this executable belongs to.
     @param [in] project   Name of project this executable belongs to.
-                          If None or an empty string is given, no project
-                          information is included.
-    @param [in] copyright The copyright notice. If None is given, the default
-                          copyright is used. In case of an empty string, no
-                          copyright notice is printed.
-    @param [in] license   Information regarding licensing. If None is given,
-                          the default software license is used. In case of an
+                          If @c None or an empty string is given, no project
+                          information is printed.
+    @param [in] copyright The copyright notice. If @c None or an empty string,
+                          no copyright notice is printed.
+    @param [in] license   Information regarding licensing. If @c None or an
                           empty string, no license information is printed.
 
     """
@@ -91,28 +86,29 @@ def print_version(name, version, project=None, copyright=None, license=None):
     sys.stdout.write(version)
     sys.stdout.write('\n')
     # copyright notice
-    if not copyright:
-        copyright = "Copyright (c) University of Pennsylvania. All rights reserved."
-    if copyright != '':
+    if not copyright and copyright != '':
+        sys.stdout.write("Copyright (c) ");
         sys.stdout.write(copyright)
         sys.stdout.write('\n')
     # license information
-    if not license:
-        license = "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
-    if license != '':
+    if not license and license != '':
         sys.stdout.write(license)
         sys.stdout.write('\n')
 
 # ----------------------------------------------------------------------------
 def get_executable_path(name=None):
-    """
-    Get absolute path of executable file.
+    """Get absolute path of executable file.
 
     This function determines the absolute file path of an executable. If no
     arguments are given, the absolute path of this executable is returned.
-    Otherwise, the named command is searched in the system PATH and its
-    absolute path returned if found. If the executable is not found, None is
-    returned.
+    Otherwise, the named command is searched in the system @c PATH and its
+    absolute path returned if found. If the executable is not found, @c None
+    is returned.
+
+    @param [in] name Name of command or @c None.
+
+    @returns Absolute path of executable or @c None if not found.
+             If @p name is @c None, the path of this executable is returned.
 
     """
     path = None
@@ -130,9 +126,12 @@ def get_executable_path(name=None):
 
 # ----------------------------------------------------------------------------
 def get_executable_name(name=None):
-    """
-    Get name of executable file. If no name is specified, the name of this
-    executable is returned.
+    """Get name of executable file.
+
+    @param [in] name Name of command or @c None.
+
+    @returns Name of executable file or @c None if not found.
+             If @p name is @c None, the name of this executable is returned.
 
     """
     path = get_executable_path(name)
@@ -141,9 +140,12 @@ def get_executable_name(name=None):
 
 # ----------------------------------------------------------------------------
 def get_executable_directory(name=None):
-    """
-    Get directory of executable file. If no executable is specified, the
-    directory of this executable is returned.
+    """Get directory of executable file.
+
+    @param [in] name Name of command or @c None.
+
+    @returns Absolute path of directory containing executable or @c None if not found.
+             If @p name is @c None, the directory of this executable is returned.
 
     """
     path = get_executable_path(name)
@@ -168,7 +170,15 @@ class SubprocessError(Exception):
 
 # ----------------------------------------------------------------------------
 def to_quoted_string(args):
-    """Convert list to double quoted string."""
+    """Convert list to double quoted string.
+
+    @param [in] args List of arguments.
+
+    @returns Double quoted string, i.e., string where array elements are separated
+             by a space character and surrounded by double quotes if necessary.
+             Double quotes within an array element are escaped with a backslash.
+
+    """
     qargs = []
     re_quote_or_not = re.compile(r"'|\s")
     for arg in args:
@@ -180,47 +190,54 @@ def to_quoted_string(args):
     return ' '.join(qargs)
 
 # ----------------------------------------------------------------------------
+def split_quoted_string(args):
+    """Split double quoted string."""
+    from shlex import split
+    return split(args)
+
+# ----------------------------------------------------------------------------
 def to_array_of_strings(args):
-    """Convert list or double quoted string to array of strings."""
-    if type(args) is list:
-        args = [str(i) for i in args]
-    elif type(args) is str:
-        from shlex import split
-        args = split(args)
-    else:
-        raise Exception("Argument args must be either list or string")
+    """Convert list or double quoted string to array of strings.
+
+    @param [in] args List or arguments or double quoted string.
+
+    @returns List of strings.
+
+    """
+    if   type(args) is list: return [str(i) for i in args]
+    elif type(args) is str:  return split_quoted_string(args);
+    else: raise Exception("Argument must be either list or string")
 
 # ----------------------------------------------------------------------------
 def execute_process(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False):
-    """
-    Execute command as subprocess.
+    """Execute command as subprocess.
 
-    @param [in] args       Command with arguments given either as single quoted
-                           string or array of command name and arguments.
-                           In the latter case, the array elements are converted
-                           to strings using the built-in str() function.
-                           Hence, any type which can be converted to a string
-                           can be used. The first argument must be the name
-                           or path of the executable of the command.
-    @param [in] quiet      Turns off output of stdout of child process to
+    @param [in] args       Command with arguments given either as quoted string
+                           or array of command name and arguments. In the latter
+                           case, the array elements are converted to strings
+                           using the built-in str() function. Hence, any type
+                           which can be converted to a string is permitted.
+                           The first argument must be the name or path of the
+                           executable of the command.
+    @param [in] quiet      Turns off output of @c stdout of child process to
                            stdout of parent process.
     @param [in] stdout     Whether to return the command output.
     @param [in] allow_fail If true, does not raise an exception if return
-                           value is non-zero. Otherwise, a SubprocessError is
+                           value is non-zero. Otherwise, a @c SubprocessError is
                            raised by this function.
     @param [in] verbose    Verbosity of output messages.
                            Does not affect verbosity of executed command.
     @param [in] simulate   Whether to simulate command execution only.
 
-    @return A tuple consisting of exit code of executed command and command
-            output if both @p stdout and @p allow_fail are True.
-            If only @p stdout is True, only the command output is returned.
-            If only @p allow_fail is True, only the exit code is returned.
-            Otherwise, this function always returns 0.
+    @returns A tuple consisting of exit code of executed command and command
+             output if both @p stdout and @p allow_fail are @c True.
+             If only @p stdout is @c True, only the command output is returned.
+             If only @p allow_fail is @c True, only the exit code is returned.
+             Otherwise, this function always returns 0.
 
     @throws SubprocessError If command execution failed. This exception is not
                             raised if the command executed with non-zero exit
-                            code but @p allow_fail set to True.
+                            code but @p allow_fail set to @c True.
 
     """
     # convert args to list of strings

@@ -2,11 +2,11 @@
 # @file  ExecutableTargetInfo.pm
 # @brief Provides information about executables built by BASIS.
 #
-# @note The ExecutableTargetInfo.pm module is automatically created by
+# @note The ExecutableTargetInfo.pm module was automatically created by
 #       BASIS from the template file ExecutableTargetInfo.pm.in which is
 #       part of the BASIS installation.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -14,7 +14,7 @@
 # @ingroup BasisPerlUtilities
 ##############################################################################
 
-package SBIA::@PROJECT_NAME@::ExecutableTargetInfo;
+package @PROJECT_NAMESPACE_PERL@::ExecutableTargetInfo;
 
 use strict;
 use warnings;
@@ -26,19 +26,20 @@ use warnings;
 our ($VERSION, @ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS);
 
 BEGIN {
-    use Exporter ();
+    use Exporter();
+    use @PROJECT_NAMESPACE_PERL@::Config qw(VERSION);
 
-    $VERSION = @PROJECT_VERSION_PERL@;
-    @ISA     = qw (Exporter);
+    $VERSION = VERSION;
+    @ISA     = qw(Exporter);
 
     %EXPORT_TAGS = (
-        default => [qw (
+        default => [qw(
             get_executable_name
             get_executable_directory
             get_executable_path
         )],
 
-        everything => [qw (
+        everything => [qw(
             get_executable_name
             get_executable_directory
             get_executable_path
@@ -47,7 +48,7 @@ BEGIN {
         )]
     );
 
-    Exporter::export_ok_tags ('everything');
+    Exporter::export_ok_tags('everything');
 }
 
 # ============================================================================
@@ -58,7 +59,7 @@ use Cwd            qw(realpath);
 use File::Basename qw(dirname basename);
 use File::Spec     qw(rel2abs);
 
-use SBIA::BASIS::File::Which;
+use SBIA::BASIS::Which;
 
 # ============================================================================
 # private data
@@ -94,7 +95,7 @@ sub get_target_uid
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
-    defined $_location or initialize ();
+    defined $_location or initialize();
     # handle invalid arguments
     defined $target or return undef;
     length ($target) > 0 or return undef;
@@ -120,7 +121,7 @@ sub get_target_uid
 # @returns Whether the given build target is known by this module.
 sub is_known_target
 {
-    my $uid = get_target_uid ($_[0]);
+    my $uid = get_target_uid($_[0]);
     defined $uid or return 0;
     $uid =~ s/^[.]?(.*)/$1/;
     exists $_location->{$uid};
@@ -134,9 +135,9 @@ sub is_known_target
 # @returns Name part of executable file path.
 sub get_executable_name
 {
-    my $path = get_executable_path (@_);
+    my $path = get_executable_path(@_);
     defined $path or return undef;
-    return basename ($path);
+    return basename($path);
 }
 
 # ----------------------------------------------------------------------------
@@ -147,9 +148,9 @@ sub get_executable_name
 # @returns Directory part of executable file path.
 sub get_executable_directory
 {
-    my $path = get_executable_path (@_);
+    my $path = get_executable_path(@_);
     defined $path or return undef;
-    return dirname ($path);
+    return dirname($path);
 }
 
 # ----------------------------------------------------------------------------
@@ -170,9 +171,9 @@ sub get_executable_path
 {
     my $path = undef;
     if (@_ == 0) {
-        $path = realpath ($0);
+        $path = realpath($0);
     } else {
-        my $uid = get_target_uid ($_[0]);
+        my $uid = get_target_uid($_[0]);
         defined $uid and $uid =~ s/^[.]?(.*)/$1/;
         if (defined $uid and exists $_location->{$uid}) {
             $path = $_location->{$uid};
@@ -189,11 +190,11 @@ sub get_executable_path
                 }
                 $path =~ s/\$\(IntDir\)//g;
             }
-            $path = File::Spec->rel2abs ($path, dirname (__FILE__));
+            $path = File::Spec->rel2abs($path, dirname (__FILE__));
             # the realpath() function only works for existing paths
-            $path = realpath ($path) if -e $path;
+            $path = realpath($path) if -e $path;
         } else {
-            $path = which ($_[0])
+            $path = which($_[0])
         }
     }
     return $path;

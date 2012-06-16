@@ -12,9 +12,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# return if already loaded
-[ "${_SBIA_@NAMESPACE_UPPER@_EXECUTABLETARGETINFO_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_@NAMESPACE_UPPER@_EXECUTABLETARGETINFO_INCLUDED=1
+[ ${_SBIA_@NAMESPACE_UPPER@_EXECUTABLETARGETINFO_INCLUDED:-1} ] || {
+_SBIA_@NAMESPACE_UPPER@_EXECUTABLETARGETINFO_INCLUDED=0
 
 
 # ============================================================================
@@ -245,13 +244,13 @@ function _executabletargetinfo_sanitize
 # ----------------------------------------------------------------------------
 ## @brief Add (key, value) pair to executable target info "hash".
 #
-# @sa _executabletargetinfo_get()
-#
 # @param [in] key   Hash key.
 # @param [in] name  Name of the hash table.
 # @param [in] value Value associated with the given hash key.
 #
 # @returns Sets a readonly variable that represents the (key, value) entry.
+#
+# @sa _executabletargetinfo_get()
 function _executabletargetinfo_add
 {
     [ $# -eq 3 ] || return 1
@@ -279,8 +278,6 @@ function _executabletargetinfo_add
 # ----------------------------------------------------------------------------
 ## @brief Get value from executable target info "hash".
 #
-# @sa _executabletargetinfo_add()
-#
 # @param [out] value Value corresponding to given @p key
 #                    or an empty string if key is unknown.
 # @param [in]  key   Hash key.
@@ -290,6 +287,8 @@ function _executabletargetinfo_add
 #
 # @retval 0 On success.
 # @retval 1 On failure.
+#
+# @sa _executabletargetinfo_add()
 function _executabletargetinfo_get
 {
     [ $# -eq 3 ] || return 1
@@ -341,12 +340,12 @@ function _executabletargetinfo_initialize
 # aliases (optional)
 # ============================================================================
 
-if [ -z "${use_executable_target_aliases}" ] || [ ${use_executable_target_aliases} -eq 0 ]; then
-    return
+if [ "${basis_use_executable_aliases}" == 'true' ]; then
+    # define aliases of build target names to executable file paths
+    @EXECUTABLE_ALIASES@
+    # enable expansion of aliases also in non-interactive shells
+    shopt -s expand_aliases
 fi
 
-# define aliases of build target names to executable file paths
-@EXECUTABLE_ALIASES@
 
-# enable expansion of aliases also in non-interactive shells
-shopt -s expand_aliases
+} # executabletargetinfo.sh

@@ -1,15 +1,14 @@
 ##############################################################################
 # @file  basis.sh
-# @brief Main module of BASIS BASH Utilities.
+# @brief Main module of BASIS Bash Utilities.
 #
-# This module sources the modules of the BASIS BASH Utilities. Hence, it is
-# sufficient to only source this module. This is done by the
-# @c &#64;BASIS_BASH_UTILITIES&#64; code.
+# This module sources the modules of the BASIS Bash Utilities. Hence, it is
+# sufficient to only source this module.
 #
 # @note The basis.sh module is automatically created by BASIS from the
 #       template file basis.sh.in which is part of the BASIS installation.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -17,9 +16,8 @@
 # @ingroup BasisBashUtilities
 ##############################################################################
 
-# return if already loaded
-[ "${_SBIA_@NAMESPACE_UPPER@_BASIS_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_@NAMESPACE_UPPER@_BASIS_INCLUDED=1
+[ "${_SBIA_@NAMESPACE_UPPER@_BASIS_INCLUDED}" == 'true' ] || {
+_SBIA_@NAMESPACE_UPPER@_BASIS_INCLUDED='true'
 
 
 # ============================================================================
@@ -34,10 +32,15 @@ readonly _BASIS_DIR=@BASIS_BASH___DIR__@
 # ============================================================================
 
 # non-project specific
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"    # core utilities
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/shflags.sh" # command-line parsing library
+. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"      # core utilities
+. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/path.sh"      # file path manipulation
+. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh" # basic utility functions
+. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/shflags.sh"   # command-line parsing library
 
 # project specific
+. "${_BASIS_DIR}/config.sh"               # project configuration
 . "${_BASIS_DIR}/executabletargetinfo.sh" # info about executable targets
 . "${_BASIS_DIR}/stdaux.sh"               # standard higher-level utilities
 
+
+} # basis.sh

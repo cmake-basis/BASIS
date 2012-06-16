@@ -2,10 +2,10 @@
 # @file  StdAux.pm
 # @brief Standard auxiliary functions.
 #
-# @note The StdAux.pm module is automatically created by BASIS from the
+# @note The StdAux.pm module was automatically created by BASIS from the
 #       template file StdAux.pm.in which is part of the BASIS installation.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -13,7 +13,7 @@
 # @ingroup BasisPerlUtilities
 ##############################################################################
 
-package SBIA::@PROJECT_NAME@::StdAux;
+package @PROJECT_NAMESPACE_PERL@::StdAux;
 
 # ============================================================================
 # modules
@@ -22,7 +22,8 @@ package SBIA::@PROJECT_NAME@::StdAux;
 use strict;
 use warnings;
 
-use SBIA::@PROJECT_NAME@::ExecutableTargetInfo qw(get_executable_path get_executable_name);
+use @PROJECT_NAMESPACE_PERL@::Config qw(PROJECT RELEASE CONTACT COPYRIGHT LICENSE);
+use @PROJECT_NAMESPACE_PERL@::ExecutableTargetInfo;
 
 # ============================================================================
 # exports
@@ -31,26 +32,38 @@ use SBIA::@PROJECT_NAME@::ExecutableTargetInfo qw(get_executable_path get_execut
 our ($VERSION, @ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS);
 
 BEGIN {
-    use Exporter ();
+    use Exporter();
+    use @PROJECT_NAMESPACE_PERL@::Config qw(VERSION);
 
-    $VERSION = @PROJECT_VERSION_PERL@;
-    @ISA     = qw (Exporter);
+    $VERSION = VERSION;
+    @ISA     = qw(Exporter);
 
     %EXPORT_TAGS = (
-        default => [qw (
-            print_version
+        default => [qw(
             print_contact
+            print_version
+            get_executable_path
+            get_executable_name
+            get_executable_directory
             execute_process
         )],
 
-        everything => [qw (
-            print_version
+        everything => [qw(
             print_contact
+            print_version
+            get_executable_path
+            get_executable_name
+            get_executable_directory
             execute_process
+            PROJECT
+            RELEASE
+            CONTACT
+            COPYRIGHT
+            LICENSE
         )]
     );
 
-    Exporter::export_ok_tags ('everything');
+    Exporter::export_ok_tags('everything');
 }
 
 
@@ -59,56 +72,91 @@ BEGIN {
 
 
 # ============================================================================
-# version / contact
+# executable information
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Print version information including copyright and license notices.
+use SBIA::BASIS::Utilities qw(print_contact);
+
+# ----------------------------------------------------------------------------
+## Print version information including copyright and license notices.
+#
+# Example:
+# @code
+# print_version('foo', copyright => '', license => "Apache License 2.0");
+# @endcode
 #
 # @param [in] name      Name of executable. Should not be set programmatically
-#                       to the first argument of the main script.
-# @param [in] copyright The copyright notice. If undef, the official default
-#                       copyright is used without year, which is not desired.
-#                       If an empty string is given, no copyright notice is
-#                       printed.
-# @param [in] license   Information regarding licensing. If undef, the official
-#                       software license of SBIA is used. If an empty string
-#                       is given, no license information is printed.
+#                       to the first argument to the __main__ module.
+# @param [in] copyright The copyright notice. If None, the default copyright
+#                       without year is used, which is not recommended as the
+#                       copyright years should always be included. If an
+#                       empty string is given, no copyright notice is printed.
+# @param [in] license   Information regarding licensing. If None, the default
+#                       software license is used. If an empty string is given,
+#                       no license information is printed.
 sub print_version
 {
-    my ($name, $copyright, $license) = @_;
-    # version
-    die "print_version(): Executable name not specified!\n" unless defined($name);
-    print $name, " (@PROJECT_NAME@) @PROJECT_RELEASE@\n";
-    # copyright notice
-    if (defined $copyright) {
-        print $copyright, "\n" unless $copyright == '';
-    } else {
-        print "Copyright (c) University of Pennsylvania. All rights reserved.\n";
+    my $name = shift or die "print_version(): Missing name argument";
+    if ($name =~ m/^(copyright|license)$/) {
+        warn "print_version(): Name argument matches option name. Missing name argument?";
     }
-    # license information
-    if (defined $license) {
-        print $license, "\n" unless $license == '';
-    } else {
-        print "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.\n";
-    }
+    my %defaults = (copyright => undef, license => undef);
+    my %options  = (%defaults, @_);
+    SBIA::BASIS::Utilities::print_version($name, RELEASE,
+                                          project   => PROJECT,
+                                          copyright => $options{'copyright'},
+                                          license   => $options{'license'});
 }
 
 # ----------------------------------------------------------------------------
-## @brief Print contact information.
+## @brief Get absolute path of executable file.
 #
-# @param [in] contact Name of contact. If undef, the default contact of SBIA
-#                     is used, which is recommended.
-sub print_contact
+# This function determines the absolute file path of an executable. If no
+# arguments are given, the absolute path of this executable is returned.
+# If the command names a known executable build target, the absolute path to
+# the corresonding built (and installed) executable file is returned.
+# Otherwise, the named command is searched in the system @c PATH and its
+# absolute path returned if found. If the executable is not found, @c undef
+# is returned.
+#
+# @param [in] name Name of command or @c undef.
+#
+# @returns Absolute path of executable or @c undef if not found.
+#          If @p name is @c undef, the path of this executable is returned.
+sub get_executable_path
 {
-    my $contact = $_[0];
-    print "Contact:\n  ";
-    if (defined $contact) {
-        print $contact
-    } else {
-        print "SBIA Group <sbia-software at uphs.upenn.edu>"
-    }
-    print "\n";
+    my $path = @PROJECT_NAMESPACE_PERL@::ExecutableTargetInfo::get_executable_path(@_);
+    $path = SBIA::BASIS::Utilities::get_executable_path(@_) unless defined $path;
+    return $path;
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get name of executable file.
+#
+# @param [in] name Name of command or @c undef.
+#
+# @returns Name of executable file or @c undef if not found.
+#          If @p name is @c undef, the path of this executable is returned.
+sub get_executable_name
+{
+    my $path = get_executable_path(@_);
+    defined $path or return undef;
+    return basename($path);
+}
+
+# ----------------------------------------------------------------------------
+## @brief Get directory of executable file.
+#
+# @param [in] name Name of command or @c undef.
+#
+# @returns Absolute path of directory containing executable or @c undef if not found.
+#          If @p name is @c undef, the directory of this executable is returned.
+sub get_executable_directory
+{
+    my $path = get_executable_path(@_);
+    defined $path or return undef;
+    return dirname($path);
 }
 
 # ============================================================================
@@ -118,26 +166,25 @@ sub print_contact
 # ----------------------------------------------------------------------------
 ## @brief Execute command as subprocess.
 #
-# This command takes either an array reference reference or a string as first
-# argument. All other arguments are keyword arguments using hash notation.
+# This command takes either an array reference or a string as first argument.
+# All other arguments are keyword arguments using hash notation.
 #
 # Example:
 # @code
 # # only returns exit code of command but does not output anything
 # my $status = execute_process(['ls', '/'], quiet => 1);
-# # returns exit code of command and returns command output without
-# # printing it to stdout.
+# # returns exit code of command and returns command output w/o printing to stdout
 # my ($status, $stdout) = execute_process('ls /', quiet => 1, stdout => 1);
 # @endcode
 #
-# @param [in] args       Command with arguments given either as single quoted
-#                        string or array of command name and arguments.
-#                        In the latter case, the array elements are converted
-#                        to strings using the built-in str() function.
-#                        Hence, any type which can be converted to a string
-#                        can be used.
-# @param [in] quiet      Turns off output of stdout of child process to
-#                        stdout of parent process.
+# @param [in] args       Command with arguments given either as quoted string
+#                        or reference to array of command name and arguments.
+#                        The first argument must be the name or path of the
+#                        executable of the command. If it names a known
+#                        executable build target, the executable built
+#                        (and installed) by this target is executed.
+# @param [in] quiet      Turns off output of @c stdout of child process to
+#                        @c stdout of parent process.
 # @param [in] stdout     Whether to return the command output.
 # @param [in] allow_fail If true, does not raise an exception if return
 #                        value is non-zero. Otherwise, an exception is
@@ -147,93 +194,31 @@ sub print_contact
 # @param [in] simulate   Whether to simulate command execution only.
 #
 # @return A tuple consisting of exit code of executed command and command
-#         output if both @p stdout and @p allow_fail are True.
-#         If only @p stdout is True, only the command output is returned.
-#         If only @p allow_fail is True, only the exit code is returned.
+#         output if both @p stdout and @p allow_fail are true.
+#         If only @p stdout is true, only the command output is returned.
+#         If only @p allow_fail is true, only the exit code is returned.
 #         Otherwise, this function always returns 0.
 #
 # @throws die If command execution failed. This exception is not raised
 #             if the command executed with non-zero exit code but
-#             @p allow_fail is set to a non-false value.
+#             @p allow_fail is true.
 sub execute_process
 {
     # arguments
-    my $args = shift or die "execute_process(): Too few arguments given";
+    my $args = shift or die "execute_process(): No command specified for execution";
     if ($args =~ m/^(quiet|stdout|allow_fail|verbose|simulate)$/) {
-        warn "execute_process(): First argument matches option name. Missing args argument?";
+        warn "First argument matches option name. Missing args argument?";
     }
-    my %defaults = (quiet => 0, stdout => 0, allow_fail => 0, 
-            verbose => 0, simulate => 0);
-    my %options = (%defaults, @_);
-    # get command name and arguments
-    my $command = '';
-    my $arguments = '';
-    # if input is an array
-    if (ref($args) eq 'ARRAY') {
-        @$args > 0 or die "execute_process(): No command specified";
-        $command = shift @$args;
-        $arguments = '';
-        for my $arg (@$args) {
-            if ($arg =~ m/\s/) {
-                # escape double quotes
-                $arg =~ s/"/\\"/g;
-                # quote argument
-                $arg = '"' . $arg . '"';
-            }
-            $arguments .= ' ';
-            $arguments .= $arg;
-        }
-    # if input is a string
-    } elsif (ref($args) eq '') {
-        # extract command from string
-        $args =~ m/^\s*('([^']|\\')*[^\\]'|"([^"]|\\")*[^\\]"|\S+)(.*)$/;
-        $command = $1;
-        $arguments = $4;
-    # otherwise, wrong input type
-    } else {
-        die "execute_process(): Argument args must be either array reference or string";
-    }
-    # map build target name to executable file
+    my %defaults = (quiet => 0, stdout => 0, allow_fail => 0, verbose => 0, simulate => 0);
+    my %options  = (%defaults, @_);
+    # get absolute path of executable
+    my ($command, $arguments) = SBIA::BASIS::Utilities::split_command_and_arguments($args);
     my $exec_path = get_executable_path($command);
-    defined $exec_path or die "$command: Either unknown build target or command not found";
-    # quote executable path if necessary
-    not $exec_path =~ m/\s/ or $exec_path = '"' . $exec_path . '"';
-    # prepend absolute path of found executable
+    defined $exec_path or die "$command: Command not found";
+    $exec_path = '"' . $exec_path . '"' if $exec_path =~ m/'|\s/; # quote if necessary
     $args = $exec_path . $arguments;
-    # some verbose output
-    if ($options{'verbose'} gt 0) {
-        print "\$ ", $args;
-        $options{'simulate'} and print " (simulated)";
-        print "\n";
-    }
-    # execute command
-    my $status = 0;
-    my $output = '';
-    if (not $options{'simulate'}) {
-        open CMD, "$args |" or die "$command: Failed to open subprocess";
-        my $ofh = select STDOUT;
-        $|++;
-        while (<CMD>) {
-            print $_ unless $options{'quiet'};
-            $output .= $_ if $options{'stdout'};
-        }
-        $|--;
-        select $ofh;
-        close CMD;
-        $status = $?;
-    }
-    # if command failed, throw an exception
-    if ($status != 0 and not $options{'allow_fail'}) {
-        die "Command $args failed";
-    }
-    # return
-    if ($options{'stdout'} and $options{'allow_fail'}) {
-        return ($status, $output);
-    } elsif ($options{'stdout'}) {
-        return $output;
-    } else {
-        return $status;
-    }
+    # execute subprocess
+    return SBIA::BASIS::Utilities::execute_process($args, %options);
 }
 
 

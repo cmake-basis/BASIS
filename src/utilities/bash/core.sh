@@ -1,11 +1,11 @@
 ##############################################################################
 # @file  core.sh
-# @brief Core functions for BASH.
+# @brief Core functions for Bash development.
 #
-# This is the core module of the BASIS utilities for BASH. It implements
-# fundamental functions for the development in BASH. Therefore, this module
+# This is the core module of the BASIS utilities for Bash. It implements
+# fundamental functions for the development in Bash. Therefore, this module
 # has to be kept independent of any other modules and shall only make use
-# of BASH builtin's and basic commands.
+# of Bash builtin's and basic commands.
 #
 # Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -26,7 +26,9 @@ _SBIA_BASIS_CORE_INCLUDED=1
 # constants
 # ============================================================================
 
+## @brief Major version number of Bash interpreter.
 BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
+## @brief Minor version number of Bash interpreter.
 BASH_VERSION_MINOR=${BASH_VERSION#*.}
 BASH_VERSION_MINOR=${BASH_VERSION_MINOR%%.*}
 
@@ -194,89 +196,6 @@ There is NO WARRANTY, to the extent permitted by law."
                 return 1 ;;
         esac
     done
-}
-
-# ============================================================================
-# quoted string <-> array
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-## @brief Build quoted string from array.
-#
-# Example:
-# @code
-# basis_array_to_quoted_string str 'this' "isn't" a 'simple example of "a quoted"' 'string'
-# echo "${str}"
-# @endcode
-#
-# @param [out] var      Name of result variable for quoted string.
-# @param [in]  elements All remaining arguments are considered to be the
-#                       elements of the array to convert.
-#
-# @returns Nothing.
-function basis_array_to_quoted_string
-{
-    local str=''
-    local element=''
-    # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
-    # turns the array into a single string value if local is used
-    if [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ]; then
-        local args=("$@")
-    else
-        args=("$@")
-    fi
-    local i=1
-    while [ $i -lt ${#args[@]} ]; do
-        element="${args[$i]}"
-        # escape double quotes
-        element=`echo -n "${element}" | sed "s/\"/\\\\\\\\\"/g"`
-        # surround element by double quotes if it contains single quotes or whitespaces
-        match "${element}" "[' ]" && element="\"${element}\""
-        # append element
-        [ -n "${str}" ] && str="${str} "
-        str="${str}${element}"
-        # next argument
-        (( i++ ))
-    done
-    local "$1" && upvar $1 "${str}"
-}
-
-# ----------------------------------------------------------------------------
-## @brief Split (quoted) string.
-#
-# This function can be used to split a (quoted) string into its elements.
-#
-# Example:
-# @code
-# str="'this' 'isn\'t' a \"simple example of \\\"a quoted\\\"\" 'string'"
-# basis_split array "${str}"
-# echo ${#array[@]}  # 5
-# echo "${array[3]}" # simple example of "a quoted"
-# @endcode
-#
-# @param [out] var Result variable for array.
-# @param [in]  str Quoted string.
-#
-# @returns Nothing.
-function basis_split
-{
-    [ $# -eq 2 ] || return 1
-    local _basis_split_str=$2
-    # match arguments from left to right
-    while match "${_basis_split_str}" "[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\")*[^\\]\"|[^ ]+)(.*)"; do
-        # matched element including quotes
-        _basis_split_element="${BASH_REMATCH[1]}"
-        # remove quotes
-        _basis_split_element=`echo "${_basis_split_element}" | sed "s/^['\"]//;s/['\"]$//"`
-        # replace quoted quotes within argument by quotes
-        _basis_split_element=`echo "${_basis_split_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
-        # add to resulting array
-        _basis_split_array[${#_basis_split_array[@]}]="${_basis_split_element}"
-        # continue with residual command-line
-        _basis_split_str="${BASH_REMATCH[4]}"
-    done
-    # return
-    local "$1" && upvar $1 "${_basis_split_array[@]}"
 }
 
 
