@@ -14,30 +14,30 @@ add_subdirectory (cxx)
 
 # ----------------------------------------------------------------------------
 # Java utilities
-if (BUILD_UTILITIES_FOR_JAVA)
+if (Java_FOUND)
   add_subdirectory (java)
 endif ()
 
 # ----------------------------------------------------------------------------
 # Python utilities
-if (BUILD_UTILITIES_FOR_PYTHON)
+if (PythonInterp_FOUND)
   add_subdirectory (python)
 endif ()
 
 # ----------------------------------------------------------------------------
 # Perl utilities
-if (BUILD_UTILITIES_FOR_PERL)
+if (Perl_FOUND)
   add_subdirectory (perl)
 endif ()
 
 # ----------------------------------------------------------------------------
 # BASH utilities
-if (BUILD_UTILITIES_FOR_BASH)
+if (BASH_FOUND)
   add_subdirectory (bash)
 endif ()
 
 # ----------------------------------------------------------------------------
 # MATLAB utilities
-if (BUILD_UTILITIES_FOR_MATLAB)
+if (MATLAB_FOUND)
   add_subdirectory (matlab)
 endif ()

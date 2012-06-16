@@ -38,11 +38,11 @@ set (TESTING_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
 set (TESTING_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}")
 
 ## @brief Whether Python utilities are build.
-set (TEST_PYTHON_UTILITIES "${BUILD_UTILITIES_FOR_PYTHON}")
+set (TEST_PYTHON_UTILITIES "${PythonInterp_FOUND}")
 ## @brief Whether Perl utilities are build.
-set (TEST_PERL_UTILITIES "${BUILD_UTILITIES_FOR_PERL}")
+set (TEST_PERL_UTILITIES "${Perl_FOUND}")
 ## @brief Whether BASH utilities are build.
-set (TEST_BASH_UTILITIES "${BUILD_UTILITIES_FOR_BASH}")
+set (TEST_BASH_UTILITIES "${BASH_FOUND}")
 
 # ============================================================================
 # utilities

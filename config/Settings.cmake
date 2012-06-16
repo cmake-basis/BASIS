@@ -23,25 +23,6 @@
 ##############################################################################
 
 # ============================================================================
-# options
-# ============================================================================
-
-set (BUILD_UTILITIES_FOR_PYTHON ${PythonInterp_FOUND}) # USE_PythonInterp option
-set (BUILD_UTILITIES_FOR_PERL   ${Perl_FOUND})         # USE_Perl option
-set (BUILD_UTILITIES_FOR_BASH   ${BASH_FOUND})         # USE_BASH option
-
-set (BASIS_UTILITIES_ENABLED CXX) # set in BASISConfig.cmake for other projects
-if (BUILD_UTILITIES_FOR_PYTHON)
-  list (APPEND BASIS_UTILITIES_ENABLED PYTHON)
-endif ()
-if (BUILD_UTILITIES_FOR_PERL)
-  list (APPEND BASIS_UTILITIES_ENABLED PERL)
-endif ()
-if (BUILD_UTILITIES_FOR_BASH)
-  list (APPEND BASIS_UTILITIES_ENABLED BASH)
-endif ()
-
-# ============================================================================
 # directories
 # ============================================================================
 
@@ -82,21 +63,34 @@ set (BASIS_INCLUDES_CHECK_EXCLUDE
 # utilities
 # ============================================================================
 
+# list of enabled utilities
+# in case of other projects defined by BASISConfig.cmake
+set (BASIS_UTILITIES_ENABLED CXX)
+if (PythonInterp_FOUND)
+  list (APPEND BASIS_UTILITIES_ENABLED PYTHON)
+endif ()
+if (Perl_FOUND)
+  list (APPEND BASIS_UTILITIES_ENABLED PERL)
+endif ()
+if (BASH_FOUND)
+  list (APPEND BASIS_UTILITIES_ENABLED BASH)
+endif ()
+
 # configure all BASIS utilities such that they are included in API
 # documentation even if BASIS does not use them itself
-if (BUILD_UTILITIES_FOR_JAVA)
+if (Java_FOUND)
   basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES TRUE)
 endif ()
-if (BUILD_UTILITIES_FOR_PYTHON)
+if (PythonInterp_FOUND)
   basis_set_project_property (PROPERTY PROJECT_USES_PYTHON_UTILITIES TRUE)
 endif ()
-if (BUILD_UTILITIES_FOR_PERL)
+if (Perl_FOUND)
   basis_set_project_property (PROPERTY PROJECT_USES_PERL_UTILITIES TRUE)
 endif ()
-if (BUILD_UTILITIES_FOR_BASH)
+if (BASH_FOUND)
   basis_set_project_property (PROPERTY PROJECT_USES_BASH_UTILITIES TRUE)
 endif ()
-if (BUILD_UTILITIES_FOR_MATLAB)
+if (MATLAB_FOUND)
   basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES TRUE)
 endif ()
 
