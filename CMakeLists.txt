@@ -93,6 +93,7 @@ set (
     "FindMOSEK.cmake"
     "FindNiftiCLib.cmake"
     "FindOpenCV.cmake"
+    "FindPerl.cmake"
     "FindPerlLibs.cmake"
     "FindPythonInterp.cmake"
     "FindSphinx.cmake"
