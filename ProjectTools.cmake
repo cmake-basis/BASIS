@@ -904,9 +904,7 @@ macro (basis_project_initialize)
 
   # print project information
   if (BASIS_VERBOSE AND NOT PROJECT_IS_MODULE)
-    message (STATUS "Project:")
-    message (STATUS "  Name:    ${PROJECT_NAME}")
-    message (STATUS "  Release: ${PROJECT_RELEASE}")
+    message (STATUS "${PROJECT_NAME} ${PROJECT_RELEASE}")
   endif ()
 
   # --------------------------------------------------------------------------
