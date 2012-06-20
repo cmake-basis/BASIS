@@ -50,16 +50,6 @@ std::string getcwd();
 std::string exepath();
 
 /**
- * @brief Get canonical path of directory containing executable file.
- *
- * @return Canonical path of directory containing executable file.
- *
- * @sa exepath()
- * @sa exename()
- */
-std::string exedir();
-
-/**
  * @brief Get name of executable.
  *
  * @note The name of the executable may or may not include the file name
@@ -76,6 +66,16 @@ std::string exedir();
  * @sa exedir()
  */
 std::string exename();
+
+/**
+ * @brief Get canonical path of directory containing executable file.
+ *
+ * @return Canonical path of directory containing executable file.
+ *
+ * @sa exepath()
+ * @sa exename()
+ */
+std::string exedir();
 
 /**
  * @brief Read value of symbolic link.
