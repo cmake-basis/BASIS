@@ -80,15 +80,15 @@ std::string exedir();
 /**
  * @brief Read value of symbolic link.
  *
- * @param [in]  link  Path of symbolic link.
- * @param [out] value Value of symbolic link.
+ * @param [in] path Path of symbolic link.
  *
- * @return Whether the given path is a symbolic link and its value could be
- *         read and returned successfully.
+ * @returns Value of symbolic link. Can be relative or absolute path. If the
+ *          link could not be read, an empty string is returned. Note that
+ *          on Windows, this function always returns an empty string.
  *
  * @sa realpath()
  */
-bool readlink(const std::string& link, std::string& value);
+std::string readlink(const std::string& path);
 
 /**
  * @brief Make directory.

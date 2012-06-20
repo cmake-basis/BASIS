@@ -295,7 +295,7 @@ string exepath(const string& name)
         //      of which() even though BASIS includes a Python implementation
         //      that can also be used on Windows. Still, a native C++
         //      implementation is desireable.
-        if (os::path::isrel(exec_name) && info.is_known_target("sbia.basis.which")) {
+        if (!os::path::isabs(exec_name) && info.is_known_target("sbia.basis.which")) {
             vector<string> which(2);
             which[0] = "sbia.basis.which";
             which[1] = name;

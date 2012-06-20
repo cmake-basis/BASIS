@@ -58,7 +58,6 @@ string getcwd()
         wd = buffer;
         free(buffer);
     }
-    if (!wd.empty()) wd = path::posix(wd, true);
     return wd;
 }
 
@@ -152,44 +151,29 @@ string exedir()
 }
 
 // ---------------------------------------------------------------------------
-bool readlink(const string& link, string& value)
+string readlink(const string& path)
 {
-    if (!path::isvalid(link)) {
-        BASIS_THROW(invalid_argument, "Invalid path: '" << link << "'");
-    }
-
-    bool ok = true;
-#if WINDOWS
-    value = link;
-#else
+    string value;
+#if UNIX
     char* buffer = NULL;
     char* newbuf = NULL;
     size_t buflen = 256;
-
     for (;;) {
         newbuf = reinterpret_cast<char*>(realloc(buffer, buflen * sizeof(char)));
-        if (!newbuf) {
-            ok = false;
-            break;
-        }
+        if (!newbuf) break;
         buffer = newbuf;
-
-        int n = ::readlink(link.c_str(), buffer, buflen);
-
-        if (n < 0) {
-            ok = false;
-            break;
-        } else if (static_cast<size_t>(n) < buflen) {
+        int n = ::readlink(path.c_str(), buffer, buflen);
+        if (n < 0) break;
+        if (static_cast<size_t>(n) < buflen) {
             buffer[n] = '\0';
             value = buffer;
             break;
         }
         buflen += 256;
     }
-
     free(buffer);
 #endif
-    return ok;
+    return value;
 }
 
 // ---------------------------------------------------------------------------

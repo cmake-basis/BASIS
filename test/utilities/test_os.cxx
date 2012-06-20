@@ -25,29 +25,49 @@ using namespace std;
 
 
 // ---------------------------------------------------------------------------
-// Tests the retrieval of the current working directory
-TEST (Path, GetWorkingDirectory)
+TEST (os, getcwd)
 {
     // get working directory
     string wd;
     ASSERT_NO_THROW (wd = os::getcwd());
-
     // path may not be empty
-    ASSERT_FALSE (wd.empty()) << "Working directory may not be empty";
-
+    ASSERT_FALSE(wd.empty()) << "Working directory may not be empty";
     // path should be absolute
-    EXPECT_FALSE (os::path::isrel(wd)) << "Working directory must be absolute";
-
+    EXPECT_TRUE(os::path::isabs(wd)) << "Working directory must be absolute";
     // path should have only slashes, no backslashes
-    EXPECT_EQ (string::npos, wd.find('\\')) << "Working directory may only contain slashes (/) as path separators";
-
+    EXPECT_EQ(string::npos, wd.find('\\')) << "Working directory may only contain slashes (/) as path separators";
     // path should not have trailing slash
-    EXPECT_NE ('/', wd[wd.size() - 1]) << "Working directory must not have trailing slash (/)";
+    EXPECT_NE('/', wd[wd.size() - 1]) << "Working directory must not have trailing slash (/)";
 }
 
 // ---------------------------------------------------------------------------
-// Tests the creation of new directories and their removal.
-TEST (Path, MakeRemoveDirectory)
+TEST (os, exepath)
+{
+    string path;
+    EXPECT_NO_THROW (path = os::exepath());
+    cout << path << endl;
+    EXPECT_STREQ("test_os", os::path::basename(path).c_str());
+}
+
+// ---------------------------------------------------------------------------
+TEST (os, exename)
+{
+    string name;
+    EXPECT_NO_THROW(name = os::exename());
+    EXPECT_STREQ("test_os", name.c_str());
+}
+
+// ---------------------------------------------------------------------------
+TEST (os, exedir)
+{
+    string path;
+    EXPECT_NO_THROW(path = os::exedir());
+    cout << path << endl;
+    EXPECT_TRUE(path == os::path::dirname(os::exepath()));
+}
+
+// ---------------------------------------------------------------------------
+TEST (os, makermdirs)
 {
     string dir;
     // already existing directory
@@ -68,68 +88,31 @@ TEST (Path, MakeRemoveDirectory)
 }
 
 // ---------------------------------------------------------------------------
-// Tests the reading of a symbolic link's value
-TEST (Path, ReadLink)
+TEST (os, readlink)
 {
-    std::string value;
-#if WINDOWS
-    EXPECT_TRUE (os::readlink("/proc/exe", value));
-    EXPECT_TRUE (value == "/proc/exe");
-    EXPECT_TRUE (os::readlink("/does/not/exist", value));
-    EXPECT_TRUE (value == "/does/not/exist");
-#else
-    const string tmpDir = os::getcwd() + "/basis-path-test-read_symlink";
-    string cmd, link;
- 
-    cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
-    ASSERT_TRUE (system(cmd.c_str ()) == 0) << cmd << " failed";
+    EXPECT_STREQ("", os::readlink("").c_str());
+    #if WINDOWS
+        EXPECT_STREQ("", os::readlink("/proc/exe").c_str());
+        EXPECT_STREQ("", os::readlink("/does/not/exist"));
+    #else
+        const string tmpDir = os::getcwd() + "/basis-path-test-read_symlink";
+        string cmd, link;
+     
+        cmd = "mkdir -p \""; cmd += tmpDir; cmd += "\"";
+        ASSERT_TRUE(system(cmd.c_str ()) == 0) << cmd << " failed";
 
-    link  = tmpDir; link += "/symlink";
-    value = "hello world";
-    cmd   = "ln -sn \""; cmd += value; cmd += "\" \""; cmd += link; cmd += "\"";
-    EXPECT_TRUE (system(cmd.c_str ()) == 0) << cmd << " failed";
-    value = "";
-    EXPECT_TRUE (os::readlink(link, value)) << "Link: " << link;
-    EXPECT_STREQ ("hello world", value.c_str ());
-    link  = tmpDir; link += "/nolink";
-    cmd   = "touch \""; cmd += link; cmd += "\"";
-    EXPECT_TRUE (system (cmd.c_str ()) == 0) << cmd << " failed";
-    EXPECT_FALSE (os::readlink(link, value)) << "Link: " << link;
+        link = tmpDir; link += "/symlink";
+        cmd  = "ln -sn \"hello world\" \""; cmd += link; cmd += "\"";
+        EXPECT_TRUE(system(cmd.c_str ()) == 0) << cmd << " failed";
+        EXPECT_STREQ("hello world", os::readlink(link).c_str()) << "Link: " << link;
 
-    cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
-    ASSERT_TRUE (system(cmd.c_str ()) == 0) << cmd << " failed";
-    EXPECT_TRUE (system(cmd.c_str ()) == 0);
-#endif
+        link  = tmpDir; link += "/nolink";
+        cmd   = "touch \""; cmd += link; cmd += "\"";
+        EXPECT_TRUE(system (cmd.c_str ()) == 0) << cmd << " failed";
+        EXPECT_STREQ("", os::readlink(link).c_str()) << "Link: " << link;
 
-    EXPECT_THROW (os::readlink("",     value), invalid_argument);
-    EXPECT_THROW (os::readlink("C::/", value), invalid_argument);
-}
-
-// ---------------------------------------------------------------------------
-// Tests the retrieval of the current executable's path
-TEST (Path, GetExecutablePath)
-{
-    string path;
-    EXPECT_NO_THROW (path = os::exepath());
-    cout << path << endl;
-    EXPECT_STREQ ("test_path", os::path::filename(path).c_str ());
-}
-
-// ---------------------------------------------------------------------------
-// Tests the retrieval of the current executable's directory
-TEST (Path, GetExecutableDirectory)
-{
-    string path;
-    EXPECT_NO_THROW (path = os::exedir());
-    cout << path << endl;
-    EXPECT_TRUE (path == os::path::dirname(os::exepath()));
-}
-
-// ---------------------------------------------------------------------------
-// Tests the retrieval of the current executable's name
-TEST (Path, GetExecutableName)
-{
-    string name;
-    EXPECT_NO_THROW (name = os::exename());
-    EXPECT_STREQ ("test_path", name.c_str ());
+        cmd = "rm -rf \""; cmd += tmpDir; cmd += "\"";
+        ASSERT_TRUE(system(cmd.c_str ()) == 0) << cmd << " failed";
+        EXPECT_TRUE(system(cmd.c_str ()) == 0);
+    #endif
 }
