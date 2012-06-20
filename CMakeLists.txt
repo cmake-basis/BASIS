@@ -96,6 +96,7 @@ set (
     "FindPerl.cmake"
     "FindPerlLibs.cmake"
     "FindPythonInterp.cmake"
+    "FindSparseBayes.cmake"
     "FindSphinx.cmake"
 )
 
