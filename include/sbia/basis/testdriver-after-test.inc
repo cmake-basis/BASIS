@@ -83,13 +83,13 @@
                 }
                 // output the matching baseline for submission to the dashboard
                 cout << "<DartMeasurement name=\"BaselineImageName\" type=\"text/string\">";
-                cout << get_file_name(bestmatch);
+                cout << os::path::basename(bestmatch);
                 cout << "</DartMeasurement>" << std::endl;
                 result += beststatus;
             }
             // empty current working directory
             if (clean_cwd_after_test.getValue()) {
-                clear_directory(get_working_directory().c_str());
+                os::emptydir(os::getcwd().c_str());
             }
         }
 

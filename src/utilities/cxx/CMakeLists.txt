@@ -24,7 +24,8 @@ basis_get_target_name (UTILITIES "${BASIS_UTILITIES_LIBRARY}")
 
 basis_add_library (
   ${UTILITIES} STATIC
-    "path.cxx"       # utility path functions
+    "os.cxx"         # operating system dependent functions
+    "path.cxx"       # file/directory path related functions
     "subprocess.cxx" # subprocess execution
     "stdio.cxx"      # standard I/O functions
     "CmdLine.cxx"    # command-line parsing

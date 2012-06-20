@@ -137,7 +137,7 @@ void testdriversetup(int* argc, char** argv[])
     cout <<  "</DartMeasurement>" << endl;
 
     cout << "<DartMeasurement name=\"Working Directory\" type=\"string\">";
-    cout << get_working_directory();
+    cout << os::getcwd();
     cout <<  "</DartMeasurement>" << endl;
 
     #ifdef ITK_VERSION

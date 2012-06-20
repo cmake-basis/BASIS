@@ -45,13 +45,13 @@
         }
         // empty current working directory
         if (clean_cwd_before_test.getValue()) {
-            clear_directory(get_working_directory().c_str());
+            os::emptydir(os::getcwd().c_str());
         }
         // remove all test output images if existent from previous test run
         if (testcmd.isSet()) {
             for (size_t i = 0; i < regression_tests.size(); i++) {
                 const char* test_image_file = regression_tests[i].test_image_file.c_str();
-                if (is_file(test_image_file)) {
+                if (os::path::isfile(test_image_file)) {
                     if (remove(test_image_file) == 0) {
                         if (verbose.getValue() > 0) {
                             cout << "Removed already existing output image "

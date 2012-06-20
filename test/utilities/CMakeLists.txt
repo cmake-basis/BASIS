@@ -10,6 +10,7 @@
 
 # ----------------------------------------------------------------------------
 # project independent utilities
+basis_add_test (test_os.cxx         UNITTEST)
 basis_add_test (test_path.cxx       UNITTEST)
 basis_add_test (test_subprocess.cxx UNITTEST)
 

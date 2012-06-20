@@ -27,7 +27,7 @@
 
 #include <sbia/tclap/Constraint.h>
 
-#include <sbia/basis/path.h> // exists()
+#include <sbia/basis/os/path.h> // isfile(), isdir()
 
 
 namespace sbia
@@ -243,7 +243,7 @@ public:
     virtual ~ExistingFileConstraint() {}
     virtual std::string description() const { return "Value must name an existing file."; }
     virtual std::string shortID() const { return _typeDesc; }
-    virtual bool check(const std::string& value) const { return is_file(value); }
+    virtual bool check(const std::string& value) const { return os::path::isfile(value); }
 protected:
     std::string _typeDesc;
 };
@@ -258,7 +258,7 @@ public:
     virtual ~ExistingDirectoryConstraint() {}
     virtual std::string description() const { return "Value must name an existing directory."; }
     virtual std::string shortID() const { return _typeDesc; }
-    virtual bool check(const std::string& value) const { return is_dir(value); }
+    virtual bool check(const std::string& value) const { return os::path::isdir(value); }
 protected:
     std::string _typeDesc;
 };

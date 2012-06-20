@@ -33,7 +33,7 @@
 #include <@BASIS_INCLUDE_PREFIX@config.h>
 #include <@BASIS_INCLUDE_PREFIX@assert.h>
 #include <@BASIS_INCLUDE_PREFIX@except.h>
-#include <@BASIS_INCLUDE_PREFIX@path.h>
+#include <@BASIS_INCLUDE_PREFIX@os.h>
 
 
 /// @addtogroup BasisCxxUtilities
@@ -149,18 +149,30 @@ bool is_known_target(const std::string& name);
  *
  * @returns Absolute path of executable or an empty string if not found.
  *          If @p name is @c NULL, the path of this executable is returned.
+ *
+ * @sa exename()
+ * @sa exedir()
  */
-std::string get_executable_path(const std::string& name = std::string());
+std::string exepath(const std::string& name = std::string());
 
 /**
  * @brief Get name of executable file.
+ *
+ * @note The name of the executable may or may not include the file name
+ *       extension depending on the executable type and operating system.
+ *       Hence, this function is neither an equivalent to
+ *       os::path::basename(exepath()) nor os::path::filename(exepath()).
+ *       In particular, on Windows, the .exe and .com extension is not
+ *       included in the returned executable name.
  *
  * @param [in] name Name of command or @c NULL.
  *
  * @returns Name of executable file or an empty string if not found.
  *          If @p name is @c NULL, the name of this executable is returned.
+ *
+ * @sa exepath()
  */
-std::string get_executable_name(const std::string& name = std::string());
+std::string exename(const std::string& name = std::string());
 
 /**
  * @brief Get directory of executable file.
@@ -169,8 +181,10 @@ std::string get_executable_name(const std::string& name = std::string());
  *
  * @returns Absolute path of directory containing executable or an empty string if not found.
  *          If @p name is @c NULL, the directory of this executable is returned.
+ *
+ * @sa exepath()
  */
-std::string get_executable_directory(const std::string& name = std::string());
+std::string exedir(const std::string& name = std::string());
 
 // ===========================================================================
 // package directories
@@ -207,28 +221,28 @@ std::string get_installation_prefix();
  *
  * @return Absolute path of directory containing runtime executables.
  */
-std::string get_runtime_directory();
+std::string bindir();
 
 /**
  * @brief Get absolute path of directory containing auxiliary executables.
  *
  * @return Absolute path of directory containing auxiliary executables.
  */
-std::string get_libexec_directory();
+std::string libexecdir();
 
 /**
  * @brief Get absolute path of directory containing libraries.
  *
  * @return Absolute path of directory containing libraries.
  */
-std::string get_library_directory();
+std::string libdir();
 
 /**
  * @brief Get absolute path of directory containing auxiliary data.
  *
  * @return Absolute path of directory containing auxiliary data.
  */
-std::string get_data_directory();
+std::string datadir();
 
 // ===========================================================================
 // command execution

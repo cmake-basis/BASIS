@@ -19,11 +19,13 @@
 
 // acceptable in .cxx file
 using namespace std;
+using namespace sbia::basis;
 
 
 namespace @BASIS_NAMESPACE_LOWER@ {
 
 namespace @PROJECT_NAME_LOWER@ {
+
 
 // ===========================================================================
 // constants
@@ -243,7 +245,9 @@ void print_version(const char* name, const char* version, const char* project, c
 inline bool executing_in_build_tree()
 {
     // get executable path relative to top directory of build tree
-    string rel_path = sbia::basis::to_relative_path(
+    string rel_path = os::path::relpath(
+            // directory of this executable
+            os::exedir(),
             // The following path is the absolute path of the top directory of the build
             // tree in which the software was built. It can be used to determine whether
             // an executable is executing from within the build tree rather than an
@@ -252,9 +256,7 @@ inline bool executing_in_build_tree()
             // a check whether or not the location of the executable file is inside this
             // build tree is enough to know whether or not it is executed from within the
             // build tree or an installation.
-            sbia::basis::get_real_path("@BUILD_ROOT_PATH_CONFIG@"),
-            // directory of this executable
-            sbia::basis::get_executable_directory());
+            os::path::realpath("@BUILD_ROOT_PATH_CONFIG@"));
     // return whether executable directory is inside the build tree or not
     return !(rel_path == "" || rel_path == "." ||
             (rel_path.substr(0, 2) == ".." && (rel_path.size() == 2 || rel_path[2] == '/')));
@@ -275,10 +277,10 @@ bool is_known_target(const string& name)
 }
 
 // ---------------------------------------------------------------------------
-string get_executable_path(const string& name)
+string exepath(const string& name)
 {
     // return path of this executable if no name given
-    if (name.empty()) return sbia::basis::get_executable_path();
+    if (name.empty()) return os::exepath();
     // get executable target information instance
     const ExecutableTargetInfo& info = ExecutableTargetInfo::instance();
     // get name of executable and check if target name is known
@@ -293,7 +295,7 @@ string get_executable_path(const string& name)
         //      of which() even though BASIS includes a Python implementation
         //      that can also be used on Windows. Still, a native C++
         //      implementation is desireable.
-        if (is_relative(exec_name) && info.is_known_target("sbia.basis.which")) {
+        if (os::path::isrel(exec_name) && info.is_known_target("sbia.basis.which")) {
             vector<string> which(2);
             which[0] = "sbia.basis.which";
             which[1] = name;
@@ -313,24 +315,34 @@ string get_executable_path(const string& name)
     }
     // prepend either build tree directory or installation directory
     if (executing_in_build_tree()) {
-        return join_paths(info.get_build_directory(name), exec_name);
+        return os::path::join(info.get_build_directory(name), exec_name);
     } else {
-        return join_paths(info.get_installation_directory(name), exec_name);
+        return os::path::join(info.get_installation_directory(name), exec_name);
     }
 }
 
 // ---------------------------------------------------------------------------
-string get_executable_name(const std::string& name)
+string exename(const std::string& name)
 {
-    string path = get_executable_path(name);
-    return path.empty() ? "" : sbia::basis::get_file_name(path);
+    string exec_path = exepath(name);
+    if (exec_path.empty()) return "";
+#if WINDOWS
+    string ext = os::path::fileext(exec_path);
+    if (ext == ".exe" || ext == ".com") {
+        return os::path::filename(exec_path);
+    } else {
+        return os::path::basename(exec_path);
+    }
+#else
+    return os::path::basename(exec_path);
+#endif
 }
 
 // ---------------------------------------------------------------------------
-string get_executable_directory(const std::string& name)
+string exedir(const std::string& name)
 {
-    string path = get_executable_path(name);
-    return path.empty() ? "" : sbia::basis::get_file_directory(path);
+    string exec_path = exepath(name);
+    return exec_path.empty() ? "" : os::path::dirname(exec_path);
 }
 
 // ===========================================================================
@@ -341,49 +353,49 @@ string get_executable_directory(const std::string& name)
 string get_installation_prefix()
 {
 #ifdef LIBEXEC
-    return sbia::basis::join_paths(sbia::basis::get_executable_directory(), "@LIBEXEC_PATH_PREFIX_CONFIG@");
+    return os::path::join(os::exedir(), "@LIBEXEC_PATH_PREFIX_CONFIG@");
 #else
-    return sbia::basis::join_paths(sbia::basis::get_executable_directory(), "@RUNTIME_PATH_PREFIX_CONFIG@");
+    return os::path::join(os::exedir(), "@RUNTIME_PATH_PREFIX_CONFIG@");
 #endif
 }
 
 // ---------------------------------------------------------------------------
-string get_runtime_directory()
+string bindir()
 {
     if (executing_in_build_tree()) {
         return "@RUNTIME_BUILD_PATH_CONFIG@";
     } else {
-        return sbia::basis::join_paths(get_installation_prefix(), "@RUNTIME_PATH_CONFIG@");
+        return os::path::join(get_installation_prefix(), "@RUNTIME_PATH_CONFIG@");
     }
 }
 
 // ---------------------------------------------------------------------------
-string get_libexec_directory()
+string libexecdir()
 {
     if (executing_in_build_tree()) {
         return "@LIBEXEC_BUILD_PATH_CONFIG@";
     } else {
-        return sbia::basis::join_paths(get_installation_prefix(), "@LIBEXEC_PATH_CONFIG@");
+        return os::path::join(get_installation_prefix(), "@LIBEXEC_PATH_CONFIG@");
     }
 }
 
 // ---------------------------------------------------------------------------
-string get_library_directory()
+string libdir()
 {
     if (executing_in_build_tree()) {
         return "@LIBRARY_BUILD_PATH_CONFIG@";
     } else {
-        return sbia::basis::join_paths(get_installation_prefix(), "@LIBRARY_PATH_CONFIG@");
+        return os::path::join(get_installation_prefix(), "@LIBRARY_PATH_CONFIG@");
     }
 }
 
 // ---------------------------------------------------------------------------
-string get_data_directory()
+string datadir()
 {
     if (executing_in_build_tree()) {
         return "@DATA_BUILD_PATH_CONFIG@";
     } else {
-        return sbia::basis::join_paths(get_installation_prefix(), "@DATA_PATH_CONFIG@");
+        return os::path::join(get_installation_prefix(), "@DATA_PATH_CONFIG@");
     }
 }
 
@@ -394,20 +406,20 @@ string get_data_directory()
 // ---------------------------------------------------------------------------
 string to_quoted_string(const vector<string>& args)
 {
-    return sbia::basis::Subprocess::tostring(args);
+    return Subprocess::tostring(args);
 }
 
 // ---------------------------------------------------------------------------
 vector<string> split_quoted_string(const string& args)
 {
-    return sbia::basis::Subprocess::split(args);
+    return Subprocess::split(args);
 }
 
 // ---------------------------------------------------------------------------
 int execute_process(const string& cmd, bool quiet, ostream* out,
                     bool allow_fail, int verbose, bool simulate)
 {
-    vector<string> args = sbia::basis::Subprocess::split(cmd);
+    vector<string> args = Subprocess::split(cmd);
     return execute_process(args, quiet, out, allow_fail, verbose, simulate);
 }
 
@@ -415,13 +427,11 @@ int execute_process(const string& cmd, bool quiet, ostream* out,
 int execute_process(vector<string>& args, bool quiet, ostream* out,
                     bool allow_fail, int verbose, bool simulate)
 {
-    typedef sbia::basis::Subprocess Subprocess;
-
     if (args.empty() || args[0].empty()) {
         BASIS_THROW(SubprocessError, "execute_process(): No command specified");
     }
     // map build target name to executable file path
-    string exec_path = get_executable_path(args[0]);
+    string exec_path = exepath(args[0]);
     // prepend absolute path of found executable
     if (!exec_path.empty()) args[0] = exec_path;
     // some verbose output
@@ -533,7 +543,7 @@ string ExecutableTargetInfo::get_build_directory(const string& target) const
     if (it == _build_dirs.end()) return "";
 #if defined CMAKE_INTDIR
     // this subdirectory is used by CMake generators for IDEs such as Visual Studio
-    return sbia::basis::join_paths(it->second, CMAKE_INTDIR);
+    return os::path::join(it->second, CMAKE_INTDIR);
 #else
     return it->second;
 #endif
@@ -548,7 +558,7 @@ string ExecutableTargetInfo::get_installation_directory(const string& target) co
     else uid = get_target_uid(target);
     MapIterator it = _install_dirs.find(uid);
     if (it == _install_dirs.end()) return "";
-    return sbia::basis::join_paths(get_installation_prefix(), it->second);
+    return os::path::join(get_installation_prefix(), it->second);
 }
 
 // ---------------------------------------------------------------------------

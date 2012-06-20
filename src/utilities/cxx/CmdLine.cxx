@@ -19,7 +19,7 @@
 #include <sbia/tclap/VersionVisitor.h>
 #include <sbia/tclap/XorHandler.h>
 
-#include <sbia/basis/path.h>   // get_executable_name()
+#include <sbia/basis/os.h>     // exename()
 #include <sbia/basis/except.h> // BASIS_THROW, runtime_error
 #include <sbia/basis/stdio.h>  // get_terminal_columns(), print_wrapped()
 
@@ -333,7 +333,7 @@ void StdOutput::printArgumentHelp(ostream& os, TCLAP::Arg* arg, bool indentFirst
 // ---------------------------------------------------------------------------
 void StdOutput::printUsage(ostream& os, bool heading) const
 {
-    string                        exec_name  = get_executable_name();
+    string                        exec_name  = os::exename();
     list<TCLAP::Arg*>             args       = _cmd->getArgList();
     TCLAP::XorHandler             xorhandler = _cmd->getXorHandler();
     vector< vector<TCLAP::Arg*> > xors       = xorhandler.getXorList();
@@ -530,7 +530,7 @@ void StdOutput::printArguments(ostream& os, bool all) const
 // ---------------------------------------------------------------------------
 void StdOutput::printExample(ostream& os) const
 {
-    const string exec_name = get_executable_name();
+    const string exec_name = os::exename();
     const vector<string>& examples = _cmd->getExamples();
 
     if (!examples.empty()) {
@@ -898,7 +898,7 @@ void CmdLine::parse(vector<string>& args)
     int estat = 0;
 
     try {
-        _progName = basis::get_executable_name();
+        _progName = os::exename();
         args.erase(args.begin());
 
         int requiredCount = 0;

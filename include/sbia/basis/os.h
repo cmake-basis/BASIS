@@ -77,6 +77,82 @@ std::string exedir();
  */
 std::string exename();
 
+/**
+ * @brief Read value of symbolic link.
+ *
+ * @param [in]  link  Path of symbolic link.
+ * @param [out] value Value of symbolic link.
+ *
+ * @return Whether the given path is a symbolic link and its value could be
+ *         read and returned successfully.
+ *
+ * @sa realpath()
+ */
+bool readlink(const std::string& link, std::string& value);
+
+/**
+ * @brief Make directory.
+ *
+ * @note The parent directory must exist already. See makedirs() for a function
+ *       that also creates the parent directories if none-existent.
+ *
+ * @param path Path of the directory.
+ *
+ * @returns Whether the directory was created successfully.
+ *          Note that on Posix, the created directory will have mode 0755.
+ *          On Windows, the default security descriptor is passed on to the
+ *          CreateDirectory() function.
+ *
+ * @sa makedirs()
+ */
+bool mkdir(const std::string& path);
+
+/**
+ * @brief Make directory including parent directories if required.
+ *
+ * @param path Path of the directory.
+ *
+ * @returns Whether the directory was created successfully.
+ *          Note that on Posix, the created directories will have mode 0755.
+ *          On Windows, the default security descriptor is passed on to the
+ *          CreateDirectory() function.
+ */
+bool makedirs(const std::string& path);
+
+/**
+ * @brief Remove empty directory.
+ *
+ * This function removes an empty directory. If the directory is not empty,
+ * it will fail. See rmtree() for a function that also removes the files and
+ * recursively the directories within the specified directory.
+ *
+ * @param path Path of the directory.
+ *
+ * @returns Whether the directory was removed successfully.
+ *
+ * @sa rmtree()
+ */
+bool rmdir(const std::string& path);
+
+/**
+ * @brief Remove whole directory tree.
+ *
+ * @param path Path of the directory.
+ *
+ * @returns Whether the directory was removed successfully.
+ */
+bool rmtree(const std::string& path);
+
+/**
+ * @brief Remove files and directories from directory.
+ *
+ * @param path Path of the directory.
+ *
+ * @returns Whether the directory was cleared successfully, i.e., leaving
+ *          the directory @p path empty.
+ */
+bool emptydir(const std::string& path);
+
 
 } // namespace os
 
