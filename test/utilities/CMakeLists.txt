@@ -15,8 +15,9 @@ basis_add_test (test_path.cxx       UNITTEST)
 basis_add_test (test_subprocess.cxx UNITTEST)
 
 if (BUILD_UTILITIES_FOR_BASH)
-  basis_add_test (test_core.sh  UNITTEST)
-  basis_add_test (test_shtap.sh UNITTEST)
+  basis_add_test (test_core.sh        UNITTEST)
+  basis_add_test (test_shutilities.sh UNITTEST)
+  basis_add_test (test_shtap.sh       UNITTEST)
 endif ()
 
 basis_add_executable (parseargs.cxx)

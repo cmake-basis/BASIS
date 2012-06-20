@@ -7,15 +7,14 @@
 # has to be kept independent of any other modules and shall only make use
 # of Bash builtin's and basic commands.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# return if already loaded
-[ "${_SBIA_BASIS_CORE_INCLUDED:-0}" -eq 1 ] && return 0
-_SBIA_BASIS_CORE_INCLUDED=1
+[ "${_SBIA_BASIS_CORE_INCLUDED}" == 'true' ] || {
+_SBIA_BASIS_CORE_INCLUDED='true'
 
 
 ## @addtogroup BasisBashUtilities
@@ -54,7 +53,7 @@ readonly BASH_VERSION_MINOR
 #
 # @retval 0 On match.
 # @retval 1 Otherwise.
-function match
+match()
 {
     [ $# -eq 2 ] || return 1
 
@@ -122,7 +121,7 @@ function match
 #
 # @sa upvars()
 # @sa http://fvue.nl/wiki/Bash:_Passing_variables_by_reference
-function upvar
+upvar()
 {
     if unset -v "$1"; then           # Unset & validate varname
         if (( $# == 2 )); then
@@ -148,7 +147,7 @@ function upvar
 # @retval 1 On failure.
 #
 # @sa http://fvue.nl/wiki/Bash:_Passing_variables_by_reference
-function upvars
+upvars()
 {
     if ! (( $# )); then
         echo "${FUNCNAME[0]}: usage: ${FUNCNAME[0]} [-v varname"\
@@ -201,3 +200,6 @@ There is NO WARRANTY, to the extent permitted by law."
 
 ## @}
 # end of Doxygen group
+
+
+} # _SBIA_BASIS_CORE_INCLUDED

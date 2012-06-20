@@ -28,7 +28,7 @@ _SBIA_BASIS_PATH_INCLUDED='true'
 # @param [in] path Path.
 #
 # @return Cleaned path.
-clean_path()
+normpath()
 {
     local _basis_cp_path="$1"
     # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
@@ -76,7 +76,7 @@ clean_path()
 # @param [in] path Absolute or relative path.
 #
 # @return Absolute path.
-to_absolute_path()
+abspath()
 {
     local _basis_tap_base="$1"
     local _basis_tap_path="$2"
@@ -86,7 +86,7 @@ to_absolute_path()
     if [ "${_basis_tap_path:0:1}" != '/' ]; then
         _basis_tap_path="${_basis_tap_base}/${_basis_tap_path}"
     fi
-    clean_path "${_basis_tap_path}"
+    normpath "${_basis_tap_path}"
 }
 
 # ----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ to_absolute_path()
 #
 # @return Canonical file path without duplicate slashes, ".", "..",
 #         and symbolic links.
-get_real_path()
+realpath()
 {
     # make path absolute and resolve '..' references
     local _basis_grp_path=`to_absolute_path "$1"`

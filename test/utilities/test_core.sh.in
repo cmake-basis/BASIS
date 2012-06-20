@@ -4,7 +4,7 @@
 # @file  test_core.sh
 # @brief Test core.sh module.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -23,14 +23,14 @@ echo    "</DartMeasurement>";
 # plan
 # ============================================================================
 
-plan_tests 26
+plan_tests 10
 
 # ============================================================================
 # tests
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# test match()
+# match()
 match
 isnt $? 0 'match() without arguments returns non-zero value'
 match 'a'
@@ -51,31 +51,3 @@ match 'ballroom' '^(ha|ba)ll$'
 isnt $? 0 'more complex pattern with groups and alternatives'
 match 'ballroom' '^(ha|ba)ll'
 is $? 0 'more complex pattern with groups and alternatives'
-
-# ----------------------------------------------------------------------------
-# test basis_array_to_quoted_string()
-basis_array_to_quoted_string str
-is $? 0 'conversion of empty array to quoted string was successful'
-is "${str}" '' 'empty array converted to empty string'
-basis_array_to_quoted_string str a
-is $? 0 'conversion of single element array to quoted string was successful'
-is "${str}" 'a' 'single element array converted to simple string'
-basis_array_to_quoted_string str 'this' "isn't" a 'simple example of "a quoted"' 'string'
-is $? 0 'conversion of complex array to quoted string was successful'
-is "${str}" "this \"isn't\" a \"simple example of \\\"a quoted\\\"\" string" \
-    'complex array with quotations in elements was converted correctly'
-
-# ----------------------------------------------------------------------------
-# test basis_split_quoted_string()
-basis_split array ''
-is $? 0 'splitting of empty string was successful'
-is ${#array[@]} 0 'empty string was split into empty array'
-ok "[ -z ${array[0]} ]" 'empty string was split into empty array'
-basis_split array "this isn\\'t a \"simple example of \\\"a quoted\\\"\" string"
-is $? 0 'splitting complex quoted string was successful'
-is ${#array[@]} 5 'complex quoted string split into 5 elements'
-is "${array[0]}" 'this' '1st element of complex quoted string'
-is "${array[1]}" "isn't" '2nd element of complex quoted string'
-is "${array[2]}" 'a' '3rd element of complex quoted string'
-is "${array[3]}" 'simple example of "a quoted"' '4th element of complex quoted string'
-is "${array[4]}" 'string' '5th element of complex quoted string'

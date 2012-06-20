@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  basis.sh
-# @brief BASIS Bash Utilities of @PROJECT_NAME@ package.
+# @brief BASIS utilities of @PROJECT_NAME@ package.
 #
 # @note The basis.sh module was automatically created by BASIS from the
 #       template file basis.sh.in which is part of the BASIS installation.
@@ -11,15 +11,9 @@
 #
 # @note In Bash, there is no concept of namespaces. Hence, the utility functions
 #       are all defined by the utilities.sh module which is part of the BASIS
-#       installation. By simply setting the constants to the project specific
-#       values, these utility functions are customized for this particular
-#       package. This, however, also means that the BASIS utilities of two
-#       different packages cannot be used within a Bash script at the same
-#       time in general. The order in which the basis.sh modules are sourced
-#       matters. Therefore, in Bash, care must be taken which modules of a
-#       BASIS-based package are being sourced and whether these in turn
-#       source either the utilities.sh module of BASIS or the basis.sh module
-#       which has been configured/customized for this particular package.
+#       installation. See the documentation of this module for conflicts that
+#       may be caused by this lack of namespaces and how to circumvent these.
+#       This module is mainly intended for use in executable scripts, not modules.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -34,37 +28,43 @@ _@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED='true'
 
 
 # ============================================================================
-# source implementations of utility functions
-# ============================================================================
-
-readonly _BASIS_DIR="@BASIS_BASH___DIR__@/@_BASIS_LIBRARY"
-
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh"
-
-# ============================================================================
 # configuration of utilities
 # ============================================================================
+
+# the functions of the utilities.sh module make use of the following constants
+# these constants need to be set before sourcing utilities.sh as otherwise
+# this module will initialize them and set them to readonly
+
 
 ## @addtogroup BasisBashUtilities
 # @{
 
-
 ## @brief Project name.
-PROJECT="@PROJECT_NAME@"
+readonly PROJECT="@PROJECT_NAME@"
 ## @brief Project version.
-VERSION="@PROJECT_VERSION@"
+readonly VERSION="@PROJECT_VERSION@"
+## @brief Major project version.
+readonly VERSION_MAJOR="@PROJECT_VERSION_MAJOR@"
+## @brief Minor project version.
+readonly VERSION_MINOR="@PROJECT_VERSION_MINOR@"
+## @brief Project patch number.
+readonly VERSION_PATCH="@PROJECT_VERSION_PATCH@"
 ## @brief Project release.
-RELEASE="@PROJECT_RELEASE@"
-## @brief Default copyright of executables.
-COPYRIGHT="University of Pennsylvania"
-## @brief Default license of executables.
-LICENSE="See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
-## @brief Default contact to use for help output of executables.
-CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
+readonly RELEASE="@PROJECT_RELEASE@"
 
 
 ## @{
 # end of Doxygen group
+
+readonly _BASIS_TARGET_UID_PREFIX='@PROJECT_NAMESPACE_CMAKE@'
+readonly _BASIS_DIR="@BASIS_BASH___DIR__@/@_BASIS_LIBRARY"
+
+# ============================================================================
+# source implementations of utility functions
+# ============================================================================
+
+# source project-independent utiltiy functions
+. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh"
 
 # ============================================================================
 # initialize executable target information
@@ -86,13 +86,13 @@ CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
 #
 # @retval 0 On success.
 # @retval 1 On failure.
-_executabletargetinfo_initialize()
+_basis_executabletargetinfo_initialize()
 {
     [ $# -eq 0 ] || return 1
 
     @EXECUTABLE_TARGET_INFO@
 
-    _EXECUTABLETARGETINFO_INITIALIZED='true'
+    _BASIS_EXECUTABLETARGETINFO_INITIALIZED='true'
     return 0
 }
 
