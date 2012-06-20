@@ -214,12 +214,11 @@ endif ()
 # # The project's namespace is SBIA_@PROJECT_NAME_UPPER@ and the name of the
 # # module in this example is mymodule.sh. This gives the fully-qualified module
 # # namespace SBIA_@PROJECT_NAME_UPPER@_MYMODULE. Note that private identifiers
-# # are further
-# # prefixed with an underscore '_'.
+# # are further prefixed with an underscore '_'.
 #
-# # return if already loaded
-# [ "${_SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED:-0}" -eq 1 ] && return 0
-# _SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED=1
+# # skip if already included
+# [ "${_SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED:-0}" == 'true' ] || {
+# _SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED='true'
 #
 # # define private global variable
 # _SBIA_@PROJECT_NAME_UPPER@_MYMODULE_verbose=0
@@ -229,10 +228,13 @@ endif ()
 # # Note: To not complicate the use of the module, the name must not necessarily
 # #       include the fully-qualified namespace identifier, but the name should
 # #       chosen carefully to avoid name conflicts with other modules.
-# MYMODULE_string()
+# mymodule_dosth()
 # {
 #     # ...
 # }
+#
+#
+# } # _SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED
 # @endcode
 #
 # @ingroup BasisBashUtilities
