@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  basis/__init__.py
-# @brief Initialize BASIS package.
+# @brief BASIS utilities for Python.
 #
 # Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -10,19 +10,10 @@
 # @ingroup BasisPythonUtilities
 ##############################################################################
 
-"""
-Initialize BASIS package.
+__all__ = [] # use of import * is discouraged
 
-Copyright (c) 2012 University of Pennsylvania. All rights reserved.
-See COPYING file or https://www.rad.upenn.edu/sbia/software/license.html.
-
-Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-
-"""
-
-from .utilities import get_real_path, clean_path, join_paths, get_file_directory, get_file_name, \
-                       get_file_name_extension, exists, is_known_target, get_target_uid, \
-                       get_executable_path, get_executable_name, get_executable_directory, \
-                       to_quoted_string, split_quoted_string, execute_process, SubprocessError
-
-from .utilities import __all__
+# import utilities module
+from . import utilities
+# further, import main functions into this module's namespace
+from .utilities import print_contact, print_version, \
+                       exepath, exename, exedir, execute, SubprocessError
