@@ -92,7 +92,7 @@ find_program (PERL_EXECUTABLE NAMES perl PATHS ${PERL_POSSIBLE_BIN_PATHS})
 
 if (PERL_EXECUTABLE)
   execute_process (COMMAND "${PERL_EXECUTABLE}" --version OUTPUT_VARIABLE STDOUT ERROR_VARIABLE STDERR)
-  if (STDOUT MATCHES "\\(v([0-9]+)\\.([0-9]+)\\.([0-9]+)\\)")
+  if (STDOUT MATCHES "[( ]v([0-9]+)\\.([0-9]+)\\.([0-9]+)[ )]")
     set (PERL_VERSION_MAJOR "${CMAKE_MATCH_1}")
     set (PERL_VERSION_MINOR "${CMAKE_MATCH_2}")
     set (PERL_VERSION_PATCH "${CMAKE_MATCH_3}")
