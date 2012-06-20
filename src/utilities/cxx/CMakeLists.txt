@@ -12,7 +12,7 @@
 # template files
 basis_install (
   FILES
-    "basis.h.in"
+    "basis.h.in"     # project-specific utility functions
     "basis.cxx.in"
   DESTINATION
     "${INSTALL_CXX_TEMPLATES_DIR}"
@@ -29,11 +29,11 @@ basis_add_library (
     "subprocess.cxx" # subprocess execution
     "stdio.cxx"      # standard I/O functions
     "CmdLine.cxx"    # command-line parsing
+    "utilities.cxx"  # project-independent utility functions
 )
 
 # ----------------------------------------------------------------------------
 # unit testing
-
 if (NOT HAVE_TR1_TUPLE)
   basis_add_definitions ("-DGTEST_USE_OWN_TR1_TUPLE=1")
 endif ()
