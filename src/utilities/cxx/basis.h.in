@@ -26,6 +26,7 @@
 /// @addtogroup BasisCxxUtilities
 /// @{
 
+
 namespace @BASIS_NAMESPACE_LOWER@ {
 
 namespace @PROJECT_NAME_LOWER@ {
@@ -283,15 +284,15 @@ int execute(std::vector<std::string>  args,
             bool                      simulate   = false);
 
 
-/// @}
-// end of Doxygen group
-
-
 } // namespace basis
 
 } // namespace @PROJECT_NAME_LOWER@
 
 } // namespace @BASIS_NAMESPACE_LOWER@
+
+
+/// @}
+// end of Doxygen group
 
 
 #endif // _@BASIS_NAMESPACE_UPPER@_@PROJECT_NAME_UPPER@_BASIS_H
