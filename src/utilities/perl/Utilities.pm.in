@@ -5,17 +5,17 @@
 # This module defines the BASIS utility functions. It uses the Sub::Exporter
 # module to enable the generation of these functions customized to the request
 # of the particular project they are used in. This is, for example, used by
-# the @BASIS_NAMESPACE@::&lt;Project&gt;::Basis module that is specifically
+# the SBIA::&lt;Project&gt;::Basis module that is specifically
 # configured for each BASIS-based project. The default utility functions
 # defined by this module, i.e., without any customizaton are intended for use
 # in Perl scripts that are not build as part of a particular package. In case
 # of a BASIS package, the already customized project-specific implementations
 # should be used instead, i.e., those defined by the
-# @BASIS_NAMESPACE@::&lt;Project&gt;::Basis module of the project.
+# SBIA::&lt;Project&gt;::Basis module of the project.
 #
 # @note This module exports also all other BASIS utility functions that are
 #       defined in other Perl modules. Therefore, only this module or the
-#       @BASIS_NAMESPACE@::&lt;Project&gt;::Basis module, respectively,
+#       SBIA::&lt;Project&gt;::Basis module, respectively,
 #       should be used.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
@@ -29,9 +29,9 @@
 use strict;
 use warnings;
 
-package @PROJECT_NAMESPACE_PERL@::Utilities;
+package SBIA::BASIS::Utilities;
 {
-    $@PROJECT_NAMESPACE_PERL@::Utilities::VERSION = @PROJECT_VERSION_PERL@;
+    $SBIA::BASIS::Utilities::VERSION = @PROJECT_VERSION_PERL@;
 }
 
 
@@ -104,7 +104,7 @@ sub print_contact
 #
 # Example:
 # @code
-# use @PROJECT_NAMESPACE_PERL@::Utilities qw(print_version);
+# use SBIA::BASIS::Utilities qw(print_version);
 # print_version('foo', '1.0');
 # print_version('foo', version => '1.0');
 # print_version(name => 'foo', version => '1.0');
@@ -112,7 +112,7 @@ sub print_contact
 #
 # Example:
 # @code
-# use @PROJECT_NAMESPACE_PERL@::Utilities
+# use SBIA::BASIS::Utilities
 #     print_version => {project   => 'FooBar',
 #                       version   => '1.0',
 #                       copyright => '2012 Andreas Schuh',
