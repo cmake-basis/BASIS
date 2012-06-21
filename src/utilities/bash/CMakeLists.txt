@@ -19,6 +19,7 @@ basis_install (
 
 # ----------------------------------------------------------------------------
 # modules
+basis_add_library (config.sh)    # constants, build configuration
 basis_add_library (core.sh)      # fundamental core functions
 basis_add_library (path.sh)      # path manipulation functions
 basis_add_library (utilities.sh) # project independent utilities

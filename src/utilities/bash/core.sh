@@ -17,6 +17,9 @@
 _SBIA_BASIS_CORE_INCLUDED='true'
 
 
+. "`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`/config.sh" || exit 1
+
+
 ## @addtogroup BasisBashUtilities
 #  @{
 

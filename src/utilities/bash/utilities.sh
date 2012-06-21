@@ -52,15 +52,16 @@ _SBIA_BASIS_UTILITIES_INCLUDED='true'
 # constants
 # ============================================================================
 
-readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd -P`"
+readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd`"
 
 # ============================================================================
 # source other modules
 # ============================================================================
 
-. "${_BASIS_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/core.sh"    || exit 1 # core utilities
-. "${_BASIS_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/path.sh"    || exit 1 # file path manipulation
-. "${_BASIS_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/shflags.sh" || exit 1 # command-line parsing library
+. "${_BASIS_UTILITIES_DIR}/config.sh"  || exit 1 # constants
+. "${_BASIS_UTILITIES_DIR}/core.sh"    || exit 1 # core utilities
+. "${_BASIS_UTILITIES_DIR}/path.sh"    || exit 1 # file path manipulation
+. "${_BASIS_UTILITIES_DIR}/shflags.sh" || exit 1 # command-line parsing library
 
 # ============================================================================
 # configuration
