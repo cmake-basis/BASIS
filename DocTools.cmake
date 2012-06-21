@@ -499,7 +499,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   endforeach ()
   # other settings
   if (NOT DOXYGEN_COLS_IN_ALPHA_INDEX OR DOXYGEN_COLS_IN_ALPHA_INDEX MATCHES "[^0-9]")
-    set (DOXYGEN_COLS_IN_ALPHA_INDEX 3)
+    set (DOXYGEN_COLS_IN_ALPHA_INDEX 1)
   endif ()
   # HTML style
   set (DOXYGEN_HTML_STYLESHEET "${BASIS_MODULE_PATH}/doxygen_sbia.css")
