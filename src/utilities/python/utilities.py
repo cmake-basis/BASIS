@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  utilities.py
-# @brief BASIS utilities.
+# @brief Main module of project-independent BASIS utilities.
 #
 # This module defines the BASIS Utilities whose implementations are not
 # project-specific, i.e., do not make use of particular project attributes such
