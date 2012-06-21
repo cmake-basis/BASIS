@@ -2177,7 +2177,14 @@ function (basis_add_script_finalize TARGET_UID)
     set (CONFIGURED_FILE "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   endif ()
   if ((MODULE AND LIBRARY_INSTALL_DIRECTORY) OR (NOT MODULE AND RUNTIME_INSTALL_DIRECTORY))
-    set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
+    if (SCRIPT_FILE MATCHES "\\.in")
+      set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
+    else ()
+      # Otherwise, Doxygen would have problems as it does not know which
+      # file to process. Thus, write configured file to directory excluded
+      # from Doxygen search path.
+      set (CONFIGURED_INSTALL_FILE "${BUILD_DIR}/${SCRIPT_NAME}")
+    endif ()
   else ()
     set (CONFIGURED_INSTALL_FILE)
   endif ()
