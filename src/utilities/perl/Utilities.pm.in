@@ -2,20 +2,19 @@
 # @file  Utilities.pm
 # @brief BASIS utilities for Perl.
 #
-# This module defines the BASIS utility functions. It uses the Sub::Exporter
+# This module defines the BASIS utility functions. It uses the SBIA::Sub::Exporter
 # module to enable the generation of these functions customized to the request
 # of the particular project they are used in. This is, for example, used by
-# the SBIA::&lt;Project&gt;::Basis module that is specifically
-# configured for each BASIS-based project. The default utility functions
-# defined by this module, i.e., without any customizaton are intended for use
-# in Perl scripts that are not build as part of a particular package. In case
-# of a BASIS package, the already customized project-specific implementations
-# should be used instead, i.e., those defined by the
-# SBIA::&lt;Project&gt;::Basis module of the project.
+# the SBIA::Project::Basis module that is specifically configured for each
+# BASIS-based project. The default utility functions defined by this module,
+# i.e., without any customizaton are intended for use in Perl scripts that
+# are not build as part of a particular package. In case of a BASIS package,
+# the already customized project-specific implementations should be used instead,
+# i.e., those defined by the SBIA::Project::Basis module of the project.
 #
 # @note This module exports also all other BASIS utility functions that are
 #       defined in other Perl modules. Therefore, only this module or the
-#       SBIA::&lt;Project&gt;::Basis module, respectively,
+#       SBIA::Project::Basis module, respectively,
 #       should be used.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
@@ -87,7 +86,7 @@ use SBIA::Sub::Exporter -setup => {
 # ----------------------------------------------------------------------------
 ## @brief Print contact information.
 #
-# @param [in] contact Name of contact. If @c undef, the default contact is used.
+# @param [in] $contact Name of contact. If @c undef, the default contact is used.
 sub print_contact
 {
     my $contact = shift;
@@ -126,26 +125,26 @@ sub print_contact
 # Licensed under the Apache License, Version 2.0
 # @endverbatim
 #
-# @param [in] name      Name of executable. Should not be set programmatically
-#                       to the first argument of the main script, but a string
-#                       literal instead. This argument is required if no default
-#                       has been set during customization. The argument can be
-#                       either given as first argument or as keyword argument
-#                       as in "name => 'foo'".
-# @param [in] version   Version of executable, e.g., release of project this
-#                       executable belongs to. This argument is required if no
-#                       default has been set during customization. The argument
-#                       can be either given as second argument or as keyword
-#                       argument as in "version => '1.0'".
-# @param [in] project   Name of project this executable belongs to.
-#                       If @c undef or an empty string is given, no project
-#                       information is included in output.
-# @param [in] copyright The copyright notice. If @c undef, the default copyright
-#                       is used. If an empty string is given, no copyright notice
-#                       is printed.
-# @param [in] license   Information regarding licensing. If @c undef, the default
-#                       software license is used. If an empty string is given,
-#                       no license information is printed.
+# @param [in] $name      Name of executable. Should not be set programmatically
+#                        to the first argument of the main script, but a string
+#                        literal instead. This argument is required if no default
+#                        has been set during customization. The argument can be
+#                        either given as first argument or as keyword argument
+#                        as in "name => 'foo'".
+# @param [in] $version   Version of executable, e.g., release of project this
+#                        executable belongs to. This argument is required if no
+#                        default has been set during customization. The argument
+#                        can be either given as second argument or as keyword
+#                        argument as in "version => '1.0'".
+# @param [in] $project   Name of project this executable belongs to.
+#                        If @c undef or an empty string is given, no project
+#                        information is included in output.
+# @param [in] $copyright The copyright notice. If @c undef, the default copyright
+#                        is used. If an empty string is given, no copyright notice
+#                        is printed.
+# @param [in] $license   Information regarding licensing. If @c undef, the default
+#                        software license is used. If an empty string is given,
+#                        no license information is printed.
 sub print_version
 {
     my $name    = undef;
@@ -186,15 +185,15 @@ sub print_version
 #
 # This function prepends the default namespace used for targets build as
 # part of the project this module belongs to if the given target name is yet
-# neither known nor fully-qualified, i.e., in the form <namespace>::<target>.
+# neither known nor fully-qualified, i.e., in the form "<namespace>::<target>".
 #
-# @param [in] target  Name of build target.
-# @param [in] prefix  Common target name prefix. If @c undef, the given
-#                     target name must match excactly. Otherwise, targets
-#                     within the specified namespace are considered.
-# @param [in] targets Reference to hash which maps known build targets to
-#                     executable file paths. If not specified, this function
-#                     always returns the input target name unchanged.
+# @param [in] $target   Name of build target.
+# @param [in] $prefix   Common target name prefix. If @c undef, the given
+#                       target name must match excactly. Otherwise, targets
+#                       within the specified namespace are considered.
+# @param [in] %$targets Reference to hash which maps known build targets to
+#                       executable file paths. If not specified, this function
+#                       always returns the input target name unchanged.
 #
 # @returns Fully-qualified build target name or @c undef if @p target is
 #          @c undef or an empty string.
@@ -228,13 +227,13 @@ sub targetuid
 #       default values for @p prefix and @p targets, which is in particular
 #       done by the Basis module.
 #
-# @param [in] target  Name of build target.
-# @param [in] prefix  Common target name prefix. If @c undef, the given
-#                     target name must match excactly. Otherwise, targets
-#                     within the specified namespace are considered.
-# @param [in] targets Reference to hash which maps known build targets to
-#                     executable file paths. If not specified, this function
-#                     always returns false.
+# @param [in] $target   Name of build target.
+# @param [in] $prefix   Common target name prefix. If @c undef, the given
+#                       target name must match excactly. Otherwise, targets
+#                       within the specified namespace are considered.
+# @param [in] %$targets Reference to hash which maps known build targets to
+#                       executable file paths. If not specified, this function
+#                       always returns false.
 #
 # @returns Whether the given build target is known by this module.
 sub istarget
@@ -265,13 +264,13 @@ sub istarget
 # absolute path returned if found. If the executable is not found, @c undef
 # is returned.
 #
-# @param [in] name    Name of command or @c undef.
-# @param [in] prefix  Common target name prefix. If @c undef, the given
-#                     target name must match excactly. Otherwise, targets
-#                     within the specified namespace are considered.
-# @param [in] targets Reference to hash which maps known build targets to
-#                     executable file paths. If not specified, this function
-#                     always returns false.
+# @param [in] $name     Name of command or @c undef.
+# @param [in] $prefix   Common target name prefix. If @c undef, the given
+#                       target name must match excactly. Otherwise, targets
+#                       within the specified namespace are considered.
+# @param [in] %$targets Reference to hash which maps known build targets to
+#                       executable file paths. If not specified, this function
+#                       always returns false.
 #
 # @returns Absolute path of executable or @c undef if not found.
 #          If @p name is @c undef, the path of this executable is returned.
@@ -317,13 +316,13 @@ sub exepath
 #       default values for @p prefix and @p targets, which is in particular
 #       done by the Basis module.
 #
-# @param [in] name    Name of command or @c undef.
-# @param [in] prefix  Common target name prefix. If @c undef, the given
-#                     target name must match excactly. Otherwise, targets
-#                     within the specified namespace are considered.
-# @param [in] targets Reference to hash which maps known build targets to
-#                     executable file paths. If not specified, this function
-#                     always returns false.
+# @param [in] $name     Name of command or @c undef.
+# @param [in] $prefix   Common target name prefix. If @c undef, the given
+#                       target name must match excactly. Otherwise, targets
+#                       within the specified namespace are considered.
+# @param [in] %$targets Reference to hash which maps known build targets to
+#                      executable file paths. If not specified, this function
+#                      always returns false.
 #
 # @returns Name of executable file or @c undef if not found.
 #          If @p name is @c undef, the path of this executable is returned.
@@ -341,13 +340,13 @@ sub exename
 #       default values for @p prefix and @p targets, which is in particular
 #       done by the Basis module.
 #
-# @param [in] name    Name of command or @c undef.
-# @param [in] prefix  Common target name prefix. If @c undef, the given
-#                     target name must match excactly. Otherwise, targets
-#                     within the specified namespace are considered.
-# @param [in] targets Reference to hash which maps known build targets to
-#                     executable file paths. If not specified, this function
-#                     always returns false.
+# @param [in] $name     Name of command or @c undef.
+# @param [in] $prefix   Common target name prefix. If @c undef, the given
+#                       target name must match excactly. Otherwise, targets
+#                       within the specified namespace are considered.
+# @param [in] %$targets Reference to hash which maps known build targets to
+#                       executable file paths. If not specified, this function
+#                       always returns false.
 #
 # @returns Absolute path of directory containing executable or @c undef if not found.
 #          If @p name is @c undef, the directory of this executable is returned.
@@ -365,7 +364,7 @@ sub exedir
 # ----------------------------------------------------------------------------
 ## @brief Convert list to double quoted string.
 #
-# @param [in] args Array of arguments.
+# @param [in] @$args Array of arguments.
 #
 # @returns Double quoted string, i.e., string where array elements are separated
 #          by a space character and surrounded by double quotes if necessary.
@@ -392,7 +391,7 @@ sub tostring
 # ----------------------------------------------------------------------------
 ## @brief Split quoted string.
 #
-# @param [in] str Quoted string.
+# @param [in] $str Quoted string.
 sub split
 {
     my $str  = shift;
@@ -416,10 +415,10 @@ sub split
 }
 
 # ----------------------------------------------------------------------------
-## @brief Split/Convert quoted string or array of arguments into command name
-#         and quoted string of command arguments.
+# @brief Split/Convert quoted string or array of arguments into command name
+#        and quoted string of command arguments.
 #
-# @param [in] args Array of command name and arguments or quoted string.
+# @param [in] @$args Array of command name and arguments or quoted string.
 #
 # @returns Tuple of command name and quoted string of command arguments.
 sub _split_command_and_arguments
@@ -456,23 +455,23 @@ sub _split_command_and_arguments
 # my ($status, $stdout) = execute('ls /', quiet => 1, stdout => 1);
 # @endcode
 #
-# @param [in] args       Command with arguments given either as single quoted
-#                        string or array of command name and arguments.
-# @param [in] quiet      Turns off output of @c stdout of child process to
-#                        @c stdout of parent process.
-# @param [in] stdout     Whether to return the command output.
-# @param [in] allow_fail If true, does not raise an exception if return
-#                        value is non-zero. Otherwise, an exception is
-#                        raised by this function using die.
-# @param [in] verbose    Verbosity of output messages.
-#                        Does not affect verbosity of executed command.
-# @param [in] simulate   Whether to simulate command execution only.
-# @param [in] prefix     Common target name prefix. If @c undef, the given
-#                        target name must match excactly. Otherwise, targets
-#                        within the specified namespace are considered.
-# @param [in] targets    Reference to hash which maps known build targets to
-#                        executable file paths. If not specified, this function
-#                        always returns false.
+# @param [in] $args        Command with arguments given either as single quoted
+#                          string or array of command name and arguments.
+# @param [in] $quiet       Turns off output of @c stdout of child process to
+#                          @c stdout of parent process.
+# @param [in] $stdout      Whether to return the command output.
+# @param [in] $allow_fail  If true, does not raise an exception if return
+#                          value is non-zero. Otherwise, an exception is
+#                          raised by this function using die.
+# @param [in] $verbose     Verbosity of output messages.
+#                          Does not affect verbosity of executed command.
+# @param [in] $simulate    Whether to simulate command execution only.
+# @param [in] $prefix      Common target name prefix. If @c undef, the given
+#                          target name must match excactly. Otherwise, targets
+#                          within the specified namespace are considered.
+# @param [in] %$targets    Reference to hash which maps known build targets to
+#                          executable file paths. If not specified, this function
+#                          always returns false.
 #
 # @return The exit code of the subprocess if @p stdout is false (the default).
 #         Otherwise, if @p stdout is true, a tuple consisting of exit code

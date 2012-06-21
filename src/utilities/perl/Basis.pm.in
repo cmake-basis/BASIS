@@ -53,12 +53,6 @@ use SBIA::Sub::Exporter -setup => {
 use constant PROJECT   => '@PROJECT_NAME@';
 ## @brief Project release.
 use constant RELEASE   => '@PROJECT_RELEASE@';
-## @brief Default copyright of executables.
-use constant COPYRIGHT => "University of Pennsylvania";
-## @brief Default license of executables.
-use constant LICENSE   => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
-## @brief Default contact to use for help output of executables.
-use constant CONTACT   => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
 # ============================================================================
 # custom utilities
@@ -70,16 +64,18 @@ my $_EXECUTABLE_TARGETS = {
     @EXECUTABLE_TARGET_INFO@
 };
 
-use SBIA::BASIS::Utilities
-        print_contact => { contact   => CONTACT },
-        print_version => { project   => PROJECT,   version => RELEASE,
-                           copyright => COPYRIGHT, license => LICENSE },
+use SBIA::BASIS::Utilities qw(print_contact),
+        print_version => { project => PROJECT, version => RELEASE },
         targetuid     => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
         istarget      => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
         exepath       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
         exename       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
         exedir        => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
         execute       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS };
+
+
+## @}
+# end of Doxygen group
 
 
 1; # indicate success of module loading

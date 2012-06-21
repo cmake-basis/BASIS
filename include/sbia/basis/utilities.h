@@ -40,6 +40,7 @@
 /// @addtogroup BasisCxxUtilities
 /// @{
 
+
 namespace sbia {
 
 namespace basis {
@@ -382,13 +383,13 @@ int execute(std::vector<std::string>        args,
             const IExecutableTargetInfo*    targets    = NULL);
 
 
-/// @}
-// end of Doxygen group
-
-
 } // namespace basis
 
 } // namespace sbia
+
+
+/// @}
+// end of Doxygen group
 
 
 #endif // _SBIA_BASIS_UTILITIES_H
