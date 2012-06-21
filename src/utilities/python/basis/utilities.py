@@ -35,6 +35,15 @@ from . import which
 # constants
 # ============================================================================
 
+## @brief Default copyright of executables.
+COPYRIGHT = "University of Pennsylvania"
+## @brief Default license of executables.
+LICENSE = "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+## @brief Default contact to use for help output of executables.
+CONTACT = "SBIA Group <sbia-software at uphs.upenn.edu>"
+
+
+# used to make paths relative to this module absolute
 _MODULE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # ============================================================================
@@ -45,8 +54,7 @@ _MODULE_DIR = os.path.dirname(os.path.realpath(__file__))
 ## @brief Print contact information.
 #
 # @param [in] contact Name of contact.
-def print_contact(contact=None):
-    if not contact: raise Exception('print_contact(): Missing contact argument')
+def print_contact(contact=CONTACT):
     sys.stdout.write("Contact:\n  " + contact + "\n")
 
 # ----------------------------------------------------------------------------
@@ -66,7 +74,7 @@ def print_contact(contact=None):
 #                       is printed.
 # @param [in] license   Information regarding licensing. If @c None or an
 #                       empty string, no license information is printed.
-def print_version(name, version=None, project=None, copyright=None, license=None):
+def print_version(name, version=None, project=None, copyright=COPYRIGHT, license=LICENSE):
     if not version: raise Exception('print_version(): Missing version argument')
     # program identification
     sys.stdout.write(name)

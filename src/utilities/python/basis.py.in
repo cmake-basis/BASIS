@@ -41,12 +41,6 @@ PROJECT = '@PROJECT_NAME@'
 VERSION = '@PROJECT_VERSION@'
 ## @brief Project version string used by print_version().
 RELEASE = '@PROJECT_RELEASE@'
-## @brief Default copyright of executables.
-COPYRIGHT = "University of Pennsylvania"
-## @brief Default license of executables.
-LICENSE = "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
-## @brief Default contact to use for help output of executables.
-CONTACT = "SBIA Group <sbia-software at uphs.upenn.edu>"
 
 # prefix used to convert target names into target UIDs
 _TARGET_UID_PREFIX = '@PROJECT_NAMESPACE_CMAKE@'
@@ -63,7 +57,7 @@ _EXECUTABLE_TARGETS = {
 ## @brief Print contact information.
 #
 # @param [in] contact Name of contact.
-def print_contact(contact=CONTACT):
+def print_contact(contact=utilities.CONTACT):
     utilities.print_contact(contact)
 
 # ----------------------------------------------------------------------------
@@ -83,7 +77,11 @@ def print_contact(contact=CONTACT):
 #                       is printed.
 # @param [in] license   Information regarding licensing. If @c None or an empty
 #                        string, no license information is printed.
-def print_version(name, version=RELEASE, project=PROJECT, copyright=COPYRIGHT, license=LICENSE):
+def print_version(name,
+                  version=RELEASE,
+                  project=PROJECT,
+                  copyright=utilities.COPYRIGHT,
+                  license=utilities.LICENSE):
     utilities.print_version(name, version, project=project, copyright=copyright, license=license)
 
 # ----------------------------------------------------------------------------

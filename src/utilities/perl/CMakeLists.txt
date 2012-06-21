@@ -61,6 +61,6 @@ endforeach ()
 
 # ----------------------------------------------------------------------------
 # Perl modules
-basis_add_library (Utilities.pm)
+basis_add_library (BASIS/Utilities.pm)
 
 basis_add_dependencies (Utilities_pm File_Which_pm)

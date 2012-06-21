@@ -18,7 +18,7 @@ endif ()
 # ----------------------------------------------------------------------------
 # basic command-line tools
 if (PythonInterp_FOUND)
-  basis_add_executable (which which.py)
+  basis_add_executable ("${PROJECT_CODE_DIR}/utilities/python/basis/which.py")
   basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
 endif ()
 

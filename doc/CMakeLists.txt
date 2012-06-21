@@ -38,6 +38,9 @@ basis_add_doc (
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
                    "*/gmock/*"            # Google Mock
                    "*/gtest/*"            # Google Test
+                   "*/tclap/*"            # TCLAP library
+                   "*/breathe/*"          # Sphinx extension
+                   "*/doxylink/*"         # Sphinx extension
                    "*/argh/*"             # Python Argh
                    "*/test.cxx"           # Google Mock and Test
                    "*/test_main.cxx"      # main() of unit tests based on GMock
