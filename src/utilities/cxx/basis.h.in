@@ -105,7 +105,7 @@ void print_contact(const char* contact = NULL);
  * @brief Print version information including copyright and license notices.
  *
  * @param [in] name      Name of executable. Should not be set programmatically
- *                       to the first argument of the @c_main() function, but
+ *                       to the first argument of the @c main() function, but
  *                       a string literal instead.
  * @param [in] version   Version of executable, e.g., release of project
  *                       this executable belongs to. Defaults to RELEASE.
