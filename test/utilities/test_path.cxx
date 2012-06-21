@@ -210,6 +210,14 @@ TEST (Path, splitext)
     os::path::splitext("/home/andreas/brain.nii.gz", head, ext, &exts);
     EXPECT_STREQ("/home/andreas/brain", head.c_str());
     EXPECT_STREQ(".nii.gz", ext.c_str());
+
+    #if WINDOWS
+        EXPECT_STREQ("/this/file/is/",        os::path::splitext("/this/file/is/.hidden")[0].c_str());
+        EXPECT_STREQ(".hidden",               os::path::splitext("/this/file/is/.hidden")[1].c_str());
+    #else
+        EXPECT_STREQ("/this/file/is/.hidden", os::path::splitext("/this/file/is/.hidden")[0].c_str());
+        EXPECT_STREQ("",                      os::path::splitext("/this/file/is/.hidden")[1].c_str());
+    #endif
 }
 
 // ---------------------------------------------------------------------------

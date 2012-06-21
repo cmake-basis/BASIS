@@ -219,7 +219,7 @@ void splitext(const string& path, string& head, string& ext, const set<string>* 
         // not start of file extension
         #if UNIX
             if (pos != string::npos && (pos == 0 || issep(path[pos - 1]))) {
-                pos == string::npos;
+                pos = string::npos;
             }
         #endif
     }
