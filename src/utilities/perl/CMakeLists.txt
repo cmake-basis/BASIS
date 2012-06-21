@@ -31,34 +31,36 @@ set (CPAN_MODULES
   # TODO - Use Doxygen::Filter::Perl to filter Perl sources for Doxgen.
   #        This has been partly implemented already, but this filter yet
   #        does not work as I would like to. Therefore, these changes are
-  #        yet uncommited.
+  #        yet uncommited. The Pod::POM package, on the other side, seems
+  #        to provide the required functionality for the conversion of Pod
+  #        comments into Doxygen-style comments.
   #        -- schuha 6/16/2012
   #"Doxygen::Filter"
   #"Doxygen::Filter::Perl"
-  #"Doxygen::Filter::Perl::POD"
-  #"Pod::POM"
-  #"Pod::POM::Constants"
-  #"Pod::POM::Node"
-  #"Pod::POM::Node::Begin"
-  #"Pod::POM::Node::Code"
-  #"Pod::POM::Node::Content"
-  #"Pod::POM::Node::For"
-  #"Pod::POM::Node::Head1"
-  #"Pod::POM::Node::Head2"
-  #"Pod::POM::Node::Head3"
-  #"Pod::POM::Node::Head4"
-  #"Pod::POM::Node::Item"
-  #"Pod::POM::Node::Over"
-  #"Pod::POM::Node::Pod"
-  #"Pod::POM::Node::Sequence"
-  #"Pod::POM::Node::Text"
-  #"Pod::POM::Node::Verbatim"
-  #"Pod::POM::Nodes"
-  #"Pod::POM::Test"
-  #"Pod::POM::View"
-  #"Pod::POM::View::HTML"
-  #"Pod::POM::View::Pod"
-  #"Pod::POM::View::Text"
+  "Pod::POM"
+  "Pod::POM::Constants"
+  "Pod::POM::Node"
+  "Pod::POM::Node::Begin"
+  "Pod::POM::Node::Code"
+  "Pod::POM::Node::Content"
+  "Pod::POM::Node::For"
+  "Pod::POM::Node::Head1"
+  "Pod::POM::Node::Head2"
+  "Pod::POM::Node::Head3"
+  "Pod::POM::Node::Head4"
+  "Pod::POM::Node::Item"
+  "Pod::POM::Node::Over"
+  "Pod::POM::Node::Pod"
+  "Pod::POM::Node::Sequence"
+  "Pod::POM::Node::Text"
+  "Pod::POM::Node::Verbatim"
+  "Pod::POM::Nodes"
+  "Pod::POM::Test"
+  "Pod::POM::View"
+  "Pod::POM::View::HTML"
+  "Pod::POM::View::Pod"
+  "Pod::POM::View::Text"
+  "Pod::POM::View::Doxygen"
 )
 
 foreach (MODULE IN LISTS CPAN_MODULES)
