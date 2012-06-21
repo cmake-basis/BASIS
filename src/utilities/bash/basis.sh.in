@@ -35,9 +35,9 @@ _@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED='true'
 # these constants need to be set before sourcing utilities.sh as otherwise
 # this module will initialize them and set them to readonly
 
-
 ## @addtogroup BasisBashUtilities
 # @{
+
 
 ## @brief Project name.
 readonly PROJECT="@PROJECT_NAME@"
@@ -71,7 +71,7 @@ readonly _BASIS_DIR="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Initialize executable target information.
+# @brief Initialize executable target information.
 #
 # This function initializes the structures of information about the executable
 # build targets. If this function is executed another time, it does nothing

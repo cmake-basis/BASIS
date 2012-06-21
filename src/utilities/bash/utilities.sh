@@ -483,22 +483,22 @@ split()
 # Example:
 # @code
 # # the next command will exit the current shell if it fails
-# execute_process ls /not/existing
+# execute ls /not/existing
 # # to prevent this, provide the --allow_fail option
-# execute_process --allow_fail ls /not/existing
+# execute --allow_fail ls /not/existing
 # # to make it explicit where the command-line to execute starts, use --
-# execute_process --allow_fail -- ls /not/existing
+# execute --allow_fail -- ls /not/existing
 # @endcode
 #
 # Note that the output of the command is not redirected by this function.
 # In order to execute the command quietly, use this function as follows:
 # @code
-# execute_process ls / &> /dev/null
+# execute ls / &> /dev/null
 # @endcode
 # Or to store the command output in a variable including error messages
 # use it as follows:
 # @code
-# output=`execute_process ls / 2>&1`
+# output=`execute ls / 2>&1`
 # @endcode
 # Note that in this case, the option --allow_fail has no effect as the
 # calling shell will never be terminated. Only the subshell in which the
@@ -595,7 +595,7 @@ execute()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Sanitize string for use in variable name.
+# @brief Sanitize string for use in variable name.
 #
 # @param [out] out Sanitized string.
 # @param [in]  str String to be sanitized.
@@ -620,7 +620,7 @@ _basis_executabletargetinfo_sanitize()
 }
 
 # ----------------------------------------------------------------------------
-## @brief Add (key, value) pair to executable target info "hash".
+# @brief Add (key, value) pair to executable target info "hash".
 #
 # @param [in] key   Hash key.
 # @param [in] name  Name of the hash table.
@@ -654,7 +654,7 @@ _basis_executabletargetinfo_add()
 }
 
 # ----------------------------------------------------------------------------
-## @brief Get value from executable target info "hash".
+# @brief Get value from executable target info "hash".
 #
 # @param [out] value Value corresponding to given @p key
 #                    or an empty string if key is unknown.
