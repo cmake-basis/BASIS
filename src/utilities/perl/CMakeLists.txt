@@ -28,15 +28,6 @@ set (CPAN_MODULES
   "Data::OptList"
   "Params::Util"
   "File::Which"
-  # TODO - Use Doxygen::Filter::Perl to filter Perl sources for Doxgen.
-  #        This has been partly implemented already, but this filter yet
-  #        does not work as I would like to. Therefore, these changes are
-  #        yet uncommited. The Pod::POM package, on the other side, seems
-  #        to provide the required functionality for the conversion of Pod
-  #        comments into Doxygen-style comments.
-  #        -- schuha 6/16/2012
-  #"Doxygen::Filter"
-  #"Doxygen::Filter::Perl"
   "Pod::POM"
   "Pod::POM::Constants"
   "Pod::POM::Node"
