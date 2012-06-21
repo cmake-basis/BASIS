@@ -52,9 +52,9 @@ use SBIA::File::Which     qw(which);
 ## @brief Default copyright of executables.
 use constant COPYRIGHT => "University of Pennsylvania";
 ## @brief Default license of executables.
-use constant LICENSE => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
+use constant LICENSE   => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
 ## @brief Default contact to use for help output of executables.
-use constant CONTACT => "SBIA Group <sbia-software at uphs.upenn.edu>";
+use constant CONTACT   => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
 # ============================================================================
 # exports
@@ -64,26 +64,19 @@ use constant CONTACT => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
 use SBIA::Sub::Exporter -setup => {
     exports => [
-        qw(to_quoted_string split_quoted_string),
-        print_contact            => \&_build_print_contact,
-        print_version            => \&_build_print_version,
-        get_target_uid           => \&_build_executabletargetinfo_function,
-        is_known_target          => \&_build_executabletargetinfo_function,
-        get_executable_path      => \&_build_executabletargetinfo_function,
-        get_executable_name      => \&_build_executabletargetinfo_function,
-        get_executable_directory => \&_build_executabletargetinfo_function,
-        execute_process          => \&_build_execute_process],
+        qw(tostring split),
+        print_contact => \&_build_print_contact,
+        print_version => \&_build_print_version,
+        targetuid     => \&_build_executabletargetinfo_function,
+        istarget      => \&_build_executabletargetinfo_function,
+        exepath       => \&_build_executabletargetinfo_function,
+        exename       => \&_build_executabletargetinfo_function,
+        exedir        => \&_build_executabletargetinfo_function,
+        execute       => \&_build_execute],
     groups => {
-        default => [ qw(print_contact print_version
-                        get_executable_path get_executable_name get_executable_directory
-                        execute_process)
-        ],
-        everything => [ qw(print_contact print_version
-                           get_target_uid is_known_target
-                           get_executable_path get_executable_name get_executable_directory
-                           to_quoted_string split_quoted_string
-                           execute_process)
-        ]
+        default    => [qw(print_contact print_version exepath exename exedir execute)],
+        everything => [qw(print_contact print_version targetuid istarget exepath
+                          exename exedir tostring split execute)]
     }
 };
 
@@ -205,7 +198,7 @@ sub print_version
 #
 # @returns Fully-qualified build target name or @c undef if @p target is
 #          @c undef or an empty string.
-sub get_target_uid
+sub targetuid
 {
     my $target  = shift;
     my $prefix  = shift;
@@ -244,13 +237,13 @@ sub get_target_uid
 #                     always returns false.
 #
 # @returns Whether the given build target is known by this module.
-sub is_known_target
+sub istarget
 {
     my $target  = shift;
     my $prefix  = shift;
     my $targets = shift;
     if (defined $targets) {
-        my $uid = get_target_uid($target, $prefix, $targets);
+        my $uid = targetuid($target, $prefix, $targets);
         defined $uid or return 0;
         $uid =~ s/^[.]?(.*)/$1/;
         exists $targets->{$uid};
@@ -282,7 +275,7 @@ sub is_known_target
 #
 # @returns Absolute path of executable or @c undef if not found.
 #          If @p name is @c undef, the path of this executable is returned.
-sub get_executable_path
+sub exepath
 {
     my $name    = shift;
     my $prefix  = shift;
@@ -291,7 +284,7 @@ sub get_executable_path
     if (not defined $name) {
         $path = realpath($0);
     } elsif (defined $targets) {
-        my $uid = get_target_uid($name, $prefix, $targets);
+        my $uid = targetuid($name, $prefix, $targets);
         defined $uid and $uid =~ s/^[.]?(.*)/$1/;
         if (defined $uid and exists $targets->{$uid}) {
             $path = $targets->{$uid};
@@ -334,9 +327,9 @@ sub get_executable_path
 #
 # @returns Name of executable file or @c undef if not found.
 #          If @p name is @c undef, the path of this executable is returned.
-sub get_executable_name
+sub exename
 {
-    my $path = get_executable_path(@_);
+    my $path = exepath(@_);
     defined $path or return undef;
     return basename($path);
 }
@@ -358,9 +351,9 @@ sub get_executable_name
 #
 # @returns Absolute path of directory containing executable or @c undef if not found.
 #          If @p name is @c undef, the directory of this executable is returned.
-sub get_executable_directory
+sub exedir
 {
-    my $path = get_executable_path(@_);
+    my $path = exepath(@_);
     defined $path or return undef;
     return dirname($path);
 }
@@ -377,7 +370,7 @@ sub get_executable_directory
 # @returns Double quoted string, i.e., string where array elements are separated
 #          by a space character and surrounded by double quotes if necessary.
 #          Double quotes within an array element are escaped with a backslash.
-sub to_quoted_string
+sub tostring
 {
     my $str = '';
     if (ref($_[0]) eq 'ARRAY') {
@@ -400,7 +393,7 @@ sub to_quoted_string
 ## @brief Split quoted string.
 #
 # @param [in] str Quoted string.
-sub split_quoted_string
+sub split
 {
     my $str  = shift;
     my $max  = shift;
@@ -429,16 +422,16 @@ sub split_quoted_string
 # @param [in] args Array of command name and arguments or quoted string.
 #
 # @returns Tuple of command name and quoted string of command arguments.
-sub split_command_and_arguments
+sub _split_command_and_arguments
 {
     my $args      = $_[0];
     my $command   = '';
     my $arguments = '';
     if (ref($args) eq 'ARRAY') {
-        $command   = shift @$args or die "execute_process(): No command specified for execution";
-        $arguments = to_quoted_string($args);
+        $command   = shift @$args or die "execute(): No command specified for execution";
+        $arguments = tostring($args);
     } elsif (ref($args) eq '') {
-        ($command, $arguments) = split_quoted_string($args, 1);
+        ($command, $arguments) = split($args, 1);
     } else {
         die "Argument must be either array reference or string";
     }
@@ -458,9 +451,9 @@ sub split_command_and_arguments
 # Example:
 # @code
 # # only returns exit code of command but does not output anything
-# my $status = execute_process(['ls', '/'], quiet => 1);
+# my $status = execute(['ls', '/'], quiet => 1);
 # # returns exit code of command and returns command output w/o printing to stdout
-# my ($status, $stdout) = execute_process('ls /', quiet => 1, stdout => 1);
+# my ($status, $stdout) = execute('ls /', quiet => 1, stdout => 1);
 # @endcode
 #
 # @param [in] args       Command with arguments given either as single quoted
@@ -489,10 +482,10 @@ sub split_command_and_arguments
 # @throws die If command execution failed. This exception is not raised
 #             if the command executed with non-zero exit code but
 #             @p allow_fail is true.
-sub execute_process
+sub execute
 {
     # arguments
-    my $args = shift or die "execute_process(): No command specified for execution";
+    my $args = shift or die "execute(): No command specified for execution";
     if ($args =~ m/^(quiet|stdout|allow_fail|verbose|simulate|prefix|targets)$/) {
         warn "First argument matches option name. Missing args argument?";
     }
@@ -501,8 +494,8 @@ sub execute_process
                     prefix  => undef, targets  => undef);
     my %options  = (%defaults, @_);
     # get absolute path of executable
-    my ($command, $arguments) = split_command_and_arguments($args);
-    my $exec_path = get_executable_path($command, $options{'prefix'}, $options{'targets'});
+    my ($command, $arguments) = _split_command_and_arguments($args);
+    my $exec_path = exepath($command, $options{'prefix'}, $options{'targets'});
     defined $exec_path or die "$command: Command not found";
     $exec_path = '"' . $exec_path . '"' if $exec_path =~ m/'|\s/; # quote if necessary
     $args = $exec_path . $arguments;
@@ -602,8 +595,8 @@ sub _build_executabletargetinfo_function
 }
 
 # ----------------------------------------------------------------------------
-# builder of customized execute_process()
-sub _build_execute_process
+# builder of customized execute()
+sub _build_execute
 {
     my ($class, $fn, $args) = @_;
     return sub {
@@ -616,7 +609,7 @@ sub _build_execute_process
                         prefix     => $args->{prefix},
                         targets    => $args->{targets});
         my %options  = (%defaults, @_);
-        execute_process($args, %options);
+        execute($args, %options);
     }
 }
 

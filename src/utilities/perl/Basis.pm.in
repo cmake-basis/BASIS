@@ -36,23 +36,12 @@ package @PROJECT_NAMESPACE_PERL@::Basis;
 
 use SBIA::Sub::Exporter -setup => {
     exports => [
-        qw(print_contact print_version
-           get_target_uid is_known_target
-           get_executable_path get_executable_name get_executable_directory
-           to_quoted_string split_quoted_string
-           execute_process)
-    ],
+        qw(print_contact print_version targetuid istarget exepath exename
+           exedir tostring split execute)],
     groups => {
-        default => [ qw(print_contact print_version
-                        get_executable_path get_executable_name get_executable_directory
-                        execute_process)
-        ],
-        everything => [ qw(print_contact print_version
-                           get_target_uid is_known_target
-                           get_executable_path get_executable_name get_executable_directory
-                           to_quoted_string split_quoted_string
-                           execute_process)
-        ]
+        default    => [qw(print_contact print_version exepath exename exedir execute)],
+        everything => [qw(print_contact print_version targetuid istarget
+                          exepath exename exedir tostring split execute)]
     }
 };
 
@@ -61,15 +50,15 @@ use SBIA::Sub::Exporter -setup => {
 # ============================================================================
 
 ## @brief Project name.
-use constant PROJECT => '@PROJECT_NAME@';
+use constant PROJECT   => '@PROJECT_NAME@';
 ## @brief Project release.
-use constant RELEASE => '@PROJECT_RELEASE@';
+use constant RELEASE   => '@PROJECT_RELEASE@';
 ## @brief Default copyright of executables.
 use constant COPYRIGHT => "University of Pennsylvania";
 ## @brief Default license of executables.
-use constant LICENSE => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
+use constant LICENSE   => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
 ## @brief Default contact to use for help output of executables.
-use constant CONTACT => "SBIA Group <sbia-software at uphs.upenn.edu>";
+use constant CONTACT   => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
 # ============================================================================
 # custom utilities
@@ -82,15 +71,15 @@ my $_EXECUTABLE_TARGETS = {
 };
 
 use SBIA::BASIS::Utilities
-        print_contact            => { contact   => CONTACT },
-        print_version            => { project   => PROJECT,   version => RELEASE,
-                                      copyright => COPYRIGHT, license => LICENSE },
-        get_target_uid           => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        is_known_target          => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        get_executable_path      => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        get_executable_name      => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        get_executable_directory => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        execute_process          => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS };
+        print_contact => { contact   => CONTACT },
+        print_version => { project   => PROJECT,   version => RELEASE,
+                           copyright => COPYRIGHT, license => LICENSE },
+        targetuid     => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        istarget      => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        exepath       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        exename       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        exedir        => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
+        execute       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS };
 
 
 1; # indicate success of module loading
