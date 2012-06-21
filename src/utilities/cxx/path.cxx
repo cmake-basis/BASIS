@@ -212,13 +212,16 @@ void splitext(const string& path, string& head, string& ext, const set<string>* 
             }
         }
     }
-    // otherwise, extract last extension component
+    // otherwise, get position of last dot
     if (pos == string::npos) {
         pos = path.find_last_of('.');
-        // consider leading dot of hidden file on Posix as part of file name
-        if (pos > path.size() && (path[pos - 1] == '/' || path[pos - 1] == '\\')) {
-            pos = string::npos;
-        }
+        // leading dot of file name in Posix indicates hidden file,
+        // not start of file extension
+        #if UNIX
+            if (pos != string::npos && (pos == 0 || issep(path[pos - 1]))) {
+                pos == string::npos;
+            }
+        #endif
     }
     // split extension
     if (pos == string::npos) {
