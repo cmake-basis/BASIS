@@ -119,6 +119,14 @@ if (NOT @PROJECT_IS_MODULE@)
   endif()
 
   foreach (${NS}MODULE IN LISTS ${NS}MODULES_REQUESTED)
+    # check if requested module is available
+    list (FIND ${NS}MODULES_ENABLED ${NS}MODULE IDX)
+    if (IDX EQUAL -1)
+      message (FATAL_ERROR "Requested module ${${NS}MODULE} of package @PROJECT_NAME@"
+                           " was not enabled when building @PROJECT_NAME@. Rebuild"
+                           " the @PROJECT_NAME@ package with MODULE_${${NS}MODULE}"
+                           " set to ON and try again.")
+    endif ()
     # include configuration files of modules
     set (${${NS}MODULE}_CONFIG_PREFIX "${NS}${MODULE}_")
     include ("@MODULES_DIR_CONFIG@/${${NS}MODULE}/${${NS}MODULE}Config.cmake")
