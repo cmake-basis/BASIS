@@ -18,8 +18,8 @@
 # constants
 # ============================================================================
 
-get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
-get_executable_directory _EXEC_DIR  && readonly _EXEC_DIR
+exedir  _EXEC_DIR  && readonly _EXEC_DIR
+exename _EXEC_NAME && readonly _EXEC_NAME
 
 # ============================================================================
 # help

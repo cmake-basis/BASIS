@@ -31,7 +31,7 @@ while [ $# -gt 0 ]; do
             ;;
 
         --help|-h)
-            get_executable_name exec_name
+            exename exec_name
             echo "Usage:"
             echo "  ${exec_name} [svn options/arguments]"
             echo "  ${exec_name} [options]"
@@ -51,7 +51,7 @@ while [ $# -gt 0 ]; do
             ;;
 
         --helpshort)
-            get_executable_name exec_name
+            exename exec_name
             echo "Usage:"
             echo "  ${exec_name} [svn options/arguments]"
             echo "  ${exec_name} [options]"

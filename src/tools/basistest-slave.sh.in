@@ -22,8 +22,8 @@
 # constants
 # ============================================================================
 
-get_executable_directory _EXEC_DIR  && readonly _EXEC_DIR
-get_executable_name      _EXEC_NAME && readonly _EXEC_NAME
+exedir  _EXEC_DIR  && readonly _EXEC_DIR
+exename _EXEC_NAME && readonly _EXEC_NAME
 
 # ============================================================================
 # help/version
