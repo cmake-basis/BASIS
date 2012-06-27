@@ -1336,7 +1336,7 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # add installation rule to register package with CMake
-  if (NOT PROJECT_IS_MODULE AND BASIS_REGISTER)
+  if (BASIS_REGISTER AND NOT PROJECT_IS_MODULE AND PROJECT_VERSION VERSION_GREATER 0.0.0)
     basis_register_package ()
   endif ()
 
