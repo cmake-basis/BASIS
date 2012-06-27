@@ -41,13 +41,13 @@
 # ============================================================================
 
 ## @brief Absolute path of directory of project sources in source tree.
-set (PROJECT_CODE_DIR "@PROJECT_SOURCE_DIR@/src")
+set (PROJECT_CODE_DIR    "@PROJECT_SOURCE_DIR@/src")
 ## @brief Absolute path of directory of BASIS project configuration in source tree.
-set (PROJECT_CONFIG_DIR "@PROJECT_SOURCE_DIR@/config")
+set (PROJECT_CONFIG_DIR  "@PROJECT_SOURCE_DIR@/config")
 ## @brief Absolute path of directory of auxiliary data in source tree.
-set (PROJECT_DATA_DIR "@PROJECT_SOURCE_DIR@/data")
+set (PROJECT_DATA_DIR    "@PROJECT_SOURCE_DIR@/data")
 ## @brief Absolute path of directory of documentation files in source tree.
-set (PROJECT_DOC_DIR "@PROJECT_SOURCE_DIR@/doc")
+set (PROJECT_DOC_DIR     "@PROJECT_SOURCE_DIR@/doc")
 ## @brief Absolute path of directory of example in source tree.
 set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
 ## @brief Absolute path of diretory of public header files in source tree.
@@ -96,6 +96,10 @@ endif ()
 foreach (P CODE CONFIG DATA DOC EXAMPLE MODULES TESTING)
   basis_get_relative_path (D "${PROJECT_SOURCE_DIR}" "${PROJECT_${P}_DIR}")
   set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${D}")
+  # references to top-level project's directories
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_BINARY_${P}_DIR "${BINARY_${P}_DIR}")
+  endif ()
 endforeach ()
 
 # Directory for configured public header files is the same for the top-level
@@ -136,6 +140,13 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}")
 ## @brief Absolute path of root directory of build tree of top-level project.
 if (NOT PROJECT_IS_MODULE)
   set (BASIS_PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
+endif ()
+
+# references to top-level project's directories
+if (NOT PROJECT_IS_MODULE)
+  foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE PYTHON_LIBRARY PERL_LIBRARY)
+    set (BASIS_BINARY_${D}_DIR "${BINARY_${D}_DIR}")
+  endforeach ()
 endif ()
 
 # ============================================================================
@@ -418,6 +429,13 @@ if (UNIX)
     set (INSTALL_TEXINFO_DIR "${INSTALL_SHARE_DIR}/info")
   endif ()
 endif ()
+
+# ----------------------------------------------------------------------------
+# references to top-level project's directories
+foreach (D IN ITEMS CONFIG INCLUDE RUNTIME LIBEXEC LIBRARY ARCHIVE
+                    PYTHON_LIBRARY PERL_LIBRARY DATA DOC EXAMPLE SHARE)
+  set (BASIS_INSTALL_${D}_DIR "${INSTALL_${D}_DIR}")
+endforeach ()
 
 
 ## @}
