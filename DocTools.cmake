@@ -1435,7 +1435,11 @@ endfunction ()
 # command-line tool svn2cl(.sh) is installed, it is used to output a nicer
 # formatted change log.
 function (basis_add_changelog)
-  basis_make_target_uid (TARGET_UID "changelog")
+  if (PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
+    basis_make_target_uid (TARGET_UID "changelog_${PROJECT_NAME_LOWER}")
+  else ()
+    basis_make_target_uid (TARGET_UID "changelog")
+  endif ()
 
   option (BUILD_CHANGELOG "Request build and/or installation of the ChangeLog." OFF)
   mark_as_advanced (BUILD_CHANGELOG)
@@ -1445,7 +1449,7 @@ function (basis_add_changelog)
     message (STATUS "Adding ChangeLog...")
   endif ()
 
-  if (BUILD_CHANGELOG)
+  if (NOT PROJECT_IS_MODULE AND BUILD_CHANGELOG)
     set (_ALL "ALL")
   else ()
     set (_ALL)
@@ -1546,8 +1550,10 @@ function (basis_add_changelog)
   # --------------------------------------------------------------------------
   # neither SVN nor Git repository
   else ()
-    message (STATUS "Project is neither SVN working copy nor Git repository."
-                    " Generation of ChangeLog disabled.")
+    if (BASIS_VERBOSE)
+      message (STATUS "Project source directory ${PROJECT_SOURCE_DIR} is neither"
+                      " SVN working copy nor Git repository. Generation of ChangeLog disabled.")
+    endif ()
     set (DISABLE_BUILD_CHANGELOG TRUE)
   endif ()
 
@@ -1567,10 +1573,16 @@ function (basis_add_changelog)
 
   # --------------------------------------------------------------------------
   # install ChangeLog
+  get_filename_component (CHANGELOG_NAME "${CHANGELOG_FILE}" NAME)
+  if (PROJECT_IS_MODULE AND "${INSTALL_DOC_DIR}" STREQUAL "${BASIS_INSTALL_DOC_DIR}")
+    set (CHANGELOG_NAME "${CHANGELOG_NAME}-${PROJECT_NAME}")
+  endif ()
+
   install (
     FILES       "${CHANGELOG_FILE}"
     DESTINATION "${INSTALL_DOC_DIR}"
     COMPONENT   "${BASIS_RUNTIME_COMPONENT}"
+    RENAME      "${CHANGELOG_NAME}"
     OPTIONAL
   )
 
