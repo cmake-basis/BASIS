@@ -183,96 +183,134 @@ macro (basis_find_package PACKAGE)
     endif ()
   endif ()
   # --------------------------------------------------------------------------
-  # Note that some <Pkg>_DIR variables are set in the package configuration
-  # of found (BASIS-based) packages such as in particular BASIS itself. These
-  # are marked as INTERNAL as the packages may not even be used by the project
-  # that uses that package. If this project, however, looks for any of these
-  # packages itself, the variables should be made visible for the user.
-  if (${PKG}_DIR)
-    basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
-  elseif (${PKG_UPPER}_DIR)
-    basis_set_or_update_type (${PKG_UPPER}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
-  endif ()
-  # --------------------------------------------------------------------------
-  # hide or show already defined <PKG>_DIR cache entry
-  if (DEFINED ${PKG}_DIR AND DEFINED USE_${PKG})
-    if (USE_${PKG})
-      mark_as_advanced (CLEAR ${PKG}_DIR)
-    else ()
-      mark_as_advanced (FORCE ${PKG}_DIR)
+  # otherwise, look for external package
+  if (NOT ${PKG}_FOUND)
+
+    # --------------------------------------------------------------------------
+    # Note that some <Pkg>_DIR variables are set in the package configuration
+    # of found (BASIS-based) packages such as in particular BASIS itself. These
+    # are marked as INTERNAL as the packages may not even be used by the project
+    # that uses that package. If this project, however, looks for any of these
+    # packages itself, the variables should be made visible for the user.
+    if (${PKG}_DIR)
+      basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
+    elseif (${PKG_UPPER}_DIR)
+      basis_set_or_update_type (${PKG_UPPER}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
     endif ()
-  endif ()
-  # --------------------------------------------------------------------------
-  # find external packages
-  if (NOT ${PKG}_FOUND AND (NOT DEFINED USE_${PKG} OR USE_${PKG}))
-    # circumvent issue with CMake's find_package() interpreting these variables
-    # relative to the current binary directory instead of the top-level directory
-    if (${PKG}_DIR AND NOT IS_ABSOLUTE "${${PKG}_DIR}")
-      set (${PKG}_DIR "${CMAKE_BINARY_DIR}/${${PKG}_DIR}")
-      get_filename_component (${PKG}_DIR "${${PKG}_DIR}" ABSOLUTE)
-    endif ()
-    # moreover, users tend to specify the installation prefix instead of the
-    # actual directory containing the package configuration file
-    if (IS_DIRECTORY "${${PKG}_DIR}")
-      list (INSERT CMAKE_PREFIX_PATH 0 "${${PKG}_DIR}")
-    endif ()
-    # now look for the package
-    set (FIND_ARGN)
-    if (ARGN_EXACT)
-      list (APPEND FIND_ARGN "EXACT")
-    endif ()
-    if (ARGN_QUIET)
-      list (APPEND FIND_ARGN "QUIET")
-    endif ()
-    if (ARGN_COMPONENTS)
-      list (APPEND FIND_ARGN "COMPONENTS" ${ARGN_COMPONENTS})
-    elseif (ARGN_REQUIRED)
-      list (APPEND FIND_ARGN "REQUIRED")
-    endif ()
-    if ("${PKG}" MATCHES "^(MFC|wxWidgets)$")
-      # if Find<Pkg>.cmake prints status message, don't do it here
-      find_package (${PKG} ${VER} ${FIND_ARGN})
-    else ()
-      set (MSG "${PKG}")
-      if (VER)
-        set (MSG "${PKG} ${VER}")
+    # --------------------------------------------------------------------------
+    # hide or show already defined <PKG>_DIR cache entry
+    if (DEFINED ${PKG}_DIR AND DEFINED USE_${PKG})
+      if (USE_${PKG})
+        mark_as_advanced (CLEAR ${PKG}_DIR)
+      else ()
+        mark_as_advanced (FORCE ${PKG}_DIR)
       endif ()
-      if (BASIS_VERBOSE)
-        message (STATUS "Looking for ${MSG}...")
+    endif ()
+    # --------------------------------------------------------------------------
+    # find external packages
+    if (NOT DEFINED USE_${PKG} OR USE_${PKG})
+      # circumvent issue with CMake's find_package() interpreting these variables
+      # relative to the current binary directory instead of the top-level directory
+      if (${PKG}_DIR AND NOT IS_ABSOLUTE "${${PKG}_DIR}")
+        set (${PKG}_DIR "${CMAKE_BINARY_DIR}/${${PKG}_DIR}")
+        get_filename_component (${PKG}_DIR "${${PKG}_DIR}" ABSOLUTE)
       endif ()
-      find_package (${PKG} ${VER} ${FIND_ARGN})
-      if (${PKG_UPPER}_FOUND)
-        set (${PKG}_FOUND TRUE)
+      # moreover, users tend to specify the installation prefix instead of the
+      # actual directory containing the package configuration file
+      if (IS_DIRECTORY "${${PKG}_DIR}")
+        list (INSERT CMAKE_PREFIX_PATH 0 "${${PKG}_DIR}")
       endif ()
-      # verbose output of information about found package
-      if (BASIS_VERBOSE)
-        if (${PKG}_FOUND)
-          if (DEFINED ${PKG}_DIR)
-            message (STATUS "Looking for ${MSG}... - found: ${${PKG}_DIR}")
-          elseif (DEFINED ${PKG_UPPER}_DIR)
-            message (STATUS "Looking for ${MSG}... - found: ${${PKG_UPPER}_DIR}")
-          else ()
-            message (STATUS "Looking for ${MSG}... - found")
+      # now look for the package
+      set (FIND_ARGN)
+      if (ARGN_EXACT)
+        list (APPEND FIND_ARGN "EXACT")
+      endif ()
+      if (ARGN_QUIET)
+        list (APPEND FIND_ARGN "QUIET")
+      endif ()
+      if (ARGN_COMPONENTS)
+        list (APPEND FIND_ARGN "COMPONENTS" ${ARGN_COMPONENTS})
+      elseif (ARGN_REQUIRED)
+        list (APPEND FIND_ARGN "REQUIRED")
+      endif ()
+      if ("${PKG}" MATCHES "^(MFC|wxWidgets)$")
+        # if Find<Pkg>.cmake prints status message, don't do it here
+        find_package (${PKG} ${VER} ${FIND_ARGN})
+      else ()
+        set (_STATUS "Looking for ${PKG}")
+        if (VER)
+          set (_STATUS "${_STATUS} ${VER}")
+        endif ()
+        set (_STATUS "${_STATUS}...")
+        if (BASIS_VERBOSE)
+          message (STATUS "${_STATUS}")
+        endif ()
+        find_package (${PKG} ${VER} ${FIND_ARGN})
+        if (${PKG_UPPER}_FOUND)
+          set (${PKG}_FOUND TRUE)
+        endif ()
+        # set common <Pkg>_VERSION_STRING variable if possible and not set
+        if (NOT DEFINED ${PKG}_VERSION_STRING)
+          if (PKG MATCHES "^PythonInterp$")
+            set (${PKG}_VERSION_STRING ${PYTHON_VERSION_STRING})
+          elseif (DEFINED ${PKG_UPPER}_VERSION_STRING)
+            set (${PKG}_VERSION_STRING ${${PKG_UPPER}_VERSION_STRING})
+          elseif (DEFINED ${PKG}_VERSION_MAJOR)
+            set (${PKG}_VERSION_STRING ${${PKG}_VERSION_MAJOR})
+            if (DEFINED ${PKG}_VERSION_MINOR)
+              set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG}_VERSION_MINOR})
+              if (DEFINED ${PKG}_VERSION_PATCH)
+                set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG}_VERSION_PATCH})
+              endif ()
+            endif ()
+          elseif (DEFINED ${PKG_UPPER}_VERSION_MAJOR)
+            set (${PKG}_VERSION_STRING ${${PKG_UPPER}_VERSION_MAJOR})
+            if (DEFINED ${PKG_UPPER}_VERSION_MINOR)
+              set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG_UPPER}_VERSION_MINOR})
+              if (DEFINED ${PKG_UPPER}_VERSION_PATCH)
+                set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG_UPPER}_VERSION_PATCH})
+              endif ()
+            endif ()
+          elseif (DEFINED ${PKG}_VERSION)
+            set (${PKG}_VERSION_STRING ${${PKG}_VERSION})
+          elseif (DEFINED ${PKG_UPPER}_VERSION)
+            set (${PKG}_VERSION_STRING ${${PKG_UPPER}_VERSION})
           endif ()
-        else ()
-          message (STATUS "Looking for ${MSG}... - not found")
+        endif ()
+        # verbose output of information about found package
+        if (BASIS_VERBOSE)
+          if (${PKG}_FOUND)
+            set (_STATUS "${_STATUS} - found")
+            if (DEFINED ${PKG}_VERSION_STRING)
+              set (_STATUS "${_STATUS} v${${PKG}_VERSION_STRING}")
+            endif ()
+            if (DEFINED ${PKG}_DIR)
+              set (_STATUS "${_STATUS} at ${${PKG}_DIR}")
+            elseif (DEFINED ${PKG_UPPER}_DIR)
+              set (_STATUS "${_STATUS} at ${${PKG_UPPER}_DIR}")
+            endif ()
+          else ()
+            set (_STATUS "${_STATUS} - not found")
+          endif ()
+          message (STATUS "${_STATUS}")
+        endif ()
+      endif ()
+      # provide option which allows users to disable use of not required packages
+      if (${PKG}_FOUND AND NOT ARGN_REQUIRED)
+        option (USE_${PKG} "Enable/disable use of package ${PKG}." ON)
+        mark_as_advanced (USE_${PKG})
+        if (NOT USE_${PKG})
+          set (${PKG}_FOUND       FALSE)
+          set (${PKG_UPPER}_FOUND FALSE)
         endif ()
       endif ()
     endif ()
-    # provide option which allows users to disable use of not required packages
-    if (${PKG}_FOUND AND NOT ARGN_REQUIRED)
-      option (USE_${PKG} "Enable/disable use of package ${PKG}." ON)
-      mark_as_advanced (USE_${PKG})
-      if (NOT USE_${PKG})
-        set (${PKG}_FOUND       FALSE)
-        set (${PKG_UPPER}_FOUND FALSE)
-      endif ()
+    # --------------------------------------------------------------------------
+    # reset <PKG>_DIR variable for possible search of different package version
+    if (PKG_DIR AND NOT ${PKG}_DIR)
+      basis_set_or_update_value (${PKG}_DIR "${PKG_DIR}")
     endif ()
-  endif ()
-  # --------------------------------------------------------------------------
-  # reset <PKG>_DIR variable for possible search of different package version
-  if (PKG_DIR AND NOT ${PKG}_DIR)
-    basis_set_or_update_value (${PKG}_DIR "${PKG_DIR}")
+
   endif ()
   # --------------------------------------------------------------------------
   # unset locally used variables

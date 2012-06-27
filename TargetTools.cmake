@@ -981,13 +981,13 @@ endfunction ()
 # @param [in] ARGN   Further arguments of CMake's add_executable().
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
-function (add_executable TARGET)
+function (add_executable TARGET_UID)
   if (ARGC EQUAL 2 AND ARGV1 MATCHES "^IMPORTED$")
-    _add_executable (${TARGET} IMPORTED)
-    basis_add_imported_target ("${TARGET}" EXECUTABLE)
+    _add_executable (${TARGET_UID} IMPORTED)
+    basis_add_imported_target ("${TARGET_UID}" EXECUTABLE)
   else ()
-    _add_executable (${TARGET} ${ARGN})
-    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
+    _add_executable (${TARGET_UID} ${ARGN})
+    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   endif ()
 endfunction ()
 
@@ -1004,59 +1004,13 @@ endfunction ()
 # @param [in] ARGN   Further arguments of CMake's add_library().
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_library
-function (add_library TARGET)
+function (add_library TARGET_UID)
   if (ARGC EQUAL 3 AND ARGV2 MATCHES "^IMPORTED$")
-    _add_library (${TARGET} "${ARGV1}" IMPORTED)
-    basis_add_imported_target ("${TARGET}" "${ARGV1}")
+    _add_library (${TARGET_UID} "${ARGV1}" IMPORTED)
+    basis_add_imported_target ("${TARGET_UID}" "${ARGV1}")
   else ()
-    _add_library (${TARGET} ${ARGN})
-    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET}")
-  endif ()
-endfunction ()
-
-# ----------------------------------------------------------------------------
-## @brief Add build target for BASIS utilities library.
-function (basis_add_utilities_library)
-  if (BASIS_USE_FULLY_QUALIFIED_UIDS)
-    set (TARGET_UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.basis")
-  else ()
-    set (TARGET_UID basis)
-  endif ()
-  if (NOT BASIS_UTILITIES_ENABLED MATCHES "CXX")
-    message (FATAL_ERROR "A build target makes use of the BASIS C++ utilities"
-                         " but BASIS was build without C++ utilities enabled."
-                         " Either specify the option NOUTILITIES or rebuild"
-                         " BASIS with C++ utilities enabled.")
-  endif ()
-  if (NOT TARGET ${TARGET_UID} AND EXISTS "${BINARY_CODE_DIR}/basis.cxx")
-    add_library (${TARGET_UID} STATIC "${BINARY_CODE_DIR}/basis.cxx")
-    string (REGEX REPLACE "^.*\\." "" OUTPUT_NAME "${TARGET_UID}")
-
-    # define dependency on non-project specific utilities as the order in
-    # which static libraries are listed on the command-line for the linker
-    # matters; this will tell CMake to get the order right
-    target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
-
-    _set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        BASIS_TYPE               "STATIC_LIBRARY"
-        OUTPUT_NAME              "${OUTPUT_NAME}"
-        ARCHIVE_OUTPUT_DIRECTORY "${BASIS_BINARY_ARCHIVE_DIR}"
-    )
-
-    install (
-      TARGETS ${TARGET_UID}
-      EXPORT  ${BASIS_PROJECT_NAME}
-      ARCHIVE
-        DESTINATION "${BASIS_INSTALL_ARCHIVE_DIR}"
-        COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-    )
-    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
-
-    if (BASIS_DEBUG)
-      message ("** Added BASIS utilities library ${TARGET_UID}")
-    endif ()
+    _add_library (${TARGET_UID} ${ARGN})
+    basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   endif ()
 endfunction ()
 
@@ -1074,7 +1028,7 @@ endfunction ()
 # By default, the BASIS C++ utilities library is added as link dependency of
 # the executable target. If none of the BASIS C++ utilities are used by the
 # executable, the option NOUTILITIES can be given. To enable this option
-# by default, set the variable @c BASIS_NO_UTILITIES to TRUE before the
+# by default, set the variable @c BASIS_UTILITIES to FALSE before the
 # basis_add_executable() commands, i.e., best in the Settings.cmake file located
 # in the @c PROJECT_CONFIG_DIR. Note, however, that the utilities library is a
 # static library and thus the linker would simply not include any of the BASIS
@@ -1173,20 +1127,6 @@ function (basis_add_executable_target TARGET_NAME)
     message (STATUS "Adding executable ${TARGET_UID}...")
   endif ()
 
-  # add BASIS utilities library target
-  if (NOT ARGN_NOUTILITIES)
-    set (ARGN_NOUTILITIES "${BASIS_NO_UTILITIES}")
-  endif ()
-  if (NOT NOUTILITIES)
-    if (NOT BASIS_UTILITIES_ENABLED MATCHES "CXX")
-      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
-                           " but BASIS was build without C++ utilities enabled."
-                           " Either specify the option NOUTILITIES or rebuild"
-                           " BASIS with C++ utilities enabled.")
-    endif ()
-    basis_add_utilities_library ()
-  endif ()
-
   # configure .in source files
   basis_configure_sources (SOURCES ${SOURCES})
 
@@ -1253,11 +1193,24 @@ function (basis_add_executable_target TARGET_NAME)
   endif ()
 
   # add default link dependencies
+  if (NOT BASIS_UTILITIES)
+    set (ARGN_NOUTILITIES TRUE)
+  endif ()
   if (NOT ARGN_NOUTILITIES)
+    if (NOT TARGET ${BASIS_UTILITIES_LIBRARY})
+      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
+                           " but BASIS was build without C++ utilities enabled."
+                           " Either specify the option NOUTILITIES, set the global"
+                           " variable BASIS_UTILITIES to FALSE"
+                           " (in ${PROJECT_CONFIG_DIR}/Settings.cmake) or"
+                           " rebuild BASIS with C++ utilities enabled.")
+    endif ()
+    # add project-specific library target if not present yet
+    basis_add_utilities_library (BASIS_UTILITIES_TARGET)
     # non-project specific utilities build as part of BASIS
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
-    # project specific utilities build as part of this project
-    basis_target_link_libraries (${TARGET_UID} basis)
+    # project-specific utilities build as part of this project
+    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
 
   # install executable and/or export target
@@ -1311,7 +1264,7 @@ endfunction ()
 # By default, the BASIS C++ utilities library is added as link dependency of
 # the executable target. If none of the BASIS C++ utilities are used by the
 # executable, the option NOUTILITIES can be given. To enable this option
-# by default, set the variable @c BASIS_NO_UTILITIES to TRUE before the
+# by default, set the variable @c BASIS_UTILITIES to FALSE before the
 # basis_add_executable() commands, i.e., best in the Settings.cmake file located
 # in the @c PROJECT_CONFIG_DIR. Note, however, that the utilities library is a
 # static library and thus the linker would simply not include any of the BASIS
@@ -1484,20 +1437,6 @@ function (basis_add_library_target TARGET_NAME)
     set (TYPE "MODULE")
   endif ()
 
-  # add BASIS utilities library target
-  if (NOT ARGN_NOUTILITIES)
-    set (ARGN_NOUTILITIES "${BASIS_NO_UTILITIES}")
-  endif ()
-  if (NOT ARGN_NOUTILITIES)
-    if (NOT BASIS_UTILITIES_ENABLED MATCHES "CXX")
-      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
-                           " but BASIS was build without C++ utilities enabled."
-                           " Either specify the option NOUTILITIES or rebuild"
-                           " BASIS with C++ utilities enabled.")
-    endif ()
-    basis_add_utilities_library ()
-  endif ()
-
   # configure .in source files
   basis_configure_sources (SOURCES ${SOURCES})
 
@@ -1536,11 +1475,24 @@ function (basis_add_library_target TARGET_NAME)
   endif ()
 
   # add default link dependencies
+  if (NOT BASIS_UTILITIES)
+    set (ARGN_NOUTILITIES TRUE)
+  endif ()
   if (NOT ARGN_NOUTILITIES)
+    if (NOT TARGET ${BASIS_UTILITIES_LIBRARY})
+      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
+                           " but BASIS was build without C++ utilities enabled."
+                           " Either specify the option NOUTILITIES, set the global"
+                           " variable BASIS_UTILITIES to FALSE"
+                           " (in ${PROJECT_CONFIG_DIR}/Settings.cmake) or"
+                           " rebuild BASIS with C++ utilities enabled.")
+    endif ()
+    # add project-specific library target if not present yet
+    basis_add_utilities_library (BASIS_UTILITIES_TARGET)
     # non-project specific utilities build as part of BASIS
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
-    # project specific utilities build as part of this project
-    basis_target_link_libraries (${TARGET_UID} basis)
+    # project-specific utilities build as part of this project
+    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
 
   # target version information

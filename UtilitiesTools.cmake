@@ -15,6 +15,99 @@
 
 
 # ============================================================================
+# C++ utilities
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Add build target for BASIS C++ utilities library.
+#
+# This function is called by the top-level project in order to add the "basis"
+# build target for the static project-specific BASIS utilities library for C++.
+# It is called by basis_project_impl() in the root CMakeLists.txt file of the
+# top-level project.
+#
+# The CMake function add_library() checks if the specified source code files
+# exist. If a source file is not found, an error is raised by CMake. The BASIS
+# utilities can, however, only be configured at the end of the configuration
+# step. Therefore, this function simply writes dummy C++ source files in order
+# to pass the existence check. The actual source files are configured by the
+# function basis_configure_utilities().
+#
+# After writing these dummy source files, a library build target for the
+# project-specific BASIS C++ utilities is added. This build target is not
+# being build as part of the ALL target in case it is never used by any of
+# the build targets of the project. Only if build target links to this
+# library, it will be build and installed.
+#
+# @param [out] UID UID of added build target.
+function (basis_add_utilities_library UID)
+  # target UID of "basis" library target
+  set (TARGET_UID basis)
+  if (PROJECT_IS_MODULE)
+    if (BASIS_USE_MODULE_NAMESPACES)
+      set (TARGET_UID "${PROJECT_NAME_LOWER}.${TARGET_UID}")
+    else ()
+      set (TARGET_UID "${TARGET_UID}_${PROJECT_NAME_LOWER}")
+    endif ()
+  endif ()
+  if (BASIS_USE_FULLY_QUALIFIED_UIDS)
+    set (TARGET_UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
+  endif ()
+  # Output name for library. Use same file for each "basis" library target
+  # as long as basis.cxx does not differ for different modules. Separate
+  # build targets are only required because of the EXPORT option of
+  # install(TARGETS) and the install(EXPORT) command.
+  set (OUTPUT_NAME "basis")
+  # write dummy source files
+  foreach (S IN ITEMS basis.h basis.cxx)
+    if (S MATCHES "\\.h$")
+      set (S "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}/${S}")
+    else ()
+      set (S "${BASIS_BINARY_CODE_DIR}/${S}")
+    endif ()
+    if (NOT EXISTS "${S}")
+      file (WRITE "${S}"
+        "#error This dummy source file should have been replaced by the"
+        " BASIS CMake function basis_configure_utilities()"
+      )
+    endif ()
+  endforeach ()
+  # add target if not present yet
+  if (NOT TARGET ${TARGET_UID})
+    # add library target if not present yet - only build if required
+    add_library (${TARGET_UID} STATIC "${BASIS_BINARY_CODE_DIR}/basis.cxx")
+    # define dependency on non-project specific utilities as the order in
+    # which static libraries are listed on the command-line for the linker
+    # matters; this will help CMake to get the order right
+    target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
+    # set target properties
+    _set_target_properties (
+      ${TARGET_UID}
+      PROPERTIES
+        BASIS_TYPE               "STATIC_LIBRARY"
+        OUTPUT_NAME              "${OUTPUT_NAME}"
+        ARCHIVE_OUTPUT_DIRECTORY "${BASIS_BINARY_ARCHIVE_DIR}"
+    )
+    # add installation rule
+    install (
+      TARGETS ${TARGET_UID}
+      EXPORT  ${PROJECT_NAME}
+      ARCHIVE
+        DESTINATION "${BASIS_INSTALL_ARCHIVE_DIR}"
+        COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
+    )
+    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS ${TARGET_UID})
+    # debug message
+    if (BASIS_DEBUG)
+      message ("** Added BASIS utilities library ${TARGET_UID}")
+    endif ()
+  endif ()
+  # done
+  basis_set_project_property (PROPERTY PROJECT_USES_CXX_UTILITIES TRUE)
+  set (${UID} "${TARGET_UID}" PARENT_SCOPE)
+endfunction ()
+
+# ============================================================================
 # BASH utilities
 # ============================================================================
 
@@ -187,33 +280,6 @@ endfunction ()
 # ============================================================================
 # configuration
 # ============================================================================
-
-# ----------------------------------------------------------------------------
-## @brief Write dummy source files of BASIS utilities.
-#
-# The CMake functions add_executable() and add_library() check if the specified
-# source code files exist. If a source file is not found, an error is raised
-# by these functions. The BASIS utilities can, however, only be configured at
-# the end of the configuration step. Therefore, this function simply writes
-# dummy files in order to pass the existence check. The actual source files
-# are configured by the function basis_configure_utilities().
-#
-# @sa basis_configure_utilities()
-function (basis_write_dummy_utilities)
-  foreach (S IN ITEMS basis.h basis.cxx)
-    if (S MATCHES "\\.h$")
-      set (S "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}/${S}")
-    else ()
-      set (S "${BINARY_CODE_DIR}/${S}")
-    endif ()
-    if (NOT EXISTS "${S}")
-      file (WRITE "${S}"
-        "#error This dummy source file should have been replaced by the"
-        " BASIS CMake function basis_configure_utilities()"
-      )
-    endif ()
-  endforeach ()
-endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Configure BASIS utilities.
