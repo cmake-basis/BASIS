@@ -20,13 +20,4 @@ basis_install (
 
 # ----------------------------------------------------------------------------
 # Python modules
-basis_add_library (basis/__init__.py)  # package initialization
-basis_add_library (basis/argparse.py)  # command-line parsing library
-basis_add_library (basis/diff3.py)     # implementation of three-way diff
-basis_add_library (basis/utilities.py) # project independent utilities
-basis_add_library (basis/which.py)     # which command
-
-basis_add_dependencies (utilities_py which_py)
-foreach (m IN ITEMS argparse diff3 utilities which)
-  basis_add_dependencies (${m}_py __init___py)
-endforeach ()
+basis_add_library (sbia DESTINATION "${INSTALL_PYTHON_LIBRARY_DIR}")

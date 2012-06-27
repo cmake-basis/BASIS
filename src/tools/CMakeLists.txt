@@ -16,26 +16,22 @@ if (PythonInterp_FOUND)
 endif ()
 
 # ----------------------------------------------------------------------------
-# basic command-line tools
+# platform independent "which" command
 if (PythonInterp_FOUND)
-  basis_add_executable ("${PROJECT_CODE_DIR}/utilities/python/basis/which.py")
+  basis_add_executable ("${PROJECT_CODE_DIR}/utilities/python/sbia/basis/which.py")
   basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
 endif ()
 
 # ----------------------------------------------------------------------------
 # doxygen filters
 if (PythonInterp_FOUND AND Perl_FOUND)
-  basis_add_executable (doxyfilter.py        LIBEXEC)
+  basis_add_executable (doxyfilter.pl        LIBEXEC)
   basis_add_executable (doxyfilter-bash.py   LIBEXEC)
-  basis_add_executable (doxyfilter-cmake.py  LIBEXEC)
   basis_add_executable (doxyfilter-perl.py   LIBEXEC)
-  basis_add_executable (doxyfilter-matlab.pl LIBEXEC)
   basis_add_dependencies (
     doxyfilter
       doxyfilter-bash
-      doxyfilter-cmake
       doxyfilter-perl
-      doxyfilter-matlab
   )
 endif ()
 
