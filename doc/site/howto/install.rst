@@ -214,9 +214,10 @@ use of or required by this software.
 |                            |           | not include any MATLAB sources (``.m`` files), you do not     |
 |                            |           | need the MATLAB Compiler to build it.                         |
 +----------------------------+-----------+---------------------------------------------------------------+
-| Doxygen_                   | 1.5.9     | This tools is required for the generation of the API          |
+| Doxygen_                   | 1.8.0     | This tools is required for the generation of the API          |
 |                            |           | documentation from in-source comments in C++, CMake, BASH,    |
-|                            |           | Python, and Perl.                                             |
+|                            |           | Python, and Perl. Note that only since version 1.8.0, Python  |
+|                            |           | and the use of Markdown (Extra) are support by Doxygen.       |
 +----------------------------+-----------+---------------------------------------------------------------+
 | Sphinx_                    | 1.1.3     | This tool can be used for the generation of the documentation |
 |                            |           | from in-source Python comments and in particular from         |
