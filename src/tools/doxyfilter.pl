@@ -13,7 +13,8 @@
 use File::Basename         qw(fileparse);
 use SBIA::BASIS::Utilities qw(exename execute);
 
-use SBIA::Doxygen::Filter::CMake;
+use SBIA::BASIS::DoxyFilter::Bash;
+use SBIA::BASIS::DoxyFilter::CMake;
 
 
 if (@ARGV != 1) {
@@ -37,11 +38,12 @@ elsif ($ext eq '.m')              { $lang = 'matlab'; }
 # otherwise, consider shebang directive if given
 if (not defined $lang) {
     open FILE, $filename or die "Failed to open file \"$filename\"!";
-    $lang = $2 if (<FILE> and /^#!\s*(\/usr\/bin\/|\/bin\/|\/usr\/bin\/env\s+)(python|perl|bash)/);
+    $lang = $2 if <FILE> =~ /^#!\s*(\/usr\/bin\/|\/bin\/|\/usr\/bin\/env\s+)(python|perl|bash)/;
     close FILE;
 }
 # create filter for source language
-if ($lang eq 'cmake') { $filter = new SBIA::Doxygen::Filter::CMake; }
+if    ($lang eq 'bash')  { $filter = new SBIA::BASIS::DoxyFilter::Bash;  }
+elsif ($lang eq 'cmake') { $filter = new SBIA::BASIS::DoxyFilter::CMake; }
 # execute filter
 if (defined $filter) {
     $filter->process($filename);

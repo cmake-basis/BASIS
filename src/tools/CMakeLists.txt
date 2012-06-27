@@ -24,15 +24,8 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # doxygen filters
-if (PythonInterp_FOUND AND Perl_FOUND)
-  basis_add_executable (doxyfilter.pl        LIBEXEC)
-  basis_add_executable (doxyfilter-bash.py   LIBEXEC)
-  basis_add_executable (doxyfilter-perl.py   LIBEXEC)
-  basis_add_dependencies (
-    doxyfilter
-      doxyfilter-bash
-      doxyfilter-perl
-  )
+if (Perl_FOUND)
+  basis_add_executable (doxyfilter.pl LIBEXEC)
 endif ()
 
 # ----------------------------------------------------------------------------
