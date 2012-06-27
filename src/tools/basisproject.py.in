@@ -31,8 +31,8 @@ from sbia.basis import diff3    # three-way diff algorithm
 # ============================================================================
 
 # executable information
-_EXEC_DIR  = basis.get_executable_directory()
-_EXEC_NAME = basis.get_executable_name()
+_EXEC_DIR  = basis.exedir()
+_EXEC_NAME = basis.exename()
 
 # constants used as values for the template options
 DEL = -1 # remove feature/file if present
