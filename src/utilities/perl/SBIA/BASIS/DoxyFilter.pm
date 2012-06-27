@@ -65,8 +65,9 @@ sub new
     # add default transitions for handling of Doxygen comment blocks
     push @$transitions, ['start',   qr/^$doxydoc_begin(.*)$/, \&_doxydoc_begin, 'doxydoc'];
     push @$transitions, ['doxydoc', qr/^$doxydoc_line(\s*[\@])param\s*(\[\s*in\s*\]|\[\s*out\s*\]|\[\s*in,\s*out\s*\]|\[\s*out,\s*in\s*\])?\s+(\w+)\s+(.*)$/, \&_doxydoc_param, 'doxydoc'];
-    push @$transitions, ['doxydoc', qr/^$doxydoc_line(.*)$/,  \&_doxydoc_comment, 'doxydoc'];
-    push @$transitions, ['doxydoc', qr/^$doxydoc_end|^$/,     \&_doxydoc_end, 'start'];
+    push @$transitions, ['doxydoc', qr/^$doxydoc_line((\s*[\@])returns?\s+.*)$/, \&_doxydoc_returns, 'doxydoc'];
+    push @$transitions, ['doxydoc', qr/^$doxydoc_line(.*)$/, \&_doxydoc_comment, 'doxydoc'];
+    push @$transitions, ['doxydoc', qr/^$doxydoc_end|^$/, \&_doxydoc_end, 'start'];
     # last transition is handling all none-blank lines
     push @$transitions, ['start',   qr/[^\s]+/, \&_noneblank, 'start'];
     # initialize object and return it
@@ -107,7 +108,7 @@ sub process
                     # Fill-in blank lines until next output line matches
                     # current input line. Otherwise warnings and errors
                     # of Doxygen cannot be easily related to the input source.
-                    $self->_append("\n", 'blank') until @{$self->{'output'}} >= $self->{'lineno'} - 1;
+                    $self->_append('', 'blank') until @{$self->{'output'}} >= $self->{'lineno'} - 1;
                     # perform action of transition
                     $self->{'transition'} = $transition;
                     $transition->[+ACTION]->($self, @match) if defined $transition->[+ACTION];
@@ -169,9 +170,11 @@ sub _noneblank
 ## @brief Start of Doxygen comment.
 sub _doxydoc_begin
 {
-    my $self = shift;
-    $self->{'params'} = [];
-    $self->_doxydoc_comment(@_);
+    my ($self, $comment) = @_;
+    $self->{'params'}  = [];
+    $self->{'returndoc'} = 0;
+    $self->{'returndoc'} = 1 if $comment =~ /[\@]returns?\s+/;
+    $self->_doxydoc_comment($comment);
 }
 
 # ----------------------------------------------------------------------------
@@ -200,6 +203,24 @@ sub _doxydoc_param
     elsif ($dir =~ /out/)                  { $dir = 'out';   }
     else                                   { $dir = 'in';    }
     push @{$self->{'params'}}, {'dir' => $dir, 'name' => $name};
+}
+
+# ----------------------------------------------------------------------------
+## @brief Doxygen return value documentation.
+#
+# This function simply records in the 'returndoc' member of the filter that
+# a "@returns" or "\returns" Doxygen is present in the current Doxygen comment.
+# Some filters such as the one for CMake or Bash, use a pseudo return type
+# which indicates the type of the function rather than the actual type of
+# a return value. Often these functions do not return any particular value.
+# In this case, if the Doxygen comment does not include a documentation for
+# the pseudo return value, Doxygen will warn. To avoid this warning, a standard
+# documentation for the pseudo return value may be added by the filter.
+sub _doxydoc_returns
+{
+    my ($self, $comment) = @_;
+    $self->{'returndoc'} = 1;
+    $self->_doxydoc_comment($comment);
 }
 
 # ----------------------------------------------------------------------------

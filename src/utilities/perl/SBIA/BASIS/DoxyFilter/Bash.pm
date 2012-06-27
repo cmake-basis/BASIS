@@ -81,6 +81,7 @@ sub _fndef
     foreach my $paramdoc (@{$self->{'params'}}) {
         push @params, $paramdoc->{'dir'} . " " . $paramdoc->{'name'};
     }
+    $self->_append("/// \@returns Nothing.") if not $self->{'returndoc'};
     $self->_append("function $name(" . join(', ', @params) . ");");
 }
 

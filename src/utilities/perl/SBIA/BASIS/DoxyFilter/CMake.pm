@@ -242,6 +242,7 @@ sub _fndef_append
             push @params, $paramdoc->{'dir'} . " " . $paramdoc->{'name'}
                     if $paramdoc->{'name'} =~ /^ARG(N|V[0-9])$/;
         }
+        $self->_append("/// \@returns Nothing.") if not $self->{'returndoc'};
         $self->_append("$type $name(" . join(', ', @params) . ");");
     }
 }
