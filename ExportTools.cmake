@@ -202,7 +202,6 @@ function (basis_export_targets)
     else ()
       set (NAMESPACE_OPT NAMESPACE "${BASIS_PROJECT_NAMESPACE_CMAKE}.")
     endif ()
-
     export (
       TARGETS   ${EXPORT_TARGETS}
       FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
@@ -237,27 +236,20 @@ function (basis_export_targets)
 
     # write exports for installation - excluding test targets
     if (CUSTOM_EXPORT_TARGETS)
+      set (INSTALL_EXPORT_FILE "${PROJECT_BINARY_DIR}/CMakeFiles/Export/${INSTALL_CONFIG_DIR}/${ARGN_CUSTOM_FILE}")
+
       basis_export_header (CONTENT)
       basis_export_prefix (CONTENT)
       basis_export_import_targets (CONTENT ${CUSTOM_EXPORT_TARGETS})
       basis_export_install_properties (CONTENT ${CUSTOM_EXPORT_TARGETS})
       basis_export_footer (CONTENT)
 
-      # DO NOT use '-' in the filename prefix for the custom exports.
-      # Otherwise, it is automatically included by the exports file written
-      # by CMake for the installation tree. This is, however, not the case
-      # for the build tree. Therefore, we have to include the custom exports
-      # file our selves in the use file.
-      get_filename_component (TMP_FILE "${ARGN_CUSTOM_FILE}" NAME_WE)
-
-      set (TMP_FILE "${TMP_FILE}.install")
-      file (WRITE "${PROJECT_BINARY_DIR}/${TMP_FILE}" "${CONTENT}")
+      file (WRITE "${INSTALL_EXPORT_FILE}" "${CONTENT}")
       unset (CONTENT)
 
       install (
-        FILES       "${PROJECT_BINARY_DIR}/${TMP_FILE}"
+        FILES       "${INSTALL_EXPORT_FILE}"
         DESTINATION "${INSTALL_CONFIG_DIR}"
-        RENAME      "${ARGN_CUSTOM_FILE}"
       )
     endif ()
 
