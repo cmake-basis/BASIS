@@ -18,6 +18,7 @@
 
 // acceptable in .cxx file
 using namespace std;
+using namespace sbia::basis;
 
 
 namespace @BASIS_NAMESPACE_LOWER@ {
