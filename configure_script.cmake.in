@@ -123,11 +123,6 @@ unset -v i dir cur"
       set (SCRIPT "${BASH_CODE}\n${SCRIPT}")
     endif ()
   endif ()
-  # replace import statements of default BASIS utilities
-  if (LANGUAGE MATCHES "PYTHON")
-    string (REGEX REPLACE "(^|\n|;)[ \t]*import[ \t]+(@BASIS_NAMESPACE_LOWER@)\\.basis[ \t]*(;|\n|$)" "\\1import @PROJECT_NAMESPACE_PYTHON@.basis\\3" SCRIPT "${SCRIPT}")
-    string (REGEX REPLACE "(^|\n|;)[ \t]*from[ \t]+(@BASIS_NAMESPACE_LOWER@)[ \t]+import[ \t]+basis[ \t]*(;|\n|$)" "\\1from @PROJECT_NAMESPACE_PYTHON@ import basis\\3" SCRIPT "${SCRIPT}")
-  endif ()
   # add shebang directive/Windows Command code
   if (NOT MODULE AND NOT WITH_EXT)
     if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
