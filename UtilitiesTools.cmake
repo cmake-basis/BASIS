@@ -212,7 +212,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SCRIPT)
     # deprecated BASIS_PYTHON_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PYTHON_UTILITIES\@")
-      message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_PYTHON_UTILITIES\@!"
+      message (WARNING "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_PYTHON_UTILITIES\@!"
                        " Replace macro by\nfrom ${PROJECT_NAMESPACE_PYTHON} import basis")
       set (UTILITIES_USED TRUE)
     endif ()
@@ -240,7 +240,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SCRIPT)
     # deprecated BASIS_PERL_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PERL_UTILITIES\@")
-      message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_PERL_UTILITIES\@!"
+      message (WARNING "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_PERL_UTILITIES\@!"
                        " Replace macro by\nuse ${PROJECT_NAMESPACE_PERL}::Basis")
       set (UTILITIES_USED TRUE)
     endif ()
@@ -260,7 +260,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SCRIPT)
     # deprecated BASIS_BASH_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_BASH_UTILITIES\@")
-      message (WARNING "Script ${SCRIPT_FILE} uses the deprecated BASIS macro \@BASIS_BASH_UTILITIES\@!"
+      message (WARNING "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_BASH_UTILITIES\@!"
                        " Replace macro by\n. \${BASIS_BASH_UTILITIES} || exit 1")
       set (UTILITIES_USED TRUE)
     endif ()
