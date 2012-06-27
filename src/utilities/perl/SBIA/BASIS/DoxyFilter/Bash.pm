@@ -68,7 +68,7 @@ sub _constant
     } elsif ($value =~ /^[+-]?[0-9]+[.][0-9]+/) {
         $self->_append("float $name = $value;");
     } else {
-        $self->_append("std::string $name = \"$value\";");
+        $self->_append("string $name = \"$value\";");
     }
 }
 
