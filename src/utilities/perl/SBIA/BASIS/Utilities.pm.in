@@ -373,11 +373,10 @@ sub tostring
 {
     my $str = '';
     if (ref($_[0]) eq 'ARRAY') {
-        my $args = $_[0];
-        for my $arg (@$_[0]) {
+        foreach my $arg (@{$_[0]}) {
             $arg =~ s/"/\\"/g;                          # escape double quotes
             $arg = '"' . $arg . '"' if $arg =~ m/'|\s/; # quote if necessary
-            $str .= ' ' if $str != '';
+            $str .= ' ' if $str ne '';
             $str .= $arg;
         }
     } else {
@@ -427,8 +426,9 @@ sub _split_command_and_arguments
     my $command   = '';
     my $arguments = '';
     if (ref($args) eq 'ARRAY') {
-        $command   = shift @$args or die "execute(): No command specified for execution";
-        $arguments = tostring($args);
+        my @argv = @$args; # otherwise input is modified
+        $command   = shift @argv or die "execute(): No command specified for execution";
+        $arguments = tostring(\@argv);
     } elsif (ref($args) eq '') {
         ($command, $arguments) = split($args, 1);
     } else {
@@ -473,10 +473,10 @@ sub _split_command_and_arguments
 #                          executable file paths. If not specified, this function
 #                          always returns false.
 #
-# @return The exit code of the subprocess if @p stdout is false (the default).
-#         Otherwise, if @p stdout is true, a tuple consisting of exit code
-#         command output is returned. Note that if @p allow_fail is false,
-#         the returned exit code will always be 0.
+# @returns The exit code of the subprocess if @p stdout is false (the default).
+#          Otherwise, if @p stdout is true, a tuple consisting of exit code
+#          command output is returned. Note that if @p allow_fail is false,
+#          the returned exit code will always be 0.
 #
 # @throws die If command execution failed. This exception is not raised
 #             if the command executed with non-zero exit code but
@@ -599,7 +599,7 @@ sub _build_execute
 {
     my ($class, $fn, $args) = @_;
     return sub {
-        my $args     = shift;
+        my $argv     = shift;
         my %defaults = (quiet      => $args->{quiet},
                         stdout     => $args->{stdout},
                         allow_fail => $args->{allow_fail},
@@ -608,7 +608,7 @@ sub _build_execute
                         prefix     => $args->{prefix},
                         targets    => $args->{targets});
         my %options  = (%defaults, @_);
-        execute($args, %options);
+        execute($argv, %options);
     }
 }
 
