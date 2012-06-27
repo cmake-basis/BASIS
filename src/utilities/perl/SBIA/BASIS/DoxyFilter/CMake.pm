@@ -22,12 +22,14 @@ use base SBIA::BASIS::DoxyFilter;
 sub new
 {
     shift->SUPER::new([
+        # if() else() endif()
+        ['start', qr/^\s*if\s*\(/, undef, 'start'], # discard if()'s such that
+                                                    # Doxygen comment is
+                                                    # associated with next
+                                                    # block that is supposed
+                                                    # to be in the then branch.
         # include()
         ['start', qr/^\s*include\s*\((.+)\)\s*(#.*)?$/, \&_include, 'start'],
-        # if() else() endif()
-        ['start', qr/^\s*if\s*\(/, undef, 'start'], # discard if()'s such that comment
-                                                    # is associated with next block
-                                                    # that can be documented
         # option()
         ['start',         qr/^\s*option\s*\(\s*(\w+)\s+(\"([^\"]|\\\")*[^\\]\")\s+(ON|OFF)\s*\)\s*(#.*)?$/, \&_option,       'start'],
         ['start',         qr/^\s*option(.*)[^\)]\s*(#.*)?$/,                                                \&_option_begin, 'option'],
