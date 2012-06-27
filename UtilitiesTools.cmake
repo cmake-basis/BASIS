@@ -199,8 +199,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     # match use/require statements
     if (NOT UTILITIES_USED)
       set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<"](${INCLUDE_PREFIX})?basis.h[">]") # e.g., #include "basis.sh", #include <sbia/project/basis.h>
-      set (RE "(^|\\n)[ \\t]*${RE}([ \\t]*//.*|[ \\t]*)(\\n|$)")
-      if (SCRIPT MATCHES "${RE}")
+      if (SCRIPT MATCHES "(^|\n)[ \t]*${RE}([ \t]*//.*|[ \t]*)(\n|$)")
         set (UTILITIES_USED TRUE)
         break ()
       endif ()
@@ -226,8 +225,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
         "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"           # e.g., from . import basis", "from .. import basis
         "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"          # e.g., from .basis import which, WhichError", "form ..basis import which
       ) # foreach RE
-        set (RE "(^|\\n|;)[ \\t]*${RE}([ \\t]*as[ \\t]+.*)?([ \\t]*#.*|[ \\t]*)(;|\\n|$)")
-        if (SCRIPT MATCHES "${RE}")
+        if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*as[ \t]+.*)?([ \t]*#.*|[ \t]*)(;|\n|$)")
           set (UTILITIES_USED TRUE)
           break ()
         endif ()
@@ -247,8 +245,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     # match use/require statements
     if (NOT UTILITIES_USED)
       set (RE "(use|require)[ \\t]+${PROJECT_NAMESPACE_PERL}::Basis([ \\t]+.*)?") # e.g., use SBIA::Project::Basis qw(:everything);
-      set (RE "(^|\\n|;)[ \\t]*${RE}([ \\t]*#.*|[ \\t]*)(;|\\n|$)")
-      if (SCRIPT MATCHES "${RE}")
+      if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*#.*|[ \t]*)(;|\n|$)")
         set (UTILITIES_USED TRUE)
         break ()
       endif ()
@@ -267,8 +264,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     # match source/. built-ins
     if (NOT UTILITIES_USED)
       set (RE "(source|\\.)[ \\t]+\\\${?BASIS_BASH_UTILITIES}?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?") # e.g., . ${BASIS_BASH_UTILITIES} || exit 1
-      set (RE "(^|\\n|;)[ \\t]*(${RE})[ \\t]*(;|\\n|$)")
-      if (SCRIPT MATCHES "${RE}")
+      if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${RE})[ \t]*(;|\n|$)")
         set (UTILITIES_USED TRUE)
       endif ()
     endif ()
