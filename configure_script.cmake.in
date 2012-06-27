@@ -155,7 +155,7 @@ set (BUILD_INSTALL_SCRIPT FALSE)
 set (DIR                  "${BINARY_DIR}")
 set (FILE                 "${BINARY_DIR}/${NAME}")
 
-include ("@BINARY_CONFIG_DIR@/BasisScriptConfig.cmake")
+include ("@BINARY_CONFIG_DIR@/BasisScriptConfig.cmake" OPTIONAL)
 include ("@BINARY_CONFIG_DIR@/ScriptConfig.cmake" OPTIONAL)
 include ("@BUILD_DIR@/ScriptConfig.cmake" OPTIONAL)
 
@@ -177,7 +177,7 @@ if (CONFIGURED_INSTALL_FILE)
   set (DIR                  "${INSTALL_DIR}")
   set (FILE                 "${INSTALL_DIR}/${NAME}")
 
-  include ("@BINARY_CONFIG_DIR@/BasisScriptConfig.cmake")
+  include ("@BINARY_CONFIG_DIR@/BasisScriptConfig.cmake" OPTIONAL)
   include ("@BINARY_CONFIG_DIR@/ScriptConfig.cmake" OPTIONAL)
   include ("@BUILD_DIR@/ScriptConfig.cmake" OPTIONAL)
 
