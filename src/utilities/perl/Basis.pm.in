@@ -60,18 +60,18 @@ use constant RELEASE   => '@PROJECT_RELEASE@';
 
 my $_TARGET_PREFIX = '@PROJECT_NAMESPACE_CMAKE@';
 
-my $_EXECUTABLE_TARGETS = {
+my %_EXECUTABLE_TARGETS = (
     @EXECUTABLE_TARGET_INFO@
-};
+);
 
 use SBIA::BASIS::Utilities qw(print_contact),
         print_version => { project => PROJECT, version => RELEASE },
-        targetuid     => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        istarget      => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        exepath       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        exename       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        exedir        => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS },
-        execute       => { prefix => $_TARGET_PREFIX, targets => $_EXECUTABLE_TARGETS };
+        targetuid     => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
+        istarget      => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
+        exepath       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
+        exename       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
+        exedir        => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
+        execute       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS };
 
 
 ## @}

@@ -36,14 +36,16 @@ elsif ($ext eq '.sh')             { $lang = 'bash';   }
 elsif ($ext =~ /\.(cmake|ctest)/) { $lang = 'cmake';  }
 elsif ($ext eq '.m')              { $lang = 'matlab'; }
 # otherwise, consider shebang directive if given
-if (not defined $lang) {
+if (not $lang) {
     open FILE, $filename or die "Failed to open file \"$filename\"!";
     $lang = $2 if <FILE> =~ /^#!\s*(\/usr\/bin\/|\/bin\/|\/usr\/bin\/env\s+)(python|perl|bash)/;
     close FILE;
 }
 # create filter for source language
-if    ($lang eq 'bash')  { $filter = new SBIA::BASIS::DoxyFilter::Bash;  }
-elsif ($lang eq 'cmake') { $filter = new SBIA::BASIS::DoxyFilter::CMake; }
+if ($lang) {
+    if    ($lang eq 'bash')  { $filter = new SBIA::BASIS::DoxyFilter::Bash;  }
+    elsif ($lang eq 'cmake') { $filter = new SBIA::BASIS::DoxyFilter::CMake; }
+}
 # execute filter
 if (defined $filter) {
     $filter->process($filename);

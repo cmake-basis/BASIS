@@ -175,9 +175,10 @@ sub _set_end
     my $line = $self->{'line'};
     $self->{'buffer'} .= " $line";
     if ($self->{'buffer'} =~ /\s*(set|basis_set_if_empty|basis_set_if_not_set)\s*\(\s*(\w+)\s+(\"([^\"]|\\\")*[^\\]\"|[^\s]+)(\s+PARENT_SCOPE|\s+CACHE\s+(\w+)\s+(.*))?\s*\)\s*$/) {
-        my $type  = lc $6;
+        my $type  = '';
         my $name  = $2;
         my $value = $3;
+        $type = lc $6 if defined $6;
         $value =~ s/^\s*\"?//;
         $value =~ s/\"?\s*$//;
         $self->_append("$type $name = \"$value\"");
@@ -225,18 +226,21 @@ sub _fndef_append
         my $type   = $1;
         my $name   = $2;
         my $params = $3;
-        chomp $params;
-        $params =~ s/^\s+//;
-        my @params = split /\s+/, $params;
-        for (my $i = 0; $i <= $#params; $i++) {
-            my $dir = 'in';
-            foreach my $paramdoc (@{$self->{'params'}}) {
-                if ($paramdoc->{'name'} eq $params[$i]) {
-                    $dir = $paramdoc->{'dir'};
-                    last;
+        my @params = ();
+        if ($params) {
+            chomp $params;
+            $params =~ s/^\s+//;
+            @params = split /\s+/, $params;
+            for (my $i = 0; $i <= $#params; $i++) {
+                my $dir = 'in';
+                foreach my $paramdoc (@{$self->{'params'}}) {
+                    if ($paramdoc->{'name'} eq $params[$i]) {
+                        $dir = $paramdoc->{'dir'};
+                        last;
+                    }
                 }
+                $params[$i] = "$dir $params[$i]";
             }
-            $params[$i] = "$dir $params[$i]";
         }
         foreach my $paramdoc (@{$self->{'params'}}) {
             push @params, $paramdoc->{'dir'} . " " . $paramdoc->{'name'}

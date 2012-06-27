@@ -198,6 +198,7 @@ sub _doxydoc_comment
 sub _doxydoc_param
 {
     my ($self, $prefix, $dir, $name, $comment) = @_;
+    $dir = '' if not defined $dir;
     $self->_append("///" . $prefix . "param$dir $name $comment", 'doxydoc', 'param');
     if    ($dir =~ /out/ and $dir =~ /in/) { $dir = 'inout'; }
     elsif ($dir =~ /out/)                  { $dir = 'out';   }
