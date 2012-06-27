@@ -27,8 +27,11 @@
 #include <iostream>
 #include <vector>
 
+// build configuration - has to be included using full path in case the build
+//                       tree of BASIS is used instead of an installation
+#include <sbia/basis/config.h>
+
 // basic utilities
-#include "config.h"
 #include "assert.h"
 #include "except.h"
 #include "os.h"
