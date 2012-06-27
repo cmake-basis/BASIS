@@ -107,7 +107,7 @@ sub process
                     # Fill-in blank lines until next output line matches
                     # current input line. Otherwise warnings and errors
                     # of Doxygen cannot be easily related to the input source.
-                    #$self->_append("\n", 'blank') until @{$self->{'output'}} >= $self->{'lineno'} - 1;
+                    $self->_append("\n", 'blank') until @{$self->{'output'}} >= $self->{'lineno'} - 1;
                     # perform action of transition
                     $self->{'transition'} = $transition;
                     $transition->[+ACTION]->($self, @match) if defined $transition->[+ACTION];
