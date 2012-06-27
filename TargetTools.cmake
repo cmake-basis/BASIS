@@ -977,8 +977,8 @@ endfunction ()
 #
 # @note Use basis_add_executable() instead where possible!
 #
-# @param [in] TARGET Name of the target.
-# @param [in] ARGN   Further arguments of CMake's add_executable().
+# @param [in] TARGET_UID Name of the target.
+# @param [in] ARGN       Further arguments of CMake's add_executable().
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
 function (add_executable TARGET_UID)
@@ -1000,8 +1000,8 @@ endfunction ()
 #
 # @note Use basis_add_library() instead where possible!
 #
-# @param [in] TARGET Name of the target.
-# @param [in] ARGN   Further arguments of CMake's add_library().
+# @param [in] TARGET_UID Name of the target.
+# @param [in] ARGN       Further arguments of CMake's add_library().
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_library
 function (add_library TARGET_UID)
