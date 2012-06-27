@@ -11,7 +11,7 @@
 ##############################################################################
 
 use File::Basename         qw(fileparse);
-use SBIA::BASIS::Utilities qw(exename execute);
+use SBIA::BASIS::Utilities qw(exename execute istarget);
 
 use SBIA::BASIS::DoxyFilter::Bash;
 use SBIA::BASIS::DoxyFilter::CMake;
@@ -51,7 +51,7 @@ if (defined $filter) {
     $filter->process($filename);
     print $filter->output();
     $status = 0;
-} elsif ($lang) {
+} elsif ($lang and istarget("doxyfilter-$lang")) {
     my @cmd = ("doxyfilter-$lang");
     push @cmd, '-f' if $lang eq 'python';
     push @cmd, $filename;
