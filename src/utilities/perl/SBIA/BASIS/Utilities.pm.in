@@ -499,7 +499,7 @@ sub execute
     $exec_path = '"' . $exec_path . '"' if $exec_path =~ m/'|\s/; # quote if necessary
     $args = $exec_path . $arguments;
     # some verbose output
-    if ($options{'verbose'} gt 0) {
+    if ($options{'verbose'} gt 0 or $options{'simulate'}) {
         print "\$ ", $args;
         $options{'simulate'} and print " (simulated)";
         print "\n";

@@ -295,7 +295,7 @@ def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simula
     if not path: raise SubprocessError(args[0] + ": Command not found")
     args[0] = path
     # some verbose output
-    if verbose > 0:
+    if verbose > 0 or simulate:
         sys.stdout.write('$ ')
         sys.stdout.write(tostring(args))
         if simulate: sys.stdout.write(' (simulated)')

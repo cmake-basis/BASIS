@@ -568,10 +568,10 @@ execute()
     local _basis_ep_exec && exepath _basis_ep_exec "${_basis_ep_command}"
     [ -n "${_basis_ep_exec}" ] || echo "${_basis_ep_command}: Command not found" 1>&2; exit 1
     # some verbose output
-    [ ${verbose} -lt 1 ] || {
+    if [ ${verbose} -gt 0 ] || [ "${_basis_ep_simulate}" == 'true' ]; then
         tostring _basis_ep_args "$@"
         echo "\$ ${_basis_ep_exec} ${_basis_ep_args}"
-    }
+    fi
     # execute command
     [ "${_basis_ep_simulate}" == 'true' ] || "${_basis_ep_exec}" "$@"
     local _basis_ep_status=$?

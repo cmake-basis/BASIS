@@ -156,7 +156,7 @@ int execute(vector<string> args, bool quiet, ostream* out,
     // prepend absolute path of found executable
     if (!exec_path.empty()) args[0] = exec_path;
     // some verbose output
-    if (verbose > 0) {
+    if (verbose > 0 || simulate) {
         cout << "$ " << Subprocess::tostring(args);
         if (simulate) cout << " (simulated)";
         cout << endl;
