@@ -212,10 +212,11 @@ def whichgen(command, path=None, verbose=0, exts=None):
     if os.sep in command or os.altsep and os.altsep in command:
         if os.path.exists(command):
             match = _cull((command, "explicit path given"), matches, verbose)
-            if verbose:
-                yield match
-            else:
-                yield match[0]
+            if match:
+                if verbose:
+                    yield match
+                else:
+                    yield match[0]
     else:
         for i in range(len(path)):
             dirName = path[i]
