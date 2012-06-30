@@ -25,19 +25,6 @@ _SBIA_BASIS_CORE_INCLUDED='true'
 
 
 # ============================================================================
-# constants
-# ============================================================================
-
-## @brief Major version number of Bash interpreter.
-BASH_VERSION_MAJOR=${BASH_VERSION%%.*}
-## @brief Minor version number of Bash interpreter.
-BASH_VERSION_MINOR=${BASH_VERSION#*.}
-BASH_VERSION_MINOR=${BASH_VERSION_MINOR%%.*}
-
-readonly BASH_VERSION_MAJOR
-readonly BASH_VERSION_MINOR
-
-# ============================================================================
 # pattern matching
 # ============================================================================
 
