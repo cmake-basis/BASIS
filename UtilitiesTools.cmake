@@ -647,8 +647,8 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     # Bash
     if (BASH)
       # hash entry
-      set (SH_B "${SH_B}\n    _executabletargetinfo_add '${ALIAS}'${S}LOCATION '${BUILD_LOCATION}'")
-      set (SH_I "${SH_I}\n    _executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
+      set (SH_B "${SH_B}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${BUILD_LOCATION}'")
+      set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
       # alias
       set (SH_A "${SH_A}\nalias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
       # short alias (if target belongs to this project)
