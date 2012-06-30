@@ -47,9 +47,10 @@ end
 try
   eval (cmd);
 catch exception
-  % do nothing, the output of the CMake command has to be
-  % parsed for occurrences of 'Error' messages to detect
-  % a failure during the build step with mcc
+  % catch here and do not use error(), otherwise quit() is never executed
+  % the output of the CMake command has to be parsed for occurrences of
+  % 'Error' messages to detect a failure during the build step with mcc
+  disp(exception.message);
 end
 
 % quit MATLAB interpreter
