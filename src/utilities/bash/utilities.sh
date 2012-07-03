@@ -253,7 +253,7 @@ print_version()
 targetuid()
 {
     [ -n "$1" ] && [ $# -eq 2 ] || return 1
-    local _basis_gtu_target="$2"
+    local _basis_targetuid_target="$2"
     # initialize module if not done yet - this is only done here because
     # whenever information is looked up about an executable target, this
     # function is invoked first
@@ -261,23 +261,23 @@ targetuid()
         _basis_executabletargetinfo_initialize || return 1
     fi
     # empty string as input remains unchanged
-    [ -z "${_basis_gtu_target}" ] && local "$1" && upvar $1 '' && return 0
+    [ -z "${_basis_targetuid_target}" ] && local "$1" && upvar $1 '' && return 0
     # in case of a leading namespace separator, do not modify target name
-    [ "${_basis_gtu_target:0:1}" == '.' ] && local "$1" && upvar $1 "${_basis_gtu_target}" && return 0
+    [ "${_basis_targetuid_target:0:1}" == '.' ] && local "$1" && upvar $1 "${_basis_targetuid_target}" && return 0
     # project namespace
-    local _basis_gtu_prefix="${_BASIS_TARGET_UID_PREFIX}.DUMMY"
+    local _basis_targetuid_prefix="${_BASIS_TARGET_UID_PREFIX}.DUMMY"
     # try prepending namespace or parts of it until target is known
-    local _basis_gtu_path=''
-    while [ "${_basis_gtu_prefix/\.*/}" != "${_basis_gtu_prefix}" ]; do
-        _basis_gtu_prefix="${_basis_gtu_prefix%\.*}"
-        _basis_executabletargetinfo_get _basis_gtu_path "${_basis_gtu_prefix}.${_basis_gtu_target}" LOCATION
-        if [ -n "${_basis_gtu_path}" ]; then
-            local "$1" && upvar $1 "${_basis_gtu_prefix}.${_basis_gtu_target}"
+    local _basis_targetuid_path=''
+    while [ "${_basis_targetuid_prefix/\.*/}" != "${_basis_targetuid_prefix}" ]; do
+        _basis_targetuid_prefix="${_basis_targetuid_prefix%\.*}"
+        _basis_executabletargetinfo_get _basis_targetuid_path "${_basis_targetuid_prefix}.${_basis_targetuid_target}" LOCATION
+        if [ -n "${_basis_targetuid_path}" ]; then
+            local "$1" && upvar $1 "${_basis_targetuid_prefix}.${_basis_targetuid_target}"
             return 0
         fi
     done
     # otherwise, return target name unchanged
-    local "$1" && upvar $1 "${_basis_gtu_target}"
+    local "$1" && upvar $1 "${_basis_targetuid_target}"
 }
 
 # ----------------------------------------------------------------------------
@@ -288,10 +288,10 @@ targetuid()
 # @returns Whether the named target is a known executable target.
 istarget()
 {
-    local _basis_ikt_uid && targetuid _basis_ikt_uid "$1"
-    [ -n "${_basis_ikt_uid}" ] || return 1
-    local _basis_ikt_path && _basis_executabletargetinfo_get _basis_ikt_path "${_basis_ikt_uid}" LOCATION
-    [ -n "${_basis_ikt_path}" ]
+    local _basis_istarget_uid && targetuid _basis_istarget_uid "$1"
+    [ -n "${_basis_istarget_uid}" ] || return 1
+    local _basis_istarget_path && _basis_executabletargetinfo_get _basis_istarget_path "${_basis_istarget_uid}" LOCATION
+    [ -n "${_basis_istarget_path}" ]
 }
 
 # ----------------------------------------------------------------------------
@@ -317,32 +317,32 @@ istarget()
 exepath()
 {
     [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
-    local _basis_gep_path=''
+    local _basis_exepath_path=''
     # if no target name given, get path of this executable
     if [ $# -lt 2 ]; then
-        _basis_gep_path="`realpath "$0"`"
+        _basis_exepath_path="`realpath "$0"`"
     # otherwise, get path of executable built by named target
     else
         # get UID of target
-        local _basis_gep_uid && targetuid _basis_gep_uid "$2"
-        [ "${_basis_gep_uid:0:1}" == '.' ] && _basis_gep_uid=${_basis_gep_uid:1}
-        if [ -n "${_basis_gep_uid}" ]; then
+        local _basis_exepath_uid && targetuid _basis_exepath_uid "$2"
+        [ "${_basis_exepath_uid:0:1}" == '.' ] && _basis_exepath_uid=${_basis_exepath_uid:1}
+        if [ -n "${_basis_exepath_uid}" ]; then
             # get path relative to this module
-            _basis_executabletargetinfo_get _basis_gep_path "${_basis_gep_uid}" LOCATION
-            if [ -n "${_basis_gep_path}" ]; then
+            _basis_executabletargetinfo_get _basis_exepath_path "${_basis_exepath_uid}" LOCATION
+            if [ -n "${_basis_exepath_path}" ]; then
                 # make path absolute
-                _basis_gep_path=`abspath "${_BASIS_DIR}" "${path}"`
+                _basis_exepath_path=`abspath "${_BASIS_DIR}" "${_basis_exepath_path}"`
                 [ $? -eq 0 ] || return 1
             else
-                _basis_gep_path=`/usr/bin/which "$2" 2> /dev/null`
+                _basis_exepath_path=`/usr/bin/which "$2" 2> /dev/null`
             fi
         else
-            _basis_gep_path=`/usr/bin/which "$2" 2> /dev/null`
+            _basis_exepath_path=`/usr/bin/which "$2" 2> /dev/null`
         fi
     fi
     # return path
-    local "$1" && upvar $1 "${_basis_gep_path}"
-    [ $? -eq 0 ] && [ -n "${_basis_gep_path}" ]
+    local "$1" && upvar $1 "${_basis_exepath_path}"
+    [ $? -eq 0 ] && [ -n "${_basis_exepath_path}" ]
 }
 
 # ----------------------------------------------------------------------------
@@ -359,10 +359,10 @@ exepath()
 exename()
 {
     [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
-    local _basis_gen_path && exepath _basis_gen_path "$2"
+    local _basis_exename_path && exepath _basis_exename_path "$2"
     [ $? -eq 0 ] || return 1
-    local _basis_gen_name="`basename "${_basis_gen_path}"`"
-    local "$1" && upvar $1 "${_basis_gen_name}"
+    local _basis_exename_name="`basename "${_basis_exename_path}"`"
+    local "$1" && upvar $1 "${_basis_exename_name}"
 }
 
 # ----------------------------------------------------------------------------
@@ -379,10 +379,10 @@ exename()
 exedir()
 {
     [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
-    local _basis_ged_path && exepath _basis_ged_path "$2"
+    local _basis_exedir_path && exepath _basis_exedir_path "$2"
     [ $? -eq 0 ] || return 1
-    local _basis_ged_dir="`dirname "${_basis_ged_path}"`"
-    local "$1" && upvar $1 "${_basis_ged_dir}"
+    local _basis_exedir_dir="`dirname "${_basis_exedir_path}"`"
+    local "$1" && upvar $1 "${_basis_exedir_dir}"
 }
 
 # ============================================================================
@@ -405,29 +405,29 @@ exedir()
 # @returns Nothing.
 tostring()
 {
-    local _basis_tqs_str=''
-    local _basis_tqs_element=''
+    local _basis_tostring_str=''
+    local _basis_tostring_element=''
     # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
     # turns the array into a single string value if local is used
     if [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ]; then
-        local _basis_tqs_args=("$@")
+        local _basis_tostring_args=("$@")
     else
-        _basis_tqs_args=("$@")
+        _basis_tostring_args=("$@")
     fi
-    local _basis_tqs_i=1
-    while [ $_basis_tqs_i -lt ${#_basis_tqs_args[@]} ]; do
-        _basis_tqs_element="${_basis_tqs_args[$_basis_tqs_i]}"
+    local _basis_tostring_i=1
+    while [ $_basis_tostring_i -lt ${#_basis_tostring_args[@]} ]; do
+        _basis_tostring_element="${_basis_tostring_args[$_basis_tostring_i]}"
         # escape double quotes
-        _basis_tqs_element=`echo -n "${_basis_tqs_element}" | sed "s/\"/\\\\\\\\\"/g"`
+        _basis_tostring_element=`echo -n "${_basis_tostring_element}" | sed "s/\"/\\\\\\\\\"/g"`
         # surround element by double quotes if it contains single quotes or whitespaces
-        match "${_basis_tqs_element}" "[' ]" && _basis_tqs_element="\"${_basis_tqs_element}\""
+        match "${_basis_tostring_element}" "[' ]" && _basis_tostring_element="\"${_basis_tostring_element}\""
         # append element
-        [ -n "${_basis_tqs_str}" ] && _basis_tqs_str="${_basis_tqs_str} "
-        _basis_tqs_str="${_basis_tqs_str}${_basis_tqs_element}"
+        [ -n "${_basis_tostring_str}" ] && _basis_tostring_str="${_basis_tostring_str} "
+        _basis_tostring_str="${_basis_tostring_str}${_basis_tostring_element}"
         # next argument
-        let _basis_tqs_i++
+        let _basis_tostring_i++
     done
-    local "$1" && upvar $1 "${_basis_tqs_str}"
+    local "$1" && upvar $1 "${_basis_tostring_str}"
 }
 
 # ----------------------------------------------------------------------------
@@ -453,26 +453,26 @@ split()
     # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
     # turns the array into a single string value if local is used
     if [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ]; then
-        local _basis_sqs_array=()
+        local _basis_split_array=()
     else
-        _basis_sqs_array=()
+        _basis_split_array=()
     fi
-    local _basis_sqs_str=$2
+    local _basis_split_str=$2
     # match arguments from left to right
-    while match "${_basis_sqs_str}" "[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\")*[^\\]\"|[^ ]+)(.*)"; do
+    while match "${_basis_split_str}" "[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\")*[^\\]\"|[^ ]+)(.*)"; do
         # matched element including quotes
-        _basis_sqs_element="${BASH_REMATCH[1]}"
+        _basis_split_element="${BASH_REMATCH[1]}"
         # remove quotes
-        _basis_sqs_element=`echo "${_basis_sqs_element}" | sed "s/^['\"]//;s/(^|[^\\])['\"]$//"`
+        _basis_split_element=`echo "${_basis_split_element}" | sed "s/^['\"]//;s/(^|[^\\])['\"]$//"`
         # replace quoted quotes within argument by quotes
-        _basis_sqs_element=`echo "${_basis_sqs_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
+        _basis_split_element=`echo "${_basis_split_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
         # add to resulting array
-        _basis_sqs_array[${#_basis_sqs_array[@]}]="${_basis_sqs_element}"
+        _basis_split_array[${#_basis_split_array[@]}]="${_basis_split_element}"
         # continue with residual command-line
-        _basis_sqs_str="${BASH_REMATCH[4]}"
+        _basis_split_str="${BASH_REMATCH[4]}"
     done
     # return
-    local "$1" && upvar $1 "${_basis_sqs_array[@]}"
+    local "$1" && upvar $1 "${_basis_split_array[@]}"
 }
 
 # ----------------------------------------------------------------------------
@@ -540,20 +540,20 @@ split()
 execute()
 {
     # parse arguments
-    local _basis_ep_allow_fail='false'
-    local _basis_ep_simulate='false'
-    local _basis_ep_verbose=0
-    local _basis_ep_args=''
+    local _basis_execute_allow_fail='false'
+    local _basis_execute_simulate='false'
+    local _basis_execute_verbose=0
+    local _basis_execute_args=''
     while [ $# -gt 0 ]; do
         case "$1" in
-            -f|--allow_fail) _basis_ep_allow_fail='true'; ;;
-            -s|--simulate)   _basis_ep_simulate='true';   ;;
+            -f|--allow_fail) _basis_execute_allow_fail='true'; ;;
+            -s|--simulate)   _basis_execute_simulate='true';   ;;
             -v|--verbose)
                 if [ `match "$2" '^-?[0-9]+$'` ]; then
-                    _basis_ep_verbose=$2
+                    _basis_execute_verbose=$2
                     shift
                 else
-                    let _basis_ep_verbose++
+                    let _basis_execute_verbose++
                 fi
                 ;;
             --)              shift; break; ;;
@@ -562,28 +562,28 @@ execute()
         shift
     done
     # command to execute and its arguments
-    local _basis_ep_command="$1"; shift
-    [ -n "${_basis_ep_command}" ] || echo "execute_process(): No command specified to execute" 1>&2; return 1
+    local _basis_execute_command="$1"; shift
+    [ -n "${_basis_execute_command}" ] || { echo "execute_process(): No command specified to execute" 1>&2; return 1; }
     # get absolute path of executable
-    local _basis_ep_exec && exepath _basis_ep_exec "${_basis_ep_command}"
-    [ -n "${_basis_ep_exec}" ] || echo "${_basis_ep_command}: Command not found" 1>&2; exit 1
+    local _basis_execute_exec && exepath _basis_execute_exec "${_basis_execute_command}"
+    [ -n "${_basis_execute_exec}" ] || { echo "${_basis_execute_command}: Command not found" 1>&2; exit 1; }
     # some verbose output
-    if [ ${verbose} -gt 0 ] || [ "${_basis_ep_simulate}" == 'true' ]; then
-        tostring _basis_ep_args "$@"
-        echo "\$ ${_basis_ep_exec} ${_basis_ep_args}"
+    if [ ${_basis_execute_verbose} -gt 0 ] || [ "${_basis_execute_simulate}" == 'true' ]; then
+        tostring _basis_execute_args "$@"
+        echo "\$ ${_basis_execute_exec} ${_basis_execute_args}"
     fi
     # execute command
-    [ "${_basis_ep_simulate}" == 'true' ] || "${_basis_ep_exec}" "$@"
-    local _basis_ep_status=$?
+    [ "${_basis_execute_simulate}" == 'true' ] || "${_basis_execute_exec}" "$@"
+    local _basis_execute_status=$?
     # if command failed, exit
-    [ ${_basis_ep_status} -eq 0 -o "${_basis_ep_allow_fail}" == 'true' ] || {
-        [ -n "${_basis_ep_args}" ] || tostring _basis_ep_args "$@"
+    [ ${_basis_execute_status} -eq 0 -o "${_basis_execute_allow_fail}" == 'true' ] || {
+        [ -n "${_basis_execute_args}" ] || tostring _basis_execute_args "$@"
         echo
-        echo "Command ${_basis_ep_exec} ${_basis_ep_args} failed" 1>&2
+        echo "Command ${_basis_execute_exec} ${_basis_execute_args} failed" 1>&2
         exit 1
     }
     # return exit code
-    return ${_basis_ep_status}
+    return ${_basis_execute_status}
 }
 
 
