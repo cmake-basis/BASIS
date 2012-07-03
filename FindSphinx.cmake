@@ -58,6 +58,8 @@ set (_Sphinx_REQUIRED_VARS)
 # default components to look for
 if (NOT Sphinx_FIND_COMPONENTS)
   set (Sphinx_FIND_COMPONENTS "build" "apidoc")
+elseif (NOT Sphinx_FIND_COMPONENTS MATCHES "^(build|apidoc)$")
+  message (FATAL_ERROR "Invalid Sphinx component in: ${Sphinx_FIND_COMPONENTS}")
 endif ()
 
 # ----------------------------------------------------------------------------
