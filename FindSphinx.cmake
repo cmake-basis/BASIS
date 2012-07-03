@@ -5,7 +5,7 @@
 # @par Input variables:
 # <table border="0">
 #   <tr>
-#     @tp @b Sphinx_COMPONENTS @endtp
+#     @tp @b Sphinx_FIND_COMPONENTS @endtp
 #     <td>Sphinx build tools to look for, i.e., 'apidoc' and/or 'build'.</td>
 # </table>
 #
@@ -55,14 +55,14 @@
 set (_Sphinx_REQUIRED_VARS)
 
 # ----------------------------------------------------------------------------
-# default components
-if (NOT Sphinx_COMPONENTS)
-  set (Sphinx_COMPONENTS "build" "apidoc")
+# default components to look for
+if (NOT Sphinx_FIND_COMPONENTS)
+  set (Sphinx_FIND_COMPONENTS "build" "apidoc")
 endif ()
 
 # ----------------------------------------------------------------------------
 # find components, i.e., build tools
-foreach (_Sphinx_TOOL IN LISTS Sphinx_COMPONENTS)
+foreach (_Sphinx_TOOL IN LISTS Sphinx_FIND_COMPONENTS)
   find_program (Sphinx-${_Sphinx_TOOL}_EXECUTABLE NAMES sphinx-${_Sphinx_TOOL})
   mark_as_advanced (Sphinx-${_Sphinx_TOOL}_EXECUTABLE)
   list (APPEND _Sphinx_REQUIRED_VARS Sphinx-${_Sphinx_TOOL}_EXECUTABLE)

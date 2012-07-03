@@ -17,19 +17,10 @@
 #         are used.</td>
 #   </tr>
 #   <tr>
-#     @tp @b MOSEK_MATLAB @endtp
-#     <td>Whether the MATLAB components of the MOSEK package should be found.
-#         Defaults to @c TRUE if @c MATLAB_FOUND evaluates to true and @c FALSE otherwise.</td>
-#   </tr>
-#   <tr>
-#     @tp @b MOSEK_JAVA @endtp
-#     <td>Whether the Java components of the MOSEK package should be found.
-#         Defaults to @c FALSE.</td>
-#   </tr>
-#   <tr>
-#     @tp @b MOSEK_PYTHON @endtp
-#     <td>Whether the Python components of the MOSEK package should be found.
-#         Defaults to @c FALSE.</td>
+#     @tp @b MOSEK_FIND_COMPONENTS @endtp
+#     <td>The @c COMPONENTS argument(s) of the find_package() command can
+#         be used to also look for optional MOSEK components.
+#         Valid component values are "mex", "jar", and "pypkg".</td>
 #   </tr>
 #   <tr>
 #     @tp @b MOSEK_TOOLS_SUFFIX @endtp
@@ -62,6 +53,10 @@
 #   <tr>
 #     @tp @b MOSEK_FOUND @endtp
 #     <td>Whether the package was found and the following CMake variables are valid.</td>
+#   </tr>
+#   <tr>
+#     @tp @b MOSEK_<component>_FOUND @endtp
+#     <td>Whether the component requested by @c MOSEK_FIND_COMPONENTS was found.</td>
 #   </tr>
 #   <tr>
 #     @tp @b MOSEK_INCLUDE_DIR @endtp
@@ -108,6 +103,19 @@
 #
 # @ingroup CMakeFindModules
 ##############################################################################
+
+# ----------------------------------------------------------------------------
+# optional components to look for
+set (_MOSEK_OPTIONAL_COMPONENTS mex jar pypkg)
+foreach (CMP IN LISTS _MOSEK_OPTIONAL_COMPONENTS)
+  set (MOSEK_FIND_${CMP} FALSE)
+endforeach ()
+foreach (CMP IN LISTS MOSEK_FIND_COMPONENTS)
+  if (CMP MATCHES "^(mex|jar|pypkg)$")
+    message (FATAL_ERROR "Invalid MOSEK component: ${CMP}")
+  endif ()
+  set (MOSEK_FIND_${CMP} TRUE)
+endforeach ()
 
 # ----------------------------------------------------------------------------
 # remember CMAKE_FIND_LIBRARY_SUFFIXES to be able to restore it
@@ -157,22 +165,21 @@ if (NOT MOSEK_DIR)
 endif ()
 
 # MATLAB components
-if (NOT DEFINED MOSEK_MATLAB)
-  set (MOSEK_MATLAB ${MATLAB_FOUND})
-endif ()
-
-if (MOSEK_MATLAB)
+if (MOSEK_FIND_mex)
   # MATLAB version
   if (NOT MATLAB_RELEASE)
     if (COMMAND basis_get_matlab_release)
       basis_get_matlab_release ()
       if (NOT MATLAB_RELEASE)
-        message (FATAL_ERROR "Failed to determine release version of MATLAB installation. "
-                             "This information is required to be able to find the right MOSEK MEX-files. "
-                             "Set MATLAB_RELEASE manually and try again.")
+        message (FATAL_ERROR "Failed to determine release version of MATLAB installation."
+                             " This information is required to be able to find the right MOSEK MEX-files."
+                             " Alternatively, set MATLAB_RELEASE manually and try again.")
       endif ()
     else ()
-      set (MATLAB_RELEASE "R2009b")
+      message (FATAL_ERROR "MATLAB_RELEASE variable not set."
+                           " This information is required to be able to find the right MOSEK MEX-files."
+                           " Set MATLAB_RELEASE to the correct MATLAB release version, e.g., R2009b,"
+                           " and try again.")
     endif ()
   endif ()
   string (TOLOWER "${MATLAB_RELEASE}" MATLAB_RELEASE_LOWER)
@@ -219,24 +226,15 @@ if (MOSEK_MATLAB)
   endif ()
 endif ()
 
-# Java components
-if (NOT DEFINED MOSEK_JAVA)
-  set (MOSEK_JAVA FALSE)
-endif ()
-
 # Python components
-if (NOT DEFINED MOSEK_PYTHON)
-  set (MOSEK_PYTHON FALSE)
-endif ()
-
-if (MOSEK_PYTHON)
+if (MOSEK_FIND_pypkg)
   if (NOT PYTHON_VERSION_MAJOR)
     message (FATAL_ERROR "Python interpreter not found or not added as dependency before MOSEK. "
                          "The information about the Python version is required to be able to find "
                          "the right MOSEK Python modules. Therefore, add the PythonInterp package "
                          "as dependency to BasisProjects.cmake before the entry of MOSEK. "
                          "The FindPythonInterp.cmake module will determine the version of the "
-                         "Python installation. Otherwise, set PYTHON_VERSION_MAJOR manually.")
+                         "Python installation. Alternatively, set PYTHON_VERSION_MAJOR manually.")
   endif ()
 endif ()
 
@@ -375,7 +373,7 @@ mark_as_advanced (MOSEK_INCLUDE_DIR)
 mark_as_advanced (MOSEK_LIBRARY)
 
 # MATLAB components
-if (MOSEK_MATLAB)
+if (MOSEK_FIND_mex)
   if (MOSEK_DIR)
 
     find_file (
@@ -406,7 +404,7 @@ if (MOSEK_MATLAB)
 endif ()
 
 # Java components
-if (MOSEK_JAVA)
+if (MOSEK_FIND_jar)
   if (MOSEK_DIR)
 
     find_file (
@@ -437,7 +435,7 @@ if (MOSEK_JAVA)
 endif ()
 
 # Python components
-if (MOSEK_PYTHON)
+if (MOSEK_FIND_pypkg)
   if (MOSEK_DIR)
 
     find_path (
@@ -488,14 +486,29 @@ set (MOSEK_REQUIRED_VARS
   MOSEK_LIBRARY
 )
 
-if (MOSEK_MATLAB)
+if (MOSEK_FIND_mex)
   list (APPEND MOSEK_REQUIRED_VARS MOSEK_mosekopt_MEX)
+  if (MOSEK_mosekopt_MEX)
+    set (MOSEK_mex_FOUND TRUE)
+  else ()
+    set (MOSEK_mex_FOUND FALSE)
+  endif ()
 endif ()
-if (MOSEK_JAVA)
+if (MOSEK_FIND_jar)
   list (APPEND MOSEK_REQUIRED_VARS MOSEK_mosek_JAR)
+  if (MOSEK_mosek_JAR)
+    set (MOSEK_jar_FOUND TRUE)
+  else ()
+    set (MOSEK_jar_FOUND FALSE)
+  endif ()
 endif ()
-if (MOSEK_PYTHON)
+if (MOSEK_FIND_pypkg)
   list (APPEND MOSEK_REQUIRED_VARS MOSEK_PYTHONPATH)
+  if (MOSEK_PYTHONPATH)
+    set (MOSEK_pypkg_FOUND TRUE)
+  else ()
+    set (MOSEK_pypkg_FOUND FALSE)
+  endif ()
 endif ()
 
 find_package_handle_standard_args (
@@ -508,3 +521,7 @@ find_package_handle_standard_args (
 
 set (CMAKE_FIND_LIBRARY_SUFFIXES "${_MOSEK_CMAKE_FIND_LIBRARY_SUFFIXES}")
 unset (_MOSEK_CMAKE_FIND_LIBRARY_SUFFIXES)
+
+foreach (CMP IN LISTS _MOSEK_OPTIONAL_COMPONENTS)
+  unset (MOSEK_FIND_${CMP})
+endforeach ()
