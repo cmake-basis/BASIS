@@ -18,7 +18,7 @@
 #   </tr>
 #   <tr>
 #     @tp @b MOSEK_MATLAB @endtp
-#     <td>Whether the MATLAB components of the MOSEK packages should be found.
+#     <td>Whether the MATLAB components of the MOSEK package should be found.
 #         Defaults to @c TRUE if @c MATLAB_FOUND evaluates to true and @c FALSE otherwise.</td>
 #   </tr>
 #   <tr>
