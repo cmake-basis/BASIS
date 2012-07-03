@@ -1,31 +1,31 @@
 ##############################################################################
-# @file  FindJython.cmake
+# @file  FindJythonInterp.cmake
 # @brief Find Jython interpreter.
 #
 # @par Output variables:
 # <table border="0">
 #   <tr>
-#     @tp @b Jython_FOUND @endtp
+#     @tp @b JythonInterp_FOUND @endtp
 #     <td>Whether the Jython executable was found.</td>
 #   </tr>
 #   <tr>
-#     @tp @b Jython_EXECUTABLE @endtp
+#     @tp @b JYTHON_EXECUTABLE @endtp
 #     <td>Path to the Jython interpreter.</td>
 #   </tr>
 #   <tr>
-#     @tp @b Jython_VERSION_STRING @endtp
+#     @tp @b JYTHON_VERSION_STRING @endtp
 #     <td>Jython version found, e.g. 2.5.2.</td>
 #   </tr>
 #   <tr>
-#     @tp @b Jython_VERSION_MAJOR @endtp
+#     @tp @b JYTHON_VERSION_MAJOR @endtp
 #     <td>Jython major version found, e.g. 2.</td>
 #   </tr>
 #   <tr>
-#     @tp @b Jython_VERSION_MINOR @endtp
+#     @tp @b JYTHON_VERSION_MINOR @endtp
 #     <td>Jython minor version found, e.g. 5.</td>
 #   </tr>
 #   <tr>
-#     @tp @b Jython_VERSION_PATCH @endtp
+#     @tp @b JYTHON_VERSION_PATCH @endtp
 #     <td>Jython patch version found, e.g. 2.</td>
 #   </tr>
 # </table>
@@ -34,11 +34,11 @@
 ##############################################################################
 
 # find jython executable
-find_program (Jython_EXECUTABLE NAMES jython)
+find_program (JYTHON_EXECUTABLE NAMES jython)
 
 # determine jython version string
-if (Jython_EXECUTABLE)
-  execute_process (COMMAND "${Jython_EXECUTABLE}" -c "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
+if (JYTHON_EXECUTABLE)
+  execute_process (COMMAND "${JYTHON_EXECUTABLE}" -c "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
                    OUTPUT_VARIABLE _JYTHON_VERSION
                    RESULT_VARIABLE _JYTHON_VERSION_RESULT
                    ERROR_QUIET)
@@ -66,6 +66,11 @@ if (Jython_EXECUTABLE)
       else ()
           set (JYTHON_VERSION_PATCH "0")
       endif()
+    else ()
+      set (JYTHON_VERSION_STRING)
+      set (JYTHON_VERSION_MAJOR)
+      set (JYTHON_VERSION_MINOR)
+      set (JYTHON_VERSION_PATCH)
     endif ()
   endif ()
   unset (_JYTHON_VERSION)
@@ -75,12 +80,12 @@ endif ()
 # handle the QUIETLY and REQUIRED arguments and set Jython_FOUND to TRUE if
 # all listed variables are TRUE
 include (FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS (Jython REQUIRED_VARS JYTHON_EXECUTABLE VERSION_VAR JYTHON_VERSION_STRING)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS (JythonInterp REQUIRED_VARS JYTHON_EXECUTABLE VERSION_VAR JYTHON_VERSION_STRING)
 
-if (DEFINED JYTHON_FOUND)
-  set (Jython_FOUND "${JYTHON_FOUND}")
-elseif (NOT DEFINED Jython_FOUND)
-  set (Jython_FOUND FALSE)
+if (DEFINED JYTHONINTERP_FOUND)
+  set (JythonInterp_FOUND "${JYTHONINTERP_FOUND}")
+elseif (NOT DEFINED JythonInterp_FOUND)
+  set (JythonInterp_FOUND FALSE)
 endif ()
 
 mark_as_advanced (JYTHON_EXECUTABLE)
