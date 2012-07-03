@@ -1011,33 +1011,23 @@ macro (basis_find_packages)
   include ("${PROJECT_CONFIG_DIR}/Depends.cmake" OPTIONAL)
 
   # --------------------------------------------------------------------------
-  # optional dependencies - first in case a newer version of a package
-  #                         can optionally be used, but at least an older
-  #                         one is required
-  foreach (P IN LISTS PROJECT_OPTIONAL_DEPENDS)
-    basis_find_package ("${P}" QUIET)
-    basis_use_package ("${P}")
-  endforeach ()
-
-  # --------------------------------------------------------------------------
-  # optional test dependencies
-  if (BUILD_TESTING)
-    foreach (P IN LISTS PROJECT_OPTIONAL_TEST_DEPENDS)
-      basis_find_package ("${P}" QUIET)
-      basis_use_package ("${P}")
-    endforeach ()
-  endif ()
-
-  # --------------------------------------------------------------------------
   # required dependencies
   foreach (P IN LISTS PROJECT_DEPENDS)
     basis_find_package ("${P}" REQUIRED)
-    basis_use_package ("${P}"  REQUIRED)
+    basis_use_package  ("${P}" REQUIRED)
+  endforeach ()
+
+  # --------------------------------------------------------------------------
+  # optional dependencies
+  foreach (P IN LISTS PROJECT_OPTIONAL_DEPENDS)
+    basis_find_package ("${P}" QUIET)
+    basis_use_package  ("${P}")
   endforeach ()
 
   # --------------------------------------------------------------------------
   # test dependencies
   if (BUILD_TESTING)
+    # required test dependencies
     foreach (P IN LISTS PROJECT_TEST_DEPENDS)
       basis_find_package ("${P}") # do not use REQUIRED here to be able to show
       basis_use_package ("${P}")  # error message below
@@ -1053,6 +1043,11 @@ macro (basis_find_packages)
       unset (U)
       unset (VER)
       unset (CMPS)
+    endforeach ()
+    # optional test dependencies
+    foreach (P IN LISTS PROJECT_OPTIONAL_TEST_DEPENDS)
+      basis_find_package ("${P}" QUIET)
+      basis_use_package ("${P}")
     endforeach ()
   endif ()
 
