@@ -87,6 +87,7 @@ set (
     "FindGMock.cmake"
     "FindGTest.cmake"
     "FindITK.cmake"
+    "FindJythonInterp.cmake"
     "FindLIBLINEAR.cmake"
     "FindMATLAB.cmake"
     "FindMatlabNiftiTools.cmake"
