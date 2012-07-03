@@ -437,7 +437,7 @@ function (basis_configure_utilities)
                 else ()
                   set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_B}\")
                 endif ()
-                set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n# define short aliases for this project's targets\n${SH_S}\")"
+                set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n${SH_S}\")"
     )
     basis_set_target_properties (basis_sh PROPERTIES OUTPUT_NAME basis)
     # dependencies
@@ -650,11 +650,11 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       set (SH_B "${SH_B}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${BUILD_LOCATION}'")
       set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
       # alias
-      set (SH_A "${SH_A}\nalias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
+      set (SH_A "${SH_A}\n    alias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
       # short alias (if target belongs to this project)
       if (TARGET_UID MATCHES "^${PROJECT_NAMESPACE_CMAKE_REGEX}\\.")
         basis_get_target_name (TARGET_NAME "${TARGET_UID}")
-        set (SH_S "${SH_S}\nalias '${TARGET_NAME}'='${ALIAS}'")
+        set (SH_S "${SH_S}\n    alias '${TARGET_NAME}'='${ALIAS}'")
       endif ()
     endif ()
     # ------------------------------------------------------------------------
