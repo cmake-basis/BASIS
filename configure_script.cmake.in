@@ -149,6 +149,7 @@ unset -v i dir cur"
             set (SCRIPT "#! ${PYTHON_EXECUTABLE}\n${SCRIPT}")
           endif ()
         endif ()
+      endif ()
     elseif (LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
       if (WIN32)
         set (SCRIPT "@goto = \"START_OF_BATCH\" ;\n@goto = ();\n${SCRIPT}")
