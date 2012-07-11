@@ -40,10 +40,10 @@ set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/matlab")
 # installation directory of project template files
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
 
-# installation directory of Sphinx extensions
-set (INSTALL_SPHINX_EXTENSIONS_DIR "${INSTALL_PYTHON_LIBRARY_DIR}/${BASIS_NAMESPACE_LOWER}/sphinx/ext")
+# common prefix (path) of Sphinx extensions
+set (SPHINX_EXTENSIONS_PREFIX "${BASIS_NAMESPACE_LOWER}/sphinx/ext")
 # installation directory of Sphinx themes
-set (INSTALL_SPHINX_THEMES_DIR     "${INSTALL_SHARE_DIR}/sphinx/themes")
+set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx/themes")
 
 # ============================================================================
 # general settings
@@ -97,11 +97,13 @@ endif ()
 # target UIDs of BASIS libraries; these would be set by the package configuration
 # file if this BASIS project would not be BASIS itself
 if (BASIS_USE_FULLY_QUALIFIED_UIDS)
-  set (BASIS_UTILITIES_LIBRARY "sbia.basis.utilities")
-  set (BASIS_TEST_LIBRARY      "sbia.basis.testlib")
-  set (BASIS_TEST_MAIN_LIBRARY "sbia.basis.testmain")
+  set (NS "sbia.basis.")
 else ()
-  set (BASIS_UTILITIES_LIBRARY "utilities")
-  set (BASIS_TEST_LIBRARY      "testlib")
-  set (BASIS_TEST_MAIN_LIBRARY "testmain")
+  set (NS)
 endif ()
+set (BASIS_CXX_UTILITIES_LIBRARY    "${NS}utilities_cxx")
+set (BASIS_PYTHON_UTILITIES_LIBRARY "${NS}utilities_python")
+set (BASIS_PERL_UTILITIES_LIBRARY   "${NS}utilities_perl")
+set (BASIS_BASH_UTILITIES_LIBRARY   "${NS}utilities_bash")
+set (BASIS_TEST_LIBRARY             "${NS}testlib")
+set (BASIS_TEST_MAIN_LIBRARY        "${NS}testmain")

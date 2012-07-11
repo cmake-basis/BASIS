@@ -18,12 +18,15 @@ basis_install (
 )
 
 # ----------------------------------------------------------------------------
-# modules
-basis_add_library (config.sh)    # constants, build configuration
-basis_add_library (core.sh)      # fundamental core functions
-basis_add_library (path.sh)      # path manipulation functions
-basis_add_library (utilities.sh) # project independent utilities
-basis_add_library (shflags.sh)   # command-line parsing library
-basis_add_library (shtap.sh)     # unit testing framework
+# utilities
+basis_get_target_name (UTILITIES "${BASIS_BASH_UTILITIES_LIBRARY}")
 
-basis_add_dependencies (utilities_sh core_sh path_sh shflags_sh)
+basis_add_library (
+  ${UTILITIES}
+    "config.sh"    # constants, build configuration
+    "core.sh"      # fundamental core functions
+    "path.sh"      # path manipulation functions
+    "utilities.sh" # project independent utilities
+    "shflags.sh"   # command-line parsing library
+    "shtap.sh"     # unit testing framework
+)

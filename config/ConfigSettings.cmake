@@ -26,12 +26,26 @@
 ## @brief List of enabled BASIS utilities.
 set (UTILITIES_ENABLED ${BASIS_UTILITIES_ENABLED})
 
-basis_get_fully_qualified_target_uid (UTILITIES_LIBRARY_CONFIG "${BASIS_UTILITIES_LIBRARY}")
+basis_get_fully_qualified_target_uid (CXX_UTILITIES_LIBRARY_CONFIG    "${BASIS_CXX_UTILITIES_LIBRARY}")
+basis_get_fully_qualified_target_uid (PYTHON_UTILITIES_LIBRARY_CONFIG "${BASIS_PYTHON_UTILITIES_LIBRARY}")
+basis_get_fully_qualified_target_uid (PERL_UTILITIES_LIBRARY_CONFIG   "${BASIS_PERL_UTILITIES_LIBRARY}")
+basis_get_fully_qualified_target_uid (BASH_UTILITIES_LIBRARY_CONFIG   "${BASIS_BASH_UTILITIES_LIBRARY}")
+
 basis_get_fully_qualified_target_uid (TEST_LIBRARY_CONFIG      "${BASIS_TEST_LIBRARY}")
 basis_get_fully_qualified_target_uid (TEST_MAIN_LIBRARY_CONFIG "${BASIS_TEST_MAIN_LIBRARY}")
 
-## @brief Name of BASIS C++ utilities library.
-set (UTILITIES_LIBRARY_CONFIG "${UTILITIES_LIBRARY_CONFIG}")
+# the following set() statements are simply used to document the variables
+# note that this documentation is included in the Doxygen generated documentation
+
+## @brief Name of BASIS utilities library for C++.
+set (CXX_UTILITIES_LIBRARY_CONFIG    "${CXX_UTILITIES_LIBRARY_CONFIG}")
+## @brief Name of BASIS utilities library for Python.
+set (PYTHON_UTILITIES_LIBRARY_CONFIG "${PYTHON_UTILITIES_LIBRARY_CONFIG}")
+## @brief Name of BASIS utilities library for Perl.
+set (PERL_UTILITIES_LIBRARY_CONFIG   "${PERL_UTILITIES_LIBRARY_CONFIG}")
+## @brief Name of BASIS utilities library for Bash.
+set (BASH_UTILITIES_LIBRARY_CONFIG   "${BASH_UTILITIES_LIBRARY_CONFIG}")
+
 ## @brief Name of C++ unit testing library.
 set (TEST_LIBRARY_CONFIG "${TEST_LIBRARY_CONFIG}")
 ## @brief Name of C++ unit testing library with definition of main() function.

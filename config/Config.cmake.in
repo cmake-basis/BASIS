@@ -79,8 +79,15 @@ basis_set_config (BASH_TEMPLATES_DIR "@BASH_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to MATLAB utilities files.
 basis_set_config (MATLAB_TEMPLATES_DIR "@MATLAB_TEMPLATES_DIR_CONFIG@")
 
-## @brief Utilities library.
-basis_set_config (UTILITIES_LIBRARY "@UTILITIES_LIBRARY_CONFIG@")
+## @brief C++ utilities library.
+basis_set_config (CXX_UTILITIES_LIBRARY    "@CXX_UTILITIES_LIBRARY_CONFIG@")
+## @brief Python utilities library.
+basis_set_config (PYTHON_UTILITIES_LIBRARY "@PYTHON_UTILITIES_LIBRARY_CONFIG@")
+## @brief Perl utilities library.
+basis_set_config (PERL_UTILITIES_LIBRARY   "@PERL_UTILITIES_LIBRARY_CONFIG@")
+## @brief Bash utilities library.
+basis_set_config (BASH_UTILITIES_LIBRARY   "@BASH_UTILITIES_LIBRARY_CONFIG@")
+
 ## @brief Unit testing library.
 basis_set_config (TEST_LIBRARY "@TEST_LIBRARY_CONFIG@")
 ## @brief Implementation of main() function of unit test driver.

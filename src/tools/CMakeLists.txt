@@ -12,13 +12,13 @@
 # project management
 if (PythonInterp_FOUND)
   basis_add_executable (basisproject.py)
-  basis_add_dependencies (basisproject diff3_py argparse_py)
+  basis_target_link_libraries (utilities_python)
 endif ()
 
 # ----------------------------------------------------------------------------
 # platform independent "which" command
 if (PythonInterp_FOUND)
-  basis_add_executable ("${PROJECT_CODE_DIR}/utilities/python/sbia/basis/which.py")
+  basis_add_executable ("${PROJECT_LIBRARY_DIR}/python/sbia/basis/which.py")
   basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
 endif ()
 
@@ -26,6 +26,7 @@ endif ()
 # doxygen filters
 if (Perl_FOUND)
   basis_add_executable (doxyfilter.pl LIBEXEC)
+  basis_target_link_libraries (doxyfilter doxyfilter_modules)
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -57,7 +58,7 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # automated testing
-basis_add_script (basistest.ctest MODULE DESTINATION "${INSTALL_MODULES_DIR}")
+basis_add_script (basistest.ctest DESTINATION "${INSTALL_MODULES_DIR}")
 
 if (BASH_FOUND)
   basis_add_executable (basistest-svn.sh)    # wraps svn command

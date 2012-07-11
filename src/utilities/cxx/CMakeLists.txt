@@ -20,8 +20,7 @@ basis_install (
 
 # ----------------------------------------------------------------------------
 # utilities
-basis_get_target_name (UTILITIES "${BASIS_UTILITIES_LIBRARY}")
-
+basis_get_target_name (UTILITIES "${BASIS_CXX_UTILITIES_LIBRARY}")
 basis_add_library (
   ${UTILITIES} STATIC
     "os.cxx"         # operating system dependent functions
@@ -31,6 +30,7 @@ basis_add_library (
     "CmdLine.cxx"    # command-line parsing
     "utilities.cxx"  # project-independent utility functions
 )
+basis_set_target_properties (${UTILITIES} PROPERTIES OUTPUT_NAME utilities)
 
 # ----------------------------------------------------------------------------
 # unit testing
