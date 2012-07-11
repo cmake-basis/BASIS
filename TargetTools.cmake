@@ -361,7 +361,9 @@ endfunction ()
 # The main reason for replacing this function is to treat libraries such as
 # MEX-files which are supposed to be compiled into a MATLAB executable added
 # by basis_add_executable() special. In this case, these libraries are added
-# to the LINK_DEPENDS property of the given MATLAB Compiler target.
+# to the LINK_DEPENDS property of the given MATLAB Compiler target. Similarly,
+# executable scripts and modules written in a scripting language may depend
+# on other modules.
 #
 # Another reason is the mapping of build target names to fully-qualified
 # build target names as used by BASIS (see basis_get_target_uid()).
@@ -378,21 +380,18 @@ endfunction ()
 #
 # @returns Adds link dependencies to the specified build target.
 #          For custom targets, the given libraries are added to the
-#          @c DEPENDS property of these target, in particular.
+#          @c LINK_DEPENDS property of these targets, in particular.
 #
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:target_link_libraries
 #
 # @ingroup CMakeAPI
 function (basis_target_link_libraries TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
-
   if (NOT TARGET "${TARGET_UID}")
     message (FATAL_ERROR "basis_target_link_libraries(): Unknown target ${TARGET_UID}.")
   endif ()
-
   # get type of named target
-  get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
-
+  get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
   # substitute non-fully qualified target names
   set (ARGS)
   foreach (ARG ${ARGN})
@@ -403,24 +402,53 @@ function (basis_target_link_libraries TARGET_NAME)
       list (APPEND ARGS "${ARG}")
     endif ()
   endforeach ()
-
-  # MATLAB Compiler or MEX target
-  if (BASIS_TYPE MATCHES "MCC|MEX")
-    get_target_property (DEPENDS ${TARGET_UID} "LINK_DEPENDS")
-
+  # custom BASIS targets with LINK_DEPENDS property
+  if (BASIS_TYPE MATCHES "MCC|MEX|SCRIPT")
+    get_target_property (DEPENDS ${TARGET_UID} LINK_DEPENDS)
     if (NOT DEPENDS)
       set (DEPENDS)
     endif ()
-    list (APPEND DEPENDS ${ARGS})
- 
-    # pull implicit dependencies (e.g., ITK uses this)
-    # note that MCC does itself a dependency check
-    if (NOT BASIS_TYPE MATCHES "MCC")
+    # scripts inherit dependencies of other scripts
+    if (BASIS_TYPE MATCHES "SCRIPT")
       set (DEPENDENCY_ADDED 1)
       while (DEPENDENCY_ADDED)
         set (DEPENDENCY_ADDED 0)
-        foreach (LIB ${DEPENDS})
-          foreach (LIB_DEPEND ${${LIB}_LIB_DEPENDS})
+        foreach (LIB IN LISTS ARGS)
+          list (FIND DEPENDS ${LIB} IDX)
+          if (IDX EQUAL -1)
+            set (DEPENDENCY_ADDED 1)
+            list (APPEND DEPENDS ${LIB})
+            if (TARGET ${LIB})
+              get_target_property (LIB_TYPE ${LIB} BASIS_TYPE)
+              if (LIB_TYPE MATCHES "SCRIPT")
+                get_target_property (LIB_DEPENDS    ${LIB} LINK_DEPENDS)
+                get_target_property (USES_UTILITIES ${LIB} BASIS_UTILITIES)
+                if (USES_UTILITIES)
+                  set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES TRUE)
+                endif ()
+                foreach (LIB_DEPEND IN LISTS LIB_DEPENDS)
+                  list (FIND DEPENDS ${LIB_DEPEND} IDX)
+                  if (IDX EQUAL -1)
+                    list (APPEND DEPENDS "${LIB_DEPEND}")
+                  endif ()
+                endforeach ()
+              endif ()
+            endif ()
+          endif ()
+        endforeach ()
+      endwhile ()
+    # note that MCC does itself a dependency check
+    elseif (BASIS_TYPE MATCHES "MCC")
+      list (APPEND DEPENDS ${ARGS})
+    # otherwise
+    else ()
+      list (APPEND DEPENDS ${ARGS})
+      # pull implicit dependencies (e.g., ITK uses this)
+      set (DEPENDENCY_ADDED 1)
+      while (DEPENDENCY_ADDED)
+        set (DEPENDENCY_ADDED 0)
+        foreach (LIB IN LISTS DEPENDS)
+          foreach (LIB_DEPEND IN LISTS ${LIB}_LIB_DEPENDS)
             if (NOT LIB_DEPEND MATCHES "^general$")
               string (REGEX REPLACE "^-l" "" LIB_DEPEND "${LIB_DEPEND}")
               list (FIND DEPENDS ${LIB_DEPEND} IDX)
@@ -433,7 +461,7 @@ function (basis_target_link_libraries TARGET_NAME)
         endforeach ()
       endwhile ()
     endif ()
-
+    # update LINK_DEPENDS property
     _set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
   # other
   else ()
@@ -452,8 +480,8 @@ endfunction ()
 # where an executable can be a binary file or a script written in a scripting
 # language. In general we refer to any output file which is part of the software
 # (i.e., excluding configuration files) and which can be executed
-# (e.g., a binary file in the ELF format) or interpreted (e.g., a BASH script)
-# directly, as executable file. Natively, CMake supports only executables build
+# (e.g., a binary file in the ELF format) or interpreted (e.g., a Python script)
+# directly, as executable file. Natively, CMake supports only executables built
 # from C/C++ source code files. This function extends CMake's capabilities
 # by adding custom build commands for non-natively supported programming
 # languages and further standardizes the build of executable targets.
@@ -473,17 +501,19 @@ endfunction ()
 #         source code. The target is added via CMake's add_executable() command.</td>
 #   </tr>
 #   <tr>
-#     @tp <b>PYTHON</b>|<b>PERL</b>|<b>BASH</b> @endtp
+#     @tp <b>PYTHON</b>|<b>JYTHON</b>|<b>PERL</b>|<b>BASH</b> @endtp
 #     <td>Executables written in one of the named scripting languages are built by
 #         configuring and/or copying the script files to the build tree and
 #         installation tree, respectively. During the build step, certain strings
 #         of the form \@VARIABLE\@ are substituted by the values set during the
 #         configure step. How these CMake variables are set is specified by a
-#         so-called script configuration file, which itself is a CMake script.</td>
+#         so-called script configuration, which itself is either a CMake script
+#         file or a string of CMake code set as value of the @c COMPILE_DEFINITIONS
+#         property of the executable target.</td>
 #   </tr>
 #   <tr>
 #     @tp @b MATLAB @endtp
-#     <td>Standalone application build from MATLAB sources using the
+#     <td>Standalone application built from MATLAB sources using the
 #         MATLAB Compiler (mcc). This language option is used when the list
 #         of source files contains one or more *.m files. A custom target is
 #         added which depends on custom command(s) that build the executable.</td>
@@ -496,16 +526,18 @@ endfunction ()
 # @par Helper functions
 # If the programming language of the input source files is not specified
 # explicitly by providing the @p LANGUAGE argument, the extensions of the
-# source files are inspected using basis_get_source_language(). Once the
-# programming language is known, this function invokes the proper subcommand.
-# In particular, it calls basis_add_executable_target() for C++ sources (.cxx),
-# basis_add_mcc_target() for MATLAB scripts (.m), and basis_add_script() for all
-# other source files.
+# source files and if necessary the first line of script files are inspected
+# by the basis_get_source_language() function. Once the programming language is
+# known, this function invokes the proper subcommand which adds the respective
+# build target. In particular, it calls basis_add_executable_target() for C++
+# sources (.cxx), basis_add_mcc_target() for MATLAB scripts (.m), and
+# basis_add_script() for all other source files.
 #
 # @note DO NOT use the mentioned subcommands directly. Always use
-#       basis_add_library() to add a library target to your project. Only refer
-#       to the documentation of the subcommands to learn about the available
-#       options of the particular subcommand.
+#       basis_add_executable() to add an executable target to your project.
+#       Only refer to the documentation of the subcommands to learn about the
+#       available options of the particular subcommand and considered target
+#       properties.
 #
 # @par Output directories
 # The built executable file is output to the @c BINARY_RUNTIME_DIR or
@@ -516,72 +548,77 @@ endfunction ()
 #
 # @par Installation
 # An install command for the added executable target is added by this function
-# as well. The executable will be installed as part of the component @p COMPONENT
+# as well. The executable will be installed as part of the specified @p COMPONENT
 # in the directory @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if the option
-# @p LIBEXEC is given. Executable targets are exported such that they can be
-# imported by other CMake-aware projects by including the CMake configuration file
-# of this package (&lt;Package&gt;Config.cmake file). No installation rules are
-# added, however, if this function is used within the @c PROJECT_TESTING_DIR.
-# Test executables are further only exported as part of the build tree.
+# @p LIBEXEC is given. Executable targets are exported by default such that they
+# can be imported by other CMake-aware projects by including the CMake
+# configuration file of this package (&lt;Package&gt;Config.cmake file).
+# No installation rules are added, however, if this function is used within the
+# @c PROJECT_TESTING_DIR or if "none" (case-insensitive) is given as
+# @p DESTINATION. Test executables are further only exported as part of the
+# build tree, but not the installation as they are by default not installed.
 #
-# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
-#       executable is output to the @c TESTING_RUNTIME_DIR or
-#       @c TESTING_LIBEXEC_DIR instead. Moreover, no installation rules are added.
-#       Test executables are further only exported as part of the build tree.
-#
-# @param [in] TARGET_NAME Name of the target. If a source file is given
-#                         as first argument, the build target name is derived
-#                         from the name of this source file.
+# @param [in] TARGET_NAME Name of the target. If an existing source file is given
+#                         as first argument, it is added to the list of source files
+#                         and the build target name is derived from the name of this file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted, all other arguments are passed
 #                         on to add_executable() or the respective custom
-#                         commands used to build the executable.
+#                         commands used to add an executable build target.
 # @par
 # <table border="0">
 #   <tr>
 #     @tp @b COMPONENT name @endtp
-#     <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
+#     <td>Name of component as part of which this executable will be installed
+#         if the specified @c DESTINATION is not "none".
+#         (default: @c BASIS_RUNTIME_COMPONENT)</td>
 #   </tr>
 #   <tr>
 #     @tp @b DESTINATION dir @endtp
 #     <td>Installation directory relative to @c INSTALL_PREFIX.
-#         If "none" (the case is ignored) is given as argument,
-#         no installation rules are added for this executable target.
-#         Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR
-#                  (if @p LIBEXEC is given).</td>
+#         If "none" (case-insensitive) is given as argument, no default
+#         installation rules are added for this executable target.
+#         (default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR
+#         if the @p LIBEXEC option is given)</td>
 #   </tr>
 #   <tr>
 #     @tp @b LANGUAGE lang @endtp
-#     <td>Source code language. By default determined from the extensions of
-#         the given source files.</td>
+#     <td>Programming language in which source files are written (case-insensitive).
+#         If not specified, the programming language is derived from the file name
+#         extensions of the source files and, if applicable, the shebang directive
+#         on the first line of the script file. If the programming language could
+#         not be detected automatically, check the file name extensions of the
+#         source files and whether no unrecognized additional arguments were given
+#         or specify the programming language using this option.
+#         (default: auto-detected)</td>
 #   </tr>
 #   <tr>
 #     @tp @b LIBEXEC @endtp
-#     <td>Specifies that the built executable is an auxiliary executable
-#         which is only called by other executables.</td>
+#     <td>Specifies that the built executable is an auxiliary executable which
+#         is only called by other executables. (default: @c FALSE)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOEXPORT @endtp
-#     <td>Do not export the target.</td>
+#     @tp @b [NO]EXPORT @endtp
+#     <td>Whether to export this target. (default: @c TRUE)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOUTILITIES @endtp
-#     <td>Do not add the BASIS utilities to the link dependencies.</td>
+#     @tp @b NO_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are not used by this executable and hence
+#         no link dependency on the BASIS utilities shall be added.
+#         (default: @c NOT @c BASIS_UTILITIES)</td>
 #   </tr>
 #   <tr>
-#     @tp @b WITH_PATH , @b WITH_EXT @endtp
-#     <td>See documentation of basis_add_script().</td>
-#   </tr>
-#   <tr>
-#     @tp @b CONFIG , @b CONFIG_FILE @endtp
-#     <td>See documentation of basis_add_script().</td>
+#     @tp @b USE_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are used and required by this executable
+#         and hence a link dependency on the BASIS utilities has to be added.
+#         (default: @c BASIS_UTILITIES)</td>
 #   </tr>
 # </table>
 #
 # @returns Adds an executable build target. In case of an executable which is
-#          not build from C++ source files, the function basis_add_custom_finalize()
+#          not build from C++ source files, the function basis_finalize_targets()
 #          has to be invoked to finalize the addition of the custom build target.
-#          This is done automatically by the basis_project_impl() macro.
+#          This is done at the end of the basis_project_impl() macro.
 #
 # @sa basis_add_executable_target()
 # @sa basis_add_script()
@@ -590,61 +627,59 @@ endfunction ()
 # @ingroup CMakeAPI
 function (basis_add_executable TARGET_NAME)
   # --------------------------------------------------------------------------
-  # determine language
-  CMAKE_PARSE_ARGUMENTS (
-    ARGN
-      "TEST" # discard deprecated TEST option
-      "LANGUAGE"
-      ""
-    ${ARGN}
-  )
-
+  # determine programming language
+  CMAKE_PARSE_ARGUMENTS (ARGN "TEST" "LANGUAGE" "" ${ARGN}) # discard deprecated TEST option
   if (NOT ARGN_LANGUAGE)
-
+    # get list of source files only
+    set (SOURCES)
+    # derive target name from file name if existing source file given as first argument
+    get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+    if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
+      set (SOURCES "${S}")
+    endif ()
+    # parse arguments
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "LIBEXEC;MODULE;WITH_PATH;WITH_EXT;NOUTILITIES;NOEXPORT"
-      "BINARY_DIRECTORY;DESTINATION;COMPONENT;CONFIG;CONFIG_FILE"
-      ""
+        "MODULE;EXECUTABLE;LIBEXEC;NO_BASIS_UTILITIES;USE_BASIS_UTILITIES;EXPORT;NOEXPORT"
+        "COMPONENT;DESTINATION"
+        ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
-
-    if (NOT TMP_UNPARSED_ARGUMENTS)
-      set (TMP_UNPARSED_ARGUMENTS "${TARGET_NAME}")
+    if (TMP_UNPARSED_ARGUMENTS)
+      list (APPEND SOURCES ${TMP_UNPARSED_ARGUMENTS})
     endif ()
-
-    basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
+    # auto-detect programming language
+    basis_get_source_language (ARGN_LANGUAGE "${SOURCES}")
     if (ARGN_LANGUAGE MATCHES "AMBIGUOUS|UNKNOWN")
-      message ("basis_add_executable(${TARGET_NAME}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
+      message ("Target ${TARGET_UID}: Given source code files: ${SOURCES}")
       if (ARGN_LANGUAGE MATCHES "AMBIGUOUS")
-        message (FATAL_ERROR "basis_add_executable(${TARGET_NAME}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+        message (FATAL_ERROR "Target ${TARGET_UID}: Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       elseif (ARGN_LANGUAGE MATCHES "UNKNOWN")
-        message (FATAL_ERROR "basis_add_executable(${TARGET_NAME}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+        message (FATAL_ERROR "Target ${TARGET_UID}: Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       endif ()
     endif ()
   endif ()
   string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
-
   # --------------------------------------------------------------------------
   # C++
   if (ARGN_LANGUAGE MATCHES "CXX")
-
     basis_add_executable_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
-
   # --------------------------------------------------------------------------
   # MATLAB
   elseif (ARGN_LANGUAGE MATCHES "MATLAB")
-
-    basis_add_mcc_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS} TYPE EXECUTABLE)
-
+    basis_add_mcc_target (${TARGET_NAME} TYPE EXECUTABLE ${ARGN_UNPARSED_ARGUMENTS})
   # --------------------------------------------------------------------------
-  # scripting language
+  # others
   else ()
-    CMAKE_PARSE_ARGUMENTS (ARGN "MODULE" "" "" ${ARGN_UNPARSED_ARGUMENTS})
+    CMAKE_PARSE_ARGUMENTS (ARGN "MODULE;LIBEXEC" "" "" ${ARGN_UNPARSED_ARGUMENTS})
     if (ARGN_MODULE)
-      message (FATAL_ERROR "basis_add_executable(${TARGET_UID}): A MODULE cannot be an executable! Use basis_add_library() instead.")
+      message (FATAL_ERROR "Target ${TARGET_UID}: A MODULE cannot be an executable! Use basis_add_library() instead.")
     endif ()
-    basis_add_script (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
+    if (ARGN_LIBEXEC)
+      basis_add_script (${TARGET_NAME} LIBEXEC ${ARGN_UNPARSED_ARGUMENTS})
+    else ()
+      basis_add_script (${TARGET_NAME} EXECUTABLE ${ARGN_UNPARSED_ARGUMENTS})
+    endif ()
   endif ()
 endfunction ()
 
@@ -652,12 +687,12 @@ endfunction ()
 ## @brief Add library target.
 #
 # This is the main function to add a library target to the build system, where
-# a library can be a binary archive, shared library, a MEX-file or a module
+# a library can be a binary archive, shared library, a MEX-file or module(s)
 # written in a scripting language. In general we refer to any output file which
 # is part of the software (i.e., excluding configuration files), but cannot be
 # executed (e.g., a binary file in the ELF format) or interpreted
-# (e.g., a BASH script) directly, as library file. Natively, CMake supports only
-# libraries build from C/C++ source code files. This function extends CMake's
+# (e.g., a Python module) directly, as library file. Natively, CMake supports only
+# libraries built from C/C++ source code files. This function extends CMake's
 # capabilities by adding custom build commands for non-natively supported
 # programming languages and further standardizes the build of library targets.
 # For example, by default, it is not necessary to specify installation rules
@@ -680,7 +715,7 @@ endfunction ()
 #         the MEX script instead of using the default C++ compiler directly.</td>
 #   </tr>
 #   <tr>
-#     @tp <b>PYTHON</b>|<b>PERL</b>|<b>BASH</b> @endtp
+#     @tp <b>PYTHON</b>|<b>JYTHON</b>|<b>PERL</b>|<b>BASH</b> @endtp
 #     <td>Modules written in one of the named scripting languages are built similar
 #         to executable scripts except that the file name extension is preserved
 #         and no executable file permission is set on Unix. These modules are
@@ -702,34 +737,34 @@ endfunction ()
 # source files are inspected using basis_get_source_language(). Once the
 # programming language is known, this function invokes the proper subcommand.
 # In particular, it calls basis_add_library_target() for C++ sources (.cxx)
-# if the target is not a MEX-file target, basis_add_mex_target() for C++ sources
+# if the target is not a MEX-file target, basis_add_mex_file() for C++ sources
 # if the @p MEX option is given, basis_add_mcc_target() for MATLAB scripts (.m),
-# and basis_add_script() for all other source files.
+# and basis_add_script_library() for all other source files.
 #
 # @note DO NOT use the mentioned subcommands directly. Always use
 #       basis_add_library() to add a library target to your project. Only refer
 #       to the documentation of the subcommands to learn about the available
-#       options of the particular subcommand.
+#       options of the particular subcommand and the considered target properties.
 #
 # @par Output directories
-# The built libraries are output to the @c BINARY_RUNTIME_DIR, @c BINARY_LIBRARY_DIR,
-# and/or @c BINARY_ARCHIVE_DIR. Python modules are output to subdirectories in
-# the @c BINARY_PYTHON_LIBRARY_DIR. Perl modules are output to subdirectories in
-# the @c BINARY_PERL_LIBRARY_DIR. If this command is used within the
-# @c PROJECT_TESTING_DIR, however, the files are output to the
-# @c TESTING_RUNTIME_DIR, @c TESTING_LIBRARY_DIR, @c TESTING_ARCHIVE_DIR,
-# @c TESTING_PYTHON_LIBRARY_DIR, or @c TESTING_PERL_LIBRARY_DIR instead.
+# In case of modules written in a scripting language, the libraries are output to
+# the <tt>BINARY_&lt;LANGUAGE&gt;_LIBRARY_DIR</tt> if defined. Otherwise,
+# the built libraries are output to the @c BINARY_RUNTIME_DIR, @c BINARY_LIBRARY_DIR,
+# and/or @c BINARY_ARCHIVE_DIR. If this command is used within the @c PROJECT_TESTING_DIR,
+# however, the files are output to the corresponding directories in the testing tree,
+# instead.
 #
 # @par Installation
-# An install command for the added library target is added by this function
-# as well. Runtime libraries are installed as part of the @p RUNTIME_COMPONENT
-# to the @p RUNTIME_DESTINATION. Library components are installed as part of
-# the @p LIBRARY_COMPONENT to the @p LIBRARY_DESTINATION. Library targets are
-# exported such that they can be imported by other CMake-aware projects by
-# including the CMake configuration file of this package
-# (&lt;Package&gt;Config.cmake file). If this function is used within the
-# @c PROJECT_TESTING_DIR, however, no installation rules are added.
-# Test library targets are further only exported as part of the build tree.
+# An installation rule for the added library target is added by this function
+# if the destination is not "none" (case-insensitive). Runtime libraries are
+# installed as part of the @p RUNTIME_COMPONENT to the @p RUNTIME_DESTINATION.
+# Library components are installed as part of the @p LIBRARY_COMPONENT to the
+# @p LIBRARY_DESTINATION. Library targets are further exported such that they
+# can be imported by other CMake-aware projects by including the CMake
+# configuration file of this package (&lt;Package&gt;Config.cmake file).
+# If this function is used within the @c PROJECT_TESTING_DIR, however, no
+# installation rules are added. Test library targets are further only exported
+# as part of the build tree.
 #
 # @par Example
 # @code
@@ -747,154 +782,143 @@ endfunction ()
 # basis_add_library (ShellModule MODULE MyModule.sh.in)
 # @endcode
 #
-# @param [in] TARGET_NAME Name of the target. If a source file is given
-#                         as first argument, the build target name is derived
-#                         from the name of this source file.
-#                         If the specified target name is a directory within
-#                         the current source directory, all source files with
-#                         known extension, e.g., .cxx, .py, .pm, and .m, are
-#                         globbed and separate library targets added for each
-#                         module.
+# @param [in] TARGET_NAME Name of build target. If an existing file is given as
+#                         argument, it is added to the list of source files and
+#                         the target name is derived from the name of this file.
 # @param [in] ARGN        This argument list is parsed and the following
-#                         arguments are extracted:
+#                         arguments are extracted. All unparsed arguments are
+#                         treated as source files.
 # @par
 # <table border="0">
 #   <tr>
-#     @tp @b LANGUAGE lang @endtp
-#     <td>Source code language. By default determined from the extensions of
-#         the given source code files.</td>
-#   </tr>
-#   <tr>
 #     @tp <b>STATIC</b>|<b>SHARED</b>|<b>MODULE</b>|<b>MEX</b> @endtp
-#     <td>Type of the library.</td>
+#     <td>Type of the library. (default: @c SHARED for C++ libraries if
+#         @c BUILD_SHARED_LIBS evaluates to true or @c STATIC otherwise,
+#         @c SHARED for libraries build by MATLAB Compiler, and @c MODULE
+#         in all other cases)</td>
 #   </tr>
 #   <tr>
 #     @tp @b COMPONENT name @endtp
-#     <td>Name of the component. Default: @c BASIS_LIBRARY_COMPONENT.</td>
+#     <td>Name of component as part of which this library will be installed
+#         if the @c RUNTIME_DESTINATION or @c LIBRARY_DESTINATION is not "none".
+#         Used only if @p RUNTIME_COMPONENT or @p LIBRARY_COMPONENT not specified.
+#         (default: see @p RUNTIME_COMPONENT and @p LIBRARY_COMPONENT)</td>
 #   </tr>
 #   <tr>
-#     @tp @b RUNTIME_COMPONENT name @endtp
-#     <td>Name of runtime component. Default: @c COMPONENT if specified or
-#         @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
+#     @tp @b DESTINATION dir @endtp
+#     <td>Installation directory for runtime and library component relative
+#         to @c INSTALL_PREFIX. Used only if @p RUNTIME_DESTINATION or
+#         @p LIBRARY_DESTINATION not specified. If "none" (case-insensitive)
+#         is given as argument, no default installation rules are added.
+#         (default: see @p RUNTIME_DESTINATION and @p LIBRARY_DESTINATION)</td>
+#   </tr>
+#   <tr>
+#     @tp @b LANGUAGE lang @endtp
+#     <td>Programming language in which source files are written (case-insensitive).
+#         If not specified, the programming language is derived from the file name
+#         extensions of the source files and, if applicable, the shebang directive
+#         on the first line of the script file. If the programming language could
+#         not be detected automatically, check the file name extensions of the
+#         source files and whether no unrecognized additional arguments were given
+#         or specify the programming language using this option.
+#         (default: auto-detected)</td>
 #   </tr>
 #   <tr>
 #     @tp @b LIBRARY_COMPONENT name @endtp
-#     <td>Name of library component. Default: @c COMPONENT if specified or
-#         @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
+#     <td>Name of component as part of which import/static library will be intalled
+#         if @c LIBRARY_DESTINATION is not "none".
+#         (default: @c COMPONENT if specified or @c BASIS_LIBRARY_COMPONENT otherwise)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOEXPORT @endtp
-#     <td>Do not export build target.</td>
+#     @tp @b LIBRARY_DESTINATION dir @endtp
+#     <td>Installation directory of the library component relative to
+#         @c INSTALL_PREFIX. If "none" (case-insensitive) is given as argument,
+#         no installation rule for the library component is added.
+#         (default: @c INSTALL_ARCHIVE_DIR)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOUTILITIES @endtp
-#     <td>Do not add the BASIS utilities to the link dependencies.</td>
+#     @tp @b RUNTIME_COMPONENT name @endtp
+#     <td>Name of component as part of which runtime library will be installed
+#         if @c RUNTIME_DESTINATION is not "none".
+#         (default: @c COMPONENT if specified or @c BASIS_RUNTIME_COMPONENT otherwise)</td>
+#   </tr>
+#   <tr>
+#     @tp @b RUNTIME_DESTINATION dir @endtp
+#     <td>Installation directory of the runtime component relative to
+#         @c INSTALL_PREFIX. If "none" (case-insensitive) is given as argument,
+#         no installation rule for the runtime library is added.
+#         (default: @c INSTALL_LIBRARY_DIR on Unix or @c INSTALL_RUNTIME_DIR Windows)</td>
+#   </tr>
+#   <tr>
+#     @tp @b [NO]EXPORT @endtp
+#     <td>Whether to export this target. (default: @c TRUE)</td>
+#   </tr>
+#   <tr>
+#     @tp @b NO_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are not used by this executable and hence
+#         no link dependency on the BASIS utilities shall be added.
+#         (default: @c NOT @c BASIS_UTILITIES)</td>
+#   </tr>
+#   <tr>
+#     @tp @b USE_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are used and required by this executable
+#         and hence a link dependency on the BASIS utilities has to be added.
+#         (default: @c BASIS_UTILITIES)</td>
 #   </tr>
 # </table>
 #
 # @returns Adds a library build target. In case of a library not written in C++
-#          or MEX-file targets, basis_add_custom_finalize() has to be invoked
+#          or MEX-file targets, basis_finalize_targets() has to be invoked
 #          to finalize the addition of the build target(s). This is done
-#          automatically by the basis_project_impl() macro.
+#          at the end of the basis_project_impl() macro.
 #
 # @sa basis_add_library_target()
-# @sa basis_add_script()
-# @sa basis_add_mex_target()
+# @sa basis_add_script_library()
+# @sa basis_add_mex_file()
 # @sa basis_add_mcc_target()
 #
 # @ingroup CMakeAPI
 function (basis_add_library TARGET_NAME)
   # --------------------------------------------------------------------------
-  # process all files with known extensions within specified directory
-  if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
-    # C++ library
-    file (
-      GLOB_RECURSE SOURCES
-      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.cxx"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.cxx.in"
-    )
-    if (SOURCES)
-      basis_add_library_target (${TARGET_NAME} ${SOURCES} ${ARGN})
-    else ()
-      basis_check_target_name ("${TARGET_NAME}")
-      basis_make_target_uid (TARGET_UID ${TARGET_NAME})
-      add_custom_target (${TARGET_UID} ALL)
-    endif ()
-    # script modules
-    file (
-      GLOB_RECURSE MODULES
-      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.py"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.py.in"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.pm"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.pm.in"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.m"
-        "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}/*.m.in"
-    )
-    foreach (M IN LISTS MODULES)
-      string (REGEX REPLACE "\\.in$" "" N "${M}")
-      get_filename_component (N "${N}" NAME_WE)
-      basis_get_source_target_name (T "${M}")
-      basis_add_script (${T} "${M}" MODULE WITH_PATH ${ARGN})
-      basis_set_target_properties (${T} PROPERTIES OUTPUT_NAME ${N})
-      basis_add_dependencies (${TARGET_NAME} ${T})
-    endforeach ()
-    # done
-    return ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # determine language
-  CMAKE_PARSE_ARGUMENTS (
-    ARGN
-      "TEST" # discard deprecated TEST option
-      "LANGUAGE"
-      ""
-    ${ARGN}
-  )
-
+  # determine programming language
+  CMAKE_PARSE_ARGUMENTS (ARGN "TEST" "LANGUAGE" "" ${ARGN})# discard deprecated TEST option
   if (NOT ARGN_LANGUAGE)
-
+    # get list of source files only
+    set (SOURCES)
+    # derive target name from file name if existing source file given as first argument
+    get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+    if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
+      set (SOURCES "${S}")
+    endif ()
+    # parse arguments
     CMAKE_PARSE_ARGUMENTS (
       TMP
-      "STATIC;SHARED;MODULE;MEX;WITH_PATH;NOUTILITIES;NOEXPORT"
-      "BINARY_DIRECTORY;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;CONFIG;CONFIG_SCRIPT;MFILE"
-      ""
+        "STATIC;SHARED;MODULE;USE_BASIS_UTILITIES;NO_BASIS_UTILITIES;EXPORT;NOEXPORT"
+        "COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION"
+        ""
       ${ARGN_UNPARSED_ARGUMENTS}
     )
-
-    if (NOT TMP_UNPARSED_ARGUMENTS)
-      set (TMP_UNPARSED_ARGUMENTS "${TARGET_NAME}")
+    if (TMP_UNPARSED_ARGUMENTS)
+      list (APPEND SOURCES ${TMP_UNPARSED_ARGUMENTS})
     endif ()
-
-    basis_get_source_language (ARGN_LANGUAGE "${TMP_UNPARSED_ARGUMENTS}")
+    # auto-detect programming language
+    basis_get_source_language (ARGN_LANGUAGE "${SOURCES}")
     if (ARGN_LANGUAGE MATCHES "AMBIGUOUS|UNKNOWN")
-      message ("basis_add_library(${TARGET_NAME}): Given source code files: ${TMP_UNPARSED_ARGUMENTS}")
+      message ("Target ${TARGET_UID}: Given source code files: ${SOURCES}")
       if (ARGN_LANGUAGE MATCHES "AMBIGUOUS")
-        message (FATAL_ERROR "basis_add_library(${TARGET_NAME}): Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+        message (FATAL_ERROR "Target ${TARGET_UID}: Ambiguous source code files! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       elseif (ARGN_LANGUAGE MATCHES "UNKNOWN")
-        message (FATAL_ERROR "basis_add_library(${TARGET_NAME}): Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
+        message (FATAL_ERROR "Target ${TARGET_UID}: Unknown source code language! Try to set LANGUAGE manually and make sure that no unknown option was given.")
       endif ()
     endif ()
   endif ()
   string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
-
   # --------------------------------------------------------------------------
   # C++
   if (ARGN_LANGUAGE MATCHES "CXX")
-
-    CMAKE_PARSE_ARGUMENTS (
-      ARGN
-      "MEX"
-      ""
-      ""
-      ${ARGN_UNPARSED_ARGUMENTS}
-    )
-
+    CMAKE_PARSE_ARGUMENTS (ARGN "MEX" "" "" ${ARGN_UNPARSED_ARGUMENTS})
     # MEX-file
     if (ARGN_MEX)
-
       CMAKE_PARSE_ARGUMENTS (
         ARGN
         ""
@@ -902,7 +926,6 @@ function (basis_add_library TARGET_NAME)
         ""
         ${ARGN_UNPARSED_ARGUMENTS}
       )
-
       set (OPTS)
       if (ARGN_CXX_DESTINATION)
         list (APPEND OPTS "DESTINATION" "${ARGN_DESTINATION}")
@@ -914,51 +937,456 @@ function (basis_add_library TARGET_NAME)
       elseif (ARGN_RUNTIME_COMPONENT)
         list (APPEND OPTS "COMPONENT" "${ARGN_RUNTIME_COMPONENT}")
       endif ()
-
-      basis_add_mex_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS} ${OPTS})
-
+      basis_add_mex_file (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS} ${OPTS})
     # library
     else ()
-
       basis_add_library_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
-
     endif ()
-
   # --------------------------------------------------------------------------
   # MATLAB
   elseif (ARGN_LANGUAGE MATCHES "MATLAB")
-
-    CMAKE_PARSE_ARGUMENTS (
-      ARGN
-      "STATIC;SHARED;MODULE;MEX"
-      ""
-      ""
-      ${ARGN_UNPARSED_ARGUMENTS}
-    )
-
+    CMAKE_PARSE_ARGUMENTS (ARGN "STATIC;SHARED;MODULE;MEX" "" "" ${ARGN_UNPARSED_ARGUMENTS})
     if (ARGN_STATIC OR ARGN_MODULE OR ARGN_MEX)
-      message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Invalid library type! Only shared libraries can be built by the MATLAB Compiler.")
+      message (FATAL_ERROR "Target ${TARGET_UID}: Invalid library type! Only shared libraries can be built by the MATLAB Compiler.")
     endif ()
-
     basis_add_mcc_target (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS} TYPE LIBRARY)
-
   # --------------------------------------------------------------------------
-  # scripting language
+  # other
   else ()
-
-    CMAKE_PARSE_ARGUMENTS (
-      ARGN
-      "STATIC;SHARED;MODULE;MEX"
-      ""
-      ""
-      ${ARGN_UNPARSED_ARGUMENTS}
-    )
-
+    CMAKE_PARSE_ARGUMENTS (ARGN "STATIC;SHARED;MODULE;MEX" "" "" ${ARGN_UNPARSED_ARGUMENTS})
     if (ARGN_STATIC OR ARGN_SHARED OR ARGN_MEX)
-      message (FATAL_ERROR "basis_add_library(${TARGET_UID}): Invalid library type! Only modules can be built from scripts.")
+      message (FATAL_ERROR "Target ${TARGET_UID}: Invalid library type! Only modules can be built from scripts.")
     endif ()
+    basis_add_script_library (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS})
+  endif ()
+endfunction ()
 
-    basis_add_script (${TARGET_NAME} ${ARGN_UNPARSED_ARGUMENTS} MODULE)
+# ----------------------------------------------------------------------------
+## @brief Add single arbitrary or executable script.
+#
+# @note This function should not be used directly for executable scripts or
+#       module libraries. Use basis_add_executable() or basis_add_library()
+#       in such (most) cases instead.
+#
+# This function can be used to add a single arbitrary script file (i.e., any
+# text file which is input to a program), such as a CTest script for example,
+# to the build if neither basis_add_executable() nor basis_add_library() are
+# appropriate choices. In all other cases, either basis_add_executable() or
+# basis_add_library() should be used. Note that the script file is by default
+# not considered to be an executable. Instead it is assumed that the program
+# which interprets/processes the script must be executed explicitly with this
+# script as argument. Only scripts built with the @p EXECUTABLE or @p LIBEXEC
+# type option are treated as executable files, where in case of Unix a shebang
+# directive implicitly states the program used by the shell to interpret the
+# script and on Windows a Windows Command which imitates the behavior of Unix
+# shells is generated by BASIS. Do not use these type options, however, but
+# only use the default @p MODULE option. The basis_add_executable() function
+# should be used instead to add an executable script. The basis_add_script()
+# function shall only be used for none-executable arbitrary script files which
+# cannot be built by basis_add_executable() or basis_add_library().
+#
+# If the script name ends in <tt>.in</tt>, the <tt>.in</tt> suffix is removed
+# from the output name. Further, in case of executable scripts, the file name
+# extension is removed from the output file name. Instead, a shebang directive
+# is added on Unix to the built script. In order to enable the convenient
+# execution of Python and Perl scripts also on Windows without requiring the
+# user to setup a proper associate between the filename extension with the
+# corresponding interpreter executable, a few lines of Batch code are added at
+# the top and bottom of executable Python and Perl scripts. This Batch code
+# invokes the configured interpreter with the script file and the given script
+# arguments as command-line arguments. Note that both the original script source
+# code and the Batch code are stored within the single file. The file name
+# extension of such modified scripts is by default set to <tt>.cmd</tt>, the
+# common extension for Windows NT Command Scripts. Scripts in other languages
+# are not modified and the extension of the original scripts script file is
+# preserved on Windows in this case. In case of non-executable scripts, the
+# file name extension is kept in any case.
+#
+# Certain CMake variables within the source file are replaced during the
+# built of the script. See the
+# <a href="http://www.rad.upenn.edu/sbia/software/basis/scripttargets/>
+# Build System Standard</a> for details.
+# Note, however, that source files are only configured if the file name
+# ends in the <tt>.in</tt> suffix.
+#
+# A custom CMake build target with the following properties is added by this
+# function to the build system. These properties are used by basis_build_script()
+# to generate a build script written in CMake code which is executed by a custom
+# CMake command. Before the invokation of basis_build_script(), the target
+# properties can be modified using basis_set_target_properties().
+#
+# @note Custom BASIS build targets are finalized by BASIS at the end of
+#       basis_project_impl(), i.e., the end of the root CMake configuration file
+#       of the (sub-)project.
+#
+# @par Properties on script targets
+# <table border=0>
+#   <tr>
+#     @tp @b BASIS_TYPE @endtp
+#     <td>Read-only property with value "SCRIPT_FILE" for arbitrary scripts,
+#         "SCRIPT_EXECUTABLE" for executable scripts, and "SCRIPT_LIBEXEC" for
+#          auxiliary executable scripts.
+#          (default: see @p MODULE, @p EXECUTABLE, @p LIBEXEC options)</td>
+#   </tr>
+#   <tr>
+#     @tp @b BASIS_UTILITIES @endtp
+#     <td>Whether the BASIS utilities are used by this script. For the supported
+#         scripting languages for which BASIS utilities are implemented, BASIS
+#         will in most cases automatically detect whether these utilities are
+#         used by a script or not. Otherwise, set this property manually or use
+#         either the @p USE_BASIS_UTILITIES or the @p NO_BASIS_UTILITIES option
+#         when adding the script target. (default: auto-detected or @c UNKNOWN)</td>
+#   </tr>
+#   <tr>
+#     @tp @b BINARY_DIRECTORY @endtp
+#     <td>Build tree directory of this target. (default: @c CMAKE_CURRENT_BINARY_DIR)</td>
+#   </tr>
+#   <tr>
+#     @tp @b COMPILE @endtp
+#     <td>Whether to compile the script if the programming language allows such
+#         pre-compilation as in case of Python, for example. If @c TRUE, only the
+#         compiled file is installed. (default: @c BASIS_COMPILE_SCRIPTS)</td>
+#   </tr>
+#   <tr>
+#     @tp @b COMPILE_DEFINITIONS @endtp
+#     <td>CMake code which is evaluated after the inclusion of the default script
+#         configuration files. This code can be used to set the replacement text of the
+#         CMake variables ("@VAR@" patterns) used in the source file.
+#         See <a href="http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets.html#script-configuration">
+#         Build System Standard</a> for details. (default: "")</td>
+#   </tr>
+#   <tr>
+#     @tp @b COMPONENT @endtp
+#     <td>Name of component as part of which this script is installed if
+#         @c INSTALL_DIRECTORY is not set to "none".
+#         (default: see @p COMPONENT argument)</td>
+#   </tr>
+#   <tr>
+#     @tp @b EXPORT @endtp
+#     <td>Whether to export this build target in which case an import library
+#         target is added to the custom exports file with the path to the
+#         built/installed script set as @c IMPORT_LOCATION. (default: @c TRUE)</td>
+#   </tr>
+#   <tr>
+#     @tp @b INSTALL_DIRECTORY @endtp
+#     <td>Installation directory of script file configured for use in installation tree
+#         relative to @c INSTALL_PREFIX. Set to "none" (case-insensitive) to skip the
+#         addition of an installation rule. (default: see @p DESTINATION argument)</td>
+#   </tr>
+#   <tr>
+#     @tp @b LANGUAGE @endtp
+#     <td>Read-only property of programming language of script file in uppercase letters.
+#         (default: see @p LANGUAGE argument)</td>
+#   </tr>
+#   <tr>
+#     @tp @b LINK_DEPENDS @endtp
+#     <td>Paths or target names of script modules and libraries used by this script.
+#         In case of an (auxiliary) executable script, the directories of these modules
+#         are added to the search path for modules of the given programming language
+#         if such search paths are supported by the language and BASIS knows how to set
+#         these (as in case of Python/Jython, Perl, and MATLAB, in particular).
+#         Moreover, for each listed build target a dependency is added between this
+#         script target and the named build targets. Use basis_target_link_libraries()
+#         to add additional link dependencies.
+#         (default: BASIS utilities module if used or empty list otherwise)</td>
+#   </tr>
+#   <tr>
+#     @tp @b OUTPUT_DIRECTORY @endtp
+#     <td>Output directory for built script file configured for use in build tree.
+#         (default: @c BINARY_LIBRARY_DIR for arbitrary scripts, @c BINARY_RUNTIME_DIR
+#         for executable scripts, and @c BINARY_LIBEXEC_DIR for auxiliary executables)</td>
+#   </tr>
+#   <tr>
+#     @tp @b OUTPUT_NAME @endtp
+#     <td>Name of built script file including file name extension (if any).
+#         (default: basename of script file for arbitrary scripts, without extension
+#         for executable scripts on Unix, and <tt>.cmd</tt> extension on Windows
+#         in case of executable Python/Jython or Perl script)</td>
+#   </tr>
+#   <tr>
+#     @tp @b SOURCE_DIRECTORY @endtp
+#     <td>Source directory of this target. (default: @c CMAKE_CURRENT_SOURCE_DIR)</td>
+#   </tr>
+#   <tr>
+#     @tp @b SOURCES @endtp
+#     <td>Read-only property which lists the source file of this script target.
+#         Note that the first element in this list actually names a directory
+#         in the build, the one where the build script for this target is located
+#         instead of a source file and thus should be ignored. The second entry
+#         corresponds to the source file of this script target.</td>
+#   </tr>
+# </table>
+#
+# @attention Properties documented as read-only must not be modified.
+#
+# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
+#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
+#       Moreover, no installation rules are added. Test executables are further
+#       not exported, regardless of the @c EXPORT property.
+#
+# @param [in] TARGET_NAME Name of build target. If an existing file is given as
+#                         argument, it is added to the list of source files and
+#                         the target name is derived from the name of this file.
+# @param [in] ARGN        The remaining arguments are parsed and the following arguments
+#                         recognized. All unparsed arguments are treated as source files,
+#                         where in particular exactly one source file is required if the
+#                         @p TARGET_NAME argument does not name an existing source file.
+# @par
+# <table border=0>
+#   <tr>
+#     @tp <b>MODULE</b>|<b>EXECUTABLE</b>|<b>LIBEXEC</b> @endtp
+#     <td>Type of script to built, i.e., either arbitrary module script which
+#         cannot be executed directly, an executable script with proper shebang
+#         directive and execute permissions on Unix or Windows Command on Windows,
+#         or an auxiliary executable. The type of the script mainly changes the
+#         default values of the target properties such as the output and installation
+#         directories. To add an (auxiliary) executable script, use
+#         basis_add_executable(), however, instead of this function.
+#         The @c EXECUTABLE and @c LIBEXEC options are only intended for
+#         internal use by BASIS. (default: MODULE)</td>
+#   </tr>
+#   <tr>
+#     @tp @b COMPONENT name @endtp
+#     <td>Name of installation component as part of which this script is being
+#         installed if the @c INSTALL_DIRECTORY property is not "none".
+#         (default: @c BASIS_LIBRARY_COMPONENT for arbitrary scripts or
+#         @c BASIS_RUNTIME_COMPONENT for executable scripts)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DESTINATION dir @endtp
+#     <td>Installation directory for script file relative to @c INSTALL_PREFIX.
+#         If an absolute path is given as argument, it is made relative to the
+#         configured installation prefix.
+#         (default: @c INSTALL_LIBRARY_DIR for arbitrary scripts,
+#         @c INSTALL_RUNTIME_DIR for executable scripts, and @c INSTALL_LIBEXEC_DIR
+#         for auxiliary executable scripts)</td>
+#   </tr>
+#   <tr>
+#     @tp @b LANGUAGE lang @endtp
+#     <td>Programming language in which script file is written (case-insensitive).
+#         If not specified, the programming language is derived from the file name
+#         extension of the source file and the shebang directive on the first line
+#         of the script if any. If the programming language could not be detected
+#         automatically, the @c LANGUAGE property is set to @c UNKNOWN. Note that
+#         for arbitrary script targets, the script file will still be built correctly
+#         even if the scripting language was not recognized. The automatic detection
+#         whether the BASIS utilities are used and required will fail, however.
+#         In this case, specify the programming language using this option.
+#         (default: auto-detected or @c UNKNOWN)</td>
+#   </tr>
+#   <tr>
+#     @tp @b [NO]EXPORT @endtp
+#     <td>Whether to export this target. (default: @c TRUE)</td>
+#   </tr>
+#   <tr>
+#     @tp @b NO_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are not used by this script. If the
+#         programming language of the script is known and BASIS utilities are
+#         available for this language, BASIS will in most cases automatically
+#         detect whether these utilities are used by a script or not. Use this
+#         option to skip this check because the script does not make use of the
+#         BASIS utilities.</td>
+#   </tr>
+#   <tr>
+#     @tp @b USE_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are used and thus required by this script.
+#         If the programming language of the script is known and BASIS utilities are
+#         available for this language, BASIS will in most cases automatically
+#         detect whether these utilities are used by a script or not. Use this option
+#         to skip this check because it is already known that the script makes use of
+#         the BASIS utilities. Note that an error is raised if this option is given,
+#         but no BASIS utilities are available for the programming language of this
+#         script or if the programming language is unknown, respectively, not detected
+#         correctly. In this case, consider the use of the @p LANGUAGE argument.</td>
+#   </tr>
+# </table>
+#
+# @returns Adds a custom CMake target with the documented properties. The actual custom
+#          command to build the script is added by basis_build_script().
+#
+# @ingroup CMakeAPI
+function (basis_add_script TARGET_NAME)
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "MODULE;EXECUTABLE;LIBEXEC;NO_BASIS_UTILITIES;USE_BASIS_UTILITIES;EXPORT;NOEXPORT"
+      "COMPONENT;DESTINATION;LANGUAGE"
+      ""
+    ${ARGN}
+  )
+  if (NOT ARGN_MODULE AND NOT ARGN_EXECUTABLE AND NOT ARGN_LIBEXEC)
+    set (ARGN_MODULE TRUE)
+  endif ()
+  if (ARGN_MODULE)
+    set (TYPE MODULE)
+  else ()
+    set (TYPE EXECUTABLE)
+  endif ()
+  string (TOLOWER "${TYPE}" type)
+  # derive target name from file name if existing source file given as first argument
+  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+  if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
+    set (SOURCES "${S}")
+    if (ARGN_MODULE)
+      basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME)
+    else ()
+      basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
+    endif ()
+  else ()
+    set (SOURCES)
+  endif ()
+  # check target name
+  basis_check_target_name ("${TARGET_NAME}")
+  basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding ${type} script ${TARGET_UID}...")
+  endif ()
+  if (ARGN_MODULE AND TYPE MATCHES "EXECUTABLE")
+    message (FATAL_ERROR "Target ${TARGET_UID}: MODULE and EXECUTABLE or LIBEXEC options are mutually exclusive!")
+  endif ()
+  # check/set parsed arguments
+  basis_set_flag (ARGN EXPORT ${BASIS_EXPORT})
+  if (ARGN_USE_BASIS_UTILITIES AND ARGN_NO_BASIS_UTILITIES)
+    message (FATAL_ERROR "Options USE_BASIS_UTILITIES and NO_BASIS_UTILITIES are mutually exclusive!")
+  endif ()
+  list (LENGTH ARGN_UNPARSED_ARGUMENTS N)
+  if (SOURCES)
+    math (EXPR N "${N} + 1")
+  endif ()
+  if (N GREATER 1)
+    if (NOT SOURCES)
+      list (REMOVE_AT ARGN_UNPARSED_ARGUMENTS 0)
+    endif ()
+    message (FATAL_ERROR "Target ${TARGET_UID}: Too many or unrecognized arguments: ${ARGN_UNPARSED_ARGUMENTS}!\n"
+                         " Only one script can be built by each script target.")
+  elseif (NOT SOURCES)
+    set (SOURCES "${ARGN_UNPARSED_ARGUMENTS}")
+    get_filename_component (SOURCES "${SOURCES}" ABSOLUTE)
+  endif ()
+  if (NOT EXISTS "${SOURCES}" AND NOT SOURCES MATCHES "\\.in$" AND EXISTS "${SOURCES}.in")
+    set (SOURCES "${SOURCES}.in")
+  endif ()
+  if (NOT EXISTS "${SOURCES}")
+    string (REGEX REPLACE "\\.in$" "" SOURCES "${SOURCES}")
+    message (FATAL_ERROR "Target ${TARGET_UID}: Source file ${SOURCES}[.in] does not exist!")
+  endif ()
+  # dump CMake variables for configuration of script
+  set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
+  basis_dump_variables ("${BUILD_DIR}/cache.cmake")
+  # auto-detect programming language (may be as well UNKNOWN)
+  if (ARGN_LANGUAGE)
+    string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
+  else ()
+    basis_get_source_language (ARGN_LANGUAGE ${SOURCES})
+  endif ()
+  # TEST flag
+  basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
+    set (TEST TRUE)
+  else ()
+    set (TEST FALSE)
+  endif ()
+  # default directory infix used below
+  if (ARGN_MODULE)
+    set (TYPE_INFIX "LIBRARY")
+  elseif (ARGN_LIBEXEC)
+    set (TYPE_INFIX "LIBEXEC")
+  else ()
+    set (TYPE_INFIX "RUNTIME")
+  endif ()
+  # output name
+  string (REGEX REPLACE "\\.in$" "" SOURCE_NAME "${SOURCES}")
+  if (ARGN_MODULE)
+    get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME)
+  else ()
+    if (WIN32)
+      if (ARGN_LANGUAGE MATCHES "[JP]YTHON|PERL")
+        get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME_WE)
+        set (OUTPUT_NAME "${OUTPUT_NAME}.cmd")
+      else ()
+        get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME)
+      endif ()
+    else ()
+      get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME_WE)
+    endif ()
+  endif ()
+  # output directory
+  if (TEST)
+    set (OUTPUT_DIRECTORY "${TESTING_${TYPE_INFIX}_DIR}")
+  else ()
+    set (OUTPUT_DIRECTORY "${BINARY_${TYPE_INFIX}_DIR}")
+  endif ()
+  # installation component
+  if (NOT ARGN_COMPONENT)
+    if (ARGN_MODULE)
+      set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+    else ()
+      set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+    endif ()
+  endif ()
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "Unspecified")
+  endif ()
+  # installation directory
+  if (ARGN_DESTINATION)
+    if (ARGN_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
+      set (ARGN_DESTINATION)
+    elseif (IS_ABSOLUTE "${ARGN_DESTINATION}")
+      file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
+    endif ()
+  elseif (TEST)
+    set (ARGN_DESTINATION) # do not install
+  else ()
+    set (ARGN_DESTINATION "${INSTALL_${TYPE_INFIX}_DIR}")
+  endif ()
+  # auto-detect use of BASIS utilities
+  set (LINK_DEPENDS)
+  if (ARGN_USE_BASIS_UTILITIES)
+    if (NOT BASIS_UTILITIES_ENABLED MATCHES "${ARGN_LANGUAGE}")
+      message (FATAL_ERROR "Target ${TARGET_UID} requires the BASIS utilities for ${ARGN_LANGUAGE}"
+                           " but BASIS was either build without the build of these utilities enabled"
+                           " or no utilities for this programming language are implemented. Remove the"
+                           " USE_BASIS_UTILITIES option if no BASIS utilities are used by the script"
+                           " ${SOURCES} or specify the correct programming language if it was not"
+                           " detected correctly.")
+    endif ()
+    set (USES_BASIS_UTILITIES TRUE)
+  elseif (NOT ARGN_NO_BASIS_UTILITIES AND NOT ARGN_LANGUAGE MATCHES "UNKNOWN")
+    basis_utilities_check (USES_BASIS_UTILITIES ${SOURCES} ${ARGN_LANGUAGE})
+  else ()
+    set (USES_BASIS_UTILITIES FALSE)
+  endif ()
+  if (USES_BASIS_UTILITIES)
+    basis_set_project_property (PROPERTY PROJECT_USES_${ARGN_LANGUAGE}_UTILITIES TRUE)
+    if (BASIS_DEBUG)
+      message ("** Target ${TARGET_UID} uses the BASIS utilities for ${ARGN_LANGUAGE}.")
+    endif ()
+  endif ()
+  # add custom target
+  add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
+  _set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      LANGUAGE            ${ARGN_LANGUAGE}
+      BASIS_TYPE          SCRIPT_${TYPE}
+      BASIS_UTILITIES     ${USES_BASIS_UTILITIES}
+      SOURCE_DIRECTORY    "${CMAKE_CURRENT_SOURCE_DIR}"
+      BINARY_DIRECTORY    "${CMAKE_CURRENT_BINARY_DIR}"
+      OUTPUT_DIRECTORY    "${OUTPUT_DIRECTORY}"
+      INSTALL_DIRECTORY   "${ARGN_DESTINATION}"
+      COMPONENT           "${ARGN_COMPONENT}"
+      OUTPUT_NAME         "${OUTPUT_NAME}"
+      COMPILE_DEFINITIONS ""
+      LINK_DEPENDS        "${LINK_DEPENDS}"
+      EXPORT              ${EXPORT}
+      COMPILE             ${BASIS_COMPILE_SCRIPTS}
+      TEST                ${TEST}
+      LIBEXEC             ${ARGN_LIBEXEC}
+  )
+  # add target to list of targets
+  basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding ${type} script ${TARGET_UID}... - done")
   endif ()
 endfunction ()
 
@@ -1015,7 +1443,7 @@ function (add_library TARGET_UID)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Adds an executable target built from C++ source code.
+## @brief Add executable built from C++ source code.
 #
 # @note This function should not be used directly. Instead, it is called
 #       by basis_add_executable() if the (detected) programming language
@@ -1025,182 +1453,166 @@ endfunction ()
 # C++ source code files. Refer to the documentation of basis_add_executable()
 # for a description of general options for adding an executable target.
 #
-# By default, the BASIS C++ utilities library is added as link dependency of
-# the executable target. If none of the BASIS C++ utilities are used by the
-# executable, the option NOUTILITIES can be given. To enable this option
-# by default, set the variable @c BASIS_UTILITIES to FALSE before the
-# basis_add_executable() commands, i.e., best in the Settings.cmake file located
-# in the @c PROJECT_CONFIG_DIR. Note, however, that the utilities library is a
-# static library and thus the linker would simply not include any of the BASIS
-# utilities object code in the final binary executable file if not used.
-# The only advantage is that if no target uses the utilities, the BASIS
-# utilities library is not being build.
+# By default, the BASIS C++ utilities library is added as link dependency.
+# If none of the BASIS C++ utilities are used by this target, the option
+# NO_BASIS_UTILITIES can be given. To enable this option by default, set the
+# variable @c BASIS_UTILITIES to @c FALSE, best in the <tt>Settings.cmake</tt>
+# file located in the @c PROJECT_CONFIG_DIR (add such file if missing).
+# If the use of the BASIS C++ utilities is disabled by default, the
+# @c USE_BASIS_UTILITIES option can be used to enable them for this target
+# only. Note that the utilities library is a static library and thus the linker
+# would simply not include any of the BASIS utility functions in the final
+# binary file if not used. The only advantage of setting @c BASIS_UTILITIES to
+# @c FALSE or to always specify @c NO_BASIS_UTILITIES if no target uses the
+# utilities is that the BASIS utilities library will not be build in this case.
 #
-# @param [in] TARGET_NAME Name of the target. If a source file is given
-#                         as first argument, the build target name is derived
-#                         from the name of this source file.
+# @param [in] TARGET_NAME Name of build target. If an existing file is given as
+#                         argument, it is added to the list of source files and
+#                         the target name is derived from the name of this file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted, all other arguments are
 #                         considered to be source code files and simply passed
 #                         on to CMake's add_executable() command.
 # @par
-# <table border="0">
+# <table border=0>
+#   <tr>
+#     @tp @b COMPONENT name @endtp
+#     <td>Name of component as part of which this executable will be installed
+#         if the specified @c DESTINATION is not "none".
+#         (default: @c BASIS_RUNTIME_COMPONENT)</td>
+#   </tr>
 #   <tr>
 #     @tp @b DESTINATION dir @endtp
 #     <td>Installation directory relative to @c INSTALL_PREFIX.
-#         If "none" (the case is ignored) is given as argument,
-#         no installation rules are added for this executable target.
-#         Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR
-#                  (if @p LIBEXEC is given).</td>
-#   </tr>
-#   <tr>
-#     @tp @b COMPONENT name @endtp
-#     <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT.</td>
+#         If "none" (case-insensitive) is given as argument, no default
+#         installation rules are added for this executable target.
+#         (default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR
+#         if @p LIBEXEC is given)</td>
 #   </tr>
 #   <tr>
 #     @tp @b LIBEXEC @endtp
-#     <td>Specifies that the built executable is an auxiliary executable
-#         which is only called by other executable.</td>
+#     <td>Specifies that the built executable is an auxiliary executable which
+#         is only called by other executables. (default: @c FALSE)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOUTILITIES @endtp
-#     <td>Do not add the BASIS utilities as link dependency.</td>
+#     @tp @b [NO]EXPORT @endtp
+#     <td>Whether to export this target. (default: @c TRUE)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOEXPORT @endtp
-#     <td>Do not export the target.</td>
+#     @tp @b NO_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are not used by this executable and hence
+#         no link dependency on the BASIS utilities library shall be added.
+#         (default: @c NOT @c BASIS_UTILITIES)</td>
+#   </tr>
+#   <tr>
+#     @tp @b USE_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are used and required by this executable
+#         and hence a link dependency on the BASIS utilities library has to be added.
+#         (default: @c BASIS_UTILITIES)</td>
 #   </tr>
 # </table>
 #
-# @returns Adds an executable build target built from C++ sources.
+# @returns Adds executable target using CMake's add_executable() command.
 #
 # @sa basis_add_executable()
-# @sa basis_install()
 function (basis_add_executable_target TARGET_NAME)
-  # parse arguments
-  CMAKE_PARSE_ARGUMENTS (
-    ARGN
-    "LIBEXEC;TEST;NOUTILITIES;NOEXPORT"
-    "DESTINATION;COMPONENT"
-    ""
-    ${ARGN}
-  )
-
-  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
-  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
-    set (ARGN_TEST TRUE)
-  else ()
-    if (ARGN_TEST)
-      message (FATAL_ERROR "Executable ${TARGET_NAME} cannot have TEST property!"
-                           "If it is a test executable, put it in ${PROJECT_TESTING_DIR}.")
-    endif ()
-    set (ARGN_TEST FALSE)
-  endif ()
-
-  set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
-
+  # derive target name from file name if existing source file given as first argument
   get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
-  if (NOT SOURCES OR EXISTS "${S}" OR EXISTS "${S}.in")
-    list (INSERT SOURCES 0 "${TARGET_NAME}")
+  if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
+    set (SOURCES "${S}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
+  else ()
+    set (SOURCES)
   endif ()
-
   # check target name
   basis_check_target_name (${TARGET_NAME})
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
-
-  # component
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
-  endif ()
-
-  # installation directory
-  if (NOT ARGN_DESTINATION)
-    if (ARGN_LIBEXEC)
-      set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
-    else ()
-      set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
-    endif ()
-  endif ()
-
   if (BASIS_VERBOSE)
     message (STATUS "Adding executable ${TARGET_UID}...")
   endif ()
-
-  # configure .in source files
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+    "USE_BASIS_UTILITIES;NO_BASIS_UTILITIES;EXPORT;NOEXPORT;LIBEXEC;TEST" # TEST option is deprecated
+    "COMPONENT;DESTINATION"
+    ""
+    ${ARGN}
+  )
+  list (APPEND SOURCES ${ARGN_UNPARSED_ARGUMENTS})
+  basis_set_flag (ARGN EXPORT  ${BASIS_EXPORT})
+  if (ARGN_USE_BASIS_UTILITIES AND ARGN_NO_BASIS_UTILITIES)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Options USE_BASIS_UTILITIES and NO_BASIS_UTILITIES are mutually exclusive!")
+  endif ()
+  if (ARGN_USE_BASIS_UTILITIES)
+    set (USES_BASIS_UTILITIES TRUE)
+  elseif (ARGN_NO_BASIS_UTILITIES)
+    set (USES_BASIS_UTILITIES FALSE)
+  else ()
+    set (USES_BASIS_UTILITIES ${BASIS_UTILITIES})
+  endif ()
+  # TEST flag
+  basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
+    set (TEST TRUE)
+  else ()
+    if (ARGN_TEST)
+      message (FATAL_ERROR "Target ${TARGET_UID}: Executable cannot have TEST property!"
+                           "If it is a test executable, put it's sources in the ${PROJECT_TESTING_DIR} directory.")
+    endif ()
+    set (TEST FALSE)
+  endif ()
+  # installation component
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+  endif ()
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "Unspecified")
+  endif ()
+  # installation directory
+  if (ARGN_DESTINATION)
+    if (ARGN_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
+      set (ARGN_DESTINATION)
+    elseif (IS_ABSOLUTE "${ARGN_DESTINATION}")
+      file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
+    endif ()
+  elseif (ARGN_LIBEXEC)
+    set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
+  else ()
+    set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
+  endif ()
+  # configure (.in) source files
   basis_configure_sources (SOURCES ${SOURCES})
-
   # add executable target
   add_executable (${TARGET_UID} ${SOURCES})
-
   basis_make_target_uid (HEADERS_TARGET headers)
   if (TARGET "${HEADERS_TARGET}")
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
-
-  # target properties
-  _set_target_properties (
-    ${TARGET_UID}
-    PROPERTIES
-      BASIS_TYPE  "EXECUTABLE"
-      OUTPUT_NAME "${TARGET_NAME}"
-  )
-
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" OUTPUT_NAME "${TARGET_NAME}")
   if (ARGN_LIBEXEC)
-    _set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        LIBEXEC             1
-        COMPILE_DEFINITIONS "LIBEXEC"
-    )
+    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC)
   else ()
     _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
   endif ()
-  if (ARGN_TEST)
-    _set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
-  else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
-  endif ()
-
+  _set_target_properties (${TARGET_UID} PROPERTIES TEST ${TEST})
   # output directory
-  if (ARGN_TEST)
+  if (TEST)
     if (ARGN_LIBEXEC)
-      _set_target_properties (
-        ${TARGET_UID}
-        PROPERTIES
-          RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}"
-      )
+      _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
     else ()
-      _set_target_properties (
-        ${TARGET_UID}
-        PROPERTIES
-          RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}"
-      )
+      _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
     endif ()
   elseif (ARGN_LIBEXEC)
-    _set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}"
-    )
+    _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}")
   else ()
-    _set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        LIBEXEC 0
-        RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}"
-    )
+    _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
   endif ()
-
-  # add default link dependencies
-  if (NOT BASIS_UTILITIES)
-    set (ARGN_NOUTILITIES TRUE)
-  endif ()
-  if (NOT ARGN_NOUTILITIES)
-    if (NOT TARGET ${BASIS_UTILITIES_LIBRARY})
-      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
-                           " but BASIS was build without C++ utilities enabled."
-                           " Either specify the option NOUTILITIES, set the global"
+  # link to BASIS utilities
+  if (USES_BASIS_UTILITIES)
+    if (NOT TARGET ${BASIS_CXX_UTILITIES_LIBRARY})
+      message (FATAL_ERROR "Target ${TARGET_UID} seems to make use of the BASIS C++"
+                           " utilities but BASIS was built without C++ utilities enabled."
+                           " Either specify the option NO_BASIS_UTILITIES, set the global"
                            " variable BASIS_UTILITIES to FALSE"
                            " (in ${PROJECT_CONFIG_DIR}/Settings.cmake) or"
                            " rebuild BASIS with C++ utilities enabled.")
@@ -1208,49 +1620,43 @@ function (basis_add_executable_target TARGET_NAME)
     # add project-specific library target if not present yet
     basis_add_utilities_library (BASIS_UTILITIES_TARGET)
     # non-project specific utilities build as part of BASIS
-    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
+    basis_target_link_libraries (${TARGET_UID} ${BASIS_CXX_UTILITIES_LIBRARY})
     # project-specific utilities build as part of this project
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
-
-  # install executable and/or export target
-  if (ARGN_TEST)
-
-    # TODO install (selected?) tests
-
-    if (NOT ARGN_NOEXPORT)
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES ${USES_BASIS_UTILITIES})
+  # export target
+  set (EXPORT_OPT)
+  if (EXPORT)
+    if (TEST)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
-    endif ()
-
-  else ()
-
-    if (ARGN_NOEXPORT)
-      set (EXPORT_OPT)
     else ()
-      set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
       basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
+      set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}") # for install() below
     endif ()
-
-    install (
-      TARGETS     ${TARGET_UID} ${EXPORT_OPT}
-      DESTINATION "${ARGN_DESTINATION}"
-      COMPONENT   "${ARGN_COMPONENT}"
-    )
-
-    _set_target_properties (
-      ${TARGET_UID}
-      PROPERTIES
-        RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
-    )
   endif ()
-
+  # installation
+  if (ARGN_DESTINATION)
+    if (TEST)
+      # TODO install (selected?) tests
+    else ()
+      install (
+        TARGETS ${TARGET_UID} ${EXPORT_OPT}
+        DESTINATION "${ARGN_DESTINATION}"
+        COMPONENT   "${ARGN_COMPONENT}"
+      )
+    endif ()
+    # the following property is used by basis_get_target_location()
+    _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}")
+  endif ()
+  # done
   if (BASIS_VERBOSE)
     message (STATUS "Adding executable ${TARGET_UID}... - done")
   endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Add build target for library built from C++ source code.
+## @brief Add library built from C++ source code.
 #
 # @note This function should not be used directly. Instead, it is called
 #       by basis_add_library() if the (detected) programming language
@@ -1261,114 +1667,199 @@ endfunction ()
 # code files. Refer to the documentation of basis_add_library() for a
 # description of the general options for adding a library target.
 #
-# By default, the BASIS C++ utilities library is added as link dependency of
-# the executable target. If none of the BASIS C++ utilities are used by the
-# executable, the option NOUTILITIES can be given. To enable this option
-# by default, set the variable @c BASIS_UTILITIES to FALSE before the
-# basis_add_executable() commands, i.e., best in the Settings.cmake file located
-# in the @c PROJECT_CONFIG_DIR. Note, however, that the utilities library is a
-# static library and thus the linker would simply not include any of the BASIS
-# utilities object code in the final binary executable file if not used.
-# The only advantage is that if no target uses the utilities, the BASIS
-# utilities library is not being build.
+# By default, the BASIS C++ utilities library is added as link dependency.
+# If none of the BASIS C++ utilities are used by this target, the option
+# NO_BASIS_UTILITIES can be given. To enable this option by default, set the
+# variable @c BASIS_UTILITIES to @c FALSE, best in the <tt>Settings.cmake</tt>
+# file located in the @c PROJECT_CONFIG_DIR (add such file if missing).
+# If the use of the BASIS C++ utilities is disabled by default, the
+# @c USE_BASIS_UTILITIES option can be used to enable them for this target
+# only. Note that the utilities library is a static library and thus the linker
+# would simply not include any of the BASIS utility functions in the final
+# binary file if not used. The only advantage of setting @c BASIS_UTILITIES to
+# @c FALSE or to always specify @c NO_BASIS_UTILITIES if no target uses the
+# utilities is that the BASIS utilities library will not be build in this case.
 #
-# @param [in] TARGET_NAME Name of the target. If a source file is given
-#                         as first argument, the build target name is derived
-#                         from the name of this source file.
+# @param [in] TARGET_NAME Name of build target. If an existing file is given as
+#                         argument, it is added to the list of source files and
+#                         the target name is derived from the name of this file.
 # @param [in] ARGN        This argument list is parsed and the following
 #                         arguments are extracted. All other arguments are
 #                         considered to be source code files and simply
 #                         passed on to CMake's add_library() command.
 # @par
-# <table border="0">
+# <table border=0>
 #   <tr>
 #     @tp <b>STATIC</b>|<b>SHARED</b>|<b>MODULE</b> @endtp
-#     <td>Type of the library.</td>
+#     <td>Type of the library. (default: @c SHARED if @c BUILD_SHARED_LIBS
+#         evaluates to true or @c STATIC otherwise)</td>
+#   </tr>
+#   <tr>
+#     @tp @b COMPONENT name @endtp
+#     <td>Name of component as part of which this library will be installed
+#         if either the @c RUNTIME_INSTALL_DIRECTORY or
+#         @c LIBRARY_INSTALL_DIRECTORY property is not "none". Used only if
+#         either @p RUNTIME_COMPONENT or @p LIBRARY_COMPONENT not specified.
+#         (default: see @p RUNTIME_COMPONENT and @p LIBRARY_COMPONENT)</td>
 #   </tr>
 #   <tr>
 #     @tp @b DESTINATION dir @endtp
-#     <td>Installation directory for runtime and library component
-#         relative to @c INSTALL_PREFIX. See @p RUNTIME_DESTINATION
-#         and @p LIBRARY_DESTINATION.</td>
+#     <td>Installation directory for runtime and library component relative
+#         to @c INSTALL_PREFIX. Used only if either @p RUNTIME_DESTINATION
+#         or @p LIBRARY_DESTINATION not specified. If "none" (case-insensitive)
+#         is given as argument, no default installation rules are added.
+#         (default: see @p RUNTIME_DESTINATION and @p LIBRARY_DESTINATION)</td>
 #   </tr>
 #   <tr>
-#     @tp @b RUNTIME_DESTINATION dir @endtp
-#     <td>Installation directory of the runtime component relative to
-#         @c INSTALL_PREFIX. If "none" (case ignored) is given as argument,
-#         no installation rule for the runtime library is not added.
-#         Default: @c INSTALL_LIBRARY_DIR on Unix or @c INSTALL_RUNTIME_DIR
-#         on Windows.</td>
+#     @tp @b LIBRARY_COMPONENT name @endtp
+#     <td>Name of component as part of which import/static library will be intalled
+#         if @c LIBRARY_INSTALL_DIRECTORY property is not "none".
+#         (default: @c COMPONENT if specified or @c BASIS_LIBRARY_COMPONENT otherwise)</td>
 #   </tr>
 #   <tr>
 #     @tp @b LIBRARY_DESTINATION dir @endtp
 #     <td>Installation directory of the library component relative to
-#         @c INSTALL_PREFIX. If "none" (case ignored) is given as argument,
+#         @c INSTALL_PREFIX. If "none" (case-insensitive) is given as argument,
 #         no installation rule for the library component is added.
-#         Default: @c INSTALL_ARCHIVE_DIR.</td>
-#   </tr>
-#   <tr>
-#     @tp @b COMPONENT name @endtp
-#     <td>Name of the component. Default: @c BASIS_LIBRARY_COMPONENT.</td>
+#         (default: @c INSTALL_ARCHIVE_DIR)</td>
 #   </tr>
 #   <tr>
 #     @tp @b RUNTIME_COMPONENT name @endtp
-#     <td>Name of runtime component. Default: @c COMPONENT if specified or
-#         @c BASIS_RUNTIME_COMPONENT, otherwise.</td>
+#     <td>Name of component as part of which runtime library will be installed
+#         if @c RUNTIME_INSTALL_DIRECTORY property is not "none".
+#         (default: @c COMPONENT if specified or @c BASIS_RUNTIME_COMPONENT otherwise)</td>
 #   </tr>
 #   <tr>
-#     @tp @b LIBRARY_COMPONENT name @endtp
-#     <td>Name of library component. Default: @c COMPONENT if specified or
-#         @c BASIS_LIBRARY_COMPONENT, otherwise.</td>
+#     @tp @b RUNTIME_DESTINATION dir @endtp
+#     <td>Installation directory of the runtime component relative to
+#         @c INSTALL_PREFIX. If "none" (case-insensitive) is given as argument,
+#         no installation rule for the runtime library is added.
+#         (default: @c INSTALL_LIBRARY_DIR on Unix or @c INSTALL_RUNTIME_DIR Windows)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOUTILITIES @endtp
-#     <td>Do not add the BASIS utilities as link dependency.</td>
+#     @tp @b [NO]EXPORT @endtp
+#     <td>Whether to export this target. (default: @c TRUE)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOEXPORT @endtp
-#     <td>Do not export build target.</td>
+#     @tp @b NO_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are not used by this executable and hence
+#         no link dependency on the BASIS utilities library shall be added.
+#         (default: @c NOT BASIS_UTILITIES)</td>
+#   </tr>
+#   <tr>
+#     @tp @b USE_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are used and required by this executable
+#         and hence a link dependency on the BASIS utilities library shall be added.
+#         (default: @c BASIS_UTILITIES)</td>
 #   </tr>
 # </table>
 #
-# @returns Adds a library build target.
+# @returns Adds library target using CMake's add_library() command.
+#
+# @sa basis_add_library()
 function (basis_add_library_target TARGET_NAME)
-  # parse arguments
-  CMAKE_PARSE_ARGUMENTS (
-    ARGN
-      "STATIC;SHARED;MODULE;NOUTILITIES;NOEXPORT"
-      "DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT"
-      ""
-    ${ARGN}
-  )
+  # On UNIX-based systems setting the VERSION property only creates
+  # annoying files with the version string as suffix.
+  # Moreover, MEX-files may NEVER have a suffix after the MEX extension!
+  # Otherwise, the MATLAB Compiler when using the symbolic link
+  # without this suffix will create code that fails on runtime
+  # with an .auth file missing error.
+  #
+  # Thus, do NOT set VERSION and SOVERSION properties on library targets!
 
-  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
-  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
-    set (ARGN_TEST TRUE)
-  else ()
-    set (ARGN_TEST FALSE)
-  endif ()
-
-  set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
-
+  # derive target name from file name if existing source file given as first argument
   get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
-  if (NOT SOURCES OR EXISTS "${S}")
-    list (INSERT SOURCES 0 "${TARGET_NAME}")
+  if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
+    set (SOURCES "${S}")
     basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
+  else ()
+    set (SOURCES)
   endif ()
-
   # check target name
   basis_check_target_name (${TARGET_NAME})
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
-
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "STATIC;SHARED;MODULE;USE_BASIS_UTILITIES;NO_BASIS_UTILITIES;EXPORT;NOEXPORT"
+      "COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION"
+      ""
+    ${ARGN}
+  )
+  if (ARGN_UNPARSED_ARGUMENTS)
+    list (APPEND SOURCES ${ARGN_UNPARSED_ARGUMENTS})
+  endif ()
+  basis_set_flag (ARGN EXPORT ${BASIS_EXPORT})
+  if (ARGN_USE_BASIS_UTILITIES AND ARGN_NO_BASIS_UTILITIES)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Options USE_BASIS_UTILITIES and NO_BASIS_UTILITIES are mutually exclusive!")
+  endif ()
+  if (ARGN_USE_BASIS_UTILITIES)
+    set (USES_BASIS_UTILITIES TRUE)
+  elseif (ARGN_NO_BASIS_UTILITIES)
+    set (USES_BASIS_UTILITIES FALSE)
+  else ()
+    set (USES_BASIS_UTILITIES ${BASIS_UTILITIES})
+  endif ()
+  # TEST flag
+  basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
+    set (TEST TRUE)
+  else ()
+    set (TEST FALSE)
+  endif ()
   # library type
   if (NOT ARGN_SHARED AND NOT ARGN_STATIC AND NOT ARGN_MODULE)
     if (BUILD_SHARED_LIBS)
-      set (ARGN_SHARED 1)
+      set (ARGN_SHARED TRUE)
     else ()
-      set (ARGN_STATIC 1)
+      set (ARGN_STATIC TRUE)
     endif ()
   endif ()
-
+  set (TYPE)
+  if (ARGN_STATIC)
+    if (TYPE)
+      message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}!")
+    endif ()
+    set (TYPE "STATIC")
+  endif ()
+  if (ARGN_SHARED)
+    if (TYPE)
+      message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}!")
+    endif ()
+    set (TYPE "SHARED")
+  endif ()
+  if (ARGN_MODULE)
+    if (TYPE)
+      message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}!")
+    endif ()
+    set (TYPE "MODULE")
+  endif ()
+  string (TOLOWER "${TYPE}" type)
+  # status message
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding ${type} library ${TARGET_UID}...")
+  endif ()
+  # installation component
+  if (ARGN_COMPONENT)
+    if (NOT ARGN_RUNTIME_COMPONENT)
+      set (ARGN_RUNTIME_COMPONENT "${ARGN_COMPONENT}")
+    endif ()
+    if (NOT ARGN_LIBRARY_COMPONENT)
+      set (ARGN_LIBRARY_COMPONENT "${ARGN_COMPONENT}")
+    endif ()
+  endif ()
+  if (NOT ARGN_RUNTIME_COMPONENT)
+    set (ARGN_RUNTIME_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
+  endif ()
+  if (NOT ARGN_RUNTIME_COMPONENT)
+    set (ARGN_RUNTIME_COMPONENT "Unspecified")
+  endif ()
+  if (NOT ARGN_LIBRARY_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+  endif ()
+  if (NOT ARGN_LIBRARY_COMPONENT)
+    set (ARGN_LIBRARY_COMPONENT "Unspecified")
+  endif ()
   # installation directories
   if (ARGN_DESTINATION)
     if (NOT ARGN_STATIC AND NOT ARGN_RUNTIME_DESTINATION)
@@ -1384,79 +1875,23 @@ function (basis_add_library_target TARGET_NAME)
   if (NOT ARGN_LIBRARY_DESTINATION)
     set (ARGN_LIBRARY_DESTINATION "${INSTALL_LIBRARY_DIR}")
   endif ()
-
-  if (ARGN_STATIC OR ARGN_RUNTIME_DESTINATION MATCHES "^none$|^None$|^NONE$")
+  if (ARGN_STATIC OR ARGN_RUNTIME_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
     set (ARGN_RUNTIME_DESTINATION)
   endif ()
-  if (ARGN_NOEXPORT OR ARGN_LIBRARY_DESTINATION MATCHES "^none$|^None$|^NONE$")
+  if (ARGN_LIBRARY_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
     set (ARGN_LIBRARY_DESTINATION)
   endif ()
-
-  # component
-  if (ARGN_COMPONENT)
-    if (NOT ARGN_RUNTIME_COMPONENT)
-      set (ARGN_RUNTIME_COMPONENT "${ARGN_COMPONENT}")
-    endif ()
-    if (NOT ARGN_LIBRARY_COMPONENT)
-      set (ARGN_LIBRARY_COMPONENT "${ARGN_COMPONENT}")
-    endif ()
-  endif ()
-  if (NOT ARGN_RUNTIME_COMPONENT)
-    set (ARGN_RUNTIME_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
-  endif ()
-  if (NOT ARGN_LIBRARY_COMPONENT)
-    set (ARGN_LIBRARY_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
-  endif ()
-
-  # status message
-  if (ARGN_STATIC)
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding static library ${TARGET_UID}...")
-    endif ()
-    if (TYPE)
-      message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}.")
-    endif ()
-    set (TYPE "STATIC")
-  endif ()
-  if (ARGN_SHARED)
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding shared library ${TARGET_UID}...")
-    endif ()
-    if (TYPE)
-      message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}.")
-    endif ()
-    set (TYPE "SHARED")
-  endif ()
-  if (ARGN_MODULE)
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding module ${TARGET_UID}...")
-    endif ()
-    if (TYPE)
-      message (FATAL_ERROR "More than one library type specified for target ${TARGET_UID}.")
-    endif ()
-    set (TYPE "MODULE")
-  endif ()
-
-  # configure .in source files
+  # configure (.in) source files
   basis_configure_sources (SOURCES ${SOURCES})
-
   # add library target
   add_library (${TARGET_UID} ${TYPE} ${SOURCES})
-
   basis_make_target_uid (HEADERS_TARGET headers)
   if (TARGET ${HEADERS_TARGET})
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
-
-  _set_target_properties (
-    ${TARGET_UID}
-    PROPERTIES
-      BASIS_TYPE "${TYPE}_LIBRARY"
-      OUTPUT_NAME "${TARGET_NAME}"
-  )
-
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" OUTPUT_NAME "${TARGET_NAME}")
   # output directory
-  if (ARGN_TEST)
+  if (TEST)
     _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
@@ -1473,16 +1908,12 @@ function (basis_add_library_target TARGET_NAME)
         ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
     )
   endif ()
-
-  # add default link dependencies
-  if (NOT BASIS_UTILITIES)
-    set (ARGN_NOUTILITIES TRUE)
-  endif ()
-  if (NOT ARGN_NOUTILITIES)
-    if (NOT TARGET ${BASIS_UTILITIES_LIBRARY})
+  # link to BASIS utilities
+  if (USES_BASIS_UTILITIES)
+    if (NOT TARGET ${BASIS_CXX_UTILITIES_LIBRARY})
       message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
                            " but BASIS was build without C++ utilities enabled."
-                           " Either specify the option NOUTILITIES, set the global"
+                           " Either specify the option NO_BASIS_UTILITIES, set the global"
                            " variable BASIS_UTILITIES to FALSE"
                            " (in ${PROJECT_CONFIG_DIR}/Settings.cmake) or"
                            " rebuild BASIS with C++ utilities enabled.")
@@ -1490,39 +1921,26 @@ function (basis_add_library_target TARGET_NAME)
     # add project-specific library target if not present yet
     basis_add_utilities_library (BASIS_UTILITIES_TARGET)
     # non-project specific utilities build as part of BASIS
-    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
+    basis_target_link_libraries (${TARGET_UID} ${BASIS_CXX_UTILITIES_LIBRARY})
     # project-specific utilities build as part of this project
     basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
   endif ()
-
-  # target version information
-  #
-  # Note:      On UNIX-based systems this only creates annoying files with the
-  #            version string as suffix.
-  # Attention: MEX-files may NEVER have a suffix after the MEX extension!
-  #            Otherwise, the MATLAB Compiler when using the symbolic link
-  #            without this suffix will create code that fails on runtime
-  #            with an .auth file missing error.
-  #
-  # Thus, do NOT set VERSION and SOVERSION properties.
-
-  # install library
-  if (ARGN_TEST)
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES ${USES_BASIS_UTILITIES})
+  # installation
+  if (TEST)
     # TODO At the moment, no tests are installed. Once there is a way to
     #      install selected tests, the shared libraries they depend on
     #      need to be installed as well.
-
-    if (NOT ARGN_NOEXPORT)
+    if (EXPORT)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
     endif ()
   else ()
-    if (ARGN_NOEXPORT)
-      set (EXPORT_OPT)
-    else ()
+    if (EXPORT)
       set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
       basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
+    else ()
+      set (EXPORT_OPT)
     endif ()
-
     if (ARGN_RUNTIME_DESTINATION)
       install (
         TARGETS ${TARGET_UID} ${EXPORT_OPT}
@@ -1530,8 +1948,9 @@ function (basis_add_library_target TARGET_NAME)
           DESTINATION "${ARGN_RUNTIME_DESTINATION}"
           COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
       )
+      # the following property is used by basis_get_target_location()
+      _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_INSTALL_DIRECTORY "${ARGN_RUNTIME_DESTINATION}")
     endif ()
-
     if (ARGN_LIBRARY_DESTINATION)
       install (
         TARGETS ${TARGET_UID} ${EXPORT_OPT}
@@ -1542,570 +1961,509 @@ function (basis_add_library_target TARGET_NAME)
           DESTINATION "${ARGN_LIBRARY_DESTINATION}"
           COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
       )
+      # the following property is used by basis_get_target_location()
+      _set_target_properties (${TARGET_UID} PROPERTIES LIBRARY_INSTALL_DIRECTORY "${ARGN_LIBRARY_DESTINATION}")
     endif ()
   endif ()
-
   # done
   if (BASIS_VERBOSE)
-    if (ARGN_STATIC)
-      message (STATUS "Adding static library ${TARGET_UID}... - done")
-    elseif (ARGN_SHARED)
-      message (STATUS "Adding shared library ${TARGET_UID}... - done")
-    elseif (ARGN_MODULE)
-      message (STATUS "Adding module ${TARGET_UID}... - done")
-    endif ()
+    message (STATUS "Adding ${type} library ${TARGET_UID}... - done")
   endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Add script target.
+## @brief Add script library target.
 #
-# If the script name ends in ".in", the ".in" suffix is removed from the
-# output name. Further, the extension of the script such as .sh or .py is
-# removed from the output filename of executable scripts. On Unix, a shebang
-# directive is added to executable scripts at the top of the script files
-# instead if such directive is not given yet. In order to enable the convenient
-# execution of Python and Perl scripts on Windows as well, some Batch code
-# is added at the top and bottom of executable Python and Perl scripts which
-# calls the Python or Perl interpreter with the script file and the given
-# script arguments as command-line arguments. The file name extension of
-# such modified scripts is by default set to <tt>.cmd</tt>, the common
-# extension for Windows NT Command Scripts. Scripts in other languages are
-# not specifically modified. In case of script modules, the script file name
-# extension is preserved in any case. When the @c WITH_EXT option is given,
-# executable scripts are not modified as described and their file name
-# extension is preserved.
+# @note This function should not be used directly. Instead, it is called
+#       by basis_add_library() if the (detected) programming language
+#       of the given source code files is neither @c CXX (i.e., C/C++) nor
+#       @c MATLAB.
 #
-# Example:
-# @code
-# basis_add_script (MyShellScript.sh.in)
-# basis_add_script (Script Script1.sh)
-# @endcode
+# This function adds a build target for libraries which are a collection of
+# one or more modules written in a scripting language. The relative paths
+# of the modules relative to the library's @p SOURCE_DIRECTORY property are
+# preserved. This is important for the most widely used scripting languages
+# such as Python, Perl, or MATLAB, where the file path relative to the
+# package root directory defines the package namespace.
 #
-# Certain CMake variables within the script are replaced during the configure step.
+# A custom CMake build target with the following properties is added by this
+# function to the build system. These properties are used by
+# basis_build_script_library() to generate a build script written in CMake
+# code which is executed by a custom CMake command. Before the invokation of
+# basis_build_script_library(), the target properties can be modified using
+# basis_set_target_properties().
 #
-# @sa http://www.rad.upenn.edu/sbia/software/basis/scripttargets/
+# @note Custom BASIS build targets are finalized by BASIS at the end of
+#       basis_project_impl(), i.e., the end of the root CMake configuration file
+#       of the (sub-)project.
 #
-# Note that this function only configures the script file if it ends in the ".in"
-# suffix and adds a custom target which stores all information required to setup
-# the actual custom build command as properties. The custom build command itself
-# is added by basis_add_script_finalize(), which is supposed to be called once at
-# the end of the root CMakeLists.txt file. This way properties such as the
-# @c OUTPUT_NAME can still be modified after adding the script target.
-#
-# @note If this function is used within the @c PROJECT_TESTING_DIR, the built
-#       executable is output to the @c BINARY_TESTING_DIR directory tree instead.
-#       Moreover, no installation rules are added. Test executables are further
-#       not exported, regardless of whether NOEXPORT is given or not.
-#
-# @note This function should not be used directly. Instead, the functions
-#       basis_add_executable() and basis_add_library() should be used which in
-#       turn make use of this function if the (detected) programming language
-#       is a (supported) scripting language.
-#
-# @param [in] TARGET_NAME Name of the target. If the target is build from a
-#                         single source file, the file path of this source file
-#                         can be given as first argument. The build target name
-#                         is then derived from the name of the source file.
-# @param [in] ARGN        This argument list is parsed and the following
-#                         arguments are extracted:
-# @par
-# <table border="0">
+# @par Properties on script library targets
+# <table border=0>
 #   <tr>
-#      @tp @b COMPONENT name @endtp
-#      <td>Name of the component. Default: @c BASIS_RUNTIME_COMPONENT for
-#          executable scripts or @c BASIS_LIBRARY_COMPONENT for modules.</td>
+#     @tp @b BASIS_TYPE @endtp
+#     <td>Read-only property with value "SCRIPT_LIBRARY" for script library targets.</td>
 #   </tr>
 #   <tr>
-#      @tp @b CONFIG config @endtp
-#      <td>Additional script configuration given directly as string argument.
-#          This string is included in the CMake build script before configuring
-#          the script file after the script configuration files have been included.</td>
+#     @tp @b BASIS_UTILITIES @endtp
+#     <td>Whether the BASIS utilities are used by any module of this library.
+#         For the supported scripting languages for which BASIS utilities are
+#         implemented, BASIS will in most cases automatically detect whether
+#         these utilities are used by a module or not. Otherwise, set this
+#         property manually or use either the @p USE_BASIS_UTILITIES or the
+#         @p NO_BASIS_UTILITIES option when adding the library target.
+#         (default: auto-detected or @c UNKNOWN)</td>
 #   </tr>
 #   <tr>
-#      @tp @b CONFIG_FILE file @endtp
-#      <td>Additional script configuration file. This file is included after
-#          the default script configuration file of BASIS and after the default
-#          script configuration file which is located in @c PROJECT_BINARY_DIR,
-#          but before the script configuration code given by @p CONFIG.</td>
+#     @tp @b BINARY_DIRECTORY @endtp
+#     <td>Build tree directory of this target. (default: @c CMAKE_CURRENT_BINARY_DIR)</td>
 #   </tr>
 #   <tr>
-#      @tp @b DESTINATION dir @endtp
-#      <td>The installation directory relative to @c INSTALL_PREFIX.
-#          Default: @c INSTALL_RUNTIME_DIR or @c INSTALL_LIBEXEC_DIR if
-#                   the @p LIBEXEC option is given or @c INSTALL_LIBRARY_DIR
-#                   if the @p MODULE option is given.</td>
+#     @tp @b COMPILE @endtp
+#     <td>Whether to compile the library, respectively, it's modules if the
+#         programming language allows such pre-compilation as in case of Python,
+#         for example. If @c TRUE, only the compiled files are installed.
+#         (default: @c BASIS_COMPILE_SCRIPTS)</td>
 #   </tr>
 #   <tr>
-#     @tp @b LIBEXEC @endtp
-#     <td>Specifies that the built executable is an auxiliary executable
-#         which is only called by other executable.</td>
+#     @tp @b COMPILE_DEFINITIONS @endtp
+#     <td>CMake code which is evaluated after the inclusion of the default script
+#         configuration files. This code can be used to set the replacement text of the
+#         CMake variables ("@VAR@" patterns) used in the source files.
+#         See <a href="http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets.html#script-configuration">
+#         Build System Standard</a> for details. (default: "")</td>
 #   </tr>
 #   <tr>
-#      @tp @b MODULE @endtp
-#      <td>Specifies that the script is a module file which is included by
-#          other scripts. Implies @p LIBEXEC regarding installation directory and
-#          preserves file name extension on all platforms. It can be used,
-#          for example, for Python modules that are to be imported only by other
-#          Python scripts.
-#
-#          Note that this option can also be used for arbitrary text files
-#          which are used as input to a program, not only actual modules written
-#          in a scripting language.</td>
+#     @tp @b EXPORT @endtp
+#     <td>Whether to export this build target in which case an import library
+#         target is added to the custom exports file with the path to the
+#         built/installed modules set as @c IMPORT_LOCATION. (default: @c TRUE)</td>
 #   </tr>
 #   <tr>
-#     @tp @b WITH_PATH @endtp
-#     <td>Preserve relative path of module. Required for example for
-#         Python and Perl packages where the directory hierarchy is important.</td>
+#     @tp @b LANGUAGE @endtp
+#     <td>Read-only property of programming language of modules in uppercase letters.
+#         (default: see @p LANGUAGE argument)</td>
 #   </tr>
 #   <tr>
-#     @tp @b WITH_EXT @endtp
-#     <td>Specify that the existing filename extension should be kept also
-#         in case of an executable script. No shebang directive is added to
-#         the top of the script automatically if this option is given.
-#         On Windows, on the other side, this prevents the addition of Batch
-#         code to execute the script and no <tt>.cmd</tt> file name extension
-#         is used for executable scripts build with this option.</td>
+#     @tp @b LIBRARY_COMPONENT @endtp
+#     <td>Name of component as part of which this library is installed if
+#         @c LIBRARY_INSTALL_DIRECTORY is not set to "none".
+#         (default: see @p COMPONENT argument)</td>
 #   </tr>
 #   <tr>
-#     @tp @b NOEXPORT @endtp
-#     <td>Do not export build target.</td>
+#     @tp @b LIBRARY_INSTALL_DIRECTORY @endtp
+#     <td>Installation directory of library configured for use in installation tree
+#         relative to @c INSTALL_PREFIX. Set to "none" (case-insensitive) to skip the
+#         addition of an installation rule.
+#         (default: <tt>INSTALL_&lt;LANGUAGE&gt;_LIBRARY_DIR</tt> if defined or
+#         @c INSTALL_LIBRARY_DIR otherwise)</td>
 #   </tr>
 #   <tr>
-#     @tp @b COMPILE | @b NOCOMPILE @endtp
-#     <td>Enable/disable compilation of script if supported by scripting
-#         language as well as BASIS. In particular, Python modules can be
-#         compiled. If a script could be compiled by BASIS, only the
-#         compiled file is installed. Default: @c BASIS_COMPILE_SCRIPTS</td>
+#     @tp @b LIBRARY_OUTPUT_DIRECTORY @endtp
+#     <td>Output directory of library configured for use within the build tree.
+#         (default: <tt>BINARY_&lt;LANGUAGE&gt;_LIBRARY_DIR</tt> if defined or
+#         @c BINARY_LIBRARY_DIR otherwise)</td>
+#   </tr>
+#   <tr>
+#     @tp @b LINK_DEPENDS @endtp
+#     <td>Paths or target names of script modules and libraries used by this script.
+#         For each listed build target, a dependency is added between this
+#         library target and the named build targets. Use basis_target_link_libraries()
+#         to add additional link dependencies. Further note that if this library is
+#         a link dependency of an executable script added by basis_add_executable()
+#         (i.e., basis_add_script() actually), the link dependencies of this library
+#         are inherited by the executable script.
+#         (default: BASIS utilities module if used or empty list otherwise)</td>
+#   </tr>
+#   <tr>
+#     @tp @b PREFIX @endtp
+#     <td>Common module prefix. The given directory path is appended to both
+#         @c LIBRAR_OUTPUT_DIRECTORY and @c LIBRARY_INSTALL_DIRECTORY and can be,
+#         for example, be used to install modules of a Python package as part of
+#         another Python package, where @c LIBRARY_OUTPUT_DIRECTORY or
+#         @c LIBRARY_INSTALL_DIRECTORY, respectively, is the directory of the
+#         main package which is added to the @c PYTHONPATH. Possibly missing
+#         __init__.py files in case of Python are generated by the _initpy target
+#         which is automatically added by BASIS in that case and further added to
+#         the dependencies of this library target. (default: "")</td>
+#   </tr>
+#   <tr>
+#     @tp @b SOURCE_DIRECTORY @endtp
+#     <td>Source directory of this target. This directory is in particular
+#         used to convert the paths of the given source files to relative paths.
+#         The built modules within the build and installation tree will have the
+#         same relative path (relative to the @c LIBRARY_OUTPUT_DIRECTORY or
+#         @c LIBRARY_INSTALL_DIRECTORY, respectively).
+#         (default: @c CMAKE_CURRENT_SOURCE_DIR)</td>
+#   </tr>
+#   <tr>
+#     @tp @b SOURCES @endtp
+#     <td>Read-only property which lists the source files of this library.
+#         Note that the first element in this list actually names a directory
+#         in the build, the one where the build script for this target is located
+#         instead of a source file and thus should be ignored.</td>
 #   </tr>
 # </table>
 #
-# @returns Adds custom build target @p TARGET_NAME. In order to add the
-#          custom target that actually builds the script file,
-#          basis_add_script_finalize() has to be invoked.
+# @attention Properties documented as read-only must not be modified.
 #
-# @sa basis_add_executable()
+# @param [in] TARGET_NAME Name of build target. If an existing file is given as
+#                         argument, it is added to the list of source files and
+#                         the target name is derived from the name of this file.
+# @param [in] ARGN        The remaining arguments are parsed and the following
+#                         arguments extracted. All unparsed arguments are treated
+#                         as the module files of the script library.
+# @par
+# <table border=0>
+#   <tr>
+#     @tp @b COMPONENT name @endtp
+#     <td>Name of installation component as part of which this library is being
+#         installed if the @c LIBRARY_INSTALL_DIRECTORY property is not "none".
+#         (default: @c BASIS_LIBRARY_COMPONENT)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DESTINATION dir @endtp
+#     <td>Installation directory for library relative to @c INSTALL_PREFIX.
+#         If an absolute path is given as argument, it is made relative to the
+#         configured installation prefix. (default: @c INSTALL_LIBRARY_DIR)</td>
+#   </tr>
+#   <tr>
+#     @tp @b LANGUAGE lang @endtp
+#     <td>Programming language in which modules are written (case-insensitive).
+#         If not specified, the programming language is derived from the file name
+#         extensions of the source files and the shebang directive on the first line
+#         of each module if any. If the programming language could not be detected
+#         automatically, the @c LANGUAGE property is set to @c UNKNOWN. Note that
+#         for script library targets, the library may still be built correctly
+#         even if the scripting language was not recognized. The automatic detection
+#         whether the BASIS utilities are used and required will fail, however.
+#         In this case, specify the programming language using this option.
+#         (default: auto-detected or @c UNKNOWN)</td>
+#   </tr>
+#   <tr>
+#     @tp @b [NO]EXPORT @endtp
+#     <td>Whether to export this target. (default: @c TRUE)</td>
+#   </tr>
+#   <tr>
+#     @tp @b NO_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are not used by this library. If the
+#         programming language of the modules is known and BASIS utilities are
+#         available for this language, BASIS will in most cases automatically
+#         detect whether these utilities are used by any module of this library.
+#         Use this option to skip this check in the case that no module makes
+#         use of the BASIS utilities.</td>
+#   </tr>
+#   <tr>
+#     @tp @b USE_BASIS_UTILITIES @endtp
+#     <td>Specify that the BASIS utilities are used and thus required by this library.
+#         If the programming language of the modules is known and BASIS utilities are
+#         available for this language, BASIS will in most cases automatically
+#         detect whether these utilities are used by any module of this library.
+#         Use this option to skip this check when it is already known that no module
+#         makes use of the BASIS utilities. Note that an error is raised if this option
+#         is given, but no BASIS utilities are available for the programming language
+#         of this script or if the programming language is unknown, respectively, not
+#         detected correctly. In this case, consider the use of the @p LANGUAGE argument.</td>
+#   </tr>
+# </table>
+#
+# @returns Adds a custom CMake target with the documented properties. The actual custom
+#          command to build the library is added by basis_build_script_library().
+#
 # @sa basis_add_library()
-# @sa basis_add_script_finalize()
-# @sa basis_add_custom_finalize()
-function (basis_add_script TARGET_NAME)
-  # parse arguments
-  CMAKE_PARSE_ARGUMENTS (
-    ARGN
-      "LIBEXEC;TEST;MODULE;WITH_PATH;WITH_EXT;NOEXPORT;COMPILE;NOCOMPILE"
-      "BINARY_DIRECTORY;CONFIG;CONFIG_FILE;COMPONENT;DESTINATION"
-      ""
-    ${ARGN}
-  )
-
-  basis_sanitize_for_regex (R "${PROJECT_TESTING_DIR}")
-  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${R}")
-    set (ARGN_TEST TRUE)
+function (basis_add_script_library TARGET_NAME)
+  # derive target name from file name if existing source file given as first argument
+  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
+  if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
+    set (SOURCES "${S}")
+    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
   else ()
-    if (ARGN_TEST)
-      message (FATAL_ERROR "Executable ${TARGET_NAME} cannot have TEST property!"
-                           "If it is a test executable, put it in ${PROJECT_TESTING_DIR}.")
-    endif ()
-    set (ARGN_TEST FALSE)
-  endif ()
-
-  if (ARGN_COMPILE)
-    set (COMPILE TRUE)
-  elseif (ARGN_NOCOMPILE)
-    set (COMPILE FALSE)
-  else ()
-    set (COMPILE "${BASIS_COMPILE_SCRIPTS}")
-  endif ()
-
-  if (ARGN_TEST)
-    set (ARGN_NOEXPORT TRUE)
-  endif ()
-  if (NOT ARGN_NOEXPORT)
-    set (ARGN_NOEXPORT FALSE)
-  endif ()
-
-  if (NOT ARGN_COMPONENT)
-    if (ARGN_MODULE)
-      set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
-    else ()
-      set (ARGN_COMPONENT "${BASIS_RUNTIME_COMPONENT}")
-    endif ()
-  endif ()
-  if (NOT ARGN_COMPONENT)
-    set (ARGN_COMPONENT "Unspecified")
-  endif ()
-
-  # get script file and script name
-  list (LENGTH ARGN_UNPARSED_ARGUMENTS LEN)
-  if (LEN EQUAL 0)
-    set (ARGN_SCRIPT)
-  elseif (LEN EQUAL 1)
-    list (GET ARGN_UNPARSED_ARGUMENTS 0 ARGN_SCRIPT)
-  else ()
-    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Too many arguments! Only one script can be built by a script target.")
-  endif ()
-  if (NOT ARGN_SCRIPT)
-    set (ARGN_SCRIPT "${TARGET_NAME}")
-    set (TARGET_NAME) # set below from ARGN_SCRIPT
-  endif ()
-  get_filename_component (ARGN_SCRIPT "${ARGN_SCRIPT}" ABSOLUTE)
-  if (NOT EXISTS "${ARGN_SCRIPT}")
-    set (ARGN_SCRIPT "${ARGN_SCRIPT}.in")
-  endif ()
-  if (NOT EXISTS "${ARGN_SCRIPT}")
-    string (REGEX REPLACE "\\.in$" "" ARGN_SCRIPT "${ARGN_SCRIPT}")
-    message (FATAL_ERROR "basis_add_script(): Missing script file ${ARGN_SCRIPT}[.in]!")
-  endif ()
-  get_filename_component (SCRIPT_NAME "${ARGN_SCRIPT}" NAME)
-  string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME}")
-  get_filename_component (SCRIPT_NAME_WE "${SCRIPT_NAME}" NAME_WE)
-  get_filename_component (SCRIPT_EXT "${SCRIPT_NAME}" EXT)
-
-  # determine path part which is optionally prepended to the binary directory
-  if (ARGN_WITH_PATH)
-    get_filename_component (SCRIPT_PATH "${ARGN_SCRIPT}" PATH)
-    if (IS_ABSOLUTE "${SCRIPT_PATH}")
-      basis_sanitize_for_regex (REGEX "${PROJECT_SOURCE_DIR}")
-      if (SCRIPT_PATH MATCHES "^${REGEX}")
-        basis_get_relative_path (SCRIPT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${SCRIPT_PATH}")
-      else ()
-        set (SCRIPT_PATH)
-      endif ()
-    endif ()
-  endif ()
-
-  # get script language
-  basis_get_source_language (SCRIPT_LANGUAGE "${ARGN_SCRIPT}")
-
-  # set output name and target name (if not set yet)
-  set (OUTPUT_PREFIX "")
-  set (OUTPUT_NAME   "")
-  set (OUTPUT_SUFFIX "")
-  if (TARGET_NAME)
-    set (OUTPUT_NAME "${TARGET_NAME}")
-  else ()
-    set (OUTPUT_NAME "${SCRIPT_NAME_WE}")
-    if (ARGN_MODULE)
-      if (ARGN_WITH_PATH)
-        basis_get_source_target_name (TARGET_NAME "${SCRIPT_PATH}/${SCRIPT_NAME}")
-      else ()
-        basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME}")
-      endif ()
-    else ()
-      basis_get_source_target_name (TARGET_NAME "${SCRIPT_NAME_WE}")
-    endif ()
-  endif ()
-  # use output name extension for modules,
-  # for executables also on Windows, and if WITH_EXT option is given
-  if (ARGN_MODULE OR ARGN_WITH_EXT)
-    set (OUTPUT_SUFFIX "${SCRIPT_EXT}")
-  elseif (WIN32)
-    if (SCRIPT_LANGUAGE MATCHES "PYTHON|PERL")
-      set (OUTPUT_SUFFIX ".cmd")
-    else ()
-      set (OUTPUT_SUFFIX "${SCRIPT_EXT}")
-    endif ()
-  endif ()
-  # SUFFIX and PREFIX used by CMake only for libraries
-  if (NOT ARGN_MODULE)
-    set (OUTPUT_NAME "${OUTPUT_PREFIX}${OUTPUT_NAME}${OUTPUT_SUFFIX}")
-    set (OUTPUT_PREFIX "")
-    set (OUTPUT_SUFFIX "")
+    set (SOURCES)
   endif ()
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
-
   if (BASIS_VERBOSE)
-    if (ARGN_MODULE)
-      message (STATUS "Adding module script ${TARGET_UID}...")
-    else ()
-      message (STATUS "Adding executable script ${TARGET_UID}...")
-    endif ()
+    message (STATUS "Adding script library ${TARGET_UID}...")
   endif ()
-
-  if (ARGN_MODULE AND ARGN_LIBEXEC)
-    message (FATAL_ERROR "basis_add_script(${TARGET_UID}): Script cannot be MODULE and LIBEXEC at the same time!")
-  endif ()
-
-  # directory for build system files
+  # dump CMake variables for configuration of script
   set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
-
-  # dump CMake variables for "build" of script
-  basis_dump_variables ("${BUILD_DIR}/variables.cmake")
-
-  # "parse" script to check which BASIS utilities are used
-  basis_utilities_check (SCRIPT_USES_BASIS_UTILITIES "${ARGN_SCRIPT}")
-  if (SCRIPT_USES_BASIS_UTILITIES)
-    basis_set_project_property (PROPERTY PROJECT_USES_${SCRIPT_LANGUAGE}_UTILITIES TRUE)
-    if (BASIS_DEBUG)
-      message ("** Target ${TARGET_UID} uses BASIS utilities.")
+  basis_dump_variables ("${BUILD_DIR}/cache.cmake")
+  # parse arguments
+  CMAKE_PARSE_ARGUMENTS (
+    ARGN
+      "NO_BASIS_UTILITIES;USE_BASIS_UTILITIES;EXPORT;NOEXPORT"
+      "COMPONENT;DESTINATION;LANGUAGE"
+      ""
+    ${ARGN}
+  )
+  basis_set_flag (ARGN EXPORT ${BASIS_EXPORT})
+  if (ARGN_UNPARSED_ARGUMENTS)
+    list (APPEND SOURCES "${ARGN_UNPARSED_ARGUMENTS}")
+  endif ()
+  # TEST flag
+  basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
+  if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
+    set (TEST TRUE)
+  else ()
+    set (TEST FALSE)
+  endif ()
+  # check source files
+  set (_SOURCES)
+  foreach (S IN LISTS SOURCES)
+    get_filename_component (S "${S}" ABSOLUTE)
+    if (NOT EXISTS "${S}" AND NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in")
+      set (S "${S}.in")
+    elseif (IS_DIRECTORY "${S}")
+      message (FATAL_ERROR "Target ${TARGET_UID}: Directory ${S} given where file name expected!")
+    endif ()
+    if (NOT EXISTS "${S}")
+      string (REGEX REPLACE "\\.in$" "" S "${S}")
+      message (FATAL_ERROR "Target ${TARGET_UID}: Source file ${S}[.in] does not exist!")
+    endif ()
+    list (APPEND _SOURCES "${S}")
+  endforeach ()
+  if (NOT _SOURCES)
+    message (FATAL_ERROR "Target ${TARGET_UID}: No source files specified!")
+  endif ()
+  set (SOURCES "${_SOURCES}")
+  unset (_SOURCES)
+  # auto-detect programming language (may be as well UNKNOWN)
+  string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
+  if (NOT ARGN_LANGUAGE)
+    basis_get_source_language (ARGN_LANGUAGE ${SOURCES})
+    if (ARGN_LANGUAGE MATCHES "AMBIGUOUS|UNKNOWN")
+      message (FATAL_ERROR "Target ${TARGET_UID}: Failed to determine programming"
+                           " language of modules! Make sure that all modules are"
+                           " written in the same language and that the used programming"
+                           " language is supported by BASIS, i.e., either Python (Jython),"
+                           " Perl, Bash, or MATLAB. Otherwise, try to specify the language"
+                           " explicitly using the LANGUAGE option.")
     endif ()
   endif ()
-
-  # binary directory
-  if (ARGN_BINARY_DIRECTORY)
-    set (BINARY_DIRECTORY "${ARGN_BINARY_DIRECTORY}")
+  # output directory
+  if (TEST)
+    if (DEFINED TESTING_${ARGN_LANGUAGE}_LIBRARY_DIR)
+      set (OUTPUT_DIRECTORY "${TESTING_${ARGN_LANGUAGE}_LIBRARY_DIR}")
+    else ()
+      set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
+    endif ()
   else ()
-    set (BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+    if (DEFINED BINARY_${ARGN_LANGUAGE}_LIBRARY_DIR)
+      set (OUTPUT_DIRECTORY "${BINARY_${ARGN_LANGUAGE}_LIBRARY_DIR}")
+    else ()
+      set (OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}")
+    endif ()
   endif ()
-
+  # installation component
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
+  endif ()
+  if (NOT ARGN_COMPONENT)
+    set (ARGN_COMPONENT "Unspecified")
+  endif ()
   # installation directory
-  if (ARGN_DESTINATION)
-    if (IS_ABSOLUTE "${ARGN_DESTINATION}")
-      file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
+  if (TEST)
+    if (ARGN_DESTINATION)
+      message (WARNING "Target ${TARGET_UID} is a library used for testing only."
+                       " Installation to the specified directory will be skipped.")
+      set (ARGN_DESTINATION)
     endif ()
   else ()
-    if (ARGN_TEST)
-      set (ARGN_DESTINATION)
-    elseif (ARGN_MODULE)
-      if (SCRIPT_LANGUAGE MATCHES "^PYTHON$")
-        string (REPLACE "." "/" DIR "${PROJECT_NAMESPACE_PYTHON}")
-        set (ARGN_DESTINATION "${INSTALL_PYTHON_LIBRARY_DIR}/${DIR}")
-      elseif (SCRIPT_LANGUAGE MATCHES "^PERL$")
-        string (REPLACE "::" "/" DIR "${PROJECT_NAMESPACE_PERL}")
-        set (ARGN_DESTINATION "${INSTALL_PERL_LIBRARY_DIR}/${DIR}")
+    if (ARGN_DESTINATION)
+      if (IS_ABSOLUTE "${ARGN_DESTINATION}")
+        file (RELATIVE_PATH ARGN_DESTINATION "${INSTALL_PREFIX}" "${ARGN_DESTINATION}")
+      endif ()
+    else ()
+      if (DEFINED INSTALL_${ARGN_LANGUAGE}_LIBRARY_DIR)
+        set (ARGN_DESTINATION "${INSTALL_${ARGN_LANGUAGE}_LIBRARY_DIR}")
       else ()
         set (ARGN_DESTINATION "${INSTALL_LIBRARY_DIR}")
       endif ()
-    elseif (ARGN_LIBEXEC)
-      set (ARGN_DESTINATION "${INSTALL_LIBEXEC_DIR}")
-    else ()
-      set (ARGN_DESTINATION "${INSTALL_RUNTIME_DIR}")
     endif ()
   endif ()
-
-  # output directory
-  if (ARGN_TEST)
-    if (ARGN_MODULE)
-      basis_sanitize_for_regex (REGEX "${INSTALL_LIBRARY_DIR}")
-      string (REGEX REPLACE "^${REGEX}/?" "" DIR "${ARGN_DESTINATION}")
-      basis_get_relative_path (LIBDIR "${PROJECT_BINARY_DIR}" "${TESTING_LIBRARY_DIR}")
-      basis_sanitize_for_regex (REGEX "${LIBDIR}")
-      string (REGEX REPLACE "^${REGEX}/?" "" DIR "${DIR}")
-      set (OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}/${DIR}")
-    elseif (ARGN_LIBEXEC)
-      set (OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
-    else ()
-      set (OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
+  # auto-detect use of BASIS utilities
+  if (ARGN_USE_BASIS_UTILITIES)
+    if (NOT BASIS_UTILITIES_ENABLED MATCHES "${ARGN_LANGUAGE}")
+      message (FATAL_ERROR "Target ${TARGET_UID} requires the BASIS utilities for ${ARGN_LANGUAGE}"
+                           " but BASIS was either build without the build of these utilities enabled"
+                           " or no utilities for this programming language are implemented. Remove the"
+                           " USE_BASIS_UTILITIES option if no BASIS utilities are used by the modules"
+                           " of the library or specify the correct programming language if it was not"
+                           " detected correctly.")
     endif ()
-  elseif (ARGN_MODULE)
-    basis_sanitize_for_regex (REGEX "${INSTALL_LIBRARY_DIR}")
-    string (REGEX REPLACE "^${REGEX}/?" "" DIR "${ARGN_DESTINATION}")
-    basis_get_relative_path (LIBDIR "${PROJECT_BINARY_DIR}" "${BINARY_LIBRARY_DIR}")
-    basis_sanitize_for_regex (REGEX "${LIBDIR}")
-    string (REGEX REPLACE "^${REGEX}/?" "" DIR "${DIR}")
-    set (OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}/${DIR}")
-  elseif (ARGN_LIBEXEC)
-    set (OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}")
-  else ()
-    set (OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
-  endif ()
-  string (REGEX REPLACE "/$" "" OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}")
-
-  # append relative script path
-  if (SCRIPT_PATH AND ARGN_WITH_PATH)
-    basis_sanitize_for_regex (REGEX "${SCRIPT_PATH}")
-    if (ARGN_DESTINATION AND NOT ARGN_DESTINATION MATCHES "/${REGEX}$")
-      set (ARGN_DESTINATION "${ARGN_DESTINATION}/${SCRIPT_PATH}")
-    endif ()
-    if (NOT OUTPUT_DIRECTORY MATCHES "/${REGEX}$")
-      set (OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${SCRIPT_PATH}")
-    endif ()
-  endif ()
-
-  # script configuration (only if script file name ends in ".in")
-  set (INSTALL_DIR "${ARGN_DESTINATION}")
-
-  if (ARGN_SCRIPT MATCHES "\\.in$")
-    # reference to BASIS doxygen page documenting the script configuration
-    if (PROJECT_NAME MATCHES "^BASIS$")
-      set (BuildOfScriptTargetsPageRef "@ref BuildOfScriptTargets")
-    else ()
-      set (BuildOfScriptTargetsPageRef "Build of Script Targets")
-    endif ()
-    # Configure script configuration files using configure_file()
-    # to have CMake create build rules to update the configured
-    # file if the script configuration was modified.
-    # The configured files are included by the build script that is
-    # generated by basis_add_script_finalize().
-    configure_file ("${BASIS_SCRIPT_CONFIG_FILE}" "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake" @ONLY)
-    if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
-      configure_file ("${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in" "${BINARY_CONFIG_DIR}/ScriptConfig.cmake" @ONLY)
-    endif ()
-    if (ARGN_CONFIG_FILE)
-      if (NOT EXISTS "${ARGN_CONFIG_FILE}")
-        message (FATAL_ERROR "Script configuration file \"${ARGN_CONFIG_FILE}\" does not exist. It is required to build the script ${TARGET_UID}.")
+    set (USES_BASIS_UTILITIES TRUE)
+  elseif (NOT ARGN_NO_BASIS_UTILITIES AND NOT ARGN_LANGUAGE MATCHES "UNKNOWN")
+    set (USES_BASIS_UTILITIES FALSE)
+    foreach (M IN LISTS SOURCES)
+      basis_utilities_check (USES_BASIS_UTILITIES "${M}" ${ARGN_LANGUAGE})
+      if (USES_BASIS_UTILITIES)
+        break ()
       endif ()
-      configure_file ("${ARGN_CONFIG_FILE}" "${BUILD_DIR}/ScriptConfig.cmake" @ONLY)
-    endif ()
-    # configure script configuration given as string
-    if (ARGN_CONFIG)
-      string (CONFIGURE ARGN_CONFIG "${ARGN_CONFIG}" @ONLY)
-    endif ()
-  elseif (ARGN_CONFIG OR ARGN_CONFIG_FILE)
-    message (WARNING "Provided script configuration for ${TARGET_UID} but the script file "
-                     "is missing a .in suffix. Will ignore script configuration and just "
-                     "copy the script file without configuring it.")
-    set (ARGN_CONFIG)
-    set (ARGN_CONFIG_FILE)
-  endif ()
-
-  # add custom target
-  add_custom_target (${TARGET_UID} ALL SOURCES ${ARGN_SCRIPT})
-
-  if (SCRIPT_USES_BASIS_UTILITIES)
-    if (SCRIPT_LANGUAGE MATCHES "PYTHON")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.py" NAME)
-    elseif (SCRIPT_LANGUAGE MATCHES "PERL")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "Basis.pm" NAME)
-    elseif (SCRIPT_LANGUAGE MATCHES "BASH")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.sh" NAME)
-    endif ()
-    basis_get_target_uid (BASIS_UTILITIES_TARGET ${BASIS_UTILITIES_TARGET})
-    add_dependencies (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
-  endif ()
-
-  # set target properties required by basis_add_script_finalize ()
-  if (ARGN_MODULE)
-    set (TYPE "MODULE_SCRIPT")
+    endforeach ()
   else ()
-    set (TYPE "EXECUTABLE_SCRIPT")
+    set (USES_BASIS_UTILITIES FALSE)
   endif ()
-
+  if (USES_BASIS_UTILITIES)
+    basis_set_project_property (PROPERTY PROJECT_USES_${ARGN_LANGUAGE}_UTILITIES TRUE)
+    if (BASIS_DEBUG)
+      message ("** Target ${TARGET_UID} uses the BASIS utilities for ${ARGN_LANGUAGE}.")
+    endif ()
+  endif ()
+  # add custom target
+  add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
   _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
-      BASIS_TYPE                "${TYPE}"
-      BASIS_LANGUAGE            "${SCRIPT_LANGUAGE}"
+      LANGUAGE                  "${ARGN_LANGUAGE}"
+      BASIS_TYPE                "SCRIPT_LIBRARY"
+      BASIS_UTILITIES           "${USES_BASIS_UTILITIES}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
-      BINARY_DIRECTORY          "${BINARY_DIRECTORY}"
-      RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
+      BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       LIBRARY_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
-      RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
       LIBRARY_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
-      OUTPUT_NAME               "${OUTPUT_NAME}"
-      PREFIX                    "${OUTPUT_PREFIX}"
-      SUFFIX                    "${OUTPUT_SUFFIX}"
-      COMPILE_DEFINITIONS       "${ARGN_CONFIG}"
-      LINK_DEPENDS              "${ARGN_CONFIG_FILE}"
-      RUNTIME_COMPONENT         "${ARGN_COMPONENT}"
-      LIBRARY_COMPONENT         "${ARGN_COMPONENT}"
-      NOEXPORT                  "${ARGN_NOEXPORT}"
+      LIBRARY_COMPONENT         "${BASIS_LIBRARY_COMPONENT}"
+      PREFIX                    ""
+      COMPILE_DEFINITIONS       ""
+      LINK_DEPENDS              ""
+      EXPORT                    "${EXPORT}"
       COMPILE                   "${COMPILE}"
-      WITH_EXT                  "${ARGN_WITH_EXT}"
+      TEST                      "${TEST}"
   )
-
-  if (ARGN_TEST)
-    _set_target_properties (${TARGET_UID} PROPERTIES TEST 1)
-  else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES TEST 0)
-  endif ()
-
-  if (ARGN_LIBEXEC)
-    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1)
-  else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
-  endif ()
-
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
-
   if (BASIS_VERBOSE)
-    if (ARGN_MODULE)
-      message (STATUS "Adding module script ${TARGET_UID}... - done")
-    else ()
-      message (STATUS "Adding executable script ${TARGET_UID}... - done")
-    endif ()
+    message (STATUS "Adding script library ${TARGET_UID}... - done")
   endif ()
 endfunction ()
 
+# ============================================================================
+# custom build commands
+# ============================================================================
+
 # ----------------------------------------------------------------------------
-## @brief Finalize addition of script.
+## @brief Finalize custom targets by adding the missing build commands.
 #
-# This function uses the properties of the custom script target added by
-# basis_add_script() to create the custom build command and adds this build
-# command as dependency of this added target.
+# This function is called by basis_project_impl() in order to finalize the
+# addition of the custom build targets such as, for example, build targets
+# for the build of executable scripts, Python packages, MATLAB Compiler
+# executables and shared libraries, and MEX-files.
 #
-# @param [in] TARGET_UID "Global" target name. If this function is used
-#                        within the same project as basis_add_script(),
-#                        the "local" target name may be given alternatively.
+# @returns Generates the CMake build scripts and adds custom build commands
+#          and corresponding targets for the execution of these scripts.
 #
-# @returns Adds custom target(s) to actually build the script target
-#          @p TARGET_UID added by basis_add_script().
+# @sa basis_build_script()
+# @sa basis_build_script_library()
+# @sa basis_build_mcc_target()
+# @sa basis_build_mex_file()
+function (basis_finalize_targets)
+  basis_get_project_property (TARGETS PROPERTY TARGETS)
+  foreach (TARGET_UID ${TARGETS})
+    if (NOT TARGET _${TARGET_UID})
+      get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
+      if (BASIS_TYPE MATCHES "SCRIPT_LIBRARY")
+        basis_build_script_library (${TARGET_UID})
+      elseif (BASIS_TYPE MATCHES "SCRIPT")
+        basis_build_script (${TARGET_UID})
+      elseif (BASIS_TYPE MATCHES "MEX")
+        basis_build_mex_file (${TARGET_UID})
+      elseif (BASIS_TYPE MATCHES "MCC")
+        basis_build_mcc_target (${TARGET_UID})
+      endif ()
+    endif ()
+  endforeach ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Add custom command for build of single script.
+#
+# This function is called by basis_finalize_targets() which in turn is called
+# at the end of basis_project_impl(), i.e., the end of the root CMake
+# configuration file of the (sub-)project.
+#
+# @param [in] TARGET_UID Name/UID of custom target added by basis_add_script().
 #
 # @sa basis_add_script()
-# @sa basis_add_custom_finalize()
-function (basis_add_script_finalize TARGET_UID)
-  # if used within (sub-)project itself, allow user to specify "local" target name
-  basis_get_target_uid (TARGET_UID "${TARGET_UID}")
-  # already finalized before ?
-  if (TARGET "_${TARGET_UID}")
-    return ()
-  endif ()
+function (basis_build_script TARGET_UID)
   # does this target exist ?
+  basis_get_target_uid (TARGET_UID "${TARGET_UID}")
   if (NOT TARGET "${TARGET_UID}")
-    message (FATAL_ERROR "Unknown target ${TARGET_UID}.")
-    return ()
+    message (FATAL_ERROR "Unknown build target: ${TARGET_UID}")
   endif ()
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding build command for script ${TARGET_UID}...")
+  if (BASIS_VERBOSE AND BASIS_DEBUG)
+    message (STATUS "Adding build command for target ${TARGET_UID}...")
   endif ()
   # get target properties
   basis_get_target_name (TARGET_NAME ${TARGET_UID})
   set (
     PROPERTIES
-      "BASIS_TYPE"
-      "BASIS_LANGUAGE"
-      "SOURCE_DIRECTORY"
-      "BINARY_DIRECTORY"
-      "RUNTIME_OUTPUT_DIRECTORY"
-      "RUNTIME_INSTALL_DIRECTORY"
-      "LIBRARY_OUTPUT_DIRECTORY"
-      "LIBRARY_INSTALL_DIRECTORY"
-      "PREFIX"
-      "OUTPUT_NAME"
-      "SUFFIX"
-      "VERSION"
-      "SOVERSION"
-      "SOURCES"
-      "COMPILE_DEFINITIONS"
-      "LINK_DEPENDS"
-      "RUNTIME_COMPONENT"
-      "LIBRARY_COMPONENT"
-      "LIBEXEC"
-      "TEST"
-      "NOEXPORT"
-      "COMPILE"
-      "WITH_EXT"
+      LANGUAGE             # programming language of script
+      BASIS_TYPE           # must match "^SCRIPT_(EXECUTABLE|LIBEXEC|MODULE)$"
+      BASIS_UTILITIES      # whether this target requires the BASIS utilities
+      SOURCE_DIRECTORY     # CMake source directory
+      BINARY_DIRECTORY     # CMake binary directory
+      OUTPUT_DIRECTORY     # output directory for built script
+      INSTALL_DIRECTORY    # installation directory for built script
+      COMPONENT            # installation component
+      OUTPUT_NAME          # name of built script including extension (if any)
+      COMPILE_DEFINITIONS  # CMake code to set variables used to configure script
+      LINK_DEPENDS         # paths of script modules/packages used by this script
+      TEST                 # whether this script is used for testing only
+      EXPORT               # whether this target shall be exported
+      COMPILE              # whether to compile script if applicable
+      SOURCES              # path of script source file
   )
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
-  # check target type
-  if (NOT BASIS_TYPE MATCHES "^EXECUTABLE_SCRIPT$|^MODULE_SCRIPT$")
-    message (FATAL_ERROR "Target ${TARGET_UID} has invalid BASIS_TYPE: ${BASIS_TYPE}")
-  endif ()
-  if (BASIS_TYPE MATCHES "^MODULE_SCRIPT$")
-    set (MODULE 1)
+  set (EXECUTABLE FALSE)
+  set (LIBEXEC    FALSE)
+  set (MODULE     FALSE)
+  if (BASIS_TYPE MATCHES "^SCRIPT_(EXECUTABLE|LIBEXEC|MODULE)$")
+    set (${CMAKE_MATCH_1} TRUE)
+    if (LIBEXEC)
+      set (EXECUTABLE TRUE)
+    endif ()
   else ()
-    set (MODULE 0)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Unexpected BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
-  # build directory (note that CMake returns basename of build directory as first element of SOURCES list)
-  list (GET SOURCES 0 BUILD_DIR)
-  set (BUILD_DIR "${BUILD_DIR}.dir")
-  # binary directory
   if (NOT BINARY_DIRECTORY)
-    message (FATAL_ERROR "basis_add_script_finalize(${TARGET_UID}): BINARY_DIRECTORY property not set!")
+    message (FATAL_ERROR "Target ${TARGET_UID}: Missing BINARY_DIRECTORY property!")
   endif ()
-  if (NOT BINARY_DIRECTORY MATCHES "^${PROJECT_BINARY_DIR}")
-    message (FATAL_ERROR "basis_add_script_finalize(${TARGET_UID}): BINARY_DIRECTORY must be inside of build tree!")
+  if (NOT BINARY_DIRECTORY MATCHES "^${PROJECT_BINARY_DIR}(/|$)")
+    message (FATAL_ERROR "Target ${TARGET_UID}: BINARY_DIRECTORY must be inside of build tree!")
   endif ()
-  # extract script file from SOURCES
-  list (GET SOURCES 1 SCRIPT_FILE)
-  # get script name without ".in"
-  get_filename_component (SCRIPT_NAME "${SCRIPT_FILE}" NAME)
-  string (REGEX REPLACE "\\.in$" "" SCRIPT_NAME "${SCRIPT_NAME}")
+  if (INSTALL_DIRECTORY AND NOT COMPONENT)
+    set (COMPONENT "Unspecified")
+  endif ()
+  list (LENGTH SOURCES L)
+  if (NOT L EQUAL 2)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Expected two elements in SOURCES list!"
+                         " Have you accidentally modified this read-only property or"
+                         " is your (newer) CMake version not compatible with BASIS?")
+  endif ()
+  list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
+  list (GET SOURCES 1 SOURCE_FILE)
+  set (BUILD_DIR "${BUILD_DIR}.dir")
+  # add BASIS utilities to link dependencies if used
+  if (BASIS_UTILITIES)
+    set (BASIS_UTILITIES_TARGET)
+    if (LANGUAGE MATCHES "PYTHON")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.py" NAME)
+    elseif (LANGUAGE MATCHES "PERL")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "Basis.pm" NAME)
+    elseif (LANGUAGE MATCHES "BASH")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.sh" NAME)
+    endif ()
+    if (BASIS_UTILITIES_TARGET)
+      basis_get_target_uid (BASIS_UTILITIES_TARGET ${BASIS_UTILITIES_TARGET})
+    endif ()
+    if (NOT TARGET ${BASIS_UTILITIES_TARGET})
+      message (FATAL_ERROR "Target ${TARGET_UID} claims to make use of the BASIS utilities"
+                           " for ${ARGN_LANGUAGE} but such utilities are not implemented!")
+    endif ()
+    set_property (TARGET ${TARGET_UID} APPEND PROPERTY LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
+    list (APPEND LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
+  endif ()
   # output name
   if (NOT OUTPUT_NAME)
     set (OUTPUT_NAME "${TARGET_NAME}")
@@ -2116,149 +2474,303 @@ function (basis_add_script_finalize TARGET_UID)
   if (SUFFIX)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
-  # configured output files
-  if (MODULE)
-    set (CONFIGURED_FILE "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
-  else ()
-    set (CONFIGURED_FILE "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
-  endif ()
-  if ((MODULE AND LIBRARY_INSTALL_DIRECTORY) OR (NOT MODULE AND RUNTIME_INSTALL_DIRECTORY))
-    if (SCRIPT_FILE MATCHES "\\.in")
-      set (CONFIGURED_INSTALL_FILE "${BINARY_DIRECTORY}/${SCRIPT_NAME}")
+  # options of basis_configure_script()
+  set (OUTPUT_FILE "${OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
+  if (INSTALL_DIRECTORY)
+    get_filename_component (SOURCE_NAME "${SOURCE_FILE}" NAME)
+    if (SOURCE_NAME MATCHES "\\.in$")
+      set (INSTALL_FILE "${BINARY_DIRECTORY}/${SOURCE_NAME}")
+      string (REGEX REPLACE "\\.in$" "" INSTALL_FILE "${INSTALL_FILE}")
     else ()
-      # Otherwise, Doxygen would have problems as it does not know which
-      # file to process. Thus, write configured file to directory excluded
+      # otherwise, Doxygen would have problems as it does not know which
+      # file to process. thus, write configured file to directory excluded
       # from Doxygen search path.
-      set (CONFIGURED_INSTALL_FILE "${BUILD_DIR}/${SCRIPT_NAME}")
+      set (INSTALL_FILE "${BUILD_DIR}/${SOURCE_NAME}")
     endif ()
   else ()
-    set (CONFIGURED_INSTALL_FILE)
+    set (INSTALL_FILE)
   endif ()
-  set (OUTPUT_FILE "${CONFIGURED_FILE}") # main output file used for command message
+  set (CONFIG_FILE)
+  if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
+    list (APPEND CONFIG_FILE "${BASIS_SCRIPT_CONFIG_FILE}")
+  endif ()
+  if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+    list (APPEND CONFIG_FILE "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+  endif ()
+  if (COMPILE_DEFINITIONS)
+    file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${COMPILE_DEFINITIONS}\n")
+    list (APPEND CONFIG_FILE "${BUILD_DIR}/ScriptConfig.cmake")
+  endif ()
+  set (OPTIONS "CACHE_FILE;${BUILD_DIR}/cache.cmake;CONFIG_FILE;${CONFIG_FILE}")
+  if (COMPILE)
+    list (APPEND OPTIONS COMPILE)
+  endif ()
+  if (EXECUTABLE)
+    list (APPEND OPTIONS EXECUTABLE)
+  endif ()
+  # list of all output files
   set (OUTPUT_FILES "${OUTPUT_FILE}")
-  if (CONFIGURED_INSTALL_FILE)
-    list (APPEND OUTPUT_FILES "${CONFIGURED_INSTALL_FILE}")
+  if (INSTALL_FILE)
+    list (APPEND OUTPUT_FILES "${INSTALL_FILE}")
   endif ()
-  # additional compiled output files
-  if (MODULE AND COMPILE)
-    if (BASIS_LANGUAGE MATCHES "PYTHON")
-      get_filename_component (MODULE_PATH "${CONFIGURED_FILE}" PATH)
-      get_filename_component (MODULE_NAME "${CONFIGURED_FILE}" NAME_WE)
-      set (OUTPUT_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
-      list (APPEND OUTPUT_FILES "${OUTPUT_FILE}")
-    endif ()
-    if (CONFIGURED_INSTALL_FILE)
-      if (BASIS_LANGUAGE MATCHES "PYTHON")
-        get_filename_component (MODULE_PATH "${CONFIGURED_INSTALL_FILE}" PATH)
-        get_filename_component (MODULE_NAME "${CONFIGURED_INSTALL_FILE}" NAME_WE)
-        list (APPEND OUTPUT_FILES "${MODULE_PATH}/${MODULE_NAME}.pyc")
-      endif ()
+  if (COMPILE AND LANGUAGE MATCHES "[JP]YTHON")
+    list (APPEND OUTPUT_FILES "${OUTPUT_FILE}c")
+    if (INSTALL_FILE)
+      list (APPEND OUTPUT_FILES "${INSTALL_FILE}c")
     endif ()
   endif ()
-  # files this script and its build depends on
-  set (DEPENDS ${LINK_DEPENDS} "${BUILD_SCRIPT}")
-  if (SCRIPT_FILE MATCHES "\\.in$")
-    list (APPEND DEPENDS "${BUILD_DIR}/variables.cmake")
-    if (EXISTS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
-      list (APPEND DEPENDS "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
-    endif ()
-    if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
-      list (APPEND DEPENDS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
-    endif ()
-    if (EXISTS "${BUILD_DIR}/ScriptConfig.cmake")
-      list (APPEND DEPENDS "${BUILD_DIR}/ScriptConfig.cmake")
-    endif ()
-  endif ()
-  # look for required interpreter executable
-  if (BASIS_LANGUAGE MATCHES "PYTHON")
-    find_package (PythonInterp QUIET)
-    if (NOT PYTHONINTERP_FOUND)
-      message (FATAL_ERROR "Python interpreter not found. It is required to"
-                           " execute the script file target ${TARGET_UID}.")
-    endif ()
-  elseif (BASIS_LANGUAGE MATCHES "PERL")
-    find_package (Perl QUIET)
-    if (NOT PERL_FOUND)
-      message (FATAL_ERROR "Perl interpreter not found. It is required to"
-                           " execute the script file target ${TARGET_UID}.")
-    endif ()
-  elseif (BASIS_LANGUAGE MATCHES "BASH")
-    find_package (BASH QUIET)
-    if (NOT BASH_FOUND)
-      message (FATAL_ERROR "BASH interpreter not found. It is required to"
-                           " execute the script file target ${TARGET_UID}.")
-    endif ()
-  endif ()
-  # configure build script
-  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
-  configure_file ("${BASIS_MODULE_PATH}/configure_script.cmake.in" "${BUILD_SCRIPT}" @ONLY)
-  # add custom target to execute build script
+  # add build command for script
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${OUTPUT_FILE}")
+  if (LANGUAGE MATCHES "UNKNOWN")
+    set (COMMENT "Building script ${REL}...")
+  elseif (MODULE)
+    set (COMMENT "Building ${LANGUAGE} module ${REL}...")
+  else ()
+    set (COMMENT "Building ${LANGUAGE} executable ${REL}...")
+  endif ()
   add_custom_command (
     OUTPUT          ${OUTPUT_FILES}
-    MAIN_DEPENDENCY "${SCRIPT_FILE}"
-    DEPENDS         ${DEPENDS}
-    COMMAND         "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
-    COMMENT         "Building script ${REL}..."
+    COMMAND         "${CMAKE_COMMAND}"
+                        "-DSOURCE_FILE=${SOURCE_FILE}"
+                        "-DOUTPUT_FILE=${OUTPUT_FILE}"
+                        "-DINSTALL_FILE=${INSTALL_FILE}"
+                        "-DDESTINATION=${INSTALL_DIRECTORY}"
+                        "-DOPTIONS=${OPTIONS}"
+                        -P "${BASIS_MODULE_PATH}/configure_script.cmake"
+    MAIN_DEPENDENCY ${SOURCE_FILE}
+    DEPENDS         "${BUILD_DIR}/cache.cmake" ${CONFIG_FILE}
+    COMMENT         "${COMMENT}"
+    VERBATIM
   )
-  if (TARGET "_${TARGET_UID}")
-    message (FATAL_ERROR "There is another target named _${TARGET_UID}. "
-                         "BASIS uses target names starting with an underscore "
-                         "for custom targets which are required to build script files. "
-                         "Do not use leading underscores in target names.")
-  endif ()
-  # add custom target which triggers execution of build script
+  # add custom target
   add_custom_target (_${TARGET_UID} DEPENDS ${OUTPUT_FILES})
+  foreach (T IN LISTS LINK_DEPENDS)
+    if (TARGET ${T})
+      add_dependencies (_${TARGET_UID} ${T})
+    endif ()
+  endforeach ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
-  # Provide target to build all scripts. In particular, scripts need to be build
-  # before the doc target which thus depends on this target.
-  if (NOT TARGET scripts)
-    add_custom_target (scripts)
-  endif ()
-  add_dependencies (scripts _${TARGET_UID})
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
-  # install script
-  if (NOT ARGN_NOEXPORT)
+  # export target
+  if (EXPORT)
     if (TEST)
       basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
     else ()
       basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
     endif ()
   endif ()
-  if (CONFIGURED_INSTALL_FILE)
-    set (INSTALL_FILE "${CONFIGURED_INSTALL_FILE}")
-  else ()
-    set (INSTALL_FILE "${CONFIGURED_FILE}")
-  endif ()
-  if (MODULE)
-    if (COMPILE)
-      if (BASIS_LANGUAGE MATCHES "PYTHON")
-        get_filename_component (MODULE_PATH "${INSTALL_FILE}" PATH)
-        get_filename_component (MODULE_NAME "${INSTALL_FILE}" NAME_WE)
-        set (INSTALL_FILE "${MODULE_PATH}/${MODULE_NAME}.pyc")
-      endif ()
+  # install script
+  if (INSTALL_DIRECTORY)
+    if (NOT INSTALL_FILE)
+      set (INSTALL_FILE "${OUTPUT_FILE}")
     endif ()
-    if (LIBRARY_INSTALL_DIRECTORY)
-      install (
-        FILES       "${INSTALL_FILE}"
-        DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
-        COMPONENT   "${LIBRARY_COMPONENT}"
-      )
+    if (COMPILE AND LANGUAGE MATCHES "[JP]YTHON")
+      set (INSTALL_FILE "${INSTALL_FILE}c")
     endif ()
-  else ()
-    if (RUNTIME_INSTALL_DIRECTORY)
-      install (
-        PROGRAMS    "${INSTALL_FILE}"
-        RENAME      "${OUTPUT_NAME}"
-        DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
-        COMPONENT   "${RUNTIME_COMPONENT}"
-      )
-    endif ()
+    get_filename_component (OUTPUT_NAME "${OUTPUT_FILE}" NAME)
+    install (
+      FILES       "${INSTALL_FILE}"
+      DESTINATION "${INSTALL_DIRECTORY}"
+      COMPONENT   "${COMPONENT}"
+      RENAME      "${OUTPUT_NAME}"
+    )
   endif ()
   # done
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding build command for script ${TARGET_UID}... - done")
+  if (BASIS_VERBOSE AND BASIS_DEBUG)
+    message (STATUS "Adding build command for target ${TARGET_UID}... - done")
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Add custom command for build of script library.
+#
+# This function is called by basis_finalize_targets() which in turn is called
+# at the end of basis_project_impl(), i.e., the end of the root CMake
+# configuration file of the (sub-)project.
+#
+# @param [in] TARGET_UID Name/UID of custom target added by basis_add_script_library().
+#
+# @sa basis_add_script_library()
+function (basis_build_script_library TARGET_UID)
+  # does this target exist ?
+  basis_get_target_uid (TARGET_UID "${TARGET_UID}")
+  if (NOT TARGET "${TARGET_UID}")
+    message (FATAL_ERROR "Unknown target: ${TARGET_UID}")
+  endif ()
+  if (BASIS_VERBOSE AND BASIS_DEBUG)
+    message (STATUS "Adding build command for target ${TARGET_UID}...")
+  endif ()
+  # get target properties
+  basis_get_target_name (TARGET_NAME ${TARGET_UID})
+  set (
+    PROPERTIES
+      LANGUAGE                   # programming language of modules
+      BASIS_TYPE                 # must be "SCRIPT_LIBRARY"
+      BASIS_UTILITIES            # whether this target requires the BASIS utilities
+      SOURCE_DIRECTORY           # CMake source directory
+      BINARY_DIRECTORY           # CMake binary directory
+      LIBRARY_OUTPUT_DIRECTORY   # output directory for built modules
+      LIBRARY_INSTALL_DIRECTORY  # installation directory for built modules
+      LIBRARY_COMPONENT          # installation component
+      PREFIX                     # common path prefix for modules
+      COMPILE_DEFINITIONS        # CMake code to set variables used to configure modules
+      LINK_DEPENDS               # paths of script modules/packages used by the modules of this library
+      EXPORT                     # whether to export this target
+      COMPILE                    # whether to compile the modules/library if applicable
+      SOURCES                    # source files of module scripts
+  )
+  foreach (PROPERTY ${PROPERTIES})
+    get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
+  endforeach ()
+  string (REGEX REPLACE "/$" "" PREFIX "${PREFIX}")
+  if (NOT BASIS_TYPE MATCHES "^SCRIPT_LIBRARY$")
+    message (FATAL_ERROR "Target ${TARGET_UID}: Unexpected BASIS_TYPE: ${BASIS_TYPE}")
+  endif ()
+  if (NOT SOURCE_DIRECTORY)
+    message (FATAL_ERROR "Missing SOURCE_DIRECTORY property!")
+  endif ()
+  if (NOT LIBRARY_OUTPUT_DIRECTORY)
+    message (FATAL_ERROR "Missing LIBRARY_OUTPUT_DIRECTORY property!")
+  endif ()
+  if (NOT IS_ABSOLUTE "${LIBRARY_OUTPUT_DIRECTORY}")
+    set (LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${LIBRARY_OUTPUT_DIRECTORY}")
+  endif ()
+  if (NOT LIBRARY_OUTPUT_DIRECTORY MATCHES "^${PROJECT_BINARY_DIR}")
+    message (FATAL_ERROR "Output directory LIBRARY_OUTPUT_DIRECTORY is outside the build tree!")
+  endif ()
+  if (NOT LIBRARY_COMPONENT)
+    set (LIBRARY_COMPONENT "Unspecified")
+  endif ()
+  list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
+  list (REMOVE_AT SOURCES 0)
+  set (BUILD_DIR "${BUILD_DIR}.dir")
+  if (NOT SOURCES)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Empty SOURCES list!"
+                         " Have you accidentally modified this read-only property or"
+                         " is your (newer) CMake version not compatible with BASIS?")
+  endif ()
+  # add BASIS utilities to link dependencies if used
+  if (BASIS_UTILITIES)
+    set (BASIS_UTILITIES_TARGET)
+    if (LANGUAGE MATCHES "PYTHON")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.py" NAME)
+    elseif (LANGUAGE MATCHES "PERL")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "Basis.pm" NAME)
+    elseif (LANGUAGE MATCHES "BASH")
+      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.sh" NAME)
+    endif ()
+    if (BASIS_UTILITIES_TARGET)
+      basis_get_target_uid (BASIS_UTILITIES_TARGET ${BASIS_UTILITIES_TARGET})
+    endif ()
+    if (NOT TARGET ${BASIS_UTILITIES_TARGET})
+      message (FATAL_ERROR "Target ${TARGET_UID} claims to make use of the BASIS utilities"
+                           " for ${ARGN_LANGUAGE} but such utilities are not implemented!")
+    endif ()
+    set_property (TARGET ${TARGET_UID} APPEND PROPERTY LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
+    list (APPEND LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
+  endif ()
+  # options of basis_configure_script()
+  set (CONFIG_FILE)
+  if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
+    list (APPEND CONFIG_FILE "${BASIS_SCRIPT_CONFIG_FILE}")
+  endif ()
+  if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+    list (APPEND CONFIG_FILE "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+  endif ()
+  if (COMPILE_DEFINITIONS)
+    file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${COMPILE_DEFINITIONS}\n")
+    list (APPEND CONFIG_FILE "${BUILD_DIR}/ScriptConfig.cmake")
+  endif ()
+  set (OPTIONS "CACHE_FILE;${BUILD_DIR}/cache.cmake;CONFIG_FILE;${CONFIG_FILE}")
+  if (COMPILE)
+    list (APPEND OPTIONS COMPILE)
+  endif ()
+  # add build command for each module
+  set (OUTPUT_FILES)                            # list of all output files
+  set (FILES_TO_INSTALL)                        # list of output files for installation
+  set (BINARY_INSTALL_DIRECTORY "${BUILD_DIR}") # common base directory for files to install 
+  foreach (SOURCE_FILE IN LISTS SOURCES)
+    file (RELATIVE_PATH S "${SOURCE_DIRECTORY}" "${SOURCE_FILE}")
+    string (REGEX REPLACE "\\.in$" "" S "${S}")
+    if (PREFIX)
+      set (S "${PREFIX}/${S}")
+    endif ()
+    # build command arguments
+    set (OUTPUT_FILE    "${LIBRARY_OUTPUT_DIRECTORY}/${S}")
+    if (LIBRARY_INSTALL_DIRECTORY)
+      set (INSTALL_FILE "${BINARY_INSTALL_DIRECTORY}/${S}")
+      set (DESTINATION  "${LIBRARY_INSTALL_DIRECTORY}/${S}")
+      get_filename_component (DESTINATION "${DESTINATION}" PATH)
+    else ()
+      set (INSTALL_FILE)
+      set (DESTINATION)
+    endif ()
+    # output files of this command
+    set (_OUTPUT_FILES "${OUTPUT_FILE}")
+    if (COMPILE AND LANGUAGE MATCHES "[JP]YTHON")
+      list (APPEND _OUTPUT_FILES "${OUTPUT_FILE}c")
+    endif ()
+    if (INSTALL_FILE)
+      list (APPEND _OUTPUT_FILES "${INSTALL_FILE}")
+      if (COMPILE AND LANGUAGE MATCHES "[JP]YTHON")
+        list (APPEND _OUTPUT_FILES "${INSTALL_FILE}c")
+        list (APPEND FILES_TO_INSTALL "${INSTALL_FILE}c")
+      else ()
+        list (APPEND FILES_TO_INSTALL "${INSTALL_FILE}")
+      endif ()
+    endif ()
+    # add build command
+    file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${OUTPUT_FILE}")
+    set (COMMENT "Building ${LANGUAGE} module ${REL}...")
+    add_custom_command (
+      OUTPUT          ${_OUTPUT_FILES}
+      COMMAND         "${CMAKE_COMMAND}"
+                          "-DSOURCE_FILE=${SOURCE_FILE}"
+                          "-DOUTPUT_FILE=${OUTPUT_FILE}"
+                          "-DINSTALL_FILE=${INSTALL_FILE}"
+                          "-DDESTINATION=${DESTINATION}"
+                          "-DOPTIONS=${OPTIONS}"
+                          -P "${BASIS_MODULE_PATH}/configure_script.cmake"
+      MAIN_DEPENDENCY ${SOURCE_FILE}
+      DEPENDS         "${BUILD_DIR}/cache.cmake" ${CONFIG_FILE}
+      COMMENT         "${COMMENT}"
+      VERBATIM
+    )
+    # add output files of command to list of all output files
+    list (APPEND OUTPUT_FILES ${_OUTPUT_FILES})
+  endforeach ()
+  # add custom target to build modules
+  add_custom_target (_${TARGET_UID} DEPENDS ${OUTPUT_FILES})
+  foreach (T IN LISTS LINK_DEPENDS)
+    if (TARGET ${T})
+      add_dependencies (_${TARGET_UID} ${T})
+    endif ()
+  endforeach ()
+  add_dependencies (${TARGET_UID} _${TARGET_UID})
+  # cleanup on "make clean"
+  set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
+  # export target
+  if (EXPORT)
+    if (TEST)
+      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+    else ()
+      basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
+  endif ()
+  # add installation rule
+  foreach (INSTALL_FILE IN LISTS FILES_TO_INSTALL)
+    get_filename_component (D "${INSTALL_FILE}" PATH)
+    file (RELATIVE_PATH D "${BINARY_INSTALL_DIRECTORY}" "${D}")
+    install (
+      FILES       "${INSTALL_FILE}"
+      DESTINATION "${LIBRARY_INSTALL_DIRECTORY}/${D}"
+      COMPONENT   "${LIBRARY_COMPONENT}"
+    )
+  endforeach ()
+  # done
+  if (BASIS_VERBOSE AND BASIS_DEBUG)
+    message (STATUS "Adding build command for target ${TARGET_UID}... - done")
   endif ()
 endfunction ()
 
@@ -2271,16 +2783,17 @@ function (basis_add_init_py_target)
   basis_sanitize_for_regex (TESTING_PYTHON_LIBRARY_DIR_REGEX "${TESTING_PYTHON_LIBRARY_DIR}")
   basis_sanitize_for_regex (INSTALL_PYTHON_LIBRARY_DIR_REGEX "${INSTALL_PYTHON_LIBRARY_DIR}")
   # collect build tree directories requiring a __init__.py file
+  set (TARGETS)         # targets which generate Python modules and depend on _initpy
   set (DIRS)            # directories for which to generate a __init__.py file
   set (EXCLUDE)         # exclude these directories
   set (INSTALL_EXCLUDE) # exclude these directories on installation
   set (COMPONENTS)      # installation components
   basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID IN LISTS TARGETS)
-    get_target_property (BASIS_TYPE     ${TARGET_UID} "BASIS_TYPE")
-    get_target_property (BASIS_LANGUAGE ${TARGET_UID} "BASIS_LANGUAGE")
-    if (BASIS_TYPE MATCHES "^MODULE_SCRIPT$" AND BASIS_LANGUAGE MATCHES "PYTHON")
-      # get absolute path of built Python module
+    get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
+    get_target_property (LANGUAGE   ${TARGET_UID} LANGUAGE)
+    if (BASIS_TYPE MATCHES "MODULE|LIBRARY" AND LANGUAGE MATCHES "PYTHON")
+      # get absolute path of built Python module/library
       basis_get_target_location (LOCATION         ${TARGET_UID} ABSOLUTE)
       basis_get_target_location (INSTALL_LOCATION ${TARGET_UID} POST_INSTALL_RELATIVE)
       # get component (used by installation rule)
@@ -2292,10 +2805,15 @@ function (basis_add_init_py_target)
                                         # __init__.py for this component
       endif ()
       # directories for which to build a __init__.py file
-      basis_get_filename_component (DIR "${LOCATION}" PATH)
+      if (BASIS_TYPE MATCHES "^SCRIPT_LIBRARY$")
+        set (DIR "${LOCATION}")
+      else ()
+        basis_get_filename_component (DIR "${LOCATION}" PATH)
+      endif ()
       if (LOCATION MATCHES "/__init__.py$")
         list (APPEND EXCLUDE "${DIR}")
       else ()
+        list (APPEND TARGETS ${TARGET_UID}) # depends on _initpy
         if (DIR MATCHES "^${BINARY_PYTHON_LIBRARY_DIR_REGEX}/.+")
           while (NOT "${DIR}" MATCHES "^${BINARY_PYTHON_LIBRARY_DIR_REGEX}$")
             list (APPEND DIRS "${DIR}")
@@ -2309,10 +2827,15 @@ function (basis_add_init_py_target)
         endif ()
       endif ()
       # directories for which to install a __init__.py file
-      basis_get_filename_component (DIR "${INSTALL_LOCATION}" PATH)
+      if (BASIS_TYPE MATCHES "^SCRIPT_LIBRARY$")
+        set (DIR "${INSTALL_LOCATION}")
+      else ()
+        basis_get_filename_component (DIR "${INSTALL_LOCATION}" PATH)
+      endif ()
       if (INSTALL_LOCATION MATCHES "/__init__.py$")
         list (APPEND INSTALL_EXCLUDE "${DIR}")
       else ()
+        list (APPEND TARGETS ${TARGET_UID}) # depends on _initpy
         if (DIR MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR_REGEX}/.+")
           while (NOT "${DIR}" MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR_REGEX}$")
             list (APPEND INSTALL_DIRS_${COMPONENT} "${DIR}")
@@ -2322,6 +2845,9 @@ function (basis_add_init_py_target)
       endif ()
     endif ()
   endforeach ()
+  if (TARGETS)
+    list (REMOVE_DUPLICATES TARGETS)
+  endif ()
   # return if no Python module is being build
   if (NOT DIRS)
     return ()
@@ -2367,15 +2893,16 @@ function (basis_add_init_py_target)
   endif ()
   # add custom build command
   add_custom_command (
-    OUTPUT  ${OUTPUT_FILES}
-    COMMAND "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
-    COMMENT "Building __init__.py modules..."
+    OUTPUT          ${OUTPUT_FILES}
+    COMMAND         "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
+    MAIN_DEPENDENCY "${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in"
+    COMMENT         "Building PYTHON modules */__init__.py..."
   )
   # add custom target which triggers execution of build script
   add_custom_target (_initpy ALL DEPENDS ${OUTPUT_FILES})
-  if (TARGET scripts)
-    add_dependencies (scripts _initpy)
-  endif ()
+  foreach (TARGET IN LISTS TARGETS)
+    add_dependencies (${TARGET} _initpy)
+  endforeach ()
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
   # add install rules
@@ -2394,40 +2921,10 @@ function (basis_add_init_py_target)
         install (
           FILES       "${INSTALL_INIT_FILE}"
           DESTINATION "${DIR}"
-      
           COMPONENT   "${COMPONENT}"
         )
       endif ()
     endforeach ()
-  endforeach ()
-endfunction ()
-
-# ----------------------------------------------------------------------------
-## @brief Finalize addition of custom targets.
-#
-# This function is called by basis_add_project_finalize() to finalize the
-# addition of the custom build targets such as, for example, build targets
-# to build script files, MATLAB Compiler targets, and MEX script generated
-# MEX-files.
-#
-# @returns Adds custom targets that actually build the executables and
-#          libraries for which custom build targets where added by
-#          basis_add_executable(), basis_add_library(), and basis_add_script().
-#
-# @sa basis_add_script_finalize()
-# @sa basis_add_mcc_target_finalize()
-# @sa basis_add_mex_target_finalize()
-function (basis_add_custom_finalize)
-  basis_get_project_property (TARGETS PROPERTY TARGETS)
-  foreach (TARGET_UID ${TARGETS})
-    get_target_property (BASIS_TYPE ${TARGET_UID} "BASIS_TYPE")
-    if (BASIS_TYPE MATCHES "SCRIPT")
-      basis_add_script_finalize (${TARGET_UID})
-    elseif (BASIS_TYPE MATCHES "MEX")
-      basis_add_mex_target_finalize (${TARGET_UID})
-    elseif (BASIS_TYPE MATCHES "MCC")
-      basis_add_mcc_target_finalize (${TARGET_UID})
-    endif ()
   endforeach ()
 endfunction ()
 

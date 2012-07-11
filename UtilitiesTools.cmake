@@ -79,7 +79,7 @@ function (basis_add_utilities_library UID)
     # define dependency on non-project specific utilities as the order in
     # which static libraries are listed on the command-line for the linker
     # matters; this will help CMake to get the order right
-    target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_LIBRARY})
+    target_link_libraries (${TARGET_UID} ${BASIS_CXX_UTILITIES_LIBRARY})
     # set target properties
     _set_target_properties (
       ${TARGET_UID}
@@ -190,6 +190,12 @@ function (basis_utilities_check VAR SOURCE_FILE)
     set (LANGUAGE "${ARGN}")
   else ()
     message (FATAL_ERROR "Too many arguments given!")
+  endif ()
+  # --------------------------------------------------------------------------
+  # make file path absolute and append .in suffix if necessary
+  get_filename_component (SOURCE_FILE "${SOURCE_FILE}" ABSOLUTE)
+  if (NOT EXISTS "${SOURCE_FILE}" AND NOT SOURCE_FILE MATCHES "\\.in$" AND EXISTS "${SOURCE_FILE}.in")
+    set (SOURCE_FILE "${SOURCE_FILE}.in")
   endif ()
   # --------------------------------------------------------------------------
   # C++
@@ -367,23 +373,23 @@ function (basis_configure_utilities)
                            " Rebuild BASIS with Python utilities enabled.")
     endif ()
     # add project-specific utilities
-    basis_add_library (
+    string (REPLACE "." "/" PREFIX "${PROJECT_NAMESPACE_PYTHON}")
+    basis_add_library (basis_py "${BASIS_PYTHON_TEMPLATES_DIR}/basis.py")
+    basis_set_target_properties (
       basis_py
-        "${BASIS_PYTHON_TEMPLATES_DIR}/basis.py"
-      MODULE
+      PROPERTIES
+        SOURCE_DIRECTORY "${BASIS_PYTHON_TEMPLATES_DIR}"
         BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        CONFIG "if (BUILD_INSTALL_SCRIPT)
-                  set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_I}\")
-                else ()
-                  set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_B}\")
-                endif ()"
+        PREFIX           "${PREFIX}"
+        COMPILE_DEFINITIONS
+          "if (BUILD_INSTALL_SCRIPT)
+             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_I}\")
+           else ()
+             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_B}\")
+           endif ()"
     )
-    basis_set_target_properties (basis_py PROPERTIES OUTPUT_NAME basis)
     # dependencies
-    basis_add_dependencies (basis_py _initpy)
-    if (PROJECT_NAME MATCHES "^BASIS$")
-      basis_add_dependencies (basis_py which_py)
-    endif ()
+    basis_target_link_libraries (basis_py ${BASIS_PYTHON_UTILITIES_LIBRARY})
   endif ()
   # --------------------------------------------------------------------------
   # Perl
@@ -395,22 +401,23 @@ function (basis_configure_utilities)
                            " Rebuild BASIS with Perl utilities enabled.")
     endif ()
     # add project-specific utilities
-    basis_add_library (
+    string (REPLACE "::" "/" PREFIX "${PROJECT_NAMESPACE_PERL}")
+    basis_add_library (Basis_pm "${BASIS_PERL_TEMPLATES_DIR}/Basis.pm")
+    basis_set_target_properties (
       Basis_pm
-        "${BASIS_PERL_TEMPLATES_DIR}/Basis.pm"
-      MODULE
+      PROPERTIES
+        SOURCE_DIRECTORY "${BASIS_PERL_TEMPLATES_DIR}"
         BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        CONFIG "if (BUILD_INSTALL_SCRIPT)
-                  set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_I}\")
-                else ()
-                  set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_B}\")
-                endif ()"
+        PREFIX           "${PREFIX}"
+        COMPILE_DEFINITIONS
+          "if (BUILD_INSTALL_SCRIPT)
+             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_I}\")
+           else ()
+             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_B}\")
+           endif ()"
     )
-    basis_set_target_properties (Basis_pm PROPERTIES OUTPUT_NAME "Basis")
     # dependencies
-    if (PROJECT_NAME MATCHES "^BASIS$")
-      basis_add_dependencies (Basis_pm Utilities_pm)
-    endif ()
+    basis_target_link_libraries (Basis_pm ${BASIS_PERL_UTILITIES_LIBRARY})
   endif ()
   # --------------------------------------------------------------------------
   # Bash
@@ -427,23 +434,22 @@ function (basis_configure_utilities)
                            " Rebuild BASIS with Bash utilities enabled.")
     endif ()
     # add project-specific utilities
-    basis_add_library (
+    basis_add_library (basis_sh "${BASIS_BASH_TEMPLATES_DIR}/basis.sh")
+    basis_set_target_properties (
       basis_sh
-        "${BASIS_BASH_TEMPLATES_DIR}/basis.sh"
-      MODULE
+      PROPERTIES
+        SOURCE_DIRECTORY "${BASIS_BASH_TEMPLATES_DIR}"
         BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        CONFIG "if (BUILD_INSTALL_SCRIPT)
-                  set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_I}\")
-                else ()
-                  set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_B}\")
-                endif ()
-                set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n${SH_S}\")"
+        COMPILE_DEFINITIONS
+          "if (BUILD_INSTALL_SCRIPT)
+             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_I}\")
+           else ()
+             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_B}\")
+           endif ()
+           set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n${SH_S}\")"
     )
-    basis_set_target_properties (basis_sh PROPERTIES OUTPUT_NAME basis)
     # dependencies
-    if (PROJECT_NAME MATCHES "^BASIS$")
-      basis_add_dependencies (basis_sh utilities_sh)
-    endif ()
+    basis_target_link_libraries (basis_sh ${BASIS_BASH_UTILITIES_LIBRARY})
   endif ()
 
   if (BASIS_VERBOSE)

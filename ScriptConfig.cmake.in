@@ -43,7 +43,7 @@ set (LANGUAGE "${LANGUAGE}")
 #
 # @note Mainly used in script configuration itself to make relative paths
 #       absolute. In particular, basis_set_script_path() uses this variable.
-set (DIR "${DIR}")
+set (DIR "${__DIR__}")
 
 ## @brief Absolute path of script file.
 #
@@ -108,13 +108,13 @@ basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 # libexec_dir=${exec_dir}/__PREFIX_DIR__/__LIBEXEC_DIR_SUFFIX__
 # @endcode
 
-basis_get_relative_path (RUNTIME_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${RUNTIME_DIR}")
-basis_get_relative_path (LIBEXEC_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${LIBEXEC_DIR}")
-basis_get_relative_path (LIBRARY_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${LIBRARY_DIR}")
-basis_get_relative_path (ARCHIVE_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${ARCHIVE_DIR}")
-basis_get_relative_path (PYTHON_LIBRARY_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${PYTHON_LIBRARY_DIR}")
-basis_get_relative_path (PERL_LIBRARY_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${PERL_LIBRARY_DIR}")
-basis_get_relative_path (DATA_DIR_SUFFIX "${DIR}/${PREFIX_DIR}" "${DIR}/${DATA_DIR}")
+basis_get_relative_path (RUNTIME_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${RUNTIME_DIR}")
+basis_get_relative_path (LIBEXEC_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${LIBEXEC_DIR}")
+basis_get_relative_path (LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${LIBRARY_DIR}")
+basis_get_relative_path (ARCHIVE_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${ARCHIVE_DIR}")
+basis_get_relative_path (PYTHON_LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${PYTHON_LIBRARY_DIR}")
+basis_get_relative_path (PERL_LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${PERL_LIBRARY_DIR}")
+basis_get_relative_path (DATA_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${DATA_DIR}")
 
 # Note: The following set() commands are needed for the API documentation.
 
@@ -132,30 +132,6 @@ set (PYTHON_LIBRARY_DIR_SUFFIX "${PYTHON_LIBRARY_DIR_SUFFIX}")
 set (PERL_LIBRARY_DIR_SUFFIX "${PERL_LIBRARY_DIR_SUFFIX}")
 ## @brief Directory of auxiliary data files relative to installation prefix.
 set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
-
-# ============================================================================
-# paths to project-independent BASIS utilities
-# ============================================================================
-
-if ("@PROJECT_NAME@" STREQUAL "BASIS")
-  basis_set_script_path (_BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@")
-else ()
-  basis_set_script_path (_BASIS_LIBRARY_DIR "@BASIS_LIBRARY_DIR@")
-endif ()
-
-if ("@PROJECT_NAME@" STREQUAL "BASIS")
-  basis_set_script_path (_BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
-else ()
-  basis_set_script_path (_BASIS_PYTHON_LIBRARY_DIR "@BASIS_PYTHON_LIBRARY_DIR@")
-endif ()
-
-if ("@PROJECT_NAME@" STREQUAL "BASIS")
-  basis_set_script_path (_BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@" "@INSTALL_PERL_LIBRARY_DIR@")
-else ()
-  basis_set_script_path (_BASIS_PERL_LIBRARY_DIR "@BASIS_PERL_LIBRARY_DIR@")
-endif ()
-
-set (_BASIS_CPAN_LIBRARY_DIR "${_BASIS_PERL_LIBRARY_DIR}/@BASIS_NAMESPACE@")
 
 
 ## @}

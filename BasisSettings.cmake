@@ -324,19 +324,21 @@ set (BASIS_PROPERTIES_ON_TARGETS
   XCODE_ATTRIBUTE_<an-attribute>
   # BASIS
   BASIS_INCLUDE_DIRECTORIES    # include directories
-  BASIS_LANGUAGE               # language of source files
   BASIS_LINK_DIRECTORIES       # link directories
   BASIS_TYPE                   # BASIS type of target
+  BASIS_UTILITIES              # whether BASIS utilities are used by this target
+  LANGUAGE                     # language of source files
   COMPILE                      # enable/disable compilation of script
+  EXPORT                       # whether to export target
   LIBEXEC                      # whether the target is an auxiliary executable
+  TEST                         # whether the target is a test
+  MFILE                        # documentation file of MEX-file
+  COMPONENT                    # package component of build target
+  LIBRARY_COMPONENT            # package component of the library component
+  RUNTIME_COMPONENT            # package component of the runtime component
   ARCHIVE_INSTALL_DIRECTORY    # installation directory of library
   LIBRARY_INSTALL_DIRECTORY    # installation directory of library
   RUNTIME_INSTALL_DIRECTORY    # installation directory of runtime
-  LIBRARY_COMPONENT            # package component of the library component
-  MFILE                        # documentation file of MEX-file
-  NO_EXPORT                    # enable/disable export of target
-  RUNTIME_COMPONENT            # package component of the runtime component
-  TEST                         # whether the target is a test
   OUTPUT_DIRECTORY             # output directory for generated files
   INSTALL_DIRECTORY            # installation directory for generated files
   HTML_OUTPUT_DIRECTORY        # Doxygen/Sphinx HTML output directory
@@ -365,7 +367,8 @@ set (BASIS_PROPERTIES_ON_TARGETS
   OUTPUT                       # Doxygen output formats
   TAGFILE                      # Doxygen tag file
   CONFIG_DIRECTORY             # Sphinx configuration directory
-  SOURCE_DIRECTORY             # Sphinx source directory
+  BINARY_DIRECTORY             # CMake build tree directory
+  SOURCE_DIRECTORY             # CMake or Sphinx source directory
   BUILDERS                     # Sphinx builders
 )
 
@@ -417,6 +420,9 @@ else ()
   set (BASIS_UTILITIES TRUE)
 endif ()
 
+## @brief Whether to export build targets by default.
+set (BASIS_EXPORT TRUE)
+
 ## @brief Disable use of the revision information obtained from the revision
 #         control software such as Subversion.
 #
@@ -430,7 +436,7 @@ mark_as_advanced (BASIS_REVISION_INFO)
 # In particular, Python modules are compiled if this option is enabled and
 # only the compiled modules are installed.
 #
-# @sa basis_add_script()
+# @sa basis_add_script_target()
 option (BASIS_COMPILE_SCRIPTS "Enable compilation of scripts if supported by the language." OFF)
 mark_as_advanced (BASIS_COMPILE_SCRIPTS)
 
@@ -441,14 +447,6 @@ mark_as_advanced (BASIS_COMPILE_SCRIPTS)
 # rules to actually perform the build step. See for example, the build of
 # executables using the MATLAB Compiler.
 set (BASIS_SCRIPT_EXECUTE_PROCESS "${BASIS_MODULE_PATH}/ExecuteProcess.cmake")
-
-## @brief Default script configuration template.
-#
-# This is the default template used by basis_add_script() to configure the
-# script during the build step. If the file
-# @c PROJECT_CONFIG_DIR/ScriptConfig.cmake.in exists, the value of this variable
-# is set to its path by basis_project_initialize().
-set (BASIS_SCRIPT_CONFIG_FILE "${BASIS_MODULE_PATH}/ScriptConfig.cmake.in")
 
 ## @brief File used by default as <tt>--authors</tt> file to <tt>svn2cl</tt>.
 #

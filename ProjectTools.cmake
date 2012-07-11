@@ -431,20 +431,18 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Configure public header files.
 #
-# Configure public header files whose file name ends with the .in.
-# Moreover, if @c BASIS_COPY_INCLUDES_TO_BINARY_DIR is @c TRUE, this function
+# Configure public header files whose file name ends with .in.
+# Moreover, if @c BASIS_AUTO_PREFIX_INCLUDES is @c TRUE, this function
 # copies all other files to the build tree as well, using the same relative
 # paths as will be used for the installation.
 #
-# @sa BASIS_CONFIGURE_INCLUDES
+# @sa BASIS_AUTO_PREFIX_INCLUDES
 function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # settings
 
   # log file which lists the configured header files
   set (CMAKE_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}PublicHeaders.cmake")
-  # cache of currently defined CMake variables
-  set (CACHE_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}PublicHeadersCache.txt")
 
   # considered extensions
   set (
@@ -461,10 +459,6 @@ function (basis_configure_public_headers)
   # considered include directories
   basis_get_relative_path (INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
   set (INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/${INCLUDE_DIR}")
-
-  # dump currently defined CMake variables such that these can be used to
-  # configure the .in header files during the build step
-  basis_dump_variables ("${CACHE_FILE}")
 
   # --------------------------------------------------------------------------
   # common arguments to following commands
@@ -497,7 +491,7 @@ function (basis_configure_public_headers)
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
             -D "EXTENSIONS=${EXTENSIONS}"
             -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
-            -D "INCLUDE_FILE=${CACHE_FILE}"
+            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
             -D "CMAKE_FILE=${CMAKE_FILE}"
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
     RESULT_VARIABLE RT
@@ -628,7 +622,7 @@ function (basis_configure_public_headers)
               -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
               -D "EXTENSIONS=${EXTENSIONS}"
               -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
-              -D "INCLUDE_FILE=${CACHE_FILE}"
+              -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
               -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
       COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
       DEPENDS ${PUBLIC_HEADERS}
@@ -665,6 +659,78 @@ function (basis_configure_public_headers)
   if (NOT BASIS_AUTO_PREFIX_INCLUDES AND NOT PROJECT_NAME MATCHES "^BASIS$")
     basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}/${INCLUDE_PREFIX}")
   endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Configure the scripted modules in the @c PROJECT_LIBRARY_DIR.
+#
+# This function configures ("builds") the library modules in the
+# @c PROJECT_LIBRARY_DIR that are written in a scripting language such as
+# Python or Perl. During the configuration of the build system, it globs the
+# relevant files and writes the list of found module scripts to a CMake script
+# file with a single set() command. It then adds a build target for the build
+# of these scripts. Whenever this target is build, it globs for the same files
+# to check if any files were added or removed in which case the build system
+# has to be reconfigured in order to set the dependencies of the build target.
+# If no files were added or removed, it configures the scripted modules. Note
+# that each module is configured twice, once for use within the build tree and
+# once for use within the installation.
+function (basis_configure_library_modules)
+  # build target name
+  basis_make_target_uid (TARGET_UID lib)
+  if (PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
+    set (TARGET_UID "${TARGET_UID}_${PROJECT_NAME_LOWER}")
+  endif ()
+  set (BUILD_DIR "${PROJECT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
+  # extensions - excluding .in suffix
+  set (EXTENSIONS
+    .py # Python
+    .pm # Perl
+    .sh # Bash
+    .m  # MATLAB
+  )
+  # directories where to look for module scripts
+  set (DIRECTORIES)
+  if (PYTHON_VERSION_MAJOR)
+    list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}/python${PYTHON_VERSION_MAJOR}")
+  endif ()
+  list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}/python")
+  if (PERL_VERSION_MAJOR)
+    list (APPEND DIRECTORIES "${PERL_LIBRARY_DIR}/perl${PERL_VERSION_MAJOR}")
+  endif ()
+  list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}/perl")
+  list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}") # must be last!
+  # get and save list of module scripts
+  basis_glob (FILES DIRECTORIES ${DIRECTORIES} EXTENSIONS ${EXTENSIONS})
+  # configure build script
+  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
+  configure_file ("${BASIS_MODULE_PATH}/build_scripts.cmake.in" "${BUILD_SCRIPT}")
+  # add build command that either generates a dummy output file which the build
+  # target depends on or raises a fatal error if files were added or removed
+  set (COMMENT "Configuring scripted library files")
+  if (PROJECT_IS_MODULE)
+    set (COMMENT "${COMMENT} of ${PROJECT_NAME} module")
+  endif ()
+  set (OUTPUT_FILE "${BUILD_DIR}/build.dummy")
+  add_custom_command (
+    OUTPUT  "${OUTPUT_FILE}"
+    COMMAND "${CMAKE_COMMAND}"
+            -D "DIRECTORIES=${DIRECTORIES}"
+            -D "EXTENSIONS=${EXTENSIONS}"
+            -D "FILES=${FILES}"
+            -D "CACHE=${PROJECT_BINARY_DIR}/BasisCache.txt"
+            -D "OUTPUT_FILE=${OUTPUT_FILE}"
+            -P "${BUILD_SCRIPT}"
+    DEPENDS "${PROJECT_BINARY_DIR}/BasisCache.txt" "${BUILD_SCRIPT}" ${FILES}
+    COMMENT "${COMMENT}"
+    VERBATIM
+  )
+  # add build target
+  add_custom_target (
+    ${TARGET_UID} ALL
+    DEPENDS "${OUTPUT_FILE}"
+    SOURCES "${FILES}"
+  )
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -1211,6 +1277,14 @@ macro (basis_project_impl)
   basis_installtree_asserts ()
 
   # --------------------------------------------------------------------------
+  # defaul script configuration - see basis_configure_script()
+  set (BASIS_SCRIPT_CONFIG_FILE "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
+  configure_file ("${BASIS_MODULE_PATH}/ScriptConfig.cmake.in" "${BASIS_SCRIPT_CONFIG_FILE}" @ONLY)
+  if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
+    configure_file ("${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in" "${BINARY_CONFIG_DIR}/ScriptConfig.cmake" @ONLY)
+  endif ()
+
+  # --------------------------------------------------------------------------
   # root documentation files
   basis_configure_root_documentation_files ()
 
@@ -1226,7 +1300,12 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
-  # public header files
+  # public header files and script modules
+
+  # dump currently defined CMake variables such that these can be used to
+  # configure the .in header files during the build step
+  basis_dump_variables ("${PROJECT_BINARY_DIR}/BasisCache.txt")
+
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
   basis_configure_public_headers ()
 
@@ -1291,8 +1370,9 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
-  # configure BASIS utilities
+  # finalize custom targets
   if (NOT PROJECT_IS_MODULE)
+    # configure BASIS utilities
     foreach (M IN LISTS PROJECT_MODULES_ENABLED)
       foreach (L IN ITEMS CXX PYTHON PERL BASH)
         basis_get_project_property (P ${M} PROJECT_USES_${L}_UTILITIES)
@@ -1303,21 +1383,11 @@ macro (basis_project_impl)
       endforeach ()
     endforeach ()
     basis_configure_utilities ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # finalize addition of custom build targets
-  basis_add_custom_finalize ()
-
-  # --------------------------------------------------------------------------
-  # add build target for missing __init__.py files of Python package
-  if (NOT PROJECT_IS_MODULE)
+    # add missing build commands for custom targets
+    basis_finalize_targets ()
+    # add build target for missing __init__.py files of Python package
     basis_add_init_py_target ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # add installation rules for public headers
-  if (NOT PROJECT_IS_MODULE)
+    # add installation rules for public headers
     basis_install_public_headers ()
   endif ()
 
@@ -1358,9 +1428,8 @@ macro (basis_project_impl)
     basis_add_uninstall ()
     # add code to generate uninstaller at the end of the installation
     #
-    # Attention: This must be done at last and using a add_subdirector() call
-    #            such that the code is executed by the root cmake_install.cmake
-    #            at last!
+    # Attention: This must be done at last and using a add_subdirectory() call
+    #            such that the code is executed at last by the root cmake_install.cmake!
     add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
   endif ()
 

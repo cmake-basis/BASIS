@@ -41,17 +41,19 @@
 # ============================================================================
 
 ## @brief Absolute path of directory of project sources in source tree.
-set (PROJECT_CODE_DIR    "@PROJECT_SOURCE_DIR@/src")
+set (PROJECT_CODE_DIR "@PROJECT_SOURCE_DIR@/src")
 ## @brief Absolute path of directory of BASIS project configuration in source tree.
-set (PROJECT_CONFIG_DIR  "@PROJECT_SOURCE_DIR@/config")
+set (PROJECT_CONFIG_DIR "@PROJECT_SOURCE_DIR@/config")
 ## @brief Absolute path of directory of auxiliary data in source tree.
-set (PROJECT_DATA_DIR    "@PROJECT_SOURCE_DIR@/data")
+set (PROJECT_DATA_DIR "@PROJECT_SOURCE_DIR@/data")
 ## @brief Absolute path of directory of documentation files in source tree.
-set (PROJECT_DOC_DIR     "@PROJECT_SOURCE_DIR@/doc")
+set (PROJECT_DOC_DIR "@PROJECT_SOURCE_DIR@/doc")
 ## @brief Absolute path of directory of example in source tree.
 set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
-## @brief Absolute path of diretory of public header files in source tree.
+## @brief Absolute path of directory of public header files in source tree.
 set (PROJECT_INCLUDE_DIR "@PROJECT_SOURCE_DIR@/include")
+## @brief Absolute path of directory of public scripted packages.
+set (PROJECT_LIBRARY_DIR "@PROJECT_SOURCE_DIR@/lib")
 ## @brief Absolute path of directory of project modules.
 set (PROJECT_MODULES_DIR "@PROJECT_SOURCE_DIR@/modules")
 ## @brief Absolute path of directory of testing tree in source tree.
@@ -335,7 +337,7 @@ endif ()
 # remain fixed, otherwise the modules would not know how to refer to each
 # other in the source code, the variable BASIS_INSTALL_SINFIX as well as
 # BASIS_USE_MODULE_NAMESPACES are not considered here. Instead, the
-# functions basis_add_script() and basis_add_script_finalize() make sure
+# functions basis_add_script_target() and basis_add_script_target_finalize() make sure
 # that the modules are installed as part of the right packages.
 
 ## @brief Path of installation directory for Python modules relative to @c INSTALL_PREFIX.
