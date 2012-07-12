@@ -705,7 +705,10 @@ function (basis_configure_script_libraries)
       basis_get_source_language (SOURCE_LANGUAGE ${SOURCES}) # in particular required to
                                                              # not falsely build Jython modules
                                                              # as Python library
-      if (SOURCE_LANGUAGE MATCHES "${LANGUAGE}")
+      if (SOURCE_LANGUAGE MATCHES "UNKNOWN|AMBIGUOUS")
+        message (WARNING "Failed to auto-detect scripting language of modules in ${LIB_DIR}!"
+                         " Skipping source files matching the globbing expression *${${LANGUAGE}_EXT}.")
+      elseif (SOURCE_LANGUAGE MATCHES "${LANGUAGE}")
         set (TARGET_NAME "${${LANGUAGE}_LIBRARY_TARGET}")
         basis_add_library (${TARGET_NAME} "${LIB_DIR}/**${${LANGUAGE}_EXT}" LANGUAGE ${LANGUAGE})
         basis_set_target_properties (
