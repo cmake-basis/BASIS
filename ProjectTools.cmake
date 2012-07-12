@@ -670,6 +670,9 @@ endfunction ()
 # the <tt>&lt;LANG&gt;_LIBRARY_TARGET</tt> variables, which are set to their
 # default values in the @c &lt;Project&gt;Settings.cmake file.
 function (basis_configure_script_libraries)
+  if (NOT IS_DIRECTORY "${PROJECT_LIBRARY_DIR}")
+    return ()
+  endif ()
   # Python
   set (PYTHON_EXT ".py")
   set (PYTHON_LIB_DIRS)
@@ -678,6 +681,14 @@ function (basis_configure_script_libraries)
   endif ()
   list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/python")
   list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}")
+  # Jython
+  set (JYTHON_EXT ".py")
+  set (JYTHON_LIB_DIRS)
+  if (JYTHON_VERSION_MAJOR)
+    list (APPEND JYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/jython${JYTHON_VERSION_MAJOR}")
+  endif ()
+  list (APPEND JYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/jython")
+  list (APPEND JYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}")
   # Perl
   set (PERL_EXT ".pm")
   set (PERL_LIB_DIRS)
@@ -688,12 +699,15 @@ function (basis_configure_script_libraries)
   list (APPEND PERL_LIB_DIRS "${PROJECT_LIBRARY_DIR}")
   # add library targets
   set (TARGETS)
-  foreach (LANGUAGE IN ITEMS PYTHON PERL)
+  foreach (LANGUAGE IN ITEMS PYTHON JYTHON PERL)
     foreach (LIB_DIR IN LISTS ${LANGUAGE}_LIB_DIRS)
       file (GLOB_RECURSE SOURCES "${LIB_DIR}/*${${LANGUAGE}_EXT}")
-      if (SOURCES)
+      basis_get_source_language (SOURCE_LANGUAGE ${SOURCES}) # in particular required to
+                                                             # not falsely build Jython modules
+                                                             # as Python library
+      if (SOURCE_LANGUAGE MATCHES "${LANGUAGE}")
         set (TARGET_NAME "${${LANGUAGE}_LIBRARY_TARGET}")
-        basis_add_library (${TARGET_NAME} "${LIB_DIR}/**${${LANGUAGE}_EXT}")
+        basis_add_library (${TARGET_NAME} "${LIB_DIR}/**${${LANGUAGE}_EXT}" LANGUAGE ${LANGUAGE})
         basis_set_target_properties (
           ${TARGET_NAME}
           PROPERTIES

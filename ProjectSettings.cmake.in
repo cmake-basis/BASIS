@@ -332,6 +332,13 @@ endif ()
 # build of the Python modules found in the @c PROJECT_LIBRARY_DIR.
 set (PYTHON_LIBRARY_TARGET "pythonlib")
 
+## @brief Name of library target which builds Jython modules in @c PROJECT_LIBRARY_DIR.
+#
+# This variable is used by basis_configure_script_libraries() which is called
+# by basis_project_impl() to add a library target of the given name for the
+# build of the Jython modules found in the @c PROJECT_LIBRARY_DIR.
+set (JYTHON_LIBRARY_TARGET "jythonlib")
+
 ## @brief Name of library target which builds Perl modules in @c PROJECT_LIBRARY_DIR.
 #
 # This variable is used by basis_configure_script_libraries() which is called
