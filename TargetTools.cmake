@@ -2837,7 +2837,7 @@ function (basis_add_init_py_target)
       endforeach ()
     endif ()
   endforeach ()
-  if (TARGETS)
+  if (DEPENDENTS)
     list (REMOVE_DUPLICATES DEPENDENTS)
   endif ()
   # return if no Python module is being build
