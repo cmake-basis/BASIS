@@ -23,8 +23,8 @@
 # @ingroup BasisBashUtilities
 ##############################################################################
 
-[ "${_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED}" == 'true' ] || {
-_@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED='true'
+[ "${_@PROJECT_NAMESPACE_BASH@_@__NS__@_INCLUDED}" == 'true' ] || {
+_@PROJECT_NAMESPACE_BASH@_@__NS__@_INCLUDED='true'
 
 
 # ============================================================================
