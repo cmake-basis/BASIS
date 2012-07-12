@@ -1942,7 +1942,7 @@ function (basis_configure_script INPUT OUTPUT)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "COMPILE;COPYONLY;EXECUTABLE;FORINSTALL;NOSCRIPTCONFIG"
+      "COMPILE;COPYONLY;EXECUTABLE"
       "DESTINATION"
       "CACHE_FILE;CONFIG_FILE"
     ${ARGN}
@@ -2075,7 +2075,7 @@ function (basis_configure_script INPUT OUTPUT)
     # write configured script
     file (WRITE "${_OUTPUT_FILE}" "${SCRIPT}")
     # make script executable on Unix
-    if (UNIX AND NOT ARGN_FORINSTALL)
+    if (UNIX AND NOT ARGN_DESTINATION)
       execute_process (COMMAND /bin/chmod +x "${_OUTPUT_FILE}")
     endif ()
   # --------------------------------------------------------------------------
