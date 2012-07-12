@@ -1631,6 +1631,7 @@ function (basis_add_glob_target TARGET_UID SOURCES)
                   "-DSOURCES_FILE:FILEPATH=${SOURCES_FILE}"
                   "-DERRORMSG:STRING=${ERRORMSG}"
                   -P "${BASIS_MODULE_PATH}/glob.cmake"
+      COMMENT "Checking if source files of target ${TARGET_UID} were added or removed"
       VERBATIM
     )
   # otherwise, just return the given absolute source file paths
