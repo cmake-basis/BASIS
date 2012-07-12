@@ -260,8 +260,7 @@ string basename(const string& path)
 // ---------------------------------------------------------------------------
 bool hasext(const string& path, const set<string>* exts)
 {
-    string ext, tail;
-    splitext(path, ext, tail, exts);
+    string ext = splitext(path, exts)[1];
     return exts ? exts->find(ext) != exts->end() : !ext.empty();
 }
 
