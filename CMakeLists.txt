@@ -24,6 +24,7 @@ set (
     "ExternalData.cmake"            # storing data externally
     "ExternalData_config.cmake.in"  # config of ExternalData.cmake module
     "ImportTools.cmake"             # importing targets
+    "InterpTools.cmake"             # script interpreter tools
     "InstallationTools.cmake"       # software installation
     "MatlabTools.cmake"             # MATLAB support
     "ProjectTools.cmake"            # main project/module helpers

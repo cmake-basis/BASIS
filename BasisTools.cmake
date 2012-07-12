@@ -43,6 +43,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/TopologicalSort.cmake")
 # BASIS modules
 include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/DocTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/InterpTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/InstallationTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/MatlabTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/ProjectTools.cmake")

@@ -1264,6 +1264,21 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
+  # get interpreter versions - set to invalid version if not available
+  if (NOT PYTHON_VERSION_STRING)
+    basis_get_python_version ()
+  endif ()
+  if (NOT JYTHON_VERSION_STRING)
+    basis_get_jython_version ()
+  endif ()
+  if (NOT PERL_VERSION_STRING)
+    basis_get_perl_version ()
+  endif ()
+  if (NOT BASH_VERSION_STRING)
+    basis_get_bash_version ()
+  endif ()
+
+  # --------------------------------------------------------------------------
   # initialize settings
   basis_initialize_settings ()
 
