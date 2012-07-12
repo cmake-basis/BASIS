@@ -574,6 +574,18 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS AND NOT CMAKE_C_FLAGS)
   )
 endif ()
 
+# the following Mac OS specific variables are yet not further used
+# hide them from the normal user, as they are usually not required (yet)
+if (DEFINED CMAKE_OSX_ARCHITECTURES)
+  mark_as_advanced (CMAKE_OSX_ARCHITECTURES)
+endif ()
+if (DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+  mark_as_advanced (CMAKE_OSX_DEPLOYMENT_TARGET)
+endif ()
+if (DEFINED CMAKE_OSX_SYSROOT)
+  mark_as_advanced (CMAKE_OSX_SYSROOT)
+endif ()
+
 
 ## @}
 # end of Doxygen group
