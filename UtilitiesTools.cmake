@@ -435,18 +435,25 @@ function (basis_configure_utilities)
     endif ()
     # add project-specific utilities
     basis_add_library (basis_sh "${BASIS_BASH_TEMPLATES_DIR}/basis.sh")
+    set (COMPILE_DEFINITIONS
+      "if (BUILD_INSTALL_SCRIPT)
+         set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_I}\")
+       else ()
+         set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_B}\")
+       endif ()
+       set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n${SH_S}\")"
+    )
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_LIBRARY_DIR \"${BASIS_LIBRARY_DIR}\" \"${INSTALL_LIBRARY_DIR}\")")
+    else ()
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_LIBRARY_DIR \"${BASIS_LIBRARY_DIR}\")")
+    endif ()
     basis_set_target_properties (
       basis_sh
       PROPERTIES
-        SOURCE_DIRECTORY "${BASIS_BASH_TEMPLATES_DIR}"
-        BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        COMPILE_DEFINITIONS
-          "if (BUILD_INSTALL_SCRIPT)
-             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_I}\")
-           else ()
-             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_B}\")
-           endif ()
-           set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n${SH_S}\")"
+        SOURCE_DIRECTORY    "${BASIS_BASH_TEMPLATES_DIR}"
+        BINARY_DIRECTORY    "${BINARY_CODE_DIR}"
+        COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}"
     )
     # dependencies
     basis_target_link_libraries (basis_sh ${BASIS_BASH_UTILITIES_LIBRARY})
