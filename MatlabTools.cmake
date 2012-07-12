@@ -352,9 +352,7 @@ endfunction ()
 # as well. The MEX-file will be installed as part of the specified @p COMPONENT
 # in the @c INSTALL_LIBRARY_DIR on Unix and @c INSTALL_RUNTIME_DIR on Windows.
 #
-# @param [in] TARGET_NAME Name of build target. If an existing file is given as
-#                         argument, it is added to the list of source files and
-#                         the target name is derived from the name of this file.
+# @param [in] TARGET_NAME Name of build target.
 # @param [in] ARGN        The remaining arguments are parsed and the following
 #                         arguments extracted. All unparsed arguments are treated
 #                         as the source files of the MEX-file.
@@ -395,14 +393,6 @@ endfunction ()
 #
 # @ingroup CMakeUtilities
 function (basis_add_mex_file TARGET_NAME)
-  # derive target name from file name if existing source file given as first argument
-  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
-  if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
-    set (SOURCES "${S}")
-    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
-  else ()
-    set (SOURCES)
-  endif ()
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -422,9 +412,7 @@ function (basis_add_mex_file TARGET_NAME)
       ""
     ${ARGN}
   )
-  if (ARGN_UNPARSED_ARGUMENTS)
-    list (APPEND SOURCES ${ARGN_UNPARSED_ARGUMENTS})
-  endif ()
+  set (SOURCES ${ARGN_UNPARSED_ARGUMENTS})
   basis_set_flag (ARGN EXPORT ${BASIS_EXPORT})
   if (ARGN_USE_BASIS_UTILITIES AND ARGN_NO_BASIS_UTILITIES)
     message (FATAL_ERROR "Target ${TARGET_UID}: Options USE_BASIS_UTILITIES and NO_BASIS_UTILITIES are mutually exclusive!")
@@ -558,9 +546,7 @@ endfunction ()
 #       Moreover, no installation rules are added. Test executables are further
 #       not exported, regardless of the value of the @c EXPORT property.
 #
-# @param [in] TARGET_NAME Name of build target. If an existing file is given as
-#                         argument, it is added to the list of source files and
-#                         the target name is derived from the name of this file.
+# @param [in] TARGET_NAME Name of build target.
 # @param [in] ARGN        The remaining arguments are parsed and the following
 #                         arguments extracted. All unparsed arguments are treated
 #                         as the MATLAB or C/C++ source files, respectively.
@@ -647,14 +633,6 @@ endfunction ()
 #
 # @ingroup CMakeUtilities
 function (basis_add_mcc_target TARGET_NAME)
-  # derive target name from file name if existing source file given as first argument
-  get_filename_component (S "${TARGET_NAME}" ABSOLUTE)
-  if (EXISTS "${S}" AND NOT IS_DIRECTORY "${S}" OR (NOT S MATCHES "\\.in$" AND EXISTS "${S}.in" AND NOT IS_DIRECTORY "${S}.in"))
-    set (SOURCES "${S}")
-    basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
-  else ()
-    set (SOURCES)
-  endif ()
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
@@ -666,11 +644,12 @@ function (basis_add_mcc_target TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "SHARED;EXECUTABLE;LIBEXEC;EXPORT;NOEXPORT;TEST" # TEST option is deprecated
+      "SHARED;EXECUTABLE;LIBEXEC;EXPORT;NOEXPORT"
       "COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION"
       ""
     ${ARGN}
   )
+  set (SOURCES "${ARGN_UNPARSED_ARGUMENTS}")
   basis_set_flag (ARGN EXPORT ${BASIS_EXPORT})
   if (ARGN_SHARED AND (ARGN_EXECUTABLE OR ARGN_LIBEXEC))
     message (FATAL_ERROR "Target ${TARGET_UID}: Options SHARED and EXECUTABLE or LIBEXEC are mutually exclusive!")
@@ -690,14 +669,10 @@ function (basis_add_mcc_target TARGET_NAME)
   if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
     set (TEST TRUE)
   else ()
-    if (ARGN_TEST)
-      message (FATAL_ERROR "Target ${TARGET_UID}: Executable cannot have TEST property!"
-                           "If it is a test executable, put it in ${PROJECT_TESTING_DIR}.")
-    endif ()
     set (TEST FALSE)
   endif ()
   # output directory
-  if (ARGN_TEST)
+  if (TEST)
     set (LIBRARY_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
     if (ARGN_LIBEXEC)
       set (RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
@@ -743,7 +718,7 @@ function (basis_add_mcc_target TARGET_NAME)
     endif ()
   endif ()
   if (NOT ARGN_RUNTIME_DESTINATION)
-    if (ARGN_TEST)
+    if (TEST)
       set (ARGN_RUNTIME_DESTINATION) # do not install
     else ()
       if (ARGN_LIBEXEC)
