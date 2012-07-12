@@ -18,11 +18,15 @@ basis_install (
     "${INSTALL_PYTHON_TEMPLATES_DIR}"
 )
 
-# The Python utilities can be found in <src>/lib/python/. Note that the packages
-# found in the lib/ directory are automatically configured, build, and installed.
-
-
-# TODO Remove the following once this idea is implemented.
+# ----------------------------------------------------------------------------
+# utilities
 basis_get_target_name (UTILITIES ${BASIS_PYTHON_UTILITIES_LIBRARY})
-basis_add_library (${UTILITIES} "${PROJECT_LIBRARY_DIR}/python")
-basis_set_target_properties (${UTILITIES} PROPERTIES SOURCE_DIRECTORY "${PROJECT_LIBRARY_DIR}/python" PREFIX "")
+
+basis_add_library (
+  ${UTILITIES}
+    __init__.py
+    argparse.py
+    diff3.py
+    utilities.py
+    which.py
+)

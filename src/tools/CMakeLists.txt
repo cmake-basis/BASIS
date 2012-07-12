@@ -18,8 +18,8 @@ endif ()
 # ----------------------------------------------------------------------------
 # platform independent "which" command
 if (PythonInterp_FOUND)
-  basis_add_executable ("${PROJECT_LIBRARY_DIR}/python/sbia/basis/which.py")
-  basis_set_target_properties (which PROPERTIES SYMLINK_NAME "NONE")
+  basis_add_executable (which "${PROJECT_CODE_DIR}/utilities/python/which.py")
+  basis_set_target_properties (which PROPERTIES SYMLINK_NAME NONE)
 endif ()
 
 # ----------------------------------------------------------------------------

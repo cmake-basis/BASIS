@@ -17,14 +17,29 @@ basis_install (
     "${INSTALL_PERL_TEMPLATES_DIR}"
 )
 
-# The Perl utilities can be found in <src>/lib/perl5/. Note that the packages
-# found in the lib/ directory are automatically configured, build, and installed.
+# ----------------------------------------------------------------------------
+# CPAN
+basis_add_library (
+  cpan_modules
+    "Readonly.pm"
+    "Data/**.pm"
+    "File/**.pm"
+    "Params/**.pm"
+    "Pod/**.pm"
+    "Sub/**.pm"
+)
 
-
-# TODO Remove the following once this idea is implemented.
+basis_set_target_properties (cpan_modules PROPERTIES PREFIX "${BASIS_NAMESPACE}")
 
 # ----------------------------------------------------------------------------
 # utilities
 basis_get_target_name (UTILITIES ${BASIS_PERL_UTILITIES_LIBRARY})
-basis_add_library (${UTILITIES} "${PROJECT_LIBRARY_DIR}/perl5")
-basis_set_target_properties (${UTILITIES} PROPERTIES SOURCE_DIRECTORY "${PROJECT_LIBRARY_DIR}/perl5" PREFIX "")
+
+basis_add_library (
+  ${UTILITIES}
+    "Utilities.pm"
+    "DoxyFilter.pm"
+    "DoxyFilter/**.pm"
+)
+
+basis_target_link_libraries (${UTILITIES} cpan_modules)
