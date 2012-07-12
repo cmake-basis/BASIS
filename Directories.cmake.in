@@ -122,11 +122,13 @@ basis_set_if_empty (BINARY_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib")
 basis_set_if_empty (BINARY_ARCHIVE_DIR "@PROJECT_BINARY_DIR@/lib")
 ## @brief Absolute path of output directory for Python modules.
 basis_set_if_empty (BINARY_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/python")
+## @brief Absolute path of output directory for Jython modules.
+basis_set_if_empty (BINARY_JYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/jython")
 ## @brief Absolute path of output directory for Perl modules.
 basis_set_if_empty (BINARY_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/perl5")
 
 if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  # Note that Python and Perl modules use their own internal package
+  # Note that Python/Jython and Perl modules use their own internal package
   # hierarchy. The top-level directory which is added to the search path
   # for such modules does not have to be changed here.
   foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE)
@@ -146,7 +148,8 @@ endif ()
 
 # references to top-level project's directories
 if (NOT PROJECT_IS_MODULE)
-  foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE PYTHON_LIBRARY PERL_LIBRARY)
+  foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE
+                      PYTHON_LIBRARY JYTHON_LIBRARY PERL_LIBRARY)
     set (BASIS_BINARY_${D}_DIR "${BINARY_${D}_DIR}")
   endforeach ()
 endif ()
@@ -345,6 +348,13 @@ if (UNIX)
   set (INSTALL_PYTHON_LIBRARY_DIR "lib/python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@/site-packages")
 else ()
   set (INSTALL_PYTHON_LIBRARY_DIR "Library/Python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@")
+endif ()
+
+## @brief Path of installation directory for Jython modules relative to @c INSTALL_PREFIX.
+if (UNIX)
+  set (INSTALL_JYTHON_LIBRARY_DIR "lib/jython@JYTHON_VERSION_MAJOR@.@JYTHON_VERSION_MINOR@/site-packages")
+else ()
+  set (INSTALL_JYTHON_LIBRARY_DIR "Library/Jython@JYTHON_VERSION_MAJOR@.@JYTHON_VERSION_MINOR@")
 endif ()
 
 ## @brief Path of installation directory for Perl modules relative to @c INSTALL_PREFIX.
