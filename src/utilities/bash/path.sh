@@ -104,7 +104,7 @@ abspath()
 realpath()
 {
     # make path absolute and resolve '..' references
-    local _basis_grp_path=`to_absolute_path "$1"`
+    local _basis_grp_path=`abspath "$1"`
     if ! [ -e "${_basis_grp_path}" ]; then echo -n "${_basis_grp_path}"; return; fi
     # resolve symbolic links within path
     _basis_grp_path=`cd -P -- $(dirname -- "${_basis_grp_path}") && pwd -P`/`basename -- "${_basis_grp_path}"`
