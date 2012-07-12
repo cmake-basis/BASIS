@@ -2562,11 +2562,16 @@ function (basis_build_script TARGET_UID)
       set (INSTALL_FILE "${INSTALL_FILE}c")
     endif ()
     get_filename_component (OUTPUT_NAME "${OUTPUT_FILE}" NAME)
+    if (MODULE)
+      set (INSTALLTYPE FILES)
+    else ()
+      set (INSTALLTYPE PROGRAMS)
+    endif ()
     install (
-      FILES       "${INSTALL_FILE}"
-      DESTINATION "${INSTALL_DIRECTORY}"
-      COMPONENT   "${COMPONENT}"
-      RENAME      "${OUTPUT_NAME}"
+      ${INSTALLTYPE} "${INSTALL_FILE}"
+      DESTINATION    "${INSTALL_DIRECTORY}"
+      COMPONENT      "${COMPONENT}"
+      RENAME         "${OUTPUT_NAME}"
     )
   endif ()
   # done
