@@ -471,6 +471,8 @@ basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 
 ## @brief Enable/Disable copying of all public header files to the build tree.
 #
+# @deprecated This option is deprecated and will be removed in future releases.
+#
 # If enabled, BASIS copies the public header files which were found in the
 # @c PROJECT_INCLUDE_DIR to the corresponding include directory in the build
 # tree using the same relative paths as will be used for the installation.
