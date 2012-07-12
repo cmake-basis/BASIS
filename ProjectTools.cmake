@@ -662,75 +662,54 @@ function (basis_configure_public_headers)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Configure the scripted modules in the @c PROJECT_LIBRARY_DIR.
+## @brief Add library targets for the modules in @c PROJECT_LIBRARY_DIR.
 #
 # This function configures ("builds") the library modules in the
 # @c PROJECT_LIBRARY_DIR that are written in a scripting language such as
-# Python or Perl. During the configuration of the build system, it globs the
-# relevant files and writes the list of found module scripts to a CMake script
-# file with a single set() command. It then adds a build target for the build
-# of these scripts. Whenever this target is build, it globs for the same files
-# to check if any files were added or removed in which case the build system
-# has to be reconfigured in order to set the dependencies of the build target.
-# If no files were added or removed, it configures the scripted modules. Note
-# that each module is configured twice, once for use within the build tree and
-# once for use within the installation.
-function (basis_configure_library_modules)
-  # build target name
-  basis_make_target_uid (TARGET_UID lib)
-  if (PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
-    set (TARGET_UID "${TARGET_UID}_${PROJECT_NAME_LOWER}")
-  endif ()
-  set (BUILD_DIR "${PROJECT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
-  # extensions - excluding .in suffix
-  set (EXTENSIONS
-    .py # Python
-    .pm # Perl
-    .sh # Bash
-    .m  # MATLAB
-  )
-  # directories where to look for module scripts
-  set (DIRECTORIES)
+# Python or Perl. The names of the added library targets can be modified using
+# the <tt>&lt;LANG&gt;_LIBRARY_TARGET</tt> variables, which are set to their
+# default values in the @c &lt;Project&gt;Settings.cmake file.
+function (basis_configure_script_libraries)
+  # Python
+  set (PYTHON_EXT ".py")
+  set (PYTHON_LIB_DIRS)
   if (PYTHON_VERSION_MAJOR)
-    list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}/python${PYTHON_VERSION_MAJOR}")
+    list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/python${PYTHON_VERSION_MAJOR}")
   endif ()
-  list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}/python")
+  list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/python")
+  list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}")
+  # Perl
+  set (PERL_EXT ".pm")
+  set (PERL_LIB_DIRS)
   if (PERL_VERSION_MAJOR)
-    list (APPEND DIRECTORIES "${PERL_LIBRARY_DIR}/perl${PERL_VERSION_MAJOR}")
+    list (APPEND PERL_LIB_DIRS "${PROJECT_LIBRARY_DIR}/perl${PERL_VERSION_MAJOR}")
   endif ()
-  list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}/perl")
-  list (APPEND DIRECTORIES "${PROJECT_LIBRARY_DIR}") # must be last!
-  # get and save list of module scripts
-  basis_glob (FILES DIRECTORIES ${DIRECTORIES} EXTENSIONS ${EXTENSIONS})
-  # configure build script
-  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
-  configure_file ("${BASIS_MODULE_PATH}/build_scripts.cmake.in" "${BUILD_SCRIPT}")
-  # add build command that either generates a dummy output file which the build
-  # target depends on or raises a fatal error if files were added or removed
-  set (COMMENT "Configuring scripted library files")
-  if (PROJECT_IS_MODULE)
-    set (COMMENT "${COMMENT} of ${PROJECT_NAME} module")
+  list (APPEND PERL_LIB_DIRS "${PROJECT_LIBRARY_DIR}/perl")
+  list (APPEND PERL_LIB_DIRS "${PROJECT_LIBRARY_DIR}")
+  # add library targets
+  set (TARGETS)
+  foreach (LANGUAGE IN ITEMS PYTHON PERL)
+    foreach (LIB_DIR IN LISTS ${LANGUAGE}_LIB_DIRS)
+      file (GLOB_RECURSE SOURCES "${LIB_DIR}/*${${LANGUAGE}_EXT}")
+      if (SOURCES)
+        set (TARGET_NAME "${${LANGUAGE}_LIBRARY_TARGET}")
+        basis_add_library (${TARGET_NAME} "${LIB_DIR}/**${${LANGUAGE}_EXT}")
+        basis_set_target_properties (
+          ${TARGET_NAME}
+          PROPERTIES
+            SOURCE_DIRECTORY "${LIB_DIR}"
+            PREFIX           ""
+        )
+        list (APPEND TARGETS ${TARGET_NAME})
+        break ()
+      endif ()
+    endforeach ()
+  endforeach ()
+  if (TARGETS)
+    basis_make_target_uid (LIBRARY_TARGET lib)
+    add_custom_target (${LIBRARY_TARGET} ALL)
+    basis_add_dependencies (${LIBRARY_TARGET} ${TARGETS})
   endif ()
-  set (OUTPUT_FILE "${BUILD_DIR}/build.dummy")
-  add_custom_command (
-    OUTPUT  "${OUTPUT_FILE}"
-    COMMAND "${CMAKE_COMMAND}"
-            -D "DIRECTORIES=${DIRECTORIES}"
-            -D "EXTENSIONS=${EXTENSIONS}"
-            -D "FILES=${FILES}"
-            -D "CACHE=${PROJECT_BINARY_DIR}/BasisCache.txt"
-            -D "OUTPUT_FILE=${OUTPUT_FILE}"
-            -P "${BUILD_SCRIPT}"
-    DEPENDS "${PROJECT_BINARY_DIR}/BasisCache.txt" "${BUILD_SCRIPT}" ${FILES}
-    COMMENT "${COMMENT}"
-    VERBATIM
-  )
-  # add build target
-  add_custom_target (
-    ${TARGET_UID} ALL
-    DEPENDS "${OUTPUT_FILE}"
-    SOURCES "${FILES}"
-  )
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -1300,14 +1279,14 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
-  # public header files and script modules
+  # public header files and script libraries
 
   # dump currently defined CMake variables such that these can be used to
-  # configure the .in header files during the build step
+  # configure the .in public header and module files during the build step
   basis_dump_variables ("${PROJECT_BINARY_DIR}/BasisCache.txt")
-
   basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
   basis_configure_public_headers ()
+  basis_configure_script_libraries ()
 
   # --------------------------------------------------------------------------
   # subdirectories

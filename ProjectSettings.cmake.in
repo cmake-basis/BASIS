@@ -277,6 +277,10 @@ else ()
   endif ()
 endif ()
 
+# ============================================================================
+# public include files
+# ============================================================================
+
 ## @brief Prefix for public header files.
 #
 # The prefix used for the output directory of the configured public header
@@ -316,6 +320,24 @@ else ()
     set (INCLUDE_PREFIX "${INCLUDE_PREFIX}/@PROJECT_NAME_LOWER@/")
   endif ()
 endif ()
+
+# ============================================================================
+# public libraries of script modules
+# ============================================================================
+
+## @brief Name of library target which builds Python modules in @c PROJECT_LIBRARY_DIR.
+#
+# This variable is used by basis_configure_script_libraries() which is called
+# by basis_project_impl() to add a library target of the given name for the
+# build of the Python modules found in the @c PROJECT_LIBRARY_DIR.
+set (PYTHON_LIBRARY_TARGET "pythonlib")
+
+## @brief Name of library target which builds Perl modules in @c PROJECT_LIBRARY_DIR.
+#
+# This variable is used by basis_configure_script_libraries() which is called
+# by basis_project_impl() to add a library target of the given name for the
+# build of the Perl modules found in the @c PROJECT_LIBRARY_DIR.
+set (PERL_LIBRARY_TARGET "perllib")
 
 
 ## @}
