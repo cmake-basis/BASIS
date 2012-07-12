@@ -25,8 +25,9 @@ endif ()
 # ----------------------------------------------------------------------------
 # doxygen filters
 if (Perl_FOUND)
+  basis_add_library (doxyfilterlib "DoxyFilter.pm" "DoxyFilter/**.pm")
   basis_add_executable (doxyfilter.pl LIBEXEC)
-  basis_target_link_libraries (doxyfilter doxyfilter_modules)
+  basis_target_link_libraries (doxyfilter doxyfilterlib)
 endif ()
 
 # ----------------------------------------------------------------------------

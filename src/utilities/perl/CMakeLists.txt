@@ -34,12 +34,5 @@ basis_set_target_properties (cpan_modules PROPERTIES PREFIX "${BASIS_NAMESPACE}"
 # ----------------------------------------------------------------------------
 # utilities
 basis_get_target_name (UTILITIES ${BASIS_PERL_UTILITIES_LIBRARY})
-
-basis_add_library (
-  ${UTILITIES}
-    "Utilities.pm"
-    "DoxyFilter.pm"
-    "DoxyFilter/**.pm"
-)
-
+basis_add_library (${UTILITIES} "Utilities.pm")
 basis_target_link_libraries (${UTILITIES} cpan_modules)
