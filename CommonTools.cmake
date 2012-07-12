@@ -1936,6 +1936,12 @@ endfunction ()
 #     <td>List of script configuration files to include before the configuration
 #         of the script. See also the documentation of the @p DESTINATION option.</td>
 #   </tr>
+#   <tr>
+#     @tp @b LINK_DEPENDS dep1 [dep2...] @endtp
+#     <td>List of "link" dependencies, i.e., modules and script/module libraries
+#         required by this script. For executable scripts, the paths to these
+#         modules/packages is added to the module search path.</td>
+#   </tr>
 # </table>
 function (basis_configure_script INPUT OUTPUT)
   # rename arguments to avoid conflict with script configuration
@@ -1947,7 +1953,7 @@ function (basis_configure_script INPUT OUTPUT)
     ARGN
       "COMPILE;COPYONLY;EXECUTABLE"
       "DESTINATION"
-      "CACHE_FILE;CONFIG_FILE"
+      "CACHE_FILE;CONFIG_FILE;LINK_DEPENDS"
     ${ARGN}
   )
   if (ARGN_UNPARSED_ARGUMENTS)
@@ -1955,7 +1961,7 @@ function (basis_configure_script INPUT OUTPUT)
   endif ()
   # --------------------------------------------------------------------------
   # include cache files
-  foreach (_F IN LISTS CACHE_FILE)
+  foreach (_F IN LISTS ARGN_CACHE_FILE)
     get_filename_component (_F "${_F}" ABSOLUTE)
     if (NOT EXISTS "${_F}")
       message (FATAL_ERROR "Cache file ${_F} does not exist!")
@@ -1976,6 +1982,9 @@ function (basis_configure_script INPUT OUTPUT)
   # variables mainly intended for use in script configurations, in particular,
   # these are used by basis_set_script_path() to make absolute paths relative
   if (ARGN_DESTINATION)
+    if (NOT IS_ABSOLUTE "${ARGN_DESTINATION}")
+      set (ARGN_DESTINATION "${INSTALL_PREFIX}/${ARGN_DESTINATION}")
+    endif ()
     set (BUILD_INSTALL_SCRIPT TRUE)
     set (__DIR__ "${ARGN_DESTINATION}")
   else ()
@@ -2004,35 +2013,55 @@ function (basis_configure_script INPUT OUTPUT)
     file (READ "${_INPUT_FILE}" SCRIPT)
     # determine scripting language
     basis_get_source_language (LANGUAGE "${_INPUT_FILE}")
-    # remove existing shebang directive
+    # (temporarily) remove existing shebang directive
     file (STRINGS "${_INPUT_FILE}" FIRST_LINE LIMIT_COUNT 1)
     if (FIRST_LINE MATCHES "^#!")
       basis_sanitize_for_regex (FIRST_LINE_REGEX "${FIRST_LINE}")
       string (REGEX REPLACE "^${FIRST_LINE_REGEX}\n?" "" SCRIPT "${SCRIPT}")
+      set (SHEBANG "${FIRST_LINE}")
     endif ()
     # replace CMake variables used in script
     if (NOT ARGN_COPYONLY)
       string (CONFIGURE "${SCRIPT}" SCRIPT @ONLY)
     endif ()
-    # prepend module search path of this project
+    # add code to set module search path
     if (LANGUAGE MATCHES "[JP]YTHON")
-      if (PROJECT_NAME MATCHES "^BASIS$")
-        basis_set_script_path (_BASIS_PYTHON_LIBRARY_DIR "${BASIS_PYTHON_LIBRARY_DIR}" "${INSTALL_PYTHON_LIBRARY_DIR}")
-      else ()
-        basis_set_script_path (_BASIS_PYTHON_LIBRARY_DIR "${BASIS_PYTHON_LIBRARY_DIR}")
+      if (ARGN_LINK_DEPENDS)
+        string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
+        set (PYTHON_CODE "import sys; import os.path; __dir__ = os.path.dirname(os.path.realpath(__file__))")
+        list (REVERSE ARGN_LINK_DEPENDS)
+        foreach (DIR IN LISTS ARGN_LINK_DEPENDS)
+          if (DIR MATCHES "\\.py$")
+            get_filename_component (DIR "${DIR}" PATH)
+          endif ()
+          basis_get_relative_path (DIR "${__DIR__}" "${DIR}")
+          set (PYTHON_CODE "${PYTHON_CODE}; sys.path.insert(0, os.path.realpath(os.path.join(__dir__, '${DIR}')))")
+        endforeach ()
+        set (SCRIPT "${PYTHON_CODE}\n${SCRIPT}")
       endif ()
-      string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}")
-      set (SCRIPT "import sys; import os.path; sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '${_BASIS_PYTHON_LIBRARY_DIR}'))); sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '${PYTHON_LIBRARY_DIR}')))\n${SCRIPT}")
     elseif (LANGUAGE MATCHES "PERL")
-      if (PROJECT_NAME MATCHES "^BASIS$")
-        basis_set_script_path (_BASIS_PERL_LIBRARY_DIR "${BASIS_PERL_LIBRARY_DIR}" "${INSTALL_PERL_LIBRARY_DIR}")
-      else ()
-        basis_set_script_path (_BASIS_PERL_LIBRARY_DIR "${BASIS_PERL_LIBRARY_DIR}")
+      if (ARGN_LINK_DEPENDS)
+        string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
+        set (PERL_CODE "use Cwd qw(realpath); use File::Basename;")
+        foreach (DIR IN LISTS ARGN_LINK_DEPENDS)
+          if (DIR MATCHES "\\.pm$")
+            get_filename_component (DIR "${DIR}" PATH)
+          endif ()
+          basis_get_relative_path (DIR "${__DIR__}" "${DIR}")
+          set (PERL_CODE "${PERL_CODE} use lib dirname(realpath(__FILE__)) . '/${DIR}';")
+        endforeach ()
+        set (SCRIPT "${PERL_CODE}\n${SCRIPT}")
       endif ()
-      string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}")
-      set (SCRIPT "use Cwd qw(realpath); use File::Basename; use lib realpath(dirname(realpath(__FILE__)) . '/${_BASIS_PERL_LIBRARY_DIR}'); use lib realpath(dirname(realpath(__FILE__)) . '/${PERL_LIBRARY_DIR}'); use lib dirname(realpath(__FILE__));\n${SCRIPT}")
     elseif (LANGUAGE MATCHES "BASH")
-      string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}")
+      # in case of Bash, set BASIS_BASH_UTILITIES instead
+      # TODO implement utility function which mimics the import of other Bash modules
+      #      such function could also make use of a search path to find a named module
+      #      it would be used similar to:
+      #      #! /bin/bash
+      #      . ${BASIS_BASH_UTILITIES} || exit 1
+      #      BASHLIB='<prefix>/lib'
+      #      basis_source 'sbia/basis/shtap'
+      string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
       set (BASH_CODE
   "BASIS_BASH_UTILITIES=\"$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")\"
   i=0
@@ -2050,30 +2079,32 @@ function (basis_configure_script INPUT OUTPUT)
       string (REPLACE "\n" "; " BASH_CODE "${BASH_CODE}")
       set (SCRIPT "${BASH_CODE}\n${SCRIPT}")
     endif ()
-    # add shebang directive, resp., Windows Command code
-    if (__Name__ STREQUAL __NameWE__) # to executable files without extension
-      if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
-        if (WIN32)
-          set (SCRIPT "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF\n${SCRIPT}")
-        else ()
-          set (SCRIPT "#! ${PYTHON_EXECUTABLE}\n${SCRIPT}")
-        endif ()
-      elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
-        if (WIN32)
-          set (SCRIPT "@setlocal enableextensions & \"${JYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF\n${SCRIPT}")
-        else ()
-          set (SCRIPT "#! ${JYTHON_EXECUTABLE}\n${SCRIPT}")
-        endif ()
-      elseif (LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
-        if (WIN32)
-          set (SCRIPT "@goto = \"START_OF_BATCH\" ;\n@goto = ();\n${SCRIPT}")
-          set (SCRIPT "${SCRIPT}\n\n__END__\n\n:\"START_OF_BATCH\"\n@\"${PERL_EXECUTABLE}\" -w -S \"%~f0\" %*")
-        else ()
-          set (SCRIPT "#! ${PERL_EXECUTABLE} -w\n${SCRIPT}")
-        endif ()
-      elseif (LANGUAGE MATCHES "BASH" AND BASH_EXECUTABLE)
-        set (SCRIPT "#! ${BASH_EXECUTABLE}\n${SCRIPT}")
+    # replace shebang directive
+    if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
+      if (WIN32)
+        set (SHEBANG "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
+      else ()
+        set (SHEBANG "#! ${PYTHON_EXECUTABLE}")
       endif ()
+    elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
+      if (WIN32)
+        set (SHEBANG "@setlocal enableextensions & \"${JYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
+      else ()
+        set (SHEBANG "#! ${JYTHON_EXECUTABLE}")
+      endif ()
+    elseif (LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
+      if (WIN32)
+        set (SHEBANG "@goto = \"START_OF_BATCH\" ;\n@goto = ();")
+        set (SCRIPT "${SCRIPT}\n\n__END__\n\n:\"START_OF_BATCH\"\n@\"${PERL_EXECUTABLE}\" -w -S \"%~f0\" %*")
+      else ()
+        set (SHEBANG "#! ${PERL_EXECUTABLE} -w")
+      endif ()
+    elseif (LANGUAGE MATCHES "BASH" AND BASH_EXECUTABLE)
+      set (SHEBANG "#! ${BASH_EXECUTABLE}")
+    endif ()
+    # add (modified) shebang directive again
+    if (SHEBANG)
+      set (SCRIPT "${SHEBANG}\n${SCRIPT}")
     endif ()
     # write configured script
     file (WRITE "${_OUTPUT_FILE}" "${SCRIPT}")

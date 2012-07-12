@@ -2527,6 +2527,27 @@ function (basis_build_script TARGET_UID)
   if (EXECUTABLE)
     list (APPEND OPTIONS EXECUTABLE)
   endif ()
+  # link dependencies - module search paths
+  set (BUILD_LINK_DEPENDS)
+  set (INSTALL_LINK_DEPENDS)
+  foreach (LINK_DEPEND IN LISTS LINK_DEPENDS)
+    basis_get_target_uid (UID "${LINK_DEPEND}")
+    if (TARGET "${UID}")
+      basis_get_target_location (LOCATION "${UID}" ABSOLUTE)
+      list (APPEND BUILD_LINK_DEPENDS "${LOCATION}")
+      basis_get_target_location (LOCATION "${UID}" POST_INSTALL)
+      list (APPEND INSTALL_LINK_DEPENDS "${LOCATION}")
+    else ()
+      list (APPEND BUILD_LINK_DEPENDS   "${LINK_DEPEND}")
+      list (APPEND INSTALL_LINK_DEPENDS "${LINK_DEPEND}")
+    endif ()
+  endforeach ()
+  if (BUILD_LINK_DEPENDS)
+    list (REMOVE_DUPLICATES BUILD_LINK_DEPENDS)
+  endif ()
+  if (INSTALL_LINK_DEPENDS)
+    list (REMOVE_DUPLICATES INSTALL_LINK_DEPENDS)
+  endif ()
   # list of all output files
   set (OUTPUT_FILES "${OUTPUT_FILE}")
   if (INSTALL_FILE)
@@ -2554,6 +2575,8 @@ function (basis_build_script TARGET_UID)
                         "-DOUTPUT_FILE=${OUTPUT_FILE}"
                         "-DINSTALL_FILE=${INSTALL_FILE}"
                         "-DDESTINATION=${INSTALL_DIRECTORY}"
+                        "-DBUILD_LINK_DEPENDS=${BUILD_LINK_DEPENDS}"
+                        "-DINSTALL_LINK_DEPENDS=${INSTALL_LINK_DEPENDS}"
                         "-DOPTIONS=${OPTIONS}"
                         -P "${BASIS_MODULE_PATH}/configure_script.cmake"
     MAIN_DEPENDENCY ${SOURCE_FILE}
@@ -2812,15 +2835,25 @@ function (basis_add_init_py_target)
     get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
     get_target_property (LANGUAGE   ${TARGET_UID} LANGUAGE)
     if (BASIS_TYPE MATCHES "MODULE|LIBRARY" AND LANGUAGE MATCHES "PYTHON")
-      # get absolute path of built Python module/library
+      # get absolute path of build Python modules
       basis_get_target_location (LOCATION         ${TARGET_UID} ABSOLUTE)
       basis_get_target_location (INSTALL_LOCATION ${TARGET_UID} POST_INSTALL_RELATIVE)
       if (BASIS_TYPE MATCHES "^SCRIPT_LIBRARY$")
-        get_target_property (PREFIX ${TARGET_UID} PREFIX)
+        get_target_property (PREFIX           ${TARGET_UID} PREFIX)
+        get_target_property (SOURCES          ${TARGET_UID} SOURCES)
+        get_target_property (SOURCE_DIRECTORY ${TARGET_UID} SOURCE_DIRECTORY)
         if (PREFIX)
           set (LOCATION         "${LOCATION}/${PREFIX}")
           set (INSTALL_LOCATION "${INSTALL_LOCATION}/${PREFIX}")
         endif ()
+        list (REMOVE_AT SOURCES 0) # strange, but this is a CMakeFiles/ subdirectory
+        foreach (SOURCE IN LISTS SOURCES)
+          file (RELATIVE_PATH SOURCE "${SOURCE_DIRECTORY}" "${SOURCE}")
+          list (APPEND _LOCATION         "${LOCATION}/${SOURCE}")
+          list (APPEND _INSTALL_LOCATION "${INSTALL_LOCATION}/${SOURCE}")
+        endforeach ()
+        set (LOCATION         "${_LOCATION}")
+        set (INSTALL_LOCATION "${_INSTALL_LOCATION}")
       endif ()
       # get component (used by installation rule)
       get_target_property (COMPONENT ${TARGET_UID} "LIBRARY_COMPONENT")

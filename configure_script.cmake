@@ -37,7 +37,23 @@
 #   </tr>
 #   <tr>
 #     @tp @b OPTIONS=<opt1>[;<opt2>;...] @endtp
-#     <td>Configuration options for basis_configure_script() excluding @c DESTINATION.</td>
+#     <td>Configuration options for basis_configure_script() excluding
+#         @c DESTINATION and @c LINK_DEPENDS.</td>
+#   </tr>
+#   <tr>
+#     @tp @b LINK_DEPENDS=<dep1>[;<dep2;...] @endtp
+#     <td>Link dependencies, i.e., modules and directories to be added to
+#         the search path of both @c OUTPUT_FILE and @c INSTALL_FILE.</td>
+#   </tr>
+#   <tr>
+#     @tp @b BUILD_LINK_DEPENDS=<dep1>[;<dep2;...] @endtp
+#     <td>Link dependencies, i.e., modules and directories to be added to
+#         the search path of @c OUTPUT_FILE only.</td>
+#   </tr>
+#   <tr>
+#     @tp @b INSTALL_LINK_DEPENDS=<dep1>[;<dep2;...] @endtp
+#     <td>Link dependencies, i.e., modules and directories to be added to
+#         the search path of @c INSTALL_FILE only.</td>
 #   </tr>
 # </table>
 #
@@ -56,15 +72,30 @@ endif ()
 if (NOT OUTPUT_FILE)
   message (FATAL_ERROR "Missing OUTPUT_FILE argument!")
 endif ()
-if (OPTIONS)
-  list (REMOVE_ITEM OPTIONS DESTINATION)
-else ()
+if (NOT OPTIONS)
   set (OPTIONS)
+endif ()
+# add LINK_DEPEND option
+if (NOT BUILD_LINK_DEPENDS)
+  set (BUILD_LINK_DEPENDS)
+endif ()
+if (NOT INSTALL_LINK_DEPENDS)
+  set (INSTALL_LINK_DEPENDS)
+endif ()
+if (LINK_DEPENDS)
+  list (APPEND BUILD_LINK_DEPENDS   ${LINK_DEPENDS})
+  list (APPEND INSTALL_LINK_DEPENDS ${LINK_DEPENDS})
+endif ()
+if (BUILD_LINK_DEPENDS)
+  list (INSERT BUILD_LINK_DEPENDS   0 LINK_DEPENDS) # option name
+endif ()
+if (INSTALL_LINK_DEPENDS)
+  list (INSERT INSTALL_LINK_DEPENDS 0 LINK_DEPENDS) # option name
 endif ()
 # include definition of utility functions
 include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
 # configure ("build") script - always touch files to update build timestamp
-basis_configure_script ("${SOURCE_FILE}" "${OUTPUT_FILE}" ${OPTIONS})
+basis_configure_script ("${SOURCE_FILE}" "${OUTPUT_FILE}" ${BUILD_LINK_DEPENDS} ${OPTIONS})
 if (INSTALL_FILE AND DESTINATION)
-  basis_configure_script ("${SOURCE_FILE}" "${INSTALL_FILE}" DESTINATION "${DESTINATION}" ${OPTIONS})
+  basis_configure_script ("${SOURCE_FILE}" "${INSTALL_FILE}" DESTINATION "${DESTINATION}" ${INSTALL_LINK_DEPENDS} ${OPTIONS})
 endif ()
