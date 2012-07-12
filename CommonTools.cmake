@@ -1600,11 +1600,11 @@ function (basis_add_glob_target TARGET_UID SOURCES)
     set (SOURCES_FILE "${BUILD_DIR}/sources.txt")
     # get initial list of source files
     execute_process (
-      COMMAND         "${CMAKE_COMMAND}"
-                          "-DEXPRESSIONS:STRING=${EXPRESSIONS}"
-                          "-DINIT:BOOLEAN=TRUE"
-                          "-DSOURCES_FILE:FILEPATH=${SOURCES_FILE}"
-                          -P "${BASIS_MODULE_PATH}/glob.cmake"
+      COMMAND "${CMAKE_COMMAND}"
+                  "-DEXPRESSIONS:STRING=${EXPRESSIONS}"
+                  "-DINIT:BOOLEAN=TRUE"
+                  "-DSOURCES_FILE:FILEPATH=${SOURCES_FILE}"
+                  -P "${BASIS_MODULE_PATH}/glob.cmake"
       RESULT_VARIABLE RETVAL
     )
     if (NOT RETVAL EQUAL 0 OR NOT EXISTS "${SOURCES_FILE}")
@@ -1631,6 +1631,7 @@ function (basis_add_glob_target TARGET_UID SOURCES)
                   "-DSOURCES_FILE:FILEPATH=${SOURCES_FILE}"
                   "-DERRORMSG:STRING=${ERRORMSG}"
                   -P "${BASIS_MODULE_PATH}/glob.cmake"
+      VERBATIM
     )
   # otherwise, just return the given absolute source file paths
   else ()
