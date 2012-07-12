@@ -180,7 +180,8 @@ string readlink(const string& path)
 // common implementation of mkdir() and makedirs()
 static inline bool makedir(const string& path, bool parent)
 {
-    if (path.empty() || path::isfile(path)) return false;
+    if (path.empty()) return true; // cwd already exists
+    if (path::isfile(path)) return false;
     vector<string> dirs;
     string         dir(path);
     if (parent) {
