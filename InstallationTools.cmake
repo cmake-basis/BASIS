@@ -195,6 +195,9 @@ function (basis_install_links)
           get_target_property (SYMLINK_PREFIX ${TARGET_UID} "SYMLINK_PREFIX")
           get_target_property (SYMLINK_SUFFIX ${TARGET_UID} "SYMLINK_SUFFIX")
           get_target_property (INSTALL_DIR    ${TARGET_UID} "RUNTIME_INSTALL_DIRECTORY")
+          if (NOT INSTALL_DIR)
+            get_target_property (INSTALL_DIR  ${TARGET_UID} "INSTALL_DIRECTORY")
+          endif ()
 
           basis_get_target_location (OUTPUT_NAME ${TARGET_UID} NAME)
 
