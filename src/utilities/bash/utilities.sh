@@ -76,7 +76,7 @@ readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pw
 ## @brief Project version.
 [ -n "${VERSION}" ] || readonly VERSION=''
 ## @brief Project release.
-[ -n "${VERSION}" ] || readonly RELEASE=''
+[ -n "${RELEASE}" ] || readonly RELEASE=''
 ## @brief Default copyright of executables.
 readonly COPYRIGHT="University of Pennsylvania"
 ## @brief Default license of executables.
@@ -319,7 +319,7 @@ exepath()
     [ -n "$1" ] && [ $# -eq 1 -o $# -eq 2 ] || return 1
     local _basis_exepath_path=''
     # if no target name given, get path of this executable
-    if [ $# -lt 2 ]; then
+    if [ -z "$2" ]; then
         _basis_exepath_path="`realpath "$0"`"
     # otherwise, get path of executable built by named target
     else
