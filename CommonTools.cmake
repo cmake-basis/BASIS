@@ -1734,8 +1734,11 @@ function (basis_get_source_language LANGUAGE)
         if (LANGUAGE_OUT MATCHES "CXX" AND LANG MATCHES "MATLAB")
           # MATLAB Compiler can handle this...
         elseif (LANGUAGE_OUT MATCHES "MATLAB" AND LANG MATCHES "CXX")
-          # language stays MATLAB
-          set (LANG "MATLAB")
+          set (LANG "MATLAB") # language stays MATLAB
+        elseif (LANGUAGE_OUT MATCHES "PYTHON" AND LANG MATCHES "JYTHON")
+          # Jython can deal with Python scripts/modules
+        elseif (LANGUAGE_OUT MATCHES "JYTHON" AND LANG MATCHES "PYTHON")
+          set (LANG "JYTHON") # language stays JYTHON
         else ()
           # ambiguity
           set (LANGUAGE_OUT "AMBIGUOUS")
