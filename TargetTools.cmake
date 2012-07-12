@@ -2802,7 +2802,7 @@ function (basis_add_init_py_target)
   basis_sanitize_for_regex (TESTING_PYTHON_LIBRARY_DIR_REGEX "${TESTING_PYTHON_LIBRARY_DIR}")
   basis_sanitize_for_regex (INSTALL_PYTHON_LIBRARY_DIR_REGEX "${INSTALL_PYTHON_LIBRARY_DIR}")
   # collect build tree directories requiring a __init__.py file
-  set (TARGETS)         # targets which generate Python modules and depend on _initpy
+  set (DEPENDENTS)      # targets which generate Python modules and depend on _initpy
   set (DIRS)            # directories for which to generate a __init__.py file
   set (EXCLUDE)         # exclude these directories
   set (INSTALL_EXCLUDE) # exclude these directories on installation
@@ -2832,7 +2832,7 @@ function (basis_add_init_py_target)
       if (LOCATION MATCHES "/__init__.py$")
         list (APPEND EXCLUDE "${DIR}")
       else ()
-        list (APPEND TARGETS ${TARGET_UID}) # depends on _initpy
+        list (APPEND DEPENDENTS ${TARGET_UID}) # depends on _initpy
         if (DIR MATCHES "^${BINARY_PYTHON_LIBRARY_DIR_REGEX}/.+")
           while (NOT "${DIR}" MATCHES "^${BINARY_PYTHON_LIBRARY_DIR_REGEX}$")
             list (APPEND DIRS "${DIR}")
@@ -2854,7 +2854,7 @@ function (basis_add_init_py_target)
       if (INSTALL_LOCATION MATCHES "/__init__.py$")
         list (APPEND INSTALL_EXCLUDE "${DIR}")
       else ()
-        list (APPEND TARGETS ${TARGET_UID}) # depends on _initpy
+        list (APPEND DEPENDENTS ${TARGET_UID}) # depends on _initpy
         if (DIR MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR_REGEX}/.+")
           while (NOT "${DIR}" MATCHES "^${INSTALL_PYTHON_LIBRARY_DIR_REGEX}$")
             list (APPEND INSTALL_DIRS_${COMPONENT} "${DIR}")
@@ -2865,7 +2865,7 @@ function (basis_add_init_py_target)
     endif ()
   endforeach ()
   if (TARGETS)
-    list (REMOVE_DUPLICATES TARGETS)
+    list (REMOVE_DUPLICATES DEPENDENTS)
   endif ()
   # return if no Python module is being build
   if (NOT DIRS)
@@ -2919,8 +2919,14 @@ function (basis_add_init_py_target)
   )
   # add custom target which triggers execution of build script
   add_custom_target (_initpy ALL DEPENDS ${OUTPUT_FILES})
-  foreach (TARGET IN LISTS TARGETS)
-    add_dependencies (${TARGET} _initpy)
+  if (BASIS_DEBUG)
+    message ("** basis_add_init_py_target():")
+  endif ()
+  foreach (DEPENDENT IN LISTS DEPENDENTS)
+    if (BASIS_DEBUG)
+      message ("**    Adding dependency on _initpy target to ${DEPENDENT}")
+    endif ()
+    add_dependencies (${DEPENDENT} _initpy)
   endforeach ()
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
