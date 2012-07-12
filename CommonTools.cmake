@@ -1353,7 +1353,7 @@ endfunction ()
 # @sa basis_get_target_uid()
 function (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
   basis_get_target_uid (UID "${TARGET_NAME}")
-  if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+  if (TARGET "${UID}" AND NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
     get_target_property (IMPORTED "${UID}" IMPORTED)
     if (NOT IMPORTED)
       set (UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.${UID}")
@@ -2324,6 +2324,104 @@ function (basis_get_target_location VAR TARGET_NAME PART)
 
   # return
   set ("${VAR}" "${LOCATION}" PARENT_SCOPE)
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Get link libraries/dependencies of (imported) target.
+#
+# This function recursively adds the dependencies of the dependencies as well
+# and returns them together with the list of the direct link dependencies.
+# Moreover, for script targets, if any of the dependencies uses the BASIS
+# utilities for the given language (@c BASIS_UTILITIES property), the
+# corresponding utilities library is added to the list of dependencies.
+# Note that therefore the BASIS utilities targets have to be added already,
+# which is only the case during the finalization of script targets.
+#
+# @param [out] LINK_DEPENDS List of all link dependencies. In case of scripts,
+#                           the dependencies are the required modules or
+#                           paths to required packages, respectively.
+# @param [in]  TARGET_NAME  Name of the target.
+function (basis_get_target_link_libraries LINK_DEPENDS TARGET_NAME)
+  basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
+  if (NOT TARGET "${TARGET_UID}")
+    message (FATAL_ERROR "basis_get_target_link_libraries(): Unknown target: ${TARGET_UID}")
+  endif ()
+  # get direct link dependencies of target
+  get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
+  if (IMPORTED)
+    # 1. Try IMPORTED_LINK_INTERFACE_LIBRARIES_<CMAKE_BUILD_TYPE>
+    if (CMAKE_BUILD_TYPE)
+      string (TOUPPER "${CMAKE_BUILD_TYPE}" U)
+    else ()
+      set (U "NOCONFIG")
+    endif ()
+    get_target_property (DEPENDS ${TARGET_UID} "IMPORTED_LINK_INTERFACE_LIBRARIES_${U}")
+    # 2. Try IMPORTED_LINK_INTERFACE_LIBRARIES
+    if (NOT DEPENDS)
+      get_target_property (DEPENDS ${TARGET_UID} "IMPORTED_LINK_INTERFACE_LIBRARIES")
+    endif ()
+    # 3. Prefer Release over all other configurations
+    if (NOT DEPENDS)
+      get_target_property (DEPENDS ${TARGET_UID} "IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE")
+    endif ()
+    # 4. Just use any of the imported configurations
+    if (NOT DEPENDS)
+      get_property (CONFIGS TARGET "${TARGET_UID}" PROPERTY IMPORTED_CONFIGURATIONS)
+      foreach (C IN LISTS CONFIGS)
+        get_target_property (DEPENDS ${TARGET_UID} "IMPORTED_LINK_INTERFACE_LIBRARIES_${C}")
+        if (DEPENDS)
+          break ()
+        endif ()
+      endforeach ()
+    endif ()
+  else ()
+    # otherwise, get LINK_DEPENDS property value
+    get_target_property (DEPENDS ${TARGET_UID} LINK_DEPENDS)
+  endif ()
+  if (NOT DEPENDS)
+    set (DEPENDS)
+  endif ()
+  # recursively add link dependencies of dependencies
+  foreach (LIB IN LISTS DEPENDS)
+    if (TARGET ${LIB})
+      basis_get_target_link_libraries (LIB_DEPENDS ${LIB})
+      list (APPEND DEPENDS ${LIB_DEPENDS})
+    endif ()
+  endforeach ()
+  # add BASIS utilities if used (and added)
+  get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
+  if (BASIS_TYPE MATCHES "SCRIPT")
+    set (BASIS_UTILITIES_TARGETS)
+    foreach (UID IN ITEMS ${TARGET_UID} ${DEPENDS})
+      if (TARGET "${UID}")
+        get_target_property (BASIS_UTILITIES ${UID} BASIS_UTILITIES)
+        get_target_property (LANGUAGE        ${UID} LANGUAGE)
+        if (BASIS_UTILITIES)
+          set (BASIS_UTILITIES_TARGET)
+          if (LANGUAGE MATCHES "PYTHON")
+            basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.py" NAME)
+          elseif (LANGUAGE MATCHES "PERL")
+            basis_get_source_target_name (BASIS_UTILITIES_TARGET "Basis.pm" NAME)
+          elseif (LANGUAGE MATCHES "BASH")
+            basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.sh" NAME)
+          endif ()
+          if (BASIS_UTILITIES_TARGET)
+            basis_get_target_uid (BASIS_UTILITIES_TARGET ${BASIS_UTILITIES_TARGET})
+          endif ()
+          if (TARGET ${BASIS_UTILITIES_TARGET})
+            list (APPEND BASIS_UTILITIES_TARGETS ${BASIS_UTILITIES_TARGET})
+          endif ()
+        endif ()
+      endif ()
+    endforeach ()
+    list (APPEND DEPENDS ${BASIS_UTILITIES_TARGETS})
+  endif ()
+  # remove duplicates
+  if (DEPENDS)
+    list (REMOVE_DUPLICATES DEPENDS)
+  endif ()
+  # return
+  set (${LINK_DEPENDS} "${DEPENDS}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================

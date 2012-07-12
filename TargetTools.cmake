@@ -408,37 +408,9 @@ function (basis_target_link_libraries TARGET_NAME)
     if (NOT DEPENDS)
       set (DEPENDS)
     endif ()
-    # scripts inherit dependencies of other scripts
-    if (BASIS_TYPE MATCHES "SCRIPT")
-      set (DEPENDENCY_ADDED 1)
-      while (DEPENDENCY_ADDED)
-        set (DEPENDENCY_ADDED 0)
-        foreach (LIB IN LISTS ARGS)
-          list (FIND DEPENDS ${LIB} IDX)
-          if (IDX EQUAL -1)
-            set (DEPENDENCY_ADDED 1)
-            list (APPEND DEPENDS ${LIB})
-            if (TARGET ${LIB})
-              get_target_property (LIB_TYPE ${LIB} BASIS_TYPE)
-              if (LIB_TYPE MATCHES "SCRIPT")
-                get_target_property (LIB_DEPENDS    ${LIB} LINK_DEPENDS)
-                get_target_property (USES_UTILITIES ${LIB} BASIS_UTILITIES)
-                if (USES_UTILITIES)
-                  set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES TRUE)
-                endif ()
-                foreach (LIB_DEPEND IN LISTS LIB_DEPENDS)
-                  list (FIND DEPENDS ${LIB_DEPEND} IDX)
-                  if (IDX EQUAL -1)
-                    list (APPEND DEPENDS "${LIB_DEPEND}")
-                  endif ()
-                endforeach ()
-              endif ()
-            endif ()
-          endif ()
-        endforeach ()
-      endwhile ()
-    # note that MCC does itself a dependency check
-    elseif (BASIS_TYPE MATCHES "MCC")
+    # note that MCC does itself a dependency check and in case of scripts
+    # the basis_get_target_link_libraries() function is used
+    if (BASIS_TYPE MATCHES "MCC|SCRIPT")
       list (APPEND DEPENDS ${ARGS})
     # otherwise
     else ()
@@ -2412,12 +2384,12 @@ function (basis_build_script TARGET_UID)
     message (STATUS "Adding build command for target ${TARGET_UID}...")
   endif ()
   # get target properties
-  basis_get_target_name (TARGET_NAME ${TARGET_UID})
+  basis_get_target_link_libraries (LINK_DEPENDS ${TARGET_UID}) # paths of script modules/packages
+                                                               # including BASIS utilities if used
   set (
     PROPERTIES
       LANGUAGE             # programming language of script
       BASIS_TYPE           # must match "^SCRIPT_(EXECUTABLE|LIBEXEC|MODULE)$"
-      BASIS_UTILITIES      # whether this target requires the BASIS utilities
       SOURCE_DIRECTORY     # CMake source directory
       BINARY_DIRECTORY     # CMake binary directory
       OUTPUT_DIRECTORY     # output directory for built script
@@ -2425,7 +2397,6 @@ function (basis_build_script TARGET_UID)
       COMPONENT            # installation component
       OUTPUT_NAME          # name of built script including extension (if any)
       COMPILE_DEFINITIONS  # CMake code to set variables used to configure script
-      LINK_DEPENDS         # paths of script modules/packages used by this script
       TEST                 # whether this script is used for testing only
       EXPORT               # whether this target shall be exported
       COMPILE              # whether to compile script if applicable
@@ -2463,29 +2434,9 @@ function (basis_build_script TARGET_UID)
   list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
   list (GET SOURCES 1 SOURCE_FILE)
   set (BUILD_DIR "${BUILD_DIR}.dir")
-  # add BASIS utilities to link dependencies if used
-  if (BASIS_UTILITIES)
-    set (BASIS_UTILITIES_TARGET)
-    if (LANGUAGE MATCHES "PYTHON")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.py" NAME)
-    elseif (LANGUAGE MATCHES "PERL")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "Basis.pm" NAME)
-    elseif (LANGUAGE MATCHES "BASH")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.sh" NAME)
-    endif ()
-    if (BASIS_UTILITIES_TARGET)
-      basis_get_target_uid (BASIS_UTILITIES_TARGET ${BASIS_UTILITIES_TARGET})
-    endif ()
-    if (NOT TARGET ${BASIS_UTILITIES_TARGET})
-      message (FATAL_ERROR "Target ${TARGET_UID} claims to make use of the BASIS utilities"
-                           " for ${ARGN_LANGUAGE} but such utilities are not implemented!")
-    endif ()
-    set_property (TARGET ${TARGET_UID} APPEND PROPERTY LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
-    list (APPEND LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
-  endif ()
   # output name
   if (NOT OUTPUT_NAME)
-    set (OUTPUT_NAME "${TARGET_NAME}")
+    basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
   endif ()
   if (PREFIX)
     set (OUTPUT_NAME "${PREFIX}${OUTPUT_NAME}")
@@ -2644,7 +2595,8 @@ function (basis_build_script_library TARGET_UID)
     message (STATUS "Adding build command for target ${TARGET_UID}...")
   endif ()
   # get target properties
-  basis_get_target_name (TARGET_NAME ${TARGET_UID})
+  basis_get_target_link_libraries (LINK_DEPENDS ${TARGET_UID}) # paths of script modules/packages
+                                                               # including BASIS utilities if used
   set (
     PROPERTIES
       LANGUAGE                   # programming language of modules
@@ -2691,26 +2643,6 @@ function (basis_build_script_library TARGET_UID)
     message (FATAL_ERROR "Target ${TARGET_UID}: Empty SOURCES list!"
                          " Have you accidentally modified this read-only property or"
                          " is your (newer) CMake version not compatible with BASIS?")
-  endif ()
-  # add BASIS utilities to link dependencies if used
-  if (BASIS_UTILITIES)
-    set (BASIS_UTILITIES_TARGET)
-    if (LANGUAGE MATCHES "PYTHON")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.py" NAME)
-    elseif (LANGUAGE MATCHES "PERL")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "Basis.pm" NAME)
-    elseif (LANGUAGE MATCHES "BASH")
-      basis_get_source_target_name (BASIS_UTILITIES_TARGET "basis.sh" NAME)
-    endif ()
-    if (BASIS_UTILITIES_TARGET)
-      basis_get_target_uid (BASIS_UTILITIES_TARGET ${BASIS_UTILITIES_TARGET})
-    endif ()
-    if (NOT TARGET ${BASIS_UTILITIES_TARGET})
-      message (FATAL_ERROR "Target ${TARGET_UID} claims to make use of the BASIS utilities"
-                           " for ${ARGN_LANGUAGE} but such utilities are not implemented!")
-    endif ()
-    set_property (TARGET ${TARGET_UID} APPEND PROPERTY LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
-    list (APPEND LINK_DEPENDS ${BASIS_UTILITIES_TARGET})
   endif ()
   # options of basis_configure_script()
   set (CONFIG_FILE)
