@@ -37,11 +37,11 @@ package @PROJECT_NAMESPACE_PERL@::Basis;
 use SBIA::Sub::Exporter -setup => {
     exports => [
         qw(print_contact print_version targetuid istarget exepath exename
-           exedir tostring split execute)],
+           exedir tostring qsplit execute)],
     groups => {
         default    => [qw(print_contact print_version exepath exename exedir execute)],
         everything => [qw(print_contact print_version targetuid istarget
-                          exepath exename exedir tostring split execute)]
+                          exepath exename exedir tostring qsplit execute)]
     }
 };
 
@@ -50,9 +50,9 @@ use SBIA::Sub::Exporter -setup => {
 # ============================================================================
 
 ## @brief Project name.
-use constant PROJECT   => '@PROJECT_NAME@';
+use constant PROJECT => '@PROJECT_NAME@';
 ## @brief Project release.
-use constant RELEASE   => '@PROJECT_RELEASE@';
+use constant RELEASE => '@PROJECT_RELEASE@';
 
 # ============================================================================
 # custom utilities
@@ -64,7 +64,7 @@ my %_EXECUTABLE_TARGETS = (
     @EXECUTABLE_TARGET_INFO@
 );
 
-use SBIA::BASIS::Utilities qw(print_contact),
+use SBIA::BASIS::Utilities qw(print_contact tostring qsplit),
         print_version => { project => PROJECT, version => RELEASE },
         targetuid     => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
         istarget      => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },

@@ -63,7 +63,7 @@ use constant CONTACT   => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
 use SBIA::Sub::Exporter -setup => {
     exports => [
-        qw(tostring split),
+        qw(tostring qsplit),
         print_contact => \&_build_print_contact,
         print_version => \&_build_print_version,
         targetuid     => \&_build_executabletargetinfo_function,
@@ -75,7 +75,7 @@ use SBIA::Sub::Exporter -setup => {
     groups => {
         default    => [qw(print_contact print_version exepath exename exedir execute)],
         everything => [qw(print_contact print_version targetuid istarget exepath
-                          exename exedir tostring split execute)]
+                          exename exedir tostring qsplit execute)]
     }
 };
 
