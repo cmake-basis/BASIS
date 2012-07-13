@@ -2551,7 +2551,7 @@ function (basis_build_script TARGET_UID)
       if (IDX EQUAL -1)
         set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${OUTPUT_FILE}c")
       endif ()
-    endif
+    endif ()
   endforeach ()
   # export target
   if (EXPORT)
@@ -2743,7 +2743,7 @@ function (basis_build_script_library TARGET_UID)
       if (IDX EQUAL -1)
         set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${OUTPUT_FILE}c")
       endif ()
-    endif
+    endif ()
   endforeach ()
   # export target
   if (EXPORT)
