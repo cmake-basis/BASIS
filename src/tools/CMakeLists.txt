@@ -16,8 +16,8 @@ if (PythonInterp_FOUND)
 endif ()
 
 # ----------------------------------------------------------------------------
-# platform independent "which" command
-if (PythonInterp_FOUND)
+# platform independent "which" command - not required on Unix
+if (NOT UNIX AND PythonInterp_FOUND)
   basis_add_executable (which "${PROJECT_CODE_DIR}/utilities/python/which.py")
   basis_set_target_properties (which PROPERTIES SYMLINK_NAME NONE)
 endif ()
