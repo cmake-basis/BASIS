@@ -650,11 +650,11 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       if (PL_B)
         set (PL_B "${PL_B},\n")
       endif ()
-      set (PL_B "${PL_B}    '${ALIAS}'${S}=> '${BUILD_LOCATION_WITH_INTDIR}'")
+      set (PL_B "${PL_B}        '${ALIAS}'${S}=> '${BUILD_LOCATION_WITH_INTDIR}'")
       if (PL_I)
         set (PL_I "${PL_I},\n")
       endif ()
-      set (PL_I "${PL_I}    '${ALIAS}'${S}=> '../../${INSTALL_LOCATION_REL2PERL_LIBRARY}'")
+      set (PL_I "${PL_I}        '${ALIAS}'${S}=> '../../${INSTALL_LOCATION_REL2PERL_LIBRARY}'")
     endif ()
     # ------------------------------------------------------------------------
     # Bash
