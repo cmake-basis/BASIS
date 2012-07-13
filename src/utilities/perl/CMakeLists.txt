@@ -36,3 +36,5 @@ basis_set_target_properties (cpan_modules PROPERTIES PREFIX "${BASIS_NAMESPACE}"
 basis_get_target_name (UTILITIES ${BASIS_PERL_UTILITIES_LIBRARY})
 basis_add_library (${UTILITIES} "Utilities.pm")
 basis_target_link_libraries (${UTILITIES} cpan_modules)
+
+add_dependencies (${ALL_UTILITIES} ${UTILITIES})

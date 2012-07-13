@@ -32,6 +32,8 @@ basis_add_library (
 )
 basis_set_target_properties (${UTILITIES} PROPERTIES OUTPUT_NAME utilities)
 
+add_dependencies (${ALL_UTILITIES} ${UTILITIES})
+
 # ----------------------------------------------------------------------------
 # unit testing
 if (NOT HAVE_TR1_TUPLE)

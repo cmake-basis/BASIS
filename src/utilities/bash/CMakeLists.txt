@@ -30,3 +30,5 @@ basis_add_library (
     "shflags.sh"   # command-line parsing library
     "shtap.sh"     # unit testing framework
 )
+
+add_dependencies (${ALL_UTILITIES} ${UTILITIES})

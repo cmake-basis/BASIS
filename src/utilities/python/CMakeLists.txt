@@ -30,3 +30,5 @@ basis_add_library (
     utilities.py
     which.py
 )
+
+add_dependencies (${ALL_UTILITIES} ${UTILITIES})

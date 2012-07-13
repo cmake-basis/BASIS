@@ -8,6 +8,9 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
+basis_make_target_uid (ALL_UTILITIES utilities)
+add_custom_target (${ALL_UTILITIES})
+
 # ----------------------------------------------------------------------------
 # C++ utilities
 add_subdirectory (cxx)
