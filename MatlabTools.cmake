@@ -987,7 +987,7 @@ function (basis_build_mex_file TARGET_UID)
   list (APPEND MEX_ARGS ${SOURCES})                              # source files
   # build command for invocation of MEX script
   set (BUILD_CMD     "${MATLAB_MEX_EXECUTABLE}" ${MEX_ARGS})
-  set (BUILD_LOG     "${BUILD_DIR}/mexBuild.log")
+  set (BUILD_LOG     "${BUILD_DIR}/build.log")
   set (BUILD_OUTPUT  "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   set (BUILD_OUTPUTS "${BUILD_OUTPUT}")
   if (MFILE)
@@ -1197,7 +1197,7 @@ function (basis_build_mcc_target TARGET_UID)
   #list (APPEND MCC_ARGS ${LINK_LIBS})                 # link libraries, e.g. MEX-files
   # build command for invocation of MATLAB Compiler in standalone mode
   set (BUILD_CMD   "${MATLAB_MCC_EXECUTABLE}" ${MCC_ARGS})
-  set (BUILD_LOG   "${BUILD_DIR}/mccBuild.log")
+  set (BUILD_LOG   "${BUILD_DIR}/build.log")
   set (WORKING_DIR "${SOURCE_DIRECTORY}")
   set (MATLAB_MODE OFF)
   # build command for invocation of MATLAB Compiler in MATLAB mode
