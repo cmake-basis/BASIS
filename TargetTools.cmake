@@ -1393,6 +1393,8 @@ function (basis_add_script TARGET_NAME)
       INSTALL_DIRECTORY   "${ARGN_DESTINATION}"
       COMPONENT           "${ARGN_COMPONENT}"
       OUTPUT_NAME         "${OUTPUT_NAME}"
+      PREFIX              ""
+      SUFFIX              ""
       COMPILE_DEFINITIONS ""
       LINK_DEPENDS        "${LINK_DEPENDS}"
       EXPORT              ${EXPORT}
@@ -2396,6 +2398,8 @@ function (basis_build_script TARGET_UID)
       INSTALL_DIRECTORY    # installation directory for built script
       COMPONENT            # installation component
       OUTPUT_NAME          # name of built script including extension (if any)
+      PREFIX               # name prefix
+      SUFFIX               # name suffix (e.g., extension for executable script)
       COMPILE_DEFINITIONS  # CMake code to set variables used to configure script
       TEST                 # whether this script is used for testing only
       EXPORT               # whether this target shall be exported
