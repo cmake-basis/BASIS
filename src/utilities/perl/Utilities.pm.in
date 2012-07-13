@@ -600,11 +600,11 @@ sub _build_execute
     my ($class, $fn, $args) = @_;
     return sub {
         my $argv     = shift;
-        my %defaults = (quiet      => $args->{quiet},
-                        stdout     => $args->{stdout},
-                        allow_fail => $args->{allow_fail},
-                        verbose    => $args->{verbose},
-                        simulate   => $args->{simulate},
+        my %defaults = (quiet      => $args->{quiet}      || 0,
+                        stdout     => $args->{stdout}     || 0,
+                        allow_fail => $args->{allow_fail} || 0,
+                        verbose    => $args->{verbose}    || 0,
+                        simulate   => $args->{simulate}   || 0,
                         prefix     => $args->{prefix},
                         targets    => $args->{targets});
         my %options  = (%defaults, @_);

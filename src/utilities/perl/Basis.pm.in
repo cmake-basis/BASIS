@@ -58,11 +58,15 @@ use constant RELEASE => '@PROJECT_RELEASE@';
 # custom utilities
 # ============================================================================
 
-my $_TARGET_PREFIX = '@PROJECT_NAMESPACE_CMAKE@';
+my ($_TARGET_PREFIX, %_EXECUTABLE_TARGETS);
 
-my %_EXECUTABLE_TARGETS = (
-    @EXECUTABLE_TARGET_INFO@
-);
+BEGIN {
+    $_TARGET_PREFIX = '@PROJECT_NAMESPACE_CMAKE@';
+
+    %_EXECUTABLE_TARGETS = (
+        @EXECUTABLE_TARGET_INFO@
+    );
+}
 
 use SBIA::BASIS::Utilities qw(print_contact tostring qsplit),
         print_version => { project => PROJECT, version => RELEASE },
