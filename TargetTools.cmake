@@ -2543,8 +2543,16 @@ function (basis_build_script TARGET_UID)
     endif ()
   endforeach ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
-  # cleanup on "make clean"
+  # cleanup on "make clean" - always including compiled .pyc files regardless of COMPILE
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
+  foreach (OUTPUT_FILE IN LISTS OUTPUT_FILES)
+    if (OUTPUT_FILE MATCHES "\\.py$")
+      list (FIND OUTPUT_FILES "${OUTPUT_FILE}c" IDX)
+      if (IDX EQUAL -1)
+        set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${OUTPUT_FILE}c")
+      endif ()
+    endif
+  endforeach ()
   # export target
   if (EXPORT)
     if (TEST)
@@ -2727,8 +2735,16 @@ function (basis_build_script_library TARGET_UID)
     endif ()
   endforeach ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
-  # cleanup on "make clean"
+  # cleanup on "make clean" - always including compiled .pyc files regardless of COMPILE
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
+  foreach (OUTPUT_FILE IN LISTS OUTPUT_FILES)
+    if (OUTPUT_FILE MATCHES "\\.py$")
+      list (FIND OUTPUT_FILES "${OUTPUT_FILE}c" IDX)
+      if (IDX EQUAL -1)
+        set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${OUTPUT_FILE}c")
+      endif ()
+    endif
+  endforeach ()
   # export target
   if (EXPORT)
     if (TEST)
