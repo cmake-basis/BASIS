@@ -2186,8 +2186,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
   if (TARGET "${TARGET_UID}")
     basis_get_target_name (TARGET_NAME "${TARGET_UID}")
     basis_get_target_type (TYPE        "${TARGET_UID}")
-    get_target_property (IMPORTED ${TARGET_UID} "IMPORTED")
-
+    get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
     # ------------------------------------------------------------------------
     # imported custom targets
     #
@@ -2196,88 +2195,84 @@ function (basis_get_target_location VAR TARGET_NAME PART)
     #       add_executable(<NAME> IMPORTED) and add_library(<NAME> <TYPE> IMPORTED)
     #       commands. Such executable can, for example, also be a BASH
     #       script built by basis_add_script().
-
     if (IMPORTED)
-
       # 1. Try IMPORTED_LOCATION_<CMAKE_BUILD_TYPE>
       if (CMAKE_BUILD_TYPE)
         string (TOUPPER "${CMAKE_BUILD_TYPE}" U)
       else ()
         set (U "NOCONFIG")
       endif ()
-      get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${U}")
+      get_target_property (LOCATION ${TARGET_UID} IMPORTED_LOCATION_${U})
       # 2. Try IMPORTED_LOCATION
       if (NOT LOCATION)
-        get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION")
+        get_target_property (LOCATION ${TARGET_UID} IMPORTED_LOCATION)
       endif ()
       # 3. Prefer Release over all other configurations
       if (NOT LOCATION)
-        get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_RELEASE")
+        get_target_property (LOCATION ${TARGET_UID} IMPORTED_LOCATION_RELEASE)
       endif ()
       # 4. Just use any of the imported configurations
       if (NOT LOCATION)
-        get_property (CONFIGS TARGET "${TARGET_UID}" PROPERTY IMPORTED_CONFIGURATIONS)
+        get_property (CONFIGS TARGET ${TARGET_UID} PROPERTY IMPORTED_CONFIGURATIONS)
         foreach (C IN LISTS CONFIGS)
-          get_target_property (LOCATION ${TARGET_UID} "IMPORTED_LOCATION_${C}")
+          get_target_property (LOCATION ${TARGET_UID} IMPORTED_LOCATION_${C})
           if (LOCATION)
             break ()
           endif ()
         endforeach ()
       endif ()
-
       # make path relative to INSTALL_PREFIX if POST_INSTALL_PREFIX given
       if (LOCATION AND ARGV2 MATCHES "POST_INSTALL_RELATIVE")
         file (RELATIVE_PATH LOCATION "${INSTALL_PREFIX}" "${LOCATION}")
       endif ()
-
     # ------------------------------------------------------------------------
     # non-imported custom targets
-
     else ()
-
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # libraries
-
       if (TYPE MATCHES "LIBRARY|MODULE|MEX")
-
         if (TYPE MATCHES "STATIC")
           if (PART MATCHES "^POST_INSTALL(_ABSOLUTE)?$|^POST_INSTALL_RELATIVE$")
-            get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_INSTALL_DIRECTORY")
+            get_target_property (DIRECTORY ${TARGET_UID} ARCHIVE_INSTALL_DIRECTORY)
+          else ()
+            get_target_property (DIRECTORY ${TARGET_UID} ARCHIVE_OUTPUT_DIRECTORY)
           endif ()
-          if (NOT DIRECTORY)
-            get_target_property (DIRECTORY "${TARGET_UID}" "ARCHIVE_OUTPUT_DIRECTORY")
-          endif ()
-          get_target_property (FNAME "${TARGET_UID}" "ARCHIVE_OUTPUT_NAME")
+          get_target_property (FNAME ${TARGET_UID} ARCHIVE_OUTPUT_NAME)
         else ()
           if (PART MATCHES "^POST_INSTALL(_ABSOLUTE)?$|^POST_INSTALL_RELATIVE$")
-            get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_INSTALL_DIRECTORY")
+            get_target_property (DIRECTORY ${TARGET_UID} LIBRARY_INSTALL_DIRECTORY)
+          else ()
+            get_target_property (DIRECTORY ${TARGET_UID} LIBRARY_OUTPUT_DIRECTORY)
           endif ()
-          if (NOT DIRECTORY)
-            get_target_property (DIRECTORY "${TARGET_UID}" "LIBRARY_OUTPUT_DIRECTORY")
-          endif ()
-          get_target_property (FNAME "${TARGET_UID}" "LIBRARY_OUTPUT_NAME")
+          get_target_property (FNAME ${TARGET_UID} LIBRARY_OUTPUT_NAME)
         endif ()
-
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # scripts
+      elseif (TYPE MATCHES "SCRIPT")
+        if (PART MATCHES "^POST_INSTALL(_ABSOLUTE)?$|^POST_INSTALL_RELATIVE$")
+          get_target_property (DIRECTORY ${TARGET_UID} INSTALL_DIRECTORY)
+        else ()
+          get_target_property (DIRECTORY ${TARGET_UID} OUTPUT_DIRECTORY)
+        endif ()
+        get_target_property (FNAME ${TARGET_UID} OUTPUT_NAME)
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # executables
-
       else ()
-
         if (PART MATCHES "^POST_INSTALL(_ABSOLUTE)?$|^POST_INSTALL_RELATIVE$")
-          get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_INSTALL_DIRECTORY")
+          get_target_property (DIRECTORY ${TARGET_UID} RUNTIME_INSTALL_DIRECTORY)
+        else ()
+          get_target_property (DIRECTORY ${TARGET_UID} RUNTIME_OUTPUT_DIRECTORY)
         endif ()
-        if (NOT DIRECTORY)
-          get_target_property (DIRECTORY "${TARGET_UID}" "RUNTIME_OUTPUT_DIRECTORY")
-        endif ()
-        get_target_property (FNAME "${TARGET_UID}" "RUNTIME_OUTPUT_NAME")
+        get_target_property (FNAME ${TARGET_UID} RUNTIME_OUTPUT_NAME)
       endif ()
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # get output name of built file (if applicable)
       if (NOT FNAME)
-        get_target_property (FNAME "${TARGET_UID}" "OUTPUT_NAME")
+        get_target_property (FNAME ${TARGET_UID} OUTPUT_NAME)
       endif ()
-      get_target_property (PREFIX "${TARGET_UID}" "PREFIX")
-      get_target_property (SUFFIX "${TARGET_UID}" "SUFFIX")
-
       if (NOT TYPE MATCHES "^SCRIPT_LIBRARY$")
+        get_target_property (PREFIX ${TARGET_UID} PREFIX)
+        get_target_property (SUFFIX ${TARGET_UID} SUFFIX)
         if (FNAME)
           set (TARGET_FILE "${FNAME}")
         else ()
@@ -2292,7 +2287,8 @@ function (basis_get_target_location VAR TARGET_NAME PART)
           set (TARGET_FILE "${TARGET_FILE}.exe")
         endif ()
       endif ()
-
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # assemble final path
       if (PART MATCHES "^POST_INSTALL(_ABSOLUTE)?$")
         if (NOT IS_ABSOLUTE "${DIRECTORY}")
           set (DIRECTORY "${INSTALL_PREFIX}/${DIRECTORY}")
@@ -2305,24 +2301,19 @@ function (basis_get_target_location VAR TARGET_NAME PART)
           endif ()
         endif ()
       endif ()
-
       if (TARGET_FILE)
         set (LOCATION "${DIRECTORY}/${TARGET_FILE}")
       else ()
         set (LOCATION "${DIRECTORY}")
       endif ()
-
     endif ()
-
     # get filename component
     if (NOT PART MATCHES "^POST_INSTALL(_ABSOLUTE)?$|^POST_INSTALL_RELATIVE$")
       get_filename_component (LOCATION "${LOCATION}" "${PART}")
     endif ()
-
   else ()
     message (FATAL_ERROR "basis_get_target_location(): Unknown target ${TARGET_UID}")
   endif ()
-
   # return
   set ("${VAR}" "${LOCATION}" PARENT_SCOPE)
 endfunction ()
