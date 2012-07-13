@@ -183,7 +183,7 @@ tostring = utilities.tostring
 # @returns Array of arguments.
 #
 # @sa tostring()
-qsplit = utilities.asplit
+qsplit = utilities.qsplit
 
 # ----------------------------------------------------------------------------
 ## @brief Execute command as subprocess.
