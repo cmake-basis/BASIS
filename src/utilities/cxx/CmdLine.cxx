@@ -541,7 +541,12 @@ void StdOutput::printExample(ostream& os) const
             if (it != examples.begin()) os << endl;
             string example = *it;
             string::size_type pos = 0;
+            // backwards compatibility
             while ((pos = example.find("EXECNAME", pos)) != string::npos) {
+                example.replace(pos, 8, exec_name);
+            }
+            // desired placeholder as it relates to the exename() function
+            while ((pos = example.find("EXENAME", pos)) != string::npos) {
                 example.replace(pos, 8, exec_name);
             }
             print_wrapped(os, example, _columns, 4, 4);

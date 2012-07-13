@@ -116,13 +116,13 @@ the command-line are handled by BASIS.
             vector<string> examples;
 
             examples.push_back(
-                    "EXECNAME --gaussian --std 3.5 --radius 5 5 3 brain.nii\n"
+                    "EXENAME --gaussian --std 3.5 --radius 5 5 3 brain.nii\n"
                     "Smooths the image brain.nii using a Gaussian with standard"
                     " deviation 3.5 voxel units and 5 voxels in-slice radius and"
                     " 3 voxels radius across slices.");
 
             examples.push_back(
-                    "EXECNAME  --anisotropic brain.nii\n"
+                    "EXENAME  --anisotropic brain.nii\n"
                     "Smooths the image brain.nii using an anisotropic diffusion filter.");
 
             CmdLine cmd(
