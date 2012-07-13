@@ -2091,7 +2091,13 @@ function (basis_configure_script INPUT OUTPUT)
       if (WIN32)
         set (SHEBANG "@setlocal enableextensions & \"${JYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
       else ()
-        set (SHEBANG "#! ${JYTHON_EXECUTABLE}")
+        # Attention: It is IMPORTANT to always use "#! /usr/bin/env <interpreter>" even if
+        #            the <interpreter> is given as full path in case of jython. Otherwise,
+        #            the Jython executable fails to execute from within a Python script using
+        #            the os.system(), subprocess.popen(), subprocess.call() or similar function!
+        #            Don't ask me for an explanation, but possibly the used shell otherwise does
+        #            not recognize the shebang as being valid. The /usr/bin/env helps out here.
+        set (SHEBANG "#! /usr/bin/env ${JYTHON_EXECUTABLE}")
       endif ()
     elseif (LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
       if (WIN32)
