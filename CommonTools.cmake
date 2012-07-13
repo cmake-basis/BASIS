@@ -2003,7 +2003,7 @@ function (basis_configure_script INPUT OUTPUT)
   endforeach ()
   # --------------------------------------------------------------------------
   # configure executable script
-  if (ARGN_EXECUTABLE OR __Name__ STREQUAL __NameWE__)
+  if (ARGN_EXECUTABLE)
     # Attention: Every line of code added/removed will introduce a mismatch
     #            between error messages of the interpreter and the original
     #            source file. To not confuse/mislead developers too much,
