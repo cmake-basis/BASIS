@@ -674,7 +674,7 @@ function (basis_configure_script_libraries)
     return ()
   endif ()
   # Python
-  set (PYTHON_EXT ".py")
+  set (PYTHON_EXT .py .py.in)
   set (PYTHON_LIB_DIRS)
   if (PYTHON_VERSION_MAJOR)
     list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/python${PYTHON_VERSION_MAJOR}")
@@ -682,7 +682,7 @@ function (basis_configure_script_libraries)
   list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/python")
   list (APPEND PYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}")
   # Jython
-  set (JYTHON_EXT ".py")
+  set (JYTHON_EXT .py .py.in)
   set (JYTHON_LIB_DIRS)
   if (JYTHON_VERSION_MAJOR)
     list (APPEND JYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/jython${JYTHON_VERSION_MAJOR}")
@@ -690,7 +690,7 @@ function (basis_configure_script_libraries)
   list (APPEND JYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}/jython")
   list (APPEND JYTHON_LIB_DIRS "${PROJECT_LIBRARY_DIR}")
   # Perl
-  set (PERL_EXT ".pm")
+  set (PERL_EXT .pm .pm.in)
   set (PERL_LIB_DIRS)
   if (PERL_VERSION_MAJOR)
     list (APPEND PERL_LIB_DIRS "${PROJECT_LIBRARY_DIR}/perl${PERL_VERSION_MAJOR}")
@@ -701,16 +701,20 @@ function (basis_configure_script_libraries)
   set (TARGETS)
   foreach (LANGUAGE IN ITEMS PYTHON JYTHON PERL)
     foreach (LIB_DIR IN LISTS ${LANGUAGE}_LIB_DIRS)
-      file (GLOB_RECURSE SOURCES "${LIB_DIR}/*${${LANGUAGE}_EXT}")
+      set (EXPRESSIONS)
+      foreach (MODULE_EXT IN LISTS ${LANGUAGE}_EXT)
+        list (APPEND EXPRESSIONS "${LIB_DIR}/**${MODULE_EXT}")
+      endforeach ()
+      file (GLOB_RECURSE SOURCES ${EXPRESSIONS})
       basis_get_source_language (SOURCE_LANGUAGE ${SOURCES}) # in particular required to
                                                              # not falsely build Jython modules
                                                              # as Python library
       if (SOURCE_LANGUAGE MATCHES "UNKNOWN|AMBIGUOUS")
         message (WARNING "Failed to auto-detect scripting language of modules in ${LIB_DIR}!"
-                         " Skipping source files matching the globbing expression *${${LANGUAGE}_EXT}.")
+                         " Skipping source files matching one of the extensions [${${LANGUAGE}_EXT}].")
       elseif (SOURCE_LANGUAGE MATCHES "${LANGUAGE}")
         set (TARGET_NAME "${${LANGUAGE}_LIBRARY_TARGET}")
-        basis_add_library (${TARGET_NAME} "${LIB_DIR}/**${${LANGUAGE}_EXT}" LANGUAGE ${LANGUAGE})
+        basis_add_library (${TARGET_NAME} ${EXPRESSIONS} LANGUAGE ${LANGUAGE})
         basis_set_target_properties (
           ${TARGET_NAME}
           PROPERTIES
