@@ -438,7 +438,7 @@ tostring()
 # Example:
 # @code
 # str="'this' 'isn\'t' a \"simple example of \\\"a quoted\\\"\" 'string'"
-# split array "${str}"
+# qsplit array "${str}"
 # echo ${#array[@]}  # 5
 # echo "${array[3]}" # simple example of "a quoted"
 # @endcode
@@ -447,32 +447,32 @@ tostring()
 # @param [in]  str Quoted string.
 #
 # @returns Nothing.
-split()
+qsplit()
 {
     [ $# -eq 2 ] || return 1
     # GNU bash, version 3.00.15(1)-release (x86_64-redhat-linux-gnu)
     # turns the array into a single string value if local is used
     if [ ${BASH_VERSION_MAJOR} -gt 3 ] || [ ${BASH_VERSION_MAJOR} -eq 3 -a ${BASH_VERSION_MINOR} -gt 0 ]; then
-        local _basis_split_array=()
+        local _basis_qsplit_array=()
     else
-        _basis_split_array=()
+        _basis_qsplit_array=()
     fi
-    local _basis_split_str=$2
+    local _basis_qsplit_str=$2
     # match arguments from left to right
-    while match "${_basis_split_str}" "[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\")*[^\\]\"|[^ ]+)(.*)"; do
+    while match "${_basis_qsplit_str}" "[ ]*('([^']|\\\')*[^\\]'|\"([^\"]|\\\")*[^\\]\"|[^ ]+)(.*)"; do
         # matched element including quotes
-        _basis_split_element="${BASH_REMATCH[1]}"
+        _basis_qsplit_element="${BASH_REMATCH[1]}"
         # remove quotes
-        _basis_split_element=`echo "${_basis_split_element}" | sed "s/^['\"]//;s/(^|[^\\])['\"]$//"`
+        _basis_qsplit_element=`echo "${_basis_qsplit_element}" | sed "s/^['\"]//;s/(^|[^\\])['\"]$//"`
         # replace quoted quotes within argument by quotes
-        _basis_split_element=`echo "${_basis_split_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
+        _basis_qsplit_element=`echo "${_basis_qsplit_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
         # add to resulting array
-        _basis_split_array[${#_basis_split_array[@]}]="${_basis_split_element}"
+        _basis_qsplit_array[${#_basis_qsplit_array[@]}]="${_basis_qsplit_element}"
         # continue with residual command-line
-        _basis_split_str="${BASH_REMATCH[4]}"
+        _basis_qsplit_str="${BASH_REMATCH[4]}"
     done
     # return
-    local "$1" && upvar $1 "${_basis_split_array[@]}"
+    local "$1" && upvar $1 "${_basis_qsplit_array[@]}"
 }
 
 # ----------------------------------------------------------------------------

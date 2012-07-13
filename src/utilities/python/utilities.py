@@ -251,7 +251,7 @@ def tostring(args):
 # @returns Array of arguments.
 #
 # @sa to_quoted_string()
-def split(args):
+def qsplit(args):
     return shlex.split(args)
 
 # ----------------------------------------------------------------------------
@@ -288,7 +288,7 @@ def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simula
                   prefix=None, targets=None):
     # convert args to list of strings
     if   type(args) is list: args = [str(i) for i in args]
-    elif type(args) is str:  args = split(args);
+    elif type(args) is str:  args = qsplit(args);
     else: raise Exception("execute(): Argument args must be either list or string")
     # get absolute path of executable
     path = exepath(args[0], prefix=prefix, targets=targets)

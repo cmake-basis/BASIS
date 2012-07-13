@@ -129,7 +129,7 @@ string tostring(const vector<string>& args)
 }
 
 // ---------------------------------------------------------------------------
-vector<string> split(const string& args)
+vector<string> qsplit(const string& args)
 {
     return Subprocess::split(args);
 }

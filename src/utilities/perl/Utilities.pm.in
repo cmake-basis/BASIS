@@ -391,7 +391,7 @@ sub tostring
 ## @brief Split quoted string.
 #
 # @param [in] $str Quoted string.
-sub split
+sub qsplit
 {
     my $str  = shift;
     my $max  = shift;
@@ -430,7 +430,7 @@ sub _split_command_and_arguments
         $command   = shift @argv or die "execute(): No command specified for execution";
         $arguments = tostring(\@argv);
     } elsif (ref($args) eq '') {
-        ($command, $arguments) = split($args, 1);
+        ($command, $arguments) = qsplit($args, 1);
     } else {
         die "Argument must be either array reference or string";
     }
