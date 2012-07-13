@@ -66,7 +66,7 @@ set (
     "buildtimestamp.cmd"          # get build timestamp on Windows
     "CheckPublicHeaders.cmake"    # check if header files were added/removed
     "cmake_uninstall.cmake.in"    # uninstall script
-    "configure_script.cmake"      # used to configure ("build") script files
+    "configure_script.cmake.in"   # used to configure ("build") script files
     "ConfigureIncludeFiles.cmake" # used to configure public header files
     "Directories.cmake.in"        # project directory structure
     "doxyfilter.bat.in"           # wraps Doxygen filter command on Windows
