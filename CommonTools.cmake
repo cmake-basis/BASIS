@@ -842,7 +842,7 @@ function (basis_dump_variables RESULT_FILE)
   set (DUMP)
   get_cmake_property (VARIABLE_NAMES VARIABLES)
   foreach (V IN LISTS VARIABLE_NAMES)
-    if (NOT V MATCHES "^_|^RESULT_FILE$|^ARGC$|^ARGV[0-9]?$")
+    if (NOT V MATCHES "^_|^RESULT_FILE$|^ARGC$|^ARGV[0-9]?$|^ARGN_")
       set (VALUE "${${V}}")
       # sanitize value for use in set() command
       string (REPLACE "\\" "\\\\" VALUE "${VALUE}") # escape backspaces
