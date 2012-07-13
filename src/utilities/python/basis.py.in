@@ -172,7 +172,7 @@ SubprocessError = utilities.SubprocessError
 #          by a space character and surrounded by double quotes if necessary.
 #          Double quotes within an argument are escaped with a backslash.
 #
-# @sa split_quoted_string()
+# @sa qsplit()
 tostring = utilities.tostring
 
 # ----------------------------------------------------------------------------
@@ -182,8 +182,8 @@ tostring = utilities.tostring
 #
 # @returns Array of arguments.
 #
-# @sa to_quoted_string()
-split = utilities.split
+# @sa tostring()
+qsplit = utilities.asplit
 
 # ----------------------------------------------------------------------------
 ## @brief Execute command as subprocess.
