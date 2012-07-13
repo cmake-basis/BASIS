@@ -31,7 +31,6 @@ foreach (EXPRESSION IN LISTS EXPRESSIONS)
   endif ()
 endforeach ()
 if (SOURCES)
-  list (SORT SOURCES) # deterministic order
   list (REMOVE_DUPLICATES SOURCES)
 endif ()
 
