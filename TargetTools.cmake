@@ -1313,18 +1313,18 @@ function (basis_add_script TARGET_NAME)
   endif ()
   # output name
   string (REGEX REPLACE "\\.in$" "" SOURCE_NAME "${SOURCES}")
+  get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME_WE)
   if (ARGN_MODULE)
-    get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME)
+    get_filename_component (SUFFIX "${SOURCE_NAME}" EXT)
   else ()
     if (WIN32)
       if (ARGN_LANGUAGE MATCHES "[JP]YTHON|PERL")
-        get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME_WE)
-        set (OUTPUT_NAME "${OUTPUT_NAME}.cmd")
+        set (OUTPUT_SUFFIX ".cmd")
       else ()
-        get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME)
+        get_filename_component (SUFFIX "${SOURCE_NAME}" EXT)
       endif ()
     else ()
-      get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME_WE)
+      set (SUFFIX)
     endif ()
   endif ()
   # output directory
@@ -1394,7 +1394,7 @@ function (basis_add_script TARGET_NAME)
       COMPONENT           "${ARGN_COMPONENT}"
       OUTPUT_NAME         "${OUTPUT_NAME}"
       PREFIX              ""
-      SUFFIX              ""
+      SUFFIX              "${SUFFIX}"
       COMPILE_DEFINITIONS ""
       LINK_DEPENDS        "${LINK_DEPENDS}"
       EXPORT              ${EXPORT}
