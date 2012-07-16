@@ -75,15 +75,15 @@ basis_append_config (INCLUDE_DIRS "@INCLUDE_DIRS_CONFIG@")
 basis_set_config (LIBRARY_DIR "@LIBRARY_DIR_CONFIG@")
 
 ## @brief Directory of libraries including dependencies.
-basis_set_config    (LIBRARY_DIRS) # to have a set recognized by Doxygen filter
+basis_set_config    (LIBRARY_DIRS) # to have a set() recognized by Doxygen filter
 basis_copy_config   (LIBRARY_DIRS LIBRARY_DIR)
 basis_append_config (LIBRARY_DIRS "@LIBRARY_DIRS_CONFIG@")
 
 ## @brief Search path for Python package.
-basis_set_config (PYTHON_LIBRARY_DIR "@PYTHON_LIBRARY_DIR_CONFIG@")
+basis_set_config (PYTHONPATH "@PYTHONPATH_CONFIG@")
 
 ## @brief Search path for Perl packages.
-basis_set_config (PERL_LIBRARY_DIR "@PERL_LIBRARY_DIR_CONFIG@")
+basis_set_config (PERL5LIB "@PERL5LIB_CONFIG@")
 
 # ============================================================================
 # exports
