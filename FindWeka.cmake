@@ -167,12 +167,14 @@ if (CMAKE_HOST_APPLE)
   #      $ENV{HOME}/Applications/weka-3-7-6.app/Contents
   #      directories for all requested/known Weka versions
 endif ()
-foreach (Weka_CLSDIR $ENV{CLASSPATH})
+string (REPLACE ":" ";" Weka_ENV_CLASSPATH "$ENV{CLASSPATH}")
+foreach (Weka_CLSDIR IN LISTS Weka_ENV_CLASSPATH)
   if (Weka_CLSDIR MATCHES "\\.jar")
     get_filename_component (Weka_CLSDIR "${Weka_CLSDIR}" PATH)
   endif ()
   list (APPEND Weka_HINTS "${Weka_CLSDIR}")
 endforeach ()
+unset (Weka_ENV_CLASSPATH)
 
 #-------------------------------------------------------------
 # find weka.jar
