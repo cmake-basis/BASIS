@@ -175,7 +175,8 @@ if (Weka_DIR)
     Weka_CLASSPATH
     NAMES         weka.jar
     HINTS         "${Weka_DIR}"
-    PATH_SUFFIXES "Contents/Resources/Java"
+    PATH_SUFFIXES "weka"
+                  "Contents/Resources/Java"
                   "Resources/Java"
     DOC           "The Java library of the Weka package (weka.jar)."
     NO_DEFAULT_PATH
@@ -185,7 +186,8 @@ else ()
     Weka_CLASSPATH
     NAMES         weka.jar
     HINTS         ${Weka_HINTS} ENV CLASSPATH
-    PATH_SUFFIXES "Contents/Resources/Java"
+    PATH_SUFFIXES "weka"
+                  "Contents/Resources/Java"
                   "Resources/Java"
     DOC           "The Java library of the Weka package (weka.jar)."
   )
