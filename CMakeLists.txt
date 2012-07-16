@@ -56,9 +56,9 @@ set (BASIS_CXX_TEMPLATES_DIR      "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx
 set (BASIS_PYTHON_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/python")
 set (BASIS_PERL_TEMPLATES_DIR     "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/perl")
 set (BASIS_BASH_TEMPLATES_DIR     "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash")
-set (BASIS_PYTHON_LIBRARY_DIR     "${BASIS_LIBRARY_DIR}/python")
-set (BASIS_PERL_LIBRARY_DIR       "${BASIS_LIBRARY_DIR}/perl5")
-set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHON_LIBRARY_DIR}/sbia/sphinx/ext")
+set (BASIS_PYTHONPATH             "${BASIS_LIBRARY_DIR}/python")
+set (BASIS_PERL5LIB               "${BASIS_LIBRARY_DIR}/perl5")
+set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHONPATH}/sbia/sphinx/ext")
 set (BASIS_SPHINX_HTML_THEME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/sphinx/themes")
 
 include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
