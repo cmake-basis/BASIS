@@ -476,6 +476,7 @@ function (basis_add_mex_file TARGET_NAME)
   _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
+      LANGUAGE                  "CXX"
       BASIS_TYPE                MEX
       BASIS_UTILITIES           ${USES_BASIS_UTILITIES}
       BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
@@ -753,6 +754,7 @@ function (basis_add_mcc_target TARGET_NAME)
   _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
+      LANGUAGE                  "MATLAB"
       BASIS_TYPE                "MCC_${TYPE}"
       BASIS_UTILITIES           FALSE # TODO Implement utilities for MATLAB
       BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
