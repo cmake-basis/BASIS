@@ -87,28 +87,43 @@ function (weka_list_packages PACKAGES WHICH)
   if (NOT JAVA_EXECUTABLE)
     set (JAVA_EXECUTABLE java)
   endif ()
-  if (Weka_CLASSPATH)
-    execute_process (
-      COMMAND "${JAVA_EXECUTABLE}"
-                  -classpath "${Weka_CLASSPATH}"
-                  weka.core.WekaPackageManager
-                  -list-packages "${WHICH}"
-      RESULT_VARIABLE STATUS
-      OUTPUT_VARIABLE STDOUT
-    )
-    if (STATUS EQUAL 0)
-      string (REPLACE ";"  "," STDOUT "${STDOUT}")
-      string (REPLACE "\n" ";" STDOUT "${STDOUT}")
-      foreach (LINE IN LISTS STDOUT)
-        if (LINE MATCHES "^(-+|[0-9]+(\\.[0-9]+(\\.[0-9]+)))[ \t]+[0-9]+(\\.[0-9]+(\\.[0-9]+))[ \t]+([a-zA-Z_-]+):")
-          list (APPEND PKGS "${CMAKE_MATCH_6}")
-        endif ()
-      endforeach ()
+  if (Weka_VERSION_MAJOR AND Weka_VERSION_MINOR)
+    if (Weka_VERSION_MAJOR EQUAL 3)
+      if (Weka_VERSION_MINOR GREATER 1)
+        set (HAS_PACKAGE_MANAGER TRUE)
+      endif ()
+    elseif (Weka_VERSION_MAJOR GREATER 2)
+      set (HAS_PACKAGE_MANAGER TRUE)
     else ()
-      message (WARNING "Failed to retrieve list of ${WHICH} Weka packages!")
+      set (HAS_PACKAGE_MANAGER FALSE)
     endif ()
   else ()
-    message (WARNING "Cannot retrieve list of Weka packages because Weka_CLASSPATH is not set!")
+    set (HAS_PACKAGE_MANAGER TRUE)
+  endif ()
+  if (HAS_PACKAGE_MANAGER)
+    if (Weka_CLASSPATH)
+      execute_process (
+        COMMAND "${JAVA_EXECUTABLE}"
+                    -classpath "${Weka_CLASSPATH}"
+                    weka.core.WekaPackageManager
+                    -list-packages "${WHICH}"
+        RESULT_VARIABLE STATUS
+        OUTPUT_VARIABLE STDOUT
+      )
+      if (STATUS EQUAL 0)
+        string (REPLACE ";"  "," STDOUT "${STDOUT}")
+        string (REPLACE "\n" ";" STDOUT "${STDOUT}")
+        foreach (LINE IN LISTS STDOUT)
+          if (LINE MATCHES "^(-+|[0-9]+(\\.[0-9]+(\\.[0-9]+)))[ \t]+[0-9]+(\\.[0-9]+(\\.[0-9]+))[ \t]+([a-zA-Z_-]+):")
+            list (APPEND PKGS "${CMAKE_MATCH_6}")
+          endif ()
+        endforeach ()
+      else ()
+        message (WARNING "Failed to retrieve list of ${WHICH} Weka packages!")
+      endif ()
+    else ()
+      message (WARNING "Cannot retrieve list of Weka packages because Weka_CLASSPATH is not set!")
+    endif ()
   endif ()
   set (${PACKAGES} "${PKGS}" PARENT_SCOPE)
 endfunction ()
