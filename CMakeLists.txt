@@ -101,6 +101,7 @@ set (
     "FindPythonInterp.cmake"
     "FindSparseBayes.cmake"
     "FindSphinx.cmake"
+    "FindWeka.cmake"
 )
 
 # ----------------------------------------------------------------------------
