@@ -490,10 +490,11 @@ endmacro ()
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_filename_component
 # @sa basis_get_filename_component()
 function (get_filename_component)
-  if (ARGC GREATER 4)
+  if (ARGC LESS 3)
+    message (FATAL_ERROR "[basis_]get_filename_component(): At least three arguments required!")
+  elseif (ARGC GREATER 4)
     message (FATAL_ERROR "[basis_]get_filename_component(): Too many arguments!")
   endif ()
-
   list (GET ARGN 0 VAR)
   list (GET ARGN 1 STR)
   list (GET ARGN 2 CMD)
