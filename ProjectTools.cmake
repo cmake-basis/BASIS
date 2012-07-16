@@ -1282,6 +1282,19 @@ macro (basis_project_impl)
     basis_get_bash_version ()
   endif ()
 
+  if (PYTHON_EXECUTABLE AND PYTHON_VERSION_MAJOR EQUAL 0 OR (PYTHON_VERSION_MAJOR EQUAL 1 AND PYTHON_VERSION_MINOR EQUAL 4))
+    message (WARNING "Failed to determine Python version!")
+  endif ()
+  if (JYTHON_EXECUTABLE AND JYTHON_VERSION_MAJOR EQUAL 0)
+    message (WARNING "Failed to determine Jython version!")
+  endif ()
+  if (PERL_EXECUTABLE AND PERL_VERSION_MAJOR EQUAL 0)
+    message (WARNING "Failed to determine Perl version!")
+  endif ()
+  if (BASH_EXECUTABLE AND BASH_VERSION_MAJOR EQUAL 0)
+    message (WARNING "Failed to determine Bash version!")
+  endif ()
+
   # --------------------------------------------------------------------------
   # initialize settings
   basis_initialize_settings ()
