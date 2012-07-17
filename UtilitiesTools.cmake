@@ -211,8 +211,8 @@ function (basis_utilities_check VAR SOURCE_FILE)
       endif ()
     endif ()
   # --------------------------------------------------------------------------
-  # Python
-  elseif (LANGUAGE MATCHES "PYTHON")
+  # Python/Jython
+  elseif (LANGUAGE MATCHES "[JP]YTHON")
     # read script file
     file (READ "${SOURCE_FILE}" SCRIPT)
     # deprecated BASIS_PYTHON_UTILITIES macro
