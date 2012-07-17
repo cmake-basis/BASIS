@@ -347,15 +347,23 @@ void StdOutput::printUsage(ostream& os, bool heading) const
             else                          optxors.push_back(xors[i]);
         }
     }
-    list<TCLAP::Arg*> reqargs;
-    list<TCLAP::Arg*> optargs;
+    list<TCLAP::Arg*> reqargs, reqposargs;
+    list<TCLAP::Arg*> optargs, optposargs;
     for (TCLAP::ArgListIterator it = args.begin(); it != args.end(); it++) {
         if (_stdargs.find((*it)->getName()) == _stdargs.end()
                 && !xorhandler.contains((*it))) {
-            if ((*it)->isRequired()) {
-                (*it)->addToList(reqargs);
+            if (isUnlabeledArg(*it)) {
+                if ((*it)->isRequired()) {
+                    (*it)->addToList(reqposargs);
+                } else {
+                    (*it)->addToList(optposargs);
+                }
             } else {
-                (*it)->addToList(optargs);
+                if ((*it)->isRequired()) {
+                    (*it)->addToList(reqargs);
+                } else {
+                    (*it)->addToList(optargs);
+                }
             }
         }
     }
@@ -363,7 +371,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
     // executable name
     string s = exec_name;
     string id;
-    // optional arguments
+    // optional arguments with flags
     for (int i = 0; static_cast<unsigned int>(i) < optxors.size(); i++) {
         s += " [";
         for (TCLAP::ArgVectorIterator it = optxors[i].begin();
@@ -386,7 +394,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
             s += "...";
         }
     }
-    // required arguments
+    // required arguments with flags
     for (int i = 0; static_cast<unsigned int>(i) < reqxors.size(); i++) {
         s += " (";
         for (TCLAP::ArgVectorIterator it = reqxors[i].begin();
@@ -404,6 +412,25 @@ void StdOutput::printUsage(ostream& os, bool heading) const
         id = getArgumentID(*it);
         s += " ";
         s += id;
+        if ((*it)->acceptsMultipleValues() && id.find("...") == string::npos) {
+            s += "...";
+        }
+    }
+    // required positional arguments
+    for (TCLAP::ArgListIterator it = reqposargs.begin(); it != reqposargs.end(); it++) {
+        id = getArgumentID(*it);
+        s += " ";
+        s += id;
+        if ((*it)->acceptsMultipleValues() && id.find("...") == string::npos) {
+            s += "...";
+        }
+    }
+    // optional positional arguments
+    for (TCLAP::ArgListIterator it = optposargs.begin(); it != optposargs.end(); it++) {
+        id = getArgumentID(*it);
+        s += " [";
+        s += id;
+        s += "]";
         if ((*it)->acceptsMultipleValues() && id.find("...") == string::npos) {
             s += "...";
         }
@@ -446,17 +473,25 @@ void StdOutput::printArguments(ostream& os, bool all) const
             else                          optxors.push_back(xors[i]);
         }
     }
-    list<TCLAP::Arg*> reqargs;
-    list<TCLAP::Arg*> optargs;
+    list<TCLAP::Arg*> reqargs, reqposargs;
+    list<TCLAP::Arg*> optargs, optposargs;
     list<TCLAP::Arg*> stdargs;
     for (TCLAP::ArgListIterator it = args.begin(); it != args.end(); it++) {
         if (_stdargs.find((*it)->getName()) != _stdargs.end()) {
             (*it)->addToList(stdargs);
         } else if (!xorhandler.contains((*it))) {
-            if ((*it)->isRequired()) {
-                (*it)->addToList(reqargs);
+            if (isUnlabeledArg(*it)) {
+                if ((*it)->isRequired()) {
+                    (*it)->addToList(reqposargs);
+                } else {
+                    (*it)->addToList(optposargs);
+                }
             } else {
-                (*it)->addToList(optargs);
+                if ((*it)->isRequired()) {
+                    (*it)->addToList(reqargs);
+                } else {
+                    (*it)->addToList(optargs);
+                }
             }
         }
     }
@@ -470,10 +505,14 @@ void StdOutput::printArguments(ostream& os, bool all) const
     os << "OPTIONS" << endl;
 
     // required arguments
-    if (!reqxors.empty() || !reqargs.empty()) {
+    if (!reqxors.empty() || !reqargs.empty() || !reqposargs.empty()) {
         os << "    Required arguments:" << endl;
+        for (TCLAP::ArgListIterator it = reqposargs.begin(); it != reqposargs.end(); it++) {
+            if (it != reqposargs.begin()) os << endl;
+            printArgumentHelp(os, *it);
+        }
         for (int i = 0; static_cast<unsigned int>(i) < reqxors.size(); i++) {
-            if (i > 0) os << endl;
+            if (i > 0 || !reqposargs.empty()) os << endl;
             for (TCLAP::ArgVectorIterator it = reqxors[i].begin();
                     it != reqxors[i].end(); it++) {
                 if (it != reqxors[i].begin()) {
@@ -492,12 +531,16 @@ void StdOutput::printArguments(ostream& os, bool all) const
 
     // optional arguments
     if (!optxors.empty() || !optargs.empty()) {
-        if (!reqxors.empty() || !reqargs.empty()) {
+        if (!reqxors.empty() || !reqargs.empty() || !reqposargs.empty()) {
             os << endl;
         }
         os << "    Optional arguments:" << endl;
+        for (TCLAP::ArgListIterator it = optposargs.begin(); it != optposargs.end(); it++) {
+            if (it != optposargs.begin()) os << endl;
+            printArgumentHelp(os, *it);
+        }
         for (int i = 0; static_cast<unsigned int>(i) < optxors.size(); i++) {
-            if (i > 0) os << endl;
+            if (i > 0 || !optposargs.empty()) os << endl;
             for (TCLAP::ArgVectorIterator it = optxors[i].begin();
                     it != optxors[i].end(); it++) {
                 if (it != optxors[i].begin()) {
