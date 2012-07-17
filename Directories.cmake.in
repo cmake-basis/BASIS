@@ -220,7 +220,7 @@ endif ()
 # Note: CMake's find_package() command considers certain directories.
 #       Hence, the variable BASIS_INSTALL_SINFIX which may not comply to
 #       the naming of standard locations considered by this command cannot
-#       be used here, but a name depending on this package's name must be used.
+#       be used here, but this package's name must be used.
 
 ## @brief Path of installation directory for CMake package configuration
 #         files relative to @c INSTALL_PREFIX.
@@ -234,7 +234,7 @@ endif ()
 # argument to the find_package() command.
 if (NOT PROJECT_IS_MODULE)
   if (UNIX)
-    set (INSTALL_CONFIG_DIR "lib/cmake/@_PROJECT_DIR_INFIX@")
+    set (INSTALL_CONFIG_DIR "lib/cmake/@PROJECT_NAME_LOWER@")
   else ()
     set (INSTALL_CONFIG_DIR "CMake")
   endif ()
