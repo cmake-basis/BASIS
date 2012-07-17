@@ -65,9 +65,9 @@ endif ()
 # targets are referenced from another project, but not within the project.
 if (NOT PROJECT_IS_MODULE)
   if (BASIS_NAMESPACE)
-    set (BASIS_PROJECT_NAMESPACE_CMAKE "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAME_LOWER@")
+    set (BASIS_PROJECT_NAMESPACE_CMAKE "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAMESPACE_LOWER@")
   else ()
-    set (BASIS_PROJECT_NAMESPACE_CMAKE "@PROJECT_NAME_LOWER@")
+    set (BASIS_PROJECT_NAMESPACE_CMAKE "@PROJECT_NAMESPACE_LOWER@")
   endif ()
 endif ()
 basis_sanitize_for_regex (
@@ -83,7 +83,7 @@ basis_sanitize_for_regex (
 # Example:
 # @code
 # basis_make_target_uid(TARGET_UID "mycmd")
-# # sets TARGET_UID to "sbia.@PROJECT_NAME_LOWER@.mycmd"
+# # sets TARGET_UID to "sbia.@PROJECT_NAMESPACE_LOWER@.mycmd"
 # @endcode
 #
 # @sa basis_make_target_uid()
@@ -94,7 +94,7 @@ if (NOT PROJECT_IS_MODULE)
   set (PROJECT_NAMESPACE_CMAKE "${BASIS_PROJECT_NAMESPACE_CMAKE}")
 else ()
   if (BASIS_USE_MODULE_NAMESPACES)
-    set (PROJECT_NAMESPACE_CMAKE "${PROJECT_NAMESPACE_CMAKE}.@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_CMAKE "${PROJECT_NAMESPACE_CMAKE}.@PROJECT_NAMESPACE_LOWER@")
   endif ()
 endif ()
 basis_sanitize_for_regex (PROJECT_NAMESPACE_CMAKE_REGEX "${PROJECT_NAMESPACE_CMAKE}")
@@ -108,7 +108,7 @@ basis_sanitize_for_regex (PROJECT_NAMESPACE_CMAKE_REGEX "${PROJECT_NAMESPACE_CMA
 # Example:
 # @code
 # namespace sbia {
-# namespace @PROJECT_NAME_LOWER@ {
+# namespace @PROJECT_NAMESPACE_LOWER@ {
 # // your code goes here
 # }
 # }
@@ -117,13 +117,13 @@ basis_sanitize_for_regex (PROJECT_NAMESPACE_CMAKE_REGEX "${PROJECT_NAMESPACE_CMA
 # @ingroup BasisCxxUtilities
 if (NOT PROJECT_IS_MODULE)
   if (BASIS_NAMESPACE)
-    set (PROJECT_NAMESPACE_CXX "${BASIS_NAMESPACE_LOWER}::@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_CXX "${BASIS_NAMESPACE_LOWER}::@PROJECT_NAMESPACE_LOWER@")
   else ()
-    set (PROJECT_NAMESPACE_CXX "@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_CXX "@PROJECT_NAMESPACE_LOWER@")
   endif ()
 else ()
   if (BASIS_USE_MODULE_NAMESPACES)
-    set (PROJECT_NAMESPACE_CXX "${PROJECT_NAMESPACE_CXX}::@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_CXX "${PROJECT_NAMESPACE_CXX}::@PROJECT_NAMESPACE_LOWER@")
   endif ()
 endif ()
 
@@ -134,19 +134,19 @@ endif ()
 #
 # Example:
 # @code
-# package sbia.@PROJECT_NAME_LOWER@;
+# package sbia.@PROJECT_NAMESPACE_LOWER@;
 # @endcode
 #
 # @ingroup BasisJavaUtilities
 if (NOT PROJECT_IS_MODULE)
   if (BASIS_NAMESPACE)
-    set (PROJECT_NAMESPACE_JAVA "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_JAVA "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAMESPACE_LOWER@")
   else ()
-    set (PROJECT_NAMESPACE_JAVA "@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_JAVA "@PROJECT_NAMESPACE_LOWER@")
   endif ()
 else ()
   if (BASIS_USE_MODULE_NAMESPACES)
-    set (PROJECT_NAMESPACE_JAVA "${PROJECT_NAMESPACE_JAVA}.@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_JAVA "${PROJECT_NAMESPACE_JAVA}.@PROJECT_NAMESPACE_LOWER@")
   endif ()
 endif ()
 
@@ -157,19 +157,19 @@ endif ()
 #
 # Example:
 # @code
-# import sbia.@PROJECT_NAME_LOWER@
+# import sbia.@PROJECT_NAMESPACE_LOWER@
 # @endcode
 #
 # @ingroup BasisPythonUtilities
 if (NOT PROJECT_IS_MODULE)
   if (BASIS_NAMESPACE)
-    set (PROJECT_NAMESPACE_PYTHON "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_PYTHON "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAMESPACE_LOWER@")
   else ()
-    set (PROJECT_NAMESPACE_PYTHON "@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_PYTHON "@PROJECT_NAMESPACE_LOWER@")
   endif ()
 else ()
   if (BASIS_USE_MODULE_NAMESPACES)
-    set (PROJECT_NAMESPACE_PYTHON "${PROJECT_NAMESPACE_PYTHON}.@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_PYTHON "${PROJECT_NAMESPACE_PYTHON}.@PROJECT_NAMESPACE_LOWER@")
   endif ()
 endif ()
 
@@ -211,17 +211,17 @@ endif ()
 #
 # Example:
 # @code
-# # The project's namespace is SBIA_@PROJECT_NAME_UPPER@ and the name of the
+# # The project's namespace is SBIA_@PROJECT_NAMESPACE_UPPER@ and the name of the
 # # module in this example is mymodule.sh. This gives the fully-qualified module
-# # namespace SBIA_@PROJECT_NAME_UPPER@_MYMODULE. Note that private identifiers
+# # namespace SBIA_@PROJECT_NAMESPACE_UPPER@_MYMODULE. Note that private identifiers
 # # are further prefixed with an underscore '_'.
 #
 # # skip if already included
-# [ "${_SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED:-0}" == 'true' ] || {
-# _SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED='true'
+# [ "${_SBIA_@PROJECT_NAMESPACE_UPPER@_MYMODULE_INCLUDED:-0}" == 'true' ] || {
+# _SBIA_@PROJECT_NAMESPACE_UPPER@_MYMODULE_INCLUDED='true'
 #
 # # define private global variable
-# _SBIA_@PROJECT_NAME_UPPER@_MYMODULE_verbose=0
+# _SBIA_@PROJECT_NAMESPACE_UPPER@_MYMODULE_verbose=0
 #
 # # define public function
 # #
@@ -234,19 +234,19 @@ endif ()
 # }
 #
 #
-# } # _SBIA_@PROJECT_NAME_UPPER@_MYMODULE_INCLUDED
+# } # _SBIA_@PROJECT_NAMESPACE_UPPER@_MYMODULE_INCLUDED
 # @endcode
 #
 # @ingroup BasisBashUtilities
 if (NOT PROJECT_IS_MODULE)
   if (BASIS_NAMESPACE)
-    set (PROJECT_NAMESPACE_BASH "${BASIS_NAMESPACE_UPPER}_@PROJECT_NAME_UPPER@")
+    set (PROJECT_NAMESPACE_BASH "${BASIS_NAMESPACE_UPPER}_@PROJECT_NAMESPACE_UPPER@")
   else ()
-    set (PROJECT_NAMESPACE_BASH "@PROJECT_NAME_UPPER@")
+    set (PROJECT_NAMESPACE_BASH "@PROJECT_NAMESPACE_UPPER@")
   endif ()
 else ()
   if (BASIS_USE_MODULE_NAMESPACES)
-    set (PROJECT_NAMESPACE_BASH "${PROJECT_NAMESPACE_BASH}_@PROJECT_NAME_UPPER@")
+    set (PROJECT_NAMESPACE_BASH "${PROJECT_NAMESPACE_BASH}_@PROJECT_NAMESPACE_UPPER@")
   endif ()
 endif ()
 
@@ -261,19 +261,19 @@ endif ()
 #
 # Example:
 # @code
-# import sbia.@PROJECT_NAME_LOWER@.cls
+# import sbia.@PROJECT_NAMESPACE_LOWER@.cls
 # @endcode
 #
 # @ingroup BasisMatlabUtilities
 if (NOT PROJECT_IS_MODULE)
   if (BASIS_NAMESPACE)
-    set (PROJECT_NAMESPACE_MATLAB "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_MATLAB "${BASIS_NAMESPACE_LOWER}.@PROJECT_NAMESPACE_LOWER@")
   else ()
-    set (PROJECT_NAMESPACE_MATLAB "@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_MATLAB "@PROJECT_NAMESPACE_LOWER@")
   endif ()
 else ()
   if (BASIS_USE_MODULE_NAMESPACES)
-    set (PROJECT_NAMESPACE_MATLAB "${PROJECT_NAMESPACE_MATLAB}.@PROJECT_NAME_LOWER@")
+    set (PROJECT_NAMESPACE_MATLAB "${PROJECT_NAMESPACE_MATLAB}.@PROJECT_NAMESPACE_LOWER@")
   endif ()
 endif ()
 
@@ -288,7 +288,7 @@ endif ()
 # @c INSTALL_INCLUDE_DIR. The header files have to be included in a
 # source file using the entire relative path, e.g.,
 # @code
-# #include <sbia/@PROJECT_NAME_LOWER@/config.h>
+# #include <sbia/@PROJECT_NAMESPACE_LOWER@/config.h>
 # @endcode
 # This avoids name conflicts among projects in a more reliable way then only
 # changing the order of paths in the include search path and is similar to
@@ -311,13 +311,13 @@ endif ()
 #       to a file name prefix if ever desired.
 if (NOT PROJECT_IS_MODULE)
   if (BASIS_NAMESPACE)
-    set (INCLUDE_PREFIX "${BASIS_NAMESPACE_LOWER}/@PROJECT_NAME_LOWER@/")
+    set (INCLUDE_PREFIX "${BASIS_NAMESPACE_LOWER}/@PROJECT_NAMESPACE_LOWER@/")
   else ()
-    set (INCLUDE_PREFIX "@PROJECT_NAME_LOWER@/")
+    set (INCLUDE_PREFIX "@PROJECT_NAMESPACE_LOWER@/")
   endif ()
 else ()
   if (BASIS_USE_MODULE_NAMESPACES)
-    set (INCLUDE_PREFIX "${INCLUDE_PREFIX}/@PROJECT_NAME_LOWER@/")
+    set (INCLUDE_PREFIX "${INCLUDE_PREFIX}/@PROJECT_NAMESPACE_LOWER@/")
   endif ()
 endif ()
 
@@ -330,6 +330,9 @@ endif ()
 # This variable is used by basis_configure_script_libraries() which is called
 # by basis_project_impl() to add a library target of the given name for the
 # build of the Python modules found in the @c PROJECT_LIBRARY_DIR.
+#
+# @note The given target name is argument to the basis_add_library() command,
+#       i.e., excluding the project namespace @c PROJECT_NAMESPACE_CMAKE.
 set (PYTHON_LIBRARY_TARGET "pythonlib")
 
 ## @brief Name of library target which builds Jython modules in @c PROJECT_LIBRARY_DIR.
@@ -337,6 +340,9 @@ set (PYTHON_LIBRARY_TARGET "pythonlib")
 # This variable is used by basis_configure_script_libraries() which is called
 # by basis_project_impl() to add a library target of the given name for the
 # build of the Jython modules found in the @c PROJECT_LIBRARY_DIR.
+#
+# @note The given target name is argument to the basis_add_library() command,
+#       i.e., excluding the project namespace @c PROJECT_NAMESPACE_CMAKE.
 set (JYTHON_LIBRARY_TARGET "jythonlib")
 
 ## @brief Name of library target which builds Perl modules in @c PROJECT_LIBRARY_DIR.
@@ -344,6 +350,9 @@ set (JYTHON_LIBRARY_TARGET "jythonlib")
 # This variable is used by basis_configure_script_libraries() which is called
 # by basis_project_impl() to add a library target of the given name for the
 # build of the Perl modules found in the @c PROJECT_LIBRARY_DIR.
+#
+# @note The given target name is argument to the basis_add_library() command,
+#       i.e., excluding the project namespace @c PROJECT_NAMESPACE_CMAKE.
 set (PERL_LIBRARY_TARGET "perllib")
 
 

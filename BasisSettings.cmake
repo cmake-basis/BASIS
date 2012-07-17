@@ -116,6 +116,7 @@ endif ()
 set (
   BASIS_METADATA_LIST_SINGLE
     NAME
+    NAMESPACE
     VERSION
 )
 

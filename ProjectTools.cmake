@@ -36,6 +36,21 @@ macro (basis_project_check_metadata)
     set (BASIS_PROJECT_NAME "${PROJECT_NAME}")
   endif ()
 
+  if (NOT PROJECT_NAMESPACE)
+    set (PROJECT_NAMESPACE "${PROJECT_NAME}")
+  endif ()
+  if (NOT PROJECT_NAMESPACE MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
+    message (FATAL_ERROR "basis_project(): Invalid project namespace!\n\n"
+                         "Please choose a project namespace with either only captial "
+                         "letters in case of an acronym or a name with mixed case, "
+                         "but starting with a captial letter.\n\n"
+                         "Note that numbers are allowed, but not as first character. "
+                         "Further, do not use characters such as '_' or '-' to "
+                         "separate parts of the project namespace. Instead, use the "
+                         "upper camel case notation "
+                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
+  endif ()
+
   if (PROJECT_VERSION)
     if (NOT PROJECT_VERSION MATCHES "^[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(rc[0-9]+|[a-z])?$")
       message (FATAL_ERROR "basis_project(): Invalid version ${PROJECT_VERSION}!")
@@ -123,8 +138,12 @@ endmacro ()
 #     <td>The name of the project.</td>
 #   </tr>
 #   <tr>
+#     @tp @b NAMESPACE ns @endtp
+#     <td>The namespace identifier of the project. (default: @p NAME)</td>
+#   </tr>
+#   <tr>
 #     @tp @b VERSION major[.minor[.patch]] @endtp
-#     <td>Project version string. Defaults to "1.0.0"</td>
+#     <td>Project version string. (default: 1.0.0)</td>
 #   </tr>
 #   <tr>
 #     @tp @b DESCRIPTION description @endtp
@@ -135,7 +154,7 @@ endmacro ()
 #     @tp @b PACKAGE_VENDOR name @endtp
 #     <td>The vendor of this package, used for packaging. If multiple arguments
 #         are given, they are concatenated using one space character as delimiter.
-#         Default: "SBIA Group at University of Pennsylvania".</td>
+#         (default: SBIA Group at University of Pennsylvania)</td>
 #   </tr>
 #   <tr>
 #     @tp @b DEPENDS name[, name] @endtp
@@ -161,6 +180,7 @@ endmacro ()
 #
 # @returns Sets the following non-cached CMake variables:
 # @retval PROJECT_NAME                    @c NAME argument.
+# @retval PROJECT_NAMESPACE               @c NAMESPACE argument.
 # @retval PROJECT_VERSION                 @c VERSION argument.
 # @retval PROJECT_DESCRIPTION             Concatenated @c DESCRIPTION arguments.
 # @retval PROJECT_PACKAGE_VENDOR          Concatenated @c PACKAGE_VENDOR argument.
@@ -836,25 +856,27 @@ endfunction ()
 # @sa basis_project_impl()
 #
 # @returns Sets the following non-cached CMake variables:
-# @retval PROJECT_NAME_LOWER Project name in all lowercase letters.
-# @retval PROJECT_NAME_UPPER Project name in all uppercase letters.
-# @retval PROJECT_NAME_INFIX Project name used as infix for installation
-#                            directories and namespace identifiers.
-#                            In particular, the project name in either
-#                            all lowercase or mixed case starting with
-#                            an uppercase letter depending on whether
-#                            the @c PROJECT_NAME has mixed case or not.
-# @retval PROJECT_REVISION   Revision number of Subversion controlled
-#                            source tree or 0 if the source tree is
-#                            not under revision control.
-# @retval PROJECT_RELEASE    A string of project version and revision
-#                            that can be used for the output of
-#                            version information. The format of this
-#                            string is either one of the following:
-#                            - "v1.0.0 (r42)"
-#                            - "v1.0.0" (if revision unknown)
-#                            - "r42"    (if version is 0.0.0)
-#                            - ""       (otherwise)
+# @retval PROJECT_NAME_LOWER       Project name in lowercase.
+# @retval PROJECT_NAME_UPPER       Project name in uppercase.
+# @retval PROJECT_NAME_INFIX       Project name used as infix for installation
+#                                  directories and namespace identifiers.
+#                                  In particular, the project name in either
+#                                  all lowercase or mixed case starting with
+#                                  an uppercase letter depending on whether
+#                                  the @c PROJECT_NAME has mixed case or not.
+# @retval PROJECT_NAMESPACE_LOWER  Namespace identifier of project in lowercase.
+# @retval PROJECT_NAMESPACE_UPPER  Namespace identifier of project in uppercase.
+# @retval PROJECT_REVISION         Revision number of Subversion controlled
+#                                  source tree or 0 if the source tree is
+#                                  not under revision control.
+# @retval PROJECT_RELEASE          A string of project version and revision
+#                                  that can be used for the output of
+#                                  version information. The format of this
+#                                  string is either one of the following:
+#                                  - "v1.0.0 (r42)"
+#                                  - "v1.0.0" (if revision unknown)
+#                                  - "r42"    (if version is 0.0.0)
+#                                  - ""       (otherwise)
 macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # CMake version and policies
@@ -905,7 +927,12 @@ macro (basis_project_initialize)
   # convert project name to upper and lower case only, respectively
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
-
+  # convert project namespace identifier to upper and lower case only, respectively.
+  # used in particular in ProjectSettings.cmake.in to combine it with the common
+  # BASIS_NAMESPACE of all projects. The PROJECT_NAMESPACE_CMAKE is in particular
+  # used by basis_make_target_uid().
+  string (TOUPPER "${PROJECT_NAMESPACE}" PROJECT_NAMESPACE_UPPER)
+  string (TOLOWER "${PROJECT_NAMESPACE}" PROJECT_NAMESPACE_LOWER)
   # This variable is in particular used in the Directories.cmake.in template
   # file to separate the files of modules of a project from each other
   # if BASIS_USE_MODULE_NAMESPACES is set to ON.
