@@ -86,7 +86,7 @@ if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
   # hierarchy. The top-level directory which is added to the search path
   # for such modules does not have to be changed here.
   foreach (D IN ITEMS OUTPUT RUNTIME LIBRARY)
-    set (TESTING_${D}_DIR "${TESTING_${D}_DIR}/@PROJECT_NAME_INFIX@")
+    set (TESTING_${D}_DIR "${TESTING_${D}_DIR}/@_PROJECT_DIR_INFIX@")
   endforeach ()
 endif ()
 
@@ -132,7 +132,7 @@ if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
   # hierarchy. The top-level directory which is added to the search path
   # for such modules does not have to be changed here.
   foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE)
-    set (BINARY_${D}_DIR "${BINARY_${D}_DIR}/@PROJECT_NAME_INFIX@")
+    set (BINARY_${D}_DIR "${BINARY_${D}_DIR}/@_PROJECT_DIR_INFIX@")
   endforeach ()
 endif ()
 
@@ -194,14 +194,14 @@ option (INSTALL_SINFIX "Whether to use the package-specific installation path su
 if (UNIX)
   set (
     BASIS_INSTALL_SINFIX
-      "${BASIS_NAMESPACE_LOWER}/@PROJECT_NAME_INFIX@"
+      "${BASIS_NAMESPACE_LOWER}/@_PROJECT_DIR_INFIX@"
     CACHE STRING
       "Suffix/Infix used for installation paths."
   )
 else ()
   set (
     BASIS_INSTALL_SINFIX
-      "@PROJECT_NAME_INFIX@"
+      "@_PROJECT_DIR_INFIX@"
     CACHE STRING
       "Suffix/Infix used for installation paths."
   )
@@ -234,12 +234,12 @@ endif ()
 # argument to the find_package() command.
 if (NOT PROJECT_IS_MODULE)
   if (UNIX)
-    set (INSTALL_CONFIG_DIR "lib/cmake/@PROJECT_NAME_INFIX@")
+    set (INSTALL_CONFIG_DIR "lib/cmake/@_PROJECT_DIR_INFIX@")
   else ()
     set (INSTALL_CONFIG_DIR "CMake")
   endif ()
 else ()
-  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/@PROJECT_NAME_INFIX@")
+  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/@_PROJECT_DIR_INFIX@")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -273,7 +273,7 @@ endif ()
 if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
   foreach (P RUNTIME LIBEXEC)
     set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/@PROJECT_NAME_INFIX@")
+    set (${VAR} "${${VAR}}/@_PROJECT_DIR_INFIX@")
   endforeach ()
 endif ()
 
@@ -322,7 +322,7 @@ if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
   # created by the function basis_configure_public_headers().
   foreach (P LIBRARY ARCHIVE)
     set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/@PROJECT_NAME_INFIX@")
+    set (${VAR} "${${VAR}}/@_PROJECT_DIR_INFIX@")
   endforeach ()
 endif ()
 
@@ -413,7 +413,7 @@ else ()
   endif ()
 endif ()
 if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  set (INSTALL_DATA_DIR "${INSTALL_DATA_DIR}/@PROJECT_NAME_INFIX@")
+  set (INSTALL_DATA_DIR "${INSTALL_DATA_DIR}/@_PROJECT_DIR_INFIX@")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -430,7 +430,7 @@ if (INSTALL_SINFIX)
   set (INSTALL_DOC_DIR "${INSTALL_DOC_DIR}/${BASIS_INSTALL_SINFIX}")
 endif ()
 if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  set (INSTALL_DOC_DIR "${INSTALL_DOC_DIR}/@PROJECT_NAME_INFIX@")
+  set (INSTALL_DOC_DIR "${INSTALL_DOC_DIR}/@_PROJECT_DIR_INFIX@")
 endif ()
 
 ## @brief Path of installation directory for example files
@@ -444,7 +444,7 @@ else ()
   endif ()
 endif ()
 if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  set (INSTALL_EXAMPLE_DIR "${INSTALL_EXAMPLE_DIR}/@PROJECT_NAME_INFIX@")
+  set (INSTALL_EXAMPLE_DIR "${INSTALL_EXAMPLE_DIR}/@_PROJECT_DIR_INFIX@")
 endif ()
 
 ## @brief Path of installation directory for man pages

@@ -858,12 +858,8 @@ endfunction ()
 # @returns Sets the following non-cached CMake variables:
 # @retval PROJECT_NAME_LOWER       Project name in lowercase.
 # @retval PROJECT_NAME_UPPER       Project name in uppercase.
-# @retval PROJECT_NAME_INFIX       Project name used as infix for installation
-#                                  directories and namespace identifiers.
-#                                  In particular, the project name in either
-#                                  all lowercase or mixed case starting with
-#                                  an uppercase letter depending on whether
-#                                  the @c PROJECT_NAME has mixed case or not.
+# @retval PROJECT_NAMESPACE_INFIX  Project namespace used as infix for installation.
+#                                  paths in Directories.cmake.in.
 # @retval PROJECT_NAMESPACE_LOWER  Namespace identifier of project in lowercase.
 # @retval PROJECT_NAMESPACE_UPPER  Namespace identifier of project in uppercase.
 # @retval PROJECT_REVISION         Revision number of Subversion controlled
@@ -933,16 +929,6 @@ macro (basis_project_initialize)
   # used by basis_make_target_uid().
   string (TOUPPER "${PROJECT_NAMESPACE}" PROJECT_NAMESPACE_UPPER)
   string (TOLOWER "${PROJECT_NAMESPACE}" PROJECT_NAMESPACE_LOWER)
-  # This variable is in particular used in the Directories.cmake.in template
-  # file to separate the files of modules of a project from each other
-  # if BASIS_USE_MODULE_NAMESPACES is set to ON.
-  if (WIN32)
-    # Windows users prefer mixed case directory names
-    set (PROJECT_NAME_INFIX "${PROJECT_NAME}")
-  else ()
-    # Unix users often prefer lowercase directory names
-    set (PROJECT_NAME_INFIX "${PROJECT_NAME_LOWER}")
-  endif ()
 
   # get revision of project
   #
@@ -1046,15 +1032,26 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Initialize project settings.
 macro (basis_initialize_settings)
-  # configure and include BASIS directory structure
+  # configure BASIS directory structure
+  #
+  # the following variable is used in the Directories.cmake.in template
+  # file to separate the files of modules of a project from each other
+  # if BASIS_USE_MODULE_NAMESPACES is set to ON
+  if (WIN32)
+    # Windows users prefer mixed case directory names
+    set (_PROJECT_DIR_INFIX "${PROJECT_NAMESPACE}")
+  else ()
+    # Unix users often prefer lowercase directory names
+    set (_PROJECT_DIR_INFIX "${PROJECT_NAMESPACE_LOWER}")
+  endif ()
   configure_file (
     "${BASIS_MODULE_PATH}/Directories.cmake.in"
     "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake"
     @ONLY
   )
-
+  unset (_PROJECT_DIR_INFIX)
+  # include directory structure related variables
   include ("${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake")
-
   # include project specific settings
   #
   # This file enables the project to modify the default behavior of BASIS,
@@ -1069,14 +1066,12 @@ macro (basis_initialize_settings)
   else ()
     include ("${PROJECT_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
   endif ()
-
   # configure and include BASIS settings
   configure_file (
     "${BASIS_MODULE_PATH}/ProjectSettings.cmake.in"
     "${BINARY_CONFIG_DIR}/ProjectSettings.cmake"
     @ONLY
   )
-
   include ("${BINARY_CONFIG_DIR}/ProjectSettings.cmake" NO_POLICY_SCOPE)
 endmacro ()
 
