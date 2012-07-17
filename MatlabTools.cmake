@@ -343,7 +343,11 @@ endfunction ()
 #
 # @par Properties on script library targets
 # <table border=0>
-#   TODO
+#   <tr>
+#     @tp @b MFILE file @endtp
+#     <td>MATLAB source file with function prototype and documentation of MEX-file.
+#         (default: none)</td>
+#   </tr>
 # </table>
 #
 # @attention Properties documented as read-only must not be modified.
@@ -363,11 +367,6 @@ endfunction ()
 #     <td>Name of installation component as part of which this MEX-file is being
 #         installed if the @c LIBRARY_INSTALL_DIRECTORY property is not "none".
 #         (default: @c BASIS_LIBRARY_COMPONENT)</td>
-#   </tr>
-#   <tr>
-#     @tp @b MFILE file @endtp
-#     <td>MATLAB source file with function prototype and documentation of MEX-file.
-#         Note that the use of this option is yet experimental. (default: none)</td>
 #   </tr>
 #   <tr>
 #     @tp @b [NO]EXPORT @endtp
@@ -408,7 +407,7 @@ function (basis_add_mex_file TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
       "USE_BASIS_UTILITIES;NO_BASIS_UTILITIES;EXPORT;NOEXPORT"
-      "COMPONENT;DESTINATION;MFILE"
+      "COMPONENT;DESTINATION"
       ""
     ${ARGN}
   )
@@ -423,9 +422,6 @@ function (basis_add_mex_file TARGET_NAME)
     set (USES_BASIS_UTILITIES FALSE)
   else ()
     set (USES_BASIS_UTILITIES ${BASIS_UTILITIES})
-  endif ()
-  if (ARGN_MFILE)
-    get_filename_component (ARGN_MFILE "${ARGN_MFILE}" ABSOLUTE)
   endif ()
   basis_mexext (MEXEXT)
   # TEST flag
@@ -492,7 +488,7 @@ function (basis_add_mex_file TARGET_NAME)
       PREFIX                    ""
       OUTPUT_NAME               ""
       SUFFIX                    ".${MEXEXT}"
-      MFILE                     "${ARGN_MFILE}"
+      MFILE                     ""
       TEST                      ${TEST}
       EXPORT                    ${EXPORT}
   )
@@ -846,6 +842,14 @@ function (basis_build_mex_file TARGET_UID)
   endif ()
   if (NOT LIBRARY_COMPONENT)
     set (LIBRARY_COMPONENT "Unspecified")
+  endif ()
+  if (MFILE)
+    if (NOT IS_ABSOLUTE "${MFILE}")
+      set (MFILE "${SOURCE_DIRECTORY}/${MFILE}")
+    endif ()
+    if (NOT EXISTS "${MFILE}")
+      message (FATAL_ERROR "M-file ${MFILE} of MEX-file target ${TARGET_UID} does not exist!")
+    endif ()
   endif ()
   # output name
   if (NOT OUTPUT_NAME)
