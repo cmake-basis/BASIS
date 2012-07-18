@@ -92,7 +92,7 @@ function (set_target_properties)
       message ("**   -> ${PROPERTY} = [${VALUE}]")
     endif ()
     # check property name
-    if ("${PROPERTY}" STREQUAL "")
+    if (PROPERTY MATCHES "^$")
       message (FATAL_ERROR "Empty property name given!")
     # if property is related to the location of an imported target,
     # update corresponding project properties
