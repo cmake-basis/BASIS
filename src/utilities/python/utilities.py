@@ -287,9 +287,9 @@ def qsplit(args):
 def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False,
                   prefix=None, targets=None):
     # convert args to list of strings
-    if   type(args) is list: args = [str(i) for i in args]
-    elif type(args) is str:  args = qsplit(args);
-    else: raise Exception("execute(): Argument args must be either list or string")
+    if   type(args) is list:               args = [str(i) for i in args]
+    elif type(args) is in (str, unicode):  args = qsplit(args);
+    else: raise Exception("execute(): Argument args must be either list or string, but %s given" % type(args))
     # get absolute path of executable
     path = exepath(args[0], prefix=prefix, targets=targets)
     if not path: raise SubprocessError(args[0] + ": Command not found")
