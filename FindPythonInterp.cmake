@@ -143,7 +143,7 @@ endif()
 
 # determine python version string
 if(PYTHON_EXECUTABLE)
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -E -c
                             "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
                     OUTPUT_VARIABLE _VERSION
                     RESULT_VARIABLE _PYTHON_VERSION_RESULT
@@ -159,7 +159,7 @@ if(PYTHON_EXECUTABLE)
         endif()
     else()
         # sys.version predates sys.version_info, so use that
-        execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "import sys; sys.stdout.write(sys.version)"
+        execute_process(COMMAND "${PYTHON_EXECUTABLE}" -E -c "import sys; sys.stdout.write(sys.version)"
                         OUTPUT_VARIABLE _VERSION
                         RESULT_VARIABLE _PYTHON_VERSION_RESULT
                         ERROR_QUIET)
