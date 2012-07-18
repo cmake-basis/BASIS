@@ -27,7 +27,7 @@ endif ()
 function (basis_get_python_version)
   if (PYTHON_EXECUTABLE)
     execute_process(
-      COMMAND "${PYTHON_EXECUTABLE}" -c "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
+      COMMAND "${PYTHON_EXECUTABLE}" -E -c "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
       OUTPUT_VARIABLE VERSION
       RESULT_VARIABLE RETVAL
       ERROR_QUIET
@@ -43,7 +43,7 @@ function (basis_get_python_version)
     else ()
       # sys.version predates sys.version_info
       execute_process (
-        COMMAND "${PYTHON_EXECUTABLE}" -c "import sys; sys.stdout.write(sys.version)"
+        COMMAND "${PYTHON_EXECUTABLE}" -E -c "import sys; sys.stdout.write(sys.version)"
         OUTPUT_VARIABLE VERSION
         RESULT_VARIABLE RETVAL
         ERROR_QUIET
