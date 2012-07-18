@@ -315,6 +315,29 @@ endmacro ()
 function (basis_link_directories)
   # CMake's link_directories() command
   _link_directories (${ARGN})
+  # make relative paths absolute
+  set (DIRS)
+  foreach (P IN LISTS ARGN)
+    get_filename_component (P "${P}" ABSOLUTE)
+    list (APPEND DIRS "${P}")
+  endforeach ()
+  if (NOT DIRS)
+    message (WARNING "basis_link_directories(): No directories given to add!")
+  endif ()
+  # append directories to "global" list of link directories
+  basis_get_project_property (LINK_DIRS PROPERTY PROJECT_LINK_DIRS)
+  list (APPEND LINK_DIRS ${DIRS})
+  if (LINK_DIRS)
+    list (REMOVE_DUPLICATES LINK_DIRS)
+  endif ()
+  if (BASIS_DEBUG)
+    message ("** basis_link_directories():")
+    message ("**    Add:         [${DIRS}]")
+    if (BASIS_VERBOSE)
+    message ("**    Directories: [${LINK_DIRS}]")
+    endif ()
+  endif ()
+  basis_set_project_property (PROPERTY PROJECT_LINK_DIRS "${LINK_DIRS}")
 endfunction ()
 
 # ============================================================================
@@ -397,46 +420,56 @@ function (basis_target_link_libraries TARGET_NAME)
   foreach (ARG ${ARGN})
     basis_get_target_uid (UID "${ARG}")
     if (TARGET "${UID}")
+      if (UID MATCHES "^${TARGET_UID}$")
+        message (FATAL_ERROR "Cannot add link library as dependency of itself!")
+      endif ()
       list (APPEND ARGS "${UID}")
     else ()
       list (APPEND ARGS "${ARG}")
     endif ()
   endforeach ()
-  # custom BASIS targets with LINK_DEPENDS property
-  if (BASIS_TYPE MATCHES "MCC|MEX|SCRIPT")
-    get_target_property (DEPENDS ${TARGET_UID} LINK_DEPENDS)
-    if (NOT DEPENDS)
-      set (DEPENDS)
-    endif ()
-    # note that MCC does itself a dependency check and in case of scripts
-    # the basis_get_target_link_libraries() function is used
-    if (BASIS_TYPE MATCHES "MCC|SCRIPT")
-      list (APPEND DEPENDS ${ARGS})
-    # otherwise
-    else ()
-      list (APPEND DEPENDS ${ARGS})
-      # pull implicit dependencies (e.g., ITK uses this)
-      set (DEPENDENCY_ADDED 1)
-      while (DEPENDENCY_ADDED)
-        set (DEPENDENCY_ADDED 0)
-        foreach (LIB IN LISTS DEPENDS)
-          foreach (LIB_DEPEND IN LISTS ${LIB}_LIB_DEPENDS)
-            if (NOT LIB_DEPEND MATCHES "^$|^general$")
-              string (REGEX REPLACE "^-l" "" LIB_DEPEND "${LIB_DEPEND}")
-              list (FIND DEPENDS ${LIB_DEPEND} IDX)
-              if (IDX EQUAL -1)
-                list (APPEND DEPENDS ${LIB_DEPEND})
-                set (DEPENDENCY_ADDED 1)
-              endif ()
-            endif ()
-          endforeach ()
-        endforeach ()
-      endwhile ()
-    endif ()
-    # update LINK_DEPENDS property
-    _set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
-  # other
+  # get current link libraries
+  if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|STATIC|MODULE)_LIBRARY$")
+    get_target_property (DEPENDS ${TARGET_UID} BASIS_LINK_DEPENDS)
   else ()
+    get_target_property (DEPENDS ${TARGET_UID} LINK_DEPENDS)
+  endif ()
+  if (NOT DEPENDS)
+    set (DEPENDS)
+  endif ()
+  # note that MCC does itself a dependency check and in case of scripts
+  # the basis_get_target_link_libraries() function is used
+  if (BASIS_TYPE MATCHES "MCC|SCRIPT")
+    list (APPEND DEPENDS ${ARGS})
+  # otherwise
+  else ()
+    list (APPEND DEPENDS ${ARGS})
+    # pull implicit dependencies (e.g., ITK uses this)
+    set (DEPENDENCY_ADDED 1)
+    while (DEPENDENCY_ADDED)
+      set (DEPENDENCY_ADDED 0)
+      foreach (LIB IN LISTS DEPENDS)
+        foreach (LIB_DEPEND IN LISTS ${LIB}_LIB_DEPENDS)
+          if (NOT LIB_DEPEND MATCHES "^$|^general$")
+            string (REGEX REPLACE "^-l" "" LIB_DEPEND "${LIB_DEPEND}")
+            list (FIND DEPENDS ${LIB_DEPEND} IDX)
+            if (IDX EQUAL -1)
+              list (APPEND DEPENDS ${LIB_DEPEND})
+              set (DEPENDENCY_ADDED 1)
+            endif ()
+          endif ()
+        endforeach ()
+      endforeach ()
+    endwhile ()
+  endif ()
+  # update LINK_DEPENDS property
+  if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|STATIC|MODULE)_LIBRARY$")
+    _set_target_properties (${TARGET_UID} PROPERTIES BASIS_LINK_DEPENDS "${DEPENDS}")
+  else ()
+    _set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
+  endif ()
+  # add link libraries for CMake targets
+  if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|STATIC|MODULE)LIBRARY$")
     target_link_libraries (${TARGET_UID} ${ARGS})
   endif ()
 endfunction ()
@@ -1617,6 +1650,8 @@ function (basis_add_executable_target TARGET_NAME)
   else ()
     _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
   endif ()
+  # installation directory
+  _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}")
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
     if (NOT TARGET ${BASIS_CXX_UTILITIES_LIBRARY})
@@ -1906,6 +1941,15 @@ function (basis_add_library_target TARGET_NAME)
         ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}"
     )
   endif ()
+  # installation directory
+  # these properties are used by basis_get_target_location() in particular
+  _set_target_properties (
+    ${TARGET_UID}
+    PROPERTIES
+      RUNTIME_INSTALL_DIRECTORY "${ARGN_RUNTIME_DESTINATION}"
+      LIBRARY_INSTALL_DIRECTORY "${ARGN_LIBRARY_DESTINATION}"
+      ARCHIVE_INSTALL_DIRECTORY "${ARGN_LIBRARY_DESTINATION}"
+  )
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
     if (NOT TARGET ${BASIS_CXX_UTILITIES_LIBRARY})
@@ -1946,8 +1990,6 @@ function (basis_add_library_target TARGET_NAME)
           DESTINATION "${ARGN_RUNTIME_DESTINATION}"
           COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
       )
-      # the following property is used by basis_get_target_location()
-      _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_INSTALL_DIRECTORY "${ARGN_RUNTIME_DESTINATION}")
     endif ()
     if (ARGN_LIBRARY_DESTINATION)
       install (
@@ -2363,7 +2405,9 @@ function (basis_finalize_targets)
   foreach (TARGET_UID ${TARGETS})
     if (NOT TARGET _${TARGET_UID})
       get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
-      if (BASIS_TYPE MATCHES "SCRIPT_LIBRARY")
+      if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|MODULE)_LIBRARY$")
+        basis_set_target_install_rpath (${TARGET_UID})
+      elseif (BASIS_TYPE MATCHES "SCRIPT_LIBRARY")
         basis_build_script_library (${TARGET_UID})
       elseif (BASIS_TYPE MATCHES "SCRIPT")
         basis_build_script (${TARGET_UID})
@@ -2374,6 +2418,83 @@ function (basis_finalize_targets)
       endif ()
     endif ()
   endforeach ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Set INSTALL_RPATH property of executable or shared library target.
+#
+# This functions sets the @c INSTALL_RPATH property of a specified executable or
+# shared library target using the @c LINK_DEPENDS obtained using the
+# basis_get_target_link_libraries() function. It determines the installation
+# location of each dependency using the basis_get_target_location() function.
+#
+# @returns Sets the @c INSTALL_RPATH property of the specified target.
+#
+# @sa basis_get_target_link_libraries()
+function (basis_set_target_install_rpath TARGET_NAME)
+  basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
+  if (NOT TARGET "${TARGET_UID}")
+    message (FATAL_ERROR "Unknown target: ${TARGET_UID}")
+  endif ()
+  if (BASIS_DEBUG)
+    message ("** basis_set_target_install_rpath():")
+    message ("**    TARGET_NAME:   ${TARGET_UID}")
+  endif ()
+  if (CMAKE_HOST_APPLE)
+    set (ORIGIN "@loader_path")
+  else ()
+    set (ORIGIN "\$ORIGIN")
+  endif ()
+  # get location of target used to make paths relative to this $ORIGIN
+  basis_get_target_location (TARGET_LOCATION ${TARGET_UID} POST_INSTALL_PATH)
+  # directories of link libraries
+  basis_get_target_link_libraries (LINK_DEPENDS ${TARGET_UID})
+  if (BASIS_DEBUG AND BASIS_VERBOSE)
+    message ("**    LINK_DEPENDS:  [${LINK_DEPENDS}]")
+  endif ()
+  set (INSTALL_RPATH "${CMAKE_INSTALL_RPATH}")
+  foreach (LINK_DEPEND ${LINK_DEPENDS})
+    if (TARGET "${LINK_DEPEND}")
+      basis_get_target_location (DEPEND_LOCATION ${LINK_DEPEND} POST_INSTALL_PATH)
+    elseif (IS_ABSOLUTE "${LINK_DEPEND}")
+      if (IS_DIRECTORY "${LINK_DEPEND}")
+        set (DEPEND_LOCATION "${LINK_DEPEND}")
+      else ()
+        get_filename_component (DEPEND_LOCATION "${LINK_DEPEND}" PATH)
+      endif ()
+    else ()
+      set (DEPEND_LOCATION)
+    endif ()
+    if (DEPEND_LOCATION)
+      if (BASIS_DEBUG AND BASIS_VERBOSE)
+        message ("**    LOCATION of ${LINK_DEPEND}: ${DEPEND_LOCATION}")
+      endif ()
+      list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${DEPEND_LOCATION}" IDX)
+      if (IDX EQUAL -1)
+        basis_get_relative_path (RPATH "${TARGET_LOCATION}" "${DEPEND_LOCATION}")
+        list (APPEND INSTALL_RPATH "${ORIGIN}/${RPATH}")
+      endif ()
+    endif ()
+  endforeach ()
+  # directories added by [basis_]link_directories() command
+  basis_get_project_property (LINK_DIRS PROPERTY PROJECT_LINK_DIRS)
+  foreach (LINK_DIR ${LINK_DIRS})
+    list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${LINK_DIR}" IDX)
+    if (IDX EQUAL -1)
+      basis_get_relative_path (RPATH "${TARGET_LOCATION}" "${LINK_DIR}")
+      list (APPEND INSTALL_RPATH "${ORIGIN}/${RPATH}")
+    endif ()
+  endforeach ()
+  # remove duplicates
+  if (INSTALL_RPATH)
+    list (REMOVE_DUPLICATES INSTALL_RPATH)
+  endif ()
+  # set INSTALL_RPATH property
+  string (REPLACE ";" ":" INSTALL_RPATH "${INSTALL_RPATH}")
+  _set_target_properties (${TARGET_UID} PROPERTIES INSTALL_RPATH "${INSTALL_RPATH}")
+  if (BASIS_DEBUG)
+    message ("**    INSTALL_RPATH: [${INSTALL_RPATH}]")
+  endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------

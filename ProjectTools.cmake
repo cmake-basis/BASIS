@@ -1014,6 +1014,8 @@ macro (basis_project_initialize)
   basis_set_project_property (PROPERTY IMPORTED_RANKS     "")
   # see basis_include_directories()
   basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS "")
+  # see basis_link_directories()
+  basis_set_project_property (PROPERTY PROJECT_LINK_DIRS "")
   # see add_executable(), add_library()
   basis_set_project_property (PROPERTY TARGETS "")
   # see basis_add_*() functions

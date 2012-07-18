@@ -326,6 +326,7 @@ set (BASIS_PROPERTIES_ON_TARGETS
   # BASIS
   BASIS_INCLUDE_DIRECTORIES    # include directories
   BASIS_LINK_DIRECTORIES       # link directories
+  BASIS_LINK_DEPENDS           # link libraries
   BASIS_TYPE                   # BASIS type of target
   BASIS_UTILITIES              # whether BASIS utilities are used by this target
   LANGUAGE                     # language of source files
@@ -586,6 +587,14 @@ endif ()
 if (DEFINED CMAKE_OSX_SYSROOT)
   mark_as_advanced (CMAKE_OSX_SYSROOT)
 endif ()
+
+# use RPATH
+set (CMAKE_SKIP_RPATH       FALSE)
+set (CMAKE_SKIP_BUILD_RPATH FALSE)
+# tell CMake to append directories outside project to RPATH
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# use different RPATH for build and installed binaries
+set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 
 ## @}

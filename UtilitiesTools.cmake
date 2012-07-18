@@ -84,9 +84,10 @@ function (basis_add_utilities_library UID)
     _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
-        BASIS_TYPE               "STATIC_LIBRARY"
-        OUTPUT_NAME              "${OUTPUT_NAME}"
-        ARCHIVE_OUTPUT_DIRECTORY "${BASIS_BINARY_ARCHIVE_DIR}"
+        BASIS_TYPE                "STATIC_LIBRARY"
+        OUTPUT_NAME               "${OUTPUT_NAME}"
+        ARCHIVE_OUTPUT_DIRECTORY  "${BASIS_BINARY_ARCHIVE_DIR}"
+        ARCHIVE_INSTALL_DIRECTORY "${BASIS_INSTALL_ARCHIVE_DIR}"
     )
     # add installation rule
     install (
@@ -510,12 +511,12 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       if (TYPE MATCHES "EXECUTABLE")
         basis_get_target_location (BUILD_LOCATION   ${TARGET} ABSOLUTE)
         basis_get_target_location (INSTALL_LOCATION ${TARGET} POST_INSTALL)
-        if (BUILD_LOCATION AND INSTALL_LOCATION)
+        if (BUILD_LOCATION)
           list (APPEND EXECUTABLE_TARGETS "${TARGET}")
           list (APPEND BUILD_LOCATIONS    "${BUILD_LOCATION}")
           list (APPEND INSTALL_LOCATIONS  "${INSTALL_LOCATION}")
         else ()
-          message (FATAL_ERROR "Failed to determine build or install location of target ${TARGET}!")
+          message (FATAL_ERROR "Failed to determine build location of target ${TARGET}!")
         endif ()
       endif ()
     endforeach ()
@@ -601,16 +602,18 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       set (BUILD_LOCATION_WITH_INTDIR "${BUILD_LOCATION}")
     endif ()
     # installation path relative to different library paths
-    foreach (L LIBRARY PYTHON_LIBRARY PERL_LIBRARY)
-      file (
-        RELATIVE_PATH INSTALL_LOCATION_REL2${L}
-          "${INSTALL_PREFIX}/${INSTALL_${L}_DIR}"
-          "${INSTALL_LOCATION}"
-      )
-      if (NOT INSTALL_LOCATION_REL2${L})
-        set (INSTALL_LOCATION_REL2${L} ".")
-      endif ()
-    endforeach ()
+    if (INSTALL_LOCATION)
+      foreach (L LIBRARY PYTHON_LIBRARY PERL_LIBRARY)
+        file (
+          RELATIVE_PATH INSTALL_LOCATION_REL2${L}
+            "${INSTALL_PREFIX}/${INSTALL_${L}_DIR}"
+            "${INSTALL_LOCATION}"
+        )
+        if (NOT INSTALL_LOCATION_REL2${L})
+          set (INSTALL_LOCATION_REL2${L} ".")
+        endif ()
+      endforeach ()
+    endif ()
     # target UID including project namespace
     if (TARGET_UID MATCHES "\\.")
       set (ALIAS "${TARGET_UID}")
@@ -630,7 +633,9 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     if (CXX)
       get_filename_component (EXEC_NAME   "${BUILD_LOCATION}"   NAME)
       get_filename_component (BUILD_DIR   "${BUILD_LOCATION}"   PATH)
-      get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+      if (INSTALL_LOCATION)
+        get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
+      endif ()
 
       set (CC "${CC}\n")
       set (CC "${CC}\n    // ${TARGET_UID}")
@@ -642,7 +647,11 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     # Python
     if (PYTHON)
       set (PY_B "${PY_B}    '${ALIAS}':${S}'${BUILD_LOCATION_WITH_INTDIR}',\n")
-      set (PY_I "${PY_I}    '${ALIAS}':${S}'../../${INSTALL_LOCATION_REL2PYTHON_LIBRARY}',\n")
+      if (INSTALL_LOCATION)
+        set (PY_I "${PY_I}    '${ALIAS}':${S}'../../${INSTALL_LOCATION_REL2PYTHON_LIBRARY}',\n")
+      else ()
+        set (PY_I "${PY_I}    '${ALIAS}':${S}'',\n")
+      endif ()
     endif ()
     # ------------------------------------------------------------------------
     # Perl
@@ -654,14 +663,22 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       if (PL_I)
         set (PL_I "${PL_I},\n")
       endif ()
-      set (PL_I "${PL_I}        '${ALIAS}'${S}=> '../../${INSTALL_LOCATION_REL2PERL_LIBRARY}'")
+      if (INSTALL_LOCATION)
+        set (PL_I "${PL_I}        '${ALIAS}'${S}=> '../../${INSTALL_LOCATION_REL2PERL_LIBRARY}'")
+      else ()
+        set (PL_I "${PL_I}        '${ALIAS}'${S}=> ''")
+      endif ()
     endif ()
     # ------------------------------------------------------------------------
     # Bash
     if (BASH)
       # hash entry
       set (SH_B "${SH_B}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${BUILD_LOCATION}'")
-      set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
+      if (INSTALL_LOCATION)
+        set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
+      else ()
+        set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION ''")
+      endif ()
       # alias
       set (SH_A "${SH_A}\n    alias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
       # short alias (if target belongs to this project)
