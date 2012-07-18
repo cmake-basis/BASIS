@@ -2090,21 +2090,22 @@ function (basis_configure_script INPUT OUTPUT)
     # replace shebang directive
     if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
       if (WIN32)
-        set (SHEBANG "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
+        set (SHEBANG "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -E -x \"%~f0\" %* & goto :EOF")
       else ()
-        set (SHEBANG "#! ${PYTHON_EXECUTABLE}")
+        set (SHEBANG "#! ${PYTHON_EXECUTABLE} -E")
       endif ()
     elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
       if (WIN32)
         set (SHEBANG "@setlocal enableextensions & \"${JYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
       else ()
-        # Attention: It is IMPORTANT to always use "#! /usr/bin/env <interpreter>" even if
-        #            the <interpreter> is given as full path in case of jython. Otherwise,
-        #            the Jython executable fails to execute from within a Python script using
-        #            the os.system(), subprocess.popen(), subprocess.call() or similar function!
+        # Attention: It is IMPORTANT to not use "#! <interpreter>" even if the <interpreter>
+        #            is given as full path in case of jython. Otherwise, the Jython executable
+        #            fails to execute from within a Python script using the os.system(),
+        #            subprocess.popen(), subprocess.call() or similar function!
         #            Don't ask me for an explanation, but possibly the used shell otherwise does
-        #            not recognize the shebang as being valid. The /usr/bin/env helps out here.
-        set (SHEBANG "#! /usr/bin/env ${JYTHON_EXECUTABLE}")
+        #            not recognize the shebang as being valid. Using /usr/bin/env helps out here,
+        #            -schuha
+        set (SHEBANG "#! /usr/bin/env \"${JYTHON_EXECUTABLE}\"")
       endif ()
     elseif (LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
       if (WIN32)
