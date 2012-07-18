@@ -11,7 +11,11 @@
 # Modified by Andreas Schuh to enable the use at SBIA, where an ATLAS C library
 # is installed which contains the symbols without trailing _ character, i.e.,
 # instead of checking the existence of the cblas_dgemm_ function, the
-# existence of the cblas_dgemm function has to be checked.
+# existence of the cblas_dgemm function has to be checked. Moreover, added
+# code to mark variable as advanced and only show them to the user if
+# no required library was found. If the found library is cblas, the corresponding
+# header file cblas.h is searched as well. Therefore, added the BLAS_INCLUDE_DIR
+# variable which is only defined if required.
 #
 # This module sets the following variables:
 #  BLAS_FOUND - set to true if a library implementing the BLAS interface
@@ -20,6 +24,7 @@
 #    and -L).
 #  BLAS_LIBRARIES - uncached list of libraries (using full path name) to
 #    link against to use BLAS
+#  BLAS_INCLUDE_DIR - uncached list of include directories for C libraries
 #  BLAS95_LIBRARIES - uncached list of libraries (using full path name)
 #    to link against to use BLAS95 interface
 #  BLAS95_FOUND - set to true if a library implementing the BLAS f95 interface
@@ -190,6 +195,9 @@ if (BLA_VENDOR STREQUAL "ATLAS" OR BLA_VENDOR STREQUAL "All")
   "cblas;f77blas;atlas"
   ""
   )
+  if (BLAS_LIBRARIES MATCHES "cblas")
+    find_path (BLAS_INCLUDE_DIR NAMES cblas.h DOC "Include directory of the cblas.h header file.")
+  endif ()
  endif(NOT BLAS_LIBRARIES)
 endif (BLA_VENDOR STREQUAL "ATLAS" OR BLA_VENDOR STREQUAL "All")
 
@@ -553,6 +561,15 @@ if (BLA_VENDOR MATCHES "Intel*" OR BLA_VENDOR STREQUAL "All")
  endif (_LANGUAGES_ MATCHES C OR _LANGUAGES_ MATCHES CXX)
 endif (BLA_VENDOR MATCHES "Intel*" OR BLA_VENDOR STREQUAL "All")
 
+if (BLAS_LIBRARIES_VARS)
+  mark_as_advanced (FORCE ${BLAS_LIBRARIES_VARS})
+endif ()
+if (BLAS95_LIBRARIES)
+  mark_as_advanced (FORCE ${BLAS95_LIBRARIES})
+endif ()
+if (BLAS_INCLUDE_DIR)
+  mark_as_advanced (FORCE BLAS_INCLUDE_DIR)
+endif ()
 
 if(BLA_F95)
  if(BLAS95_LIBRARIES)
@@ -563,9 +580,11 @@ if(BLA_F95)
 
   if(NOT BLAS_FIND_QUIETLY)
     if(BLAS95_FOUND)
+      mark_as_advanced (${BLAS95_LIBRARIES})
       message(STATUS "A library with BLAS95 API found.")
     else(BLAS95_FOUND)
       if(BLAS_FIND_REQUIRED)
+        mark_as_advanced (CLEAR ${BLAS95_LIBRARIES})
         message(FATAL_ERROR
         "A required library with BLAS95 API not found. Please specify library location.")
       else(BLAS_FIND_REQUIRED)
@@ -578,7 +597,11 @@ if(BLA_F95)
   set(BLAS_LIBRARIES "${BLAS95_LIBRARIES}")
 else(BLA_F95)
   if(BLAS_LIBRARIES)
-    set(BLAS_FOUND TRUE)
+    if(BLAS_LIBRARIES_VARS MATCHES "cblas" AND NOT BLAS_INCLUDE_DIR)
+      set(BLAS_FOUND FALSE)
+    else()
+      set(BLAS_FOUND TRUE)
+    endif()
   else(BLAS_LIBRARIES)
     set(BLAS_FOUND FALSE)
   endif(BLAS_LIBRARIES)
@@ -587,17 +610,32 @@ else(BLA_F95)
     if(BLAS_FOUND)
       message(STATUS "A library with BLAS API found.")
     else(BLAS_FOUND)
-      if(BLAS_FIND_REQUIRED)
-        mark_as_advanced (CLEAR ${BLAS_LIBRARIES_VARS})
-        message(FATAL_ERROR
-        "A required library with BLAS API not found. Please specify library location"
-        " by setting at least one of the following variables: [${BLAS_LIBRARIES_VARS}]."
-        )
-      else(BLAS_FIND_REQUIRED)
-        message(STATUS
-        "A library with BLAS API not found. Please specify library location."
-        )
-      endif(BLAS_FIND_REQUIRED)
+      if(BLAS_LIBRARIES AND BLAS_cblas_LIBRARY AND NOT BLAS_INCLUDE_DIR)
+        if(BLAS_FIND_REQUIRED)
+          mark_as_advanced (CLEAR BLAS_INCLUDE_DIR)
+          message(FATAL_ERROR
+            "Location of cblas.h header file for C BLAS library not found!"
+            " Please specify the directory containing this file for library ${BLAS_cblas_LIBRARY}"
+            " using the BLAS_INCLUDE_DIR variable."
+          )
+        else(BLAS_FIND_REQUIRED)
+          message(STATUS
+          "Location of cblas.h header file for C BLAS library not found! Please specify header location."
+          )
+        endif(BLAS_FIND_REQUIRED)
+      else()
+        if(BLAS_FIND_REQUIRED)
+          mark_as_advanced (CLEAR ${BLAS_LIBRARIES_VARS})
+          message(FATAL_ERROR
+            "A required library with BLAS API not found. Please specify library location"
+            " by setting the following variables: [${BLAS_LIBRARIES_VARS}]."
+          )
+        else(BLAS_FIND_REQUIRED)
+          message(STATUS
+          "A library with BLAS API not found. Please specify library location."
+          )
+        endif(BLAS_FIND_REQUIRED)
+      endif()
     endif(BLAS_FOUND)
   endif(NOT BLAS_FIND_QUIETLY)
 endif(BLA_F95)
