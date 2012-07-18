@@ -2445,9 +2445,12 @@ function (basis_set_target_install_rpath TARGET_NAME)
   else ()
     set (ORIGIN "\$ORIGIN")
   endif ()
-  # common default RPATH (rarely used)
   # always prefer libraries located within the same directory
-  set (INSTALL_RPATH "${ORIGIN}/.;${CMAKE_INSTALL_RPATH}")
+  set (INSTALL_RPATH "${ORIGIN}/.")
+  # common default RPATH (rarely used)
+  if (CMAKE_INSTALL_RPATH)
+    set (INSTALL_RPATH "${INSTALL_RPATH};${CMAKE_INSTALL_RPATH}")
+  endif ()
   # get location of target used to make paths relative to this $ORIGIN
   basis_get_target_location (TARGET_LOCATION ${TARGET_UID} POST_INSTALL_PATH)
   # directories of link libraries
