@@ -16,6 +16,11 @@ else ()
   set (__BASIS_INTERPTOOLS_INCLUDED TRUE)
 endif ()
 
+
+## @addtogroup CMakeUtilities
+# @{
+
+
 # ----------------------------------------------------------------------------
 ## @brief Get version of Python interpreter.
 #
@@ -214,3 +219,7 @@ function (basis_get_bash_version)
     set (BASH_VERSION_PATCH  "${VERSION_PATCH}"  PARENT_SCOPE)
   endif ()
 endfunction ()
+
+
+## @}
+# end of Doxygen group
