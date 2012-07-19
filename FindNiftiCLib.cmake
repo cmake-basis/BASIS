@@ -157,6 +157,11 @@ mark_as_advanced (NiftiCLib_LIBRARY)
 mark_as_advanced (NiftiCLib_znz_LIBRARY)
 
 # ----------------------------------------------------------------------------
+# prerequisites
+
+
+
+# ----------------------------------------------------------------------------
 # aliases / backwards compatibility
 if (NiftiCLib_INCLUDE_DIR)
   set (NiftiCLib_INCLUDE_DIRS "${NiftiCLib_INCLUDE_DIR}")
@@ -170,11 +175,12 @@ if (NiftiCLib_LIBRARY)
   set (NiftiCLib_LIB "${NiftiCLib_LIBRARY}")
 endif ()
 
-if (NiftiCLib_LIBRARY)
-  set (NiftiCLib_LIBRARIES "${NiftiCLib_LIBRARY}")
-endif ()
-if (NiftiCLib_LIBRARIES AND NiftiCLib_znz_LIBRARY)
+set (NiftiCLib_LIBRARIES)
+if (NiftiCLib_znz_LIBRARY)
   list (APPEND NiftiCLib_LIBRARIES "${NiftiCLib_znz_LIBRARY}")
+endif ()
+if (NiftiCLib_LIBRARY)
+  list (APPEND NiftiCLib_LIBRARIES "${NiftiCLib_LIBRARY}")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -190,7 +196,8 @@ if (NiftiCLib_LIBRARY)
     niftiio
     PROPERTIES
       IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-      IMPORTED_LOCATION "${NiftiCLib_LIBRARY}"
+      IMPORTED_LOCATION                 "${NiftiCLib_LIBRARY}"
+      IMPORTED_LINK_INTERFACE_LIBRARIES "${NiftiCLib_znz_LIBRARY}"
   )
 endif ()
 
@@ -208,6 +215,7 @@ find_package_handle_standard_args (
   REQUIRED_VARS
     NiftiCLib_INCLUDE_DIR
     NiftiCLib_LIBRARY
+    NiftiCLib_znz_LIBRARY
 )
 
 set (NiftiCLib_FOUND ${NIFTICLIB_FOUND})
