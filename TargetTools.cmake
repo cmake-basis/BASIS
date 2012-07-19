@@ -462,15 +462,15 @@ function (basis_target_link_libraries TARGET_NAME)
       endforeach ()
     endwhile ()
   endif ()
-  # update LINK_DEPENDS property
+  # update LINK_DEPENDS
   if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|STATIC|MODULE)_LIBRARY$")
     _set_target_properties (${TARGET_UID} PROPERTIES BASIS_LINK_DEPENDS "${DEPENDS}")
-  else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
-  endif ()
-  # add link libraries for CMake targets
-  if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|STATIC|MODULE)LIBRARY$")
     target_link_libraries (${TARGET_UID} ${ARGS})
+  else ()
+    # FIXME cannot use LINK_DEPENDS for CMake targets as these depends are
+    #       otherwise added as is to the Makefile. therefore, consider renaming
+    #       LINK_DEPENDS in general to BASIS_LINK_DEPENDS.
+    _set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
   endif ()
 endfunction ()
 
