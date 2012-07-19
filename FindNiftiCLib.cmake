@@ -98,8 +98,6 @@ else ()
   endif()
 endif ()
 
-message ("CMAKE_FIND_LIBRARY_SUFFIXES: ${CMAKE_FIND_LIBRARY_SUFFIXES}")
-
 # ----------------------------------------------------------------------------
 # find paths/files
 if (NiftiCLib_DIR)
