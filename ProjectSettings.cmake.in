@@ -355,6 +355,16 @@ set (JYTHON_LIBRARY_TARGET "jythonlib")
 #       i.e., excluding the project namespace @c PROJECT_NAMESPACE_CMAKE.
 set (PERL_LIBRARY_TARGET "perllib")
 
+## @brief Name of library target which builds MATLAB modules in @c PROJECT_LIBRARY_DIR.
+#
+# This variable is used by basis_configure_script_libraries() which is called
+# by basis_project_impl() to add a library target of the given name for the
+# build of the MATLAB modules found in the @c PROJECT_LIBRARY_DIR.
+#
+# @note The given target name is argument to the basis_add_library() command,
+#       i.e., excluding the project namespace @c PROJECT_NAMESPACE_CMAKE.
+set (MATLAB_LIBRARY_TARGET "matlablib")
+
 
 ## @}
 # end of Doxygen group

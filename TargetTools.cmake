@@ -758,10 +758,12 @@ endfunction ()
 #   </tr>
 #   <tr>
 #     @tp @b MATLAB @endtp
-#     <td>Shared libraries built from MATLAB sources using the MATLAB Compiler (mcc).
+#     <td>Libraries of M-files or shared libraries built using the MATLAB Compiler (mcc).
 #         This language option is used when the list of source files contains one or
 #         more *.m files. A custom target is added which depends on custom command(s)
-#         that build the library.</td>
+#         that build the library. If the type of the library is @c SHARED, a shared
+#         library is build using the MATLAB Compiler. Otherwise, the M-files are
+#         configured and installed such that they can be used in MATLAB.</td>
 #   </tr>
 # </table>
 #
@@ -828,8 +830,7 @@ endfunction ()
 #     @tp <b>STATIC</b>|<b>SHARED</b>|<b>MODULE</b>|<b>MEX</b> @endtp
 #     <td>Type of the library. (default: @c SHARED for C++ libraries if
 #         @c BUILD_SHARED_LIBS evaluates to true or @c STATIC otherwise,
-#         @c SHARED for libraries build by MATLAB Compiler, and @c MODULE
-#         in all other cases)</td>
+#         and @c MODULE in all other cases)</td>
 #   </tr>
 #   <tr>
 #     @tp @b COMPONENT name @endtp
@@ -990,11 +991,16 @@ function (basis_add_library TARGET_NAME)
   # --------------------------------------------------------------------------
   # MATLAB
   elseif (ARGN_LANGUAGE MATCHES "MATLAB")
-    if (ARGN_STATIC OR ARGN_MODULE OR ARGN_MEX)
+    if (ARGN_STATIC OR ARGN_MEX)
       message (FATAL_ERROR "Target ${TARGET_UID}: Invalid library type! Only shared libraries can be built by the MATLAB Compiler.")
     endif ()
-    list (REMOVE_ITEM ARGN SHARED)
-    basis_add_mcc_target (${TARGET_NAME} SHARED ${ARGN})
+    if (ARGN_SHARED)
+      list (REMOVE_ITEM ARGN SHARED)
+      basis_add_mcc_target (${TARGET_NAME} SHARED ${ARGN})
+    else ()
+      list (REMOVE_ITEM ARGN MODULE) # optional
+      basis_add_script_library (${TARGET_NAME} ${ARGN})
+    endif ()
   # --------------------------------------------------------------------------
   # other
   else ()

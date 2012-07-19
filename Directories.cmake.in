@@ -78,8 +78,12 @@ basis_set_if_empty (TESTING_LIBEXEC_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
 basis_set_if_empty (TESTING_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
 ## @brief Absolute path of output directory for Python modules used for testing.
 basis_set_if_empty (TESTING_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/python")
+## @brief Absolute path of output directory for Jython modules used for testing.
+basis_set_if_empty (TESTING_JYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/jython")
 ## @brief Absolute path of output directory for Perl modules used for testing.
 basis_set_if_empty (TESTING_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/perl5")
+## @brief Absolute path of output directory for MATLAB modules used for testing.
+basis_set_if_empty (TESTING_MATLAB_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/matlab")
 
 if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
   # Note that Python and Perl modules use their own internal package
@@ -126,6 +130,8 @@ basis_set_if_empty (BINARY_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/python")
 basis_set_if_empty (BINARY_JYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/jython")
 ## @brief Absolute path of output directory for Perl modules.
 basis_set_if_empty (BINARY_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/perl5")
+## @brief Absolute path of output directory for MATLAB modules.
+basis_set_if_empty (BINARY_MATLAB_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/matlab")
 
 if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
   # Note that Python/Jython and Perl modules use their own internal package
@@ -149,7 +155,7 @@ endif ()
 # references to top-level project's directories
 if (NOT PROJECT_IS_MODULE)
   foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE
-                      PYTHON_LIBRARY JYTHON_LIBRARY PERL_LIBRARY)
+                      PYTHON_LIBRARY JYTHON_LIBRARY PERL_LIBRARY MATLAB_LIBRARY)
     set (BASIS_BINARY_${D}_DIR "${BINARY_${D}_DIR}")
   endforeach ()
 endif ()
@@ -385,6 +391,27 @@ else ()
     set (INSTALL_PERL_LIBRARY_DIR "lib/perl/site_perl")
   else ()
     set (INSTALL_PERL_LIBRARY_DIR "Library/Perl/site_perl")
+  endif ()
+endif ()
+
+## @brief Path of installation directory for MATLAB M-files relative to @c INSTALL_PREFIX.
+if (MATLAB_RELEASE)
+  if (UNIX)
+    set (INSTALL_MATLAB_LIBRARY_DIR "lib/matlab/@MATLAB_RELEASE@")
+  else ()
+    set (INSTALL_MATLAB_LIBRARY_DIR "Library/Matlab/@MATLAB_RELEASE@")
+  endif ()
+elseif (MATLAB_VERSION_MAJOR AND DEFINED MATLAB_VERSION_MINOR)
+  if (UNIX)
+    set (INSTALL_MATLAB_LIBRARY_DIR "lib/matlab@MATLAB_VERSION_MAJOR@.@MATLAB_VERSION_MINOR@")
+  else ()
+    set (INSTALL_MATLAB_LIBRARY_DIR "Library/Matlab@MATLAB_VERSION_MAJOR@.@MATLAB_VERSION_MINOR@")
+  endif ()
+else ()
+  if (UNIX)
+    set (INSTALL_MATLAB_LIBRARY_DIR "lib/matlab")
+  else ()
+    set (INSTALL_MATLAB_LIBRARY_DIR "Library/Matlab")
   endif ()
 endif ()
 
