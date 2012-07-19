@@ -25,8 +25,12 @@ endmacro ()
 #            three-way diff merge used by the basisproject tool to update
 #            existing projects to this newer template will fail.
 
-basis_install_template (1.0)
-basis_install_template (1.1)
-basis_install_template (1.2)
-basis_install_template (1.3)
-basis_install_template (1.4)
+if (BUILD_PROJECT_TOOL)
+  if (INSTALL_DEPRECATED_TEMPLATES)
+    basis_install_template (1.0)
+    basis_install_template (1.1)
+    basis_install_template (1.2)
+    basis_install_template (1.3)
+  endif ()
+  basis_install_template (1.4)
+endif ()

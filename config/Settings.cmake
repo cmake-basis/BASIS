@@ -37,9 +37,6 @@ set (INSTALL_PERL_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/perl")
 set (INSTALL_BASH_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/bash")
 set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/matlab")
 
-# installation directory of project template files
-set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
-
 # common prefix (path) of Sphinx extensions
 set (SPHINX_EXTENSIONS_PREFIX "${BASIS_NAMESPACE_LOWER}/sphinx/ext")
 # installation directory of Sphinx themes
@@ -58,6 +55,28 @@ set (BASIS_INCLUDES_CHECK_EXCLUDE
   "^sbia/gmock/"
   "^sbia/tclap/"
 )
+
+# ============================================================================
+# project template
+# ============================================================================
+
+option (BUILD_PROJECT_TOOL "Request build of the basisproject command-line tool." ON)
+
+set (_DOC "Request installation of deprecated project templates."
+          " Required by basisproject to upgrade a project which was"
+          " instantiated from an older template.")
+basis_list_to_string (_DOC ${_DOC})
+
+if (BUILD_PROJECT_TOOL)
+  option (INSTALL_DEPRECATED_TEMPLATES "${_DOC}" OFF)
+else ()
+  set (INSTALL_DEPRECATED_TEMPLATES OFF CACHE BOOL "${_DOC}" FORCE)
+endif ()
+mark_as_advanced (INSTALL_DEPRECATED_TEMPLATES)
+unset (_DOC)
+
+# installation directory of project template files
+set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
 
 # ============================================================================
 # utilities

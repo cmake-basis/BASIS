@@ -10,7 +10,7 @@
 
 # ----------------------------------------------------------------------------
 # project management
-if (PythonInterp_FOUND)
+if (BUILD_PROJECT_TOOL AND PythonInterp_FOUND)
   basis_add_executable (basisproject.py)
   basis_target_link_libraries (utilities_python)
 endif ()
