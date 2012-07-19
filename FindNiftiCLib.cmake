@@ -104,10 +104,10 @@ if (NiftiCLib_DIR)
 
   find_path (
     NiftiCLib_INCLUDE_DIR
-      NAMES         nifti1_io.h
+      NAMES         nifti/nifti1_io.h
       HINTS         ${NiftiCLib_DIR}
-      PATH_SUFFIXES "include" "include/nifti"
-      DOC           "Path of directory containing nifti1.h file."
+      PATH_SUFFIXES "include"
+      DOC           "Path of directory containing nifti1_io.h file."
       NO_DEFAULT_PATH
   )
 
@@ -131,10 +131,9 @@ else ()
 
   find_path (
     NiftiCLib_INCLUDE_DIR
-      NAMES         nifti1_io.h
+      NAMES         nifti/nifti1_io.h
       HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-      PATH_SUFFIXES nifti
-      DOC           "Path of directory containing nifti1.h file."
+      DOC           "Path of directory containing nifti1_io.h file."
   )
 
   find_library (
@@ -161,7 +160,10 @@ mark_as_advanced (NiftiCLib_znz_LIBRARY)
 # aliases / backwards compatibility
 if (NiftiCLib_INCLUDE_DIR)
   set (NiftiCLib_INCLUDE_DIRS "${NiftiCLib_INCLUDE_DIR}")
-  set (NiftiCLib_INCLUDES     "${NiftiCLib_INCLUDE_DIR}")
+  if (NOT NiftiCLib_INCLUDE_DIR MATCHES "/nifti/?$")
+    list (APPEND NiftiCLib_INCLUDE_DIRS "${NiftiCLib_INCLUDE_DIR}/nifti")
+  endif ()
+  set (NiftiCLib_INCLUDES "${NiftiCLib_INCLUDE_DIRS}")
 endif ()
 
 if (NiftiCLib_LIBRARY)
@@ -213,7 +215,7 @@ set (NiftiCLib_FOUND ${NIFTICLIB_FOUND})
 # ----------------------------------------------------------------------------
 # set NiftiCLib_DIR
 if (NOT NiftiCLib_DIR AND NiftiCLib_FOUND)
-  string (REGEX REPLACE "include/nifti/?" "" NiftiCLib_PREFIX "${NiftiCLib_INCLUDE_DIR}")
+  string (REGEX REPLACE "include(/nifti)?/?" "" NiftiCLib_PREFIX "${NiftiCLib_INCLUDE_DIR}")
   set (NiftiCLib_DIR "${NiftiCLib_PREFIX}" CACHE PATH "Installation prefix for NiftiCLib." FORCE)
   unset (NiftiCLib_PREFIX)
 endif ()
