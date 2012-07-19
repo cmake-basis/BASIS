@@ -158,8 +158,51 @@ mark_as_advanced (NiftiCLib_znz_LIBRARY)
 
 # ----------------------------------------------------------------------------
 # prerequisites
+if (NiftiCLib_USE_STATIC_LIB OR NiftiCLib_znz_LIBRARY MATCHES "\\.a$")
+  find_package (ZLIB REQUIRED)
+endif ()
 
+set (NiftiCLib_LIBRARIES "${ZLIB_LIBRARIES}")
+if (NiftiCLib_znz_LIBRARY)
+  list (APPEND NiftiCLib_LIBRARIES "${NiftiCLib_znz_LIBRARY}")
+endif ()
+if (NiftiCLib_LIBRARY)
+  list (APPEND NiftiCLib_LIBRARIES "${NiftiCLib_LIBRARY}")
+endif ()
 
+# ----------------------------------------------------------------------------
+# import targets
+if (NiftiCLib_znz_LIBRARY)
+  if (NiftiCLib_USE_STATIC_LIB OR NiftiCLib_znz_LIBRARY MATCHES "\\.a$")
+    add_library (niftiznz STATIC IMPORTED)
+  else ()
+    add_library (niftiznz SHARED IMPORTED)
+  endif ()
+  set_target_properties (
+    niftiznz
+    PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+      IMPORTED_LOCATION                 "${NiftiCLib_znz_LIBRARY}"
+      IMPORTED_LINK_INTERFACE_LIBRARIES "${ZLIB_LIBRARIES}"
+  )
+endif ()
+
+if (NiftiCLib_LIBRARY)
+  if (NiftiCLib_USE_STATIC_LIB OR NiftiCLib_LIBRARY MATCHES "\\.a$")
+    add_library (niftiio STATIC IMPORTED)
+  else ()
+    add_library (niftiio SHARED IMPORTED)
+  endif ()
+  set_target_properties (
+    niftiio
+    PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+      IMPORTED_LOCATION                 "${NiftiCLib_LIBRARY}"
+  )
+  if (TARGET niftiznz)
+    set_target_properties (niftiio PROPERTIES IMPORTED_LINK_INTERFACE_LIBRARIES niftiznz)
+  endif ()
+endif ()
 
 # ----------------------------------------------------------------------------
 # aliases / backwards compatibility
@@ -173,32 +216,6 @@ endif ()
 
 if (NiftiCLib_LIBRARY)
   set (NiftiCLib_LIB "${NiftiCLib_LIBRARY}")
-endif ()
-
-set (NiftiCLib_LIBRARIES)
-if (NiftiCLib_znz_LIBRARY)
-  list (APPEND NiftiCLib_LIBRARIES "${NiftiCLib_znz_LIBRARY}")
-endif ()
-if (NiftiCLib_LIBRARY)
-  list (APPEND NiftiCLib_LIBRARIES "${NiftiCLib_LIBRARY}")
-endif ()
-
-# ----------------------------------------------------------------------------
-# import targets
-if (NiftiCLib_LIBRARY)
-  if (NiftiCLib_USE_STATIC_LIB)
-    add_library (niftiio STATIC IMPORTED)
-  else ()
-    add_library (niftiio SHARED IMPORTED)
-  endif ()
-
-  set_target_properties (
-    niftiio
-    PROPERTIES
-      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-      IMPORTED_LOCATION                 "${NiftiCLib_LIBRARY}"
-      IMPORTED_LINK_INTERFACE_LIBRARIES "${NiftiCLib_znz_LIBRARY}"
-  )
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -216,6 +233,7 @@ find_package_handle_standard_args (
     NiftiCLib_INCLUDE_DIR
     NiftiCLib_LIBRARY
     NiftiCLib_znz_LIBRARY
+    ZLIB_LIBRARIES
 )
 
 set (NiftiCLib_FOUND ${NIFTICLIB_FOUND})
