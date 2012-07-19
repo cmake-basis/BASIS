@@ -56,7 +56,7 @@ void testdriversetup(int* argc, char** argv[])
                 "This program alters the environment, runs a test and "
                 "compares the output image to one or more baseline images.",
                 // example usage
-                "EXECNAME GaussFilter --compare output.nii baseline.nii"
+                "EXENAME GaussFilter --compare output.nii baseline.nii"
                 "\n"
                 "Runs the test GaussFilter which presumably writes the"
                 " gaussian smoothed image to the image file output.nii."
