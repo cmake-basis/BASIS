@@ -123,7 +123,7 @@ endfunction ()
 # @endcode
 #
 # @ingroup BasisBashUtilities
-set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
+set (BASIS_BASH___FILE__ "$(cd -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
 
 # ----------------------------------------------------------------------------
 ## @brief Absolute path of directory of current BASH file.
@@ -136,7 +136,7 @@ set (BASIS_BASH___FILE__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pw
 # @endcode
 #
 # @ingroup BasisBashUtilities
-set (BASIS_BASH___DIR__ "$(cd -P -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
+set (BASIS_BASH___DIR__ "$(cd -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
 
 # ============================================================================
 # deprecated BASIS_<LANG>_UTILITIES "macros"
