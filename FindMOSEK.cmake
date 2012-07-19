@@ -34,7 +34,7 @@
 #         the "ver ('MATLAB')" command of MATLAB without brackets. If this
 #         variable is not set and the basis_get_matlab_release() command is
 #         available, it is invoked to determine the release version automatically.
-#         Otherwise, the release version defaults to "R2009b".</td>
+#         Otherwise, an error is raised if the "mex" component is searched.</td>
 #   </tr>
 #   <tr>
 #     @tp @b MEX_EXT @endtp
@@ -169,7 +169,7 @@ if (MOSEK_FIND_mex)
   # MATLAB version
   if (NOT MATLAB_RELEASE)
     if (COMMAND basis_get_matlab_release)
-      basis_get_matlab_release ()
+      basis_get_matlab_release (MATLAB_RELEASE)
       if (NOT MATLAB_RELEASE)
         message (FATAL_ERROR "Failed to determine release version of MATLAB installation."
                              " This information is required to be able to find the right MOSEK MEX-files."
