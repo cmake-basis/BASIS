@@ -549,7 +549,8 @@ execute()
             -f|--allow_fail) _basis_execute_allow_fail='true'; ;;
             -s|--simulate)   _basis_execute_simulate='true';   ;;
             -v|--verbose)
-                if [ `match "$2" '^-?[0-9]+$'` ]; then
+                match "$2" '^-?[0-9]+$'
+                if [ $? -eq 0 ]; then
                     _basis_execute_verbose=$2
                     shift
                 else
