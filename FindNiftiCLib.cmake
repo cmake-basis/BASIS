@@ -92,11 +92,13 @@ else ()
   if (WIN32)
     set (CMAKE_FIND_LIBRARY_SUFFIXES .dll .lib)
   elseif(APPLE)
-    set (CMAKE_FIND_LIBRARY_SUFFIXES .dylib)
+    set (CMAKE_FIND_LIBRARY_SUFFIXES .dylib .a)
   else ()
     set (CMAKE_FIND_LIBRARY_SUFFIXES .so .a)
   endif()
 endif ()
+
+message ("CMAKE_FIND_LIBRARY_SUFFIXES: ${CMAKE_FIND_LIBRARY_SUFFIXES}")
 
 # ----------------------------------------------------------------------------
 # find paths/files
