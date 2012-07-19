@@ -102,7 +102,8 @@ mark_as_advanced (BASIS_MEX_TIMEOUT)
 # @ingroup CMakeUtilities
 function (basis_get_full_matlab_version VERSION)
   if (NOT MATLAB_EXECUTABLE)
-    message (FATAL_ERROR "MATLAB_EXECUTABLE not found. Forgot to add MATLAB as dependency?")
+    set (VERSION "" PARENT_SCOPE)
+    return ()
   endif ()
   set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
   # run matlab command to write return value of "version" command to text file
@@ -139,62 +140,53 @@ function (basis_get_full_matlab_version VERSION)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Determine version of MATLAB installation.
+## @brief Get version of MATLAB installation.
 #
-# @param [out] ARGN The first argument ARGV0 is set to the version of the
-#                   MATLAB installation, i.e., "7.9.0", for example, or an
-#                   empty string if execution of MATLAB failed.
-#                   If no output variable name is specified, the variable
-#                   MATLAB_VERSION is added to the cache if not present yet.
-#                   Note that if no output variable is given and MATLAB_VERSION
-#                   is already set, nothing is done.
-#
-# @returns Sets the variable named by the first argument to the determined
-#          MATLAB version.
+# @param [out] ARGV1 If given, the named variable is set to the version string
+#                    of the MATLAB installation. Otherwise, the variables
+#                    @c MATLAB_VERSION_STRING, @c MATLAB_VERSION_MAJOR,
+#                    @c MATLAB_VERSION_MINOR, and @c MATLAB_VERSION_PATCH are
+#                    set in the scope of the caller.
 #
 # @ingroup CMakeUtilities
 function (basis_get_matlab_version)
   if (ARGC GREATER 1)
-    message (FATAL_ERROR "basis_get_matlab_version (): Invalid number of arguments.")
-  endif ()
-  if (ARGC EQUAL 0 AND MATLAB_VERSION)
-    return ()
+    message (FATAL_ERROR "basis_get_matlab_version(): Too many arguments!")
   endif ()
   basis_get_full_matlab_version (VERSION)
-  if (VERSION MATCHES "^([0-9]+\\.[0-9]+\\.[0-9]+)")
-    set (VERSION "${CMAKE_MATCH_1}")
+  if (VERSION MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)")
+    set (VERSION_STRING "${CMAKE_MATCH_0}")
+    set (VERSION_MAJOR  "${CMAKE_MATCH_1}")
+    set (VERSION_MINOR  "${CMAKE_MATCH_2}")
+    set (VERSION_PATCH  "${CMAKE_MATCH_3}")
   else ()
-    set (VERSION "")
+    set (VERSION_STRING "0.0")
+    set (VERSION_MAJOR  "0")
+    set (VERSION_MINOR  "0")
+    set (VERSION_PATCH  "0")
   endif ()
   if (ARGC EQUAL 1)
-    set (${ARGV0} "${VERSION}" PARENT_SCOPE)
+    set (${ARGV0} "${VERSION_STRING}" PARENT_SCOPE)
   else ()
-    set (MATLAB_VERSION "${VERSION}" CACHE STRING "The version string of the MATLAB installation." FORCE)
-    mark_as_advanced (MATLAB_VERSION)
+    set (MATLAB_VERSION_STRING "${VERSION_STRING}" PARENT_SCOPE)
+    set (MATLAB_VERSION_MAJOR  "${VERSION_MAJOR}"  PARENT_SCOPE)
+    set (MATLAB_VERSION_MINOR  "${VERSION_MINOR}"  PARENT_SCOPE)
+    set (MATLAB_VERSION_PATCH  "${VERSION_PATCH}"  PARENT_SCOPE)
   endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Determine release version of MATLAB installation.
+## @brief Get release version of MATLAB installation.
 #
-# @param [out] ARGN The first argument ARGV0 is set to the release version of
-#                   the MATLAB installation, i.e., "R2009b", for example,
-#                   or an empty string if execution of MATLAB failed.
-#                   If no output variable name is specified, the variable
-#                   MATLAB_RELEASE is added to the cache if not present yet.
-#                   Note that if no output variable is given and MATLAB_RELEASE
-#                   is already set, nothing is done.
-#
-# @returns Sets the variable named by the first argument to the release version
-#          of MATLAB.
+# @param [out] ARGV1 If given, the named variable is set to the release string
+#                    of the MATLAB installation, e.g., "R2009b". Otherwise,
+#                    the variable @c MATLAB_RELEASE is set in the scope of the
+#                    caller.
 #
 # @ingroup CMakeUtilities
 function (basis_get_matlab_release)
   if (ARGC GREATER 1)
-    message (FATAL_ERROR "basis_get_matlab_release (): Invalid number of arguments.")
-  endif ()
-  if (ARGC EQUAL 0 AND MATLAB_RELEASE)
-    return ()
+    message (FATAL_ERROR "basis_get_matlab_release(): Too many arguments!")
   endif ()
   basis_get_full_matlab_version (VERSION)
   if (VERSION MATCHES ".*\\\((.+)\\\)")
@@ -205,8 +197,7 @@ function (basis_get_matlab_release)
   if (ARGC EQUAL 1)
     set (${ARGV0} "${RELEASE}" PARENT_SCOPE)
   else ()
-    set (MATLAB_RELEASE "${RELEASE}" CACHE STRING "The release version of the MATLAB installation." FORCE)
-    mark_as_advanced (MATLAB_RELEASE)
+    set (MATLAB_RELEASE "${RELEASE}")
   endif ()
 endfunction ()
 
