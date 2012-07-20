@@ -233,7 +233,6 @@ find_package_handle_standard_args (
     NiftiCLib_INCLUDE_DIR
     NiftiCLib_LIBRARY
     NiftiCLib_znz_LIBRARY
-    ZLIB_LIBRARIES
 )
 
 set (NiftiCLib_FOUND ${NIFTICLIB_FOUND})
