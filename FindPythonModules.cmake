@@ -124,7 +124,7 @@ include (CMakeParseArguments)
 #          or the string "&lt;MODULE%gt;-NOTFOUND" otherwise.
 function (basis_find_python_module CACHEVAR)
   # do nothing if path of module already known from previous run
-  if (NOT ${CACHEVAR} MATCHES "NOTFOUND$")
+  if (DEFINED ${CACHEVAR} AND NOT ${CACHEVAR} MATCHES "NOTFOUND$")
     return ()
   endif ()
   # set initial value of cache entry
@@ -306,7 +306,15 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # common <Pkg>_DIR variable
-set (PythonModules_DIR "${PythonModules_PYTHONPATH}" CACHE PATH "Directory or list of directories separated by ; of installed Python modules.")
+if (NOT PythonModules_DIR)
+  set (
+    PythonModules_DIR
+      "${PythonModules_PYTHONPATH}"
+    CACHE PATH
+      "Directory or list of directories separated by ; of installed Python modules."
+    FORCE
+  )
+endif ()
 
 # ----------------------------------------------------------------------------
 # clean up
