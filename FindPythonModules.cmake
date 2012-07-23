@@ -18,6 +18,12 @@
 #         the names of the Python modules to look for.</td>
 #   </tr>
 #   <tr>
+#     @tp @b PythonModules_FIND_OPTIONAL_COMPONENTS @endtp
+#     <td>The @c OPTIONAL_COMPONENTS argument(s) of the find_package() command
+#         specifies the names of the Python modules which are not necessarily
+#         required, but should be searched as well.</td>
+#   </tr>
+#   <tr>
 #     @tp @b PYTHON_EXECUTABLE @endtp
 #     <td>Path to the Python interpreter. Should be set by first looking
 #         for the Python interpreter, i.e., find_packages(PythonInterp).
@@ -146,6 +152,7 @@ function (basis_find_python_module CACHEVAR)
   endif ()
   if (ARGN_NO_DEFAULT_PATH)
     set (ARGN_NO_PYTHONPATH TRUE)
+    set (ARGN_PYTHON_EXECUTABLE)
   endif ()
   # 1. search specified paths
   foreach (P ${ARGN_PATH}) # ignore empty entries
@@ -222,48 +229,52 @@ endfunction ()
 
 # ----------------------------------------------------------------------------
 # find Python modules
-if (NOT PythonModules_FIND_COMPONENTS)
-  message (FATAL_ERROR "PythonModules: No COMPONENTS (i.e., Python module names) specified!")
+if (NOT PythonModules_FIND_COMPONENTS AND NOT PythonModules_FIND_OPTIONAL_COMPONENTS)
+  message (FATAL_ERROR "PythonModules: No (OPTIONAL_)COMPONENTS (i.e., Python module names) specified!")
 endif ()
-
-set (PythonModules_FOUND TRUE)   # set to false if at least one not found
 if (NOT DEFINED PythonModules_PYTHONPATH)
   set (PythonModules_PYTHONPATH) # PYTHONPATH of all found modules
 endif ()
-
-foreach (_PythonModules_MODULE IN LISTS PythonModules_FIND_COMPONENTS)
-  set (_PythonModules_VAR "PythonModules_${_PythonModules_MODULE}_PATH")
-  if (PythonModules_DIR)
-    basis_find_python_module (
-      ${_PythonModules_VAR}
-      NAME "${_PythonModules_MODULE}"
-      PATH "${PythonModules_DIR}"
-    )
-  else ()
-    basis_find_python_module (
-      ${_PythonModules_VAR}
-      NAME "${_PythonModules_MODULE}"
-      PATH "${PythonModules_DIR}"
-      NO_DEFAULT_PATH
-    )
-  endif ()
-  mark_as_advanced (${_PythonModules_VAR})
-  if (${_PythonModules_VAR} MATCHES "(^ *|NOTFOUND)$")
-    set (PythonModules_FOUND           FALSE)
-    set (PythonModules_${MODULE}_FOUND FALSE)
-  else ()
-    set (PythonModules_${MODULE}_FOUND TRUE)
-    list (APPEND PythonModules_PYTHONPATH "${${_PythonModules_VAR}}")
-  endif ()
-endforeach ()
-
+# helper macro
+macro (_PythonModules_find_python_modules ALL_FOUND)
+  set (${ALL_FOUND} TRUE)
+  foreach (_PythonModules_MODULE ${ARGN})
+    set (_PythonModules_VAR "PythonModules_${_PythonModules_MODULE}_PATH")
+    if (PythonModules_DIR)
+      basis_find_python_module (
+        ${_PythonModules_VAR}
+        NAME "${_PythonModules_MODULE}"
+        PATH "${PythonModules_DIR}"
+        NO_DEFAULT_PATH
+      )
+    else ()
+      basis_find_python_module (
+        ${_PythonModules_VAR}
+        NAME "${_PythonModules_MODULE}"
+        PATH "${PythonModules_DIR}"
+      )
+    endif ()
+    mark_as_advanced (${_PythonModules_VAR})
+    if (${_PythonModules_VAR} MATCHES "(^ *|NOTFOUND)$")
+      set (${ALL_FOUND}                  FALSE)
+      set (PythonModules_${MODULE}_FOUND FALSE)
+    else ()
+      set (PythonModules_${MODULE}_FOUND TRUE)
+      list (APPEND PythonModules_PYTHONPATH "${${_PythonModules_VAR}}")
+    endif ()
+  endforeach ()
+endmacro ()
+# optional first, as PythonModules_FOUND shall be reset to TRUE afterwards
+_PythonModules_find_python_modules (PythonModules_FOUND ${PythonModules_FIND_OPTIONAL_COMPONENTS})
+_PythonModules_find_python_modules (PythonModules_FOUND ${PythonModules_FIND_COMPONENTS})
+# remove duplicate paths in PYTHONPATH
 if (PythonModules_PYTHONPATH)
   list (REMOVE_DUPLICATES PythonModules_PYTHONPATH)
 endif ()
 
 # ----------------------------------------------------------------------------
 # handle standard QUIET and REQUIRED arguments
-if (PythonModules_FIND_REQUIRED AND NOT PythonModules_FOUND)
+if (NOT PythonModules_FOUND)
   # list of modules that were not found
   list (_PythonModules_MISSING)
   foreach (_PythonModules_MODULE IN LISTS PythonModules_FIND_COMPONENTS)
@@ -283,8 +294,9 @@ if (PythonModules_FIND_REQUIRED AND NOT PythonModules_FOUND)
   else ()
     set (_PythonModules_HINT "Set")
   endif ()
-  set (_PythonModules_HINT "${_PythonModules_HINT} the PYTHONPATH environment/CMake variable")
-  set (_PythonModules_HINT "${_PythonModules_HINT} or set the PythonModules_DIR or PythonModules_<module>_PATH variable(s).")
+  set (_PythonModules_HINT "${_PythonModules_HINT} the PythonModules_DIR variable. Alternatively, unset")
+  set (_PythonModules_HINT "${_PythonModules_HINT} PythonModules_DIR and set the PYTHONPATH environment/CMake variable")
+  set (_PythonModules_HINT "${_PythonModules_HINT} and/or PythonModules_<module>_PATH variable(s) instead.")
   # error message
   message (FATAL_ERROR "Could NOT find the following Python modules:\n${_PythonModules_MISSING}\n${_PythonModules_HINT}")
 endif ()
