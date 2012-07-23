@@ -88,11 +88,29 @@ function (basis_find_python_module CACHEVAR MODULE)
   endif ()
   if (${CACHEVAR} MATCHES "NOTFOUND$")
     if (PYTHON_EXECUTABLE)
+      # 1. ignore PYTHON* environment variables using -E option of Python
       execute_process (
-        COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
+        COMMAND "${PYTHON_EXECUTABLE}" -E -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
         RESULT_VARIABLE STATUS
         OUTPUT_VARIABLE P
+        ERROR_VARIABLE  ERROR
       )
+      # 2. otherwise, try it without -E option
+      if (NOT STATUS EQUAL 0)
+        execute_process (
+          COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
+          RESULT_VARIABLE STATUS
+          OUTPUT_VARIABLE P
+          ERROR_VARIABLE  ERROR
+        )
+        if (NOT STATUS EQUAL 0 AND ERROR MATCHES "ImportError: No module named site")
+          message (WARNING "Failed to run Python interpreter ${PYTHON_EXECUTABLE} without -E option."
+                           " Make sure that the PYTHONHOME environment variable is either not set (recommended)"
+                           " or at least set correctly for this Python installation. Maybe you need to enable"
+                           " this Python version first? Otherwise, set PYTHON_EXECUTABLE to the right"
+                           " Python interpreter executable (python).")
+        endif ()
+      endif ()
       if (STATUS EQUAL 0)
         if (EXISTS "${P}/__init__.py")
           get_filename_component (P "${P}" PATH)
