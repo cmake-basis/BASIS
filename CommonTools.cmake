@@ -2105,7 +2105,7 @@ function (basis_configure_script INPUT OUTPUT)
         #            Don't ask me for an explanation, but possibly the used shell otherwise does
         #            not recognize the shebang as being valid. Using /usr/bin/env helps out here,
         #            -schuha
-        set (SHEBANG "#! /usr/bin/env \"${JYTHON_EXECUTABLE}\"")
+        set (SHEBANG "#! /usr/bin/env ${JYTHON_EXECUTABLE}")
       endif ()
     elseif (LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
       if (WIN32)
