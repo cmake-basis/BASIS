@@ -87,15 +87,16 @@ function (basis_find_python_module CACHEVAR MODULE)
     set (${CACHEVAR} "${MODULE}-NOTFOUND" CACHE PATH "Directory containing ${MODULE} Python module/package.")
   endif ()
   if (${CACHEVAR} MATCHES "NOTFOUND$")
+    # run Python, import module, and print directory of __file__ attribute
     if (PYTHON_EXECUTABLE)
-      # 1. ignore PYTHON* environment variables using -E option of Python
+      # 1. try it with -E option -- the preferred way to run Python
       execute_process (
         COMMAND "${PYTHON_EXECUTABLE}" -E -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
         RESULT_VARIABLE STATUS
         OUTPUT_VARIABLE P
         ERROR_VARIABLE  ERROR
       )
-      # 2. otherwise, try it without -E option
+      # 2. try it without -E option
       if (NOT STATUS EQUAL 0)
         execute_process (
           COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
@@ -104,11 +105,15 @@ function (basis_find_python_module CACHEVAR MODULE)
           ERROR_VARIABLE  ERROR
         )
         if (NOT STATUS EQUAL 0 AND ERROR MATCHES "ImportError: No module named site")
-          message (WARNING "Failed to run Python interpreter ${PYTHON_EXECUTABLE} without -E option."
-                           " Make sure that the PYTHONHOME environment variable is either not set (recommended)"
-                           " or at least set correctly for this Python installation. Maybe you need to enable"
-                           " this Python version first? Otherwise, set PYTHON_EXECUTABLE to the right"
-                           " Python interpreter executable (python).")
+          set (PYTHONHOME "$ENV{PYTHONHOME}")
+          unset (ENV{PYTHONHOME})
+          execute_process (
+            COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
+            RESULT_VARIABLE STATUS
+            OUTPUT_VARIABLE P
+            ERROR_VARIABLE  ERROR
+          )
+          set (ENV{PYTHONHOME} "${PYTHONHOME}")
         endif ()
       endif ()
       if (STATUS EQUAL 0)
@@ -116,8 +121,16 @@ function (basis_find_python_module CACHEVAR MODULE)
           get_filename_component (P "${P}" PATH)
         endif ()
         set_property (CACHE ${CACHEVAR} PROPERTY VALUE "${P}")
+      else ()
+        message (WARNING "Failed to run Python interpreter ${PYTHON_EXECUTABLE} with or without -E option."
+                         " Make sure that the Python interpreter is installed properly and that the PYTHONHOME"
+                         " environment variable is either not set (recommended) or at least set correctly for"
+                         " this Python installation. Maybe you need to enable this Python version first somehow"
+                         " if more than one version of Python is installed on your system?"
+                         " Otherwise, set PYTHON_EXECUTABLE to the right Python interpreter executable (python).")
       endif ()
     endif ()
+    # search PYTHONPATH
     if (${CACHEVAR} MATCHES "NOTFOUND$")
       if (NOT DEFINED PYTHONPATH)
         string (REPLACE ":" ";" PYTHONPATH "$ENV{PYTHONPATH}")
