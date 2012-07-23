@@ -157,7 +157,8 @@ function (basis_find_python_module CACHEVAR)
   # 1. search specified paths
   foreach (P ${ARGN_PATH}) # ignore empty entries
     if (IS_ABSOLUTE "${P}")
-      if (EXISTS "${P}/${ARGN_NAME}.py" OR EXISTS "${P}/${ARGN_NAME}/__init__.py")
+      if (EXISTS "${P}/${ARGN_NAME}.py"  OR EXISTS "${P}/${ARGN_NAME}/__init__.py" OR
+          EXISTS "${P}/${ARGN_NAME}.pyc" OR EXISTS "${P}/${ARGN_NAME}/__init__.pyc")
         set_property (CACHE ${CACHEVAR} PROPERTY VALUE "${P}")
         return ()
       endif ()
@@ -196,7 +197,7 @@ function (basis_find_python_module CACHEVAR)
       endif ()
     endif ()
     if (STATUS EQUAL 0)
-      if (P MATCHES "__init__\\.py$")
+      if (P MATCHES "__init__\\.pyc?$")
         get_filename_component (P "${P}" PATH)
         get_filename_component (P "${P}" PATH)
       else ()
@@ -218,7 +219,8 @@ function (basis_find_python_module CACHEVAR)
     string (REPLACE ":" ";" PYTHONPATH "$ENV{PYTHONPATH}")
     foreach (P ${PYTHONPATH}) # ignore empty entries
       if (IS_ABSOLUTE "${P}")
-        if (EXISTS "${P}/${ARGN_NAME}.py" OR EXISTS "${P}/${ARGN_NAME}/__init__.py")
+        if (EXISTS "${P}/${ARGN_NAME}.py"  OR EXISTS "${P}/${ARGN_NAME}/__init__.py" OR
+            EXISTS "${P}/${ARGN_NAME}.pyc" OR EXISTS "${P}/${ARGN_NAME}/__init__.pyc")
           set_property (CACHE ${CACHEVAR} PROPERTY VALUE "${P}")
           return ()
         endif ()
