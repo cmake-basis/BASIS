@@ -91,33 +91,39 @@ function (basis_find_python_module CACHEVAR MODULE)
     if (PYTHON_EXECUTABLE)
       # 1. try it with -E option -- the preferred way to run Python
       execute_process (
-        COMMAND "${PYTHON_EXECUTABLE}" -E -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
+        COMMAND "${PYTHON_EXECUTABLE}" -E -c "import ${MODULE}; print ${MODULE}.__file__"
         RESULT_VARIABLE STATUS
         OUTPUT_VARIABLE P
         ERROR_VARIABLE  ERROR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
       )
       # 2. try it without -E option
       if (NOT STATUS EQUAL 0)
         execute_process (
-          COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
+          COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; print ${MODULE}.__file__"
           RESULT_VARIABLE STATUS
           OUTPUT_VARIABLE P
           ERROR_VARIABLE  ERROR
+          OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         if (NOT STATUS EQUAL 0 AND ERROR MATCHES "ImportError: No module named site")
           set (PYTHONHOME "$ENV{PYTHONHOME}")
           unset (ENV{PYTHONHOME})
           execute_process (
-            COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; import os; print os.path.dirname(${MODULE}.__file__)"
+            COMMAND "${PYTHON_EXECUTABLE}" -c "import ${MODULE}; print ${MODULE}.__file__"
             RESULT_VARIABLE STATUS
             OUTPUT_VARIABLE P
             ERROR_VARIABLE  ERROR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
           )
           set (ENV{PYTHONHOME} "${PYTHONHOME}")
         endif ()
       endif ()
       if (STATUS EQUAL 0)
-        if (EXISTS "${P}/__init__.py")
+        if (P MATCHES "__init__\\.py$")
+          get_filename_component (P "${P}" PATH)
+          get_filename_component (P "${P}" PATH)
+        else ()
           get_filename_component (P "${P}" PATH)
         endif ()
         set_property (CACHE ${CACHEVAR} PROPERTY VALUE "${P}")
