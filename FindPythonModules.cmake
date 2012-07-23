@@ -124,7 +124,7 @@ include (CMakeParseArguments)
 #          or the string "&lt;MODULE%gt;-NOTFOUND" otherwise.
 function (basis_find_python_module CACHEVAR)
   # do nothing if path of module already known from previous run
-  if (${CACHEVAR} MATCHES "NOTFOUND$")
+  if (NOT ${CACHEVAR} MATCHES "NOTFOUND$")
     return ()
   endif ()
   # set initial value of cache entry
