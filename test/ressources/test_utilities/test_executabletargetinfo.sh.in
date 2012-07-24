@@ -1,17 +1,16 @@
+#! /bin/bash
+
 ##############################################################################
 # @file  test_executable_target_info.sh
-# @brief Test executable_target_info.sh module.
+# @brief Test executable target related functions of BASIS utilities.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-@BASIS_BASH_UTILITIES@
-
-readonly _TEST_EXECUTABLETARGETINFO_DIR=@BASIS_BASH___DIR__@
-source "${_TEST_EXECUTABLETARGETINFO_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh"
+. ${BASIS_BASH_UTILITIES} || { echo "Failed to load BASIS utilities!" 1>&2; exit 1; }
 
 
 # ============================================================================
@@ -29,117 +28,117 @@ plan_tests 43
 #
 # This function failed before due to the GNU version of tr using -c instead of -C.
 
-_executabletargetinfo_sanitize sane 'basis::basisproject'
+_basis_executabletargetinfo_sanitize sane 'basis::basisproject'
 is "${sane}" 'basis__basisproject' ':: replaced by _'
-_executabletargetinfo_sanitize sane 'basis.basisproject'
+_basis_executabletargetinfo_sanitize sane 'basis.basisproject'
 is "${sane}" 'basis_basisproject' '. replaced by _'
-_executabletargetinfo_sanitize sane 'basis@basisproject'
+_basis_executabletargetinfo_sanitize sane 'basis@basisproject'
 is "${sane}" 'basis_basisproject' '@ replaced by _'
 
 # ----------------------------------------------------------------------------
-# test get_target_uid()
+# test targetuid()
 
 # without namespace
-get_target_uid uid 'basisproject'
+targetuid uid 'basisproject'
 is $? 0 'return value is 0'
 is "${uid}" 'basisproject' 'target of other project unmodified'
-get_target_uid uid 'unknown'
+targetuid uid 'unknown'
 is $? 0 'return value is 0'
 is "${uid}" 'unknown' 'unknown target unmodified'
 
 # with namespace
-get_target_uid uid 'sbia.basis.basisproject'
+targetuid uid 'sbia.basis.basisproject'
 is $? 0 'return value is 0'
 is "${uid}" 'sbia.basis.basisproject' 'UID remains unchanged'
-get_target_uid uid 'basis.basisproject'
+targetuid uid 'basis.basisproject'
 is $? 0 'return value is 0'
 is "${uid}" 'sbia.basis.basisproject' 'global namespace prepended'
-get_target_uid uid 'hammer.hammer'
+targetuid uid 'hammer.hammer'
 is $? 0 'return value is 0'
 is "${uid}" 'hammer.hammer' 'UID remains unchanged'
 
 # global namespace
-get_target_uid uid '.hello'
+targetuid uid '.hello'
 is $? 0 'return value is 0'
 is "${uid}" '.hello' 'global namespace remains unchanged'
 
 # empty string
-get_target_uid uid ''
+targetuid uid ''
 is $? 0 'return value is 0'
 is "${uid}" '' 'empty string remains unchanged'
 
 # ----------------------------------------------------------------------------
-# test is_known_target()
+# test istarget()
 
-is_known_target 'basisproject'
+istarget 'basisproject'
 isnt $? 0 'basisproject not part of UtilitiesTest'
-is_known_target 'basis.basisproject'
+istarget 'basis.basisproject'
 is $? 0 'basis.basisproject is known target'
-is_known_target ''
+istarget ''
 isnt $? 0 'empty target string is unknown target'
-is_known_target
+istarget
 isnt $? 0 'undefined target string is unknown target'
-is_known_target 'hammer.hammer'
+istarget 'hammer.hammer'
 isnt $? 0 'some unknown target'
 
 # ----------------------------------------------------------------------------
-# test get_executable_name()
+# test exename()
 
 # name of this executable
-get_executable_name name
+exename name
 is $? 0 'return value is 0'
 is "${name}" 'test_executabletargetinfo_sh' 'name of this executable'
 
 # name of executable built by other target
-get_executable_name name 'basis.basisproject'
+exename name 'basis.basisproject'
 is $? 0 'return value is 0'
 like "${name}" 'basisproject' 'name of other executable'
 
 # ----------------------------------------------------------------------------
-# test get_executable_directory()
+# test exedir()
 
 # directory of this executable
-get_executable_directory dir
+exedir dir
 is $? 0 'return value is 0'
 like "${dir}" '/Testing/Temporary/test_utilities/build/Testing/bin' 'directory of this executable'
 
 # directory of executable built by other target
-get_executable_directory dir 'basis.basisproject'
+exedir dir 'basis.basisproject'
 is $? 0 'return value is 0'
 like "${dir}" '^/.*/bin(/basis)?$' 'directory of other executable'
 
 # ----------------------------------------------------------------------------
-# test get_executable_path()
+# test exepath()
 
 # path of this executable
-get_executable_path path
+exepath path
 is $? 0 'return value is 0'
-get_executable_directory dir
+exedir dir
 is $? 0 'return value is 0'
-get_executable_name name
+exename name
 is $? 0 'return value is 0'
 is "${path}" "${dir}/${name}" 'path of this executable'
 
 # path of executable built by other target
 target='basis.basisproject'
-get_executable_path path "${target}"
+exepath path "${target}"
 is $? 0 'return value is 0'
-get_executable_directory dir "${target}"
+exedir dir "${target}"
 is $? 0 'return value is 0'
-get_executable_name name "${target}"
+exename name "${target}"
 is $? 0 'return value is 0'
 is "${path}" "${dir}/${name}" "path of ${target}"
 
 # path of some system command
-get_executable_path path 'ls'
+exepath path 'ls'
 is $? 0 'return value is 0'
 is "${path}" '/bin/ls' 'absolute path of ls command'
 
 # path of non-existend system command
-get_executable_path path 'some-certainly-non-existing-command'
+exepath path 'some-certainly-non-existing-command'
 isnt $? 0 'return value is not 0'
 is "${path}" '' 'empty path returned for non-existend command'
 
 # wrong number of arguments
-get_executable_path
+exepath
 isnt $? 0 'return value is not 0'

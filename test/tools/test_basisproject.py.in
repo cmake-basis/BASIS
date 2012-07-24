@@ -133,13 +133,13 @@ def test_required_arguments(verbose=0):
     print "------------------------------------------------------------------------------"
     print "test_required_arguments:"
     print
-    if basis.execute_process('basis.basisproject',
+    if basis.execute('basis.basisproject',
             allow_fail=True, verbose=True) == 0:
         raise Exception('Expected non-zero return code')
-    if basis.execute_process('basis.basisproject --name TestProject',
+    if basis.execute('basis.basisproject --name TestProject',
             allow_fail=True, verbose=True) == 0:
         raise Exception('Expected non-zero return code')
-    if basis.execute_process('basis.basisproject --description noname',
+    if basis.execute('basis.basisproject --description noname',
             allow_fail=True, verbose=True) == 0:
         raise Exception('Expected non-zero return code')
     print

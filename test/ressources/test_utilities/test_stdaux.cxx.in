@@ -1,22 +1,22 @@
 /**
  * @file  test_stdaux.cxx
- * @brief Test stdaux.cxx module.
+ * @brief Test standard auxiliary functions of BASIS utilities.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <sbia/basis/test.h>   // unit testing framework
-#include "stdaux.h"            // testee
+#include <sbia/basis/test.h>
 
-#include <sbia/basis/except.h> // SubprocessException
-#include <sbia/basis/path.h>   // get_executable_directory()
+#include <sbia/basis/os.h>     // exedir()
 #include <vector>
 #include <string>
 #include <stdio.h>             // remove(), freopen()
 #include <fstream>
+
+#include "basis.h"
 
 // stdout/stderr redirection - dup(), dup2(), fileno(), close()
 #if WINDOWS
@@ -32,17 +32,18 @@
 #endif
 
 
-using namespace sbia;
 using namespace std;
 
+namespace _basis = sbia::basis;
+namespace basis  = sbia::utilitiestest::basis;
 
 // ---------------------------------------------------------------------------
-// Test exception when execute_process() is not used as intended.
+// Test exception when basis::execute() is not used as intended.
 TEST(StdAux, ExecuteProcessInvalidUse)
 {
     vector<string> argv;
-    EXPECT_THROW(basis::execute_process(""), basis::SubprocessException);
-    EXPECT_THROW(basis::execute_process(argv), basis::SubprocessException);
+    EXPECT_THROW(basis::execute(""),   _basis::SubprocessError);
+    EXPECT_THROW(basis::execute(argv), _basis::SubprocessError);
 }
 
 // ---------------------------------------------------------------------------
@@ -52,9 +53,9 @@ TEST(StdAux, ExecuteTarget)
     vector<string> args;
     int status;
     std::ostringstream output;
-    EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command"));
+    EXPECT_NO_THROW(status = basis::execute("basis.dummy_command"));
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command is 0";
-    EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet", true, &output));
+    EXPECT_NO_THROW(status = basis::execute("basis.dummy_command --greet", true, &output));
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command --greet is 0";
 #if WINDOWS
     EXPECT_STREQ("Hello, BASIS!\r\n", output.str().c_str());
@@ -65,7 +66,7 @@ TEST(StdAux, ExecuteTarget)
     output.str("");
     args.push_back("basis.dummy_command");
     args.push_back("--greet");
-    EXPECT_NO_THROW(status = basis::execute_process(args, true, &output));
+    EXPECT_NO_THROW(status = basis::execute(args, true, &output));
     EXPECT_EQ(0, status) << "exit code of basis.dummy_command --warn is 0";
 #if WINDOWS
     EXPECT_STREQ("Hello, BASIS!\r\n", output.str().c_str());
@@ -91,9 +92,9 @@ TEST(StdAux, Redirection)
     ASSERT_TRUE(errlog.is_open());
     streambuf* outbuf = cout.rdbuf(outlog.rdbuf());
     streambuf* errbuf = cerr.rdbuf(errlog.rdbuf());
-    // execute subprocess
+    // basis::execute subprocess
     int status = 0;
-    EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet --warn", true));
+    EXPECT_NO_THROW(status = basis::execute("basis.dummy_command --greet --warn", true));
     EXPECT_EQ(0, status);
     // restore stdout and stderr output streams
     outlog.close();
@@ -110,9 +111,9 @@ TEST(StdAux, Redirection)
     ASSERT_TRUE(errlog != NULL);
     _dup2(_fileno(outlog), 1);
     _dup2(_fileno(errlog), 2);
-    // execute subprocess
+    // basis::execute subprocess
     int status = 0;
-    EXPECT_NO_THROW(status = basis::execute_process("basis.dummy_command --greet --warn", true));
+    EXPECT_NO_THROW(status = basis::execute("basis.dummy_command --greet --warn", true));
     EXPECT_EQ(0, status);
     // restore stdout and stderr output streams
     _dup2(stdout_dup, 1);
@@ -152,10 +153,10 @@ TEST(StdAux, ExecuteCommand)
     string args = "ls";
 #endif
     args += " ";
-    args += basis::get_executable_directory();
+    args += _basis::exedir();
     int status = 0;
     std::ostringstream output;
-    ASSERT_NO_THROW(status = basis::execute_process(args, true, &output));
+    ASSERT_NO_THROW(status = basis::execute(args, true, &output));
     EXPECT_EQ(0, status) << "exit code of dir or ls is 0";
     EXPECT_STRNE("", output.str().c_str()) << "output of dir or ls is not empty";
 }

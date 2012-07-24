@@ -24,7 +24,7 @@ from sbia.basis import basis
 # constants
 # ============================================================================
 
-TEST_NAME      = os.path.splitext(os.path.basename(basis.get_executable_name()))[0]
+TEST_NAME      = os.path.splitext(os.path.basename(basis.exename()))[0]
 BASIS_DIR      = '@TESTING_BASIS_DIR@'
 RESSOURCES_DIR = os.path.join('@PROJECT_TESTING_DIR@/ressources', TEST_NAME)
 SOURCE_DIR     = os.path.join('@TESTING_OUTPUT_DIR@', TEST_NAME, 'source')
@@ -70,7 +70,7 @@ def create_project(name, *args, **kwargs):
         create_cmd.extend(['--use', pkg])
     for pkg in useopt:
         create_cmd.extend(['--useopt', pkg])
-    basis.execute_process(create_cmd, verbose=True)
+    basis.execute(create_cmd, verbose=True)
     print "Creating test project... - done"
 
 # ----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ def update_project(name, *args, **kwargs):
         update_cmd.extend(['--use', pkg])
     for pkg in useopt:
         update_cmd.extend(['--useopt', pkg])
-    basis.execute_process(update_cmd, verbose=True)
+    basis.execute(update_cmd, verbose=True)
     print "Updating test project... - done"
 
 # ----------------------------------------------------------------------------
@@ -119,7 +119,7 @@ def build_project(verbose=0):
     if verbose > 1:
         config_cmd.append('-DBASIS_DEBUG:BOOL=ON')
     config_cmd.append(SOURCE_DIR)
-    basis.execute_process(config_cmd, verbose=True)
+    basis.execute(config_cmd, verbose=True)
     print "Configuring test project... - done"
     print "Building test project..."
     build_cmd = None
@@ -136,7 +136,7 @@ def build_project(verbose=0):
     if not build_cmd:
         build_cmd = ['make']
         if verbose > 0: build_cmd.append('VERBOSE=1')
-    basis.execute_process(build_cmd, verbose=True)
+    basis.execute(build_cmd, verbose=True)
     print "Building test project... - done"
     os.chdir(wd)
 
@@ -152,7 +152,7 @@ def run_tests(verbose=0):
         if '@TESTING_BUILD_TYPE@' != '': test_cmd.append('@TESTING_BUILD_TYPE@')
         else: test_cmd.append('Release')
     test_cmd.extend(sys.argv[1:])
-    basis.execute_process(test_cmd, verbose=True)
+    basis.execute(test_cmd, verbose=True)
     os.chdir(wd)
 
 # ----------------------------------------------------------------------------

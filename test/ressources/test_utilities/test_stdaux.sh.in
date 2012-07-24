@@ -1,17 +1,16 @@
+#! /bin/bash
+
 ##############################################################################
 # @file  test_stdaux.sh
-# @brief Test stdaux.sh module.
+# @brief Test standard auxiliary functions of BASIS utilities.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-@BASIS_BASH_UTILITIES@
-
-readonly _TEST_STDAUX_DIR=@BASIS_BASH___DIR__@
-source "${_TEST_STDAUX_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh"
+. ${BASIS_BASH_UTILITIES} || { echo "Failed to load BASIS utilities!" 1>&2; exit 1; }
 
 
 # ============================================================================
@@ -25,46 +24,46 @@ plan_tests 30;
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# Test exceptions when execute_process() is not used as intended.
-execute_process
+# Test exceptions when execute() is not used as intended.
+execute
 isnt $? 0 'non-zero exit code when called with no arguments'
-execute_process ''
+execute ''
 isnt $? 0 'non-zero exit code when called with empty string argument'
 
 # ----------------------------------------------------------------------------
 # Test execution of executable target.
-execute_process 'basis.dummy_command'
+execute 'basis.dummy_command'
 is $? 0 'exit code 0 when running dummy command by target name'
-stdout=`execute_process 'basis.dummy_command' --greet`
+stdout=`execute 'basis.dummy_command' --greet`
 is $? 0 'exit code 0 when running dummy command by target name and with --greet'
 match "$stdout" '^Hello, BASIS!'
 is $? 0 'greeting captured correctly'
 
 # ----------------------------------------------------------------------------
 # Test -- argument
-stdout=`execute_process -- ls`
+stdout=`execute -- ls`
 is $? 0 'use of special -- option'
-stdout=`execute_process -- --allow_fail ls` # option considered as command
+stdout=`execute -- --allow_fail ls` # option considered as command
 isnt $? 0 '--allow_fail ignored after -- option'
 
 # ----------------------------------------------------------------------------
-# Test --allow_fail option of execute_process().
-stdout=`execute_process 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
+# Test --allow_fail option of execute().
+stdout=`execute 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
 isnt $? 0 'exit code is non-zero'
 match "$stdout" 'CONTINUED'
 isnt $? 0 'aborted when exit code is non-zero and --allow_fail not specified'
-stdout=`execute_process 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
+stdout=`execute 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
 isnt $? 0 'exit code is non-zero'
 match "$stdout" 'CONTINUED'
 isnt $? 0 'exit code is non-zero'
-stdout=`execute_process --allow_fail 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
+stdout=`execute --allow_fail 'basis.dummy_command' --exit 1 || echo 'CONTINUED'`
 is $? 0 'exit code of echo command is 0'
 match "$stdout" 'CONTINUED'
 is $? 0 'captured message after non-successful command which was allowed to fail'
 
 # ----------------------------------------------------------------------------
 # Test redirection of STDOUT and STDERR
-stdout=`execute_process basis.dummy_command --greet --warn > test_stdaux_sh.stdout 2> test_stdaux_sh.stderr`
+stdout=`execute basis.dummy_command --greet --warn > test_stdaux_sh.stdout 2> test_stdaux_sh.stderr`
 is $? 0 'command run successful with redirection of STDOUT and STDERR'
 match "$stdout" ''
 is $? 0 'nothing returned due to redirection'
@@ -77,21 +76,21 @@ is $? 0 'message to STDERR captured correctly'
 rm -f test_stdaux_sh.stderr
 
 # ----------------------------------------------------------------------------
-# Test --verbose option of execute_process().
-stdout=`execute_process 'basis.dummy_command'`
+# Test --verbose option of execute().
+stdout=`execute 'basis.dummy_command'`
 is $? 0 'execution of dummy command'
 is "$stdout" '' 'nothing output'
-stdout=`execute_process --verbose 'basis.dummy_command'`
+stdout=`execute --verbose 'basis.dummy_command'`
 is $? 0 'execution of dummy command'
 isnt "$stdout" '' 'output not empty with --verbose enabled'
 match "$stdout" 'dummy_command'
 is $? 0 'output of executed command when --verbose enabled'
-stdout=`execute_process -v 0 'basis.dummy_command'`
+stdout=`execute -v 0 'basis.dummy_command'`
 is $? 0 'execution of dummy command'
 is "$stdout" '' 'nothing output with -v 0'
-stdout=`execute_process -v 0 1 'basis.dummy_command'`
+stdout=`execute -v 0 1 'basis.dummy_command'`
 is $? 1 'wrong use of -v option'
-stdout=`execute_process --verbose 1 'basis.dummy_command'`
+stdout=`execute --verbose 1 'basis.dummy_command'`
 is $? 0 'execution of dummy command'
 isnt "$stdout" '' 'output not empty with --verbose 1'
 match "$stdout" 'dummy_command'
@@ -99,7 +98,7 @@ is $? 0 'output of executed command with --verbose 1'
 
 # ----------------------------------------------------------------------------
 # Test execution of some non-target command.
-get_executable_directory directory
-stdout=`execute_process ls "${directory}" > /dev/null`
+exedir directory
+stdout=`execute ls "${directory}" > /dev/null`
 is $? 0 'execution of non-target command'
 is "$stdout" '' 'no output due to redirection of STDOUT to /dev/null'

@@ -1,8 +1,10 @@
+#! /usr/bin/env python
+
 ##############################################################################
 # @file  test_executabletargetinfo.py
-# @brief Test executabletargetinfo.py module.
+# @brief Test executable target related functions of BASIS utilities.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -13,8 +15,7 @@ import re
 import os
 import sys
 
-
-@BASIS_PYTHON_UTILITIES@
+from sbia.utilitiestest import basis
 
 
 # ============================================================================
@@ -24,66 +25,66 @@ import sys
 class TestExecutableTargetInfo(unittest.TestCase):
     
     # ------------------------------------------------------------------------
-    def test_get_target_uid(self):
+    def test_targetuid(self):
         self.assertEquals (
-                basis.get_target_uid ('basisproject'),
+                basis.targetuid ('basisproject'),
                 'basisproject')
         self.assertEquals (
-                basis.get_target_uid ('unknown'),
+                basis.targetuid ('unknown'),
                 'unknown')
         self.assertEquals (
-                basis.get_target_uid ('sbia.basis.basisproject'),
+                basis.targetuid ('sbia.basis.basisproject'),
                 'sbia.basis.basisproject')
         self.assertEquals (
-                basis.get_target_uid ('basis.basisproject'),
+                basis.targetuid ('basis.basisproject'),
                 'sbia.basis.basisproject')
         self.assertEquals (
-                basis.get_target_uid ('hammer.hammer'),
+                basis.targetuid ('hammer.hammer'),
                 'hammer.hammer')
-        self.assertEquals (basis.get_target_uid ('.hello'), '.hello')
-        self.assertEquals (basis.get_target_uid (None), None)
-        self.assertEquals (basis.get_target_uid (''), None)
+        self.assertEquals (basis.targetuid ('.hello'), '.hello')
+        self.assertEquals (basis.targetuid (None), None)
+        self.assertEquals (basis.targetuid (''), None)
     
     # ------------------------------------------------------------------------
-    def test_is_known_target(self):
-        self.assertFalse (basis.is_known_target ('basisproject'))
-        self.assertTrue (basis.is_known_target ('basis.basisproject'))
-        self.assertFalse (basis.is_known_target (None))
-        self.assertFalse (basis.is_known_target (''))
-        self.assertFalse (basis.is_known_target ('hammer.hammer'))
+    def test_istarget(self):
+        self.assertFalse (basis.istarget ('basisproject'))
+        self.assertTrue  (basis.istarget ('basis.basisproject'))
+        self.assertFalse (basis.istarget (None))
+        self.assertFalse (basis.istarget (''))
+        self.assertFalse (basis.istarget ('hammer.hammer'))
     
     # ------------------------------------------------------------------------
-    def test_get_executable_name(self):
+    def test_exename(self):
         # name of this executable
         self.assertTrue (re.match (
                     r"test_executabletargetinfo_py(\.cmd)?",
-                    basis.get_executable_name ()))
+                    basis.exename ()))
         # name of executable built by some target
         self.assertTrue (re.match (
                     r"basisproject(\.cmd)?",
-                    basis.get_executable_name ('basis.basisproject'))) 
+                    basis.exename ('basis.basisproject'))) 
     
     # ------------------------------------------------------------------------
-    def test_get_executable_directory(self):
+    def test_exedir(self):
         # directory of this executable
-        print "Executable directory: " + basis.get_executable_directory ()
+        print "Executable directory: " + basis.exedir ()
         self.assertTrue (re.search (
                     r"[/\\]Testing[/\\]Temporary[/\\]test_utilities[/\\]build[/\\]Testing[/\\]bin",
-                    basis.get_executable_directory ()))
+                    basis.exedir ()))
         # directory of executable built by some target
         self.assertTrue (re.match (
                     r"([a-zA-Z]:)?[/\\].*[/\\]bin([/\\]basis)?",
-                    basis.get_executable_directory ('basis.basisproject')))
+                    basis.exedir ('basis.basisproject')))
     
     # ------------------------------------------------------------------------
-    def test_get_executable_path(self):
+    def test_exepath(self):
         # path of this executable
-        self.assertEquals (basis.get_executable_path (),
-                os.path.join (basis.get_executable_directory (), basis.get_executable_name ()))
+        self.assertEquals (basis.exepath (),
+                os.path.join (basis.exedir (), basis.exename ()))
         # path of executable built by some target
         target = 'basis.basisproject'
-        self.assertEquals (basis.get_executable_path (target),
-                os.path.join (basis.get_executable_directory (target), basis.get_executable_name (target)))
+        self.assertEquals (basis.exepath (target),
+                os.path.join (basis.exedir (target), basis.exename (target)))
         # path of some system command
         if (os.name != 'posix'):
             target   = 'regedit'
@@ -91,7 +92,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         else:
             target = 'ls'
             expected = '/bin/ls'
-        self.assertEquals(basis.get_executable_path (target).lower(), expected)
+        self.assertEquals(basis.exepath (target).lower(), expected)
 
 # ============================================================================
 # main

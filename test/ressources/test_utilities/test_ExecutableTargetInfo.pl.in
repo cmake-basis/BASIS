@@ -1,92 +1,94 @@
+#! /usr/bin/env perl
+
 ##############################################################################
 # @file  test_ExecutableTargetInfo.pl
-# @brief Test ExecutableTargetInfo.pm module.
+# @brief Test executable target related functions of BASIS utilities.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
+package Basis;
+use SBIA::UtilitiesTest::Basis qw(targetuid istarget exepath exename exedir);
+package main;
 
 use Test::More tests => 20;
-
-
-@BASIS_PERL_UTILITIES@
 
 # ============================================================================
 # tests
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# Test Basis::get_target_uid().
+# Test Basis::targetuid().
 
-is (Basis::get_target_uid ('basisproject'), 'basisproject',
+is (Basis::targetuid ('basisproject'), 'basisproject',
     'target of other project unmodified');
-is (Basis::get_target_uid ('unknown'), 'unknown',
+is (Basis::targetuid ('unknown'), 'unknown',
     'unknown target unmodified');
-is (Basis::get_target_uid ('basis.basisproject'), 'sbia.basis.basisproject',
+is (Basis::targetuid ('basis.basisproject'), 'sbia.basis.basisproject',
     'global namespace prepended');
-is (Basis::get_target_uid ('sbia.basis.basisproject'), 'sbia.basis.basisproject',
+is (Basis::targetuid ('sbia.basis.basisproject'), 'sbia.basis.basisproject',
     'UID remains unchanged');
-is (Basis::get_target_uid ('hammer.hammer'), 'hammer.hammer',
+is (Basis::targetuid ('hammer.hammer'), 'hammer.hammer',
     'UID remains unchanged');
-is (Basis::get_target_uid ('.hello'), '.hello',
+is (Basis::targetuid ('.hello'), '.hello',
     'global namespace remains unchanged');
-is (Basis::get_target_uid (undef), undef,
+is (Basis::targetuid (undef), undef,
     'invalid argument results in undef as return value');
-is (Basis::get_target_uid (''), undef,
+is (Basis::targetuid (''), undef,
     'invalid argument results in undef as return value');
 
 # ----------------------------------------------------------------------------
-# Test Basis::is_known_target().
+# Test Basis::istarget().
 
-ok (!Basis::is_known_target ('basisproject'),
+ok (!Basis::istarget ('basisproject'),
     'basisproject not part of UtilitiesTest');
-ok (Basis::is_known_target ('basis.basisproject'),
+ok (Basis::istarget ('basis.basisproject'),
     'basis.basisproject is a known target');
-ok (!Basis::is_known_target (undef),
+ok (!Basis::istarget (undef),
     'undefined argument is unknown target');
-ok (!Basis::is_known_target (''),
+ok (!Basis::istarget (''),
     'empty target string is unknown target');
-ok (!Basis::is_known_target ('hammer.hammer'),
+ok (!Basis::istarget ('hammer.hammer'),
     'some unknown target');
 
 # ----------------------------------------------------------------------------
-# Test Basis::get_executable_name().
+# Test Basis::exename().
 
 # name of this executable
-like (Basis::get_executable_name (),
+like (Basis::exename (),
     qr/^test_ExecutableTargetInfo_pl(\.cmd)?$/,
     "name of this executable");
 # name of executable built by some target
-like (Basis::get_executable_name ('basis.basisproject'),
+like (Basis::exename ('basis.basisproject'),
     qr/^basisproject(\.cmd)?$/,
     "name of basis.basisproject executable");
 
 # ----------------------------------------------------------------------------
-# Test Basis::get_executable_directory().
+# Test Basis::exedir().
 
 # directory of this executable
-like (Basis::get_executable_directory (),
+like (Basis::exedir (),
     qr/[\/\\]Testing[\/\\]Temporary[\/\\]test_utilities[\/\\]build[\/\\]Testing[\/\\]bin/,
     "directory of this executable");
 # directory of executable built by some target
-like (Basis::get_executable_directory ('basis.basisproject'),
+like (Basis::exedir ('basis.basisproject'),
     qr/^([A-Z]:)?[\/\\].*[\/\\]bin([\/\\]basis)?$/,
     "directory of basis.basisproject executable");
 
 # ----------------------------------------------------------------------------
-# Test Basis::get_executable_path().
+# Test Basis::exepath().
 
 # path of this executable
-is (Basis::get_executable_path (),
-    Basis::get_executable_directory () . '/' . Basis::get_executable_name (),
+is (Basis::exepath (),
+    Basis::exedir () . '/' . Basis::exename (),
     "path of this executable");
 # path of executable built by some target
 my $target = 'basis.basisproject';
-is (Basis::get_executable_path ($target),
-    Basis::get_executable_directory ($target) . '/' . Basis::get_executable_name ($target),
+is (Basis::exepath ($target),
+    Basis::exedir ($target) . '/' . Basis::exename ($target),
     "path of $target executable");
 # path of some system command
 if ($^O =~ m/MSWin32/) {
@@ -96,4 +98,4 @@ if ($^O =~ m/MSWin32/) {
     $target = 'ls';
     $expected = '/bin/ls';
 }
-is (lc(Basis::get_executable_path ($target)), $expected);
+is (lc(Basis::exepath ($target)), $expected);
