@@ -418,9 +418,7 @@ tostring()
     while [ $_basis_tostring_i -lt ${#_basis_tostring_args[@]} ]; do
         _basis_tostring_element="${_basis_tostring_args[$_basis_tostring_i]}"
         # escape double quotes
-        # attention: the -- is required to prevent echo to interpret any folowing
-        #            characters as possible options to echo
-        _basis_tostring_element=`echo -n -- ${_basis_tostring_element} | sed 's/^-- //;s/"/\\"/g'`
+        _basis_tostring_element=`printf "${_basis_tostring_element}" | sed 's/"/\\"/g'`
         # surround element by double quotes if it contains single quotes or whitespace
         match "${_basis_tostring_element}" "[' ]" && _basis_tostring_element="\"${_basis_tostring_element}\""
         # append element
@@ -467,9 +465,9 @@ qsplit()
         # remove quotes
         # attention: the -- is required to prevent echo to interpret any folowing
         #            characters as possible options to echo
-        _basis_qsplit_element=`echo -n -- ${_basis_qsplit_element} | sed "s/^-- //;s/^['\"]//;s/(^|[^\\])['\"]$//"`
+        _basis_qsplit_element=`printf "${_basis_qsplit_element}" | sed "s/^['\"]//;s/(^|[^\\])['\"]$//"`
         # replace quoted quotes within argument by quotes
-        _basis_qsplit_element=`echo -n -- ${_basis_qsplit_element} | sed "s/^-- //;s/[\\]'/'/g;s/[\\]\"/\"/g"`
+        _basis_qsplit_element=`printf "${_basis_qsplit_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
         # add to resulting array
         _basis_qsplit_array[${#_basis_qsplit_array[@]}]="${_basis_qsplit_element}"
         # continue with residual command-line
@@ -618,7 +616,7 @@ _basis_executabletargetinfo_sanitize()
     }
     # attention: the -- is required to prevent echo from interpeting any leading
     #            option like sequences in $2 as option to echo
-    local sane="`echo -n -- $2 | sed 's/^-- //' | tr [:space:] '_' | tr -c [:alnum:] '_'`"
+    local sane="`printf "$2" | tr [:space:] '_' | tr -c [:alnum:] '_'`"
     [ -n "${sane}" ] || {
         echo "_basis_executabletargetinfo_sanitize(): Failed to sanitize string '$2'" 1>&2
         exit 1
