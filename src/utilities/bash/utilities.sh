@@ -414,7 +414,7 @@ tostring()
     else
         _basis_tostring_args=("$@")
     fi
-    local _basis_tostring_i=1
+    local _basis_tostring_i=0
     while [ $_basis_tostring_i -lt ${#_basis_tostring_args[@]} ]; do
         _basis_tostring_element="${_basis_tostring_args[$_basis_tostring_i]}"
         # escape double quotes
