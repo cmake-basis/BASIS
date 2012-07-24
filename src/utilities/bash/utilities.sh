@@ -62,6 +62,7 @@ readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pw
 . "${_BASIS_UTILITIES_DIR}/core.sh"    || exit 1 # core utilities
 . "${_BASIS_UTILITIES_DIR}/path.sh"    || exit 1 # file path manipulation
 . "${_BASIS_UTILITIES_DIR}/shflags.sh" || exit 1 # command-line parsing library
+. "${_BASIS_UTILITIES_DIR}/shtap.sh"   || exit 1 # test anything protocol
 
 # ============================================================================
 # configuration
