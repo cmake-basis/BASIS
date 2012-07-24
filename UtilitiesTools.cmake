@@ -226,11 +226,12 @@ function (basis_utilities_check VAR SOURCE_FILE)
     if (NOT UTILITIES_USED)
       basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
       foreach (RE IN ITEMS
-        "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                # e.g., import sbia.project.basis
-        "import[ \\t]+\\.\\.?basis"                             # e.g., import .basis", "import ..basis
-        "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis" # e.g., from sbia.project import basis
-        "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"           # e.g., from . import basis", "from .. import basis
-        "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"          # e.g., from .basis import which, WhichError", "form ..basis import which
+        "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                  # e.g., import sbia.project.basis
+        "import[ \\t]+\\.\\.?basis"                               # e.g., import .basis", "import ..basis
+        "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis"   # e.g., from sbia.project import basis
+        "from[ \\t]+${PYTHON_PACKAGE}.basis[ \\t]+import[ \\t].*" # e.g., from sbia.project.basis import which
+        "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"             # e.g., from . import basis", "from .. import basis
+        "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"            # e.g., from .basis import which, WhichError", "from ..basis import which
       ) # foreach RE
         if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*as[ \t]+.*)?([ \t]*#.*|[ \t]*)(;|\n|$)")
           set (UTILITIES_USED TRUE)
