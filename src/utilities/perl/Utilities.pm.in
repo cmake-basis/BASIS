@@ -508,7 +508,7 @@ sub execute
     my $status = 0;
     my $output = '';
     if (not $options{'simulate'}) {
-        open CMD, "$args |" or die "$command: Failed to open subprocess";
+        open CMD, " $args |" or die "$command: Failed to open subprocess";
         my $ofh = select STDOUT;
         $|++;
         while (<CMD>) {
