@@ -228,8 +228,11 @@ void splitext(const string& path, string& head, string& ext, const set<string>* 
         head = path;
         ext  = "";
     } else {
-        head = path.substr(0, pos);
-        ext  = path.substr(pos);
+        // tmp variable used for the case that head references the same input
+        // string as path
+        string tmp = path.substr(0, pos);
+        ext        = path.substr(pos);
+        head       = tmp;
     }
 }
 
