@@ -592,7 +592,7 @@ void StdOutput::printExample(ostream& os) const
             // desired placeholder as it relates to the exename() function
             pos = 0;
             while ((pos = example.find("EXENAME", pos)) != string::npos) {
-                example.replace(pos, 8, exec_name);
+                example.replace(pos, 7, exec_name);
             }
             print_wrapped(os, example, _columns, 4, 4);
         }
