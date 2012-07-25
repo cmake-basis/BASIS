@@ -583,12 +583,14 @@ void StdOutput::printExample(ostream& os) const
                 it != examples.end(); ++it) {
             if (it != examples.begin()) os << endl;
             string example = *it;
-            string::size_type pos = 0;
+            string::size_type pos;
             // backwards compatibility
+            pos = 0;
             while ((pos = example.find("EXECNAME", pos)) != string::npos) {
                 example.replace(pos, 8, exec_name);
             }
             // desired placeholder as it relates to the exename() function
+            pos = 0;
             while ((pos = example.find("EXENAME", pos)) != string::npos) {
                 example.replace(pos, 8, exec_name);
             }
