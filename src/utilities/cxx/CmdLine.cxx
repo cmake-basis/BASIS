@@ -335,7 +335,7 @@ void StdOutput::printUsage(ostream& os, bool heading) const
 {
     string                        exec_name  = os::exename();
     list<TCLAP::Arg*>             args       = _cmd->getArgList();
-    TCLAP::XorHandler             xorhandler = _cmd->getXorHandler();
+    TCLAP::XorHandler&            xorhandler = _cmd->getXorHandler();
     vector< vector<TCLAP::Arg*> > xors       = xorhandler.getXorList();
 
     // separate into argument groups
@@ -461,7 +461,7 @@ void StdOutput::printDescription(ostream& os) const
 void StdOutput::printArguments(ostream& os, bool all) const
 {
     list<TCLAP::Arg*>             args       = _cmd->getArgList();
-    TCLAP::XorHandler             xorhandler = _cmd->getXorHandler();
+    TCLAP::XorHandler&            xorhandler = _cmd->getXorHandler();
     vector< vector<TCLAP::Arg*> > xors       = xorhandler.getXorList();
 
     // separate into argument groups

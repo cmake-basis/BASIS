@@ -276,6 +276,11 @@ public:
      */
     std::string& getContact() { return _contact; }
 
+    /**
+     * @brief Get handler of XOR'd arguments.
+     */
+    XorHandler& getXorHandler() { return _xorHandler; }
+
     // -----------------------------------------------------------------------
     // helpers
 protected:
