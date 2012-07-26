@@ -922,6 +922,11 @@ macro (basis_project_initialize)
 
   # only set if not set by top-level project before configuring a module
   basis_set_if_empty (PROJECT_IS_MODULE FALSE)
+  # set only by basis_use_package() to TRUE such that functions such as
+  # the overwritten (basis_)link_directories() command or add_library()
+  # know that these directories/targets belong to an external project which
+  # is part of the same superbuild. otherwise, it shall be FALSE.
+  set (BUNDLE_PROJECT FALSE)
 
   # hide it here to avoid that it shows up in the GUI on error
   set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
@@ -1043,6 +1048,7 @@ macro (basis_project_initialize)
   basis_set_project_property (PROPERTY PROJECT_INCLUDE_DIRS "")
   # see basis_link_directories()
   basis_set_project_property (PROPERTY PROJECT_LINK_DIRS "")
+  basis_set_project_property (PROPERTY BUNDLE_LINK_DIRS  "")
   # see add_executable(), add_library()
   basis_set_project_property (PROPERTY TARGETS "")
   # see basis_add_*() functions

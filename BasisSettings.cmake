@@ -329,6 +329,7 @@ set (BASIS_PROPERTIES_ON_TARGETS
   BASIS_LINK_DEPENDS           # link libraries
   BASIS_TYPE                   # BASIS type of target
   BASIS_UTILITIES              # whether BASIS utilities are used by this target
+  BUNDLED                      # whether target belongs to same bundle/superbuild
   LANGUAGE                     # language of source files
   COMPILE                      # enable/disable compilation of script
   EXPORT                       # whether to export target
@@ -589,12 +590,10 @@ if (DEFINED CMAKE_OSX_SYSROOT)
 endif ()
 
 # use RPATH
-set (CMAKE_SKIP_RPATH       FALSE)
-set (CMAKE_SKIP_BUILD_RPATH FALSE)
-# tell CMake to append directories outside project to RPATH
-set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-# use different RPATH for build and installed binaries
-set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set (CMAKE_SKIP_RPATH                  FALSE) # use RPATH for installed project own binaries
+set (CMAKE_SKIP_BUILD_RPATH            FALSE) # use RPATH for project own binaries
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE) # do not add directories outside project to RPATH
+set (CMAKE_BUILD_WITH_INSTALL_RPATH    FALSE) # use different RPATH for build tree executables
 
 
 ## @}

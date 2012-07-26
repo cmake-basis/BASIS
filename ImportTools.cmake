@@ -152,6 +152,11 @@ endfunction ()
 #
 # @sa basis_update_imported_location()
 function (basis_add_imported_target TARGET TYPE)
+  if (BUNDLE_PROJECT)
+    _set_target_properties (${TARGET} PROPERTIES BUNDLED TRUE)
+  else ()
+    _set_target_properties (${TARGET} PROPERTIES BUNDLED FALSE)
+  endif ()
   # if target was added before
   basis_get_project_property (TARGETS PROPERTY IMPORTED_TARGETS)
   if (TARGETS)

@@ -390,6 +390,23 @@ macro (basis_use_package PACKAGE)
         endif ()
       endif ()
     endif ()
+    # if this package is an external project, i.e., a project build as part
+    # of the same superbuild as this project, set BUNDLE_PROJECT to TRUE.
+    # it is used by (basis_)link_directories() and add_library() to mark
+    # the imported link directories and target as belonging to the same
+    # installation. this is in particular important for the RPATH settings.
+    # whether this package is an external project or not, is decided by the
+    # BUNDLE_PROJECTS variable which must be set using the -D option of
+    # cmake to a list naming all the other packages which are part of the
+    # superbuild.
+    if (BUNDLE_PROJECTS)
+      list (FIND BUNDLE_PROJECTS "${PKG}" IDX)
+      if (IDX EQUAL -1)
+        set (BUNDLE_PROJECT FALSE)
+      else ()
+        set (BUNDLE_PROJECT TRUE)
+      endif ()
+    endif ()
     # use external package
     string (TOUPPER "${PKG}" PKG_UPPER)
     if (${PKG}_FOUND OR ${PKG_UPPER}_FOUND)
@@ -460,6 +477,9 @@ macro (basis_use_package PACKAGE)
       message (FATAL_ERROR "Package ${PACKAGE} not found!")
     endif ()
     unset (PKG_UPPER)
+    # reset switch that identifies currently imported targets and link directories
+    # as belonging to an external project which is part of the same superbuild
+    set (BUNDLE_PROJECT FALSE)
   endforeach ()
 endmacro ()
 

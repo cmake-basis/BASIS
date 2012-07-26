@@ -338,6 +338,18 @@ function (basis_link_directories)
     endif ()
   endif ()
   basis_set_project_property (PROPERTY PROJECT_LINK_DIRS "${LINK_DIRS}")
+  # if the directories are added by an external project's <Pkg>Use.cmake
+  # file which is part of the same superbuild as this project, add the
+  # directories further to the list of directories that may be added to
+  # the RPATH. see basis_set_target_install_rpath().
+  if (BUNDLE_PROJECT) # set in basis_use_package()
+    basis_get_project_property (LINK_DIRS PROPERTY BUNDLE_LINK_DIRS)
+    list (APPEND LINK_DIRS ${DIRS})
+    if (LINK_DIRS)
+      list (REMOVE_DUPLICATES LINK_DIRS)
+    endif ()
+    basis_set_project_property (PROPERTY BUNDLE_LINK_DIRS "${LINK_DIRS}")
+  endif ()
 endfunction ()
 
 # ============================================================================
@@ -2432,7 +2444,7 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Set INSTALL_RPATH property of executable or shared library target.
 #
-# This functions sets the @c INSTALL_RPATH property of a specified executable or
+# This function sets the @c INSTALL_RPATH property of a specified executable or
 # shared library target using the @c LINK_DEPENDS obtained using the
 # basis_get_target_link_libraries() function. It determines the installation
 # location of each dependency using the basis_get_target_location() function.
@@ -2447,7 +2459,7 @@ function (basis_set_target_install_rpath TARGET_NAME)
   endif ()
   if (BASIS_DEBUG)
     message ("** basis_set_target_install_rpath():")
-    message ("**    TARGET_NAME:   ${TARGET_UID}")
+    message ("**    TARGET_NAME:  ${TARGET_UID}")
   endif ()
   if (CMAKE_HOST_APPLE)
     set (ORIGIN "@loader_path")
@@ -2462,41 +2474,58 @@ function (basis_set_target_install_rpath TARGET_NAME)
   endif ()
   # get location of target used to make paths relative to this $ORIGIN
   basis_get_target_location (TARGET_LOCATION ${TARGET_UID} POST_INSTALL_PATH)
+  # directories of external projects belonging to same bundle which
+  # were added using [basis_]link_directories() command
+  basis_get_project_property (BUNDLE_LINK_DIRS PROPERTY BUNDLE_LINK_DIRS)
+  foreach (LINK_DIR ${BUNDLE_LINK_DIRS})
+    list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${LINK_DIR}" IDX)
+    if (IDX EQUAL -1)
+      if (BASIS_DEBUG AND BASIS_VERBOSE)
+        message ("**    BUNDLE_LINK_DIR: ${LINK_DIR}")
+      endif ()
+      basis_get_relative_path (RPATH "${TARGET_LOCATION}" "${LINK_DIR}")
+      list (APPEND INSTALL_RPATH "${ORIGIN}/${RPATH}")
+    endif ()
+  endforeach ()
   # directories of link libraries
+  #
+  # if CMAKE_RPATH_USE_LINK_PATH is enabled, also any directories
+  # listed in the LINK_DEPENDS as well as the location of imported
+  # targets are considered, which may include system libraries.
+  # otherwise, only the libraries of this project and targets imported
+  # from other projects which are part of the same superbuild are considered
   basis_get_target_link_libraries (LINK_DEPENDS ${TARGET_UID})
   if (BASIS_DEBUG AND BASIS_VERBOSE)
-    message ("**    LINK_DEPENDS:  [${LINK_DEPENDS}]")
+    message ("**    LINK_DEPENDS: [${LINK_DEPENDS}]")
   endif ()
   foreach (LINK_DEPEND ${LINK_DEPENDS})
+    set (DEPEND_LOCATION)
     if (TARGET "${LINK_DEPEND}")
-      basis_get_target_location (DEPEND_LOCATION ${LINK_DEPEND} POST_INSTALL_PATH)
+      basis_get_target_property (BUNDLED  ${LINK_DEPEND} BUNDLED)
+      basis_get_target_property (IMPORTED ${LINK_DEPEND} IMPORTED)
+      if (NOT IMPORTED OR BUNDLED)
+        basis_get_target_location (DEPEND_LOCATION ${LINK_DEPEND} POST_INSTALL_PATH)
+        if (BASIS_DEBUG AND BASIS_VERBOSE)
+          message ("**    LOCATION(${LINK_DEPEND}): ${DEPEND_LOCATION}")
+        endif ()
+      endif ()
     elseif (IS_ABSOLUTE "${LINK_DEPEND}")
       if (IS_DIRECTORY "${LINK_DEPEND}")
         set (DEPEND_LOCATION "${LINK_DEPEND}")
       else ()
         get_filename_component (DEPEND_LOCATION "${LINK_DEPEND}" PATH)
       endif ()
-    else ()
-      set (DEPEND_LOCATION)
+      list (FIND BUNDLE_LINK_DIRS "${DEPEND_LOCATION}" IDX)
+      if (IDX EQUAL -1)
+        set (DEPEND_LOCATION)
+      endif ()
     endif ()
     if (DEPEND_LOCATION)
-      if (BASIS_DEBUG AND BASIS_VERBOSE)
-        message ("**    LOCATION of ${LINK_DEPEND}: ${DEPEND_LOCATION}")
-      endif ()
       list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${DEPEND_LOCATION}" IDX)
       if (IDX EQUAL -1)
         basis_get_relative_path (RPATH "${TARGET_LOCATION}" "${DEPEND_LOCATION}")
         list (APPEND INSTALL_RPATH "${ORIGIN}/${RPATH}")
       endif ()
-    endif ()
-  endforeach ()
-  # directories added by [basis_]link_directories() command
-  basis_get_project_property (LINK_DIRS PROPERTY PROJECT_LINK_DIRS)
-  foreach (LINK_DIR ${LINK_DIRS})
-    list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${LINK_DIR}" IDX)
-    if (IDX EQUAL -1)
-      basis_get_relative_path (RPATH "${TARGET_LOCATION}" "${LINK_DIR}")
-      list (APPEND INSTALL_RPATH "${ORIGIN}/${RPATH}")
     endif ()
   endforeach ()
   # remove duplicates
