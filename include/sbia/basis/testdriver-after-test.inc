@@ -60,7 +60,8 @@
                                 baseline_image_files[j].c_str(),
                                 regression_tests[i].intensity_tolerance,
                                 regression_tests[i].max_number_of_differences,
-                                regression_tests[i].tolerance_radius);
+                                regression_tests[i].tolerance_radius,
+                                regression_tests[i].orientation_insensitive);
                         if (status < beststatus) {
                             bestmatch  = baseline_image_files[j];
                             beststatus = status;
@@ -78,6 +79,7 @@
                                 regression_tests[i].intensity_tolerance,
                                 regression_tests[i].max_number_of_differences,
                                 regression_tests[i].tolerance_radius,
+                                regression_tests[i].orientation_insensitive,
                                 1); // ...generate error images
                     }
                 }

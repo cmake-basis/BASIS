@@ -121,6 +121,7 @@ struct RegressionTest {
     double       intensity_tolerance;
     unsigned int max_number_of_differences;
     unsigned int tolerance_radius;
+    bool         orientation_insensitive;
 };
 
 /// @brief Container storing added regression tests, one for each occurrence
@@ -171,6 +172,14 @@ UIntArg tolerance_radius(
         " given radius has to fulfill the criteria of the following"
         " regression tests",
         false, 0, "<int>", true);
+
+SwitchArg orientation_insensitive(
+        "", "orientation-insensitive",
+        "Allow the test and baseline images to have different orientation."
+        " When this option is given, the orientation of both images is made"
+        " identical before they are compared. It is suitable if the test"
+        " and baseline images are simply stored with different orientation,"
+        " but with proper orientation information in the file header.");
 
 // ---------------------------------------------------------------------------
 // test execution
@@ -298,6 +307,9 @@ vector<string> get_baseline_filenames(string filename_template);
  * @param [in] intensity_tolerance       Maximum tolerable intensity difference.
  * @param [in] max_number_of_differences Maximum number of differing pixels.
  * @param [in] tolerance_radius          Tolerance radius.
+ * @param [in] orientation_insensitive   Change orientation of both images to
+ *                                       a common coordinate orientation before
+ *                                       comparing them.
  * @param [in] report                    Level of test report to generate.
  *                                       If zero, no report is generated.
  *                                       If greater than zero, a report is
@@ -312,6 +324,7 @@ int image_regression_test(const char*  imagefile,
                           double       intensity_tolerance = 2.0,
                           unsigned int max_number_of_differences = 0,
                           unsigned int tolerance_radius = 0,
+                          bool         orientation_insensitive = false,
                           int          report = 0);
 
 

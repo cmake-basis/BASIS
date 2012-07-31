@@ -73,6 +73,7 @@ void testdriversetup(int* argc, char** argv[])
         cmd.add(max_number_of_differences);
         cmd.add(intensity_tolerance);
         cmd.add(tolerance_radius);
+        cmd.add(orientation_insensitive);
         cmd.add(redirect_output);
         cmd.add(max_number_of_threads);
         cmd.add(full_output);
@@ -170,6 +171,7 @@ void CompareVisitor::visit()
     regression_test.intensity_tolerance       = intensity_tolerance.getValue();
     regression_test.max_number_of_differences = max_number_of_differences.getValue();
     regression_test.tolerance_radius          = tolerance_radius.getValue();
+    regression_test.orientation_insensitive   = orientation_insensitive.getValue();
 
     regression_tests.push_back(regression_test);
 }
@@ -207,6 +209,7 @@ int image_regression_test(const char*  imagefile,
                           double       intensity_tolerance,
                           unsigned int max_number_of_differences,
                           unsigned int tolerance_radius,
+                          bool         orientation_insensitive,
                           int          report)
 {
     #ifdef ITK_VERSION
@@ -215,7 +218,8 @@ int image_regression_test(const char*  imagefile,
                                    report,
                                    intensity_tolerance,
                                    max_number_of_differences,
-                                   tolerance_radius);
+                                   tolerance_radius,
+                                   orientation_insensitive);
     #else
         BASIS_THROW(runtime_error,
                     "Not implemented yet! Use ITK implementation instead, i.e.,"

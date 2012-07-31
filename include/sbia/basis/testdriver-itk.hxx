@@ -61,20 +61,13 @@
 #endif
 
 
-#if ITK_VERSION_MAJOR >= 4
-// Disable warning: 'std::copy': Function call with parameters that may be unsafe
-//                  - this call relies on the caller to check that the passed
-//                  values are correct.
-#  pragma warning (disable: 4996)
-#  include <itkTestDriverInclude.h>
-#else
-#  include <itkImage.h>
-#  include <itkImageFileReader.h>
-#  include <itkImageFileWriter.h>
-#  include <itkRescaleIntensityImageFilter.h>
-#  include <itkExtractImageFilter.h>
-#  include <itkDifferenceImageFilter.h>
-#endif
+#include <itkImage.h>
+#include <itkImageFileReader.h>
+#include <itkImageFileWriter.h>
+#include <itkRescaleIntensityImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkDifferenceImageFilter.h>
+#include <itkOrientImageFilter.h>
 
 #include <itkGDCMImageIOFactory.h>
 #include <itkMetaImageIOFactory.h>
@@ -90,10 +83,7 @@
 
 
 // maximum number of dimensions of test and baseline images
-// Note: We cannot redefine the macro used by the ITK 4.
-#if ITK_VERSION_MAJOR < 4
-#  define ITK_TEST_DIMENSION_MAX BASIS_MAX_TEST_IMAGE_DIMENSION
-#endif
+#define ITK_TEST_DIMENSION_MAX BASIS_MAX_TEST_IMAGE_DIMENSION
 
 
 // ---------------------------------------------------------------------------
@@ -111,10 +101,6 @@ void RegisterRequiredFactories()
     itk::ObjectFactoryBase::RegisterFactory(itk::NiftiImageIOFactory::New());
 }
 
-
-#if ITK_VERSION_MAJOR < 4
-
-
 // ---------------------------------------------------------------------------
 // This implementation of the image regression test was copied from the
 // Testing/Code/IO/ImageCompareCommand.cxx file of the ITK 3.20 release.
@@ -123,17 +109,21 @@ void RegisterRequiredFactories()
 // TestKernel module and furthermore the generation of the reports is
 // identical as well. This includes the extraction of the center slice instead
 // of the first slice to generate PNG images for inclusion in the report.
-int RegressionTestImage (const char* testImageFilename,
-                         const char* baselineImageFilename,
-                         int reportErrors,
-                         double intensityTolerance,
+//
+// The orientationInsensitive flag has been added to allow for differences
+// in the image orientations on disk.
+int RegressionTestImage (const char*  testImageFilename,
+                         const char*  baselineImageFilename,
+                         int          reportErrors,
+                         double       intensityTolerance,
                          unsigned int numberOfPixelsTolerance,
-                         unsigned int radiusTolerance)
+                         unsigned int radiusTolerance,
+                         bool         orientationInsensitive)
 {
   // Use the factory mechanism to read the test and baseline files and convert them to double
-  typedef itk::Image<double,ITK_TEST_DIMENSION_MAX>         ImageType;
-  typedef itk::Image<unsigned char,ITK_TEST_DIMENSION_MAX>  OutputType;
-  typedef itk::Image<unsigned char,2>                       DiffOutputType;
+  typedef itk::Image<double,        ITK_TEST_DIMENSION_MAX> ImageType;
+  typedef itk::Image<unsigned char, ITK_TEST_DIMENSION_MAX> OutputType;
+  typedef itk::Image<unsigned char, 2>                      DiffOutputType;
   typedef itk::ImageFileReader<ImageType>                   ReaderType;
 
   // Read the baseline file
@@ -162,12 +152,83 @@ int RegressionTestImage (const char* testImageFilename,
     return 1000;
     }
 
+  ImageType::Pointer baselineImage = baselineReader->GetOutput();
+  ImageType::Pointer testImage     = testReader    ->GetOutput();
+
+  testImage    ->DisconnectPipeline();
+  baselineImage->DisconnectPipeline();
+
+  ImageType::SizeType baselineSize = baselineImage->GetLargestPossibleRegion().GetSize();
+  ImageType::SizeType testSize     = testImage    ->GetLargestPossibleRegion().GetSize();
+
+  if (orientationInsensitive) {
+    const unsigned int OrientImageDimension = 3;
+    typedef itk::Image<double, OrientImageDimension>                     OrienterImageType;
+    typedef itk::ExtractImageFilter<ImageType, OrienterImageType>        ExtractorType;
+    typedef itk::CastImageFilter<OrienterImageType, ImageType>           UpCasterType;
+    typedef itk::OrientImageFilter<OrienterImageType, OrienterImageType> OrienterType;
+
+    ExtractorType::Pointer extractor = ExtractorType::New();
+    OrienterType ::Pointer orienter  = OrienterType ::New();
+    UpCasterType ::Pointer caster    = UpCasterType ::New();
+
+    ImageType::SizeType   extract_size;
+    ImageType::IndexType  extract_index;
+    ImageType::RegionType extract_region;
+    extract_index.Fill(0);
+    extract_size .Fill(0);
+
+    for (unsigned int i = 0; i < ITK_TEST_DIMENSION_MAX; i++) {
+        if (baselineSize[i] > 1) extract_size[i] = baselineSize[i];
+    }
+
+    extract_region.SetIndex(extract_index);
+    extract_region.SetSize (extract_size);
+    extractor->SetExtractionRegion(extract_region);
+
+    orienter->UseImageDirectionOn();
+    orienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPI);
+
+
+    extractor->SetInput(baselineImage);
+    orienter ->SetInput(extractor->GetOutput());
+    caster   ->SetInput(orienter ->GetOutput());
+
+    try
+      {
+      caster->Update();
+      }
+    catch (itk::ExceptionObject& e)
+      {
+      std::cerr << "Failed to change orientation of baseline image to RPI : " << e << std::endl;
+      return 1000;
+      }
+
+    baselineImage = caster->GetOutput();
+    baselineSize = baselineImage->GetLargestPossibleRegion().GetSize();
+    baselineImage->DisconnectPipeline();
+
+
+    extractor->SetInput(testImage);
+    orienter ->SetInput(extractor->GetOutput());
+    caster   ->SetInput(orienter ->GetOutput());
+
+    try
+      {
+      caster->Update();
+      }
+    catch (itk::ExceptionObject& e)
+      {
+      std::cerr << "Failed to change orientation of test image to RPI : " << e << std::endl;
+      return 1000;
+      }
+
+    testImage = caster->GetOutput();
+    testSize  = testImage->GetLargestPossibleRegion().GetSize();
+    testImage->DisconnectPipeline();
+  }
+
   // The sizes of the baseline and test image must match
-  ImageType::SizeType baselineSize;
-    baselineSize = baselineReader->GetOutput()->GetLargestPossibleRegion().GetSize();
-  ImageType::SizeType testSize;
-    testSize = testReader->GetOutput()->GetLargestPossibleRegion().GetSize();
-  
   if (baselineSize != testSize)
     {
     std::cerr << "The size of the Baseline image and Test image do not match!" << std::endl;
@@ -181,8 +242,8 @@ int RegressionTestImage (const char* testImageFilename,
   // Now compare the two images
   typedef itk::DifferenceImageFilter<ImageType,ImageType> DiffType;
   DiffType::Pointer diff = DiffType::New();
-    diff->SetValidInput(baselineReader->GetOutput());
-    diff->SetTestInput(testReader->GetOutput());
+    diff->SetValidInput(baselineImage);
+    diff->SetTestInput(testImage);
     
     diff->SetDifferenceThreshold( intensityTolerance );
     diff->SetToleranceRadius( radiusTolerance );
@@ -299,7 +360,7 @@ int RegressionTestImage (const char* testImageFilename,
     baseName << testImageFilename << ".base.png";
     try
       {
-      rescale->SetInput(baselineReader->GetOutput());
+      rescale->SetInput(baselineImage);
       rescale->Update();
       }
     catch(const std::exception& e)
@@ -334,7 +395,7 @@ int RegressionTestImage (const char* testImageFilename,
     testName << testImageFilename << ".test.png";
     try
       {
-      rescale->SetInput(testReader->GetOutput());
+      rescale->SetInput(testImage);
       rescale->Update();
       }
     catch(const std::exception& e)
@@ -368,9 +429,6 @@ int RegressionTestImage (const char* testImageFilename,
     }
   return differenceFailed;
 }
-
-
-#endif // ITK_VERSION_MAJOR < 4
 
 
 #endif // _SBIA_BASIS_TESTDRIVER_ITK_HXX
