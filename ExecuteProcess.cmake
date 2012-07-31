@@ -264,11 +264,23 @@ endforeach ()
 # ----------------------------------------------------------------------------
 # give some hints for known error messages
 if (NOT RETVAL EQUAL 0)
+  set (HINTS)
   # MATLAB Compiler
-  if (COMMAND MATCHES "mcc")
+  if (CMD MATCHES "mcc")
     if (STDERR MATCHES "The file.*appears to be a MEX-file.[ ]+It shadows the M-file.*but will not execute properly at runtime, as it does not export a function.*named 'mexFunction.'")
-      set (STDERR "\n\n**** The error that a MEX-file would shadow a M-file can be caused by a shared library\n     that is required by the MEX-file but not found in the search path of the dynamic loader.")
+      set (HINTS "${HINTS}
+
+  Note: The error that a MEX-file would shadow a M-file can be caused by a shared library that
+        is required by the MEX-file but not found in the search path of the dynamic loader.
+")
     endif ()
+  endif ()
+  # append hints to output
+  if ("${STDOUT}" STREQUAL "${STDERR}")
+    set (STDERR "${STDERR}${HINTS}")
+    set (STDOUT "${STDOUT}${HINTS}")
+  else ()
+    set (STDERR "${STDERR}${HINTS}")
   endif ()
 endif ()
 
