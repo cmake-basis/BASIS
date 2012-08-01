@@ -67,7 +67,7 @@ basis_project (
     PythonInterp
     Perl
     BASH
-    ITK-4{ITKTestKernel}
+    ITK-4
     ITK
     Doxygen
     Sphinx
