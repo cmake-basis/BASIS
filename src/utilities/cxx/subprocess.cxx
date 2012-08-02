@@ -160,10 +160,12 @@ string Subprocess::tostring(const CommandLine& args)
                 arg.insert(j, 1, '\\');
                 j = arg.find_first_of("\\\"", j + 2);
             }
-            // surround argument by double quotes
-            cmd.push_back('\"');
-            cmd.append(arg);
-            cmd.push_back('\"');
+            // surround argument by double quotes if necessary
+            if (cmd.empty() || arg.find_first_of("' \t") != string::npos) {
+                cmd.push_back('\"');
+                cmd.append(arg);
+                cmd.push_back('\"');
+            }
         } else {
             cmd.append(*i);
         }

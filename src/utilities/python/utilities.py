@@ -234,7 +234,7 @@ class SubprocessError(Exception):
 # @sa split_quoted_string()
 def tostring(args):
     qargs = []
-    re_quote_or_not = re.compile(r"'|\s")
+    re_quote_or_not = re.compile(r"'|\s|^$")
     for arg in args:
         # escape double quotes
         arg = arg.replace('"', '\\"')

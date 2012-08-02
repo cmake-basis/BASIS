@@ -374,15 +374,15 @@ sub tostring
     my $str = '';
     if (ref($_[0]) eq 'ARRAY') {
         foreach my $arg (@{$_[0]}) {
-            $arg =~ s/"/\\"/g;                          # escape double quotes
-            $arg = '"' . $arg . '"' if $arg =~ m/'|\s/; # quote if necessary
+            $arg =~ s/"/\\"/g;                             # escape double quotes
+            $arg = '"' . $arg . '"' if $arg =~ m/'|\s|^$/; # quote if necessary
             $str .= ' ' if $str ne '';
             $str .= $arg;
         }
     } else {
         $str = $_[0];
-        $str =~ s/"/\\"/g;                          # escape double quotes
-        $str = '"' . $str . '"' if $str =~ m/'|\s/; # quote if necessary
+        $str =~ s/"/\\"/g;                             # escape double quotes
+        $str = '"' . $str . '"' if $str =~ m/'|\s|^$/; # quote if necessary
     }
     return $str;
 }

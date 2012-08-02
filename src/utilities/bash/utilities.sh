@@ -420,8 +420,8 @@ tostring()
         _basis_tostring_element="${_basis_tostring_args[$_basis_tostring_i]}"
         # escape double quotes
         _basis_tostring_element=`printf -- "${_basis_tostring_element}" | sed 's/"/\\"/g'`
-        # surround element by double quotes if it contains single quotes or whitespace
-        match "${_basis_tostring_element}" "[' ]" && _basis_tostring_element="\"${_basis_tostring_element}\""
+        # surround element by double quotes if necessary
+        match "${_basis_tostring_element}" "[' ]|^$" && _basis_tostring_element="\"${_basis_tostring_element}\""
         # append element
         [ -n "${_basis_tostring_str}" ] && _basis_tostring_str="${_basis_tostring_str} "
         _basis_tostring_str="${_basis_tostring_str}${_basis_tostring_element}"
