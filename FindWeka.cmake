@@ -50,6 +50,10 @@
 #     <td>Whether the package was found and the following CMake variables are valid.</td>
 #   </tr>
 #   <tr>
+#     @tp @b Weka_HAS_PACKAGE_MANAGER @endtp
+#     <td>Whether the found version of Weka has a package manager.</td>
+#   </tr>
+#   <tr>
 #     @tp @b Weka_CLASSPATH @endtp
 #     <td>The path of the found <tt>weka.jar</tt> file.</td>
 #   </tr>
@@ -74,6 +78,28 @@
 # ============================================================================
 # helpers
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# @brief Determine if this Weka version has a package manager.
+#
+# @returns This macro sets the Weka_HAS_PACKAGE_MANAGER variable.
+macro (weka_has_package_manager)
+  if (Weka_VERSION_MAJOR AND Weka_VERSION_MINOR)
+    if (Weka_VERSION_MAJOR EQUAL 3)
+      if (Weka_VERSION_MINOR GREATER 7 OR (Weka_VERSION_MINOR EQUAL 7 AND Weka_VERSION_PATCH GREATER 1))
+        set (Weka_HAS_PACKAGE_MANAGER TRUE)
+      else ()
+        set (Weka_HAS_PACKAGE_MANAGER FALSE)
+      endif ()
+    elseif (Weka_VERSION_MAJOR GREATER 2)
+      set (Weka_HAS_PACKAGE_MANAGER TRUE)
+    else ()
+      set (Weka_HAS_PACKAGE_MANAGER FALSE)
+    endif ()
+  else ()
+    set (Weka_HAS_PACKAGE_MANAGER TRUE)
+  endif ()
+endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get list of Weka packages.
@@ -111,6 +137,7 @@ function (weka_list_packages PACKAGES WHICH)
                     -list-packages "${WHICH}"
         RESULT_VARIABLE STATUS
         OUTPUT_VARIABLE STDOUT
+        ERROR_VARIABLE  STDERR
       )
       if (STATUS EQUAL 0)
         string (REPLACE ";"  "," STDOUT "${STDOUT}")
@@ -121,7 +148,9 @@ function (weka_list_packages PACKAGES WHICH)
           endif ()
         endforeach ()
       else ()
-        message (WARNING "Failed to retrieve list of ${WHICH} Weka packages!")
+        message (WARNING "Failed to retrieve list of ${WHICH} Weka packages! The command\n"
+                         "\"${JAVA_EXECUTABLE}\" -classpath \"${Weka_CLASSPATH}\" weka.core.WekaPackageManager -list-packages ${WHICH}\n"
+                         "failed with the error:\n${STDERR}")
       endif ()
     else ()
       message (WARNING "Cannot retrieve list of Weka packages because Weka_CLASSPATH is not set!")
@@ -150,12 +179,17 @@ function (weka_get_version VERSION MAJOR MINOR PATCH)
       COMMAND "${JAVA_EXECUTABLE}" -classpath "${Weka_CLASSPATH}" weka.core.Version
       RESULT_VARIABLE RETVAL
       OUTPUT_VARIABLE STDOUT
+      ERROR_VARIABLE  STDERR
     )
     if (STDOUT MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)")
       set (VERSION_STRING "${CMAKE_MATCH_0}")
       set (VERSION_MAJOR  "${CMAKE_MATCH_1}")
       set (VERSION_MINOR  "${CMAKE_MATCH_2}")
       set (VERSION_PATCH  "${CMAKE_MATCH_3}")
+    else ()
+      message (WARNING "Failed to version of Weka installation. The command\n"
+                       "\"${JAVA_EXECUTABLE}\" -classpath \"${Weka_CLASSPATH}\" weka.core.Version\n"
+                       "failed with the error:\n${STDERR}")
     endif ()
   endif ()
   set (${VERSION} "${VERSION_STRING}" PARENT_SCOPE)
@@ -171,7 +205,9 @@ endfunction ()
 # ----------------------------------------------------------------------------
 # initialize search
 if (NOT Weka_DIR)
-  if (NOT $ENV{Weka_DIR} STREQUAL "")
+  if (NOT $ENV{WEKAHOME} STREQUAL "")
+    set (Weka_DIR "$ENV{WEKAHOME}" CACHE PATH "Installation directory of Weka." FORCE)
+  elseif (NOT $ENV{Weka_DIR} STREQUAL "")
     set (Weka_DIR "$ENV{Weka_DIR}" CACHE PATH "Installation directory of Weka." FORCE)
   else ()
     set (Weka_DIR "$ENV{WEKA_DIR}" CACHE PATH "Installation directory of Weka." FORCE)
@@ -193,9 +229,13 @@ foreach (Weka_CLSDIR IN LISTS Weka_ENV_CLASSPATH)
 endforeach ()
 unset (Weka_ENV_CLASSPATH)
 
-#-------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # find weka.jar
 if (Weka_DIR)
+  if (Weka_CLASSPATH AND NOT Weka_CLASSPATH MATCHES "^${Weka_DIR}/")
+    set_property (CACHE Weka_CLASSPATH PROPERTY VALUE "Weka_CLASSPATH-NOTFOUND")
+  endif ()
+
   find_file (
     Weka_CLASSPATH
     NAMES         weka.jar
@@ -231,43 +271,62 @@ mark_as_advanced (Weka_CLASSPATH)
 #-------------------------------------------------------------
 # determine Weka version
 weka_get_version (Weka_VERSION_STRING Weka_VERSION_MAJOR Weka_VERSION_MINOR Weka_VERSION_PATCH)
+weka_has_package_manager ()
 
 #-------------------------------------------------------------
 # find Weka packages
-if (NOT Weka_PACKAGES_DIR AND Weka_DIR)
-  if (IS_DIRECTORY "${Weka_DIR}/packages")
-    set (Weka_PACKAGES_DIR "${Weka_DIR}/packages" CACHE PATH "Installation directory of Weka packages." FORCE)
-  elseif (IS_DIRECTORY "$ENV{HOME}/wekafiles/packages")
-    set (Weka_PACKAGES_DIR "$ENV{HOME}/wekafiles/packages" CACHE PATH "Installation directory of Weka packages." FORCE)
-  endif ()
-endif ()
-set (Weka_REQUIRED_PACKAGE_VARS)
-if (Weka_FIND_COMPONENTS)
-  foreach (Weka_PKG IN LISTS Weka_FIND_COMPONENTS)
-    list (APPEND Weka_REQUIRED_PACKAGE_VARS "Weka_${Weka_PKG}_DIR")
-  endforeach ()
-elseif (Weka_CLASSPATH)
-  weka_list_packages (Weka_FIND_COMPONENTS installed)
-endif ()
-foreach (Weka_PKG IN LISTS Weka_FIND_COMPONENTS)
-  set (Weka_${Weka_PKG}_DIR "NOTFOUND" CACHE PATH "Directory of ${Weka_PKG} Weka package." FORCE)
-  mark_as_advanced (Weka_${Weka_PKG}_DIR)
-  if (IS_DIRECTORY "${Weka_PACKAGES_DIR}/${Weka_PKG}")
-    if (EXISTS "${Weka_PACKAGES_DIR}/${Weka_PKG}/${Weka_PKG}.jar")
-      set (Weka_${Weka_PKG}_CLASSPATH "${Weka_PACKAGES_DIR}/${Weka_PKG}/${Weka_PKG}.jar")
-    elseif (IS_DIRECTORY "${Weka_PACKAGES_DIR}/${Weka_PKG}/weka")
-      set (Weka_${Weka_PKG}_CLASSPATH "${Weka_PACKAGES_DIR}/${Weka_PKG}")
-    elseif (IS_DIRECTORY "${Weka_PACKAGES_DIR}/${Weka_PACKAGE}/src/main/java/weka")
-      set (Weka_${Weka_PKG}_CLASSPATH "${Weka_PACKAGES_DIR}/${Weka_PKG}/src/main/java")
+if (Weka_HAS_PACKAGE_MANAGER)
+  if (NOT Weka_PACKAGES_DIR AND Weka_DIR)
+    if (IS_DIRECTORY "${Weka_DIR}/packages")
+      set (Weka_PACKAGES_DIR "${Weka_DIR}/packages" CACHE PATH "Installation directory of Weka packages." FORCE)
+    elseif (IS_DIRECTORY "$ENV{HOME}/wekafiles/packages")
+      set (Weka_PACKAGES_DIR "$ENV{HOME}/wekafiles/packages" CACHE PATH "Installation directory of Weka packages." FORCE)
     endif ()
   endif ()
-  if (Weka_${Weka_PKG}_CLASSPATH)
-    list (APPEND Weka_PACKAGES_CLASSPATH "${Weka_${Weka_PKG}_CLASSPATH}")
-    set (Weka_${Weka_PKG}_DIR "${Weka_PACKAGES_DIR}/${Weka_PKG}" CACHE PATH "Directory of ${Weka_PKG} Weka package." FORCE)
-    break ()
+  set (Weka_REQUIRED_PACKAGE_VARS)
+  if (Weka_FIND_COMPONENTS)
+    foreach (Weka_PKG IN LISTS Weka_FIND_COMPONENTS)
+      list (APPEND Weka_REQUIRED_PACKAGE_VARS "Weka_${Weka_PKG}_DIR")
+    endforeach ()
+  elseif (Weka_CLASSPATH)
+    weka_list_packages (Weka_FIND_COMPONENTS installed)
   endif ()
-endforeach ()
-unset (Weka_PKG)
+  foreach (Weka_PKG IN LISTS Weka_FIND_COMPONENTS)
+    set (Weka_${Weka_PKG}_DIR "Weka_${Weka_PKG}_DIR-NOTFOUND" CACHE PATH "Directory of ${Weka_PKG} Weka package." FORCE)
+    mark_as_advanced (Weka_${Weka_PKG}_DIR)
+    if (IS_DIRECTORY "${Weka_PACKAGES_DIR}/${Weka_PKG}")
+      if (EXISTS "${Weka_PACKAGES_DIR}/${Weka_PKG}/${Weka_PKG}.jar")
+        set (Weka_${Weka_PKG}_CLASSPATH "${Weka_PACKAGES_DIR}/${Weka_PKG}/${Weka_PKG}.jar")
+      elseif (IS_DIRECTORY "${Weka_PACKAGES_DIR}/${Weka_PKG}/weka")
+        set (Weka_${Weka_PKG}_CLASSPATH "${Weka_PACKAGES_DIR}/${Weka_PKG}")
+      elseif (IS_DIRECTORY "${Weka_PACKAGES_DIR}/${Weka_PACKAGE}/src/main/java/weka")
+        set (Weka_${Weka_PKG}_CLASSPATH "${Weka_PACKAGES_DIR}/${Weka_PKG}/src/main/java")
+      endif ()
+    endif ()
+    if (Weka_${Weka_PKG}_CLASSPATH)
+      list (APPEND Weka_PACKAGES_CLASSPATH "${Weka_${Weka_PKG}_CLASSPATH}")
+      set (Weka_${Weka_PKG}_DIR "${Weka_PACKAGES_DIR}/${Weka_PKG}" CACHE PATH "Directory of ${Weka_PKG} Weka package." FORCE)
+      break ()
+    endif ()
+  endforeach ()
+  unset (Weka_PKG)
+else ()
+  if (DEFINED Weka_PACKAGES_DIR)
+    get_property (Weka_PACKAGES_DIR_SET CACHE Weka_PACKAGES_DIR PROPERTY TYPE SET)
+    if (Weka_PACKAGES_DIR_SET)
+      set_property (CACHE Weka_PACKAGES_DIR PROPERTY TYPE  INTERNAL)
+      set_property (CACHE Weka_PACKAGES_DIR PROPERTY VALUE Weka_PACKAGES_DIR-NOTFOUND)
+    endif ()
+    unset (Weka_PACKAGES_DIR_SET)
+  endif ()
+  if (Weka_FIND_COMPONENTS)
+    message (WARNING "This Weka version has no package manager and consists only of the core weka.jar package."
+                     " The components required may not be available with this Weka version. Make sure that you"
+                     " have installed and selected the proper Weka version required by this software package."
+                     " Further, check the Weka_DIR variable and set it accordingly if it points to the wrong"
+                     " installation of Weka.")
+  endif ()
+endif ()
 
 # ----------------------------------------------------------------------------
 # Weka_CLASSPATHS
