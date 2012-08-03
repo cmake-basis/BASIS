@@ -51,22 +51,26 @@
                     int status = binary_diff(test_file, baseline_file);
                     if (status == -1) {
                         cerr << "No test output file found given file path " << test_file << "!" << endl;
+                        status = 1;
                     } else if (status == -2) {
                         cerr << "No baseline file found given file path " << baseline_file << "!" << endl;
+                        status = 1;
                     } else if (status != 0) {
                         cerr << "Files " << test_file << " and " << baseline_file << " differ!" << endl;
-                        result += status;
                     }
+                    result += status;
                 } else if (regression_tests[i].method == DIFF_LINES) {
                     int status = text_diff_lines(test_file, baseline_file, regression_tests[i].max_number_of_differences);
                     if (status == -1) {
                         cerr << "No test output file found given file path " << test_file << "!" << endl;
+                        status = 1;
                     } else if (status == -2) {
                         cerr << "No baseline file found given file path " << baseline_file << "!" << endl;
+                        status = 1;
                     } else if (status != 0) {
                         cerr << "Files " << test_file << " and " << baseline_file << " differ by more than the allowed " << regression_tests[i].max_number_of_differences << " lines!" << endl;
-                        result += status;
                     }
+                    result += status;
                 } else if (regression_tests[i].method == COMPARE_IMAGES) {
                     vector<string> baseline_files = get_baseline_filenames(baseline_file);
                     string         bestmatch      = baseline_file;
