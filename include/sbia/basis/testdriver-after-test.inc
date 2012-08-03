@@ -45,49 +45,73 @@
                 cout << "Performing regression tests" << endl;
             }
             for (size_t i = 0; i < regression_tests.size(); i++) {
-                const char*    test_image_file      = regression_tests[i].test_image_file.c_str();
-                const char*    baseline_image_file  = regression_tests[i].baseline_image_file.c_str();
-                vector<string> baseline_image_files = get_baseline_filenames(baseline_image_file);
-                string         bestmatch  = baseline_image_file;
-                int            beststatus = numeric_limits<int>::max();
-                if (baseline_image_files.empty()) {
-                    bestmatch += " not found";
-                    cerr << "No baseline images found given file path " << baseline_image_file << "!" << endl;
+                const char* test_file     = regression_tests[i].test_file.c_str();
+                const char* baseline_file = regression_tests[i].baseline_file.c_str();
+                if (regression_tests[i].method == BINARY_DIFF) {
+                    int status = binary_diff(test_file, baseline_file);
+                    if (status == -1) {
+                        cerr << "No test output file found given file path " << test_file << "!" << endl;
+                    } else if (status == -2) {
+                        cerr << "No baseline file found given file path " << baseline_file << "!" << endl;
+                    } else if (status != 0) {
+                        cerr << "Files " << test_file << " and " << baseline_file << " differ!" << endl;
+                        result += status;
+                    }
+                } else if (regression_tests[i].method == DIFF_LINES) {
+                    int status = text_diff_lines(test_file, baseline_file, regression_tests[i].max_number_of_differences);
+                    if (status == -1) {
+                        cerr << "No test output file found given file path " << test_file << "!" << endl;
+                    } else if (status == -2) {
+                        cerr << "No baseline file found given file path " << baseline_file << "!" << endl;
+                    } else if (status != 0) {
+                        cerr << "Files " << test_file << " and " << baseline_file << " differ by more than the allowed " << regression_tests[i].max_number_of_differences << " lines!" << endl;
+                        result += status;
+                    }
+                } else if (regression_tests[i].method == COMPARE_IMAGES) {
+                    vector<string> baseline_files = get_baseline_filenames(baseline_file);
+                    string         bestmatch      = baseline_file;
+                    int            beststatus     = numeric_limits<int>::max();
+                    if (baseline_files.empty()) {
+                        bestmatch += " not found";
+                        cerr << "No baseline images found given file path " << baseline_file << "!" << endl;
+                    } else {
+                        for (size_t j = 0; j < baseline_files.size(); j++) {
+                            int status = image_regression_test(
+                                    test_file,
+                                    baseline_files[j].c_str(),
+                                    regression_tests[i].intensity_tolerance,
+                                    regression_tests[i].max_number_of_differences,
+                                    regression_tests[i].tolerance_radius,
+                                    regression_tests[i].orientation_insensitive);
+                            if (status < beststatus) {
+                                bestmatch  = baseline_files[j];
+                                beststatus = status;
+                            }
+                            if (beststatus == 0) {
+                                // perfect test result
+                                break;
+                            }
+                        }
+                        // if the best we can do still has errors...
+                        if (beststatus != 0) {
+                            image_regression_test(
+                                    test_file,
+                                    baseline_files[0].c_str(),
+                                    regression_tests[i].intensity_tolerance,
+                                    regression_tests[i].max_number_of_differences,
+                                    regression_tests[i].tolerance_radius,
+                                    regression_tests[i].orientation_insensitive,
+                                    1); // ...generate error images
+                        }
+                    }
+                    // output the matching baseline for submission to the dashboard
+                    cout << "<DartMeasurement name=\"BaselineImageName\" type=\"text/string\">";
+                    cout << os::path::basename(bestmatch);
+                    cout << "</DartMeasurement>" << std::endl;
+                    result += beststatus;
                 } else {
-                    for (size_t j = 0; j < baseline_image_files.size(); j++) {
-                        int status = image_regression_test(
-                                test_image_file,
-                                baseline_image_files[j].c_str(),
-                                regression_tests[i].intensity_tolerance,
-                                regression_tests[i].max_number_of_differences,
-                                regression_tests[i].tolerance_radius,
-                                regression_tests[i].orientation_insensitive);
-                        if (status < beststatus) {
-                            bestmatch  = baseline_image_files[j];
-                            beststatus = status;
-                        }
-                        if (beststatus == 0) {
-                            // perfect test result
-                            break;
-                        }
-                    }
-                    // if the best we can do still has errors...
-                    if (beststatus != 0) {
-                        image_regression_test(
-                                test_image_file,
-                                baseline_image_files[0].c_str(),
-                                regression_tests[i].intensity_tolerance,
-                                regression_tests[i].max_number_of_differences,
-                                regression_tests[i].tolerance_radius,
-                                regression_tests[i].orientation_insensitive,
-                                1); // ...generate error images
-                    }
+                    cerr << "Invalid test method: " << regression_tests[i].method << "! Check testdriver implementation." << endl;
                 }
-                // output the matching baseline for submission to the dashboard
-                cout << "<DartMeasurement name=\"BaselineImageName\" type=\"text/string\">";
-                cout << os::path::basename(bestmatch);
-                cout << "</DartMeasurement>" << std::endl;
-                result += beststatus;
             }
             // empty current working directory
             if (clean_cwd_after_test.getValue()) {

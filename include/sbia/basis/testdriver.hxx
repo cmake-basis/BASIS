@@ -69,6 +69,8 @@ void testdriversetup(int* argc, char** argv[])
         cmd.add(add_before_env);
         cmd.add(clean_cwd_before_test);
         cmd.add(clean_cwd_after_test);
+        cmd.add(diff);
+        cmd.add(diff_lines);
         cmd.add(compare);
         cmd.add(max_number_of_differences);
         cmd.add(intensity_tolerance);
@@ -155,6 +157,89 @@ void testdriversetup(int* argc, char** argv[])
 }
 
 // ===========================================================================
+// low-level file comparison
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+void BinaryDiffVisitor::visit()
+{
+    assert(diff.getValue().size() != 0);
+    assert((diff.getValue().size() % 2) == 0);
+
+    RegressionTest regression_test;
+
+    regression_test.test_file                 = diff.getValue()[diff.getValue().size() - 2];
+    regression_test.baseline_file             = diff.getValue()[diff.getValue().size() - 1];
+    regression_test.intensity_tolerance       = 0.0f;
+    regression_test.max_number_of_differences = 0;
+    regression_test.tolerance_radius          = 0;
+    regression_test.orientation_insensitive   = false;
+    regression_test.method                    = BINARY_DIFF;
+
+    regression_tests.push_back(regression_test);
+}
+
+// ---------------------------------------------------------------------------
+int binary_diff(const char* testfile, const char* baseline)
+{
+    int retval = 0;
+    ifstream ift(testfile, ios::binary);
+    ifstream ifb(baseline, ios::binary);
+    if (!ift) return -1;
+    if (!ifb) return -2;
+    istream_iterator<unsigned char> eos; // end-of-stream
+    istream_iterator<unsigned char> it(ift);
+    istream_iterator<unsigned char> ib(ifb);
+    while (it != eos && ib != eos) {
+        if (*it != *ib) break;
+        ++it;
+        ++ib;
+    }
+    if (it != eos || ib != eos) retval = 1;
+    ift.close();
+    ifb.close();
+    return retval;
+}
+
+// ---------------------------------------------------------------------------
+void LineDiffVisitor::visit()
+{
+    assert(diff_lines.getValue().size() != 0);
+    assert((diff_lines.getValue().size() % 2) == 0);
+
+    RegressionTest regression_test;
+
+    regression_test.test_file                 = diff_lines.getValue()[diff_lines.getValue().size() - 2];
+    regression_test.baseline_file             = diff_lines.getValue()[diff_lines.getValue().size() - 1];
+    regression_test.intensity_tolerance       = 0.0f;
+    regression_test.max_number_of_differences = 0;
+    regression_test.tolerance_radius          = 0;
+    regression_test.orientation_insensitive   = false;
+    regression_test.method                    = DIFF_LINES;
+
+    regression_tests.push_back(regression_test);
+}
+
+// ---------------------------------------------------------------------------
+int text_diff_lines(const char* testfile, const char* baseline, unsigned int max_number_of_differences)
+{
+    int retval = 0;
+    ifstream ift(testfile);
+    ifstream ifb(baseline);
+    if (!ift) return -1;
+    if (!ifb) return -2;
+    string tline, bline;
+    while (getline(ift, tline) && getline(ifb, bline)) {
+        if (tline != bline) retval++;
+    }
+    if (static_cast<unsigned int>(retval) <= max_number_of_differences) retval = 0;
+    if (getline(ift, tline) || getline(ifb, bline)) retval = 1000;
+    ift.close();
+    ifb.close();
+    return retval;
+}
+
+// ===========================================================================
 // image regression testing
 // ===========================================================================
 
@@ -166,12 +251,13 @@ void CompareVisitor::visit()
 
     RegressionTest regression_test;
 
-    regression_test.test_image_file           = compare.getValue()[compare.getValue().size() - 2];
-    regression_test.baseline_image_file       = compare.getValue()[compare.getValue().size() - 1];
+    regression_test.test_file                 = compare.getValue()[compare.getValue().size() - 2];
+    regression_test.baseline_file             = compare.getValue()[compare.getValue().size() - 1];
     regression_test.intensity_tolerance       = intensity_tolerance.getValue();
     regression_test.max_number_of_differences = max_number_of_differences.getValue();
     regression_test.tolerance_radius          = tolerance_radius.getValue();
     regression_test.orientation_insensitive   = orientation_insensitive.getValue();
+    regression_test.method                    = COMPARE_IMAGES;
 
     regression_tests.push_back(regression_test);
 }

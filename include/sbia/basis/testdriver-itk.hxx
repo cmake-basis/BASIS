@@ -259,9 +259,11 @@ int RegressionTestImage (const char*  testImageFilename,
 
   //The measurement errors should be reported for both success and errors
   //to facilitate setting tight tolerances of tests.
-  std::cout << "<DartMeasurement name=\"ImageError\" type=\"numeric/double\">";
-  std::cout << numberOfPixelsWithDifferences;
-  std::cout <<  "</DartMeasurement>" << std::endl;
+  if (reportErrors) {
+      std::cout << "<DartMeasurement name=\"ImageError\" type=\"numeric/double\">";
+      std::cout << numberOfPixelsWithDifferences;
+      std::cout <<  "</DartMeasurement>" << std::endl;
+  }
 
   if( averageIntensityDifference > 0.0 )
     {

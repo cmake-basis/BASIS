@@ -50,16 +50,14 @@
         // remove all test output images if existent from previous test run
         if (testcmd.isSet()) {
             for (size_t i = 0; i < regression_tests.size(); i++) {
-                const char* test_image_file = regression_tests[i].test_image_file.c_str();
-                if (os::path::isfile(test_image_file)) {
-                    if (remove(test_image_file) == 0) {
+                const char* test_file = regression_tests[i].test_file.c_str();
+                if (os::path::isfile(test_file)) {
+                    if (remove(test_file) == 0) {
                         if (verbose.getValue() > 0) {
-                            cout << "Removed already existing output image "
-                                 << test_image_file << endl;
+                            cout << "Removed already existing test output file " << test_file << endl;
                         }
                     } else {
-                        cerr << "Warning: Failed to remove already existing output image "
-                             << test_image_file << endl;
+                        cerr << "Warning: Failed to remove already existing output image " << test_file << endl;
                     }
                 }
             }
