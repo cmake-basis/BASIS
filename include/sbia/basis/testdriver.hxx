@@ -212,7 +212,7 @@ void LineDiffVisitor::visit()
     regression_test.test_file                 = diff_lines.getValue()[diff_lines.getValue().size() - 2];
     regression_test.baseline_file             = diff_lines.getValue()[diff_lines.getValue().size() - 1];
     regression_test.intensity_tolerance       = 0.0f;
-    regression_test.max_number_of_differences = 0;
+    regression_test.max_number_of_differences = max_number_of_differences.getValue();
     regression_test.tolerance_radius          = 0;
     regression_test.orientation_insensitive   = false;
     regression_test.method                    = DIFF_LINES;
