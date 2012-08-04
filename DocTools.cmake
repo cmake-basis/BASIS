@@ -1249,7 +1249,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     endif ()
     add_custom_target (
       ${TARGET_UID}_${BUILDER}
-          "${Sphinx-build_EXECUTABLE}" ${OPTIONS}
+          ${PYTHON_EXECUTABLE} -E "${Sphinx-build_EXECUTABLE}" ${OPTIONS}
               -b ${SPHINX_BUILDER}
               -c "${SPHINX_CONFIG_DIRECTORY}"
               -d "${SPHINX_CONFIG_DIRECTORY}/doctrees"
