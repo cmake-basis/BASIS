@@ -896,8 +896,9 @@ endfunction ()
 #                                  that can be used for the output of
 #                                  version information. The format of this
 #                                  string is either one of the following:
-#                                  - "v1.0.0 (r42)"
-#                                  - "v1.0.0" (if revision unknown)
+#                                  - "v1.0 (r42)"
+#                                  - "v1.0.5 (r50)"
+#                                  - "v1.0"   (if revision unknown)
 #                                  - "r42"    (if version is 0.0.0)
 #                                  - ""       (otherwise)
 macro (basis_project_initialize)
@@ -996,7 +997,10 @@ macro (basis_project_initialize)
       endif ()
     endif ()
   else ()
-    set (PROJECT_RELEASE "v${PROJECT_VERSION}")
+    set (PROJECT_RELEASE "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+    if (PROJECT_VERSION_PATCH)
+      set (PROJECT_RELEASE "${PROJECT_RELEASE}.${PROJECT_VERSION_PATCH}")
+    endif ()
     if (PROJECT_REVISION)
       set (PROJECT_RELEASE "${PROJECT_RELEASE} (r${PROJECT_REVISION})")
     endif ()
