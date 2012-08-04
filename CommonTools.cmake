@@ -2165,7 +2165,7 @@ function (basis_configure_script INPUT OUTPUT)
     # compile module if requested
     if (ARGN_COMPILE)
       if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
-        execute_process (COMMAND "${PYTHON_EXECUTABLE}" -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}')")
+        execute_process (COMMAND "${PYTHON_EXECUTABLE}" -E -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}')")
       elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
         execute_process (COMMAND "${JYTHON_EXECUTABLE}" -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}')")
       endif ()
