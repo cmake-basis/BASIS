@@ -56,7 +56,7 @@ basis_project (
   NAME
     "BASIS"
   VERSION
-    0.0.0
+    2.0.0rc1
   DESCRIPTION
     "This package implements and supports the development of "
     "software which follows the SBIA Build system And Software "
