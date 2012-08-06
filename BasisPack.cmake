@@ -145,7 +145,6 @@ list (APPEND CPACK_SOURCE_IGNORE_FILES
   "/#"
   "\\\\.*~"
   "cscope\\\\.*"
-  "/[b|B]uild/"
   "/${_TEST_DIR}/internal/"
 )
 
