@@ -330,6 +330,7 @@ set (BASIS_PROPERTIES_ON_TARGETS
   BASIS_TYPE                   # BASIS type of target
   BASIS_UTILITIES              # whether BASIS utilities are used by this target
   BUNDLED                      # whether target belongs to same bundle/superbuild
+  COMPILE_DEFINITIONS_FILE     # script configuration file
   LANGUAGE                     # language of source files
   COMPILE                      # enable/disable compilation of script
   EXPORT                       # whether to export target

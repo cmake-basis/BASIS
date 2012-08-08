@@ -1124,6 +1124,13 @@ endfunction ()
 #         Build System Standard</a> for details. (default: "")</td>
 #   </tr>
 #   <tr>
+#     @tp @b COMPILE_DEFINITIONS_FILE @endtp
+#     <td>CMake script file with compile definitions, also referred to as script
+#         configuration file. The named files are included after the default BASIS
+#         script configuration and before the @c COMPILE_DEFINITIONS code is being
+#         evaluated. (default: @c BINARY_CONFIG_DIR/ScriptConfig.cmake)</td>
+#   </tr>
+#   <tr>
 #     @tp @b COMPONENT @endtp
 #     <td>Name of component as part of which this script is installed if
 #         @c INSTALL_DIRECTORY is not set to "none".
@@ -1410,6 +1417,12 @@ function (basis_add_script TARGET_NAME)
   else ()
     set (ARGN_DESTINATION "${INSTALL_${TYPE_INFIX}_DIR}")
   endif ()
+  # script configuration ("compile definitions")
+  if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+    set (CONFIG_FILE "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+  else ()
+    set (CONFIG_FILE)
+  endif ()
   # auto-detect use of BASIS utilities
   set (LINK_DEPENDS)
   if (ARGN_LANGUAGE MATCHES "[JP]YTHON")
@@ -1443,23 +1456,24 @@ function (basis_add_script TARGET_NAME)
   _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
-      LANGUAGE            ${ARGN_LANGUAGE}
-      BASIS_TYPE          SCRIPT_${TYPE}
-      BASIS_UTILITIES     ${USES_BASIS_UTILITIES}
-      SOURCE_DIRECTORY    "${CMAKE_CURRENT_SOURCE_DIR}"
-      BINARY_DIRECTORY    "${CMAKE_CURRENT_BINARY_DIR}"
-      OUTPUT_DIRECTORY    "${OUTPUT_DIRECTORY}"
-      INSTALL_DIRECTORY   "${ARGN_DESTINATION}"
-      COMPONENT           "${ARGN_COMPONENT}"
-      OUTPUT_NAME         "${OUTPUT_NAME}"
-      PREFIX              ""
-      SUFFIX              "${SUFFIX}"
-      COMPILE_DEFINITIONS ""
-      LINK_DEPENDS        "${LINK_DEPENDS}"
-      EXPORT              ${EXPORT}
-      COMPILE             ${BASIS_COMPILE_SCRIPTS}
-      TEST                ${TEST}
-      LIBEXEC             ${ARGN_LIBEXEC}
+      LANGUAGE                 ${ARGN_LANGUAGE}
+      BASIS_TYPE               SCRIPT_${TYPE}
+      BASIS_UTILITIES          ${USES_BASIS_UTILITIES}
+      SOURCE_DIRECTORY         "${CMAKE_CURRENT_SOURCE_DIR}"
+      BINARY_DIRECTORY         "${CMAKE_CURRENT_BINARY_DIR}"
+      OUTPUT_DIRECTORY         "${OUTPUT_DIRECTORY}"
+      INSTALL_DIRECTORY        "${ARGN_DESTINATION}"
+      COMPONENT                "${ARGN_COMPONENT}"
+      OUTPUT_NAME              "${OUTPUT_NAME}"
+      PREFIX                   ""
+      SUFFIX                   "${SUFFIX}"
+      COMPILE_DEFINITIONS      ""
+      COMPILE_DEFINITIONS_FILE "${CONFIG_FILE}"
+      LINK_DEPENDS             "${LINK_DEPENDS}"
+      EXPORT                   ${EXPORT}
+      COMPILE                  ${BASIS_COMPILE_SCRIPTS}
+      TEST                     ${TEST}
+      LIBEXEC                  ${ARGN_LIBEXEC}
   )
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
@@ -2094,6 +2108,13 @@ endfunction ()
 #         Build System Standard</a> for details. (default: "")</td>
 #   </tr>
 #   <tr>
+#     @tp @b COMPILE_DEFINITIONS_FILE @endtp
+#     <td>CMake script file with compile definitions, also referred to as script
+#         configuration file. The named files are included after the default BASIS
+#         script configuration and before the @c COMPILE_DEFINITIONS code is being
+#         evaluated. (default: @c BINARY_CONFIG_DIR/ScriptConfig.cmake)</td>
+#   </tr>
+#   <tr>
 #     @tp @b EXPORT @endtp
 #     <td>Whether to export this build target in which case an import library
 #         target is added to the custom exports file with the path to the
@@ -2342,6 +2363,12 @@ function (basis_add_script_library TARGET_NAME)
   else ()
     set (PREFIX)
   endif ()
+  # script configuration ("compile definitions")
+  if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+    set (CONFIG_FILE "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+  else ()
+    set (CONFIG_FILE)
+  endif ()
   # auto-detect use of BASIS utilities
   if (ARGN_LANGUAGE MATCHES "[JP]YTHON")
     set (UTILITIES_LANGUAGE "PYTHON")
@@ -2390,6 +2417,7 @@ function (basis_add_script_library TARGET_NAME)
       LIBRARY_COMPONENT         "${BASIS_LIBRARY_COMPONENT}"
       PREFIX                    "${PREFIX}"
       COMPILE_DEFINITIONS       ""
+      COMPILE_DEFINITIONS_FILE  "${CONFIG_FILE}"
       LINK_DEPENDS              ""
       EXPORT                    "${EXPORT}"
       COMPILE                   "${COMPILE}"
@@ -2564,21 +2592,22 @@ function (basis_build_script TARGET_UID)
                                                                # including BASIS utilities if used
   set (
     PROPERTIES
-      LANGUAGE             # programming language of script
-      BASIS_TYPE           # must match "^SCRIPT_(EXECUTABLE|LIBEXEC|MODULE)$"
-      SOURCE_DIRECTORY     # CMake source directory
-      BINARY_DIRECTORY     # CMake binary directory
-      OUTPUT_DIRECTORY     # output directory for built script
-      INSTALL_DIRECTORY    # installation directory for built script
-      COMPONENT            # installation component
-      OUTPUT_NAME          # name of built script including extension (if any)
-      PREFIX               # name prefix
-      SUFFIX               # name suffix (e.g., extension for executable script)
-      COMPILE_DEFINITIONS  # CMake code to set variables used to configure script
-      TEST                 # whether this script is used for testing only
-      EXPORT               # whether this target shall be exported
-      COMPILE              # whether to compile script if applicable
-      SOURCES              # path of script source file
+      LANGUAGE                 # programming language of script
+      BASIS_TYPE               # must match "^SCRIPT_(EXECUTABLE|LIBEXEC|MODULE)$"
+      SOURCE_DIRECTORY         # CMake source directory
+      BINARY_DIRECTORY         # CMake binary directory
+      OUTPUT_DIRECTORY         # output directory for built script
+      INSTALL_DIRECTORY        # installation directory for built script
+      COMPONENT                # installation component
+      OUTPUT_NAME              # name of built script including extension (if any)
+      PREFIX                   # name prefix
+      SUFFIX                   # name suffix (e.g., extension for executable script)
+      COMPILE_DEFINITIONS      # CMake code to set variables used to configure script
+      COMPILE_DEFINITIONS_FILE # script configuration file
+      TEST                     # whether this script is used for testing only
+      EXPORT                   # whether this target shall be exported
+      COMPILE                  # whether to compile script if applicable
+      SOURCES                  # path of script source file
   )
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
@@ -2647,8 +2676,8 @@ function (basis_build_script TARGET_UID)
   if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
     list (APPEND CONFIG_FILE "${BASIS_SCRIPT_CONFIG_FILE}")
   endif ()
-  if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
-    list (APPEND CONFIG_FILE "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+  if (COMPILE_DEFINITIONS_FILE)
+    list (APPEND CONFIG_FILE ${COMPILE_DEFINITIONS_FILE})
   endif ()
   if (COMPILE_DEFINITIONS)
     file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${COMPILE_DEFINITIONS}\n")
@@ -2823,6 +2852,7 @@ function (basis_build_script_library TARGET_UID)
       LIBRARY_COMPONENT          # installation component
       PREFIX                     # common path prefix for modules
       COMPILE_DEFINITIONS        # CMake code to set variables used to configure modules
+      COMPILE_DEFINITIONS_FILE   # script configuration file
       LINK_DEPENDS               # paths of script modules/packages used by the modules of this library
       EXPORT                     # whether to export this target
       COMPILE                    # whether to compile the modules/library if applicable
@@ -2863,8 +2893,8 @@ function (basis_build_script_library TARGET_UID)
   if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
     list (APPEND CONFIG_FILE "${BASIS_SCRIPT_CONFIG_FILE}")
   endif ()
-  if (EXISTS "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
-    list (APPEND CONFIG_FILE "${BINARY_CONFIG_DIR}/ScriptConfig.cmake")
+  if (COMPILE_DEFINITIONS_FILE)
+    list (APPEND CONFIG_FILE ${COMPILE_DEFINITIONS_FILE})
   endif ()
   if (COMPILE_DEFINITIONS)
     file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${COMPILE_DEFINITIONS}\n")

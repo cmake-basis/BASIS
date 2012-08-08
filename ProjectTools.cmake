@@ -432,7 +432,7 @@ macro (basis_project_modules)
   unset (L)
 
   # report what will be built
-  if (PROJECT_MODULES_ENABLED)
+  if (PROJECT_MODULES_ENABLED AND BASIS_VERBOSE)
     message (STATUS "Enabled modules [${PROJECT_MODULES_ENABLED}].")
   endif ()
 
@@ -1468,9 +1468,24 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # finalize custom targets
   if (NOT PROJECT_IS_MODULE)
-    # configure BASIS utilities
+    # copy properties of modules
     foreach (M IN LISTS PROJECT_MODULES_ENABLED)
-      foreach (L IN ITEMS CXX PYTHON PERL BASH)
+      foreach (P IN ITEMS IMPORTED_TARGETS
+                          IMPORTED_TYPES
+                          IMPORTED_LOCATIONS
+                          IMPORTED_RANKS
+                          PROJECT_INCLUDE_DIRS
+                          PROJECT_LINK_DIRS
+                          BUNDLE_LINK_DIRS
+                          TARGETS
+                          CUSTOM_EXPORT_TARGETS
+                          TEST_EXPORT_TARGETS)
+        basis_get_project_property (V ${M} ${P})
+        basis_set_project_property (APPEND PROPERTY ${P} ${V})
+      endforeach ()
+    endforeach ()
+    foreach (L IN ITEMS CXX PYTHON PERL BASH)
+      foreach (M IN LISTS PROJECT_MODULES_ENABLED)
         basis_get_project_property (P ${M} PROJECT_USES_${L}_UTILITIES)
         if (P)
           basis_set_project_property (PROPERTY PROJECT_USES_${L}_UTILITIES TRUE)
@@ -1478,6 +1493,7 @@ macro (basis_project_impl)
         endif ()
       endforeach ()
     endforeach ()
+    # configure the BASIS utilities
     basis_configure_utilities ()
     # add missing build commands for custom targets
     basis_finalize_targets ()
