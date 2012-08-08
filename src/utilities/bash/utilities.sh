@@ -52,17 +52,16 @@ _SBIA_BASIS_UTILITIES_INCLUDED='true'
 # constants
 # ============================================================================
 
-readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd`"
+readonly BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd`"
 
 # ============================================================================
 # source other modules
 # ============================================================================
 
-. "${_BASIS_UTILITIES_DIR}/config.sh"  || exit 1 # constants
-. "${_BASIS_UTILITIES_DIR}/core.sh"    || exit 1 # core utilities
-. "${_BASIS_UTILITIES_DIR}/path.sh"    || exit 1 # file path manipulation
-. "${_BASIS_UTILITIES_DIR}/shflags.sh" || exit 1 # command-line parsing library
-. "${_BASIS_UTILITIES_DIR}/shtap.sh"   || exit 1 # test anything protocol
+. "${BASIS_UTILITIES_DIR}/config.sh"  || exit 1 # constants
+. "${BASIS_UTILITIES_DIR}/core.sh"    || exit 1 # core utilities
+. "${BASIS_UTILITIES_DIR}/path.sh"    || exit 1 # file path manipulation
+. "${BASIS_UTILITIES_DIR}/shflags.sh" || exit 1 # command-line parsing library
 
 # ============================================================================
 # configuration
@@ -89,7 +88,7 @@ readonly CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
 # common prefix of target UIDs belonging to this project
 [ -n "${_BASIS_TARGET_UID_PREFIX}" ] || readonly _BASIS_TARGET_UID_PREFIX=''
 # used to make relative paths in executable target information map absolute
-[ -n "${_BASIS_DIR}" ] || readonly _BASIS_DIR="${_BASIS_UTILITIES_DIR}"
+[ -n "${_BASIS_DIR}" ] || readonly _BASIS_DIR="${BASIS_UTILITIES_DIR}"
 
 # ============================================================================
 # executable information
