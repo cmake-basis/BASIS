@@ -13,6 +13,8 @@
 #define _SBIA_BASIS_TESTDRIVER_HXX
 
 
+#include <iterator>     // istream_iterator
+
 #if WINDOWS
 #  include <Winsock2.h> // gethostbyname()
 #  ifdef max
@@ -20,7 +22,7 @@
 #  endif
 #  pragma comment(lib, "Ws2_32.lib")
 #else
-#  include <netdb.h> // gethostbyname()
+#  include <netdb.h>    // gethostbyname()
 #endif
 
 #ifdef ITK_VERSION
