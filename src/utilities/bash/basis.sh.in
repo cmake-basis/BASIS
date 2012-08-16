@@ -103,6 +103,7 @@ _basis_executabletargetinfo_initialize()
 if [ "${basis_use_executable_aliases}" == 'true' ]; then
     # define aliases of build target names to executable file paths
     @EXECUTABLE_ALIASES@
+
     # enable expansion of aliases also in non-interactive shells
     shopt -s expand_aliases
 fi
