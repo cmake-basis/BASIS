@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <stdlib.h>            // malloc(), free()
+#include <string.h>            // strncmp()
 
 #if WINDOWS
 #  include <direct.h>          // _getcwd()
