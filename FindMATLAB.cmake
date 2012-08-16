@@ -163,14 +163,14 @@ if (_MATLAB_EXECUTABLE_NAMES)
         )
         mark_as_advanced (MATLAB_EXECUTABLE)
       else ()
-        string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_UPPER)
+        string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_U)
         find_program (
-          MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE
+          MATLAB_${_MATLAB_EXE_U}_EXECUTABLE
             NAMES "${_MATLAB_EXE}"
             HINTS "${MATLAB_DIR}/bin"
             DOC   "The MATLAB application ${_MATLAB_EXE}."
         )
-        mark_as_advanced (MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE)
+        mark_as_advanced (MATLAB_${_MATLAB_EXE_U}_EXECUTABLE)
       endif ()
     endforeach ()
 
@@ -185,13 +185,13 @@ if (_MATLAB_EXECUTABLE_NAMES)
         )
         mark_as_advanced (MATLAB_EXECUTABLE)
       else ()
-        string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_UPPER)
+        string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_U)
         find_program (
-          MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE
+          MATLAB_${_MATLAB_EXE_U}_EXECUTABLE
             NAMES "${_MATLAB_EXE}"
             DOC   "The MATLAB application ${_MATLAB_EXE}."
         )
-        mark_as_advanced (MATLAB_${_MATLAB_EXE_UPPER}_EXECUTABLE)
+        mark_as_advanced (MATLAB_${_MATLAB_EXE_U}_EXECUTABLE)
       endif ()
     endforeach ()
 
