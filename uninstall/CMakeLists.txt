@@ -25,11 +25,7 @@ install (
 )
 
 # write executable uninstaller
-if (INSTALL_SINFIX)
-  set (UNINSTALLER_NAME "uninstall")
-else ()
-  set (UNINSTALLER_NAME "uninstall-${PROJECT_NAME_LOWER}")
-endif ()
+set (UNINSTALLER_NAME "uninstall-${PROJECT_NAME_L}")
 if (WIN32)
   set (UNINSTALLER_NAME "${UNINSTALLER_NAME}.bat")
 endif ()
@@ -50,13 +46,6 @@ install (
     list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${UNINSTALLER}\")
     "
 )
-
-if (INSTALL_SINFIX AND INSTALL_LINKS)
-  basis_install_link (
-    "${INSTALL_RUNTIME_DIR}/${UNINSTALLER_NAME}"
-    "bin/uninstall-${PROJECT_NAME_LOWER}"
-  )
-endif ()
 
 # write install manifest at the very end of the installation
 install (
