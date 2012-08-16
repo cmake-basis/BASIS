@@ -418,7 +418,7 @@ tostring()
     while [ $_basis_tostring_i -lt ${#_basis_tostring_args[@]} ]; do
         _basis_tostring_element="${_basis_tostring_args[$_basis_tostring_i]}"
         # escape double quotes
-        _basis_tostring_element=`printf -- "${_basis_tostring_element}" | sed 's/"/\\"/g'`
+        _basis_tostring_element=`printf -- "${_basis_tostring_element}" | sed 's/\\"/\\\\"/g'`
         # surround element by double quotes if necessary
         match "${_basis_tostring_element}" "[' ]|^$" && _basis_tostring_element="\"${_basis_tostring_element}\""
         # append element
@@ -463,7 +463,13 @@ qsplit()
         # matched element including quotes
         _basis_qsplit_element="${BASH_REMATCH[1]}"
         # remove quotes
-        _basis_qsplit_element=`printf -- "${_basis_qsplit_element}" | sed "s/^['\"]//;s/(^|[^\\])['\"]$//"`
+        if [[ ${_basis_qsplit_element:0:1} == '"' && ${_basis_qsplit_element: -1} == '"' ]]; then
+            _basis_qsplit_element="${_basis_qsplit_element:1}"
+            _basis_qsplit_element="${_basis_qsplit_element%\"}"
+        elif [[ ${_basis_qsplit_element:0:1} == "'" && ${_basis_qsplit_element: -1} == "'" ]]; then
+            _basis_qsplit_element="${_basis_qsplit_element:1}"
+            _basis_qsplit_element="${_basis_qsplit_element%\'}"
+        fi
         # replace quoted quotes within argument by quotes
         _basis_qsplit_element=`printf -- "${_basis_qsplit_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
         # add to resulting array
