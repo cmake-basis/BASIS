@@ -1517,7 +1517,7 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # uninstaller
-  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
+  if (NOT PROJECT_IS_MODULE)
     # add uninstall target
     basis_add_uninstall ()
     # add code to generate uninstaller at the end of the installation
