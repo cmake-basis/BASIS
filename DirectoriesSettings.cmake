@@ -85,10 +85,13 @@ set (BINARY_MATLAB_LIBRARY_DIR "${BASIS_PROJECT_BINARY_DIR}/Testing/lib/matlab")
 # ============================================================================
 
 # set directories corresponding to the source tree directories
-foreach (_P CODE CONFIG DATA DOC EXAMPLE INCLUDE MODULES TESTING)
+foreach (_P CODE CONFIG DATA DOC EXAMPLE MODULES TESTING)
   basis_get_relative_path (_D "${PROJECT_SOURCE_DIR}" "${PROJECT_${_P}_DIR}")
   set (BINARY_${_P}_DIR "${PROJECT_BINARY_DIR}/${_D}")
 endforeach ()
+
+basis_get_relative_path (_D "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
+set (BINARY_INCLUDE_DIR "${BASIS_PROJECT_BINARY_DIR}/${_D}")
 
 set (BINARY_RUNTIME_DIR        "${BASIS_PROJECT_BINARY_DIR}/bin")
 set (BINARY_LIBEXEC_DIR        "${BASIS_PROJECT_BINARY_DIR}/lib${_MODULE}")
@@ -283,7 +286,7 @@ endif ()
 
 if (NOT PROJECT_IS_MODULE)
   # build tree
-  foreach (_D CODE CONFIG DATA DOC EXAMPLE MODULES TESTING
+  foreach (_D CODE CONFIG DATA DOC EXAMPLE INCLUDE MODULES TESTING
               RUNTIME LIBEXEC LIBRARY ARCHIVE
               PYTHON_LIBRARY JYTHON_LIBRARY PERL_LIBRARY MATLAB_LIBRARY)
     set (BASIS_BINARY_${_D}_DIR "${BINARY_${_D}_DIR}")
