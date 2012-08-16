@@ -19,6 +19,7 @@ set (
     "BasisSettings.cmake"           # default project-independent settings
     # submodules included by BasisTools.cmake
     "CommonTools.cmake"             # common functions/macros
+    "DirectoriesSettings.cmake"     # project directory structure
     "DocTools.cmake"                # documentation generation
     "ExportTools.cmake"             # exporting targets
     "ExternalData.cmake"            # storing data externally
@@ -68,7 +69,7 @@ set (
     "cmake_uninstall.cmake.in"    # uninstall script
     "configure_script.cmake.in"   # used to configure ("build") script files
     "ConfigureIncludeFiles.cmake" # used to configure public header files
-    "Directories.cmake.in"        # project directory structure
+    "Directories.cmake.in"        # documents project directory structure
     "doxyfilter.bat.in"           # wraps Doxygen filter command on Windows
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
     "glob.cmake"                  # used to glob for source files

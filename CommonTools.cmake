@@ -141,8 +141,8 @@ macro (basis_find_package PACKAGE)
   else ()
     set (VER "${CMAKE_MATCH_0}")
   endif ()
-  string (TOUPPER "${PKG}" PKG_UPPER)
-  string (TOUPPER "${PKG}" PKG_LOWER)
+  string (TOUPPER "${PKG}" PKG_U)
+  string (TOUPPER "${PKG}" PKG_L)
   # --------------------------------------------------------------------------
   # preserve <PKG>_DIR variable which might get reset if different versions
   # of the package are searched or if package is optional and deselected
@@ -197,8 +197,8 @@ macro (basis_find_package PACKAGE)
     # packages itself, the variables should be made visible for the user.
     if (${PKG}_DIR)
       basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
-    elseif (${PKG_UPPER}_DIR)
-      basis_set_or_update_type (${PKG_UPPER}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
+    elseif (${PKG_U}_DIR)
+      basis_set_or_update_type (${PKG_U}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
     endif ()
     # --------------------------------------------------------------------------
     # hide or show already defined <PKG>_DIR cache entry
@@ -249,15 +249,15 @@ macro (basis_find_package PACKAGE)
           message (STATUS "${_STATUS}")
         endif ()
         find_package (${PKG} ${VER} ${FIND_ARGN})
-        if (${PKG_UPPER}_FOUND)
+        if (${PKG_U}_FOUND)
           set (${PKG}_FOUND TRUE)
         endif ()
         # set common <Pkg>_VERSION_STRING variable if possible and not set
         if (NOT DEFINED ${PKG}_VERSION_STRING)
           if (PKG MATCHES "^PythonInterp$")
             set (${PKG}_VERSION_STRING ${PYTHON_VERSION_STRING})
-          elseif (DEFINED ${PKG_UPPER}_VERSION_STRING)
-            set (${PKG}_VERSION_STRING ${${PKG_UPPER}_VERSION_STRING})
+          elseif (DEFINED ${PKG_U}_VERSION_STRING)
+            set (${PKG}_VERSION_STRING ${${PKG_U}_VERSION_STRING})
           elseif (DEFINED ${PKG}_VERSION_MAJOR)
             set (${PKG}_VERSION_STRING ${${PKG}_VERSION_MAJOR})
             if (DEFINED ${PKG}_VERSION_MINOR)
@@ -266,18 +266,18 @@ macro (basis_find_package PACKAGE)
                 set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG}_VERSION_PATCH})
               endif ()
             endif ()
-          elseif (DEFINED ${PKG_UPPER}_VERSION_MAJOR)
-            set (${PKG}_VERSION_STRING ${${PKG_UPPER}_VERSION_MAJOR})
-            if (DEFINED ${PKG_UPPER}_VERSION_MINOR)
-              set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG_UPPER}_VERSION_MINOR})
-              if (DEFINED ${PKG_UPPER}_VERSION_PATCH)
-                set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG_UPPER}_VERSION_PATCH})
+          elseif (DEFINED ${PKG_U}_VERSION_MAJOR)
+            set (${PKG}_VERSION_STRING ${${PKG_U}_VERSION_MAJOR})
+            if (DEFINED ${PKG_U}_VERSION_MINOR)
+              set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG_U}_VERSION_MINOR})
+              if (DEFINED ${PKG_U}_VERSION_PATCH)
+                set (${PKG}_VERSION_STRING ${${PKG}_VERSION_STRING}.${${PKG_U}_VERSION_PATCH})
               endif ()
             endif ()
           elseif (DEFINED ${PKG}_VERSION)
             set (${PKG}_VERSION_STRING ${${PKG}_VERSION})
-          elseif (DEFINED ${PKG_UPPER}_VERSION)
-            set (${PKG}_VERSION_STRING ${${PKG_UPPER}_VERSION})
+          elseif (DEFINED ${PKG_U}_VERSION)
+            set (${PKG}_VERSION_STRING ${${PKG_U}_VERSION})
           endif ()
         endif ()
         # verbose output of information about found package
@@ -289,8 +289,8 @@ macro (basis_find_package PACKAGE)
             endif ()
             if (DEFINED ${PKG}_DIR)
               set (_STATUS "${_STATUS} at ${${PKG}_DIR}")
-            elseif (DEFINED ${PKG_UPPER}_DIR)
-              set (_STATUS "${_STATUS} at ${${PKG_UPPER}_DIR}")
+            elseif (DEFINED ${PKG_U}_DIR)
+              set (_STATUS "${_STATUS} at ${${PKG_U}_DIR}")
             endif ()
           else ()
             set (_STATUS "${_STATUS} - not found")
@@ -304,7 +304,7 @@ macro (basis_find_package PACKAGE)
         mark_as_advanced (USE_${PKG})
         if (NOT USE_${PKG})
           set (${PKG}_FOUND       FALSE)
-          set (${PKG_UPPER}_FOUND FALSE)
+          set (${PKG_U}_FOUND FALSE)
         endif ()
       endif ()
     endif ()
@@ -319,7 +319,7 @@ macro (basis_find_package PACKAGE)
   # unset locally used variables
   unset (PACKAGE_DIR)
   unset (PKG)
-  unset (PKG_UPPER)
+  unset (PKG_U)
   unset (VER)
   unset (USE_PKG_OPTION)
 endmacro ()
@@ -408,8 +408,8 @@ macro (basis_use_package PACKAGE)
       endif ()
     endif ()
     # use external package
-    string (TOUPPER "${PKG}" PKG_UPPER)
-    if (${PKG}_FOUND OR ${PKG_UPPER}_FOUND)
+    string (TOUPPER "${PKG}" PKG_U)
+    if (${PKG}_FOUND OR ${PKG_U}_FOUND)
       # use package only if basis_use_package() not invoked before
       if (BASIS_USE_${PKG}_INCLUDED)
         if (BASIS_DEBUG)
@@ -422,11 +422,11 @@ macro (basis_use_package PACKAGE)
           message ("**     Include package use file of external package.")
         endif ()
         include ("${${PKG}_USE_FILE}")
-      elseif (${PKG_UPPER}_USE_FILE)
+      elseif (${PKG_U}_USE_FILE)
         if (BASIS_DEBUG)
           message ("**     Include package use file of external package.")
         endif ()
-        include ("${${PKG_UPPER}_USE_FILE}")
+        include ("${${PKG_U}_USE_FILE}")
       else ()
         if (BASIS_DEBUG)
           message ("**     Use variables which were set by basis_find_package().")
@@ -442,29 +442,29 @@ macro (basis_use_package PACKAGE)
           endif ()
         # generic
         else ()
-          if (${PKG}_INCLUDE_DIRS OR ${PKG_UPPER}_INCLUDE_DIRS)
+          if (${PKG}_INCLUDE_DIRS OR ${PKG_U}_INCLUDE_DIRS)
             if (${PKG}_INCLUDE_DIRS)
               basis_include_directories (${${PKG}_INCLUDE_DIRS})
             else ()
-              basis_include_directories (${${PKG_UPPER}_INCLUDE_DIRS})
+              basis_include_directories (${${PKG_U}_INCLUDE_DIRS})
             endif ()
           elseif (${PKG}_INCLUDES OR ${v}_INCLUDES)
             if (${PKG}_INCLUDES)
               basis_include_directories (${${PKG}_INCLUDES})
             else ()
-              basis_include_directories (${${PKG_UPPER}_INCLUDES})
+              basis_include_directories (${${PKG_U}_INCLUDES})
             endif ()
-          elseif (${PKG}_INCLUDE_PATH OR ${PKG_UPPER}_INCLUDE_PATH)
+          elseif (${PKG}_INCLUDE_PATH OR ${PKG_U}_INCLUDE_PATH)
             if (${PKG}_INCLUDE_PATH)
               basis_include_directories (${${PKG}_INCLUDE_PATH})
             else ()
-              basis_include_directories (${${PKG_UPPER}_INCLUDE_PATH})
+              basis_include_directories (${${PKG_U}_INCLUDE_PATH})
             endif ()
-          elseif (${PKG}_INCLUDE_DIR OR ${PKG_UPPER}_INCLUDE_DIR)
+          elseif (${PKG}_INCLUDE_DIR OR ${PKG_U}_INCLUDE_DIR)
             if (${PKG}_INCLUDE_DIR)
               basis_include_directories (${${PKG}_INCLUDE_DIR})
             else ()
-              basis_include_directories (${${PKG_UPPER}_INCLUDE_DIR})
+              basis_include_directories (${${PKG_U}_INCLUDE_DIR})
             endif ()  
           endif ()
         endif ()
@@ -476,7 +476,7 @@ macro (basis_use_package PACKAGE)
       endif ()
       message (FATAL_ERROR "Package ${PACKAGE} not found!")
     endif ()
-    unset (PKG_UPPER)
+    unset (PKG_U)
     # reset switch that identifies currently imported targets and link directories
     # as belonging to an external project which is part of the same superbuild
     set (BUNDLE_PROJECT FALSE)
@@ -801,13 +801,13 @@ endmacro ()
 # given name is set to the specified relative path. Optionally, a third
 # argument, the path used for building the script for the install tree
 # can be passed as well. If a relative path is given as this argument,
-# it is made absolute by prefixing it with @c INSTALL_PREFIX instead.
+# it is made absolute by prefixing it with @c CMAKE_INSTALL_PREFIX instead.
 #
 # @note This function may only be used in script configurations such as
 #       in particular the ScriptConfig.cmake.in file. It requires that the
 #       variables @c __DIR__ and @c BUILD_INSTALL_SCRIPT are set properly.
 #       These variables are set by the configure_script() function.
-#       Moreover, it makes use of the global @c INSTALL_PREFIX and
+#       Moreover, it makes use of the global @c CMAKE_INSTALL_PREFIX and
 #       @c PROJECT_SOURCE_DIR variables.
 #
 # @param [out] VAR   Name of the variable.
@@ -826,7 +826,7 @@ function (basis_set_script_path VAR PATH)
     message (FATAL_ERROR "Too many arguments given for function basis_set_script_path()")
   endif ()
   if (ARGC EQUAL 3 AND BUILD_INSTALL_SCRIPT)
-    set (PREFIX "${INSTALL_PREFIX}")
+    set (PREFIX "${CMAKE_INSTALL_PREFIX}")
     set (PATH   "${ARGV2}")
   else ()
     set (PREFIX "${PROJECT_SOURCE_DIR}")
@@ -1268,16 +1268,12 @@ endfunction ()
 #
 # @sa basis_get_target_uid()
 macro (basis_make_target_uid TARGET_UID TARGET_NAME)
-  set ("${TARGET_UID}" "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
-  # strip off top-level namespace part (optional)
+  set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
+  # optionally strip off top-level namespace part
   if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
-    string (
-      REGEX REPLACE
-        "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
-        ""
-      "${TARGET_UID}"
-        "${${TARGET_UID}}"
-    )
+    basis_sanitize_for_regex (_bmtu_RE "${BASIS_PROJECT_NAMESPACE_CMAKE}")
+    string (REGEX REPLACE "^${_bmtu_RE}\\." "" ${TARGET_UID} "${${TARGET_UID}}")
+    unset (_bmtu_RE)
   endif ()
 endmacro ()
 
@@ -1290,12 +1286,11 @@ endmacro ()
 # used as actual CMake target name. This function can be used to get for a
 # given target name or UID the closest match of a known target UID.
 #
-# In particular, if this project is a module of another BASIS project, the
-# namespace given by @c PROJECT_NAMESPACE_CMAKE is used as prefix, where the
-# namespace prefix and the build target name are separated by a dot (.).
-# Otherwise, if this project is the top-level project, no namespace prefix is
-# used and if the project's namespace is given as prefix, it will be removed.
-# When the target is exported, however, the namespace of this project will be
+# The individual parts of the target UID, i.e, package vendor, package name,
+# module name, and target name are separated by a dot (.).
+# If @c BASIS_USE_FULLY_QUALIFIED_UIDS is set to @c OFF, the common part of
+# all target UIDs is removed by this function from the target UID.
+# When the target is exported, however, this common part will be
 # prefixed again. This is done by the basis_export_targets() function.
 #
 # Note that names of imported targets are not prefixed in any case.
@@ -1304,7 +1299,8 @@ endmacro ()
 # back to the target name without namespace prefix.
 #
 # @note At the moment, BASIS does not support modules which themselves have
-#       modules again. This would require a more nested namespace hierarchy.
+#       modules again. This would require a more nested namespace hierarchy
+#       and makes things unnecessarily complicated.
 #
 # @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
@@ -1313,6 +1309,7 @@ endmacro ()
 #
 # @sa basis_get_target_name()
 function (basis_get_target_uid TARGET_UID TARGET_NAME)
+  basis_sanitize_for_regex (BASE_RE "${BASIS_PROJECT_NAMESPACE_CMAKE}")
   # in case of a leading namespace separator, do not modify target name
   if (TARGET_NAME MATCHES "^\\.")
     set (UID "${TARGET_NAME}")
@@ -1320,23 +1317,11 @@ function (basis_get_target_uid TARGET_UID TARGET_NAME)
   else ()
     set (UID "${TARGET_NAME}")
     # try prepending namespace or parts of it until target is known
-    if (BASIS_DEBUG AND BASIS_VERBOSE)
-      message ("** basis_get_target_uid()")
-    endif ()
     set (PREFIX "${PROJECT_NAMESPACE_CMAKE}")
     if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
-      string (
-        REGEX REPLACE
-          "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
-          ""
-        PREFIX
-          "${PREFIX}"
-      )
+      string (REGEX REPLACE "^${BASE_RE}\\." "" PREFIX "${PREFIX}")
     endif ()
     while (PREFIX)
-      if (BASIS_DEBUG AND BASIS_VERBOSE)
-        message ("**     Trying: ${PREFIX}.${TARGET_NAME}")
-      endif ()
       if (TARGET "${PREFIX}.${TARGET_NAME}")
         set (UID "${PREFIX}.${TARGET_NAME}")
         break ()
@@ -1351,18 +1336,9 @@ function (basis_get_target_uid TARGET_UID TARGET_NAME)
   endif ()
   # strip off top-level namespace part (optional)
   if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
-    string (
-      REGEX REPLACE
-        "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
-        ""
-      UID
-        "${UID}"
-    )
+    string (REGEX REPLACE "^${BASE_RE}\\." "" UID "${UID}")
   endif ()
   # return
-  if (BASIS_DEBUG AND BASIS_VERBOSE)
-    message ("** basis_get_target_uid(): ${TARGET_NAME} -> ${UID}")
-  endif ()
   set ("${TARGET_UID}" "${UID}" PARENT_SCOPE)
 endfunction ()
 
@@ -1383,10 +1359,12 @@ function (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
   if (TARGET "${UID}" AND NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
     get_target_property (IMPORTED "${UID}" IMPORTED)
     if (NOT IMPORTED)
-      set (UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.${UID}")
+      string (TOLOWER "${BASIS_PROJECT_PACKAGE_VENDOR}" vendor)
+      string (TOLOWER "${BASIS_PROJECT_PACKAGE}"        pkg)
+      set (UID "${vendor}.${pkg}.${UID}")
     endif ()
   endif ()
-  set ("${TARGET_UID}" "${UID}" PARENT_SCOPE)
+  set (${TARGET_UID} "${UID}" PARENT_SCOPE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -1418,12 +1396,11 @@ function (basis_get_target_name TARGET_NAME TARGET_UID)
   # make sure we have a fully-qualified target UID
   basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
   # strip off namespace of current project
-  string (REGEX REPLACE "^${PROJECT_NAMESPACE_CMAKE_REGEX}\\." "" NAME "${UID}")
+  string (TOLOWER "${PROJECT_PACKAGE_VENDOR}" vendor)
+  string (TOLOWER "${PROJECT_PACKAGE}"        pkg)
+  string (REGEX REPLACE "^${vendor}\\.${pkg}\\." "" NAME "${UID}")
   # return
-  if (BASIS_DEBUG AND BASIS_VERBOSE)
-    message ("** basis_get_target_name(): ${UID} -> ${NAME}")
-  endif ()
-  set ("${TARGET_NAME}" "${NAME}" PARENT_SCOPE)
+  set (${TARGET_NAME} "${NAME}" PARENT_SCOPE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -1452,7 +1429,6 @@ function (basis_check_target_name TARGET_NAME)
 
   # unique ?
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
-
   if (TARGET "${TARGET_UID}")
     message (FATAL_ERROR "There exists already a target named ${TARGET_UID}."
                          " Target names must be unique.")
@@ -1490,23 +1466,23 @@ endmacro ()
 # @returns Sets @p TEST_UID to the UID of the test @p TEST_NAME.
 #
 # @sa basis_get_test_name()
-macro (basis_get_test_uid TEST_UID TEST_NAME)
+function (basis_get_test_uid TEST_UID TEST_NAME)
   if (TEST_NAME MATCHES "\\.")
-    set ("${TEST_UID}" "${TEST_NAME}")
+    set (UID "${TEST_NAME}")
   else ()
-    set ("${TEST_UID}" "${PROJECT_NAMESPACE_CMAKE}.${TEST_NAME}")
+    string (TOLOWER "${PROJECT_PACKAGE_VENDOR}" vendor)
+    string (TOLOWER "${PROJECT_PACKAGE}"        pkg)
+    set (UID "${vendor}.${pkg}.${TEST_NAME}")
   endif ()
   # strip off top-level namespace part (optional)
   if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
-    string (
-      REGEX REPLACE
-        "^${BASIS_PROJECT_NAMESPACE_CMAKE_REGEX}\\."
-        ""
-      "${TEST_UID}"
-        "${${TEST_UID}}"
-    )
+    string (TOLOWER "${BASIS_PROJECT_PACKAGE_VENDOR}" vendor)
+    string (TOLOWER "${BASIS_PROJECT_PACKAGE}"        pkg)
+    string (REGEX REPLACE "^${vendor}\\.${pkg}\\." "" UID "${UID}")
   endif ()
-endmacro ()
+  # return
+  set (${TEST_UID} "${UID}" PARENT_SCOPE)
+endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get "global" test name, i.e., actual CTest test name.
@@ -1520,13 +1496,16 @@ endmacro ()
 # @param [in]  TEST_NAME Test name used as argument to BASIS CMake functions.
 #
 # @sa basis_get_test_uid()
-macro (basis_get_fully_qualified_test_uid TEST_UID TEST_NAME)
+function (basis_get_fully_qualified_test_uid TEST_UID TEST_NAME)
   if (TEST_NAME MATCHES "\\.")
-    set ("${TEST_UID}" "${TEST_NAME}")
+    set (UID "${TEST_NAME}")
   else ()
-    set ("${TEST_UID}" "${PROJECT_NAMESPACE_CMAKE}.${TEST_NAME}")
+    string (TOLOWER "${BASIS_PROJECT_PACKAGE_VENDOR}" vendor)
+    string (TOLOWER "${BASIS_PROJECT_PACKAGE}"        pkg)
+    set (UID "${vendor}.${pkg}.${TEST_NAME}")
   endif ()
-endmacro ()
+  set (${TEST_UID} "${UID}" PARENT_SCOPE)
+endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get namespace of test.
@@ -1537,9 +1516,9 @@ endmacro ()
 # @param [in]  TEST_UID Test UID/name.
 macro (basis_get_test_namespace TEST_NS TEST_UID)
   if (TEST_UID MATCHES "^(.*)\\.")
-    set ("${TEST_NS}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+    set (${TEST_NS} "${CMAKE_MATCH_1}")
   else ()
-    set ("${TEST_NS}" "" PARENT_SCOPE)
+    set (${TEST_NS} "")
   endif ()
 endmacro ()
 
@@ -1554,9 +1533,9 @@ endmacro ()
 # @sa basis_get_test_uid()
 macro (basis_get_test_name TEST_NAME TEST_UID)
   if (TEST_UID MATCHES "([^.]+)$")
-    set ("${TEST_NAME}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+    set (${TEST_NAME} "${CMAKE_MATCH_1}")
   else ()
-    set ("${TEST_NAME}" "" PARENT_SCOPE)
+    set (${TEST_NAME} "")
   endif ()
 endmacro ()
 
@@ -1586,6 +1565,27 @@ endfunction ()
 # ============================================================================
 # common target tools
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# @brief Get default subdirectory prefix of scripted library modules.
+#
+# @param [out] PREFIX   Name of variable which is set to the default library
+#                       prefix, i.e., subdirectory relative to the library
+#                       root directory as used for the @c PREFIX property of
+#                       scripted module libraries (see basis_add_script_library())
+#                       or relative to the include directory in case of C++.
+# @param [in]  LANGUAGE Programming language, e.g., @c CXX, @c PYTHON,...
+macro (basis_library_prefix PREFIX LANGUAGE)
+  if (LANGUAGE MATCHES "^BASH$")
+    set (${PREFIX})
+  elseif (PROJECT_NAMESPACE_${LANGUAGE})
+    string (REGEX REPLACE "\\.|::" "/" ${PREFIX} "${PROJECT_NAMESPACE_${LANGUAGE}}")
+  else ()
+    message (FATAL_ERROR "basis_library_prefix(): PROJECT_NAMESPACE_${LANGUAGE} not set!"
+                         " Make sure that the LANGUAGE argument is supported and in"
+                         " uppercase letters only.")
+  endif ()
+endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Glob source files.
@@ -2011,7 +2011,7 @@ function (basis_configure_script INPUT OUTPUT)
   # these are used by basis_set_script_path() to make absolute paths relative
   if (ARGN_DESTINATION)
     if (NOT IS_ABSOLUTE "${ARGN_DESTINATION}")
-      set (ARGN_DESTINATION "${INSTALL_PREFIX}/${ARGN_DESTINATION}")
+      set (ARGN_DESTINATION "${CMAKE_INSTALL_PREFIX}/${ARGN_DESTINATION}")
     endif ()
     set (BUILD_INSTALL_SCRIPT TRUE)
     set (__DIR__ "${ARGN_DESTINATION}")
@@ -2044,8 +2044,8 @@ function (basis_configure_script INPUT OUTPUT)
     # (temporarily) remove existing shebang directive
     file (STRINGS "${_INPUT_FILE}" FIRST_LINE LIMIT_COUNT 1)
     if (FIRST_LINE MATCHES "^#!")
-      basis_sanitize_for_regex (FIRST_LINE_REGEX "${FIRST_LINE}")
-      string (REGEX REPLACE "^${FIRST_LINE_REGEX}\n?" "" SCRIPT "${SCRIPT}")
+      basis_sanitize_for_regex (FIRST_LINE_RE "${FIRST_LINE}")
+      string (REGEX REPLACE "^${FIRST_LINE_RE}\n?" "" SCRIPT "${SCRIPT}")
       set (SHEBANG "${FIRST_LINE}")
     endif ()
     # replace CMake variables used in script
@@ -2065,7 +2065,7 @@ function (basis_configure_script INPUT OUTPUT)
           basis_get_relative_path (DIR "${__DIR__}" "${DIR}")
           set (PYTHON_CODE "${PYTHON_CODE}; sys.path.insert(0, os.path.realpath(os.path.join(__dir__, '${DIR}')))")
         endforeach ()
-        set (SCRIPT "${PYTHON_CODE}\n${SCRIPT}")
+        set (SCRIPT "${PYTHON_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
     elseif (LANGUAGE MATCHES "PERL")
       if (ARGN_LINK_DEPENDS)
@@ -2078,34 +2078,47 @@ function (basis_configure_script INPUT OUTPUT)
           basis_get_relative_path (DIR "${__DIR__}" "${DIR}")
           set (PERL_CODE "${PERL_CODE} use lib dirname(realpath(__FILE__)) . '/${DIR}';")
         endforeach ()
-        set (SCRIPT "${PERL_CODE}\n${SCRIPT}")
+        set (SCRIPT "${PERL_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
     elseif (LANGUAGE MATCHES "BASH")
-      # in case of Bash, set BASIS_BASH_UTILITIES instead
-      # TODO implement utility function which mimics the import of other Bash modules
-      #      such function could also make use of a search path to find a named module
-      #      it would be used similar to:
-      #      #! /bin/bash
-      #      . ${BASIS_BASH_UTILITIES} || exit 1
-      #      BASHLIB='<prefix>/lib'
-      #      basis_source 'sbia/basis/shtap'
+      # In case of Bash, set BASIS_BASH_UTILITIES which is required to first source the
+      # BASIS utilities modules (in particular core.sh). This variable should be set to
+      # the utilities.sh module of BASIS by default as part of the BASIS installation
+      # (environment variable) and is here set to the project-specific basis.sh module.
       string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
       set (BASH_CODE
-  "BASIS_BASH_UTILITIES=\"$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")\"
-  i=0
-  cur=\"$BASIS_BASH_UTILITIES\"
-  while [ -h \"$cur\" ] && [ $i -lt 100 ]
-  do  dir=`dirname -- \"$cur\"`
-  cur=`readlink -- \"$cur\"`
-  cur=`cd \"$dir\" && cd $(dirname -- \"$cur\") && pwd`/`basename -- \"$cur\"`
-  (( i++ ))
-  done
-  if [ $i -lt 100 ]; then path=\"$cur\"; fi
-  BASIS_BASH_UTILITIES=\"$(dirname -- \"$BASIS_BASH_UTILITIES\")/${LIBRARY_DIR}/basis.sh\"
-  unset -v i dir cur"
+# Note: Code formatted such that it can be on single line. Use no comments within!
+"__FILE__=\"$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")\"
+i=0
+lnk=\"$__FILE__\"
+while [[ -h \"$lnk\" ]] && [[ $i -lt 100 ]]
+do dir=`dirname -- \"$lnk\"`
+lnk=`readlink -- \"$lnk\"`
+lnk=`cd \"$dir\" && cd $(dirname -- \"$lnk\") && pwd`/`basename -- \"$lnk\"`
+let i++
+done
+[[ $i -lt 100 ]] && __FILE__=\"$lnk\"
+unset -v i dir lnk
+__DIR__=\"$(dirname -- \"$__FILE__\")\"
+BASIS_BASH_UTILITIES=\"$__DIR__/${LIBRARY_DIR}/basis.sh\""
       )
       string (REPLACE "\n" "; " BASH_CODE "${BASH_CODE}")
-      set (SCRIPT "${BASH_CODE}\n${SCRIPT}")
+      # set BASHPATH which is used by import() function provided by core.sh module of BASIS
+      set (BASHPATH)
+      foreach (DIR ${ARGN_LINK_DEPENDS})
+        if (DIR MATCHES "\\.sh$")
+          get_filename_component (DIR "${DIR}" PATH)
+        endif ()
+        basis_get_relative_path (DIR "${__DIR__}" "${DIR}")
+        list (APPEND BASHPATH "$__DIR__/${DIR}")
+      endforeach ()
+      if (BASHPATH)
+        list (REMOVE_DUPLICATES BASHPATH)
+        list (APPEND BASHPATH "$BASHPATH")
+        basis_list_to_delimited_string (BASHPATH ":" NOAUTOQUOTE ${BASHPATH})
+        set (BASH_CODE "${BASH_CODE}; BASHPATH=\"${BASHPATH}\"")
+      endif ()
+      set (SCRIPT "${BASH_CODE} # <-- added by BASIS\n${SCRIPT}")
     endif ()
     # replace shebang directive
     if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
@@ -2256,9 +2269,9 @@ function (basis_get_target_location VAR TARGET_NAME PART)
           endif ()
         endforeach ()
       endif ()
-      # make path relative to INSTALL_PREFIX if POST_INSTALL_PREFIX given
+      # make path relative to CMAKE_INSTALL_PREFIX if POST_CMAKE_INSTALL_PREFIX given
       if (LOCATION AND ARGV2 MATCHES "POST_INSTALL_RELATIVE")
-        file (RELATIVE_PATH LOCATION "${INSTALL_PREFIX}" "${LOCATION}")
+        file (RELATIVE_PATH LOCATION "${CMAKE_INSTALL_PREFIX}" "${LOCATION}")
       endif ()
     # ------------------------------------------------------------------------
     # non-imported custom targets
@@ -2334,14 +2347,14 @@ function (basis_get_target_location VAR TARGET_NAME PART)
         # assemble final path
         if (PART MATCHES "POST_INSTALL_RELATIVE")
           if (IS_ABSOLUTE "${DIRECTORY}")
-            file (RELATIVE_PATH DIRECTORY "${INSTALL_PREFIX}" "${DIRECTORY}")
+            file (RELATIVE_PATH DIRECTORY "${CMAKE_INSTALL_PREFIX}" "${DIRECTORY}")
             if (NOT DIRECTORY)
               set (DIRECTORY ".")
             endif ()
           endif ()
         elseif (PART MATCHES "POST_INSTALL")
           if (NOT IS_ABSOLUTE "${DIRECTORY}")
-            set (DIRECTORY "${INSTALL_PREFIX}/${DIRECTORY}")
+            set (DIRECTORY "${CMAKE_INSTALL_PREFIX}/${DIRECTORY}")
           endif ()
         endif ()
         if (TARGET_FILE)
@@ -2502,11 +2515,11 @@ endfunction ()
 #   <tr>
 #     @tp <b><tt>$&lt;TARGET_FILE_POST_INSTALL:tgt&gt;</tt></b> @endtp
 #     <td>Absolute path of target file after installation using the
-#         current @c INSTALL_PREFIX.</td>
+#         current @c CMAKE_INSTALL_PREFIX.</td>
 #   </tr>
 #   <tr>
 #     @tp <b><tt>$&lt;TARGET_FILE_POST_INSTALL_RELATIVE:tgt&gt;</tt></b> @endtp
-#     <td>Path of target file after installation relative to @c INSTALL_PREFIX.</td>
+#     <td>Path of target file after installation relative to @c CMAKE_INSTALL_PREFIX.</td>
 #   </tr>
 # </table>
 # Additionally, the suffix <tt>_NAME</tt> or <tt>_DIR</tt> can be appended

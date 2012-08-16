@@ -16,8 +16,8 @@
 
 # ----------------------------------------------------------------------------
 # check arguments
-if (NOT OUTPUT_FILE)
-  message (FATAL_ERROR "Missing argument OUTPUT_FILE!")
+if (NOT CMAKE_FILE)
+  message (FATAL_ERROR "Missing argument CMAKE_FILE!")
 endif ()
 
 if (NOT REFERENCE_FILE)
@@ -39,50 +39,46 @@ endif ()
 # ----------------------------------------------------------------------------
 # compare files
 execute_process (
-  COMMAND ${CMAKE_COMMAND} -E compare_files "${OUTPUT_FILE}" "${REFERENCE_FILE}"
+  COMMAND ${CMAKE_COMMAND} -E compare_files "${CMAKE_FILE}" "${REFERENCE_FILE}"
   RESULT_VARIABLE EXIT_CODE
   OUTPUT_QUIET
   ERROR_QUIET
 )
 
 if (EXIT_CODE EQUAL 0)
-  set (OUTPUT_FILE_DIFFERS FALSE)
+  set (CMAKE_FILE_DIFFERS FALSE)
 else ()
-  set (OUTPUT_FILE_DIFFERS TRUE)
+  set (CMAKE_FILE_DIFFERS TRUE)
 endif ()
 
 # ----------------------------------------------------------------------------
 # remove obsolete public headers
-if (OUTPUT_FILE_DIFFERS)
-  set (${VARIABLE_NAME})
-  include ("${OUTPUT_FILE}")
-  set (CURRENT_HEADERS "${${VARIABLE_NAME}}")
-  set (${VARIABLE_NAME})
+if (CMAKE_FILE_DIFFERS)
+  unset (${VARIABLE_NAME})
+  include ("${CMAKE_FILE}")
+  set (_HEADERS "${${VARIABLE_NAME}}")
+  unset (${VARIABLE_NAME})
   include ("${REFERENCE_FILE}")
-  foreach (H IN LISTS CURRENT_HEADERS)
+  foreach (H IN LISTS _HEADERS)
     list (FIND ${VARIABLE_NAME} "${H}" IDX)
     if (IDX EQUAL -1)
       string (REGEX REPLACE "^.*/include/" "" H "${H}")
       string (REGEX REPLACE "\\.in$"       "" H "${H}")
-      if (AUTO_PREFIX_INCLUDES)
-        file (REMOVE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}${H}")
-      else ()
-        file (REMOVE "${BINARY_INCLUDE_DIR}/${H}")
-      endif ()
+      file (REMOVE "${BINARY_INCLUDE_DIR}/${H}")
     endif ()
   endforeach ()
 endif ()
 
 # ----------------------------------------------------------------------------
 # remove files if different
-if (OUTPUT_FILE_DIFFERS)
-  file (REMOVE "${OUTPUT_FILE}")
+if (CMAKE_FILE_DIFFERS)
+  file (REMOVE "${CMAKE_FILE}")
   file (REMOVE "${REFERENCE_FILE}")
   file (REMOVE "${REFERENCE_FILE}.update")
 endif ()
 
 # ----------------------------------------------------------------------------
 # fatal error if files added/removed
-if (OUTPUT_FILE_DIFFERS AND ERRORMSG)
+if (CMAKE_FILE_DIFFERS AND ERRORMSG)
   message (FATAL_ERROR "${ERRORMSG}")
 endif ()

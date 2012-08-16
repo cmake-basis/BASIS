@@ -115,7 +115,7 @@ set (BASIS_PROPERTIES_ON_TESTS
 )
 
 # convert list into regular expression
-basis_list_to_regex (BASIS_PROPERTIES_ON_TESTS_REGEX ${BASIS_PROPERTIES_ON_TESTS})
+basis_list_to_regex (BASIS_PROPERTIES_ON_TESTS_RE ${BASIS_PROPERTIES_ON_TESTS})
 
 # ============================================================================
 # utilities
@@ -216,7 +216,7 @@ function (basis_set_tests_properties)
     # directly after the PROPERTIES keyword.
     while (N GREATER 0)
       list (GET ARGN 0 ARG)
-      if (ARG MATCHES "${BASIS_PROPERTIES_ON_TESTS_REGEX}")
+      if (ARG MATCHES "${BASIS_PROPERTIES_ON_TESTS_RE}")
         break ()
       endif ()
       list (APPEND VALUE "${ARG}")
@@ -533,17 +533,9 @@ function (basis_add_test TEST_NAME)
       endif ()
       if (LANGUAGE MATCHES "CXX")
         if (NOT ARGN_NO_DEFAULT_MAIN)
-          if (BASIS_NAMESPACE)
-            list (APPEND ARGN_LINK_DEPENDS "${BASIS_NAMESPACE_LOWER}.basis.testmain")
-          else ()
-            list (APPEND ARGN_LINK_DEPENDS "basis.testmain")
-          endif ()
+          list (APPEND ARGN_LINK_DEPENDS "${BASIS_PACKAGE_VENDOR_L}.basis.testmain")
         endif ()
-        if (BASIS_NAMESPACE)
-          list (APPEND ARGN_LINK_DEPENDS "${BASIS_NAMESPACE_LOWER}.basis.testlib")
-        else ()
-          list (APPEND ARGN_LINK_DEPENDS "basis.testlib")
-        endif ()
+        list (APPEND ARGN_LINK_DEPENDS "${BASIS_PACKAGE_VENDOR_L}.basis.testlib")
         list (APPEND ARGN_LINK_DEPENDS "${CMAKE_THREAD_LIBS_INIT}")
       endif ()
     endif ()

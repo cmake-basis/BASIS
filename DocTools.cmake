@@ -274,8 +274,8 @@ function (basis_add_doxygen_doc TARGET_NAME)
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
-  string (TOLOWER "${TARGET_NAME}" TARGET_NAME_LOWER)
-  string (TOUPPER "${TARGET_NAME}" TARGET_NAME_UPPER)
+  string (TOLOWER "${TARGET_NAME}" TARGET_NAME_L)
+  string (TOUPPER "${TARGET_NAME}" TARGET_NAME_U)
   # verbose output
   if (BASIS_VERBOSE)
     message (STATUS "Adding documentation ${TARGET_UID}...")
@@ -434,9 +434,10 @@ function (basis_add_doxygen_doc TARGET_NAME)
   set (DOXYGEN_INPUT "\"${DOXYGEN_INPUT}\"")
   # input filters
   if (NOT DOXYGEN_INPUT_FILTER)
-    basis_get_target_uid (DOXYFILTER "${BASIS_NAMESPACE_LOWER}.basis.doxyfilter")
+    string (TOLOWER "${BASIS_PACKAGE_VENDOR}" vendor)
+    basis_get_target_uid (DOXYFILTER "${vendor}.basis.doxyfilter")
     if (TARGET "${DOXYFILTER}")
-      basis_get_target_location (DOXYGEN_INPUT_FILTER "${DOXYFILTER}" ABSOLUTE)
+      basis_get_target_location (DOXYGEN_INPUT_FILTER ${DOXYFILTER} ABSOLUTE)
     endif ()
   else ()
     set (DOXYFILTER)
@@ -476,12 +477,12 @@ function (basis_add_doxygen_doc TARGET_NAME)
   endif ()
   # outputs
   if (NOT DOXYGEN_OUTPUT_DIRECTORY)
-    set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_LOWER}")
+    set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_L}")
   endif ()
   if (DOXYGEN_TAGFILE MATCHES "^(None|NONE|none)$")
     set (DOXYGEN_TAGFILE)
   else ()
-    set (DOXYGEN_TAGFILE "${DOXYGEN_OUTPUT_DIRECTORY}/Doxytags.${TARGET_NAME_LOWER}")
+    set (DOXYGEN_TAGFILE "${DOXYGEN_OUTPUT_DIRECTORY}/Doxytags.${TARGET_NAME_L}")
   endif ()
   if (NOT DOXYGEN_OUTPUT)
     set (DOXYGEN_OUTPUT html)
@@ -512,15 +513,15 @@ function (basis_add_doxygen_doc TARGET_NAME)
     set (DOXYGEN_WARN_FORMAT "\"$file:$line: $text \"")
   endif ()
   # installation directories
-  set (INSTALL_${TARGET_NAME_UPPER}_DIR "" CACHE PATH "Installation directory for ${TARGET_NAME_UPPER}.")
-  mark_as_advanced (INSTALL_${TARGET_NAME_UPPER}_DIR)
+  set (INSTALL_${TARGET_NAME_U}_DIR "" CACHE PATH "Installation directory for ${TARGET_NAME_U}.")
+  mark_as_advanced (INSTALL_${TARGET_NAME_U}_DIR)
   foreach (f IN LISTS DOXYGEN_OUTPUT)
     string (TOUPPER "${f}" F)
     if (NOT DOXYGEN_${F}_DESTINATION)
       if (DOXYGEN_DESTINATION)
         set (DOXYGEN_${F}_DESTINATION "${DOXYGEN_DESTINATION}") # common destination
-      elseif (INSTALL_${TARGET_NAME_UPPER}_DIR)
-        set (DOXYGEN_${F}_DESTINATION "${INSTALL_${TARGET_NAME_UPPER}_DIR}") # global setting
+      elseif (INSTALL_${TARGET_NAME_U}_DIR)
+        set (DOXYGEN_${F}_DESTINATION "${INSTALL_${TARGET_NAME_U}_DIR}") # global setting
       elseif (f MATCHES "man")
         if (INSTALL_MAN_DIR)
           set (DOXYGEN_${F}_DESTINATION "${INSTALL_MAN_DIR}/man${DOXYGEN_MAN_SECTION}") # default for manual pages
@@ -531,7 +532,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
     endif ()
   endforeach ()
   # configure Doxyfile
-  set (DOXYFILE "${DOXYGEN_OUTPUT_DIRECTORY}/Doxyfile.${TARGET_NAME_LOWER}")
+  set (DOXYFILE "${DOXYGEN_OUTPUT_DIRECTORY}/Doxyfile.${TARGET_NAME_L}")
   configure_file ("${DOXYGEN_DOXYFILE}" "${DOXYFILE}" @ONLY)
   # add target
   set (LOGOS)
@@ -630,12 +631,12 @@ function (basis_add_doxygen_doc TARGET_NAME)
       set (MAN_DESTINATION  \"${DOXYGEN_MAN_DESTINATION}\")
 
       function (install_doxydoc FMT)
-        string (TOUPPER \"\${FMT}\" FMT_UPPER)
-        set (INSTALL_PREFIX \"\${\${FMT_UPPER}_DESTINATION}\")
-        if (NOT INSTALL_PREFIX)
+        string (TOUPPER \"\${FMT}\" FMT_U)
+        set (CMAKE_INSTALL_PREFIX \"\${\${FMT_U}_DESTINATION}\")
+        if (NOT CMAKE_INSTALL_PREFIX)
           return ()
-        elseif (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
-          set (INSTALL_PREFIX \"${INSTALL_PREFIX}/\${INSTALL_PREFIX}\")
+        elseif (NOT IS_ABSOLUTE \"\${CMAKE_INSTALL_PREFIX}\")
+          set (CMAKE_INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_PREFIX}\")
         endif ()
         set (EXT)
         set (DIR \"\${FMT}\")
@@ -657,27 +658,27 @@ function (basis_add_doxygen_doc TARGET_NAME)
           execute_process (
             COMMAND \"${CMAKE_COMMAND}\" -E compare_files
                 \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}/\${F}\"
-                \"\${INSTALL_PREFIX}/\${F}\"
+                \"\${CMAKE_INSTALL_PREFIX}/\${F}\"
             RESULT_VARIABLE RC
             OUTPUT_QUIET
             ERROR_QUIET
           )
           if (RC EQUAL 0)
-            message (STATUS \"Up-to-date: \${INSTALL_PREFIX}/\${F}\")
+            message (STATUS \"Up-to-date: \${CMAKE_INSTALL_PREFIX}/\${F}\")
           else ()
-            message (STATUS \"Installing: \${INSTALL_PREFIX}/\${F}\")
+            message (STATUS \"Installing: \${CMAKE_INSTALL_PREFIX}/\${F}\")
             execute_process (
               COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
                   \"${DOXYGEN_OUTPUT_DIRECTORY}/\${DIR}/\${F}\"
-                  \"\${INSTALL_PREFIX}/\${F}\"
+                  \"\${CMAKE_INSTALL_PREFIX}/\${F}\"
               RESULT_VARIABLE RC
               OUTPUT_QUIET
               ERROR_QUIET
             )
             if (RC EQUAL 0)
-              list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${F}\")
+              list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${CMAKE_INSTALL_PREFIX}/\${F}\")
             else ()
-              message (STATUS \"Failed to install \${INSTALL_PREFIX}/\${F}\")
+              message (STATUS \"Failed to install \${CMAKE_INSTALL_PREFIX}/\${F}\")
             endif ()
           endif ()
         endforeach ()
@@ -686,9 +687,9 @@ function (basis_add_doxygen_doc TARGET_NAME)
           execute_process (
             COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
               \"${DOXYGEN_TAGFILE}\"
-              \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\"
+              \"\${CMAKE_INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\"
           )
-          list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\")
+          list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${CMAKE_INSTALL_PREFIX}/\${DOXYGEN_TAGFILE_NAME}\")
         endif ()
       endfunction ()
 
@@ -876,8 +877,8 @@ function (basis_add_sphinx_doc TARGET_NAME)
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
-  string (TOLOWER "${TARGET_NAME}" TARGET_NAME_LOWER)
-  string (TOUPPER "${TARGET_NAME}" TARGET_NAME_UPPER)
+  string (TOLOWER "${TARGET_NAME}" TARGET_NAME_L)
+  string (TOUPPER "${TARGET_NAME}" TARGET_NAME_U)
   # verbose output
   if (BASIS_VERBOSE)
     message (STATUS "Adding documentation ${TARGET_UID}...")
@@ -1093,17 +1094,17 @@ function (basis_add_sphinx_doc TARGET_NAME)
     set (SPHINX_MAN_SECTION 1)
   endif ()
   # installation directories
-  set (INSTALL_${TARGET_NAME_UPPER}_DIR "" CACHE PATH "Installation directory for ${TARGET_NAME_UPPER}.")
-  mark_as_advanced (INSTALL_${TARGET_NAME_UPPER}_DIR)
+  set (INSTALL_${TARGET_NAME_U}_DIR "" CACHE PATH "Installation directory for ${TARGET_NAME_U}.")
+  mark_as_advanced (INSTALL_${TARGET_NAME_U}_DIR)
   foreach (b IN LISTS SPHINX_BUILDERS)
     string (TOUPPER "${b}" B)
     if (NOT SPHINX_${B}_DESTINATION)
       if (SPHINX_DESTINATION)                           
         set (SPHINX_${B}_DESTINATION "${DESTINATION}") # common destination
-      elseif (INSTALL_${TARGET_NAME_UPPER}_DIR)
-        set (SPHINX_${B}_DESTINATION "${INSTALL_${TARGET_NAME_UPPER}_DIR}") # global setting
+      elseif (INSTALL_${TARGET_NAME_U}_DIR)
+        set (SPHINX_${B}_DESTINATION "${INSTALL_${TARGET_NAME_U}_DIR}") # global setting
       elseif (BUILDER MATCHES "text")
-        set (SPHINX_${B}_DESTINATION "${INSTALL_DOC_DIR}/${TARGET_NAME_LOWER}")
+        set (SPHINX_${B}_DESTINATION "${INSTALL_DOC_DIR}/${TARGET_NAME_L}")
       elseif (BUILDER MATCHES "man")
         if (INSTALL_MAN_DIR)
           set (SPHINX_${B}_DESTINATION "${INSTALL_MAN_DIR}/man${SPHINX_MAN_SECTION}") # default for manual pages
@@ -1322,12 +1323,12 @@ function (basis_add_sphinx_doc TARGET_NAME)
         else ()
           set (SPHINX_BUILDER \"\${BUILDER}\")
         endif ()
-        string (TOUPPER \"\${BUILDER}\" BUILDER_UPPER)
-        set (INSTALL_PREFIX \"\${\${BUILDER_UPPER}_DESTINATION}\")
-        if (NOT INSTALL_PREFIX)
+        string (TOUPPER \"\${BUILDER}\" BUILDER_U)
+        set (CMAKE_INSTALL_PREFIX \"\${\${BUILDER_U}_DESTINATION}\")
+        if (NOT CMAKE_INSTALL_PREFIX)
           return ()
-        elseif (NOT IS_ABSOLUTE \"\${INSTALL_PREFIX}\")
-          set (INSTALL_PREFIX \"${INSTALL_PREFIX}/\${INSTALL_PREFIX}\")
+        elseif (NOT IS_ABSOLUTE \"\${CMAKE_INSTALL_PREFIX}\")
+          set (CMAKE_INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_PREFIX}\")
         endif ()
         set (EXT)
         if (BUILDER MATCHES \"pdf\")
@@ -1350,22 +1351,22 @@ function (basis_add_sphinx_doc TARGET_NAME)
               execute_process (
                 COMMAND \"${CMAKE_COMMAND}\" -E compare_files
                     \"${SPHINX_OUTPUT_DIRECTORY}/\${SPHINX_BUILDER}/\${F}\"
-                    \"\${INSTALL_PREFIX}/\${F}\"
+                    \"\${CMAKE_INSTALL_PREFIX}/\${F}\"
                 RESULT_VARIABLE RC
                 OUTPUT_QUIET
                 ERROR_QUIET
               )
             endif ()
             if (RC EQUAL 0)
-              message (STATUS \"Up-to-date: \${INSTALL_PREFIX}/\${F}\")
+              message (STATUS \"Up-to-date: \${CMAKE_INSTALL_PREFIX}/\${F}\")
             else ()
-              message (STATUS \"Installing: \${INSTALL_PREFIX}/\${F}\")
+              message (STATUS \"Installing: \${CMAKE_INSTALL_PREFIX}/\${F}\")
               if (BUILDER MATCHES \"texinfo\")
-                if (EXISTS \"\${INSTALL_PREFIX}/dir\")
+                if (EXISTS \"\${CMAKE_INSTALL_PREFIX}/dir\")
                   execute_process (
                     COMMAND install-info
                         \"${SPHINX_OUTPUT_DIRECTORY}/\${SPHINX_BUILDER}/\${F}\"
-                        \"\${INSTALL_PREFIX}/dir\"
+                        \"\${CMAKE_INSTALL_PREFIX}/dir\"
                     RESULT_VARIABLE RC
                     OUTPUT_QUIET
                     ERROR_QUIET
@@ -1374,7 +1375,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
                   execute_process (
                     COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
                         \"${SPHINX_OUTPUT_DIRECTORY}/\${SPHINX_BUILDER}/\${F}\"
-                        \"\${INSTALL_PREFIX}/dir\"
+                        \"\${CMAKE_INSTALL_PREFIX}/dir\"
                     RESULT_VARIABLE RC
                     OUTPUT_QUIET
                     ERROR_QUIET
@@ -1384,7 +1385,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
                 execute_process (
                   COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
                       \"${SPHINX_OUTPUT_DIRECTORY}/\${SPHINX_BUILDER}/\${F}\"
-                      \"\${INSTALL_PREFIX}/\${F}\"
+                      \"\${CMAKE_INSTALL_PREFIX}/\${F}\"
                   RESULT_VARIABLE RC
                   OUTPUT_QUIET
                   ERROR_QUIET
@@ -1392,9 +1393,9 @@ function (basis_add_sphinx_doc TARGET_NAME)
               endif ()
               if (RC EQUAL 0)
                 # also remember .info files for deinstallation via install-info --delete
-                list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_PREFIX}/\${F}\")
+                list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${CMAKE_INSTALL_PREFIX}/\${F}\")
               else ()
-                message (STATUS \"Failed to install \${INSTALL_PREFIX}/\${F}\")
+                message (STATUS \"Failed to install \${CMAKE_INSTALL_PREFIX}/\${F}\")
               endif ()
             endif ()
           endif ()
@@ -1435,11 +1436,7 @@ endfunction ()
 # command-line tool svn2cl(.sh) is installed, it is used to output a nicer
 # formatted change log.
 function (basis_add_changelog)
-  if (PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
-    basis_make_target_uid (TARGET_UID "changelog_${PROJECT_NAME_LOWER}")
-  else ()
-    basis_make_target_uid (TARGET_UID "changelog")
-  endif ()
+  basis_make_target_uid (TARGET_UID changelog)
 
   option (BUILD_CHANGELOG "Request build and/or installation of the ChangeLog." OFF)
   mark_as_advanced (BUILD_CHANGELOG)

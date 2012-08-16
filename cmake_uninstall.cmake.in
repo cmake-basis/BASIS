@@ -13,16 +13,9 @@
 cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
-# set the install prefix and sinfix
-if (NOT DEFINED INSTALL_PREFIX)
-  if (DEFINED CMAKE_INSTALL_PREFIX)
-    set (INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-  else ()
-    set (INSTALL_PREFIX "@INSTALL_PREFIX@")
-  endif ()
-endif ()
-if (NOT DEFINED INSTALL_SINFIX)
-  set (INSTALL_SINFIX "@BASIS_INSTALL_SINFIX@")
+# set the install prefix
+if (NOT DEFINED CMAKE_INSTALL_PREFIX)
+  set (CMAKE_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -77,14 +70,14 @@ list (REVERSE MANIFEST)
 # remove package from CMake package registry
 set (REGISTERED "@BASIS_REGISTER@")
 if (WIN32 AND REGISTERED)
-  set (PKGUID "@BASIS_NAMESPACE_LOWER@-@PROJECT_NAME_LOWER@-@PROJECT_VERSION@")
+  set (PKGUID "@PROJECT_PACKAGE_VENDOR_L@-@PROJECT_PACKAGE_L@-@PROJECT_VERSION@")
   execute_process (
-    COMMAND reg delete "HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_NAME@" /v "${PKGUID}" /f
+    COMMAND reg delete "HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_PACKAGE@" /v "${PKGUID}" /f
     RESULT_VARIABLE RT
     ERROR_VARIABLE ERR
   )
   if (RT EQUAL 0)
-    message (STATUS "Deregister:   Removed HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_NAME@\\${PKGUID}")
+    message (STATUS "Deregister:   Removed HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_PACKAGE@\\${PKGUID}")
   else ()
     string (STRIP "${ERR}" ERR)
     message (STATUS "Deregister:   Failed to remove package from registry: ${ERR}")
@@ -93,15 +86,12 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # remove installed files
-set (PYTHON_BASE_PACKAGE_DIR "@BASIS_NAMESPACE_LOWER@")
-string (REPLACE "." "/" PYTHON_BASE_PACKAGE_DIR "${PYTHON_BASE_PACKAGE_DIR}")
-
 foreach (F ${MANIFEST}) # skip empty entries, i.e., blank lines
   set (F "$ENV{DESTDIR}${F}") # support change of root
   if (EXISTS "${F}")
     set (FILE_IN_USE FALSE)
-    # do not remove __init__.py files in lib/python/sbia/ if still in use
-    if (F MATCHES "(.*)/${PYTHON_BASE_PACKAGE_DIR}/__init__.pyc?$")
+    # do not remove __init__.py files in lib/python/<vendor>/ if still in use
+    if (F MATCHES "(.*)/@PROJECT_PACKAGE_VENDOR_L@/__init__.pyc?$")
       set (PYTHONPATH "${CMAKE_MATCH_1}")
       file (GLOB_RECURSE PYFILES "${PYTHONPATH}/*.py" "${PYTHONPATH}/*.pyc")
       foreach (PYFILE IN LISTS PYFILES)
@@ -173,17 +163,17 @@ list (APPEND EXCLUDE_DIRS
 # stop removing directories at root installation directory
 # the subdirectory will be still removed if it is not in the
 # list of excluded system directories
-get_filename_component (D "$ENV{DESTDIR}${INSTALL_PREFIX}" PATH)
+get_filename_component (D "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}" PATH)
 list (APPEND EXCLUDE_DIRS "${D}")
 
-string (REPLACE "." "\\." INSTALL_PREFIX_REGEX "$ENV{DESTDIR}${INSTALL_PREFIX}")
-string (REPLACE "." "\\." CMAKE_REGISTRY_PREFIX_REGEX "$ENV{HOME}/.cmake")
+string (REPLACE "." "\\." CMAKE_INSTALL_PREFIX_RE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
+string (REPLACE "." "\\." CMAKE_REGISTRY_PREFIX_RE "$ENV{HOME}/.cmake")
 
 foreach (F ${MANIFEST}) # skip empty entries, i.e., blank lines
   # remove directories only if file was installed inside the installation root
   # or the CMake package registration on Unix
-  if (F MATCHES "^${INSTALL_PREFIX_REGEX}" OR
-        (UNIX AND F MATCHES "^${CMAKE_REGISTRY_PREFIX_REGEX}"))
+  if (F MATCHES "^${CMAKE_INSTALL_PREFIX_RE}" OR
+        (UNIX AND F MATCHES "^${CMAKE_REGISTRY_PREFIX_RE}"))
     get_filename_component (D "$ENV{DESTDIR}${F}" PATH)
     while (D)
       # skip directory if we removed it already
@@ -209,7 +199,7 @@ foreach (F ${MANIFEST}) # skip empty entries, i.e., blank lines
           message (STATUS "Failed to remove ${D}")
         endif ()
       endif ()
-      if ("${D}" STREQUAL "$ENV{DESTDIR}${INSTALL_PREFIX}")
+      if ("${D}" STREQUAL "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
         # we reached the root installation direcory
         break ()
       endif ()

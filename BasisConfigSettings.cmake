@@ -68,11 +68,7 @@ endif ()
 # installation configuration settings
 # ============================================================================
 
-basis_get_relative_path (
-  INSTALL_PREFIX_CONFIG
-    "${INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}"
-    "${INSTALL_PREFIX}"
-)
+basis_get_relative_path (INSTALL_PREFIX_CONFIG "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}" "${CMAKE_INSTALL_PREFIX}")
 
 ## @brief Installation prefix.
 set (INSTALL_PREFIX_CONFIG "\${CMAKE_CURRENT_LIST_DIR}/${INSTALL_PREFIX_CONFIG}")

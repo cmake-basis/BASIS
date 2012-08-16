@@ -8,24 +8,6 @@
 #
 # @sa http://www.rad.upenn.edu/sbia/software/basis/standard/fhs/
 #
-# The project must follow the directory structure as defined by the
-# <tt>PROJECT_&lt;*&gt;_DIR</tt> variables.
-#
-# Ideally, when changing the name of one of these directories, only the
-# directory structure of the template needs to be updated. The BASIS CMake
-# functions should not be required to change as they are supposed to use these
-# variables instead of the actual names. Any change of the project directory
-# structure has to be made with care, however, and backwards compatibility to
-# previous releases of BASIS shall be maintained. Consider the use of the
-# @c TEMPLATE_VERSION if required.
-#
-# If this project is a module and modules shall reside in the same namespace
-# as the top-level project (i.e., @c BASIS_USE_MODULE_NAMESPACES is @c OFF),
-# the directories are the same for all modules except of the
-# <tt>PROJECT_&lt;*&gt;_DIR</tt> variables, which refer to the source tree of
-# the current module. Otherwise, the modules add their name to the paths such
-# that the files of the modules are separated by subdirectories.
-#
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
@@ -41,195 +23,77 @@
 # ============================================================================
 
 ## @brief Absolute path of directory of project sources in source tree.
-set (PROJECT_CODE_DIR "@PROJECT_SOURCE_DIR@/src")
+set (PROJECT_CODE_DIR "@PROJECT_CODE_DIR@")
 ## @brief Absolute path of directory of BASIS project configuration in source tree.
-set (PROJECT_CONFIG_DIR "@PROJECT_SOURCE_DIR@/config")
+set (PROJECT_CONFIG_DIR "@PROJECT_CONFIG_DIR@")
 ## @brief Absolute path of directory of auxiliary data in source tree.
-set (PROJECT_DATA_DIR "@PROJECT_SOURCE_DIR@/data")
+set (PROJECT_DATA_DIR "@PROJECT_DATA_DIR@")
 ## @brief Absolute path of directory of documentation files in source tree.
-set (PROJECT_DOC_DIR "@PROJECT_SOURCE_DIR@/doc")
+set (PROJECT_DOC_DIR "@PROJECT_DOC_DIR@")
 ## @brief Absolute path of directory of example in source tree.
-set (PROJECT_EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/example")
+set (PROJECT_EXAMPLE_DIR "@PROJECT_EXAMPLE_DIR@")
 ## @brief Absolute path of directory of public header files in source tree.
-set (PROJECT_INCLUDE_DIR "@PROJECT_SOURCE_DIR@/include")
+set (PROJECT_INCLUDE_DIR "@PROJECT_INCLUDE_DIR@")
 ## @brief Absolute path of directory of public scripted packages.
-set (PROJECT_LIBRARY_DIR "@PROJECT_SOURCE_DIR@/lib")
+set (PROJECT_LIBRARY_DIR "@PROJECT_LIBRARY_DIR@")
 ## @brief Absolute path of directory of project modules.
-set (PROJECT_MODULES_DIR "@PROJECT_SOURCE_DIR@/modules")
+set (PROJECT_MODULES_DIR "@PROJECT_MODULES_DIR@")
 ## @brief Absolute path of directory of testing tree in source tree.
-set (PROJECT_TESTING_DIR "@PROJECT_SOURCE_DIR@/test")
-
-## @brief Absolute path of root directory of source tree of top-level project.
-if (NOT PROJECT_IS_MODULE)
-  set (BASIS_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
-endif ()
+set (PROJECT_TESTING_DIR "@PROJECT_TESTING_DIR@")
 
 # ============================================================================
 # testing tree
 # ============================================================================
 
 ## @brief Absolute path of output directory for tests.
-basis_set_if_empty (TESTING_OUTPUT_DIR "@PROJECT_BINARY_DIR@/Testing/Temporary")
+set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
 ## @brief Absolute path of output directory for built test executables.
-basis_set_if_empty (TESTING_RUNTIME_DIR "@PROJECT_BINARY_DIR@/Testing/bin")
+set (TESTING_RUNTIME_DIR "@TESTING_RUNTIME_DIR@")
 ## @brief Absolute path of output directory for auxiliary executables used by tests.
-basis_set_if_empty (TESTING_LIBEXEC_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
+set (TESTING_LIBEXEC_DIR "@TESTING_LIBEXEC_DIR@")
 ## @brief Absolute path of output directory for testing libraries.
-basis_set_if_empty (TESTING_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib")
+set (TESTING_LIBRARY_DIR "@TESTING_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for Python modules used for testing.
-basis_set_if_empty (TESTING_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/python")
+set (TESTING_PYTHON_LIBRARY_DIR "@TESTING_PYTHON_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for Jython modules used for testing.
-basis_set_if_empty (TESTING_JYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/jython")
+set (TESTING_JYTHON_LIBRARY_DIR "@TESTING_JYTHON_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for Perl modules used for testing.
-basis_set_if_empty (TESTING_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/perl5")
+set (TESTING_PERL_LIBRARY_DIR "@TESTING_PERL_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for MATLAB modules used for testing.
-basis_set_if_empty (TESTING_MATLAB_LIBRARY_DIR "@PROJECT_BINARY_DIR@/Testing/lib/matlab")
-
-if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  # Note that Python and Perl modules use their own internal package
-  # hierarchy. The top-level directory which is added to the search path
-  # for such modules does not have to be changed here.
-  foreach (D IN ITEMS OUTPUT RUNTIME LIBRARY)
-    set (TESTING_${D}_DIR "${TESTING_${D}_DIR}/@_PROJECT_DIR_INFIX@")
-  endforeach ()
-endif ()
+set (TESTING_MATLAB_LIBRARY_DIR "@TESTING_MATLAB_LIBRARY_DIR@")
 
 # ============================================================================
 # build tree
 # ============================================================================
 
-# set directories corresponding to the source tree directories
-foreach (P CODE CONFIG DATA DOC EXAMPLE MODULES TESTING)
-  basis_get_relative_path (D "${PROJECT_SOURCE_DIR}" "${PROJECT_${P}_DIR}")
-  set (BINARY_${P}_DIR "${PROJECT_BINARY_DIR}/${D}")
-  # references to top-level project's directories
-  if (NOT PROJECT_IS_MODULE)
-    set (BASIS_BINARY_${P}_DIR "${BINARY_${P}_DIR}")
-  endif ()
-endforeach ()
-
-# Directory for configured public header files is the same for the top-level
-# project and its modules. The proper subdirectories are created by the
-# function basis_configure_public_headers().
-if (NOT PROJECT_IS_MODULE)
-  basis_get_relative_path (D "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
-  set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/${D}")
-endif ()
-
 ## @brief Absolute path of output directory for main executables.
-basis_set_if_empty (BINARY_RUNTIME_DIR "@PROJECT_BINARY_DIR@/bin")
+set (BINARY_RUNTIME_DIR "@BINARY_RUNTIME_DIR@")
 ## @brief Absolute path of output directory for auxiliary executables.
-basis_set_if_empty (BINARY_LIBEXEC_DIR "@PROJECT_BINARY_DIR@/lib")
+set (BINARY_LIBEXEC_DIR "@BINARY_LIBEXEC_DIR@")
 ## @brief Absolute path of output directory for shared libraries and modules.
-basis_set_if_empty (BINARY_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib")
+set (BINARY_LIBRARY_DIR "@BINARY_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for static and import libraries.
-basis_set_if_empty (BINARY_ARCHIVE_DIR "@PROJECT_BINARY_DIR@/lib")
+set (BINARY_ARCHIVE_DIR "@BINARY_ARCHIVE_DIR@")
+## @brief Absolute path of output directory for configured public header files.
+set (BINARY_INCLUDE_DIR "@BINARY_INCLUDE_DIR@")
 ## @brief Absolute path of output directory for Python modules.
-basis_set_if_empty (BINARY_PYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/python")
+set (BINARY_PYTHON_LIBRARY_DIR "@BINARY_PYTHON_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for Jython modules.
-basis_set_if_empty (BINARY_JYTHON_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/jython")
+set (BINARY_JYTHON_LIBRARY_DIR "@BINARY_JYTHON_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for Perl modules.
-basis_set_if_empty (BINARY_PERL_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/perl5")
+set (BINARY_PERL_LIBRARY_DIR "@BINARY_PERL_LIBRARY_DIR@")
 ## @brief Absolute path of output directory for MATLAB modules.
-basis_set_if_empty (BINARY_MATLAB_LIBRARY_DIR "@PROJECT_BINARY_DIR@/lib/matlab")
-
-if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  # Note that Python/Jython and Perl modules use their own internal package
-  # hierarchy. The top-level directory which is added to the search path
-  # for such modules does not have to be changed here.
-  foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE)
-    set (BINARY_${D}_DIR "${BINARY_${D}_DIR}/@_PROJECT_DIR_INFIX@")
-  endforeach ()
-endif ()
-
-# set default CMake variable which are, however, not used by BASIS
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BINARY_LIBRARY_DIR}")
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}")
-
-## @brief Absolute path of root directory of build tree of top-level project.
-if (NOT PROJECT_IS_MODULE)
-  set (BASIS_PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
-endif ()
-
-# references to top-level project's directories
-if (NOT PROJECT_IS_MODULE)
-  foreach (D IN ITEMS RUNTIME LIBEXEC LIBRARY ARCHIVE
-                      PYTHON_LIBRARY JYTHON_LIBRARY PERL_LIBRARY MATLAB_LIBRARY)
-    set (BASIS_BINARY_${D}_DIR "${BINARY_${D}_DIR}")
-  endforeach ()
-endif ()
+set (BINARY_MATLAB_LIBRARY_DIR "@BINARY_MATLAB_LIBRARY_DIR@")
 
 # ============================================================================
 # install tree
 # ============================================================================
 
-# Attention: In order for CPack to work correctly, the destination paths have
-#            to be given relative to CMAKE_INSTALL_PREFIX. Therefore, this
-#            prefix must be excluded from the following paths!
-
-# ----------------------------------------------------------------------------
-# prefix
-
-# C:/Program Files/Project -> C:/Program Files/<BASIS_NAMESPACE>
-string (
-  REGEX REPLACE
-    "/Project$"
-    "/${BASIS_NAMESPACE}"
-  CMAKE_INSTALL_PREFIX
-    "${CMAKE_INSTALL_PREFIX}"
-)
-
-## @brief Installation prefix.
-set (
-  INSTALL_PREFIX
-    "${CMAKE_INSTALL_PREFIX}"
-  CACHE PATH
-    "Prefix used for installation paths."
-)
-
-set (CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
-
-# ----------------------------------------------------------------------------
-# infix
-
-## @brief Whether to use installation sinfix.
-option (INSTALL_SINFIX "Whether to use the package-specific installation path suffix/infix." ON)
-
-## @brief Installation sinfix.
-if (UNIX)
-  set (
-    BASIS_INSTALL_SINFIX
-      "${BASIS_NAMESPACE_LOWER}/@_PROJECT_DIR_INFIX@"
-    CACHE STRING
-      "Suffix/Infix used for installation paths."
-  )
-else ()
-  set (
-    BASIS_INSTALL_SINFIX
-      "@_PROJECT_DIR_INFIX@"
-    CACHE STRING
-      "Suffix/Infix used for installation paths."
-  )
-endif ()
-mark_as_advanced (BASIS_INSTALL_SINFIX)
-
-if (INSTALL_SINFIX)
-  set_property (CACHE BASIS_INSTALL_SINFIX PROPERTY TYPE STRING)
-else ()
-  set_property (CACHE BASIS_INSTALL_SINFIX PROPERTY TYPE INTERNAL)
-endif ()
-
-# ----------------------------------------------------------------------------
-# package configuration
-
-# Note: CMake's find_package() command considers certain directories.
-#       Hence, the variable BASIS_INSTALL_SINFIX which may not comply to
-#       the naming of standard locations considered by this command cannot
-#       be used here, but this package's name must be used.
+## @brief Installation prefix, i.e., root directory of installation.
+set (CMAKE_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@")
 
 ## @brief Path of installation directory for CMake package configuration
-#         files relative to @c INSTALL_PREFIX.
+#         files relative to @c CMAKE_INSTALL_PREFIX.
 #
 # Install configuration files of modules in subdirectories such that
 # CMake does not find them by default. Their might be a case that
@@ -238,267 +102,74 @@ endif ()
 # of the module is anyway supposed to be included by the package
 # configuration file if this module is requested by the COMPONENTS
 # argument to the find_package() command.
-if (NOT PROJECT_IS_MODULE)
-  if (UNIX)
-    set (INSTALL_CONFIG_DIR "lib/cmake/@PROJECT_NAME_LOWER@")
-  else ()
-    set (INSTALL_CONFIG_DIR "CMake")
-  endif ()
-else ()
-  set (INSTALL_CONFIG_DIR "${INSTALL_CONFIG_DIR}/@_PROJECT_DIR_INFIX@")
-endif ()
-
-# ----------------------------------------------------------------------------
-# executables
+set (INSTALL_CONFIG_DIR "@INSTALL_CONFIG_DIR@")
 
 ## @brief Path of installation directory for runtime executables and shared
-#         libraries on Windows relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_RUNTIME_DIR "bin")
-else ()
-  set (INSTALL_RUNTIME_DIR "Bin")
-endif ()
+#         libraries on Windows relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_RUNTIME_DIR "@INSTALL_RUNTIME_DIR@")
 
 ## @brief Path of installation directory for auxiliary executables
-#         relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_LIBEXEC_DIR "lib")
-else ()
-  set (INSTALL_LIBEXEC_DIR "Bin")
-endif ()
-
-# prepend installation sinfix
-if (INSTALL_SINFIX)
-  foreach (P RUNTIME LIBEXEC)
-    set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/${BASIS_INSTALL_SINFIX}")
-  endforeach ()
-endif ()
-
-# prepend module name
-if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  foreach (P RUNTIME LIBEXEC)
-    set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/@_PROJECT_DIR_INFIX@")
-  endforeach ()
-endif ()
-
-# ----------------------------------------------------------------------------
-# libraries
+#         relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_LIBEXEC_DIR "@INSTALL_LIBEXEC_DIR@")
 
 ## @brief Path of installation directory for public header files
-#         relative to @c INSTALL_PREFIX.
+#         relative to @c CMAKE_INSTALL_PREFIX.
 #
 # @note If the @c INCLUDE_PREFIX specifies subdirectories, these will be
 #       created underneath this directory during the installation.
-if (UNIX)
-  set (INSTALL_INCLUDE_DIR "include")
-else ()
-  set (INSTALL_INCLUDE_DIR "Include")
-endif ()
+set (INSTALL_INCLUDE_DIR "@INSTALL_INCLUDE_DIR@")
 
 ## @brief Path of installation directory for shared libraries on Unix-based
-#         systems and module libraries relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_LIBRARY_DIR "lib")
-else ()
-  set (INSTALL_LIBRARY_DIR "Library")
-endif ()
+#         systems and module libraries relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_LIBRARY_DIR "@INSTALL_LIBRARY_DIR@")
 
 ## @brief Path of installation directory for static and import libraries
-#         relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_ARCHIVE_DIR "lib")
-else ()
-  set (INSTALL_ARCHIVE_DIR "Library")
-endif ()
-
-# prepend installation sinfix
-if (INSTALL_SINFIX)
-  foreach (P LIBRARY ARCHIVE)
-    set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/${BASIS_INSTALL_SINFIX}")
-  endforeach ()
-endif ()
-
-# prepend module name
-if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  # Note that the INSTALL_INCLUDE_DIR is the same for top-level project
-  # and modules. The subdirectory structure within this directory is
-  # created by the function basis_configure_public_headers().
-  foreach (P LIBRARY ARCHIVE)
-    set (VAR "INSTALL_${P}_DIR")
-    set (${VAR} "${${VAR}}/@_PROJECT_DIR_INFIX@")
-  endforeach ()
-endif ()
-
-# ----------------------------------------------------------------------------
-# script modules
+#         relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_ARCHIVE_DIR "@INSTALL_ARCHIVE_DIR@")
 
 # Similar to the public header files of C/C++ libraries, the modules written
 # in Python or Perl are installed with fixed relative directories which
 # correspond to the packages these modules belong to:
 #
-# Python: sbia.<project>
-# Perl:   SBIA::<Project>
+# For example, the Python module <vendor>.<pkg>.<module> is installed
+# in the subdirectory <vendor>/<pkg>/<module>/ relative to the
+# installation path for public Python modules, i.e., INSTALL_PYTHON_LIBRARY_DIR.
+# External users of this module will add the INSTALL_PYTHON_LIBRARY_DIR
+# to the search path for Python modules and import the module, for example, as
+# follows:
 #
-# As here the project name is already part of the file path and has to
-# remain fixed, otherwise the modules would not know how to refer to each
-# other in the source code, the variable BASIS_INSTALL_SINFIX as well as
-# BASIS_USE_MODULE_NAMESPACES are not considered here. Instead, the
-# functions basis_add_script_target() and basis_add_script_target_finalize() make sure
-# that the modules are installed as part of the right packages.
+# from <vendor>.<pkg> import <module>
 
-## @brief Path of installation directory for Python modules relative to @c INSTALL_PREFIX.
-if (PYTHON_VERSION_MAJOR AND DEFINED PYTHON_VERSION_MINOR)
-  if (UNIX)
-    set (INSTALL_PYTHON_LIBRARY_DIR "lib/python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@/site-packages")
-  else ()
-    set (INSTALL_PYTHON_LIBRARY_DIR "Library/Python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@")
-  endif ()
-else ()
-  if (UNIX)
-    set (INSTALL_PYTHON_LIBRARY_DIR "lib/python/site-packages")
-  else ()
-    set (INSTALL_PYTHON_LIBRARY_DIR "Library/Python")
-  endif ()
-endif ()
+## @brief Path of installation directory of public Python modules relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_PYTHON_LIBRARY_DIR "@INSTALL_PYTHON_LIBRARY_DIR@")
+## @brief Path of installation directory of public Jython modules relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_JYTHON_LIBRARY_DIR "@INSTALL_JYTHON_LIBRARY_DIR@")
+## @brief Path of installation directory of public Perl modules relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_PERL_LIBRARY_DIR "@INSTALL_PERL_LIBRARY_DIR@")
+## @brief Path of installation directory of public MATLAB M-files relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_MATLAB_LIBRARY_DIR "@INSTALL_MATLAB_LIBRARY_DIR@")
 
-## @brief Path of installation directory for Jython modules relative to @c INSTALL_PREFIX.
-if (JYTHON_VERSION_MAJOR AND DEFINED JYTHON_VERSION_MINOR)
-  if (UNIX)
-    set (INSTALL_JYTHON_LIBRARY_DIR "lib/jython@JYTHON_VERSION_MAJOR@.@JYTHON_VERSION_MINOR@/site-packages")
-  else ()
-    set (INSTALL_JYTHON_LIBRARY_DIR "Library/Jython@JYTHON_VERSION_MAJOR@.@JYTHON_VERSION_MINOR@")
-  endif ()
-else ()
-  if (UNIX)
-    set (INSTALL_JYTHON_LIBRARY_DIR "lib/jython/site-packages")
-  else ()
-    set (INSTALL_JYTHON_LIBRARY_DIR "Library/Jython")
-  endif ()
-endif ()
+## @brief Path of installation directory for shared files relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_SHARE_DIR "@INSTALL_SHARE_DIR@")
+## @brief Path of installation directory for shared data files relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_DATA_DIR "@INSTALL_DATA_DIR@")
+## @brief Path of installation directory for documentation files relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_DOC_DIR "@INSTALL_DOC_DIR@")
+## @brief Path of installation directory for example files relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_EXAMPLE_DIR "@INSTALL_EXAMPLE_DIR@")
+## @brief Path of installation directory for man pages relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_MAN_DIR "@INSTALL_MAN_DIR@")
+## @brief Path of Texinfo files relative to @c CMAKE_INSTALL_PREFIX.
+set (INSTALL_TEXINFO_DIR "@INSTALL_TEXINFO_DIR@")
 
-## @brief Path of installation directory for Perl modules relative to @c INSTALL_PREFIX.
-if (PERL_VERSION_MAJOR AND DEFINED PERL_VERSION_STRING)
-  if (UNIX)
-    set (INSTALL_PERL_LIBRARY_DIR "lib/perl@PERL_VERSION_MAJOR@/site_perl/@PERL_VERSION_STRING@")
-  else ()
-    set (INSTALL_PERL_LIBRARY_DIR "Library/Perl@PERL_VERSION_MAJOR@/site_perl/@PERL_VERSION_STRING@")
-  endif ()
-else ()
-  if (UNIX)
-    set (INSTALL_PERL_LIBRARY_DIR "lib/perl/site_perl")
-  else ()
-    set (INSTALL_PERL_LIBRARY_DIR "Library/Perl/site_perl")
-  endif ()
-endif ()
+# ============================================================================
+# top-level references
+# ============================================================================
 
-## @brief Path of installation directory for MATLAB M-files relative to @c INSTALL_PREFIX.
-if (MATLAB_RELEASE)
-  if (UNIX)
-    set (INSTALL_MATLAB_LIBRARY_DIR "lib/matlab/@MATLAB_RELEASE@")
-  else ()
-    set (INSTALL_MATLAB_LIBRARY_DIR "Library/Matlab/@MATLAB_RELEASE@")
-  endif ()
-elseif (MATLAB_VERSION_MAJOR AND DEFINED MATLAB_VERSION_MINOR)
-  if (UNIX)
-    set (INSTALL_MATLAB_LIBRARY_DIR "lib/matlab@MATLAB_VERSION_MAJOR@.@MATLAB_VERSION_MINOR@")
-  else ()
-    set (INSTALL_MATLAB_LIBRARY_DIR "Library/Matlab@MATLAB_VERSION_MAJOR@.@MATLAB_VERSION_MINOR@")
-  endif ()
-else ()
-  if (UNIX)
-    set (INSTALL_MATLAB_LIBRARY_DIR "lib/matlab")
-  else ()
-    set (INSTALL_MATLAB_LIBRARY_DIR "Library/Matlab")
-  endif ()
-endif ()
-
-# ----------------------------------------------------------------------------
-# shared data
-
-## @brief Path of installation directory for shared files
-#         relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_SHARE_DIR "share")
-else ()
-  set (INSTALL_SHARE_DIR "Share")
-endif ()
-if (INSTALL_SINFIX)
-  set (INSTALL_SHARE_DIR "${INSTALL_SHARE_DIR}/${BASIS_INSTALL_SINFIX}")
-endif ()
-
-## @brief Path of installation directory for shared data files
-#         relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_DATA_DIR "${INSTALL_SHARE_DIR}/data")
-else ()
-  set (INSTALL_DATA_DIR "Data")
-  if (INSTALL_SINFIX)
-    set (INSTALL_DATA_DIR "${INSTALL_DATA_DIR}/${BASIS_INSTALL_SINFIX}")
-  endif ()
-endif ()
-if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  set (INSTALL_DATA_DIR "${INSTALL_DATA_DIR}/@_PROJECT_DIR_INFIX@")
-endif ()
-
-# ----------------------------------------------------------------------------
-# documentation
-
-## @brief Path of installation directory for documentation files
-#         relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_DOC_DIR "share/doc")
-else ()
-  set (INSTALL_DOC_DIR "Doc")
-endif ()
-if (INSTALL_SINFIX)
-  set (INSTALL_DOC_DIR "${INSTALL_DOC_DIR}/${BASIS_INSTALL_SINFIX}")
-endif ()
-if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  set (INSTALL_DOC_DIR "${INSTALL_DOC_DIR}/@_PROJECT_DIR_INFIX@")
-endif ()
-
-## @brief Path of installation directory for example files
-#         relative to @c INSTALL_PREFIX.
-if (UNIX)
-  set (INSTALL_EXAMPLE_DIR "${INSTALL_SHARE_DIR}/example")
-else ()
-  set (INSTALL_EXAMPLE_DIR "Example")
-  if (INSTALL_SINFIX)
-    set (INSTALL_EXAMPLE_DIR "${INSTALL_EXAMPLE_DIR}/${BASIS_INSTALL_SINFIX}")
-  endif ()
-endif ()
-if (PROJECT_IS_MODULE AND BASIS_USE_MODULE_NAMESPACES)
-  set (INSTALL_EXAMPLE_DIR "${INSTALL_EXAMPLE_DIR}/@_PROJECT_DIR_INFIX@")
-endif ()
-
-## @brief Path of installation directory for man pages
-#         relative to @c INSTALL_PREFIX.
-if (UNIX)
-  if (INSTALL_SHARE_DIR MATCHES "^(.*/${BASIS_NAMESPACE_LOWER})(/.*)?$")
-    set (INSTALL_MAN_DIR "${CMAKE_MATCH_1}man")
-  else ()
-    set (INSTALL_MAN_DIR "${INSTALL_SHARE_DIR}/man")
-  endif ()
-endif ()
-
-## @brief Path of Texinfo files relative to @c INSTALL_PREFIX.
-if (UNIX)
-  if (INSTALL_SHARE_DIR MATCHES "^(.*/${BASIS_NAMESPACE_LOWER})(/.*)?$")
-    set (INSTALL_TEXINFO_DIR "${CMAKE_MATCH_1}info")
-  else ()
-    set (INSTALL_TEXINFO_DIR "${INSTALL_SHARE_DIR}/info")
-  endif ()
-endif ()
-
-# ----------------------------------------------------------------------------
-# references to top-level project's directories
-foreach (D IN ITEMS CONFIG INCLUDE RUNTIME LIBEXEC LIBRARY ARCHIVE
-                    PYTHON_LIBRARY PERL_LIBRARY DATA DOC EXAMPLE SHARE)
-  set (BASIS_INSTALL_${D}_DIR "${INSTALL_${D}_DIR}")
-endforeach ()
+## @brief Absolute path of root directory of source tree of top-level project.
+set (BASIS_PROJECT_SOURCE_DIR "@BASIS_PROJECT_SOURCE_DIR@")
+## @brief Absolute path of root directory of build tree of top-level project.
+set (BASIS_PROJECT_BINARY_DIR "@BASIS_PROJECT_BINARY_DIR@")
 
 
 ## @}

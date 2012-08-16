@@ -35,6 +35,13 @@
 ##############################################################################
 
 # ============================================================================
+# local variables
+# ============================================================================
+
+basis_get_relative_path (_TEST_DIR    "${PROJECT_SOURCE_DIR}" "${PROJECT_TESTING_DIR}")
+basis_get_relative_path (_MODULES_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_MODULES_DIR}")
+
+# ============================================================================
 # system libraries
 # ============================================================================
 
@@ -62,7 +69,7 @@ endif ()
 # ============================================================================
 
 # general information
-set (CPACK_PACKAGE_NAME                "${PROJECT_NAME}")
+set (CPACK_PACKAGE_NAME                "${PROJECT_PACKAGE}")
 set (CPACK_PACKAGE_VERSION_MAJOR       "${PROJECT_VERSION_MAJOR}")
 set (CPACK_PACKAGE_VERSION_MINOR       "${PROJECT_VERSION_MINOR}")
 set (CPACK_PACKAGE_VERSION_PATCH       "${PROJECT_VERSION_PATCH}")
@@ -73,15 +80,15 @@ set (CPACK_RESOURCE_FILE_README        "${PROJECT_README_FILE}")
 set (CPACK_RESOURCE_FILE_LICENSE       "${PROJECT_COPYING_FILE}")
 
 if (PROJECT_INSTALL_FILE)
-  set (CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_INSTALL_FILE}")
+  set (CPACK_PACKAGE_DESCRIPTION_FILE  "${PROJECT_INSTALL_FILE}")
 endif ()
 
 if (PROJECT_WELCOME_FILE)
-  set (CPACK_RESOURCE_FILE_WELCOME "${PROJECT_WELCOME_FILE}")
+  set (CPACK_RESOURCE_FILE_WELCOME     "${PROJECT_WELCOME_FILE}")
 endif ()
 
-set (CPACK_INSTALL_PREFIX      "${CMAKE_INSTALL_PREFIX}")
-set (CPACK_PACKAGE_RELOCATABLE "true")
+set (CPACK_INSTALL_PREFIX              "${CMAKE_INSTALL_PREFIX}")
+set (CPACK_PACKAGE_RELOCATABLE         "true")
 
 # system name
 string (TOLOWER "${CMAKE_SYSTEM_NAME}" CPACK_SYSTEM_NAME)
@@ -97,7 +104,7 @@ endif ()
 set (CPACK_GENERATOR                   "TGZ")
 set (CPACK_INCLUDE_TOPLEVEL_DIRECTORY  "1")
 set (CPACK_TOPLEVEL_TAG                "${CPACK_SYSTEM_NAME}")
-set (CPACK_PACKAGE_FILE_NAME           "${PROJECT_NAME_LOWER}-${PROJECT_VERSION}-${CPACK_SYSTEM_NAME}")
+set (CPACK_PACKAGE_FILE_NAME           "${PROJECT_PACKAGE_L}-${PROJECT_VERSION}-${CPACK_SYSTEM_NAME}")
 if (CMAKE_SYSTEM_PROCESSOR)
   set (CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 endif ()
@@ -105,12 +112,12 @@ endif ()
 # source package
 set (CPACK_SOURCE_GENERATOR         "TGZ")
 set (CPACK_SOURCE_TOPLEVEL_TAG      "${CPACK_SYSTEM_NAME}-source")
-set (CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME_LOWER}-${PROJECT_VERSION}-source")
+set (CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_PACKAGE_L}-${PROJECT_VERSION}-source")
 
 # ----------------------------------------------------------------------------
-# @todo The proper values for the following options still need to be
-#       figured. For the moment, just ignore these settings. NSIS might
-#       anyways not be supported in the near future.
+# TODO The proper values for the following options still need to be
+#      figured. For the moment, just ignore these settings. NSIS might
+#      anyways not be supported in the near future.
 # ----------------------------------------------------------------------------
 
 if (WIN32 AND NOT UNIX)
@@ -132,8 +139,6 @@ endif ()
 # source package
 # ============================================================================
 
-basis_get_relative_path (_TEST_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_TESTING_DIR}")
-
 ## @brief Patterns to be ignored when creating source package.
 # @ingroup BasisSettings
 list (APPEND CPACK_SOURCE_IGNORE_FILES
@@ -148,15 +153,11 @@ list (APPEND CPACK_SOURCE_IGNORE_FILES
   "/${_TEST_DIR}/internal/"
 )
 
-unset (_TEST_DIR)
-
 # exclude disabled modules from source package
 if (PROJECT_MODULES_DISABLED)
-  basis_get_relative_path (_MODULES_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_MODULES_DIR}")
-  foreach (M ${PROJECT_MODULES_DISABLED})
-    list (APPEND CPACK_SOURCE_IGNORE_FILES "/${_MODULES_DIR}/${M}/")
+  foreach (_M ${PROJECT_MODULES_DISABLED})
+    list (APPEND CPACK_SOURCE_IGNORE_FILES "/${_MODULES_DIR}/${_M}/")
   endforeach ()
-  unset (_MODULES_DIR)
 endif ()
 
 # ============================================================================
@@ -312,3 +313,10 @@ elseif (EXISTS "${PROJECT_CONFIG_DIR}/Components.cmake")
   include ("${PROJECT_CONFIG_DIR}/Components.cmake")
 endif ()
 
+# ============================================================================
+# clean up
+# ============================================================================
+
+unset (_M)
+unset (_TEST_DIR)
+unset (_MODULES_DIR)
