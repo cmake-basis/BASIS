@@ -1462,8 +1462,8 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
-  # finalize custom targets
-  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
+  # copy project properties of modules
+  if (NOT PROJECT_IS_MODULE)
     # copy properties of modules
     foreach (M IN LISTS PROJECT_MODULES_ENABLED)
       foreach (P IN ITEMS IMPORTED_TARGETS
@@ -1489,6 +1489,11 @@ macro (basis_project_impl)
         endif ()
       endforeach ()
     endforeach ()
+  endif () 
+
+  # --------------------------------------------------------------------------
+  # finalize custom targets
+  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
     # configure the BASIS utilities
     basis_configure_utilities ()
     # add missing build commands for custom targets

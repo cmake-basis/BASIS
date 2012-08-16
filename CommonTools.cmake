@@ -1396,9 +1396,8 @@ function (basis_get_target_name TARGET_NAME TARGET_UID)
   # make sure we have a fully-qualified target UID
   basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
   # strip off namespace of current project
-  string (TOLOWER "${PROJECT_PACKAGE_VENDOR}" vendor)
-  string (TOLOWER "${PROJECT_PACKAGE}"        pkg)
-  string (REGEX REPLACE "^${vendor}\\.${pkg}\\." "" NAME "${UID}")
+  basis_sanitize_for_regex (RE "${PROJECT_NAMESPACE_CMAKE}")
+  string (REGEX REPLACE "^${RE}\\." "" NAME "${UID}")
   # return
   set (${TARGET_NAME} "${NAME}" PARENT_SCOPE)
 endfunction ()
