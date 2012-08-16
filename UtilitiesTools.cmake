@@ -42,39 +42,29 @@
 # @param [out] UID UID of added build target.
 function (basis_add_utilities_library UID)
   # target UID of "basis" library target
-  set (TARGET_UID basis)
-  if (PROJECT_IS_MODULE)
-    if (BASIS_USE_MODULE_NAMESPACES)
-      set (TARGET_UID "${PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
-    else ()
-      set (TARGET_UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}_${PROJECT_NAME_L}")
-    endif ()
-  endif ()
-  if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
-    string (REGEX REPLACE "^${BASIS_PROJECT_NAMESPACE_CMAKE}\\." "" TARGET_UID "${TARGET_UID}")
-  endif ()
-  # Output name for library. Use same file for each "basis" library target
-  # as long as basis.cxx does not differ for different modules. Separate
-  # build targets are only required because of the EXPORT option of
-  # install(TARGETS) and the install(EXPORT) command.
-  set (OUTPUT_NAME "basis")
-  # write dummy source files
-  basis_library_prefix (PREFIX CXX)
-  foreach (S IN ITEMS basis.h basis.cxx)
-    if (S MATCHES "\\.h$")
-      set (S "${BINARY_INCLUDE_DIR}/${PREFIX}/${S}")
-    else ()
-      set (S "${BASIS_BINARY_CODE_DIR}/${S}")
-    endif ()
-    if (NOT EXISTS "${S}")
-      file (WRITE "${S}"
-        "#error This dummy source file should have been replaced by the"
-        " BASIS CMake function basis_configure_utilities()"
-      )
-    endif ()
-  endforeach ()
-  # add target if not present yet
+  basis_make_target_uid (TARGET_UID basis)
   if (NOT TARGET ${TARGET_UID})
+    # Output name for library. Use same file for each "basis" library target
+    # as long as basis.cxx does not differ for different modules. Separate
+    # build targets are only required because of the EXPORT option of
+    # install(TARGETS) and the install(EXPORT) command.
+    # add target if not present yet
+    set (OUTPUT_NAME "basis")
+    # write dummy source files
+    basis_library_prefix (PREFIX CXX)
+    foreach (S IN ITEMS basis.h basis.cxx)
+      if (S MATCHES "\\.h$")
+        set (S "${BINARY_INCLUDE_DIR}/${PREFIX}/${S}")
+      else ()
+        set (S "${BASIS_BINARY_CODE_DIR}/${S}")
+      endif ()
+      if (NOT EXISTS "${S}")
+        file (WRITE "${S}"
+          "#error This dummy source file should have been replaced by the"
+          " BASIS CMake function basis_configure_utilities()"
+        )
+      endif ()
+    endforeach ()
     # add library target if not present yet - only build if required
     add_library (${TARGET_UID} STATIC "${BASIS_BINARY_CODE_DIR}/basis.cxx")
     # define dependency on non-project specific utilities as the order in
