@@ -10,10 +10,9 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-readonly _TEST_SHTAP_DIR=@BASIS_BASH___DIR__@
+. "${BASIS_BASH_UTILITIES}" || exit 1
 
-source "${_TEST_SHTAP_DIR}/@_BASIS_LIBRARY_DIR@/core.sh" || exit 1
-source "${_TEST_SHTAP_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh" || exit 1
+import shtap
 
 echo -n "<DartMeasurement name=\"Host Name\" type=\"string\">"
 echo -n `hostname`;

@@ -11,4 +11,10 @@
 basis_add_library (breathe)
 basis_add_library (doxylink)
 
-basis_set_target_properties (breathe doxylink PROPERTIES PREFIX "${SPHINX_EXTENSIONS_PREFIX}")
+basis_set_target_properties (
+  breathe doxylink
+  PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PYTHON_LIBRARY_DIR}"
+    LIBRARY_INSTALL_DIRECTORY "${INSTALL_PYTHON_LIBRARY_DIR}"
+    PREFIX                    "${SPHINX_EXTENSIONS_PREFIX}"
+)

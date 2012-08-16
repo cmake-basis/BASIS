@@ -16,7 +16,7 @@
 #include <stdio.h>             // remove(), freopen()
 #include <fstream>
 
-#include "basis.h"
+#include <sbia/utilitiestest/basis.h>
 
 // stdout/stderr redirection - dup(), dup2(), fileno(), close()
 #if WINDOWS

@@ -13,7 +13,7 @@
 #include <sbia/basis/test.h>
 #include <sbia/basis/subprocess.h>
 
-#include "basis.h"
+#include <sbia/basis/basis.h>
 
 
 using namespace std;

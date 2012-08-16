@@ -10,7 +10,7 @@
 
 #include <sbia/basis/test.h>
 
-#include "basis.h"
+#include <sbia/utilitiestest/basis.h>
 
 
 using namespace sbia::utilitiestest::basis;

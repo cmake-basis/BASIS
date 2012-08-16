@@ -10,10 +10,9 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-readonly _TEST_UTILITIES_DIR=@BASIS_BASH___DIR__@
+. "${BASIS_BASH_UTILITIES}" || exit 1
 
-source "${_TEST_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh" || exit 1
-source "${_TEST_UTILITIES_DIR}/@_BASIS_LIBRARY_DIR@/shtap.sh"     || exit 1
+import shtap
 
 echo -n "<DartMeasurement name=\"Host Name\" type=\"string\">"
 echo -n `hostname`;
@@ -43,12 +42,12 @@ is "${str}" "this \"isn't\" a \"simple example of \\\"a quoted\\\"\" string" \
     'complex array with quotations in elements was converted correctly'
 
 # ----------------------------------------------------------------------------
-# split()
-split array ''
+# qsplit()
+qsplit array ''
 is $? 0 'splitting of empty string was successful'
 is ${#array[@]} 0 'empty string was split into empty array'
 ok "[ -z ${array[0]} ]" 'empty string was split into empty array'
-split array "this isn\\'t a \"simple example of \\\"a quoted\\\"\" string"
+qsplit array "this isn\\'t a \"simple example of \\\"a quoted\\\"\" string"
 is $? 0 'splitting complex quoted string was successful'
 is ${#array[@]} 5 'complex quoted string split into 5 elements'
 is "${array[0]}" 'this' '1st element of complex quoted string'

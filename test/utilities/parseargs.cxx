@@ -8,7 +8,7 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include "basis.h" // include BASIS C++ utilities
+#include <sbia/basis/basis.h> // include BASIS C++ utilities
 
 
 // acceptable in .cxx file
