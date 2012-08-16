@@ -66,7 +66,7 @@ if html_title == '': html_title = '@PROJECT_NAME@'
 html_short_title = '@SPHINX_HTML_SHORTTITLE@'
 if html_short_title == '': html_short_title = html_title
 
-htmlhelp_basename = '@PROJECT_NAME_LOWER@_doc'
+htmlhelp_basename = '@PROJECT_NAME_L@_doc'
 
 
 # Options for LaTeX output

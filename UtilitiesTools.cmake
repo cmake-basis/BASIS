@@ -45,13 +45,13 @@ function (basis_add_utilities_library UID)
   set (TARGET_UID basis)
   if (PROJECT_IS_MODULE)
     if (BASIS_USE_MODULE_NAMESPACES)
-      set (TARGET_UID "${PROJECT_NAME_LOWER}.${TARGET_UID}")
+      set (TARGET_UID "${PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
     else ()
-      set (TARGET_UID "${TARGET_UID}_${PROJECT_NAME_LOWER}")
+      set (TARGET_UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}_${PROJECT_NAME_L}")
     endif ()
   endif ()
-  if (BASIS_USE_FULLY_QUALIFIED_UIDS)
-    set (TARGET_UID "${BASIS_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
+  if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+    string (REGEX REPLACE "^${BASIS_PROJECT_NAMESPACE_CMAKE}\\." "" TARGET_UID "${TARGET_UID}")
   endif ()
   # Output name for library. Use same file for each "basis" library target
   # as long as basis.cxx does not differ for different modules. Separate
@@ -59,9 +59,10 @@ function (basis_add_utilities_library UID)
   # install(TARGETS) and the install(EXPORT) command.
   set (OUTPUT_NAME "basis")
   # write dummy source files
+  basis_library_prefix (PREFIX CXX)
   foreach (S IN ITEMS basis.h basis.cxx)
     if (S MATCHES "\\.h$")
-      set (S "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}/${S}")
+      set (S "${BINARY_INCLUDE_DIR}/${PREFIX}/${S}")
     else ()
       set (S "${BASIS_BINARY_CODE_DIR}/${S}")
     endif ()
@@ -139,34 +140,6 @@ set (BASIS_BASH___FILE__ "$(cd -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -
 set (BASIS_BASH___DIR__ "$(cd -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)")
 
 # ============================================================================
-# deprecated BASIS_<LANG>_UTILITIES "macros"
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for Python.
-#
-# @deprecated This macro should no longer be used. Instead, simply import the
-#             sbia.&lt;project&gt;.basis module, e.g.,
-#             "from sbia.<project> import basis".
-set (BASIS_PYTHON_UTILITIES "\@PROJECT_NAMESPACE_PYTHON\@ import basis")
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for Perl.
-#
-# @deprecated This macro should no longer be used. Instead add the code
-#             "package Basis; use SBIA::<Project>::Basis qw(:everything); package main;"
-#             to your script. The package instructions can be omitted if the
-#             BASIS functions shall not be placed in the Basis package.
-set (BASIS_PERL_UTILITIES "package Basis; use \@PROJECT_NAMESPACE_PERL\@::Basis qw(:everything); package main;")
-
-# ----------------------------------------------------------------------------
-## @brief Include BASIS utilities for BASH.
-#
-# @deprecated This macro should not be used any longer. Instead, simply add
-#             the code "source ${BASIS_MODULE} || exit 1" to your script.
-set (BASIS_BASH_UTILITIES ". \${BASIS_BASH_UTILITIES} || exit 1")
-
-# ============================================================================
 # determine which utilities are used
 # ============================================================================
 
@@ -204,12 +177,11 @@ function (basis_utilities_check VAR SOURCE_FILE)
     # read script file
     file (READ "${SOURCE_FILE}" SOURCE)
     # match use/require statements
-    if (NOT UTILITIES_USED)
-      set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<"](${INCLUDE_PREFIX})?basis.h[">]") # e.g., #include "basis.sh", #include <sbia/project/basis.h>
-      if (SCRIPT MATCHES "(^|\n)[ \t]*${RE}([ \t]*//.*|[ \t]*)(\n|$)")
-        set (UTILITIES_USED TRUE)
-        break ()
-      endif ()
+    basis_library_prefix (PREFIX ${LANGUAGE})
+    set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<"](${PREFIX}/)?basis.h[">]") # e.g., #include "basis.h", #include <vendor/pkg/basis.h>
+    if (SCRIPT MATCHES "(^|\n)[ \t]*${RE}([ \t]*//.*|[ \t]*)(\n|$)")
+      set (UTILITIES_USED TRUE)
+      break ()
     endif ()
   # --------------------------------------------------------------------------
   # Python/Jython
@@ -218,27 +190,24 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SCRIPT)
     # deprecated BASIS_PYTHON_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PYTHON_UTILITIES\@")
-      message (WARNING "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_PYTHON_UTILITIES\@!"
-                       " Replace macro by\nfrom ${PROJECT_NAMESPACE_PYTHON} import basis")
-      set (UTILITIES_USED TRUE)
+      message (FATAL_ERROR "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_PYTHON_UTILITIES\@!")
     endif ()
     # match import statements
-    if (NOT UTILITIES_USED)
-      basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
-      foreach (RE IN ITEMS
-        "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                  # e.g., import sbia.project.basis
-        "import[ \\t]+\\.\\.?basis"                               # e.g., import .basis", "import ..basis
-        "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis"   # e.g., from sbia.project import basis
-        "from[ \\t]+${PYTHON_PACKAGE}.basis[ \\t]+import[ \\t].*" # e.g., from sbia.project.basis import which
-        "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"             # e.g., from . import basis", "from .. import basis
-        "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"            # e.g., from .basis import which, WhichError", "from ..basis import which
-      ) # foreach RE
-        if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*as[ \t]+.*)?([ \t]*#.*|[ \t]*)(;|\n|$)")
-          set (UTILITIES_USED TRUE)
-          break ()
-        endif ()
-      endforeach ()
-    endif ()
+    basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
+    foreach (RE IN ITEMS
+      "import[ \\t]+basis"                                      # e.g., import basis
+      "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                  # e.g., import <vendor>.<package>.basis
+      "import[ \\t]+\\.\\.?basis"                               # e.g., import .basis", "import ..basis
+      "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis"   # e.g., from <vendor>.<package> import basis
+      "from[ \\t]+${PYTHON_PACKAGE}.basis[ \\t]+import[ \\t].*" # e.g., from <vendor>.<package>.basis import which
+      "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"             # e.g., from . import basis", "from .. import basis
+      "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"            # e.g., from .basis import which, WhichError", "from ..basis import which
+    ) # foreach RE
+      if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*as[ \t]+.*)?([ \t]*#.*|[ \t]*)(;|\n|$)")
+        set (UTILITIES_USED TRUE)
+        break ()
+      endif ()
+    endforeach ()
   # --------------------------------------------------------------------------
   # Perl
   elseif (LANGUAGE MATCHES "PERL")
@@ -246,17 +215,14 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SCRIPT)
     # deprecated BASIS_PERL_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PERL_UTILITIES\@")
-      message (WARNING "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_PERL_UTILITIES\@!"
-                       " Replace macro by\nuse ${PROJECT_NAMESPACE_PERL}::Basis")
-      set (UTILITIES_USED TRUE)
+      message (FATAL_ERROR "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_PERL_UTILITIES\@!")
     endif ()
     # match use/require statements
-    if (NOT UTILITIES_USED)
-      set (RE "(use|require)[ \\t]+${PROJECT_NAMESPACE_PERL}::Basis([ \\t]+.*)?") # e.g., use SBIA::Project::Basis qw(:everything);
-      if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*#.*|[ \t]*)(;|\n|$)")
-        set (UTILITIES_USED TRUE)
-        break ()
-      endif ()
+    basis_sanitize_for_regex (PERL_PACKAGE "${PROJECT_NAMESPACE_PERL}")
+    set (RE "(use|require)[ \\t]+${PERL_PACKAGE}::Basis([ \\t]+.*)?") # e.g., use <Vendor>::<Package>::Basis qw(:everything);
+    if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*#.*|[ \t]*)(;|\n|$)")
+      set (UTILITIES_USED TRUE)
+      break ()
     endif ()
   # --------------------------------------------------------------------------
   # Bash
@@ -265,16 +231,12 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SCRIPT)
     # deprecated BASIS_BASH_UTILITIES macro
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_BASH_UTILITIES\@")
-      message (WARNING "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_BASH_UTILITIES\@!"
-                       " Replace macro by\n. \${BASIS_BASH_UTILITIES} || exit 1")
-      set (UTILITIES_USED TRUE)
+      message (FATAL_ERROR "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_BASH_UTILITIES\@!")
     endif ()
     # match source/. built-ins
-    if (NOT UTILITIES_USED)
-      set (RE "(source|\\.)[ \\t]+\\\${?BASIS_BASH_UTILITIES}?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?") # e.g., . ${BASIS_BASH_UTILITIES} || exit 1
-      if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${RE})[ \t]*(;|\n|$)")
-        set (UTILITIES_USED TRUE)
-      endif ()
+    set (RE "(source|\\.)[ \\t]+\\\"?\\\${?BASIS_BASH_UTILITIES}?\\\"?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?") # e.g., . ${BASIS_BASH_UTILITIES} || exit 1
+    if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${RE})[ \t]*(;|\n|$)")
+      set (UTILITIES_USED TRUE)
     endif ()
   endif ()
   # return
@@ -341,29 +303,28 @@ function (basis_configure_utilities)
     set (LIBRARY_BUILD_PATH_CONFIG "${BINARY_LIBRARY_DIR}")
     set (DATA_BUILD_PATH_CONFIG    "${PROJECT_DATA_DIR}")
     # paths - installation
-    file (RELATIVE_PATH RUNTIME_PATH_PREFIX_CONFIG "${INSTALL_PREFIX}/${INSTALL_RUNTIME_DIR}" "${INSTALL_PREFIX}")
+    file (RELATIVE_PATH RUNTIME_PATH_PREFIX_CONFIG "${CMAKE_INSTALL_PREFIX}/${INSTALL_RUNTIME_DIR}" "${CMAKE_INSTALL_PREFIX}")
     string (REGEX REPLACE "/$|\\$" "" RUNTIME_PATH_PREFIX_CONFIG "${RUNTIME_PATH_PREFIX_CONFIG}")
-    file (RELATIVE_PATH LIBEXEC_PATH_PREFIX_CONFIG "${INSTALL_PREFIX}/${INSTALL_LIBEXEC_DIR}" "${INSTALL_PREFIX}")
+    file (RELATIVE_PATH LIBEXEC_PATH_PREFIX_CONFIG "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBEXEC_DIR}" "${CMAKE_INSTALL_PREFIX}")
     string (REGEX REPLACE "/$|\\$" "" LIBEXEC_PATH_PREFIX_CONFIG "${LIBEXEC_PATH_PREFIX_CONFIG}")
     set (RUNTIME_PATH_CONFIG "${INSTALL_RUNTIME_DIR}")
     set (LIBEXEC_PATH_CONFIG "${INSTALL_LIBEXEC_DIR}")
     set (LIBRARY_PATH_CONFIG "${INSTALL_LIBRARY_DIR}")
     set (DATA_PATH_CONFIG    "${INSTALL_DATA_DIR}")
+    # namespace
+    set (PROJECT_NAMESPACE_CXX_BEGIN "namespace ${PROJECT_PACKAGE_VENDOR_L} { namespace ${PROJECT_PACKAGE_L} {")
+    set (PROJECT_NAMESPACE_CXX_END   "} }")
+    if (PROJECT_IS_SUBPROJECT)
+      set (PROJECT_NAMESPACE_CXX_BEGIN "${PROJECT_NAMESPACE_CXX_BEGIN} namespace ${PROJECT_NAME_L} {")
+      set (PROJECT_NAMESPACE_CXX_END   "${PROJECT_NAMESPACE_CXX_END} }")
+    endif ()
     # executable target information
     set (EXECUTABLE_TARGET_INFO "${EXECUTABLE_TARGET_INFO_CXX}")
     # configure source files
-    configure_file (
-      "${BASIS_CXX_TEMPLATES_DIR}/basis.h.in"
-      "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}basis.h"
-      @ONLY
-    )
-    configure_file (
-      "${BASIS_CXX_TEMPLATES_DIR}/basis.cxx.in"
-      "${BINARY_CODE_DIR}/basis.cxx"
-      @ONLY
-    )
-    source_group (BASIS FILES "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}basis.h"
-                              "${BINARY_CODE_DIR}/basis.cxx")
+    basis_library_prefix (PREFIX CXX)
+    configure_file ("${BASIS_CXX_TEMPLATES_DIR}/basis.h.in"   "${BINARY_INCLUDE_DIR}/${PREFIX}/basis.h" @ONLY)
+    configure_file ("${BASIS_CXX_TEMPLATES_DIR}/basis.cxx.in" "${BINARY_CODE_DIR}/basis.cxx"            @ONLY)
+    source_group (BASIS FILES "${BINARY_INCLUDE_DIR}/${PREFIX}/basis.h" "${BINARY_CODE_DIR}/basis.cxx")
   endif ()
   # --------------------------------------------------------------------------
   # Python
@@ -375,14 +336,16 @@ function (basis_configure_utilities)
                            " Rebuild BASIS with Python utilities enabled.")
     endif ()
     # add project-specific utilities
-    string (REPLACE "." "/" PREFIX "${PROJECT_NAMESPACE_PYTHON}")
+    basis_library_prefix (PREFIX PYTHON)
     basis_add_library (basis_py "${BASIS_PYTHON_TEMPLATES_DIR}/basis.py")
     basis_set_target_properties (
       basis_py
       PROPERTIES
-        SOURCE_DIRECTORY "${BASIS_PYTHON_TEMPLATES_DIR}"
-        BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        PREFIX           "${PREFIX}"
+        SOURCE_DIRECTORY          "${BASIS_PYTHON_TEMPLATES_DIR}"
+        BINARY_DIRECTORY          "${BINARY_CODE_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PYTHON_LIBRARY_DIR}"
+        LIBRARY_INSTALL_DIRECTORY "${INSTALL_PYTHON_LIBRARY_DIR}"
+        PREFIX                    "${PREFIX}"
         COMPILE_DEFINITIONS
           "if (BUILD_INSTALL_SCRIPT)
              set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_I}\")
@@ -403,14 +366,16 @@ function (basis_configure_utilities)
                            " Rebuild BASIS with Perl utilities enabled.")
     endif ()
     # add project-specific utilities
-    string (REPLACE "::" "/" PREFIX "${PROJECT_NAMESPACE_PERL}")
+    basis_library_prefix (PREFIX PERL)
     basis_add_library (Basis_pm "${BASIS_PERL_TEMPLATES_DIR}/Basis.pm")
     basis_set_target_properties (
       Basis_pm
       PROPERTIES
-        SOURCE_DIRECTORY "${BASIS_PERL_TEMPLATES_DIR}"
-        BINARY_DIRECTORY "${BINARY_CODE_DIR}"
-        PREFIX           "${PREFIX}"
+        SOURCE_DIRECTORY          "${BASIS_PERL_TEMPLATES_DIR}"
+        BINARY_DIRECTORY          "${BINARY_CODE_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PERL_LIBRARY_DIR}"
+        LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
+        PREFIX                    "${PREFIX}"
         COMPILE_DEFINITIONS
           "if (BUILD_INSTALL_SCRIPT)
              set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_I}\")
@@ -603,7 +568,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       foreach (L LIBRARY PYTHON_LIBRARY PERL_LIBRARY)
         file (
           RELATIVE_PATH INSTALL_LOCATION_REL2${L}
-            "${INSTALL_PREFIX}/${INSTALL_${L}_DIR}"
+            "${CMAKE_INSTALL_PREFIX}/${INSTALL_${L}_DIR}"
             "${INSTALL_LOCATION}"
         )
         if (NOT INSTALL_LOCATION_REL2${L})
@@ -679,7 +644,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       # alias
       set (SH_A "${SH_A}\n    alias '${ALIAS}'=`get_executable_path '${ALIAS}'`")
       # short alias (if target belongs to this project)
-      if (TARGET_UID MATCHES "^${PROJECT_NAMESPACE_CMAKE_REGEX}\\.")
+      if (TARGET_UID MATCHES "^${PROJECT_NAMESPACE_CMAKE_RE}\\.")
         basis_get_target_name (TARGET_NAME "${TARGET_UID}")
         set (SH_S "${SH_S}\n    alias '${TARGET_NAME}'='${ALIAS}'")
       endif ()

@@ -24,7 +24,7 @@
 macro (basis_slicer_module)
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
-      ""
+      "${BASIS_METADATA_LIST_SWITCH}"
       "${BASIS_METADATA_LIST_SINGLE};${BASIS_SLICER_METADATA_LIST_SINGLE}"
       "${BASIS_METADATA_LIST_MULTI};${BASIS_SLICER_METADATA_LIST_MULTI}"
     ${ARGN}
@@ -50,10 +50,12 @@ endmacro ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief 
+## @brief Initialize slicer module meta-data.
 #
 # At the moment, only one module, most often the top-level project can be a
-# Slicer module, i.e., call basis_slicer_module() in BasisProject.cmake.
+# Slicer module, i.e., call basis_slicer_module() either in the
+# BasisProject.cmake file of the top-level project or in the corresponding file
+# of at most one of the project modules.
 macro (basis_slicer_module_initialize)
   if (NOT PROJECT_IS_MODULE)
     set (_N 0)

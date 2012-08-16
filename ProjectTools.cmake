@@ -18,11 +18,21 @@
 # @sa basis_project()
 # @sa basis_slicer_module()
 macro (basis_project_check_metadata)
+  # PROJECT_NAME or PROJECT_SUBPROJECT
+  if (PROJECT_SUBPROJECT AND PROJECT_NAME)
+    message (FATAL_ERROR "Options SUBPROJECT and NAME are mutually exclusive!")
+  elseif (PROJECT_SUBPROJECT)
+    set (PROJECT_NAME "${PROJECT_SUBPROJECT}")
+    set (PROJECT_IS_SUBPROJECT TRUE)
+  else ()
+    set (PROJECT_IS_SUBPROJECT FALSE)
+  endif ()
+  unset (PROJECT_SUBPROJECT)
   if (NOT PROJECT_NAME)
-    message (FATAL_ERROR "basis_project(): Project name not specified!")
+    message (FATAL_ERROR "Project name not specified!")
   endif ()
   if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
-    message (FATAL_ERROR "basis_project(): Invalid project name!\n\n"
+    message (FATAL_ERROR "Invalid project name: ${PROJECT_NAME}!\n\n"
                          "Please choose a project name with either only captial "
                          "letters in case of an acronym or a name with mixed case, "
                          "but starting with a captial letter.\n\n"
@@ -34,26 +44,56 @@ macro (basis_project_check_metadata)
   endif ()
   if (NOT PROJECT_IS_MODULE)
     set (BASIS_PROJECT_NAME "${PROJECT_NAME}")
+    string (TOLOWER "${BASIS_PROJECT_NAME}" BASIS_PROJECT_NAME_L)
+    string (TOUPPER "${BASIS_PROJECT_NAME}" BASIS_PROJECT_NAME_U)
   endif ()
-
-  if (NOT PROJECT_NAMESPACE)
-    set (PROJECT_NAMESPACE "${PROJECT_NAME}")
+  string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_L)
+  string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_U)
+  # PROJECT_PACKAGE
+  if (NOT PROJECT_PACKAGE)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_PACKAGE "${BASIS_PROJECT_PACKAGE}")
+    else ()
+      set (PROJECT_PACKAGE "${PROJECT_NAME}")
+    endif ()
   endif ()
-  if (NOT PROJECT_NAMESPACE MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
-    message (FATAL_ERROR "basis_project(): Invalid project namespace!\n\n"
-                         "Please choose a project namespace with either only captial "
+  if (NOT PROJECT_PACKAGE MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
+    message (FATAL_ERROR "Project ${PROJECT_NAME} declares invalid package name: ${PROJECT_PACKAGE}!\n\n"
+                         "Please choose a package name with either only captial "
                          "letters in case of an acronym or a name with mixed case, "
                          "but starting with a captial letter.\n\n"
                          "Note that numbers are allowed, but not as first character. "
                          "Further, do not use characters such as '_' or '-' to "
-                         "separate parts of the project namespace. Instead, use the "
+                         "separate parts of the package name. Instead, use the "
                          "upper camel case notation "
                          "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
   endif ()
-
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PACKAGE "${PROJECT_PACKAGE}")
+    string (TOLOWER "${BASIS_PROJECT_PACKAGE}" BASIS_PROJECT_PACKAGE_L)
+    string (TOUPPER "${BASIS_PROJECT_PACKAGE}" BASIS_PROJECT_PACKAGE_U)
+  endif ()
+  string (TOLOWER "${PROJECT_PACKAGE}" PROJECT_PACKAGE_L)
+  string (TOUPPER "${PROJECT_PACKAGE}" PROJECT_PACKAGE_U)
+  # PROJECT_PACKAGE_VENDOR
+  if (NOT PROJECT_PACKAGE_VENDOR)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_PACKAGE_VENDOR "${BASIS_PROJECT_PACKAGE_VENDOR}")
+    else ()
+      set (PROJECT_PACKAGE_VENDOR "${BASIS_PACKAGE_VENDOR}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PACKAGE_VENDOR "${PROJECT_PACKAGE_VENDOR}")
+    string (TOLOWER "${BASIS_PROJECT_PACKAGE_VENDOR}" BASIS_PROJECT_PACKAGE_VENDOR_L)
+    string (TOUPPER "${BASIS_PROJECT_PACKAGE_VENDOR}" BASIS_PROJECT_PACKAGE_VENDOR_U)
+  endif ()
+  string (TOLOWER "${PROJECT_PACKAGE_VENDOR}" PROJECT_PACKAGE_VENDOR_L)
+  string (TOUPPER "${PROJECT_PACKAGE_VENDOR}" PROJECT_PACKAGE_VENDOR_U)
+  # PROJECT_VERSION
   if (PROJECT_VERSION)
     if (NOT PROJECT_VERSION MATCHES "^[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(rc[0-9]+|[a-z])?$")
-      message (FATAL_ERROR "basis_project(): Invalid version ${PROJECT_VERSION}!")
+      message (FATAL_ERROR "Project ${PROJECT_NAME} has invalid version: ${PROJECT_VERSION}!")
     endif ()
     if (PROJECT_IS_MODULE)
       if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?$")
@@ -66,27 +106,17 @@ macro (basis_project_check_metadata)
     if (PROJECT_IS_MODULE)
       set (PROJECT_VERSION "${BASIS_PROJECT_VERSION}")
     else ()
-      message (FATAL_ERROR "basis_project(): Project version not specified!")
+      message (FATAL_ERROR "Project version not specified!")
     endif ()
   endif ()
-
+  if (NOT PROJECT_IS_MODULE)
+  endif ()
+  # PROJECT_DESCRIPTION
   if (PROJECT_DESCRIPTION)
     basis_list_to_string (PROJECT_DESCRIPTION ${PROJECT_DESCRIPTION})
   else ()
     set (PROJECT_DESCRIPTION "")
   endif ()
-
-  if (PROJECT_PACKAGE_VENDOR)
-    basis_list_to_string (PROJECT_PACKAGE_VENDOR ${PROJECT_PACKAGE_VENDOR})
-    if (NOT PROJECT_IS_MODULE)
-      set (BASIS_PROJECT_PACKAGE_VENDOR "${PROJECT_PACKAGE_VENDOR}")
-    endif ()
-  elseif (PROJECT_IS_MODULE)
-    set (PROJECT_PACKAGE_VENDOR "${BASIS_PROJECT_PACKAGE_VENDOR}")
-  else ()
-    set (PROJECT_PACKAGE_VENDOR "SBIA Group at University of Pennsylvania")
-  endif ()
-
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
@@ -138,8 +168,30 @@ endmacro ()
 #     <td>The name of the project.</td>
 #   </tr>
 #   <tr>
-#     @tp @b NAMESPACE ns @endtp
-#     <td>The namespace identifier of the project. (default: @p NAME)</td>
+#     @tp @b SUBPROJECT name @endtp
+#     <td>Use this option instead of @c NAME to indicate that this project is a
+#         subproject of the given package. This results, for example, in target
+#         UIDs such as "<vendor>.<package>.<name>" instead of "<vendor>.<package>" only.
+#         Moreover, the libraries and shared files of a subproject are installed
+#         in subdirectores whose name equals the name of the subproject. This option
+#         should only be used for projects which are modules of another BASIS project,
+#         where these modules should reside in their own sub-namespace rather than
+#         on the same level as the top-level project.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PACKAGE pkg @endtp
+#     <td>Name of the package this project (module) belongs to. Defaults to the
+#         name of the (top-level) project. This option can be used to specify a
+#         different package name for the installation. Moreover, in case of a
+#         project module, setting the package name explicitly using this option
+#         even when equal to the project name, enables the build of the module
+#         as separate project using the same directory structure.
+#         (default: name of top-level project)</td>
+#   </tr>
+#   <tr>
+#     @tp @b PACKAGE_VENDOR vendor @endtp
+#     <td>The vendor of this package, used for packaging and installation.
+#         (default: vendor of top-level project or @c BASIS_PACKAGE_VENDOR)</td>
 #   </tr>
 #   <tr>
 #     @tp @b VERSION major[.minor[.patch]] @endtp
@@ -149,12 +201,6 @@ endmacro ()
 #     @tp @b DESCRIPTION description @endtp
 #     <td>Package description, used for packing. If multiple arguments are given,
 #         they are concatenated using one space character as delimiter.</td>
-#   </tr>
-#   <tr>
-#     @tp @b PACKAGE_VENDOR name @endtp
-#     <td>The vendor of this package, used for packaging. If multiple arguments
-#         are given, they are concatenated using one space character as delimiter.
-#         (default: SBIA Group at University of Pennsylvania)</td>
 #   </tr>
 #   <tr>
 #     @tp @b DEPENDS name[, name] @endtp
@@ -180,20 +226,21 @@ endmacro ()
 #
 # @returns Sets the following non-cached CMake variables:
 # @retval PROJECT_NAME                    @c NAME argument.
-# @retval PROJECT_NAMESPACE               @c NAMESPACE argument.
+# @retval PROJECT_PACKAGE                 @c PACKAGE argument.
+# @retval PROJECT_PACKAGE_VENDOR          @c PACKAGE_VENDOR argument.
 # @retval PROJECT_VERSION                 @c VERSION argument.
-# @retval PROJECT_DESCRIPTION             Concatenated @c DESCRIPTION arguments.
-# @retval PROJECT_PACKAGE_VENDOR          Concatenated @c PACKAGE_VENDOR argument.
+# @retval PROJECT_DESCRIPTION             @c DESCRIPTION argument.
 # @retval PROJECT_DEPENDS                 @c DEPENDS arguments.
 # @retval PROJECT_OPTIONAL_DEPENDS        @c OPTIONAL_DEPENDS arguments.
 # @retval PROJECT_TEST_DEPENDS            @c TEST_DEPENDS arguments.
 # @retval PROJECT_OPTIONAL_TEST_DEPENDS   @c OPTIONAL_TEST_DEPENDS arguments.
+# @retval PROJECT_IS_SUBPROJECT           @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
 #
 # @ingroup CMakeAPI
 macro (basis_project)
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
-      ""
+      "${BASIS_METADATA_LIST_SWITCH}"
       "${BASIS_METADATA_LIST_SINGLE}"
       "${BASIS_METADATA_LIST_MULTI}"
     ${ARGN}
@@ -241,15 +288,15 @@ endmacro ()
 #
 # @returns Nothing.
 macro (basis_installtree_asserts)
-  if (NOT IS_ABSOLUTE "${INSTALL_PREFIX}")
-    message (FATAL_ERROR "INSTALL_PREFIX must be an absolute path!")
+  if (NOT IS_ABSOLUTE "${CMAKE_INSTALL_PREFIX}")
+    message (FATAL_ERROR "CMAKE_INSTALL_PREFIX must be an absolute path!")
   endif ()
   string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
   string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
-  string (TOLOWER "${INSTALL_PREFIX}"   INSTALL_ROOT)
+  string (TOLOWER "${CMAKE_INSTALL_PREFIX}"   INSTALL_ROOT)
   if ("${INSTALL_ROOT}" STREQUAL "${BUILD_ROOT}" OR "${INSTALL_ROOT}" STREQUAL "${SOURCE_ROOT}")
-    message (FATAL_ERROR "The current INSTALL_PREFIX points at the source or build tree:\n"
-                         "  ${INSTALL_PREFIX}\n"
+    message (FATAL_ERROR "The current CMAKE_INSTALL_PREFIX points at the source or build tree:\n"
+                         "  ${CMAKE_INSTALL_PREFIX}\n"
                          "This is not permitted by this project. "
                          "Please choose another installation prefix."
     )
@@ -450,21 +497,13 @@ endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Configure public header files.
-#
-# Configure public header files whose file name ends with .in.
-# Moreover, if @c BASIS_AUTO_PREFIX_INCLUDES is @c TRUE, this function
-# copies all other files to the build tree as well, using the same relative
-# paths as will be used for the installation.
-#
-# @sa BASIS_AUTO_PREFIX_INCLUDES
 function (basis_configure_public_headers)
   # --------------------------------------------------------------------------
   # settings
 
   # log file which lists the configured header files
   set (CMAKE_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}PublicHeaders.cmake")
-
-  # considered extensions
+  # considered extensions (excl. .in suffix)
   set (
     EXTENSIONS
       ".h"
@@ -475,21 +514,9 @@ function (basis_configure_public_headers)
       ".txx"
       ".inc"
   )
-
   # considered include directories
   basis_get_relative_path (INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
   set (INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/${INCLUDE_DIR}")
-
-  # --------------------------------------------------------------------------
-  # common arguments to following commands
-  # Attention: Arguments which have a CMake list as value cannot be set this way,
-  #            i.e., the arguments PROJECTS_INCLUDE_DIRS and EXTENSIONS.
-  set (COMMON_ARGS
-    -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
-    -D "INCLUDE_PREFIX=${INCLUDE_PREFIX}"
-    -D "AUTO_PREFIX_INCLUDES=${BASIS_AUTO_PREFIX_INCLUDES}"
-    -D "VARIABLE_NAME=PUBLIC_HEADERS"
-  )
 
   # --------------------------------------------------------------------------
   # clean up last run before the error because a file was added/removed
@@ -509,9 +536,9 @@ function (basis_configure_public_headers)
   execute_process (
     COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
             -D "EXTENSIONS=${EXTENSIONS}"
-            -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
-            -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
+            -D "CACHE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
             -D "CMAKE_FILE=${CMAKE_FILE}"
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
     RESULT_VARIABLE RT
@@ -539,7 +566,8 @@ function (basis_configure_public_headers)
       # tree with root directory BINARY_INCLUDE_DIR.
       COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
               -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
-              -D "OUTPUT_FILE=${CMAKE_FILE}.tmp"
+              -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
+              -D "CMAKE_FILE=${CMAKE_FILE}.tmp"
               -D "REFERENCE_FILE=${CMAKE_FILE}"
               -P "${BASIS_MODULE_PATH}/CheckPublicHeaders.cmake"
       VERBATIM
@@ -569,14 +597,10 @@ function (basis_configure_public_headers)
 
   # error message displayed when a file was added or removed which requires
   # a reconfiguration of the build system
-  set (ERRORMSG "You have either added, removed, or renamed a public header file")
-  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
-    list (APPEND ERRORMSG " with a .in suffix in the file name")
-  endif ()
-  list (APPEND ERRORMSG ". Therefore, the build system needs to be"
-                        " re-configured. Either try to build again which will"
-                        " trigger CMake and re-configure the build system or"
-                        " run CMake manually.")
+  set (ERRORMSG "You have either added, removed, or renamed a public header file"
+                " with a .in suffix in the file name. Therefore, the build system"
+                " needs to be re-configured. Either try to build again which will"
+                " trigger CMake and re-configure the build system or run CMake manually.")
   basis_list_to_string (ERRORMSG ${ERRORMSG})
 
   # custom command which globs the files in the project's include directory
@@ -586,10 +610,10 @@ function (basis_configure_public_headers)
   endif ()
   add_custom_command (
     OUTPUT  "${CMAKE_FILE}.tmp"
-    COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
+    COMMAND "${CMAKE_COMMAND}"
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
             -D "EXTENSIONS=${EXTENSIONS}"
-            -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
             -D "CMAKE_FILE=${CMAKE_FILE}.tmp"
             -D "PREVIEW=TRUE" # do not actually configure the files
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
@@ -599,9 +623,6 @@ function (basis_configure_public_headers)
 
   # custom target to detect whether a file was added or removed
   basis_make_target_uid (CHECK_HEADERS_TARGET headers_check)
-  if (PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
-    set (CHECK_HEADERS_TARGET "${CHECK_HEADERS_TARGET}_${PROJECT_NAME_LOWER}")
-  endif ()
   add_custom_target (
     ${CHECK_HEADERS_TARGET} ALL
     # trigger execution of custom command that generates the list
@@ -609,9 +630,10 @@ function (basis_configure_public_headers)
     DEPENDS "${CMAKE_FILE}.tmp"
     # Compare current list of headers to list of previously configured files.
     # If the lists differ, the build of this target fails with the given error message.
-    COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
+    COMMAND "${CMAKE_COMMAND}"
             -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
-            -D "OUTPUT_FILE=${CMAKE_FILE}"
+            -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
+            -D "CMAKE_FILE=${CMAKE_FILE}"
             -D "REFERENCE_FILE=${CMAKE_FILE}.tmp"
             -D "ERRORMSG=${ERRORMSG}"
             -D "REMOVE_FILES_IF_DIFFERENT=TRUE" # triggers reconfigure on next build
@@ -624,7 +646,7 @@ function (basis_configure_public_headers)
     if (NOT TARGET headers_check)
       add_custom_target (headers_check ALL)
     endif ()
-    basis_add_dependencies (headers_check ${CHECK_HEADERS_TARGET})
+    add_dependencies (headers_check ${CHECK_HEADERS_TARGET})
   endif ()
 
   # --------------------------------------------------------------------------
@@ -638,11 +660,11 @@ function (basis_configure_public_headers)
       OUTPUT  "${CMAKE_FILE}.updated" # do not use same file as included
                                       # before otherwise CMake will re-configure
                                       # the build system next time
-      COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
+      COMMAND "${CMAKE_COMMAND}"
               -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+              -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
               -D "EXTENSIONS=${EXTENSIONS}"
-              -D "INCLUDES_CHECK_EXCLUDE=${BASIS_INCLUDES_CHECK_EXCLUDE}"
-              -D "INCLUDE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
+              -D "CACHE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
               -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
       COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
       DEPENDS ${PUBLIC_HEADERS}
@@ -650,9 +672,6 @@ function (basis_configure_public_headers)
       VERBATIM
     )
     basis_make_target_uid (CONFIGURE_HEADERS_TARGET headers)
-    if (PROJECT_IS_MODULE AND NOT BASIS_USE_MODULE_NAMESPACES)
-      set (CONFIGURE_HEADERS_TARGET "${CONFIGURE_HEADERS_TARGET}_${PROJECT_NAME_LOWER}")
-    endif ()
     add_custom_target (
       ${CONFIGURE_HEADERS_TARGET} ALL
       DEPENDS ${CHECK_HEADERS_TARGET} "${CMAKE_FILE}.updated"
@@ -662,33 +681,19 @@ function (basis_configure_public_headers)
       if (NOT TARGET headers)
         add_custom_target (headers ALL)
       endif ()
-      basis_add_dependencies (headers ${CONFIGURE_HEADERS_TARGET})
+      add_dependencies (headers ${CONFIGURE_HEADERS_TARGET})
     endif ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # add include directories
-  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
-    basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}")
-  endif ()
-  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}"
-                                    "${BINARY_INCLUDE_DIR}")
-  # Attention: BASIS includes public header files which are named the
-  #            same as system-wide header files. Therefore, avoid to add
-  #            <src>/include/sbia/basis/ to the include search path.
-  if (NOT BASIS_AUTO_PREFIX_INCLUDES AND NOT PROJECT_NAME MATCHES "^BASIS$")
-    basis_include_directories (BEFORE "${PROJECT_INCLUDE_DIR}/${INCLUDE_PREFIX}")
   endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Add library targets for the modules in @c PROJECT_LIBRARY_DIR.
+## @brief Add library targets for the public modules in @c PROJECT_LIBRARY_DIR.
 #
 # This function configures ("builds") the library modules in the
 # @c PROJECT_LIBRARY_DIR that are written in a scripting language such as
 # Python or Perl. The names of the added library targets can be modified using
 # the <tt>&lt;LANG&gt;_LIBRARY_TARGET</tt> variables, which are set to their
-# default values in the @c &lt;Project&gt;Settings.cmake file.
+# default values in the @c BasisSettings.cmake file.
 function (basis_configure_script_libraries)
   if (NOT IS_DIRECTORY "${PROJECT_LIBRARY_DIR}")
     return ()
@@ -765,8 +770,10 @@ function (basis_configure_script_libraries)
         basis_set_target_properties (
           ${TARGET_NAME}
           PROPERTIES
-            SOURCE_DIRECTORY "${LIB_DIR}"
-            PREFIX           ""
+            SOURCE_DIRECTORY          "${LIB_DIR}"
+            LIBRARY_OUTPUT_DIRECTORY  "${BINARY_${LANGUAGE}_LIBRARY_DIR}"
+            LIBRARY_INSTALL_DIRECTORY "${INSTALL_${LANGUAGE}_LIBRARY_DIR}"
+            PREFIX                    ""
         )
         list (APPEND TARGETS ${TARGET_NAME})
         break ()
@@ -883,12 +890,6 @@ endfunction ()
 # @sa basis_project_impl()
 #
 # @returns Sets the following non-cached CMake variables:
-# @retval PROJECT_NAME_LOWER       Project name in lowercase.
-# @retval PROJECT_NAME_UPPER       Project name in uppercase.
-# @retval PROJECT_NAMESPACE_INFIX  Project namespace used as infix for installation.
-#                                  paths in Directories.cmake.in.
-# @retval PROJECT_NAMESPACE_LOWER  Namespace identifier of project in lowercase.
-# @retval PROJECT_NAMESPACE_UPPER  Namespace identifier of project in uppercase.
 # @retval PROJECT_REVISION         Revision number of Subversion controlled
 #                                  source tree or 0 if the source tree is
 #                                  not under revision control.
@@ -952,16 +953,6 @@ macro (basis_project_initialize)
   if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     set_property (CACHE CMAKE_PROJECT_NAME PROPERTY VALUE "${PROJECT_NAME}")
   endif ()
-
-  # convert project name to upper and lower case only, respectively
-  string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
-  string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
-  # convert project namespace identifier to upper and lower case only, respectively.
-  # used in particular in ProjectSettings.cmake.in to combine it with the common
-  # BASIS_NAMESPACE of all projects. The PROJECT_NAMESPACE_CMAKE is in particular
-  # used by basis_make_target_uid().
-  string (TOUPPER "${PROJECT_NAMESPACE}" PROJECT_NAMESPACE_UPPER)
-  string (TOLOWER "${PROJECT_NAMESPACE}" PROJECT_NAMESPACE_LOWER)
 
   # get revision of project
   #
@@ -1072,29 +1063,17 @@ endmacro ()
 ## @brief Initialize project settings.
 macro (basis_initialize_settings)
   # configure BASIS directory structure
-  #
-  # the following variable is used in the Directories.cmake.in template
-  # file to separate the files of modules of a project from each other
-  # if BASIS_USE_MODULE_NAMESPACES is set to ON
-  if (WIN32)
-    # Windows users prefer mixed case directory names
-    set (_PROJECT_DIR_INFIX "${PROJECT_NAMESPACE}")
-  else ()
-    # Unix users often prefer lowercase directory names
-    set (_PROJECT_DIR_INFIX "${PROJECT_NAMESPACE_LOWER}")
-  endif ()
+  include ("${BASIS_MODULE_PATH}/DirectoriesSettings.cmake")
   configure_file (
     "${BASIS_MODULE_PATH}/Directories.cmake.in"
     "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake"
     @ONLY
   )
-  unset (_PROJECT_DIR_INFIX)
-  # include directory structure related variables
-  include ("${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake")
   # include project specific settings
   #
   # This file enables the project to modify the default behavior of BASIS,
-  # but only if BASIS allows so as the BASIS settings are included afterwards.
+  # but only if BASIS allows so as the BASIS project settings are included
+  # afterwards.
   if (EXISTS "${PROJECT_CONFIG_DIR}/Settings.cmake.in")
     configure_file (
       "${PROJECT_CONFIG_DIR}/Settings.cmake.in"
@@ -1105,12 +1084,38 @@ macro (basis_initialize_settings)
   else ()
     include ("${PROJECT_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
   endif ()
-  # configure and include BASIS settings
+  # configure project specific BASIS settings
+  set (_BASIS_NAMESPACE_CMAKE "${BASIS_PROJECT_PACKAGE_VENDOR_L}.${BASIS_PROJECT_PACKAGE_L}")
+  set (_NAMESPACE_CMAKE       "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
+  set (_NAMESPACE_CXX         "${PROJECT_PACKAGE_VENDOR_L}::${PROJECT_PACKAGE_L}")
+  set (_NAMESPACE_JAVA        "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
+  set (_NAMESPACE_PYTHON      "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
+  set (_NAMESPACE_PERL        "${PROJECT_PACKAGE_VENDOR}::${PROJECT_PACKAGE}")
+  set (_NAMESPACE_BASH        "${PROJECT_PACKAGE_VENDOR_U}_${PROJECT_PACKAGE_U}")
+  set (_NAMESPACE_MATLAB      "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
+  if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
+    set (_NAMESPACE_CMAKE "${_NAMESPACE_CMAKE}.${PROJECT_NAME_L}")
+  endif ()
+  if (PROJECT_IS_SUBPROJECT)
+    foreach (_L IN ITEMS CXX JAVA PYTHON MATLAB)
+      set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}::${PROJECT_NAME_L}")
+    endforeach ()
+    set (_NAMESPACE_PERL "${_NAMESPACE_PERL}::${PROJECT_NAME}")
+    set (_NAMESPACE_BASH "${_NAMESPACE_BASH}_${PROJECT_NAME_U}")
+  endif ()
+  # configure settings file with API documentation
   configure_file (
     "${BASIS_MODULE_PATH}/ProjectSettings.cmake.in"
     "${BINARY_CONFIG_DIR}/ProjectSettings.cmake"
     @ONLY
   )
+  # unset local variables
+  foreach (_L IN ITEMS CMAKE CXX JAVA PYTHON PERL BASH MATLAB)
+    unset (_BASIS_NAMESPACE_${_L})
+    unset (_NAMESPACE_${_L})
+  endforeach ()
+  unset (_L)
+  # include configured project specific BASIS settings
   include ("${BINARY_CONFIG_DIR}/ProjectSettings.cmake" NO_POLICY_SCOPE)
 endmacro ()
 
@@ -1190,23 +1195,17 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Add installation rules for public header files.
 macro (basis_install_public_headers)
+  # subdirectory of basis.h header file
+  basis_library_prefix (_BASIS_H_DIR CXX)
   # install public header files from source tree
-  if (NOT BASIS_AUTO_PREFIX_INCLUDES AND EXISTS "${PROJECT_INCLUDE_DIR}")
-    basis_install_directory (
-      "${PROJECT_INCLUDE_DIR}"
-      "${INSTALL_INCLUDE_DIR}"
-      PATTERN "*.in" EXCLUDE
-    )
+  if (EXISTS "${PROJECT_INCLUDE_DIR}")
+    basis_install_directory ("${PROJECT_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" PATTERN "*.in" EXCLUDE)
   endif ()
   # install configured public header files, excluding BASIS utilities
   file (GLOB_RECURSE _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*")
-  list (REMOVE_ITEM _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}basis.h")
+  list (REMOVE_ITEM _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/${_BASIS_H_DIR}/basis.h")
   if (_CONFIGURED_PUBLIC_HEADERS)
-    basis_install_directory (
-      "${BINARY_INCLUDE_DIR}"
-      "${INSTALL_INCLUDE_DIR}"
-      REGEX "/${INCLUDE_PREFIX}basis\\.h$" EXCLUDE
-    )
+    basis_install_directory ("${BINARY_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" REGEX "/${_BASIS_H_DIR}/basis\\.h$" EXCLUDE)
   endif ()
   # "parse" public header files to check if C++ BASIS utilities are included
   if (NOT BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
@@ -1231,16 +1230,11 @@ macro (basis_install_public_headers)
   unset (_CONFIGURED_PUBLIC_HEADERS)
   # install public headers of BASIS utilities (optional)
   if (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
-    get_filename_component (_A "${INCLUDE_PREFIX}" PATH)
-    get_filename_component (_B "${INCLUDE_PREFIX}" NAME)
     install (
-      FILES       "${BINARY_INCLUDE_DIR}/${INCLUDE_PREFIX}basis.h"
-      DESTINATION "${INSTALL_INCLUDE_DIR}/${_A}"
+      FILES       "${BINARY_INCLUDE_DIR}/${_BASIS_H_DIR}/basis.h"
+      DESTINATION "${INSTALL_INCLUDE_DIR}/${_BASIS_H_DIR}"
       COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
-      RENAME      "${_B}basis.h"
     )
-    unset (_A)
-    unset (_B)
   endif ()
 endmacro ()
 
@@ -1401,7 +1395,9 @@ macro (basis_project_impl)
   # dump currently defined CMake variables such that these can be used to
   # configure the .in public header and module files during the build step
   basis_dump_variables ("${PROJECT_BINARY_DIR}/BasisCache.txt")
-  basis_include_directories (BEFORE "${PROJECT_CODE_DIR}")
+  basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}"
+                                    "${PROJECT_INCLUDE_DIR}"
+                                    "${PROJECT_CODE_DIR}")
   basis_configure_public_headers ()
   basis_configure_script_libraries ()
 
@@ -1467,7 +1463,7 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # finalize custom targets
-  if (NOT PROJECT_IS_MODULE)
+  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
     # copy properties of modules
     foreach (M IN LISTS PROJECT_MODULES_ENABLED)
       foreach (P IN ITEMS IMPORTED_TARGETS
@@ -1499,9 +1495,11 @@ macro (basis_project_impl)
     basis_finalize_targets ()
     # add build target for missing __init__.py files of Python package
     basis_add_init_py_target ()
-    # add installation rules for public headers
-    basis_install_public_headers ()
   endif ()
+
+  # --------------------------------------------------------------------------
+  # add installation rules for public headers
+  basis_install_public_headers ()
 
   # --------------------------------------------------------------------------
   # generate configuration files
@@ -1518,24 +1516,8 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
-  # install symbolic links
-  if (INSTALL_LINKS)
-    basis_install_links ()
-    # documentation
-    # Note: Not all CPack generators preserve symbolic links to directories
-    # Note: This is not part of the filesystem hierarchy standard of Linux,
-    #       but of the standard of certain distributions including Ubuntu.
-    #if (NOT PROJECT_IS_MODULE AND INSTALL_SINFIX AND BASIS_INSTALL_SINFIX)
-    #  basis_install_link (
-    #    "${INSTALL_DOC_DIR}"
-    #    "share/doc/${BASIS_INSTALL_SINFIX}"
-    #  )
-    #endif ()
-  endif ()
-
-  # --------------------------------------------------------------------------
   # uninstaller
-  if (NOT PROJECT_IS_MODULE)
+  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
     # add uninstall target
     basis_add_uninstall ()
     # add code to generate uninstaller at the end of the installation

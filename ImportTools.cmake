@@ -81,7 +81,7 @@ function (set_target_properties)
     # directly after the PROPERTIES keyword.
     while (N GREATER 0)
       list (GET ARGN 0 ARG)
-      if (ARG MATCHES "${BASIS_PROPERTIES_ON_TARGETS_REGEX}")
+      if (ARG MATCHES "${BASIS_PROPERTIES_ON_TARGETS_RE}")
         break ()
       endif ()
       list (APPEND VALUE "${ARG}")

@@ -55,16 +55,9 @@ set (FILE "${FILE}")
 ## @brief Name of script file.
 set (NAME "${NAME}")
 ## @brief Name of script file in uppercase only.
-set (NAME_UPPER "${NAME_UPPER}")
+set (NAME_U "${NAME_U}")
 ## @brief Name of script file in lowercase only.
-set (NAME_LOWER "${NAME_LOWER}")
-
-## @brief Namespace string for use in global script variable names.
-set (NAMESPACE "${NAMESPACE}")
-## @brief Namespace string for use in global script constant names.
-set (NAMESPACE_UPPER "${NAMESPACE_UPPER}")
-## @brief Namespace string for use in global script variable and function names.
-set (NAMESPACE_LOWER "${NAMESPACE_LOWER}")
+set (NAME_L "${NAME_L}")
 
 # ============================================================================
 # directories
@@ -81,7 +74,7 @@ set (NAMESPACE_LOWER "${NAMESPACE_LOWER}")
 # @endcode
 
 ## @brief Installation prefix relative to script location.
-basis_set_script_path (PREFIX_DIR "@CMAKE_BINARY_DIR@" "@INSTALL_PREFIX@")
+basis_set_script_path (PREFIX_DIR "@CMAKE_BINARY_DIR@" "@CMAKE_INSTALL_PREFIX@")
 
 ## @brief Directory of main executables relative to script location.
 basis_set_script_path (RUNTIME_DIR "@BINARY_RUNTIME_DIR@" "@INSTALL_RUNTIME_DIR@")

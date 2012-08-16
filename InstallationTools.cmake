@@ -85,7 +85,7 @@ function (basis_install_directory)
   if (IS_ABSOLUTE "${DESTINATION}")
     set (DESTINATION_ABSDIR "${DESTINATION}")
   else ()
-    set (DESTINATION_ABSDIR "${INSTALL_PREFIX}/${DESTINATION}")
+    set (DESTINATION_ABSDIR "${CMAKE_INSTALL_PREFIX}/${DESTINATION}")
   endif ()
   if ("${DESTINATION_ABSDIR}" MATCHES "^${REGEX}")
     message (FATAL_ERROR "Installation directory ${DESTINATION_ABSDIR} is inside the project source tree!")
@@ -116,7 +116,7 @@ endfunction ()
 #
 # @ingroup CMakeAPI
 function (basis_install_link OLD NEW)
-  # Attention: CMAKE_INSTALL_PREFIX must be used instead of INSTALL_PREFIX.
+  # Attention: CMAKE_INSTALL_PREFIX must be used instead of CMAKE_INSTALL_PREFIX.
   set (CMD_IN
     "
     set (OLD \"@OLD@\")
@@ -241,30 +241,30 @@ endfunction ()
 # The uninstaller whose template can be found in cmake_uninstaller.cmake.in
 # is responsible for removing the registry entry again.
 function (basis_register_package)
-  set (PKGDIR "${INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}")
+  set (PKGDIR "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}")
   # note: string(MD5) only available since CMake 2.8.7
   #string (MD5 PKGUID "${PKGDIR}")
-  set (PKGUID "${BASIS_NAMESPACE_LOWER}-${PROJECT_NAME_LOWER}-${PROJECT_VERSION}")
+  set (PKGUID "${PROJECT_PACKAGE_VENDOR_L}-${PROJECT_PACKAGE_L}-${PROJECT_VERSION}")
   if (WIN32)
     install (CODE
       "execute_process (
-         COMMAND reg add \"HKCU\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_NAME}\" /v \"${PKGUID}\" /d \"${PKGDIR}\" /t REG_SZ /f
+         COMMAND reg add \"HKCU\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_PACKAGE}\" /v \"${PKGUID}\" /d \"${PKGDIR}\" /t REG_SZ /f
          RESULT_VARIABLE RT
          ERROR_VARIABLE  ERR
          OUTPUT_QUIET
        )
        if (RT EQUAL 0)
-         message (STATUS \"Register:   Added HKEY_CURRENT_USER\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_NAME}\\\\${PKGUID}\")
+         message (STATUS \"Register:   Added HKEY_CURRENT_USER\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_PACKAGE}\\\\${PKGUID}\")
        else ()
          string (STRIP \"\${ERR}\" ERR)
          message (STATUS \"Register:   Failed to add registry entry: \${ERR}\")
        endif ()"
     )
   elseif (IS_DIRECTORY "$ENV{HOME}")
-    file (WRITE "${BINARY_CONFIG_DIR}/${PROJECT_NAME}RegistryFile" "${PKGDIR}")
+    file (WRITE "${BINARY_CONFIG_DIR}/${PROJECT_PACKAGE}RegistryFile" "${PKGDIR}")
     install (
-      FILES       "${BINARY_CONFIG_DIR}/${PROJECT_NAME}RegistryFile"
-      DESTINATION "$ENV{HOME}/.cmake/packages/${PROJECT_NAME_LOWER}"
+      FILES       "${BINARY_CONFIG_DIR}/${PROJECT_PACKAGE}RegistryFile"
+      DESTINATION "$ENV{HOME}/.cmake/packages/${PROJECT_PACKAGE_L}"
       RENAME      "${PKGUID}"
     )
   endif ()
