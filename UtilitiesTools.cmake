@@ -44,19 +44,29 @@ function (basis_add_utilities_library UID)
   # target UID of "basis" library target
   basis_make_target_uid (TARGET_UID basis)
   if (NOT TARGET ${TARGET_UID})
-    # Output name for library. Use same file for each "basis" library target
-    # as long as basis.cxx does not differ for different modules. Separate
-    # build targets are only required because of the EXPORT option of
-    # install(TARGETS) and the install(EXPORT) command.
-    # add target if not present yet
-    set (OUTPUT_NAME "basis")
+    if (PROJECT_IS_SUBPROJECT)
+      # a subproject has it's own version of the project-specific BASIS utilities
+      # as the targets and functions live in a separate namespace
+      set (CODE_DIR    "${BINARY_CODE_DIR}")
+      set (INCLUDE_DIR "${BINARY_INCLUDE_DIR}")
+      set (OUTPUT_DIR  "${BINARY_ARCHIVE_DIR}")
+      set (INSTALL_DIR "${INSTALL_ARCHIVE_DIR}")
+    else ()
+      # modules, on the other side, share the library with the top-level project
+      # the addition of the utilities target is in this case only required because
+      # of the install(TARGETS) and install(EXPORT) commands.
+      set (CODE_DIR    "${BASIS_BINARY_CODE_DIR}")
+      set (INCLUDE_DIR "${BASIS_BINARY_INCLUDE_DIR}")
+      set (OUTPUT_DIR  "${BASIS_BINARY_ARCHIVE_DIR}")
+      set (INSTALL_DIR "${BASIS_INSTALL_ARCHIVE_DIR}")
+    endif ()
     # write dummy source files
     basis_library_prefix (PREFIX CXX)
     foreach (S IN ITEMS basis.h basis.cxx)
       if (S MATCHES "\\.h$")
-        set (S "${BINARY_INCLUDE_DIR}/${PREFIX}/${S}")
+        set (S "${INCLUDE_DIR}/${PREFIX}/${S}")
       else ()
-        set (S "${BASIS_BINARY_CODE_DIR}/${S}")
+        set (S "${CODE_DIR}/${S}")
       endif ()
       if (NOT EXISTS "${S}")
         file (WRITE "${S}"
@@ -66,7 +76,7 @@ function (basis_add_utilities_library UID)
       endif ()
     endforeach ()
     # add library target if not present yet - only build if required
-    add_library (${TARGET_UID} STATIC "${BASIS_BINARY_CODE_DIR}/basis.cxx")
+    add_library (${TARGET_UID} STATIC "${CODE_DIR}/basis.cxx")
     # define dependency on non-project specific utilities as the order in
     # which static libraries are listed on the command-line for the linker
     # matters; this will help CMake to get the order right
@@ -75,17 +85,17 @@ function (basis_add_utilities_library UID)
     _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
-        BASIS_TYPE                "STATIC_LIBRARY"
-        OUTPUT_NAME               "${OUTPUT_NAME}"
-        ARCHIVE_OUTPUT_DIRECTORY  "${BASIS_BINARY_ARCHIVE_DIR}"
-        ARCHIVE_INSTALL_DIRECTORY "${BASIS_INSTALL_ARCHIVE_DIR}"
+        BASIS_TYPE                STATIC_LIBRARY
+        OUTPUT_NAME               basis
+        ARCHIVE_OUTPUT_DIRECTORY  "${OUTPUT_DIR}"
+        ARCHIVE_INSTALL_DIRECTORY "${INSTALL_DIR}"
     )
     # add installation rule
     install (
       TARGETS ${TARGET_UID}
       EXPORT  ${PROJECT_NAME}
       ARCHIVE
-        DESTINATION "${BASIS_INSTALL_ARCHIVE_DIR}"
+        DESTINATION "${INSTALL_DIR}"
         COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
     )
     basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS ${TARGET_UID})
