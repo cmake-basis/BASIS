@@ -23,8 +23,8 @@
 # @ingroup BasisBashUtilities
 ##############################################################################
 
-[ "${_@PROJECT_NAMESPACE_BASH@_@__NS__@_INCLUDED}" == 'true' ] || {
-_@PROJECT_NAMESPACE_BASH@_@__NS__@_INCLUDED='true'
+[ "${_@PROJECT_PACKAGE_VENDOR_U@_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED}" == 'true' ] || {
+_@PROJECT_PACKAGE_VENDOR_U@_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED='true'
 
 
 # ============================================================================
@@ -64,7 +64,11 @@ readonly _BASIS_DIR="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
 # ============================================================================
 
 # source project-independent utiltiy functions
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh"
+. "${_BASIS_DIR}/@_BASIS_BASH_LIBRARY_DIR@/sbia/basis/utilities.sh"
+if [[ $? -ne 0 ]]; then
+    echo "Failed to import sbia.basis.utilities module!" 1>&2
+    exit 1
+fi
 
 # ============================================================================
 # initialize executable target information

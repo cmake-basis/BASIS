@@ -53,28 +53,31 @@
 #       the corresponding options of the basis_project() command.
 
 basis_project (
-  NAME
-    "BASIS"
-  VERSION
-    0.0.0
-  DESCRIPTION
-    "This package implements and supports the development of "
-    "software which follows the SBIA Build system And Software "
-    "Implementation Standard (BASIS)."
+  # --------------------------------------------------------------------------
+  # meta-data
+  NAME        BASIS
+  VERSION     0.0.0
+  DESCRIPTION "This package implements and supports the development of "
+              "software which follows the SBIA Build system And Software "
+              "Implementation Standard (BASIS)."
+  # --------------------------------------------------------------------------
+  # dependencies
   DEPENDS
     #<dependency>
   OPTIONAL_DEPENDS
     PythonInterp
+    JythonInterp
     Perl
+    MATLAB{matlab}
     BASH
-    ITK-4
-    ITK
     Doxygen
     Sphinx
+    ITK # required by basistest-driver
+        # TODO get rid of this dependency
     #<optional-dependency>
   TEST_DEPENDS
     #<test-dependency>
   OPTIONAL_TEST_DEPENDS
-    "MATLAB{matlab, mex, mexext}"
+    MATLAB{matlab,mex,mexext}
     #<optional-test-dependency>
 )

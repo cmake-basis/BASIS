@@ -12,7 +12,7 @@
 
 . "${BASIS_BASH_UTILITIES}" || exit 1
 
-import shtap
+import sbia.basis.shtap
 
 echo -n "<DartMeasurement name=\"Host Name\" type=\"string\">"
 echo -n `hostname`;

@@ -80,7 +80,7 @@ import()
         esac
         shift
     done
-    local module="${1//./\/}"
+    local module="${1//.//}" # replace dots (.) by forward slashes (/)
     if [[ -z "${module}" ]]; then
         echo "import: missing module name argument!" 1>&2
         exit 1
