@@ -101,7 +101,7 @@ import()
         path="${path#*:}"
     done
     if [[ ${exitonerror} == 'true' ]]; then
-        echo "import: module $1 not found!" 1>&2
+        echo "import: module '$1' not found!" 1>&2
         exit 1
     fi
     return 1
