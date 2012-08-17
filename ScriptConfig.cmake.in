@@ -86,8 +86,14 @@ basis_set_script_path (LIBRARY_DIR "@BINARY_LIBRARY_DIR@" "@INSTALL_LIBRARY_DIR@
 basis_set_script_path (ARCHIVE_DIR "@BINARY_ARCHIVE_DIR@" "@INSTALL_ARCHIVE_DIR@")
 ## @brief Directory of Python modules relative to script location.
 basis_set_script_path (PYTHON_LIBRARY_DIR "@BINARY_PYTHON_LIBRARY_DIR@" "@INSTALL_PYTHON_LIBRARY_DIR@")
+## @brief Directory of Jython modules relative to script location.
+basis_set_script_path (JYTHON_LIBRARY_DIR "@BINARY_JYTHON_LIBRARY_DIR@" "@INSTALL_JYTHON_LIBRARY_DIR@")
 ## @brief Directory of Perl modules relative to script location.
 basis_set_script_path (PERL_LIBRARY_DIR "@BINARY_PERL_LIBRARY_DIR@" "@INSTALL_PERL_LIBRARY_DIR@")
+## @brief Directory of MATLAB modules relative to script location.
+basis_set_script_path (MATLAB_LIBRARY_DIR "@BINARY_MATLAB_LIBRARY_DIR@" "@INSTALL_MATLAB_LIBRARY_DIR@")
+## @brief Directory of Bash modules relative to script location.
+basis_set_script_path (BASH_LIBRARY_DIR "@BINARY_BASH_LIBRARY_DIR@" "@INSTALL_BASH_LIBRARY_DIR@")
 ## @brief Directory of auxiliary data files relative to script location.
 basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 
@@ -101,13 +107,16 @@ basis_set_script_path (DATA_DIR "@PROJECT_DATA_DIR@" "@INSTALL_DATA_DIR@")
 # libexec_dir=${exec_dir}/__PREFIX_DIR__/__LIBEXEC_DIR_SUFFIX__
 # @endcode
 
-basis_get_relative_path (RUNTIME_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${RUNTIME_DIR}")
-basis_get_relative_path (LIBEXEC_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${LIBEXEC_DIR}")
-basis_get_relative_path (LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${LIBRARY_DIR}")
-basis_get_relative_path (ARCHIVE_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${ARCHIVE_DIR}")
+basis_get_relative_path (RUNTIME_DIR_SUFFIX        "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${RUNTIME_DIR}")
+basis_get_relative_path (LIBEXEC_DIR_SUFFIX        "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${LIBEXEC_DIR}")
+basis_get_relative_path (LIBRARY_DIR_SUFFIX        "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${LIBRARY_DIR}")
+basis_get_relative_path (ARCHIVE_DIR_SUFFIX        "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${ARCHIVE_DIR}")
 basis_get_relative_path (PYTHON_LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${PYTHON_LIBRARY_DIR}")
-basis_get_relative_path (PERL_LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${PERL_LIBRARY_DIR}")
-basis_get_relative_path (DATA_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${DATA_DIR}")
+basis_get_relative_path (JYTHON_LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${JYTHON_LIBRARY_DIR}")
+basis_get_relative_path (PERL_LIBRARY_DIR_SUFFIX   "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${PERL_LIBRARY_DIR}")
+basis_get_relative_path (MATLAB_LIBRARY_DIR_SUFFIX "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${MATLAB_LIBRARY_DIR}")
+basis_get_relative_path (BASH_LIBRARY_DIR_SUFFIX   "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${BASH_LIBRARY_DIR}")
+basis_get_relative_path (DATA_DIR_SUFFIX           "${__DIR__}/${PREFIX_DIR}" "${__DIR__}/${DATA_DIR}")
 
 # Note: The following set() commands are needed for the API documentation.
 
@@ -121,8 +130,14 @@ set (LIBRARY_DIR_SUFFIX "${LIBRARY_DIR_SUFFIX}")
 set (ARCHIVE_DIR_SUFFIX "${ARCHIVE_DIR_SUFFIX}")
 ## @brief Directory of Python modules relative to installation prefix.
 set (PYTHON_LIBRARY_DIR_SUFFIX "${PYTHON_LIBRARY_DIR_SUFFIX}")
+## @brief Directory of Jython modules relative to installation prefix.
+set (JYTHON_LIBRARY_DIR_SUFFIX "${JYTHON_LIBRARY_DIR_SUFFIX}")
 ## @brief Directory of Perl modules relative to installation prefix.
 set (PERL_LIBRARY_DIR_SUFFIX "${PERL_LIBRARY_DIR_SUFFIX}")
+## @brief Directory of MATLAB modules relative to installation prefix.
+set (MATLAB_LIBRARY_DIR_SUFFIX "${MATLAB_LIBRARY_DIR_SUFFIX}")
+## @brief Directory of Bash modules relative to installation prefix.
+set (BASH_LIBRARY_DIR_SUFFIX "${BASH_LIBRARY_DIR_SUFFIX}")
 ## @brief Directory of auxiliary data files relative to installation prefix.
 set (DATA_DIR_SUFFIX "${DATA_DIR_SUFFIX}")
 

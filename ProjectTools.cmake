@@ -772,7 +772,7 @@ function (basis_configure_script_libraries)
           PROPERTIES
             SOURCE_DIRECTORY          "${LIB_DIR}"
             LIBRARY_OUTPUT_DIRECTORY  "${BINARY_${LANGUAGE}_LIBRARY_DIR}"
-            LIBRARY_INSTALL_DIRECTORY "${INSTALL_${LANGUAGE}_LIBRARY_DIR}"
+            LIBRARY_INSTALL_DIRECTORY "${INSTALL_${LANGUAGE}_SITE_LIBRARY_DIR}"
             PREFIX                    ""
         )
         list (APPEND TARGETS ${TARGET_NAME})
@@ -1086,22 +1086,20 @@ macro (basis_initialize_settings)
   endif ()
   # configure project specific BASIS settings
   set (_BASIS_NAMESPACE_CMAKE "${BASIS_PROJECT_PACKAGE_VENDOR_L}.${BASIS_PROJECT_PACKAGE_L}")
-  set (_NAMESPACE_CMAKE       "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
-  set (_NAMESPACE_CXX         "${PROJECT_PACKAGE_VENDOR_L}::${PROJECT_PACKAGE_L}")
-  set (_NAMESPACE_JAVA        "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
-  set (_NAMESPACE_PYTHON      "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
-  set (_NAMESPACE_PERL        "${PROJECT_PACKAGE_VENDOR}::${PROJECT_PACKAGE}")
-  set (_NAMESPACE_BASH        "${PROJECT_PACKAGE_VENDOR_U}_${PROJECT_PACKAGE_U}")
-  set (_NAMESPACE_MATLAB      "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
+  set (_NAMESPACE_CXX  "${PROJECT_PACKAGE_VENDOR_L}::${PROJECT_PACKAGE_L}")
+  set (_NAMESPACE_PERL "${PROJECT_PACKAGE_VENDOR}::${PROJECT_PACKAGE}")
+  foreach (_L IN ITEMS CMAKE JAVA PYTHON BASH MATLAB)
+    set (_NAMESPACE_${_L} "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
+  endforeach ()
   if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
     set (_NAMESPACE_CMAKE "${_NAMESPACE_CMAKE}.${PROJECT_NAME_L}")
   endif ()
   if (PROJECT_IS_SUBPROJECT)
-    foreach (_L IN ITEMS CXX JAVA PYTHON MATLAB)
-      set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}::${PROJECT_NAME_L}")
-    endforeach ()
+    set (_NAMESPACE_CXX  "${_NAMESPACE_CXX}::${PROJECT_NAME_L}")
     set (_NAMESPACE_PERL "${_NAMESPACE_PERL}::${PROJECT_NAME}")
-    set (_NAMESPACE_BASH "${_NAMESPACE_BASH}_${PROJECT_NAME_U}")
+    foreach (_L IN ITEMS JAVA PYTHON MATLAB)
+      set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}.${PROJECT_NAME_L}")
+    endforeach ()
   endif ()
   # configure settings file with API documentation
   configure_file (

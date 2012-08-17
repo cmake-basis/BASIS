@@ -76,11 +76,22 @@ basis_set_config    (LIBRARY_DIRS) # to have a set() recognized by Doxygen filte
 basis_copy_config   (LIBRARY_DIRS LIBRARY_DIR)
 basis_append_config (LIBRARY_DIRS "@LIBRARY_DIRS_CONFIG@")
 
-## @brief Search path for Python package.
+## @brief Search path for Python modules.
 basis_set_config (PYTHONPATH "@PYTHONPATH_CONFIG@")
 
-## @brief Search path for Perl packages.
+## @brief Search path for Jython modules.
+basis_set_config (JYTHONPATH "@JYTHONPATH_CONFIG@")
+
+## @brief Search path for Perl modules.
 basis_set_config (PERL5LIB "@PERL5LIB_CONFIG@")
+
+## @brief Search path for MATLAB modules.
+basis_set_config (MATLABPATH "@MATLABPATH_CONFIG@")
+
+## @brief Search path for Bash modules.
+#
+# See the import() function of the BASIS Bash utilities.
+basis_set_config (BASHPATH "@BASHPATH_CONFIG@")
 
 # ============================================================================
 # exports

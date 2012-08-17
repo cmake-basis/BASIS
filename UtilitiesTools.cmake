@@ -401,6 +401,7 @@ function (basis_configure_utilities)
                            " Rebuild BASIS with Bash utilities enabled.")
     endif ()
     # add project-specific utilities
+    basis_library_prefix (PREFIX BASH)
     basis_add_library (basis_sh "${BASIS_BASH_TEMPLATES_DIR}/basis.sh")
     set (COMPILE_DEFINITIONS
       "if (BUILD_INSTALL_SCRIPT)
@@ -411,16 +412,19 @@ function (basis_configure_utilities)
        set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n    ${EXECUTABLE_TARGET_INFO_BASH_S}\")"
     )
     if (PROJECT_NAME MATCHES "^BASIS$")
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_LIBRARY_DIR \"${BASIS_LIBRARY_DIR}\" \"${INSTALL_LIBRARY_DIR}\")")
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BINARY_BASH_LIBRARY_DIR}\" \"${INSTALL_BASH_LIBRARY_DIR}\")")
     else ()
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_LIBRARY_DIR \"${BASIS_LIBRARY_DIR}\")")
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")
     endif ()
     basis_set_target_properties (
       basis_sh
       PROPERTIES
-        SOURCE_DIRECTORY    "${BASIS_BASH_TEMPLATES_DIR}"
-        BINARY_DIRECTORY    "${BINARY_CODE_DIR}"
-        COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}"
+        SOURCE_DIRECTORY          "${BASIS_BASH_TEMPLATES_DIR}"
+        BINARY_DIRECTORY          "${BINARY_CODE_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY  "${BINARY_BASH_LIBRARY_DIR}"
+        LIBRARY_INSTALL_DIRECTORY "${INSTALL_BASH_LIBRARY_DIR}"
+        PREFIX                    "${PREFIX}"
+        COMPILE_DEFINITIONS       "${COMPILE_DEFINITIONS}"
     )
     # dependencies
     basis_target_link_libraries (basis_sh ${BASIS_BASH_UTILITIES_LIBRARY})

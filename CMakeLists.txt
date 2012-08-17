@@ -72,6 +72,7 @@ set (
     "Directories.cmake.in"        # documents project directory structure
     "doxyfilter.bat.in"           # wraps Doxygen filter command on Windows
     "ExecuteProcess.cmake"        # wraps CMake's execute_process() function
+    "get_python_lib.py"           # auxiliary script to determine site-packages directory
     "glob.cmake"                  # used to glob for source files
     "runmcc.m"                    # helper used by MatlabTools.cmake module
     "ScriptConfig.cmake.in"       # default script configuration file

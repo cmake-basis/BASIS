@@ -399,6 +399,9 @@ basis_set_if_empty (BASIS_USE_FULLY_QUALIFIED_UIDS OFF)
 ## @brief Default vendor of BASIS-based packages.
 set (BASIS_PACKAGE_VENDOR "SBIA")
 
+string (TOLOWER "${BASIS_PACKAGE_VENDOR}" BASIS_PACKAGE_VENDOR_L)
+string (TOUPPER "${BASIS_PACKAGE_VENDOR}" BASIS_PACKAGE_VENDOR_U)
+
 ## @brief Default component used for library targets when no component is specified.
 #
 # The default component a library target and its auxiliary files
@@ -434,6 +437,34 @@ mark_as_advanced (BASIS_REVISION_INFO)
 # @sa basis_add_script_target()
 option (BASIS_COMPILE_SCRIPTS "Enable compilation of scripts if supported by the language." OFF)
 mark_as_advanced (BASIS_COMPILE_SCRIPTS)
+
+## @brief Enable the installation of scripted modules in site specific default directories.
+#
+# If this option is @c ON, scripted modules such as Python and Perl modules, in particular,
+# are installed in the default installation directories for site packages of the respective
+# interpreter. This means that these modules may be installed outside the installation
+# root directory as specified by the @c CMAKE_INSTALL_PREFIX. When this option is set to
+# @c OFF, all modules are installed in subdirectories of the @c CMAKE_INSTALL_PREFIX.
+# These directories may have to be added to the search path for modules manually as they
+# might not be in the default search path of the respective interpreter.
+#
+# The installation directories for public modules which are intended for external use
+# can further be set using the -D option of CMake or be modified by editing the respective
+# advanced CMake cache variables named <tt>INSTALL_&lt;LANG%gt;_SITE_DIR</tt>.
+#
+# @note Even though it is more convenient for the user of a package to have the modules
+#       being installed in the default directories, this option is set to @c OFF by default.
+#       The reasons are that it is in first place expected that the installation will copy
+#       files only to directories within the @c CMAKE_INSTALL_PREFIX. Moreover, it is not
+#       guaranteed if the user has write permissions for the default site packages directories.
+#       Last but not least, when installing public modules located in the @c PROJECT_LIBRARY_DIR
+#       source directory, BASIS does not set a default module @c PREFIX which reduces the risk
+#       of overwriting existing modules of other packages. If the developer of a BASIS package
+#       was not thorough and did not follow the guidelines, setting this option to @c ON
+#       has the potential risk of overwriting other packages' modules. Therefore,
+#       modules are only installed in system default locations if explicitly requested.
+option (BASIS_SITE_DIRS "Enable the installation of scripted modules in site specific default directories." OFF)
+mark_as_advanced (BASIS_SITE_DIRS)
 
 ## @brief Script used to execute a process in CMake script mode.
 #

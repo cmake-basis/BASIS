@@ -1585,9 +1585,7 @@ endfunction ()
 #                       or relative to the include directory in case of C++.
 # @param [in]  LANGUAGE Programming language, e.g., @c CXX, @c PYTHON,...
 macro (basis_library_prefix PREFIX LANGUAGE)
-  if (LANGUAGE MATCHES "^BASH$")
-    set (${PREFIX})
-  elseif (PROJECT_NAMESPACE_${LANGUAGE})
+  if (PROJECT_NAMESPACE_${LANGUAGE})
     string (REGEX REPLACE "\\.|::" "/" ${PREFIX} "${PROJECT_NAMESPACE_${LANGUAGE}}")
   else ()
     message (FATAL_ERROR "basis_library_prefix(): PROJECT_NAMESPACE_${LANGUAGE} not set!"
@@ -2008,13 +2006,6 @@ function (basis_configure_script INPUT OUTPUT)
   # --------------------------------------------------------------------------
   # set general variables for use in scripts
   set (__FILE__ "${_OUTPUT_FILE}")
-  get_filename_component (__Name__ "${_OUTPUT_FILE}" NAME)
-  string (TOUPPER "${__Name__}" __NAME__)
-  string (TOLOWER "${__Name__}" __name__)
-  get_filename_component (__NameWE__   "${_OUTPUT_FILE}" NAME_WE)
-  string (REGEX REPLACE "[^a-zA-Z0-9]" "_" __Ns__ "${__NameWE__}")
-  string (TOUPPER "${__Ns__}" __NS__)
-  string (TOLOWER "${__Ns__}" __ns__)
   # --------------------------------------------------------------------------
   # variables mainly intended for use in script configurations, in particular,
   # these are used by basis_set_script_path() to make absolute paths relative
@@ -2090,6 +2081,7 @@ function (basis_configure_script INPUT OUTPUT)
         set (SCRIPT "${PERL_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
     elseif (LANGUAGE MATCHES "BASH")
+      basis_library_prefix (PREFIX BASH)
       # In case of Bash, set BASIS_BASH_UTILITIES which is required to first source the
       # BASIS utilities modules (in particular core.sh). This variable should be set to
       # the utilities.sh module of BASIS by default as part of the BASIS installation
@@ -2109,7 +2101,7 @@ done
 [[ $i -lt 100 ]] && __FILE__=\"$lnk\"
 unset -v i dir lnk
 __DIR__=\"$(dirname -- \"$__FILE__\")\"
-BASIS_BASH_UTILITIES=\"$__DIR__/${LIBRARY_DIR}/basis.sh\""
+BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}/basis.sh\""
       )
       string (REPLACE "\n" "; " BASH_CODE "${BASH_CODE}")
       # set BASHPATH which is used by import() function provided by core.sh module of BASIS
