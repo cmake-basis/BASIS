@@ -121,12 +121,13 @@ function (basis_get_full_matlab_version VERSION)
       "fid = fopen ('${OUTPUT_FILE}', 'w')"
       "fprintf (fid, '%s', version)"
       "fclose (fid)"
-      "exit"
+      "quit force"
     )
     message (STATUS "Determining MATLAB version...")
     execute_process (
       COMMAND         ${CMD} "${MATLAB_CMD}"
       RESULT_VARIABLE RETVAL
+      TIMEOUT         30
       OUTPUT_QUIET
       ERROR_QUIET
     )
