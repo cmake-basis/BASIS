@@ -109,7 +109,7 @@ function (basis_get_full_matlab_version VERSION)
     set (VERSION "" PARENT_SCOPE)
     return ()
   endif ()
-  set (OUTPUT_FILE "${BASIS_PROJECT_BINARY_DIR}/MatlabVersion.txt")
+  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
   # run matlab command to write return value of "version" command to text file
   if (NOT EXISTS "${OUTPUT_FILE}")
     set (CMD "${MATLAB_EXECUTABLE}" "-nodesktop" "-nosplash")
@@ -119,6 +119,7 @@ function (basis_get_full_matlab_version VERSION)
     list (APPEND CMD "-r")
     set (MATLAB_CMD
       "fid = fopen ('${OUTPUT_FILE}', 'w')"
+      "if ~fid, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end"
       "fprintf (fid, '%s', version)"
       "fclose (fid)"
       "quit force"
@@ -128,10 +129,10 @@ function (basis_get_full_matlab_version VERSION)
       COMMAND         ${CMD} "${MATLAB_CMD}"
       RESULT_VARIABLE RETVAL
       TIMEOUT         30
+      ERROR_VARIABLE  STDERR
       OUTPUT_QUIET
-      ERROR_QUIET
     )
-    if (NOT RETVAL EQUAL 0)
+    if (NOT RETVAL EQUAL 0 OR STDERR MATCHES "??? Error")
       set (VERSION "" PARENT_SCOPE)
       message (STATUS "Determining MATLAB version... - failed")
       return ()
