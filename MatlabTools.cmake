@@ -57,7 +57,7 @@ set (BASIS_SCRIPT_MCC "${CMAKE_CURRENT_LIST_DIR}/runmcc.m")
 ## @brief Compile flags used to build MATLAB Compiler targets.
 set (
   BASIS_MCC_FLAGS
-    "-v -R -singleCompThread"
+    "-R -singleCompThread"
   CACHE STRING
     "Common MATLAB Compiler flags (separated by ' '; use '\\' to mask ' ')."
 )
@@ -65,7 +65,7 @@ set (
 ## @brief Compile flags used to build MEX-files using the MEX script.
 set (
   BASIS_MEX_FLAGS
-    "-v"
+    ""
   CACHE STRING
     "Common MEX switches (separated by ' '; use '\\' to mask ' ')."
 )
@@ -815,13 +815,7 @@ function (basis_add_mcc_target TARGET_NAME)
                          " Set MATLAB_DIR and/or MATLAB_MCC_EXECUTABLE manually and try again.")
   endif ()
   if ((BASIS_COMPILE_MATLAB AND MATLAB_MCC_EXECUTABLE) OR TYPE MATCHES "LIBRARY")
-    if (BASIS_MCC_FLAGS)
-      string (REPLACE "\\ "    "&nbsp;" COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
-      string (REPLACE " "      ";"      COMPILE_FLAGS "${COMPILE_FLAGS}")
-      string (REPLACE "&nbsp;" " "      COMPILE_FLAGS "${COMPILE_FLAGS}")
-    else ()
-      set (COMPILE_FLAGS)
-    endif ()
+    set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
   else ()
     set (COMPILE_FLAGS NOMCC)
   endif ()
@@ -1084,7 +1078,7 @@ function (basis_build_mex_file TARGET_UID)
   list (APPEND MEX_ARGS ${MEX_USER_ARGS})                        # other user switches
   list (APPEND MEX_ARGS ${SOURCES})                              # source files
   # build command for invocation of MEX script
-  set (BUILD_CMD     "${MATLAB_MEX_EXECUTABLE}" ${MEX_ARGS})
+  set (BUILD_CMD     "${MATLAB_MEX_EXECUTABLE}" -v ${MEX_ARGS})
   set (BUILD_LOG     "${BUILD_DIR}/build.log")
   set (BUILD_OUTPUT  "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   set (BUILD_OUTPUTS "${BUILD_OUTPUT}")
@@ -1249,6 +1243,8 @@ function (basis_build_mcc_target TARGET_UID)
   if (SUFFIX)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
+  # split compile flags at spaces into list
+  basis_string_to_list (MCC_USER_FLAGS "${COMPILE_FLAGS}")
   # initialize dependencies of custom build command
   set (DEPENDS ${SOURCES})
   # build output file and comment
@@ -1348,10 +1344,10 @@ function (basis_build_mcc_target TARGET_UID)
       list (APPEND LINK_LIBS "${LIB_FILE}")
     endforeach ()
     # MATLAB Compiler arguments
-    set (MCC_ARGS ${COMPILE_FLAGS})                     # user specified flags
-    foreach (INCLUDE_PATH ${BASIS_INCLUDE_DIRECTORIES}) # add directories added via
-      list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)        # basis_include_directories ()
-      if (EXISTS "${INCLUDE_PATH}" AND IDX EQUAL -1)    # function to search path
+    string (REGEX REPLACE " +" ";" MCC_ARGS "${COMPILE_FLAGS}") # user specified flags
+    foreach (INCLUDE_PATH ${BASIS_INCLUDE_DIRECTORIES})         # add directories added via
+      list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)                # basis_include_directories ()
+      if (EXISTS "${INCLUDE_PATH}" AND IDX EQUAL -1)            # function to search path
         list (APPEND MCC_ARGS "-I" "${INCLUDE_PATH}")
       endif ()
     endforeach ()
@@ -1377,7 +1373,7 @@ function (basis_build_mcc_target TARGET_UID)
       endif ()
     endforeach ()
     # build command for invocation of MATLAB Compiler in standalone mode
-    set (BUILD_CMD   "${MATLAB_MCC_EXECUTABLE}" ${MCC_ARGS})
+    set (BUILD_CMD   "${MATLAB_MCC_EXECUTABLE}" ${MCC_USER_ARGS} ${MCC_ARGS})
     set (BUILD_LOG   "${BUILD_DIR}/build.log")
     set (WORKING_DIR "${SOURCE_DIRECTORY}")
     set (MATLAB_MODE OFF)
@@ -1391,16 +1387,15 @@ function (basis_build_mcc_target TARGET_UID)
         set (MATLAB_MODE OFF)
       endif ()
       if (MATLAB_MODE)
-        basis_list_to_delimited_string (MCC_ARGS "', '" NOAUTOQUOTE ${MCC_ARGS})
-        set (MCC_ARGS "'${MCC_ARGS}'")
+        basis_list_to_delimited_string (ARGS "', '" NOAUTOQUOTE ${MCC_USER_ARGS} ${MCC_ARGS})
         set (
           BUILD_CMD
             "${MATLAB_EXECUTABLE}" # run MATLAB
             "-nosplash"            # do not display splash screen on start up
             "-nodesktop"           # run in command line mode
             "-nojvm"               # we do not need the Java Virtual Machine
-            "-r" "try, mcc(${MCC_ARGS}), catch err, fprintf(2, err.message), end, quit force"
-         )
+            "-r" "try, mcc('-v', '${ARGS}'), catch err, fprintf(2, err.message), end, quit force"
+        )
       endif ()
     endif ()
     # post-build command
