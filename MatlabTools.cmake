@@ -109,7 +109,7 @@ function (basis_get_full_matlab_version VERSION)
     set (VERSION "" PARENT_SCOPE)
     return ()
   endif ()
-  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
+  set (OUTPUT_FILE "${BASIS_PROJECT_BINARY_DIR}/MatlabVersion.txt")
   # run matlab command to write return value of "version" command to text file
   if (NOT EXISTS "${OUTPUT_FILE}")
     set (CMD "${MATLAB_EXECUTABLE}" "-nodesktop" "-nosplash")
