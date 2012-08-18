@@ -772,7 +772,7 @@ function (basis_configure_script_libraries)
           PROPERTIES
             SOURCE_DIRECTORY          "${LIB_DIR}"
             LIBRARY_OUTPUT_DIRECTORY  "${BINARY_${LANGUAGE}_LIBRARY_DIR}"
-            LIBRARY_INSTALL_DIRECTORY "${INSTALL_${LANGUAGE}_SITE_LIBRARY_DIR}"
+            LIBRARY_INSTALL_DIRECTORY "${INSTALL_${LANGUAGE}_SITE_DIR}"
             PREFIX                    ""
         )
         list (APPEND TARGETS ${TARGET_NAME})
