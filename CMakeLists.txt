@@ -41,45 +41,45 @@ set (
 set (
   CMAKE_MODULES_AUXILIARY_FILES
     # API documentation
-    "Doxyfile.in"                      # default Doxygen configuration template
-    "Modules.dox"                      # documentation of BASIS modules groups
-    "Utilities.dox"                    # documentation of BASIS Utilities group
-    "CxxUtilities.dox"                 # documentation of C++ Utilities group
-    "JavaUtilities.dox"                # documentation of Java Utilities group
-    "PythonUtilities.dox"              # documentation of Python Utilities group
-    "PerlUtilities.dox"                # documentation of Perl Utilities group
-    "BashUtilities.dox"                # documentation of BASH Utilities group
-    "MatlabUtilities.dox"              # documentation of MATLAB Utilities group
+    "Doxyfile.in"                         # default Doxygen configuration template
+    "Modules.dox"                         # documentation of BASIS modules groups
+    "Utilities.dox"                       # documentation of BASIS Utilities group
+    "CxxUtilities.dox"                    # documentation of C++ Utilities group
+    "JavaUtilities.dox"                   # documentation of Java Utilities group
+    "PythonUtilities.dox"                 # documentation of Python Utilities group
+    "PerlUtilities.dox"                   # documentation of Perl Utilities group
+    "BashUtilities.dox"                   # documentation of BASH Utilities group
+    "MatlabUtilities.dox"                 # documentation of MATLAB Utilities group
     # package configuration
-    "Config.cmake.in"                  # default <Pkg>Config.cmake template
-    "BasisConfigSettings.cmake"        # settings for default <Pkg>Config.cmake
-    "ConfigVersion.cmake.in"           # default <Pkg>ConfigVersion.cmake template
-    "ConfigUse.cmake.in"               # default <Pkg>Use.cmake template
-    "GenerateConfig.cmake"             # generation/configuration of <Pkg>Config.cmake et al.
+    "Config.cmake.in"                     # default <Pkg>Config.cmake template
+    "BasisConfigSettings.cmake"           # settings for default <Pkg>Config.cmake
+    "ConfigVersion.cmake.in"              # default <Pkg>ConfigVersion.cmake template
+    "ConfigUse.cmake.in"                  # default <Pkg>Use.cmake template
+    "GenerateConfig.cmake"                # generation/configuration of <Pkg>Config.cmake et al.
     # documentation generation
-    "doxygen_header.html"              # header of Doxygen documentation
-    "doxygen_footer.html"              # footer of Doxygen documentation
-    "doxygen_sbia.css"                 # stylesheet for Doxygen documentation
-    "sphinx_conf.py.in"                # default Sphinx configuration
-    "logo_sbia.png"                    # the logo of SBIA
-    "logo_penn.gif"                    # the logo of UPenn
+    "doxygen_header.html"                 # header of Doxygen documentation
+    "doxygen_footer.html"                 # footer of Doxygen documentation
+    "doxygen_sbia.css"                    # stylesheet for Doxygen documentation
+    "sphinx_conf.py.in"                   # default Sphinx configuration
+    "logo_sbia.png"                       # the logo of SBIA
+    "logo_penn.gif"                       # the logo of UPenn
     # other
-    "buildtimestamp.cmd"               # get build timestamp on Windows
-    "CheckPublicHeaders.cmake"         # check if header files were added/removed
-    "cmake_uninstall.cmake.in"         # uninstall script
-    "configure_script.cmake.in"        # used to configure ("build") script files
-    "ConfigureIncludeFiles.cmake"      # used to configure public header files
-    "Directories.cmake.in"             # documents project directory structure
-    "doxyfilter.bat.in"                # wraps Doxygen filter command on Windows
-    "ExecuteProcess.cmake"             # wraps CMake's execute_process() function
-    "generate_matlab_executable.py.in" # build command for alternative build of MCC targets
-    "get_python_lib.py"                # auxiliary script to determine site-packages directory
-    "glob.cmake"                       # used to glob for source files
-    "runmcc.m"                         # helper used by MatlabTools.cmake module
-    "ScriptConfig.cmake.in"            # default script configuration file
-    "PostprocessChangeLog.cmake"       # used to postprocess generated ChangeLog
-    "ProjectSettings.cmake.in"         # default project-dependent settings
-    "updatefile.py"                    # helper used by BasisUpdate.cmake module
+    "buildtimestamp.cmd"                  # get build timestamp on Windows
+    "CheckPublicHeaders.cmake"            # check if header files were added/removed
+    "cmake_uninstall.cmake.in"            # uninstall script
+    "configure_script.cmake.in"           # used to configure ("build") script files
+    "ConfigureIncludeFiles.cmake"         # used to configure public header files
+    "Directories.cmake.in"                # documents project directory structure
+    "doxyfilter.bat.in"                   # wraps Doxygen filter command on Windows
+    "ExecuteProcess.cmake"                # wraps CMake's execute_process() function
+    "generate_matlab_executable.cmake.in" # build command for alternative build of MCC targets
+    "get_python_lib.py"                   # auxiliary script to determine site-packages directory
+    "glob.cmake"                          # used to glob for source files
+    "runmcc.m"                            # helper used by MatlabTools.cmake module
+    "ScriptConfig.cmake.in"               # default script configuration file
+    "PostprocessChangeLog.cmake"          # used to postprocess generated ChangeLog
+    "ProjectSettings.cmake.in"            # default project-dependent settings
+    "updatefile.py"                       # helper used by BasisUpdate.cmake module
 )
 
 # ----------------------------------------------------------------------------
