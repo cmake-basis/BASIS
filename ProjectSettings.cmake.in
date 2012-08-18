@@ -94,6 +94,16 @@ set (PROJECT_NAMESPACE_JAVA "@_NAMESPACE_JAVA@")
 # @ingroup BasisPythonUtilities
 set (PROJECT_NAMESPACE_PYTHON "@_NAMESPACE_PYTHON@")
 
+## @brief CMake variable of Jython package name of project.
+#
+# The Jython package name of a BASIS project is made up of the vendor name and the name
+# of the package itself. Moreover, if the project is a module of another project,
+# the name of the module may optionally be used as part of the namespace as well.
+# Names of packages and sub-packages in Jython are usually in lowercase only.
+#
+# @ingroup BasisPythonUtilities
+set (PROJECT_NAMESPACE_JYTHON "@_NAMESPACE_JYTHON@")
+
 ## @brief CMake variable of Perl package name of project.
 #
 # The Perl package name of a BASIS project is made up of the vendor name and the name
