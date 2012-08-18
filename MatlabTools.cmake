@@ -132,7 +132,7 @@ function (basis_get_full_matlab_version VERSION)
       ERROR_VARIABLE  STDERR
       OUTPUT_QUIET
     )
-    if (NOT RETVAL EQUAL 0 OR STDERR MATCHES "??? Error")
+    if (NOT RETVAL EQUAL 0 OR STDERR MATCHES "\\?\\?\\? Error")
       set (VERSION "" PARENT_SCOPE)
       message (STATUS "Determining MATLAB version... - failed")
       return ()
