@@ -145,16 +145,22 @@ set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation pre
 
 # ----------------------------------------------------------------------------
 # installation scheme - non-cached, can be preset using -D option of CMake
-if (BASIS_INSTALL_SCHEME)
-  if (NOT BASIS_INSTALL_SCHEME MATCHES "^(usr|opt|win)$")
-    message (FATAL_ERROR "Invalid BASIS_INSTALL_SCHEME! Valid values are 'usr', 'opt', or 'win'.")
+set (BASIS_INSTALL_SCHEME "default" CACHE STRING "default, opt, usr, or win")
+set_property(CACHE BASIS_INSTALL_SCHEME PROPERTY STRINGS default opt usr win)
+mark_as_advanced (BASIS_INSTALL_SCHEME)
+
+if (BASIS_INSTALL_SCHEME MATCHES "default")
+  if (WIN32)
+    set (BASIS_INSTALL_SCHEME win)
+  elseif (CMAKE_INSTALL_PREFIX MATCHES "^/usr(/local)?$")
+    set (BASIS_INSTALL_SCHEME usr)
+  else ()
+    set (BASIS_INSTALL_SCHEME opt)
   endif ()
-elseif (WIN32)
-  set (BASIS_INSTALL_SCHEME win)
-elseif (CMAKE_INSTALL_PREFIX MATCHES "^/usr(/local)?$")
-  set (BASIS_INSTALL_SCHEME usr)
-else ()
-  set (BASIS_INSTALL_SCHEME opt)
+endif ()
+
+if (NOT BASIS_INSTALL_SCHEME MATCHES "^(opt|usr|win)$")
+  message (FATAL_ERROR "Invalid BASIS_INSTALL_SCHEME! Valid values are 'default', 'opt', 'usr', or 'win'.")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -182,7 +188,7 @@ if (BASIS_INSTALL_SCHEME MATCHES "win") # e.g., CMAKE_INSTALL_PREFIX := <Program
 elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr/local
 
   # package configuration
-  set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
+  set (INSTALL_CONFIG_DIR  "lib${_PACKAGE}${_MODULE}/cmake")
   # executables
   set (INSTALL_RUNTIME_DIR "bin")
   set (INSTALL_LIBEXEC_DIR "lib${_PACKAGE}${_MODULE}")
@@ -202,7 +208,7 @@ elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr
 else () # e.g., CMAKE_INSTALL_PREFIX := /opt/<vendor>/<package>
 
   # package configuration
-  set (INSTALL_CONFIG_DIR  "lib/cmake${_MODULE}")
+  set (INSTALL_CONFIG_DIR  "lib${_MODULE}/cmake")
   # executables
   set (INSTALL_RUNTIME_DIR "bin")
   set (INSTALL_LIBEXEC_DIR "lib${_MODULE}")
