@@ -21,6 +21,11 @@
 #         "libmex", "mx" or "libmx", and "eng" or "libeng".</td>
 #   </tr>
 #   <tr>
+#     @tp @b MATLAB_FIND_OPTIONAL_COMPONENTS @endtp
+#     <td>The @c OPTIONAL_COMPONENTS argument(s) of the find_package() command.
+#         See @c MATLAB_FIND_COMPONENTS.</td>
+#   </tr>
+#   <tr>
 #     @tp @b MATLAB_PATH_SUFFIXES @endtp
 #     <td>Path suffixes which are used to find the proper MATLAB libraries.
 #         By default, this find module tries to determine the path suffix
@@ -131,8 +136,12 @@ if (NOT MATLAB_PATH_SUFFIXES)
   endif ()
 endif ()
 
+set (_MATLAB_EXECUTABLE_NAMES)
 set (_MATLAB_LIBRARY_NAMES)
-if (MATLAB_FIND_COMPONENTS)
+set (_MATLAB_OPTIONAL_EXECUTABLE_NAMES)
+set (_MATLAB_OPTIONAL_LIBRARY_NAMES)
+
+if (MATLAB_FIND_COMPONENTS OR MATLAB_FIND_OPTIONAL_COMPONENTS)
   foreach (_MATLAB_COMPONENT IN LISTS MATLAB_FIND_COMPONENTS)
     string (TOLOWER "${_MATLAB_COMPONENT}" _MATLAB_COMPONENT)
     if (_MATLAB_COMPONENT MATCHES "^(matlab|mcc|mexext|mex)$")
@@ -143,17 +152,29 @@ if (MATLAB_FIND_COMPONENTS)
       message (FATAL_ERROR "Unknown MATLAB component: ${_MATLAB_COMPONENT}")
     endif ()
   endforeach ()
+  foreach (_MATLAB_COMPONENT IN LISTS MATLAB_FIND_OPTIONAL_COMPONENTS)
+    string (TOLOWER "${_MATLAB_COMPONENT}" _MATLAB_COMPONENT)
+    if (_MATLAB_COMPONENT MATCHES "^(matlab|mcc|mexext|mex)$")
+      list (APPEND _MATLAB_OPTIONAL_EXECUTABLE_NAMES ${_MATLAB_COMPONENT})
+    elseif (_MATLAB_COMPONENT MATCHES "^(lib)?(mex|mx|eng)$")
+      list (APPEND _MATLAB_OPTIONAL_LIBRARY_NAMES ${CMAKE_MATCH_2})
+    else ()
+      message (FATAL_ERROR "Unknown MATLAB component: ${_MATLAB_COMPONENT}")
+    endif ()
+  endforeach ()
 else ()
-  set (_MATLAB_EXECUTABLE_NAMES matlab mcc mex mexext)
-  set (_MATLAB_LIBRARY_NAMES    mex mx eng)
+  set (_MATLAB_EXECUTABLE_NAMES          matlab)
+  set (_MATLAB_OPTIONAL_EXECUTABLE_NAMES mcc mex mexext)
+  set (_MATLAB_LIBRARY_NAMES             mex mx eng)
+  set (_MATLAB_OPTIONAL_LIBRARY_NAMES)
 endif ()
 
 # ----------------------------------------------------------------------------
 # find MATLAB executables
-if (_MATLAB_EXECUTABLE_NAMES)
+if (_MATLAB_EXECUTABLE_NAMES OR _MATLAB_OPTIONAL_EXECUTABLE_NAMES)
   if (MATLAB_DIR)
 
-    foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES)
+    foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES _MATLAB_OPTIONAL_EXECUTABLE_NAMES)
       if (_MATLAB_EXE MATCHES "matlab")
         find_program (
           MATLAB_EXECUTABLE
@@ -176,7 +197,7 @@ if (_MATLAB_EXECUTABLE_NAMES)
 
   else ()
 
-    foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES)
+    foreach (_MATLAB_EXE IN LISTS _MATLAB_EXECUTABLE_NAMES _MATLAB_OPTIONAL_EXECUTABLE_NAMES)
       if (_MATLAB_EXE MATCHES "matlab")
         find_program (
           MATLAB_EXECUTABLE
@@ -200,7 +221,7 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # find paths/files
-if (_MATLAB_LIBRARY_NAMES)
+if (_MATLAB_LIBRARY_NAMES OR _MATLAB_OPTIONAL_LIBRARY_NAMES)
   if (MATLAB_DIR)
 
     find_path (
@@ -211,7 +232,7 @@ if (_MATLAB_LIBRARY_NAMES)
         NO_DEFAULT_PATH
     )
 
-    foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+    foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES _MATLAB_OPTIONAL_LIBRARY_NAMES)
       find_library (
         MATLAB_${_MATLAB_LIB}_LIBRARY
           NAMES         "${_MATLAB_LIB}" "lib${_MATLAB_LIB}"
@@ -231,7 +252,7 @@ if (_MATLAB_LIBRARY_NAMES)
         DOC   "Include directory for MATLAB libraries."
     )
 
-    foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+    foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES _MATLAB_OPTIONAL_LIBRARY_NAMES)
       find_library (
         MATLAB_${_MATLAB_LIB}_LIBRARY
           NAMES "${_MATLAB_LIB}"
@@ -243,12 +264,12 @@ if (_MATLAB_LIBRARY_NAMES)
   endif ()
   # mark variables as advanced
   mark_as_advanced (MATLAB_INCLUDE_DIR)
-  foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+  foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES _MATLAB_OPTIONAL_LIBRARY_NAMES)
     mark_as_advanced (MATLAB_${_MATLAB_LIB}_LIBRARY)
   endforeach ()
   # list of all libraries
   set (MATLAB_LIBRARY)
-  foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES)
+  foreach (_MATLAB_LIB IN LISTS _MATLAB_LIBRARY_NAMES _MATLAB_OPTIONAL_LIBRARY_NAMES)
     if (MATLAB_${_MATLAB_LIB}_LIBRARY)
       list (APPEND MATLAB_LIBRARY "${MATLAB_${_MATLAB_LIB}_LIBRARY}")
     endif ()
