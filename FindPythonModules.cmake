@@ -205,12 +205,12 @@ function (basis_find_python_module CACHEVAR)
       endif ()
       set_property (CACHE ${CACHEVAR} PROPERTY VALUE "${P}")
       return ()
-    else ()
-      message (WARNING "Failed to run Python interpreter ${ARGN_PYTHON_EXECUTABLE} with or without -E option."
-                       " Make sure that the Python interpreter is installed properly and that the PYTHONHOME"
-                       " environment variable is either not set (recommended) or at least set correctly for"
-                       " this Python installation. Maybe you need to enable this Python version first somehow"
-                       " if more than one version of Python is installed on your system?"
+    elseif (ERROR MATCHES "'import site' failed")
+      message (WARNING "Import of site module failed when running Python interpreter ${ARGN_PYTHON_EXECUTABLE}"
+                       " with and without -E option. Make sure that the Python interpreter is installed properly"
+                       " and that the PYTHONHOME environment variable is either not set (recommended) or at"
+                       " least set correctly for this Python installation. Maybe you need to enable this Python"
+                       " version first somehow if more than one version of Python is installed on your system?"
                        " Otherwise, set PYTHON_EXECUTABLE to the right Python interpreter executable (python).")
     endif ()
   endif ()
