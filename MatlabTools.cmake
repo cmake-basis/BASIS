@@ -119,7 +119,7 @@ function (basis_get_full_matlab_version VERSION)
     list (APPEND CMD "-r")
     set (MATLAB_CMD
       "fid = fopen ('${OUTPUT_FILE}', 'w')"
-      "if ~fid, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end"
+      "if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end"
       "fprintf (fid, '%s', version)"
       "fclose (fid)"
       "quit force"
