@@ -1391,14 +1391,15 @@ function (basis_build_mcc_target TARGET_UID)
         set (MATLAB_MODE OFF)
       endif ()
       if (MATLAB_MODE)
-        basis_list_to_delimited_string (MCC_ARGS " " NOAUTOQUOTE ${MCC_ARGS})
+        basis_list_to_delimited_string (MCC_ARGS "', '" NOAUTOQUOTE ${MCC_ARGS})
+        set (MCC_ARGS "'${MCC_ARGS}'")
         set (
           BUILD_CMD
             "${MATLAB_EXECUTABLE}" # run MATLAB
             "-nosplash"            # do not display splash screen on start up
             "-nodesktop"           # run in command line mode
             "-nojvm"               # we do not need the Java Virtual Machine
-            "-r" "try, mcc(${MCC_ARGS}), catch err, disp(err.message), end, quit force"
+            "-r" "try, mcc(${MCC_ARGS}), catch err, fprintf(2, err.message), end, quit force"
          )
       endif ()
     endif ()
