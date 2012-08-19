@@ -42,7 +42,7 @@ if (PKGS)
 endif ()
 
 foreach (PKG IN LISTS PKGS)
-  set (DEPENDS_CONFIG "${DEPENDS_CONFIG}# ${PKG}\nset (${PKG}_DIR \"${${PKG}_DIR}\")")
+  set (DEPENDS_CONFIG "${DEPENDS_CONFIG}# ${PKG}\nset (${PKG}_DIR \"${${PKG}_DIR}\")\n")
 endforeach ()
 
 # ============================================================================
