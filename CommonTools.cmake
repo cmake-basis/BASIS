@@ -38,6 +38,16 @@ macro (find_package)
   #            maintain a list of lists, which is not supported by CMake.
   list (APPEND _BASIS_FIND_LIBRARY_SUFFIXES "{${CMAKE_FIND_LIBRARY_SUFFIXES}}")
   _find_package(${ARGV})
+  # map obsolete <PKG>_* variables to case-sensitive <Pkg>_*
+  string (TOUPPER "${ARGV0}" _FP_ARGV0_U)
+  if (NOT DEFINED ${ARGV0}_FOUND AND DEFINED ${_FP_ARGV0_U}_FOUND)
+    set (${ARGV0}_FOUND "${${ARGV0_U}_FOUND}")
+  endif ()
+  if (NOT DEFINED ${ARGV0}_DIR AND DEFINED ${_FP_ARGV0_U}_DIR)
+    set (${ARGV0}_DIR "${${_FP_ARGV0_U}_DIR}")
+  endif ()
+  unset (_FP_ARGV0_U)
+  # restore CMAKE_FIND_LIBRARY_SUFFIXES
   string (REGEX REPLACE ";?{([^}]*)}$" "" _BASIS_FIND_LIBRARY_SUFFIXES "${_BASIS_FIND_LIBRARY_SUFFIXES}")
   set (CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_MATCH_1}")
 endmacro ()
@@ -163,7 +173,7 @@ macro (basis_find_package PACKAGE)
   # find other modules of same project
   if (PROJECT_IS_MODULE)
     # allow modules to specify top-level project as dependency
-    if (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
+    if (PKG MATCHES "^${BASIS_PROJECT_PACKAGE}$")
       if (BASIS_DEBUG)
         message ("**     This is the top-level project.")
       endif ()
@@ -179,7 +189,7 @@ macro (basis_find_package PACKAGE)
           if (BASIS_DEBUG)
             message ("**     Identified it as other module of this project.")
           endif ()
-          include ("${${PKG}_DIR}/${PKG}Config.cmake")
+          include ("${${PKG}_DIR}/${BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}${PKG}Config.cmake")
           set (${PKG}_FOUND TRUE)
         endif ()
       endif ()
@@ -189,17 +199,6 @@ macro (basis_find_package PACKAGE)
   # otherwise, look for external package
   if (NOT ${PKG}_FOUND)
 
-    # --------------------------------------------------------------------------
-    # Note that some <Pkg>_DIR variables are set in the package configuration
-    # of found (BASIS-based) packages such as in particular BASIS itself. These
-    # are marked as INTERNAL as the packages may not even be used by the project
-    # that uses that package. If this project, however, looks for any of these
-    # packages itself, the variables should be made visible for the user.
-    if (${PKG}_DIR)
-      basis_set_or_update_type (${PKG}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
-    elseif (${PKG_U}_DIR)
-      basis_set_or_update_type (${PKG_U}_DIR PATH "The directory containing a CMake configuration file for ${PKG}.")
-    endif ()
     # --------------------------------------------------------------------------
     # hide or show already defined <PKG>_DIR cache entry
     if (DEFINED ${PKG}_DIR AND DEFINED USE_${PKG})
@@ -249,9 +248,6 @@ macro (basis_find_package PACKAGE)
           message (STATUS "${_STATUS}")
         endif ()
         find_package (${PKG} ${VER} ${FIND_ARGN})
-        if (${PKG_U}_FOUND)
-          set (${PKG}_FOUND TRUE)
-        endif ()
         # set common <Pkg>_VERSION_STRING variable if possible and not set
         if (NOT DEFINED ${PKG}_VERSION_STRING)
           if (PKG MATCHES "^PythonInterp$")
@@ -289,8 +285,6 @@ macro (basis_find_package PACKAGE)
             endif ()
             if (DEFINED ${PKG}_DIR)
               set (_STATUS "${_STATUS} at ${${PKG}_DIR}")
-            elseif (DEFINED ${PKG_U}_DIR)
-              set (_STATUS "${_STATUS} at ${${PKG_U}_DIR}")
             endif ()
           else ()
             set (_STATUS "${_STATUS} - not found")

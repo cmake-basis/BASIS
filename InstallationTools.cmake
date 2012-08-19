@@ -242,29 +242,27 @@ endfunction ()
 # is responsible for removing the registry entry again.
 function (basis_register_package)
   set (PKGDIR "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}")
-  # note: string(MD5) only available since CMake 2.8.7
-  #string (MD5 PKGUID "${PKGDIR}")
-  set (PKGUID "${PROJECT_PACKAGE_VENDOR_L}-${PROJECT_PACKAGE_L}-${PROJECT_VERSION}")
+  set (PKGUID "${BASIS_PROJECT_PACKAGE_UID}")
   if (WIN32)
     install (CODE
       "execute_process (
-         COMMAND reg add \"HKCU\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_PACKAGE}\" /v \"${PKGUID}\" /d \"${PKGDIR}\" /t REG_SZ /f
+         COMMAND reg add \"HKCU\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_PACKAGE_CONFIG_PREFIX}\" /v \"${PKGUID}\" /d \"${PKGDIR}\" /t REG_SZ /f
          RESULT_VARIABLE RT
          ERROR_VARIABLE  ERR
          OUTPUT_QUIET
        )
        if (RT EQUAL 0)
-         message (STATUS \"Register:   Added HKEY_CURRENT_USER\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_PACKAGE}\\\\${PKGUID}\")
+         message (STATUS \"Register:   Added HKEY_CURRENT_USER\\\\Software\\\\Kitware\\\\CMake\\\\Packages\\\\${PROJECT_PACKAGE_CONFIG_PREFIX}\\\\${PKGUID}\")
        else ()
          string (STRIP \"\${ERR}\" ERR)
          message (STATUS \"Register:   Failed to add registry entry: \${ERR}\")
        endif ()"
     )
   elseif (IS_DIRECTORY "$ENV{HOME}")
-    file (WRITE "${BINARY_CONFIG_DIR}/${PROJECT_PACKAGE}RegistryFile" "${PKGDIR}")
+    file (WRITE "${PROJECT_BINARY_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}RegistryFile" "${PKGDIR}")
     install (
-      FILES       "${BINARY_CONFIG_DIR}/${PROJECT_PACKAGE}RegistryFile"
-      DESTINATION "$ENV{HOME}/.cmake/packages/${PROJECT_PACKAGE_L}"
+      FILES       "${PROJECT_BINARY_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}RegistryFile"
+      DESTINATION "$ENV{HOME}/.cmake/packages/${PROJECT_PACKAGE_CONFIG_PREFIX}"
       RENAME      "${PKGUID}"
     )
   endif ()

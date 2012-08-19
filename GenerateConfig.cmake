@@ -36,10 +36,7 @@
 
 
 ## @brief Package name.
-set (CONFIG_PREFIX "${PROJECT_PACKAGE}")
-if (PROJECT_IS_MODULE)
-  set (CONFIG_PREFIX "${PROJECT_NAME}")
-endif ()
+set (CONFIG_PREFIX "${PROJECT_PACKAGE_CONFIG_PREFIX}")
 ## @brief Name of the CMake package configuration file.
 set (CONFIG_FILE "${CONFIG_PREFIX}Config.cmake")
 ## @brief Name of the CMake package version file.
@@ -72,7 +69,7 @@ basis_export_targets (
 # namespace prefix used for configuration variables
 set (BASIS_NS
 "# prefix used for variable names
-set (NS \"${CONFIG_PREFIX}_\")
+set (NS \"${PROJECT_PACKAGE}_\")
 
 # allow caller to change namespace - used by projects with modules
 if (\${NS}CONFIG_PREFIX)

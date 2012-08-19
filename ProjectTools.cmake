@@ -502,7 +502,7 @@ function (basis_configure_public_headers)
   # settings
 
   # log file which lists the configured header files
-  set (CMAKE_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}PublicHeaders.cmake")
+  set (CMAKE_FILE "${BINARY_INCLUDE_DIR}/${PROJECT_NAME}PublicHeaders.cmake")
   # considered extensions (excl. .in suffix)
   set (
     EXTENSIONS
@@ -1066,7 +1066,7 @@ macro (basis_initialize_settings)
   include ("${BASIS_MODULE_PATH}/DirectoriesSettings.cmake")
   configure_file (
     "${BASIS_MODULE_PATH}/Directories.cmake.in"
-    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Directories.cmake"
+    "${BINARY_CONFIG_DIR}/Directories.cmake"
     @ONLY
   )
   # include project specific settings
@@ -1101,6 +1101,16 @@ macro (basis_initialize_settings)
       set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}.${PROJECT_NAME_L}")
     endforeach ()
   endif ()
+  set (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "${PROJECT_PACKAGE}")
+  if (BASIS_PREFIX_PACKAGE_CONFIG_BY_VENDOR)
+    set (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "${PROJECT_PACKAGE_VENDOR}${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}")
+  endif ()
+  if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
+    set (_PROJECT_PACKAGE_CONFIG_PREFIX "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}${PROJECT_NAME}")
+  else ()
+    set (_PROJECT_PACKAGE_CONFIG_PREFIX "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}")
+  endif ()
+  set (_BASIS_PROJECT_PACKAGE_UID "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}-${PROJECT_VERSION}")
   # configure settings file with API documentation
   configure_file (
     "${BASIS_MODULE_PATH}/ProjectSettings.cmake.in"
@@ -1112,6 +1122,9 @@ macro (basis_initialize_settings)
     unset (_BASIS_NAMESPACE_${_L})
     unset (_NAMESPACE_${_L})
   endforeach ()
+  unset (_BASIS_PROJECT_PACKAGE_UID)
+  unset (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX)
+  unset (_PROJECT_PACKAGE_CONFIG_PREFIX)
   unset (_L)
   # include configured project specific BASIS settings
   include ("${BINARY_CONFIG_DIR}/ProjectSettings.cmake" NO_POLICY_SCOPE)
@@ -1203,7 +1216,13 @@ macro (basis_install_public_headers)
   file (GLOB_RECURSE _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*")
   list (REMOVE_ITEM _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/${_BASIS_H_DIR}/basis.h")
   if (_CONFIGURED_PUBLIC_HEADERS)
-    basis_install_directory ("${BINARY_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" REGEX "/${_BASIS_H_DIR}/basis\\.h$" EXCLUDE)
+    basis_install_directory (
+      "${BINARY_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}"
+      REGEX   "/${_BASIS_H_DIR}/basis\\.h$" EXCLUDE # BASIS utilities header only installed
+                                                    # below if included by any other public header
+      PATTERN "*.cmake"                     EXCLUDE # e.g., <Name>PublicHeaders.cmake file,
+      PATTERN "*.cmake.*"                   EXCLUDE # see basis_configure_public_headers()
+    )
   endif ()
   # "parse" public header files to check if C++ BASIS utilities are included
   if (NOT BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
@@ -1226,7 +1245,7 @@ macro (basis_install_public_headers)
     unset (_B)
   endif ()
   unset (_CONFIGURED_PUBLIC_HEADERS)
-  # install public headers of BASIS utilities (optional)
+  # install public header of BASIS utilities (optional)
   if (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
     install (
       FILES       "${BINARY_INCLUDE_DIR}/${_BASIS_H_DIR}/basis.h"

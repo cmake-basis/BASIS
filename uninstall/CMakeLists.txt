@@ -21,13 +21,13 @@
 install (
   FILES       "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake"
   DESTINATION "${INSTALL_CONFIG_DIR}"
-  RENAME      "${PROJECT_NAME}Uninstall.cmake"
+  RENAME      "${PROJECT_PACKAGE_CONFIG_PREFIX}Uninstall.cmake"
 )
 
 # write executable uninstaller
-set (UNINSTALLER_NAME "uninstall-${PROJECT_NAME_L}")
+set (UNINSTALLER_NAME "uninstall--${PROJECT_PACKAGE_L}")
 if (WIN32)
-  set (UNINSTALLER_NAME "${UNINSTALLER_NAME}.bat")
+  set (UNINSTALLER_NAME "${UNINSTALLER_NAME}.cmd")
 endif ()
 
 install (
@@ -39,7 +39,7 @@ install (
     if (UNIX)
       file (APPEND \"\${UNINSTALLER}\" \"#! /bin/sh\n\")
     endif ()
-    file (APPEND \"\${UNINSTALLER}\" \"\\\"${CMAKE_COMMAND}\\\" -P \\\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PROJECT_NAME}Uninstall.cmake\\\"\")
+    file (APPEND \"\${UNINSTALLER}\" \"\\\"${CMAKE_COMMAND}\\\" -P \\\"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}Uninstall.cmake\\\"\")
     if (UNIX)
       execute_process (COMMAND /bin/chmod +x \"\${UNINSTALLER}\")
     endif ()
@@ -51,7 +51,7 @@ install (
 install (
   CODE
     "
-    set (INSTALL_MANIFEST_FILE \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PROJECT_NAME}InstallManifest.txt\")
+    set (INSTALL_MANIFEST_FILE \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}InstallManifest.txt\")
     list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${INSTALL_MANIFEST_FILE}\")
     message (\"-- Installing: \${INSTALL_MANIFEST_FILE}\")
     file (WRITE \"\${INSTALL_MANIFEST_FILE}\" \"\")

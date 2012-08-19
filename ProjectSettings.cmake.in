@@ -138,6 +138,25 @@ set (PROJECT_NAMESPACE_BASH "@_NAMESPACE_BASH@")
 # @ingroup BasisMatlabUtilities
 set (PROJECT_NAMESPACE_MATLAB "@_NAMESPACE_MATLAB@")
 
+# ============================================================================
+# package configuration
+# ============================================================================
+
+## @brief Prefix/name of CMake package configuration file of top-level project.
+set (BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "@_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX@")
+
+## @brief Prefix/name of CMake package configuration file.
+set (PROJECT_PACKAGE_CONFIG_PREFIX "@_PROJECT_PACKAGE_CONFIG_PREFIX@")
+
+## @brief UID of package in CMake's user package registry.
+#
+# The value of this variable is used as name for the registry file which
+# contains the path to the package configuration file on Unix, or the name
+# of the Windows registry key on Windows.
+#
+# @sa http://www.cmake.org/Wiki/CMake/Tutorials/Package_Registry
+set (BASIS_PROJECT_PACKAGE_UID "@_BASIS_PROJECT_PACKAGE_UID@")
+
 
 ## @}
 # end of Doxygen group
