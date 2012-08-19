@@ -133,9 +133,9 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     if (NOT PROJECT_VERSION MATCHES "^0\\.0\\.0$")
       set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${PROJECT_VERSION}")
     endif ()
-  # /opt/<vendor>/<package>[-<version>]
+  # /opt/local/<vendor>/<package>[-<version>]
   else ()
-    set (CMAKE_INSTALL_PREFIX "/opt/${_VENDOR}${_PACKAGE}")
+    set (CMAKE_INSTALL_PREFIX "/opt/local/${_VENDOR}${_PACKAGE}")
     if (NOT PROJECT_VERSION MATCHES "^0\\.0\\.0$")
       set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${PROJECT_VERSION}")
     endif ()
