@@ -25,7 +25,7 @@ install (
 )
 
 # write executable uninstaller
-set (UNINSTALLER_NAME "uninstall--${PROJECT_PACKAGE_L}")
+set (UNINSTALLER_NAME "uninstall-${PROJECT_PACKAGE_L}")
 if (WIN32)
   set (UNINSTALLER_NAME "${UNINSTALLER_NAME}.cmd")
 endif ()
