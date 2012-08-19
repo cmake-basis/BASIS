@@ -41,7 +41,7 @@ macro (find_package)
   # map obsolete <PKG>_* variables to case-sensitive <Pkg>_*
   string (TOUPPER "${ARGV0}" _FP_ARGV0_U)
   if (NOT DEFINED ${ARGV0}_FOUND AND DEFINED ${_FP_ARGV0_U}_FOUND)
-    set (${ARGV0}_FOUND "${${ARGV0_U}_FOUND}")
+    set (${ARGV0}_FOUND "${${_FP_ARGV0_U}_FOUND}")
   endif ()
   if (NOT DEFINED ${ARGV0}_DIR AND DEFINED ${_FP_ARGV0_U}_DIR)
     set (${ARGV0}_DIR "${${_FP_ARGV0_U}_DIR}")
