@@ -133,9 +133,9 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     if (NOT PROJECT_VERSION MATCHES "^0\\.0\\.0$")
       set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${PROJECT_VERSION}")
     endif ()
-  # /opt/local/<vendor>/<package>[-<version>]
+  # /opt/<vendor>/<package>[-<version>]
   else ()
-    set (CMAKE_INSTALL_PREFIX "/opt/local/${_VENDOR}${_PACKAGE}")
+    set (CMAKE_INSTALL_PREFIX "/opt${_VENDOR}${_PACKAGE}")
     if (NOT PROJECT_VERSION MATCHES "^0\\.0\\.0$")
       set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${PROJECT_VERSION}")
     endif ()
@@ -152,7 +152,7 @@ mark_as_advanced (BASIS_INSTALL_SCHEME)
 if (BASIS_INSTALL_SCHEME MATCHES "default")
   if (WIN32)
     set (BASIS_INSTALL_SCHEME win)
-  elseif (CMAKE_INSTALL_PREFIX MATCHES "^/usr(/local)?$")
+  elseif (CMAKE_INSTALL_PREFIX MATCHES "^/(usr|opt)(/local)?$")
     set (BASIS_INSTALL_SCHEME usr)
   else ()
     set (BASIS_INSTALL_SCHEME opt)
@@ -222,8 +222,8 @@ else () # e.g., CMAKE_INSTALL_PREFIX := /opt/<vendor>/<package>
   set (INSTALL_EXAMPLE_DIR "share${_MODULE}/example")
   # documentation
   set (INSTALL_DOC_DIR     "doc${_MODULE}")
-  set (INSTALL_MAN_DIR     "share/man")
-  set (INSTALL_TEXINFO_DIR "share/info")
+  set (INSTALL_MAN_DIR     "man")
+  set (INSTALL_TEXINFO_DIR "info")
 
 endif ()
 
