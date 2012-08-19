@@ -122,7 +122,7 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BINARY_ARCHIVE_DIR}")
 # default installation prefix
 string (REGEX REPLACE "[\\/]+$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 # change default installation prefix used by CMake
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR NOT CMAKE_INSTALL_PREFIX)
   # <ProgramFilesDir>/<Vendor>/<Package>[-<version>]
   if (WIN32)
     get_filename_component (CMAKE_INSTALL_PREFIX "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion;ProgramFilesDir]" ABSOLUTE)
@@ -188,7 +188,7 @@ if (BASIS_INSTALL_SCHEME MATCHES "win") # e.g., CMAKE_INSTALL_PREFIX := <Program
 elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr/local
 
   # package configuration
-  set (INSTALL_CONFIG_DIR  "lib${_PACKAGE}${_MODULE}/cmake")
+  set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
   # executables
   set (INSTALL_RUNTIME_DIR "bin")
   set (INSTALL_LIBEXEC_DIR "lib${_PACKAGE}${_MODULE}")
@@ -208,7 +208,7 @@ elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr
 else () # e.g., CMAKE_INSTALL_PREFIX := /opt/<vendor>/<package>
 
   # package configuration
-  set (INSTALL_CONFIG_DIR  "lib${_MODULE}/cmake")
+  set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
   # executables
   set (INSTALL_RUNTIME_DIR "bin")
   set (INSTALL_LIBEXEC_DIR "lib${_MODULE}")
