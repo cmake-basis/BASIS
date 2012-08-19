@@ -26,7 +26,7 @@ endif ()
 
 
 ## @brief Enable/Disable compilation of MATLAB sources if the MATLAB Compiler is available.
-option (BASIS_COMPILE_MATLAB "Enable compilation of MATLAB sources if MATLAB Compiler (mcc) is available." OFF)
+option (BASIS_COMPILE_MATLAB "Enable compilation of MATLAB sources if MATLAB Compiler (mcc) is available." ON)
 
 ## @brief Enable/Disable invocation of MATLAB Compiler in MATLAB mode.
 option (
