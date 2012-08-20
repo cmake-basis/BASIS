@@ -13,8 +13,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-[ "${_SBIA_BASIS_CORE_INCLUDED}" == 'true' ] || {
-_SBIA_BASIS_CORE_INCLUDED='true'
+[ "${_BASIS_CORE_INCLUDED}" == 'true' ] || {
+_BASIS_CORE_INCLUDED='true'
 
 
 . "`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`/config.sh" || exit 1
@@ -275,4 +275,4 @@ There is NO WARRANTY, to the extent permitted by law."
 # end of Doxygen group
 
 
-} # _SBIA_BASIS_CORE_INCLUDED
+} # _BASIS_CORE_INCLUDED

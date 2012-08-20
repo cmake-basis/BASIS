@@ -22,11 +22,11 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::Over;
+package BASIS::Pod::POM::Node::Over;
 
 use strict;
 
-use parent qw( SBIA::Pod::POM::Node );
+use parent qw( BASIS::Pod::POM::Node );
 use vars qw( %ATTRIBS @ACCEPT $EXPECT $ERROR );
 
 %ATTRIBS =   ( indent => 4 );

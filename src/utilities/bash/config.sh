@@ -8,8 +8,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-[ "${_SBIA_BASIS_CONFIG_INCLUDED}" == 'true' ] || {
-_SBIA_BASIS_CONFIG_INCLUDED='true'
+[ "${_BASIS_CONFIG_INCLUDED}" == 'true' ] || {
+_BASIS_CONFIG_INCLUDED='true'
 
 
 ## @addtogroup BasisBashUtilities
@@ -30,4 +30,4 @@ readonly BASH_VERSION_MINOR
 # end of Doxygen group
 
 
-} # _SBIA_BASIS_CONFIG_INCLUDED
+} # _BASIS_CONFIG_INCLUDED

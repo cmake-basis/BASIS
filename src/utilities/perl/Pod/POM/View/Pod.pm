@@ -19,14 +19,14 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::View::Pod;
+package BASIS::Pod::POM::View::Pod;
 
 require 5.004;
 
 use strict;
-use SBIA::Pod::POM::Nodes;
-use SBIA::Pod::POM::View;
-use parent qw( SBIA::Pod::POM::View );
+use BASIS::Pod::POM::Nodes;
+use BASIS::Pod::POM::View;
+use parent qw( BASIS::Pod::POM::View );
 use vars qw( $VERSION $DEBUG $ERROR $AUTOLOAD $MARKUP );
 
 $VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
@@ -34,8 +34,8 @@ $DEBUG   = 0 unless defined $DEBUG;
 
 # create reverse lookup table mapping method name to original sequence
 $MARKUP = {
-    map { ( $SBIA::Pod::POM::Node::Sequence::NAME{ $_ } => $_ ) } 
-       keys %SBIA::Pod::POM::Node::Sequence::NAME,
+    map { ( $BASIS::Pod::POM::Node::Sequence::NAME{ $_ } => $_ ) } 
+       keys %BASIS::Pod::POM::Node::Sequence::NAME,
 };
 
 

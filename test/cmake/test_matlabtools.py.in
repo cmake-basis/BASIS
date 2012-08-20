@@ -18,7 +18,7 @@
 import sys
 sys.path.insert(0, '@BINARY_PYTHON_LIBRARY_DIR@')
 sys.path.insert(0, '@TESTING_PYTHON_LIBRARY_DIR@')
-from sbia.basis.testaux import *
+from testaux import *
 
 # ============================================================================
 # main

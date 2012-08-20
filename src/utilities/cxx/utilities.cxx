@@ -8,15 +8,13 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <sbia/basis/subprocess.h>
-#include <sbia/basis/utilities.h>
+#include <basis/subprocess.h>
+#include <basis/utilities.h>
 
 
 // acceptable in .cxx file
 using namespace std;
 
-
-namespace sbia {
 
 namespace basis {
 
@@ -200,5 +198,3 @@ int execute(vector<string> args, bool quiet, ostream* out,
 
 
 } // namespace basis
-
-} // namespace sbia

@@ -29,12 +29,12 @@
 #       Doxygen::Filter::Perl::POD which is part of the
 #       Doxygen::Filter::Perl package.
 #*
-package SBIA::Pod::POM::View::Doxygen;
+package BASIS::Pod::POM::View::Doxygen;
 
 use 5.8.8;
 use strict;
 use warnings;
-use parent qw(SBIA::Pod::POM::View::HTML);
+use parent qw(BASIS::Pod::POM::View::HTML);
 
 our $VERSION = '1.00';
 $VERSION = eval $VERSION;

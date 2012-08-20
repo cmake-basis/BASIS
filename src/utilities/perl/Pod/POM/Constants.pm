@@ -21,7 +21,7 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Constants;
+package BASIS::Pod::POM::Constants;
 
 require 5.004;
 

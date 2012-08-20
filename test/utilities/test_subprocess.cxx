@@ -10,17 +10,17 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <sbia/basis/test.h>
-#include <sbia/basis/subprocess.h>
+#include <basis/test.h>
+#include <basis/subprocess.h>
 
-#include <sbia/basis/basis.h>
+#include <basis/basis.h>
 
 
 using namespace std;
-using namespace sbia::basis;
+using namespace basis;
 
 
-const string cCmd = basis::exepath("basis.dummy_command");
+const string cCmd = ::basis::basis::exepath("basis.dummy_command");
 
 // ---------------------------------------------------------------------------
 TEST(Subprocess, Split)

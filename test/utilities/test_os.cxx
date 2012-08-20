@@ -11,16 +11,16 @@
 
 #include <stdexcept>
 
-#include <sbia/basis/config.h> // WINDOWS, UNIX macros
-#include <sbia/basis/test.h> // unit testing framework
-#include <sbia/basis/os.h> // testee
+#include <basis/config.h> // WINDOWS, UNIX macros
+#include <basis/test.h> // unit testing framework
+#include <basis/os.h> // testee
 
 #if UNIX
 #  include <stdlib.h> // the system() function is used to create symbolic links
 #endif
 
 
-using namespace sbia::basis;
+using namespace basis;
 using namespace std;
 
 

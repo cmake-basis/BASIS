@@ -22,12 +22,12 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::Sequence;
+package BASIS::Pod::POM::Node::Sequence;
 
 use strict;
 
-use SBIA::Pod::POM::Constants qw( :all );
-use parent qw( SBIA::Pod::POM::Node );
+use BASIS::Pod::POM::Constants qw( :all );
+use parent qw( BASIS::Pod::POM::Node );
 use vars qw( %NAME );
 
 %NAME = (
@@ -55,7 +55,7 @@ sub add {
 sub present {
     my ($self, $view) = @_;
     my ($cmd, $method, $result);
-    $view ||= $SBIA::Pod::POM::DEFAULT_VIEW;
+    $view ||= $BASIS::Pod::POM::DEFAULT_VIEW;
 
     $self = $$self;
     return $self unless ref $self eq 'ARRAY';

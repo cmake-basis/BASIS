@@ -19,12 +19,12 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Test;
+package BASIS::Pod::POM::Test;
 
 require 5.004;
 
 use strict;
-use SBIA::Pod::POM;
+use BASIS::Pod::POM;
 use base qw( Exporter );
 use vars qw( $VERSION @EXPORT );
 

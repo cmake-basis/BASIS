@@ -23,20 +23,22 @@
 # Example:
 # @code
 # basis_project (
-#   NAME
-#     "MyProject"
-#   VERSION
-#     1.1.5
-#   DESCRIPTION
-#     "This is the description of the project named"
-#     " MyProject which follows BASIS."
-#   DEPENDS
-#     NiftiCLib
-#     Python
-#   OPTIONAL_DEPENDS
-#     MPI
-#   TEST_DEPENDS
-#     Perl
+#   # ------------------------------------------------------------------------
+#   # meta-data
+#   NAME             MyProject
+#   PROVIDER         PackageProvider
+#   VERSION          1.1.5
+#   DESCRIPTION      "This is the description of the project named"
+#                    " MyProject which follows BASIS."
+#   AUTHOR           "Max Muster"
+#   COPYRIGHT        "2012 University of Pennsylvania"
+#   LICENSE          "See COPYING file."
+#   CONTACT          "SBIA Group <sbia-software at uphs.upenn.edu>"
+#   # ------------------------------------------------------------------------
+#   # dependencies
+#   DEPENDS          NiftiCLib PythonInterp
+#   OPTIONAL_DEPENDS MPI
+#   TEST_DEPENDS     Perl
 # )
 # @endcode
 #
@@ -56,10 +58,15 @@ basis_project (
   # --------------------------------------------------------------------------
   # meta-data
   NAME        BASIS
+  PROVIDER    SBIA
   VERSION     0.0.0
   DESCRIPTION "This package implements and supports the development of "
               "software which follows the SBIA Build system And Software "
               "Implementation Standard (BASIS)."
+  AUTHORS     "Andreas Schuh"
+  COPYRIGHT   "2011, 2012 University of Pennsylvania"
+  LICENSE     "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+  CONTACT     "SBIA Group <sbia-software at uphs.upenn.edu>"
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS
@@ -72,8 +79,7 @@ basis_project (
     BASH
     Doxygen
     Sphinx
-    ITK # required by basistest-driver
-        # TODO get rid of this dependency
+    ITK # TODO required by basistest-driver, get rid of this dependency
     #<optional-dependency>
   TEST_DEPENDS
     #<test-dependency>

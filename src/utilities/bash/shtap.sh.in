@@ -114,7 +114,7 @@
 
 # return if already loaded
 [ -n "${SHTAP_VERSION:-}" ] && return 0
-readonly SHTAP_VERSION='1.02-sbia'
+readonly SHTAP_VERSION='1.02-basis'
 
 
 . "`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`/core.sh" || exit 1 # match()

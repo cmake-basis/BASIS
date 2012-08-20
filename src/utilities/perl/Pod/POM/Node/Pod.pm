@@ -22,11 +22,11 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::Pod;
+package BASIS::Pod::POM::Node::Pod;
 
 use strict;
 
-use parent qw( SBIA::Pod::POM::Node );
+use parent qw( BASIS::Pod::POM::Node );
 use vars qw( @ACCEPT $ERROR );
 
 @ACCEPT = qw( head1 head2 head3 head4 over begin for text verbatim code );

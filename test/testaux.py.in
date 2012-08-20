@@ -18,7 +18,7 @@ import shutil
 import getopt
 import socket
 
-from sbia.basis import basis
+from basis import basis
 
 # ============================================================================
 # constants

@@ -22,18 +22,18 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::Verbatim;
+package BASIS::Pod::POM::Node::Verbatim;
 
 use strict;
 
-use parent qw( SBIA::Pod::POM::Node );
+use parent qw( BASIS::Pod::POM::Node );
 use vars qw( %ATTRIBS $ERROR );
 
 %ATTRIBS = ( text => '' );
 
 sub present {
     my ($self, $view) = @_;
-    $view ||= $SBIA::Pod::POM::DEFAULT_VIEW;
+    $view ||= $BASIS::Pod::POM::DEFAULT_VIEW;
     return $view->view_verbatim($self->{ text });
 }
 

@@ -635,10 +635,6 @@ endif ()
 # site information
 if (NOT CTEST_SITE)
   site_name (CTEST_SITE)
-
-  # remove ".local" or ".uphs.upenn.edu" suffix from site name
-  string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" CTEST_SITE "${CTEST_SITE}")
-
   # common site name
   if (COMMON_SITE_PREFIXES)
     foreach (P ${COMMON_SITE_PREFIXES})

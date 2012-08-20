@@ -18,7 +18,7 @@
 
 // acceptable in .cxx file
 using namespace std;
-using namespace sbia::basis;
+using namespace basis;
 
 
 @PROJECT_NAMESPACE_CXX_BEGIN@
@@ -38,9 +38,9 @@ const unsigned int VERSION_MAJOR = @PROJECT_VERSION_MAJOR@;
 const unsigned int VERSION_MINOR = @PROJECT_VERSION_MINOR@;
 const unsigned int VERSION_PATCH = @PROJECT_VERSION_PATCH@;
 
-const char* COPYRIGHT = "University of Pennsylvania";
-const char* LICENSE   = "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
-const char* CONTACT   = "SBIA Group <sbia-software at uphs.upenn.edu>";
+const char* COPYRIGHT = "@PROJECT_COPYRIGHT@";
+const char* LICENSE   = "@PROJECT_LICENSE@";
+const char* CONTACT   = "@PROJECT_CONTACT@";
 
 
 namespace basis {
@@ -246,47 +246,47 @@ string datadir()
 // ---------------------------------------------------------------------------
 void print_contact(const char* contact)
 {
-    sbia::basis::print_contact(contact != NULL ? contact : CONTACT);
+    ::basis::print_contact(contact != NULL ? contact : CONTACT);
 }
 
 // ---------------------------------------------------------------------------
 void print_version(const char* name, const char* version, const char* project, const char* copyright, const char* license)
 {
-    sbia::basis::print_version(name,
-                               version   != NULL ? version   : RELEASE,
-                               project   != NULL ? project   : PROJECT,
-                               copyright != NULL ? copyright : COPYRIGHT,
-                               license   != NULL ? license   : LICENSE);
+    ::basis::print_version(name,
+                           version   != NULL ? version   : RELEASE,
+                           project   != NULL ? project   : PROJECT,
+                           copyright != NULL ? copyright : COPYRIGHT,
+                           license   != NULL ? license   : LICENSE);
 }
 
 // ---------------------------------------------------------------------------
 string targetuid(const string& name)
 {
-    return sbia::basis::targetuid(name, ExecutableTargetInfo::instance());
+    return ::basis::targetuid(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 bool istarget(const string& name)
 {
-    return sbia::basis::istarget(name, ExecutableTargetInfo::instance());
+    return ::basis::istarget(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 string exepath(const string& name)
 {
-    return sbia::basis::exepath(name, ExecutableTargetInfo::instance());
+    return ::basis::exepath(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 string exename(const std::string& name)
 {
-    return sbia::basis::exename(name, ExecutableTargetInfo::instance());
+    return ::basis::exename(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 string exedir(const std::string& name)
 {
-    return sbia::basis::exedir(name, ExecutableTargetInfo::instance());
+    return ::basis::exedir(name, ExecutableTargetInfo::instance());
 }
 
 // ===========================================================================
@@ -297,16 +297,16 @@ string exedir(const std::string& name)
 int execute(const string& cmd, bool quiet, ostream* out,
             bool allow_fail, int verbose, bool simulate)
 {
-    return sbia::basis::execute(cmd, quiet, out, allow_fail, verbose, simulate,
-                                ExecutableTargetInfo::instance());
+    return ::basis::execute(cmd, quiet, out, allow_fail, verbose, simulate,
+                            ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 int execute(vector<string> args, bool quiet, ostream* out,
             bool allow_fail, int verbose, bool simulate)
 {
-    return sbia::basis::execute(args, quiet, out, allow_fail, verbose, simulate,
-                                ExecutableTargetInfo::instance());
+    return ::basis::execute(args, quiet, out, allow_fail, verbose, simulate,
+                            ExecutableTargetInfo::instance());
 }
 
 // ===========================================================================

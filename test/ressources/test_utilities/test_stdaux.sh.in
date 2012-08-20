@@ -12,7 +12,7 @@
 
 . "${BASIS_BASH_UTILITIES}" || { echo "Failed to load BASIS utilities!" 1>&2; exit 1; }
 
-import sbia.basis.shtap
+import basis.shtap
 
 
 # ============================================================================

@@ -14,8 +14,8 @@
 # @ingroup BasisTools
 ##############################################################################
 
-package SBIA::BASIS::DoxyFilter::Python;
-use base SBIA::BASIS::DoxyFilter;
+package BASIS::DoxyFilter::Python;
+use base BASIS::DoxyFilter;
 
 # ============================================================================
 # states

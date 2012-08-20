@@ -40,8 +40,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-[ "${_SBIA_BASIS_UTILITIES_INCLUDED}" == 'true' ] || {
-_SBIA_BASIS_UTILITIES_INCLUDED='true'
+[ "${_BASIS_UTILITIES_INCLUDED}" == 'true' ] || {
+_BASIS_UTILITIES_INCLUDED='true'
 
 
 ## @addtogroup BasisBashUtilities
@@ -58,10 +58,11 @@ readonly BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd
 # source other modules
 # ============================================================================
 
-. "${BASIS_UTILITIES_DIR}/config.sh"  || exit 1 # constants
-. "${BASIS_UTILITIES_DIR}/core.sh"    || exit 1 # core utilities
-. "${BASIS_UTILITIES_DIR}/path.sh"    || exit 1 # file path manipulation
-. "${BASIS_UTILITIES_DIR}/shflags.sh" || exit 1 # command-line parsing library
+. "${BASIS_UTILITIES_DIR}/core.sh"  || exit 1 # core utilities, i.e., import()
+
+import basis.config  # constants
+import basis.os.path # file path manipulation
+import basis.shflags # command-line parsing library
 
 # ============================================================================
 # configuration
@@ -78,11 +79,11 @@ readonly BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd
 ## @brief Project release.
 [ -n "${RELEASE}" ] || readonly RELEASE=''
 ## @brief Default copyright of executables.
-readonly COPYRIGHT="University of Pennsylvania"
+[ -n "${COPYRIGHT}" ] || readonly COPYRIGHT='@PROJECT_COPYRIGHT@'
 ## @brief Default license of executables.
-readonly LICENSE="See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+[ -n "${LICENSE}" ] || readonly LICENSE='@PROJECT_LICENSE@'
 ## @brief Default contact to use for help output of executables.
-readonly CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
+[ -n "${CONTACT}" ] || readonly CONTACT='@PROJECT_CONTACT@'
 
 
 # common prefix of target UIDs belonging to this project
@@ -705,4 +706,4 @@ _basis_executabletargetinfo_initialize()
 }
 
 
-} # _SBIA_BASIS_UTILITIES_INCLUDED
+} # _BASIS_UTILITIES_INCLUDED

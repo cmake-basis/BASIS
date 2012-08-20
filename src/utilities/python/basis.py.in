@@ -24,7 +24,7 @@
 
 __all__ = [] # use of import * is discouraged
 
-from sbia.basis import utilities
+from basis import utilities
 
 
 ## @addtogroup BasisPythonUtilities
@@ -41,6 +41,12 @@ PROJECT = '@PROJECT_NAME@'
 VERSION = '@PROJECT_VERSION@'
 ## @brief Project version string used by print_version().
 RELEASE = '@PROJECT_RELEASE@'
+## @brief Default copyright of executables.
+COPYRIGHT = "@COPYRIGHT@"
+## @brief Default license of executables.
+LICENSE = "@LICENSE@"
+## @brief Default contact to use for help output of executables.
+CONTACT = "@CONTACT@"
 
 # prefix used to convert target names into target UIDs
 _TARGET_UID_PREFIX = '@PROJECT_NAMESPACE_CMAKE@'
@@ -57,7 +63,7 @@ _EXECUTABLE_TARGETS = {
 ## @brief Print contact information.
 #
 # @param [in] contact Name of contact.
-def print_contact(contact=utilities.CONTACT):
+def print_contact(contact=CONTACT):
     utilities.print_contact(contact)
 
 # ----------------------------------------------------------------------------
@@ -80,8 +86,8 @@ def print_contact(contact=utilities.CONTACT):
 def print_version(name,
                   version=RELEASE,
                   project=PROJECT,
-                  copyright=utilities.COPYRIGHT,
-                  license=utilities.LICENSE):
+                  copyright=COPYRIGHT,
+                  license=LICENSE):
     utilities.print_version(name, version, project=project, copyright=copyright, license=license)
 
 # ----------------------------------------------------------------------------

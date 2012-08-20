@@ -21,7 +21,7 @@
 # variable ${NS}INCLUDE_DIR, where by default @c NS is the package name
 # followed by an underscore (_).
 #
-# See the %Config.cmake.in file of BASIS for details.
+# See the Config.cmake.in file of BASIS for details.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -40,6 +40,12 @@
 # ============================================================================
 # @PROJECT_NAME@ configuration
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# default settings
+basis_set_config (PACKAGE_VENDOR "@PACKAGE_VENDOR_CONFIG@")
+basis_set_config (COPYRIGHT      "@COPYRIGHT_CONFIG@")
+basis_set_config (CONTACT        "@CONTACT_CONFIG@")
 
 # ----------------------------------------------------------------------------
 # CMake modules

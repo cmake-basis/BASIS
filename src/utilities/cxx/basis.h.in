@@ -17,10 +17,10 @@
  */
 
 #pragma once
-#ifndef _@PROJECT_PACKAGE_VENDOR_U@_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_BASIS_H
-#define _@PROJECT_PACKAGE_VENDOR_U@_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_BASIS_H
+#ifndef _@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_BASIS_H
+#define _@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_BASIS_H
 
-#include <sbia/basis/utilities.h> // project-independent utilities
+#include <basis/utilities.h> // project-independent utilities
 
 
 /// @addtogroup BasisCxxUtilities
@@ -289,4 +289,4 @@ int execute(std::vector<std::string>  args,
 // end of Doxygen group
 
 
-#endif // _@PROJECT_PACKAGE_VENDOR_U@_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_BASIS_H
+#endif // _@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_BASIS_H

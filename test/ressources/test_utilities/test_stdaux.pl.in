@@ -12,7 +12,7 @@
 
 
 package Basis;
-use SBIA::UtilitiesTest::Basis qw(execute exedir);
+use UtilitiesTest::Basis qw(execute exedir);
 package main;
 
 use Test::More tests => 28;

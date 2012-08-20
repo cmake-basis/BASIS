@@ -34,7 +34,7 @@ basis_set_target_properties (
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PERL_LIBRARY_DIR}"
     LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
-    PREFIX                    "${PROJECT_PACKAGE_VENDOR}"
+    PREFIX                    "BASIS"
 )
 
 # ----------------------------------------------------------------------------

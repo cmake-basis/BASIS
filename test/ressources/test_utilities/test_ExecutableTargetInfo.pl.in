@@ -11,10 +11,10 @@
 ##############################################################################
 
 package Basis;
-use SBIA::UtilitiesTest::Basis qw(targetuid istarget exepath exename exedir);
+use UtilitiesTest::Basis qw(targetuid istarget exepath exename exedir);
 package main;
 
-use Test::More tests => 20;
+use Test::More tests => 19;
 
 # ============================================================================
 # tests
@@ -27,9 +27,7 @@ is (Basis::targetuid ('basisproject'), 'basisproject',
     'target of other project unmodified');
 is (Basis::targetuid ('unknown'), 'unknown',
     'unknown target unmodified');
-is (Basis::targetuid ('basis.basisproject'), 'sbia.basis.basisproject',
-    'global namespace prepended');
-is (Basis::targetuid ('sbia.basis.basisproject'), 'sbia.basis.basisproject',
+is (Basis::targetuid ('basis.basisproject'), 'basis.basisproject',
     'UID remains unchanged');
 is (Basis::targetuid ('hammer.hammer'), 'hammer.hammer',
     'UID remains unchanged');

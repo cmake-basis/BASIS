@@ -23,23 +23,23 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM;
+package BASIS::Pod::POM;
 
 require 5.004;
 
 use strict;
-use SBIA::Pod::POM::Constants qw( :all );
-use SBIA::Pod::POM::Nodes;
-use SBIA::Pod::POM::View::Pod;
+use BASIS::Pod::POM::Constants qw( :all );
+use BASIS::Pod::POM::Nodes;
+use BASIS::Pod::POM::View::Pod;
 
 use vars qw( $VERSION $DEBUG $ERROR $ROOT $TEXTSEQ $DEFAULT_VIEW );
 use base qw( Exporter );
 
 $VERSION = '0.27';
 $DEBUG   = 0 unless defined $DEBUG;
-$ROOT    = 'SBIA::Pod::POM::Node::Pod';               # root node class
-$TEXTSEQ = 'SBIA::Pod::POM::Node::Sequence';          # text sequence class
-$DEFAULT_VIEW = 'SBIA::Pod::POM::View::Pod';          # default view class
+$ROOT    = 'BASIS::Pod::POM::Node::Pod';               # root node class
+$TEXTSEQ = 'BASIS::Pod::POM::Node::Sequence';          # text sequence class
+$DEFAULT_VIEW = 'BASIS::Pod::POM::View::Pod';          # default view class
 
 
 #------------------------------------------------------------------------

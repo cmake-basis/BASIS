@@ -11,36 +11,26 @@
 
 #include <vector>
 
-#include <sbia/basis/config.h> // platform macros - must be first
+#include <basis/config.h> // platform macros - must be first
 
-#include <stdlib.h>            // malloc(), free(), _splitpath_s() (WINDOWS)
-#include <string.h>            // strncmp()
+#include <stdlib.h>       // malloc(), free(), _splitpath_s() (WINDOWS)
+#include <string.h>       // strncmp()
 
 #if UNIX
-#  include <sys/stat.h>        // stat(), lstat()
+#  include <sys/stat.h>   // stat(), lstat()
 #endif
 
-#include <sbia/basis/except.h> // to throw exceptions
+#include <basis/except.h> // to throw exceptions
 
-#include <sbia/basis/os.h>
-#include <sbia/basis/os/path.h>
+#include <basis/os.h>
+#include <basis/os/path.h>
 
 
 // acceptable in .cxx file
 using namespace std;
 
 
-namespace sbia
-{
-
-namespace basis
-{
-
-namespace os
-{
-
-namespace path
-{
+namespace basis { namespace os { namespace path {
 
 
 // ===========================================================================
@@ -486,5 +476,3 @@ bool islink(const string& path)
 } // namespace os
 
 } // namespace basis
-
-} // namespace sbia

@@ -22,12 +22,12 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::Text;
+package BASIS::Pod::POM::Node::Text;
 
 use strict;
 
-use SBIA::Pod::POM::Constants qw( :all );
-use parent qw( SBIA::Pod::POM::Node );
+use BASIS::Pod::POM::Constants qw( :all );
+use parent qw( BASIS::Pod::POM::Node );
 use vars qw( %ATTRIBS $ERROR );
 
 %ATTRIBS = ( text => '' );
@@ -49,7 +49,7 @@ sub add {
 sub present {
     my ($self, $view) = @_;
     my $text = $self->{ text };
-    $view ||= $SBIA::Pod::POM::DEFAULT_VIEW;
+    $view ||= $BASIS::Pod::POM::DEFAULT_VIEW;
 
     $text = $text->present($view) 
 	if ref $text;

@@ -30,7 +30,7 @@ cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
 # version of BASIS template used by this project
-set (TEMPLATE_VERSION 1.4)
+set (TEMPLATE_VERSION 1.5)
 
 # Note that this version in case of the BASIS project itself defines the
 # current version of the project template. Thus, this version number has to
@@ -65,7 +65,7 @@ set (BASIS_PERL5LIB               "${BASIS_LIBRARY_DIR}/perl5")
 set (BASIS_MATLABPATH             "${BASIS_LIBRARY_DIR}/matlab")
 set (BASIS_BASHPATH               "${BASIS_LIBRARY_DIR}/bash")
 
-set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHONPATH}/sbia/sphinx/ext")
+set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHONPATH}/basis/sphinx/ext")
 set (BASIS_SPHINX_HTML_THEME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/sphinx/themes")
 
 include ("${BASIS_MODULE_PATH}/BasisTools.cmake")

@@ -22,11 +22,11 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::Item;
+package BASIS::Pod::POM::Node::Item;
 
 use strict;
 
-use parent qw( SBIA::Pod::POM::Node );
+use parent qw( BASIS::Pod::POM::Node );
 use vars qw( %ATTRIBS @ACCEPT $ERROR );
 
 %ATTRIBS =   ( title => '*' );

@@ -22,12 +22,12 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::Content;
+package BASIS::Pod::POM::Node::Content;
 
 use strict;
 
-use SBIA::Pod::POM::Constants qw( :all );
-use parent qw( SBIA::Pod::POM::Node );
+use BASIS::Pod::POM::Constants qw( :all );
+use parent qw( BASIS::Pod::POM::Node );
 
 sub new {
     my $class = shift;
@@ -36,7 +36,7 @@ sub new {
 
 sub present {
     my ($self, $view) = @_;
-    $view ||= $SBIA::Pod::POM::DEFAULT_VIEW;
+    $view ||= $BASIS::Pod::POM::DEFAULT_VIEW;
     return join('', map { ref $_ ? $_->present($view) : $_ } @$self);
 }
 

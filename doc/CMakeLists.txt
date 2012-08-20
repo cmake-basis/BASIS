@@ -21,18 +21,31 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-# ----------------------------------------------------------------------------
+# ============================================================================
 # API documentation (in-source code comments)
+# ============================================================================
 
-# modify template file which shall also be included in documentation such that
-# it will not cause a Doxygen warning because of unrecognized xml/html tags
+set (OPTIONS)
+
+# ----------------------------------------------------------------------------
+# pre-generated API documentation
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/index.html")
+  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/" DESTINATION "${INSTALL_DOC_DIR}/apidoc")
+  list (APPEND OPTIONS EXCLUDE_FROM_DOC)
+endif ()
+
+# ----------------------------------------------------------------------------
+# Doxygen
+
+# replace <year> pattern in template file which shall be included in documentation
+# to avoid unrecognized xml/html tags warning of Doxygen
 file (READ "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}/config/Depends.cmake" TEMPLATE)
 string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
 file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
 unset (TEMPLATE)
 
 basis_add_doc (
-  apidoc
+  apidoc           ${OPTIONS}
   GENERATOR        Doxygen
   INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
   EXCLUDE_PATTERNS # external libraries packaged with BASIS
@@ -49,13 +62,16 @@ basis_add_doc (
                    # files in binary source tree
                    "cmake_install.cmake"
                    "CTestTestfile.cmake"
+  HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
 )
 
-# ----------------------------------------------------------------------------
-# software manual
-set (OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
+# ============================================================================
+# condensed software manual (e.g., excluding download and installation)
+# ============================================================================
 
-foreach (N IN ITEMS Manual UserManual SoftwareManual UserGuide)
+set (OUTPUT_NAME "${PROJECT_NAME} Software Manual")
+
+foreach (N IN ITEMS manual Manual UserManual SoftwareManual UserGuide userguide)
   if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
     basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
     break ()
@@ -68,17 +84,17 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual/index.rst")
     GENERATOR        Sphinx
     BUILDER          pdf html
     OUTPUT_NAME      "${OUTPUT_NAME}"
-    HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
-    COPYRIGHT        "2012 University of Pennsylvania"
-    AUTHOR           "Andreas Schuh"
+    HTML_DESTINATION "${INSTALL_DOC_DIR}/manual"
   )
 endif ()
 
-# ----------------------------------------------------------------------------
+# ============================================================================
 # developer's guide (optional)
-set (OUTPUT_NAME "${PROJECT_NAME}_Developer's_Guide")
+# ============================================================================
 
-foreach (N IN ITEMS DeveloperGuide DeveloperManual)
+set (OUTPUT_NAME "${PROJECT_NAME} Developer's Guide")
+
+foreach (N IN ITEMS DeveloperManual DeveloperGuide)
   if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
     basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
     break ()
@@ -89,30 +105,88 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/developer/index.rst")
   basis_add_doc (
     guide
     GENERATOR        Sphinx
-    BUILDER          pdf
+    BUILDER          pdf html
     SOURCE_DIRECTORY developer
     OUTPUT_NAME      "${OUTPUT_NAME}"
-    COPYRIGHT        "2012 University of Pennsylvania"
-    AUTHOR           "Andreas Schuh"
+    HTML_DESTINATION "${INSTALL_DOC_DIR}/guide"
   )
 endif ()
 
-# ----------------------------------------------------------------------------
+# ============================================================================
 # web site (optional)
+# ============================================================================
+
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
   basis_add_doc (
     site
-    GENERATOR     Sphinx
-    BUILDER       html dirhtml pdf man
-    MAN_SECTION   7
-    SHOW_RELEASE  false
-    INDEXLINK     "SBIA Software"
-    RELLINKS      download installation documentation tutorials
-    HTML_SIDEBARS localtoc relations sourcepdflink
-    LATEX_TITLE   ${PROJECT_NAME}
-    DOXYLINK      apidoc
-    DOXYLINK_URL  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
-    COPYRIGHT     "2011, 2012 University of Pennsylvania"
-    AUTHOR        "Andreas Schuh"
+    GENERATOR        Sphinx
+    BUILDER          html dirhtml pdf man
+    MAN_SECTION      7
+    SHOW_RELEASE     false
+    INDEXLINK        "SBIA Software"
+    RELLINKS         download installation documentation tutorials
+    HTML_SIDEBARS    localtoc relations sourcepdflink
+    LATEX_TITLE      ${PROJECT_NAME}
+    DOXYLINK         apidoc
+    DOXYLINK_URL     http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
   )
+endif ()
+
+# ============================================================================
+# comprehensive manual (may contain all of the above)
+# ============================================================================
+
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
+
+  set (OPTIONS)
+  set (HTML_SIDEBARS localtoc relations)
+
+  # --------------------------------------------------------------------------
+  # pre-generated PDF
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pdf")
+    basis_add_doc ("${PROJECT_NAME}.pdf")
+    list (APPEND HTML_SIDEBARS sourcepdflink)
+    list (APPEND OPTIONS       EXCLUDE_FROM_DOC)
+  else ()
+    list (APPEND HTML_SIDEBARS sourcelink)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # comprehensive software manual
+  basis_add_doc (
+    softwaremanual   ${OPTIONS}
+    GENERATOR        Sphinx
+    BUILDER          pdf html dirhtml man
+    MAN_SECTION      7
+    SHOW_RELEASE     false
+    INDEXLINK        "SBIA Software"
+    RELLINKS         download installation documentation tutorials
+    HTML_SIDEBARS    ${HTML_SIDEBARS}
+    HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
+    LATEX_TITLE      ${PROJECT_NAME}
+    DOXYLINK         apidoc
+    DOXYLINK_URL     http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
+    EXCLUDE_PATTERNS "manual/*"    # condensed manual
+                     "developer/*" # developer's guide
+                     "site/*"      # web site
+  )
+
+  # --------------------------------------------------------------------------
+  # add dummy 'site' target(s)
+  basis_exists_target (SITE_TARGET_EXISTS site)
+  if (NOT SITE_TARGET_EXISTS)
+    basis_add_custom_target (site)
+    basis_add_dependencies (site softwaremanual_html)
+    basis_add_custom_target (site_dirhtml)
+    basis_add_dependencies (site_dirhtml softwaremanual_dirhtml)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # add dummy 'manual' target
+  basis_exists_target (MANUAL_TARGET_EXISTS manual)
+  if (NOT MANUAL_TARGET_EXISTS)
+    basis_add_custom_target (manual)
+    basis_add_dependencies (manual softwaremanual_pdf)
+  endif ()
+
 endif ()

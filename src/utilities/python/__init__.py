@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  sbia/basis/__init__.py
+# @file  basis/__init__.py
 # @brief BASIS utilities for Python.
 #
 # Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />

@@ -9,7 +9,7 @@
  */
 
 
-#include <sbia/basis/config.h> // WINDOWS, UNIX, MACOS... macros
+#include <basis/config.h>  // WINDOWS, UNIX, MACOS... macros
 
 #include <iostream>
 
@@ -29,18 +29,14 @@
                            // of a bug in libgcov in Mac OS X Snow Leopard
 #endif
 
-#include <sbia/basis/except.h>
-#include <sbia/basis/subprocess.h>
+#include <basis/except.h>
+#include <basis/subprocess.h>
 
 
 using namespace std;
 
 
-namespace sbia
-{
-
-namespace basis
-{
+namespace basis {
 
 
 // ===========================================================================
@@ -785,5 +781,3 @@ int Subprocess::call(const string& cmd)
 
 
 } // namespace basis
-
-} // namespace sbia
