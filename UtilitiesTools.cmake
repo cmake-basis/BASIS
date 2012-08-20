@@ -338,6 +338,18 @@ function (basis_configure_utilities)
     # add project-specific utilities
     basis_library_prefix (PREFIX PYTHON)
     basis_add_library (basis_py "${BASIS_PYTHON_TEMPLATES_DIR}/basis.py")
+    set (COMPILE_DEFINITIONS
+      "if (BUILD_INSTALL_SCRIPT)
+         set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_I}\")
+       else ()
+         set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_B}\")
+       endif ()"
+    )
+    if (PROJECT_NAME MATCHES "^BASIS$")
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BINARY_PYTHON_LIBRARY_DIR}\" \"${INSTALL_PYTHON_LIBRARY_DIR}\")")
+    else ()
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
+    endif ()
     basis_set_target_properties (
       basis_py
       PROPERTIES
@@ -346,12 +358,7 @@ function (basis_configure_utilities)
         LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PYTHON_LIBRARY_DIR}"
         LIBRARY_INSTALL_DIRECTORY "${INSTALL_PYTHON_LIBRARY_DIR}"
         PREFIX                    "${PREFIX}"
-        COMPILE_DEFINITIONS
-          "if (BUILD_INSTALL_SCRIPT)
-             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_I}\")
-           else ()
-             set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_B}\")
-           endif ()"
+        COMPILE_DEFINITIONS       "${COMPILE_DEFINITIONS}"
     )
     # dependencies
     basis_target_link_libraries (basis_py ${BASIS_PYTHON_UTILITIES_LIBRARY})
