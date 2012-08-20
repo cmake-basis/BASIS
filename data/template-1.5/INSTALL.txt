@@ -54,7 +54,7 @@ BUILDING THE SOFTWARE FROM SOURCES
 
   The following software has to be installed (if not optional).
 
-  - BASIS >= 1.3
+  - BASIS >= 2.0
 
     Web Site: http://www.rad.upenn.edu/sbia/software/basis/
     Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
@@ -106,7 +106,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   <sbia-software at uphs.upenn.edu>. In case of failing tests, please attach
   the output of the following command to your email:
  
-  $ ctest -V
+  $ ctest -V &> test.log
 
   In the following, only package-specific CMake settings available to
   configure the build and installation of this software are documented.
