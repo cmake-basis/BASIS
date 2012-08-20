@@ -1339,7 +1339,8 @@ function (basis_build_mcc_target TARGET_UID)
     add_custom_command (
       OUTPUT ${BUILD_OUTPUT}
       # rebuild when input sources were modified
-      DEPENDS ${DEPENDS}
+      MAIN_DEPENDENCY "${MAIN_SOURCE_FILE}"
+      DEPENDS         "${BUILD_SCRIPT}" "${CMAKE_CURRENT_LIST_FILE}" ${DEPENDS}
       # invoke MATLAB Compiler in either MATLAB or standalone mode
       # wrapping command in CMake execute_process () command allows for inspection
       # parsing of command output for error messages and specification of timeout
