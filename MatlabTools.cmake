@@ -336,6 +336,7 @@ function (basis_generate_matlab_executable OUTPUT_FILE)
   if (NOT OUTPUT_FILE)
     message ("basis_generate_matlab_executable(): Missing OUTPUT_FILE argument!")
   endif ()
+  basis_list_to_delimited_string (ARGN_MATLABPATH "', '" NOAUTOQUOTE ${ARGN_MATLABPATH})
   file (WRITE "${OUTPUT_FILE}"
     # note that Bash variables within the script are denoted by $var
     # instead of ${var} to prevent CMake from substituting these patterns
@@ -373,7 +374,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 \"${MATLAB_EXECUTABLE}\" -nodesktop -nosplash ${ARGN_OPTIONS} \\
-    -r \"try, addpath(${ARGN_MATLABPATH},'-begin'), ${ARGN_COMMAND}($args), catch err, fprintf(2, ['??? Error executing ${ARGN_COMMAND}\\n' err.message '\\n'), end, quit force\" \\
+    -r \"try, addpath('${ARGN_MATLABPATH}','-begin'), ${ARGN_COMMAND}($args), catch err, fprintf(2, ['??? Error executing ${ARGN_COMMAND}\\n' err.message '\\n'), end, quit force\" \\
     2> >(tee \"$errlog\" >&2)"
   ) # end of file(WRITE) command
 endfunction ()
