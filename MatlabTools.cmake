@@ -18,6 +18,16 @@ endif ()
 
 
 # ============================================================================
+# modules
+# ============================================================================
+
+# Note: Required because generate_matlab_executable.cmake uses this module.
+
+include (CMakeParseArguments)
+include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
+
+# ============================================================================
 # options
 # ============================================================================
 
