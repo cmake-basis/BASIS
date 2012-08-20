@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  SBIA/DoxyFilter/Base.pm
+# @file  DoxyFilter/Base.pm
 # @brief Base class for Doxygen filter implementations.
 #
 # @note Not to confuse with the Doxygen::Filter::Perl package available on CPAN.
@@ -14,7 +14,7 @@ use 5.8.3;
 use strict;
 use warnings;
 
-package SBIA::BASIS::DoxyFilter;
+package BASIS::DoxyFilter;
 
 # ============================================================================
 # exports

@@ -25,7 +25,7 @@ basis_add_library (
   ${UTILITIES}
     "config.sh"    # constants, build configuration
     "core.sh"      # fundamental core functions
-    "path.sh"      # path manipulation functions
+    "os/path.sh"   # path manipulation functions
     "utilities.sh" # project independent utilities
     "shflags.sh"   # command-line parsing library
     "shtap.sh"     # unit testing framework

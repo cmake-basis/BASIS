@@ -21,7 +21,7 @@
 # variable ${NS}INCLUDE_DIR, where by default @c NS is the package name
 # followed by an underscore (_).
 #
-# See the %Config.cmake.in file of BASIS for details.
+# See the Config.cmake.in file of BASIS for details.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -40,6 +40,12 @@
 # ============================================================================
 # @PROJECT_NAME@ configuration
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# default settings
+basis_set_config (PACKAGE_VENDOR "@PACKAGE_VENDOR_CONFIG@")
+basis_set_config (COPYRIGHT      "@COPYRIGHT_CONFIG@")
+basis_set_config (CONTACT        "@CONTACT_CONFIG@")
 
 # ----------------------------------------------------------------------------
 # CMake modules
@@ -61,35 +67,41 @@ basis_set_config (UTILITIES_ENABLED "@UTILITIES_ENABLED@")
 
 ## @brief Python interpreter used to build/configure BASIS Python modules.
 basis_set_config (PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@")
+## @brief Jython interpreter used to build/configure BASIS Jython modules.
+basis_set_config (JYTHON_EXECUTABLE "@JYTHON_EXECUTABLE@")
 ## @brief Perl interpreter used to build/configure BASIS Perl modules.
 basis_set_config (PERL_EXECUTABLE "@PERL_EXECUTABLE@")
-## @brief BASH executable used to build/configure BASIS BASH modules.
+## @brief Bash executable used to build/configure BASIS Bash modules.
 basis_set_config (BASH_EXECUTABLE "@BASH_EXECUTABLE@")
 
 ## @brief Absolute path to C++ utilities files.
 basis_set_config (CXX_TEMPLATES_DIR "@CXX_TEMPLATES_DIR_CONFIG@")
-## @brief Absolute path to Java utilities files.
-basis_set_config (JAVA_TEMPLATES_DIR "@JAVA_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to Python utilities files.
 basis_set_config (PYTHON_TEMPLATES_DIR "@PYTHON_TEMPLATES_DIR_CONFIG@")
+## @brief Absolute path to Python utilities files.
+basis_set_config (JYTHON_TEMPLATES_DIR "@JYTHON_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to Perl utilities files.
 basis_set_config (PERL_TEMPLATES_DIR "@PERL_TEMPLATES_DIR_CONFIG@")
-## @brief Absolute path to BASH utilities files.
-basis_set_config (BASH_TEMPLATES_DIR "@BASH_TEMPLATES_DIR_CONFIG@")
 ## @brief Absolute path to MATLAB utilities files.
 basis_set_config (MATLAB_TEMPLATES_DIR "@MATLAB_TEMPLATES_DIR_CONFIG@")
+## @brief Absolute path to Bash utilities files.
+basis_set_config (BASH_TEMPLATES_DIR "@BASH_TEMPLATES_DIR_CONFIG@")
 
 ## @brief C++ utilities library.
 basis_set_config (CXX_UTILITIES_LIBRARY    "@CXX_UTILITIES_LIBRARY_CONFIG@")
 ## @brief Python utilities library.
 basis_set_config (PYTHON_UTILITIES_LIBRARY "@PYTHON_UTILITIES_LIBRARY_CONFIG@")
+## @brief Jython utilities library.
+basis_set_config (JYTHON_UTILITIES_LIBRARY "@JYTHON_UTILITIES_LIBRARY_CONFIG@")
 ## @brief Perl utilities library.
 basis_set_config (PERL_UTILITIES_LIBRARY   "@PERL_UTILITIES_LIBRARY_CONFIG@")
+## @brief MATLAB utilities library.
+basis_set_config (MATLAB_UTILITIES_LIBRARY "@MATLAB_UTILITIES_LIBRARY_CONFIG@")
 ## @brief Bash utilities library.
 basis_set_config (BASH_UTILITIES_LIBRARY   "@BASH_UTILITIES_LIBRARY_CONFIG@")
 
 ## @brief Unit testing library.
-basis_set_config (TEST_LIBRARY "@TEST_LIBRARY_CONFIG@")
+basis_set_config (TEST_LIBRARY      "@TEST_LIBRARY_CONFIG@")
 ## @brief Implementation of main() function of unit test driver.
 basis_set_config (TEST_MAIN_LIBRARY "@TEST_MAIN_LIBRARY_CONFIG@")
 

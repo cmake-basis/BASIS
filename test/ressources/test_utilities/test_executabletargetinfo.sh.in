@@ -10,14 +10,15 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-. ${BASIS_BASH_UTILITIES} || { echo "Failed to load BASIS utilities!" 1>&2; exit 1; }
+. "${BASIS_BASH_UTILITIES}" || { echo "Failed to load BASIS utilities!" 1>&2; exit 1; }
 
+import basis.shtap
 
 # ============================================================================
 # plan
 # ============================================================================
 
-plan_tests 43
+plan_tests 41
 
 # ============================================================================
 # tests
@@ -47,12 +48,9 @@ is $? 0 'return value is 0'
 is "${uid}" 'unknown' 'unknown target unmodified'
 
 # with namespace
-targetuid uid 'sbia.basis.basisproject'
-is $? 0 'return value is 0'
-is "${uid}" 'sbia.basis.basisproject' 'UID remains unchanged'
 targetuid uid 'basis.basisproject'
 is $? 0 'return value is 0'
-is "${uid}" 'sbia.basis.basisproject' 'global namespace prepended'
+is "${uid}" 'basis.basisproject' 'UID remains unchanged'
 targetuid uid 'hammer.hammer'
 is $? 0 'return value is 0'
 is "${uid}" 'hammer.hammer' 'UID remains unchanged'

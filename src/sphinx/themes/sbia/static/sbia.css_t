@@ -34,11 +34,10 @@ td.projectlogo
 td.projectlogo img
 { 
     border: 0px none;
-    width: 60px;
     height: 60px;
     background-color: #660000;
 }
- 
+
 div.projectname
 {
     font: 300% Tahoma, Arial,sans-serif;
@@ -47,6 +46,13 @@ div.projectname
     padding: 2px 0px;
     background-color: #660000;
     text-shadow: #C1C7DD 1px 1px 2px;
+}
+
+div.projectname img
+{ 
+    border: 0px none;
+    height: 60px;
+    background-color: #660000;
 }
 
 div.projectname .projectversion
@@ -385,6 +391,10 @@ div.sphinxsidebar {
     width: {{ theme_sidebarwidth|toint }}px;
     float: right;
     text-align: left;
+}
+
+div.sphinxsidebar div.sphinxsidebarwrapper p.logo {
+    width: {{ theme_sidebarwidth|toint }}px;
 }
 
 div.sphinxsidebar h4, div.sphinxsidebar h3 {

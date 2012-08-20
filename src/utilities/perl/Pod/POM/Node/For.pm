@@ -22,11 +22,11 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node::For;
+package BASIS::Pod::POM::Node::For;
 
 use strict;
 
-use parent qw( SBIA::Pod::POM::Node );
+use parent qw( BASIS::Pod::POM::Node );
 use vars qw( %ATTRIBS $ERROR );
 
 %ATTRIBS = ( format => undef, text => '' );

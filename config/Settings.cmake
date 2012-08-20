@@ -27,34 +27,20 @@
 # ============================================================================
 
 # installation directory of CMake modules
-set (INSTALL_MODULES_DIR "${INSTALL_SHARE_DIR}/cmake")
+set (INSTALL_MODULES_DIR "${INSTALL_SHARE_DIR}/cmake-modules")
 
 # installation directory of utilities template files
-set (INSTALL_CXX_TEMPLATES_DIR    "${INSTALL_SHARE_DIR}/utilities/cxx")
-set (INSTALL_JAVA_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/java")
-set (INSTALL_PYTHON_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/python")
-set (INSTALL_PERL_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/perl")
-set (INSTALL_BASH_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities/bash")
-set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities/matlab")
+set (INSTALL_CXX_TEMPLATES_DIR    "${INSTALL_SHARE_DIR}/utilities")
+set (INSTALL_JAVA_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities")
+set (INSTALL_PYTHON_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities")
+set (INSTALL_PERL_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities")
+set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities")
+set (INSTALL_BASH_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities")
 
 # common prefix (path) of Sphinx extensions
-set (SPHINX_EXTENSIONS_PREFIX "${BASIS_NAMESPACE_LOWER}/sphinx/ext")
+set (SPHINX_EXTENSIONS_PREFIX "basis/sphinx/ext")
 # installation directory of Sphinx themes
-set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx/themes")
-
-# ============================================================================
-# general settings
-# ============================================================================
-
-# do not copy public header files to build tree
-set (BASIS_AUTO_PREFIX_INCLUDES FALSE)
-# specify regular expressions of public header files which are excluded
-# from the check whether their path is prefixed by INCLUDE_PREFIX
-set (BASIS_INCLUDES_CHECK_EXCLUDE
-  "^sbia/gtest/"
-  "^sbia/gmock/"
-  "^sbia/tclap/"
-)
+set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 
 # ============================================================================
 # project template

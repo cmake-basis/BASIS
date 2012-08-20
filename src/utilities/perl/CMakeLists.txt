@@ -29,12 +29,29 @@ basis_add_library (
     "Sub/**.pm"
 )
 
-basis_set_target_properties (cpan_modules PROPERTIES PREFIX "${BASIS_NAMESPACE}")
+basis_set_target_properties (
+  cpan_modules
+  PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PERL_LIBRARY_DIR}"
+    LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
+    PREFIX                    "BASIS"
+)
 
 # ----------------------------------------------------------------------------
 # utilities
 basis_get_target_name (UTILITIES ${BASIS_PERL_UTILITIES_LIBRARY})
+
 basis_add_library (${UTILITIES} "Utilities.pm")
+
+basis_library_prefix (PREFIX PERL)
+basis_set_target_properties (
+  ${UTILITIES}
+  PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PERL_LIBRARY_DIR}"
+    LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
+    PREFIX                    "${PREFIX}"
+)
+
 basis_target_link_libraries (${UTILITIES} cpan_modules)
 
 add_dependencies (${ALL_UTILITIES} ${UTILITIES})

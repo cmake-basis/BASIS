@@ -20,7 +20,7 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::View;
+package BASIS::Pod::POM::View;
 
 require 5.004;
 

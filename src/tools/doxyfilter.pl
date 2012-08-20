@@ -10,11 +10,11 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-use File::Basename         qw(fileparse);
-use SBIA::BASIS::Utilities qw(exename execute istarget);
+use File::Basename   qw(fileparse);
+use BASIS::Utilities qw(exename execute istarget);
 
-use SBIA::BASIS::DoxyFilter::Bash;
-use SBIA::BASIS::DoxyFilter::CMake;
+use BASIS::DoxyFilter::Bash;
+use BASIS::DoxyFilter::CMake;
 
 
 if (@ARGV != 1) {
@@ -43,8 +43,8 @@ if (not $lang) {
 }
 # create filter for source language
 if ($lang) {
-    if    ($lang eq 'bash')  { $filter = new SBIA::BASIS::DoxyFilter::Bash;  }
-    elsif ($lang eq 'cmake') { $filter = new SBIA::BASIS::DoxyFilter::CMake; }
+    if    ($lang eq 'bash')  { $filter = new BASIS::DoxyFilter::Bash;  }
+    elsif ($lang eq 'cmake') { $filter = new BASIS::DoxyFilter::CMake; }
 }
 # execute filter
 if (defined $filter) {

@@ -40,8 +40,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-[ "${_SBIA_BASIS_UTILITIES_INCLUDED}" == 'true' ] || {
-_SBIA_BASIS_UTILITIES_INCLUDED='true'
+[ "${_BASIS_UTILITIES_INCLUDED}" == 'true' ] || {
+_BASIS_UTILITIES_INCLUDED='true'
 
 
 ## @addtogroup BasisBashUtilities
@@ -52,17 +52,17 @@ _SBIA_BASIS_UTILITIES_INCLUDED='true'
 # constants
 # ============================================================================
 
-readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd`"
+readonly BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd`"
 
 # ============================================================================
 # source other modules
 # ============================================================================
 
-. "${_BASIS_UTILITIES_DIR}/config.sh"  || exit 1 # constants
-. "${_BASIS_UTILITIES_DIR}/core.sh"    || exit 1 # core utilities
-. "${_BASIS_UTILITIES_DIR}/path.sh"    || exit 1 # file path manipulation
-. "${_BASIS_UTILITIES_DIR}/shflags.sh" || exit 1 # command-line parsing library
-. "${_BASIS_UTILITIES_DIR}/shtap.sh"   || exit 1 # test anything protocol
+. "${BASIS_UTILITIES_DIR}/core.sh"  || exit 1 # core utilities, i.e., import()
+
+import basis.config  # constants
+import basis.os.path # file path manipulation
+import basis.shflags # command-line parsing library
 
 # ============================================================================
 # configuration
@@ -79,17 +79,17 @@ readonly _BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pw
 ## @brief Project release.
 [ -n "${RELEASE}" ] || readonly RELEASE=''
 ## @brief Default copyright of executables.
-readonly COPYRIGHT="University of Pennsylvania"
+[ -n "${COPYRIGHT}" ] || readonly COPYRIGHT='@PROJECT_COPYRIGHT@'
 ## @brief Default license of executables.
-readonly LICENSE="See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+[ -n "${LICENSE}" ] || readonly LICENSE='@PROJECT_LICENSE@'
 ## @brief Default contact to use for help output of executables.
-readonly CONTACT="SBIA Group <sbia-software at uphs.upenn.edu>"
+[ -n "${CONTACT}" ] || readonly CONTACT='@PROJECT_CONTACT@'
 
 
 # common prefix of target UIDs belonging to this project
 [ -n "${_BASIS_TARGET_UID_PREFIX}" ] || readonly _BASIS_TARGET_UID_PREFIX=''
 # used to make relative paths in executable target information map absolute
-[ -n "${_BASIS_DIR}" ] || readonly _BASIS_DIR="${_BASIS_UTILITIES_DIR}"
+[ -n "${_BASIS_DIR}" ] || readonly _BASIS_DIR="${BASIS_UTILITIES_DIR}"
 
 # ============================================================================
 # executable information
@@ -419,7 +419,7 @@ tostring()
     while [ $_basis_tostring_i -lt ${#_basis_tostring_args[@]} ]; do
         _basis_tostring_element="${_basis_tostring_args[$_basis_tostring_i]}"
         # escape double quotes
-        _basis_tostring_element=`printf -- "${_basis_tostring_element}" | sed 's/"/\\"/g'`
+        _basis_tostring_element=`printf -- "${_basis_tostring_element}" | sed 's/\\"/\\\\"/g'`
         # surround element by double quotes if necessary
         match "${_basis_tostring_element}" "[' ]|^$" && _basis_tostring_element="\"${_basis_tostring_element}\""
         # append element
@@ -464,7 +464,13 @@ qsplit()
         # matched element including quotes
         _basis_qsplit_element="${BASH_REMATCH[1]}"
         # remove quotes
-        _basis_qsplit_element=`printf -- "${_basis_qsplit_element}" | sed "s/^['\"]//;s/(^|[^\\])['\"]$//"`
+        if [[ ${_basis_qsplit_element:0:1} == '"' && ${_basis_qsplit_element: -1} == '"' ]]; then
+            _basis_qsplit_element="${_basis_qsplit_element:1}"
+            _basis_qsplit_element="${_basis_qsplit_element%\"}"
+        elif [[ ${_basis_qsplit_element:0:1} == "'" && ${_basis_qsplit_element: -1} == "'" ]]; then
+            _basis_qsplit_element="${_basis_qsplit_element:1}"
+            _basis_qsplit_element="${_basis_qsplit_element%\'}"
+        fi
         # replace quoted quotes within argument by quotes
         _basis_qsplit_element=`printf -- "${_basis_qsplit_element}" | sed "s/[\\]'/'/g;s/[\\]\"/\"/g"`
         # add to resulting array
@@ -700,4 +706,4 @@ _basis_executabletargetinfo_initialize()
 }
 
 
-} # _SBIA_BASIS_UTILITIES_INCLUDED
+} # _BASIS_UTILITIES_INCLUDED

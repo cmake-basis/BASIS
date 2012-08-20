@@ -2,7 +2,7 @@
  * @file  dummy_command.cxx
  * @brief Dummy executable used to test Subprocess module.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -12,7 +12,7 @@
 #include <cstdlib>  // exit, atoi
 #include <cstring>  // strcmp
 
-#include <sbia/basis/config.h>
+#include <basis/config.h>
 
 #if WINDOWS
 #  include <windows.h>

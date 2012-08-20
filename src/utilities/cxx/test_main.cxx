@@ -37,7 +37,7 @@
 // Author: wan@google.com (Zhanyong Wan)
 
 #include <iostream>
-#include <sbia/basis/test.h>
+#include <basis/test.h>
 
 #if defined (_WIN32) || defined (WIN32) || defined (_WINDOWS)
 #  include <Winsock2.h> // gethostbyname()

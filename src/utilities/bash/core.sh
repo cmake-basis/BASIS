@@ -13,8 +13,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-[ "${_SBIA_BASIS_CORE_INCLUDED}" == 'true' ] || {
-_SBIA_BASIS_CORE_INCLUDED='true'
+[ "${_BASIS_CORE_INCLUDED}" == 'true' ] || {
+_BASIS_CORE_INCLUDED='true'
 
 
 . "`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`/config.sh" || exit 1
@@ -23,6 +23,89 @@ _SBIA_BASIS_CORE_INCLUDED='true'
 ## @addtogroup BasisBashUtilities
 #  @{
 
+
+# ============================================================================
+# module import
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+## @brief Import Bash module.
+#
+# This function can be used to import, i.e., source, a named module, where the
+# module is searched for in the directories specified by the @c BASHPATH
+# (environment) variable. Modules can be prepended by the names of the
+# subdirectories they are located in relative to a directory listed in the
+# @c BASHPATH, where dots (.) can be used instead of slashes to separate the
+# parts of the relative module path. Moreover, the <tt>.sh</tt> extension of
+# the modules is appended to the module name if not specified.
+#
+# Example:
+# @code
+# import sbia.basis.core
+# import -o optional.module
+# if [ $? -eq 0 ]; then
+#     echo "Module optional.module imported successfully"
+# else
+#     echo "Module optional.module not found"
+# fi
+# @endcode
+#
+# @note The directories listed in the @c BASHPATH must be absolute paths
+#       starting with a forward slash (/).
+#
+# @param [in] options Option flags. The only possible option is -o. If this
+#                     option is given before the module name, the function
+#                     returns with return value 1 on error. Otherwise, it
+#                     calls the exit function with this exit code.
+#                     It can therefore be used for optional modules, which
+#                     do not necessarily need to be imported.
+# @param [in] module  Name of the module to import.
+#
+# @returns Only on success or if the -o option is given. Otherwise it calls
+#          the exit function if an error occurs.
+#
+# @retval 0 if the module was loaded successfully.
+# @retval 1 on error if -o option is given.
+import()
+{
+    if [[ -z "${BASHPATH}" ]]; then
+        echo "import: BASHPATH not specified!" 1>&2
+        exit 1
+    fi
+    local exitonerror='true'
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -o) exitonerror='false'; ;;
+            *)  break; ;;
+        esac
+        shift
+    done
+    local module="${1//.//}" # replace dots (.) by forward slashes (/)
+    if [[ -z "${module}" ]]; then
+        echo "import: missing module name argument!" 1>&2
+        exit 1
+    fi
+    if [[ $# -gt 1 ]]; then
+        echo "import: too many arguments!" 1>&2
+        exit 1
+    fi
+    [[ ${module: -3} == '.sh' ]] || module="${module}.sh"
+    local path="${BASHPATH}"
+    local root=
+    while [[ -n "${path}" ]]; do
+        root="${path%%:*}"
+        if [[ "${root:0:1}" == '/' && -f "${root}/${module}" ]]; then
+            . "${root}/${module}"
+            return 0
+        fi
+        path="${path#*:}"
+    done
+    if [[ ${exitonerror} == 'true' ]]; then
+        echo "import: module '$1' not found!" 1>&2
+        exit 1
+    fi
+    return 1
+}
 
 # ============================================================================
 # pattern matching
@@ -192,4 +275,4 @@ There is NO WARRANTY, to the extent permitted by law."
 # end of Doxygen group
 
 
-} # _SBIA_BASIS_CORE_INCLUDED
+} # _BASIS_CORE_INCLUDED

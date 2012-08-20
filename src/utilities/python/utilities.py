@@ -36,11 +36,11 @@ from . import which
 # ============================================================================
 
 ## @brief Default copyright of executables.
-COPYRIGHT = "University of Pennsylvania"
+COPYRIGHT = "@COPYRIGHT@"
 ## @brief Default license of executables.
-LICENSE = "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+LICENSE = "@LICENSE@"
 ## @brief Default contact to use for help output of executables.
-CONTACT = "SBIA Group <sbia-software at uphs.upenn.edu>"
+CONTACT = "@CONTACT@"
 
 
 # used to make paths relative to this module absolute

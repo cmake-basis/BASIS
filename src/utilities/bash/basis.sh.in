@@ -3,7 +3,7 @@
 # @brief BASIS utilities of @PROJECT_NAME@ package.
 #
 # @note The basis.sh module was automatically created by BASIS from the
-#       template file basis.sh.in which is part of the BASIS installation.
+#       template file basis.sh.in which is part of BASIS.
 #
 # This module sources the modules of the project-independent BASIS Bash Utilities
 # which are part of the BASIS installation. Hence, it is sufficient to only
@@ -23,8 +23,8 @@
 # @ingroup BasisBashUtilities
 ##############################################################################
 
-[ "${_@PROJECT_NAMESPACE_BASH@_@__NS__@_INCLUDED}" == 'true' ] || {
-_@PROJECT_NAMESPACE_BASH@_@__NS__@_INCLUDED='true'
+[ "${_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED}" == 'true' ] || {
+_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED='true'
 
 
 # ============================================================================
@@ -40,17 +40,23 @@ _@PROJECT_NAMESPACE_BASH@_@__NS__@_INCLUDED='true'
 
 
 ## @brief Project name.
-readonly PROJECT="@PROJECT_NAME@"
+readonly PROJECT='@PROJECT_NAME@'
 ## @brief Project version.
-readonly VERSION="@PROJECT_VERSION@"
+readonly VERSION='@PROJECT_VERSION@'
 ## @brief Major project version.
-readonly VERSION_MAJOR="@PROJECT_VERSION_MAJOR@"
+readonly VERSION_MAJOR='@PROJECT_VERSION_MAJOR@'
 ## @brief Minor project version.
-readonly VERSION_MINOR="@PROJECT_VERSION_MINOR@"
+readonly VERSION_MINOR='@PROJECT_VERSION_MINOR@'
 ## @brief Project patch number.
-readonly VERSION_PATCH="@PROJECT_VERSION_PATCH@"
+readonly VERSION_PATCH='@PROJECT_VERSION_PATCH@'
 ## @brief Project release.
-readonly RELEASE="@PROJECT_RELEASE@"
+readonly RELEASE='@PROJECT_RELEASE@'
+## @brief Default copyright of executables.
+readonly COPYRIGHT='@PROJECT_COPYRIGHT@'
+## @brief Default license of executables.
+readonly LICENSE='@PROJECT_LICENSE@'
+## @brief Default contact to use for help output of executables.
+readonly CONTACT='@PROJECT_CONTACT@'
 
 
 ## @}
@@ -64,7 +70,11 @@ readonly _BASIS_DIR="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
 # ============================================================================
 
 # source project-independent utiltiy functions
-. "${_BASIS_DIR}/@_BASIS_LIBRARY_DIR@/utilities.sh"
+. "${_BASIS_DIR}/@_BASIS_BASH_LIBRARY_DIR@/basis/utilities.sh"
+if [[ $? -ne 0 ]]; then
+    echo "Failed to import basis.utilities module!" 1>&2
+    exit 1
+fi
 
 # ============================================================================
 # initialize executable target information
@@ -103,9 +113,10 @@ _basis_executabletargetinfo_initialize()
 if [ "${basis_use_executable_aliases}" == 'true' ]; then
     # define aliases of build target names to executable file paths
     @EXECUTABLE_ALIASES@
+
     # enable expansion of aliases also in non-interactive shells
     shopt -s expand_aliases
 fi
 
 
-} # _@PROJECT_NAMESPACE_BASH@_@NAMESPACE_UPPER@_INCLUDED
+} # _@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED

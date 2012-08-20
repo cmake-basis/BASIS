@@ -31,4 +31,13 @@ basis_add_library (
     which.py
 )
 
+basis_library_prefix (PREFIX PYTHON)
+basis_set_target_properties (
+  ${UTILITIES}
+  PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PYTHON_LIBRARY_DIR}"
+    LIBRARY_INSTALL_DIRECTORY "${INSTALL_PYTHON_LIBRARY_DIR}"
+    PREFIX                    "${PREFIX}"
+)
+
 add_dependencies (${ALL_UTILITIES} ${UTILITIES})

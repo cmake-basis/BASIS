@@ -2,20 +2,19 @@
 # @file  Utilities.pm
 # @brief Main module of project-independent BASIS utilities.
 #
-# This module defines the BASIS utility functions. It uses the SBIA::Sub::Exporter
+# This module defines the BASIS utility functions. It uses the BASIS::Sub::Exporter
 # module to enable the generation of these functions customized to the request
 # of the particular project they are used in. This is, for example, used by
-# the SBIA::Project::Basis module that is specifically configured for each
-# BASIS-based project. The default utility functions defined by this module,
-# i.e., without any customizaton are intended for use in Perl scripts that
-# are not build as part of a particular package. In case of a BASIS package,
-# the already customized project-specific implementations should be used instead,
-# i.e., those defined by the SBIA::Project::Basis module of the project.
+# the @PROJECT_PACKAGE@::Basis module. The default utility functions defined by
+# this module, i.e., without any customizaton are intended for use in Perl
+# scripts that are not build as part of a particular package. In case of a
+# BASIS package, the already customized project-specific implementations should
+# be used instead, i.e., those defined by the @PROJECT_PACKAGE@::Basis module of
+# the project.
 #
 # @note This module exports also all other BASIS utility functions that are
-#       defined in other Perl modules. Therefore, only this module or the
-#       SBIA::Project::Basis module, respectively,
-#       should be used.
+#       defined in other Perl modules. Therefore, only this or the
+#       @PROJECT_PACKAGE@::Basis module should be used.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -28,16 +27,16 @@
 use strict;
 use warnings;
 
-package SBIA::BASIS::Utilities;
+package BASIS::Utilities;
 {
-    $SBIA::BASIS::Utilities::VERSION = @PROJECT_VERSION_PERL@;
+    $BASIS::Utilities::VERSION = @PROJECT_VERSION_PERL@;
 }
 
 
 use Cwd                   qw(realpath);
 use File::Basename        qw(dirname basename);
 use File::Spec::Functions qw(catfile);
-use SBIA::File::Which     qw(which);
+use BASIS::File::Which    qw(which);
 
 
 ## @addtogroup BasisPerlUtilities
@@ -49,11 +48,11 @@ use SBIA::File::Which     qw(which);
 # ============================================================================
 
 ## @brief Default copyright of executables.
-use constant COPYRIGHT => "University of Pennsylvania";
+use constant COPYRIGHT => "@PROJECT_COPYRIGHT@";
 ## @brief Default license of executables.
-use constant LICENSE   => "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.";
+use constant LICENSE   => "@PROJECT_LICENSE@";
 ## @brief Default contact to use for help output of executables.
-use constant CONTACT   => "SBIA Group <sbia-software at uphs.upenn.edu>";
+use constant CONTACT   => "@PROJECT_CONTACT@";
 
 # ============================================================================
 # exports
@@ -61,7 +60,7 @@ use constant CONTACT   => "SBIA Group <sbia-software at uphs.upenn.edu>";
 
 # Note: The generators are defined at the end of this file.
 
-use SBIA::Sub::Exporter -setup => {
+use BASIS::Sub::Exporter -setup => {
     exports => [
         qw(tostring qsplit),
         print_contact => \&_build_print_contact,
@@ -103,7 +102,7 @@ sub print_contact
 #
 # Example:
 # @code
-# use SBIA::BASIS::Utilities qw(print_version);
+# use BASIS::Utilities qw(print_version);
 # print_version('foo', '1.0');
 # print_version('foo', version => '1.0');
 # print_version(name => 'foo', version => '1.0');
@@ -111,7 +110,7 @@ sub print_contact
 #
 # Example:
 # @code
-# use SBIA::BASIS::Utilities
+# use BASIS::Utilities
 #     print_version => {project   => 'FooBar',
 #                       version   => '1.0',
 #                       copyright => '2012 Andreas Schuh',

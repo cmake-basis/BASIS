@@ -154,31 +154,15 @@ foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
     "${CODE_DIR}/*${E}"
   )
 endforeach ()
-set (BASIS_AUTO_PREFIX_INCLUDES "@BASIS_AUTO_PREFIX_INCLUDES@")
-if (BASIS_AUTO_PREFIX_INCLUDES)
-  # TODO Files in build tree are yet never considered by CTest
-  #      as long as they are uncovered. This is due to a
-  #      bug in CTest itself.
-  #
-  #      See http://public.kitware.com/Bug/view.php?id=12910.
-else ()
+foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
+  list (APPEND CTEST_EXTRA_COVERAGE_GLOB
+    "${INCLUDE_DIR}/*${E}"
+  )
+endforeach ()
+foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
   foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
     list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "${INCLUDE_DIR}/*${E}"
-    )
-  endforeach ()
-endif ()
-foreach (M IN LISTS "@PROJECT_MODULES_ENABLED@")
-  if (NOT BASIS_AUTO_PREFIX_INCLUDES)
-    foreach (E IN ITEMS .h .hh .hpp .hxx .txx .inl .inc)
-      list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-        "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
-      )
-    endforeach ()
-  endif ()
-  foreach (E IN ITEMS .c .cc .cpp .cxx .h .hh .hpp .hxx .txx .inl .inc)
-    list (APPEND CTEST_EXTRA_COVERAGE_GLOB
-      "${MODULES_DIR}/${M}/${CODE_DIR}/*${E}"
+      "${MODULES_DIR}/${M}/${INCLUDE_DIR}/*${E}"
     )
   endforeach ()
 endforeach ()

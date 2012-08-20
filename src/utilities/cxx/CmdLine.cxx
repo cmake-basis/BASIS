@@ -12,29 +12,25 @@
 #include <set>
 
 
-#include <sbia/tclap/Arg.h>
-#include <sbia/tclap/ArgException.h>
-#include <sbia/tclap/StdOutput.h>
-#include <sbia/tclap/Visitor.h>
-#include <sbia/tclap/VersionVisitor.h>
-#include <sbia/tclap/XorHandler.h>
+#include <basis/tclap/Arg.h>
+#include <basis/tclap/ArgException.h>
+#include <basis/tclap/StdOutput.h>
+#include <basis/tclap/Visitor.h>
+#include <basis/tclap/VersionVisitor.h>
+#include <basis/tclap/XorHandler.h>
 
-#include <sbia/basis/os.h>     // exename()
-#include <sbia/basis/except.h> // BASIS_THROW, runtime_error
-#include <sbia/basis/stdio.h>  // get_terminal_columns(), print_wrapped()
+#include <basis/os.h>     // exename()
+#include <basis/except.h> // BASIS_THROW, runtime_error
+#include <basis/stdio.h>  // get_terminal_columns(), print_wrapped()
 
-#include <sbia/basis/CmdLine.h>
+#include <basis/CmdLine.h>
 
 
 // acceptable in .cxx file
 using namespace std;
 
 
-namespace sbia
-{
-
-namespace basis
-{
+namespace basis {
 
 
 // ===========================================================================
@@ -1002,5 +998,3 @@ void CmdLine::parse(vector<string>& args)
 
 
 } // namespace basis
-
-} // namespace sbia

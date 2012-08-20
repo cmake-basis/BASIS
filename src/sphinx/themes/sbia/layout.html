@@ -21,7 +21,13 @@
           {%- endif %}
           <td class="projectid">
             <div class="projectname">
-              <a href="{{ pathto('index') }}">{{ project }}</a>
+              <a href="{{ pathto('index') }}">
+                {%- if theme_titlelogo %}
+                  <img alt="{{ project }}" src="{{ pathto("_static/" + theme_titlelogo, 1) }}" />
+                {%- else %}
+                  {{ project }}
+                {%- endif %}
+              </a>
               {%- if theme_show_release|tobool %}
                 &#160;
                 <span class="projectversion">{{ release }}</span>

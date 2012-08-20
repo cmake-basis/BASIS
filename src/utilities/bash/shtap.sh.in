@@ -114,11 +114,10 @@
 
 # return if already loaded
 [ -n "${SHTAP_VERSION:-}" ] && return 0
-readonly SHTAP_VERSION='1.02-sbia'
+readonly SHTAP_VERSION='1.02-basis'
 
 
-readonly _SHTAP_DIR=@BASIS_BASH___DIR__@
-. "${_SHTAP_DIR}/@LIBRARY_DIR@/core.sh" # match()
+. "`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`/core.sh" || exit 1 # match()
 
 readonly _SHTAP_FILENAME='@__Name__@'
 

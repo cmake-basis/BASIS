@@ -24,7 +24,27 @@
 
 __all__ = [] # use of import * is discouraged
 
-from sbia.basis import utilities
+# The statement "from basis import utilities" (or "import basis.utilities")
+# cannot be used here with Python 2.x because the name of this module is
+# the same as the name of the basis package. Therefore, load the source
+# file of the basis.utilities module explicitly here.
+#
+# Note: imp.load_source() would be quite more compact. However, the following
+#       will also still work with Python 3.1 and 3.2. For Python 3.3 a
+#       different implementation might be necessary using loader objects.
+import imp
+import os
+_path = os.path.realpath(os.path.join(os.path.dirname(__file__),
+                         '@_BASIS_PYTHONPATH@/basis'))
+(_file, _filepath, _desc) = imp.find_module('utilities', [_path])
+try:
+    utilities = imp.load_module('basis.utilities', _file, _filepath, _desc)
+finally:
+    if _file: _file.close()
+del _path
+del _file
+del _filepath
+del _desc
 
 
 ## @addtogroup BasisPythonUtilities
@@ -41,6 +61,12 @@ PROJECT = '@PROJECT_NAME@'
 VERSION = '@PROJECT_VERSION@'
 ## @brief Project version string used by print_version().
 RELEASE = '@PROJECT_RELEASE@'
+## @brief Default copyright of executables.
+COPYRIGHT = "@COPYRIGHT@"
+## @brief Default license of executables.
+LICENSE = "@LICENSE@"
+## @brief Default contact to use for help output of executables.
+CONTACT = "@CONTACT@"
 
 # prefix used to convert target names into target UIDs
 _TARGET_UID_PREFIX = '@PROJECT_NAMESPACE_CMAKE@'
@@ -57,7 +83,7 @@ _EXECUTABLE_TARGETS = {
 ## @brief Print contact information.
 #
 # @param [in] contact Name of contact.
-def print_contact(contact=utilities.CONTACT):
+def print_contact(contact=CONTACT):
     utilities.print_contact(contact)
 
 # ----------------------------------------------------------------------------
@@ -80,8 +106,8 @@ def print_contact(contact=utilities.CONTACT):
 def print_version(name,
                   version=RELEASE,
                   project=PROJECT,
-                  copyright=utilities.COPYRIGHT,
-                  license=utilities.LICENSE):
+                  copyright=COPYRIGHT,
+                  license=LICENSE):
     utilities.print_version(name, version, project=project, copyright=copyright, license=license)
 
 # ----------------------------------------------------------------------------

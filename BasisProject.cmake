@@ -23,20 +23,22 @@
 # Example:
 # @code
 # basis_project (
-#   NAME
-#     "MyProject"
-#   VERSION
-#     1.1.5
-#   DESCRIPTION
-#     "This is the description of the project named"
-#     " MyProject which follows BASIS."
-#   DEPENDS
-#     NiftiCLib
-#     Python
-#   OPTIONAL_DEPENDS
-#     MPI
-#   TEST_DEPENDS
-#     Perl
+#   # ------------------------------------------------------------------------
+#   # meta-data
+#   NAME             MyProject
+#   PROVIDER         PackageProvider
+#   VERSION          1.1.5
+#   DESCRIPTION      "This is the description of the project named"
+#                    " MyProject which follows BASIS."
+#   AUTHOR           "Max Muster"
+#   COPYRIGHT        "2012 University of Pennsylvania"
+#   LICENSE          "See COPYING file."
+#   CONTACT          "SBIA Group <sbia-software at uphs.upenn.edu>"
+#   # ------------------------------------------------------------------------
+#   # dependencies
+#   DEPENDS          NiftiCLib PythonInterp
+#   OPTIONAL_DEPENDS MPI
+#   TEST_DEPENDS     Perl
 # )
 # @endcode
 #
@@ -53,28 +55,35 @@
 #       the corresponding options of the basis_project() command.
 
 basis_project (
-  NAME
-    "BASIS"
-  VERSION
-    2.0.0rc1
-  DESCRIPTION
-    "This package implements and supports the development of "
-    "software which follows the SBIA Build system And Software "
-    "Implementation Standard (BASIS)."
+  # --------------------------------------------------------------------------
+  # meta-data
+  NAME        BASIS
+  PROVIDER    SBIA
+  VERSION     2.0.0rc2
+  DESCRIPTION "This package implements and supports the development of "
+              "software which follows the SBIA Build system And Software "
+              "Implementation Standard (BASIS)."
+  AUTHORS     "Andreas Schuh"
+  COPYRIGHT   "2011, 2012 University of Pennsylvania"
+  LICENSE     "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+  CONTACT     "SBIA Group <sbia-software at uphs.upenn.edu>"
+  # --------------------------------------------------------------------------
+  # dependencies
   DEPENDS
     #<dependency>
   OPTIONAL_DEPENDS
     PythonInterp
+    JythonInterp
     Perl
+    MATLAB{matlab}
     BASH
-    ITK-4
-    ITK
     Doxygen
     Sphinx
+    ITK # TODO required by basistest-driver, get rid of this dependency
     #<optional-dependency>
   TEST_DEPENDS
     #<test-dependency>
   OPTIONAL_TEST_DEPENDS
-    "MATLAB{matlab, mex, mexext}"
+    MATLAB{matlab,mex,mexext}
     #<optional-test-dependency>
 )

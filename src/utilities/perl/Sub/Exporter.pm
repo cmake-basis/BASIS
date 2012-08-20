@@ -1,20 +1,19 @@
 # Original package Sub::Exporter downloaded from CPAN on 6/15/2012. This module
-# has been modified by Andreas Schuh on 6/15/2012 in order to make it a subpackage
-# of the SBIA namespace.
+# has been modified by Andreas Schuh on 6/15/2012 to make it part of BASIS.
 
 use 5.006;
 use strict;
 use warnings;
-package SBIA::Sub::Exporter;
+package BASIS::Sub::Exporter;
 {
-  $SBIA::Sub::Exporter::VERSION = '0.984';
+  $BASIS::Sub::Exporter::VERSION = '0.984';
 }
 # ABSTRACT: a sophisticated exporter for custom-built routines
 
 use Carp ();
-use SBIA::Data::OptList 0.100 ();
-use SBIA::Params::Util 0.14 (); # _CODELIKE
-use SBIA::Sub::Install 0.92 ();
+use BASIS::Data::OptList 0.100 ();
+use BASIS::Params::Util 0.14 (); # _CODELIKE
+use BASIS::Sub::Install 0.92 ();
 
 
 # Given a potential import name, this returns the group name -- if it's got a
@@ -51,9 +50,9 @@ sub _expand_groups {
       my $suffix = (delete $merge{-suffix}) || '';
 
       if (
-        SBIA::Params::Util::_CODELIKE($groups[$i][1]) ## no critic Private
+        BASIS::Params::Util::_CODELIKE($groups[$i][1]) ## no critic Private
         or
-        SBIA::Params::Util::_SCALAR0($groups[$i][1]) ## no critic Private
+        BASIS::Params::Util::_SCALAR0($groups[$i][1]) ## no critic Private
       ) {
         # this entry was build by a group generator
         $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
@@ -98,9 +97,9 @@ sub _expand_group {
   my $exports = $config->{groups}{$group_name};
 
   if (
-    SBIA::Params::Util::_CODELIKE($exports) ## no critic Private
+    BASIS::Params::Util::_CODELIKE($exports) ## no critic Private
     or
-    SBIA::Params::Util::_SCALAR0($exports) ## no critic Private
+    BASIS::Params::Util::_SCALAR0($exports) ## no critic Private
   ) {
     # I'm not very happy with this code for hiding -prefix and -suffix, but
     # it's needed, and I'm not sure, offhand, how to make it better.
@@ -109,7 +108,7 @@ sub _expand_group {
     delete $group_arg->{-prefix};
     delete $group_arg->{-suffix};
 
-    my $group = SBIA::Params::Util::_CODELIKE($exports) ## no critic Private
+    my $group = BASIS::Params::Util::_CODELIKE($exports) ## no critic Private
               ? $exports->($class, $group_name, $group_arg, $collection)
               : $class->$$exports($group_name, $group_arg, $collection);
 
@@ -122,7 +121,7 @@ sub _expand_group {
     };
   } else {
     $exports
-      = SBIA::Data::OptList::mkopt($exports, "$group_name exports");
+      = BASIS::Data::OptList::mkopt($exports, "$group_name exports");
 
     return @{
       _expand_groups($class, $config, $exports, $collection, $seen, $merge)
@@ -152,7 +151,7 @@ sub _mk_collection_builder {
       };
 
       my $error_msg = "collection $name failed validation";
-      if (SBIA::Params::Util::_SCALAR0($hook)) { ## no critic Private
+      if (BASIS::Params::Util::_SCALAR0($hook)) { ## no critic Private
         Carp::croak $error_msg unless $class->$$hook($value, $arg);
       } else {
         Carp::croak $error_msg unless $hook->($value, $arg);
@@ -199,7 +198,7 @@ sub setup_exporter {
 
   my $import = build_exporter($config);
 
-  SBIA::Sub::Install::reinstall_sub({
+  BASIS::Sub::Install::reinstall_sub({
     code => $import,
     into => $into,
     as   => $as,
@@ -238,7 +237,7 @@ sub _rewrite_build_config {
   my ($config) = @_;
 
   if (my @keys = grep { not exists $valid_config_key{$_} } keys %$config) {
-    Carp::croak "unknown options (@keys) passed to SBIA::Sub::Exporter";
+    Carp::croak "unknown options (@keys) passed to BASIS::Sub::Exporter";
   }
 
   Carp::croak q(into and into_level may not both be supplied to exporter)
@@ -254,7 +253,7 @@ sub _rewrite_build_config {
     if exists $config->{into} and exists $config->{into_level};
 
   for (qw(exports collectors)) {
-    $config->{$_} = SBIA::Data::OptList::mkopt_hash(
+    $config->{$_} = BASIS::Data::OptList::mkopt_hash(
       $config->{$_},
       $_,
       [ 'CODE', 'SCALAR' ],
@@ -267,7 +266,7 @@ sub _rewrite_build_config {
     Carp::croak "names (@names) used in both collections and exports";
   }
 
-  $config->{groups} = SBIA::Data::OptList::mkopt_hash(
+  $config->{groups} = BASIS::Data::OptList::mkopt_hash(
       $config->{groups},
       'groups',
       [
@@ -317,7 +316,7 @@ sub build_exporter {
     my $installer = delete $special->{installer} || $config->{installer};
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
-    my $import_args = SBIA::Data::OptList::mkopt([ @_ ]);
+    my $import_args = BASIS::Data::OptList::mkopt([ @_ ]);
 
     # is this right?  defaults first or collectors first? -- rjbs, 2006-06-24
     $import_args = [ [ -default => undef ] ] unless @$import_args;
@@ -353,7 +352,7 @@ sub _do_import {
 
     my ($generator, $as);
 
-    if ($import_arg and SBIA::Params::Util::_CODELIKE($import_arg)) { ## no critic
+    if ($import_arg and BASIS::Params::Util::_CODELIKE($import_arg)) { ## no critic
       # This is the case when a group generator has inserted name/code pairs.
       $generator = sub { $import_arg };
       $as = $name;
@@ -421,7 +420,7 @@ sub default_generator {
   # overloading precedence would turn an overloaded-as-code generator object
   # into a string before code. -- rjbs, 2006-06-11
   return $generator->($class, $name, $arg->{arg}, $arg->{col})
-    if SBIA::Params::Util::_CODELIKE($generator); ## no critic Private
+    if BASIS::Params::Util::_CODELIKE($generator); ## no critic Private
 
   # This "must" be a scalar reference, to a generator method name.
   # -- rjbs, 2006-12-05
@@ -443,7 +442,7 @@ sub default_installer {
     } elsif (ref $as) {
       Carp::croak "invalid reference type for $as: " . ref $as;
     } else {
-      SBIA::Sub::Install::reinstall_sub({
+      BASIS::Sub::Install::reinstall_sub({
         code => $code,
         into => $arg->{into},
         as   => $as
@@ -492,7 +491,7 @@ __END__
 
 =head1 NAME
 
-SBIA::Sub::Exporter - a sophisticated exporter for custom-built routines
+BASIS::Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
@@ -500,11 +499,11 @@ version 0.984
 
 =head1 SYNOPSIS
 
-SBIA::Sub::Exporter must be used in two places.  First, in an exporting module:
+BASIS::Sub::Exporter must be used in two places.  First, in an exporting module:
 
   # in the exporting module:
   package Text::Tweaker;
-  use SBIA::Sub::Exporter -setup => {
+  use BASIS::Sub::Exporter -setup => {
     exports => [
       qw(squish titlecase), # always works the same way
       reformat => \&build_reformatter, # generator to build exported function
@@ -531,11 +530,11 @@ exporting package.
 =head1 DESCRIPTION
 
 B<ACHTUNG!>  If you're not familiar with Exporter or exporting, read
-L<SBIA::Sub::Exporter::Tutorial> first!
+L<BASIS::Sub::Exporter::Tutorial> first!
 
 =head2 Why Generators?
 
-The biggest benefit of SBIA::Sub::Exporter over existing exporters (including the
+The biggest benefit of BASIS::Sub::Exporter over existing exporters (including the
 ubiquitous Exporter.pm) is its ability to build new coderefs for export, rather
 than to simply export code identical to that found in the exporting package.
 
@@ -545,7 +544,7 @@ If your module's consumers get a routine that works like this:
   my $value = analyze($data, $tolerance, $passes);
 
 and they constantly pass only one or two different set of values for the
-non-C<$data> arguments, your code can benefit from SBIA::Sub::Exporter.  By writing a
+non-C<$data> arguments, your code can benefit from BASIS::Sub::Exporter.  By writing a
 simple generator, you can let them do this, instead:
 
   use Data::Analyze
@@ -588,14 +587,14 @@ Generators can also allow you to export class methods to be called as
 subroutines:
 
   package Data::Methodical;
-  use SBIA::Sub::Exporter -setup => { exports => { some_method => \&_curry_class } };
+  use BASIS::Sub::Exporter -setup => { exports => { some_method => \&_curry_class } };
 
   sub _curry_class {
     my ($class, $name) = @_;
     sub { $class->$name(@_); };
   }
 
-Because of the way that exporters and SBIA::Sub::Exporter work, any package that
+Because of the way that exporters and BASIS::Sub::Exporter work, any package that
 inherits from Data::Methodical can inherit its exporter and override its
 C<some_method>.  If a user imports C<some_method> from that package, he'll
 receive a subroutine that calls the method on the subclass, rather than on
@@ -603,7 +602,7 @@ Data::Methodical itself.
 
 =head2 Other Customizations
 
-Building custom routines with generators isn't the only way that SBIA::Sub::Exporters
+Building custom routines with generators isn't the only way that BASIS::Sub::Exporters
 allows the importing code to refine its use of the exported routines.  They may
 also be renamed to avoid naming collisions.
 
@@ -629,10 +628,10 @@ C<trig_cos> and C<trig_tan>.
 
 =head1 EXPORTER CONFIGURATION
 
-You can configure an exporter for your package by using SBIA::Sub::Exporter like so:
+You can configure an exporter for your package by using BASIS::Sub::Exporter like so:
 
   package Tools;
-  use SBIA::Sub::Exporter
+  use BASIS::Sub::Exporter
     -setup => { exports => [ qw(function1 function2 function3) ] };
 
 This is the simplest way to use the exporter, and is basically equivalent to
@@ -642,10 +641,10 @@ this:
   use base qw(Exporter);
   our @EXPORT_OK = qw(function1 function2 function2);
 
-Any basic use of SBIA::Sub::Exporter will look like this:
+Any basic use of BASIS::Sub::Exporter will look like this:
 
   package Tools;
-  use SBIA::Sub::Exporter -setup => \%config;
+  use BASIS::Sub::Exporter -setup => \%config;
 
 The following keys are valid in C<%config>:
 
@@ -664,15 +663,15 @@ passed:
   into_level - how far up the caller stack to look for a target (default 0)
   into       - an explicit target (package) into which to export routines
 
-In other words: SBIA::Sub::Exporter installs a C<import> routine which, when called,
+In other words: BASIS::Sub::Exporter installs a C<import> routine which, when called,
 exports routines to the calling namespace.  The C<into> and C<into_level>
 options change where those exported routines are installed.
 
   generator  - a callback used to produce the code that will be installed
-               default: SBIA::Sub::Exporter::default_generator
+               default: BASIS::Sub::Exporter::default_generator
 
   installer  - a callback used to install the code produced by the generator
-               default: SBIA::Sub::Exporter::default_installer
+               default: BASIS::Sub::Exporter::default_installer
 
 For information on how these callbacks are used, see the documentation for
 C<L</default_generator>> and C<L</default_installer>>.
@@ -754,7 +753,7 @@ are the subs that will be exported.
 This example shows a simple use of the group generator.
 
   package Data::Crypto;
-  use SBIA::Sub::Exporter -setup => { groups => { cipher => \&build_cipher_group } };
+  use BASIS::Sub::Exporter -setup => { groups => { cipher => \&build_cipher_group } };
 
   sub build_cipher_group {
     my ($class, $group, $arg) = @_;
@@ -767,7 +766,7 @@ built together by code which encloses their secret in their environment.
 
 =head3 Default Groups
 
-If a module that uses SBIA::Sub::Exporter is C<use>d with no arguments, it will try
+If a module that uses BASIS::Sub::Exporter is C<use>d with no arguments, it will try
 to export the group named C<default>.  If that group has not been specifically
 configured, it will be empty, and nothing will happen.
 
@@ -908,7 +907,7 @@ the exporter as a package's import routine.
 
 =head2 default_generator
 
-This is SBIA::Sub::Exporter's default generator.  It takes bits of configuration that
+This is BASIS::Sub::Exporter's default generator.  It takes bits of configuration that
 have been gathered during the import and turns them into a coderef that can be
 installed.
 
@@ -925,7 +924,7 @@ Passed arguments are:
 
 =head2 default_installer
 
-This is SBIA::Sub::Exporter's default installer.  It does what SBIA::Sub::Exporter
+This is BASIS::Sub::Exporter's default installer.  It does what BASIS::Sub::Exporter
 promises: it installs code into the target package.
 
   default_installer(\%arg, \@to_export);
@@ -941,7 +940,7 @@ instead.
 
 =head1 EXPORTS
 
-SBIA::Sub::Exporter also offers its own exports: the C<setup_exporter> and
+BASIS::Sub::Exporter also offers its own exports: the C<setup_exporter> and
 C<build_exporter> routines described above.  It also provides a special "setup"
 collector, which will set up an exporter using the parameters passed to it.
 
@@ -950,7 +949,7 @@ uses C<build_exporter>, not C<setup_exporter>.  This means that the special
 arguments like "into" and "as" for C<setup_exporter> are not accepted here.
 Instead, you may write something like:
 
-  use SBIA::Sub::Exporter
+  use BASIS::Sub::Exporter
     { into => 'Target::Package' },
     -setup => {
       -as     => 'do_import',
@@ -964,7 +963,7 @@ reader.
 =head1 COMPARISONS
 
 There are a whole mess of exporters on the CPAN.  The features included in
-SBIA::Sub::Exporter set it apart from any existing Exporter.  Here's a summary of
+BASIS::Sub::Exporter set it apart from any existing Exporter.  Here's a summary of
 some other exporters and how they compare.
 
 =over
@@ -972,7 +971,7 @@ some other exporters and how they compare.
 =item * L<Exporter> and co.
 
 This is the standard Perl exporter.  Its interface is a little clunky, but it's
-fast and ubiquitous.  It can do some things that SBIA::Sub::Exporter can't:  it can
+fast and ubiquitous.  It can do some things that BASIS::Sub::Exporter can't:  it can
 export things other than routines, it can import "everything in this group
 except this symbol," and some other more esoteric things.  These features seem
 to go nearly entirely unused.
@@ -983,16 +982,16 @@ can't rename or customize routines.  Its groups ("tags") can't be nested.
 L<Exporter::Lite> is a whole lot like Exporter, but it does significantly less:
 it supports exporting symbols, but not groups, pattern matching, or negation.
 
-The fact that SBIA::Sub::Exporter can't export symbols other than subroutines is
+The fact that BASIS::Sub::Exporter can't export symbols other than subroutines is
 a good idea, not a missing feature.
 
-For simple uses, setting up SBIA::Sub::Exporter is about as easy as Exporter.  For
-complex uses, SBIA::Sub::Exporter makes hard things possible, which would not be
+For simple uses, setting up BASIS::Sub::Exporter is about as easy as Exporter.  For
+complex uses, BASIS::Sub::Exporter makes hard things possible, which would not be
 possible with Exporter. 
 
-When using a module that uses SBIA::Sub::Exporter, users familiar with Exporter will
+When using a module that uses BASIS::Sub::Exporter, users familiar with Exporter will
 probably see no difference in the basics.  These two lines do about the same
-thing in whether the exporting module uses Exporter or SBIA::Sub::Exporter.
+thing in whether the exporting module uses Exporter or BASIS::Sub::Exporter.
 
   use Some::Module qw(foo bar baz);
   use Some::Module qw(foo :bar baz);
@@ -1004,17 +1003,17 @@ The definition for exporting in Exporter.pm might look like this:
   our @EXPORT_OK   = qw(foo bar baz quux);
   our %EXPORT_TAGS = (bar => [ qw(bar baz) ]);
 
-Using SBIA::Sub::Exporter, it would look like this:
+Using BASIS::Sub::Exporter, it would look like this:
 
   package Some::Module;
-  use SBIA::Sub::Exporter -setup => {
+  use BASIS::Sub::Exporter -setup => {
     exports => [ qw(foo bar baz quux) ],
     groups  => { bar => [ qw(bar baz) ]}
   };
 
-SBIA::Sub::Exporter respects inheritance, so that a package may export inherited
+BASIS::Sub::Exporter respects inheritance, so that a package may export inherited
 routines, and will export the most inherited version.  Exporting methods
-without currying away the invocant is a bad idea, but SBIA::Sub::Exporter allows you
+without currying away the invocant is a bad idea, but BASIS::Sub::Exporter allows you
 to do just that -- and anyway, there are other uses for this feature, like
 packages of exported subroutines which use inheritance specifically to allow
 more specialized, but similar, packages.
@@ -1028,7 +1027,7 @@ global package variables.
 
 Some exporters use attributes to mark variables to export.  L<Exporter::Simple>
 supports exporting any kind of symbol, and supports groups.  Using a module
-like Exporter or SBIA::Sub::Exporter, it's easy to look at one place and see what is
+like Exporter or BASIS::Sub::Exporter, it's easy to look at one place and see what is
 exported, but it's impossible to look at a variable definition and see whether
 it is exported by that alone.  Exporter::Simple makes this trade in reverse:
 each variable's declaration includes its export definition, but there is no one
@@ -1054,7 +1053,7 @@ with changed names.
 
 L<Class::Exporter> performs a special kind of routine generation, giving each
 importing package an instance of your class, and then exporting the instance's
-methods as normal routines.  (SBIA::Sub::Exporter, of course, can easily emulate this
+methods as normal routines.  (BASIS::Sub::Exporter, of course, can easily emulate this
 behavior, as shown above.)
 
 L<Exporter::Tidy> implements a form of renaming (using its C<_map> argument)
@@ -1077,7 +1076,7 @@ variables for its configuration.
 
 =head1 THANKS
 
-Hans Dieter Pearcey provided helpful advice while I was writing SBIA::Sub::Exporter.
+Hans Dieter Pearcey provided helpful advice while I was writing BASIS::Sub::Exporter.
 Ian Langworth and Shawn Sorichetti asked some good questions and helped me
 improve my documentation quite a bit.  Yuval Kogman helped me find a bunch of
 little problems.

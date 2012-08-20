@@ -10,8 +10,8 @@
 # @ingroup BasisTools
 ##############################################################################
 
-package SBIA::BASIS::DoxyFilter::Bash;
-use base SBIA::BASIS::DoxyFilter;
+package BASIS::DoxyFilter::Bash;
+use base BASIS::DoxyFilter;
 
 # ============================================================================
 # public

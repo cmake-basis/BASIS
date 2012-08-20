@@ -10,8 +10,8 @@
 # @ingroup BasisTools
 ##############################################################################
 
-package SBIA::BASIS::DoxyFilter::CMake;
-use base SBIA::BASIS::DoxyFilter;
+package BASIS::DoxyFilter::CMake;
+use base BASIS::DoxyFilter;
 
 # ============================================================================
 # public

@@ -9,8 +9,8 @@
  */
 
 
-#include <sbia/basis/config.h> // platform macros - must be first
-#include <sbia/basis/except.h> // to throw exceptions
+#include <basis/config.h> // platform macros - must be first
+#include <basis/except.h> // to throw exceptions
 
 #include <vector>
 #include <stdlib.h>            // malloc(), free()
@@ -28,22 +28,15 @@
 #  include <mach-o/dyld.h>     // _NSGetExecutablePath()
 #endif
 
-#include <sbia/basis/os.h>
-#include <sbia/basis/os/path.h>
+#include <basis/os.h>
+#include <basis/os/path.h>
 
 
 // acceptable in .cxx file
 using namespace std;
 
 
-namespace sbia
-{
-
-namespace basis
-{
-
-namespace os
-{
+namespace basis { namespace os {
 
 
 // ---------------------------------------------------------------------------
@@ -295,5 +288,3 @@ bool emptydir(const string& path)
 } // namespace os
 
 } // namespace basis
-
-} // namespace sbia

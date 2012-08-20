@@ -8,15 +8,15 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <sbia/basis/test.h>
+#include <basis/test.h>
 
-#include <sbia/basis/os.h>     // exedir()
+#include <basis/os.h>             // exedir()
 #include <vector>
 #include <string>
-#include <stdio.h>             // remove(), freopen()
+#include <stdio.h>                // remove(), freopen()
 #include <fstream>
 
-#include "basis.h"
+#include <utilitiestest/basis.h>
 
 // stdout/stderr redirection - dup(), dup2(), fileno(), close()
 #if WINDOWS
@@ -34,8 +34,8 @@
 
 using namespace std;
 
-namespace _basis = sbia::basis;
-namespace basis  = sbia::utilitiestest::basis;
+namespace _basis = basis;
+namespace basis  = utilitiestest::basis;
 
 // ---------------------------------------------------------------------------
 // Test exception when basis::execute() is not used as intended.

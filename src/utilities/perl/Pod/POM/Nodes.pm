@@ -20,27 +20,27 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Nodes;
+package BASIS::Pod::POM::Nodes;
 
 require 5.004;
 require Exporter;
 
 use strict;
 
-use SBIA::Pod::POM::Node::Pod;
-use SBIA::Pod::POM::Node::Head1;
-use SBIA::Pod::POM::Node::Head2;
-use SBIA::Pod::POM::Node::Head3;
-use SBIA::Pod::POM::Node::Head4;
-use SBIA::Pod::POM::Node::Over;
-use SBIA::Pod::POM::Node::Item;
-use SBIA::Pod::POM::Node::Begin;
-use SBIA::Pod::POM::Node::For;
-use SBIA::Pod::POM::Node::Verbatim;
-use SBIA::Pod::POM::Node::Code;
-use SBIA::Pod::POM::Node::Text;
-use SBIA::Pod::POM::Node::Sequence;
-use SBIA::Pod::POM::Node::Content;
+use BASIS::Pod::POM::Node::Pod;
+use BASIS::Pod::POM::Node::Head1;
+use BASIS::Pod::POM::Node::Head2;
+use BASIS::Pod::POM::Node::Head3;
+use BASIS::Pod::POM::Node::Head4;
+use BASIS::Pod::POM::Node::Over;
+use BASIS::Pod::POM::Node::Item;
+use BASIS::Pod::POM::Node::Begin;
+use BASIS::Pod::POM::Node::For;
+use BASIS::Pod::POM::Node::Verbatim;
+use BASIS::Pod::POM::Node::Code;
+use BASIS::Pod::POM::Node::Text;
+use BASIS::Pod::POM::Node::Sequence;
+use BASIS::Pod::POM::Node::Content;
 
 
 use vars qw( $VERSION $DEBUG $ERROR @EXPORT_OK @EXPORT_FAIL );

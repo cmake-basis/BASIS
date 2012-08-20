@@ -8,30 +8,26 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <sbia/basis/config.h> // WINDOWS macro
-#include <sbia/basis/assert.h> // assert()
+#include <basis/config.h> // WINDOWS macro
+#include <basis/assert.h> // assert()
 
-#include <stdlib.h>            // getenv()
+#include <stdlib.h>       // getenv()
 
 #if WINDOWS
-#  include <windows.h>         // GetConsoleScreenBufferInfo()
+#  include <windows.h>    // GetConsoleScreenBufferInfo()
 #else
-#  include <unistd.h>          // STDOUT_FILENO
-#  include <sys/ioctl.h>       // ioctl()
+#  include <unistd.h>     // STDOUT_FILENO
+#  include <sys/ioctl.h>  // ioctl()
 #endif
 
-#include <sbia/basis/stdio.h>
+#include <basis/stdio.h>
 
 
 // acceptable in .cxx file
 using namespace std;
 
 
-namespace sbia
-{
-
-namespace basis
-{
+namespace basis {
 
 
 // ---------------------------------------------------------------------------
@@ -133,5 +129,3 @@ ostream& print_wrapped(ostream&      os,
 
 
 } // namespace basis
-
-} // namespace sbia

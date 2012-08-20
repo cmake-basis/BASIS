@@ -19,13 +19,13 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::View::HTML;
+package BASIS::Pod::POM::View::HTML;
 
 require 5.004;
 
 use strict;
-use SBIA::Pod::POM::View;
-use parent qw( SBIA::Pod::POM::View );
+use BASIS::Pod::POM::View;
+use parent qw( BASIS::Pod::POM::View );
 use vars qw( $VERSION $DEBUG $ERROR $AUTOLOAD );
 use Text::Wrap;
 

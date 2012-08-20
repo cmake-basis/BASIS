@@ -48,6 +48,17 @@
 #            before any other dependency, the PYTHON_EXECUTABLE variable is
 #            set by the basis_project_impl() macro.
 
+## @brief Jython interpreter configured when building BASIS.
+if (BASIS_JYTHON_EXECUTABLE)
+  set (
+    JYTHON_EXECUTABLE
+      "${BASIS_JYTHON_EXECUTABLE}"
+    CACHE PATH
+      "The Jython interpreter."
+  )
+  mark_as_advanced (JYTHON_EXECUTABLE)
+endif ()
+
 ## @brief Perl interpreter configured when building BASIS.
 if (BASIS_PERL_EXECUTABLE)
   set (
@@ -59,7 +70,7 @@ if (BASIS_PERL_EXECUTABLE)
   mark_as_advanced (PERL_EXECUTABLE)
 endif ()
 
-## @brief BASH executable configured when building BASIS.
+## @brief Bash executable configured when building BASIS.
 if (BASIS_BASH_EXECUTABLE)
   set (
     BASH_EXECUTABLE
@@ -67,6 +78,5 @@ if (BASIS_BASH_EXECUTABLE)
     CACHE PATH
       "The BASH executable."
   )
-
   mark_as_advanced (BASH_EXECUTABLE)
 endif ()

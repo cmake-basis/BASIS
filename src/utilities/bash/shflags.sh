@@ -100,7 +100,7 @@
 # return if FLAGS already loaded
 [ -n "${FLAGS_VERSION:-}" ] && return 0
 
-FLAGS_VERSION='1.0.4pre-sbia'
+FLAGS_VERSION='1.0.4pre-basis'
 
 # ============================================================================
 # variables

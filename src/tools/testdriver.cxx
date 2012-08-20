@@ -2,7 +2,7 @@
  * @file  testdriver.cxx
  * @brief Standalone test driver to run a test as subprocess.
  *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+ * Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
  * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
  *
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -10,8 +10,8 @@
 
 #define BASIS_STANDALONE_TESTDRIVER
 
-#include <sbia/basis/testdriver.h>
-#include <sbia/basis/subprocess.h>
+#include <basis/testdriver.h>
+#include <basis/subprocess.h>
 
 
 // ---------------------------------------------------------------------------
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     testdriversetup(&argc, &argv);
 
     // setup test
-    #include <sbia/basis/testdriver-before-test.inc>
+    #include <basis/testdriver-before-test.inc>
 
     // run test subprocess
     if (testcmd.isSet()) {
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     }
 
     // perform regression tests
-    #include <sbia/basis/testdriver-after-test.inc>
+    #include <basis/testdriver-after-test.inc>
  
     return result;
 }

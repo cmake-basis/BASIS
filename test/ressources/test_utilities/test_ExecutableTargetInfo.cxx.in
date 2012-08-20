@@ -8,12 +8,12 @@
  * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
-#include <sbia/basis/test.h>
+#include <basis/test.h>
 
-#include "basis.h"
+#include <utilitiestest/basis.h>
 
 
-using namespace sbia::utilitiestest::basis;
+using namespace utilitiestest::basis;
 using namespace std;
 
 
@@ -27,9 +27,9 @@ TEST(ExecutableTargetInfo, targetuid)
         << "unknown target modified";
     EXPECT_STREQ(targetuid("helloworld").c_str(), targetuid("utilitiestest.helloworld").c_str ())
         << "using either target name or target UID does not give the same for own executable";
-    EXPECT_STREQ("sbia.basis.basisproject", targetuid("basis.basisproject").c_str())
+    EXPECT_STREQ("basis.basisproject", targetuid("basis.basisproject").c_str())
         << "UID changed";
-    EXPECT_STREQ("sbia.utilitiestest.helloworld", targetuid("utilitiestest.helloworld").c_str())
+    EXPECT_STREQ("utilitiestest.helloworld", targetuid("utilitiestest.helloworld").c_str())
         << "UID changed";
     EXPECT_STREQ(".hello", targetuid(".hello").c_str())
         << "namespace prepended even though global namespace specified";

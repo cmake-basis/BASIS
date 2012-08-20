@@ -30,7 +30,7 @@ cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
 # version of BASIS template used by this project
-set (TEMPLATE_VERSION 1.4)
+set (TEMPLATE_VERSION 1.5)
 
 # Note that this version in case of the BASIS project itself defines the
 # current version of the project template. Thus, this version number has to
@@ -49,16 +49,23 @@ set (TEMPLATE_VERSION 1.4)
 # this would be a project which uses BASIS.
 
 set (BASIS_MODULE_PATH            "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
-set (BASIS_INCLUDE_PREFIX         "sbia/basis/")
-set (BASIS_INCLUDE_DIR            "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set (BASIS_LIBRARY_DIR            "${CMAKE_CURRENT_BINARY_DIR}/lib")
+
 set (BASIS_CXX_TEMPLATES_DIR      "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")
 set (BASIS_PYTHON_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/python")
+set (BASIS_JYTHON_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/jython")
 set (BASIS_PERL_TEMPLATES_DIR     "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/perl")
+set (BASIS_MATLAB_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/matlab")
 set (BASIS_BASH_TEMPLATES_DIR     "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/bash")
+
+set (BASIS_INCLUDE_DIR            "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set (BASIS_LIBRARY_DIR            "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set (BASIS_PYTHONPATH             "${BASIS_LIBRARY_DIR}/python")
+set (BASIS_JYTHONPATH             "${BASIS_LIBRARY_DIR}/jython")
 set (BASIS_PERL5LIB               "${BASIS_LIBRARY_DIR}/perl5")
-set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHONPATH}/sbia/sphinx/ext")
+set (BASIS_MATLABPATH             "${BASIS_LIBRARY_DIR}/matlab")
+set (BASIS_BASHPATH               "${BASIS_LIBRARY_DIR}/bash")
+
+set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHONPATH}/basis/sphinx/ext")
 set (BASIS_SPHINX_HTML_THEME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/sphinx/themes")
 
 include ("${BASIS_MODULE_PATH}/BasisTools.cmake")

@@ -10,7 +10,9 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-. ${BASIS_BASH_UTILITIES} || { echo "Failed to load BASIS utilities!" 1>&2; exit 1; }
+. "${BASIS_BASH_UTILITIES}" || { echo "Failed to load BASIS utilities!" 1>&2; exit 1; }
+
+import basis.shtap
 
 
 # ============================================================================

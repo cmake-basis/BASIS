@@ -4,7 +4,7 @@
 # @file  basistest.sh
 # @brief Common wrapper for the basistest subcommands.
 #
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -18,7 +18,6 @@
 # constants
 # ============================================================================
 
-exedir  _EXEC_DIR  && readonly _EXEC_DIR
 exename _EXEC_NAME && readonly _EXEC_NAME
 
 # ============================================================================
@@ -59,9 +58,8 @@ function print_synopsis
 {
     cat - << EOF-SYNOPSIS
 Usage:
-  ${_EXEC_NAME} <cmd> [options] [options of subcommand]
+  ${_EXEC_NAME} [<cmd>] [options] [options of subcommand]
   ${_EXEC_NAME} help <cmd>
-  ${_EXEC_NAME} [options]
 EOF-SYNOPSIS
 }
 
@@ -70,9 +68,9 @@ EOF-SYNOPSIS
 function print_options
 {
     cat - << EOF-OPTIONS
-Options:
-  <cmd>         Recognized subcommands are cron, master, slave, and svn.
-  --help, -h    Print help and exit
+Optional arguments:
+  <cmd>         Recognized subcommands are cron, master, slave, and svn. (default: slave)
+  -h, --help    Print help and exit
   --helpshort   Print short help and exit.
 EOF-OPTIONS
 }
@@ -102,8 +100,7 @@ if [ -n "$1" ]; then
             echo "Missing subcommand! See ${_EXEC_NAME} --help." 1>&2
             exit 1
         fi
-
-        exec "${_EXEC_DIR}/basistest-${cmd}" '--help'
+        execute "basistest-${cmd}" '--help'
     elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
         print_help
         exit 0
@@ -121,4 +118,4 @@ fi
 # ============================================================================
 
 [ -n "${cmd}" ] || { echo "Missing subcommand! See ${_EXEC_NAME} --help."; exit 1; }
-exec "${_EXEC_DIR}/basistest-${cmd}" "$@"
+execute "basistest-${cmd}" "$@"

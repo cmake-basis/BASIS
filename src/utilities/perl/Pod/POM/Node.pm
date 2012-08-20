@@ -19,31 +19,31 @@
 #
 #========================================================================
 
-package SBIA::Pod::POM::Node;
+package BASIS::Pod::POM::Node;
 
 require 5.004;
 
 use strict;
-use SBIA::Pod::POM::Nodes;
-use SBIA::Pod::POM::Constants qw( :all );
+use BASIS::Pod::POM::Nodes;
+use BASIS::Pod::POM::Constants qw( :all );
 use vars qw( $VERSION $DEBUG $ERROR $NODES $NAMES $AUTOLOAD );
 use constant DUMP_LINE_LENGTH => 80;
 
 $VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
 $DEBUG   = 0 unless defined $DEBUG;
 $NODES   = {
-    pod      => 'SBIA::Pod::POM::Node::Pod',
-    head1    => 'SBIA::Pod::POM::Node::Head1',
-    head2    => 'SBIA::Pod::POM::Node::Head2',
-    head3    => 'SBIA::Pod::POM::Node::Head3',
-    head4    => 'SBIA::Pod::POM::Node::Head4',
-    over     => 'SBIA::Pod::POM::Node::Over',
-    item     => 'SBIA::Pod::POM::Node::Item',
-    begin    => 'SBIA::Pod::POM::Node::Begin',
-    for      => 'SBIA::Pod::POM::Node::For',
-    text     => 'SBIA::Pod::POM::Node::Text',
-    code     => 'SBIA::Pod::POM::Node::Code',
-    verbatim => 'SBIA::Pod::POM::Node::Verbatim',
+    pod      => 'BASIS::Pod::POM::Node::Pod',
+    head1    => 'BASIS::Pod::POM::Node::Head1',
+    head2    => 'BASIS::Pod::POM::Node::Head2',
+    head3    => 'BASIS::Pod::POM::Node::Head3',
+    head4    => 'BASIS::Pod::POM::Node::Head4',
+    over     => 'BASIS::Pod::POM::Node::Over',
+    item     => 'BASIS::Pod::POM::Node::Item',
+    begin    => 'BASIS::Pod::POM::Node::Begin',
+    for      => 'BASIS::Pod::POM::Node::For',
+    text     => 'BASIS::Pod::POM::Node::Text',
+    code     => 'BASIS::Pod::POM::Node::Code',
+    verbatim => 'BASIS::Pod::POM::Node::Verbatim',
 };
 $NAMES = {
     map { ( $NODES->{ $_ } => $_ ) } keys %$NODES,
@@ -89,8 +89,8 @@ sub new {
     # create object with slots for each acceptable child and overall content
     my $self = bless {
 	type      => $type,
-	content   => bless([ ], 'SBIA::Pod::POM::Node::Content'),
-	map { ($_ => bless([ ], 'SBIA::Pod::POM::Node::Content')) } 
+	content   => bless([ ], 'BASIS::Pod::POM::Node::Content'),
+	map { ($_ => bless([ ], 'BASIS::Pod::POM::Node::Content')) } 
 	      (@$accept, 'code'),
     }, $class;
 
@@ -147,7 +147,7 @@ sub add {
 	    unless defined $node;
 	push(@{ $self->{ $type   } }, $node);
 	push(@{ $self->{ content } }, $node);
-    $pom->{in_begin} = 1 if $nodeclass eq 'SBIA::Pod::POM::Node::Begin';
+    $pom->{in_begin} = 1 if $nodeclass eq 'BASIS::Pod::POM::Node::Begin';
 	return $node;
     }
 
@@ -181,7 +181,7 @@ sub add {
 
 sub present {
     my ($self, $view, @args) = @_;
-    $view    ||= $SBIA::Pod::POM::DEFAULT_VIEW;
+    $view    ||= $BASIS::Pod::POM::DEFAULT_VIEW;
     my $type   = $self->{ type };
     my $method = "view_$type";
     DEBUG("presenting method $method to $view\n");

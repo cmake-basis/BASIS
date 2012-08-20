@@ -26,14 +26,21 @@ endif ()
 # doxygen filters
 if (Perl_FOUND)
   basis_add_library (doxyfilterlib "DoxyFilter.pm" "DoxyFilter/**.pm")
+  basis_library_prefix (PREFIX PERL)
+  basis_set_target_properties (
+    doxyfilterlib
+    PROPERTIES
+      LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PERL_LIBRARY_DIR}"
+      LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
+      PREFIX                    "${PREFIX}"
+  )
   basis_add_executable (doxyfilter.pl LIBEXEC)
   basis_target_link_libraries (doxyfilter doxyfilterlib)
 endif ()
 
 # ----------------------------------------------------------------------------
 # testing tools
-basis_add_executable (testdriver.cxx)
-basis_set_target_properties (testdriver PROPERTIES OUTPUT_NAME "basistest-driver")
+basis_add_executable (testdriver.cxx LIBEXEC)
 if (WIN32)
   basis_target_link_libraries (testdriver Ws2_32)
 endif ()
@@ -43,18 +50,10 @@ if (ITK_FOUND)
     testdriver
     PROPERTIES
       COMPILE_DEFINITIONS
-        "TESTDRIVER_NAME=\"basistest-driver\""
         "ITK_VERSION=\"${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}.${ITK_VERSION_PATCH}\""
         "ITK_VERSION_MAJOR=${ITK_VERSION_MAJOR}"
   )
   basis_target_link_libraries (testdriver ${ITK_LIBRARIES})
-else ()
-  basis_set_target_properties (
-    testdriver
-    PROPERTIES
-      COMPILE_DEFINITIONS
-        "TESTDRIVER_NAME=\"basistest-driver\""
-  )
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -62,14 +61,9 @@ endif ()
 basis_add_script (basistest.ctest DESTINATION "${INSTALL_MODULES_DIR}")
 
 if (BASH_FOUND)
-  basis_add_executable (basistest-svn.sh)    # wraps svn command
-  basis_add_executable (basistest-slave.sh)  # executes test task
-  basis_add_executable (basistest-master.sh) # executes scheduled tests
-  basis_add_executable (basistest-cron.sh)   # test cron job
-  basis_add_executable (basistest.sh)        # main wrapper
-
-  # do not install symbolic links for subcommands
-  foreach (C cron master slave svn)
-    basis_set_target_properties (basistest-${C} PROPERTIES SYMLINK_NAME "NONE")
-  endforeach ()
+  basis_add_executable (basistest-svn.sh    LIBEXEC) # wraps svn command
+  basis_add_executable (basistest-slave.sh  LIBEXEC) # executes test task
+  basis_add_executable (basistest-master.sh LIBEXEC) # executes scheduled tests
+  basis_add_executable (basistest-cron.sh   LIBEXEC) # test cron job
+  basis_add_executable (basistest.sh)                # main wrapper
 endif ()

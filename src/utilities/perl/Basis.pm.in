@@ -3,7 +3,7 @@
 # @brief BASIS utilities of @PROJECT_NAME@ package.
 #
 # @note The Basis.pm module was automatically created by BASIS from the
-#       template file Basis.pm.in which is part of the BASIS installation.
+#       template file Basis.pm.in which is part of BASIS.
 #
 # This module imports the modules of the BASIS utilities for Perl and exports
 # these utility functions as part of its own package scope next to the functions
@@ -34,7 +34,7 @@ package @PROJECT_NAMESPACE_PERL@::Basis;
 # exports
 # ============================================================================
 
-use SBIA::Sub::Exporter -setup => {
+use BASIS::Sub::Exporter -setup => {
     exports => [
         qw(print_contact print_version targetuid istarget exepath exename
            exedir tostring qsplit execute)],
@@ -50,9 +50,15 @@ use SBIA::Sub::Exporter -setup => {
 # ============================================================================
 
 ## @brief Project name.
-use constant PROJECT => '@PROJECT_NAME@';
+use constant PROJECT   => '@PROJECT_NAME@';
 ## @brief Project release.
-use constant RELEASE => '@PROJECT_RELEASE@';
+use constant RELEASE   => '@PROJECT_RELEASE@';
+## @brief Default copyright of executables.
+use constant COPYRIGHT => "@PROJECT_COPYRIGHT@";
+## @brief Default license of executables.
+use constant LICENSE   => "@PROJECT_LICENSE@";
+## @brief Default contact to use for help output of executables.
+use constant CONTACT   => "@PROJECT_CONTACT@";
 
 # ============================================================================
 # custom utilities
@@ -68,8 +74,9 @@ BEGIN {
     );
 }
 
-use SBIA::BASIS::Utilities qw(print_contact tostring qsplit),
-        print_version => { project => PROJECT, version => RELEASE },
+use BASIS::Utilities qw(tostring qsplit),
+        print_contact => { contact => CONTACT },
+        print_version => { project => PROJECT, version => RELEASE, copyright => COPYRIGHT, license => LICENSE },
         targetuid     => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
         istarget      => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
         exepath       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
