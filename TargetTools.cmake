@@ -2581,7 +2581,9 @@ function (basis_build_script TARGET_UID)
   if (NOT TARGET "${TARGET_UID}")
     message (FATAL_ERROR "Unknown build target: ${TARGET_UID}")
   endif ()
-  message (STATUS "Adding build command for target ${TARGET_UID}...")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding build command for target ${TARGET_UID}...")
+  endif ()
   # get target properties
   basis_get_target_link_libraries (LINK_DEPENDS ${TARGET_UID}) # paths of script modules/packages
                                                                # including BASIS utilities if used
@@ -2821,7 +2823,9 @@ function (basis_build_script TARGET_UID)
     )
   endif ()
   # done
-  message (STATUS "Adding build command for target ${TARGET_UID}... - done")
+  if (BASIS_VERBOSE)
+    message (STATUS "Adding build command for target ${TARGET_UID}... - done")
+  endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------
