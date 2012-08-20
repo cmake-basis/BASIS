@@ -381,6 +381,7 @@ args=
 while [[ $# -gt 0 ]]; do
   [[ -z \"$args\" ]] || args=\"$args, \"
   args=\"$args, '$1'\"
+  shift
 done
 
 echo 'Launching MATLAB to execute ${ARGN_COMMAND} function...'
