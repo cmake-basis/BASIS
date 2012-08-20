@@ -491,6 +491,15 @@ endfunction ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+## @brief Add custom target.
+macro (basis_add_custom_target TARGET_NAME)
+  basis_check_target_name ("${TARGET_NAME}")
+  basis_make_target_uid (_UID "${TARGET_NAME}")
+  add_custom_target (${_UID} ${ARGN})
+  unset (_UID)
+endmacro ()
+
+# ----------------------------------------------------------------------------
 ## @brief Add executable target.
 #
 # This is the main function to add an executable target to the build system,
@@ -1028,9 +1037,6 @@ function (basis_add_library TARGET_NAME)
   # --------------------------------------------------------------------------
   # re-glob source files before each build (if necessary)
   if (TARGET __${TARGET_UID})
-    if (TARGET _${TARGET_UID})
-      add_dependencies (_${TARGET_UID} __${TARGET_UID})
-    endif ()
     add_dependencies (${TARGET_UID} __${TARGET_UID})
   endif ()
 endfunction ()
@@ -1672,6 +1678,9 @@ function (basis_add_executable_target TARGET_NAME)
   if (TARGET "${HEADERS_TARGET}")
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
+  if (TARGET __${TARGET_UID}) # re-glob source files
+    add_dependencies (_${TARGET_UID} __${TARGET_UID})
+  endif ()
   _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" OUTPUT_NAME "${TARGET_NAME}")
   if (ARGN_LIBEXEC)
     _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC)
@@ -1962,6 +1971,9 @@ function (basis_add_library_target TARGET_NAME)
   basis_make_target_uid (HEADERS_TARGET headers)
   if (TARGET ${HEADERS_TARGET})
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
+  endif ()
+  if (TARGET __${TARGET_UID}) # re-glob source files
+    add_dependencies (_${TARGET_UID} __${TARGET_UID})
   endif ()
   _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" OUTPUT_NAME "${TARGET_NAME}")
   # output directory
@@ -2521,11 +2533,8 @@ function (basis_set_target_install_rpath TARGET_NAME)
   endforeach ()
   # directories of link libraries
   #
-  # if CMAKE_RPATH_USE_LINK_PATH is enabled, also any directories
-  # listed in the LINK_DEPENDS as well as the location of imported
-  # targets are considered, which may include system libraries.
-  # otherwise, only the libraries of this project and targets imported
-  # from other projects which are part of the same superbuild are considered
+  # only the libraries of this project and targets imported
+  # from other projects which are part of the same bundle
   basis_get_target_link_libraries (LINK_DEPENDS ${TARGET_UID})
   if (BASIS_DEBUG AND BASIS_VERBOSE)
     message ("**    LINK_DEPENDS: [${LINK_DEPENDS}]")
@@ -2786,6 +2795,9 @@ function (basis_build_script TARGET_UID)
       add_dependencies (_${TARGET_UID} ${T})
     endif ()
   endforeach ()
+  if (TARGET __${TARGET_UID}) # re-glob source files
+    add_dependencies (_${TARGET_UID} __${TARGET_UID})
+  endif ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean" - including .pyc files regardless of COMPILE flag
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
@@ -2981,6 +2993,9 @@ function (basis_build_script_library TARGET_UID)
       add_dependencies (_${TARGET_UID} ${T})
     endif ()
   endforeach ()
+  if (TARGET __${TARGET_UID}) # re-glob source files
+    add_dependencies (_${TARGET_UID} __${TARGET_UID})
+  endif ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean" - including .pyc files regardless of COMPILE flag
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})

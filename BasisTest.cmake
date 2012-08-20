@@ -28,9 +28,6 @@ include (CTest)
 # mark timeout option as advanced
 mark_as_advanced (DART_TESTING_TIMEOUT)
 
-# remove ".local" or ".uphs.upenn.edu" suffix from site name
-string (REGEX REPLACE "\\.local$|\\.uphs\\.upenn\\.edu$" "" SITE "${SITE}")
-
 set (RUN_FROM_CTEST_OR_DART 1)
 include (CTestTargets)
 set (RUN_FROM_CTEST_OR_DART)
@@ -294,7 +291,7 @@ function (basis_add_test_driver TESTDRIVER_NAME)
                          "a custom test driver.")
   endif ()
   # choose test driver implementation depending on which packages are available
-  set (TESTDRIVER_INCLUDE "sbia/basis/testdriver.h")
+  set (TESTDRIVER_INCLUDE "basis/testdriver.h")
   set (TESTDRIVER_DEPENDS)
   if (ITK_FOUND)
     basis_include_directories (BEFORE ${ITK_INCLUDE_DIRS})
@@ -308,8 +305,8 @@ function (basis_add_test_driver TESTDRIVER_NAME)
   if (NOT TESTDRIVER_SOURCE MATCHES "\\.cxx")
     set (TESTDRIVER_SOURCE "${TESTDRIVER_SOURCE}.cxx")
   endif ()
-  set (CMAKE_TESTDRIVER_BEFORE_TESTMAIN "    #include <sbia/basis/testdriver-before-test.inc>")
-  set (CMAKE_TESTDRIVER_AFTER_TESTMAIN  "    #include <sbia/basis/testdriver-after-test.inc>")
+  set (CMAKE_TESTDRIVER_BEFORE_TESTMAIN "    #include <basis/testdriver-before-test.inc>")
+  set (CMAKE_TESTDRIVER_AFTER_TESTMAIN  "    #include <basis/testdriver-after-test.inc>")
   create_test_sourcelist (
     TESTDRIVER_SOURCES
       ${TESTDRIVER_SOURCE} ${ARGN_UNPARSED_ARGUMENTS}

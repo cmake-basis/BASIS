@@ -51,9 +51,6 @@ mark_as_advanced (BASIS_MCC_MATLAB_MODE)
 #  @{
 
 
-## @brief Script used to invoke the MATLAB Compiler in MATLAB mode.
-set (BASIS_SCRIPT_MCC "${CMAKE_CURRENT_LIST_DIR}/runmcc.m")
-
 ## @brief Compile flags used to build MATLAB Compiler targets.
 set (
   BASIS_MCC_FLAGS
@@ -355,8 +352,8 @@ finish()
 }
 trap finish EXIT
 
-if [[ -d \"$SBIA_TMPDIR\" ]]; then
-    tmpdir=$SBIA_TMPDIR
+if [[ -d \"$TMPDIR\" ]]; then
+    tmpdir=$TMPDIR
 else
     tmpdir=/tmp
 fi
@@ -1127,6 +1124,9 @@ function (basis_build_mex_file TARGET_UID)
   endif ()
   # add custom target
   add_custom_target (_${TARGET_UID} DEPENDS ${BUILD_OUTPUTS} SOURCES ${SOURCES})
+  if (TARGET __${TARGET_UID}) # re-glob source files
+    add_dependencies (_${TARGET_UID} __${TARGET_UID})
+  endif ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean"
   set_property (
@@ -1445,6 +1445,9 @@ function (basis_build_mcc_target TARGET_UID)
   # --------------------------------------------------------------------------
   # add custom target
   add_custom_target (_${TARGET_UID} DEPENDS ${BUILD_OUTPUT} SOURCES ${SOURCES})
+  if (TARGET __${TARGET_UID}) # re-glob source files
+    add_dependencies (_${TARGET_UID} __${TARGET_UID})
+  endif ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${BUILD_OUTPUT})

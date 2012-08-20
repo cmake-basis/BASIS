@@ -780,7 +780,7 @@ COLS_IN_ALPHA_INDEX    = @DOXYGEN_COLS_IN_ALPHA_INDEX@
 # The IGNORE_PREFIX tag can be used to specify one or more prefixes that 
 # should be ignored while generating the index headers.
 
-IGNORE_PREFIX          = Sbia sbia SBIA @PROJECT_NAME@ @PROJECT_NAME_U@ @PROJECT_NAME_L@
+IGNORE_PREFIX          = @DOXYGEN_IGNORE_PREFIX@
 
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output

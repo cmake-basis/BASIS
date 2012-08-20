@@ -90,18 +90,6 @@ foreach (F ${MANIFEST}) # skip empty entries, i.e., blank lines
   set (F "$ENV{DESTDIR}${F}") # support change of root
   if (EXISTS "${F}")
     set (FILE_IN_USE FALSE)
-    # do not remove __init__.py files in lib/python/<vendor>/ if still in use
-    if (F MATCHES "(.*)/@PROJECT_PACKAGE_VENDOR_L@/__init__.pyc?$")
-      set (PYTHONPATH "${CMAKE_MATCH_1}")
-      file (GLOB_RECURSE PYFILES "${PYTHONPATH}/*.py" "${PYTHONPATH}/*.pyc")
-      foreach (PYFILE IN LISTS PYFILES)
-        list (FIND MANIFEST "${PYFILE}" IDX)
-        if (IDX EQUAL -1)
-          set (FILE_IN_USE TRUE)
-          break ()
-        endif ()
-      endforeach ()
-    endif ()
     if (NOT FILE_IN_USE)
       message (STATUS "Uninstalling: ${F}")
       execute_process (COMMAND "${CMAKE_COMMAND}" -E remove -f "${F}" RESULT_VARIABLE RT)
@@ -136,6 +124,7 @@ list (APPEND EXCLUDE_DIRS
   "/usr"
   "/usr/local"
   "/opt"
+  "/opt/local"
   "$ENV{HOME}"
   "$ENV{HOME}/local"
   # these should anyway never be used as installation prefix without subdirectory
@@ -156,9 +145,17 @@ list (APPEND EXCLUDE_DIRS
   "/tmp"
   "/lost+found"
   "/cdrom"
-  "C:\\Program Files"
-  "C:/Program Files"
 )
+
+if (WIN32)
+  get_filename_component (PROGRAM_FILES_DIR "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion;ProgramFilesDir]" ABSOLUTE)
+  if (NOT PROGRAM_FILES_DIR OR PROGRAM_FILES_DIR MATCHES "/registry")
+    set (PROGRAM_FILES_DIR "C:/Program Files")
+  endif ()
+  list (APPEND EXCLUDE_DIRS "${PROGRAM_FILES_DIR}")
+  string (REPLACE "/" "\\" PROGRAM_FILES_DIR "${PROGRAM_FILES_DIR}")
+  list (APPEND EXCLUDE_DIRS "${PROGRAM_FILES_DIR}")
+endif ()
 
 # stop removing directories at root installation directory
 # the subdirectory will be still removed if it is not in the

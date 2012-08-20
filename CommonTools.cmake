@@ -173,7 +173,7 @@ macro (basis_find_package PACKAGE)
   # find other modules of same project
   if (PROJECT_IS_MODULE)
     # allow modules to specify top-level project as dependency
-    if (PKG MATCHES "^${BASIS_PROJECT_PACKAGE}$")
+    if (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
       if (BASIS_DEBUG)
         message ("**     This is the top-level project.")
       endif ()
@@ -1280,7 +1280,7 @@ endmacro ()
 # used as actual CMake target name. This function can be used to get for a
 # given target name or UID the closest match of a known target UID.
 #
-# The individual parts of the target UID, i.e, package vendor, package name,
+# The individual parts of the target UID, i.e, package name,
 # module name, and target name are separated by a dot (.).
 # If @c BASIS_USE_FULLY_QUALIFIED_UIDS is set to @c OFF, the common part of
 # all target UIDs is removed by this function from the target UID.
@@ -1570,22 +1570,47 @@ endfunction ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# @brief Get default subdirectory prefix of scripted library modules.
+## @brief Whether a given target exists.
+#
+# This function should be used instead of the if(TARGET) command of CMake
+# because target names are mapped by BASIS to target UIDs.
+#
+# @param [out] RESULT_VARIABLE Boolean result variable.
+#
+# @sa basis_make_target_uid()
+# @sa basis_get_target_uid()
+macro (basis_exists_target RESULT_VARIABLE TARGET_NAME)
+  basis_get_target_uid (_UID "${TARGET_NAME}")
+  if (TARGET ${_UID})
+    set (${RESULT_VARIABLE} TRUE)
+  else ()
+    set (${RESULT_VARIABLE} FALSE)
+  endif ()
+  unset (_UID)
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Get default subdirectory prefix of scripted library modules.
 #
 # @param [out] PREFIX   Name of variable which is set to the default library
 #                       prefix, i.e., subdirectory relative to the library
 #                       root directory as used for the @c PREFIX property of
 #                       scripted module libraries (see basis_add_script_library())
 #                       or relative to the include directory in case of C++.
-# @param [in]  LANGUAGE Programming language, e.g., @c CXX, @c PYTHON,...
+# @param [in]  LANGUAGE Programming language (case-insenitive), e.g.,
+#                       @c CXX, @c Python, @c Matlab...
 macro (basis_library_prefix PREFIX LANGUAGE)
-  if (PROJECT_NAMESPACE_${LANGUAGE})
-    string (REGEX REPLACE "\\.|::" "/" ${PREFIX} "${PROJECT_NAMESPACE_${LANGUAGE}}")
+  string (TOUPPER "${LANGUAGE}" _LANGUAGE_U)
+  if (PROJECT_NAMESPACE_${_LANGUAGE_U})
+    basis_sanitize_for_regex (_RE "${BASIS_NAMESPACE_DELIMITER_${_LANGUAGE_U}}")
+    string (REGEX REPLACE "${_RE}" "/" ${PREFIX} "${PROJECT_NAMESPACE_${_LANGUAGE_U}}")
+    unset (_RE)
   else ()
-    message (FATAL_ERROR "basis_library_prefix(): PROJECT_NAMESPACE_${LANGUAGE} not set!"
+    message (FATAL_ERROR "basis_library_prefix(): PROJECT_NAMESPACE_${_LANGUAGE_U} not set!"
                          " Make sure that the LANGUAGE argument is supported and in"
                          " uppercase letters only.")
   endif ()
+  unset (_LANGUAGE_U)
 endmacro ()
 
 # ----------------------------------------------------------------------------

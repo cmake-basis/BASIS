@@ -34,15 +34,10 @@ templates_path = [@SPHINX_TEMPLATES_PATH@]
 source_suffix = '.rst'
 master_doc = '@SPHINX_MASTER_DOC@'
 
-project = '@PROJECT_NAME@'
-version = '@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@'
-release = '@PROJECT_RELEASE@'
-
+project   = '@PROJECT_NAME@'
+version   = '@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@'
+release   = '@PROJECT_RELEASE@'
 copyright = '@SPHINX_COPYRIGHT@'
-if not copyright:
-    import datetime
-    now = datetime.datetime.now()
-    copyright = "%d University of Pennsylvania" % now.year
 
 
 # Options for HTML output

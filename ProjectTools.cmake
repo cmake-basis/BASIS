@@ -18,6 +18,19 @@
 # @sa basis_project()
 # @sa basis_slicer_module()
 macro (basis_project_check_metadata)
+  # PROJECT_AUTHOR
+  if (PROJECT_AUTHORS AND PROJECT_AUTHOR)
+    message (FATAL_ERROR "Options AUTHOR and AUTHORS are mutually exclusive!")
+  endif ()
+  if (PROJECT_AUTHOR)
+    set (PROJECT_AUTHORS "${PROJECT_AUTHOR}")
+  endif ()
+  if (NOT PROJECT_AUTHORS AND PROJECT_IS_MODULE)
+    set (PROJECT_AUTHORS "${BASIS_PROJECT_AUTHORS}")
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_AUTHORS "${PROJECT_AUTHORS}")
+  endif ()
   # PROJECT_NAME or PROJECT_SUBPROJECT
   if (PROJECT_SUBPROJECT AND PROJECT_NAME)
     message (FATAL_ERROR "Options SUBPROJECT and NAME are mutually exclusive!")
@@ -42,18 +55,26 @@ macro (basis_project_check_metadata)
                          "upper camel case notation "
                          "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
   endif ()
-  if (NOT PROJECT_IS_MODULE)
-    set (BASIS_PROJECT_NAME "${PROJECT_NAME}")
-    string (TOLOWER "${BASIS_PROJECT_NAME}" BASIS_PROJECT_NAME_L)
-    string (TOUPPER "${BASIS_PROJECT_NAME}" BASIS_PROJECT_NAME_U)
-  endif ()
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_L)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_U)
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_NAME   "${PROJECT_NAME}")
+    set (BASIS_PROJECT_NAME_L "${PROJECT_NAME_L}")
+    set (BASIS_PROJECT_NAME_U "${PROJECT_NAME_U}")
+  endif ()
   # PROJECT_PACKAGE
   if (NOT PROJECT_PACKAGE)
     if (PROJECT_IS_MODULE)
       set (PROJECT_PACKAGE "${BASIS_PROJECT_PACKAGE}")
     else ()
+      if (PROJECT_IS_SUBPROJECT)
+        message (FATAL_ERROR "Missing PACKAGE option for SUBPROJECT ${PROJECT_NAME}!"
+                             " Note that the PACKAGE option is required for subprojects"
+                             " in order to enable the independent build. It should be"
+                             " set to the name of the top-level project this subproject"
+                             " belongs to. Otherwise, the subproject can only be build"
+                             " as part of the package it belongs to.")
+      endif ()
       set (PROJECT_PACKAGE "${PROJECT_NAME}")
     endif ()
   endif ()
@@ -68,14 +89,20 @@ macro (basis_project_check_metadata)
                          "upper camel case notation "
                          "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
   endif ()
-  if (NOT PROJECT_IS_MODULE)
-    set (BASIS_PROJECT_PACKAGE "${PROJECT_PACKAGE}")
-    string (TOLOWER "${BASIS_PROJECT_PACKAGE}" BASIS_PROJECT_PACKAGE_L)
-    string (TOUPPER "${BASIS_PROJECT_PACKAGE}" BASIS_PROJECT_PACKAGE_U)
-  endif ()
   string (TOLOWER "${PROJECT_PACKAGE}" PROJECT_PACKAGE_L)
   string (TOUPPER "${PROJECT_PACKAGE}" PROJECT_PACKAGE_U)
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PACKAGE   "${PROJECT_PACKAGE}")
+    set (BASIS_PROJECT_PACKAGE_L "${PROJECT_PACKAGE_L}")
+    set (BASIS_PROJECT_PACKAGE_U "${PROJECT_PACKAGE_U}")
+  endif ()
   # PROJECT_PACKAGE_VENDOR
+  if (PROJECT_PROVIDER AND PROJECT_PACKAGE_VENDOR)
+    message (FATAL_ERROR "Options PROVIDER and PACKAGE_VENDOR are mutually exclusive!")
+  endif ()
+  if (PROJECT_PROVIDER)
+    set (PROJECT_PACKAGE_VENDOR "${PROJECT_PROVIDER}")
+  endif ()
   if (NOT PROJECT_PACKAGE_VENDOR)
     if (PROJECT_IS_MODULE)
       set (PROJECT_PACKAGE_VENDOR "${BASIS_PROJECT_PACKAGE_VENDOR}")
@@ -83,13 +110,13 @@ macro (basis_project_check_metadata)
       set (PROJECT_PACKAGE_VENDOR "${BASIS_PACKAGE_VENDOR}")
     endif ()
   endif ()
-  if (NOT PROJECT_IS_MODULE)
-    set (BASIS_PROJECT_PACKAGE_VENDOR "${PROJECT_PACKAGE_VENDOR}")
-    string (TOLOWER "${BASIS_PROJECT_PACKAGE_VENDOR}" BASIS_PROJECT_PACKAGE_VENDOR_L)
-    string (TOUPPER "${BASIS_PROJECT_PACKAGE_VENDOR}" BASIS_PROJECT_PACKAGE_VENDOR_U)
-  endif ()
   string (TOLOWER "${PROJECT_PACKAGE_VENDOR}" PROJECT_PACKAGE_VENDOR_L)
   string (TOUPPER "${PROJECT_PACKAGE_VENDOR}" PROJECT_PACKAGE_VENDOR_U)
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PACKAGE_VENDOR   "${PROJECT_PACKAGE_VENDOR}")
+    set (BASIS_PROJECT_PACKAGE_VENDOR_L "${PROJECT_PACKAGE_VENDOR_L}")
+    set (BASIS_PROJECT_PACKAGE_VENDOR_U "${PROJECT_PACKAGE_VENDOR_U}")
+  endif ()
   # PROJECT_VERSION
   if (PROJECT_VERSION)
     if (NOT PROJECT_VERSION MATCHES "^[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(rc[0-9]+|[a-z])?$")
@@ -109,13 +136,44 @@ macro (basis_project_check_metadata)
       message (FATAL_ERROR "Project version not specified!")
     endif ()
   endif ()
-  if (NOT PROJECT_IS_MODULE)
-  endif ()
   # PROJECT_DESCRIPTION
   if (PROJECT_DESCRIPTION)
     basis_list_to_string (PROJECT_DESCRIPTION ${PROJECT_DESCRIPTION})
   else ()
     set (PROJECT_DESCRIPTION "")
+  endif ()
+  # PROJECT_COPYRIGHT
+  if (NOT PROJECT_COPYRIGHT)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_COPYRIGHT "${BASIS_PROJECT_COPYRIGHT}")
+    else ()
+      set (PROJECT_COPYRIGHT "${BASIS_COPYRIGHT}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_COPYRIGHT "${PROJECT_COPYRIGHT}")
+  endif ()
+  # PROJECT_LICENSE
+  if (NOT PROJECT_LICENSE)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_LICENSE "${BASIS_PROJECT_LICENSE}")
+    else ()
+      set (PROJECT_LICENSE "${BASIS_LICENSE}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_LICENSE "${PROJECT_LICENSE}")
+  endif ()
+  # PROJECT_CONTACT
+  if (NOT PROJECT_CONTACT)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_CONTACT "${BASIS_PROJECT_CONTACT}")
+    else ()
+      set (PROJECT_CONTACT "${BASIS_CONTACT}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_CONTACT "${PROJECT_CONTACT}")
   endif ()
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
@@ -170,8 +228,8 @@ endmacro ()
 #   <tr>
 #     @tp @b SUBPROJECT name @endtp
 #     <td>Use this option instead of @c NAME to indicate that this project is a
-#         subproject of the given package. This results, for example, in target
-#         UIDs such as "<vendor>.<package>.<name>" instead of "<vendor>.<package>" only.
+#         subproject of the package @c PACKAGE. This results, for example, in target
+#         UIDs such as "<package>.<name>.<target>" instead of "<package>.<target>".
 #         Moreover, the libraries and shared files of a subproject are installed
 #         in subdirectores whose name equals the name of the subproject. This option
 #         should only be used for projects which are modules of another BASIS project,
@@ -181,17 +239,23 @@ endmacro ()
 #   <tr>
 #     @tp @b PACKAGE pkg @endtp
 #     <td>Name of the package this project (module) belongs to. Defaults to the
-#         name of the (top-level) project. This option can be used to specify a
-#         different package name for the installation. Moreover, in case of a
-#         project module, setting the package name explicitly using this option
-#         even when equal to the project name, enables the build of the module
-#         as separate project using the same directory structure.
-#         (default: name of top-level project)</td>
+#         name of the (top-level) project. This option can further be used in case
+#         of a top-level project to specify a different package name for the installation.
+#         In case of a subproject which is a module of another BASIS project, setting
+#         the package name explicitly using this option enables the build of the
+#         subproject as separate project while preserving the directory structure
+#         and other namespace settings. Therefore, this option is required if the
+#         @c SUBPROJECT option is given and the project shall be build independently
+#         as stand-alone package. (default: name of top-level package)</td>
 #   </tr>
 #   <tr>
 #     @tp @b PACKAGE_VENDOR vendor @endtp
 #     <td>The vendor of this package, used for packaging and installation.
-#         (default: vendor of top-level project or @c BASIS_PACKAGE_VENDOR)</td>
+#         (default: vendor of top-level project or empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b PROVIDER vendor @endtp
+#     <td>This option can be used as an alternative to @c PACKAGE_VENDOR.</td>
 #   </tr>
 #   <tr>
 #     @tp @b VERSION major[.minor[.patch]] @endtp
@@ -1062,6 +1126,7 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Initialize project settings.
 macro (basis_initialize_settings)
+  # --------------------------------------------------------------------------
   # configure BASIS directory structure
   include ("${BASIS_MODULE_PATH}/DirectoriesSettings.cmake")
   configure_file (
@@ -1069,6 +1134,7 @@ macro (basis_initialize_settings)
     "${BINARY_CONFIG_DIR}/Directories.cmake"
     @ONLY
   )
+  # --------------------------------------------------------------------------
   # include project specific settings
   #
   # This file enables the project to modify the default behavior of BASIS,
@@ -1084,41 +1150,51 @@ macro (basis_initialize_settings)
   else ()
     include ("${PROJECT_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
   endif ()
+  # --------------------------------------------------------------------------
   # configure project specific BASIS settings
-  set (_BASIS_NAMESPACE_CMAKE "${BASIS_PROJECT_PACKAGE_VENDOR_L}.${BASIS_PROJECT_PACKAGE_L}")
-  set (_NAMESPACE_CXX  "${PROJECT_PACKAGE_VENDOR_L}::${PROJECT_PACKAGE_L}")
-  set (_NAMESPACE_PERL "${PROJECT_PACKAGE_VENDOR}::${PROJECT_PACKAGE}")
-  foreach (_L IN ITEMS CMAKE JAVA PYTHON JYTHON BASH MATLAB)
-    set (_NAMESPACE_${_L} "${PROJECT_PACKAGE_VENDOR_L}.${PROJECT_PACKAGE_L}")
-  endforeach ()
+  set (_BASIS_NAMESPACE_CMAKE "${PROJECT_PACKAGE_L}")
   if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
-    set (_NAMESPACE_CMAKE "${_NAMESPACE_CMAKE}.${PROJECT_NAME_L}")
+    set (_NAMESPACE_CMAKE "${_BASIS_NAMESPACE_CMAKE}.${PROJECT_NAME_L}")
+  else ()
+    set (_NAMESPACE_CMAKE "${_BASIS_NAMESPACE_CMAKE}")
   endif ()
+  # default namespaces used for supported programming languages
+  foreach (_L IN LISTS BASIS_LANGUAGES_U)
+    if (_L MATCHES "PERL")
+      set (_NAMESPACE_${_L} "${PROJECT_PACKAGE}")
+    else ()
+      set (_NAMESPACE_${_L} "${PROJECT_PACKAGE_L}")
+    endif ()
+  endforeach ()
   if (PROJECT_IS_SUBPROJECT)
-    set (_NAMESPACE_CXX  "${_NAMESPACE_CXX}::${PROJECT_NAME_L}")
-    set (_NAMESPACE_PERL "${_NAMESPACE_PERL}::${PROJECT_NAME}")
-    foreach (_L IN ITEMS JAVA PYTHON JYTHON MATLAB)
-      set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}.${PROJECT_NAME_L}")
+    foreach (_L IN LISTS BASIS_LANGUAGES_U)
+      if (_L MATCHES "PERL")
+        set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}${BASIS_NAMESPACE_DELIMITER_${_L}}${PROJECT_NAME}")
+      elseif (NOT _L MATCHES "CMAKE")
+        set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}${BASIS_NAMESPACE_DELIMITER_${_L}}${PROJECT_NAME_L}")
+      endif ()
     endforeach ()
   endif ()
-  set (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "${PROJECT_PACKAGE}")
-  if (BASIS_PREFIX_PACKAGE_CONFIG_BY_VENDOR)
-    set (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "${PROJECT_PACKAGE_VENDOR}${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}")
-  endif ()
+  # package configuration
+  set (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "${BASIS_PROJECT_PACKAGE}")
   if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
     set (_PROJECT_PACKAGE_CONFIG_PREFIX "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}${PROJECT_NAME}")
   else ()
     set (_PROJECT_PACKAGE_CONFIG_PREFIX "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}")
   endif ()
-  set (_BASIS_PROJECT_PACKAGE_UID "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}-${PROJECT_VERSION}")
-  # configure settings file with API documentation
+  if (PROJECT_PACKAGE_VENDOR)
+    set (_BASIS_PROJECT_PACKAGE_UID "${PROJECT_PACKAGE_VENDOR}-${PROJECT_PACKAGE}-${PROJECT_VERSION}")
+  else ()
+    set (_BASIS_PROJECT_PACKAGE_UID "${PROJECT_PACKAGE}-${PROJECT_VERSION}")
+  endif ()
+  # configure settings file which contains the documentation of these variables
   configure_file (
     "${BASIS_MODULE_PATH}/ProjectSettings.cmake.in"
     "${BINARY_CONFIG_DIR}/ProjectSettings.cmake"
     @ONLY
   )
   # unset local variables
-  foreach (_L IN ITEMS CMAKE CXX JAVA PYTHON JYTHON PERL BASH MATLAB)
+  foreach (_L IN LISTS BASIS_LANGUAGES_U)
     unset (_BASIS_NAMESPACE_${_L})
     unset (_NAMESPACE_${_L})
   endforeach ()

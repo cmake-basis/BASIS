@@ -222,7 +222,7 @@ function (basis_export_targets)
   if (EXPORT_TARGETS)
     if (BASIS_USE_FULLY_QUALIFIED_UIDS)
       set (NAMESPACE_OPT)
-    else ()
+    elseif (BASIS_PROJECT_NAMESPACE_CMAKE)
       set (NAMESPACE_OPT NAMESPACE "${BASIS_PROJECT_NAMESPACE_CMAKE}.")
     endif ()
     export (

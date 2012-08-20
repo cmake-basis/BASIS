@@ -120,16 +120,22 @@ set (
 ## @brief Names of project meta-data with only one argument.
 set (
   BASIS_METADATA_LIST_SINGLE
+    AUTHOR
     NAME
     SUBPROJECT
     PACKAGE
     PACKAGE_VENDOR
+    PROVIDER       # alias for PACKAGE_VENDOR
+    COPYRIGHT
+    LICENSE
+    CONTACT
     VERSION
 )
 
 ## @brief Names of project meta-data with multiple arguments.
 set (
   BASIS_METADATA_LIST_MULTI
+    AUTHORS
     DESCRIPTION
     DEPENDS
     OPTIONAL_DEPENDS
@@ -180,7 +186,6 @@ set (
 set (
   BASIS_RESERVED_TARGET_NAMES
     "all"
-
     "bundle"
     "bundle_source"
     "changelog"
@@ -194,17 +199,6 @@ set (
     "scripts"
     "test"
     "uninstall"
-    # basis_add_sphinx_doc()
-    ".*_all"
-    ".*_html"
-    ".*_dirhtml"
-    ".*_singlehtml"
-    ".*_latex"
-    ".*_pdf"
-    ".*_texinfo"
-    ".*_man"
-    ".*_text"
-    ".*_linkcheck"
 )
 
 ## @brief Names of recognized properties on targets.
@@ -396,12 +390,6 @@ basis_list_to_regex (BASIS_PROPERTIES_ON_TARGETS_RE ${BASIS_PROPERTIES_ON_TARGET
 # the fully-qualified target UID is usually required.
 basis_set_if_empty (BASIS_USE_FULLY_QUALIFIED_UIDS OFF)
 
-## @brief Default vendor of BASIS-based packages.
-set (BASIS_PACKAGE_VENDOR "SBIA")
-
-string (TOLOWER "${BASIS_PACKAGE_VENDOR}" BASIS_PACKAGE_VENDOR_L)
-string (TOUPPER "${BASIS_PACKAGE_VENDOR}" BASIS_PACKAGE_VENDOR_U)
-
 ## @brief Default component used for library targets when no component is specified.
 #
 # The default component a library target and its auxiliary files
@@ -500,8 +488,42 @@ option (BASIS_REGISTER "Request registration of installed package in CMake packa
 mark_as_advanced (BASIS_REGISTER)
 
 # ============================================================================
-# public libraries of script modules
+# programming language specific settings
 # ============================================================================
+
+## @brief List of programming languages explicitly supported by BASIS.
+#
+# @todo Add full support for Java.
+set (BASIS_LANGUAGES CXX Python Jython Perl Matlab Bash)
+
+string (TOLOWER "${BASIS_LANGUAGES}" BASIS_LANGUAGES_L)
+string (TOUPPER "${BASIS_LANGUAGES}" BASIS_LANGUAGES_U)
+
+# ----------------------------------------------------------------------------
+# namespace delimiters
+# ----------------------------------------------------------------------------
+
+## @brief Namespace delimiter used in C++.
+set (BASIS_NAMESPACE_DELIMITER_CXX .)
+## @brief Namespace delimiter used in Python.
+set (BASIS_NAMESPACE_DELIMITER_PYTHON .)
+## @brief Namespace delimiter used in Jython.
+set (BASIS_NAMESPACE_DELIMITER_JYTHON .)
+## @brief Namespace delimiter used in Perl.
+set (BASIS_NAMESPACE_DELIMITER_PERL ::)
+## @brief Namespace delimiter used in MATLAB.
+set (BASIS_NAMESPACE_DELIMITER_MATLAB .)
+## @brief Namespace delimiter used in Bash.
+#
+# @note Bash itself has no concept of namespaces. This namespace delimiter is
+#       used by the import() function of the BASIS Utilities for Bash.
+#
+# @sa BasisBashUtilities
+set (BASIS_NAMESPACE_DELIMITER_BASH .)
+
+# ----------------------------------------------------------------------------
+# public libraries of script modules
+# ----------------------------------------------------------------------------
 
 ## @brief Name of library target which builds Python modules in @c PROJECT_LIBRARY_DIR.
 #
@@ -542,6 +564,16 @@ set (PERL_LIBRARY_TARGET "perllib")
 # @note The given target name is argument to the basis_add_library() command.
 #       Overwrite default value in Settings.cmake file of project if desired.
 set (MATLAB_LIBRARY_TARGET "matlablib")
+
+## @brief Name of library target which builds Bash modules in @c PROJECT_LIBRARY_DIR.
+#
+# This variable is used by basis_configure_script_libraries() which is called
+# by basis_project_impl() to add a library target of the given name for the
+# build of the Bash modules found in the @c PROJECT_LIBRARY_DIR.
+#
+# @note The given target name is argument to the basis_add_library() command.
+#       Overwrite default value in Settings.cmake file of project if desired.
+set (BASH_LIBRARY_TARGET "bashlib")
 
 # ============================================================================
 # documentation

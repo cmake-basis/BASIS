@@ -28,15 +28,8 @@ endif ()
 file (READ "${CHANGELOG_FILE}" CHANGELOG)
 
 # ----------------------------------------------------------------------------
-# svn log
-if (INPUTFORMAT MATCHES "SVN")
-
-  # remove UPHS domain from SVN user name
-  string (REPLACE "\@UPHS.PENNHEALTH.PRV" "" CHANGELOG "${CHANGELOG}")
-
-# ----------------------------------------------------------------------------
 # git log
-elseif (INPUTFORMAT MATCHES "GIT")
+if (INPUTFORMAT MATCHES "GIT")
 
   # remove git-svn-id entries from commit message body
   string (REGEX REPLACE "[ \n\r\t]*git-svn-id:[ \n\r]*[^@]*@[0-9]+[ \n\t]+[-0-9a-z]*" "" CHANGELOG "${CHANGELOG}")

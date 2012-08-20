@@ -40,7 +40,11 @@ endif ()
 # local variables
 # ============================================================================
 
-set (_VENDOR  "/${PROJECT_PACKAGE_VENDOR}")
+if (PROJECT_PACKAGE_VENDOR)
+  set (_VENDOR  "/${PROJECT_PACKAGE_VENDOR}")
+else ()
+  set (_VENDOR)
+endif ()
 set (_PACKAGE "/${PROJECT_PACKAGE}")
 if (PROJECT_IS_SUBPROJECT)
   set (_MODULE  "/${PROJECT_NAME}")

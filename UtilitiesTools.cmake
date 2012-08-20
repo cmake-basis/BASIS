@@ -178,7 +178,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SOURCE)
     # match use/require statements
     basis_library_prefix (PREFIX ${LANGUAGE})
-    set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<"](${PREFIX}/)?basis.h[">]") # e.g., #include "basis.h", #include <vendor/pkg/basis.h>
+    set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<"](${PREFIX}/)?basis.h[">]") # e.g., #include "basis.h", #include <pkg/basis.h>
     if (SCRIPT MATCHES "(^|\n)[ \t]*${RE}([ \t]*//.*|[ \t]*)(\n|$)")
       set (UTILITIES_USED TRUE)
       break ()
@@ -196,12 +196,12 @@ function (basis_utilities_check VAR SOURCE_FILE)
     basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
     foreach (RE IN ITEMS
       "import[ \\t]+basis"                                      # e.g., import basis
-      "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                  # e.g., import <vendor>.<package>.basis
-      "import[ \\t]+\\.\\.?basis"                               # e.g., import .basis", "import ..basis
-      "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis"   # e.g., from <vendor>.<package> import basis
-      "from[ \\t]+${PYTHON_PACKAGE}.basis[ \\t]+import[ \\t].*" # e.g., from <vendor>.<package>.basis import which
+      "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                  # e.g., import <package>.basis
+      "import[ \\t]+\\.\\.?basis"                               # e.g., import .basis, import ..basis
+      "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis"   # e.g., from <package> import basis
+      "from[ \\t]+${PYTHON_PACKAGE}.basis[ \\t]+import[ \\t].*" # e.g., from <package>.basis import which
       "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"             # e.g., from . import basis", "from .. import basis
-      "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"            # e.g., from .basis import which, WhichError", "from ..basis import which
+      "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"            # e.g., from .basis import which, WhichError, from ..basis import which
     ) # foreach RE
       if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*as[ \t]+.*)?([ \t]*#.*|[ \t]*)(;|\n|$)")
         set (UTILITIES_USED TRUE)
@@ -219,7 +219,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     endif ()
     # match use/require statements
     basis_sanitize_for_regex (PERL_PACKAGE "${PROJECT_NAMESPACE_PERL}")
-    set (RE "(use|require)[ \\t]+${PERL_PACKAGE}::Basis([ \\t]+.*)?") # e.g., use <Vendor>::<Package>::Basis qw(:everything);
+    set (RE "(use|require)[ \\t]+${PERL_PACKAGE}::Basis([ \\t]+.*)?") # e.g., use <Package>::Basis qw(:everything);
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*#.*|[ \t]*)(;|\n|$)")
       set (UTILITIES_USED TRUE)
       break ()
@@ -312,8 +312,8 @@ function (basis_configure_utilities)
     set (LIBRARY_PATH_CONFIG "${INSTALL_LIBRARY_DIR}")
     set (DATA_PATH_CONFIG    "${INSTALL_DATA_DIR}")
     # namespace
-    set (PROJECT_NAMESPACE_CXX_BEGIN "namespace ${PROJECT_PACKAGE_VENDOR_L} { namespace ${PROJECT_PACKAGE_L} {")
-    set (PROJECT_NAMESPACE_CXX_END   "} }")
+    set (PROJECT_NAMESPACE_CXX_BEGIN "namespace ${PROJECT_PACKAGE_L} {")
+    set (PROJECT_NAMESPACE_CXX_END   "}")
     if (PROJECT_IS_SUBPROJECT)
       set (PROJECT_NAMESPACE_CXX_BEGIN "${PROJECT_NAMESPACE_CXX_BEGIN} namespace ${PROJECT_NAME_L} {")
       set (PROJECT_NAMESPACE_CXX_END   "${PROJECT_NAMESPACE_CXX_END} }")
@@ -587,7 +587,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
     if (IMPORTED OR TARGET_UID MATCHES "^\\.")
       set (ALIAS "${TARGET_UID}")
-    elseif (NOT BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS)
+    elseif (NOT BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS AND BASIS_PROJECT_NAMESPACE_CMAKE)
       set (ALIAS "${BASIS_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
     endif ()
     # indentation after dictionary key, i.e., alias

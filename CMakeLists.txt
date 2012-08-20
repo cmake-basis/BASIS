@@ -75,7 +75,6 @@ set (
     "generate_matlab_executable.cmake.in" # build command for alternative build of MCC targets
     "get_python_lib.py"                   # auxiliary script to determine site-packages directory
     "glob.cmake"                          # used to glob for source files
-    "runmcc.m"                            # helper used by MatlabTools.cmake module
     "ScriptConfig.cmake.in"               # default script configuration file
     "PostprocessChangeLog.cmake"          # used to postprocess generated ChangeLog
     "ProjectSettings.cmake.in"            # default project-dependent settings
