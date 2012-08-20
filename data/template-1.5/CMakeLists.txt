@@ -14,7 +14,7 @@ cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
 # version of BASIS template used by this project
-set (TEMPLATE_VERSION <template-version>)
+set (TEMPLATE_VERSION "<template-version>")
 
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions

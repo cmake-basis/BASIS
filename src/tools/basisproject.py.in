@@ -80,7 +80,7 @@ def get_standard_template_options(opts, overwrite=False):
     if overwrite or opts.get('example')             == None: opts['example']             = ADD
     if overwrite or opts.get('include')             == None: opts['include']             = DEL
     if overwrite or opts.get('test')                == None: opts['test']                = ADD
-    if overwrite or opts.get('test-internal')       == None: opts['test-internal']       = ADD
+    if overwrite or opts.get('test-internal')       == None: opts['test-internal']       = DEL
     if (overwrite
             or (opts.get('src') == None and opts.get('modules') == None)
             or (opts.get('src') == None and opts.get('modules') == DEL)
@@ -135,7 +135,7 @@ def get_project_name(cmake_file):
     fp = open(cmake_file, 'rt')
     txt = fp.read()
     fp.close()
-    m = re.search(r'\s*(basis_project|basis_slicer_module)\s*\(\s*NAME\s+\"?(?P<name>\w+)\"?', txt)
+    m = re.search(r'\s*(basis_project|basis_slicer_module)\s*\((\s*#[^\n]*\n)*\s*(NAME|SUBPROJECT)\s+"?(?P<name>\w+)"?', txt)
     if m: return m.group('name')
     return None
 
@@ -145,7 +145,7 @@ def get_template_version(cmake_file):
     fp = open(cmake_file, 'rt')
     txt = fp.read()
     fp.close()
-    m = re.search(r'\s*set\s*\(\s*TEMPLATE_VERSION\s+\"?(?P<version>[0-9.]+)\"?', txt)
+    m = re.search(r'\s*set\s*\(\s*TEMPLATE_VERSION\s+"?(?P<version>[0-9.]+)"?', txt)
     if m: return m.group('version')
     return None
 
@@ -196,10 +196,12 @@ def alter(filename, args, backup=True, update=False):
         out = out.replace('<template-version>', '@TEMPLATE_VERSION@')
     # <project>
     if hasattr(args, 'name') and args.name:
-        out = out.replace('<project>', args.name)
+        out = out.replace('#<project>', args.name)
+        out = out.replace('<project>',  args.name)
     # <description>
     if hasattr(args, 'description') and args.description:
-        out = out.replace('<description>', args.description)
+        out = out.replace('#<description>', '"' + args.description + '"')
+        out = out.replace('<description>',  args.description)
     # <author>
     if hasattr(args, 'author') and args.author:
         start = out.find('<author>')
@@ -208,11 +210,13 @@ def alter(filename, args, backup=True, update=False):
             if linestart == -1: linestart  = 0
             else:               linestart += 1
             authors = [a.strip() for a in args.author.split(',')]
-            prefix  = out[linestart:start].replace("AUTHORS", "       ")
-            for author in authors:
-                out = out.replace('#<author>', ''.join(['"', author, '"\n', prefix, '#<author>']), 1)
-            if len(prefix) > 0 and prefix[-1] == '"': prefix = '"' + prefix
-            out = out.replace('<author>', prefix.join(authors))
+            prefix  = out[linestart:start].replace("AUTHORS", "       ").replace("AUTHOR", "      ")
+            if len(prefix) > 0 and prefix[-1] == '#':
+                for author in authors:
+                    out = out.replace('#<author>', ''.join(['"', author, '"\n', prefix, '<author>']), 1)
+            else:
+                authors = ('\n' + prefix).join(authors)
+                out = out.replace('<author>', authors)
     # <year>
     year = None
     if hasattr(args, 'year') and args.year:
@@ -260,7 +264,7 @@ def update_template_version(args):
         if re.search('set\s+\(TEMPLATE_VERSION @TEMPLATE_VERSION@\)', txt):
             return 0
         else:
-            out = re.sub('set\s+\(TEMPLATE_VERSION [0-9]+(\.[0-9]+)?\)',
+            out = re.sub('set\s+\(TEMPLATE_VERSION "?[0-9]+(\.[0-9]+)?"?\)',
                          'set (TEMPLATE_VERSION @TEMPLATE_VERSION@)', txt)
     else:
         ok = False

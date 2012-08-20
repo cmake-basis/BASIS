@@ -50,16 +50,16 @@
 # @ingroup BasisSettings
 ##############################################################################
 
-# Note: The #<*dependency> patterns are required by the basisproject tool
-#       and should be kept on a separate line as last commented argument of
-#       the corresponding options of the basis_project() command.
+# Note: The #<*> patterns are required by the basisproject tool and should be
+#       kept on a separate line as last commented argument of the corresponding
+#       options of the basis_project() command.
 
 basis_project (
   # --------------------------------------------------------------------------
   # meta-data
-  NAME        <project>
+  NAME        #<project>
   VERSION     0.0.0
-  DESCRIPTION "<description>"
+  DESCRIPTION #<description>
   AUTHORS     #<author>
   # --------------------------------------------------------------------------
   # dependencies
