@@ -352,6 +352,8 @@ function (basis_generate_matlab_executable OUTPUT_FILE)
     # instead of ${var} to prevent CMake from substituting these patterns
     "#! /bin/bash
 
+readonly __DIR__=\"${BASIS_BASH___DIR__}\"
+
 errlog=
 finish()
 {
@@ -1332,7 +1334,14 @@ function (basis_build_mcc_target TARGET_UID)
           list (APPEND BUILD_MATLABPATH "${LINK_PATH}")
           list (APPEND DEPENDS ${UID})
         endif ()
-        basis_get_target_location (LINK_DEPEND ${UID} POST_INSTALL)
+        basis_get_target_property (BUNDLED  ${UID} BUNDLED)
+        basis_get_target_property (IMPORTED ${UID} IMPORTED)
+        if (NOT IMPORTED OR BUNDLED)
+          basis_get_target_location (LINK_DEPEND ${UID} POST_INSTALL_RELATIVE)
+          set (LINK_DEPEND "$__DIR__/${LINK_DEPEND}")
+        else ()
+          basis_get_target_location (LINK_DEPEND ${UID} POST_INSTALL)
+        endif ()
         if (LINK_DEPEND MATCHES "\\.mex")
           get_filename_component (LINK_PATH "${LINK_DEPEND}" PATH)
           list (APPEND INSTALL_MATLABPATH "${LINK_PATH}")
