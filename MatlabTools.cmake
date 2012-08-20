@@ -797,7 +797,7 @@ function (basis_add_mcc_target TARGET_NAME)
   if (ARGN_LIBRARY_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
     set (ARGN_LIBRARY_DESTINATION)
   endif ()
-  # MCC flags
+  # whether to compile and compilation flags (for mcc)
   if (NOT MATLAB_MCC_EXECUTABLE)
     find_package (MATLAB COMPONENTS mcc QUIET)
   endif ()
@@ -806,10 +806,11 @@ function (basis_add_mcc_target TARGET_NAME)
                          " Set MATLAB_DIR and/or MATLAB_MCC_EXECUTABLE manually and try again.")
   endif ()
   if ((BASIS_COMPILE_MATLAB AND MATLAB_MCC_EXECUTABLE) OR TYPE MATCHES "LIBRARY")
-    set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
+    set (COMPILE TRUE)
   else ()
-    set (COMPILE_FLAGS NOMCC)
+    set (COMPILE FALSE)
   endif ()
+  set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
   # suffix
   if (WIN32 AND EXECUTABLE AND COMPILE_FLAGS MATCHES "^NOMCC$")
     set (SUFFIX ".cmd")
@@ -841,6 +842,7 @@ function (basis_add_mcc_target TARGET_NAME)
       OUTPUT_NAME               "${TARGET_NAME}"
       SUFFIX                    "${SUFFIX}"
       COMPILE_FLAGS             "${COMPILE_FLAGS}"
+      COMPILE                   "${COMPILE}"
       LINK_DEPENDS              ""
       EXPORT                    ${EXPORT}
       LIBEXEC                   ${ARGN_LIBEXEC}
@@ -1192,6 +1194,7 @@ function (basis_build_mcc_target TARGET_UID)
       SUFFIX
       SOURCES
       COMPILE_FLAGS
+      COMPILE
       LINK_DEPENDS
       TEST
       EXPORT
@@ -1250,7 +1253,7 @@ function (basis_build_mcc_target TARGET_UID)
   endif ()
   # --------------------------------------------------------------------------
   # assemble build command for build of executable wrapper script
-  if (EXECUTABLE AND COMPILE_FLAGS MATCHES "^NOMCC$")
+  if (EXECUTABLE AND NOT COMPILE)
     # main source file and MATLAB function
     list (GET SOURCES 0 MAIN_SOURCE_FILE)
     get_filename_component (MATLAB_COMMAND "${MAIN_SOURCE_FILE}" NAME_WE)
