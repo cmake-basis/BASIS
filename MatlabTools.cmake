@@ -823,6 +823,14 @@ function (basis_add_mcc_target TARGET_NAME)
   if ((BASIS_COMPILE_MATLAB AND MATLAB_MCC_EXECUTABLE) OR TYPE MATCHES "LIBRARY")
     set (COMPILE TRUE)
   else ()
+    if (BASIS_COMPILE_MATLAB)
+      message (WARNING "MATLAB Compiler not found. Will generate a wrapper script for target"
+                       " ${TARGET_UID} which executes the MATLAB code using the -c option of"
+                       " the MATLAB interpreter. It is recommended to compile the MATLAB code"
+                       " using the MATLAB Compiler if possible, however. Therefore, make sure"
+                       " that the MATLAB Compiler is available and check the value of the"
+                       " advanced MATLAB_MCC_EXECUTABLE variable in CMake.")
+    endif ()
     set (COMPILE FALSE)
   endif ()
   set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
