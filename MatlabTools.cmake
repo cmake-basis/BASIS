@@ -333,6 +333,9 @@ function (basis_generate_matlab_executable OUTPUT_FILE)
   if (NOT MATLAB_EXECUTABLE)
     set (MATLAB_EXECUTABLE matlab)
   endif ()
+  if (NOT OUTPUT_FILE)
+    message ("basis_generate_matlab_executable(): Missing OUTPUT_FILE argument!")
+  endif ()
   file (WRITE "${OUTPUT_FILE}"
     # note that Bash variables within the script are denoted by $var
     # instead of ${var} to prevent CMake from substituting these patterns
@@ -369,7 +372,7 @@ while [[ $# -gt 0 ]]; do
   args=\"$args, '$1'\"
 done
 
-${MATLAB_EXECUTABLE} -nodesktop -nosplash ${ARGN_OPTIONS} \
+\"${MATLAB_EXECUTABLE}\" -nodesktop -nosplash ${ARGN_OPTIONS} \
     -r \"try, addpath(${ARGN_MATLABPATH},'-begin'), ${ARGN_COMMAND}($args), catch err, fprintf(2, ['??? Error executing ${ARGN_COMMAND}\\n' err.message '\\n'), end, quit force\" \
     2> >(tee \"${errlog}\" >&2)"
   ) # end of file(WRITE) command
@@ -1263,6 +1266,8 @@ function (basis_build_mcc_target TARGET_UID)
     list (GET SOURCES 0 MAIN_SOURCE_FILE)
     get_filename_component (MATLAB_COMMAND "${MAIN_SOURCE_FILE}" NAME_WE)
     get_filename_component (SOURCE_DIR     "${MAIN_SOURCE_FILE}" PATH)
+    # output file
+    set (OUTPUT_FILE "${BUILD_OUTPUT}")
     # installation
     set (INSTALL_FILE "${BUILD_DIR}/${OUTPUT_NAME}")                     # file to be installed
     set (INSTALL_DIR  "${INSTALL_MATLAB_LIBRARY_DIR}/${MATLAB_COMMAND}") # location of installed MATLAB sources
