@@ -1119,7 +1119,7 @@ function (basis_build_mex_file TARGET_UID)
       OUTPUT  "${BUILD_MFILE}"
       DEPENDS "${MFILE}"
       COMMAND "${CMAKE_COMMAND}" -E copy "${MFILE}" "${BUILD_MFILE}"
-      COMMENT "Copying M-file of MEX-file ${REL}..."
+      COMMENT "Copying M-file of ${REL}..."
     )
   endif ()
   # add custom target
