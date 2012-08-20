@@ -1364,7 +1364,8 @@ function (basis_build_mcc_target TARGET_UID)
       else ()
         basis_get_relative_path (REL "${SOURCE_DIR}" "${REL}")
       endif ()
-      if (REL MATCHES "^\\.\\./")
+      string (REGEX REPLACE "\\./" "" REL "${REL}")
+      if (REL MATCHES "^\\.\\./|^$")
         install (
           FILES       "${SOURCE}"
           DESTINATION "${INSTALL_DIR}"
