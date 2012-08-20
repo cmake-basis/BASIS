@@ -370,7 +370,7 @@ else
     tmpdir=/tmp
 fi
 
-errlog=`mktemp \"$tmpdir/${ARGN_COMMAND}.XXXXXX.stderr\"`
+errlog=`mktemp \"$tmpdir/${ARGN_COMMAND}-log.XXXXXX\"`
 [[ $? -eq 0 ]] || {
     echo \"Failed to create temporary log file in '$tmpdir'!\" 1>&2
     exit 1
