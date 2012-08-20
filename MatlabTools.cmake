@@ -374,7 +374,7 @@ done
 
 \"${MATLAB_EXECUTABLE}\" -nodesktop -nosplash ${ARGN_OPTIONS} \
     -r \"try, addpath(${ARGN_MATLABPATH},'-begin'), ${ARGN_COMMAND}($args), catch err, fprintf(2, ['??? Error executing ${ARGN_COMMAND}\\n' err.message '\\n'), end, quit force\" \
-    2> >(tee \"${errlog}\" >&2)"
+    2> >(tee \"$errlog\" >&2)"
   ) # end of file(WRITE) command
 endfunction ()
 
