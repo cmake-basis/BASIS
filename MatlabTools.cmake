@@ -833,6 +833,27 @@ function (basis_add_mcc_target TARGET_NAME)
     endif ()
     set (COMPILE FALSE)
   endif ()
+  if (WIN32 AND NOT COMPILE)
+    # TODO implement generation of Windows Command on Windows
+    set (CONTACT)
+    if (PROJECT_CONTACT)
+      set (CONTACT "\n\nYou may further want to contact ${CONTACT} in order to ask for"
+                   " a binary distribution package which contains pre-build binaries"
+                   " created using the MATLAB Compiler and download the MATLAB Compiler"
+                   " Runtime only if no MATLAB Compiler license is available to you.")
+      basis_list_to_string (CONTACT ${CONTACT})
+    endif ()
+    if (NOT BASIS_COMPILE_MATLAB)
+      basis_update_value (BASIS_COMPILE_MATLAB ON)
+    endif ()
+    message (FATAL_ERROR "The optional generation of a Windows Command which executes"
+                         " the MATLAB code using the -c option of the MATLAB interpreter"
+                         " as an alternative to the build of the MATLAB sources using"
+                         " the MATLAB Compiler is not yet implemented. You will have"
+                         " to obtain a MATLAB Compiler license and set the advanced"
+                         " MATLAB_MCC_EXECUTABLE variable in CMake or use this package"
+                         " on a Unix system instead.${CONTACT}")
+  endif ()
   set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
   if (COMPILE)
     if (NOT MATLAB_MCC_EXECUTABLE)
