@@ -827,7 +827,7 @@ function (basis_add_mcc_target TARGET_NAME)
   else ()
     if (BASIS_COMPILE_MATLAB)
       message (WARNING "MATLAB Compiler not found. Will generate a wrapper script for target"
-                       " ${TARGET_UID} which executes the MATLAB code using the -c option of"
+                       " ${TARGET_UID} which executes the MATLAB code using the -r option of"
                        " the MATLAB interpreter. It is recommended to compile the MATLAB code"
                        " using the MATLAB Compiler if possible, however. Therefore, make sure"
                        " that the MATLAB Compiler is available and check the value of the"
@@ -849,7 +849,7 @@ function (basis_add_mcc_target TARGET_NAME)
       basis_update_value (BASIS_COMPILE_MATLAB ON)
     endif ()
     message (FATAL_ERROR "The optional generation of a Windows Command which executes"
-                         " the MATLAB code using the -c option of the MATLAB interpreter"
+                         " the MATLAB code using the -r option of the MATLAB interpreter"
                          " as an alternative to the build of the MATLAB sources using"
                          " the MATLAB Compiler is not yet implemented. You will have"
                          " to obtain a MATLAB Compiler license and set the advanced"
@@ -1315,6 +1315,12 @@ function (basis_build_mcc_target TARGET_UID)
     list (GET SOURCES 0 MAIN_SOURCE_FILE)
     get_filename_component (MATLAB_COMMAND "${MAIN_SOURCE_FILE}" NAME_WE)
     get_filename_component (SOURCE_DIR     "${MAIN_SOURCE_FILE}" PATH)
+    get_filename_component (SOURCE_PACKAGE "${SOURCE_DIR}"       NAME)
+    if (SOURCE_PACKAGE MATCHES "^+")
+      get_filename_component (SOURCE_DIR "${SOURCE_DIR}" PATH)
+    else ()
+      set (SOURCE_PACKAGE "${MATLAB_COMMAND}")
+    endif ()
     basis_get_relative_path (DIR "${PROJECT_SOURCE_DIR}" "${SOURCE_DIR}")
     set (BINARY_DIR "${PROJECT_BINARY_DIR}/${DIR}") # location of configured sources
     # output file
@@ -1322,7 +1328,7 @@ function (basis_build_mcc_target TARGET_UID)
     # installation
     set (INSTALL_FILE       "${BUILD_DIR}/${OUTPUT_NAME}")                          # file to be installed
     set (INSTALL_DIR        "${CMAKE_INSTALL_PREFIX}/${RUNTIME_INSTALL_DIRECTORY}") # location of installed wrapper
-    set (INSTALL_SOURCE_DIR "${INSTALL_MATLAB_LIBRARY_DIR}/${MATLAB_COMMAND}")      # location of installed MATLAB sources
+    set (INSTALL_SOURCE_DIR "${INSTALL_MATLAB_LIBRARY_DIR}")                        # location of installed MATLAB sources
     # MATLAB search path
     set (BUILD_MATLABPATH   "${SOURCE_DIR}")
     file (RELATIVE_PATH REL "${INSTALL_DIR}" "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}")
