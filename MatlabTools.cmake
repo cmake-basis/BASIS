@@ -1320,11 +1320,17 @@ function (basis_build_mcc_target TARGET_UID)
     # output file
     set (OUTPUT_FILE "${BUILD_OUTPUT}")
     # installation
-    set (INSTALL_FILE "${BUILD_DIR}/${OUTPUT_NAME}")                     # file to be installed
-    set (INSTALL_DIR  "${INSTALL_MATLAB_LIBRARY_DIR}/${MATLAB_COMMAND}") # location of installed MATLAB sources
+    set (INSTALL_FILE       "${BUILD_DIR}/${OUTPUT_NAME}")                          # file to be installed
+    set (INSTALL_DIR        "${CMAKE_INSTALL_PREFIX}/${RUNTIME_INSTALL_DIRECTORY}") # location of installed wrapper
+    set (INSTALL_SOURCE_DIR "${INSTALL_MATLAB_LIBRARY_DIR}/${MATLAB_COMMAND}")      # location of installed MATLAB sources
     # MATLAB search path
-    set (BUILD_MATLABPATH)
-    set (INSTALL_MATLABPATH)
+    set (BUILD_MATLABPATH   "${SOURCE_DIR}")
+    file (RELATIVE_PATH REL "${INSTALL_DIR}" "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}")
+    if (REL)
+      set (INSTALL_MATLABPATH "$__DIR__/${REL}")
+    else ()
+      set (INSTALL_MATLABPATH "$__DIR__")
+    endif ()
     foreach (LINK_DEPEND ${LINK_DEPENDS})
       basis_get_target_uid (UID "${LINK_DEPEND}")
       if (TARGET ${UID})
@@ -1334,13 +1340,16 @@ function (basis_build_mcc_target TARGET_UID)
           list (APPEND BUILD_MATLABPATH "${LINK_PATH}")
           list (APPEND DEPENDS ${UID})
         endif ()
-        basis_get_target_property (BUNDLED  ${UID} BUNDLED)
-        basis_get_target_property (IMPORTED ${UID} IMPORTED)
+        basis_get_target_location (LINK_DEPEND ${UID} POST_INSTALL)
+        basis_get_target_property (BUNDLED     ${UID} BUNDLED)
+        basis_get_target_property (IMPORTED    ${UID} IMPORTED)
         if (NOT IMPORTED OR BUNDLED)
-          basis_get_target_location (LINK_DEPEND ${UID} POST_INSTALL_RELATIVE)
-          set (LINK_DEPEND "$__DIR__/${LINK_DEPEND}")
-        else ()
-          basis_get_target_location (LINK_DEPEND ${UID} POST_INSTALL)
+          file (RELATIVE_PATH REL "${INSTALL_DIR}" "${LINK_DEPEND}")
+          if (REL)
+            set (LINK_DEPEND "$__DIR__/${REL}")
+          else ()
+            set (LINK_DEPEND "$__DIR__")
+          endif ()
         endif ()
         if (LINK_DEPEND MATCHES "\\.mex")
           get_filename_component (LINK_PATH "${LINK_DEPEND}" PATH)
@@ -1361,7 +1370,12 @@ function (basis_build_mcc_target TARGET_UID)
     # build tree instead of the source tree, add corresponding build
     # tree path to BUILD_MATLABPATH as well
     if (SOURCES MATCHES "^${BINARY_CODE_DIR_RE}")
-      list (INSERT BUILD_MATLABPATH 0 "${BINARY_DIR}")
+      file (RELATIVE_PATH REL "${INSTALL_DIR}" "${BINARY_DIR}")
+      if (REL)
+        list (INSERT BUILD_MATLABPATH 0 "$__DIR__/${REL}")
+      else ()
+        list (INSERT BUILD_MATLABPATH 0 "$__DIR__")
+      endif ()
     endif ()
     # remove duplicates
     if (BUILD_MATLABPATH)
@@ -1397,13 +1411,13 @@ function (basis_build_mcc_target TARGET_UID)
       if (REL MATCHES "^\\.?$|^\\.\\./")
         install (
           FILES       "${SOURCE}"
-          DESTINATION "${INSTALL_DIR}"
+          DESTINATION "${INSTALL_SOURCE_DIR}"
           COMPONENT   "${RUNTIME_COMPONENT}"
         )
       else ()
         install (
           FILES       "${SOURCE}"
-          DESTINATION "${INSTALL_DIR}/${REL}"
+          DESTINATION "${INSTALL_SOURCE_DIR}/${REL}"
           COMPONENT   "${RUNTIME_COMPONENT}"
         )
       endif ()

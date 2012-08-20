@@ -28,11 +28,9 @@ set (MATLAB_EXECUTABLE  "@MATLAB_EXECUTABLE@")
 set (MATLAB_COMMAND     "@MATLAB_COMMAND@")
 # settings specific to build tree
 set (OUTPUT_FILE        "@OUTPUT_FILE@")
-set (SOURCE_DIR         "@SOURCE_DIR@")
 set (BUILD_MATLABPATH   "@BUILD_MATLABPATH@")
 # settings specific to installation
 set (INSTALL_FILE       "@INSTALL_FILE@")
-set (INSTALL_DIR        "@INSTALL_DIR@")
 set (INSTALL_MATLABPATH "@INSTALL_MATLABPATH@")
 
 # ----------------------------------------------------------------------------
@@ -43,13 +41,13 @@ set (INSTALL_MATLABPATH "@INSTALL_MATLABPATH@")
 basis_generate_matlab_executable (
   "${OUTPUT_FILE}"
   COMMAND    ${MATLAB_COMMAND}
-  MATLABPATH ${SOURCE_DIR} ${BUILD_MATLABPATH}
+  MATLABPATH ${BUILD_MATLABPATH}
 )
 # generate executable for installation
 if (INSTALL_FILE)
   basis_generate_matlab_executable (
     "${INSTALL_FILE}"
     COMMAND    ${MATLAB_COMMAND}
-    MATLABPATH ${INSTALL_DIR} ${INSTALL_MATLABPATH}
+    MATLABPATH ${INSTALL_MATLABPATH}
   )
 endif ()
