@@ -32,9 +32,10 @@ PACKAGE OVERVIEW
 
   - BasisProject.cmake   Meta-data used by BASIS to configure the project.
   - CMakeLists.txt       Root CMake configuration file.
+  - build/               Contains CMake configuration file for bundle build.
   - config/              Package configuration files.
   - data/                Auxiliary data required by the executables (optional).
-  - doc/                 Software documentation such as the user manual.
+  - doc/                 Software documentation such as the software manual.
   - example/             Example input files.
   - include/             Public header files of libraries.
   - modules/             Additional software modules.
