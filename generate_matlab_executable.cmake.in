@@ -17,6 +17,7 @@
 
 cmake_minimum_required (VERSION 2.8.4)
 
+include (CMakeParseArguments)                     # used by basis_generate_matlab_executable()
 include ("@BASIS_MODULE_PATH@/MatlabTools.cmake") # basis_generate_matlab_executable()
 
 # ----------------------------------------------------------------------------
@@ -24,6 +25,7 @@ include ("@BASIS_MODULE_PATH@/MatlabTools.cmake") # basis_generate_matlab_execut
 # ----------------------------------------------------------------------------
 
 # general settings
+set (MATLAB_EXECUTABLE  "@MATLAB_EXECUTABLE@")
 set (MATLAB_COMMAND     "@MATLAB_COMMAND@")
 # settings specific to build tree
 set (OUTPUT_FILE        "@OUTPUT_FILE@")

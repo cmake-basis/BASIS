@@ -16,16 +16,6 @@ else ()
   set (__BASIS_MATLABTOOLS_INCLUDED TRUE)
 endif ()
 
-# ============================================================================
-# modules
-# ============================================================================
-
-# Note: These includes are required because this module is used by the
-#       generate_matlab_executable.cmake build script.
-
-include (CMakeParseArguments)
-include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 
 # ============================================================================
 # options
@@ -340,7 +330,6 @@ endfunction ()
 # </table>
 function (basis_generate_matlab_executable OUTPUT_FILE)
   CMAKE_PARSE_ARGUMENTS (ARGN "" "COMMAND" "OPTIONS;MATLABPATH" ${ARGN})
-  find_package (MATLAB COMPONENT matlab QUIET)
   if (NOT MATLAB_EXECUTABLE)
     set (MATLAB_EXECUTABLE matlab)
   endif ()
@@ -808,9 +797,6 @@ function (basis_add_mcc_target TARGET_NAME)
     set (ARGN_LIBRARY_DESTINATION)
   endif ()
   # whether to compile and compilation flags (for mcc)
-  if (NOT MATLAB_MCC_EXECUTABLE)
-    find_package (MATLAB COMPONENTS mcc QUIET)
-  endif ()
   if (TYPE MATCHES "LIBRARY" AND NOT MATLAB_MCC_EXECUTABLE)
     message (FATAL_ERROR "MATLAB Compiler not found! It is required to build target ${TARGET_UID}."
                          " Set MATLAB_DIR and/or MATLAB_MCC_EXECUTABLE manually and try again.")
@@ -821,6 +807,15 @@ function (basis_add_mcc_target TARGET_NAME)
     set (COMPILE FALSE)
   endif ()
   set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
+  if (COMPILE)
+    if (NOT MATLAB_MCC_EXECUTABLE)
+      find_package (MATLAB COMPONENTS mcc QUIET)
+    endif ()
+  else ()
+    if (NOT MATLAB_EXECUTABLE)
+      find_package (MATLAB COMPONENTS matlab QUIET)
+    endif ()
+  endif ()
   # suffix
   if (WIN32 AND EXECUTABLE AND COMPILE_FLAGS MATCHES "^NOMCC$")
     set (SUFFIX ".cmd")
