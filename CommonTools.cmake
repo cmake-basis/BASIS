@@ -1475,7 +1475,7 @@ endmacro ()
 #
 # @sa basis_get_test_name()
 function (basis_get_test_uid TEST_UID TEST_NAME)
-  if (TEST_NAME MATCHES "\\.")
+  if (TEST_NAME MATCHES "^\\.")
     set (UID "${TEST_NAME}")
   else ()
     set (UID "${PROJECT_NAMESPACE_CMAKE}.${TEST_NAME}")
