@@ -16,6 +16,16 @@ else ()
   set (__BASIS_MATLABTOOLS_INCLUDED TRUE)
 endif ()
 
+# ============================================================================
+# modules
+# ============================================================================
+
+# Note: These includes are required because this module is used by the
+#       generate_matlab_executable.cmake build script.
+
+include (CMakeParseArguments)
+include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
+include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 
 # ============================================================================
 # options
