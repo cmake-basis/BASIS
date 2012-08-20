@@ -34,17 +34,27 @@ __all__ = [] # use of import * is discouraged
 #       different implementation might be necessary using loader objects.
 import imp
 import os
+# path to BASIS Utilities modules
 _path = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                         '@_BASIS_PYTHONPATH@/basis'))
-(_file, _filepath, _desc) = imp.find_module('utilities', [_path])
+                         '@_BASIS_PYTHONPATH@'))
+# basis/__init__.py must be loaded first
+(_file, _filepath, _desc) = imp.find_module('basis', [_path])
+try:
+    basis = imp.load_module('basis', _file, _filepath, _desc)
+finally:
+    if _file: _file.close()
+# then we can load basis.utilities
+(_file, _filepath, _desc) = imp.find_module('utilities', [os.path.join(_path, 'basis')])
 try:
     utilities = imp.load_module('basis.utilities', _file, _filepath, _desc)
 finally:
     if _file: _file.close()
+# clean up scope
 del _path
 del _file
 del _filepath
 del _desc
+del imp
 
 
 ## @addtogroup BasisPythonUtilities
