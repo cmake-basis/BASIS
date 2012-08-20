@@ -81,25 +81,138 @@ function (basis_install_directory)
   else ()
     message (FATAL_ERROR "Too few arguments given!")
   endif ()
-  basis_sanitize_for_regex (REGEX "${PROJECT_SOURCE_DIR}")
-  if (IS_ABSOLUTE "${DESTINATION}")
-    set (DESTINATION_ABSDIR "${DESTINATION}")
-  else ()
-    set (DESTINATION_ABSDIR "${CMAKE_INSTALL_PREFIX}/${DESTINATION}")
+  # check arguments
+  if (NOT IS_ABSOLUTE "${DESTINATION}")
+    set (DESTINATION "${CMAKE_INSTALL_PREFIX}/${DESTINATION}")
   endif ()
-  if ("${DESTINATION_ABSDIR}" MATCHES "^${REGEX}")
-    message (FATAL_ERROR "Installation directory ${DESTINATION_ABSDIR} is inside the project source tree!")
+  basis_sanitize_for_regex (PROJECT_SOURCE_DIR_RE "${PROJECT_SOURCE_DIR}")
+  if ("${DESTINATION}" MATCHES "^${PROJECT_SOURCE_DIR_RE}")
+    message (FATAL_ERROR "Installation directory ${DESTINATION} is inside the project source tree!")
   endif ()
   string (REGEX REPLACE "/+$" "" SOURCE "${SOURCE}")
-  install (
-    DIRECTORY   "${SOURCE}/"
-    DESTINATION "${DESTINATION}"
+  # parse options
+  set (MATCH)
+  set (EXCLUDE)
+  set (COMPONENT)
+  set (CONFIGURATIONS)
+  set (RE)
+  set (OPT)
+  set (NUM)
+  foreach (O IN LISTS OPTIONS)
+    if (O MATCHES "^(FILES_MATCHING|.*PERMISSIONS|OPTIONAL|DESTINATION|DIRECTORY)$")
+      message (FATAL_ERROR "Option ${O} not supported by basis_install_directory()!")
+    endif ()
+    if (OPT MATCHES "^(PATTERN|REGEX)$")
+      if (NUM EQUAL 1)
+        if (O MATCHES "^EXCLUDE$")
+          list (APPEND EXCLUDE "${RE}")
+        else ()
+          list (APPEND MATCH   "${RE}")
+        endif ()
+        set (OPT)
+        set (RE)
+      else ()
+        if (OPT MATCHES "PATTERN")
+          string (REGEX REPLACE "(^|[^\\])\\*" "&#9734" O "${O}")
+          basis_sanitize_for_regex (O "${O}")
+          string (REPLACE "&#9734" ".*" O "${O}")
+        endif ()
+        set (RE  "${O}")
+        set (NUM 1)
+      endif ()
+    elseif (OPT MATCHES "^COMPONENT$")
+      set (COMPONENT "${O}")
+      set (OPT)
+    elseif (OPT MATCHES "^CONFIGURATIONS$")
+      if (O MATCHES "^(PATTERN|REGEX|COMPONENT|CONFIGURATIONS)$")
+        set (OPT)
+      else ()
+        list (APPEND CONFIGURATIONS "${O}")
+        math (EXPR NUM "${NUM} + 1")
+      endif ()
+    endif ()
+    if (O MATCHES "^(PATTERN|REGEX|COMPONENT|CONFIGURATIONS)$")
+      if (OPT)
+        message (FATAL_ERROR "basis_install_directory(): Option ${OPT} is missing an argument!")
+      endif ()
+      set (OPT ${O})
+      set (NUM 0)
+    endif ()
+  endforeach ()
+  if (OPT MATCHES "CONFIGURATIONS" AND NOT NUM GREATER 0)
+    message (FATAL_ERROR "basis_install_directory(): Missing argument(s) for ${OPT} option!")
+  elseif (OPT MATCHES "PATTERN|REGEX")
+    if (NUM EQUAL 1)
+      list (APPEND MATCH "${RE}")
+    else ()
+      message (FATAL_ERROR "basis_install_directory(): Missing argument(s) for ${OPT} option!")
+    endif ()
+  elseif (OPT MATCHES "COMPONENT")
+    message (FATAL_ERROR "basis_install_directory(): Missing argument for ${OPT} option!")
+  endif ()
+  list (APPEND EXCLUDE "CMakeLists.txt$" "/.svn/" "/.git/" ".DS_Store$" ".*~$") # default excludes
+  basis_list_to_delimited_string (MATCH   "|" NOAUTOQUOTE ${MATCH})
+  basis_list_to_delimited_string (EXCLUDE "|" NOAUTOQUOTE ${EXCLUDE})
+  string (REPLACE "\\" "\\\\" MATCH   "${MATCH}")
+  string (REPLACE "\"" "\\\"" MATCH   "${MATCH}")
+  string (REPLACE "\\" "\\\\" EXCLUDE "${EXCLUDE}")
+  string (REPLACE "\"" "\\\"" EXCLUDE "${EXCLUDE}")
+  # Add installation instructions. Note that install(DIRECTORY) is here not
+  # used to avoid the generation of empty directories
+  set (OPTIONS)
+  if (CONFIGURATIONS)
+    list (APPEND OPTIONS CONFIGURATIONS ${CONFIGURATIONS})
+  endif ()
+  if (COMPONENT)
+    list (APPEND OPTIONS COMPONENT ${COMPONENT})
+  endif ()
+  install (CODE
+ "# -----------------------------------------------------------------------
+  # basis_install_directory(): ${SOURCE}
+  set (BASIS_INSTALL_DIRECTORY_FILES)
+  set (BASIS_INSTALL_DIRECTORY_SOURCE      \"${SOURCE}\")
+  set (BASIS_INSTALL_DIRECTORY_DESTINATION \"${DESTINATION}\")
+  set (BASIS_INSTALL_DIRECTORY_MATCH       \"${MATCH}\")
+  set (BASIS_INSTALL_DIRECTORY_EXCLUDE     \"${EXCLUDE}\")
+  file (GLOB_RECURSE BASIS_INSTALL_DIRECTORY_ALL_FILES \"\${BASIS_INSTALL_DIRECTORY_SOURCE}/*\")
+  foreach (BASIS_INSTALL_DIRECTORY_FILE IN LISTS BASIS_INSTALL_DIRECTORY_ALL_FILES)
+    if (NOT BASIS_INSTALL_DIRECTORY_MATCH                                            OR
+            BASIS_INSTALL_DIRECTORY_FILE MATCHES \"\${BASIS_INSTALL_DIRECTORY_MATCH}\" AND
+        NOT BASIS_INSTALL_DIRECTORY_FILE MATCHES \"\${BASIS_INSTALL_DIRECTORY_EXCLUDE}\")
+      list (APPEND BASIS_INSTALL_DIRECTORY_FILES \"\${BASIS_INSTALL_DIRECTORY_FILE}\")
+   endif ()
+  endforeach ()
+  foreach (BASIS_INSTALL_DIRECTORY_FILE IN LISTS BASIS_INSTALL_DIRECTORY_FILES)
+    file (RELATIVE_PATH BASIS_INSTALL_DIRECTORY_FILE \"\${BASIS_INSTALL_DIRECTORY_SOURCE}\" \"\${BASIS_INSTALL_DIRECTORY_FILE}\")
+    execute_process (
+      COMMAND \"${CMAKE_COMMAND}\" -E compare_files
+                  \"\${BASIS_INSTALL_DIRECTORY_SOURCE}/\${BASIS_INSTALL_DIRECTORY_FILE}\"
+                  \"\${BASIS_INSTALL_DIRECTORY_DESTINATION}/\${BASIS_INSTALL_DIRECTORY_FILE}\"
+      RESULT_VARIABLE RC
+      OUTPUT_QUIET
+      ERROR_QUIET
+    )
+    if (RC EQUAL 0)
+      message (STATUS \"Up-to-date: \${BASIS_INSTALL_DIRECTORY_DESTINATION}/\${BASIS_INSTALL_DIRECTORY_FILE}\")
+    else ()
+      message (STATUS \"Installing: \${BASIS_INSTALL_DIRECTORY_DESTINATION}/\${BASIS_INSTALL_DIRECTORY_FILE}\")
+      execute_process (
+        COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different
+            \"\${BASIS_INSTALL_DIRECTORY_SOURCE}/\${BASIS_INSTALL_DIRECTORY_FILE}\"
+            \"\${BASIS_INSTALL_DIRECTORY_DESTINATION}/\${BASIS_INSTALL_DIRECTORY_FILE}\"
+        RESULT_VARIABLE RC
+        OUTPUT_QUIET
+        ERROR_QUIET
+      )
+      if (RC EQUAL 0)
+        list (APPEND CMAKE_INSTALL_MANIFEST_FILES \"\${BASIS_INSTALL_DIRECTORY_DESTINATION}/\${BASIS_INSTALL_DIRECTORY_FILE}\")
+      else ()
+        message (STATUS \"Failed to install \${BASIS_INSTALL_DIRECTORY_DESTINATION}/\${BASIS_INSTALL_DIRECTORY_FILE}\")
+      endif ()
+    endif ()
+  endforeach ()
+  # -----------------------------------------------------------------------"
     ${OPTIONS}
-    PATTERN     CMakeLists.txt EXCLUDE
-    PATTERN     *~             EXCLUDE
-    PATTERN     .svn           EXCLUDE
-    PATTERN     .git           EXCLUDE
-    PATTERN     .DS_Store      EXCLUDE
   )
 endfunction ()
 
