@@ -442,6 +442,10 @@ endfunction ()
 #     <td>MATLAB source file with function prototype and documentation of MEX-file.
 #         (default: none)</td>
 #   </tr>
+#   <tr>
+#     @tp @b PREFIX path @endtp
+#     <td>Output prefix of build MEX-file such as package name (including leading +).</td>
+#   </tr>
 # </table>
 #
 # @attention Properties documented as read-only must not be modified.
@@ -990,6 +994,11 @@ function (basis_build_mex_file TARGET_UID)
   if (SUFFIX)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
+  string (REGEX REPLACE "/+" "/" PREFIX "${PREFIX}")
+  string (REGEX REPLACE "/$" ""  PREFIX "${PREFIX}")
+  if (PREFIX AND NOT PREFIX MATCHES "^/")
+    set (PREFIX "/${PREFIX}")
+  endif ()
   # initialize dependencies of custom build command
   set (DEPENDS ${SOURCES})
   # get list of libraries to link to
@@ -1123,16 +1132,16 @@ function (basis_build_mex_file TARGET_UID)
   # build command for invocation of MEX script
   set (BUILD_CMD     "${MATLAB_MEX_EXECUTABLE}" -v ${MEX_ARGS})
   set (BUILD_LOG     "${BUILD_DIR}/build.log")
-  set (BUILD_OUTPUT  "${LIBRARY_OUTPUT_DIRECTORY}/${PREFIX}/${OUTPUT_NAME}")
+  set (BUILD_OUTPUT  "${LIBRARY_OUTPUT_DIRECTORY}${PREFIX}/${OUTPUT_NAME}")
   set (BUILD_OUTPUTS "${BUILD_OUTPUT}")
   if (MFILE)
-    set (BUILD_MFILE "${LIBRARY_OUTPUT_DIRECTORY}/${PREFIX}/${OUTPUT_NAME_WE}.m")
+    set (BUILD_MFILE "${LIBRARY_OUTPUT_DIRECTORY}${PREFIX}/${OUTPUT_NAME_WE}.m")
     list (APPEND BUILD_OUTPUTS "${BUILD_MFILE}")
   else ()
     set (BUILD_MFILE)
   endif ()
   # relative paths used for comments of commands
-  file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${PREFIX}/${OUTPUT_NAME}")
+  file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_OUTPUT}")
   # add custom command to build executable using MEX script
   add_custom_command (
     OUTPUT "${BUILD_OUTPUT}"
@@ -1195,7 +1204,7 @@ function (basis_build_mex_file TARGET_UID)
   if (LIBRARY_INSTALL_DIRECTORY)
     install (
       FILES       ${BUILD_OUTPUTS}
-      DESTINATION "${LIBRARY_INSTALL_DIRECTORY}/${PREFIX}"
+      DESTINATION "${LIBRARY_INSTALL_DIRECTORY}${PREFIX}"
       COMPONENT   "${LIBRARY_COMPONENT}"
     )
   endif ()
