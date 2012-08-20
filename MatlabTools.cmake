@@ -1291,7 +1291,7 @@ function (basis_build_mcc_target TARGET_UID)
     endforeach ()
     # configure build script
     set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
-    configure_file ("${BASIS_MODULE_PATH}/generate_matlab_wrapper.cmake.in" "${BUILD_SCRIPT}" @ONLY)
+    configure_file ("${BASIS_MODULE_PATH}/generate_matlab_executable.cmake.in" "${BUILD_SCRIPT}" @ONLY)
     # add custom command to build wrapper executable
     add_custom_command (
       OUTPUT ${BUILD_OUTPUT}
