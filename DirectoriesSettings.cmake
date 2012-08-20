@@ -241,21 +241,39 @@ if (BASIS_INSTALL_SCHEME MATCHES "win")
 
   foreach (_L IN ITEMS Python Jython Perl Matlab Bash)
     string (TOUPPER "${_L}" _U)
-    set (INSTALL_${_U}_LIBRARY_DIR "Library/${_L}")
+    if (_U MATCHES "PERL")
+      set (INSTALL_${_U}_LIBRARY_DIR "Library/Perl5")
+    elseif (NOT _U MATCHES "MATLAB|BASH" AND ${_U}_VERSION_MAJOR AND DEFINED ${_U}_VERSION_MINOR)
+      set (INSTALL_${_U}_LIBRARY_DIR "Library/${_L}${${_U}_VERSION_MAJOR}.${${_U}_VERSION_MINOR}")
+    else ()
+      set (INSTALL_${_U}_LIBRARY_DIR "Library/${_L}")
+    endif ()
   endforeach ()
 
 elseif (BASIS_INSTALL_SCHEME MATCHES "usr")
 
   foreach (_L IN ITEMS python jython perl matlab bash)
     string (TOUPPER "${_L}" _U)
-    set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/${_L}")
+    if (_U MATCHES "PERL")
+      set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/perl5")
+    elseif (NOT _U MATCHES "MATLAB|BASH" AND ${_U}_VERSION_MAJOR AND DEFINED ${_U}_VERSION_MINOR)
+      set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/${_L}${${_U}_VERSION_MAJOR}.${${_U}_VERSION_MINOR}")
+    else ()
+      set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/${_L}")
+    endif ()
   endforeach ()
 
 else ()
 
   foreach (_L IN ITEMS python jython perl matlab bash)
     string (TOUPPER "${_L}" _U)
-    set (INSTALL_${_U}_LIBRARY_DIR "lib/${_L}")
+    if (_U MATCHES "PERL")
+      set (INSTALL_${_U}_LIBRARY_DIR "lib/perl5")
+    elseif (NOT _U MATCHES "MATLAB|BASH" AND ${_U}_VERSION_MAJOR AND DEFINED ${_U}_VERSION_MINOR)
+      set (INSTALL_${_U}_LIBRARY_DIR "lib/${_L}${${_U}_VERSION_MAJOR}.${${_U}_VERSION_MINOR}")
+    else ()
+      set (INSTALL_${_U}_LIBRARY_DIR "lib/${_L}")
+    endif ()
   endforeach ()
 
 endif ()
@@ -272,7 +290,7 @@ endif ()
 # and basis_add_script() CMake functions are by default considered to be intended
 # for internal use by the other modules and executable scripts.
 #
-# Note: For those interpreters of scripting language which by themselves do
+# Note: For those interpreters of scripting languages which by themselves do
 #       not define a common installation directory for site packages, the
 #       installation directory for public modules may be identical to the
 #       one for private modules. Moreover, the user has the option to disable
@@ -337,76 +355,12 @@ if (BASIS_SITE_DIRS)
 endif ()
 
 # if it failed to determine the default installation directories by executing some
-# code or command, use some other reasonable defaults instead
-if (BASIS_INSTALL_SCHEME MATCHES "win")
-
-  foreach (_L IN ITEMS Python Jython Perl Bash)
-    string (TOUPPER "${_L}" _U)
-    if (NOT INSTALL_${_U}_SITE_DIR)
-      if (${_U}_VERSION_MAJOR AND DEFINED ${_U}_VERSION_STRING)
-        set (INSTALL_${_U}_SITE_DIR "Library/${_L}${${_U}_VERSION_MAJOR}.${${_U}_VERSION_MINOR}")
-      else ()
-        set (INSTALL_${_U}_SITE_DIR "Library/${_L}")
-      endif ()
-    endif ()
-  endforeach ()
-
-  if (NOT INSTALL_MATLAB_SITE_DIR)
-    if (MATLAB_RELEASE)
-      set (INSTALL_MATLAB_SITE_DIR "Library/Matlab/${MATLAB_RELEASE}")
-    elseif (MATLAB_VERSION_MAJOR AND DEFINED MATLAB_VERSION_MINOR)
-      set (INSTALL_MATLAB_SITE_DIR "Library/Matlab${MATLAB_VERSION_MAJOR}.${MATLAB_VERSION_MINOR}")
-    else ()
-      set (INSTALL_MATLAB_SITE_DIR "Library/Matlab")
-    endif ()
+# code or command, use the directories used for private libraries instead
+foreach (_U IN ITEMS PYTHON JYTHON PERL MATLAB BASH)
+  if (NOT INSTALL_${_U}_SITE_DIR)
+    set (INSTALL_${_U}_SITE_DIR "${INSTALL_${_U}_LIBRARY_DIR}")
   endif ()
-
-else ()
-
-  # Python
-  if (NOT INSTALL_PYTHON_SITE_DIR)
-    if (PYTHON_VERSION_MAJOR AND DEFINED PYTHON_VERSION_MINOR)
-      set (INSTALL_PYTHON_SITE_DIR "lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages")
-    else ()
-      set (INSTALL_PYTHON_SITE_DIR "lib/python/site-packages")
-    endif ()
-  endif ()
-  # Jython
-  if (NOT INSTALL_JYTHON_SITE_DIR)
-    if (JYTHON_VERSION_MAJOR AND DEFINED JYTHON_VERSION_MINOR)
-      set (INSTALL_JYTHON_SITE_DIR "lib/jython${JYTHON_VERSION_MAJOR}.${JYTHON_VERSION_MINOR}/site-packages")
-    else ()
-      set (INSTALL_JYTHON_SITE_DIR "lib/jython/site-packages")
-    endif ()
-  endif ()
-  # Perl
-  if (NOT INSTALL_PERL_SITE_DIR)
-    if (PERL_VERSION_MAJOR AND DEFINED PERL_VERSION_STRING)
-      set (INSTALL_PERL_SITE_DIR "lib/perl${PERL_VERSION_MAJOR}/site_perl/${PERL_VERSION_STRING}")
-    else ()
-      set (INSTALL_PERL_SITE_DIR "lib/perl/site_perl")
-    endif ()
-  endif ()
-  # MATLAB
-  if (NOT INSTALL_MATLAB_SITE_DIR)
-    if (MATLAB_RELEASE)
-      set (INSTALL_MATLAB_SITE_DIR "lib/matlab/${MATLAB_RELEASE}")
-    elseif (MATLAB_VERSION_MAJOR AND DEFINED MATLAB_VERSION_MINOR)
-      set (INSTALL_MATLAB_SITE_DIR "lib/matlab${MATLAB_VERSION_MAJOR}.${MATLAB_VERSION_MINOR}")
-    else ()
-      set (INSTALL_MATLAB_SITE_DIR "lib/matlab")
-    endif ()
-  endif ()
-  # Bash
-  if (NOT INSTALL_BASH_SITE_DIR)
-    if (BASH_VERSION_MAJOR AND DEFINED BASH_VERSION_STRING)
-      set (INSTALL_BASH_SITE_DIR "lib/bash${BASH_VERSION_MAJOR}.${BASH_VERSION_MINOR}")
-    else ()
-      set (INSTALL_BASH_SITE_DIR "lib/bash")
-    endif ()
-  endif ()
-
-endif ()
+endforeach ()
 
 # cache directories - also so users can edit them
 foreach (_L IN ITEMS Python Jython Perl MATLAB Bash)
