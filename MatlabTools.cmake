@@ -1262,10 +1262,14 @@ function (basis_build_mcc_target TARGET_UID)
   # --------------------------------------------------------------------------
   # assemble build command for build of executable wrapper script
   if (EXECUTABLE AND NOT COMPILE)
+    # used to recognize source files which are located in the build tree
+    basis_sanitize_for_regex (BINARY_CODE_DIR_RE "${BINARY_CODE_DIR}")
     # main source file and MATLAB function
     list (GET SOURCES 0 MAIN_SOURCE_FILE)
     get_filename_component (MATLAB_COMMAND "${MAIN_SOURCE_FILE}" NAME_WE)
     get_filename_component (SOURCE_DIR     "${MAIN_SOURCE_FILE}" PATH)
+    basis_get_relative_path (DIR "${PROJECT_SOURCE_DIR}" "${SOURCE_DIR}")
+    set (BINARY_DIR "${PROJECT_BINARY_DIR}/${DIR}") # location of configured sources
     # output file
     set (OUTPUT_FILE "${BUILD_OUTPUT}")
     # installation
@@ -1299,6 +1303,13 @@ function (basis_build_mcc_target TARGET_UID)
         endif ()
       endif ()
     endforeach ()
+    # if any source file was configured and hence is located in the
+    # build tree instead of the source tree, add corresponding build
+    # tree path to BUILD_MATLABPATH as well
+    if (SOURCES MATCHES "^${BINARY_CODE_DIR_RE}")
+      list (INSERT BUILD_MATLABPATH 0 "${BINARY_DIR}")
+    endif ()
+    # remove duplicates
     if (BUILD_MATLABPATH)
       list (REMOVE_DUPLICATES BUILD_MATLABPATH)
     endif ()
@@ -1323,7 +1334,11 @@ function (basis_build_mcc_target TARGET_UID)
     # install source files - preserving relative paths in SOURCE_DIR
     foreach (SOURCE IN LISTS SOURCES)
       get_filename_component  (REL "${SOURCE}" PATH)
-      basis_get_relative_path (REL "${SOURCE_DIR}" "${REL}")
+      if (SOURCE MATCHES "^${BINARY_CODE_DIR_RE}")
+        basis_get_relative_path (REL "${BINARY_DIR}" "${REL}")
+      else ()
+        basis_get_relative_path (REL "${SOURCE_DIR}" "${REL}")
+      endif ()
       if (REL MATCHES "^\\.\\./")
         install (
           FILES       "${SOURCE}"
