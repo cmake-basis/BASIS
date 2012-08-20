@@ -2783,7 +2783,7 @@ function (basis_build_script TARGET_UID)
   add_custom_command (
     OUTPUT          ${OUTPUT_FILES}
     COMMAND         "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
-    MAIN_DEPENDENCY ${SOURCE_FILE}
+    MAIN_DEPENDENCY "${SOURCE_FILE}"
     DEPENDS         "${BUILD_SCRIPT}" "${BUILD_DIR}/cache.cmake" ${CONFIG_FILE}
     COMMENT         "${COMMENT}"
     VERBATIM
@@ -2978,7 +2978,7 @@ function (basis_build_script_library TARGET_UID)
     add_custom_command (
       OUTPUT          ${_OUTPUT_FILES}
       COMMAND         "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
-      MAIN_DEPENDENCY ${SOURCE_FILE}
+      MAIN_DEPENDENCY "${SOURCE_FILE}"
       DEPENDS         "${BUILD_SCRIPT}" "${BUILD_DIR}/cache.cmake" ${CONFIG_FILE}
       COMMENT         "${COMMENT}"
       VERBATIM
