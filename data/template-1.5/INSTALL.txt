@@ -106,7 +106,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   <sbia-software at uphs.upenn.edu>. In case of failing tests, please attach
   the output of the following command to your email:
  
-  $ ctest -V &> test.log
+  $ ctest -V >& test.log
 
   In the following, only package-specific CMake settings available to
   configure the build and installation of this software are documented.
