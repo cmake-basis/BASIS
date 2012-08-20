@@ -363,7 +363,6 @@ finish()
     fi
     exit $status
 }
-trap finish EXIT
 
 if [[ -d \"$TMPDIR\" ]]; then
     tmpdir=$TMPDIR
@@ -385,6 +384,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo 'Launching MATLAB to execute ${ARGN_COMMAND} function...'
+trap finish EXIT # DO NOT install trap earlier !
 '${MATLAB_EXECUTABLE}' -nodesktop -nosplash ${ARGN_OPTIONS} \\
     -r \"try, addpath('${ARGN_MATLABPATH}', '-begin'), ${ARGN_COMMAND}($args), catch err, fprintf(2, ['??? Error executing ${ARGN_COMMAND}\\n' err.message '\\n']), end, quit force\" \\
     2> >(tee \"$errlog\" >&2)"
