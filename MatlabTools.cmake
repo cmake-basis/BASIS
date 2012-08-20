@@ -1329,6 +1329,9 @@ function (basis_build_mcc_target TARGET_UID)
     set (INSTALL_FILE       "${BUILD_DIR}/${OUTPUT_NAME}")                          # file to be installed
     set (INSTALL_DIR        "${CMAKE_INSTALL_PREFIX}/${RUNTIME_INSTALL_DIRECTORY}") # location of installed wrapper
     set (INSTALL_SOURCE_DIR "${INSTALL_MATLAB_LIBRARY_DIR}")                        # location of installed MATLAB sources
+    if (NOT SOURCE_PACKAGE MATCHES "^\\+")
+      set (INSTALL_SOURCE_DIR "${INSTALL_SOURCE_DIR}/${SOURCE_PACKAGE}")
+    endif ()
     # MATLAB search path
     set (BUILD_MATLABPATH   "${SOURCE_DIR}")
     file (RELATIVE_PATH REL "${INSTALL_DIR}" "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}")
