@@ -287,9 +287,8 @@ function (basis_configure_utilities)
   basis_get_project_property (BASH   PROPERTY PROJECT_USES_BASH_UTILITIES)
   if (NOT CXX AND NOT PYTHON AND NOT PERL AND NOT BASH)
     return ()
-  elseif (BASIS_VERBOSE)
-    message (STATUS "Configuring BASIS utilities...")
   endif ()
+  message (STATUS "Configuring BASIS utilities...")
   # --------------------------------------------------------------------------
   # executable target information
   _basis_generate_executable_target_info(${CXX} ${PYTHON} ${PERL} ${BASH})
@@ -437,9 +436,7 @@ function (basis_configure_utilities)
     basis_target_link_libraries (basis_sh ${BASIS_BASH_UTILITIES_LIBRARY})
   endif ()
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Configuring BASIS utilities... - done")
-  endif ()
+  message (STATUS "Configuring BASIS utilities... - done")
 endfunction ()
 
 # ----------------------------------------------------------------------------

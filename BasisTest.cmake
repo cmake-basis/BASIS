@@ -557,9 +557,7 @@ function (basis_add_test TEST_NAME)
 
   # --------------------------------------------------------------------------
   # add test
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding test ${TEST_UID}...")
-  endif ()
+  message (STATUS "Adding test ${TEST_UID}...")
 
   if (NOT ARGN_WORKING_DIRECTORY)
     set (ARGN_WORKING_DIRECTORY "${TESTING_OUTPUT_DIR}/${TEST_NAME}")
@@ -614,9 +612,7 @@ function (basis_add_test TEST_NAME)
   # therefore, add this fail regular expression to identify such issues
   set_tests_properties (${TEST_UID} PROPERTIES FAIL_REGULAR_EXPRESSION "(\\[ *PASSED *\\]|Ran) 0 tests|No tests were found!!!")
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding test ${TEST_UID}... - done")
-  endif ()
+  message (STATUS "Adding test ${TEST_UID}... - done")
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -650,9 +646,7 @@ endfunction ()
 function (basis_add_tests_of_default_options TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding tests of default options for ${TARGET_UID}...")
-  endif ()
+  message (STATUS "Adding tests of default options for ${TARGET_UID}...")
 
   if (NOT TARGET "${TARGET_UID}")
     message (FATAL_ERROR "Unknown target ${TARGET_UID}.")
@@ -712,9 +706,7 @@ function (basis_add_tests_of_default_options TARGET_NAME)
       PASS_REGULAR_EXPRESSION "[Uu]sage:(\n)( )*${EXEC_NAME}"
   )
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding tests of default options for ${EXEC}... - done")
-  endif ()
+  message (STATUS "Adding tests of default options for ${EXEC}... - done")
 endfunction ()
 
 

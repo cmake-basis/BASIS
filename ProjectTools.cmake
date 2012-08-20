@@ -543,7 +543,7 @@ macro (basis_project_modules)
   unset (L)
 
   # report what will be built
-  if (PROJECT_MODULES_ENABLED AND BASIS_VERBOSE)
+  if (PROJECT_MODULES_ENABLED)
     message (STATUS "Enabled modules [${PROJECT_MODULES_ENABLED}].")
   endif ()
 
@@ -593,9 +593,7 @@ function (basis_configure_public_headers)
 
   # --------------------------------------------------------------------------
   # configure public header files
-  if (BASIS_VERBOSE)
-    message (STATUS "Configuring public header files...")
-  endif ()
+  message (STATUS "Configuring public header files...")
 
   execute_process (
     COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
@@ -643,9 +641,7 @@ function (basis_configure_public_headers)
     endif ()
   endif ()
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Configuring public header files... - done")
-  endif ()
+  message (STATUS "Configuring public header files... - done")
 
   # We need a list of the configured files to add them as dependency of the
   # custom build targets such that these get re-build whenever a file changed.
@@ -1077,7 +1073,7 @@ macro (basis_project_initialize)
   endif ()
 
   # print project information
-  if (BASIS_VERBOSE AND NOT PROJECT_IS_MODULE)
+  if (NOT PROJECT_IS_MODULE)
     message (STATUS "${PROJECT_NAME} ${PROJECT_RELEASE}")
   endif ()
 
@@ -1503,15 +1499,11 @@ macro (basis_project_impl)
   # build modules
   if (NOT PROJECT_IS_MODULE)
     foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-      if (BASIS_VERBOSE)
-        message (STATUS "Configuring module ${MODULE}...")
-      endif ()
+      message (STATUS "Configuring module ${MODULE}...")
       set (PROJECT_IS_MODULE TRUE)
       add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
       set (PROJECT_IS_MODULE FALSE)
-      if (BASIS_VERBOSE)
-        message (STATUS "Configuring module ${MODULE}... - done")
-      endif ()
+      message (STATUS "Configuring module ${MODULE}... - done")
     endforeach ()
   endif ()
 

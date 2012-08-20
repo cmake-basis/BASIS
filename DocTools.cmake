@@ -141,9 +141,7 @@ function (basis_install_doc SOURCE)
       "${CMAKE_CURRENT_SOURCE_DIR}/${ARGN_OUTPUT_NAME}"
   )
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding documentation ${RELPATH}...")
-  endif ()
+  message (STATUS "Adding documentation ${RELPATH}...")
 
   if (IS_DIRECTORY "${SOURCE}")
     basis_install_directory (
@@ -159,9 +157,7 @@ function (basis_install_doc SOURCE)
     )
   endif ()
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding documentation ${RELPATH}... - done")
-  endif ()
+  message (STATUS "Adding documentation ${RELPATH}... - done")
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -292,9 +288,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   string (TOLOWER "${TARGET_NAME}" TARGET_NAME_L)
   string (TOUPPER "${TARGET_NAME}" TARGET_NAME_U)
   # verbose output
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding documentation ${TARGET_UID}...")
-  endif ()
+  message (STATUS "Adding documentation ${TARGET_UID}...")
   # find Doxygen
   find_package (Doxygen QUIET)
   if (NOT DOXYGEN_EXECUTABLE)
@@ -302,9 +296,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
       message (FATAL_ERROR "Doxygen not found! Either install Doxygen and/or set DOXYGEN_EXECUTABLE or disable BUILD_DOCUMENTATION.")
     endif ()
     message (STATUS "Doxygen not found. Generation of ${TARGET_UID} documentation disabled.")
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
-    endif ()
+    message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
     return ()
   endif ()
   # parse arguments
@@ -717,9 +709,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
       "
   )
   # done
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding documentation ${TARGET_UID}... - done")
-  endif ()
+  message (STATUS "Adding documentation ${TARGET_UID}... - done")
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -905,9 +895,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
   string (TOLOWER "${TARGET_NAME}" TARGET_NAME_L)
   string (TOUPPER "${TARGET_NAME}" TARGET_NAME_U)
   # verbose output
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding documentation ${TARGET_UID}...")
-  endif ()
+  message (STATUS "Adding documentation ${TARGET_UID}...")
   # parse arguments
   set (ONE_ARG_OPTIONS
     COMPONENT
@@ -939,9 +927,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
       message (FATAL_ERROR "Command sphinx-build not found! Either install Sphinx and/or set Sphinx-build_EXECUTABLE or disable BUILD_DOCUMENTATION.")
     endif ()
     message (STATUS "Command sphinx-build not found. Generation of ${TARGET_UID} documentation disabled.")
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
-    endif ()
+    message (STATUS "Adding documentation ${TARGET_UID}... - skipped")
     return ()
   endif ()
   # parse remaining arguments
@@ -1455,9 +1441,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
       "
   )
   # done
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding documentation ${TARGET_UID}... - done")
-  endif ()
+  message (STATUS "Adding documentation ${TARGET_UID}... - done")
 endfunction ()
 
 # ============================================================================
@@ -1480,9 +1464,7 @@ function (basis_add_changelog)
   mark_as_advanced (BUILD_CHANGELOG)
   set (CHANGELOG_FILE "${PROJECT_BINARY_DIR}/ChangeLog")
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding ChangeLog...")
-  endif ()
+  message (STATUS "Adding ChangeLog...")
 
   if (NOT PROJECT_IS_MODULE AND BUILD_CHANGELOG)
     set (_ALL "ALL")
@@ -1551,8 +1533,10 @@ function (basis_add_changelog)
       endif ()
 
     else ()
-      message (STATUS "Project is SVN working copy but Subversion executable was not found."
-                      " Generation of ChangeLog disabled.")
+      if (BASIS_VERBOSE)
+        message (STATUS "Project is SVN working copy but Subversion executable was not found."
+                        " Generation of ChangeLog disabled.")
+      endif ()
       set (DISABLE_BUILD_CHANGELOG TRUE)
     endif ()
 
@@ -1577,8 +1561,10 @@ function (basis_add_changelog)
       )
 
     else ()
-      message (STATUS "Project is Git repository but Git executable was not found."
-                      " Generation of ChangeLog disabled.")
+      if (BASIS_VERBOSE)
+        message (STATUS "Project is Git repository but Git executable was not found."
+                        " Generation of ChangeLog disabled.")
+      endif ()
       set (DISABLE_BUILD_CHANGELOG TRUE)
     endif ()
 
@@ -1596,9 +1582,7 @@ function (basis_add_changelog)
   # disable changelog target
   if (DISABLE_BUILD_CHANGELOG)
     set (BUILD_CHANGELOG OFF CACHE INTERNAL "" FORCE)
-    if (BASIS_VERBOSE)
-      message (STATUS "Adding ChangeLog... - skipped")
-    endif ()
+    message (STATUS "Adding ChangeLog... - skipped")
     return ()
   endif ()
 
@@ -1621,7 +1605,5 @@ function (basis_add_changelog)
     OPTIONAL
   )
 
-  if (BASIS_VERBOSE)
-    message (STATUS "Adding ChangeLog... - done")
-  endif ()
+  message (STATUS "Adding ChangeLog... - done")
 endfunction ()
