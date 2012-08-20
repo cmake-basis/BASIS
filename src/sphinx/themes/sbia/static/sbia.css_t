@@ -23,6 +23,21 @@ table.title
     margin: 0px 12px;
 }
 
+td.projectlogo
+{
+    text-align: center;
+    vertical-align: bottom;
+    border-collapse: separate;
+    background-color: #660000;
+}
+ 
+td.projectlogo img
+{ 
+    border: 0px none;
+    height: 60px;
+    background-color: #660000;
+}
+
 div.projectname
 {
     font: 300% Tahoma, Arial,sans-serif;

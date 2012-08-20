@@ -16,6 +16,9 @@
     <table class="title" cellspacing="0" cellpadding="0">
       <tbody>
         <tr style="height: 56px">
+          {%- if theme_projectlogo %}
+            <td class="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_projectlogo, 1) }}" /></a></td>
+          {%- endif %}
           <td class="projectid">
             <div class="projectname">
               <a href="{{ pathto('index') }}">
