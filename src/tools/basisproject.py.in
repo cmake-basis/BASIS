@@ -61,7 +61,7 @@ def get_template_options(op=None):
             'include'             : op, # add/remove public includes tree
             'src'                 : op, # add/remove directory for source files
             'modules'             : op, # add/remove support for modularization
-            'test'                : op} # add/remove testing configuration file
+            'test'                : op, # add/remove testing configuration file
             'test-internal'       : op} # add/remove internal testing configuration file
  
 # ----------------------------------------------------------------------------
@@ -210,7 +210,7 @@ def alter(filename, args, backup=True, update=False):
             authors = [a.strip() for a in args.author.split(',')]
             prefix  = out[linestart:start].replace("AUTHORS", "       ")
             for author in authors:
-                out = out.replace('#<author>', ''.join(['"', author, '"\n', prefix, '#<author>'], 1)
+                out = out.replace('#<author>', ''.join(['"', author, '"\n', prefix, '#<author>']), 1)
             if len(prefix) > 0 and prefix[-1] == '"': prefix = '"' + prefix
             out = out.replace('<author>', prefix.join(authors))
     # <year>
