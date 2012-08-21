@@ -2861,7 +2861,7 @@ function (basis_build_script_library TARGET_UID)
       LIBRARY_OUTPUT_DIRECTORY   # output directory for built modules
       LIBRARY_INSTALL_DIRECTORY  # installation directory for built modules
       LIBRARY_COMPONENT          # installation component
-      PREFIX                     # common path prefix for modules
+      PREFIX                     # common prefix for modules
       COMPILE_DEFINITIONS        # CMake code to set variables used to configure modules
       COMPILE_DEFINITIONS_FILE   # script configuration file
       LINK_DEPENDS               # paths of script modules/packages used by the modules of this library
@@ -2926,7 +2926,7 @@ function (basis_build_script_library TARGET_UID)
     basis_get_source_target_name (BUILD_SCRIPT_NAME "build_${S}")
     # arguments of build script
     if (PREFIX)
-      set (S "${PREFIX}/${S}")
+      set (S "${PREFIX}${S}")
     endif ()
     set (OUTPUT_FILE    "${LIBRARY_OUTPUT_DIRECTORY}/${S}")
     if (LIBRARY_INSTALL_DIRECTORY)
@@ -3046,6 +3046,7 @@ function (basis_add_init_py_target)
         get_target_property (PREFIX           ${TARGET_UID} PREFIX)
         get_target_property (SOURCES          ${TARGET_UID} SOURCES)
         get_target_property (SOURCE_DIRECTORY ${TARGET_UID} SOURCE_DIRECTORY)
+        get_filename_component (PREFIX "${PREFIX}" PATH)
         if (PREFIX)
           set (LOCATION         "${LOCATION}/${PREFIX}")
           set (INSTALL_LOCATION "${INSTALL_LOCATION}/${PREFIX}")

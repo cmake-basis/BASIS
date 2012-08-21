@@ -1597,6 +1597,8 @@ endmacro ()
 #                       root directory as used for the @c PREFIX property of
 #                       scripted module libraries (see basis_add_script_library())
 #                       or relative to the include directory in case of C++.
+#                       Note that this prefix includes a trailing slash to
+#                       indicate that the prefix is a subdirectory.
 # @param [in]  LANGUAGE Programming language (case-insenitive), e.g.,
 #                       @c CXX, @c Python, @c Matlab...
 macro (basis_library_prefix PREFIX LANGUAGE)
@@ -1604,6 +1606,7 @@ macro (basis_library_prefix PREFIX LANGUAGE)
   if (PROJECT_NAMESPACE_${_LANGUAGE_U})
     basis_sanitize_for_regex (_RE "${BASIS_NAMESPACE_DELIMITER_${_LANGUAGE_U}}")
     string (REGEX REPLACE "${_RE}" "/" ${PREFIX} "${PROJECT_NAMESPACE_${_LANGUAGE_U}}")
+    set (PREFIX "${PREFIX}/")
     unset (_RE)
   else ()
     message (FATAL_ERROR "basis_library_prefix(): PROJECT_NAMESPACE_${_LANGUAGE_U} not set!"
@@ -2120,7 +2123,7 @@ done
 [[ $i -lt 100 ]] && __FILE__=\"$lnk\"
 unset -v i dir lnk
 __DIR__=\"$(dirname -- \"$__FILE__\")\"
-BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}/basis.sh\""
+BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
       )
       string (REPLACE "\n" "; " BASH_CODE "${BASH_CODE}")
       # set BASHPATH which is used by import() function provided by core.sh module of BASIS

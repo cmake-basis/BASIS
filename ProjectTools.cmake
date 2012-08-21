@@ -1291,21 +1291,21 @@ endmacro ()
 ## @brief Add installation rules for public header files.
 macro (basis_install_public_headers)
   # subdirectory of basis.h header file
-  basis_library_prefix (_BASIS_H_DIR CXX)
+  basis_library_prefix (_BASIS_H_PREFIX CXX)
   # install public header files from source tree
   if (EXISTS "${PROJECT_INCLUDE_DIR}")
     basis_install_directory ("${PROJECT_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" PATTERN "*.in" EXCLUDE)
   endif ()
   # install configured public header files, excluding BASIS utilities
   file (GLOB_RECURSE _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*")
-  list (REMOVE_ITEM _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/${_BASIS_H_DIR}/basis.h")
+  list (REMOVE_ITEM _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/${_BASIS_H_PREFIX}basis.h")
   if (_CONFIGURED_PUBLIC_HEADERS)
     basis_install_directory (
       "${BINARY_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}"
-      REGEX   "/${_BASIS_H_DIR}/basis\\.h$" EXCLUDE # BASIS utilities header only installed
-                                                    # below if included by any other public header
-      PATTERN "*.cmake"                     EXCLUDE # e.g., <Name>PublicHeaders.cmake file,
-      PATTERN "*.cmake.*"                   EXCLUDE # see basis_configure_public_headers()
+      REGEX   "/${_BASIS_H_PREFIX}basis\\.h$" EXCLUDE # BASIS utilities header only installed
+                                                      # below if included by any other public header
+      PATTERN "*.cmake"                       EXCLUDE # e.g., <Name>PublicHeaders.cmake file,
+      PATTERN "*.cmake.*"                     EXCLUDE # see basis_configure_public_headers()
     )
   endif ()
   # "parse" public header files to check if C++ BASIS utilities are included
@@ -1333,7 +1333,7 @@ macro (basis_install_public_headers)
   if (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES)
     install (
       FILES       "${BINARY_INCLUDE_DIR}/${_BASIS_H_DIR}/basis.h"
-      DESTINATION "${INSTALL_INCLUDE_DIR}/${_BASIS_H_DIR}"
+      DESTINATION "${INSTALL_INCLUDE_DIR}/${_BASIS_H_PREFIX}"
       COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
     )
   endif ()

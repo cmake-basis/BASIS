@@ -527,8 +527,9 @@ endfunction ()
 #         (default: none)</td>
 #   </tr>
 #   <tr>
-#     @tp @b PREFIX path @endtp
-#     <td>Output prefix of build MEX-file such as package name (including leading +).</td>
+#     @tp @b PREFIX prefix @endtp
+#     <td>Output prefix of build MEX-file such as package name
+#         (the prefix must include the leading + and trailing /).</td>
 #   </tr>
 # </table>
 #
