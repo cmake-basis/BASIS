@@ -1436,6 +1436,8 @@ function (basis_build_mcc_target TARGET_UID)
       set (INSTALL_STARTUP_DIR  "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}")
     endif ()
     get_filename_component (BUILD_STARTUP_DIR "${BUILD_STARTUP_FILE}" PATH)
+    list (APPEND BUILD_OUTPUT "${BUILD_STARTUP_FILE}")
+    list (APPEND BUILD_OUTPUT "${INSTALL_STARTUP_FILE}")
     # MATLAB search path
     #
     # The following paths are written to the startup M-file such
@@ -1523,16 +1525,16 @@ function (basis_build_mcc_target TARGET_UID)
     configure_file ("${BASIS_MODULE_PATH}/generate_matlab_executable.cmake.in" "${BUILD_SCRIPT}" @ONLY)
     # add custom command to build wrapper executable
     add_custom_command (
-      OUTPUT ${BUILD_OUTPUT}
+      OUTPUT          ${BUILD_OUTPUT}
       # rebuild when input sources were modified
       MAIN_DEPENDENCY "${MAIN_SOURCE_FILE}"
       DEPENDS         "${BUILD_SCRIPT}" "${CMAKE_CURRENT_LIST_FILE}" ${DEPENDS}
       # invoke MATLAB Compiler in either MATLAB or standalone mode
       # wrapping command in CMake execute_process () command allows for inspection
       # parsing of command output for error messages and specification of timeout
-      COMMAND "${CMAKE_COMMAND}" "-P" "${BUILD_SCRIPT}"
+      COMMAND         "${CMAKE_COMMAND}" "-P" "${BUILD_SCRIPT}"
       # comment
-      COMMENT "${BUILD_COMMENT}"
+      COMMENT         "${BUILD_COMMENT}"
     )
     # install source files - preserving relative paths in SOURCE_DIR
     foreach (SOURCE IN LISTS SOURCES)
@@ -1680,7 +1682,7 @@ function (basis_build_mcc_target TARGET_UID)
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean"
   set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${BUILD_OUTPUT})
-  if (NOT COMPILE_FLAGS MATCHES "^NOMCC$")
+  if (COMPILE)
     set_property (
       DIRECTORY
       APPEND PROPERTY
