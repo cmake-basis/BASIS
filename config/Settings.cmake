@@ -37,8 +37,8 @@ set (INSTALL_PERL_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities")
 set (INSTALL_MATLAB_TEMPLATES_DIR "${INSTALL_SHARE_DIR}/utilities")
 set (INSTALL_BASH_TEMPLATES_DIR   "${INSTALL_SHARE_DIR}/utilities")
 
-# common prefix (path) of Sphinx extensions
-set (SPHINX_EXTENSIONS_PREFIX "basis/sphinx/ext")
+# common prefix of Sphinx extensions
+set (SPHINX_EXTENSIONS_PREFIX "basis/sphinx/ext/")
 # installation directory of Sphinx themes
 set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 
