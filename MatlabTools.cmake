@@ -1576,7 +1576,7 @@ function (basis_build_mcc_target TARGET_UID)
       list (APPEND LINK_LIBS "${LIB_FILE}")
     endforeach ()
     # MATLAB search path
-    foreach (P IN ${SOURCES})
+    foreach (P ${SOURCES})
       get_filename_component (P "${P}" PATH)
       list (APPEND MATLABPATH "${P}")
     endforeach ()
