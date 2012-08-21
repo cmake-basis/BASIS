@@ -13,16 +13,14 @@
 #define _BASIS_TESTDRIVER_HXX
 
 
-#include <iterator>
-
 #if WINDOWS
-#  include <Winsock2.h> // gethostbyname()
+#  include <Winsock2.h> // gethostname()
 #  ifdef max
 #    undef max
 #  endif
 #  pragma comment(lib, "Ws2_32.lib")
 #else
-#  include <netdb.h> // gethostbyname()
+#  include <unistd.h>   // gethostname()
 #endif
 
 #ifdef ITK_VERSION
