@@ -87,7 +87,7 @@ BUILDING THE SOFTWARE FROM SOURCES
   $ ccmake -DBASIS_DIR:PATH=/path/to/basis ../$package-$version-source
 
     - Press 'c' to configure the build system and 'e' to ignore warnings.
-    - Set INSTALL_PREFIX and other CMake variables and options.
+    - Set CMAKE_INSTALL_PREFIX and other CMake variables and options.
     - Continue pressing 'c' until the option 'g' is available.
     - Then press 'g' to generate the configuration files for GNU Make.
 
