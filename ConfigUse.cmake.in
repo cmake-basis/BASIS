@@ -56,8 +56,8 @@ endif ()
 set (NO_${NS}IMPORTS "${NO_${NS}IMPORTS}")
 
 if (NOT NO_${NS}IMPORTS)
-  include ("${CMAKE_CURRENT_LIST_DIR}/@EXPORTS_FILE@" OPTIONAL)
-  include ("${CMAKE_CURRENT_LIST_DIR}/@CUSTOM_EXPORTS_FILE@" OPTIONAL)
+  include ("${${NS}EXPORTS_FILE}"        OPTIONAL)
+  include ("${${NS}CUSTOM_EXPORTS_FILE}" OPTIONAL)
 endif ()
 
 # ============================================================================
