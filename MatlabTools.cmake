@@ -396,7 +396,6 @@ function (basis_generate_matlab_executable OUTPUT_FILE)
   if (MATLABPATH)
     list (REMOVE_DUPLICATES MATLABPATH)
   endif ()
-  basis_list_to_delimited_string (MATLABPATH "', '" NOAUTOQUOTE ${MATLABPATH})
   # startup script
   if (ARGN_STARTUP)
     get_filename_component (STARTUP_COMMAND "${ARGN_STARTUP}" NAME_WE)
@@ -404,7 +403,7 @@ function (basis_generate_matlab_executable OUTPUT_FILE)
     get_filename_component (STARTUP_PKG     "${STARTUP_DIR}"  NAME)
     if (STARTUP_PKG MATCHES "^\\+")
       get_filename_component (STARTUP_DIR "${STARTUP_DIR}" PATH)
-      string (REGEX REPLACE "^\\+" "" STARTUP_PKG "${STARTUP_PKG}.")
+      string (REGEX REPLACE "^\\+" "" STARTUP_PKG "${STARTUP_PKG}")
       set (STARTUP_COMMAND "${STARTUP_PKG}.${STARTUP_COMMAND}")
     endif ()
     if (IS_ABSOLUTE "${STARTUP_DIR}")
@@ -417,15 +416,21 @@ function (basis_generate_matlab_executable OUTPUT_FILE)
     endif ()
     list (FIND MATLABPATH "${STARTUP_DIR}" IDX)
     if (IDX EQUAL -1)
-      set (STARTUP_CODE "addpath('${STARTUP_DIR}'), ")
+      set (STARTUP_CODE ", addpath('${STARTUP_DIR}')")
     else ()
       set (STARTUP_CODE)
     endif ()
-    set (STARTUP_CODE "${STARTUP_CODE}${STARTUP_COMMAND}, ")
+    set (STARTUP_CODE "${STARTUP_CODE}, ${STARTUP_COMMAND}")
   else ()
     set (STARTUP_CODE)
   endif ()
   # write wrapper executable
+  if (MATLABPATH)
+    basis_list_to_delimited_string (MATLABPATH "', '" NOAUTOQUOTE ${MATLABPATH})
+    set (MATLABPATH ", addpath('${MATLABPATH}', '-begin')")
+  else ()
+    set (MATLABPATH)
+  endif ()
   file (WRITE "${OUTPUT_FILE}"
     # note that Bash variables within the script are denoted by $var
     # instead of ${var} to prevent CMake from substituting these patterns
@@ -467,7 +472,7 @@ done
 echo 'Launching MATLAB to execute ${ARGN_COMMAND} function...'
 trap finish EXIT # DO NOT install trap earlier !
 '${MATLAB_EXECUTABLE}' -nodesktop -nosplash ${ARGN_OPTIONS} \\
-    -r \"try, addpath('${MATLABPATH}', '-begin')${STARTUP_CODE}, ${ARGN_COMMAND}($args), catch err, fprintf(2, ['??? Error executing ${ARGN_COMMAND}\\n' err.message '\\n']), end, quit force\" \\
+    -r \"try${MATLABPATH}${STARTUP_CODE}, ${ARGN_COMMAND}($args), catch err, fprintf(2, ['??? Error executing ${ARGN_COMMAND}\\n' err.message '\\n']), end, quit force\" \\
     2> >(tee \"$errlog\" >&2)"
   ) # end of file(WRITE) command
   if (UNIX)
@@ -1423,13 +1428,14 @@ function (basis_build_mcc_target TARGET_UID)
     # startup file
     if (SOURCE_PACKAGE MATCHES "^\\+")
       set (BUILD_STARTUP_FILE   "${BINARY_DIR}/${SOURCE_PACKAGE}/startup.m")
-      set (INSTALL_STARTUP_FILE "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}/${SOURCE_PACKAGE}/startup.m")
+      set (INSTALL_STARTUP_FILE "${BUILD_DIR}/startup.m")
+      set (INSTALL_STARTUP_DIR  "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}/${SOURCE_PACKAGE}")
     else ()
       set (BUILD_STARTUP_FILE   "${BINARY_DIR}/startup.m")
-      set (INSTALL_STARTUP_FILE "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}/startup.m")
+      set (INSTALL_STARTUP_FILE "${BUILD_DIR}/startup.m")
+      set (INSTALL_STARTUP_DIR  "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}")
     endif ()
-    get_filename_component (BUILD_STARTUP_DIR   "${BUILD_STARTUP_FILE}"   PATH)
-    get_filename_component (INSTALL_STARTUP_DIR "${INSTALL_STARTUP_FILE}" PATH)
+    get_filename_component (BUILD_STARTUP_DIR "${BUILD_STARTUP_FILE}" PATH)
     # MATLAB search path
     #
     # The following paths are written to the startup M-file such
@@ -1453,12 +1459,17 @@ function (basis_build_mcc_target TARGET_UID)
       endif ()
     endif ()
     list (APPEND BUILD_MATLABPATH "${SOURCE_DIR}")
-    file (RELATIVE_PATH REL "${INSTALL_STARTUP_DIR}" "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}")
-    if (REL)
-      list (APPEND INSTALL_MATLABPATH "${REL}")
-    else ()
-      list (APPEND INSTALL_MATLABPATH ".")
-    endif ()
+    # The following is not required because startup script is located
+    # in the same directory as the other sources and basis_generate_matlab_executable()
+    # adds this path automatically in order to run the startup script.
+    # Moreover, if anyone wants to run the startup script, they have to
+    # add this path manually or make it the current directory first.
+    #file (RELATIVE_PATH REL "${INSTALL_STARTUP_DIR}" "${CMAKE_INSTALL_PREFIX}/${INSTALL_SOURCE_DIR}")
+    #if (REL)
+    #  list (APPEND INSTALL_MATLABPATH "${REL}")
+    #else ()
+    #  list (APPEND INSTALL_MATLABPATH ".")
+    #endif ()
     # link dependencies, i.e., MEX-files
     foreach (LINK_DEPEND ${LINK_DEPENDS})
       basis_get_target_uid (UID "${LINK_DEPEND}")
@@ -1495,6 +1506,11 @@ function (basis_build_mcc_target TARGET_UID)
         endif ()
       endif ()
     endforeach ()
+    # cleanup directory paths
+    string (REGEX REPLACE "/+"     "/"    BUILD_MATLABPATH   "${BUILD_MATLABPATH}")
+    string (REGEX REPLACE "/+"     "/"    INSTALL_MATLABPATH "${INSTALL_MATLABPATH}")
+    string (REGEX REPLACE "/(;|$)" "\\1"  BUILD_MATLABPATH   "${BUILD_MATLABPATH}")
+    string (REGEX REPLACE "/(;|$)" "\\1"  INSTALL_MATLABPATH "${INSTALL_MATLABPATH}")
     # remove duplicates
     if (BUILD_MATLABPATH)
       list (REMOVE_DUPLICATES BUILD_MATLABPATH)
