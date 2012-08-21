@@ -1606,7 +1606,7 @@ macro (basis_library_prefix PREFIX LANGUAGE)
   if (PROJECT_NAMESPACE_${_LANGUAGE_U})
     basis_sanitize_for_regex (_RE "${BASIS_NAMESPACE_DELIMITER_${_LANGUAGE_U}}")
     string (REGEX REPLACE "${_RE}" "/" ${PREFIX} "${PROJECT_NAMESPACE_${_LANGUAGE_U}}")
-    set (PREFIX "${PREFIX}/")
+    set (${PREFIX} "${${PREFIX}}/")
     unset (_RE)
   else ()
     message (FATAL_ERROR "basis_library_prefix(): PROJECT_NAMESPACE_${_LANGUAGE_U} not set!"
