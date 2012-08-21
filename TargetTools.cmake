@@ -3027,26 +3027,25 @@ function (basis_add_init_py_target)
   basis_sanitize_for_regex (BINARY_JYTHON_LIBRARY_DIR_RE  "${BINARY_JYTHON_LIBRARY_DIR}")
   basis_sanitize_for_regex (TESTING_JYTHON_LIBRARY_DIR_RE "${TESTING_JYTHON_LIBRARY_DIR}")
   basis_sanitize_for_regex (INSTALL_JYTHON_LIBRARY_DIR_RE "${INSTALL_JYTHON_LIBRARY_DIR}")
-  # collect build tree directories requiring a __init__.py file
+  # collect directories requiring a __init__.py file
   set (DEPENDENTS)      # targets which generate Python modules and depend on _initpy
   set (DIRS)            # directories for which to generate a __init__.py file
   set (EXCLUDE)         # exclude these directories
-  set (INSTALL_EXCLUDE) # exclude these directories on installation
+  set (INSTALL_EXCLUDE) # exclude these directories upon installation
   set (COMPONENTS)      # installation components
   basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID IN LISTS TARGETS)
     get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
     get_target_property (LANGUAGE   ${TARGET_UID} LANGUAGE)
     if (BASIS_TYPE MATCHES "MODULE|LIBRARY" AND LANGUAGE MATCHES "^[JP]YTHON$")
-      # get absolute path of build Python modules
+      # get path of built Python modules
       basis_get_target_location (LOCATION         ${TARGET_UID} ABSOLUTE)
       basis_get_target_location (INSTALL_LOCATION ${TARGET_UID} POST_INSTALL_RELATIVE)
       if (BASIS_TYPE MATCHES "^SCRIPT_LIBRARY$")
         get_target_property (PREFIX           ${TARGET_UID} PREFIX)
         get_target_property (SOURCES          ${TARGET_UID} SOURCES)
         get_target_property (SOURCE_DIRECTORY ${TARGET_UID} SOURCE_DIRECTORY)
-        string (REGEX REPLACE "/$" "" PREFIX "${PREFIX}")
-        get_filename_component (PREFIX "${PREFIX}" PATH)
+        string (REGEX REPLACE "/+$" "" PREFIX "${PREFIX}")
         if (PREFIX)
           set (LOCATION         "${LOCATION}/${PREFIX}")
           set (INSTALL_LOCATION "${INSTALL_LOCATION}/${PREFIX}")
