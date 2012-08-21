@@ -1576,20 +1576,14 @@ function (basis_build_mcc_target TARGET_UID)
       list (APPEND LINK_LIBS "${LIB_FILE}")
     endforeach ()
     # MATLAB Compiler arguments
-    string (REGEX REPLACE " +" ";" MCC_ARGS "${COMPILE_FLAGS}") # user specified flags
-    foreach (INCLUDE_PATH ${BASIS_INCLUDE_DIRECTORIES})         # add directories added via
-      list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)                # basis_include_directories ()
-      if (EXISTS "${INCLUDE_PATH}" AND IDX EQUAL -1)            # function to search path
+    string (REGEX REPLACE " +" ";" MCC_ARGS "${COMPILE_FLAGS}")              # user specified flags
+    foreach (INCLUDE_PATH ${BASIS_INCLUDE_DIRECTORIES})                      # add directories added via
+      string (REGEX REPLACE "/(\\+|@).*$" "" INCLUDE_PATH "${INCLUDE_PATH}") # remove package/class subdirectories
+      list (FIND MCC_ARGS "${INCLUDE_PATH}" IDX)                             # basis_include_directories ()
+      if (EXISTS "${INCLUDE_PATH}" AND IDX EQUAL -1)                         # function to search path
         list (APPEND MCC_ARGS "-I" "${INCLUDE_PATH}")
       endif ()
     endforeach ()
-    list (FIND BASIS_INCLUDE_DIRECTORIES "${SOURCE_DIRECTORY}" IDX)
-    if (IDX EQUAL -1)
-      # add current source directory to search path,
-      # needed for build in MATLAB mode as working directory
-      # differs from the current source directory then
-      list (APPEND MCC_ARGS "-I" "${SOURCE_DIRECTORY}")
-    endif ()
     if (LIBRARY)
       list (APPEND MCC_ARGS "-l")                       # build library
     else ()
