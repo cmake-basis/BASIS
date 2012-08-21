@@ -411,7 +411,7 @@ function (basis_generate_matlab_executable OUTPUT_FILE)
       file (RELATIVE_PATH "${ARGN_DESTINATION}" "${STARTUP_DIR}")
     endif ()
     if (STARTUP_DIR)
-      set (STARTUP_DIR "$__DIR__/${STARTUP_DIR}"
+      set (STARTUP_DIR "$__DIR__/${STARTUP_DIR}")
     else ()
       set (STARTUP_DIR "$__DIR__")
     endif ()
