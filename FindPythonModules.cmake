@@ -205,7 +205,7 @@ function (basis_find_python_module CACHEVAR)
       endif ()
       set_property (CACHE ${CACHEVAR} PROPERTY VALUE "${P}")
       return ()
-    elseif (ERROR MATCHES "'import site' failed")
+    elseif (ERROR MATCHES "'import site' failed|ImportError: No module named site")
       message (WARNING "Import of site module failed when running Python interpreter ${ARGN_PYTHON_EXECUTABLE}"
                        " with and without -E option. Make sure that the Python interpreter is installed properly"
                        " and that the PYTHONHOME environment variable is either not set (recommended) or at"
