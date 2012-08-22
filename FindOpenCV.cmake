@@ -74,8 +74,10 @@ if (NOT OpenCV_DIR)
   mark_as_advanced (OpenCV_INCLUDE_DIR)
   # b) derive OpenCV_DIR from include path
   if (OpenCV_INCLUDE_DIR)
+    # Mac OS Framework
+    string (REGEX REPLACE "/Headers(/.*)?$" "" OpenCV_DIR "${OpenCV_INCLUDE_DIR}")
     # OpenCV 1
-    string (REGEX REPLACE "/include/.*$" "" OpenCV_DIR "${OpenCV_INCLUDE_DIR}")
+    string (REGEX REPLACE "/include(/.*)$" "" OpenCV_DIR "${OpenCV_DIR}")
     # OpenCV >= 2
     if (EXISTS "${OpenCV_DIR}/share/opencv/OpenCVConfig.cmake")
       set (OpenCV_DIR "${OpenCV_DIR}/share/opencv")
@@ -204,12 +206,21 @@ if (EXISTS "${OpenCV_DIR}")
       )
 
       # release build
-      find_library (
-        OpenCV_${__CVLIB}_LIBRARY_RELEASE
-        NAMES "${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}"
-        PATHS "${OpenCV_DIR}/lib"
-        NO_DEFAULT_PATH
-      )
+      if (APPLE AND OpenCV_DIR MATCHES "/OpenCV\\.framework/*$" AND EXISTS "${OpenCV_DIR}/OpenCV" AND NOT IS_DIRECTORY "${OpenCV_DIR}/OpenCV")
+        find_file (
+          OpenCV_${__CVLIB}_LIBRARY_RELEASE
+          NAMES OpenCV
+          PATHS "${OpenCV_DIR}"
+          NO_DEFAULT_PATH
+        )
+      else ()
+        find_library (
+          OpenCV_${__CVLIB}_LIBRARY_RELEASE
+          NAMES "${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}"
+          PATHS "${OpenCV_DIR}/lib"
+          NO_DEFAULT_PATH
+        )
+      endif ()
 
       mark_as_advanced (OpenCV_${__CVLIB}_LIBRARY_DEBUG)
       mark_as_advanced (OpenCV_${__CVLIB}_LIBRARY_RELEASE)
