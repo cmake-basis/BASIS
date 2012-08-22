@@ -935,7 +935,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     set (SPHINX_COMPONENT "Unspecified")
   endif ()
   # find Sphinx
-  find_package (Sphinx)
+  find_package (Sphinx COMPONENTS build QUIET)
   if (NOT Sphinx-build_EXECUTABLE)
     if (BUILD_DOCUMENTATION)
       message (FATAL_ERROR "Command sphinx-build not found! Either install Sphinx and/or set Sphinx-build_EXECUTABLE or disable BUILD_DOCUMENTATION.")
