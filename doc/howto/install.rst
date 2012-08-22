@@ -128,7 +128,7 @@ is referred to as BASH_ variable:
 
 .. code-block:: bash
 
-    pkg=<package>-<version>
+    package=<package>-<version>
 
 
 .. _BasisBuildDependencies:
@@ -240,7 +240,7 @@ At first, extract the downloaded source package, e.g.:
 
 .. code-block:: bash
 
-    tar -xzf $pkg-source.tar.gz ~
+    tar -xzf $package-source.tar.gz ~
 
 This will extract the sources to a new diretory in your home directory
 named "<package>-<version>-source".
@@ -255,8 +255,8 @@ Create a directory for the build tree of the package and change to it, e.g.:
 
 .. code-block:: bash
 
-    mkdir ~/$pkg-build
-    cd ~/$pkg-build
+    mkdir ~/$package-build
+    cd ~/$package-build
 
 .. note::
 
@@ -267,7 +267,7 @@ To configure the build tree, run CMake's graphical tool ccmake_:
 
 .. code-block:: bash
 
-    ccmake ~/$pkg-source
+    ccmake ~/$package-source
 
 Press ``c`` to trigger the configuration step of CMake. Warnings can be ignored by
 pressing ``e``. Once all CMake variables are configured properly, which might require
@@ -276,15 +276,15 @@ configuration files for the selected build tool (i.e., GNU Make Makefiles in our
 and exit CMake.
 
 Variables which specify the location of other required or optionally used packages
-if available are named ``<Pkg>_DIR``. These variables usually have to be set to the
-directory which contains a file named ``<Pkg>Config.cmake`` or ``<pkg>-config.cmake``.
+if available are named ``<Package>_DIR``. These variables usually have to be set to the
+directory which contains a file named ``<Package>Config.cmake`` or ``<package>-config.cmake``.
 Alternatively, or if the package does not provide such CMake package configuration
 file, the installation prefix, i.e., root directory should be specified. See the
 build instructions of the particular software package you are building for more
 details on the particular ``<Pkg>_DIR`` variables that may have to be set if the
 packages were not found automatically by CMake.
 
-See the documentation of the available `default configuration options` for more options
+See the documentation of the available `default configuration options`_ for more options
 that can be used to configure the build of any BASIS-based project. Please refer also
 to the package specific build instructions given in the ``INSTALL`` file of the
 corresponding package which is located in the top directory of the source tree.
@@ -315,7 +315,7 @@ the command:
 
 .. code-block:: bash
 
-    cmake -D BUILD_DOCUMENTATION:BOOL=ON ~/$pkg-build
+    cmake -D BUILD_DOCUMENTATION:BOOL=ON ~/$package-build
 
 Note that the build of the documentation may require the build of the software
 beforehand. If the software was not build before, the build of the documentation
@@ -404,9 +404,9 @@ directly with the ``-V`` option instead:
 
 .. code-block:: bash
 
-    ctest -V >& $pkg-test.log
+    ctest -V >& $package-test.log
 
-and attach the file ``$pkg-test.log`` to the issue report.
+and attach the file ``$package-test.log`` to the issue report.
 
 .. note::
     If the software package does not include tests, follow the steps in the
@@ -424,15 +424,15 @@ First, make sure that the CMake configuration option ``CMAKE_INSTALL_PREFIX`` an
 
 .. code-block:: bash
 
-    cmake -D "CMAKE_INSTALL_PREFIX:PATH=<prefix>" ~/$pkg-build
+    cmake -D "CMAKE_INSTALL_PREFIX:PATH=<prefix>" ~/$package-build
 
 or:
 
 .. code-block:: bash
 
     cmake -D "CMAKE_INSTALL_PREFIX:PATH=<prefix>" \
-          -D "BASIS_INSTALL_SCHEME:STRING=default|usr|opt|win \
-          ~/$pkg-build
+          -D "BASIS_INSTALL_SCHEME:STRING=default|usr|opt|win" \
+          ~/$package-build
 
 This can be omitted if these variables were set already during the configuration
 of the build tree or if the default values should be used.
@@ -504,7 +504,7 @@ Environment
 -----------
 
 In order to ease the execution of the main executable files, we suggest to
-add either the path ``~/$pkg-build/bin/`` or ``<prefix>/bin/`` to the search
+add either the path ``~/$package-build/bin/`` or ``<prefix>/bin/`` to the search
 path for executable files, i.e., the ``PATH`` environment variable. This is,
 however, generally not requirement for the correct functioning of the software.
 
@@ -565,7 +565,7 @@ used to install the package:
 
 .. code-block:: bash
 
-    cd ~/$pkg-build
+    cd ~/$package-build
     make uninstall
 
 .. warning::
@@ -592,7 +592,7 @@ given by ``<prefix>``, run the command:
 
 .. code-block:: bash
 
-    uninstall-$pkg
+    uninstall-$package
 
 assuming that you added ``<prefix>/bin/`` to your ``PATH`` environment variable.
 
