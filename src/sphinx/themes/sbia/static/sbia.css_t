@@ -393,7 +393,7 @@ div.sphinxsidebar {
     text-align: left;
 }
 
-div.sphinxsidebar div.sphinxsidebarwrapper p.logo {
+div.sphinxsidebar div.sphinxsidebarwrapper img.logo {
     width: {{ theme_sidebarwidth|toint }}px;
 }
 
