@@ -77,6 +77,11 @@
 ##############################################################################
 
 # ----------------------------------------------------------------------------
+# unset environment variables that may cause problems otherwise
+set (ENV{PYTHONHOME})
+set (ENV{PYTHONPATH})
+
+# ----------------------------------------------------------------------------
 # initialize arguments
 if (NOT COMMAND)
   message (FATAL_ERROR "No command specified for execute_process (): use -DCOMMAND='cmd'")
