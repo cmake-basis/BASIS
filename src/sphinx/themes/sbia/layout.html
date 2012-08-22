@@ -16,14 +16,14 @@
     <table class="title" cellspacing="0" cellpadding="0">
       <tbody>
         <tr style="height: 56px">
-          {%- if theme_projectlogo %}
-            <td class="projectlogo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_projectlogo, 1) }}" /></a></td>
+          {%- if theme_project_logo %}
+            <td class="project_logo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_project_logo, 1) }}" /></a></td>
           {%- endif %}
           <td class="projectid">
             <div class="projectname">
               <a href="{{ pathto('index') }}">
-                {%- if theme_titlelogo %}
-                  <img alt="{{ project }}" src="{{ pathto("_static/" + theme_titlelogo, 1) }}" />
+                {%- if theme_title_logo %}
+                  <img alt="{{ project }}" src="{{ pathto("_static/" + theme_title_logo, 1) }}" />
                 {%- else %}
                   {{ project }}
                 {%- endif %}
@@ -37,10 +37,10 @@
         </tr>
       </tbody>
     </table>
-    {%- if theme_pennlogo|tobool %}
+    {%- if theme_penn_logo|tobool %}
       <div class="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
     {%- endif %}
-    {%- if theme_sbialogo|tobool %}
+    {%- if theme_sbia_logo|tobool %}
       <div class="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
     {%- endif %}
     <div class="clearer"></div>
