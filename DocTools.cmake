@@ -868,6 +868,10 @@ endfunction ()
 #     <td>Title for LaTeX/PDF output. Defaults to title of <tt>index.rst</tt>.</td>
 #   </tr>
 #   <tr>
+#     @tp @b LATEX_LOGO file @endtp
+#     <td>Logo to display above title in generated LaTeX/PDF output.</td>
+#   </tr>
+#   <tr>
 #     @tp @b LATEX_DOCUMENT_CLASS howto|manual @endtp
 #     <td>Document class to use by @c latex builder.</td>
 #   </tr>
@@ -905,7 +909,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     SOURCE_DIRECTORY OUTPUT_DIRECTORY OUTPUT_NAME TAG
     COPYRIGHT MASTER_DOC
     HTML_TITLE HTML_THEME HTML_LOGO HTML_THEME_PATH
-    LATEX_TITLE LATEX_DOCUMENT_CLASS LATEX_SHOW_URLS LATEX_SHOW_PAGEREFS
+    LATEX_TITLE LATEX_LOGO LATEX_DOCUMENT_CLASS LATEX_SHOW_URLS LATEX_SHOW_PAGEREFS
     MAN_SECTION
     DOXYLINK_URL DOXYLINK_PREFIX DOXYLINK_SUFFIX
   )
