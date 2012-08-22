@@ -78,8 +78,8 @@
 
 # ----------------------------------------------------------------------------
 # unset environment variables that may cause problems otherwise
-set (ENV{PYTHONHOME})
-set (ENV{PYTHONPATH})
+unset (ENV{PYTHONHOME})
+unset (ENV{PYTHONPATH})
 
 # ----------------------------------------------------------------------------
 # initialize arguments
