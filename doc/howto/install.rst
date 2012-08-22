@@ -281,7 +281,7 @@ directory which contains a file named ``<Package>Config.cmake`` or ``<package>-c
 Alternatively, or if the package does not provide such CMake package configuration
 file, the installation prefix, i.e., root directory should be specified. See the
 build instructions of the particular software package you are building for more
-details on the particular ``<Pkg>_DIR`` variables that may have to be set if the
+details on the particular ``<Package>_DIR`` variables that may have to be set if the
 packages were not found automatically by CMake.
 
 See the documentation of the available :doc:`default configuration options <buildoptions>`
@@ -309,7 +309,7 @@ the configured build tree::
 
     make
 
-In order to build the documentation, the ``BUILD_DOCUMENTATION`` option
+In order to build the documentation, the :option:`-DBUILD_DOCUMENTATION` option
 has to be set to ``ON``. If not done before, this option can be enabled using
 the command:
 
@@ -336,8 +336,8 @@ documentation may be useful which can be build using the ``apidoc`` target::
 
     make apidoc
 
-The advanced ``INSTALL_APIDOC_DIR`` configuration option can be set to an
-absolute path or a path relative to the ``CMAKE_INSTALL_PREFIX`` directory
+The advanced :option:`-DBASIS_INSTALL_APIDOC_DIR` configuration option can be set to an
+absolute path or a path relative to the :option:`-DCMAKE_INSTALL_PREFIX` directory
 in order to modify the installation directory for the API documentation which is
 generated from the in-source comments using tools such as Doxygen_ and Sphinx_.
 This can be useful, for example, to install the documentation in the document
@@ -357,8 +357,8 @@ the following command instead::
     make site_dirhtml
 
 The resulting web site can then be found in ``doc/site/dirhtml/``.
-Optionally, the advanced ``INSTALL_SITE_DIR`` configuration option can be
-set to an absolute path or a path relative to the ``CMAKE_INSTALL_PREFIX``
+Optionally, the advanced :option:`-DBASIS_INSTALL_SITE_DIR` configuration option can be
+set to an absolute path or a path relative to the :option:`-DCMAKE_INSTALL_PREFIX`
 directory in order to modify the installation directory for the generated
 web site. This can be useful, for example, to install the web site in the
 document directory of a web server.
@@ -419,8 +419,10 @@ and attach the file ``$package-test.log`` to the issue report.
 Install
 -------
 
-First, make sure that the CMake configuration option ``CMAKE_INSTALL_PREFIX`` and
-``BASIS_INSTALL_SCHEME`` are set properly by running CMake:
+First, make sure that the CMake configuration options :option:`-DCMAKE_INSTALL_PREFIX`,
+:option:`-DBASIS_INSTALL_SCHEME`, and :option:`-DBASIS_INSTALL_SITE_PACKAGES` are set properly,
+where for normal use cases only :option:`-DCMAKE_INSTALL_PREFIX` may be modified.
+These variables can be set as follows:
 
 .. code-block:: bash
 
@@ -432,14 +434,15 @@ or:
 
     cmake -D "CMAKE_INSTALL_PREFIX:PATH=<prefix>" \
           -D "BASIS_INSTALL_SCHEME:STRING=default|usr|opt|win" \
+          -D "BASIS_INSTALL_SITE:BOOL=ON|OFF" \
           ~/$package-build
 
 This can be omitted if these variables were set already during the configuration
 of the build tree or if the default values should be used.
-On Linux, ``CMAKE_INSTALL_PREFIX`` is by default set to ``/opt/<provider>/<package>[-<version>]``
+On Linux, :option:`-DCMAKE_INSTALL_PREFIX` is by default set to ``/opt/<provider>/<package>[-<version>]``
 and on Windows to ``C:/Program Files/<Provider>/<Package>[-<version>]``.
 
-The advanced ``BASIS_INSTALL_SCHEME`` option specifies how to install the files relative
+The advanced :option:`-DBASIS_INSTALL_SCHEME` option specifies how to install the files relative
 to this installation prefix. If it is set to ``default`` (the default), BASIS will
 decide the appropriate directory structure based on the set installation prefix. On Unix,
 if the installation prefix contains the package name, the ``opt`` installation scheme
@@ -458,6 +461,11 @@ similar to the ``opt`` scheme. Furthermore, the directory names are more Windows
 and start with a capital letter. For example, the default installation directory for
 package library files on Windows given the installation prefix
 ``C:\Program Files\<Provider>\<Package>`` is ``C:\Program Files\<Provider>\<Package>\Library``.
+
+If the :option:`-DBASIS_INSTALL_SITE_PACKAGES` option is ``ON``, module libraries written
+in a scripting language such as Python or Perl are installed to the system-wide default
+directories for site packages of these languages. As this requires write permission to
+these directories, this option is diabled by default.
 
 .. note:: The binary executables which are intended to be called by the user are
           copied to the ``bin/`` directory, where no package subdirectory is created
@@ -482,7 +490,7 @@ installed binary executable and shared object files, which can save disk space.
  
 If more than one version of a software package shall be installed,
 include the package version in the installation prefix by setting
-``CMAKE_INSTALL_PREFIX`` to ``/opt/[<provider>/]/<package>[-<version>]``,
+:option:`-DCMAKE_INSTALL_PREFIX` to ``/opt/[<provider>/]/<package>[-<version>]``,
 for example (the default). Otherwise, you may choose to install the package
 in ``/usr/local``, which will by default make the executables in the
 ``bin/`` directory and the header files available to other packages without
@@ -491,7 +499,7 @@ the need to change any environment settings.
 Besides the installation of the built files of the software package to the
 named locations, the directory where the CMake configuration file of the package
 was installed is added to CMake's `package registry`_ if the advanced option
-``BASIS_REGISTER`` is set to ``ON`` (the default). This helps CMake to find the
+:option:`-DBASIS_REGISTER` is set to ``ON`` (the default). This helps CMake to find the
 installed package when used by another software package based on CMake.
 
 After the successful installation, the build tree can be deleted. It should
