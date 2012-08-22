@@ -78,7 +78,7 @@ basis_project (
     MATLAB{matlab}
     BASH
     Doxygen
-    Sphinx
+    Sphinx{build}
     ITK # TODO required by basistest-driver, get rid of this dependency
     #<optional-dependency>
   TEST_DEPENDS

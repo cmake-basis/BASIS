@@ -48,13 +48,23 @@ basis_add_doc (
 
 set (OUTPUT_NAME "${PROJECT_NAME} Software Manual")
 
-foreach (N IN ITEMS manual Manual UserManual SoftwareManual UserGuide userguide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
-    break ()
-  endif ()
-endforeach ()
+# ----------------------------------------------------------------------------
+# pre-generated PDF
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/${OUTPUT_NAME}.pdf")
+  # pre-generated PDF which is included with web site for download
+  basis_add_doc ("site/${OUTPUT_NAME}.pdf")
+else ()
+  # other pre-generated PDF found in the current source directory
+  foreach (N IN ITEMS manual Manual UserManual SoftwareManual UserGuide userguide)
+    if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
+      basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
+      break ()
+    endif ()
+  endforeach ()
+endif ()
 
+# ----------------------------------------------------------------------------
+# generate software manual from reStructuredText sources
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual/index.rst")
   basis_add_doc (
     manual
@@ -71,13 +81,23 @@ endif ()
 
 set (OUTPUT_NAME "${PROJECT_NAME} Developer's Guide")
 
-foreach (N IN ITEMS DeveloperManual DeveloperGuide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
-    break ()
-  endif ()
-endforeach ()
+# ----------------------------------------------------------------------------
+# pre-generated PDF
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/${OUTPUT_NAME}.pdf")
+  # pre-generated PDF which is included with web site for download
+  basis_add_doc ("site/${OUTPUT_NAME}.pdf")
+else ()
+  # other pre-generated PDF found in the current source directory
+  foreach (N IN ITEMS DeveloperManual DeveloperGuide)
+    if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
+      basis_add_doc (${N}.pdf OUTPUT_NAME "${OUTPUT_NAME}.pdf")
+      break ()
+    endif ()
+  endforeach ()
+endif ()
 
+# ----------------------------------------------------------------------------
+# generate developer's guide from reStructuredText sources
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/developer/index.rst")
   basis_add_doc (
     guide
@@ -94,16 +114,33 @@ endif ()
 # ============================================================================
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
+
+  set (HTML_SIDEBARS localtoc relations)
+
+  # --------------------------------------------------------------------------
+  # pre-generated site PDF for download
+  if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/site/${PROJECT_NAME}.pdf")
+    basis_add_doc ("${CMAKE_CURRENT_LIST_DIR}/site/${PROJECT_NAME}.pdf")
+    list (APPEND HTML_SIDEBARS sourcepdflink)
+  else ()
+    list (APPEND HTML_SIDEBARS sourcelink)
+  endif ()
+
+  # --------------------------------------------------------------------------
+  # web site
   basis_add_doc (
     site
     GENERATOR     Sphinx
     BUILDER       html dirhtml pdf man
     MAN_SECTION   7
+    HTML_THEME    ${PROJECT_PACKAGE_VENDOR_L}
     SHOW_RELEASE  false
+    INDEXLINK     "${PROJECT_PACKAGE_VENDOR} Software"
     RELLINKS      download installation documentation examples publications
-    HTML_SIDEBARS localtoc relations sourcelink
+    HTML_SIDEBARS ${HTML_SIDEBARS}
     LATEX_TITLE   "${PROJECT_NAME}"
   )
+
 endif ()
 
 # ============================================================================
@@ -132,7 +169,9 @@ if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
     GENERATOR        Sphinx
     BUILDER          pdf html dirhtml man
     MAN_SECTION      7
+    HTML_THEME       ${PROJECT_PACKAGE_VENDOR_L}
     SHOW_RELEASE     false
+    INDEXLINK        "${PROJECT_PACKAGE_VENDOR} Software"
     RELLINKS         download installation documentation faq publications
     HTML_SIDEBARS    ${HTML_SIDEBARS}
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
