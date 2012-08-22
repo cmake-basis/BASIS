@@ -286,9 +286,9 @@ packages were not found automatically by CMake.
 
 See the documentation of the available :doc:`default configuration options <buildoptions>`
 for more options that can be used to configure the build of any BASIS-based project.
-Please refer also to the package specific build instructions given in the ``INSTALL`` file of
-the corresponding package which is located in the top directory of the source tree.
-In this document, additional project specific configuration options are document if existent.
+Please refer also to the package specific build instructions given in the ``INSTALL`` file
+or software manual of the corresponding package for information on available
+additional project specific configuration options.
 
 .. note::
     The ccmake_ tool also provides a brief description to each variable in the status bar.
@@ -439,14 +439,14 @@ of the build tree or if the default values should be used.
 On Linux, ``CMAKE_INSTALL_PREFIX`` is by default set to ``/opt/<provider>/<package>[-<version>]``
 and on Windows to ``C:/Program Files/<Provider>/<Package>[-<version>]``.
 
-The ``BASIS_INSTALL_SCHEME`` option specifies how to install the files relative
-to this installation prefix. If it is set to ``default``, BASIS will decide the
-appropriate directory structure based on the set installation prefix. On Unix,
+The advanced ``BASIS_INSTALL_SCHEME`` option specifies how to install the files relative
+to this installation prefix. If it is set to ``default`` (the default), BASIS will
+decide the appropriate directory structure based on the set installation prefix. On Unix,
 if the installation prefix contains the package name, the ``opt`` installation scheme
 is selected which skips the addition of subdirectories named after the package within
 the different installation subdirectories. This corresponds to the suggested
-`Filesystem Hierarchy for Linux <http://www.pathname.com/fhs/pub/fhs-2.3.html#OPTADDONAPPLICATIONSOFTWAREPACKAGES>`_
-for add-on packages where the installation prefix is set to ``/opt/<package>`` or
+`Linux Filesystem Hierarchy for add-on packages <http://www.pathname.com/fhs/pub/fhs-2.3.html#OPTADDONAPPLICATIONSOFTWAREPACKAGES>`_
+, where the installation prefix is set to ``/opt/<package>`` or
 ``/opt/<provider>/<package>``. Otherwise, the ``usr`` installation scheme
 is chosen which will append the package name to each installation directory to avoid
 conflicts between software packages installed in the same location. This installation
@@ -455,17 +455,17 @@ Given the installation prefix ``/usr/local``, for example, the package library f
 will be installed into ``/usr/local/lib/<package>``. On Windows, the ``win`` scheme
 is used which does not add any package specific subdirectories to the installation path
 similar to the ``opt`` scheme. Furthermore, the directory names are more Windows-like
-and start with a captial letter. For example, the default installation directory for
+and start with a capital letter. For example, the default installation directory for
 package library files on Windows given the installation prefix
-``C:\Program Files\<Vendor>\<Package>`` is ``C:\Program Files\<Provider>\<Package>\Library``.
+``C:\Program Files\<Provider>\<Package>`` is ``C:\Program Files\<Provider>\<Package>\Library``.
 
 .. note:: The binary executables which are intended to be called by the user are
-          copied to the ``bin/`` directory, where in neither case a package subdirectory
-          is created in this case. It is in the responsibility of the package provider
-          to choose names of the executables that are unique enough to avoid conflicts
-          with other available software packages. Auxiliary executables, on the other
-          side, i.e., executables which are called by the executables in the ``bin``
-          directory, are installed in the directory for library files.
+          copied to the ``bin/`` directory, where no package subdirectory is created
+          regardless of the installation scheme. It is in the responsibility of the
+          package provider to choose names of the executables that are unique enough
+          to avoid conflicts with other available software packages. Auxiliary executables,
+          on the other side, i.e., executables which are called by the executables in
+          the ``bin/`` directory, are installed in the directory for library files.
 
 The executables and auxiliary files can be installed using either the command::
 

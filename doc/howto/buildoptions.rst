@@ -18,7 +18,7 @@ The following CMake options/variables can be configured:
 .. note:: Though surprising at first glance, the build of the documentation may
           often be preceeded by the build of the software itself. The reason is
           that the documentation can in general only be generated after script files
-          have been configured. Thus, be not surprised if ``make doc`` will actually
+          have been configured. Thus, do not be surprised if ``make doc`` will actually
           first build the software if not up to date before generating the API
           documentation.
 
@@ -151,6 +151,7 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
     Installation directory of the web site relative to the installation prefix.
 
 
+.. _CMAKE_INSTALL_PREFIX: http://www.cmake.org/cmake/help/v2.8.9/cmake.html#variable:CMAKE_INSTALL_PREFIX
 .. _CMake GUI: http://www.cmake.org/cmake/help/runningcmake.html
 .. _Git: http://git-scm.com/
 .. _MATLAB: http://www.mathworks.com/products/matlab/
