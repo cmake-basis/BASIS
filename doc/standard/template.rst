@@ -36,7 +36,7 @@ README.txt
     them to the more extensive documentation. This file in
     particular introduces the software package shortly, including a
     summary of the package files. Moreover, it refers to the
-    :ref:`INSTALL.txt <INSTALL>` and :ref:`COPYING.txt <COYPING>`
+    :ref:`INSTALL.txt <INSTALL>` and :ref:`COPYING.txt <COPYING>`
     files for details on the build and installation and software license,
     respectively. Furthermore, references to scientific articles related
     to the software package shall be included in this file.
