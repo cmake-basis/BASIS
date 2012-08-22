@@ -121,11 +121,7 @@ set (
 # coverage
 # ----------------------------------------------------------------------------
 
-
 # get relative paths for use in globbing expression
-#
-# Note that all public include files are copied to the build tree and thus
-# consider only the once in the build tree, not the once in the source tree.
 file (RELATIVE_PATH MODULES_DIR "@PROJECT_SOURCE_DIR@" "@PROJECT_MODULES_DIR@")
 file (RELATIVE_PATH CODE_DIR    "@PROJECT_SOURCE_DIR@" "@PROJECT_CODE_DIR@")
 file (RELATIVE_PATH INCLUDE_DIR "@PROJECT_BINARY_DIR@" "@BINARY_INCLUDE_DIR@")
