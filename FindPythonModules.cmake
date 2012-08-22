@@ -166,6 +166,7 @@ function (basis_find_python_module CACHEVAR)
   endforeach ()
   # 2. get __file__ attribute of module loaded in Python
   if (ARGN_PYTHON_EXECUTABLE)
+    set (IMPORT_SITE_ERROR FALSE)
     # 2a. try it with -E option -- the preferred way to run Python
     execute_process (
       COMMAND "${ARGN_PYTHON_EXECUTABLE}" -E -c "import ${ARGN_NAME}; print ${ARGN_NAME}.__file__"
@@ -174,6 +175,9 @@ function (basis_find_python_module CACHEVAR)
       ERROR_VARIABLE  ERROR
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+    if (ERROR MATCHES "'import site' failed|ImportError: No module named site")
+      set (IMPORT_SITE_ERROR TRUE)
+    endif ()
     # 2b. try it without -E option
     if (NOT STATUS EQUAL 0)
       execute_process (
@@ -183,6 +187,9 @@ function (basis_find_python_module CACHEVAR)
         ERROR_VARIABLE  ERROR
         OUTPUT_STRIP_TRAILING_WHITESPACE
       )
+      if (ERROR MATCHES "'import site' failed|ImportError: No module named site")
+        set (IMPORT_SITE_ERROR TRUE)
+      endif ()
       if (NOT STATUS EQUAL 0 AND ERROR MATCHES "ImportError: No module named site")
         set (PYTHONHOME "$ENV{PYTHONHOME}")
         unset (ENV{PYTHONHOME})
@@ -193,6 +200,9 @@ function (basis_find_python_module CACHEVAR)
           ERROR_VARIABLE  ERROR
           OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+        if (ERROR MATCHES "'import site' failed|ImportError: No module named site")
+          set (IMPORT_SITE_ERROR TRUE)
+        endif ()
         set (ENV{PYTHONHOME} "${PYTHONHOME}")
       endif ()
     endif ()
@@ -205,7 +215,7 @@ function (basis_find_python_module CACHEVAR)
       endif ()
       set_property (CACHE ${CACHEVAR} PROPERTY VALUE "${P}")
       return ()
-    elseif (ERROR MATCHES "'import site' failed|ImportError: No module named site")
+    elseif (IMPORT_SITE_ERROR)
       message (WARNING "Import of site module failed when running Python interpreter ${ARGN_PYTHON_EXECUTABLE}"
                        " with and without -E option. Make sure that the Python interpreter is installed properly"
                        " and that the PYTHONHOME environment variable is either not set (recommended) or at"
