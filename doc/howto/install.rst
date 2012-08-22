@@ -284,10 +284,10 @@ build instructions of the particular software package you are building for more
 details on the particular ``<Pkg>_DIR`` variables that may have to be set if the
 packages were not found automatically by CMake.
 
-See the documentation of the available `default configuration options`_ for more options
-that can be used to configure the build of any BASIS-based project. Please refer also
-to the package specific build instructions given in the ``INSTALL`` file of the
-corresponding package which is located in the top directory of the source tree.
+See the documentation of the available :doc:`default configuration options <buildoptions>`_
+for more options that can be used to configure the build of any BASIS-based project.
+Please refer also to the package specific build instructions given in the ``INSTALL`` file of
+the corresponding package which is located in the top directory of the source tree.
 In this document, additional project specific configuration options are document if existent.
 
 .. note::
