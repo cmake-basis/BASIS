@@ -195,7 +195,7 @@ if (BLA_VENDOR STREQUAL "ATLAS" OR BLA_VENDOR STREQUAL "All")
   "cblas;f77blas;atlas"
   ""
   )
-  if (BLAS_LIBRARIES MATCHES "cblas")
+  if (BLAS_LIBRARIES_VARS MATCHES "cblas")
     find_path (BLAS_INCLUDE_DIR NAMES cblas.h DOC "Include directory of the cblas.h header file.")
   endif ()
  endif(NOT BLAS_LIBRARIES)
