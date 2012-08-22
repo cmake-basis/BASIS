@@ -73,11 +73,26 @@ endforeach ()
 # ----------------------------------------------------------------------------
 # determine Sphinx version
 if (Sphinx-build_EXECUTABLE)
-  execute_process (
-    COMMAND "Sphinx-build_EXECUTABLE" -h
-    OUTPUT_VARIABLE _Sphinx_VERSION
-    ERROR_QUIET
-  )
+  # intentionally use invalid -h option here as the help that is shown then
+  # will include the Sphinx version information
+  if (BASIS_MODULE_PATH AND EXISTS "${BASIS_MODULE_PATH}/ExecuteProcess.cmake")
+    # this ExecuteProcess.cmake script unsets PYTHONHOME and PYTHONPATH to
+    # avoid "import site" errors if these are set to another installed
+    # Python version as the one required by sphinx-build (shebang)
+    execute_process (
+      COMMAND "${CMAKE_COMMAND}"
+        -D "COMMAND:STRING=${Sphinx-build_EXECUTABLE};-h"
+        -P "${BASIS_MODULE_PATH}/ExecuteProcess.cmake"
+      OUTPUT_VARIABLE _Sphinx_VERSION
+      ERROR_VARIABLE  _Sphinx_VERSION
+    )
+  else ()
+    execute_process (
+      COMMAND "${Sphinx-build_EXECUTABLE}" -h
+      OUTPUT_VARIABLE _Sphinx_VERSION
+      ERROR_VARIABLE  _Sphinx_VERSION
+    )
+  endif ()
   if (_Sphinx_VERSION MATCHES "^Sphinx v([0-9]+\\.[0-9]+\\.[0-9]+)")
     set (Sphinx_VERSION_STRING "${CMAKE_MATCH_1}")
     string (REPLACE "." ";" _Sphinx_VERSION "${Sphinx_VERSION}")
