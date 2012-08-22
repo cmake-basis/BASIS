@@ -154,13 +154,15 @@ set_property(CACHE BASIS_INSTALL_SCHEME PROPERTY STRINGS default opt usr win)
 mark_as_advanced (BASIS_INSTALL_SCHEME)
 
 if (BASIS_INSTALL_SCHEME MATCHES "default")
+  string (TOLOWER "${CMAKE_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX_L)
   if (WIN32)
     set (BASIS_INSTALL_SCHEME win)
-  elseif (CMAKE_INSTALL_PREFIX MATCHES "^/(usr|opt)(/local)?$")
-    set (BASIS_INSTALL_SCHEME usr)
-  else ()
+  elseif (CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?${PROJECT_NAME_L}[_-]?") # e.g. /opt/<package>[-<version>]
     set (BASIS_INSTALL_SCHEME opt)
+  else ()
+    set (BASIS_INSTALL_SCHEME usr)
   endif ()
+  unset (CMAKE_INSTALL_PREFIX_L)
 endif ()
 
 if (NOT BASIS_INSTALL_SCHEME MATCHES "^(opt|usr|win)$")
