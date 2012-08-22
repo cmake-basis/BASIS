@@ -451,8 +451,8 @@ mark_as_advanced (BASIS_COMPILE_SCRIPTS)
 #       was not thorough and did not follow the guidelines, setting this option to @c ON
 #       has the potential risk of overwriting other packages' modules. Therefore,
 #       modules are only installed in system default locations if explicitly requested.
-option (BASIS_SITE_DIRS "Enable the installation of scripted modules in site specific default directories." OFF)
-mark_as_advanced (BASIS_SITE_DIRS)
+option (BASIS_INSTALL_SITE_PACKAGES "Enable the installation of scripted modules in site specific default directories." OFF)
+mark_as_advanced (BASIS_INSTALL_SITE_PACKAGES)
 
 ## @brief Script used to execute a process in CMake script mode.
 #

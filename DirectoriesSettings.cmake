@@ -299,28 +299,28 @@ endif ()
 #       the installation of public modules in the system default site directories
 #       in order to prevent the installation of files outside the CMAKE_INSTALL_PREFIX.
 
-# reset directories if BASIS_SITE_DIRS option has been changed
-if (DEFINED _BASIS_SITE_DIRS)
+# reset directories if BASIS_INSTALL_SITE_PACKAGES option has been changed
+if (DEFINED _BASIS_INSTALL_SITE_PACKAGES)
   set (_RESET FALSE)
-  if (BASIS_SITE_DIRS AND NOT _BASIS_SITE_DIRS)
+  if (BASIS_INSTALL_SITE_PACKAGES AND NOT _BASIS_INSTALL_SITE_PACKAGES)
     set (_RESET TRUE)
-  elseif (NOT BASIS_SITE_DIRS AND _BASIS_SITE_DIRS)
+  elseif (NOT BASIS_INSTALL_SITE_PACKAGES AND _BASIS_INSTALL_SITE_PACKAGES)
     set (_RESET TRUE)
   endif ()
   if (_RESET)
     foreach (_L IN ITEMS PYTHON JYTHON PERL)
-      # do not reset if BASIS_SITE_DIRS is OFF and path is already relative
-      if (IS_ABSOLUTE "${INSTALL_${_L}_SITE_DIR}" OR BASIS_SITE_DIRS)
+      # do not reset if BASIS_INSTALL_SITE_PACKAGES is OFF and path is already relative
+      if (IS_ABSOLUTE "${INSTALL_${_L}_SITE_DIR}" OR BASIS_INSTALL_SITE_PACKAGES)
         basis_update_value (INSTALL_${_L}_SITE_DIR)
       endif ()
     endforeach ()
   endif ()
   unset (_RESET)
 endif ()
-set (_BASIS_SITE_DIRS "${BASIS_SITE_DIRS}" CACHE INTERNAL "Previous value of BASIS_SITE_DIRS option." FORCE)
+set (_BASIS_INSTALL_SITE_PACKAGES "${BASIS_INSTALL_SITE_PACKAGES}" CACHE INTERNAL "Previous value of BASIS_INSTALL_SITE_PACKAGES option." FORCE)
 
 # try to determine default installation directories
-if (BASIS_SITE_DIRS)
+if (BASIS_INSTALL_SITE_PACKAGES)
   # Python
   if (NOT INSTALL_PYTHON_SITE_DIR AND PYTHON_EXECUTABLE)
     execute_process (
