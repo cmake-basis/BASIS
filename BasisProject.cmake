@@ -59,7 +59,7 @@ basis_project (
   # meta-data
   NAME        BASIS
   PROVIDER    SBIA
-  VERSION     1.3.1
+  VERSION     2.0.0rc2
   DESCRIPTION "This package implements and supports the development of "
               "software which follows the SBIA Build system And Software "
               "Implementation Standard (BASIS)."

@@ -80,7 +80,6 @@ EOF-OPTIONS
 # ============================================================================
 
 cmd='slave' # subcommand to run
-args=()     # options of subcommand
 verbose=0   # verbosity of output messages
 
 if [ -n "$1" ]; then
@@ -101,6 +100,7 @@ if [ -n "$1" ]; then
             exit 1
         fi
         execute "basistest-${cmd}" '--help'
+        exit $?
     elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
         print_help
         exit 0

@@ -13,6 +13,8 @@
 #define _BASIS_TESTDRIVER_HXX
 
 
+#include <iterator>
+
 #if WINDOWS
 #  include <Winsock2.h> // gethostname()
 #  ifdef max
