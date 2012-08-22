@@ -185,7 +185,7 @@ endfunction ()
 #   <tr>
 #     @tp @b DESTINATION dir @endtp
 #     <td>Installation directory prefix. Defaults to
-#         @c INSTALL_&ltTARGET&gt;_DIR in case of HTML output if set.
+#         @c BASIS_INSTALL_&ltTARGET&gt;_DIR in case of HTML output if set.
 #         Otherwise, the generated HTML files are not installed.</td>
 #   </tr>
 #   <tr>
@@ -520,12 +520,12 @@ function (basis_add_doxygen_doc TARGET_NAME)
     set (DOXYGEN_WARN_FORMAT "\"$file:$line: $text \"")
   endif ()
   # installation directories
-  set (INSTALL_${TARGET_NAME_U}_DIR "" CACHE PATH "Installation directory for Doxygen ${TARGET_NAME} target.")
-  mark_as_advanced (INSTALL_${TARGET_NAME_U}_DIR)
+  set (BASIS_INSTALL_${TARGET_NAME_U}_DIR "" CACHE PATH "Installation directory for Doxygen ${TARGET_NAME} target.")
+  mark_as_advanced (BASIS_INSTALL_${TARGET_NAME_U}_DIR)
   foreach (f IN LISTS DOXYGEN_OUTPUT)
     string (TOUPPER "${f}" F)
-    if (INSTALL_${TARGET_NAME_U}_DIR)
-      set (DOXYGEN_${F}_DESTINATION "${INSTALL_${TARGET_NAME_U}_DIR}") # user setting
+    if (BASIS_INSTALL_${TARGET_NAME_U}_DIR)
+      set (DOXYGEN_${F}_DESTINATION "${BASIS_INSTALL_${TARGET_NAME_U}_DIR}") # user setting
     endif ()
     if (NOT DOXYGEN_${F}_DESTINATION)
       if (DOXYGEN_DESTINATION)
@@ -757,7 +757,7 @@ endfunction ()
 #     @tp @b DESTINATION dir @endtp
 #     <td>Installation directory prefix. Used whenever there is no specific
 #         destination specified for a particular Sphinx builder. Defaults to
-#         @c INSTALL_&ltTARGET&gt;_DIR in case of HTML output if set.
+#         @c BASIS_INSTALL_&ltTARGET&gt;_DIR in case of HTML output if set.
 #         Otherwise, the generated HTML files are not installed.</td>
 #   </tr>
 #   <tr>
@@ -1132,13 +1132,12 @@ function (basis_add_sphinx_doc TARGET_NAME)
     set (SPHINX_MAN_SECTION 1)
   endif ()
   # installation directories
-  set (INSTALL_${TARGET_NAME_U}_DIR "" CACHE PATH "Installation directory for documentation ${TARGET_NAME} target.")
-  mark_as_advanced (INSTALL_${TARGET_NAME_U}_DIR)
+  set (BASIS_INSTALL_${TARGET_NAME_U}_DIR "" CACHE PATH "Installation directory for documentation ${TARGET_NAME} target.")
+  mark_as_advanced (BASIS_INSTALL_${TARGET_NAME_U}_DIR)
   foreach (b IN LISTS SPHINX_BUILDERS)
     string (TOUPPER "${b}" B)
-    if (INSTALL_${TARGET_NAME_U}_DIR)
-      message ("basis_add_sphinx_doc(): CHECKPOINT 1")
-      set (SPHINX_${B}_DESTINATION "${INSTALL_${TARGET_NAME_U}_DIR}") # user setting
+    if (BASIS_INSTALL_${TARGET_NAME_U}_DIR)
+      set (SPHINX_${B}_DESTINATION "${BASIS_INSTALL_${TARGET_NAME_U}_DIR}") # user setting
     endif ()
     if (NOT SPHINX_${B}_DESTINATION)
       if (SPHINX_DESTINATION)                           
