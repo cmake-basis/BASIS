@@ -1278,6 +1278,25 @@ function (basis_add_sphinx_doc TARGET_NAME)
   else ()
     message (FATAL_ERROR "Missing Sphinx configuration file ${SPHINX_CONFIG_FILE}!")
   endif ()
+  # extract python executable from shebang of sphinx-build
+  set (SPHINX_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}")
+  set (SPHINX_PYTHON_OPTIONS)
+  if (UNIX)
+    file (STRINGS "${Sphinx-build_EXECUTABLE}" FIRST_LINE LIMIT_COUNT 1)
+    if (FIRST_LINE MATCHES "^#!(.*python.*)")
+      string (REGEX REPLACE "^ +| +$" "" SPHINX_PYTHON_EXECUTABLE "${CMAKE_MATCH_1}")
+      if (SPHINX_PYTHON_EXECUTABLE MATCHES "([^ ]+) (.*)")
+        set (SPHINX_PYTHON_EXECUTABLE "${CMAKE_MATCH_1}")
+        string (REGEX REPLACE " +" ";" SPHINX_PYTHON_OPTIONS "${CMAKE_MATCH_2}")
+      endif ()
+    endif ()
+  endif ()
+  # this is done to avoid problems with multiple Python versions being installed
+  # and a wrong setting of PYTHONHOME and/or PYTHONPATH
+  list (FIND SPHINX_PYTHON_OPTIONS -E IDX)
+  if (IDX EQUAL -1)
+    list (INSERT SPHINX_PYTHON_OPTIONS 0 -E)
+  endif ()
   # add target to build documentation
   set (OPTIONS -a -N -n)
   if (NOT BASIS_VERBOSE)
@@ -1298,12 +1317,13 @@ function (basis_add_sphinx_doc TARGET_NAME)
     endif ()
     add_custom_target (
       ${TARGET_UID}_${BUILDER}
-          "${Sphinx-build_EXECUTABLE}" ${OPTIONS}
-              -b ${SPHINX_BUILDER}
-              -c "${SPHINX_CONFIG_DIRECTORY}"
-              -d "${SPHINX_CONFIG_DIRECTORY}/doctrees"
-              "${SPHINX_SOURCE_DIRECTORY}"
-              "${SPHINX_OUTPUT_DIRECTORY}/${SPHINX_BUILDER}"
+          "${SPHINX_PYTHON_EXECUTABLE}" ${SPHINX_PYTHON_OPTIONS}
+              "${Sphinx-build_EXECUTABLE}" ${OPTIONS}
+                -b ${SPHINX_BUILDER}
+                -c "${SPHINX_CONFIG_DIRECTORY}"
+                -d "${SPHINX_CONFIG_DIRECTORY}/doctrees"
+                "${SPHINX_SOURCE_DIRECTORY}"
+                "${SPHINX_OUTPUT_DIRECTORY}/${SPHINX_BUILDER}"
           ${SPHINX_POST_COMMAND}
           ${OPTDEPENDS}
       WORKING_DIRECTORY "${SPHINX_CONFIG_DIRECTORY}"
