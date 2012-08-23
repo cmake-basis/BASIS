@@ -249,9 +249,11 @@ Python
 
 A Python module named basis.py_ stores the location of the executables relative
 to its own path in a dictionary where the UIDs of the corresponding build targets
-are used as keys. The functions ``<package>.basis.exename()``,
-``<package>.basis.exedir()``, and ``<package>.basis.exepath()`` can be used to get
-the name, directory, or path, respectively, of the executable file built by the
+are used as keys. The functions
+`exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#gad832403b77ea714613fe9d8792fc2d76>`_,
+`exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#gae4a179b411575e221d6363bdc5e08946>`_,
+and `exepath() http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#ga300b1dc5bb4d6d7d13dc8ac4fec9a368`_
+can be used to get the name, directory, or path, respectively, of the executable file built by the
 specified target. If no target is specified, the name, directory, or path of the
 calling executable itself is returned.
 
@@ -261,10 +263,11 @@ calling executable itself is returned.
 Perl
 ----
 
-The ``Basis.pm`` Perl module uses a hash reference to store the locations of the
+The Basis.pm_ Perl module uses a hash reference to store the locations of the
 executable files relative to the module itself. The functions
-``<Package>::Basis::exename()``, ``<Package>::Basis::exedir()``, and
-``<Package>::Basis::exepath()`` can be used to get the name, directory, or path,
+`exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gabcdbfcbc0a8f61d74af795ec1cc3201c>`_,
+`exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gae2fad71a402bbbe877cc62e6c8dad4d7>`_, and
+`exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gaaafd1e575a71a6eb230c712f1ae9f72b>`_ can be used to get the name, directory, or path,
 respectively, of the executable file built by the specified target.
 If no target is specified, the name, directory, or path of the calling
 executable itself is returned.
@@ -320,12 +323,13 @@ MATLAB is yet not provided by BASIS.
 
 
 .. _basis.py: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/basis_8py.html
-.. _basis.sh: http://www.gnu.org/software/bash/
-.. _BASIS Utilities: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisUtilities.html
+.. _basis.sh: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/basis_8sh.html
+.. _Basis.pm: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/Basis_8pm.html
+.. _BASIS Utilities: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisUtilities.html
 .. _Bash: http://www.gnu.org/software/bash/
 .. _Mac OS Bundles: http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
 .. _MathWorks: http://www.mathworks.com/
 .. _MATLAB: http://www.mathworks.com/products/matlab/
-.. _LIBEXEC_DIR: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisScriptConfig.html#ga23a9a97d3bfc6b2f5be74d2db7da2aa1
-.. _BasisScriptConfig.cmake: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/BasisScriptConfig_8cmake.html
+.. _LIBEXEC_DIR: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisScriptConfig.html#gab41b55712c871a1c6ef0407894d58958
+.. _BasisScriptConfig.cmake: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/BasisScriptConfig_8cmake.html
 .. _system(): http://www.cplusplus.com/reference/clibrary/cstdlib/system/
