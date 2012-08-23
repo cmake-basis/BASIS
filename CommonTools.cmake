@@ -2147,9 +2147,9 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
     # replace shebang directive
     if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
       if (WIN32)
-        set (SHEBANG "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -E -x \"%~f0\" %* & goto :EOF")
+        set (SHEBANG "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
       else ()
-        set (SHEBANG "#! ${PYTHON_EXECUTABLE} -E")
+        set (SHEBANG "#! ${PYTHON_EXECUTABLE}")
       endif ()
     elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
       if (WIN32)
