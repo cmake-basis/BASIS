@@ -294,6 +294,10 @@ Note that the directory for CMake package configuration files is chosen such tha
 CMake finds these files automatically given that the ``<prefix>`` is a system default
 location or the ``INSTALL_RUNTIME_DIR`` is in the ``PATH`` environment.
 
+.. raw:: latex
+
+    \clearpage
+
 Note further that the include directory by intention always ends in the package name
 such that header files of a project have to be included as follows in order to avoid
 conflicts with other packages which use identical names for some of their headers:
@@ -308,10 +312,15 @@ to ``include/`` directory, but not the ``<package>`` subdirectory.
 Following a description of the directories, where the names of the CMake
 variables defined by BASIS are used instead of the actual directory names:
 
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{5cm}|p{10.5cm}|
+
 =========================   ===================================================================
   Directory Variable                                 Description
 =========================   ===================================================================
-``CMAKE_INSTALL_PREFIX``    Installation prefix (``<prefix>``).
+``CMAKE_INSTALL_PREFIX``    Common prefix (``<prefix>``) of installation directories.
                             Defaults to ``/opt/<provider>/<package>-<version>`` on Unix
                             and ``C:/Program Files/<Provider>/<Package>-<version>`` on Windows.
                             All other directories are specified relative to this prefix.

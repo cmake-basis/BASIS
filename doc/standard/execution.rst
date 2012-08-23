@@ -27,21 +27,19 @@ Therefore, BASIS proposes and implements the following convention on how
 absolute paths of (auxiliary) executables are determined at runtime by taking
 the absolute path of the directory of the calling executable into consideration.
 
-Main executables in ``<prefix>/bin/<sinfix>/`` call utility executables relative
-to their own directory. For example, a BASH_ script called ``main`` that executes
-a utility script ``util`` in ``<prefix>/lib/<sinfix>/`` would do so as demonstrated
+Main executables in the ``bin/`` directory call utility executables relative
+to their own location. For example, a Bash_ script called ``main`` that executes
+a utility script ``util`` in the ``lib/`` directory would do so as demonstrated
 in the following example code (for details on the ``@VAR@`` patterns, please refer
 to the :doc:`scripttargets` page):
 
 .. code-block:: bash
 
     # among others, defines the get_executable_directory() function
-    @BASIS_BASH_UTILITIES@
-
+    . ${BASIS_Bash_UTILITIES} || { echo "Failed to import BASIS utilities!" 1>&2; exit 1; }
     # get absolute directory path of auxiliary executable
-    get_executable_directory _EXEC_DIR && readonly _EXEC_DIR
+    exedir _EXEC_DIR && readonly _EXEC_DIR
     _LIBEXEC_DIR=${_EXEC_DIR}/@LIBEXEC_DIR@
-
     # call utility executable in libexec directory
     ${_LIBEXEC_DIR}/util
 
@@ -204,11 +202,9 @@ Implementation
 In the following the implementation of the calling conventions in each supported
 programming language is summarized.
 
-Note that the `BASIS Utilities`_ provide an ``execute_process()`` function for each
+Note that the `BASIS Utilities`_ provide an ``execute()`` function for each
 of these languages which accepts either an executable file path or
-a build target name as first argument of the command-line to execute. This
-function makes use of the so-called ``ExecutableTargetInfo`` module of the
-particular programming language whose implementation is summarized here.
+a build target name as first argument of the command-line to execute.
 
 
 .. _CxxCallingConventionsImpl:
@@ -217,25 +213,25 @@ C++
 ---
 
 For C++ programs, the BASIS C++ utilities provide the function
-`get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#gaf4f56530755f7a5825f789b4d5f995de>`__
+`exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisCxxUtilities.html>`__
 which maps a build target name to the absolute path of the executable file
 built by this target. This function makes use of the static instance of the class
-:apidoc:`sbia::basis::ExecutableTargetInfo` whose constructor is automatically
+:apidoc:`basis::basis::ExecutableTargetInfo` whose constructor is automatically
 generated during the configuration of a project. This constructor initializes the
 data structures required for the mapping of target names to absolute file paths.
-Note that BASIS generates different implementations of this module for different projects.
+Note that BASIS generates different implementations of this module for different projects,
+the whose documentation is linked here is the one generated for BASIS itself.
 
 The project implementations will, however, mainly make use of the
-`execute_process() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html#ga8947d83def8523a37c0e58948428dd7d>`__
+`execute() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisCxxUtilities.html>`__
 function which accepts either an actual executable file
 path or a build target name as first argument of the command-line to execute.
 This function shall be used in C++ code as a substitution for the commonly
-used `system()`_ function on Unix. The advantage of ``execute_process()`` is further,
+used `system()`_ function on Unix. The advantage of ``execute()`` is further,
 that it is implemented for all operating systems which are supported by BASIS,
-i.e., Linux, Mac OS, and Windows. The declaration of the ``execute_process()``
-function can be found in the ``stdaux.h`` header file, which is included by
-the main ``basis.h`` header file. Note that these files are as well unique
-to each BASIS project build.
+i.e., Linux, Mac OS, and Windows. The declaration of the ``execute()``
+function can be found in the ``basis.h`` header file. Note that this file is unique
+to each BASIS project.
 
 
 .. _JavaCallingConventionsImpl:
@@ -251,14 +247,13 @@ The Java programming language is not yet supported by BASIS.
 Python
 ------
 
-A Python module named executabletargetinfo.py_ stores the location of the
-executables relative to its own path in a dictionary where the UIDs of the
-corresponding build targets are used as keys. The functions
-``get_executable_name()``, ``get_executable_directory()``, and
-``get_executable_path()`` can be used to get the name, directory, or path,
-respectively, of the executable file built by the specified target. If no
-target is specified, the name, directory, or path of the calling executable
-itself is returned.
+A Python module named basis.py_ stores the location of the executables relative
+to its own path in a dictionary where the UIDs of the corresponding build targets
+are used as keys. The functions ``<package>.basis.exename()``,
+``<package>.basis.exedir()``, and ``<package>.basis.exepath()`` can be used to get
+the name, directory, or path, respectively, of the executable file built by the
+specified target. If no target is specified, the name, directory, or path of the
+calling executable itself is returned.
 
 
 .. _PerlCallingConventionsImpl:
@@ -266,10 +261,10 @@ itself is returned.
 Perl
 ----
 
-The ExecutableTargetInfo.pm_ Perl module uses a hash reference to store the
-locations of the executable files relative to the module itself. The
-functions ``get_executable_name()``, ``get_executable_directory()``, and
-``get_executable_path()`` can be used to get the name, directory, or path,
+The ``Basis.pm`` Perl module uses a hash reference to store the locations of the
+executable files relative to the module itself. The functions
+``<Package>::Basis::exename()``, ``<Package>::Basis::exedir()``, and
+``<Package>::Basis::exepath()`` can be used to get the name, directory, or path,
 respectively, of the executable file built by the specified target.
 If no target is specified, the name, directory, or path of the calling
 executable itself is returned.
@@ -277,29 +272,28 @@ executable itself is returned.
 
 .. _BashCallingConventionsImpl:
 
-BASH
+Bash
 ----
 
-For BASH_, the module executabletargetinfo.sh_ immidates associative arrays
-to store the location of the built executable files relative to this module.
-The functions
-`get_executable_name() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#ga76e85c979664b54dc50b5ba49b52579c>`__,
-`get_executable_directory() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#gac2e93af7862fa2cb2416763d002d8b82>`__,
-and `get_executable_path() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBashUtilities.html#ga8fd09ab9bd29a0213325a341c385510d>`__
+For Bash_, the module basis.sh_ immidates associative arrays to store the location
+of the built executable files relative to this module. The functions
+`exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisBashUtilities.html#gae51069427c675de3fdc22e3b8edbd282>`__,
+`exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisBashUtilities.html#ga910356e76596e5bdbedb544186ff395b>`__,
+and `exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisBashUtilities.html#ga40ae56f084f0786fe49bfc98e2fabf1f>`__
 can be used to get the name, directory, or path, respectively, of the
 executable file built by the specified target. If no target is specified,
 the name, directory, or path of the calling executable itself is returned.
 
-Additionally, the ``executabletargetinfo.sh`` module can setup aliases named after
-the UID of the build targets for the absolute file path of the corresponding
-executables. The target names can then be simply used as aliases for the actual
-executables. The initialization of the aliases is, however, at the moment
-expensive and delays the load time of the executable which sources the
-executabletargetinfo.sh module. Note further that this approach requires the
-option expand_aliases to be set via ``shopt -s expand_aliases`` which is done by
-the ``executabletargetinfo.sh`` module if aliases were enabled.
-A ``shopt -u expand_aliases`` disables the expansion of alises and hence should
-not be used in BASH scripts which execute other executables using these aliases.
+Additionally, the basis.sh_ module can setup aliases named after the UID of the
+build targets for the absolute file path of the corresponding executables.
+The target names can then be simply used as aliases for the actual executables.
+The initialization of the aliases is, however, at the moment expensive and delays
+the load time of the executable which sources the basis.sh_ module. Note further
+that this approach requires the option ``expand_aliases`` to be set via
+``shopt -s expand_aliases`` which is done by the ``basis.sh`` module if aliases
+were enabled. A ``shopt -u expand_aliases`` disables the expansion of aliases and
+hence should not be used in Bash scripts which execute other executables using
+the aliases defined by basis.sh_.
 
 
 .. _UnsupportedCallingConventions:
@@ -321,23 +315,14 @@ MATLAB
 
 Visit `this MathWorks page <http://www.mathworks.com/help/techdoc/matlab_external/bp_kqh7.html>`_
 for a documentation of external interfaces MathWorks_ provides for the development
-of applications in MATLAB_. None of these interfaces includes the direct execution
-of other executables using something like a system call.
-There are better ways to execute code written in C++ or Java from MATLAB code.
-If you would need to execute a BASH or Python script from MATLAB, you need to
-rethink the design of your software.
-
-.. todo::
-    The statement that MATLAB does not provide a function to execute subprocesses
-    may indeed not be correct. Check this and consider the implementation of a
-    execute_process() function for MATLAB as well.
+of applications in MATLAB_. An implementation of the ``execute()`` function in
+MATLAB is yet not provided by BASIS.
 
 
-.. _executabletargetinfo.py: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/executabletargetinfo_8py_source.html
-.. _ExecutableTargetInfo.pm: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/ExecutableTargetInfo_8pm_source.html
-.. _executabletargetinfo.sh: http://www.gnu.org/software/bash/
+.. _basis.py: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/basis_8py.html
+.. _basis.sh: http://www.gnu.org/software/bash/
 .. _BASIS Utilities: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisUtilities.html
-.. _BASH: http://www.gnu.org/software/bash/
+.. _Bash: http://www.gnu.org/software/bash/
 .. _Mac OS Bundles: http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
 .. _MathWorks: http://www.mathworks.com/
 .. _MATLAB: http://www.mathworks.com/products/matlab/

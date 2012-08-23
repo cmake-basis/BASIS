@@ -41,6 +41,10 @@ README.txt
     respectively. Furthermore, references to scientific articles related
     to the software package shall be included in this file.
 
+.. raw:: latex
+
+    \clearpage
+
 AUTHORS.txt
     Names the authors of the software package. Moreover, people who
     notably contributed to the software directly shall be named
@@ -240,11 +244,9 @@ config/ConfigUse.cmake.in
     in order to configure the build system of packages which
     use this software packages properly such that they can
     make use of this software. For example, the package
-    configuration sets a variable ``<Pkg>_INCLUDE_DIRS``
-    to a list of include directories which have to be added
-    to the include search path. Then, this file would contain
-    CMake instructions such as the line ``include_directories(${<Pkg>_INCLUDE_DIRS})``
-    to actually add these directories to the search path for header files.
+    configuration sets a variable to a list of include directories
+    have to be added to the include search path. This file would then contain
+    CMake instructions to actually add these directories to the path.
 
 config/ConfigVersion.cmake.in
     This file accompanies the package configuration file

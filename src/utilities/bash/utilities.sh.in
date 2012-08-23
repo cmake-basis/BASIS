@@ -38,21 +38,20 @@
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+#
+# @ingroup BasisBashUtilities
 ##############################################################################
 
 [ "${_BASIS_UTILITIES_INCLUDED}" == 'true' ] || {
 _BASIS_UTILITIES_INCLUDED='true'
 
 
-## @addtogroup BasisBashUtilities
-#  @{
-
-
 # ============================================================================
 # constants
 # ============================================================================
 
-readonly BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd`"
+BASIS_UTILITIES_DIR="`cd -P -- "\`dirname -- "${BASH_SOURCE}"\`" && pwd`"
+readonly BASIS_UTILITIES_DIR
 
 # ============================================================================
 # source other modules
@@ -90,6 +89,11 @@ import basis.shflags # command-line parsing library
 [ -n "${_BASIS_TARGET_UID_PREFIX}" ] || readonly _BASIS_TARGET_UID_PREFIX=''
 # used to make relative paths in executable target information map absolute
 [ -n "${_BASIS_DIR}" ] || readonly _BASIS_DIR="${BASIS_UTILITIES_DIR}"
+
+
+## @addtogroup BasisBashUtilities
+#  @{
+
 
 # ============================================================================
 # executable information

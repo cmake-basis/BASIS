@@ -59,9 +59,6 @@ basis_add_doc (
                    "*/test_main.cxx"      # main() of unit tests based on GMock
                    # testdriver which includes *.inc files
                    "*/testdriver.cxx"
-                   # files in binary source tree
-                   "cmake_install.cmake"
-                   "CTestTestfile.cmake"
   HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
 )
 

@@ -1,13 +1,11 @@
 ##############################################################################
 # @file  basis/__init__.py
-# @brief BASIS utilities for Python.
+# @brief Initialization file of BASIS Utilities package.
 #
 # Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
-#
-# @ingroup BasisPythonUtilities
 ##############################################################################
 
 __all__ = [] # use of import * is discouraged
