@@ -706,7 +706,7 @@ endfunction ()
 #
 # @par Properties on MATLAB Compiler targets
 # <table border=0>
-#   TODO
+#   <tr><td>TODO</td></tr>
 # </table>
 #
 # An install command for the added executable or library target is added by

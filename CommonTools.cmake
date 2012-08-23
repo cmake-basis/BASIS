@@ -1576,6 +1576,7 @@ endfunction ()
 # because target names are mapped by BASIS to target UIDs.
 #
 # @param [out] RESULT_VARIABLE Boolean result variable.
+# @param [in]  TARGET_NAME     Name which to check whether it is a target.
 #
 # @sa basis_make_target_uid()
 # @sa basis_get_target_uid()
