@@ -8,4 +8,4 @@ See shflags.sh_ as a reference until this guide is completed, keeping in mind,
 though, that this module will have to be revised.
 
 
-.. _shflags.sh: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/shflags_8sh.html
+.. _shflags.sh: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/shflags_8sh.html

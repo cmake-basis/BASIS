@@ -13,12 +13,12 @@ also be found as part of this documentation.
 .. note::
 
     BASIS provides its own subclass of the ``TCLAP::CmdLine`` class
-    which is also named ``CmdLine``, but in the ``sbia::basis`` namespace, i.e.,
-    ``sbia::basis::CmdLine``. Most of the argument implementations are, however,
+    which is also named ``CmdLine``, but in the ``basis`` namespace, i.e.,
+    ``basis::CmdLine``. Most of the argument implementations are, however,
     simply typedefs of the commonly used ``TCLAP::Arg`` subclasses.
-    See the `API documentation <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__CxxCmdLine.html>`_
+    See the `API documentation <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__CxxCmdLine.html>`_
     for a list of command-line arguments which are made available as part of
-    the ``sbia::basis`` namespace.
+    the ``basis`` namespace.
 
 The usage of the command-line parsing library shall be demonstrated in the
 following on the implementation of an example command-line program. It should
@@ -39,12 +39,12 @@ the command-line are handled by BASIS.
      * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
      */
 
-    #include "basis.h" // include BASIS C++ utilities
+    #include <package/basis.h> // include BASIS C++ utilities
 
 
     // acceptable in .cxx file
     using namespace std;
-    using namespace sbia::basis;
+    using namespace basis;
 
 
     // ===========================================================================
@@ -127,16 +127,14 @@ the command-line are handled by BASIS.
 
             CmdLine cmd(
                     // program identification
-                    "smoothimage", cProjectName,
+                    "smoothimage", PROJECT,
                     // program description
                     "This program smooths an input image using either a Gaussian "
                     "filter or an anisotropic diffusion filter.",
                     // example usage
                     examples,
                     // version information
-                    cVersionAndRevision,
-                    "Copyright (c) 2011 University of Pennsylvania."
-                    " All rights reserved.");
+                    RELEASE, "2011 University of Pennsylvania");
 
             // The constructor of the CmdLine class has already added the standard
             // arguments --help, --helpshort, --helpxml, --helpman, and --version.
