@@ -278,7 +278,7 @@ executable itself is returned.
 Bash
 ----
 
-For Bash_, the module basis.sh_ immidates associative arrays to store the location
+The module basis.sh_ imitates associative arrays to store the location
 of the built executable files relative to this module. The functions
 `exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisBashUtilities.html#gae51069427c675de3fdc22e3b8edbd282>`__,
 `exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisBashUtilities.html#ga910356e76596e5bdbedb544186ff395b>`__,
