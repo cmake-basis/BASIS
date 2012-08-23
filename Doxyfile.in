@@ -639,7 +639,7 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = */.svn/*   \
                          */.git/*   \
                          */Testing* \
-                         */CMakeFiles*
+                         */CMakeFiles/*.cmake
 
 EXCLUDE_PATTERNS      += @DOXYGEN_EXCLUDE_PATTERNS@
 

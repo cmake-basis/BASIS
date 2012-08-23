@@ -1548,18 +1548,9 @@ macro (basis_project_impl)
     add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
   endif ()
 
-  # build/install package documentation
-  if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
-    add_subdirectory ("${PROJECT_DOC_DIR}")
-  endif ()
-
   if (BASIS_DEBUG)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterSubdirectories.cmake")
   endif ()
-
-  # ----------------------------------------------------------------------------
-  # change log
-  basis_add_changelog ()
 
   # --------------------------------------------------------------------------
   # write convenience file to setup MATLAB environment
@@ -1615,6 +1606,20 @@ macro (basis_project_impl)
   # --------------------------------------------------------------------------
   # generate configuration files
   include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
+
+  # ----------------------------------------------------------------------------
+  # change log
+  basis_add_changelog ()
+
+  # --------------------------------------------------------------------------
+  # build/install package documentation
+  #
+  # This is done after all files which may be interesting for inclusion
+  # in the documentation are generated. In particular, this has to be done
+  # after the configuration of the BASIS utilities.
+  if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
+    add_subdirectory ("${PROJECT_DOC_DIR}")
+  endif ()
 
   # --------------------------------------------------------------------------
   # package software

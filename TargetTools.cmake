@@ -2652,15 +2652,8 @@ function (basis_build_script TARGET_UID)
   set (OUTPUT_FILE "${OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
   if (INSTALL_DIRECTORY)
     get_filename_component (SOURCE_NAME "${SOURCE_FILE}" NAME)
-    if (SOURCE_NAME MATCHES "\\.in$")
-      set (INSTALL_FILE "${BINARY_DIRECTORY}/${SOURCE_NAME}")
-      string (REGEX REPLACE "\\.in$" "" INSTALL_FILE "${INSTALL_FILE}")
-    else ()
-      # otherwise, Doxygen would have problems as it does not know which
-      # file to process. thus, write configured file to directory excluded
-      # from Doxygen search path.
-      set (INSTALL_FILE "${BUILD_DIR}/${SOURCE_NAME}")
-    endif ()
+    set (INSTALL_FILE "${BUILD_DIR}/build/${SOURCE_NAME}")
+    string (REGEX REPLACE "\\.in$" "" INSTALL_FILE "${INSTALL_FILE}")
     set (DESTINATION "${INSTALL_DIRECTORY}")
     if (NOT IS_ABSOLUTE "${DESTINATION}")
       set (DESTINATION "${CMAKE_INSTALL_PREFIX}/${DESTINATION}")

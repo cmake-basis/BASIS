@@ -303,7 +303,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     DOXYGEN
       "EXCLUDE_FROM_DOC"
-      "COMPONENT;DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION"
+      "COMPONENT;DESTINATION;HTML_DESTINATION;MAN_DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION"
       "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX"
       ${ARGN}
   )
@@ -367,7 +367,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   list (APPEND DOXYGEN_INPUT "${PROJECT_BINARY_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}ConfigVersion.cmake")
   list (APPEND DOXYGEN_INPUT "${PROJECT_BINARY_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}Use.cmake")
   # input directories
-  if (NOT BASIS_AUTO_PREFIX_INCLUDES AND EXISTS "${PROJECT_INCLUDE_DIR}")
+  if (EXISTS "${PROJECT_INCLUDE_DIR}")
     list (APPEND DOXYGEN_INPUT "${PROJECT_INCLUDE_DIR}")
   endif ()
   if (EXISTS "${BINARY_INCLUDE_DIR}")
@@ -387,6 +387,25 @@ function (basis_add_doxygen_doc TARGET_NAME)
     endif ()
     if (EXISTS "${PROJECT_MODULES_DIR}/${M}/${INCLUDE_DIR}")
       list (APPEND DOXYGEN_INPUT "${BINARY_MODULES_DIR}/${M}/${INCLUDE_DIR}")
+    endif ()
+  endforeach ()
+  # in case of scripts, have Doxygen process the configured versions for the
+  # installation which are further located in proper subdirectories instead
+  # of the original source files
+  basis_get_project_property (TARGETS)
+  foreach (T IN LISTS TARGETS)
+    get_target_property (BASIS_TYPE ${T} BASIS_TYPE)
+    get_target_property (TEST       ${T} TEST)
+    if (NOT TEST AND BASIS_TYPE MATCHES "SCRIPT")
+      get_target_property (SOURCES ${T} SOURCES)
+      if (SOURCES)
+        list (GET SOURCES 0 BUILD_DIR)
+        list (REMOVE_AT SOURCES 0)
+        list (APPEND DOXYGEN_INPUT "${BUILD_DIR}.dir/build")
+        foreach (S IN LISTS SOURCES)
+          list (APPEND DOXYGEN_EXCLUDE_PATTERNS "${S}")
+        endforeach ()
+      endif ()
     endif ()
   endforeach ()
   # add .dox files as input
