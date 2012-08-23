@@ -38,6 +38,11 @@ if (Perl_FOUND)
   basis_target_link_libraries (doxyfilter doxyfilterlib)
 endif ()
 
+# TODO Implement BASIS::DoxyFilter::CMake Perl module and remove this executable.
+if (PythonInterp_FOUND)
+  basis_add_executable (doxyfilter-perl.py LIBEXEC)
+endif ()
+
 # ----------------------------------------------------------------------------
 # testing tools
 basis_add_executable (testdriver.cxx LIBEXEC)

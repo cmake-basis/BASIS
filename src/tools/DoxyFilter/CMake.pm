@@ -41,9 +41,9 @@ sub new
         ['option',        qr/^.*\)\s*(#.*)?$/,                                                              \&_option_end,   'start'],
         ['option',        qr/.*$/,                                                                          \&_option_line,  'option'],
         # set()
-        ['start',         qr/^\s*(set|basis_set_if_empty|basis_set_if_not_set)\s*\(\s*(\w+)\s+(.*)\s*\)\s*(#.*)?$/,                     \&_set_nocache, 'start'],
-        ['start',         qr/^\s*(set|basis_set_if_empty|basis_set_if_not_set)\s*\(\s*(\w+)\s+(.*)\s+CACHE\s+(\w+)\s+(.*)\)\s*(#.*)?$/, \&_set_cache,   'start'],
-        ['start',         qr/^\s*(set|basis_set_if_empty|basis_set_if_not_set)(.*)[^\)]\s*(#.*)?$/,                                     \&_set_begin,   'set'],
+        ['start',         qr/^\s*(set|basis_set_if_empty|basis_set_if_not_set|basis_set_script_path)\s*\(\s*(\w+)\s+(.*)\s*\)\s*(#.*)?$/,                     \&_set_nocache, 'start'],
+        ['start',         qr/^\s*(set|basis_set_if_empty|basis_set_if_not_set|basis_set_script_path)\s*\(\s*(\w+)\s+(.*)\s+CACHE\s+(\w+)\s+(.*)\)\s*(#.*)?$/, \&_set_cache,   'start'],
+        ['start',         qr/^\s*(set|basis_set_if_empty|basis_set_if_not_set|basis_set_script_path)(.*)[^\)]\s*(#.*)?$/,                                     \&_set_begin,   'set'],
         ['set',           qr/(^|^.*\s+)\"([^\"]|\\\")*$/,                                                                               \&_set_line,    'set_value'],
         ['set_value',     qr/(^|^.*[^\\])\".*\s+\"([^\"]|\\\")*$/,                                                                      \&_set_line,    'set_value'],
         ['set_value',     qr/(^|^.*[^\\])\".*\)\s*(#.*)?$/,                                                                             \&_set_end,     'start'],
@@ -147,7 +147,7 @@ sub _set_cache
 sub _set_nocache
 {
     my ($self, $setfn, $name, $value) = @_;
-    $self->_append("$name;");
+    $self->_append("cmake $name;");
 }
 
 # ----------------------------------------------------------------------------
@@ -192,30 +192,38 @@ sub _set_end
 # ----------------------------------------------------------------------------
 sub _fndef
 {
-    my $self = shift;
-    $self->_fndef_append($self->{'line'});
+    my ($self, $dummy, $name) = @_;
+    $self->_fndef_append($self->{'line'}) unless $name =~ m/^_/;
 }
 
 # ----------------------------------------------------------------------------
 sub _fndef_begin
 {
-    my $self = shift;
-    $self->{'buffer'} = "$self->{'line'}";
+    my ($self, $dummy, $name) = @_;
+    if ($name =~ m/^_/) {
+        $self->{'skip'} = 1;
+    } else {
+        $self->{'buffer'} = "$self->{'line'}";
+    }
 }
 
 # ----------------------------------------------------------------------------
 sub _fndef_line
 {
     my $self = shift;
-    $self->{'buffer'} .= " $self->{'line'}";
+    $self->{'buffer'} .= " $self->{'line'}" unless $self->{'skip'};
 }
 
 # ----------------------------------------------------------------------------
 sub _fndef_end
 {
     my $self = shift;
-    $self->{'buffer'} .= " $self->{'line'}";
-    $self->_fndef_append($self->{'buffer'});
+    if (not $self->{'skip'}) {
+        $self->{'buffer'} .= " $self->{'line'}";
+        $self->_fndef_append($self->{'buffer'});
+    } else {
+        $self->{'skip'} = 0;
+    }
 }
 
 # ----------------------------------------------------------------------------

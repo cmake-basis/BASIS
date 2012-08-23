@@ -36,11 +36,11 @@ from . import which
 # ============================================================================
 
 ## @brief Default copyright of executables.
-COPYRIGHT = "@COPYRIGHT@"
+COPYRIGHT = "@PROJECT_COPYRIGHT@"
 ## @brief Default license of executables.
-LICENSE = "@LICENSE@"
+LICENSE = "@PROJECT_LICENSE@"
 ## @brief Default contact to use for help output of executables.
-CONTACT = "@CONTACT@"
+CONTACT = "@PROJECT_CONTACT@"
 
 
 # used to make paths relative to this module absolute

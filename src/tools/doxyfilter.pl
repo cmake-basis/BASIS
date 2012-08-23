@@ -10,8 +10,8 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-use File::Basename   qw(fileparse);
-use BASIS::Utilities qw(exename execute istarget);
+use File::Basename qw(fileparse);
+use BASIS::Basis   qw(exename execute istarget);
 
 use BASIS::DoxyFilter::Bash;
 use BASIS::DoxyFilter::CMake;

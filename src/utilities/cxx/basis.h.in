@@ -282,7 +282,10 @@ int execute(std::vector<std::string>  args,
             bool                      simulate   = false);
 
 
-} @PROJECT_NAMESPACE_CXX_END@ // end of namespaces
+}
+
+
+@PROJECT_NAMESPACE_CXX_END@ // end of namespaces
 
 
 /// @}

@@ -21,7 +21,8 @@ use base BASIS::DoxyFilter;
 ## @brief Constructs a CMake Doxygen filter.
 sub new
 {
-    shift->SUPER::new([
+    my $self = shift;
+    $self->SUPER::new([
         # if elif fi
         ['start', qr/^\s*if\s*\[/, undef, 'start'], # discard if's such that
                                                     # Doxygen comment is
@@ -61,14 +62,16 @@ sub _source
 sub _constant
 {
     my ($self, $unused1, $unused2, $name, $value) = @_;
-    $value =~ s/^\s*[\"']?//;
-    $value =~ s/[\"']?\s*$//;
-    if ($value =~ /^[+-]?[0-9]+/) {
-        $self->_append("int $name = $value");
-    } elsif ($value =~ /^[+-]?[0-9]+[.][0-9]+/) {
-        $self->_append("float $name = $value;");
-    } else {
-        $self->_append("string $name = \"$value\";");
+    if (not $name =~ m/^_/) {
+        $value =~ s/^\s*[\"']?//;
+        $value =~ s/[\"']?\s*$//;
+        if ($value =~ /^[+-]?[0-9]+$/) {
+            $self->_append("int $name = $value;");
+        } elsif ($value =~ /^[+-]?[0-9]+[.][0-9]+$/) {
+            $self->_append("float $name = $value;");
+        } else {
+            $self->_append("string $name = \"$value\";");
+        }
     }
 }
 
@@ -77,12 +80,14 @@ sub _fndef
 {
     my ($self, $unused, $name1, $name2) = @_;
     my $name = $name1 ? $name1 : $name2;
-    my @params = ();
-    foreach my $paramdoc (@{$self->{'params'}}) {
-        push @params, $paramdoc->{'dir'} . " " . $paramdoc->{'name'};
+    if (not $name =~ m/^_/) {
+        my @params = ();
+        foreach my $paramdoc (@{$self->{'params'}}) {
+            push @params, $paramdoc->{'dir'} . " " . $paramdoc->{'name'};
+        }
+        $self->_append("/// \@returns Nothing.") if not $self->{'returndoc'};
+        $self->_append("function $name(" . join(', ', @params) . ");");
     }
-    $self->_append("/// \@returns Nothing.") if not $self->{'returndoc'};
-    $self->_append("function $name(" . join(', ', @params) . ");");
 }
 
 
