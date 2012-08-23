@@ -288,18 +288,19 @@ The installation scheme for Windows is::
 
 In order to install different versions of a software, choose an installation
 prefix that includes the package name and software version, for example,
-``/opt/<package>-<version>`` (Unix) or ``C:/Program Files/<Package>-<version>``.
+``/opt/<package>-<version>`` (Unix) or ``C:/Program Files/<Package>-<version>`` (Windows).
 
 Note that the directory for CMake package configuration files is chosen such that
 CMake finds these files automatically given that the ``<prefix>`` is a system default
 location or the ``INSTALL_RUNTIME_DIR`` is in the ``PATH`` environment.
 
 Note further that the include directory by intention always ends in the package name
-such that header files of a project have to be included as follows:
+such that header files of a project have to be included as follows in order to avoid
+conflicts with other packages which use identical names for some of their headers:
 
 .. code-block:: c++
 
-    #include <package>/header.h>
+    #include <package/header.h>
 
 Hence, the include directory which is added to the search path has to be set
 to ``include/`` directory, but not the ``<package>`` subdirectory.
@@ -328,3 +329,7 @@ variables defined by BASIS are used instead of the actual directory names:
 ``INSTALL_MAN_DIR/man3/``   Man pages of libraries.
 ``INSTALL_SHARE_DIR``       Shared package files including required auxiliary data files.
 =========================   ===================================================================
+
+
+.. _Filesystem Hierarchy Standard of Linux: http://www.pathname.com/fhs/pub/fhs-2.3.html
+.. _Subversion: http://subversion.apache.org/

@@ -40,7 +40,7 @@ The following CMake options/variables can be configured:
 .. option:: -DCMAKE_INSTALL_PREFIX:PATH
 
     Prefix used for package :ref:`installation <InstallBuiltFiles>`. See also the
-    `CMake reference <http://www.cmake.org/cmake/help/v2.8.9/cmake.html#variable:CMAKE_INSTALL_PREFIX>`_.
+    `CMake reference <http://www.cmake.org/cmake/help/v2.8.8/cmake.html#variable:CMAKE_INSTALL_PREFIX>`_.
 
 .. option:: -DUSE_<Package>:BOOL
 
@@ -94,7 +94,8 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Installation scheme, i.e., filesystem hierarchy, to use for the installation of the
     software files relative to the installation prefix specified by the :option:`-DCMAKE_INSTALL_PREFIX`.
-    Valid values are ``default``, ``usr``, ``opt``, or ``win``.
+    Valid values are ``default``, ``usr``, ``opt``, or ``win``. See :ref:`InsallationTree`
+    as defined by the :doc:`/standard/fhs` of BASIS for more details.
 
 .. option:: -DBASIS_INSTALL_SITE_DIR:PATH
 

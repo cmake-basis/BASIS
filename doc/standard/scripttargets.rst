@@ -61,9 +61,7 @@ following order:
 2. Default script configuration file of BASIS (``BasisScriptConfig.cmake``).
 3. Default script configuration file of individual project
    (``ScriptConfig.cmake``, optional).
-4. Script configuration file specified using the ``CONFIG_FILE`` argument of
-   the :apidoc:`basis_add_executable()` or :apidoc:`basis_add_library()` command.
-5. Script configuration code specified using the ``CONFIG`` argument of the
+4. Script configuration code specified using the ``CONFIG`` argument of the
    :apidoc:`basis_add_executable()` or :apidoc:`basis_add_library()` command.
 
 
@@ -102,12 +100,12 @@ of ``BUILD_INSTALL_SCRIPT``, i.e.,
 .. code-block:: cmake
 
     if (BUILD_INSTALL_SCRIPT)
-      set (DATA_DIR "@INSTALL_PREFIX@/@INSTALL_DATA_DIR@")
+      set (DATA_DIR "@CMAKE_INSTALL_PREFIX@/@INSTALL_DATA_DIR@")
     else ()
       set (DATA_DIR "@PROJECT_DATA_DIR@")
     endif ()
 
-Avoid the use of absolute paths, however! Instead, use the ``DIR`` variable
+Avoid the use of absolute paths, however! Instead, use the ``__DIR__`` variable
 which is set in the build script to the directory of the output script file
 to make these paths relative to this directory which contains the configured
 script file. These relative paths which are defined by the script configuration
@@ -115,11 +113,11 @@ are then used in the script file as follows:
 
 .. code-block:: bash
 
-    # /usr/bin/env bash
-    @BASIS_BASH_UTILITIES@
-    get_executable_directory EXEC_DIR && readonly EXEC_DIR
+    #! /usr/bin/env bash
+    . ${BASIS_BASH_UTILITIES} || { echo "Failed to import BASIS utilities!" 1>&2; exit 1; }
+    exedir EXEDIR && readonly EXEDIR
     [ $? -eq 0 ] || { echo 'Failed to determine directory of this executable!'; exit 1; }
-    readonly DATA_DIR="${EXEC_DIR}/@DATA_DIR@"
+    readonly DATA_DIR="${EXEDIR}/@DATA_DIR@"
 
 where ``DATA_DIR`` is the relative path to the required data files as determined
 during the evaluation of the script configuration. See documentation of

@@ -47,7 +47,7 @@ named packages to the corresponding lists of dependencies.
 .. note::
 
     In order for the project tool to be able to find the correct place where to insert
-    the new dependencies, the ``<dependency>`` et al. placeholders have to be present.
+    the new dependencies, the ``#<dependency>`` et al. placeholders have to be present.
     See the ``BasisProject.cmake`` template file.
 
 

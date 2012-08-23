@@ -312,34 +312,6 @@ following example lines of the ``~swtest/.bashrc``:
     currently not further supported by BASIS, but is an open feature to be implemented.
 
 
-.. _BuildConfigurations:
-
-Available Build Configurations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Every BASIS projects can be build using one of the following build configurations:
-
-:Debug: Used for debugging programs.
-:Coverage: Enables coverage analysis.
-:MemCheck: Enables memory checks.
-:Release: Used to build programs for deployment. This is the default build configuration.
-
-When the ``coverage`` option is given, the CTest script ``basistest.ctest``
-will choose the ``Coverage`` configuration. If the ``memcheck`` option
-is given instead, the ``MemCheck`` configuration is used. If both options are
-given, the ``Coverage`` configuration is chosen because it generally provides
-already the required options also for the memory checks. The main difference may be
-that the ``Coverage`` configuration does not necessarily include debug information
-(e.g., using the ``-g`` option for GCC) while for more precise output messages
-by the memory checker (e.g., ``valgrind``), debug information is desirable.
-Another difference can be static vs. dynamic linking. Thus, generally consider to
-run separate test jobs for coverage analysis and memory checking.
-
-.. note::
-
-    At least one test job should use the **Release** build configuration.
-
-
 .. _AddingTestsToBasisTestConfiguration:
 
 Adding Test Job to basistest Configuration
