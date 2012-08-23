@@ -511,10 +511,13 @@ be verified before, however, that the installation indeed was successful.
 Environment
 -----------
 
+.. envvar:: PATH
+
 In order to ease the execution of the main executable files, we suggest to
-add either the path ``~/$package-build/bin/`` or ``<prefix>/bin/`` to the search
-path for executable files, i.e., the ``PATH`` environment variable. This is,
-however, generally not requirement for the correct functioning of the software.
+add the path ``<prefix>/bin/`` to the search path for executable files, i.e.,
+the ``PATH`` environment variable. This is, however, generally not required.
+It only eases the execution of the command-line tools provided by the software
+package.
 
 For example, if you use BASH_ add the following line to the ``~/.bashrc`` file:
 
@@ -522,16 +525,19 @@ For example, if you use BASH_ add the following line to the ``~/.bashrc`` file:
 
     export PATH="<prefix>/bin:${PATH}"
 
-To be able to use the provided Python modules of the software package if any
+
+.. envvar:: PYTHONPATH
+
+To be able to use any provided Python modules of the software package
 in your own Python scripts, you need to add the path
 ``<prefix>/lib/[<package>/]python<version>/`` to the search path for Python
-modules, e.g.:
+modules if such path exists after installation:
 
 .. code-block:: bash
 
     export PYTHONPATH=${PYTHONPATH}:/opt/<provider>/<package>-<version>/lib/python2.7
 
-or in your Python script:
+or, alternatively, insert the following code at the top of your Python scripts:
 
 .. code-block:: python
 
@@ -540,15 +546,18 @@ or in your Python script:
     sys.path.append('/opt/<provider>/<package>-<version>/lib/python2.7')
     from package import module
 
-To be able to use the provided Perl modules of the software package if any
-in your own Perl scripts, you need to add the path <prefix>/perl5/ to
-the search path for Perl modules, e.g.:
+
+.. envvar:: PERL5LIB
+
+To be able to use the provided Perl modules of the software package in your own
+Perl scripts, you need to add the path ``<prefix>/perl5/`` to the search path for
+Perl modules if such path exists after installation:
 
 .. code-block:: bash
 
     export PERL5LIB=${PERL5LIB}:/opt/<provider>/<package>-<version>/lib/perl5
 
-or in your Perl script:
+or, alternatively, insert the following code at the top of your Perl scripts:
 
 .. code-block:: perl
 
@@ -578,9 +587,8 @@ used to install the package:
 
 .. warning::
 
-    With the current implementation, this command will simply delete all the
-    files which were installed during the **last** build of the install target
-    (``make install``).
+    This command will only delete all files which were installed during the
+    **last** build of the install target (``make install``).
 
 
 .. _Deinstallation:
@@ -593,16 +601,15 @@ script which reads in this list in order to remove these files again
 is generated and installed in ``<prefix>/lib/cmake/<package>/``.
 
 The uninstaller is located in ``<prefix>/bin/`` and named ``uninstall-<package>``.
-
-Hence, in order to remove all files installed by this package as well
-as the empty directories left behind inside the installation root directory
-given by ``<prefix>``, run the command:
+In order to remove all files installed by this package as well as the empty
+directories left behind inside the installation root directory given by ``<prefix>``,
+run the command:
 
 .. code-block:: bash
 
     uninstall-$package
 
-assuming that you added ``<prefix>/bin/`` to your ``PATH`` environment variable.
+assuming that you added ``<prefix>/bin/`` to your :envvar:`PATH` environment variable.
 
 .. note::
 
