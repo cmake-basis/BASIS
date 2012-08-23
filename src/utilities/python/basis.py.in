@@ -72,11 +72,11 @@ VERSION = '@PROJECT_VERSION@'
 ## @brief Project version string used by print_version().
 RELEASE = '@PROJECT_RELEASE@'
 ## @brief Default copyright of executables.
-COPYRIGHT = "@COPYRIGHT@"
+COPYRIGHT = "@PROJECT_COPYRIGHT@"
 ## @brief Default license of executables.
-LICENSE = "@LICENSE@"
+LICENSE = "@PROJECT_LICENSE@"
 ## @brief Default contact to use for help output of executables.
-CONTACT = "@CONTACT@"
+CONTACT = "@PROJECT_CONTACT@"
 
 # prefix used to convert target names into target UIDs
 _TARGET_UID_PREFIX = '@PROJECT_NAMESPACE_CMAKE@'
