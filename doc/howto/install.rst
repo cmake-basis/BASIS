@@ -448,7 +448,7 @@ decide the appropriate directory structure based on the set installation prefix.
 if the installation prefix contains the package name, the ``opt`` installation scheme
 is selected which skips the addition of subdirectories named after the package within
 the different installation subdirectories. This corresponds to the suggested
-`Linux Filesystem Hierarchy for add-on packages <http://www.pathname.com/fhs/pub/fhs-2.3.html#OPTADDONAPPLICATIONSOFTWAREPACKAGES>`_
+`Linux Filesystem Hierarchy for Add-on Packages <http://www.pathname.com/fhs/pub/fhs-2.3.html#OPTADDONAPPLICATIONSOFTWAREPACKAGES>`_
 , where the installation prefix is set to ``/opt/<package>`` or
 ``/opt/<provider>/<package>``. Otherwise, the ``usr`` installation scheme
 is chosen which will append the package name to each installation directory to avoid

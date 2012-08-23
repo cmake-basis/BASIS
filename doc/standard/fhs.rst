@@ -2,7 +2,7 @@
 Filesystem Hierarchy Standard
 =============================
 
-This document describes the filesystem hierarcy of projects following the
+This document describes the filesystem hierarchy of projects following the
 Build system And Software Implementation Standard (BASIS). This standard
 is in particular based on the `Filesystem Hierarchy Standard of Linux`_.
 The configuration of the installation is further designed such that it is
@@ -11,13 +11,14 @@ well as the installation of multiple versions of each package. Furthermore,
 the directory structure by default integrates software developed at SBIA not
 only seamlessly into the target system but also the various separately managed
 SBIA software packages with each other. The latter can in particular be
-employed by a superproject concept based on a super-build.
+employed by a superproject concept based on a bundle build (also commonly
+referred to as super-build).
 
 In this document, names of CMake variables defined by the BASIS modules are
-given. These are used within the CMake modules to refer to the particular
-directories of a software project. These variables should be used either
-directly or indirectly where possible such that a change of the actual
-directory names does not require a modification of the software itself.
+given. These are used within the CMake functions of BASIS to refer to the
+particular directories of a software project. These variables should be used
+either directly or indirectly where possible such that a change of the actual
+directory names does not require a modification of the functions.
 
 The BASIS Filesystem Hierarchy Standard is in particular implemented by
 the :doc:`template`, which is the template for any software project
@@ -29,19 +30,17 @@ Filesystem Hierarchy Standard.
 Legend
 ======
 
-In the reminder, ``<project>`` is a placeholder for the project name in lowercase
-letters only and ``<Project>`` is the case-sensitive project name.
+In the reminder, ``<project>`` (``<package>``) is a placeholder for the project
+(or package) name in lowercase letters only and ``<Project>`` is the
+case-sensitive project name.
  
 Further, ``<version>`` is a placeholder for the project version string
 ``<major>.<minor>.<patch>``, where ``<major>`` is the major version number,
 ``<minor>`` the minor version number, and ``<patch>`` the patch number.
 
 The root directory of a particular project source tree is denoted by ``<source>``,
-while the root directory of the project binary tree is referred to as ``<build>``.
-Note that each software project consists of more than one project components
-(not identical to, but related with software package components).
-Each component can be downloaded, configured, build, and installed separately.
-See design-components file and section Source Tree for details.
+while the root directory of the project's build or binary tree is referred to
+as ``<build>``.
 
 The root directory of a development branch such as in particular the trunk
 (see :ref:`RepositoryOrganization`), is considered relative to the base URL
@@ -120,8 +119,8 @@ Furthermore, any files essential to the execution of the software are
 considered to be part of the software. Examples are a pre-computed lookup
 table and a medical image atlas.
  
-The testing at SBIA can further be divided into two subcategories: system
-testing and unit testing. It is important to note the difference of system
+The testing considered by BASIS can further be divided into two subcategories:
+system testing and unit testing. It is important to note the difference of system
 tests and unit tests. Most often, only system tests will be performed due to
 the research character of the projects. These tests are usually implemented in
 a scripting language such as Python, Perl, or BASH. System tests simply run
@@ -130,14 +129,15 @@ the expected results. Therefore, system tests can also be performed on a
 target system using the installed software where both the software and system
 tests are distributed as separate binary distribution packages. Unit tests,
 on the other side, only test a single software module such as a C++ class or
-Python module, for example. The size of the  additional data required for unit
-tests shall be reasonably small. Entire medical image data sets should only be
-required for system tests. The unit tests are compiled into separate executable
-files called test drivers. These executable files are not essential for the
-functioning of the software and are solely build for the purpose of testing.
+Python module. The size of the  additional data required for unit tests shall
+be reasonably small. Entire medical image data sets should only be required
+for system tests and even then downsampled to a very low resolution for practical
+reasons. The unit tests are compiled into separate executable files called test
+drivers. These executable files are not essential for the functioning of the
+software and are solely build for the purpose of testing.
 
 As the testing as well as the example in the field of medical imaging often
-requires a huge amount of image data, these datasets are stored and managed
+requires a huge amount of image data, these datasets may be stored and managed
 outside the source tree. Please refer to the :doc:`/howto/manage-data` guide
 for details on this topic.
 
@@ -230,59 +230,79 @@ When installing the software package by building either the install target,
 extracting a binary distribution package, or running an installer of a binary
 distribution package, the following directory structure is used.
 
-.. The tabularcolumns directive is required to help with formatting the table properly
-   in case of LaTeX (PDF) output.
-
-.. tabularcolumns:: |p{3cm}|p{12.5cm}|
-
-==================   ======================================================
-     Option                           Description
-==================   ======================================================
-``INSTALL_PREFIX``   Installation directories prefix (``<prefix>``).
-                     Defaults to ``/usr/local`` on Unix-like systems
-                     and ``C:\Program Files\SBIA`` on Windows.
-                     Note that this variable is initialized by the value
-                     of ``CMAKE_INSTALL_PREFIX``, the default variable used
-                     by CMake. Once it is initialized, the value of CMake's
-                     ``CMAKE_INSTALL_PREFIX`` variable is forced to always
-                     reflect the value of this variable.
-``INSTALL_SINFIX``   Installation directories suffix or infix, respectively
-                     (``<sinfix>``). Defaults to ``@PROJECT_NAME_LOWER@``.
-
-==================   ======================================================
-
-In order to install different versions of a software, choose an installation
-prefix that includes the package name and software version, for example,
-``/usr/local/@PROJECT_NAME_LOWER@-@PROJECT_VERSION@``. In this case,
-``INSTALL_SINFIX`` should be set to an empty string.
-
-
 Filesystem Hierarchy
 --------------------
 
-Based on above options, the installation directories are set as follows::
+In order to account for different installation schemes depending on the location
+and target system on which the software is being installed, different installation
+hierarchies are proposed.
 
-    - INSTALL_PREFIX                 - <prefix>/
-        + INSTALL_CONFIG_DIR             + lib/cmake/<sinfix>/ (Unix) | cmake/ (Windows)
-        + INSTALL_RUNTIME_DIR            + bin/<sinfix>/
-        + INSTALL_LIBEXEC_DIR            + lib/<sinfix>/ | bin/<sinfix>/ (Windows)
-        + INSTALL_LIBRARY_DIR            + lib/<sinfix>/
-        + INSTALL_ARCHIVE_DIR            + lib/<sinfix>/
-        + INSTALL_INCLUDE_DIR            + include/sbia/<project>/
+The first installation scheme is referred to as the ``usr`` scheme which is in
+compliance with the `Linux Filesystem Hierarchy Standard for /usr <http://www.pathname.com/fhs/pub/fhs-2.3.html#THEUSRHIERARCHY>`_::
+
+    - CMAKE_INSTALL_PREFIX           - <prefix>/
+        + INSTALL_CONFIG_DIR             + lib/cmake/<package>/
+        + INSTALL_RUNTIME_DIR            + bin/
+        + INSTALL_LIBEXEC_DIR            + lib/<package>/
+        + INSTALL_LIBRARY_DIR            + lib/<package>/
+        + INSTALL_ARCHIVE_DIR            + lib/<package>/
+        + INSTALL_INCLUDE_DIR            + include/<package>/
         + INSTALL_SHARE_DIR              + share/
-            + INSTALL_DOC_DIR                + <sinfix>/doc/
-            + INSTALL_EXAMPLE_DIR            + <sinfix>/example/
-            + INSTALL_MAN_DIR                + <sinfix>/man/
+            + INSTALL_DATA_DIR               + <package>/data/
+            + INSTALL_DOC_DIR                + doc/<package>/
+            + INSTALL_EXAMPLE_DIR            + <package>/example/
+            + INSTALL_MAN_DIR                + man/
+            + INSTALL_INFO_DIR               + info/
 
-Note that the include directory by intention always ends in ``sbia/<project>``,
+Another common installation scheme, here referred to as the ``opt`` scheme and the
+default used by BASIS packages, follows the
+`Linux Filesystem Hierarchy Standard for Add-on Packages <http://www.pathname.com/fhs/pub/fhs-2.3.html#OPTADDONAPPLICATIONSOFTWAREPACKAGES>`_::
+
+    - CMAKE_INSTALL_PREFIX           - <prefix>/
+        + INSTALL_CONFIG_DIR             + lib/cmake/<package>/
+        + INSTALL_RUNTIME_DIR            + bin/
+        + INSTALL_LIBEXEC_DIR            + lib/
+        + INSTALL_LIBRARY_DIR            + lib/
+        + INSTALL_ARCHIVE_DIR            + lib/
+        + INSTALL_INCLUDE_DIR            + include/<package>/
+        + INSTALL_SHARE_DIR              + share/
+            + INSTALL_DATA_DIR               + data/
+            + INSTALL_DOC_DIR                + doc/
+            + INSTALL_EXAMPLE_DIR            + example/
+            + INSTALL_MAN_DIR                + man/
+            + INSTALL_INFO_DIR               + info/
+
+The installation scheme for Windows is::
+
+    - CMAKE_INSTALL_PREFIX           - <prefix>/
+        + INSTALL_CONFIG_DIR             + CMake/
+        + INSTALL_RUNTIME_DIR            + Bin/
+        + INSTALL_LIBEXEC_DIR            + Library/
+        + INSTALL_LIBRARY_DIR            + Library/
+        + INSTALL_ARCHIVE_DIR            + Library/
+        + INSTALL_INCLUDE_DIR            + Include/<package>/
+        + INSTALL_SHARE_DIR              + Share/
+        + INSTALL_DATA_DIR               + Data/
+        + INSTALL_DOC_DIR                + Doc/
+        + INSTALL_EXAMPLE_DIR            + Example/
+
+In order to install different versions of a software, choose an installation
+prefix that includes the package name and software version, for example,
+``/opt/<package>-<version>`` (Unix) or ``C:/Program Files/<Package>-<version>``.
+
+Note that the directory for CMake package configuration files is chosen such that
+CMake finds these files automatically given that the ``<prefix>`` is a system default
+location or the ``INSTALL_RUNTIME_DIR`` is in the ``PATH`` environment.
+
+Note further that the include directory by intention always ends in the package name
 such that header files of a project have to be included as follows:
 
 .. code-block:: c++
 
-    #include <sbia/<project>/header.h>
+    #include <package>/header.h>
 
 Hence, the include directory which is added to the search path has to be set
-to ``<prefix>/include/``.
+to ``include/`` directory, but not the ``<package>`` subdirectory.
 
 Following a description of the directories, where the names of the CMake
 variables defined by BASIS are used instead of the actual directory names:
@@ -290,40 +310,21 @@ variables defined by BASIS are used instead of the actual directory names:
 =========================   ===================================================================
   Directory Variable                                 Description
 =========================   ===================================================================
+``CMAKE_INSTALL_PREFIX``    Installation prefix (``<prefix>``).
+                            Defaults to ``/opt/<provider>/<package>-<version>`` on Unix
+                            and ``C:/Program Files/<Provider>/<Package>-<version>`` on Windows.
+                            All other directories are specified relative to this prefix.
 ``INSTALL_CONFIG_DIR``      CMake package configuration files.
 ``INSTALL_RUNTIME_DIR``     Main executables and shared libraries on Windows.
 ``INSTALL_LIBEXEC_DIR``     Utility executables which are called by other executables only.
 ``INSTALL_LIBRARY_DIR``     Shared libraries on Unix and module libraries.
 ``INSTALL_ARCHIVE_DIR``     Static and import libraries on Windows.
 ``INSTALL_INCLUDE_DIR``     Public header files of libraries.
+``INSTALL_DATA_DIR``        Auxiliary data files required for the execution of the software.
 ``INSTALL_DOC_DIR``         Documentation files including the software manual in particular.
 ``INSTALL_EXAMPLE_DIR``     All data required to follow example as described in manuals.
-``INSTALL_MAN_DIR``         Man pages are installed to this directory.
-``INSTALL_MAN_DIR/man1/``   Man pages of main executables.
+``INSTALL_MAN_DIR``         Man pages.
+``INSTALL_MAN_DIR/man1/``   Man pages of the executables in ``INSTALL_RUNTIME_DIR``.
 ``INSTALL_MAN_DIR/man3/``   Man pages of libraries.
 ``INSTALL_SHARE_DIR``       Shared package files including required auxiliary data files.
 =========================   ===================================================================
-
-
-Links
------
-
-On Unix, the following symbolic links are created when the option ``INSTALL_LINKS``
-is set to ``ON``. Note that the link creation will fail if a file or directory with
-the links' name already exists. This is desired and will simply be reported to the
-user. If a symbolic name of the same name already exists, it is replaced however.
-
-.. The tabularcolumns directive is required such that table is not too wide in PDF.
-
-.. tabularcolumns:: |p{6.8cm}|p{8.7cm}|
-
-=====================================   ==============================================
-                Link                                    Target
-=====================================   ==============================================
-``<prefix>/bin/<exec>``                 ``INSTALL_RUNTIME_DIR/<exec>``
-``<prefix>/share/doc/<sinfix>/``        ``INSTALL_DOC_DIR``
-``<prefix>/share/man/man.?/<name>.?``   ``INSTALL_MAN_DIR/man.?/<name>.?``
-=====================================   ==============================================
-
-.. _Filesystem Hierarchy Standard of Linux: http://proton.pathname.com/fhs/
-.. _Subversion: http://subversion.tigris.org/
