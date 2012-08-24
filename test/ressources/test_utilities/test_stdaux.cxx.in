@@ -41,8 +41,8 @@ using namespace utilitiestest;
 TEST(StdAux, ExecuteProcessInvalidUse)
 {
     vector<string> argv;
-    EXPECT_THROW(execute(""),   basis::SubprocessError);
-    EXPECT_THROW(execute(argv), basis::SubprocessError);
+    EXPECT_THROW(execute(""),   basis::util::SubprocessError);
+    EXPECT_THROW(execute(argv), basis::util::SubprocessError);
 }
 
 // ---------------------------------------------------------------------------
