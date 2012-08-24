@@ -18,6 +18,17 @@
 
 
 # ============================================================================
+# script site packages directories
+# ============================================================================
+
+## @brief Default directory for Python site packages.
+set (PYTHON_SITELIB "@PYTHON_SITELIB@")
+## @brief Default directory for Jython site packages.
+set (JYTHON_SITELIB "@JYTHON_SITELIB@")
+## @brief Default directory for Perl site packages.
+set (PERL_SITELIB "@PERL_SITELIB@")
+
+# ============================================================================
 # source tree
 # ============================================================================
 

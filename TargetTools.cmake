@@ -2746,6 +2746,11 @@ function (basis_build_script TARGET_UID)
   if (INSTALL_LINK_DEPENDS)
     list (REMOVE_DUPLICATES INSTALL_LINK_DEPENDS)
   endif ()
+  # remove default site-packages directories
+  if (LANGUAGE MATCHES "[JP]YTHON|PERL")
+    list (REMOVE_ITEM BUILD_LINK_DEPENDS   "${${LANGUAGE}_SITELIB}")
+    list (REMOVE_ITEM INSTALL_LINK_DEPENDS "${${LANGUAGE}_SITELIB}")
+  endif ()
   # configure build script
   set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
   configure_file ("${BASIS_MODULE_PATH}/configure_script.cmake.in" "${BUILD_SCRIPT}" @ONLY)

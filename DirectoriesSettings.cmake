@@ -58,6 +58,45 @@ if (UNIX)
 endif ()
 
 # ============================================================================
+# directories of site packages of script interpreters
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+set (PYTHON_SITELIB)
+if (PYTHON_EXECUTABLE)
+  execute_process (
+    COMMAND "${PYTHON_EXECUTABLE}" "${BASIS_MODULE_PATH}/get_python_lib.py"
+    RESULT_VARIABLE _RV
+    OUTPUT_VARIABLE PYTHON_SITELIB
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  if (NOT _RV EQUAL 0)
+    set (PYTHON_SITELIB)
+  endif ()
+endif ()
+# ----------------------------------------------------------------------------
+set (JYTHON_SITELIB)
+if (JYTHON_EXECUTABLE)
+  execute_process (
+    COMMAND "${JYTHON_EXECUTABLE}" "${BASIS_MODULE_PATH}/get_python_lib.py"
+    RESULT_VARIABLE _RV
+    OUTPUT_VARIABLE JYTHON_SITELIB
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  if (NOT _RV EQUAL 0)
+    set (JYTHON_SITELIB)
+  endif ()
+endif ()
+# ----------------------------------------------------------------------------
+# Perl
+find_package (PerlLibs QUIET)
+if (NOT PerlLibs_FOUND)
+  set (PERL_SITELIB)
+endif ()
+
+# ============================================================================
 # source tree
 # ============================================================================
 
@@ -322,37 +361,16 @@ set (_BASIS_INSTALL_SITE_PACKAGES "${BASIS_INSTALL_SITE_PACKAGES}" CACHE INTERNA
 # try to determine default installation directories
 if (BASIS_INSTALL_SITE_PACKAGES)
   # Python
-  if (NOT INSTALL_PYTHON_SITE_DIR AND PYTHON_EXECUTABLE)
-    execute_process (
-      COMMAND "${PYTHON_EXECUTABLE}" -E "${BASIS_MODULE_PATH}/get_python_lib.py"
-      RESULT_VARIABLE _RV
-      OUTPUT_VARIABLE INSTALL_PYTHON_SITE_DIR
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_QUIET
-    )
-    if (NOT _RV EQUAL 0)
-      set (INSTALL_PYTHON_SITE_DIR)
-    endif ()
+  if (NOT INSTALL_PYTHON_SITE_DIR)
+    set (INSTALL_PYTHON_SITE_DIR "${PYTHON_SITELIB}")
   endif ()
   # Jython
-  if (NOT INSTALL_JYTHON_SITE_DIR AND JYTHON_EXECUTABLE)
-    execute_process (
-      COMMAND "${JYTHON_EXECUTABLE}" "${BASIS_MODULE_PATH}/get_python_lib.py"
-      RESULT_VARIABLE _RV
-      OUTPUT_VARIABLE INSTALL_JYTHON_SITE_DIR
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_QUIET
-    )
-    if (NOT _RV EQUAL 0)
-      set (INSTALL_JYTHON_SITE_DIR)
-    endif ()
+  if (NOT INSTALL_JYTHON_SITE_DIR)
+    set (INSTALL_JYTHON_SITE_DIR "${JYTHON_SITELIB}")
   endif ()
   # Perl
   if (NOT INSTALL_PERL_SITE_DIR)
-    find_package (PerlLibs QUIET)
-    if (PERLLIBS_FOUND)
-      set (INSTALL_PERL_SITE_DIR "${PERL_SITELIB}")
-    endif ()
+    set (INSTALL_PERL_SITE_DIR "${PERL_SITELIB}")
   endif ()
 endif ()
 
