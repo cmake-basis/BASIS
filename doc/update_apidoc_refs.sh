@@ -12,5 +12,10 @@ if [ -z "${release}" ]; then
     echo "No release version specified, e.g., 2.0!" 1>&2
     exit 1
 fi
+[[ ${release} == 'latest' ]] || release=v${release}
 
-find . -type f \( -name '*.rst' ! -name documentation.rst \) -exec sed -i'' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/v$release/:g" {} \;
+if [[ `printf ${BASH_VERSION} | grep 'apple'` ]]; then
+    find . -type f \( -name '*.rst' ! -name documentation.rst \) -exec sed -i'' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/$release/:g;s:/apidoc/latest/:/apidoc/$release/:g" {} \;
+else
+    find . -type f \( -name '*.rst' ! -name documentation.rst \) -exec sed -i '' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/$release/:g;s:/apidoc/latest/:/apidoc/$release/:g" {} \;
+fi
