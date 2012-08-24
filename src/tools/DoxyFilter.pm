@@ -1,5 +1,5 @@
 ##############################################################################
-# @file  DoxyFilter/Base.pm
+# @file  DoxyFilter.pm
 # @brief Base class for Doxygen filter implementations.
 #
 # @note Not to confuse with the Doxygen::Filter::Perl package available on CPAN.

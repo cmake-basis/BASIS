@@ -189,7 +189,10 @@ def parse_tag_file(doc):
 		normalised_arglist = normalised_tuple[1]
 		if normalised_tuple[1] is not None: #This is a 'flag' for a ParseException having happened
 			if mapping.get(member_symbol):
-				mapping[member_symbol]['arglist'][normalised_arglist] = anchor_link
+				if 'arglist' in mapping[member_symbol]:
+					mapping[member_symbol]['arglist'][normalised_arglist] = anchor_link
+				else:
+					print('Skipping %s %s%s. Error reported from parser was: %s' % (old_tuple[2], old_tuple[0], old_tuple[1], normalised_tuple[0]))
 			else:
 				mapping[member_symbol] = {'kind' : kind, 'arglist' : {normalised_arglist : anchor_link}}
 		else:

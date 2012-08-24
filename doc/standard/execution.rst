@@ -230,8 +230,8 @@ C++
 For C++ programs, the BASIS C++ utilities provide the function
 `exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisCxxUtilities.html>`__
 which maps a build target name to the absolute path of the executable file
-built by this target. This function makes use of the static instance of the class
-:apidoc:`basis::basis::ExecutableTargetInfo` whose constructor is automatically
+built by this target. This function makes use of an implementation of the
+:apidoc:`basis::basis::IExecutableTargetInfo` interface whose constructor is automatically
 generated during the configuration of a project. This constructor initializes the
 data structures required for the mapping of target names to absolute file paths.
 Note that BASIS generates different implementations of this module for different projects,
@@ -265,9 +265,9 @@ Python
 A Python module named basis.py_ stores the location of the executables relative
 to its own path in a dictionary where the UIDs of the corresponding build targets
 are used as keys. The functions
-`exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#gad832403b77ea714613fe9d8792fc2d76>`_,
-`exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#gae4a179b411575e221d6363bdc5e08946>`_,
-and `exepath() http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#ga300b1dc5bb4d6d7d13dc8ac4fec9a368`_
+`exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#gad832403b77ea714613fe9d8792fc2d76>`__,
+`exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#gae4a179b411575e221d6363bdc5e08946>`__,
+and `exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html#ga300b1dc5bb4d6d7d13dc8ac4fec9a368>`__
 can be used to get the name, directory, or path, respectively, of the executable file built by the
 specified target. If no target is specified, the name, directory, or path of the
 calling executable itself is returned.
@@ -280,9 +280,9 @@ Perl
 
 The Basis.pm_ Perl module uses a hash reference to store the locations of the
 executable files relative to the module itself. The functions
-`exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gabcdbfcbc0a8f61d74af795ec1cc3201c>`_,
-`exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gae2fad71a402bbbe877cc62e6c8dad4d7>`_, and
-`exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gaaafd1e575a71a6eb230c712f1ae9f72b>`_ can be used to get the name, directory, or path,
+`exename() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gabcdbfcbc0a8f61d74af795ec1cc3201c>`__,
+`exedir() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gae2fad71a402bbbe877cc62e6c8dad4d7>`__, and
+`exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html#gaaafd1e575a71a6eb230c712f1ae9f72b>`__ can be used to get the name, directory, or path,
 respectively, of the executable file built by the specified target.
 If no target is specified, the name, directory, or path of the calling
 executable itself is returned.
