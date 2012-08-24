@@ -73,6 +73,8 @@ if latex_logo == '': latex_logo = None
 latex_show_urls     = '@SPHINX_LATEX_SHOW_URLS@'
 latex_show_pagerefs = @SPHINX_LATEX_SHOW_PAGEREFS@
 
+latex_elements = {'printindex': ''}
+
 
 # Options for MAN output
 # ----------------------
