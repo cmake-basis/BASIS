@@ -129,7 +129,7 @@ foreach(_library ${_list})
 
    if ( APPLE )
     if(BLA_STATIC)
-     set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib;.dll")
+     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
     endif(BLA_STATIC)
     find_library(${_prefix}_${_library}_LIBRARY
     NAMES ${_library}
