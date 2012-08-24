@@ -308,9 +308,9 @@ std::vector<std::string> split(const std::string& args);
  *
  * This function is a replacement for system() on Unix and is furthermore
  * less platform dependent. The first argument of the given command-line string
- * is mapped to an absolute executable file using get_executable_path() if the
- * given first argument is a know build target name. Otherwise, the command-line
- * is used unmodified.
+ * is mapped to an absolute executable file using exepath() if the given first
+ * argument is a know build target name. Otherwise, the command-line is used
+ * unmodified.
  *
  * @param [in] cmd         Command-line given as double quoted string. Arguments
  *                         containing whitespaces have to be quoted using double
@@ -348,9 +348,9 @@ int execute(const std::string&           cmd,
  *
  * This function is a replacement for system() on Unix and is furthermore
  * less platform dependent. The first argument of the given command-line string
- * is mapped to an absolute executable file using get_executable_path() if the
- * given first argument is a know build target name. Otherwise, the command-line
- * is used unmodified.
+ * is mapped to an absolute executable file using exepath() if the given first
+ * argument is a know build target name. Otherwise, the command-line is used
+ * unmodified.
  *
  * @param [in]  args       Command-line given as argument vector. The first
  *                         argument has to be either a build target name or the
