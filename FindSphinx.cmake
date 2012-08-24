@@ -24,7 +24,6 @@
 #     <td>Non-cached alias for @c Sphinx-build_EXECUTABLE.</td>
 #   </tr>
 #   <tr>
-#   </tr>
 #     @tp @b Sphinx_PYTHON_EXECUTABLE @endtp
 #     <td>Python executable used to run sphinx-build. This is either the
 #         by default found Python interpreter or a specific version as
