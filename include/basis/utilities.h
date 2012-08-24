@@ -44,7 +44,9 @@
 /// @{
 
 
-namespace basis {
+// the subnamespace is required to avoid conflict with configured
+// project-specific utilities of BASIS itself
+namespace basis { namespace util {
 
 
 // ===========================================================================
@@ -384,7 +386,7 @@ int execute(std::vector<std::string>        args,
             const IExecutableTargetInfo*    targets    = NULL);
 
 
-} // namespace basis
+} } // end of namespaces
 
 
 /// @}

@@ -42,10 +42,6 @@ const char* COPYRIGHT = "@PROJECT_COPYRIGHT@";
 const char* LICENSE   = "@PROJECT_LICENSE@";
 const char* CONTACT   = "@PROJECT_CONTACT@";
 
-
-namespace basis {
-
-
 // ===========================================================================
 // local helper functions
 // ===========================================================================
@@ -86,7 +82,7 @@ static inline bool executing_in_build_tree()
  *
  * @sa IExecutableTargetInfo
  */
-class ExecutableTargetInfo : public IExecutableTargetInfo
+class ExecutableTargetInfo : public basis::util::IExecutableTargetInfo
 {
     // -----------------------------------------------------------------------
     // typedefs
@@ -246,47 +242,47 @@ string datadir()
 // ---------------------------------------------------------------------------
 void print_contact(const char* contact)
 {
-    ::basis::print_contact(contact != NULL ? contact : CONTACT);
+    basis::util::print_contact(contact != NULL ? contact : CONTACT);
 }
 
 // ---------------------------------------------------------------------------
 void print_version(const char* name, const char* version, const char* project, const char* copyright, const char* license)
 {
-    ::basis::print_version(name,
-                           version   != NULL ? version   : RELEASE,
-                           project   != NULL ? project   : PROJECT,
-                           copyright != NULL ? copyright : COPYRIGHT,
-                           license   != NULL ? license   : LICENSE);
+    basis::util::print_version(name,
+                               version   != NULL ? version   : RELEASE,
+                               project   != NULL ? project   : PROJECT,
+                               copyright != NULL ? copyright : COPYRIGHT,
+                               license   != NULL ? license   : LICENSE);
 }
 
 // ---------------------------------------------------------------------------
 string targetuid(const string& name)
 {
-    return ::basis::targetuid(name, ExecutableTargetInfo::instance());
+    return basis::util::targetuid(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 bool istarget(const string& name)
 {
-    return ::basis::istarget(name, ExecutableTargetInfo::instance());
+    return basis::util::istarget(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 string exepath(const string& name)
 {
-    return ::basis::exepath(name, ExecutableTargetInfo::instance());
+    return basis::util::exepath(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 string exename(const std::string& name)
 {
-    return ::basis::exename(name, ExecutableTargetInfo::instance());
+    return basis::util::exename(name, ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 string exedir(const std::string& name)
 {
-    return ::basis::exedir(name, ExecutableTargetInfo::instance());
+    return basis::util::exedir(name, ExecutableTargetInfo::instance());
 }
 
 // ===========================================================================
@@ -297,16 +293,16 @@ string exedir(const std::string& name)
 int execute(const string& cmd, bool quiet, ostream* out,
             bool allow_fail, int verbose, bool simulate)
 {
-    return ::basis::execute(cmd, quiet, out, allow_fail, verbose, simulate,
-                            ExecutableTargetInfo::instance());
+    return basis::util::execute(cmd, quiet, out, allow_fail, verbose, simulate,
+                                ExecutableTargetInfo::instance());
 }
 
 // ---------------------------------------------------------------------------
 int execute(vector<string> args, bool quiet, ostream* out,
             bool allow_fail, int verbose, bool simulate)
 {
-    return ::basis::execute(args, quiet, out, allow_fail, verbose, simulate,
-                            ExecutableTargetInfo::instance());
+    return basis::util::execute(args, quiet, out, allow_fail, verbose, simulate,
+                                ExecutableTargetInfo::instance());
 }
 
 // ===========================================================================
@@ -394,4 +390,4 @@ ExecutableTargetInfo::ExecutableTargetInfo()
 }
 
 
-} @PROJECT_NAMESPACE_CXX_END@ // end of namespaces
+@PROJECT_NAMESPACE_CXX_END@ // end of namespaces

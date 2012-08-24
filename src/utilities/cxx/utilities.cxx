@@ -16,7 +16,7 @@
 using namespace std;
 
 
-namespace basis {
+namespace basis { namespace util {
 
 
 // ===========================================================================
@@ -197,4 +197,4 @@ int execute(vector<string> args, bool quiet, ostream* out,
 }
 
 
-} // namespace basis
+} } // end of namespaces
