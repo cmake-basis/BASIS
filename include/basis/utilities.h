@@ -301,7 +301,7 @@ std::string tostring(const std::vector<std::string>& args);
  *
  * @sa tostring()
  */
-std::vector<std::string> split(const std::string& args);
+std::vector<std::string> qsplit(const std::string& args);
 
 /**
  * @brief Execute command as subprocess.

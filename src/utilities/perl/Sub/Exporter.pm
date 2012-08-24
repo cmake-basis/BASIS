@@ -390,8 +390,8 @@ sub _do_import {
   );
 }
 
-## Cute idea, possibly for future use: also supply an "unimport" for:
-## no Module::Whatever qw(arg arg arg);
+# Cute idea, possibly for future use: also supply an "unimport" for:
+# no Module::Whatever qw(arg arg arg);
 # sub _unexport {
 #   my (undef, undef, undef, undef, undef, $as, $into) = @_;
 # 
