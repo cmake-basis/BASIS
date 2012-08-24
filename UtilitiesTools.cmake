@@ -323,7 +323,7 @@ function (basis_configure_utilities)
     basis_library_prefix (PREFIX CXX)
     configure_file ("${BASIS_CXX_TEMPLATES_DIR}/basis.h.in"   "${BINARY_INCLUDE_DIR}/${PREFIX}basis.h" @ONLY)
     configure_file ("${BASIS_CXX_TEMPLATES_DIR}/basis.cxx.in" "${BINARY_CODE_DIR}/basis.cxx"            @ONLY)
-    source_group (BASIS FILES "${BINARY_INCLUDE_DIR}/${PREFIX}/basis.h" "${BINARY_CODE_DIR}/basis.cxx")
+    source_group (BASIS FILES "${BINARY_INCLUDE_DIR}/${PREFIX}basis.h" "${BINARY_CODE_DIR}/basis.cxx")
   endif ()
   # --------------------------------------------------------------------------
   # Python
