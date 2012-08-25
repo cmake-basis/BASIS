@@ -185,9 +185,12 @@ if (_MATLAB_EXECUTABLE_NAMES OR _MATLAB_OPTIONAL_EXECUTABLE_NAMES)
         mark_as_advanced (MATLAB_EXECUTABLE)
       else ()
         string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_U)
+		if (WIN32 AND _MATLAB_EXE MATCHES "mex")
+		  list (APPEND _MATLAB_EXE "${_MATLAB_EXE}.bat")
+		endif ()
         find_program (
           MATLAB_${_MATLAB_EXE_U}_EXECUTABLE
-            NAMES "${_MATLAB_EXE}"
+            NAMES ${_MATLAB_EXE}
             HINTS "${MATLAB_DIR}/bin"
             DOC   "The MATLAB application ${_MATLAB_EXE}."
         )
@@ -217,6 +220,13 @@ if (_MATLAB_EXECUTABLE_NAMES OR _MATLAB_OPTIONAL_EXECUTABLE_NAMES)
     endforeach ()
 
   endif ()
+endif ()
+
+# ----------------------------------------------------------------------------
+# set MATLAB_DIR
+if (NOT MATLAB_DIR AND MATLAB_EXECUTABLE)
+  string (REGEX REPLACE "/bin(/[a-z0-9]+)?/(matlab|MATLAB)(\\.exe|\\.EXE)?$" "" _MATLAB_PREFIX "${MATLAB_EXECUTABLE}")
+  set (MATLAB_DIR "${_MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -320,7 +330,7 @@ endif ()
 # ----------------------------------------------------------------------------
 # set MATLAB_DIR
 if (NOT MATLAB_DIR AND MATLAB_INCLUDE_DIR)
-  string (REGEX REPLACE "extern/include/?" "" _MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
+  string (REGEX REPLACE "/extern/include/?" "" _MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
   set (MATLAB_DIR "${_MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
 endif ()
 
