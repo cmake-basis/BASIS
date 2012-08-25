@@ -16,7 +16,9 @@
 #include <stdlib.h>       // malloc(), free(), _splitpath_s() (WINDOWS)
 #include <string.h>       // strncmp()
 
-#if UNIX
+#if WINDOWS
+#  include <windows.h>    // GetFileAttributes()
+#else
 #  include <sys/stat.h>   // stat(), lstat()
 #endif
 
@@ -39,7 +41,7 @@ namespace basis { namespace os { namespace path {
 
 #if WINDOWS
     static const char  cSeparator  = '\\';
-    static const char* cSeparators = "\//";
+    static const char* cSeparators = "\\/";
 #else
     static const char  cSeparator  = '/';
     static const char* cSeparators = "/";
@@ -81,9 +83,20 @@ string normpath(const string& path)
             i = 2;
         }
     #endif
-    vector<string> parts;
-    string current;
+    string norm_path = drive;
     bool abs = issep(path[i]);
+    if (abs) {
+        #if WINDOWS
+            while (i <= path.size() && issep(path[i])) {
+                norm_path += cSeparator;
+                i++;
+            }
+        #else
+            norm_path += cSeparator;
+        #endif
+    }
+    string         current;
+    vector<string> parts;
     while (i <= path.size()) {
         if (issep(path[i]) || path[i] == '\0') {
             if (current == "..") {
@@ -101,12 +114,10 @@ string normpath(const string& path)
         }
         i++;
     }
-    current = drive;
-    if (abs) current += cSeparator;
     for (i = 0; i < parts.size(); i++) {
-        current = join(current, parts[i]);
+        norm_path = join(norm_path, parts[i]);
     }
-    return current.empty() ? "." : current;
+    return norm_path.empty() ? "." : norm_path;
 }
 
 // ---------------------------------------------------------------------------
@@ -170,14 +181,17 @@ vector<string> split(const string& path)
 // ---------------------------------------------------------------------------
 void splitdrive(const string& path, string& drive, string& tail)
 {
-    #if WINDOWS
-        if (path.size() > 1 && path[1] == ':') {
-            tail  = path.substr(2);
-            drive = path[0]; drive += ':';
-        }
-    #endif
-    tail  = path;
-    drive = "";
+#if WINDOWS
+    if (path.size() > 1 && path[1] == ':') {
+        tail  = path.substr(2);
+        drive = path[0]; drive += ':';
+    }
+    else
+#endif
+    {
+        tail  = path;
+        drive = "";
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -287,8 +301,8 @@ string relpath(const string& path, const string& base)
     string norm_base = normpath(join(getcwd(), base));
     // check if paths are on same drive
     #if WINDOWS
-        string drive      = splitdrive(path);
-        string base_drive = splitdrive(abs_base);
+        string drive      = splitdrive(norm_path)[0];
+        string base_drive = splitdrive(norm_base)[0];
         if (drive != base_drive) {
             BASIS_THROW(invalid_argument,
                         "Path is on drive " << drive << ", start is on drive " << base_drive);

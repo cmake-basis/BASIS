@@ -475,7 +475,7 @@ is used which does not add any package specific subdirectories to the installati
 similar to the ``opt`` scheme. Furthermore, the directory names are more Windows-like
 and start with a capital letter. For example, the default installation directory for
 package library files on Windows given the installation prefix
-``C:\Program Files\<Provider>\<Package>`` is ``C:\Program Files\<Provider>\<Package>\Library``.
+``C:\Program Files\<Provider>\<Package>`` is ``C:\Program Files\<Provider>\<Package>\Lib``.
 
 If the :option:`-DBASIS_INSTALL_SITE_PACKAGES` option is ``ON``, module libraries written
 in a scripting language such as Python or Perl are installed to the system-wide default

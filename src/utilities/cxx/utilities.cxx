@@ -16,7 +16,7 @@
 using namespace std;
 
 
-namespace basis {
+namespace basis { namespace util {
 
 
 // ===========================================================================
@@ -98,15 +98,11 @@ string exename(const std::string& name, const IExecutableTargetInfo* targets)
     string exec_path = exepath(name, targets);
     if (exec_path.empty()) return "";
 #if WINDOWS
-    string ext = os::path::fileext(exec_path);
-    if (ext == ".exe" || ext == ".com") {
-        return os::path::filename(exec_path);
-    } else {
-        return os::path::basename(exec_path);
-    }
-#else
-    return os::path::basename(exec_path);
+    string fname, ext;
+    os::path::splitext(exec_path, fname, ext);
+    if (ext == ".exe" || ext == ".com") exec_path = fname;
 #endif
+    return os::path::basename(exec_path);
 }
 
 // ---------------------------------------------------------------------------
@@ -197,4 +193,4 @@ int execute(vector<string> args, bool quiet, ostream* out,
 }
 
 
-} // namespace basis
+} } // end of namespaces

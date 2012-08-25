@@ -20,7 +20,7 @@ using namespace std;
 using namespace basis;
 
 
-const string cCmd = ::basis::basis::exepath("basis.dummy_command");
+const string cCmd = exepath("basis.dummy_command");
 
 // ---------------------------------------------------------------------------
 TEST(Subprocess, Split)

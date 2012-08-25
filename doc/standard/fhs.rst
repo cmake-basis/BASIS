@@ -292,9 +292,9 @@ The installation scheme for Windows is::
     - CMAKE_INSTALL_PREFIX           - <prefix>/
         + INSTALL_CONFIG_DIR             + CMake/
         + INSTALL_RUNTIME_DIR            + Bin/
-        + INSTALL_LIBEXEC_DIR            + Library/
-        + INSTALL_LIBRARY_DIR            + Library/
-        + INSTALL_ARCHIVE_DIR            + Library/
+        + INSTALL_LIBEXEC_DIR            + Lib/
+        + INSTALL_LIBRARY_DIR            + Lib/
+        + INSTALL_ARCHIVE_DIR            + Lib/
         + INSTALL_INCLUDE_DIR            + Include/<package>/
         + INSTALL_SHARE_DIR              + Share/
         + INSTALL_DATA_DIR               + Data/

@@ -160,8 +160,8 @@ TEST (Path, splitdrive)
 
     os::path::splitdrive("C:/", drive, tail);
     #if WINDOWS
-        EXPECT_STREQ("C:/", drive.c_str());
-        EXPECT_STREQ("",    tail .c_str());
+        EXPECT_STREQ("C:", drive.c_str());
+        EXPECT_STREQ("/",  tail .c_str());
     #else
         EXPECT_STREQ("",    drive.c_str());
         EXPECT_STREQ("C:/", tail .c_str());
@@ -304,8 +304,13 @@ TEST (Path, relpath)
     EXPECT_STREQ("..",            os::path::relpath("/usr", "/usr/local").c_str());
     EXPECT_STREQ("..",            os::path::relpath("/usr", "/usr/local/").c_str());
     EXPECT_STREQ("..",            os::path::relpath("/usr/", "/usr/local").c_str());
-    EXPECT_STREQ("../config.txt", os::path::relpath("/usr/config.txt", "/usr/local").c_str());
-    EXPECT_STREQ("Testing/bin",   os::path::relpath("/usr/local/src/build/Testing/bin", "/usr/local/src/build").c_str());
+	#if WINDOWS
+	    EXPECT_STREQ("..\\config.txt", os::path::relpath("/usr/config.txt", "/usr/local").c_str());
+        EXPECT_STREQ("Testing\\bin",   os::path::relpath("/usr/local/src/build/Testing/bin", "/usr/local/src/build").c_str());
+	#else
+        EXPECT_STREQ("../config.txt", os::path::relpath("/usr/config.txt", "/usr/local").c_str());
+        EXPECT_STREQ("Testing/bin",   os::path::relpath("/usr/local/src/build/Testing/bin", "/usr/local/src/build").c_str());
+	#endif
 }
 
 // ---------------------------------------------------------------------------
@@ -313,7 +318,7 @@ TEST (Path, join)
 {
     #if WINDOWS
         EXPECT_STREQ(".\\usr",          os::path::join(".", "usr").c_str());
-        EXPECT_STREQ("\\etc",           os::path::join("/usr/local", "/etc").c_str());
+        EXPECT_STREQ("/etc",           os::path::join("/usr/local", "/etc").c_str());
         EXPECT_STREQ("\\etc",           os::path::join("/usr/local", "\\etc").c_str());
         EXPECT_STREQ("/usr/local\\etc", os::path::join("/usr/local", "etc").c_str());
     #else

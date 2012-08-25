@@ -53,10 +53,6 @@ extern const char* LICENSE;
 /// @brief Default contact to use for help output of executables.
 extern const char* CONTACT;
 
-
-namespace basis {
-
-
 // ===========================================================================
 // package directories
 // ===========================================================================
@@ -280,9 +276,6 @@ int execute(std::vector<std::string>  args,
             bool                      allow_fail = false,
             int                       verbose    = 0,
             bool                      simulate   = false);
-
-
-}
 
 
 @PROJECT_NAMESPACE_CXX_END@ // end of namespaces

@@ -34,7 +34,7 @@ cmake_test (test_string_manipulation)
 
 # ----------------------------------------------------------------------------
 # test use MATLAB Compiler and MEX-script
-if (MATLAB_FOUND AND PythonInterp_FOUND)
+if (MATLAB_EXECUTABLE AND MATLAB_MEX_EXECUTABLE AND PythonInterp_FOUND)
   basis_add_test (test_matlabtools.py)
   basis_set_tests_properties (test_matlabtools PROPERTIES TIMEOUT 1500)
 endif ()
