@@ -122,19 +122,14 @@ string exepath()
 // ---------------------------------------------------------------------------
 string exename()
 {
-    string name = exepath();
-    if (name.empty()) return "";
+    string exec_path = exepath();
+    if (exec_path.empty()) return "";
 #if WINDOWS
-    string ext = path::fileext(name);
-    if (ext == ".exe" || ext == ".com") {
-        name = path::filename(name);
-    } else {
-        name = path::basename(name);
-    }
-#else
-    name = path::basename(name);
+    string head, ext;
+    path::splitext(exec_path, head, ext);
+    if (ext == ".exe" || ext == ".com") exec_path = head;
 #endif
-    return name;
+    return path::basename(exec_path);
 }
 
 // ---------------------------------------------------------------------------
@@ -253,7 +248,7 @@ bool emptydir(const string& path)
             // remove subdirectory or file, respectively
             subpath = path::join(path, info.cFileName);
             if(info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                if (!rmdir(subpath, true)) ok = false;
+                if (!removedir(subpath, true)) ok = false;
             } else {
                 if (::SetFileAttributes(subpath.c_str(), FILE_ATTRIBUTE_NORMAL) == FALSE ||
                     ::DeleteFile(subpath.c_str()) == FALSE) ok = false;

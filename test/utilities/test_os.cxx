@@ -35,7 +35,9 @@ TEST (os, getcwd)
     // path should be absolute
     EXPECT_TRUE(os::path::isabs(wd)) << "Working directory must be absolute";
     // path should have only slashes, no backslashes
+#if UNIX
     EXPECT_EQ(string::npos, wd.find('\\')) << "Working directory may only contain slashes (/) as path separators";
+#endif
     // path should not have trailing slash
     EXPECT_NE('/', wd[wd.size() - 1]) << "Working directory must not have trailing slash (/)";
 }
@@ -46,7 +48,11 @@ TEST (os, exepath)
     string path;
     EXPECT_NO_THROW (path = os::exepath());
     cout << path << endl;
+#if WINDOWS
+    EXPECT_STREQ("test_os.exe", os::path::basename(path).c_str());
+#else
     EXPECT_STREQ("test_os", os::path::basename(path).c_str());
+#endif
 }
 
 // ---------------------------------------------------------------------------
@@ -93,7 +99,7 @@ TEST (os, readlink)
     EXPECT_STREQ("", os::readlink("").c_str());
     #if WINDOWS
         EXPECT_STREQ("", os::readlink("/proc/exe").c_str());
-        EXPECT_STREQ("", os::readlink("/does/not/exist"));
+        EXPECT_STREQ("", os::readlink("/does/not/exist").c_str());
     #else
         const string tmpDir = os::getcwd() + "/basis-path-test-read_symlink";
         string cmd, link;

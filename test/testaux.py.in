@@ -91,7 +91,7 @@ def update_project(name, *args, **kwargs):
     print "Updating test project... - done"
 
 # ----------------------------------------------------------------------------
-def build_project(verbose=0):
+def build_project(verbose=0, cmakeopts=None):
     "Build test project."
     print "Configuring test project..."
     if os.path.exists(BUILD_DIR): shutil.rmtree(BUILD_DIR)
@@ -104,6 +104,7 @@ def build_project(verbose=0):
             '-DBUILD_TESTING:BOOL=ON',
             '-DBASIS_DIR:PATH=' + BASIS_DIR,
             '-DCMAKE_BUILD_TYPE:STRING=@TESTING_BUILD_TYPE@']
+    config_cmd.extend(cmakeopts)
     if '@TESTING_C_FLAGS@' != '':
         config_cmd.append('-DCMAKE_C_FLAGS:STRING=@TESTING_C_FLAGS@')
     if '@TESTING_CXX_FLAGS@' != '':

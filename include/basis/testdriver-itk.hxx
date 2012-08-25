@@ -66,7 +66,11 @@
 #include <itkImageFileWriter.h>
 #include <itkRescaleIntensityImageFilter.h>
 #include <itkExtractImageFilter.h>
-#include <itkDifferenceImageFilter.h>
+#if defined(ITK_VERSION_MAJOR) && ITK_VERSION_MAJOR < 4
+#  include <itkDifferenceImageFilter.h>
+#else
+#  include <itkTestingComparisonImageFilter.h>
+#endif
 #include <itkOrientImageFilter.h>
 
 #include <itkGDCMImageIOFactory.h>
@@ -240,8 +244,12 @@ int RegressionTestImage (const char*  testImageFilename,
     }
 
   // Now compare the two images
-  typedef itk::DifferenceImageFilter<ImageType,ImageType> DiffType;
-  DiffType::Pointer diff = DiffType::New();
+#if defined(ITK_VERSION_MAJOR) && ITK_VERSION_MAJOR < 4
+    typedef itk::DifferenceImageFilter<ImageType,ImageType> DiffType;
+#else
+    typedef itk::Testing::ComparisonImageFilter<ImageType,ImageType> DiffType;
+#endif
+    DiffType::Pointer diff = DiffType::New();
     diff->SetValidInput(baselineImage);
     diff->SetTestInput(testImage);
     
@@ -250,106 +258,94 @@ int RegressionTestImage (const char*  testImageFilename,
 
     diff->UpdateLargestPossibleRegion();
 
-  bool differenceFailed = false;
+    bool differenceFailed = false;
   
-  double averageIntensityDifference = diff->GetTotalDifference();
+    double averageIntensityDifference = diff->GetTotalDifference();
 
-  unsigned long numberOfPixelsWithDifferences = 
-                        diff->GetNumberOfPixelsWithDifferences();
+    unsigned long numberOfPixelsWithDifferences = diff->GetNumberOfPixelsWithDifferences();
 
-  //The measurement errors should be reported for both success and errors
-  //to facilitate setting tight tolerances of tests.
-  if (reportErrors) {
-      std::cout << "<DartMeasurement name=\"ImageError\" type=\"numeric/double\">";
-      std::cout << numberOfPixelsWithDifferences;
-      std::cout <<  "</DartMeasurement>" << std::endl;
-  }
-
-  if( averageIntensityDifference > 0.0 )
-    {
-    if( numberOfPixelsWithDifferences > numberOfPixelsTolerance )
-      {
-      differenceFailed = true;
-      }
-    else
-      {
-      differenceFailed = false;
-      }
+    //The measurement errors should be reported for both success and errors
+    //to facilitate setting tight tolerances of tests.
+    if (reportErrors) {
+        std::cout << "<DartMeasurement name=\"ImageError\" type=\"numeric/double\">";
+        std::cout << numberOfPixelsWithDifferences;
+        std::cout <<  "</DartMeasurement>" << std::endl;
     }
-  else
-    {
-    differenceFailed = false; 
+
+    if( averageIntensityDifference > 0.0 ) {
+        if( numberOfPixelsWithDifferences > numberOfPixelsTolerance ) {
+            differenceFailed = true;
+        } else {
+            differenceFailed = false;
+        }
+    } else {
+        differenceFailed = false; 
     }
-  
-  if (differenceFailed && reportErrors)
-    {
-    typedef itk::RescaleIntensityImageFilter<ImageType,OutputType>    RescaleType;
-    typedef itk::ExtractImageFilter<OutputType,DiffOutputType>        ExtractType;
-    typedef itk::ImageFileWriter<DiffOutputType>                      WriterType;
-    typedef itk::ImageRegion<ITK_TEST_DIMENSION_MAX>                  RegionType;
 
-    OutputType::IndexType index; index.Fill(0);
-    OutputType::SizeType size; size.Fill(0);
+    if (differenceFailed && reportErrors) {
+        typedef itk::RescaleIntensityImageFilter<ImageType,OutputType>    RescaleType;
+        typedef itk::ExtractImageFilter<OutputType,DiffOutputType>        ExtractType;
+        typedef itk::ImageFileWriter<DiffOutputType>                      WriterType;
+        typedef itk::ImageRegion<ITK_TEST_DIMENSION_MAX>                  RegionType;
 
-    RescaleType::Pointer rescale = RescaleType::New();
+        OutputType::IndexType index; index.Fill(0);
+        OutputType::SizeType size; size.Fill(0);
 
-    rescale->SetOutputMinimum(itk::NumericTraits<unsigned char>::NonpositiveMin());
-    rescale->SetOutputMaximum(itk::NumericTraits<unsigned char>::max());
-    rescale->SetInput(diff->GetOutput());
-    rescale->UpdateLargestPossibleRegion();
+        RescaleType::Pointer rescale = RescaleType::New();
 
-    //Note: This modification has been applied to the ImageCompareCommand
-    //      implementation of the ITK 3.18 vs. ITK 4.0
-    //
-    //Get the center slice of the image,  In 3D, the first slice
-    //is often a black slice with little debugging information.
-    size = rescale->GetOutput()->GetLargestPossibleRegion().GetSize();
-    for (unsigned int i = 2; i < ITK_TEST_DIMENSION_MAX; i++)
-      {
-      index[i] = size[i] / 2; //NOTE: Integer Divide used to get approximately
-                              // the center slice
-      size[i] = 0;
-      }
+        rescale->SetOutputMinimum(itk::NumericTraits<unsigned char>::NonpositiveMin());
+        rescale->SetOutputMaximum(itk::NumericTraits<unsigned char>::max());
+        rescale->SetInput(diff->GetOutput());
+        rescale->UpdateLargestPossibleRegion();
 
-    RegionType region;
-    region.SetIndex(index);
-    region.SetSize(size);
+        //Note: This modification has been applied to the ImageCompareCommand
+        //      implementation of the ITK 3.18 vs. ITK 4.0
+        //
+        //Get the center slice of the image,  In 3D, the first slice
+        //is often a black slice with little debugging information.
+        size = rescale->GetOutput()->GetLargestPossibleRegion().GetSize();
+        for (unsigned int i = 2; i < ITK_TEST_DIMENSION_MAX; i++) {
+            index[i] = size[i] / 2; //NOTE: Integer Divide used to get approximately
+                                    // the center slice
+            size[i] = 0;
+        }
 
-    ExtractType::Pointer extract = ExtractType::New();
+        RegionType region;
+        region.SetIndex(index);
+        region.SetSize(size);
 
-    extract->SetInput(rescale->GetOutput());
-    extract->SetExtractionRegion(region);
+        ExtractType::Pointer extract = ExtractType::New();
 
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetInput(extract->GetOutput());
+        extract->SetInput(rescale->GetOutput());
+        extract->SetExtractionRegion(region);
 
-    itksys_ios::ostringstream diffName;
-    diffName << testImageFilename << ".diff.png";
-    try
-      {
-      rescale->SetInput(diff->GetOutput());
-      rescale->Update();
-      }
-    catch(const std::exception& e)
-      {
-      std::cerr << "Error during rescale of " << diffName.str() << std::endl;
-      std::cerr << e.what() << "\n";
-      }
-    catch (...)
-      {
-      std::cerr << "Error during rescale of " << diffName.str() << std::endl;
-      }
-    writer->SetFileName(diffName.str().c_str());
-    try
-      {
-      writer->Update();
-      }
-    catch(const std::exception& e)
-      {
-      std::cerr << "Error during write of " << diffName.str() << std::endl;
-      std::cerr << e.what() << "\n";
-      }
-    catch (...)
+        WriterType::Pointer writer = WriterType::New();
+        writer->SetInput(extract->GetOutput());
+
+        itksys_ios::ostringstream diffName;
+        diffName << testImageFilename << ".diff.png";
+        try {
+            rescale->SetInput(diff->GetOutput());
+            rescale->Update();
+        } catch(const std::exception& e) {
+          std::cerr << "Error during rescale of " << diffName.str() << std::endl;
+          std::cerr << e.what() << "\n";
+          }
+        catch (...)
+          {
+          std::cerr << "Error during rescale of " << diffName.str() << std::endl;
+          }
+        writer->SetFileName(diffName.str().c_str());
+        try
+          {
+          writer->Update();
+          }
+        catch(const std::exception& e)
+          {
+          std::cerr << "Error during write of " << diffName.str() << std::endl;
+          std::cerr << e.what() << "\n";
+          }
+        catch (...)
       {
       std::cerr << "Error during write of " << diffName.str() << std::endl;
       }
