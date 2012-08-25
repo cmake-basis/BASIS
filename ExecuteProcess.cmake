@@ -83,8 +83,11 @@ unset (ENV{PYTHONPATH})
 
 # ----------------------------------------------------------------------------
 # initialize arguments
-if (NOT COMMAND)
-  message (FATAL_ERROR "No command specified for execute_process (): use -DCOMMAND='cmd'")
+set (CONFIGURED_COMMAND "@COMMAND@")
+if (CONFIGURED_COMMAND)
+  set (COMMAND "${CONFIGURED_COMMAND}")
+elseif (NOT COMMAND)
+  message (FATAL_ERROR "No command specified for execute_process(): use \"-DCOMMAND=cmd\"")
 endif ()
 
 if (NOT ARGS_SEPARATOR)

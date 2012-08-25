@@ -1056,6 +1056,9 @@ function (basis_build_mex_file TARGET_UID)
   list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
   list (REMOVE_AT SOURCES 0)
   set (BUILD_DIR "${BUILD_DIR}.dir")
+  if (NOT IS_DIRECTORY "${BUILD_DIR}")
+	file (MAKE_DIRECTORY "${BUILD_DIR}")
+  endif ()
   if (NOT SOURCES)
     message (FATAL_ERROR "Target ${TARGET_UID}: Empty SOURCES list!"
                          " Have you accidentally modified this read-only property or"
@@ -1110,77 +1113,81 @@ function (basis_build_mex_file TARGET_UID)
       set (${VAR})
     endif ()
   endmacro ()
-  extract (CC)
-  extract (CFLAGS)
-  extract (CXX)
-  extract (CXXFLAGS)
-  extract (CLIBS)
-  extract (CXXLIBS)
-  extract (LD)
-  extract (LDXX)
-  extract (LDFLAGS)
-  extract (LDCXXFLAGS)
-  if (LINK_FLAGS)
-    set (LDFLAGS "${LDFLAGS} ${LINK_FLAGS}")
+  if (UNIX)
+    extract (CC)
+    extract (CFLAGS)
+    extract (CXX)
+    extract (CXXFLAGS)
+    extract (CLIBS)
+    extract (CXXLIBS)
+    extract (LD)
+    extract (LDXX)
+    extract (LDFLAGS)
+    extract (LDCXXFLAGS)
+    if (LINK_FLAGS)
+      set (LDFLAGS "${LDFLAGS} ${LINK_FLAGS}")
+    endif ()
+    # set defaults for not provided options
+    if (NOT CC)
+      set (CC "${CMAKE_C_COMPILER}")
+    endif ()
+    if (NOT CFLAGS)
+      set (CFLAGS "${CMAKE_C_FLAGS}")
+    endif ()
+    if (NOT CFLAGS MATCHES "( |^)-fPIC( |$)")
+      set (CFLAGS "-fPIC ${CFLAGS}")
+    endif ()
+    if (NOT CXX)
+      set (CXX "${CMAKE_CXX_COMPILER}")
+    endif ()
+    if (NOT CXXFLAGS)
+      set (CXXFLAGS "${CMAKE_CXX_FLAGS}")
+    endif ()
+    if (NOT CXXFLAGS MATCHES "( |^)-fPIC( |$)")
+      set (CXXFLAGS "-fPIC ${CXXFLAGS}")
+    endif ()
+    if (NOT LD)
+      set (LD "${CMAKE_CXX_COMPILER}") # do not use CMAKE_LINKER here
+    endif ()
+    if (NOT LDFLAGS)
+      set (LDFLAGS "\$LDFLAGS ${CMAKE_SHARED_LINKER_FLAGS}")
+    endif ()
+    # We chose to use CLIBS and CXXLIBS instead of the -L and -l switches
+    # to add also link libraries added via basis_target_link_libraries()
+    # because the MEX script will not use these arguments if CLIBS or CXXLIBS
+    # is set. Moreover, the -l switch can only be used to link to a shared
+    # library and not a static one (on UNIX).
+    #foreach (LIB ${LINK_LIBS})
+    #  if (LIB MATCHES "[/\\\.]")
+    #    set (CXXLIBS "${CXXLIBS} ${LIB}")
+    #  endif ()
+    #endforeach ()
   endif ()
-  # set defaults for not provided options
-  if (NOT CC)
-    set (CC "${CMAKE_C_COMPILER}")
-  endif ()
-  if (NOT CFLAGS)
-    set (CFLAGS "${CMAKE_C_FLAGS}")
-  endif ()
-  if (NOT CFLAGS MATCHES "( |^)-fPIC( |$)")
-    set (CFLAGS "-fPIC ${CFLAGS}")
-  endif ()
-  if (NOT CXX)
-    set (CXX "${CMAKE_CXX_COMPILER}")
-  endif ()
-  if (NOT CXXFLAGS)
-    set (CXXFLAGS "${CMAKE_CXX_FLAGS}")
-  endif ()
-  if (NOT CXXFLAGS MATCHES "( |^)-fPIC( |$)")
-    set (CXXFLAGS "-fPIC ${CXXFLAGS}")
-  endif ()
-  if (NOT LD)
-    set (LD "${CMAKE_CXX_COMPILER}") # do not use CMAKE_LINKER here
-  endif ()
-  if (NOT LDFLAGS)
-    set (LDFLAGS "\$LDFLAGS ${CMAKE_SHARED_LINKER_FLAGS}")
-  endif ()
-  # We chose to use CLIBS and CXXLIBS instead of the -L and -l switches
-  # to add also link libraries added via basis_target_link_libraries ()
-  # because the MEX script will not use these arguments if CLIBS or CXXLIBS
-  # is set. Moreover, the -l switch can only be used to link to a shared
-  # library and not a static one (on UNIX).
-  #foreach (LIB ${LINK_LIBS})
-  #  if (LIB MATCHES "[/\\\.]")
-  #    set (CXXLIBS "${CXXLIBS} ${LIB}")
-  #  endif ()
-  #endforeach ()
   # get remaining switches
   basis_string_to_list (MEX_USER_ARGS "${COMPILE_FLAGS}")
   # assemble MEX switches
   set (MEX_ARGS)
-  list (APPEND MEX_ARGS "CC=${CC}" "CFLAGS=${CFLAGS}")           # C compiler and flags
-  if (CLIBS)
-    list (APPEND MEX_ARGS "CLIBS=${CLIBS}")                      # C link libraries
-  endif ()
-  list (APPEND MEX_ARGS "CXX=${CXX}" "CXXFLAGS=${CXXFLAGS}")     # C++ compiler and flags
-  if (CXXLIBS)
-    list (APPEND MEX_ARGS "CXXLIBS=${CXXLIBS}")                  # C++ link libraries
-  endif ()
-  if (LD)
-    list (APPEND MEX_ARGS "LD=${LD}")                            # C linker
-  endif ()
-  if (LDFLAGS)
-    list (APPEND MEX_ARGS "LDFLAGS=${LDFLAGS}")                  # C link flags
-  endif ()
-  if (LDCXX)
-    list (APPEND MEX_ARGS "LDCXX=${LDCXX}")                      # C++ linker
-  endif ()
-  if (LDCXXFLAGS)
-    list (APPEND MEX_ARGS "LDCXXFLAGS=${LDCXXFLAGS}")            # C++ link flags
+  if (UNIX)
+    list (APPEND MEX_ARGS "CC=${CC}" "CFLAGS=${CFLAGS}")           # C compiler and flags
+    if (CLIBS)
+      list (APPEND MEX_ARGS "CLIBS=${CLIBS}")                      # C link libraries
+    endif ()
+    list (APPEND MEX_ARGS "CXX=${CXX}" "CXXFLAGS=${CXXFLAGS}")     # C++ compiler and flags
+    if (CXXLIBS)
+      list (APPEND MEX_ARGS "CXXLIBS=${CXXLIBS}")                  # C++ link libraries
+    endif ()
+    if (LD)
+      list (APPEND MEX_ARGS "LD=${LD}")                            # C linker
+    endif ()
+    if (LDFLAGS)
+      list (APPEND MEX_ARGS "LDFLAGS=${LDFLAGS}")                  # C link flags
+    endif ()
+    if (LDCXX)
+      list (APPEND MEX_ARGS "LDCXX=${LDCXX}")                      # C++ linker
+    endif ()
+    if (LDCXXFLAGS)
+      list (APPEND MEX_ARGS "LDCXXFLAGS=${LDCXXFLAGS}")            # C++ link flags
+    endif ()
   endif ()
   list (APPEND MEX_ARGS "-outdir" "${BUILD_DIR}")                # output directory
   list (APPEND MEX_ARGS "-output" "${OUTPUT_NAME_WE}")           # output name (w/o extension)
@@ -1190,30 +1197,54 @@ function (basis_build_mex_file TARGET_UID)
       list (APPEND MEX_ARGS "-I${INCLUDE_PATH}")
     endif ()
   endforeach ()
-  foreach (LIBRARY_PATH ${BASIS_LINK_DIRECTORIES})               # link directories
-    list (FIND MEX_ARGS "-L${LIBRARY_PATH}" IDX)                 # as specified via
-    if (LIBRARY_PATH AND IDX EQUAL -1)                           # basis_link_directories ()
-      list (APPEND MEX_ARGS "-L${LIBRARY_PATH}")
-    endif ()
+  set (MEX_LIBPATH)
+  set (MEX_LIBS)
+  foreach (LINK_DIR ${BASIS_LINK_DIRECTORIES})                    # link directories
+    if (WIN32)
+	  string (REPLACE "/" "\\" LINK_DIR "${LINK_DIR}")
+	  set (LINK_DIR "/LIBPATH:\\\"${LINK_DIR}\\\"")
+	else ()
+	  set (LINK_DIR "-L${LINK_DIR}")
+	endif ()
+    list (APPEND MEX_LIBPATH "${LINK_DIR}")                      # as specified via basis_link_directories ()
   endforeach ()
-  foreach (LIBRARY ${LINK_LIBS})                                 # link libraries
+  foreach (LIBRARY ${LINK_LIBS})                                # link libraries
     get_filename_component (LINK_DIR "${LIBRARY}" PATH)         # as specified via
     get_filename_component (LINK_LIB "${LIBRARY}" NAME_WE)      # basis_target_link_libraries ()
     string (REGEX REPLACE "^-l" "" LINK_LIB "${LINK_LIB}")
-    if (UNIX)
-      string (REGEX REPLACE "^lib" "" LINK_LIB "${LINK_LIB}")
-    endif ()
-    list (FIND MEX_ARGS "-L${LINK_DIR}" IDX)
-    if (LINK_DIR AND IDX EQUAL -1)
-      list (APPEND MEX_ARGS "-L${LINK_DIR}")
-    endif ()
-    list (FIND MEX_ARGS "-l${LINK_LIB}" IDX)
-    if (LINK_LIB AND IDX EQUAL -1)
-      list (APPEND MEX_ARGS "-l${LINK_LIB}")
-    endif ()
+    if (WIN32)
+	  string (REPLACE "/" "\\" LINK_DIR "${LINK_DIR}")
+	  set (LINK_DIR "/LIBPATH:\\\"${LINK_DIR}\\\"")
+	  if (NOT LINK_LIB MATCHES "\\.lib$")
+	    set (LINK_LIB "${LINK_LIB}.lib")
+	  endif ()
+	else ()
+	  string (REGEX REPLACE "^lib" "" LINK_LIB "${LINK_LIB}")
+	  set (LINK_DIR "-L${LINK_DIR}")
+      set (LINK_LIB "-l${LINK_LIB}")
+	endif ()
+    list (APPEND MEX_LIBPATH "${LINK_DIR}")
+    list (APPEND MEX_LIBS    "${LINK_LIB}")
   endforeach ()
-  list (APPEND MEX_ARGS ${MEX_USER_ARGS})                        # other user switches
-  list (APPEND MEX_ARGS ${SOURCES})                              # source files
+  if (MEX_LIBPATH)
+    list (REMOVE_DUPLICATES MEX_LIBPATH)
+  endif ()
+  if (MEX_LIBS)
+    list (REMOVE_DUPLICATES MEX_LIBS)
+  endif ()
+  if (MEX_LIBPATH OR MEX_LIBS)
+    if (WIN32)
+	  basis_list_to_delimited_string (MEX_LIBPATH " " NOAUTOQUOTE ${MEX_LIBPATH})
+	  basis_list_to_delimited_string (MEX_LIBS    " " ${MEX_LIBS})
+	  list (APPEND MEX_ARGS "LINKFLAGS#$LINKFLAGS ${MEX_LIBPATH} ${MEX_LIBS}")
+    else ()
+      list (APPEND MEX_ARGS ${MEX_LIBPATH} ${MEX_LIBS})
+    endif ()
+  endif ()
+  # other user switches 
+  list (APPEND MEX_ARGS ${MEX_USER_ARGS})
+  # source files
+  list (APPEND MEX_ARGS ${SOURCES})
   # build command for invocation of MEX script
   set (BUILD_CMD     "${MATLAB_MEX_EXECUTABLE}" -v ${MEX_ARGS})
   set (BUILD_LOG     "${BUILD_DIR}/build.log")
@@ -1225,6 +1256,9 @@ function (basis_build_mex_file TARGET_UID)
   else ()
     set (BUILD_MFILE)
   endif ()
+  # configure build script
+  set (COMMAND "${BUILD_CMD}")
+  configure_file ("${BASIS_SCRIPT_EXECUTE_PROCESS}" "${BUILD_DIR}/build.cmake" @ONLY)
   # relative paths used for comments of commands
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_OUTPUT}")
   # add custom command to build executable using MEX script
@@ -1236,7 +1270,7 @@ function (basis_build_mex_file TARGET_UID)
     # command allows for inspection of command output for error messages
     # and specification of timeout
     COMMAND "${CMAKE_COMMAND}"
-            "-DCOMMAND=${BUILD_CMD}"
+	        "-DCOMMAND=${COMMAND}"
             "-DWORKING_DIRECTORY=${BUILD_DIR}"
             "-DTIMEOUT=${BASIS_MEX_TIMEOUT}"
             "-DERROR_EXPRESSION=[E|e]rror"

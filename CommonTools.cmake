@@ -37,6 +37,7 @@ macro (find_package)
   #            track of library suffixes. Further note that we need to
   #            maintain a list of lists, which is not supported by CMake.
   list (APPEND _BASIS_FIND_LIBRARY_SUFFIXES "{${CMAKE_FIND_LIBRARY_SUFFIXES}}")
+  list (APPEND _BASIS_FIND_EXECUTABLE_SUFFIX "${CMAKE_FIND_EXECUTABLE_SUFFIX}")
   _find_package(${ARGV})
   # map obsolete <PKG>_* variables to case-sensitive <Pkg>_*
   string (TOUPPER "${ARGV0}" _FP_ARGV0_U)
@@ -50,6 +51,13 @@ macro (find_package)
   # restore CMAKE_FIND_LIBRARY_SUFFIXES
   string (REGEX REPLACE ";?{([^}]*)}$" "" _BASIS_FIND_LIBRARY_SUFFIXES "${_BASIS_FIND_LIBRARY_SUFFIXES}")
   set (CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_MATCH_1}")
+  # restore CMAKE_FIND_EXECUTABLE_SUFFIX
+  list (LENGTH _BASIS_FIND_EXECUTABLE_SUFFIX _FP_LAST)
+  if (_FP_LAST GREATER 0)
+    math (EXPR _FP_LAST "${_FP_LAST} - 1")
+    list (REMOVE_AT _BASIS_FIND_EXECUTABLE_SUFFIX ${_FP_LAST})
+  endif ()
+  unset (_FP_LAST)
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -197,8 +205,24 @@ macro (basis_find_package PACKAGE)
   endif ()
   # --------------------------------------------------------------------------
   # otherwise, look for external package
-  if (NOT ${PKG}_FOUND)
-
+  set (FIND_ADDITIONAL_COMPONENTS FALSE)
+  if (${PKG}_FOUND)
+	if (${PKG}_FOUND_COMPONENTS AND ARGN_COMPONENTS)
+	  foreach (_C ${ARGN_COMPONENTS})
+	    list (FIND ${PKG}_FOUND_COMPONENTS "${_C}" _IDX)
+	    if (_IDX EQUAL -1)
+	      set (FIND_ADDITIONAL_COMPONENTS TRUE)
+	      break ()
+	    endif ()
+	  endforeach ()
+	elseif (${PKG}_FOUND_COMPONENTS OR ARGN_COMPONENTS)
+	  set (FIND_ADDITIONAL_COMPONENTS TRUE)
+	endif ()
+  endif ()
+  if (NOT ${PKG}_FOUND OR FIND_ADDITIONAL_COMPONENTS)
+	set (_${PKG}_FOUND "${${PKG}_FOUND}") # used to decide what the intersection of
+	                                      # of multiple find invocations for the same
+										  # package with different components will be
     # --------------------------------------------------------------------------
     # hide or show already defined <PKG>_DIR cache entry
     if (DEFINED ${PKG}_DIR AND DEFINED USE_${PKG})
@@ -243,6 +267,12 @@ macro (basis_find_package PACKAGE)
         if (VER)
           set (_STATUS "${_STATUS} ${VER}")
         endif ()
+		if (ARGN_COMPONENTS)
+		  set (_STATUS "${_STATUS} [${ARGN_COMPONENTS}]")
+		endif ()
+		if (NOT ARGN_REQUIRED)
+		  set (_STATUS "${_STATUS} (optional)")
+		endif ()
         set (_STATUS "${_STATUS}...")
         message (STATUS "${_STATUS}")
         find_package (${PKG} ${VER} ${FIND_ARGN})
@@ -292,12 +322,25 @@ macro (basis_find_package PACKAGE)
         endif ()
         message (STATUS "${_STATUS}")
       endif ()
+	  # remember which components where found already
+	  if (${PKG}_FOUND AND ARGN_COMPONENTS)
+	    if (${PKG}_FOUND_COMPONENTS)
+		  list (APPEND ARGN_COMPONENTS ${${PKG}_FOUND_COMPONENTS})
+		  list (REMOVE_DUPLICATES ARGN_COMPONENTS)
+		endif ()
+	    set (${PKG}_FOUND_COMPONENTS "${ARGN_COMPONENTS}")
+	  endif ()
+	  # if previously components of this package where found and the additional
+	  # components are only optional, set <PKG>_FOUND to TRUE again
+	  if (_${PKG}_FOUND AND NOT ARGN_REQUIRED)
+	    set (${PKG}_FOUND TRUE)
+	  endif ()
       # provide option which allows users to disable use of not required packages
       if (${PKG}_FOUND AND NOT ARGN_REQUIRED)
         option (USE_${PKG} "Enable/disable use of package ${PKG}." ON)
         mark_as_advanced (USE_${PKG})
         if (NOT USE_${PKG})
-          set (${PKG}_FOUND       FALSE)
+          set (${PKG}_FOUND   FALSE)
           set (${PKG_U}_FOUND FALSE)
         endif ()
       endif ()
@@ -316,6 +359,7 @@ macro (basis_find_package PACKAGE)
   unset (PKG_U)
   unset (VER)
   unset (USE_PKG_OPTION)
+  unset (FIND_ADDITIONAL_COMPONENTS)
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -1645,7 +1689,9 @@ function (basis_add_glob_target TARGET_UID SOURCES)
   # make paths absolute and turn directories into recursive globbing expressions
   set (EXPRESSIONS)
   foreach (EXPRESSION IN LISTS ARGN)
-    get_filename_component (EXPRESSION "${EXPRESSION}" ABSOLUTE)
+    if (NOT IS_ABSOLUTE "${EXPRESSION}")
+      set (EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${EXPRESSION}")
+    endif ()
     if (IS_DIRECTORY "${EXPRESSION}")
       set (EXPRESSION "${EXPRESSION}/**")
     endif ()
