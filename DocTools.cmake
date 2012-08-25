@@ -875,6 +875,13 @@ endfunction ()
 #     <td>Directory for static files of HTML pages. Defaults to <tt>SOURCE_DIRECTORY/static/</tt>.</td>
 #   </tr>
 #   <tr>
+#     @tp @b HTML_STYLE css @endtp
+#     <td>The style sheet to use for HTML pages. A file of that name must exist either in Sphinx'
+#         default static/ path or the specified @c HTML_STATIC_PATH. Default is the stylesheet
+#         given by the selected theme. If you only want to add or override a few things compared
+#         to the theme’s stylesheet, use CSS \@import to import the theme’s stylesheet.</td>
+#   </tr>
+#   <tr>
 #     @tp @b HTML_SIDEBARS name... @endtp
 #     <td>Names of HTML template files for sidebar(s). Defaults to none if not specified.
 #         Valid default templates are @c localtoc, @c globaltoc, @c searchbox, @c relations,
@@ -927,7 +934,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     CONFIG_FILE
     SOURCE_DIRECTORY OUTPUT_DIRECTORY OUTPUT_NAME TAG
     COPYRIGHT MASTER_DOC
-    HTML_TITLE HTML_THEME HTML_LOGO HTML_THEME_PATH
+    HTML_TITLE HTML_THEME HTML_LOGO HTML_THEME_PATH HTML_STYLE
     LATEX_TITLE LATEX_LOGO LATEX_DOCUMENT_CLASS LATEX_SHOW_URLS LATEX_SHOW_PAGEREFS
     MAN_SECTION
     DOXYLINK_URL DOXYLINK_PREFIX DOXYLINK_SUFFIX
