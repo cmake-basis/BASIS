@@ -2419,7 +2419,7 @@ function (basis_add_script_library TARGET_NAME)
       COMPILE_DEFINITIONS_FILE  "${CONFIG_FILE}"
       LINK_DEPENDS              ""
       EXPORT                    "${EXPORT}"
-      COMPILE                   "${COMPILE}"
+      COMPILE                   "${BASIS_COMPILE_SCRIPTS}"
       TEST                      "${TEST}"
   )
   # add target to list of targets
