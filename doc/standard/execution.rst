@@ -231,7 +231,7 @@ For C++ programs, the BASIS C++ utilities provide the function
 `exepath() <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisCxxUtilities.html>`__
 which maps a build target name to the absolute path of the executable file
 built by this target. This function makes use of an implementation of the
-:apidoc:`basis::basis::IExecutableTargetInfo` interface whose constructor is automatically
+:apidoc:`basis::util::IExecutableTargetInfo` interface whose constructor is automatically
 generated during the configuration of a project. This constructor initializes the
 data structures required for the mapping of target names to absolute file paths.
 Note that BASIS generates different implementations of this module for different projects,
