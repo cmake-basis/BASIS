@@ -104,7 +104,7 @@ def build_project(verbose=0, cmakeopts=None):
             '-DBUILD_TESTING:BOOL=ON',
             '-DBASIS_DIR:PATH=' + BASIS_DIR,
             '-DCMAKE_BUILD_TYPE:STRING=@TESTING_BUILD_TYPE@']
-    config_cmd.extend(cmakeopts)
+    if cmakeopts != None: config_cmd.extend(cmakeopts)
     if '@TESTING_C_FLAGS@' != '':
         config_cmd.append('-DCMAKE_C_FLAGS:STRING=@TESTING_C_FLAGS@')
     if '@TESTING_CXX_FLAGS@' != '':
