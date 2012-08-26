@@ -1662,6 +1662,32 @@ macro (basis_library_prefix PREFIX LANGUAGE)
 endmacro ()
 
 # ----------------------------------------------------------------------------
+## @brief Get file name of compiled script.
+#
+# @param [out] CFILE  File path of compiled script file.
+# @param [in]  SOURCE Script source file.
+# @param [in]  ARGV2  Language of script file. If not specified, the language
+#                     is derived from the file name extension and shebang of
+#                     the script source file.
+function (basis_get_compiled_file CFILE SOURCE)
+  if (ARGC GREATER 2)
+    set (LANGUAGE "${ARGV2}")
+  else ()
+    basis_get_source_language (LANGUAGE "${SOURCE}")
+  endif ()
+  set (${CFILE} "" PARENT_SCOPE)
+  if (SOURCE)
+    if (LANGUAGE MATCHES "PYTHON")
+      set (${CFILE} "${SOURCE}c" PARENT_SCOPE)
+    elseif (LANGUAGE MATCHES "JYTHON")
+      if (SOURCE MATCHES "(.*)\\.([^.]+)$")
+        set (${CFILE} "${CMAKE_MATCH_1}$${CMAKE_MATCH_2}.class" PARENT_SCOPE)
+      endif ()
+    endif ()
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Glob source files.
 #
 # This function gets a list of source files and globbing expressions, evaluates
@@ -2061,12 +2087,15 @@ function (basis_configure_script INPUT OUTPUT)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
       "COMPILE;COPYONLY;EXECUTABLE"
-      "DESTINATION"
+      "DESTINATION;LANGUAGE"
       "CACHE_FILE;CONFIG_FILE;LINK_DEPENDS"
     ${ARGN}
   )
   if (ARGN_UNPARSED_ARGUMENTS)
     message (FATAL_ERROR "Unrecognized arguments given: ${ARGN_UNPARSED_ARGUMENTS}")
+  endif ()
+  if (NOT ARGN_LANGUAGE)
+    basis_get_source_language (ARGN_LANGUAGE "${_INPUT_FILE}")
   endif ()
   # --------------------------------------------------------------------------
   # include cache files
@@ -2113,8 +2142,6 @@ function (basis_configure_script INPUT OUTPUT)
     #            Moreover, blank lines can be used to insert code without
     #            changing the number of source code lines.
     file (READ "${_INPUT_FILE}" SCRIPT)
-    # determine scripting language
-    basis_get_source_language (LANGUAGE "${_INPUT_FILE}")
     # (temporarily) remove existing shebang directive
     file (STRINGS "${_INPUT_FILE}" FIRST_LINE LIMIT_COUNT 1)
     if (FIRST_LINE MATCHES "^#!")
@@ -2127,7 +2154,7 @@ function (basis_configure_script INPUT OUTPUT)
       string (CONFIGURE "${SCRIPT}" SCRIPT @ONLY)
     endif ()
     # add code to set module search path
-    if (LANGUAGE MATCHES "[JP]YTHON")
+    if (ARGN_LANGUAGE MATCHES "[JP]YTHON")
       if (ARGN_LINK_DEPENDS)
         string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
         set (PYTHON_CODE "import sys; import os.path; __dir__ = os.path.dirname(os.path.realpath(__file__))")
@@ -2147,7 +2174,7 @@ function (basis_configure_script INPUT OUTPUT)
         endforeach ()
         set (SCRIPT "${PYTHON_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
-    elseif (LANGUAGE MATCHES "PERL")
+    elseif (ARGN_LANGUAGE MATCHES "PERL")
       if (ARGN_LINK_DEPENDS)
         string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
         set (PERL_CODE "use Cwd qw(realpath); use File::Basename;")
@@ -2166,7 +2193,7 @@ function (basis_configure_script INPUT OUTPUT)
         endforeach ()
         set (SCRIPT "${PERL_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
-    elseif (LANGUAGE MATCHES "BASH")
+    elseif (ARGN_LANGUAGE MATCHES "BASH")
       basis_library_prefix (PREFIX BASH)
       # In case of Bash, set BASIS_BASH_UTILITIES which is required to first source the
       # BASIS utilities modules (in particular core.sh). This variable should be set to
@@ -2214,13 +2241,13 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
       set (SCRIPT "${BASH_CODE} # <-- added by BASIS\n${SCRIPT}")
     endif ()
     # replace shebang directive
-    if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
+    if (ARGN_LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
       if (WIN32)
         set (SHEBANG "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
       else ()
         set (SHEBANG "#! ${PYTHON_EXECUTABLE}")
       endif ()
-    elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
+    elseif (ARGN_LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
       if (WIN32)
         set (SHEBANG "@setlocal enableextensions & \"${JYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
       else ()
@@ -2233,14 +2260,14 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
         #            -schuha
         set (SHEBANG "#! /usr/bin/env ${JYTHON_EXECUTABLE}")
       endif ()
-    elseif (LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
+    elseif (ARGN_LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
       if (WIN32)
         set (SHEBANG "@goto = \"START_OF_BATCH\" ;\n@goto = ();")
         set (SCRIPT "${SCRIPT}\n\n__END__\n\n:\"START_OF_BATCH\"\n@\"${PERL_EXECUTABLE}\" -w -S \"%~f0\" %*")
       else ()
         set (SHEBANG "#! ${PERL_EXECUTABLE} -w")
       endif ()
-    elseif (LANGUAGE MATCHES "BASH" AND BASH_EXECUTABLE)
+    elseif (ARGN_LANGUAGE MATCHES "BASH" AND BASH_EXECUTABLE)
       set (SHEBANG "#! ${BASH_EXECUTABLE}")
     endif ()
     # add (modified) shebang directive again
@@ -2270,11 +2297,25 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
     file (WRITE "${_OUTPUT_FILE}" "${SCRIPT}")
     # compile module if requested
     if (ARGN_COMPILE)
-      basis_get_source_language (LANGUAGE "${_INPUT_FILE}")
-      if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
-        execute_process (COMMAND "${PYTHON_EXECUTABLE}" -E -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}')")
-      elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
-        execute_process (COMMAND "${JYTHON_EXECUTABLE}" -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}')")
+      if (ARGN_LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
+        basis_get_compiled_file (CFILE "${_OUTPUT_FILE}" ${ARGN_LANGUAGE})
+        execute_process (COMMAND "${PYTHON_EXECUTABLE}" -E -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}', '${CFILE}')")
+        if (JYTHON_EXECUTABLE)
+          if (BINARY_PYTHON_LIBRARY_DIR AND BINARY_JYTHON_LIBRARY_DIR)
+            file (RELATIVE_PATH REL "${BINARY_PYTHON_LIBRARY_DIR}" "${_OUTPUT_FILE}")
+          else ()
+            set (REL)
+          endif ()
+          if (NOT REL MATCHES "^$|^\\.\\./")
+            basis_get_compiled_file (CFILE "${BINARY_JYTHON_LIBRARY_DIR}/${REL}" JYTHON)
+          else ()
+            basis_get_compiled_file (CFILE "${_OUTPUT_FILE}" JYTHON)
+          endif ()
+          execute_process (COMMAND "${JYTHON_EXECUTABLE}" -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}', '${CFILE}')")
+        endif ()
+      elseif (ARGN_LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
+        basis_get_compiled_file (CFILE "${_OUTPUT_FILE}" ${ARGN_LANGUAGE})
+        execute_process (COMMAND "${JYTHON_EXECUTABLE}" -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}', '${CFILE}')")
       endif ()
     endif ()
   endif ()

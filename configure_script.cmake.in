@@ -30,6 +30,7 @@ set (BUILD_LINK_DEPENDS   "@BUILD_LINK_DEPENDS@")
 set (INSTALL_LINK_DEPENDS "@INSTALL_LINK_DEPENDS@")
 set (CACHE_FILE           "@CACHE_FILE@")
 set (CONFIG_FILE          "@CONFIG_FILE@")
+set (LANGUAGE             "@LANGUAGE@")
 set (OPTIONS              "@OPTIONS@")
 # configure ("build") script - always touch files to update build timestamp
 basis_configure_script (
@@ -37,6 +38,7 @@ basis_configure_script (
   LINK_DEPENDS "${BUILD_LINK_DEPENDS}"
   CACHE_FILE   "${CACHE_FILE}"
   CONFIG_FILE  "${CONFIG_FILE}"
+  LANGUAGE     "${LANGUAGE}"
   ${OPTIONS}
 )
 if (INSTALL_FILE AND DESTINATION)
@@ -46,6 +48,7 @@ if (INSTALL_FILE AND DESTINATION)
     LINK_DEPENDS "${INSTALL_LINK_DEPENDS}"
     CACHE_FILE   "${CACHE_FILE}"
     CONFIG_FILE  "${CONFIG_FILE}"
+    LANGUAGE     "${LANGUAGE}"
     ${OPTIONS}
   )
 endif ()
