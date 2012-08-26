@@ -58,6 +58,11 @@
 #     <td>Absolute path of the directory containing the Python module named &lt;module%gt;.</td>
 #   </tr>
 #   <tr>
+#     @tp @b PythonModules_&lt;module&gt; @endtp
+#     <td>Import target for module named &lt;module&gt;. The location of the
+#         target is @c PythonModules_&lt;module&gt_PATH.</tr>
+#   </tr>
+#   <tr>
 #     @tp @b PythonModules_PYTHONPATH @endtp
 #     <td>The @c PYTHONPATH setting required for the found Python module(s), i.e.,
 #         The directories that have to be added to the Python search path.
@@ -252,6 +257,7 @@ macro (_PythonModules_find_python_modules ALL_FOUND)
   set (${ALL_FOUND} TRUE)
   foreach (_PythonModules_MODULE ${ARGN})
     set (_PythonModules_VAR "PythonModules_${_PythonModules_MODULE}_PATH")
+    set (_PythonModules_TGT "PythonModules_${_PythonModules_MODULE}")
     if (PythonModules_DIR)
       basis_find_python_module (
         ${_PythonModules_VAR}
@@ -271,6 +277,15 @@ macro (_PythonModules_find_python_modules ALL_FOUND)
       set (${ALL_FOUND}                                 FALSE)
       set (PythonModules_${_PythonModules_MODULE}_FOUND FALSE)
     else ()
+      if (NOT TARGET ${_PythonModules_TGT})
+        add_library (${_PythonModules_TGT} UNKNOWN IMPORTED)
+        set_target_properties (
+          ${_PythonModules_TGT}
+          PROPERTIES
+            BASIS_TYPE        "SCRIPT_LIBRARY"
+            IMPORTED_LOCATION "${${_PythonModules_VAR}}"
+        )
+      endif ()
       set (PythonModules_${_PythonModules_MODULE}_FOUND TRUE)
       list (APPEND PythonModules_PYTHONPATH "${${_PythonModules_VAR}}")
     endif ()
