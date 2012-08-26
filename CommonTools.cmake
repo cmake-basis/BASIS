@@ -2270,6 +2270,7 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
     file (WRITE "${_OUTPUT_FILE}" "${SCRIPT}")
     # compile module if requested
     if (ARGN_COMPILE)
+      basis_get_source_language (LANGUAGE "${_INPUT_FILE}")
       if (LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
         execute_process (COMMAND "${PYTHON_EXECUTABLE}" -E -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}')")
       elseif (LANGUAGE MATCHES "JYTHON" AND JYTHON_EXECUTABLE)
