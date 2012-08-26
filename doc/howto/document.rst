@@ -137,7 +137,7 @@ files given the specification of a Sphinx documentation build target such as the
 ``site`` target defined by above template CMake code.
 
 
-.. _basis_add_doc(): http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeAPI.html#ga06f94c5d122393ad4e371f73a0803cfa
-.. _basis_add_sphinx_doc(): http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/DocTools_8cmake.html#a628468ae6c7b29570a73a2d63eebf257
+.. _basis_add_doc(): http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__CMakeAPI.html#ga06f94c5d122393ad4e371f73a0803cfa
+.. _basis_add_sphinx_doc(): http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/DocTools_8cmake.html#a628468ae6c7b29570a73a2d63eebf257
 .. _Sphinx: http://sphinx.pocoo.org/
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
