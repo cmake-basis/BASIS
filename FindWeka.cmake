@@ -37,6 +37,11 @@
 #         be used to also look for additionally installed Weka packages.</td>
 #   </tr>
 #   <tr>
+#     @tp @b Weka_FIND_OPTIONAL_COMPONENTS @endtp
+#     <td>The @c OPTIONAL_COMPONENTS argument(s) of the find_package() command can
+#         be used to also look for additionally installed Weka packages.</td>
+#   </tr>
+#   <tr>
 #     @tp @b Weka_ADDITIONAL_VERSIONS @endtp
 #     <td>List of version numbers that should be taken into account when
 #         searching for Weka.</td>
@@ -291,7 +296,7 @@ if (Weka_HAS_PACKAGE_MANAGER)
   elseif (Weka_CLASSPATH)
     weka_list_packages (Weka_FIND_COMPONENTS installed)
   endif ()
-  foreach (Weka_PKG IN LISTS Weka_FIND_COMPONENTS)
+  foreach (Weka_PKG IN LISTS Weka_FIND_COMPONENTS Weka_FIND_OPTIONAL_COMPONENTS)
     set (Weka_${Weka_PKG}_DIR "Weka_${Weka_PKG}_DIR-NOTFOUND" CACHE PATH "Directory of ${Weka_PKG} Weka package." FORCE)
     mark_as_advanced (Weka_${Weka_PKG}_DIR)
     if (IS_DIRECTORY "${Weka_PACKAGES_DIR}/${Weka_PKG}")
@@ -306,7 +311,6 @@ if (Weka_HAS_PACKAGE_MANAGER)
     if (Weka_${Weka_PKG}_CLASSPATH)
       list (APPEND Weka_PACKAGES_CLASSPATH "${Weka_${Weka_PKG}_CLASSPATH}")
       set (Weka_${Weka_PKG}_DIR "${Weka_PACKAGES_DIR}/${Weka_PKG}" CACHE PATH "Directory of ${Weka_PKG} Weka package." FORCE)
-      break ()
     endif ()
   endforeach ()
   unset (Weka_PKG)
@@ -319,7 +323,7 @@ else ()
     endif ()
     unset (Weka_PACKAGES_DIR_SET)
   endif ()
-  if (Weka_FIND_COMPONENTS)
+  if (Weka_FIND_COMPONENTS AND Weka_FIND_REQUIRED)
     message (WARNING "This Weka version has no package manager and consists only of the core weka.jar package."
                      " The components required may not be available with this Weka version. Make sure that you"
                      " have installed and selected the proper Weka version required by this software package."
