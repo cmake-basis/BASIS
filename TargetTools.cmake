@@ -3088,11 +3088,12 @@ function (basis_add_init_py_target)
   basis_sanitize_for_regex (TESTING_JYTHON_LIBRARY_DIR_RE "${TESTING_JYTHON_LIBRARY_DIR}")
   basis_sanitize_for_regex (INSTALL_JYTHON_LIBRARY_DIR_RE "${INSTALL_JYTHON_LIBRARY_DIR}")
   # collect directories requiring a __init__.py file
-  set (DEPENDENTS)      # targets which generate Python modules and depend on _initpy
-  set (DIRS)            # directories for which to generate a __init__.py file
-  set (EXCLUDE)         # exclude these directories
-  set (INSTALL_EXCLUDE) # exclude these directories upon installation
-  set (COMPONENTS)      # installation components
+  set (DEPENDENTS)          # targets which generate Python/Jython modules and depend on _initpy
+  set (PYTHON_DIRS)         # Python library directories requiring a __init__.py file
+  set (JYTHON_DIRS)         # Jython library directories requiring a __init__.py file
+  set (EXCLUDE)             # exclude these directories
+  set (INSTALL_EXCLUDE)     # exclude these directories upon installation
+  set (COMPONENTS)          # installation components
   basis_get_project_property (TARGETS PROPERTY TARGETS)
   foreach (TARGET_UID IN LISTS TARGETS)
     get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
@@ -3124,8 +3125,8 @@ function (basis_add_init_py_target)
       list (FIND COMPONENTS "${COMPONENT}" IDX)
       if (IDX EQUAL -1)
         list (APPEND COMPONENTS "${COMPONENT}")
-        set (INSTALL_DIRS_${COMPONENT}) # list of directories for which to install
-                                        # __init__.py for this component
+        set (${LANGUAGE}_INSTALL_DIRS_${COMPONENT}) # list of directories for which to install
+                                                    # __init__.py for this component
       endif ()
       # directories for which to build a __init__.py file
       foreach (L IN LISTS LOCATION)
@@ -3136,12 +3137,12 @@ function (basis_add_init_py_target)
           list (APPEND DEPENDENTS ${TARGET_UID}) # depends on _initpy
           if (BINARY_${LANGUAGE}_LIBRARY_DIR_RE AND DIR MATCHES "^${BINARY_${LANGUAGE}_LIBRARY_DIR_RE}/.+")
             while (NOT "${DIR}" MATCHES "^${BINARY_${LANGUAGE}_LIBRARY_DIR_RE}$")
-              list (APPEND DIRS "${DIR}")
+              list (APPEND ${LANGUAGE}_DIRS "${DIR}")
               get_filename_component (DIR "${DIR}" PATH)
             endwhile ()
           elseif (TESTING_${LANGUAGE}_LIBRARY_DIR_RE AND DIR MATCHES "^${TESTING_${LANGUAGE}_LIBRARY_DIR_RE}/.+")
             while (NOT "${DIR}" MATCHES "^${TESTING_${LANGUAGE}_LIBRARY_DIR_RE}$")
-              list (APPEND DIRS "${DIR}")
+              list (APPEND ${LANGUAGE}_DIRS "${DIR}")
               get_filename_component (DIR "${DIR}" PATH)
             endwhile ()
           endif ()
@@ -3156,7 +3157,7 @@ function (basis_add_init_py_target)
           list (APPEND DEPENDENTS ${TARGET_UID}) # depends on _initpy
           if (INSTALL_${LANGUAGE}_LIBRARY_DIR_RE AND DIR MATCHES "^${INSTALL_${LANGUAGE}_LIBRARY_DIR_RE}/.+")
             while (NOT "${DIR}" MATCHES "^${INSTALL_${LANGUAGE}_LIBRARY_DIR_RE}$")
-              list (APPEND INSTALL_DIRS_${COMPONENT} "${DIR}")
+              list (APPEND INSTALL_${LANGUAGE}_DIRS_${COMPONENT} "${DIR}")
               get_filename_component (DIR "${DIR}" PATH)
             endwhile ()
           endif ()
@@ -3167,11 +3168,12 @@ function (basis_add_init_py_target)
   if (DEPENDENTS)
     list (REMOVE_DUPLICATES DEPENDENTS)
   endif ()
-  # return if no Python module is being build
-  if (NOT DIRS)
+  # return if nothing to do
+  if (NOT PYTHON_DIRS AND NOT JYTHON_DIRS)
     return ()
   endif ()
-  list (REMOVE_DUPLICATES DIRS)
+  list (REMOVE_DUPLICATES PYTHON_DIRS)
+  list (REMOVE_DUPLICATES JYTHON_DIRS)
   if (EXCLUDE)
     list (REMOVE_DUPLICATES EXCLUDE)
   endif ()
@@ -3179,17 +3181,32 @@ function (basis_add_init_py_target)
     list (REMOVE_DUPLICATES INSTALL_EXCLUDE)
   endif ()
   # generate build script
-  set (C)
-  set (OUTPUT_FILES)
-  foreach (DIR IN LISTS DIRS)
-    list (FIND EXCLUDE "${DIR}" IDX)
-    if (IDX EQUAL -1)
-      set (C "${C}configure_file (\"${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in\" \"${DIR}/__init__.py\" @ONLY)\n")
-      list (APPEND OUTPUT_FILES "${DIR}/__init__.py")
+  set (C "configure_file (\"${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in\" \"${BUILD_DIR}/__init__.py\" @ONLY)\n")
+  foreach (LANGUAGE IN ITEMS PYTHON JYTHON)
+    set (${LANGUAGE}_OUTPUT_FILES)
+    set (${LANGUAGE}_INSTALL_FILE "${BUILD_DIR}/__init__.py")
+    set (C "${C}set (${LANGUAGE}_EXECUTABLE \"${${LANGUAGE}_EXECUTABLE}\")\n\n")
+    foreach (DIR IN LISTS ${LANGUAGE}_DIRS)
+      list (FIND EXCLUDE "${DIR}" IDX)
+      if (IDX EQUAL -1)
+        set (C "${C}configure_file (\"${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in\" \"${DIR}/__init__.py\" @ONLY)\n")
+        list (APPEND ${LANGUAGE}_OUTPUT_FILES "${DIR}/__init__.py")
+      endif ()
+    endforeach ()
+    if (BASIS_COMPILE_SCRIPTS AND ${LANGUAGE}_EXECUTABLE)
+      set (C "${C}\n")
+      string (TOLOWER "${LANGUAGE}" language)
+      basis_get_compiled_file (CFILE "${BUILD_DIR}/${language}/__init__.py" ${LANGUAGE})
+      set (C "${C}execute_process (COMMAND \"${${LANGUAGE}_EXECUTABLE}\" -c \"import py_compile; py_compile.compile('${BUILD_DIR}/__init__.py', '${CFILE}')\")\n")
+      list (APPEND ${LANGUAGE}_OUTPUT_FILES "${CFILE}")
+      set (${LANGUAGE}_INSTALL_FILE "${CFILE}")
+      foreach (SFILE IN LISTS ${LANGUAGE}_OUTPUT_FILES)
+        basis_get_compiled_file (CFILE "${SFILE}" ${LANGUAGE})
+        set (C "${C}execute_process (COMMAND \"${${LANGUAGE}_EXECUTABLE}\" -c \"import py_compile; py_compile.compile('${SFILE}', '${CFILE}')\")\n")
+        list (APPEND ${LANGUAGE}_OUTPUT_FILES "${CFILE}")
+      endforeach ()
     endif ()
   endforeach ()
-  set (C "${C}configure_file (\"${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in\" \"${BUILD_DIR}/__init__.py\" @ONLY)\n")
-  list (APPEND OUTPUT_FILES "${BUILD_DIR}/__init__.py")
   # write/update build script
   set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
   if (EXISTS "${BUILD_SCRIPT}")
@@ -3204,13 +3221,13 @@ function (basis_add_init_py_target)
   endif ()
   # add custom build command
   add_custom_command (
-    OUTPUT          ${OUTPUT_FILES}
+    OUTPUT          "${BUILD_DIR}/__init__.py" ${PYTHON_OUTPUT_FILES} ${JYTHON_OUTPUT_FILES}
     COMMAND         "${CMAKE_COMMAND}" -P "${BUILD_SCRIPT}"
     MAIN_DEPENDENCY "${BASIS_PYTHON_TEMPLATES_DIR}/__init__.py.in"
     COMMENT         "Building PYTHON modules */__init__.py..."
   )
   # add custom target which triggers execution of build script
-  add_custom_target (_initpy ALL DEPENDS ${OUTPUT_FILES})
+  add_custom_target (_initpy ALL DEPENDS "${BUILD_DIR}/__init__.py" ${PYTHON_OUTPUT_FILES} ${JYTHON_OUTPUT_FILES})
   if (BASIS_DEBUG)
     message ("** basis_add_init_py_target():")
   endif ()
@@ -3220,28 +3237,24 @@ function (basis_add_init_py_target)
     endif ()
     add_dependencies (${DEPENDENT} _initpy)
   endforeach ()
-  # cleanup on "make clean" - including compiled script regardless of COMPILE flag
-  set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${OUTPUT_FILES})
-  foreach (OUTPUT_FILE IN LISTS OUTPUT_FILES)
-    basis_get_compiled_file (CFILE "${OUTPUT_FILE}" ${LANGUAGE})
-    if (CFILE)
-      set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CFILE}")
-    endif ()
-  endforeach ()
+  # cleanup on "make clean" - including compiled modules regardless of COMPILE flag
+  set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${BUILD_DIR}/__init__.py" ${PYTHON_OUTPUT_FILES} ${JYTHON_OUTPUT_FILES})
   # add install rules
-  foreach (COMPONENT IN LISTS COMPONENTS)
-    if (INSTALL_DIRS_${COMPONENT})
-      list (REMOVE_DUPLICATES INSTALL_DIRS_${COMPONENT})
-    endif ()
-    foreach (DIR IN LISTS INSTALL_DIRS_${COMPONENT})
-      list (FIND INSTALL_EXCLUDE "${DIR}" IDX)
-      if (IDX EQUAL -1)
-        install (
-          FILES       "${BUILD_DIR}/__init__.py"
-          DESTINATION "${DIR}"
-          COMPONENT   "${COMPONENT}"
-        )
+  foreach (LANGUAGE IN ITEMS PYTHON JYTHON)
+    foreach (COMPONENT IN LISTS COMPONENTS)
+      if (${LANGUAGE}_INSTALL_DIRS_${COMPONENT})
+        list (REMOVE_DUPLICATES ${LANGUAGE}_INSTALL_DIRS_${COMPONENT})
       endif ()
+      foreach (DIR IN LISTS ${LANGUAGE}_INSTALL_DIRS_${COMPONENT})
+        list (FIND INSTALL_EXCLUDE "${DIR}" IDX)
+        if (IDX EQUAL -1)
+          install (
+            FILES       "${${LANGUAGE}_INSTALL_FILE}"
+            DESTINATION "${DIR}"
+            COMPONENT   "${COMPONENT}"
+          )
+        endif ()
+      endforeach ()
     endforeach ()
   endforeach ()
 endfunction ()
