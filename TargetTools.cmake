@@ -2847,10 +2847,12 @@ function (basis_build_script TARGET_UID)
     else ()
       set (INSTALLTYPE PROGRAMS)
     endif ()
+    get_filename_component (OUTPUT_NAME "${INSTALL_FILE}" NAME)
     install (
       ${INSTALLTYPE} "${INSTALL_FILE}"
       DESTINATION    "${INSTALL_DIRECTORY}"
       COMPONENT      "${COMPONENT}"
+      RENAME         "${OUTPUT_NAME}"
     )
   endif ()
   # done
