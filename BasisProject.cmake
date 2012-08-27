@@ -84,7 +84,6 @@ basis_project (
   TEST_DEPENDS
     #<test-dependency>
   OPTIONAL_TEST_DEPENDS
-    MATLAB{matlab,mex}
-	MATLAB{mcc}
+    MATLAB{mex,mcc}
     #<optional-test-dependency>
 )
