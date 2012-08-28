@@ -2220,7 +2220,7 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
       set (BASHPATH)
       foreach (DIR ${ARGN_LINK_DEPENDS})
         if (DIR MATCHES "^relative +(.*)$")
-          basis_get_relative_path (DIR "${__DIR__}" "${DIR}")
+          basis_get_relative_path (DIR "${__DIR__}" "${CMAKE_MATCH_1}")
         endif ()
         if (DIR MATCHES "\\.sh$")
           get_filename_component (DIR "${DIR}" PATH)
