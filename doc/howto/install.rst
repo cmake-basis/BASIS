@@ -480,7 +480,7 @@ package library files on Windows given the installation prefix
 If the :option:`-DBASIS_INSTALL_SITE_PACKAGES` option is ``ON``, module libraries written
 in a scripting language such as Python or Perl are installed to the system-wide default
 directories for site packages of these languages. As this requires write permission to
-these directories, this option is diabled by default.
+these directories, this option is disabled by default.
 
 .. note:: The binary executables which are intended to be called by the user are
           copied to the ``bin/`` directory, where no package subdirectory is created
