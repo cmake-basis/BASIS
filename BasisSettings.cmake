@@ -444,11 +444,11 @@ mark_as_advanced (BASIS_COMPILE_SCRIPTS)
 #       being installed in the default directories, this option is set to @c OFF by default.
 #       The reasons are that it is in first place expected that the installation will copy
 #       files only to directories within the @c CMAKE_INSTALL_PREFIX. Moreover, it is not
-#       guaranteed if the user has write permissions for the default site packages directories.
+#       guaranteed that the user has write permissions for the default site packages directories.
 #       Last but not least, when installing public modules located in the @c PROJECT_LIBRARY_DIR
 #       source directory, BASIS does not set a default module @c PREFIX which reduces the risk
 #       of overwriting existing modules of other packages. If the developer of a BASIS package
-#       was not thorough and did not follow the guidelines, setting this option to @c ON
+#       was not thorough enough and did not follow the guidelines, setting this option to @c ON
 #       has the potential risk of overwriting other packages' modules. Therefore,
 #       modules are only installed in system default locations if explicitly requested.
 option (BASIS_INSTALL_SITE_PACKAGES "Enable the installation of scripted modules in site specific default directories." OFF)
