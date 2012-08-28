@@ -69,7 +69,7 @@ readonly _BASIS_DIR="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
 # source implementations of utility functions
 # ============================================================================
 
-# source project-independent utiltiy functions
+# source project-independent utility functions
 . "${_BASIS_DIR}/@_BASIS_BASH_LIBRARY_DIR@/basis/utilities.sh"
 if [[ $? -ne 0 ]]; then
     echo "Failed to import basis.utilities module!" 1>&2
