@@ -34,8 +34,8 @@ the SBIA Group at the University of Pennsylvania, PA, at
 .. note::
 
     The commands given in this guide have to be entered in a terminal, in particular,
-    the Bourne Again Shell (BASH_). If you are not using the BASH, see the
-    documentation of your particular shel for information on how to perform these
+    the Bourne Again Shell (Bash_). If you are not using the Bash, see the
+    documentation of your particular shell for information on how to perform these
     actions using this shell instead.
 
 
@@ -139,7 +139,7 @@ Building From Sources
 
 In the following, we assume you obtained a copy of the source package as
 compressed tarball (``.tar.gz``). The name and version part of the package file
-is referred to as BASH_ variable:
+is referred to as Bash_ variable:
 
 .. code-block:: bash
 
@@ -190,7 +190,7 @@ this software can be build from its sources.
 | :doc:`BASIS </index>`      |           | The Build system And Software Implementation Standard (BASIS) |
 |                            |           | among other features defines the project directory structure  |
 |                            |           | and provides CMake implementations to ease and standardize    |
-|                            |           | the packing, build, testing, and installation. Refer to the   |
+|                            |           | the packaging, build, testing, and installation. Refer to the |
 |                            |           | ``INSTALL`` document of the software package you want to      |
 |                            |           | build for information on which particular BASIS version is    |
 |                            |           | required by this package.                                     |
@@ -230,7 +230,7 @@ use of or required by this software.
 |                            |           | need the MATLAB Compiler to build it.                         |
 +----------------------------+-----------+---------------------------------------------------------------+
 | Doxygen_                   | 1.8.0     | This tools is required for the generation of the API          |
-|                            |           | documentation from in-source comments in C++, CMake, BASH,    |
+|                            |           | documentation from in-source comments in C++, CMake, Bash,    |
 |                            |           | Python, and Perl. Note that only since version 1.8.0, Python  |
 |                            |           | and the use of Markdown (Extra) are support by Doxygen.       |
 +----------------------------+-----------+---------------------------------------------------------------+
@@ -534,7 +534,7 @@ the ``PATH`` environment variable. This is, however, generally not required.
 It only eases the execution of the command-line tools provided by the software
 package.
 
-For example, if you use BASH_ add the following line to the ``~/.bashrc`` file:
+For example, if you use Bash_ add the following line to the ``~/.bashrc`` file:
 
 .. code-block:: bash
 
@@ -635,7 +635,7 @@ assuming that you added ``<prefix>/bin/`` to your :envvar:`PATH` environment var
 
 
 .. _APT: http://en.wikipedia.org/wiki/Advanced_Packaging_Tool
-.. _BASH: http://www.gnu.org/software/bash/
+.. _Bash: http://www.gnu.org/software/bash/
 .. _CentOS: http://www.centos.org/
 .. _CMake: http://www.cmake.org/
 .. _CMake download page: http://www.cmake.org/cmake/resources/software.html
