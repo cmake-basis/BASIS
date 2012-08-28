@@ -15,7 +15,7 @@ fi
 [[ ${release} == 'latest' ]] || release=v${release}
 
 if [[ `printf ${BASH_VERSION} | grep 'apple'` ]]; then
-    find . -type f \( -name '*.rst' ! -name documentation.rst \) -exec sed -i'' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/$release/:g;s:/apidoc/latest/:/apidoc/$release/:g" {} \;
-else
     find . -type f \( -name '*.rst' ! -name documentation.rst \) -exec sed -i '' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/$release/:g;s:/apidoc/latest/:/apidoc/$release/:g" {} \;
+else
+    find . -type f \( -name '*.rst' ! -name documentation.rst \) -exec sed -i'' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/$release/:g;s:/apidoc/latest/:/apidoc/$release/:g" {} \;
 fi
