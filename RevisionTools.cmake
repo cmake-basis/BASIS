@@ -46,12 +46,10 @@ find_package (Git        QUIET)
 # @returns Sets @p REV to the revision of the working copy/repository
 #          at URL @p URL.
 function (basis_svn_get_revision URL REV)
-  set (OUT "0")
-
+  set (OUT 0)
   if (Subversion_SVN_EXECUTABLE)
     # remove "file://" from URL
     string (REGEX REPLACE "file://" "" TMP "${URL}")
-
     # retrieve SVN info
     execute_process (
       COMMAND         "${Subversion_SVN_EXECUTABLE}" info "${TMP}"
@@ -59,20 +57,17 @@ function (basis_svn_get_revision URL REV)
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-
     if (BASIS_DEBUG)
       message ("** basis_svn_get_revision()")
       message ("**   svn info: ${OUT}")
     endif ()
-
     # extract revision
-    string (REGEX REPLACE "^(.*\n)?Revision: ([^\n]+).*" "\\2" OUT "${OUT}")
-
-    if (OUT STREQUAL "")
-      set (OUT "0")
+    if (OUT MATCHES "^(.*\n)?Revision: ([^\n]+).*" AND NOT CMAKE_MATCH_2 STREQUAL "")
+      set (OUT "${CMAKE_MATCH_2}")
+    else ()
+      set (OUT 0)
     endif ()
   endif ()
-
   # return
   set ("${REV}" "${OUT}" PARENT_SCOPE)
 endfunction ()
@@ -91,12 +86,10 @@ endfunction ()
 # @returns Sets @p REV to revision number at which the working copy/repository
 #          specified by the URL @p URL was last modified.
 function (basis_svn_get_last_changed_revision URL REV)
-  set (OUT "0")
-
+  set (OUT 0)
   if (Subversion_SVN_EXECUTABLE)
     # remove "file://" from URL
     string (REGEX REPLACE "file://" "" TMP "${URL}")
-
     # retrieve SVN info
     execute_process (
       COMMAND         "${Subversion_SVN_EXECUTABLE}" info "${TMP}"
@@ -104,15 +97,17 @@ function (basis_svn_get_last_changed_revision URL REV)
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-
+    if (BASIS_DEBUG)
+      message ("** basis_svn_get_revision()")
+      message ("**   svn info: ${OUT}")
+    endif ()
     # extract last changed revision
-    string (REGEX REPLACE "^(.*\n)?Last Changed Rev: ([^\n]+).*" "\\2" OUT "${OUT}")
-
-    if (OUT STREQUAL "")
-      set (OUT "0")
+    if (OUT MATCHES "^(.*\n)?Last Changed Rev: ([^\n]+).*" AND NOT CMAKE_MATCH_2 STREQUAL "")
+      set (OUT "${CMAKE_MATCH_2}")
+    else ()
+      set (OUT 0)
     endif ()
   endif ()
-
   # return
   set ("${REV}" "${OUT}" PARENT_SCOPE)
 endfunction ()
