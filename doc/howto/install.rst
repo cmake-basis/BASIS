@@ -39,18 +39,10 @@ the SBIA Group at the University of Pennsylvania, PA, at
     actions using this shell instead.
 
 
-.. _ObtainingTheSoftware:
+.. _PackageNames:
 
-Get a Copy
-==========
-
-Visit the `SBIA homepage <http://www.rad.upenn.edu/sbia/software/index.html>`_
-for an overview of publicly available software distribution packages. For each of these
-packages, download links of the available distribution packages can be requested by
-submitting `this form <http://www.rad.upenn.edu/sbia/software/request.php>`_
-with a valid email address. An email with the respective download links will be
-sent to you automatically. If you do not receive an email within 24 hours, please
-contact the SBIA Group at ``sbia-software at uphs.upenn.edu``.
+Package Names
+=============
 
 The file names of the distribution packages follow the convention
 ``<package>-<version>-<arch><ext>``, where ``<package>`` is the name of the
