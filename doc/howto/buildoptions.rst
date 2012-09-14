@@ -66,8 +66,9 @@ The following CMake options/variables can be configured:
     the use of this optional dependency by this software.
 
 
+======================
 Advanced CMake Options
-----------------------
+======================
 
 Advanced users may further be interested in the settings of the following options
 which in most cases are automatically derived from the non-advanced CMake options
