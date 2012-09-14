@@ -33,7 +33,7 @@ and greatly improved it. See the :doc:`standard/template` of the
 See the :doc:`standard/implementation` for details on the standard for
 implementing software.
 
-:doc:`howto` which help to understand the standard and how to comply
+:ref:`HowToGuides` which help to understand the standard and how to comply
 with it can be found here as well.
 
 Projects following the standard include the `BASIS Modules`_ and make use of the
@@ -56,8 +56,9 @@ further explain its purpose and the parts it is made of
     :hidden:
 
     self
+    download
     installation
-    documentation
+    help
     people
 
 

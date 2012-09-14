@@ -13,12 +13,9 @@
 
    -->
 
-=============
-Documentation
-=============
-
-A :download:`PDF Version <BASIS.pdf>` of this documentation is available online and
-included with the distribution package.
+====
+Help
+====
 
 .. The ref links below are required for the LaTeX/PDF version as the download directive
    in this case does not translate to a hyperlink, but text only.
@@ -29,10 +26,10 @@ Quick Start Guides
 ==================
 
 The following Quick Start Guides are a good start to get familiar with BASIS and its use.
-While the :ref:`BASIS Tutorials <Tutorials>` give more in-depth information and references
-to :doc:`standard`, the quick start guides focus on getting you started as quickly as possible
-without all the details. Therefore, it is recommended to first have a look at the quick start
-guides and, if questions remain, to follow the corresponding tutorial.
+While the :ref:`Tutorials` give more in-depth information and references to :ref:`The Standard <Standard>`,
+the quick start guides focus on getting you started as quickly as possible without all the details.
+Therefore, it is recommended to first have a look at the quick start guides and, if questions remain,
+to follow the corresponding tutorial.
 
 1. :download:`Getting Started <tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`
    (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Quick%20Start%20Guide%20-%2001%20Getting%20Started.pptx>`__)
@@ -43,19 +40,52 @@ guides and, if questions remain, to follow the corresponding tutorial.
 Tutorials
 =========
 
+The tutorial slides linked here for download give a slide-by-slide introduction to BASIS and
+its use including in-depth information and references to further documentation. For a less
+comprehensive tutorial-like introduction, please refer to the :ref:`QuickStartGuides`.
+
 1. :download:`Getting Started <tutorials/BASIS Tutorial - 01 Getting Started.pptx>`
    (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
 
 
-Software Manual
-===============
+.. _HowToGuides:
+
+How-to Guides
+=============
+
+Some how-to guides found in this section are an informal definition of :ref:`The Standard <Standard>`
+advocated by BASIS and further guide the developer in following it. Others describe common tasks such
+as the creation of a new project or the installation of software and how to carry them out with BASIS.
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
-    standard
-    howto
+    howto/create-and-modify-project
+    howto/manage-data
+    howto/document
+    howto/branch-and-release
+    howto/package
+    howto/install
+    howto/run-automated-tests
 
+
+.. _Standard:
+
+The Standard
+============
+
+The next articles detail the Build system And Software Implementation Standard and moreover provide
+some guides on formatting and programming style for documentation and source code.
+
+.. toctree::
+    :maxdepth: 2
+
+    standard/buildsystem
+    standard/implementation
+    standard/style
+
+
+.. _APIDocumentation:
 
 API Documentation
 =================

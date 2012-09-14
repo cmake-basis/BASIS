@@ -149,7 +149,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
     BUILDER       html dirhtml pdf man
     MAN_SECTION   7
     HTML_THEME    ${PROJECT_PACKAGE_VENDOR_L}
-    RELLINKS      installation documentation people
+    RELLINKS      download installation help people
     SIDEBARWIDTH  300
     HTML_SIDEBARS globaltoc
     LATEX_TITLE   "${PROJECT_NAME}"
@@ -182,7 +182,7 @@ if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
     BUILDER          pdf html dirhtml man
     MAN_SECTION      7
     HTML_THEME       ${PROJECT_PACKAGE_VENDOR_L}
-    RELLINKS         installation documentation people
+    RELLINKS         download installation help people
     SIDEBARWIDTH     300
     HTML_SIDEBARS    globaltoc
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"

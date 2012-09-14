@@ -22,7 +22,7 @@ Prerequisites
 
 See the :ref:`BasisBuildDependencies` listed in the :doc:`howto/install` guide
 for a list of software tools required to build BASIS. These are further the tools
-required to build any software which is based on BASIS. Moreover, BASIS makes
+required to build any software which is based on BASIS. BASIS itself makes moreover
 use of the following software packages:
 
 .. The tabularcolumns directive is required to help with formatting the table properly
@@ -59,19 +59,6 @@ use of the following software packages:
 
 For instructions on how to build or install these prerequisites, please refer to
 the documentation of the respective software package.
-
-
-Download
---------
-
-The BASIS software is freely available under a BSD-style open source license that is compatible
-with the Open Source Definition by `The Open Source Initiative`_ and contains no restrictions
-on use of the software.
-
-The full `license`_ text is included with the distribution package and available online.
-
-Please fill `this online form <http://www.rad.upenn.edu/sbia/software/request.php?software=basis>`_
-with the appropriate information to receive an email with the download links.
 
 
 Build and Installation
