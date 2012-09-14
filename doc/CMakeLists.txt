@@ -135,15 +135,10 @@ endif ()
 
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
 
-  set (HTML_SIDEBARS localtoc relations)
-
   # --------------------------------------------------------------------------
   # pre-generated site PDF for download
   if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/site/${PROJECT_NAME}.pdf")
     basis_add_doc ("${CMAKE_CURRENT_LIST_DIR}/site/${PROJECT_NAME}.pdf")
-    list (APPEND HTML_SIDEBARS sourcepdflink)
-  else ()
-    list (APPEND HTML_SIDEBARS sourcelink)
   endif ()
 
   # --------------------------------------------------------------------------
@@ -154,10 +149,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
     BUILDER       html dirhtml pdf man
     MAN_SECTION   7
     HTML_THEME    ${PROJECT_PACKAGE_VENDOR_L}
-    SHOW_RELEASE  false
-    INDEXLINK     "${PROJECT_PACKAGE_VENDOR} Software"
-    RELLINKS      download installation documentation tutorials
-    HTML_SIDEBARS ${HTML_SIDEBARS}
+    RELLINKS      installation documentation people
+    HTML_SIDEBARS localtoc relations
     LATEX_TITLE   "${PROJECT_NAME}"
     DOXYLINK      apidoc
     DOXYLINK_URL  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
@@ -171,17 +164,13 @@ endif ()
 
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
 
-  set (OPTIONS)
-  set (HTML_SIDEBARS localtoc relations)
-
   # --------------------------------------------------------------------------
   # pre-generated PDF
   if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}.pdf")
     basis_add_doc ("${PROJECT_NAME}.pdf")
-    list (APPEND HTML_SIDEBARS sourcepdflink)
-    list (APPEND OPTIONS       EXCLUDE_FROM_DOC)
+    list (APPEND OPTIONS EXCLUDE_FROM_DOC)
   else ()
-    list (APPEND HTML_SIDEBARS sourcelink)
+    set (OPTIONS)
   endif ()
 
   # --------------------------------------------------------------------------
@@ -192,10 +181,8 @@ if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
     BUILDER          pdf html dirhtml man
     MAN_SECTION      7
     HTML_THEME       ${PROJECT_PACKAGE_VENDOR_L}
-    SHOW_RELEASE     false
-    INDEXLINK        "${PROJECT_PACKAGE_VENDOR} Software"
-    RELLINKS         download installation documentation tutorials
-    HTML_SIDEBARS    ${HTML_SIDEBARS}
+    RELLINKS         installation documentation people
+    HTML_SIDEBARS    localtoc relations
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
     LATEX_TITLE      ${PROJECT_NAME}
     EXCLUDE_PATTERNS "manual/*"    # condensed manual

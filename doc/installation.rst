@@ -61,8 +61,21 @@ For instructions on how to build or install these prerequisites, please refer to
 the documentation of the respective software package.
 
 
-This Software
--------------
+Download
+--------
+
+The BASIS software is freely available under a BSD-style open source license that is compatible
+with the Open Source Definition by `The Open Source Initiative`_ and contains no restrictions
+on use of the software.
+
+The full `license`_ text is included with the distribution package and available online.
+
+Please fill `this online form <http://www.rad.upenn.edu/sbia/software/request.php?software=basis>`_
+with the appropriate information to receive an email with the download links.
+
+
+Build and Installation
+----------------------
 
 The build, test, and installation steps which are common to any BASIS based
 software, including BASIS itself, are given in the :doc:`howto/install` guide.
@@ -72,6 +85,8 @@ this guide does not help you to resolve the issue, please contact us at
 ``sbia-software at uphs.upenn.edu``.
 
 
+.. _The Open Source Initiative: http://opensource.org/
+.. _license: http://www.rad.upenn.edu/sbia/software/license.html
 .. _ITK: http://www.itk.org/
 .. _MATLAB: http://www.mathworks.com/products/matlab/
 .. _MATLAB Compiler: http://www.mathworks.com/products/compiler/

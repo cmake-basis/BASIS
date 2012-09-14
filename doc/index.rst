@@ -56,10 +56,8 @@ further explain its purpose and the parts it is made of
     :hidden:
 
     self
-    download
     installation
     documentation
-    tutorials
 
 
 .. _BASIS Modules: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html

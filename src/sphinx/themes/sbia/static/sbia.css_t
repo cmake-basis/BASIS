@@ -16,72 +16,22 @@ div.title
     background-color: #660000;
 }
 
-table.title
-{
-    float: left;
-    background-color: #660000;
-    margin: 0px 12px;
-}
-
-td.projectlogo
-{
-    text-align: center;
-    vertical-align: bottom;
-    border-collapse: separate;
-    background-color: #660000;
-}
- 
-td.projectlogo img
-{ 
-    border: 0px none;
-    height: 60px;
-    background-color: #660000;
-}
-
-div.projectname
-{
-    font: 300% Tahoma, Arial,sans-serif;
-    color: #fff;
-    margin: 0px;
-    padding: 2px 0px;
-    background-color: #660000;
-    text-shadow: #C1C7DD 1px 1px 2px;
-}
-
-div.projectname img
-{ 
-    border: 0px none;
-    height: 60px;
-    background-color: #660000;
-}
-
-div.projectname .projectversion
-{
-    font: 50% Tahoma, Arial,sans-serif;
-    color: #fff;
-    margin: 0px;
-    padding: 0px;
-    background-color: #660000;
-}
-
-div.projectname a {
-    color: white;
-}
-
 div.sbialogo
 {
     vertical-align: bottom;
     border-collapse: separate;
+    background-color: #660000;
 }
 
 div.sbialogo img
 {
-    float: right;
+    float: left;
     border: 0px none;
     width: 300px;
 	height: 60px;
     margin-left: 20px;
     margin-right: 20px;
+    background-color: #660000;
 }
 
 div.pennlogo
@@ -103,16 +53,15 @@ div.pennlogo img
 }
 
 body {
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
-    font-size: 14px;
-    letter-spacing: -0.01em;
-    line-height: 150%;
+    font-family: 'Verdana', sans-serif;
+    font-size: 12px;
+    line-height: 1.6em;
     text-align: center;
     background-color: #F3F1E9; 
     color: black;
     padding: 0;
     margin: 0px 80px 0px 80px;
-    min-width: 740px;
+    min-width: 820px;
 }
 
 a {
@@ -260,10 +209,7 @@ pre a {
 }
 
 div.document {
-    border-left:   1px solid #aaa;
-    border-right:  1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    background-color: white;
+    background-color: #F3F1E9;
     text-align: left;
     background-image: url(contents.png);
     background-repeat: repeat-x;
@@ -280,7 +226,7 @@ div.related ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    height: 36px;
+    height: 30px;
 }
 
 div.related ul li {
@@ -297,9 +243,9 @@ div.related ul li.right {
 
 div.related ul li a {
     margin: 0;
-    padding: 12px 20px 12px 20px;
-    height: 36px;
-    line-height: 36px;
+    padding: 10px 20px 10px 20px;
+    height: 30px;
+    line-height: 30px;
     margin-top: auto;
     margin-bottom: auto;
     height: auto;
@@ -329,6 +275,64 @@ div.related ul li a:hover {
     background-color: #333366;
     text-decoration: none;
     text-shadow: none;
+}
+
+div.related ul.rellinks {
+    height: 24px;
+}
+
+div.related ul.rellinks li {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    float: left;
+}
+
+div.related ul.rellinks li.right {
+    float: right;
+}
+
+div.related ul.rellinks li.rootrellink {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    float: left;
+}
+
+div.related ul.rellinks li.rootrellink a {
+    font-size: 90%;
+    padding: 6px 20px 6px 20px;
+    font-weight: bold;
+    letter-spacing: 0.5em;
+    text-transform: none;
+}
+
+div.related ul.rellinks li a {
+    margin: 0;
+    padding: 6px 10px 6px 10px;
+    height: 24px;
+    line-height: 24px;
+    margin-top: auto;
+    margin-bottom: auto;
+    color: #E7E3D9;
+    text-decoration: none;
+    outline: none;
+    font-family: Georgia, serif;
+    font-size: 80%;
+    font-weight: normal;
+    letter-spacing: 2px;
+    text-transform: lowercase;
+    text-shadow: none;
+}
+
+div.related ul.rellinks li a:hover {
+    color: #FFFFFF;
+    background-color: #333366;
+}
+
+div.related ul.rellinks li a.current:hover {
+    color: #FFFFFF;
+    background-color: #330000;
 }
 
 div.related ul.parents {
@@ -482,7 +486,7 @@ div.footer {
     padding: 3px 8px 3px 0;
     clear: both;
     font-size: 0.8em;
-    text-align: right;
+    text-align: left;
 }
 
 div.footer a {

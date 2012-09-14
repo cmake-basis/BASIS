@@ -13,58 +13,27 @@
 
 {%- block relbar1 %}
   <div class="title">
-    <table class="title" cellspacing="0" cellpadding="0">
-      <tbody>
-        <tr style="height: 56px">
-          {%- if theme_project_logo %}
-            <td class="project_logo"><a href="{{ pathto('index') }}"><img alt="Logo" src="{{ pathto("_static/" + theme_project_logo, 1) }}" /></a></td>
-          {%- endif %}
-          <td class="projectid">
-            <div class="projectname">
-              <a href="{{ pathto('index') }}">
-                {%- if theme_title_logo %}
-                  <img alt="{{ project }}" src="{{ pathto("_static/" + theme_title_logo, 1) }}" />
-                {%- else %}
-                  {{ project }}
-                {%- endif %}
-              </a>
-              {%- if theme_show_release|tobool %}
-                &#160;
-                <span class="projectversion">{{ release }}</span>
-              {%- endif %}
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    {%- if theme_penn_logo|tobool %}
-      <div class="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
-    {%- endif %}
-    {%- if theme_sbia_logo|tobool %}
-      <div class="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
-    {%- endif %}
+    <div class="sbialogo"><a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="{{ pathto("_static/logo_sbia.png", 1) }}"/></a></div>
+    <div class="pennlogo"><a href="http://www.upenn.edu/"><img alt="Penn Logo" src="{{ pathto("_static/logo_penn.gif", 1) }}"/></a></div>
     <div class="clearer"></div>
   </div>
 
   <div class="related">
     <h3>{{ _('Navigation') }}</h3>
     <ul>
-      {%- if theme_indexlink %}
-        {%- if pathto('index') == '#' %}
-          {%- set parent_path = '..' %}
-        {%- else %}
-          {%- set parent_path = pathto('index') %}
-          {%- if parent_path and parent_path[-1] == '/' %}
-            {%- set parent_path = parent_path + '..' %}
-          {%- else %}
-            {%- set parent_path = parent_path.replace('index.html', '..') %}
-          {%- endif %}
-        {%- endif %}
-        <li class="right"><a href="{{ parent_path }}" title="{{ theme_indexlink|striptags|e }}">{{ theme_indexlink }}</a></li>
-      {%- endif %}
+      <li><a href="http://www.rad.upenn.edu/sbia/index.html"              title="Home">home</a>{{ reldelim2 }}</li>
+      <li><a href="http://www.rad.upenn.edu/sbia/personnel.html"          title="Personnel">personnel</a>{{ reldelim2 }}</li>
+      <li><a href="http://www.rad.upenn.edu/sbia/projects/index.html"     title="Projects">projects</a>{{ reldelim2 }}</li>
+      <li><a href="http://www.rad.upenn.edu/sbia/publications/index.html" title="Publications">publications</a>{{ reldelim2 }}</li>
+      <li><a href="http://www.rad.upenn.edu/sbia/software/index.html"     title="Software" style="font-weight: bold" class="current">{software}</a>{{ reldelim2 }}</li>
+      <li><a href="http://www.rad.upenn.edu/sbia/jobs.html"               title="Jobs">jobs</a>{{ reldelim2 }}</li>
+      <li><a href="http://www.rad.upenn.edu/sbia/contact.html"            title="Contact">contact</a>{{ reldelim2 }}</li>
+      <li><a href="http://www.rad.upenn.edu/sbia/funding.html"            title="Funding">funding</a>{{ reldelim2 }}</li>
+    </ul>
+    <ul class="rellinks">
       {%- block rootrellink %}
         {%- set iscurrent = pathto(master_doc) == "#" or (parents and pathto(master_doc) == parents[0].link|e) %}
-        <li><a {% if iscurrent %}class="current"{% endif %} href="{{ pathto(master_doc) }}" {{ accesskey("H") }}>home</a>{{ reldelim2 }}</li>
+        <li class="rootrellink"><a {% if iscurrent %}class="current"{% endif %} href="{{ pathto(master_doc) }}">{{ project }}</a>{{ reldelim1 }}</li>
       {%- endblock %}
       {%- block relbaritems %}
         {%- for rellink in theme_rellinks %}
