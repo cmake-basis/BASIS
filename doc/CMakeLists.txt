@@ -152,6 +152,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
     RELLINKS      download installation help people
     SIDEBARWIDTH  300
     HTML_SIDEBARS globaltoc
+    HTML_LOGO     logo.png
     LATEX_TITLE   "${PROJECT_NAME}"
     DOXYLINK      apidoc
     DOXYLINK_URL  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest

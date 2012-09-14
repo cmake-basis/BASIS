@@ -21,26 +21,18 @@
   <div class="related">
     <h3>{{ _('Navigation') }}</h3>
     <ul>
-      <li><a href="http://www.rad.upenn.edu/sbia/index.html"              title="Home">home</a>{{ reldelim2 }}</li>
-      <li><a href="http://www.rad.upenn.edu/sbia/personnel.html"          title="Personnel">personnel</a>{{ reldelim2 }}</li>
-      <li><a href="http://www.rad.upenn.edu/sbia/projects/index.html"     title="Projects">projects</a>{{ reldelim2 }}</li>
-      <li><a href="http://www.rad.upenn.edu/sbia/publications/index.html" title="Publications">publications</a>{{ reldelim2 }}</li>
-      <li><a href="http://www.rad.upenn.edu/sbia/software/index.html"     title="Software" style="font-weight: bold" class="current">{software}</a>{{ reldelim2 }}</li>
-      <li><a href="http://www.rad.upenn.edu/sbia/jobs.html"               title="Jobs">jobs</a>{{ reldelim2 }}</li>
-      <li><a href="http://www.rad.upenn.edu/sbia/contact.html"            title="Contact">contact</a>{{ reldelim2 }}</li>
-      <li><a href="http://www.rad.upenn.edu/sbia/funding.html"            title="Funding">funding</a>{{ reldelim2 }}</li>
-    </ul>
-    <ul class="rellinks">
+      <li class="right"><a href="http://www.rad.upenn.edu/sbia/software/index.html" title="SBIA Software">software</a></li>
+      <li class="right"><a href="http://www.rad.upenn.edu/sbia/index.html"          title="SBIA Home">home</a></li>
       {%- block rootrellink %}
         {%- set iscurrent = pathto(master_doc) == "#" or (parents and pathto(master_doc) == parents[0].link|e) %}
-        <li class="rootrellink"><a {% if iscurrent %}class="current"{% endif %} href="{{ pathto(master_doc) }}">{{ project }}</a>{{ reldelim1 }}</li>
+        <li class="rootrellink"><a {% if iscurrent %}class="current"{% endif %} href="{{ pathto(master_doc) }}">{{ project }}</a>{{ reldelim2 }}</li>
       {%- endblock %}
       {%- block relbaritems %}
         {%- for rellink in theme_rellinks %}
           {%- set rellink_path = pathto(rellink) %}
           {%- if rellink_path %}
             {%- set iscurrent = (rellink_path == "#" or (parents and rellink_path == parents[0].link|e)) %}
-            <li><a {% if iscurrent %}class="current"{% endif %} href="{{ rellink_path }}" title="{{ rellink|striptags|e }}">{{ rellink }}</a>{{ reldelim2 }}</li>
+            <li class="rellink"><a {% if iscurrent %}class="current"{% endif %} href="{{ rellink_path }}" title="{{ rellink|striptags|e }}">{{ rellink }}</a>{{ reldelim2 }}</li>
           {%- endif %}
         {%- endfor %}
       {%- endblock %}
