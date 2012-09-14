@@ -18,7 +18,7 @@ Style Guide for Plain Text Files
 ================================
 
 The following guide, which itself is styled according to the plain text
-format it describes, for details on how plain text documentation files
+format it describes, details how plain text documentation files
 of a software project shall be formatted.
 
 ::

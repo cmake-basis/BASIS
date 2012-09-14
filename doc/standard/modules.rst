@@ -31,7 +31,8 @@ same project or external projects (also referred to as packages).
 Note that an external project can also be another top-level project which
 utilizes the same project modularization as discussed herein.
 The idea, and partly the CMake implementation, has been borrowed from the
-`ITK 4`_ project. See the Wiki for details on the `ITK 4 Modularization`_.
+`ITK 4`_ project. See the Wiki of this project for details on the
+`ITK 4 Modularization`_.
 
 
 Implementation
@@ -66,20 +67,6 @@ depending on the ``PROJECT_IS_MODULE`` variable which specifies whether the
 project that is currently being configured is a module of another project
 (i.e., ``PROJECT_IS_MODULE`` is ``TRUE``) or a top-level project
 (i.e., ``PROJECT_IS_MODULE`` is ``FALSE``).
-
-As modules are more or less independent subprojects, which might even be
-maintained by different persons, it is desireable that naming conflicts are
-handled automatically by the top-level project. Therefore, if the CMake variable
-``BASIS_USE_MODULE_NAMESPACES`` is set to ``ON``, BASIS will take actions to
-avoid naming conflicts. For example, the CMake build target names are prepended
-by the name of the module in lowercase followed by a dot (.) as namespace
-separator. By default, the ``BASIS_USE_MODULE_NAMESPACES`` option is, however,
-set to ``OFF``. Even though modules shall be developed as independent from each
-other or the top-level project as applicable, are they yet considered to be
-closely related and their sources kept in the same repository. If a more loose
-coupling of projects is desired, these should be separate projects with separate
-repositories. These may then be distributed, configured, and build as part of
-a common superproject.
 
 .. todo::
 

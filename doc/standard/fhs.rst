@@ -156,10 +156,6 @@ requires a huge amount of image data, these datasets may be stored and managed
 outside the source tree. Please refer to the :doc:`/howto/manage-data` guide
 for details on this topic.
 
-
-Filesystem Hierarchy
---------------------
-
 Below, the filesystem hierarchy of the source tree of a software project is
 delineated. On the left side the names of the CMake variables defined by
 BASIS are given, while on the right side the actual names of the directories
@@ -207,10 +203,6 @@ In the following, only the directories which do not reflect the source
 tree are considered as these directories are created and populated by
 CMake itself.
 
-
-Filesystem Hierarchy
---------------------
-
 ::
 
     - PROJECT_BINARY_DIR              - <build>/
@@ -244,9 +236,6 @@ Installation Tree
 When installing the software package by building either the install target,
 extracting a binary distribution package, or running an installer of a binary
 distribution package, the following directory structure is used.
-
-Filesystem Hierarchy
---------------------
 
 In order to account for different installation schemes depending on the location
 and target system on which the software is being installed, different installation
