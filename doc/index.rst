@@ -58,6 +58,7 @@ further explain its purpose and the parts it is made of
     self
     installation
     documentation
+    people
 
 
 .. _BASIS Modules: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
