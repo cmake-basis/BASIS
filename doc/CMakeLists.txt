@@ -185,6 +185,7 @@ if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
     RELLINKS         download installation help people
     SIDEBARWIDTH     300
     HTML_SIDEBARS    globaltoc
+    HTML_LOGO        logo.png
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
     LATEX_TITLE      ${PROJECT_NAME}
     EXCLUDE_PATTERNS "manual/*"    # condensed manual
