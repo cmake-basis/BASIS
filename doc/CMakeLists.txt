@@ -150,7 +150,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
     MAN_SECTION   7
     HTML_THEME    ${PROJECT_PACKAGE_VENDOR_L}
     RELLINKS      installation documentation people
-    HTML_SIDEBARS localtoc relations
+    SIDEBARWIDTH  300
+    HTML_SIDEBARS globaltoc
     LATEX_TITLE   "${PROJECT_NAME}"
     DOXYLINK      apidoc
     DOXYLINK_URL  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
@@ -182,7 +183,8 @@ if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
     MAN_SECTION      7
     HTML_THEME       ${PROJECT_PACKAGE_VENDOR_L}
     RELLINKS         installation documentation people
-    HTML_SIDEBARS    localtoc relations
+    SIDEBARWIDTH     300
+    HTML_SIDEBARS    globaltoc
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
     LATEX_TITLE      ${PROJECT_NAME}
     EXCLUDE_PATTERNS "manual/*"    # condensed manual

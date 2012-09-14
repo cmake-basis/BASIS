@@ -19,7 +19,7 @@
 Overview
 ========
 
-The Build system And Software Implementation Standard (BASIS) project was
+The **Build system And Software Implementation Standard (BASIS)** project was
 started early in 2011 in order to improve and standardize the software packages
 developed at SBIA_. Based on the decision to use CMake_ and its accompanying
 tools for testing and packaging software, the standard for building software
