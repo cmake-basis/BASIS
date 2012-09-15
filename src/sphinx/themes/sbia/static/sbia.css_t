@@ -594,3 +594,13 @@ ul.keywordmatches li.goodmatch a {
 .apilink {
     font-size: 75%;
 }
+
+/* publications list */
+table.citation {
+    border:      0;
+    margin-left: 0;
+}
+
+table.citation .label {
+    width: 120px;
+}
