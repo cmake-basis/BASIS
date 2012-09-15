@@ -26,18 +26,9 @@ on use of the software.
 
 The full `license`_ text is included with the distribution package and available online.
 
-System Requirements
--------------------
 
-**Operating System:** Linux, OS X, or Microsoft Windows
-
-Software Manual
----------------
-
-The software manual is available :doc:`online <help>` or for download as :download:`PDF <BASIS.pdf>`.
-
-Software Request Form
----------------------
+Registration
+------------
 
 .. only:: latex
     
@@ -45,11 +36,21 @@ Software Request Form
 
 .. raw:: html
     
-    <iframe style="margin: 0" width="100%" height="250px" scrolling="no" frameborder="0"
-            src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=basis">
+    <iframe class="request_form" scrolling="no" src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=basis">
       The iframe tag is not supported by your browser. Please |register|_ instead.
     </iframe>
 
+
+Software Manual
+---------------
+
+The software manual is available :doc:`online <help>` or for download as :download:`PDF <BASIS.pdf>`.
+
+
+System Requirements
+-------------------
+
+**Operating System:** Linux, OS X, or Microsoft Windows
 
 .. raw:: latex
 

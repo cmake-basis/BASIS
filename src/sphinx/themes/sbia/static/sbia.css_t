@@ -209,7 +209,10 @@ pre a {
 }
 
 div.document {
-    background-color: #F3F1E9;
+    background-color: white;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
     text-align: left;
     background-image: url(contents.png);
     background-repeat: repeat-x;
@@ -603,4 +606,14 @@ table.citation {
 
 table.citation .label {
     width: 120px;
+}
+
+/* embedded software request form (http://www.rad.upenn.edu/sbia/software/request_form.php) */
+iframe.request_form {
+    background-color: #F3F1E9;
+    width: 98%;
+    height: 250px;
+    margin: 0;
+    padding-left: 10px;
+    padding-right: 10px;
 }
