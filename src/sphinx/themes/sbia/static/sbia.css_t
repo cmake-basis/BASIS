@@ -3,6 +3,9 @@
  *
  * Based on the atlernate Sphinx desing originally created by Armin Ronacher
  * for Werkzeug, and adapted by Georg Brandl.
+ *
+ * Origin:   $URL$
+ * Revision: $Rev$
  */
 
 @import url("basic.css");
