@@ -306,7 +306,7 @@ div.sphinxsidebar {
 }
 
 div.sphinxsidebar div.sphinxsidebarwrapper img.logo {
-    width: {{ theme_sidebarwidth|toint }}px;
+    width: {{ theme_sidebarwidth|toint - 16 }}px;
 }
 
 div.sphinxsidebar h4, div.sphinxsidebar h3 {
