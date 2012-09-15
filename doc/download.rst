@@ -36,7 +36,7 @@ Registration
 
 .. raw:: html
     
-    <iframe class="request_form" scrolling="no" src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=basis">
+    <iframe class="request_form" scrolling="no" frameborder="0" src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=basis">
       The iframe tag is not supported by your browser. Please |register|_ instead.
     </iframe>
 

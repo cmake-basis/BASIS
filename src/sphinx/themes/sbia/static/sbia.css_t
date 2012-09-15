@@ -209,10 +209,7 @@ pre a {
 }
 
 div.document {
-    background-color: white;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    background-color: #F3F1E9;
     text-align: left;
     background-image: url(contents.png);
     background-repeat: repeat-x;
@@ -345,18 +342,21 @@ p.rubric {
 h1 {
     margin: 0;
     padding: 0.7em 0 0.3em 0;
+    font-family: Georgia, serif;
     font-size: 1.5em;
     color: #11557C;
 }
 
 h2 {
     margin: 1.3em 0 0.2em 0;
+    font-family: Georgia, serif;
     font-size: 1.35em;
     padding: 0;
 }
 
 h3 {
     margin: 1em 0 -0.3em 0;
+    font-family: Georgia, serif;
     font-size: 1.2em;
 }
 
@@ -614,6 +614,4 @@ iframe.request_form {
     width: 98%;
     height: 250px;
     margin: 0;
-    padding-left: 10px;
-    padding-right: 10px;
 }
