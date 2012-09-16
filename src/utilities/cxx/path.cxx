@@ -15,6 +15,8 @@
 
 #include <stdlib.h>       // malloc(), free(), _splitpath_s() (WINDOWS)
 #include <string.h>       // strncmp()
+#include <cctype>         // toupper()
+#include <algorithm>      // transform()
 
 #if WINDOWS
 #  include <windows.h>    // GetFileAttributes()
@@ -203,21 +205,28 @@ vector<string> splitdrive(const string& path)
 }
 
 // ---------------------------------------------------------------------------
-void splitext(const string& path, string& head, string& ext, const set<string>* exts)
+void splitext(const string& path, string& head, string& ext, const set<string>* exts, bool icase)
 {
     size_t pos = string::npos;
-    // first test user supplied extensions
-    if (exts && exts->size() > 0) {
+    // test user supplied extensions only
+    if (exts) {
         for (set<string>::const_iterator i = exts->begin(); i != exts->end(); ++i) {
             if (path.size() < i->size()) continue;
             size_t start = path.size() - i->size();
-            if (start < pos && path.compare(start, i->size(), *i) == 0) {
-                pos = start;
+            if (start < pos) { // longest match
+                if (icase) {
+                    string str = path.substr(start);
+                    string ext = *i;
+                    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+                    std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+                    if (str == ext) pos = start;
+                } else if (path.compare(start, i->size(), *i) == 0) {
+                    pos = start;
+                }
             }
         }
-    }
     // otherwise, get position of last dot
-    if (pos == string::npos) {
+    } else {
         pos = path.find_last_of('.');
         // leading dot of file name in Posix indicates hidden file,
         // not start of file extension

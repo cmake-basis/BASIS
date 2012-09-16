@@ -163,19 +163,21 @@ std::vector<std::string> splitdrive(const std::string& path);
 /**
  * @brief Get file name extension.
  *
- * @param [in]  path Path.
- * @param [out] head Remaining path without extension.
- * @param [out] ext  Extension (including leading dot).
- * @param [in]  exts Set of recognized extensions. Note that the given set
- *                   can contain extensions with dots (.) as part of the
- *                   extension, e.g., ".nii.gz". If NULL or an empty set is
- *                   given, the part after the last dot (including the dot)
- *                   is considered to be the file name extension. Otherwise,
- *                   the longest extension from the given set which is equal
- *                   to the end of the file path is returned.
+ * @param [in]  path  Path.
+ * @param [out] head  Remaining path without extension.
+ * @param [out] ext   Extension (including leading dot).
+ * @param [in]  exts  Set of recognized extensions. Note that the given set
+ *                    can contain extensions with dots (.) as part of the
+ *                    extension, e.g., ".nii.gz". If NULL is given, the part
+ *                    after the last dot (including the dot) is considered to
+ *                    be the file name extension. Otherwise, the longest extension
+ *                    from the given set which is equal to the end of the file
+ *                    path is returned. If no specified extension matched, an
+ *                    empty string is returned as extension.
+ * @param [in]  icase Whether to ignore the case of the extensions.
  */
 void splitext(const std::string& path, std::string& head, std::string& ext,
-              const std::set<std::string>* exts = NULL);
+              const std::set<std::string>* exts = NULL, bool icase = false);
 
 /**
  * @brief Get file name extension.

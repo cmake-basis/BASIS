@@ -196,8 +196,8 @@ TEST (Path, splitext)
     exts.insert(".hdr");
 
     os::path::splitext("/home/andreas/brain.nii.gz", head, ext, &exts);
-    EXPECT_STREQ("/home/andreas/brain.nii", head.c_str());
-    EXPECT_STREQ(".gz", ext.c_str());
+    EXPECT_STREQ("/home/andreas/brain.nii.gz", head.c_str());
+    EXPECT_STREQ("", ext.c_str());
 
     exts.insert(".gz");
 
@@ -205,9 +205,13 @@ TEST (Path, splitext)
     EXPECT_STREQ("/home/andreas/brain.nii", head.c_str());
     EXPECT_STREQ(".gz", ext.c_str());
 
-    exts.insert(".nii.gz");
+    exts.insert(".nii.GZ");
 
     os::path::splitext("/home/andreas/brain.nii.gz", head, ext, &exts);
+    EXPECT_STREQ("/home/andreas/brain.nii", head.c_str());
+    EXPECT_STREQ(".gz", ext.c_str());
+
+    os::path::splitext("/home/andreas/brain.nii.gz", head, ext, &exts, true);
     EXPECT_STREQ("/home/andreas/brain", head.c_str());
     EXPECT_STREQ(".nii.gz", ext.c_str());
 
