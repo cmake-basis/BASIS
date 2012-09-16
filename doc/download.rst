@@ -47,7 +47,7 @@ Registration
 Software Manual
 ---------------
 
-The software manual is available :doc:`online <help>` or for download as :download:`PDF <BASIS.pdf>`.
+The software manual is available :doc:`online <help>` and for download and print as :download:`PDF <BASIS.pdf>`.
 
 
 System Requirements
