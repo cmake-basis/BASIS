@@ -149,4 +149,4 @@ REFERENCES
 
   [1] http://www.rad.upenn.edu/sbia/software/basis/
 
-  [2] http://www.rad.upenn.edu/sbia/software/basis/howto/install/
+  [2] http://www.rad.upenn.edu/sbia/software/basis/howto/install.html
