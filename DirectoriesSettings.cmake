@@ -188,15 +188,15 @@ set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation pre
 
 # ----------------------------------------------------------------------------
 # installation scheme - non-cached, can be preset using -D option of CMake
-set (BASIS_INSTALL_SCHEME "default" CACHE STRING "default, opt, usr, or win")
-set_property(CACHE BASIS_INSTALL_SCHEME PROPERTY STRINGS default opt usr win)
+set (BASIS_INSTALL_SCHEME "default" CACHE STRING "default, opt, usr, win (or bundle)")
+set_property(CACHE BASIS_INSTALL_SCHEME PROPERTY STRINGS default opt usr win bundle)
 mark_as_advanced (BASIS_INSTALL_SCHEME)
 
 if (BASIS_INSTALL_SCHEME MATCHES "default")
   string (TOLOWER "${CMAKE_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX_L)
   if (WIN32)
     set (BASIS_INSTALL_SCHEME win)
-  elseif (CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?${PROJECT_NAME_L}[_-]?") # e.g. /opt/<package>[-<version>]
+  elseif (CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${PROJECT_NAME}|${PROJECT_NAME_L}|${PROJECT_NAME_U})[_-]?") # e.g. /opt/<package>[-<version>]
     set (BASIS_INSTALL_SCHEME opt)
   else ()
     set (BASIS_INSTALL_SCHEME usr)
@@ -204,8 +204,8 @@ if (BASIS_INSTALL_SCHEME MATCHES "default")
   unset (CMAKE_INSTALL_PREFIX_L)
 endif ()
 
-if (NOT BASIS_INSTALL_SCHEME MATCHES "^(opt|usr|win)$")
-  message (FATAL_ERROR "Invalid BASIS_INSTALL_SCHEME! Valid values are 'default', 'opt', 'usr', or 'win'.")
+if (NOT BASIS_INSTALL_SCHEME MATCHES "^(opt|usr|win|bundle)$")
+  message (FATAL_ERROR "Invalid BASIS_INSTALL_SCHEME! Valid values are 'default', 'opt', 'usr', 'win' (or 'bundle').")
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -230,7 +230,7 @@ if (BASIS_INSTALL_SCHEME MATCHES "win") # e.g., CMAKE_INSTALL_PREFIX := <Program
   set (INSTALL_MAN_DIR)
   set (INSTALL_TEXINFO_DIR)
 
-elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr/local
+elseif (BASIS_INSTALL_SCHEME MATCHES "usr|bundle") # e.g., CMAKE_INSTALL_PREFIX := /usr/local
 
   # package configuration
   set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
@@ -312,7 +312,7 @@ elseif (BASIS_INSTALL_SCHEME MATCHES "usr")
     endif ()
   endforeach ()
  
-else ()
+else () # opt|bundle
 
   foreach (_L IN ITEMS python jython perl matlab bash)
     string (TOUPPER "${_L}" _U)
