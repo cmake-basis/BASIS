@@ -13,6 +13,11 @@
 
    -->
 
+.. meta::
+    :description: This BASIS how-to explains how to create new developement branches
+                  and merge changes from one branch into another. It further details
+                  the software release steps.
+
 ==================
 Branch and Release
 ==================

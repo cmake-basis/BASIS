@@ -13,6 +13,9 @@
 
    -->
 
+.. meta::
+    :description: Download the BASIS software and manual for Unix (Linux, OS X) and Microsoft Windows.
+
 ========
 Download
 ========

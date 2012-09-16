@@ -13,6 +13,9 @@
 
    -->
 
+.. meta::
+    :description: Common CMake options for the build configuration of BASIS-based software.
+
 =============
 CMake Options
 =============

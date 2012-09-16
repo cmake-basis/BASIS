@@ -13,6 +13,12 @@
 
    -->
 
+.. meta::
+    :description: This article defines the filesystem hierarchy standard (FHS) of BASIS,
+                  a build system and software implementation standard. The FHS defines
+                  the directory structure of the project sources, the build tree, and
+                  the installed software files.
+
 =============================
 Filesystem Hierarchy Standard
 =============================

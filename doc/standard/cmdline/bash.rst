@@ -13,14 +13,16 @@
 
    -->
 
+.. meta::
+    :description: This BASIS how-to guide gives examples on how to parse the
+                  command-line arguments in Bash scripts.
+
 ==========================================
-Parsing the Command-line Arguments in BASH
+Parsing the Command-line Arguments in Bash
 ==========================================
 
-.. todo:: This page has to be written yet.
-
-See shflags.sh_ as a reference until this guide is completed, keeping in mind,
-though, that this module will have to be revised.
-
+.. note:: This how-to guide has to be written yet. See the shflags.sh_ module as a
+          reference until this guide is completed, keeping in mind, though, that
+          this module will have to be revised.
 
 .. _shflags.sh: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/shflags_8sh.html

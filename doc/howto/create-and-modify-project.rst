@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: How to create/modify a software project based on BASIS,
+                  a build system and software implementation standard.
+
 =======================
 Create/Modify a Project
 =======================

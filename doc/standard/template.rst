@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: This article describes the software project template of BASIS,
+                  a build system and software implementation standard.
+
 =========================
 Software Project Template
 =========================

@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: This article documents the build of script targets as implemented
+                  by BASIS, a build system and software implementation standard.
+
 =======================
 Build of Script Targets
 =======================

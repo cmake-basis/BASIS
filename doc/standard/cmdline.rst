@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: BASIS how-to guides which give examples on how to parse the
+                  command-line in various programming languages.
+
 ====================
 Command-line Parsing
 ====================

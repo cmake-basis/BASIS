@@ -13,6 +13,11 @@
 
    -->
 
+.. meta::
+    :description: This article details the calling conventions, i.e., the
+                  execution of subprocesses, of BASIS, a build system and software
+                  implementation standard.
+
 ===================
 Calling Conventions
 ===================

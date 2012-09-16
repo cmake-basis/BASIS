@@ -13,6 +13,9 @@
 
    -->
 
+.. meta::
+    :description: Build and installation instructions for BASIS.
+
 ============
 Installation
 ============

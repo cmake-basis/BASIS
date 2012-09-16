@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: This BASIS style guide specifies guidelines for the formatting of
+                  plain text files of a software project.
+
 ================================
 Style Guide for Plain Text Files
 ================================

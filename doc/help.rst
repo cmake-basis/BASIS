@@ -13,9 +13,12 @@
 
    -->
 
-====
-Help
-====
+.. title:: Help
+
+.. meta::
+    :description: Learn about BASIS in the quick start guides and comprehensive tutorials.
+                  Read about the build system and software implementation standard and
+                  find how-to guides helping you to comply with the standard.
 
 .. The ref links below are required for the LaTeX/PDF version as the download directive
    in this case does not translate to a hyperlink, but text only.

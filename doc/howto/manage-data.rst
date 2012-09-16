@@ -13,12 +13,15 @@
 
    -->
 
+.. meta::
+    :description: This BASIS how-to guide describes how example and test data
+                  can be stored outside the source tree of a software project.
+
 ==================
 Managing Test Data
 ==================
 
-.. todo::
-    This how-to guide has to be written yet.
+.. note:: This how-to guide has to be written yet.
 
 This document describes how example and test data can be stored outside the source tree.
 

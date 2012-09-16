@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: This BASIS how-to guide gives examples on how to parse the
+                  command-line arguments in C++ programs.
+
 =========================================
 Parsing the Command-line Arguments in C++
 =========================================

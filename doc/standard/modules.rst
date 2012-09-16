@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: This article details the project modularization implemented by
+                  BASIS, a build system and software implementation standard.
+
 ======================
 Project Modularization
 ======================

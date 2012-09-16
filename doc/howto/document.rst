@@ -13,13 +13,15 @@
 
    -->
 
+.. meta::
+    :description: How to document software following BASIS, a build system and
+                  software implementation standard.
+
 ====================
 Documenting Software
 ====================
 
-.. todo::
-
-    This how-to guide has to be completed yet.
+.. note:: This how-to guide is yet not complete.
 
 BASIS supports two well-known and established documentation generation tools:
 Doxygen_ and Sphinx_.

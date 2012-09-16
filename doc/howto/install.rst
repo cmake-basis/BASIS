@@ -13,6 +13,11 @@
 
    -->
 
+.. meta::
+    :description: General build and installation instructions for software which
+                  was developed using BASIS, a build system and software
+                  implementation standard.
+
 ======================
 Build and Installation
 ======================

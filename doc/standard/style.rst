@@ -13,6 +13,11 @@
 
    -->
 
+.. meta::
+    :description: Style guides which specify guidelines for the formatting of
+                  documents and programming style for software projects which
+                  follow BASIS, a build system and software implementation standard.
+
 ============
 Style Guides
 ============

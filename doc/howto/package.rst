@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: This BASIS how-to describes the packaging of BASIS-based
+                  software for distribution.
+
 ==================
 Packaging Software
 ==================

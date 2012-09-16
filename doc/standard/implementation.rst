@@ -13,6 +13,10 @@
 
    -->
 
+.. meta::
+    :description: Articles which define the implementation standard of BASIS,
+                  a build system and software implementation standard.
+
 =======================
 Implementation Standard
 =======================

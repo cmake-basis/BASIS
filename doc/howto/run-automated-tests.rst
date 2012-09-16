@@ -13,6 +13,11 @@
 
    -->
 
+.. meta::
+    :description: This BASIS how-to describes the basistest family of scripts
+                  and the process which was implemented at SBIA for the
+                  automated software test execution.
+
 =================
 Automated Testing
 =================
@@ -27,6 +32,8 @@ setup on any machine outside the lab. But in order for CTest_ to be able to
 submit test results to the CDash server, a VPN connection to the
 University of Pennsylvania Health System (UPHS) network is required.
 
+.. note:: This how-to guide details the automated software testing at SBIA
+          and is therefore specific to the lab's computing environment.
 
 .. _BasisTestScripts:
 

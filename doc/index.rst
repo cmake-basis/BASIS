@@ -15,6 +15,11 @@
 
 .. title:: Home
 
+.. meta::
+    :description: The Build system And Software Implementation Standard (BASIS)
+                  is a meta-project with the goal to minimize and standardize
+                  the software development efforts in a research environment.
+
 .. raw:: latex
 
     \pagebreak
