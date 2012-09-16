@@ -623,7 +623,7 @@ _basis_executabletargetinfo_sanitize()
         upvar $1 ''
         return 0
     }
-    local sane="`printf -- "$2" | tr [:space:] '_' | tr -c [:alnum:] '_'`"
+    local sane="`printf -- "$2" | tr '[:space:]' '_' | tr -c '[:alnum:]' '_'`"
     [ -n "${sane}" ] || {
         echo "_basis_executabletargetinfo_sanitize(): Failed to sanitize string '$2'" 1>&2
         exit 1

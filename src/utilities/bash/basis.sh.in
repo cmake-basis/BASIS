@@ -99,6 +99,7 @@ fi
 _basis_executabletargetinfo_initialize()
 {
     [ $# -eq 0 ] || return 1
+    [[ "${_BASIS_EXECUTABLETARGETINFO_INITIALIZED}" == true ]] && return 0
 
     @EXECUTABLE_TARGET_INFO@
 
