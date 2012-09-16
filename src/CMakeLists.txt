@@ -22,7 +22,10 @@
 
 add_subdirectory (cmake)     # CMake modules
 add_subdirectory (utilities) # implementation utilities
-add_subdirectory (sphinx)    # Sphinx extensions and themes
+
+if (Sphinx_FOUND)
+  add_subdirectory (sphinx)  # Sphinx extensions and themes
+endif ()
 
 # ============================================================================
 # executable target(s)
