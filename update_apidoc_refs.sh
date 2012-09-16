@@ -14,7 +14,7 @@ if [ -z "${release}" ]; then
 fi
 [[ ${release} == 'latest' ]] || release=v${release}
 
-if [[ `printf ${BASH_VERSION} | grep 'apple'` ]]; then
+if [[ `uname` == Darwin ]]; then
     find doc -type f \( -name '*.rst' ! -name documentation.rst \) -exec sed -i '' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/$release/:g;s:/apidoc/latest/:/apidoc/$release/:g" {} \;
     sed -i '' "s:/apidoc/v[0-9][0-9]*\.[0-9][0-9]*/:/apidoc/$release/:g;s:/apidoc/latest/:/apidoc/$release/:g" README.md
 else
