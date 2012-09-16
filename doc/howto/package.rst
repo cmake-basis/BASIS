@@ -26,8 +26,8 @@ This document describes the packaging of BASIS projects.
 
 .. _GenerateSourcePackage:
 
-Source Distribution Package
-===========================
+Distribution of Sources
+=======================
 
 A source package for distribution, which only includes basic tests and
 selected modules, is generated using CPack_. In particular, the build target
