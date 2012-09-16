@@ -218,14 +218,14 @@ REFERENCES
    [1] http://www.rad.upenn.edu/sbia/software/basis/help.html
    [2] http://www.rad.upenn.edu/sbia/software/basis/standard/template.html
    [3] http://www.rad.upenn.edu/sbia/software/basis/standard/fhs.html
-   [4] http://www.rad.upenn.edu/sbia/software/basis/apidoc/group__BasisModules.html
-   [5] http://www.rad.upenn.edu/sbia/software/basis/apidoc/group__BasisUtilities.html
+   [4] http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
+   [5] http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html
    [6] http://www.rad.upenn.edu/sbia/software/basis/standard/implementation.html
    [7] http://www.vtk.org/Wiki/ITK/Release_4/Modularization
    [8] http://www.rad.upenn.edu/sbia/software/basis/howto/create-and-modify-project.html
-   [9] http://www.rad.upenn.edu/sbia/software/basis/apidoc/group__Tools.html
+   [9] http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__Tools.html
   [10] http://www.rad.upenn.edu/sbia/software/basis/howto/run-automated-tests.html
-  [11] http://www.rad.upenn.edu/sbia/software/basis/apidoc/UtilitiesTools_8cmake.html
+  [11] http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/UtilitiesTools_8cmake.html
   [12] http://www.rad.upenn.edu/sbia/software/basis/standard/cmdline.html
   [13] http://www.rad.upenn.edu/sbia/software/basis/standard/execution.html
   [14] http://www.rad.upenn.edu/sbia/software/basis/
