@@ -1663,6 +1663,25 @@ function (basis_get_compiled_file CFILE SOURCE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
+## @brief Whether to compile Python modules for Jython interpreter.
+#
+# This macro returns a boolean value stating whether Python modules shall also
+# be compiled for use by Jython interpreter if BASIS_COMPILE_SCRIPTS is ON.
+#
+# @param [out] FLAG Set to either TRUE or FALSE depending on whether Python
+#                   modules shall be compiled using Jython or not.
+macro (basis_compile_python_modules_for_jython FLAG)
+  if (BASIS_COMPILE_SCRIPTS AND JYTHON_EXECUTABLE)
+    set (${FLAG} TRUE)
+  else ()
+    set (${FLAG} FALSE)
+  endif ()
+  if (DEFINED USE_JythonInterp AND NOT USE_JythonInterp)
+    set (${FLAG} FALSE)
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
 ## @brief Glob source files.
 #
 # This function gets a list of source files and globbing expressions, evaluates
@@ -2275,7 +2294,8 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
       if (ARGN_LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
         basis_get_compiled_file (CFILE "${_OUTPUT_FILE}" PYTHON)
         execute_process (COMMAND "${PYTHON_EXECUTABLE}" -E -c "import py_compile; py_compile.compile('${_OUTPUT_FILE}', '${CFILE}')")
-        if (JYTHON_EXECUTABLE)
+        basis_compile_python_modules_for_jython (RV)
+        if (RV)
           if (BINARY_PYTHON_LIBRARY_DIR AND BINARY_JYTHON_LIBRARY_DIR)
             file (RELATIVE_PATH REL "${BINARY_PYTHON_LIBRARY_DIR}" "${_OUTPUT_FILE}")
           else ()
