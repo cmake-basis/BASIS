@@ -69,6 +69,7 @@ further explain its purpose and the parts it is made of
     download
     installation
     help
+    issues
     people
 
 
