@@ -22,9 +22,16 @@
 Issues
 ======
 
-Please report any issues with BASIS on SourceForge_. The issue tracker can further be
-used to request new features or to get support. Note that you may be further redirected
-from SourceForge to the actual issue tracker used.
+Please report any issues with BASIS such as bugs on SourceForge_. The issue tracker can
+further be used to request new features or to get support. Note that you may further be
+redirected automatically from SourceForge to the actual issue tracking application.
+
+.. note:: The BASIS project hosted at SourceForge is maintained by `Andreas Schuh`_ who
+          worked at SBIA from 2011-2012. Andreas will respond to your BASIS-related
+          requests and bug reports. If you do not receive a response or your issue is
+          not resolved within reasonable time, please contact us at
+          ``sbia-software at uphs.upenn.edu``.
 
 
 .. _SourceForge: https://sourceforge.net/p/sbia-basis/issues/
+.. _Andreas Schuh: http://www.rad.upenn.edu/sbia/Andreas.Schuh/
