@@ -173,6 +173,12 @@ macro (basis_find_package PACKAGE)
     set (VER "${CMAKE_MATCH_0}")
   endif ()
   # --------------------------------------------------------------------------
+  # make preset <PKG>_DIR variable visible in GUI by caching it if not done yet
+  basis_is_cached (CACHED ${PKG}_DIR)
+  if (DEFINED ${PKG}_DIR AND NOT CACHED)
+    set (${PKG}_DIR "${${PKG}_DIR}" CACHE PATH "Installation directory of ${PKG}.")
+  endif ()
+  # --------------------------------------------------------------------------
   # preserve <PKG>_DIR variable which might get reset if different versions
   # of the package are searched or if package is optional and deselected
   set (PKG_DIR "${${PKG}_DIR}")
