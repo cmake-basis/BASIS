@@ -23,7 +23,7 @@ Issues
 ======
 
 Please report any issues with BASIS such as bugs on SourceForge_. The issue tracker can
-further be used to request new features or to get support. Note that you may further be
+further be used to request new features or to get support. Note that you may be
 redirected automatically from SourceForge to the actual issue tracking application.
 
 .. note:: The BASIS project hosted at SourceForge is maintained by `Andreas Schuh`_ who
