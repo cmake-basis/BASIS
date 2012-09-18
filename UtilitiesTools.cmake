@@ -192,22 +192,27 @@ function (basis_utilities_check VAR SOURCE_FILE)
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*\@BASIS_PYTHON_UTILITIES\@")
       message (FATAL_ERROR "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_PYTHON_UTILITIES\@!")
     endif ()
-    # match import statements
     basis_sanitize_for_regex (PYTHON_PACKAGE "${PROJECT_NAMESPACE_PYTHON}")
-    foreach (RE IN ITEMS
-      "import[ \\t]+basis"                                      # e.g., import basis
-      "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                  # e.g., import <package>.basis
-      "import[ \\t]+\\.\\.?basis"                               # e.g., import .basis, import ..basis
-      "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis"   # e.g., from <package> import basis
-      "from[ \\t]+${PYTHON_PACKAGE}.basis[ \\t]+import[ \\t].*" # e.g., from <package>.basis import which
-      "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"             # e.g., from . import basis", "from .. import basis
-      "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"            # e.g., from .basis import which, WhichError, from ..basis import which
-    ) # foreach RE
-      if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*as[ \t]+.*)?([ \t]*#.*|[ \t]*)(;|\n|$)")
-        set (UTILITIES_USED TRUE)
-        break ()
-      endif ()
-    endforeach ()
+    # match use of package-specific utilities
+    if (SCRIPT MATCHES "[^a-zA-Z._]${PYTHON_PACKAGE}.basis([.; \t\n]|$)") # e.g., basis = <package>.basis, <package>.basis.exedir()
+      set (UTILITIES_USED TRUE)
+    else ()
+      # match import statements
+      foreach (RE IN ITEMS
+        "import[ \\t]+basis"                                      # e.g., import basis
+        "import[ \\t]+${PYTHON_PACKAGE}\\.basis"                  # e.g., import <package>.basis
+        "import[ \\t]+\\.\\.?basis"                               # e.g., import .basis, import ..basis
+        "from[ \\t]+${PYTHON_PACKAGE}[ \\t]+import[ \\t]+basis"   # e.g., from <package> import basis
+        "from[ \\t]+${PYTHON_PACKAGE}.basis[ \\t]+import[ \\t].*" # e.g., from <package>.basis import which
+        "from[ \\t]+\\.\\.?[ \\t]+import[ \\t]+basis"             # e.g., from . import basis", "from .. import basis
+        "from[ \\t]+\\.\\.?basis[ \\t]+import[ \\t].*"            # e.g., from .basis import which, WhichError, from ..basis import which
+      ) # foreach RE
+        if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*as[ \t]+.*)?([ \t]*#.*|[ \t]*)(;|\n|$)")
+          set (UTILITIES_USED TRUE)
+          break ()
+        endif ()
+      endforeach ()
+    endif ()
   # --------------------------------------------------------------------------
   # Perl
   elseif (LANGUAGE MATCHES "PERL")
