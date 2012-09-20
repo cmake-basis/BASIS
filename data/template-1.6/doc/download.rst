@@ -52,21 +52,23 @@ System Requirements
 **Operating System:** Linux
 
 
-Registration
-------------
+.. _register:
+
+Register for Download
+---------------------
 
 .. only:: latex
     
-    Please |register|_ to receive an email with the download links of the software.
+    Please |register online|_ to receive an email with the download links of the software.
 
 .. raw:: html
     
     <iframe class="request_form" scrolling="no" frameborder="0" src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=<project_l>">
-      The iframe tag is not supported by your browser. Please |register|_ instead.
+      The iframe tag is not supported by your browser. Please `register here <http://www.rad.upenn.edu/sbia/software/request.php?software=<project_l>>`__ instead.
     </iframe>
 
 
-.. |register| replace:: **register here**
-.. _register: http://www.rad.upenn.edu/sbia/software/request.php?software=<project_l>
+.. |register online| replace:: **register online**
+.. _register online: http://www.rad.upenn.edu/sbia/software/<project_l>/download.html#register
 
 

@@ -57,6 +57,7 @@ def get_template_options(op=None):
             'config-use'          : op, # add/remove package configuration use file
             'data'                : op, # add/remove auxiliary data files
             'doc'                 : op, # add/remove documentation
+            'doc-rst'             : op, # add/remove template reST files
             'example'             : op, # add/remove example
             'include'             : op, # add/remove public includes tree
             'src'                 : op, # add/remove directory for source files
@@ -77,6 +78,7 @@ def get_standard_template_options(opts, overwrite=False):
     if overwrite or opts.get('config-use')          == None: opts['config-use']          = DEL
     if overwrite or opts.get('data')                == None: opts['data']                = DEL
     if overwrite or opts.get('doc')                 == None: opts['doc']                 = ADD
+    if overwrite or opts.get('doc-rst')             == None: opts['doc-rst']             = ADD
     if overwrite or opts.get('example')             == None: opts['example']             = ADD
     if overwrite or opts.get('include')             == None: opts['include']             = DEL
     if overwrite or opts.get('test')                == None: opts['test']                = ADD
@@ -121,12 +123,13 @@ def get_default_template_options(root, opts, create):
             opts = _update_dflt_opt(root, opts, 'config-use',          'config/ConfigUse.cmake.in')
         opts = _update_dflt_opt(root, opts, 'data',          'data')
         opts = _update_dflt_opt(root, opts, 'doc',           'doc')
+        opts = _update_dflt_opt(root, opts, 'doc-rst',       'doc/index.rst')
         opts = _update_dflt_opt(root, opts, 'example',       'example')
         opts = _update_dflt_opt(root, opts, 'include',       'include')
         opts = _update_dflt_opt(root, opts, 'src',           'src')
         opts = _update_dflt_opt(root, opts, 'modules',       'modules')
         opts = _update_dflt_opt(root, opts, 'test',          'test')
-        opts = _update_dflt_opt(root, opts, 'test-internal', 'test-internal')
+        opts = _update_dflt_opt(root, opts, 'test-internal', 'test/internal')
     return opts
 
 # ----------------------------------------------------------------------------
@@ -751,6 +754,7 @@ selecting any of the additional template files.""")
 project template if no template was selected explicitly.
 Corresponds to:
     --doc
+    --doc-rst
     --example
     --noconfig
     --nodata
@@ -861,6 +865,10 @@ Corresponds to:
     parser.add_argument('--doc', '--nodoc',
             nargs=0, action=OptAction,
             help="Add/remove directory for documentation files.")
+
+    parser.add_argument('--doc-rst', '--nodoc-rst',
+            nargs=0, action=OptAction,
+            help="Add/remove reStructuredText (.rst) files for software manual/web site.")
 
     parser.add_argument('--example', '--noexample',
             nargs=0, action=OptAction,
@@ -1065,13 +1073,13 @@ template files in the .basis/ subdirectory.
         # software configuration data
         acc.call(addordel, opts.get('data', None), 'data/CMakeLists.txt', args)
         # documentation
-        acc.call(addordel, opts.get('doc', None), 'doc/CMakeLists.txt',   args)
-        acc.call(addordel, opts.get('doc', None), 'doc/index.rst',        args)
-        acc.call(addordel, opts.get('doc', None), 'doc/download.rst',     args)
-        acc.call(addordel, opts.get('doc', None), 'doc/installation.rst', args)
-        acc.call(addordel, opts.get('doc', None), 'doc/manual.rst',       args)
-        acc.call(addordel, opts.get('doc', None), 'doc/publications.rst', args)
-        acc.call(addordel, opts.get('doc', None), 'doc/people.rst',       args)
+        acc.call(addordel, opts.get('doc',     None), 'doc/CMakeLists.txt',   args)
+        acc.call(addordel, opts.get('doc-rst', None), 'doc/index.rst',        args)
+        acc.call(addordel, opts.get('doc-rst', None), 'doc/download.rst',     args)
+        acc.call(addordel, opts.get('doc-rst', None), 'doc/installation.rst', args)
+        acc.call(addordel, opts.get('doc-rst', None), 'doc/manual.rst',       args)
+        acc.call(addordel, opts.get('doc-rst', None), 'doc/publications.rst', args)
+        acc.call(addordel, opts.get('doc-rst', None), 'doc/people.rst',       args)
         # modularization
         acc.call(addordel, opts.get('modules', None), 'modules', args, isdir=True)
         # source files
