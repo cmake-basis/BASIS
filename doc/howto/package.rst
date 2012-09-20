@@ -48,4 +48,4 @@ distribution package::
 
 
 .. _CPack: http://www.cmake.org/cmake/help/cpack-2-8-docs.html
-.. _BasisPack.cmake: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/BasisPack_8cmake.html
+.. _BasisPack.cmake: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/BasisPack_8cmake.html
