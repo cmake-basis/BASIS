@@ -98,37 +98,66 @@ is generated from in-source comments using Doxygen_ and the filters provided by 
 for languages other than C++.
 
 * `Tools <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__Tools.html>`_
-  |Tools v2.0|_ |Tools v1.3|_ |Tools v1.2|_ |Tools v1.1|_ |Tools v1.0|_
+  |Tools v2.1|_ |Tools v2.0|_ |Tools v1.3|_ |Tools v1.2|_ |Tools v1.1|_ |Tools v1.0|_
 * `Modules <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html>`_
-  |Modules v2.0|_ |Modules v1.3|_ |Modules v1.2|_ |Modules v1.1|_ |Modules v1.0|_
+  |Modules v2.1|_ |Modules v2.0|_ |Modules v1.3|_ |Modules v1.2|_ |Modules v1.1|_ |Modules v1.0|_
 
   - `Public CMake Functions <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeAPI.html>`_
-    |CMake API v2.0|_ |CMake API v1.3|_ |CMake API v1.2|_ |CMake API v1.1|_ |CMake API v1.0|_
+    |CMake API v2.1|_ |CMake API v2.0|_ |CMake API v1.3|_ |CMake API v1.2|_ |CMake API v1.1|_ |CMake API v1.0|_
   - `Find Package Modules <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeFindModules.html>`_
-    |Find Modules v2.0|_ |Find Modules v1.3|_ |Find Modules v1.2|_ |Find Modules v1.1|_ |Find Modules v1.0|_
+    |Find Modules v2.1|_ |Find Modules v2.0|_ |Find Modules v1.3|_ |Find Modules v1.2|_ |Find Modules v1.1|_ |Find Modules v1.0|_
   - `Settings <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisSettings.html>`_
-    |Settings v2.0|_ |Settings v1.3|_ |Settings v1.2|_ |Settings v1.1|_ |Settings v1.0|_
+    |Settings v2.1|_ |Settings v2.0|_ |Settings v1.3|_ |Settings v1.2|_ |Settings v1.1|_ |Settings v1.0|_
   - `Package Configuration <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisConfig.html>`_
-    |Config v2.0|_ |Config v1.3|_ |Config v1.2|_ |Config v1.1|_ |Config v1.0|_
+    |Config v2.1|_ |Config v2.0|_ |Config v1.3|_ |Config v1.2|_ |Config v1.1|_ |Config v1.0|_
   - `Project Directories <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisDirectories.html>`_
-    |Directories v2.0|_ |Directories v1.3|_ |Directories v1.2|_ |Directories v1.1|_ |Directories v1.0|_
+    |Directories v2.1|_ |Directories v2.0|_ |Directories v1.3|_ |Directories v1.2|_ |Directories v1.1|_ |Directories v1.0|_
   - `Script Configuration <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisScriptConfig.html>`_
-    |ScriptConfig v2.0|_ |ScriptConfig v1.3|_ |ScriptConfig v1.2|_ |ScriptConfig v1.1|_ |ScriptConfig v1.0|_
+    |ScriptConfig v2.1|_ |ScriptConfig v2.0|_ |ScriptConfig v1.3|_ |ScriptConfig v1.2|_ |ScriptConfig v1.1|_ |ScriptConfig v1.0|_
 
 * `Utilities <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html>`_
-  |Utilities v2.0|_ |Utilities v1.3|_ |Utilities v1.2|_ |Utilities v1.1|_ |Utilities v1.0|_
+  |Utilities v2.1|_ |Utilities v2.0|_ |Utilities v1.3|_ |Utilities v1.2|_ |Utilities v1.1|_ |Utilities v1.0|_
 
   - `C++ Utilities <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisCxxUtilities.html>`_
-    |C++ Utilities v2.0|_ |C++ Utilities v1.3|_ |C++ Utilities v1.2|_ |C++ Utilities v1.1|_ |C++ Utilities v1.0|_
+    |C++ Utilities v2.1|_ |C++ Utilities v2.0|_ |C++ Utilities v1.3|_ |C++ Utilities v1.2|_ |C++ Utilities v1.1|_ |C++ Utilities v1.0|_
   - `Python Utilities <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisPythonUtilities.html>`_
-    |Python Utilities v2.0|_ |Python Utilities v1.3|_ |Python Utilities v1.2|_ |Python Utilities v1.1|_ |Python Utilities v1.0|_
+    |Python Utilities v2.1|_ |Python Utilities v2.0|_ |Python Utilities v1.3|_ |Python Utilities v1.2|_ |Python Utilities v1.1|_ |Python Utilities v1.0|_
   - `Perl Utilities <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisPerlUtilities.html>`_
-    |Perl Utilities v2.0|_ |Perl Utilities v1.3|_ |Perl Utilities v1.2|_ |Perl Utilities v1.1|_ |Perl Utilities v1.0|_
+    |Perl Utilities v2.1|_ |Perl Utilities v2.0|_ |Perl Utilities v1.3|_ |Perl Utilities v1.2|_ |Perl Utilities v1.1|_ |Perl Utilities v1.0|_
   - `BASH Utilities <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisBashUtilities.html>`_
-    |BASH Utilities v2.0|_ |BASH Utilities v1.3|_ |BASH Utilities v1.2|_ |BASH Utilities v1.1|_ |BASH Utilities v1.0|_
+    |BASH Utilities v2.1|_ |BASH Utilities v2.0|_ |BASH Utilities v1.3|_ |BASH Utilities v1.2|_ |BASH Utilities v1.1|_ |BASH Utilities v1.0|_
 
 .. role:: apilink
     :class: apilink
+
+.. |Tools v2.1|              replace:: :apilink:`v2.1`
+.. |Modules v2.1|            replace:: :apilink:`v2.1`
+.. |CMake API v2.1|          replace:: :apilink:`v2.1`
+.. |Find Modules v2.1|       replace:: :apilink:`v2.1`
+.. |Settings v2.1|           replace:: :apilink:`v2.1`
+.. |Config v2.1|             replace:: :apilink:`v2.1`
+.. |Directories v2.1|        replace:: :apilink:`v2.1`
+.. |ScriptConfig v2.1|       replace:: :apilink:`v2.1`
+.. |Utilities v2.1|          replace:: :apilink:`v2.1`
+.. |C++ Utilities v2.1|      replace:: :apilink:`v2.1`
+.. |Python Utilities v2.1|   replace:: :apilink:`v2.1`
+.. |Perl Utilities v2.1|     replace:: :apilink:`v2.1`
+.. |BASH Utilities v2.1|     replace:: :apilink:`v2.1`
+
+.. _Tools v2.1:              http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__Tools.html
+.. _Modules v2.1:            http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisModules.html
+.. _CMake API v2.1:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__CMakeAPI.html
+.. _Find Modules v2.1:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__CMakeFindModules.html
+.. _Settings v2.1:           http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisSettings.html
+.. _Config v2.1:             http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisConfig.html
+.. _Directories v2.1:        http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisDirectories.html
+.. _ScriptConfig v2.1:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisScriptConfig.html
+.. _Utilities v2.1:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisUtilities.html
+.. _C++ Utilities v2.1:      http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisCxxUtilities.html
+.. _Python Utilities v2.1:   http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisPythonUtilities.html
+.. _Perl Utilities v2.1:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisPerlUtilities.html
+.. _BASH Utilities v2.1:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisBASHUtilities.html
+
 
 .. |Tools v2.0|              replace:: :apilink:`v2.0`
 .. |Modules v2.0|            replace:: :apilink:`v2.0`

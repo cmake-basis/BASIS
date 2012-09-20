@@ -73,7 +73,7 @@ further explain its purpose and the parts it is made of
     people
 
 
-.. _BASIS Modules: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
-.. _BASIS Utilities: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html
+.. _BASIS Modules: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisModules.html
+.. _BASIS Utilities: http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisUtilities.html
 .. _CMake: http://www.cmake.org
 .. _SBIA: http://www.rad.upenn.edu/sbia/
