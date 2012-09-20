@@ -298,6 +298,12 @@ function (basis_configure_utilities)
   # executable target information
   _basis_generate_executable_target_info(${CXX} ${PYTHON} ${PERL} ${BASH})
   # --------------------------------------------------------------------------
+  # project ID -- used by print_version() in particular
+  set (PROJECT_ID "${PROJECT_PACKAGE}")
+  if (NOT PROJECT_NAME MATCHES "${PROJECT_PACKAGE}")
+    set (PROJECT_ID "${PROJECT_ID}, ${PROJECT_NAME}")
+  endif ()
+  # --------------------------------------------------------------------------
   # C++
   if (CXX)
     # paths - build tree
