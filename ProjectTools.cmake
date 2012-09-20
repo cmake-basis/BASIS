@@ -330,16 +330,17 @@ endmacro ()
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
-macro (basis_buildtree_asserts)
+function (basis_buildtree_asserts)
   string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
   string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
-  if ("${BUILD_ROOT}" STREQUAL "${SOURCE_ROOT}")
+  basis_sanitize_for_regex (SOURCE_ROOT_RE "${SOURCE_ROOT}")
+  if (BUILD_ROOT MATCHES "^${SOURCE_ROOT_RE}$")
     message(FATAL_ERROR "This project should not be configured & build in the "
                         "source directory:\n"
                         "  ${CMAKE_SOURCE_DIR}\n"
                         "You must run CMake in a separate build directory.")
   endif()
-endmacro ()
+endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Ensure certain requirements on install tree.
@@ -351,21 +352,22 @@ endmacro ()
 # @param [in] ARGN Not used.
 #
 # @returns Nothing.
-macro (basis_installtree_asserts)
+function (basis_installtree_asserts)
   if (NOT IS_ABSOLUTE "${CMAKE_INSTALL_PREFIX}")
     message (FATAL_ERROR "CMAKE_INSTALL_PREFIX must be an absolute path!")
   endif ()
-  string (TOLOWER "${CMAKE_SOURCE_DIR}" SOURCE_ROOT)
-  string (TOLOWER "${CMAKE_BINARY_DIR}" BUILD_ROOT)
-  string (TOLOWER "${CMAKE_INSTALL_PREFIX}"   INSTALL_ROOT)
-  if ("${INSTALL_ROOT}" STREQUAL "${BUILD_ROOT}" OR "${INSTALL_ROOT}" STREQUAL "${SOURCE_ROOT}")
+  string (TOLOWER "${CMAKE_SOURCE_DIR}"     SOURCE_ROOT)
+  string (TOLOWER "${CMAKE_BINARY_DIR}"     BUILD_ROOT)
+  string (TOLOWER "${CMAKE_INSTALL_PREFIX}" INSTALL_ROOT)
+  basis_sanitize_for_regex (INSTALL_ROOT_RE "${INSTALL_ROOT}")
+  if (BUILD_ROOT MATCHES "^${INSTALL_ROOT_RE}$" OR SOURCE_ROOT MATCHES "^${INSTALL_ROOT_RE}$")
     message (FATAL_ERROR "The current CMAKE_INSTALL_PREFIX points at the source or build tree:\n"
                          "  ${CMAKE_INSTALL_PREFIX}\n"
                          "This is not permitted by this project. "
                          "Please choose another installation prefix."
     )
   endif()
-endmacro ()
+endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Initialize project modules.
