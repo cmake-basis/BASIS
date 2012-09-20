@@ -108,6 +108,12 @@ set (BINARY_BASH_LIBRARY_DIR "@BINARY_BASH_LIBRARY_DIR@")
 ## @brief Installation prefix, i.e., root directory of installation.
 set (CMAKE_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@")
 
+## @brief Root installation directory for CMake package configuration
+#         files of bundled packages.
+#
+# This variable is used by basis_find_package() to find the CMake package
+# configuration files of bundled packages.
+set (BUNDLE_CONFIG_DIR "@BUNDLE_CONFIG_DIR@")
 ## @brief Path of installation directory for CMake package configuration
 #         files relative to @c CMAKE_INSTALL_PREFIX.
 #

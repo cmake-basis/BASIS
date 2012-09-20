@@ -40,21 +40,27 @@ endif ()
 # local variables
 # ============================================================================
 
+if (BUNDLE_NAME AND NOT BUNDLE_NAME MATCHES "${PROJECT_PACKAGE}")
+  set (_BUNDLE "/${BUNDLE_NAME}")
+else ()
+  set (_BUNDLE)
+endif ()
 if (PROJECT_PACKAGE_VENDOR)
-  set (_VENDOR  "/${PROJECT_PACKAGE_VENDOR}")
+  set (_VENDOR "/${PROJECT_PACKAGE_VENDOR}")
 else ()
   set (_VENDOR)
 endif ()
 set (_PACKAGE "/${PROJECT_PACKAGE}")
 if (PROJECT_IS_SUBPROJECT)
-  set (_MODULE  "/${PROJECT_NAME}")
+  set (_MODULE "/${PROJECT_NAME}")
 else ()
-  set (_MODULE  "")
+  set (_MODULE)
 endif ()
 if (UNIX)
   string (TOLOWER "${_VENDOR}"  _VENDOR)
   string (TOLOWER "${_PACKAGE}" _PACKAGE)
   string (TOLOWER "${_MODULE}"  _MODULE)
+  string (TOLOWER "${_BUNDLE}"  _BUNDLE)
 endif ()
 
 # ============================================================================
@@ -188,87 +194,169 @@ set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation pre
 
 # ----------------------------------------------------------------------------
 # installation scheme - non-cached, can be preset using -D option of CMake
-set (BASIS_INSTALL_SCHEME "default" CACHE STRING "default, opt, usr, win (or bundle)")
-set_property(CACHE BASIS_INSTALL_SCHEME PROPERTY STRINGS default opt usr win bundle)
+set (BASIS_INSTALL_SCHEME "default" CACHE STRING "default, opt, usr, win")
+set_property(CACHE BASIS_INSTALL_SCHEME PROPERTY STRINGS default opt usr win)
 mark_as_advanced (BASIS_INSTALL_SCHEME)
 
 if (BASIS_INSTALL_SCHEME MATCHES "default")
   string (TOLOWER "${CMAKE_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX_L)
+  string (TOLOWER "${BUNDLE_NAME}" BUNDLE_NAME_L)
+  string (TOUPPER "${BUNDLE_NAME}" BUNDLE_NAME_U)
   if (WIN32)
     set (BASIS_INSTALL_SCHEME win)
-  elseif (CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${PROJECT_NAME}|${PROJECT_NAME_L}|${PROJECT_NAME_U})[_-]?") # e.g. /opt/<package>[-<version>]
+  elseif (NOT _BUNDLE AND CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${PROJECT_NAME}|${PROJECT_NAME_L}|${PROJECT_NAME_U})[_-]?") # e.g. /opt/<package>[-<version>]
+    set (BASIS_INSTALL_SCHEME opt)
+  elseif (_BUNDLE AND CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${BUNDLE_NAME}|${BUNDLE_NAME_L}|${BUNDLE_NAME_U})[_-]?") # e.g. /opt/<bundle>[-<version>]
     set (BASIS_INSTALL_SCHEME opt)
   else ()
     set (BASIS_INSTALL_SCHEME usr)
   endif ()
   unset (CMAKE_INSTALL_PREFIX_L)
+  unset (BUNDLE_NAME_L)
+  unset (BUNDLE_NAME_U)
 endif ()
 
 if (NOT BASIS_INSTALL_SCHEME MATCHES "^(opt|usr|win|bundle)$")
-  message (FATAL_ERROR "Invalid BASIS_INSTALL_SCHEME! Valid values are 'default', 'opt', 'usr', 'win' (or 'bundle').")
+  message (FATAL_ERROR "Invalid BASIS_INSTALL_SCHEME! Valid values are 'default', 'opt', 'usr', 'win'.")
 endif ()
 
 # ----------------------------------------------------------------------------
 # installation directories
 if (BASIS_INSTALL_SCHEME MATCHES "win") # e.g., CMAKE_INSTALL_PREFIX := <ProgramFilesDir>/<Vendor>/<Package>
 
-  # package configuration
-  set (INSTALL_CONFIG_DIR  "CMake${_MODULE}")
-  # executables
-  set (INSTALL_RUNTIME_DIR "Bin")
-  set (INSTALL_LIBEXEC_DIR "Lib${_MODULE}")
-  # libraries
-  set (INSTALL_INCLUDE_DIR "Include")
-  set (INSTALL_LIBRARY_DIR "Lib${_MODULE}")
-  set (INSTALL_ARCHIVE_DIR "Lib${_MODULE}")
-  # shared data
-  set (INSTALL_SHARE_DIR   "Share${_MODULE}")
-  set (INSTALL_DATA_DIR    "Data${_MODULE}")
-  set (INSTALL_EXAMPLE_DIR "Example${_MODULE}")
-  # documentation
-  set (INSTALL_DOC_DIR     "Doc${_MODULE}")
-  set (INSTALL_MAN_DIR)
-  set (INSTALL_TEXINFO_DIR)
+  # --------------------------------------------------------------------------
+  # bundled dependency
+  if (_BUNDLE)
+    # package configuration
+    set (BUNDLE_CONFIG_DIR   "CMake")
+    set (INSTALL_CONFIG_DIR  "CMake${_PACKAGE}${_MODULE}")
+    # executables
+    set (INSTALL_RUNTIME_DIR "Lib${_PACKAGE}${_MODULE}")
+    set (INSTALL_LIBEXEC_DIR "Lib${_PACKAGE}${_MODULE}")
+    # libraries
+    set (INSTALL_INCLUDE_DIR "Include")
+    set (INSTALL_LIBRARY_DIR "Lib${_PACKAGE}${_MODULE}")
+    set (INSTALL_ARCHIVE_DIR "Lib${_PACKAGE}${_MODULE}")
+    # shared data
+    set (INSTALL_SHARE_DIR   "Share${_PACKAGE}${_MODULE}")
+    set (INSTALL_DATA_DIR    "Data${_PACKAGE}${_MODULE}")
+    set (INSTALL_EXAMPLE_DIR "Example${_PACKAGE}${_MODULE}")
+    # documentation
+    set (INSTALL_DOC_DIR     "Doc${_PACKAGE}${_MODULE}")
+    set (INSTALL_MAN_DIR)
+    set (INSTALL_TEXINFO_DIR)
+  # --------------------------------------------------------------------------
+  # main package
+  else ()
+    # package configuration
+    set (BUNDLE_CONFIG_DIR   "CMake")
+    set (INSTALL_CONFIG_DIR  "CMake${_MODULE}")
+    # executables
+    set (INSTALL_RUNTIME_DIR "Bin")
+    set (INSTALL_LIBEXEC_DIR "Lib${_MODULE}")
+    # libraries
+    set (INSTALL_INCLUDE_DIR "Include")
+    set (INSTALL_LIBRARY_DIR "Lib${_MODULE}")
+    set (INSTALL_ARCHIVE_DIR "Lib${_MODULE}")
+    # shared data
+    set (INSTALL_SHARE_DIR   "Share${_MODULE}")
+    set (INSTALL_DATA_DIR    "Data${_MODULE}")
+    set (INSTALL_EXAMPLE_DIR "Example${_MODULE}")
+    # documentation
+    set (INSTALL_DOC_DIR     "Doc${_MODULE}")
+    set (INSTALL_MAN_DIR)
+    set (INSTALL_TEXINFO_DIR)
+  endif ()
 
-elseif (BASIS_INSTALL_SCHEME MATCHES "usr|bundle") # e.g., CMAKE_INSTALL_PREFIX := /usr/local
+elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr/local
 
-  # package configuration
-  set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
-  # executables
-  set (INSTALL_RUNTIME_DIR "bin")
-  set (INSTALL_LIBEXEC_DIR "lib${_PACKAGE}${_MODULE}")
-  # libraries
-  set (INSTALL_INCLUDE_DIR "include")
-  set (INSTALL_LIBRARY_DIR "lib${_PACKAGE}${_MODULE}")
-  set (INSTALL_ARCHIVE_DIR "lib${_PACKAGE}${_MODULE}")
-  # shared data
-  set (INSTALL_SHARE_DIR   "share${_PACKAGE}${_MODULE}")
-  set (INSTALL_DATA_DIR    "share${_PACKAGE}${_MODULE}/data")
-  set (INSTALL_EXAMPLE_DIR "share${_PACKAGE}${_MODULE}/example")
-  # documentation
-  set (INSTALL_DOC_DIR     "doc${_PACKAGE}${_MODULE}")
-  set (INSTALL_MAN_DIR     "share/man")
-  set (INSTALL_TEXINFO_DIR "share/info")
+  # --------------------------------------------------------------------------
+  # bundled dependency
+  if (_BUNDLE)
+    # package configuration
+    set (BUNDLE_CONFIG_DIR   "lib/cmake${_BUNDLE}")
+    set (INSTALL_CONFIG_DIR  "lib/cmake${_BUNDLE}${_PACKAGE}${_MODULE}")
+    # executables
+    set (INSTALL_RUNTIME_DIR "lib${_BUNDLE}${_PACKAGE}${_MODULE}")
+    set (INSTALL_LIBEXEC_DIR "lib${_BUNDLE}${_PACKAGE}${_MODULE}")
+    # libraries
+    set (INSTALL_INCLUDE_DIR "include")
+    set (INSTALL_LIBRARY_DIR "lib${_BUNDLE}${_PACKAGE}${_MODULE}")
+    set (INSTALL_ARCHIVE_DIR "lib${_BUNDLE}${_PACKAGE}${_MODULE}")
+    # shared data
+    set (INSTALL_SHARE_DIR   "share${_BUNDLE}${_PACKAGE}${_MODULE}")
+    set (INSTALL_DATA_DIR    "share${_BUNDLE}${_PACKAGE}${_MODULE}/data")
+    set (INSTALL_EXAMPLE_DIR "share${_BUNDLE}${_PACKAGE}${_MODULE}/example")
+    # documentation
+    set (INSTALL_DOC_DIR     "doc${_BUNDLE}${_PACKAGE}${_MODULE}")
+    set (INSTALL_MAN_DIR     "share${_BUNDLE}${_PACKAGE}${_MODULE}/man")
+    set (INSTALL_TEXINFO_DIR "share${_BUNDLE}${_PACKAGE}${_MODULE}/info")
+  # --------------------------------------------------------------------------
+  # main package
+  else ()
+    # package configuration
+    set (BUNDLE_CONFIG_DIR   "lib/cmake${_PACKAGE}")
+    set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
+    # executables
+    set (INSTALL_RUNTIME_DIR "bin")
+    set (INSTALL_LIBEXEC_DIR "lib${_PACKAGE}${_MODULE}")
+    # libraries
+    set (INSTALL_INCLUDE_DIR "include")
+    set (INSTALL_LIBRARY_DIR "lib${_PACKAGE}${_MODULE}")
+    set (INSTALL_ARCHIVE_DIR "lib${_PACKAGE}${_MODULE}")
+    # shared data
+    set (INSTALL_SHARE_DIR   "share${_PACKAGE}${_MODULE}")
+    set (INSTALL_DATA_DIR    "share${_PACKAGE}${_MODULE}/data")
+    set (INSTALL_EXAMPLE_DIR "share${_PACKAGE}${_MODULE}/example")
+    # documentation
+    set (INSTALL_DOC_DIR     "doc${_PACKAGE}${_MODULE}")
+    set (INSTALL_MAN_DIR     "share/man")
+    set (INSTALL_TEXINFO_DIR "share/info")
+  endif ()
 
 else () # e.g., CMAKE_INSTALL_PREFIX := /opt/<vendor>/<package>
 
-  # package configuration
-  set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
-  # executables
-  set (INSTALL_RUNTIME_DIR "bin")
-  set (INSTALL_LIBEXEC_DIR "lib${_MODULE}")
-  # libraries
-  set (INSTALL_INCLUDE_DIR "include")
-  set (INSTALL_LIBRARY_DIR "lib${_MODULE}")
-  set (INSTALL_ARCHIVE_DIR "lib${_MODULE}")
-  # shared data
-  set (INSTALL_SHARE_DIR   "share${_MODULE}")
-  set (INSTALL_DATA_DIR    "share${_MODULE}/data")
-  set (INSTALL_EXAMPLE_DIR "share${_MODULE}/example")
-  # documentation
-  set (INSTALL_DOC_DIR     "doc${_MODULE}")
-  set (INSTALL_MAN_DIR     "man")
-  set (INSTALL_TEXINFO_DIR "info")
+  # --------------------------------------------------------------------------
+  # bundled dependency
+  if (_BUNDLE)
+    # package configuration
+    set (BUNDLE_CONFIG_DIR  "lib/cmake${_BUNDLE}")
+    set (INSTALL_CONFIG_DIR "lib/cmake${_BUNDLE}${_PACKAGE}${_MODULE}")
+    # executables
+    set (INSTALL_RUNTIME_DIR "lib${_PACKAGE}${_MODULE}")
+    set (INSTALL_LIBEXEC_DIR "lib${_PACKAGE}${_MODULE}")
+    # libraries
+    set (INSTALL_INCLUDE_DIR "include")
+    set (INSTALL_LIBRARY_DIR "lib${_PACKAGE}${_MODULE}")
+    set (INSTALL_ARCHIVE_DIR "lib${_PACKAGE}${_MODULE}")
+    # shared data
+    set (INSTALL_SHARE_DIR   "share${_PACKAGE}${_MODULE}")
+    set (INSTALL_DATA_DIR    "share${_PACKAGE}${_MODULE}/data")
+    set (INSTALL_EXAMPLE_DIR "share${_PACKAGE}${_MODULE}/example")
+    # documentation
+    set (INSTALL_DOC_DIR     "doc${_PACKAGE}${_MODULE}")
+    set (INSTALL_MAN_DIR     "share${_PACKAGE}${_MODULE}/man")
+    set (INSTALL_TEXINFO_DIR "share${_PACKAGE}${_MODULE}/info")
+  else ()
+    # package configuration
+    set (BUNDLE_CONFIG_DIR   "lib/cmake${_PACKAGE}")
+    set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
+    # executables
+    set (INSTALL_RUNTIME_DIR "bin")
+    set (INSTALL_LIBEXEC_DIR "lib${_MODULE}")
+    # libraries
+    set (INSTALL_INCLUDE_DIR "include")
+    set (INSTALL_LIBRARY_DIR "lib${_MODULE}")
+    set (INSTALL_ARCHIVE_DIR "lib${_MODULE}")
+    # shared data
+    set (INSTALL_SHARE_DIR   "share${_MODULE}")
+    set (INSTALL_DATA_DIR    "share${_MODULE}/data")
+    set (INSTALL_EXAMPLE_DIR "share${_MODULE}/example")
+    # documentation
+    set (INSTALL_DOC_DIR     "doc${_MODULE}")
+    set (INSTALL_MAN_DIR     "man")
+    set (INSTALL_TEXINFO_DIR "info")
+  endif ()
 
 endif ()
 
@@ -297,22 +385,28 @@ if (BASIS_INSTALL_SCHEME MATCHES "win")
 
 elseif (BASIS_INSTALL_SCHEME MATCHES "usr")
 
+  if (_BUNDLE)
+    set (_P "${_BUNDLE}")
+  else ()
+    set (_P "${_PACKAGE}")
+  endif ()
+
   foreach (_L IN ITEMS python jython perl matlab bash)
     string (TOUPPER "${_L}" _U)
     if (BASIS_COMPILE_SCRIPTS)
       if (_U MATCHES "PERL")
-        set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/perl5")
+        set (INSTALL_${_U}_LIBRARY_DIR "lib${_P}/perl5")
       elseif (NOT _U MATCHES "MATLAB|BASH" AND ${_U}_VERSION_MAJOR AND DEFINED ${_U}_VERSION_MINOR)
-        set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/${_L}${${_U}_VERSION_MAJOR}.${${_U}_VERSION_MINOR}")
+        set (INSTALL_${_U}_LIBRARY_DIR "lib${_P}/${_L}${${_U}_VERSION_MAJOR}.${${_U}_VERSION_MINOR}")
       else ()
-        set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/${_L}")
+        set (INSTALL_${_U}_LIBRARY_DIR "lib${_P}/${_L}")
       endif ()
     else ()
-      set (INSTALL_${_U}_LIBRARY_DIR "lib${_PACKAGE}/${_L}")
+      set (INSTALL_${_U}_LIBRARY_DIR "lib${_P}/${_L}")
     endif ()
   endforeach ()
  
-else () # opt|bundle
+else () # opt
 
   foreach (_L IN ITEMS python jython perl matlab bash)
     string (TOUPPER "${_L}" _U)
