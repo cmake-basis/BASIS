@@ -92,14 +92,21 @@ endif ()"
 
 if (EXISTS "${PROJECT_CONFIG_DIR}/Config.cmake.in")
   set (TEMPLATE "${PROJECT_CONFIG_DIR}/Config.cmake.in")
+elseif (PROJECT_IS_MODULE)
+  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/ModuleConfig.cmake.in")
 else ()
   set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in")
 endif ()
 
 # ----------------------------------------------------------------------------
 # provide code of BASIS config file as variable
-if (NOT "${TEMPLATE}" STREQUAL "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in")
-  file (READ "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in" BASIS_TEMPLATE)
+
+if (NOT TEMPLATE MATCHES "^${CMAKE_CURRENT_LIST_DIR}/")
+  if (PROJECT_IS_MODULE)
+    file (READ "${CMAKE_CURRENT_LIST_DIR}/ModuleConfig.cmake.in" BASIS_TEMPLATE)
+  else ()
+    file (READ "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in"       BASIS_TEMPLATE)
+  endif ()
   # remove file header
   string (REGEX REPLACE "^########.*########" "" BASIS_TEMPLATE "${BASIS_TEMPLATE}")
   string (STRIP "${BASIS_TEMPLATE}" BASIS_TEMPLATE)
@@ -179,14 +186,20 @@ if (EXISTS "${PROJECT_CONFIG_DIR}/ConfigUse.cmake.in")
 elseif (EXISTS "${PROJECT_CONFIG_DIR}/Use.cmake.in")
   # backwards compatibility to version <= 0.1.8 of BASIS
   set (TEMPLATE "${PROJECT_CONFIG_DIR}/Use.cmake.in")
+elseif (PROJECT_IS_MODULE)
+  set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/ModuleConfigUse.cmake.in")
 else ()
   set (TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in")
 endif ()
 
 # ----------------------------------------------------------------------------
 # provide code of BASIS use file as variable
-if (NOT "${TEMPLATE}" STREQUAL "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in")
-  file (READ "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in" BASIS_USE)
+if (NOT TEMPLATE MATCHES "^${CMAKE_CURRENT_LIST_DIR}/")
+  if (PROJECT_IS_MODULE)
+    file (READ "${CMAKE_CURRENT_LIST_DIR}/ModuleConfigUse.cmake.in" BASIS_USE)
+  else ()
+    file (READ "${CMAKE_CURRENT_LIST_DIR}/ConfigUse.cmake.in"       BASIS_USE)
+  endif ()
   # remove file header
   string (REGEX REPLACE "^########.*########" "" BASIS_USE "${BASIS_USE}")
   string (STRIP "${BASIS_USE}" BASIS_USE)

@@ -3,8 +3,8 @@
 # @brief CMake package configuration use file.
 #
 # @note The @USE_FILE@ file is automatically generated
-#       by BASIS from the template file ConfigUse.cmake.in which is part of the
-#       BASIS installation.
+#       by BASIS from the template file ModuleConfigUse.cmake.in which is part
+#       of the BASIS installation.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -59,15 +59,3 @@ if (NOT NO_${NS}IMPORTS)
   include ("${${NS}EXPORTS_FILE}"        OPTIONAL)
   include ("${${NS}CUSTOM_EXPORTS_FILE}" OPTIONAL)
 endif ()
-
-# ============================================================================
-# use modules
-# ============================================================================
-
-foreach (M IN LISTS ${NS}MODULES_REQUESTED)
-  if (${NS}${M}_USE_FILE)
-    set (${M}_CONFIG_PREFIX "${NS}${M}_")
-    include ("${${NS}${M}_USE_FILE}")
-    unset (${M}_CONFIG_PREFIX)
-  endif ()
-endforeach ()

@@ -1,9 +1,9 @@
 ##############################################################################
 # @file  @CONFIG_FILE@
-# @brief CMake package configuration file of BASIS.
+# @brief CMake package configuration file of @PROJECT_NAME@ of @PROJECT_PACKAGE@.
 #
 # @note The @CONFIG_FILE@ file is automatically generated
-#       by BASIS from the template file Config.cmake.in which is part of the
+#       by BASIS from the template file ModuleConfig.cmake.in which is part of the
 #       BASIS installation.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
@@ -102,60 +102,6 @@ basis_set_config (EXPORTS_FILE "${CMAKE_CURRENT_LIST_DIR}/@EXPORTS_FILE@")
 
 ## @brief Absolute path of custom exports file to be included by other projects.
 basis_set_config (CUSTOM_EXPORTS_FILE "${CMAKE_CURRENT_LIST_DIR}/@CUSTOM_EXPORTS_FILE@")
-
-# ============================================================================
-# modules
-# ============================================================================
-
-## @brief List of project modules.
-basis_set_config (MODULES "@PROJECT_MODULES@")
-
-## @brief List of built project modules.
-basis_set_config (MODULES_ENABLED "@PROJECT_MODULES_ENABLED@")
-
-## @brief List of modules requested by external package using the
-#         @c COMPONENTS argument of
-#         <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
-#         find_package()</a>.
-if (${NS}FIND_COMPONENTS)
-  basis_set_config (MODULES_REQUESTED "${${NS}FIND_COMPONENTS}")
-endif()
-if(NOT ${NS}MODULES_REQUESTED)
-  basis_set_config (MODULES_REQUESTED "${${NS}MODULES_ENABLED}")
-endif()
-
-foreach (${NS}MODULE IN LISTS ${NS}MODULES_REQUESTED)
-  # check if requested module is available
-  list (FIND ${NS}MODULES_ENABLED ${NS}MODULE IDX)
-  if (IDX EQUAL -1)
-    message (FATAL_ERROR "Requested module ${${NS}MODULE} of package @PROJECT_NAME@"
-                         " was not enabled when building @PROJECT_NAME@. Rebuild"
-                         " the @PROJECT_NAME@ package with MODULE_${${NS}MODULE}"
-                         " set to ON and try again.")
-  endif ()
-  # include configuration files of modules
-  set (${${NS}MODULE}_CONFIG_PREFIX "${NS}${MODULE}_")
-  include ("@MODULES_DIR_CONFIG@/@BASIS_PROJECT_PACKAGE_CONFIG_PREFIX@${${NS}MODULE}Config.cmake")
-  unset (${${NS}MODULE}_CONFIG_PREFIX)
-  # append include directories
-  if (${NS}${${NS}MODULE}_INCLUDE_DIRS)
-    basis_append_config (INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIRS})
-  elseif (${NS}${M}_INCLUDE_DIR)
-    basis_append_config (INCLUDE_DIRS ${${NS}${${NS}MODULE}_INCLUDE_DIR})
-  endif ()
-  # append library directories
-  if (${NS}${${NS}MODULE}_LIBRARY_DIRS)
-    basis_append_config (LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIRS})
-  elseif (${NS}${${NS}MODULE}_LIBARY_DIR)
-    basis_append_config (LIBRARY_DIRS ${${NS}${${NS}MODULE}_LIBRARY_DIR})
-  endif ()
-endforeach ()
-unset (${NS}MODULE)
-
-basis_remove_duplicates_config (INCLUDE_DIR)
-basis_remove_duplicates_config (INCLUDE_DIRS)
-basis_remove_duplicates_config (LIBRARY_DIR)
-basis_remove_duplicates_config (LIBRARY_DIRS)
 
 # ============================================================================
 # dependencies

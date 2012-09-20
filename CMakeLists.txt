@@ -52,9 +52,11 @@ set (
     "MatlabUtilities.dox"                 # documentation of MATLAB Utilities group
     # package configuration
     "Config.cmake.in"                     # default <Pkg>Config.cmake template
+    "ModuleConfig.cmake.in"               # default <Pkg>Config.cmake template for modules
     "BasisConfigSettings.cmake"           # settings for default <Pkg>Config.cmake
     "ConfigVersion.cmake.in"              # default <Pkg>ConfigVersion.cmake template
     "ConfigUse.cmake.in"                  # default <Pkg>Use.cmake template
+    "ModuleConfigUse.cmake.in"            # default <Pkg>Use.cmake template for modules
     "GenerateConfig.cmake"                # generation/configuration of <Pkg>Config.cmake et al.
     # documentation generation
     "doxygen_header.html"                 # header of Doxygen documentation
