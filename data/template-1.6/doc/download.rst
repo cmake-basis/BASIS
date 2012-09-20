@@ -14,7 +14,8 @@
    -->
 
 .. meta::
-    :description: Download the BASIS software and manual for Unix (Linux, OS X) and Microsoft Windows.
+    :description: Download the <project> software and manual.
+
 
 ========
 Download
@@ -23,7 +24,7 @@ Download
 Software License
 ----------------
 
-The BASIS software is freely available under a BSD-style open source license that is compatible
+The <project> software is freely available under a BSD-style open source license that is compatible
 with the Open Source Definition by `The Open Source Initiative`_ and contains no restrictions
 on use of the software. The full `license`_ text is included with the distribution package and
 available online.
@@ -37,22 +38,22 @@ Documentation
 
 .. only:: html
     
-    :download:`BASIS Manual <BASIS.pdf>`: PDF version of software manual.
+    :download:`<project> Manual <<project>.pdf>`: PDF version of software manual.
 
 .. only:: latex
     
-    `BASIS Manual <http://www.rad.upenn.edu/sbia/software/basis/manual.html>`__:
+    `<project> Manual <http://www.rad.upenn.edu/sbia/software/<project_l>/manual.html>`__:
     Online version of this manual.
 
 
 System Requirements
 -------------------
 
-**Operating System:** Linux, Mac OS X, Microsoft Windows
+**Operating System:** Linux
 
 
-Register for Download
----------------------
+Registration
+------------
 
 .. only:: latex
     
@@ -60,15 +61,12 @@ Register for Download
 
 .. raw:: html
     
-    <iframe class="request_form" scrolling="no" frameborder="0" src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=basis">
+    <iframe class="request_form" scrolling="no" frameborder="0" src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=<project_l>">
       The iframe tag is not supported by your browser. Please |register|_ instead.
     </iframe>
 
 
 .. |register| replace:: **register here**
-.. _register: http://www.rad.upenn.edu/sbia/software/request.php?software=basis
+.. _register: http://www.rad.upenn.edu/sbia/software/request.php?software=<project_l>
 
 
-.. raw:: latex
-
-    \clearpage

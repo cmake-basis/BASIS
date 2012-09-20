@@ -15,7 +15,7 @@
 # supported by BASIS for the generation of documentation from plain text files
 # and in-source code comments.
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) <year> University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -30,35 +30,15 @@ set (OPTIONS)
 # ----------------------------------------------------------------------------
 # pre-generated API documentation
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/index.html")
-  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/" DESTINATION "${INSTALL_DOC_DIR}/apidoc")
+  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html" DESTINATION "${INSTALL_DOC_DIR}/apidoc")
   list (APPEND OPTIONS EXCLUDE_FROM_DOC)
 endif ()
 
 # ----------------------------------------------------------------------------
 # Doxygen
-
-# replace <year> pattern in template file which shall be included in documentation
-# to avoid unrecognized xml/html tags warning of Doxygen
-file (READ "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}/config/Depends.cmake" TEMPLATE)
-string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
-file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
-unset (TEMPLATE)
-
 basis_add_doc (
   apidoc           ${OPTIONS}
   GENERATOR        Doxygen
-  INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
-  EXCLUDE_PATTERNS # external libraries packaged with BASIS
-                   "*/gmock/*"            # Google Mock
-                   "*/gtest/*"            # Google Test
-                   "*/tclap/*"            # TCLAP library
-                   "*/breathe/*"          # Sphinx extension
-                   "*/doxylink/*"         # Sphinx extension
-                   "*/argh/*"             # Python Argh
-                   "*/test.cxx"           # Google Mock and Test
-                   "*/test_main.cxx"      # main() of unit tests based on GMock
-                   # testdriver which includes *.inc files
-                   "*/testdriver.cxx"
   HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
 )
 
@@ -149,13 +129,9 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
     BUILDER       html dirhtml pdf man
     MAN_SECTION   7
     HTML_THEME    ${PROJECT_PACKAGE_VENDOR_L}
-    RELLINKS      download installation manual help people
-    SIDEBARWIDTH  300
+    RELLINKS      download installation manual publications people
     HTML_SIDEBARS globaltoc
-    HTML_LOGO     logo.png
     LATEX_TITLE   "${PROJECT_NAME}"
-    DOXYLINK      apidoc
-    DOXYLINK_URL  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
   )
 
 endif ()
@@ -165,6 +141,7 @@ endif ()
 # ============================================================================
 
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
+
 
   # --------------------------------------------------------------------------
   # pre-generated PDF
@@ -183,17 +160,13 @@ if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/index.rst")
     BUILDER          pdf html dirhtml man
     MAN_SECTION      7
     HTML_THEME       ${PROJECT_PACKAGE_VENDOR_L}
-    RELLINKS         download installation manual help people
-    SIDEBARWIDTH     300
+    RELLINKS         download installation manual publications people
     HTML_SIDEBARS    globaltoc
-    HTML_LOGO        logo.png
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
     LATEX_TITLE      ${PROJECT_NAME}
     EXCLUDE_PATTERNS "manual/*"    # condensed manual
                      "developer/*" # developer's guide
                      "site/*"      # web site
-    DOXYLINK         apidoc
-    DOXYLINK_URL     http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
   )
 
   # --------------------------------------------------------------------------

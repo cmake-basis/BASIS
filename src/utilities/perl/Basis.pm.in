@@ -50,7 +50,7 @@ use BASIS::Sub::Exporter -setup => {
 # ============================================================================
 
 ## @brief Project name.
-use constant PROJECT   => '@PROJECT_NAME@';
+use constant PROJECT   => '@PROJECT_ID@';
 ## @brief Project release.
 use constant RELEASE   => '@PROJECT_RELEASE@';
 ## @brief Default copyright of executables.
