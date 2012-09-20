@@ -70,10 +70,6 @@ Build and Installation
 The build, test, and installation steps which are common to any BASIS based
 software, including BASIS itself, are given in the :doc:`howto/install` guide.
 
-If you have problems to build, test, or install the software on your system and
-this guide does not help you to resolve the issue, please contact us at
-``sbia-software at uphs.upenn.edu``.
-
 
 .. _The Open Source Initiative: http://opensource.org/
 .. _license: http://www.rad.upenn.edu/sbia/software/license.html
