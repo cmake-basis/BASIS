@@ -443,7 +443,7 @@ macro (basis_use_package PACKAGE)
             if (BASIS_DEBUG)
               message ("**     Include package use file of other module.")
             endif ()
-            include ("${${PKG}_DIR}/${PKG}Use.cmake")
+            include ("${${PKG}_USE_FILE}")
             break () # instead of return()
           else ()
             message (FATAL_ERROR "Module ${PKG} not found! This must be a "
