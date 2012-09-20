@@ -68,8 +68,8 @@ further explain its purpose and the parts it is made of
     self
     download
     installation
+    manual
     help
-    issues
     people
 
 
