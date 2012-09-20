@@ -67,9 +67,15 @@ basis_export_targets (
 
 # code used at top of packing configuration and use files to set package
 # namespace prefix used for configuration variables
+if (PROJECT_IS_MODULE)
+  set (BASIS_NS "${PROJECT_NAME}")
+else ()
+  set (BASIS_NS "${PROJECT_PACKAGE}")
+endif ()
+
 set (BASIS_NS
 "# prefix used for variable names
-set (NS \"${PROJECT_PACKAGE}_\")
+set (NS \"${BASIS_NS}_\")
 
 # allow caller to change namespace - used by projects with modules
 if (\${NS}CONFIG_PREFIX)
