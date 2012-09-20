@@ -51,6 +51,8 @@ System Requirements
 **Operating System:** Linux, Mac OS X, Microsoft Windows
 
 
+.. _register:
+
 Register for Download
 ---------------------
 
@@ -66,7 +68,7 @@ Register for Download
 
 
 .. |register| replace:: **register here**
-.. _register: http://www.rad.upenn.edu/sbia/software/request.php?software=basis
+.. _register: http://www.rad.upenn.edu/sbia/software/basis/download.html#register
 
 
 .. raw:: latex

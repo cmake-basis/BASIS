@@ -52,8 +52,10 @@ System Requirements
 **Operating System:** Linux
 
 
-Registration
-------------
+.. _register:
+
+Register for Download
+---------------------
 
 .. only:: latex
     
@@ -67,6 +69,6 @@ Registration
 
 
 .. |register| replace:: **register here**
-.. _register: http://www.rad.upenn.edu/sbia/software/request.php?software=<project_l>
+.. _register: http://www.rad.upenn.edu/sbia/software/<project_l>/download.html#register
 
 
