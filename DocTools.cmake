@@ -1672,13 +1672,13 @@ function (basis_add_changelog)
   # --------------------------------------------------------------------------
   # install ChangeLog
   get_filename_component (CHANGELOG_NAME "${CHANGELOG_FILE}" NAME)
-  if (PROJECT_IS_MODULE AND "${INSTALL_DOC_DIR}" STREQUAL "${BASIS_INSTALL_DOC_DIR}")
+  if (PROJECT_IS_MODULE)
     set (CHANGELOG_NAME "${CHANGELOG_NAME}-${PROJECT_NAME}")
   endif ()
 
   install (
     FILES       "${CHANGELOG_FILE}"
-    DESTINATION "${INSTALL_DOC_DIR}"
+    DESTINATION "${BASIS_INSTALL_DOC_DIR}"
     COMPONENT   "${BASIS_RUNTIME_COMPONENT}"
     RENAME      "${CHANGELOG_NAME}"
     OPTIONAL
