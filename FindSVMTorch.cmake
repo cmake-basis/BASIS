@@ -73,6 +73,13 @@ endif ()
 
 set (_SVMTorch_COMPONENTS ${SVMTorch_FIND_COMPONENTS} ${SVMTorch_FIND_OPTIONAL_COMPONENTS})
 
+foreach (_SVMTorch_C IN LISTS _SVMTorch_COMPONENTS)
+  if (NOT _SVMTorch_C MATCHES "^(train|test|lib)$")
+    message (FATAL_ERROR "Invalid SVMTorch component: ${_SVMTorch_C}")
+  endif ()
+endforeach ()
+unset (_SVMTorch_C)
+
 #--------------------------------------------------------------
 # find executables
 if (_SVMTorch_COMPONENTS MATCHES train)
@@ -174,7 +181,7 @@ endif ()
 if (SVMTorch_FIND_COMPONENTS MATCHES test)
   list (APPEND SVMTorch_REQUIRED_VARS SVMTorch_test_EXECUTABLE)
 endif ()
-if (SVMTorch_FIND_COMPONENTS MATCHES obj)
+if (SVMTorch_FIND_COMPONENTS MATCHES lib)
   list (APPEND SVMTorch_REQUIRED_VARS SVMTorch_INCLUDE_DIR)
   list (APPEND SVMTorch_REQUIRED_VARS SVMTorch_LIBRARY)
 endif ()
