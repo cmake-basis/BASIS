@@ -134,6 +134,7 @@ endif ()
 
 #--------------------------------------------------------------
 # find header files and built object files
+set (SVMTorch_LIBRARY)
 if (_SVMTorch_COMPONENTS MATCHES lib)
   if (SVMTorch_DIR)
     find_path (
@@ -143,7 +144,13 @@ if (_SVMTorch_COMPONENTS MATCHES lib)
       DOC   "Directory containing the header files of SVMTorch (i.e., IOTorch.h)."
       NO_DEFAULT_PATH
     )
-    file (GLOB SVMTorch_LIBRARY "${SVMTorch_DIR}/*.o")
+    file (GLOB SVMTorch_OBJ_FILES "${SVMTorch_DIR}/*.o")
+    foreach (_SVMTorch_OBJ_FILE IN LISTS SVMTorch_OBJ_FILES)
+      if (NOT _SVMTorch_OBJ_FILE MATCHES "convert.o$|SVMTorch.o$|SVMTest.o$")
+        list (APPEND SVMTorch_LIBRARY "${_SVMTorch_OBJ_FILE}")
+      endif ()
+    endforeach ()
+    unset (_SVMTorch_OBJ_FILE)
     mark_as_advanced (SVMTorch_INCLUDE_DIR)
   else ()
     find_path (
@@ -152,7 +159,6 @@ if (_SVMTorch_COMPONENTS MATCHES lib)
       DOC   "Directory containing the header files of SVMTorch (i.e., IOTorch.h)."
     )
     mark_as_advanced (SVMTorch_INCLUDE_DIR)
-    set (SVMTorch_LIBRARY)
   endif ()
 endif ()
 
