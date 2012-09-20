@@ -48,7 +48,7 @@ Documentation
 System Requirements
 -------------------
 
-**Operating System:** Linux, OS X, or Microsoft Windows
+**Operating System:** Linux, Mac OS X, Microsoft Windows
 
 
 Register for Download
