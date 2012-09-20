@@ -66,7 +66,7 @@ del imp
 # ============================================================================
 
 ## @brief Project name.
-PROJECT = '@PROJECT_NAME@'
+PROJECT = '@PROJECT_ID@'
 ## @brief Project version.
 VERSION = '@PROJECT_VERSION@'
 ## @brief Project version string used by print_version().

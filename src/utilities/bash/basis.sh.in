@@ -40,7 +40,7 @@ _@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED='true'
 
 
 ## @brief Project name.
-readonly PROJECT='@PROJECT_NAME@'
+readonly PROJECT='@PROJECT_ID@'
 ## @brief Project version.
 readonly VERSION='@PROJECT_VERSION@'
 ## @brief Major project version.

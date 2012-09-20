@@ -30,7 +30,7 @@ using namespace basis;
 
 // ---------------------------------------------------------------------------
 // project attributes
-const char* PROJECT = "@PROJECT_NAME@";
+const char* PROJECT = "@PROJECT_ID@";
 const char* VERSION = "@PROJECT_VERSION@";
 const char* RELEASE = "@PROJECT_RELEASE@";
 
