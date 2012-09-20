@@ -43,11 +43,11 @@
 #     <td>Absolute path of found @c SVMTest executable.</td>
 #   </tr>
 #   <tr>
-#     @tp @b svmtorch.train @endtp
+#     @tp @b svmtorch.SVMTorch @endtp
 #     <td>Import target of @c SVMTorch executable.</td>
 #   </tr>
 #   <tr>
-#     @tp @b svmtorch.test @endtp
+#     @tp @b svmtorch.SVMTest @endtp
 #     <td>Import target of @c SVMTest executable.</td>
 #   </tr>
 # </table>
@@ -93,8 +93,8 @@ if (_SVMTorch_COMPONENTS MATCHES train)
   endif ()
   mark_as_advanced (SVMTorch_train_EXECUTABLE)
   if (SVMTorch_train_EXECUTABLE)
-    add_executable (svmtorch.train IMPORTED)
-    set_target_properties (svmtorch.train PROPERTIES IMPORTED_LOCATION "${SVMTorch_train_EXECUTABLE}")
+    add_executable (svmtorch.SVMTorch IMPORTED)
+    set_target_properties (svmtorch.SVMTorch PROPERTIES IMPORTED_LOCATION "${SVMTorch_train_EXECUTABLE}")
   endif ()
 endif ()
 
@@ -116,8 +116,8 @@ if (_SVMTorch_COMPONENTS MATCHES test)
   endif ()
   mark_as_advanced (SVMTorch_test_EXECUTABLE)
   if (SVMTorch_test_EXECUTABLE)
-    add_executable (svmtorch.test IMPORTED)
-    set_target_properties (svmtorch.test PROPERTIES IMPORTED_LOCATION "${SVMTorch_test_EXECUTABLE}")
+    add_executable (svmtorch.SVMTest IMPORTED)
+    set_target_properties (svmtorch.SVMTest PROPERTIES IMPORTED_LOCATION "${SVMTorch_test_EXECUTABLE}")
   endif ()
 endif ()
 
