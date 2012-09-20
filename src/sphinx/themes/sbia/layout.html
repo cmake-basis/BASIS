@@ -36,8 +36,7 @@
   <div class="related">
     <h3>{{ _('Navigation') }}</h3>
     <ul>
-      <li class="right"><a href="http://www.rad.upenn.edu/sbia/software/index.html" title="SBIA Software">software</a></li>
-      <li class="right"><a href="http://www.rad.upenn.edu/sbia/index.html"          title="SBIA Home">home</a></li>
+      <li class="right"><a href="http://www.rad.upenn.edu/sbia/software/index.html" title="SBIA Software">SBIA Software</a></li>
       {%- block rootrellink %}
         {%- set iscurrent = pathto(master_doc) == "#" or (parents and pathto(master_doc) == parents[0].link|e) %}
         <li class="rootrellink"><a {% if iscurrent %}class="current"{% endif %} href="{{ pathto(master_doc) }}">{{ project }}</a>{{ reldelim2 }}</li>
