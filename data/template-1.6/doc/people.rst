@@ -16,6 +16,7 @@
 .. meta::
     :description: Names of those who developed and contributed to <project>.
 
+
 ======
 People
 ======

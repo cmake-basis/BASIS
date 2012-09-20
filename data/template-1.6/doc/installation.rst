@@ -20,36 +20,35 @@
 Installation
 ============
 
-An exhaustive list of minimum build dependencies, including the build tools
-along detailed step-by-step build, test, and installation instructions can
-be found in the `BASIS how-to guide on software installation`_.
-
-Please refer to this guide first if you are uncertain about the steps
-summarized here or if you have problems to build, test, or install the software
-on your system. If this guide does not help you to resolve the issue, please
-contact us at ``sbia-software at uphs.upenn.edu``.
+See the `BASIS guide on software installation`_ for a complete list of build tools and
+detailed installation instructions.
 
 
 Prerequisites
 =============
+
+.. raw:: html
+    
+    <br />
 
 .. The tabularcolumns directive is required to help with formatting the table properly
    in case of LaTeX (PDF) output.
 
 .. tabularcolumns:: |p{3.75cm}|m{1.5cm}|p{9.8cm}|
 
-+---------------------+---------+---------------------------------------------------------+
-| Package             | Version | Description                                             |
-+=====================+=========+=========================================================+
-| BASIS_              | 2.1     | A meta-project developed at SBIA_ to standardize and    |
-|                     |         | simplify the software development.                      |
-+---------------------+---------+---------------------------------------------------------+
-
-For instructions on how to build or install these prerequisites, please refer to
-the documentation of the respective software package.
++---------------------+---------+----------------------------------------------------------------------------+
+| Dependency          | Version | Description                                                                |
++=====================+=========+============================================================================+
+| BASIS_              | 2.1.0   | A meta-project developed at SBIA_ to standardize the software development. |
++---------------------+---------+----------------------------------------------------------------------------+
 
 .. _BASIS: http://www.rad.upenn.edu/sbia/software/basis/index.html
 .. _SBIA: http://www.rad.upenn.edu/sbia/index.html
+
+
+.. raw:: html
+    
+    <br />
 
 
 Configure
@@ -67,15 +66,14 @@ Configure
 
     cd <project_l>-1.0.0-build
 
-4. Run CMake to configure the build tree::
+4. Run CMake_ to configure the build tree::
 
     ccmake -DBASIS_DIR:PATH=/path/to/basis ../<project_l>-1.0.0-source
 
    - Press ``c`` to configure the build system and ``e`` to ignore warnings.
    - Set ``CMAKE_INSTALL_PREFIX`` and other CMake variables and options.
    - Continue pressing ``c`` until the option ``g`` is available.
-   - Then press ``g`` to generate the configuration files for the selected
-     build tool.
+   - Then press ``g`` to generate the `GNU Make`_ configuration files.
 
 
 Build
@@ -101,8 +99,7 @@ to a text file:
 
     ctest -V >& <project_l>-test.log
 
-And send the file ``<project_l>-test.log`` as attachment of the issue report to
-``sbia-software at uphs.upenn.edu``.
+and attach the file ``<project_l>-test.log`` to the issue report.
 
 
 Install
@@ -117,7 +114,7 @@ option during the configuration of the build tree::
 After the successful installation, the build directory can be removed again.
 
 .. _BASIS: http://www.rad.upenn.edu/sbia/software/basis/index.html
-.. _BASIS how-to guide on software installation: http://www.rad.upenn.edu/sbia/software/basis/howto/install.html
+.. _BASIS guide on software installation: http://www.rad.upenn.edu/sbia/software/basis/howto/install.html
 .. _CMake: http://www.cmake.org/
 .. _CTest: http://www.cmake.org/cmake/help/v2.8.8/ctest.html
 .. _GNU Make: http://www.gnu.org/software/make/
