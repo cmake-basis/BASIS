@@ -397,7 +397,7 @@ macro (basis_project_modules)
       MODULE_INFO_FILES
     RELATIVE
       "${CMAKE_CURRENT_SOURCE_DIR}"
-      "${CMAKE_CURRENT_SOURCE_DIR}/modules/*/BasisProject.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/*/BasisProject.cmake"
   )
 
   # use function scope to avoid overwriting of this project's variables
@@ -410,11 +410,18 @@ macro (basis_project_modules)
       message (FATAL_ERROR "basis_module_info(): Missing basis_project() command in ${F}!")
     endif ()
     # remember dependencies
-    set (${PROJECT_NAME}_DEPENDS "${PROJECT_DEPENDS}" PARENT_SCOPE)
-    set (${PROJECT_NAME}_OPTIONAL_DEPENDS "${PROJECT_OPTINOAL_DEPENDS}" PARENT_SCOPE)
-    set (${PROJECT_NAME}_TEST_DEPENDS "${PROJECT_TEST_DEPENDS}" PARENT_SCOPE)
-    set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS "${PROJECT_OPTIONAL_TEST_DEPENDS}" PARENT_SCOPE)
-    set (${PROJECT_NAME}_DECLARED TRUE PARENT_SCOPE)
+    foreach (V IN ITEMS DEPENDS OPTIONAL_DEPENDS TEST_DEPENDS OPTIONAL_TEST_DEPENDS)
+      set (${V})
+      foreach (D ${PROJECT_${V}})
+        basis_tokenize_dependency ("${D}" PKG VER CMP)
+        list (APPEND ${V} "${PKG}")
+      endforeach ()
+    endforeach ()
+    set (${PROJECT_NAME}_DEPENDS               "${DEPENDS}"               PARENT_SCOPE)
+    set (${PROJECT_NAME}_OPTIONAL_DEPENDS      "${OPTIONAL_DEPENDS}"      PARENT_SCOPE)
+    set (${PROJECT_NAME}_TEST_DEPENDS          "${TEST_DEPENDS}"          PARENT_SCOPE)
+    set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS "${OPTIONAL_TEST_DEPENDS}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_DECLARED              TRUE                       PARENT_SCOPE)
     # remember if module depends on Slicer - used by basis_find_packages()
     if (PROJECT_IS_SLICER_MODULE)
       foreach (_D IN LISTS BASIS_SLICER_METADATA_LIST)
