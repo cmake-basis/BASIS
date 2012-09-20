@@ -426,7 +426,7 @@ macro (basis_use_package PACKAGE)
   foreach (A IN ITEMS "WORKAROUND FOR NOT BEING ABLE TO USE RETURN")
     if (BASIS_DEBUG)
       message ("** basis_use_package()")
-      message ("**    Package: ${PKG}")
+      message ("**     Package: ${PKG}")
     endif ()
     if (PROJECT_IS_MODULE)
       # allow modules to specify top-level project as dependency
