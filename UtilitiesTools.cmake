@@ -98,7 +98,8 @@ function (basis_add_utilities_library UID)
         DESTINATION "${INSTALL_DIR}"
         COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
     )
-    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS ${TARGET_UID})
+    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS         ${TARGET_UID})
+    basis_set_project_property (APPEND PROPERTY INSTALL_EXPORT_TARGETS ${TARGET_UID})
     # debug message
     if (BASIS_DEBUG)
       message ("** Added BASIS utilities library ${TARGET_UID}")

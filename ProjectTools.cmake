@@ -1129,6 +1129,7 @@ macro (basis_project_initialize)
   basis_set_project_property (PROPERTY TARGETS "")
   # see basis_add_*() functions
   basis_set_project_property (PROPERTY EXPORT_TARGETS                "")
+  basis_set_project_property (PROPERTY INSTALL_EXPORT_TARGETS        "")
   basis_set_project_property (PROPERTY CUSTOM_EXPORT_TARGETS         "")
   basis_set_project_property (PROPERTY TEST_EXPORT_TARGETS           "")
   basis_set_project_property (PROPERTY PROJECT_USES_CXX_UTILITIES    FALSE)

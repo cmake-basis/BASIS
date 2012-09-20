@@ -217,8 +217,7 @@ function (basis_export_targets)
 
   # --------------------------------------------------------------------------
   # export non-custom targets
-  basis_get_project_property (EXPORT_TARGETS PROPERTY EXPORT_TARGETS)
-
+  basis_get_project_property (EXPORT_TARGETS)
   if (EXPORT_TARGETS)
     if (BASIS_USE_FULLY_QUALIFIED_UIDS)
       set (NAMESPACE_OPT)
@@ -230,15 +229,18 @@ function (basis_export_targets)
       FILE      "${PROJECT_BINARY_DIR}/${ARGN_FILE}"
       ${NAMESPACE_OPT}
     )
-    foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
-      install (
-        EXPORT      "${PROJECT_NAME}"
-        DESTINATION "${INSTALL_CONFIG_DIR}"
-        FILE        "${ARGN_FILE}"
-        COMPONENT   "${COMPONENT}"
-        ${NAMESPACE_OPT}
-      )
-    endforeach ()
+    basis_get_project_property (INSTALL_EXPORT_TARGETS)
+    if (INSTALL_EXPORT_TARGETS)
+      foreach (COMPONENT "${BASIS_RUNTIME_COMPONENT}" "${BASIS_LIBRARY_COMPONENT}")
+        install (
+          EXPORT      "${PROJECT_NAME}"
+          DESTINATION "${INSTALL_CONFIG_DIR}"
+          FILE        "${ARGN_FILE}"
+          COMPONENT   "${COMPONENT}"
+          ${NAMESPACE_OPT}
+        )
+      endforeach ()
+    endif ()
   endif ()
 
   # --------------------------------------------------------------------------
