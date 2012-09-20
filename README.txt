@@ -157,6 +157,7 @@ PACKAGE OVERVIEW
   - config/                    Package configuration files.
   - data/template-<version>/   Project template(s).
   - doc/                       Documentation of BASIS.
+  - example/                   Example files used in tutorials.
   - include/                   Public header files.
   - src/                       Source code files.
   - src/cmake/                 CMake implementations and corresponding auxiliary files.
