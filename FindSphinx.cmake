@@ -5,8 +5,17 @@
 # @par Input variables:
 # <table border="0">
 #   <tr>
+#     @tp @b Sphinx_DIR @endtp
+#     <td>Installation directory of Sphinx tools. Can also be set as environment variable.</td>
+#   </tr>
+#   <tr>
+#     @tp @b SPHINX_DIR @endtp
+#     <td>Alternative environment variable for @c Sphinx_DIR.</td>
+#   </tr>
+#   <tr>
 #     @tp @b Sphinx_FIND_COMPONENTS @endtp
 #     <td>Sphinx build tools to look for, i.e., 'apidoc' and/or 'build'.</td>
+#   </tr>
 # </table>
 #
 # @par Output variables:
@@ -68,6 +77,16 @@
 set (_Sphinx_REQUIRED_VARS)
 
 # ----------------------------------------------------------------------------
+# initialize search
+if (NOT Sphinx_DIR)
+  if (NOT $ENV{Sphinx_DIR} STREQUAL "")
+    set (Sphinx_DIR "$ENV{Sphinx_DIR}" CACHE PATH "Installation prefix of Sphinx (docutils)." FORCE)
+  else ()
+    set (Sphinx_DIR "$ENV{SPHINX_DIR}" CACHE PATH "Installation prefix of Sphinx (docutils)." FORCE)
+  endif ()
+endif ()
+
+# ----------------------------------------------------------------------------
 # default components to look for
 if (NOT Sphinx_FIND_COMPONENTS)
   set (Sphinx_FIND_COMPONENTS "build" "apidoc")
@@ -78,7 +97,22 @@ endif ()
 # ----------------------------------------------------------------------------
 # find components, i.e., build tools
 foreach (_Sphinx_TOOL IN LISTS Sphinx_FIND_COMPONENTS)
-  find_program (Sphinx-${_Sphinx_TOOL}_EXECUTABLE NAMES sphinx-${_Sphinx_TOOL} sphinx-${_Sphinx_TOOL}.py)
+  if (Sphinx_DIR)
+    find_program (
+      Sphinx-${_Sphinx_TOOL}_EXECUTABLE
+      NAMES         sphinx-${_Sphinx_TOOL} sphinx-${_Sphinx_TOOL}.py
+      HINTS         "${Sphinx_DIR}"
+      PATH_SUFFIXES bin
+      DOC           "The sphinx-${_Sphinx_TOOL} Python script."
+      NO_DEFAULT_PATH
+    )
+  else ()
+    find_program (
+      Sphinx-${_Sphinx_TOOL}_EXECUTABLE
+      NAMES sphinx-${_Sphinx_TOOL} sphinx-${_Sphinx_TOOL}.py
+      DOC   "The sphinx-${_Sphinx_TOOL} Python script."
+    )
+  endif ()
   mark_as_advanced (Sphinx-${_Sphinx_TOOL}_EXECUTABLE)
   list (APPEND _Sphinx_REQUIRED_VARS Sphinx-${_Sphinx_TOOL}_EXECUTABLE)
 endforeach ()
@@ -154,7 +188,13 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS (
     Sphinx_VERSION_STRING
 )
 
-set (Sphinx_FOUND ${SPHINX_FOUND})
+# ----------------------------------------------------------------------------
+# set Sphinx_DIR
+if (NOT Sphinx_DIR AND Sphinx-build_EXECUTABLE)
+  get_filename_component (Sphinx_DIR "${Sphinx-build_EXECUTABLE}" PATH)
+  string (REGEX REPLACE "/bin/?" "" Sphinx_DIR "${Sphinx_DIR}")
+  set (Sphinx_DIR "${Sphinx_DIR}" CACHE PATH "Installation directory of Sphinx tools." FORCE)
+endif ()
 
 unset (_Sphinx_VERSION)
 unset (_Sphinx_REQUIRED_VARS)
