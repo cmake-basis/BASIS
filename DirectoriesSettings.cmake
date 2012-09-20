@@ -228,8 +228,7 @@ if (BASIS_INSTALL_SCHEME MATCHES "win") # e.g., CMAKE_INSTALL_PREFIX := <Program
   # bundled dependency
   if (_BUNDLE)
     # package configuration
-    set (BUNDLE_CONFIG_DIR   "CMake")
-    set (INSTALL_CONFIG_DIR  "CMake${_PACKAGE}${_MODULE}")
+    set (INSTALL_CONFIG_DIR  "CMake")
     # executables
     set (INSTALL_RUNTIME_DIR "Lib${_PACKAGE}${_MODULE}")
     set (INSTALL_LIBEXEC_DIR "Lib${_PACKAGE}${_MODULE}")
@@ -249,8 +248,7 @@ if (BASIS_INSTALL_SCHEME MATCHES "win") # e.g., CMAKE_INSTALL_PREFIX := <Program
   # main package
   else ()
     # package configuration
-    set (BUNDLE_CONFIG_DIR   "CMake")
-    set (INSTALL_CONFIG_DIR  "CMake${_MODULE}")
+    set (INSTALL_CONFIG_DIR  "CMake")
     # executables
     set (INSTALL_RUNTIME_DIR "Bin")
     set (INSTALL_LIBEXEC_DIR "Lib${_MODULE}")
@@ -274,8 +272,7 @@ elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr
   # bundled dependency
   if (_BUNDLE)
     # package configuration
-    set (BUNDLE_CONFIG_DIR   "lib/cmake${_BUNDLE}")
-    set (INSTALL_CONFIG_DIR  "lib/cmake${_BUNDLE}${_PACKAGE}${_MODULE}")
+    set (INSTALL_CONFIG_DIR  "lib/cmake${_BUNDLE}")
     # executables
     set (INSTALL_RUNTIME_DIR "lib${_BUNDLE}${_PACKAGE}${_MODULE}")
     set (INSTALL_LIBEXEC_DIR "lib${_BUNDLE}${_PACKAGE}${_MODULE}")
@@ -295,8 +292,7 @@ elseif (BASIS_INSTALL_SCHEME MATCHES "usr") # e.g., CMAKE_INSTALL_PREFIX := /usr
   # main package
   else ()
     # package configuration
-    set (BUNDLE_CONFIG_DIR   "lib/cmake${_PACKAGE}")
-    set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
+    set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}")
     # executables
     set (INSTALL_RUNTIME_DIR "bin")
     set (INSTALL_LIBEXEC_DIR "lib${_PACKAGE}${_MODULE}")
@@ -320,8 +316,7 @@ else () # e.g., CMAKE_INSTALL_PREFIX := /opt/<vendor>/<package>
   # bundled dependency
   if (_BUNDLE)
     # package configuration
-    set (BUNDLE_CONFIG_DIR  "lib/cmake${_BUNDLE}")
-    set (INSTALL_CONFIG_DIR "lib/cmake${_BUNDLE}${_PACKAGE}${_MODULE}")
+    set (INSTALL_CONFIG_DIR "lib/cmake${_BUNDLE}")
     # executables
     set (INSTALL_RUNTIME_DIR "lib${_PACKAGE}${_MODULE}")
     set (INSTALL_LIBEXEC_DIR "lib${_PACKAGE}${_MODULE}")
@@ -339,8 +334,7 @@ else () # e.g., CMAKE_INSTALL_PREFIX := /opt/<vendor>/<package>
     set (INSTALL_TEXINFO_DIR "share${_PACKAGE}${_MODULE}/info")
   else ()
     # package configuration
-    set (BUNDLE_CONFIG_DIR   "lib/cmake${_PACKAGE}")
-    set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}${_MODULE}")
+    set (INSTALL_CONFIG_DIR  "lib/cmake${_PACKAGE}")
     # executables
     set (INSTALL_RUNTIME_DIR "bin")
     set (INSTALL_LIBEXEC_DIR "lib${_MODULE}")
