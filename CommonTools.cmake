@@ -34,10 +34,10 @@ include (CMakeParseArguments)
 # This macro calls CMake's
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:find_package">
 # find_package()</a> command and converts obsolete all uppercase <PKG>_<VAR>
-# variables to case-sensitive <Pkg>_<VAR> variables.
+# variables to case-sensitive "<Pkg>_<VAR>" variables.
 # It further ensures that the global variables CMAKE_FIND_LIBRARY_SUFFIXES
 # and CMAKE_FIND_EXECUTABLE_SUFFIX are reset to the values they had before
-# the call to find_package(). This is required if the Find<Pkg>.cmake module
+# the call to find_package(). This is required if the "Find<Pkg>.cmake" module
 # has modified these variables, but not restored their initial value.
 macro (find_package)
   if (BASIS_DEBUG)
