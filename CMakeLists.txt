@@ -104,6 +104,7 @@ set (
     "FindPythonModules.cmake"
     "FindSparseBayes.cmake"
     "FindSphinx.cmake"
+    "FindSVMTorch.cmake"
     "FindWeka.cmake"
 )
 
