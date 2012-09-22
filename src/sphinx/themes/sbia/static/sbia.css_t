@@ -619,7 +619,11 @@ iframe.request_form {
     margin: 0;
 }
 
-/* do not show the search tip of the searchbox sidebar element */
+/* searchbox sidebar element */
+#searchbox h3 {
+    color: black;
+}
+
 .searchtip {
     display: none
 }
