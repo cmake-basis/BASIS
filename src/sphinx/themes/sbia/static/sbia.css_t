@@ -618,3 +618,8 @@ iframe.request_form {
     height: 250px;
     margin: 0;
 }
+
+/* do not show the search tip of the searchbox sidebar element */
+.searchtip {
+    display: none
+}
