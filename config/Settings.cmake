@@ -48,19 +48,6 @@ set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 
 option (BUILD_PROJECT_TOOL "Request build of the basisproject command-line tool." ON)
 
-set (_DOC "Request installation of deprecated project templates."
-          " Required by basisproject to upgrade a project which was"
-          " instantiated from an older template.")
-basis_list_to_string (_DOC ${_DOC})
-
-if (BUILD_PROJECT_TOOL)
-  option (INSTALL_DEPRECATED_TEMPLATES "${_DOC}" OFF)
-else ()
-  set (INSTALL_DEPRECATED_TEMPLATES OFF CACHE BOOL "${_DOC}" FORCE)
-endif ()
-mark_as_advanced (INSTALL_DEPRECATED_TEMPLATES)
-unset (_DOC)
-
 # installation directory of project template files
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
 

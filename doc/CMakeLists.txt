@@ -39,7 +39,7 @@ endif ()
 
 # replace <year> pattern in template file which shall be included in documentation
 # to avoid unrecognized xml/html tags warning of Doxygen
-file (READ "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}/config/Depends.cmake" TEMPLATE)
+file (READ "${PROJECT_DATA_DIR}/template-1.3/config/Depends.cmake" TEMPLATE)
 string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
 file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
 unset (TEMPLATE)
