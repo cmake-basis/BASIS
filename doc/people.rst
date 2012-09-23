@@ -16,6 +16,11 @@
 .. meta::
     :description: Names of those who developed and contributed to BASIS.
 
+.. raw:: latex
+
+    \clearpage
+
+
 ======
 People
 ======
