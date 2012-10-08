@@ -120,7 +120,9 @@ function (basis_get_full_matlab_version VERSION)
   # read MATLAB version from existing output file
   set (_MATLAB_VERSION)
   if (EXISTS "${OUTPUT_FILE}")
-    file (STRINGS "${OUTPUT_FILE}" LINES NEWLINE_CONSUME LIMIT_COUNT 2)
+    file (READ "${OUTPUT_FILE}" LINES)
+    string (REGEX REPLACE "\n"    ";" LINES "${LINES}")
+    string (REGEX REPLACE "^;|;$" ""  LINES "${LINES}")
     list (LENGTH LINES NLINES)
     if (NLINES EQUAL 2)
       list (GET LINES 0 _MATLAB_EXECUTABLE)
@@ -143,8 +145,7 @@ function (basis_get_full_matlab_version VERSION)
     set (MATLAB_CMD
       "fid = fopen ('${OUTPUT_FILE}', 'w')"
       "if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end"
-      "fprintf (fid, '${MATLAB_EXECUTABLE}')"
-      "fprintf (fid, '%s', version)"
+      "fprintf (fid, '${MATLAB_EXECUTABLE}\\n%s\\n', version)"
       "fclose (fid)"
       "quit force"
     )
@@ -161,7 +162,9 @@ function (basis_get_full_matlab_version VERSION)
       return ()
     endif ()
     # read MATLAB version from text file
-    file (STRINGS "${OUTPUT_FILE}" LINES NEWLINE_CONSUME LIMIT_COUNT 2)
+    file (READ "${OUTPUT_FILE}" LINES)
+    string (REGEX REPLACE "\n" ";" LINES "${LINES}")
+    string (REGEX REPLACE "^;|;$" ""  LINES "${LINES}")
     list (LENGTH LINES NLINES)
     if (NLINES EQUAL 2)
       list (GET LINES 1 _MATLAB_VERSION)
@@ -170,7 +173,11 @@ function (basis_get_full_matlab_version VERSION)
       message (STATUS "Determining MATLAB version... - failed")
       return ()
     endif ()
-    message (STATUS "Determining MATLAB version... - done")
+    if (BASIS_VERBOSE)
+      message (STATUS "Determining MATLAB version... - done: ${_MATLAB_VERSION}")
+    else ()
+      message (STATUS "Determining MATLAB version... - done")
+    endif ()
   endif ()
   # return
   set (VERSION "${_MATLAB_VERSION}" PARENT_SCOPE)
