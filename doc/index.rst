@@ -54,9 +54,9 @@ project, the BASIS package has to be installed. Note, however, that BASIS is not
 necessarily required during the runtime, i.e., for executing the software.
 This depends on which utilities are used by the software.
 
-The :download:`BASIS Introduction <BASIS Introduction.pptx>` slides
+The :download:`BASIS Introduction <BASIS_Introduction.pptx>` slides
 further explain its purpose and the parts it is made of
-(`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Introduction.pptx>`__).
+(`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS_Introduction.pptx>`__).
 
 .. The ref link is required for the PDF version as the download directive in
    this case does not translate to a hyperlink, but text only.

@@ -6,5 +6,6 @@ add an installation rule for the new template to the CMakeLists.txt file and
 set the TEMPLATE_VERSION variable in the root CMakeLists.txt file of BASIS
 to the new template version.
 
-Note: The template version does not have to be increased if only files
-      (and directories) were added, but no existing files removed or modified.
+Note: Only the files which were modified or added have to be present in the
+      new template. The basisproject tool will look in older template
+      directories for any missing files.

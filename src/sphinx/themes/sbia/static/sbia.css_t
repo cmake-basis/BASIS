@@ -618,3 +618,12 @@ iframe.request_form {
     height: 250px;
     margin: 0;
 }
+
+/* searchbox sidebar element */
+#searchbox h3 {
+    color: black;
+}
+
+.searchtip {
+    display: none
+}

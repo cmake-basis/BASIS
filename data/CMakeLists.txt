@@ -19,20 +19,21 @@ macro (basis_install_template VERSION)
   )
 endmacro ()
 
-# Attention: Whenever a template file is modified, added, or removed,
-#            the previous project template has to be copied to a new
-#            directory with an updated template version! Otherwise, the
-#            three-way diff merge used by the basisproject tool to update
-#            existing projects to this newer template will fail.
+# Attention: Whenever a template file is modified or added,
+#            a new template directory with an updated version
+#            number (<major>.<minor>) has to be created and the
+#            modified or added files saved under this new directory.
+#            As only the "differences" are stored each time,
+#            *all* template versions are important to keep !
+#            Otherwise, the three-way diff merge used by the basisproject
+#            tool to update existing projects will fail.
 
 if (BUILD_PROJECT_TOOL)
-  if (INSTALL_DEPRECATED_TEMPLATES)
-    basis_install_template (1.0)
-    basis_install_template (1.1)
-    basis_install_template (1.2)
-    basis_install_template (1.3)
-    basis_install_template (1.4)
-    basis_install_template (1.5)
-  endif ()
+  basis_install_template (1.0)
+  basis_install_template (1.1)
+  basis_install_template (1.2)
+  basis_install_template (1.3)
+  basis_install_template (1.4)
+  basis_install_template (1.5)
   basis_install_template (1.6)
 endif ()

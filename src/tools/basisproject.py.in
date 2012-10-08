@@ -157,6 +157,44 @@ def get_template_version(cmake_file):
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+def get_template(template, path):
+    m = re.match(r'(.*)-(\d+)\.(\d+)$', template)
+    if not m is None:
+        prefix   = m.group(1)
+        major    = int(m.group(2))
+        minor    = int(m.group(3))
+        root     = os.path.dirname (prefix)
+        base     = os.path.basename(prefix)
+        # determine available template versions and stores minor version
+        # numbers of each major version required to initialize minor number
+        # when proceeding with the previous major version
+        minors = {}
+        for f in os.listdir(root):
+            if os.path.isdir(os.path.join(root, f)):
+                m = re.match('%s-(\d+)\.(\d+)$' % base, f)
+                if not m is None:
+                    k = int(m.group(1))
+                    v = int(m.group(2))
+                    if not k in minors: minors[k] = []
+                    minors[k].append(v)
+        # decrease template version until template file/directory exists
+        while major > 0:
+            while minor >= 0:
+                template_path = os.path.join('%s-%d.%d' % (prefix, major, minor), path)
+                if os.path.exists(template_path):
+                    return template_path
+                minor -= 1
+            # set minor version number to maximum minor number for next major version
+            while major > 0 and minor < 0:
+                major -= 1
+                if major in minors:
+                    for next_minor in minors[major]:
+                        if next_minor > minor: minor = next_minor
+            if minor < 0: break
+    # otherwise, just return input
+    return os.path.join(template, path)
+
+# ----------------------------------------------------------------------------
 def add_dependencies(txt, deps, required=True, test=False):
     """Add dependencies to basis_project() command in BasisProject.cmake file."""
     if test:
@@ -307,8 +345,8 @@ def add(path, args, isdir=False):
     """
     retval = 0
 
-    template_path          = os.path.join(args.template, path)
-    original_template_path = os.path.join(args.original_template, path)
+    template_path          = get_template(args.template, path)
+    original_template_path = get_template(args.original_template, path)
     project_path           = os.path.join(args.root, path)
 
     # check existence of template
@@ -491,7 +529,7 @@ def delete(path, args, isdir=False):
     """
     retval = 0
 
-    original_template_path = os.path.join(args.original_template, path)
+    original_template_path = get_template(args.original_template, path)
     project_path = os.path.join(args.root, path)
 
     # delete existing directory
@@ -516,7 +554,7 @@ def delete(path, args, isdir=False):
         if retval != -1:
             print "D %s" % project_path
             retval = 1
-    # delete existing file and copy of template
+    # delete existing file
     elif os.path.isfile(project_path):
         # check if project file differs from template
         if not args.force:
@@ -587,7 +625,7 @@ def addordel(op, path, args, isdir=False):
     """Add/update or delete file or directory depending on operation specified.
 
     @param [in] op    Operations. Either one of ADD, None, or DEL.
-    @param [in] path  File path relative to tempate or project root, respectively.
+    @param [in] path  File path relative to template or project root, respectively.
     @param [in] args  Namespace with command-line arguments.
     @param [in] isdir Whether @p path is a directory path that may not have
                       a corresponding template.
