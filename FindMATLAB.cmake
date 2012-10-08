@@ -50,6 +50,26 @@
 #     <td>The absolute path of the found matlab executable.</td>
 #   </tr>
 #   <tr>
+#     @tp @b MATLAB_VERSION_STRING @endtp
+#     <td>Version of the found matlab executable (e.g., 7.14.0).</td>
+#   </tr>
+#   <tr>
+#     @tp @b MATLAB_VERSION_MAJOR @endtp
+#     <td>Major version of the found matlab executable (e.g., 7).</td>
+#   </tr>
+#   <tr>
+#     @tp @b MATLAB_VERSION_MINOR @endtp
+#     <td>Minor version of the found matlab executable (e.g., 14).</td>
+#   </tr>
+#   <tr>
+#     @tp @b MATLAB_VERSION_PATCH @endtp
+#     <td>Patch of the found matlab executable (e.g., 0).</td>
+#   </tr>
+#   <tr>
+#     @tp @b MATLAB_RELEASE @endtp
+#     <td>Release version of the found matlab executable (e.g., R2012a).</td>
+#   </tr>
+#   <tr>
 #     @tp @b MATLAB_MCC_EXECUTABLE @endtp
 #     <td>The absolute path of the found MATLAB Compiler (mcc) executable.</td>
 #   </tr>
@@ -227,6 +247,15 @@ endif ()
 if (NOT MATLAB_DIR AND MATLAB_EXECUTABLE)
   string (REGEX REPLACE "/bin(/[a-z0-9]+)?/(matlab|MATLAB)(\\.exe|\\.EXE)?$" "" _MATLAB_PREFIX "${MATLAB_EXECUTABLE}")
   set (MATLAB_DIR "${_MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
+endif ()
+
+# ----------------------------------------------------------------------------
+# determine MATLAB version
+if (COMMAND basis_get_matlab_version)
+  basis_get_matlab_version ()
+endif ()
+if (COMMAND basis_get_matlab_release)
+  basis_get_matlab_release ()
 endif ()
 
 # ----------------------------------------------------------------------------
