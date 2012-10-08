@@ -242,10 +242,11 @@ macro (basis_find_package PACKAGE)
   if (NOT PKG_IS_MODULE)
     # ------------------------------------------------------------------------
     # make <PKG>_DIR variable visible in GUI by caching it if not done yet
-    basis_is_cached (CACHED ${PKG}_DIR)
-    if (DEFINED ${PKG}_DIR AND NOT CACHED)
+    basis_is_cached (_BFP_CACHED ${PKG}_DIR)
+    if (DEFINED ${PKG}_DIR AND NOT _BFP_CACHED)
       set (${PKG}_DIR "${${PKG}_DIR}" CACHE PATH "Installation directory of ${PKG}.")
     endif ()
+    unset (_BFP_CACHED)
     # ------------------------------------------------------------------------
     # determine if additional components of found package should be discovered
     set (FIND_ADDITIONAL_COMPONENTS FALSE)
@@ -268,7 +269,23 @@ macro (basis_find_package PACKAGE)
       set (_${PKG}_FOUND "${${PKG}_FOUND}") # used to decide what the intersection of
                                             # of multiple find invocations for the same
                                             # package with different components will be
-      # --------------------------------------------------------------------------
+      # ----------------------------------------------------------------------
+      # reset other <PKG>_* variables if <PKG>_DIR changed
+      if (_${PKG}_DIR AND ${PKG}_DIR) # internal _<PKG>_DIR cache entry set below
+        basis_sanitize_for_regex (_BFP_RE "${${PKG}_DIR}")
+        if (NOT _${PKG}_DIR MATCHES "${_BFP_RE}")
+          get_cmake_property (_BFP_VARS VARIABLES)
+          foreach (_BFP_VAR IN LISTS _BFP_VARS)
+            if (${_BFP_VAR} MATCHES "^${PKG}_")
+              basis_update_value (${_BFP_VAR} "${_BFP_VAR}-NOTFOUND")
+            endif ()
+          endforeach ()
+          unset (_BFP_VAR)
+          unset (_BFP_VARS)
+        endif ()
+        unset (_BFP_RE)
+      endif ()
+      # ----------------------------------------------------------------------
       # hide or show already defined <PKG>_DIR cache entry
       if (DEFINED ${PKG}_DIR AND DEFINED USE_${PKG})
         if (USE_${PKG})
@@ -277,7 +294,7 @@ macro (basis_find_package PACKAGE)
           mark_as_advanced (FORCE ${PKG}_DIR)
         endif ()
       endif ()
-      # --------------------------------------------------------------------------
+      # ----------------------------------------------------------------------
       # find external packages
       if (DEFINED USE_${PKG} AND NOT USE_${PKG})
         set (${PKG}_FOUND FALSE)
@@ -379,12 +396,17 @@ macro (basis_find_package PACKAGE)
           endif ()
         endif ()
       endif ()
-      # --------------------------------------------------------------------------
+      # ----------------------------------------------------------------------
       # reset <PKG>_DIR variable for possible search of different package version
       if (PKG_DIR AND NOT ${PKG}_DIR)
         basis_set_or_update_value (${PKG}_DIR "${PKG_DIR}")
       endif ()
-
+      # ----------------------------------------------------------------------
+      # remember current/previous <PKG>_DIR
+      # (used above to reset other <PKG>_* variables whenever <PKG>_DIR changed)
+      if (DEFINED ${PKG}_DIR)
+        set (_${PKG}_DIR "${${PKG}_DIR}" CACHE INTERNAL "(Previous) Installation directory of ${PKG}." FORCE)
+      endif ()
     endif ()
   endif ()
   # --------------------------------------------------------------------------
