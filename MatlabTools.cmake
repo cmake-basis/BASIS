@@ -116,7 +116,7 @@ function (basis_get_full_matlab_version VERSION)
     set (VERSION "" PARENT_SCOPE)
     return ()
   endif ()
-  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/MatlabVersion.txt")
+  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/CMakeFiles/MatlabVersion.txt")
   # read MATLAB version from existing output file
   set (_MATLAB_VERSION)
   if (EXISTS "${OUTPUT_FILE}")
