@@ -1096,6 +1096,7 @@ template files in the .basis/ subdirectory.
         acc.call(add, 'README.txt',         args)
         acc.call(add, 'INSTALL.txt',        args)
         acc.call(add, 'COPYING.txt',        args)
+        acc.call(add, 'ChangeLog.txt',      args)
         acc.call(add, 'BasisProject.cmake', args)
         acc.call(add, 'CMakeLists.txt',     args)
         # additional configuration files
@@ -1113,6 +1114,7 @@ template files in the .basis/ subdirectory.
         # documentation
         acc.call(addordel, opts.get('doc',     None), 'doc/CMakeLists.txt',   args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/index.rst',        args)
+        acc.call(addordel, opts.get('doc-rst', None), 'doc/changelog.rst',    args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/download.rst',     args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/installation.rst', args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/manual.rst',       args)
