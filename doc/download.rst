@@ -16,6 +16,7 @@
 .. meta::
     :description: Download the BASIS software and manual for Unix (Linux, OS X) and Microsoft Windows.
 
+
 ========
 Download
 ========
@@ -38,11 +39,16 @@ Documentation
 .. only:: html
     
     :download:`BASIS Manual <BASIS_Software_Manual.pdf>`: PDF version of software manual.
-
+    
+    :doc:`BASIS ChangeLog <changelog>`: Summary of changes, new features, and bug fixes.
+ 
 .. only:: latex
     
     `BASIS Manual <http://www.rad.upenn.edu/sbia/software/basis/manual.html>`__:
     Online version of this manual.
+    
+    `BASIS ChangeLog <http://www.rad.upenn.edu/sbia/software/basis/changelog.html>`__:
+    Summary of changes, new features, and bug fixes.
 
 
 System Requirements
