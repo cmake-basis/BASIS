@@ -67,6 +67,7 @@ further explain its purpose and the parts it is made of
 
     self
     download
+    changelog
     installation
     manual
     help
