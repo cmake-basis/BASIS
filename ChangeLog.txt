@@ -19,6 +19,22 @@ Changes
 =======
 
 
+.. _v2.1.1:
+
+Release 2.1.1 (Oct 24, 2012)
+----------------------------
+
+- Reset cached, non-internal <PKG>_* variables if <PKG>_DIR changed.
+- Determine MATLAB version again after MATLAB_EXECUTABLE changed.
+- Changed output directory of MatlabVersion.txt file in build tree.
+- Modified basisproject tool and project templates to only store "differences" of templates.
+- Changed SBIA Sphinx style of search box in sidebar of web pages.
+- Changed PDF names in template doc/CMakeLists.txt and revised CMake code further.
+- Renamed documentation files.
+- Added template file for ChangeLog.
+- Documented changes of BASIS itself.
+- Updated BASIS project files to latest project template.
+
 
 .. _v2.1.0:
 
