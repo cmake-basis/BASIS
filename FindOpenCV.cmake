@@ -10,7 +10,6 @@
 # @par 2. Variable
 #
 # The following are set after configuration is done: 
-#  
 # - OpenCV_FOUND
 # - OpenCV_LIBS
 # - OpenCV_INCLUDE_DIR
@@ -19,13 +18,14 @@
 #
 # The following variables are used to maintain compatibility with other
 # Find<Pkg>.cmake modules, including the FindOpenCV.cmake module of
-# of Jan Woetzel (2006/09, www.mip.informatik.uni-kiel.de/~jw):
+# Jan Woetzel (2006/09, www.mip.informatik.uni-kiel.de/~jw):
 # - OpenCV_INCLUDE_DIRS
 # - OpenCV_LIBRARIES
 # - OpenCV_LINK_DIRECTORIES
 # 
 # @par 3. Version
 #
+# 2012/10/22 Andreas Schuh, Find OpenCV 2 also if OpenCVConfig.cmake missing.
 # 2012/02/28 Andreas Schuh, Reimplemented module to work also for OpenCV 1.x.
 # 2010/04/07 Benoit Rat, Correct a bug when OpenCVConfig.cmake is not found.
 # 2010/03/24 Benoit Rat, Add compatibility for when OpenCVConfig.cmake is not found.
@@ -123,30 +123,11 @@ if (EXISTS "${OpenCV_DIR}")
     unset (__INCLUDE_DIRS)
 
   # --------------------------------------------------------------------------
-  # OpenCV 1
+  # OpenCV 1 (or OpenCV 2 with missing OpenCVConfig.cmake file)
   else ()
 
     # will be adjusted on Unix to find the correct library version
     set (OpenCV_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
-
-    # library components
-    set (OpenCV_LIB_COMPONENTS cxcore cv ml highgui cvaux)
-
-    if (OpenCV_COMPONENTS)
-      foreach (__CVLIB IN LISTS OpenCV_COMPONENTS)
-        string (REGEX REPLACE "^opencv_" "" __CVLIB__ "${__CVLIB}")
-        list (FIND OpenCV_LIB_COMPONENTS ${__CVLIB__} IDX)
-        if (IDX EQUAL -1)
-          message (FATAL_ERROR "Unknown OpenCV library component: ${__CVLIB}"
-                               " Are you looking for OpenCV 2.0.0 or greater?"
-                               " In this case, please set OpenCV_DIR to the"
-                               " directory containing the OpenCVConfig.cmake file.")
-        endif ()
-        list (APPEND OpenCV_COMPONENTS_REQUIRED "${__CVLIB__}")
-      endforeach ()
-    else ()
-      set (OpenCV_COMPONENTS_REQUIRED ${OpenCV_LIB_COMPONENTS})
-    endif ()
 
     # find include directory
     find_path (
@@ -163,8 +144,14 @@ if (EXISTS "${OpenCV_DIR}")
       # should not be done by Find module, but OpenCVConfig.cmake does it
       # as well, unfortunately...
       include_directories (${OpenCV_INCLUDE_DIR})
-      # extract version information from cvver.h
-      file (STRINGS "${OpenCV_INCLUDE_DIR}/cvver.h" OpenCV_VERSIONS_TMP REGEX "^#define CV_[A-Z]+_VERSION[ \t]+[0-9]+$")
+      # extract version information from header file
+      if (EXISTS "${OpenCV_INCLUDE_DIR}/cvver.h")
+        file (STRINGS "${OpenCV_INCLUDE_DIR}/cvver.h" OpenCV_VERSIONS_TMP REGEX "^#define CV_[A-Z]+_VERSION[ \t]+[0-9]+$")
+      elseif (EXISTS "${OpenCV_INCLUDE_DIR}/../opencv2/core/version.hpp")
+        file (STRINGS "${OpenCV_INCLUDE_DIR}/../opencv2/core/version.hpp" OpenCV_VERSIONS_TMP REGEX "^#define CV_[A-Z]+_VERSION[ \t]+[0-9]+$")
+      else ()
+        message (FATAL_ERROR "Missing ${OpenCV_INCLUDE_DIR}/cvver.h or ${OpenCV_INCLUDE_DIR}/../opencv2/core/version.hpp file!")
+      endif ()
       string (REGEX REPLACE ".*#define CV_MAJOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_MAJOR ${OpenCV_VERSIONS_TMP})
       string (REGEX REPLACE ".*#define CV_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_MINOR ${OpenCV_VERSIONS_TMP})
       string (REGEX REPLACE ".*#define CV_SUBMINOR_VERSION[ \t]+([0-9]+).*" "\\1" OpenCV_VERSION_PATCH ${OpenCV_VERSIONS_TMP})
@@ -193,6 +180,29 @@ if (EXISTS "${OpenCV_DIR}")
       endif ()
     endif ()
 
+    # library components
+    if (OpenCV_VERSION_MAJOR GREATER 1)
+      set (OpenCV_LIB_COMPONENTS core ml  video calib3d contrib features2d flann gpu highgui imgproc objdetect legacy)
+    else ()
+      set (OpenCV_LIB_COMPONENTS cxcore cv ml highgui cvaux)
+    endif ()
+
+    if (OpenCV_COMPONENTS)
+      foreach (__CVLIB IN LISTS OpenCV_COMPONENTS)
+        string (REGEX REPLACE "^opencv_" "" __CVLIB__ "${__CVLIB}")
+        list (FIND OpenCV_LIB_COMPONENTS ${__CVLIB__} IDX)
+        if (IDX EQUAL -1)
+          message (FATAL_ERROR "Unknown OpenCV library component: ${__CVLIB}"
+                               " Are you looking for OpenCV 2.0.0 or greater?"
+                               " In this case, please set OpenCV_DIR to the"
+                               " directory containing the OpenCVConfig.cmake file.")
+        endif ()
+        list (APPEND OpenCV_COMPONENTS_REQUIRED "${__CVLIB__}")
+      endforeach ()
+    else ()
+      set (OpenCV_COMPONENTS_REQUIRED ${OpenCV_LIB_COMPONENTS})
+    endif ()
+
     # find libraries of components
     set (OpenCV_LIB_COMPONENTS)
     foreach (__CVLIB IN LISTS OpenCV_COMPONENTS_REQUIRED)
@@ -200,7 +210,7 @@ if (EXISTS "${OpenCV_DIR}")
       # debug build
       find_library (
         OpenCV_${__CVLIB}_LIBRARY_DEBUG
-        NAMES "${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}d"
+        NAMES "opencv_${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}d" "${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}d"
         PATHS "${OpenCV_DIR}/lib"
         NO_DEFAULT_PATH
       )
@@ -216,7 +226,7 @@ if (EXISTS "${OpenCV_DIR}")
       else ()
         find_library (
           OpenCV_${__CVLIB}_LIBRARY_RELEASE
-          NAMES "${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}"
+          NAMES "opencv_${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}" "${__CVLIB}${OpenCV_CVLIB_NAME_SUFFIX}"
           PATHS "${OpenCV_DIR}/lib"
           NO_DEFAULT_PATH
         )
@@ -248,7 +258,7 @@ if (EXISTS "${OpenCV_DIR}")
     endforeach ()
 
     # restore library suffixes
-    set (OpenCV_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+    set (CMAKE_FIND_LIBRARY_SUFFIXES "${OpenCV_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES}")
 
     # compatibility with OpenCV 2
     set (OpenCV_INCLUDE_DIRS "${OpenCV_INCLUDE_DIR}")
