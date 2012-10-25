@@ -28,7 +28,7 @@ Release 2.1.1 (Oct 25, 2012)
 - Reset cached, non-internal <PKG>_* variables if <PKG>_DIR changed.
 - Determine MATLAB version again after MATLAB_EXECUTABLE changed.
 - Changed output directory of MatlabVersion.txt file in build tree.
-- Fixed issue with build of MEX-files which link to libraries with filenames such as ``.so.1`.
+- Fixed issue with build of MEX-files which link to libraries with filenames such as ``.so.1``.
 - Modified basisproject tool and project templates to only store "differences" of templates.
 - Changed SBIA Sphinx style of search box in sidebar of web pages.
 - Changed PDF names in template doc/CMakeLists.txt and revised CMake code further.
