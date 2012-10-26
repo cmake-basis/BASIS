@@ -1133,7 +1133,7 @@ template files in the .basis/ subdirectory.
         # example
         acc.call(addordel, opts.get('example', None), 'example/CMakeLists.txt', args)
         # update template version
-        acc.call(update_template_version, args)
+        if args.update: acc.call(update_template_version, args)
 
     except Exception, e:
         sys.stderr.write("Failed to ")
