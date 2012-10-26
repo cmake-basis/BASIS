@@ -485,14 +485,15 @@ def add(path, args, isdir=False):
                         sys.stderr.write('\n')
                         retval = -1
             # cannot update files without copy of original template
+            # note that this may also be caused by a project file of
+            # same name as a newly added template file
             else:
                 try:
-                    # copy current template for reference next to the corresponding
-                    # project file
+                    # copy current template for reference next to the corresponding project file
                     shutil.copyfile(template_path, project_path + '.template')
                 except:
                     pass
-                sys.stderr.write("S %s - cannot update file: missing original template\n" % project_path)
+                sys.stderr.write("S %s - cannot add or update file: either project file of same name exists already or missing original template\n" % project_path)
                 retval = -1
             # print status message if file was updated
             if retval > 0:
