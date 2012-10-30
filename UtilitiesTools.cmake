@@ -596,9 +596,6 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
             "${CMAKE_INSTALL_PREFIX}/${INSTALL_${L}_DIR}/<package>"
             "${INSTALL_LOCATION}"
         )
-        message ("BASEDIR: ${CMAKE_INSTALL_PREFIX}/${INSTALL_${L}_DIR}/<package>")
-        message ("EXEDIR:  ${INSTALL_LOCATION}")
-        message ("RELDIR:  ${INSTALL_LOCATION_REL2${L}}")
       else ()
         set (INSTALL_LOCATION_REL2${L} "${INSTALL_LOCATION}")
       endif ()
