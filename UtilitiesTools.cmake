@@ -596,6 +596,9 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
             "${CMAKE_INSTALL_PREFIX}/${INSTALL_${L}_DIR}/<package>"
             "${INSTALL_LOCATION}"
         )
+        message ("BASEDIR: ${CMAKE_INSTALL_PREFIX}/${INSTALL_${L}_DIR}/<package>")
+        message ("EXEDIR:  ${INSTALL_LOCATION}")
+        message ("RELDIR:  ${INSTALL_LOCATION_REL2${L}}")
       else ()
         set (INSTALL_LOCATION_REL2${L} "${INSTALL_LOCATION}")
       endif ()
@@ -661,7 +664,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       # hash entry
       set (SH_B "${SH_B}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${BUILD_LOCATION}'")
       if (INSTALL_LOCATION)
-        set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2LIBRARY}'")
+        set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2BASH_LIBRARY}'")
       else ()
         set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION ''")
       endif ()
