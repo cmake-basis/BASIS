@@ -43,7 +43,7 @@ LICENSE = "@PROJECT_LICENSE@"
 CONTACT = "@PROJECT_CONTACT@"
 
 
-# used to make paths relative to this module absolute
+# used to make base argument of functions absolute
 _MODULE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # ============================================================================
@@ -152,17 +152,18 @@ def istarget(name, prefix=None, targets=None):
 # @param [in] name    Name of command or @c None.
 # @param [in] prefix  Common prefix of targets belonging to this project.
 # @param [in] targets Dictionary mapping target UIDs to executable paths.
+# @param [in] base    Base directory for relative paths in @p targets.
 #
 # @returns Absolute path of executable or @c None if not found.
 #          If @p name is @c None, the path of this executable is returned.
-def exepath(name=None, prefix=None, targets=None):
+def exepath(name=None, prefix=None, targets=None, base='.'):
     path = None
     if name is None:
         path = os.path.realpath(sys.argv[0])
     elif istarget(name, prefix=prefix, targets=targets):
         uid = targetuid(name, prefix=prefix, targets=targets)
         if uid.startswith('.'): uid = uid[1:]
-        path = os.path.normpath(os.path.join(_MODULE_DIR, targets[uid]))
+        path = os.path.normpath(os.path.join(os.path.join(_MODULE_DIR, base), targets[uid]))
         if '$(IntDir)' in path:
             for intdir in ['Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel']:
                 tmppath = path.replace('$(IntDir)', intdir)
@@ -183,11 +184,12 @@ def exepath(name=None, prefix=None, targets=None):
 # @param [in] name    Name of command or @c None.
 # @param [in] prefix  Common prefix of targets belonging to this project.
 # @param [in] targets Dictionary mapping target UIDs to executable paths.
+# @param [in] base    Base directory for relative paths in @p targets.
 #
 # @returns Name of executable file or @c None if not found.
 #          If @p name is @c None, the name of this executable is returned.
-def exename(name=None, prefix=None, targets=None):
-    path = exepath(name, prefix, targets)
+def exename(name=None, prefix=None, targets=None, base='.'):
+    path = exepath(name, prefix, targets, base)
     if path is None: return None
     name = os.path.basename(path)
     if os.name == 'nt' and (name.endswith('.exe') or name.endswith('.com')):
@@ -200,11 +202,12 @@ def exename(name=None, prefix=None, targets=None):
 # @param [in] name    Name of command or @c None.
 # @param [in] prefix  Common prefix of targets belonging to this project.
 # @param [in] targets Dictionary mapping target UIDs to executable paths.
+# @param [in] base    Base directory for relative paths in @p targets.
 #
 # @returns Absolute path of directory containing executable or @c None if not found.
 #         If @p name is @c None, the directory of this executable is returned.
-def exedir(name=None, prefix=None, targets=None):
-    path = exepath(name, prefix, targets)
+def exedir(name=None, prefix=None, targets=None, base='.'):
+    path = exepath(name, prefix, targets, base)
     if path is None: return None
     return os.path.dirname(path)
 
@@ -275,6 +278,7 @@ def qsplit(args):
 # @param [in] simulate   Whether to simulate command execution only.
 # @param [in] prefix     Common prefix of targets belonging to this project.
 # @param [in] targets    Dictionary mapping target UIDs to executable paths.
+# @param [in] base       Base directory for relative paths in @p targets.
 #
 # @return The exit code of the subprocess if @p stdout is false (the default).
 #         Otherwise, if @p stdout is true, a tuple consisting of exit code
@@ -285,14 +289,14 @@ def qsplit(args):
 #                         raised if the command executed with non-zero exit
 #                         code but @p allow_fail set to @c True.
 def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False,
-                  prefix=None, targets=None):
+                  prefix=None, targets=None, base='.'):
     # convert args to list of strings
     if   type(args) is list:            args = [str(i) for i in args]
     elif type(args) in (str, unicode):  args = qsplit(args);
     else:              raise Exception("execute(): Argument args must be either list or string, but %s given" % type(args))
     if len(args) == 0: raise Exception("execute(): No command specified for execution")
     # get absolute path of executable
-    path = exepath(args[0], prefix=prefix, targets=targets)
+    path = exepath(args[0], prefix=prefix, targets=targets, base=base)
     if not path: raise SubprocessError(args[0] + ": Command not found")
     args[0] = path
     # some verbose output

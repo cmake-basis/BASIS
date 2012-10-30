@@ -88,7 +88,7 @@ import basis.shflags # command-line parsing library
 # common prefix of target UIDs belonging to this project
 [ -n "${_BASIS_TARGET_UID_PREFIX}" ] || readonly _BASIS_TARGET_UID_PREFIX=''
 # used to make relative paths in executable target information map absolute
-[ -n "${_BASIS_DIR}" ] || readonly _BASIS_DIR="${BASIS_UTILITIES_DIR}"
+[ -n "${_BASIS_EXECUTABLE_TARGETS_BASE}" ] || readonly _BASIS_EXECUTABLE_TARGETS_BASE="${BASIS_UTILITIES_DIR}"
 
 
 ## @addtogroup BasisBashUtilities
@@ -336,7 +336,7 @@ exepath()
             _basis_executabletargetinfo_get _basis_exepath_path "${_basis_exepath_uid}" LOCATION
             if [ -n "${_basis_exepath_path}" ]; then
                 # make path absolute
-                _basis_exepath_path=`abspath "${_BASIS_DIR}" "${_basis_exepath_path}"`
+                _basis_exepath_path=`abspath "${_BASIS_EXECUTABLE_TARGETS_BASE}" "${_basis_exepath_path}"`
                 [ $? -eq 0 ] || return 1
             else
                 _basis_exepath_path=`/usr/bin/which "$2" 2> /dev/null`
