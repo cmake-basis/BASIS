@@ -71,9 +71,9 @@ string exepath(const string& name, const IExecutableTargetInfo* targets)
         //      of which() even though BASIS includes a Python implementation
         //      that can also be used on Windows. Still, a native C++
         //      implementation is desireable.
-        if (!os::path::isabs(exec_name) && targets->istarget("sbia.basis.which")) {
+        if (!os::path::isabs(exec_name) && targets->istarget("basis.which")) {
             vector<string> which(2);
-            which[0] = "sbia.basis.which";
+            which[0] = "basis.which";
             which[1] = name;
             ostringstream oss;
             // attention: this includes a "recursive" call of this function!
