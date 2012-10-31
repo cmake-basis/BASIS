@@ -90,7 +90,7 @@ import()
         exit 1
     fi
     [[ ${module: -3} == '.sh' ]] || module="${module}.sh"
-    local path="${BASHPATH}"
+    local path="${BASHPATH}:" # ATTENTION: Trailing ':' required to terminate while loop!
     local root=
     while [[ -n "${path}" ]]; do
         root="${path%%:*}"

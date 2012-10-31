@@ -64,25 +64,29 @@ use constant CONTACT   => "@PROJECT_CONTACT@";
 # custom utilities
 # ============================================================================
 
-my ($_TARGET_PREFIX, %_EXECUTABLE_TARGETS);
+my ($_TARGET_PREFIX, %_EXECUTABLE_TARGETS, $_TARGETS_BASE);
 
 BEGIN {
+    use File::Basename qw(dirname);
+
     $_TARGET_PREFIX = '@PROJECT_NAMESPACE_CMAKE@';
 
     %_EXECUTABLE_TARGETS = (
         @EXECUTABLE_TARGET_INFO@
     );
+
+    $_TARGETS_BASE = dirname(__FILE__);
 }
 
 use BASIS::Utilities qw(tostring qsplit),
         print_contact => { contact => CONTACT },
         print_version => { project => PROJECT, version => RELEASE, copyright => COPYRIGHT, license => LICENSE },
-        targetuid     => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
-        istarget      => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
-        exepath       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
-        exename       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
-        exedir        => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS },
-        execute       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS };
+        targetuid     => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS, base => $_TARGETS_BASE },
+        istarget      => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS, base => $_TARGETS_BASE },
+        exepath       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS, base => $_TARGETS_BASE },
+        exename       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS, base => $_TARGETS_BASE },
+        exedir        => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS, base => $_TARGETS_BASE },
+        execute       => { prefix => $_TARGET_PREFIX, targets => \%_EXECUTABLE_TARGETS, base => $_TARGETS_BASE };
 
 
 ## @}

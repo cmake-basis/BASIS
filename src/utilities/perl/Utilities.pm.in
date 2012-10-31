@@ -270,6 +270,7 @@ sub istarget
 # @param [in] %$targets Reference to hash which maps known build targets to
 #                       executable file paths. If not specified, this function
 #                       always returns false.
+# @param [in] $base     Base directory used for relative paths in @p %$targets.
 #
 # @returns Absolute path of executable or @c undef if not found.
 #          If @p name is @c undef, the path of this executable is returned.
@@ -278,6 +279,7 @@ sub exepath
     my $name    = shift;
     my $prefix  = shift;
     my $targets = shift;
+    my $base    = shift || '.';
     my $path    = undef;
     if (not defined $name) {
         $path = realpath($0);
@@ -299,7 +301,7 @@ sub exepath
                 }
                 $path =~ s/\$\(IntDir\)//g;
             }
-            $path = File::Spec->rel2abs($path, dirname(__FILE__));
+            $path = File::Spec->rel2abs($path, File::Spec->rel2abs($base, dirname(__FILE__)));
             # the realpath() function only works for existing paths
             $path = realpath($path) if -e $path;
         }
@@ -320,8 +322,9 @@ sub exepath
 #                       target name must match excactly. Otherwise, targets
 #                       within the specified namespace are considered.
 # @param [in] %$targets Reference to hash which maps known build targets to
-#                      executable file paths. If not specified, this function
-#                      always returns false.
+#                       executable file paths. If not specified, this function
+#                       always returns false.
+# @param [in] $base     Base directory used for relative paths in @p %$targets.
 #
 # @returns Name of executable file or @c undef if not found.
 #          If @p name is @c undef, the path of this executable is returned.
@@ -346,6 +349,7 @@ sub exename
 # @param [in] %$targets Reference to hash which maps known build targets to
 #                       executable file paths. If not specified, this function
 #                       always returns false.
+# @param [in] $base     Base directory used for relative paths in @p %$targets.
 #
 # @returns Absolute path of directory containing executable or @c undef if not found.
 #          If @p name is @c undef, the directory of this executable is returned.
@@ -471,6 +475,7 @@ sub _split_command_and_arguments
 # @param [in] %$targets    Reference to hash which maps known build targets to
 #                          executable file paths. If not specified, this function
 #                          always returns false.
+# @param [in] $base        Base directory used for relative paths in @p %$targets.
 #
 # @returns The exit code of the subprocess if @p stdout is false (the default).
 #          Otherwise, if @p stdout is true, a tuple consisting of exit code
@@ -484,16 +489,16 @@ sub execute
 {
     # arguments
     my $args = shift or die "execute(): No command specified for execution";
-    if ($args =~ m/^(quiet|stdout|allow_fail|verbose|simulate|prefix|targets)$/) {
+    if ($args =~ m/^(quiet|stdout|allow_fail|verbose|simulate|prefix|targets|base)$/) {
         warn "First argument matches option name. Missing args argument?";
     }
     my %defaults = (quiet   => 0,  stdout   => 0, allow_fail => 0,
                     verbose => 0,  simulate => 0,
-                    prefix  => undef, targets  => undef);
+                    prefix  => undef, targets => undef, base => '.');
     my %options  = (%defaults, @_);
     # get absolute path of executable
     my ($command, $arguments) = _split_command_and_arguments($args);
-    my $exec_path = exepath($command, $options{'prefix'}, $options{'targets'});
+    my $exec_path = exepath($command, $options{'prefix'}, $options{'targets'}, $options{'base'});
     defined $exec_path or die "$command: Command not found";
     $exec_path = '"' . $exec_path . '"' if $exec_path =~ m/'|\s/; # quote if necessary
     $args = "$exec_path $arguments";
@@ -588,7 +593,8 @@ sub _build_executabletargetinfo_function
         my $target  = shift;
         my $prefix  = shift || $args->{prefix};
         my $targets = shift || $args->{targets};
-        eval "$fn(\$target, \$prefix, \$targets)";
+        my $base    = shift || $args->{base};
+        eval "$fn(\$target, \$prefix, \$targets, \$base)";
     }
 }
 
@@ -605,7 +611,8 @@ sub _build_execute
                         verbose    => $args->{verbose}    || 0,
                         simulate   => $args->{simulate}   || 0,
                         prefix     => $args->{prefix},
-                        targets    => $args->{targets});
+                        targets    => $args->{targets},
+                        base       => $args->{base});
         my %options  = (%defaults, @_);
         execute($argv, %options);
     }

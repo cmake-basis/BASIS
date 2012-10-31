@@ -52,25 +52,32 @@ readonly VERSION_PATCH='@PROJECT_VERSION_PATCH@'
 ## @brief Project release.
 readonly RELEASE='@PROJECT_RELEASE@'
 ## @brief Default copyright of executables.
-readonly COPYRIGHT='@PROJECT_COPYRIGHT@'
+COPYRIGHT='@PROJECT_COPYRIGHT@'
 ## @brief Default license of executables.
-readonly LICENSE='@PROJECT_LICENSE@'
+LICENSE='@PROJECT_LICENSE@'
 ## @brief Default contact to use for help output of executables.
-readonly CONTACT='@PROJECT_CONTACT@'
+CONTACT='@PROJECT_CONTACT@'
+
+# if the following variables are not set, they are initialized to the
+# default values configured in the basis.utilitis module and then marked
+# as readonly by this module. otherwise, mark variables as readonly here
+[ -n "${COPYRIGHT}" ] && readonly COPYRIGHT
+[ -n "${LICENSE}"   ] && readonly LICENSE
+[ -n "${CONTACT}"   ] && readonly CONTACT
 
 
 ## @}
 # end of Doxygen group
 
 readonly _BASIS_TARGET_UID_PREFIX='@PROJECT_NAMESPACE_CMAKE@'
-readonly _BASIS_DIR="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
+readonly _BASIS_EXECUTABLE_TARGETS_BASE="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
 
 # ============================================================================
 # source implementations of utility functions
 # ============================================================================
 
 # source project-independent utility functions
-. "${_BASIS_DIR}/@_BASIS_BASH_LIBRARY_DIR@/basis/utilities.sh"
+. "${_BASIS_EXECUTABLE_TARGETS_BASE}/@_BASIS_BASH_LIBRARY_DIR@/basis/utilities.sh"
 if [[ $? -ne 0 ]]; then
     echo "Failed to import basis.utilities module!" 1>&2
     exit 1
