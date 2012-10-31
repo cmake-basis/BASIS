@@ -19,19 +19,35 @@ Changes
 =======
 
 
+.. _v2.1.2:
+
+Release 2.1.2 (Oct 31, 2012)
+----------------------------
+
+- Modified ``basisproject`` tool to only update template version in root ``CMakeLists.txt`` if called with ``-u``.
+- Modified error message of ``basisproject`` tool to not mislead user.
+- Fixed endless loop in Bash ``import()`` function when module not found.
+- Fixed readonly warning of ``COPYRIGHT``, ``LICENSE``, or ``CONTACT`` Bash variables.
+- Fixed relative path of executable target info maps of Bash, Perl, and Python utilities.
+- Fixed base directory used to make such relative paths absolute.
+- Fixed target name of Python which command used by C++ utilities.
+- Fixed Doxygen comments to avoid warnings during build of API documentation.
+- Fixed installation of API documentation as part of nightly test.
+
+
 .. _v2.1.1:
 
 Release 2.1.1 (Oct 25, 2012)
 ----------------------------
 
-- Modified FindOpenCV.cmake module to still find OpenCV 2 even if CMake configuration file missing.
-- Reset cached, non-internal <PKG>_* variables if <PKG>_DIR changed.
-- Determine MATLAB version again after MATLAB_EXECUTABLE changed.
+- Modified ``FindOpenCV.cmake`` module to still find OpenCV 2 even if CMake configuration file missing.
+- Reset cached, non-internal ``<PKG>_*`` variables if ``<PKG>_DIR`` changed.
+- Determine MATLAB version again after ``MATLAB_EXECUTABLE`` changed.
 - Changed output directory of MatlabVersion.txt file in build tree.
 - Fixed issue with build of MEX-files which link to libraries with filenames such as ``.so.1``.
 - Modified basisproject tool and project templates to only store "differences" of templates.
 - Changed SBIA Sphinx style of search box in sidebar of web pages.
-- Changed PDF names in template doc/CMakeLists.txt and revised CMake code further.
+- Changed PDF names in template ``doc/CMakeLists.txt`` and revised CMake code further.
 - Renamed documentation files.
 - Added template file for ChangeLog.
 - Documented changes of BASIS itself.
