@@ -879,7 +879,7 @@ if (FORCE_BUILD OR UPDATED_FILES)
       # other projects and the test would not reveal that the projects are
       # actually no longer compatible.
       read_cmake_cache_value (CMAKE_INSTALL_PREFIX)
-      set (UNINSTALLER "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/uninstall_${CTEST_PROJECT_NAME_LOWER}")
+      set (UNINSTALLER "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/uninstall-${CTEST_PROJECT_NAME_LOWER}")
       if (EXISTS "${UNINSTALLER}")
         execute_process (
           COMMAND           "${UNINSTALLER}"
