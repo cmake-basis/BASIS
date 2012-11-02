@@ -721,12 +721,6 @@ endif ()
 string (CONFIGURE "${CTEST_SVN_URL}" CTEST_SVN_URL @ONLY)
 
 if (NOT MANUAL_MODE AND NOT EXISTS "${CTEST_SOURCE_DIRECTORY}/.svn")
-  file (MAKE_DIRECTORY "${CTEST_SOURCE_DIRECTORY}")
-  if (UNIX)
-    # for the case that the SVN command is actually executed by
-    # another user as is the case for basistest-svn used at SBIA
-    execute_process(COMMAND /bin/chmod g+w "${CTEST_SOURCE_DIRECTORY}")
-  endif ()
   set (CTEST_CHECKOUT_COMMAND "${CTEST_SVN_COMMAND} co \"${CTEST_SVN_URL}/${CTEST_SVN_BRANCH}\" ${CTEST_SOURCE_DIRECTORY}")
 endif ()
 set (CTEST_UPDATE_COMMAND "${CTEST_SVN_COMMAND}")
