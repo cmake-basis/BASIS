@@ -87,6 +87,7 @@ set (
 # Find<Pkg>.cmake modules
 set (
   CMAKE_FIND_MODULES
+    "FindAFNI.cmake"
     "FindBASH.cmake"
     "FindBLAS.cmake"
     "FindBoostNumericBindings.cmake"
