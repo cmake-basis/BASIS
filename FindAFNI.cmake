@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  FindAFNI.cmake
-# @brief Find tools (i.e., executables/programs) of the AFNI package.
+# @brief Find programs of the AFNI package.
 #
 # @sa http://afni.nimh.nih.gov/afni/
 #
@@ -14,12 +14,12 @@
 #   </tr>
 #   <tr>
 #     @tp @b AFNI_FIND_COMPONENTS @endp
-#     <td>List of components, i.e., AFNI tools/programs, to look for.
+#     <td>List of components, i.e., AFNI programs, to look for.
 #         Specify using COMPONENTS argument of find_package() command.</td>
 #   </tr>
 #   <tr>
 #     @tp @b AFNI_FIND_OPTIONAL_COMPONENTS @endp
-#     <td>List of optional components, i.e., AFNI tools/programs, to look for.</td>
+#     <td>List of optional components, i.e., AFNI programs, to look for.</td>
 #         Specify using OPTIONAL_COMPONENTS argument of find_package() command.</td>
 #   </tr>
 # </table>
@@ -28,13 +28,13 @@
 # <table border="0">
 #   <tr>
 #     @tp @b AFNI_FOUND @endtp
-#     <td>Whether all required components of the AFNI package were found. If only
-#         optional components were searched, this variable is set to @c TRUE if
-#         all named optional components were found.</td>
+#     <td>Whether all required programs of the AFNI package were found. If only
+#         optional programs were searched, this variable is set to @c TRUE if
+#         all named programs were found.</td>
 #   </tr>
 #   <tr>
 #     @tp @b AFNI_&lt;tool%gt;_EXECUTABLE @endtp
-#     <td>Absolute path of the corresponding found AFNI tool, e.g., @c AFNI_3dcalc_EXECUTABLE.</td>
+#     <td>Absolute path of the corresponding found AFNI program, e.g., @c AFNI_3dcalc_EXECUTABLE.</td>
 #   </tr>
 # </table>
 #
@@ -53,7 +53,7 @@ if (NOT AFNI_DIR)
 endif ()
 
 if (NOT AFNI_FIND_COMPONENTS AND NOT AFNI_FIND_OPTIONAL_COMPONENTS)
-  message (FATAL_ERROR "The FindAFNI.cmake module requires a list of AFNI tools to look for"
+  message (FATAL_ERROR "The FindAFNI.cmake module requires a list of AFNI programs to look for"
                        " specified using the COMPONENTS and/or OPTIONAL_COMPONENTS argument"
                        " of the find_package() command, e.g.:"
                        "\n"
@@ -61,7 +61,7 @@ if (NOT AFNI_FIND_COMPONENTS AND NOT AFNI_FIND_OPTIONAL_COMPONENTS)
 endif ()
 
 # ----------------------------------------------------------------------------
-# private helper macro to look for a particular required or optional AFNI tool
+# private helper macro to look for a particular required or optional AFNI program
 macro (_AFNI_find_program NAME REQUIRED)
   if (AFNI_DIR)
     find_program (AFNI_${NAME}_EXECUTABLE NAMES ${NAME} HINTS ${AFNI_DIR} PATH_SUFFIXES bin NO_DEFAULT_PATH)
@@ -74,7 +74,7 @@ macro (_AFNI_find_program NAME REQUIRED)
       # and required components; in this case, let AFNI_FOUND reflect only
       # whether all required components were found, but ignore the optional ones;
       # the caller can still check AFNI_<tool>_EXECUTABLE explicitly for these
-      # optional components to see whether or not a particular AFNI tools was found
+      # optional components to see whether or not a particular AFNI programs was found
       if (REQUIRED)
         set (AFNI_FOUND FALSE)
       endif ()
@@ -93,7 +93,7 @@ macro (_AFNI_find_program NAME REQUIRED)
 endmacro ()
 
 # ----------------------------------------------------------------------------
-# find AFNI tools
+# find AFNI program(s)
 set (AFNI_FOUND TRUE)
 
 set (_AFNI_MISSING_COMPONENTS)
@@ -111,9 +111,9 @@ endforeach ()
 set (_AFNI_HELP_MESSAGE "Please set AFNI_DIR to the directory containing these executables or specify the location of each not found executable using the advanced AFNI_<tool>_EXECUTABLE CMake variables.")
 
 if (_AFNI_MISSING_COMPONENTS)
-  message (FATAL_ERROR "Could NOT find the following required AFNI tools:\n${_AFNI_MISSING_COMPONENTS}\n${_AFNI_HELP_MESSAGE}")
+  message (FATAL_ERROR "Could NOT find the following required AFNI program(s):\n${_AFNI_MISSING_COMPONENTS}\n${_AFNI_HELP_MESSAGE}")
 elseif (_AFNI_MISSING_OPTIONAL_COMPONENTS AND NOT AFNI_FIND_QUIETLY)
-  message (WARNING "Could NOT find the following optional AFNI tools:\n${_AFNI_MISSING_OPTIONAL_COMPONENTS}\n${_AFNI_HELP_MESSAGE}")
+  message (WARNING "Could NOT find the following optional AFNI program(s):\n${_AFNI_MISSING_OPTIONAL_COMPONENTS}\n${_AFNI_HELP_MESSAGE}")
 endif ()
 
 # ----------------------------------------------------------------------------
