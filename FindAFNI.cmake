@@ -28,7 +28,9 @@
 # <table border="0">
 #   <tr>
 #     @tp @b AFNI_FOUND @endtp
-#     <td>Whether all requested components (both required and optional) of the AFNI package were found.</td>
+#     <td>Whether all required components of the AFNI package were found. If only
+#         optional components were searched, this variable is set to @c TRUE if
+#         all named optional components were found.</td>
 #   </tr>
 #   <tr>
 #     @tp @b AFNI_&lt;tool%gt;_EXECUTABLE @endtp
@@ -67,7 +69,20 @@ macro (_AFNI_find_program NAME REQUIRED)
     find_program (AFNI_${NAME}_EXECUTABLE NAMES ${NAME})
   endif ()
   if (NOT AFNI_${NAME}_EXECUTABLE)
-    set (AFNI_FOUND FALSE)
+    if (AFNI_FIND_COMPONENTS)
+      # looking either only for required components or for both optional and
+      # and required components; in this case, let AFNI_FOUND reflect only
+      # whether all required components were found, but ignore the optional ones;
+      # the caller can still check AFNI_<tool>_EXECUTABLE explicitly for these
+      # optional components to see whether or not a particular AFNI tools was found
+      if (REQUIRED)
+        set (AFNI_FOUND FALSE)
+      endif ()
+    else ()
+      # looking only for optional components anyway, so let AFNI_FOUND reflect
+      # if all of these optional components were found instead
+      set (AFNI_FOUND FALSE)
+    endif ()
     if (REQUIRED)
       list (APPEND _AFNI_MISSING_COMPONENTS ${NAME})
     else ()
