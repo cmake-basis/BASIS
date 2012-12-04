@@ -116,7 +116,8 @@ function (basis_get_full_matlab_version VERSION)
     set (VERSION "" PARENT_SCOPE)
     return ()
   endif ()
-  set (OUTPUT_FILE "${CMAKE_BINARY_DIR}/CMakeFiles/MatlabVersion.txt")
+  set (WORKING_DIR "${CMAKE_BINARY_DIR}/CMakeFiles")
+  set (OUTPUT_FILE "${WORKING_DIR}/MatlabVersion.txt")
   # read MATLAB version from existing output file
   set (_MATLAB_VERSION)
   if (EXISTS "${OUTPUT_FILE}")
@@ -141,19 +142,22 @@ function (basis_get_full_matlab_version VERSION)
     if (WIN32)
       list (APPEND CMD "-automation")
     endif ()
-    list (APPEND CMD "-r")
-    set (MATLAB_CMD
-      "fid = fopen ('${OUTPUT_FILE}', 'w')"
-      "if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end"
-      "fprintf (fid, '${MATLAB_EXECUTABLE}\\n%s\\n', version)"
-      "fclose (fid)"
-      "quit force"
+    list (APPEND CMD "-r" basis_get_full_matlab_version)
+    file (WRITE "${WORKING_DIR}/basis_get_full_matlab_version.m" 
+"% DO NOT EDIT. Automatically created by BASIS (basis_get_full_matlab_version).
+fid = fopen ('${OUTPUT_FILE}', 'w')
+if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end
+fprintf (fid, '${MATLAB_EXECUTABLE}\\n%s\\n', version)
+fclose (fid)
+quit force
+"
     )
     execute_process (
-      COMMAND         ${CMD} "${MATLAB_CMD}"
-      RESULT_VARIABLE RETVAL
-      TIMEOUT         30
-      ERROR_VARIABLE  STDERR
+      COMMAND           ${CMD}
+      WORKING_DIRECTORY "${WORKING_DIR}"
+      RESULT_VARIABLE   RETVAL
+      TIMEOUT           30
+      ERROR_VARIABLE    STDERR
       OUTPUT_QUIET
     )
     if (NOT RETVAL EQUAL 0 OR STDERR MATCHES "\\?\\?\\? Error")
@@ -294,9 +298,9 @@ function (basis_mexext)
       endif ()
     elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
       if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-        set (MEXEXT "mexaci64")
+        set (MEXEXT "mexmaci64")
       else ()
-        set (MEXEXT "mexaci")
+        set (MEXEXT "mexmaci")
       endif ()
     elseif (CMAKE_SYSTEM_NAME MATCHES "SunOS")
       set (MEXEXT "mexs64")

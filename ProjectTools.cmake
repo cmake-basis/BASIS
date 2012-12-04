@@ -1474,7 +1474,7 @@ macro (basis_project_impl)
     message (WARNING "Failed to determine Bash version! Check if you can run \"${BASH_EXECUTABLE}\".")
   endif ()
   if (MATLAB_EXECUTABLE AND MATLAB_VERSION_MAJOR EQUAL 0)
-    message (WARNING "Failed to determine MATLAB version! Check if you can run \"${MATLAB_EXECUTABLE} -nodesktop -nosplash -r 'version'\".")
+    message (WARNING "Failed to determine MATLAB version! Check if you can run \"${MATLAB_EXECUTABLE} -nodesktop -nosplash -r 'version,quit force'\".")
   endif ()
 
   # --------------------------------------------------------------------------
