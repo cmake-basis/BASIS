@@ -573,7 +573,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     list (GET EXECUTABLE_TARGETS ${I} TARGET_UID)
     list (GET BUILD_LOCATIONS    ${I} BUILD_LOCATION)
     list (GET INSTALL_LOCATIONS  ${I} INSTALL_LOCATION)
-    get_target_property (IMPORTED ${TARGET_UID} BUNDLED)
+    get_target_property (BUNDLED  ${TARGET_UID} BUNDLED)
     get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
     # insert $(IntDir) for Visual Studio build location
     if (CMAKE_GENERATOR MATCHES "Visual Studio")
