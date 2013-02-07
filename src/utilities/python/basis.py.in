@@ -37,8 +37,14 @@ __all__ = [] # use of import * is discouraged
 #       different implementation might be necessary using loader objects.
 import imp
 # path to BASIS Utilities modules
-_path = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                         '@_BASIS_PYTHONPATH@'))
+_path = getenv('BASIS_PYTHONPATH')
+if _path is None:
+    _path = '@_BASIS_PYTHONPATH@'
+    if not os.path.isabs(_path):
+        _path = os.path.realpath(os.path.join(os.path.dirname(__file__), _path))
+if (not os.path.isfile(os.path.join(_path, 'basis/utilities.py') and
+    not os.path.isfile(os.path.join(_path, 'basis/utilities.pyc')):
+    raise "Module basis.utilities not found at " + _path + "!\nSpecify path using the BASIS_PYTHONPATH environment variable."
 # basis/__init__.py must be loaded first
 (_file, _filepath, _desc) = imp.find_module('basis', [_path])
 try:
@@ -56,6 +62,7 @@ del _path
 del _file
 del _filepath
 del _desc
+del _BASIS_PYTHONPATH
 del imp
 
 

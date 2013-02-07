@@ -71,13 +71,24 @@ CONTACT='@PROJECT_CONTACT@'
 
 readonly _BASIS_TARGET_UID_PREFIX='@PROJECT_NAMESPACE_CMAKE@'
 readonly _BASIS_EXECUTABLE_TARGETS_BASE="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
+_BASIS_BASH_LIBRARY_DIR='@_BASIS_BASH_LIBRARY_DIR@'
+if [ "${_BASIS_BASH_LIBRARY_DIR:0:1}" != '/' ]; then
+    _BASIS_BASH_LIBRARY_DIR="${_BASIS_EXECUTABLE_TARGETS_BASE}/${_BASIS_BASH_LIBRARY_DIR}"
+fi
+readonly _BASIS_BASH_LIBRARY_DIR
 
 # ============================================================================
 # source implementations of utility functions
 # ============================================================================
 
 # source project-independent utility functions
-. "${_BASIS_EXECUTABLE_TARGETS_BASE}/@_BASIS_BASH_LIBRARY_DIR@/basis/utilities.sh"
+[ -n "${BASIS_BASHPATH}" ] || BASIS_BASHPATH="${_BASIS_BASH_LIBRARY_DIR}"
+if [ ! -f "${BASIS_BASHPATH}/basis/utilities.sh" ]; then
+    echo "Module basis.utilities not found at ${BASIS_BASHPATH}!" 1>&2
+    echo "Specify path using the BASIS_BASHPATH environment variable." 1>&2
+    exit 1
+fi
+. "${BASIS_BASHPATH}/basis/utilities.sh"
 if [[ $? -ne 0 ]]; then
     echo "Failed to import basis.utilities module!" 1>&2
     exit 1
