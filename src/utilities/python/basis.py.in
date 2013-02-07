@@ -23,6 +23,7 @@
 ##############################################################################
 
 import os
+import sys
 
 
 __all__ = [] # use of import * is discouraged
@@ -37,14 +38,20 @@ __all__ = [] # use of import * is discouraged
 #       different implementation might be necessary using loader objects.
 import imp
 # path to BASIS Utilities modules
-_path = getenv('BASIS_PYTHONPATH')
+_path = os.getenv('BASIS_PYTHONPATH')
+if _path is None:
+    for _syspath in sys.path:
+        if (os.path.isfile(os.path.join(_syspath, 'basis/utilities.py' )) or
+            os.path.isfile(os.path.join(_syspath, 'basis/utilities.pyc'))):
+            _path = _syspath
+            break
 if _path is None:
     _path = '@_BASIS_PYTHONPATH@'
     if not os.path.isabs(_path):
         _path = os.path.realpath(os.path.join(os.path.dirname(__file__), _path))
-if (not os.path.isfile(os.path.join(_path, 'basis/utilities.py') and
-    not os.path.isfile(os.path.join(_path, 'basis/utilities.pyc')):
-    raise "Module basis.utilities not found at " + _path + "!\nSpecify path using the BASIS_PYTHONPATH environment variable."
+if (not os.path.isfile(os.path.join(_path, 'basis/utilities.py' )) and
+    not os.path.isfile(os.path.join(_path, 'basis/utilities.pyc'))):
+    raise "Module basis.utilities not found at " + _path + "!\nSpecify path using the PYTHONPATH or BASIS_PYTHONPATH environment variable."
 # basis/__init__.py must be loaded first
 (_file, _filepath, _desc) = imp.find_module('basis', [_path])
 try:
@@ -59,10 +66,10 @@ finally:
     if _file: _file.close()
 # clean up scope
 del _path
+del _syspath
 del _file
 del _filepath
 del _desc
-del _BASIS_PYTHONPATH
 del imp
 
 
