@@ -82,10 +82,24 @@ readonly _BASIS_BASH_LIBRARY_DIR
 # ============================================================================
 
 # source project-independent utility functions
-[ -n "${BASIS_BASHPATH}" ] || BASIS_BASHPATH="${_BASIS_BASH_LIBRARY_DIR}"
+if [ -z "${BASIS_BASHPATH}" ]; then
+    _path=''
+    _paths="${BASHPATH}:" # ATTENTION: Trailing ':' required to terminate while loop!
+    while [ -n "${_paths}" ]; do
+        _path="${_paths%%:*}"
+        [ "${_path:0:1}" == '/' ] && [ -f "${_path}/basis/utilities.sh" ] && break
+        _path=''
+        _paths="${_paths#*:}"
+    done
+    if [ -n "${_path}" ]; then
+        BASIS_BASHPATH="${_path}"
+    else
+        BASIS_BASHPATH="${_BASIS_BASH_LIBRARY_DIR}"
+    fi
+fi
 if [ ! -f "${BASIS_BASHPATH}/basis/utilities.sh" ]; then
     echo "Module basis.utilities not found at ${BASIS_BASHPATH}!" 1>&2
-    echo "Specify path using the BASIS_BASHPATH environment variable." 1>&2
+    echo "Specify path using the BASHPATH or BASIS_BASHPATH environment variable." 1>&2
     exit 1
 fi
 . "${BASIS_BASHPATH}/basis/utilities.sh"
