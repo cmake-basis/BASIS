@@ -358,8 +358,10 @@ function (basis_configure_utilities)
     )
     if (PROJECT_NAME MATCHES "^BASIS$")
       set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BINARY_PYTHON_LIBRARY_DIR}\" \"${INSTALL_PYTHON_LIBRARY_DIR}\")")
-    else ()
+    elseif (BUNDLE_PROJECTS MATCHES "(^|;)BASIS(;|$)")
       set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
+    else ()
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nset (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
     endif ()
     basis_set_target_properties (
       basis_py
@@ -431,8 +433,10 @@ function (basis_configure_utilities)
     )
     if (PROJECT_NAME MATCHES "^BASIS$")
       set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BINARY_BASH_LIBRARY_DIR}\" \"${INSTALL_BASH_LIBRARY_DIR}\")")
-    else ()
+    elseif (BUNDLE_PROJECTS MATCHES "(^|;)BASIS(;|$)")
       set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")
+    else ()
+      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nset (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")
     endif ()
     basis_set_target_properties (
       basis_sh
