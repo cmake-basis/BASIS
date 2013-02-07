@@ -131,9 +131,6 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-# source environment settings of test user
-source /sbia/home/swtest/.bashrc || exit 1
-
 # prepend test command by qsub command
 if [ ${sge} -ne 0 ]; then
     tmpslave=$(mktemp -t 'basistest-XXXXXX')

@@ -500,7 +500,7 @@ fi
 while [ ${idx} -lt ${num} ]; do
     echo ${new_schedule[${idx}]} >> "${schedule_file}.temp"
     if [ $? -ne 0 ]; then
-        echo "Failed to write schedule to temporary file \"${schedule_file}.temp\"!" 1&>2
+        echo "Failed to write schedule to temporary file \"${schedule_file}.temp\"!" 1>&2
         exit 1;
     fi
     (( idx++ ))
@@ -509,7 +509,7 @@ done
 if [ -f "${schedule_file}.temp" ]; then
     sort "${schedule_file}.temp" -o "${schedule_file}.temp"
     if [ $? -ne 0 ]; then
-        echo "Failed to sort temporary schedule file \"${schedule_file}.temp\"!" 1&>2
+        echo "Failed to sort temporary schedule file \"${schedule_file}.temp\"!" 1>&2
         exit 1
     fi
 fi
@@ -517,7 +517,7 @@ fi
 if [ -f "${schedule_file}.temp" ]; then
     mv -f "${schedule_file}.temp" "${schedule_file}"
     if [ $? -ne 0 ]; then
-        echo "Failed to update schedule file \"${schedule_file}\"!" 1&>2
+        echo "Failed to update schedule file \"${schedule_file}\"!" 1>&2
         exit 1
     fi
 fi
