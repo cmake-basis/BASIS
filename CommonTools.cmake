@@ -2606,6 +2606,11 @@ function (basis_get_target_link_libraries LINK_DEPENDS TARGET_NAME)
   if (NOT TARGET "${TARGET_UID}")
     message (FATAL_ERROR "basis_get_target_link_libraries(): Unknown target: ${TARGET_UID}")
   endif ()
+  if (BASIS_DEBUG AND BASIS_VERBOSE)
+    message (STATUS "** basis_get_target_link_libraries():")
+    message (STATUS "**   TARGET_NAME:     ${TARGET_NAME}")
+    message (STATUS "**   CURRENT_DEPENDS: ${ARGN}")
+  endif ()
   # get type of target
   get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
   # get direct link dependencies of target
@@ -2687,12 +2692,14 @@ function (basis_get_target_link_libraries LINK_DEPENDS TARGET_NAME)
   set (DEPENDS "${_DEPENDS}")
   unset (_DEPENDS)
   # recursively add link dependencies of dependencies
-  # FIXME avoid cyclic dependencies, maybe also implement it non-recursively
-  #       for better performance
+  # TODO implement it non-recursively for better performance
   foreach (LIB IN LISTS DEPENDS)
     if (TARGET ${LIB})
-      basis_get_target_link_libraries (LIB_DEPENDS ${LIB})
-      list (APPEND DEPENDS ${LIB_DEPENDS})
+      list (FIND ARGN "${LIB}" IDX) # avoid recursive loop
+      if (IDX EQUAL -1)
+        basis_get_target_link_libraries (LIB_DEPENDS ${LIB} ${ARGN} ${DEPENDS})
+        list (APPEND DEPENDS ${LIB_DEPENDS})
+      endif ()
     endif ()
   endforeach ()
   # remove duplicate entries
