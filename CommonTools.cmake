@@ -2189,6 +2189,7 @@ function (basis_configure_script INPUT OUTPUT)
   # --------------------------------------------------------------------------
   # set general variables for use in scripts
   set (__FILE__ "${_OUTPUT_FILE}")
+  get_filename_component (__NAME__ "${_OUTPUT_FILE}" NAME)
   # --------------------------------------------------------------------------
   # variables mainly intended for use in script configurations, in particular,
   # these are used by basis_set_script_path() to make absolute paths relative
@@ -2200,7 +2201,7 @@ function (basis_configure_script INPUT OUTPUT)
     set (__DIR__ "${ARGN_DESTINATION}")
   else ()
     set (BUILD_INSTALL_SCRIPT FALSE)
-    get_filename_component (__DIR__  "${_OUTPUT_FILE}" PATH)
+    get_filename_component (__DIR__ "${_OUTPUT_FILE}" PATH)
   endif ()
   # --------------------------------------------------------------------------
   # include script configuration files
@@ -2279,10 +2280,19 @@ function (basis_configure_script INPUT OUTPUT)
       # BASIS utilities modules (in particular core.sh). This variable should be set to
       # the utilities.sh module of BASIS by default as part of the BASIS installation
       # (environment variable) and is here set to the project-specific basis.sh module.
+      #
+      # Note that folks at SBIA may submit a Bash script directly to a batch queuing
+      # system such as the Oracle Grid Engine (SGE) instead of writing a separate submit
+      # script. To avoid not finding the BASIS utilities in this case only because the
+      # Bash file was copied by SGE to a temporary file, consider the <PROJECT>_DIR
+      # environment variable as an alternative.
       string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
       set (BASH_CODE
 # Note: Code formatted such that it can be on single line. Use no comments within!
 "__FILE__=\"$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")\"
+if [[ -n \"$SGE_ROOT\" ]] && [[ $__FILE__ =~ $SGE_ROOT/.* ]] && [[ -n \"\${${PROJECT_NAME}_DIR}\" ]] && [[ -f \"\${${PROJECT_NAME}_DIR}/bin/${__NAME__}\" ]]
+then __FILE__=\"\${${PROJECT_NAME}_DIR}/bin/${__NAME__}\"
+fi
 i=0
 lnk=\"$__FILE__\"
 while [[ -h \"$lnk\" ]] && [[ $i -lt 100 ]]
