@@ -50,6 +50,8 @@ set (PROJECT_LIBRARY_DIR "@PROJECT_LIBRARY_DIR@")
 set (PROJECT_MODULES_DIR "@PROJECT_MODULES_DIR@")
 ## @brief Absolute path of directory of testing tree in source tree.
 set (PROJECT_TESTING_DIR "@PROJECT_TESTING_DIR@")
+## @brief Names of additional project subdirectories at root level.
+set (PROJECT_SUBDIRS "@PROJECT_SUBIDRS@")
 
 # ============================================================================
 # testing tree

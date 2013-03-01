@@ -1538,25 +1538,21 @@ macro (basis_project_impl)
     endforeach ()
   endif ()
 
-  # build source code
-  if (EXISTS "${PROJECT_CODE_DIR}")
-    add_subdirectory ("${PROJECT_CODE_DIR}")
+  # add default project directories to list of subdirectories
+  # (in reverse order always at beginning of list)
+  if (BUILD_EXAMPLE)
+    list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_EXAMPLE_DIR}")
   endif ()
+  if (BUILD_TESTING)
+    list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_TESTING_DIR}")
+  endif ()
+  list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
+  list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIR}")
 
-  # install auxiliary data files
-  if (EXISTS "${PROJECT_DATA_DIR}")
-    add_subdirectory ("${PROJECT_DATA_DIR}")
-  endif ()
-
-  # build software tests
-  if (EXISTS "${PROJECT_TESTING_DIR}" AND BUILD_TESTING)
-   add_subdirectory ("${PROJECT_TESTING_DIR}")
-  endif ()
-
-  # build/install example application
-  if (EXISTS "${PROJECT_EXAMPLE_DIR}" AND BUILD_EXAMPLE)
-    add_subdirectory ("${PROJECT_EXAMPLE_DIR}")
-  endif ()
+  # process subdirectories
+  foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
+    add_subdirectory ("${SUBDIR}")
+  endforeach ()
 
   if (BASIS_DEBUG)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterSubdirectories.cmake")
