@@ -18,6 +18,20 @@
 Changes
 =======
 
+.. _v2.1.3:
+
+Release 2.1.3 (Mar 1, 2013)
+---------------------------
+
+- Make import of ``basis.utilities`` Bash/Python modules more robust against filesystem changes.
+- Support direct submission of Bash executables to Oracle Grid Engine (SGE). 
+- Added CMake Find module for AFNI programs.
+- Added ``PROJECT_SUBDIRS`` CMake variable whichs allows developers to specify additional root subdirectories.
+- Set ``CPACK_PACKAGE_CONTACT`` by default to ``PROJECT_CONTACT``.
+- Fixed paths to bundled modules to be absolute.
+- Fixed possible infinite recursion in ``basis_get_target_link_libraries``.
+- Fixed minor bug in ``basistest-master`` which wrote file "2" when an error occurred.
+
 
 .. _v2.1.2:
 
