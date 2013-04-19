@@ -1551,7 +1551,9 @@ macro (basis_project_impl)
 
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
-    add_subdirectory ("${SUBDIR}")
+    if (IS_DIRECTORY "${SUBDIR}")
+      add_subdirectory ("${SUBDIR}")
+    endif ()
   endforeach ()
 
   if (BASIS_DEBUG)
