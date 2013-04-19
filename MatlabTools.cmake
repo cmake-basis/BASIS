@@ -142,7 +142,23 @@ function (basis_get_full_matlab_version VERSION)
     if (WIN32)
       list (APPEND CMD -automation)
     endif ()
-    list (APPEND CMD -r "\"fid = fopen('${OUTPUT_FILE}', 'w'), if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end, fprintf(fid, '${MATLAB_EXECUTABLE}\\n%s\\n', version), fclose(fid), quit force\"")
+    # The following direct command works on Mac OS, but not Cent OS Linux because
+    # of the surrounding double quotes which are needed on Mac OS, but not Linux.
+    # Therefore, write MATLAB script first to file and execute it in order to
+    # have the same CMake code on all platforms. Furthermore, if the quotes might
+    # no longer be required also on Mac OS, we do not have to worry about it here.
+    # -schuha
+    #list (APPEND CMD -r "\"fid = fopen('${OUTPUT_FILE}', 'w'), [...], fclose(fid), quit force\"")
+    list (APPEND CMD "-r" basis_get_full_matlab_version)
+    file (WRITE "${WORKING_DIR}/basis_get_full_matlab_version.m" 
+"% DO NOT EDIT. Automatically created by BASIS (basis_get_full_matlab_version).
+fid = fopen ('${OUTPUT_FILE}', 'w')
+if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end
+fprintf (fid, '${MATLAB_EXECUTABLE}\\n%s\\n', version)
+fclose (fid)
+quit force
+"
+    )
     execute_process (
       COMMAND           ${CMD}
       WORKING_DIRECTORY "${WORKING_DIR}"
