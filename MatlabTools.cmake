@@ -137,7 +137,7 @@ function (basis_get_full_matlab_version VERSION)
   endif ()
   # run matlab command to write return value of "version" command to text file
   if (NOT _MATLAB_VERSION)
-    message (STATUS "Determining MATLAB version, please be patient...")
+    message (STATUS "Determining MATLAB version...")
     set (CMD "${MATLAB_EXECUTABLE}" -nodesktop -nosplash -nojvm -singleCompThread)
     if (WIN32)
       list (APPEND CMD -automation)
