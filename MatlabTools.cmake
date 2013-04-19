@@ -156,7 +156,7 @@ quit force
       COMMAND           ${CMD}
       WORKING_DIRECTORY "${WORKING_DIR}"
       RESULT_VARIABLE   RETVAL
-      TIMEOUT           30
+      TIMEOUT           120
       ERROR_VARIABLE    STDERR
       OUTPUT_QUIET
     )
