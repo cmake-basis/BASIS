@@ -20,7 +20,7 @@ Changes
 
 .. _v2.1.4:
 
-Release 2.1.4 (Apr 25, 2013)
+Release 2.1.4 (Apr 19, 2013)
 ----------------------------
 
 - Fixed issue with non-existent ``PROJECT_SUBDIRS``, in particular, the default ``data`` subdirectory.
