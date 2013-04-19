@@ -20,11 +20,13 @@ Changes
 
 .. _v2.1.4:
 
-Release 2.1.4 (Apr 25, 2013)
+Release 2.1.4 (Apr 20, 2013)
 ----------------------------
 
 - Fixed issue with non-existent ``PROJECT_SUBDIRS``, in particular, the default ``data`` subdirectory.
 - Fixed paths to executable targets imported from BASIS when it is part of the same "bundle" build.
+- Increase timeout for determining MATLAB version as MATLAB starts up *very* slow the first time.
+- Modify ``basis_get_matlab_version()`` to also set ``MATLAB_RELEASE`` if called with no argument.
 
 
 .. _v2.1.3:
