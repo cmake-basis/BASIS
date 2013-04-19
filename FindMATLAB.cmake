@@ -111,7 +111,7 @@
 #   </tr>
 # </table>
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -262,9 +262,6 @@ endif ()
 # determine MATLAB version
 if (COMMAND basis_get_matlab_version)
   basis_get_matlab_version ()
-endif ()
-if (COMMAND basis_get_matlab_release)
-  basis_get_matlab_release ()
 endif ()
 
 # ----------------------------------------------------------------------------
