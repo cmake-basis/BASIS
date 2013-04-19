@@ -42,7 +42,7 @@
 # )
 # @endcode
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -64,7 +64,7 @@ basis_project (
               "software which follows the SBIA Build system And Software "
               "Implementation Standard (BASIS)."
   AUTHORS     "Andreas Schuh"
-  COPYRIGHT   "2011, 2012 University of Pennsylvania"
+  COPYRIGHT   "2011, 2012, 2013 University of Pennsylvania"
   LICENSE     "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
   CONTACT     "SBIA Group <sbia-software at uphs.upenn.edu>"
   # --------------------------------------------------------------------------

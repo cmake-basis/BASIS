@@ -15,7 +15,7 @@
 #       may be caused by this lack of namespaces and how to circumvent these.
 #       This module is mainly intended for use in executable scripts, not modules.
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -71,13 +71,38 @@ CONTACT='@PROJECT_CONTACT@'
 
 readonly _BASIS_TARGET_UID_PREFIX='@PROJECT_NAMESPACE_CMAKE@'
 readonly _BASIS_EXECUTABLE_TARGETS_BASE="`cd -P -- \`dirname -- "${BASH_SOURCE}"\` && pwd`"
+_BASIS_BASH_LIBRARY_DIR='@_BASIS_BASH_LIBRARY_DIR@'
+if [ "${_BASIS_BASH_LIBRARY_DIR:0:1}" != '/' ]; then
+    _BASIS_BASH_LIBRARY_DIR="${_BASIS_EXECUTABLE_TARGETS_BASE}/${_BASIS_BASH_LIBRARY_DIR}"
+fi
+readonly _BASIS_BASH_LIBRARY_DIR
 
 # ============================================================================
 # source implementations of utility functions
 # ============================================================================
 
 # source project-independent utility functions
-. "${_BASIS_EXECUTABLE_TARGETS_BASE}/@_BASIS_BASH_LIBRARY_DIR@/basis/utilities.sh"
+if [ -z "${BASIS_BASHPATH}" ]; then
+    _path=''
+    _paths="${BASHPATH}:" # ATTENTION: Trailing ':' required to terminate while loop!
+    while [ -n "${_paths}" ]; do
+        _path="${_paths%%:*}"
+        [ "${_path:0:1}" == '/' ] && [ -f "${_path}/basis/utilities.sh" ] && break
+        _path=''
+        _paths="${_paths#*:}"
+    done
+    if [ -n "${_path}" ]; then
+        BASIS_BASHPATH="${_path}"
+    else
+        BASIS_BASHPATH="${_BASIS_BASH_LIBRARY_DIR}"
+    fi
+fi
+if [ ! -f "${BASIS_BASHPATH}/basis/utilities.sh" ]; then
+    echo "Module basis.utilities not found at ${BASIS_BASHPATH}!" 1>&2
+    echo "Specify path using the BASHPATH or BASIS_BASHPATH environment variable." 1>&2
+    exit 1
+fi
+. "${BASIS_BASHPATH}/basis/utilities.sh"
 if [[ $? -ne 0 ]]; then
     echo "Failed to import basis.utilities module!" 1>&2
     exit 1
