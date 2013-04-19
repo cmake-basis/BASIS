@@ -1456,7 +1456,6 @@ macro (basis_project_impl)
   endif ()
   if (NOT MATLAB_VERSION_STRING)
     basis_get_matlab_version ()
-    basis_get_matlab_release ()
   endif ()
 
   if (PYTHON_EXECUTABLE AND PYTHON_VERSION_MAJOR EQUAL 0 OR (PYTHON_VERSION_MAJOR EQUAL 1 AND PYTHON_VERSION_MINOR EQUAL 4))
@@ -1472,7 +1471,7 @@ macro (basis_project_impl)
     message (WARNING "Failed to determine Bash version! Check if you can run \"${BASH_EXECUTABLE}\".")
   endif ()
   if (MATLAB_EXECUTABLE AND MATLAB_VERSION_MAJOR EQUAL 0)
-    message (WARNING "Failed to determine MATLAB version! Check if you can run \"${MATLAB_EXECUTABLE} -nodesktop -nosplash -r 'version,quit force'\".")
+    message (WARNING "Failed to determine MATLAB version! Check if you can run \"${MATLAB_EXECUTABLE} -nodesktop -nosplash -r 'version,quit force'\" and try again.")
   endif ()
 
   # --------------------------------------------------------------------------

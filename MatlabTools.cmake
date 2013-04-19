@@ -2,7 +2,7 @@
 # @file  MatlabTools.cmake
 # @brief Enables use of MATLAB Compiler and build of MEX-files.
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -113,7 +113,7 @@ mark_as_advanced (BASIS_MEX_TIMEOUT)
 # @ingroup CMakeUtilities
 function (basis_get_full_matlab_version VERSION)
   if (NOT MATLAB_EXECUTABLE)
-    set (VERSION "" PARENT_SCOPE)
+    set (${VERSION} "" PARENT_SCOPE)
     return ()
   endif ()
   set (WORKING_DIR "${CMAKE_BINARY_DIR}/CMakeFiles")
@@ -138,42 +138,40 @@ function (basis_get_full_matlab_version VERSION)
   # run matlab command to write return value of "version" command to text file
   if (NOT _MATLAB_VERSION)
     message (STATUS "Determining MATLAB version...")
-    set (CMD "${MATLAB_EXECUTABLE}" "-nodesktop" "-nosplash")
+    set (CMD "${MATLAB_EXECUTABLE}" -nodesktop -nosplash -nojvm -singleCompThread)
     if (WIN32)
-      list (APPEND CMD "-automation")
+      list (APPEND CMD -automation)
     endif ()
-    list (APPEND CMD "-r" basis_get_full_matlab_version)
-    file (WRITE "${WORKING_DIR}/basis_get_full_matlab_version.m" 
-"% DO NOT EDIT. Automatically created by BASIS (basis_get_full_matlab_version).
-fid = fopen ('${OUTPUT_FILE}', 'w')
-if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end
-fprintf (fid, '${MATLAB_EXECUTABLE}\\n%s\\n', version)
-fclose (fid)
-quit force
-"
-    )
+    list (APPEND CMD -r "\"fid = fopen('${OUTPUT_FILE}', 'w'), if fid == -1, fprintf(2, '??? Error: Failed to open file ${OUTPUT_FILE} for writing!'), quit force, end, fprintf(fid, '${MATLAB_EXECUTABLE}\\n%s\\n', version), fclose(fid), quit force\"")
     execute_process (
       COMMAND           ${CMD}
       WORKING_DIRECTORY "${WORKING_DIR}"
       RESULT_VARIABLE   RETVAL
-      TIMEOUT           120
+      TIMEOUT           600 # MATLAB startup can be *very* slow the first time
       ERROR_VARIABLE    STDERR
       OUTPUT_QUIET
     )
     if (NOT RETVAL EQUAL 0 OR STDERR MATCHES "\\?\\?\\? Error")
-      set (VERSION "" PARENT_SCOPE)
-      message (STATUS "Determining MATLAB version... - failed")
+      set (${VERSION} "" PARENT_SCOPE)
+      if (RETVAL MATCHES "timeout")
+        set (REASON ": ${RETVAL}")
+      elseif (NOT RETVAL EQUAL 0)
+        set (REASON " with exit code: ${RETVAL}")
+      else ()
+        set (REASON ": Failed to open file ${OUTPUT_FILE} for writing")
+      endif ()
+      message (STATUS "Determining MATLAB version... - failed${REASON}")
       return ()
     endif ()
     # read MATLAB version from text file
     file (READ "${OUTPUT_FILE}" LINES)
-    string (REGEX REPLACE "\n" ";" LINES "${LINES}")
+    string (REGEX REPLACE "\n"    ";" LINES "${LINES}")
     string (REGEX REPLACE "^;|;$" ""  LINES "${LINES}")
     list (LENGTH LINES NLINES)
     if (NLINES EQUAL 2)
       list (GET LINES 1 _MATLAB_VERSION)
     else ()
-      set (VERSION "" PARENT_SCOPE)
+      set (${VERSION} "" PARENT_SCOPE)
       message (STATUS "Determining MATLAB version... - failed")
       return ()
     endif ()
@@ -184,17 +182,18 @@ quit force
     endif ()
   endif ()
   # return
-  set (VERSION "${_MATLAB_VERSION}" PARENT_SCOPE)
+  set (${VERSION} "${_MATLAB_VERSION}" PARENT_SCOPE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get version of MATLAB installation.
 #
 # @param [out] ARGV1 If given, the named variable is set to the version string
-#                    of the MATLAB installation. Otherwise, the variables
-#                    @c MATLAB_VERSION_STRING, @c MATLAB_VERSION_MAJOR,
-#                    @c MATLAB_VERSION_MINOR, and @c MATLAB_VERSION_PATCH are
-#                    set in the scope of the caller.
+#                    ("<major>.<minor>.<patch>") of the MATLAB installation.
+#                    Otherwise, the variables @c MATLAB_VERSION_STRING,
+#                    @c MATLAB_VERSION_MAJOR, @c MATLAB_VERSION_MINOR,
+#                    @c MATLAB_VERSION_PATCH, and @c MATLAB_RELEASE are set
+#                    in the scope of the caller.
 #
 # @ingroup CMakeUtilities
 function (basis_get_matlab_version)
@@ -220,6 +219,11 @@ function (basis_get_matlab_version)
     set (MATLAB_VERSION_MAJOR  "${VERSION_MAJOR}"  PARENT_SCOPE)
     set (MATLAB_VERSION_MINOR  "${VERSION_MINOR}"  PARENT_SCOPE)
     set (MATLAB_VERSION_PATCH  "${VERSION_PATCH}"  PARENT_SCOPE)
+    if (VERSION MATCHES ".*\\\((.+)\\\)")
+      set (MATLAB_RELEASE "${CMAKE_MATCH_1}" PARENT_SCOPE)
+    else ()
+      set (MATLAB_RELEASE "" PARENT_SCOPE)
+    endif ()
   endif ()
 endfunction ()
 
