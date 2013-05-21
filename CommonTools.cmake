@@ -2094,7 +2094,6 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Remove one blank line from top of string
 macro (basis_remove_blank_line STRVAR)
-  #string (REGEX MATCH "(^|(.*)\n)[ \t]*\n(.*)" "${CMAKE_MATCH_1}${CMAKE_MATCH_3}" ${STRVAR} "${${STRVAR}}")
   if (${STRVAR} MATCHES "(^|(.*)\n)[ \t]*\n(.*)")
     set (${STRVAR} "${CMAKE_MATCH_1}${CMAKE_MATCH_3}")
   endif ()
