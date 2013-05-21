@@ -2092,6 +2092,15 @@ function (basis_configure_sources LIST_NAME)
 endfunction ()
 
 # ----------------------------------------------------------------------------
+## @brief Remove one blank line from top of string
+macro (basis_remove_blank_line STRVAR)
+  #string (REGEX MATCH "(^|(.*)\n)[ \t]*\n(.*)" "${CMAKE_MATCH_1}${CMAKE_MATCH_3}" ${STRVAR} "${${STRVAR}}")
+  if (${STRVAR} MATCHES "(^|(.*)\n)[ \t]*\n(.*)")
+    set (${STRVAR} "${CMAKE_MATCH_1}${CMAKE_MATCH_3}")
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
 ## @brief Configure and optionally compile script file.
 #
 # This function is used to configure script files during the build. It is
@@ -2249,7 +2258,6 @@ function (basis_configure_script INPUT OUTPUT)
     # add code to set module search path
     if (ARGN_LANGUAGE MATCHES "[JP]YTHON")
       if (ARGN_LINK_DEPENDS)
-        string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
         set (PYTHON_CODE "import sys; import os.path; __dir__ = os.path.dirname(os.path.realpath(__file__))")
         list (REVERSE ARGN_LINK_DEPENDS)
         foreach (DIR ${ARGN_LINK_DEPENDS})
@@ -2265,11 +2273,18 @@ function (basis_configure_script INPUT OUTPUT)
             set (PYTHON_CODE "${PYTHON_CODE}; sys.path.insert(0, os.path.realpath(os.path.join(__dir__, '${DIR}')))")
           endif ()
         endforeach ()
-        set (SCRIPT "${PYTHON_CODE} # <-- added by BASIS\n${SCRIPT}")
+        # insert extra Python code near top, but after any future statement
+        # (http://docs.python.org/2/reference/simple_stmts.html#future)
+        set (FUTURE_STATEMENTS)
+        if (SCRIPT MATCHES "^(.*from[ \t]+__future__[ \t]+import[ \t]+[a-z_]+([ \t]+as[ \t]+[a-zA-Z_]+)?[ \t]*\n)(.*)$")
+          set (FUTURE_STATEMENTS "${CMAKE_MATCH_1}")
+          set (SCRIPT            "${CMAKE_MATCH_3}")
+        endif ()
+        basis_remove_blank_line (SCRIPT) # remove a blank line therefore
+        set (SCRIPT "${FUTURE_STATEMENTS}${PYTHON_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
     elseif (ARGN_LANGUAGE MATCHES "PERL")
       if (ARGN_LINK_DEPENDS)
-        string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
         set (PERL_CODE "use Cwd qw(realpath); use File::Basename;")
         foreach (DIR ${ARGN_LINK_DEPENDS})
           if (DIR MATCHES "^relative +(.*)$")
@@ -2284,6 +2299,7 @@ function (basis_configure_script INPUT OUTPUT)
             set (PERL_CODE "${PERL_CODE} use lib dirname(realpath(__FILE__)) . '/${DIR}';")
           endif ()
         endforeach ()
+        basis_remove_blank_line (SCRIPT) # remove a blank line therefore
         set (SCRIPT "${PERL_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
     elseif (ARGN_LANGUAGE MATCHES "BASH")
@@ -2298,7 +2314,6 @@ function (basis_configure_script INPUT OUTPUT)
       # script. To avoid not finding the BASIS utilities in this case only because the
       # Bash file was copied by SGE to a temporary file, consider the <PROJECT>_DIR
       # environment variable as an alternative.
-      string (REGEX REPLACE "^[ \t]*\n" "" SCRIPT "${SCRIPT}") # remove a blank line therefore
       set (BASH_CODE
 # Note: Code formatted such that it can be on single line. Use no comments within!
 "__FILE__=\"$(cd -P -- \"$(dirname -- \"$BASH_SOURCE\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")\"
@@ -2340,6 +2355,7 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
         basis_list_to_delimited_string (BASHPATH ":" NOAUTOQUOTE ${BASHPATH})
         set (BASH_CODE "${BASH_CODE}; BASHPATH=\"${BASHPATH}\"")
       endif ()
+      basis_remove_blank_line (SCRIPT) # remove a blank line therefore
       set (SCRIPT "${BASH_CODE} # <-- added by BASIS\n${SCRIPT}")
     endif ()
     # replace shebang directive
