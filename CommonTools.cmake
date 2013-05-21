@@ -1800,7 +1800,15 @@ function (basis_add_glob_target TARGET_UID SOURCES)
   set (EXPRESSIONS)
   foreach (EXPRESSION IN LISTS ARGN)
     if (NOT IS_ABSOLUTE "${EXPRESSION}")
-      set (EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${EXPRESSION}")
+      # prefer configured/generated files in the build tree, but disallow
+      # globbing within the build tree; glob only files in source tree
+      if (NOT EXPRESSION MATCHES "[*?]|\\[[0-9]+-[0-9]+\\]"            AND
+          EXISTS           "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}" AND
+          NOT IS_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}")
+        set (EXPRESSION "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}")
+      else ()
+        set (EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${EXPRESSION}")
+      endif ()
     endif ()
     if (IS_DIRECTORY "${EXPRESSION}")
       set (EXPRESSION "${EXPRESSION}/**")

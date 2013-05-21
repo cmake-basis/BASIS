@@ -286,16 +286,16 @@ function (basis_add_test_driver TESTDRIVER_NAME)
     ${ARGN}
   )
   if (ARGN_EXTRA_INCLUDE OR ARGN_FUNCTION)
-    message (FATAL_ERROR "Invalid argument EXTRA_INCLUDE or FUNCTON! "
+    message (FATAL_ERROR "Invalid argument EXTRA_INCLUDE or FUNCTION! "
                          "Use create_test_sourcelist() if you want to create "
                          "a custom test driver.")
   endif ()
   # choose test driver implementation depending on which packages are available
-  set (TESTDRIVER_INCLUDE "basis/testdriver.h")
-  set (TESTDRIVER_DEPENDS)
+  set (TESTDRIVER_INCLUDE      "basis/testdriver.h")
+  set (TESTDRIVER_LINK_DEPENDS basis.basis)
   if (ITK_FOUND)
     basis_include_directories (BEFORE ${ITK_INCLUDE_DIRS})
-    set (TESTDRIVER_LINK_DEPENDS ${ITK_LIBRARIES})
+    list (APPEND TESTDRIVER_LINK_DEPENDS ${ITK_LIBRARIES})
   endif ()
   if (WIN32)
     list (APPEND TESTDRIVER_LINK_DEPENDS Ws2_32)
