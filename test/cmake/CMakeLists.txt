@@ -32,6 +32,10 @@ endfunction ()
 # tests of CommonTools.cmake functions
 cmake_test (test_string_manipulation)
 
+if (PythonInterp_FOUND)
+  basis_add_test (test_future_statements.py) 
+endif ()
+
 # ----------------------------------------------------------------------------
 # test use MATLAB Compiler and MEX-script
 if (MATLAB_EXECUTABLE AND MATLAB_MEX_EXECUTABLE AND PythonInterp_FOUND)
