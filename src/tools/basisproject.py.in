@@ -227,6 +227,7 @@ def alter(filename, args, backup=True, update=False):
     @retval  1 if file has been modified
 
     """
+    if args.orig: return 0
     # read file content
     fp = open(filename, 'rt')
     txt = fp.read()
@@ -960,6 +961,10 @@ same filename, but with the ~ character as suffix. If this option is given, such
 files are not made. In case of a merge conflict, however, existing project files are
 always backed-up, using .mine as suffix for the file name of the backup in this case.""")
 
+    # --orig
+    parser.add_argument('--orig', action='store_true', default=False,
+            help="""Disable alteration of template files.""")
+
     # ----------------------------------------------------------------------------
     # parse command-line arguments
     if len(sys.argv) == 1:
@@ -971,7 +976,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     # ------------------------------------------------------------------------
     # create new project or update existing one?
     # request to create new project
-    if args.name:
+    if args.name or (args.orig and args.root):
         create = True
         # create subdirectory in current working directory by default
         if not args.root:
@@ -984,19 +989,20 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
             sys.stderr.write("If you want to modify an existing project, please specify the root directory\n")
             sys.stderr.write("of the existing project using the --root option and remove the --name option.\n")
             sys.exit(1)
-        # require a project description
-        if not args.description:
-            sys.stderr.write("No project description given!\n")
-            sys.exit(1)
         # set path of original template to current template
         args.original_template = args.template
-        # verify that project name is valid
-        if not re.match(r'^[a-zA-Z0-9]+$', args.name):
-            sys.stderr.write("Invalid project name: " + args.name + "\n")
-            sys.stderr.write("Project name may only consist of alphanumeric characters!\n")
-            sys.stderr.write("If you are attempting to modify an existent project, check whether the\n")
-            sys.stderr.write("project name is correctly extracted from the root CMakeLists.txt file.\n")
-            sys.exit(1)
+        if not args.orig:
+            # require a project description
+            if not args.description:
+                sys.stderr.write("No project description given!\n")
+                sys.exit(1)
+            # verify that project name is valid
+            if not re.match(r'^[a-zA-Z0-9]+$', args.name):
+                sys.stderr.write("Invalid project name: " + args.name + "\n")
+                sys.stderr.write("Project name may only consist of alphanumeric characters!\n")
+                sys.stderr.write("If you are attempting to modify an existent project, check whether the\n")
+                sys.stderr.write("project name is correctly extracted from the root CMakeLists.txt file.\n")
+                sys.exit(1)
     # request to modify existing project
     else:
         create = False
@@ -1141,6 +1147,7 @@ template files in the .basis/ subdirectory.
         else:      sys.stderr.write("modify")
         sys.stderr.write(" project: " + str(e) + '\n')
         ok = False
+        raise e
 
     # ------------------------------------------------------------------------
     # done
