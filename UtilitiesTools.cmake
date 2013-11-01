@@ -349,7 +349,7 @@ function (basis_configure_utilities)
     # add project-specific utilities
     basis_library_prefix (PREFIX PYTHON)
     basis_add_library (basis_py "${BASIS_PYTHON_TEMPLATES_DIR}/basis.py")
-    set (COMPILE_DEFINITIONS
+    set (SCRIPT_DEFINITIONS
       "if (BUILD_INSTALL_SCRIPT)
          set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_I}\")
        else ()
@@ -357,11 +357,11 @@ function (basis_configure_utilities)
        endif ()"
     )
     if (PROJECT_NAME MATCHES "^BASIS$")
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BINARY_PYTHON_LIBRARY_DIR}\" \"${INSTALL_PYTHON_LIBRARY_DIR}\")")
+      set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BINARY_PYTHON_LIBRARY_DIR}\" \"${INSTALL_PYTHON_LIBRARY_DIR}\")")
     elseif (BUNDLE_PROJECTS MATCHES "(^|;)BASIS(;|$)")
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
+      set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
     else ()
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nset (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
+      set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nset (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
     endif ()
     basis_set_target_properties (
       basis_py
@@ -371,7 +371,7 @@ function (basis_configure_utilities)
         LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PYTHON_LIBRARY_DIR}"
         LIBRARY_INSTALL_DIRECTORY "${INSTALL_PYTHON_LIBRARY_DIR}"
         PREFIX                    "${PREFIX}"
-        COMPILE_DEFINITIONS       "${COMPILE_DEFINITIONS}"
+        SCRIPT_DEFINITIONS        "${SCRIPT_DEFINITIONS}"
     )
     # dependencies
     basis_target_link_libraries (basis_py ${BASIS_PYTHON_UTILITIES_LIBRARY})
@@ -396,7 +396,7 @@ function (basis_configure_utilities)
         LIBRARY_OUTPUT_DIRECTORY  "${BINARY_PERL_LIBRARY_DIR}"
         LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
         PREFIX                    "${PREFIX}"
-        COMPILE_DEFINITIONS
+        SCRIPT_DEFINITIONS
           "if (BUILD_INSTALL_SCRIPT)
              set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_I}\")
            else ()
@@ -423,7 +423,7 @@ function (basis_configure_utilities)
     # add project-specific utilities
     basis_library_prefix (PREFIX BASH)
     basis_add_library (basis_sh "${BASIS_BASH_TEMPLATES_DIR}/basis.sh")
-    set (COMPILE_DEFINITIONS
+    set (SCRIPT_DEFINITIONS
       "if (BUILD_INSTALL_SCRIPT)
          set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_I}\")
        else ()
@@ -432,11 +432,11 @@ function (basis_configure_utilities)
        set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n    ${EXECUTABLE_TARGET_INFO_BASH_S}\")"
     )
     if (PROJECT_NAME MATCHES "^BASIS$")
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BINARY_BASH_LIBRARY_DIR}\" \"${INSTALL_BASH_LIBRARY_DIR}\")")
+      set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BINARY_BASH_LIBRARY_DIR}\" \"${INSTALL_BASH_LIBRARY_DIR}\")")
     elseif (BUNDLE_PROJECTS MATCHES "(^|;)BASIS(;|$)")
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")
+      set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")
     else ()
-      set (COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}\nset (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")
+      set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nset (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")
     endif ()
     basis_set_target_properties (
       basis_sh
@@ -446,7 +446,7 @@ function (basis_configure_utilities)
         LIBRARY_OUTPUT_DIRECTORY  "${BINARY_BASH_LIBRARY_DIR}"
         LIBRARY_INSTALL_DIRECTORY "${INSTALL_BASH_LIBRARY_DIR}"
         PREFIX                    "${PREFIX}"
-        COMPILE_DEFINITIONS       "${COMPILE_DEFINITIONS}"
+        SCRIPT_DEFINITIONS        "${SCRIPT_DEFINITIONS}"
     )
     # dependencies
     basis_target_link_libraries (basis_sh ${BASIS_BASH_UTILITIES_LIBRARY})

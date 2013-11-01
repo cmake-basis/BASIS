@@ -531,7 +531,7 @@ endmacro ()
 #         of the form \@VARIABLE\@ are substituted by the values set during the
 #         configure step. How these CMake variables are set is specified by a
 #         so-called script configuration, which itself is either a CMake script
-#         file or a string of CMake code set as value of the @c COMPILE_DEFINITIONS
+#         file or a string of CMake code set as value of the @c SCRIPT_DEFINITIONS
 #         property of the executable target.</td>
 #   </tr>
 #   <tr>
@@ -1125,7 +1125,7 @@ endfunction ()
 #         compiled file is installed. (default: @c BASIS_COMPILE_SCRIPTS)</td>
 #   </tr>
 #   <tr>
-#     @tp @b COMPILE_DEFINITIONS @endtp
+#     @tp @b SCRIPT_DEFINITIONS @endtp
 #     <td>CMake code which is evaluated after the inclusion of the default script
 #         configuration files. This code can be used to set the replacement text of the
 #         CMake variables ("@VAR@" patterns) used in the source file.
@@ -1133,10 +1133,10 @@ endfunction ()
 #         Build System Standard</a> for details. (default: "")</td>
 #   </tr>
 #   <tr>
-#     @tp @b COMPILE_DEFINITIONS_FILE @endtp
+#     @tp @b SCRIPT_DEFINITIONS_FILE @endtp
 #     <td>CMake script file with compile definitions, also referred to as script
 #         configuration file. The named files are included after the default BASIS
-#         script configuration and before the @c COMPILE_DEFINITIONS code is being
+#         script configuration and before the @c SCRIPT_DEFINITIONS code is being
 #         evaluated. (default: @c BINARY_CONFIG_DIR/ScriptConfig.cmake)</td>
 #   </tr>
 #   <tr>
@@ -1474,8 +1474,8 @@ function (basis_add_script TARGET_NAME)
       OUTPUT_NAME              "${OUTPUT_NAME}"
       PREFIX                   ""
       SUFFIX                   "${SUFFIX}"
-      COMPILE_DEFINITIONS      ""
-      COMPILE_DEFINITIONS_FILE "${CONFIG_FILE}"
+      SCRIPT_DEFINITIONS       ""
+      SCRIPT_DEFINITIONS_FILE  "${CONFIG_FILE}"
       LINK_DEPENDS             "${LINK_DEPENDS}"
       EXPORT                   ${EXPORT}
       COMPILE                  ${BASIS_COMPILE_SCRIPTS}
@@ -1674,7 +1674,7 @@ function (basis_add_executable_target TARGET_NAME)
   endif ()
   _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" OUTPUT_NAME "${TARGET_NAME}")
   if (ARGN_LIBEXEC)
-    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC)
+    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC SCRIPT_DEFINITIONS LIBEXEC)
   else ()
     _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
   endif ()
@@ -2105,7 +2105,7 @@ endfunction ()
 #         (default: @c BASIS_COMPILE_SCRIPTS)</td>
 #   </tr>
 #   <tr>
-#     @tp @b COMPILE_DEFINITIONS @endtp
+#     @tp @b SCRIPT_DEFINITIONS @endtp
 #     <td>CMake code which is evaluated after the inclusion of the default script
 #         configuration files. This code can be used to set the replacement text of the
 #         CMake variables ("@VAR@" patterns) used in the source files.
@@ -2113,10 +2113,10 @@ endfunction ()
 #         Build System Standard</a> for details. (default: "")</td>
 #   </tr>
 #   <tr>
-#     @tp @b COMPILE_DEFINITIONS_FILE @endtp
+#     @tp @b SCRIPT_DEFINITIONS_FILE @endtp
 #     <td>CMake script file with compile definitions, also referred to as script
 #         configuration file. The named files are included after the default BASIS
-#         script configuration and before the @c COMPILE_DEFINITIONS code is being
+#         script configuration and before the @c SCRIPT_DEFINITIONS code is being
 #         evaluated. (default: @c BINARY_CONFIG_DIR/ScriptConfig.cmake)</td>
 #   </tr>
 #   <tr>
@@ -2417,8 +2417,8 @@ function (basis_add_script_library TARGET_NAME)
       LIBRARY_INSTALL_DIRECTORY "${ARGN_DESTINATION}"
       LIBRARY_COMPONENT         "${BASIS_LIBRARY_COMPONENT}"
       PREFIX                    "${PREFIX}"
-      COMPILE_DEFINITIONS       ""
-      COMPILE_DEFINITIONS_FILE  "${CONFIG_FILE}"
+      SCRIPT_DEFINITIONS        ""
+      SCRIPT_DEFINITIONS_FILE   "${CONFIG_FILE}"
       LINK_DEPENDS              ""
       EXPORT                    "${EXPORT}"
       COMPILE                   "${BASIS_COMPILE_SCRIPTS}"
@@ -2598,8 +2598,8 @@ function (basis_build_script TARGET_UID)
       OUTPUT_NAME              # name of built script including extension (if any)
       PREFIX                   # name prefix
       SUFFIX                   # name suffix (e.g., extension for executable script)
-      COMPILE_DEFINITIONS      # CMake code to set variables used to configure script
-      COMPILE_DEFINITIONS_FILE # script configuration file
+      SCRIPT_DEFINITIONS       # CMake code to set variables used to configure script
+      SCRIPT_DEFINITIONS_FILE  # script configuration file
       TEST                     # whether this script is used for testing only
       EXPORT                   # whether this target shall be exported
       COMPILE                  # whether to compile script if applicable
@@ -2665,11 +2665,11 @@ function (basis_build_script TARGET_UID)
   if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
     list (APPEND CONFIG_FILE "${BASIS_SCRIPT_CONFIG_FILE}")
   endif ()
-  if (COMPILE_DEFINITIONS_FILE)
-    list (APPEND CONFIG_FILE ${COMPILE_DEFINITIONS_FILE})
+  if (SCRIPT_DEFINITIONS_FILE)
+    list (APPEND CONFIG_FILE ${SCRIPT_DEFINITIONS_FILE})
   endif ()
-  if (COMPILE_DEFINITIONS)
-    file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${COMPILE_DEFINITIONS}\n")
+  if (SCRIPT_DEFINITIONS)
+    file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${SCRIPT_DEFINITIONS}\n")
     list (APPEND CONFIG_FILE "${BUILD_DIR}/ScriptConfig.cmake")
   endif ()
   set (CACHE_FILE "${BUILD_DIR}/cache.cmake")
@@ -2911,8 +2911,8 @@ function (basis_build_script_library TARGET_UID)
       LIBRARY_INSTALL_DIRECTORY  # installation directory for built modules
       LIBRARY_COMPONENT          # installation component
       PREFIX                     # common prefix for modules
-      COMPILE_DEFINITIONS        # CMake code to set variables used to configure modules
-      COMPILE_DEFINITIONS_FILE   # script configuration file
+      SCRIPT_DEFINITIONS         # CMake code to set variables used to configure modules
+      SCRIPT_DEFINITIONS_FILE    # script configuration file
       LINK_DEPENDS               # paths of script modules/packages used by the modules of this library
       EXPORT                     # whether to export this target
       COMPILE                    # whether to compile the modules/library if applicable
@@ -2952,11 +2952,11 @@ function (basis_build_script_library TARGET_UID)
   if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
     list (APPEND CONFIG_FILE "${BASIS_SCRIPT_CONFIG_FILE}")
   endif ()
-  if (COMPILE_DEFINITIONS_FILE)
-    list (APPEND CONFIG_FILE ${COMPILE_DEFINITIONS_FILE})
+  if (SCRIPT_DEFINITIONS_FILE)
+    list (APPEND CONFIG_FILE ${SCRIPT_DEFINITIONS_FILE})
   endif ()
-  if (COMPILE_DEFINITIONS)
-    file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${COMPILE_DEFINITIONS}\n")
+  if (SCRIPT_DEFINITIONS)
+    file (WRITE "${BUILD_DIR}/ScriptConfig.cmake" "# DO NOT edit. Automatically generated by BASIS.\n${SCRIPT_DEFINITIONS}\n")
     list (APPEND CONFIG_FILE "${BUILD_DIR}/ScriptConfig.cmake")
   endif ()
   set (CACHE_FILE "${BUILD_DIR}/cache.cmake")
