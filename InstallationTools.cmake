@@ -90,7 +90,7 @@ function (basis_install_directory)
     set (DESTINATION "${CMAKE_INSTALL_PREFIX}/${DESTINATION}")
   endif ()
   basis_sanitize_for_regex (PROJECT_SOURCE_DIR_RE "${PROJECT_SOURCE_DIR}")
-  if ("${DESTINATION}" MATCHES "^${PROJECT_SOURCE_DIR_RE}")
+  if ("${DESTINATION}" MATCHES "^${PROJECT_SOURCE_DIR_RE}(/|$)")
     message (FATAL_ERROR "Installation directory ${DESTINATION} is inside the project source tree!")
   endif ()
   # parse options
