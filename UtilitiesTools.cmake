@@ -179,7 +179,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SOURCE)
     # match use/require statements
     basis_library_prefix (PREFIX ${LANGUAGE})
-    set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<"](${PREFIX})?basis.h[">]") # e.g., #include "basis.h", #include <pkg/basis.h>
+    set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<\"](${PREFIX})?basis.h[\">]") # e.g., #include "basis.h", #include <pkg/basis.h>
     if (SCRIPT MATCHES "(^|\n)[ \t]*${RE}([ \t]*//.*|[ \t]*)(\n|$)")
       set (UTILITIES_USED TRUE)
       break ()
