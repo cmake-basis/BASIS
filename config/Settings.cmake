@@ -89,7 +89,7 @@ endif ()
 # target UIDs of BASIS libraries; these would be set by the package configuration
 # file if this BASIS project would not be BASIS itself
 if (BASIS_USE_FULLY_QUALIFIED_UIDS)
-  set (NS "sbia.basis.")
+  set (NS "basis.")
 else ()
   set (NS)
 endif ()
