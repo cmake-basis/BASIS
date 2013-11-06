@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <title>$title</title>
 <!-- <link href="$relpath$tabs.css" rel="stylesheet" type="text/css"/> -->
-<link href="$relpath$doxygen_sbia.css" rel="stylesheet" type="text/css" />
+<link href="$relpath$doxygen_style.css" rel="stylesheet" type="text/css" />
 $treeview
 $search
 $mathjax
@@ -45,11 +45,11 @@ $mathjax
     </tr>
     </tbody>
   </table>
-  <div id="pennlogo">
-   <a href="http://www.upenn.edu/"><img alt="UPenn Logo" src="logo_penn.gif"></a>
+  <div id="">
+   <a href="@DOXYGEN_ORGANIZATION_WEBSITE@"><img alt="@DOXYGEN_ORANIZATION_NAME@" src="@DOXYGEN_ORGANIZATION_LOGO@"></a>
   </div>
   <div id="sbialogo">
-    <a href="http://www.rad.upenn.edu/sbia/"><img alt="SBIA Logo" src="logo_sbia.png"></a>
+    <a href="@DOXYGEN_DIVISION_WEBSITE@"><img alt="@DOXYGEN_DIVISION_NAME@" src="@DOXYGEN_DIVISION_LOGO@"></a>
   </div>
   <div id="titleendoffloat"></div>
 </div>

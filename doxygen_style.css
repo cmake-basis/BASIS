@@ -782,13 +782,13 @@ dl.bug
         border-color: #C08050;
 }
 
-#sbialogo
+#divisionlogo
 {
     vertical-align: bottom;
     border-collapse: separate;
 }
 
-#sbialogo img
+#divisionlogo img
 {
     float: right;
     border: 0px none;
@@ -805,7 +805,7 @@ dl.bug
     margin: 0px 12px;
 }
 
-#pennlogo
+#organizationlogo
 {
     float: right;
     vertical-align: bottom;
@@ -817,7 +817,7 @@ dl.bug
     background-color: #660000;
 }
 
-#pennlogo img
+#organizationlogo img
 {
     border: 0px none;
     background-color: #660000;

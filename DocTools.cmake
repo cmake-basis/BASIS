@@ -7,6 +7,8 @@
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
+# Copyright (c) 2013 Carnegie Mellon University.
+#
 # @ingroup CMakeTools
 ##############################################################################
 
@@ -264,10 +266,48 @@ endfunction ()
 #         The IGNORE_PREFIX tag can be used to specify one or more prefixes that 
 #         should be ignored while generating the index headers.</td>
 #   </tr>
+#   <tr>
+#     @tp @b ORGANIZATION_NAME name @endtp
+#     <td>Value for organization name, such as a company name,  
+#         that will be used for pages in the doxygen output.@n
+#         Default: @c ORGANIZATION_NAME.</td>
+#   </tr>
+#   <tr>
+#     @tp @b ORGANIZATION_WEBSITE website @endtp
+#     <td>Value for organization website, such as a company website,  
+#         that will be used for pages in the doxygen output.@n
+#         Default: @c ORGANIZATION_WEBSITE.</td>
+#   </tr>
+#   <tr>
+#     @tp @b ORGANIZATION_LOGO logo_path @endtp
+#     <td>Value for organization logo file, such as a company logo,  
+#         that will be used for pages in the doxygen output.@n
+#         Default: @c ORGANIZATION_LOGO.</td>
+#   </tr>
+#   <tr>
+#     @tp @b DIVISION_NAME name @endtp
+#     <td>Value for division name, such as a company division name,  
+#         that will be used for pages in the doxygen output.@n
+#         Default: @c DIVISION_NAME.</td>
+#   </tr>
+#   <tr>
+#     @tp @b DIVISION_WEBSITE website @endtp
+#     <td>Value for division website, such as a company division website,  
+#         that will be used for pages in the doxygen output.@n
+#         Default: @c DIVISION_WEBSITE.</td>
+#   </tr>
+#   <tr>
+#     @tp @b DIVISION_LOGO logo_path @endtp
+#     <td>Value for division logo file, such as a company division logo,  
+#         that will be used for pages in the doxygen output.@n
+#         Default: @c DIVISION_LOGO.</td>
+#   </tr>
 # </table>
 # @n
 # See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
 # documentation of the Doxygen tags.
+# @n@n
+# @todo add support for cases where no organization or division logo, website, or name is provided
 # @n@n
 # Example:
 # @code
@@ -303,7 +343,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     DOXYGEN
       "EXCLUDE_FROM_DOC"
-      "COMPONENT;DESTINATION;HTML_DESTINATION;MAN_DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION"
+      "COMPONENT;DESTINATION;HTML_DESTINATION;MAN_DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION;ORGANIZATION_NAME;ORGANIZATION_WEBSITE;ORGANIZATION_LOGO;DIVISION_NAME;DIVISION_WEBSITE;DIVISION_LOGO"
       "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX"
       ${ARGN}
   )
@@ -529,9 +569,11 @@ function (basis_add_doxygen_doc TARGET_NAME)
   endif ()
   basis_list_to_delimited_string (DOXYGEN_IGNORE_PREFIX " " ${DOXYGEN_IGNORE_PREFIX})
   # HTML style
-  set (DOXYGEN_HTML_STYLESHEET "${BASIS_MODULE_PATH}/doxygen_sbia.css")
-  set (DOXYGEN_HTML_HEADER     "${BASIS_MODULE_PATH}/doxygen_header.html")
-  set (DOXYGEN_HTML_FOOTER     "${BASIS_MODULE_PATH}/doxygen_footer.html")
+  configure_file ("${BASIS_MODULE_PATH}/doxygen_header.html.in" "${CMAKE_CURRENT_BINARY_DIR}/doxygen_header.html" @ONLY)
+  configure_file ("${BASIS_MODULE_PATH}/doxygen_header.html.in" "${CMAKE_CURRENT_BINARY_DIR}/doxygen_footer.html" @ONLY)
+  set (DOXYGEN_HTML_STYLESHEET "${BASIS_MODULE_PATH}/doxygen_style.css")
+  set (DOXYGEN_HTML_HEADER     "${CMAKE_CURRENT_BINARY_DIR}/doxygen_header.html")
+  set (DOXYGEN_HTML_FOOTER     "${CMAKE_CURRENT_BINARY_DIR}/doxygen_footer.html")
   # click & jump in emacs and Visual Studio
   if (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
     set (DOXYGEN_WARN_FORMAT "\"$file($line) : $text \"")
