@@ -267,37 +267,37 @@ endfunction ()
 #         should be ignored while generating the index headers.</td>
 #   </tr>
 #   <tr>
-#     @tp @b ORGANIZATION_NAME name @endtp
-#     <td>Value for organization name, such as a company name,  
+#     @tp @b PROJECT_PROVIDER_NAME name @endtp
+#     <td>Value for provider name, such as a company name,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c ORGANIZATION_NAME.</td>
+#         Default: @c PROVIDER_NAME.</td>
 #   </tr>
 #   <tr>
-#     @tp @b ORGANIZATION_WEBSITE website @endtp
-#     <td>Value for organization website, such as a company website,  
+#     @tp @b PROJECT_PROVIDER_WEBSITE website @endtp
+#     <td>Value for provider website, such as a company website,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c ORGANIZATION_WEBSITE.</td>
+#         Default: @c PROVIDER_WEBSITE.</td>
 #   </tr>
 #   <tr>
-#     @tp @b ORGANIZATION_LOGO logo_path @endtp
-#     <td>Value for organization logo file, such as a company logo,  
+#     @tp @b PROJECT_PROVIDER_LOGO logo_path @endtp
+#     <td>Value for provider logo file, such as a company logo,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c ORGANIZATION_LOGO.</td>
+#         Default: @c PROVIDER_LOGO.</td>
 #   </tr>
 #   <tr>
-#     @tp @b DIVISION_NAME name @endtp
+#     @tp @b PROJECT_DIVISION_NAME name @endtp
 #     <td>Value for division name, such as a company division name,  
 #         that will be used for pages in the doxygen output.@n
 #         Default: @c DIVISION_NAME.</td>
 #   </tr>
 #   <tr>
-#     @tp @b DIVISION_WEBSITE website @endtp
+#     @tp @b PROJECT_DIVISION_WEBSITE website @endtp
 #     <td>Value for division website, such as a company division website,  
 #         that will be used for pages in the doxygen output.@n
 #         Default: @c DIVISION_WEBSITE.</td>
 #   </tr>
 #   <tr>
-#     @tp @b DIVISION_LOGO logo_path @endtp
+#     @tp @b PROJECT_DIVISION_LOGO logo_path @endtp
 #     <td>Value for division logo file, such as a company division logo,  
 #         that will be used for pages in the doxygen output.@n
 #         Default: @c DIVISION_LOGO.</td>
@@ -307,7 +307,7 @@ endfunction ()
 # See <a href="http://www.stack.nl/~dimitri/doxygen/config.html">here</a> for a
 # documentation of the Doxygen tags.
 # @n@n
-# @todo add support for cases where no organization or division logo, website, or name is provided
+# @todo add support for cases where no provider or division logo, website, or name is provided
 # @n@n
 # Example:
 # @code
@@ -343,7 +343,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     DOXYGEN
       "EXCLUDE_FROM_DOC"
-      "COMPONENT;DESTINATION;HTML_DESTINATION;MAN_DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION;ORGANIZATION_NAME;ORGANIZATION_WEBSITE;ORGANIZATION_LOGO;DIVISION_NAME;DIVISION_WEBSITE;DIVISION_LOGO"
+      "COMPONENT;DESTINATION;HTML_DESTINATION;MAN_DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION;PROJECT_PROVIDER_NAME;PROJECT_PROVIDER_WEBSITE;PROJECT_PROVIDER_LOGO;PROJECT_PROVIDER_DIVISION;PROJECT_PROVIDER_DIVISION_WEBSITE;PROJECT_PROVIDER_DIVISION_LOGO"
       "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX"
       ${ARGN}
   )
@@ -367,6 +367,27 @@ function (basis_add_doxygen_doc TARGET_NAME)
   endif ()
   if (NOT DOXYGEN_PROJECT_NUMBER)
     set (DOXYGEN_PROJECT_NUMBER "${PROJECT_RELEASE}")
+  endif ()
+  if (NOT DOXYGEN_PROJECT_PROVIDER_NAME)
+    set (DOXYGEN_PROJECT_PROVIDER_NAME "${PROJECT_PROVIDER_NAME}")
+  endif ()
+  if (NOT DOXYGEN_PROJECT_PROVIDER_WEBSITE)
+    set (DOXYGEN_PROJECT_PROVIDER_WEBSITE "${PROJECT_PROVIDER_WEBSITE}")
+  endif ()
+  if (NOT DOXYGEN_PROJECT_PROVIDER_LOGO)
+    set (DOXYGEN_PROJECT_PROVIDER_LOGO "${PROJECT_PROVIDER_LOGO}")
+  endif ()
+  if (NOT DOXYGEN_PROJECT_PROVIDER_DIVISION)
+    set (DOXYGEN_PROJECT_PROVIDER_DIVISION "${PROJECT_PROVIDER_DIVISION}")
+  endif ()
+  if (NOT DOXYGEN_PROJECT_PROVIDER_DIVISION_WEBSITE)
+    set (DOXYGEN_PROJECT_PROVIDER_DIVISION_WEBSITE "${PROJECT_PROVIDER_DIVISION_WEBSITE}")
+  endif ()
+  if (NOT DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO)
+    set (DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO "${PROJECT_PROVIDER_DIVISION_LOGO}")
+  endif ()
+  if (NOT DOXYGEN_PROJECT_PROVIDER_NAME)
+    set (DOXYGEN_PROJECT_PROVIDER_NAME "${PROJECT_PROVIDER_NAME}")
   endif ()
   # standard input files
   list (APPEND DOXYGEN_INPUT "${PROJECT_SOURCE_DIR}/BasisProject.cmake")
@@ -606,16 +627,16 @@ function (basis_add_doxygen_doc TARGET_NAME)
   # add target
   set (LOGOS)
   if (DOXYGEN_GENERATE_HTML)
-    set (LOGOS "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_sbia.png"
-               "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_penn.png")
+    set (LOGOS "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_logo.png"
+               "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_division_logo.png")
     add_custom_command (
       OUTPUT   ${LOGOS}
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-                "${BASIS_MODULE_PATH}/logo_sbia.png"
-                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_sbia.png"
+                "${PROJECT_PROVIDER_DIVISION_LOGO}"
+                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_division_logo.png"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-                "${BASIS_MODULE_PATH}/logo_penn.gif"
-                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/logo_penn.gif"
+                "${PROJECT_PROVIDER_LOGO}"
+                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_logo.png"
       COMMENT "Copying logos to ${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/..."
     )
   endif ()

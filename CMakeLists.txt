@@ -59,12 +59,7 @@ set (
     "ModuleConfigUse.cmake.in"            # default <Pkg>Use.cmake template for modules
     "GenerateConfig.cmake"                # generation/configuration of <Pkg>Config.cmake et al.
     # documentation generation
-    "doxygen_header.html.in"                 # header of Doxygen documentation
-    "doxygen_footer.html.in"                 # footer of Doxygen documentation
-    "doxygen_style.css"                    # stylesheet for Doxygen documentation
     "sphinx_conf.py.in"                   # default Sphinx configuration
-    "logo_sbia.png"                       # the logo of SBIA
-    "logo_penn.gif"                       # the logo of UPenn
     # other
     "buildtimestamp.cmd"                  # get build timestamp on Windows
     "CheckPublicHeaders.cmake"            # check if header files were added/removed
