@@ -1120,6 +1120,7 @@ template files in the .basis/ subdirectory.
         acc.call(addordel, opts.get('data', None), 'data/CMakeLists.txt', args)
         # documentation
         acc.call(addordel, opts.get('doc',     None), 'doc/CMakeLists.txt',   args)
+        acc.call(addordel, opts.get('doc', None),     'doc/provider_logo.png',args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/index.rst',        args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/changelog.rst',    args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/download.rst',     args)
