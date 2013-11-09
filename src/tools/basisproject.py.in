@@ -21,6 +21,7 @@ import sys                 # system functions
 import re                  # regular expressions
 import datetime            # now(), to get current year for copyright
 import shutil              # copyfile()
+import shlex               # lexical analysis, used for response files
 
 from basis import basis    # basic utilities
 from basis import argparse # command-line parsing
@@ -44,6 +45,41 @@ _template = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
 # ============================================================================
 # auxiliary functions
 # ============================================================================
+ 
+def ParseWithResponseFile(args, parser):
+    commands = []
+    
+    # handle --responsefile /path/to/response/file.rsp
+    tmpargs = parser.parse_args(args)
+    if tmpargs.responsefile:
+        try:
+            inFile = open(tmpargs.responsefile)
+        
+            for line in inFile.readlines():
+                tokens = shlex.split(line, True)
+                commands.extend(ParseWithResponseFile(tokens,parser))
+        
+        except IOError as desc:
+            print(desc)
+            pass
+    
+    # handle @/path/to/response/file.rsp
+    for arg in args:
+        if arg[0] == '@':
+            try:
+                inFile = open(arg[1:])
+    
+                for line in inFile.readlines():
+                    tokens = shlex.split(line, True)
+                    commands.extend(ParseWithResponseFile(tokens,parser))
+    
+            except IOError as desc:
+                print(desc)
+                pass
+        else:
+            commands.append(arg)
+ 
+    return commands
 
 # ----------------------------------------------------------------------------
 def get_template_options(op=None):
@@ -736,6 +772,12 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
     parser.add_argument('--author', metavar='<author>',
             help="Name of original author of the software.")
 
+
+    parser.add_argument('--responsefile', metavar='<response>',
+            type=os.path.abspath, 
+            help="""File containing additional command line parameters for the program 
+to parse before executing. Also works with @/path/to/responsefile.rsp""")
+
     # --root/--template
     parser.add_argument('--root', metavar='<dir>', type=os.path.abspath,
             help="""Project root directory. Defaults to a subdirectory named after the
@@ -971,7 +1013,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         parser.print_help()
         sys.exit(1)
     else:
-        args = parser.parse_args()
+        args = parser.parse_args(ParseWithResponseFile(sys.argv[1:],parser))
 
     # ------------------------------------------------------------------------
     # create new project or update existing one?
