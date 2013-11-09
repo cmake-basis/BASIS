@@ -5,6 +5,8 @@
 # Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
+# Copyright (c) 2013 Carnegie Mellon University
+#
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup CMakeTools
@@ -676,6 +678,155 @@ function (basis_get_relative_path REL BASE PATH)
   set (${REL} "${P}" PARENT_SCOPE)
 endfunction ()
 
+##
+#  @brief Create a string from a list of variables indicating if they are defined and their values. Useful for debug and user errors.
+#
+#  @param VAR_INFO_STRING[out] The output string variable that will set with the debug string.
+#
+#  @param ARGN[in]        List of variables to be put into a string along with their value.
+#
+#  @code
+#    set(VAR1 "I'm a string")
+#    set(VAR2 2)
+#    basis_variable_value_status(VAR_INFO_STRING VAR1 VAR2 VAR3)
+#    message(STATUS ${VAR_INFO_STRING})
+#    
+#  @endcode
+function(basis_variable_value_status VAR_INFO_STRING)
+  set(OUTPUT_STRING)
+  foreach(VARIABLE_NAME IN ITEMS ${ARGN})
+     if(DEFINED ${VARIABLE_NAME})
+        set(OUTPUT_STRING "${OUTPUT_STRING}\n  variable name: ${VARIABLE_NAME}  value: ${${VARIABLE_NAME}}")
+     else()
+        set(OUTPUT_STRING "${OUTPUT_STRING}\n  variable name: ${VARIABLE_NAME}  value is not defined")
+     endif()
+  endforeach()
+  set(${VAR_INFO_STRING} ${OUTPUT_STRING} PARENT_SCOPE)
+  # debug:
+  #message(STATUS "OUTPUT_STRING:${OUTPUT_STRING}")
+  #message(STATUS "VAR_INFO_STRING:${VAR_INFO_STRING}:${${VAR_INFO_STRING}}")
+endfunction()
+
+##########################################################
+# ------- Variable Check ---------------
+##########################################################
+#
+# @brief VariableCheck checks for a list of variables 
+#        required later in the script and produces a clear error 
+#        message explaining the problem and how to fix it if they 
+#        are not present.
+#  
+# Multi Arg Params:
+#
+#     @param REQUIRED[in]         List of variables that MUST be set to run this script correctly. 
+#                                 Will produce a FATAL_ERROR message explaining which variables 
+#                                 are misisng and exit the cmake script.
+#
+#     @param OPTIONAL[in]         List of variables that be OPTIONALLY set to run this script with additional features. 
+#                                 Will produce an AUTHOR_WARNING message explaining which variables 
+#                                 are misisng and continue running the cmake script.
+#
+#
+#     @param PATH_EXISTS[in]      List of path variables that MUST be set to a location that exists.
+#
+#
+#     @param OPTIONAL_PATH_EXISTS[in]   LIST of path variables that are optional, but once set must be empty or provide a path to location that exists.
+#
+# @code
+#     basis_variable_check(
+#        REQUIRED
+#           LIBRARY1_INCLUDE_DIRS
+#           LIBRARY2_INCLUDE_DIRS
+#           LIBRARY2_LIBRARIES
+#        OPTIONAL
+#           LIBRARY3_INCLUDE_DIRS
+#           LIBRARY3_LIBRARIES
+#        OPTIONAL_PATH
+#           
+#     )
+# @endcode
+#
+##########################################################
+function(basis_variable_check)
+
+  set(options ) # currently none
+  set(oneValueArgs ) # currently none
+  set(multiValueArgs REQUIRED OPTIONAL PATH_EXISTS OPTIONAL_PATH_EXISTS )
+  cmake_parse_arguments(VARIABLE_CONFIGURATION "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  
+  
+  #-------------------------------------------
+  # Create the error strings for missing REQUIRED variables
+  set(MISSING_REQUIRED_VARIABLES)
+  foreach(VARIABLE_NAME IN LISTS VARIABLE_CONFIGURATION_REQUIRED)
+     if(NOT ${VARIABLE_NAME})
+        list(APPEND MISSING_REQUIRED_VARIABLES ${VARIABLE_NAME})
+     endif()
+  endforeach()
+  if(MISSING_REQUIRED_VARIABLES)
+    basis_variable_value_status(MISSING_REQUIRED_VARIABLES_STATUS ${MISSING_REQUIRED_VARIABLES})
+    set(MISSING_VARIABLES_ERROR "\nThe following variables are marked as REQUIRED but they are not set to a valid value. Please define the variables correctly in your cmake script or on the command line using -D. ${MISSING_REQUIRED_VARIABLES_STATUS}")
+  endif(MISSING_REQUIRED_VARIABLES)
+  
+  
+  #-------------------------------------------
+  # Create and print the warning strings for missing OPTIONAL variables
+  set(MISSING_OPTIONAL_VARIABLES)
+  foreach(VARIABLE_NAME IN LISTS VARIABLE_CONFIGURATION_OPTIONAL)
+     if(NOT ${VARIABLE_NAME})
+        list(APPEND MISSING_OPTIONAL_VARIABLES ${VARIABLE_NAME})
+     endif()
+  endforeach()
+  if(MISSING_OPTIONAL_VARIABLES)
+    basis_variable_value_status(MISSING_OPTIONAL_VARIABLES_STATUS ${MISSING_OPTIONAL_VARIABLES})
+    set(MISSING_VARIABLES_WARNING "\nThe following variables are marked as OPTIONAL but they are not set to a valid value. Please define the variables correctly in your cmake script or on the command line using -D. ${MISSING_OPTIONAL_VARIABLES_STATUS}")
+    message(AUTHOR_WARNING "${MISSING_VARIABLES_WARNING}")
+  endif(MISSING_OPTIONAL_VARIABLES)
+  
+  
+  
+  #-------------------------------------------
+  # Create the error strings for missing or nonexistant REQUIRED PATH variables
+  set(MISSING_PATH_EXISTS)
+  foreach(VARIABLE_NAME IN LISTS VARIABLE_CONFIGURATION_PATH_EXISTS)
+     if(NOT DEFINED ${VARIABLE_NAME} OR NOT EXISTS ${${VARIABLE_NAME}})
+        list(APPEND MISSING_PATH_EXISTS ${VARIABLE_NAME})
+     endif()
+  endforeach()
+  if(MISSING_PATH_EXISTS)
+    basis_variable_value_status(MISSING_PATH_EXISTS_STATUS ${MISSING_PATH_EXISTS})
+    set(PATH_EXISTS_ERROR "\nThe following PATH variables are marked as REQUIRED but they are not set to a valid location. Please define the variables correctly in your cmake script or on the command line using -D. ${MISSING_PATH_EXISTS_STATUS}")
+  endif(MISSING_PATH_EXISTS)
+  
+  
+  
+  #-------------------------------------------
+  # Create the error strings for missing or nonexistant OPTIONAL PATH variables
+  set(MISSING_OPTIONAL_PATH_EXISTS)
+  foreach(VARIABLE_NAME IN LISTS VARIABLE_CONFIGURATION_OPTIONAL_PATH_EXISTS)
+     if(DEFINED ${VARIABLE_NAME} AND NOT ${${VARIABLE_NAME}} STREQUAL "" AND NOT EXISTS ${${VARIABLE_NAME}})
+       # add VARIABLE_NAME to error list if a nonempty path is defined, but does not point to a real location
+        list(APPEND MISSING_OPTIONAL_PATH_EXISTS ${VARIABLE_NAME})
+     endif()
+  endforeach()
+  if(MISSING_OPTIONAL_PATH_EXISTS)
+    basis_variable_value_status(MISSING_OPTIONAL_PATH_EXISTS_STATUS ${MISSING_OPTIONAL_PATH_EXISTS})
+    #debug:
+    #message(STATUS "MISSING_OPTIONAL_PATH_EXISTS: ${MISSING_OPTIONAL_PATH_EXISTS}")
+    #message(STATUS "MISSING_OPTIONAL_PATH_EXISTS_STATUS: ${MISSING_OPTIONAL_PATH_EXISTS_STATUS}")
+    set(OPTIONAL_PATH_EXISTS_ERROR "\nThe following PATH variables are marked as OPTIONAL but they are not set to a valid location. Please define the variables correctly in your cmake script or on the command line using -D. ${MISSING_OPTIONAL_PATH_EXISTS_STATUS}")
+  endif(MISSING_OPTIONAL_PATH_EXISTS)
+  
+  #-------------------------------------------
+  # Print all fatal errors at once, because the script will halt
+  if(MISSING_VARIABLES_ERROR OR PATH_EXISTS_ERROR OR OPTIONAL_PATH_EXISTS_ERROR)
+    message(FATAL_ERROR "${MISSING_VARIABLES_ERROR}${PATH_EXISTS_ERROR}${OPTIONAL_PATH_EXISTS_ERROR}\n")
+  endif(MISSING_VARIABLES_ERROR OR PATH_EXISTS_ERROR OR OPTIONAL_PATH_EXISTS_ERROR)
+
+endfunction(basis_variable_check)
+
+
+
 # ============================================================================
 # name / version
 # ============================================================================
@@ -1219,6 +1370,10 @@ endfunction ()
 #                    which contain the delimiter is disabled.
 #
 # @returns Sets @p STR to the resulting string.
+#
+# @see basis_join
+#
+# @todo consider replacing basis_list_to_delimited_string with basis_join
 function (basis_list_to_delimited_string STR DELIM)
   set (OUT)
   set (AUTOQUOTE TRUE)
@@ -1241,6 +1396,30 @@ function (basis_list_to_delimited_string STR DELIM)
   endforeach ()
   set ("${STR}" "${OUT}" PARENT_SCOPE)
 endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Concatenates all list elements into a single delimited string.
+#
+# @param [in]  VALUES       Input list string.
+# @param [in]  DELIMITER    Delimiter glue used to separate list elements.
+#                           Each element which contains the delimiter as substring
+#                           is surrounded by double quotes (") in the output string.
+# @param [out] OUTPUT       Output string variable name.
+#
+# @code
+#   set( letters "" "\;a" b c "d\;d" )
+#   basis_join("${letters}" ":" output)
+#   message("${output}") # :;a:b:c:d;d
+# @endcode
+#
+# @returns Sets @p OUTPUT to the resulting string.
+#
+# @see basis_list_to_delimited_string
+function(basis_join VALUES DELIMITER OUTPUT)
+  string (REGEX REPLACE "([^\\]|^);" "\\1${DELIMITER}" _TMP_STR "${VALUES}")
+  string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}") #fixes escaping
+  set (${OUTPUT} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
 
 # ----------------------------------------------------------------------------
 ## @brief Splits a string at space characters into a list.

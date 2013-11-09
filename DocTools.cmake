@@ -267,40 +267,78 @@ endfunction ()
 #         should be ignored while generating the index headers.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PROJECT_PROVIDER_NAME name @endtp
+#     @tp @b PROJECT_PROVIDER name @endtp
 #     <td>Value for provider name, such as a company name,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c PROVIDER_NAME.</td>
+#         Default: @c PROVIDER.</td>
 #   </tr>
 #   <tr>
 #     @tp @b PROJECT_PROVIDER_WEBSITE website @endtp
 #     <td>Value for provider website, such as a company website,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c PROVIDER_WEBSITE.</td>
+#         Default: @c PROJECT_PROVIDER_WEBSITE.</td>
 #   </tr>
 #   <tr>
 #     @tp @b PROJECT_PROVIDER_LOGO logo_path @endtp
 #     <td>Value for provider logo file, such as a company logo,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c PROVIDER_LOGO.</td>
+#         Default: @c PROJECT_PROVIDER_LOGO.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PROJECT_DIVISION_NAME name @endtp
+#     @tp @b PROJECT_PROVIDER_DIVISION_NAME name @endtp
 #     <td>Value for division name, such as a company division name,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c DIVISION_NAME.</td>
+#         Default: @c PROJECT_PROVIDER_DIVISION_NAME.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PROJECT_DIVISION_WEBSITE website @endtp
+#     @tp @b PROJECT_PROVIDER_DIVISION_WEBSITE website @endtp
 #     <td>Value for division website, such as a company division website,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c DIVISION_WEBSITE.</td>
+#         Default: @c PROJECT_PROVIDER_DIVISION_WEBSITE.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PROJECT_DIVISION_LOGO logo_path @endtp
+#     @tp @b PROJECT_PROVIDER_DIVISION_LOGO logo_path @endtp
 #     <td>Value for division logo file, such as a company division logo,  
 #         that will be used for pages in the doxygen output.@n
-#         Default: @c DIVISION_LOGO.</td>
+#         Default: @c PROJECT_PROVIDER_DIVISION_LOGO.</td>
+#   </tr>
+#   <tr>
+#     @tp @b ENABLED_SECTIONS section1 [section2 ...] @endtp
+#     <td>The ENABLED_SECTIONS tag can be used to enable conditional  
+#         documentation sections, marked by \if sectionname ... \endif.
+#         @see http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_enabled_sections @n
+#         </td>
+#   </tr>
+#   <tr>
+#     @tp @b HTML_HEADER header_input_file_path @endtp
+#     <td>The HTML_HEADER tag can be used to specify a personal HTML header for 
+#         each generated HTML page. If the tag is left blank BASIS will
+#         check for ${BASIS_PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in,
+#         if it is not present doxygen will generate a standard header.
+#         @see http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_html_header @n
+#         </td>
+#   </tr>
+#   <tr>
+#     @tp @b HTML_FOOTER header_input_file_path @endtp
+#     <td>The HTML_FOOTER tag can be used to specify a personal HTML footer for 
+#         each generated HTML page. If the tag is left blank BASIS will
+#         check for ${BASIS_PROJECT_SOURCE_DIR}/doc/doxygen_footer.html.in,
+#         if it is not present doxygen will generate a standard footer.
+#         @see http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_html_footer @n
+#         </td>
+#   </tr>
+#   <tr>
+#     @tp @b HTML_STYLESHEET stylesheet_input_file_path @endtp
+#     <td>The HTML_STYLESHEET tag can be used to specify a user-defined cascading 
+#         style sheet that is used by each HTML page. It can be used to 
+#         fine-tune the look of the HTML output. If the tag is left blank BASIS will
+#         check for ${BASIS_PROJECT_SOURCE_DIR}/doc/doxygen_style.css,
+#         if it is not present doxygen will generate a default style sheet. 
+#         Note that doxygen will try to copy the style sheet file to the HTML output 
+#         directory, so don't put your own stylesheet in the HTML output directory 
+#         as well, or it will be erased!
+#         @see http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_html_footer @n
+#         </td>
 #   </tr>
 # </table>
 # @n
@@ -343,7 +381,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     DOXYGEN
       "EXCLUDE_FROM_DOC"
-      "COMPONENT;DESTINATION;HTML_DESTINATION;MAN_DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION;PROJECT_PROVIDER_NAME;PROJECT_PROVIDER_WEBSITE;PROJECT_PROVIDER_LOGO;PROJECT_PROVIDER_DIVISION;PROJECT_PROVIDER_DIVISION_WEBSITE;PROJECT_PROVIDER_DIVISION_LOGO"
+      "COMPONENT;DESTINATION;HTML_DESTINATION;MAN_DESTINATION;DOXYFILE;TAGFILE;PROJECT_NAME;PROJECT_NUMBER;OUTPUT_DIRECTORY;COLS_IN_ALPHA_INDEX;MAN_SECTION;PROJECT_PROVIDER;PROJECT_PROVIDER_WEBSITE;PROJECT_PROVIDER_LOGO;PROJECT_PROVIDER_DIVISION;PROJECT_PROVIDER_DIVISION_WEBSITE;PROJECT_PROVIDER_DIVISION_LOGO"
       "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX"
       ${ARGN}
   )
@@ -368,8 +406,8 @@ function (basis_add_doxygen_doc TARGET_NAME)
   if (NOT DOXYGEN_PROJECT_NUMBER)
     set (DOXYGEN_PROJECT_NUMBER "${PROJECT_RELEASE}")
   endif ()
-  if (NOT DOXYGEN_PROJECT_PROVIDER_NAME)
-    set (DOXYGEN_PROJECT_PROVIDER_NAME "${PROJECT_PROVIDER_NAME}")
+  if (NOT DOXYGEN_PROJECT_PROVIDER)
+    set (DOXYGEN_PROJECT_PROVIDER "${PROJECT_PROVIDER}")
   endif ()
   if (NOT DOXYGEN_PROJECT_PROVIDER_WEBSITE)
     set (DOXYGEN_PROJECT_PROVIDER_WEBSITE "${PROJECT_PROVIDER_WEBSITE}")
@@ -386,9 +424,25 @@ function (basis_add_doxygen_doc TARGET_NAME)
   if (NOT DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO)
     set (DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO "${PROJECT_PROVIDER_DIVISION_LOGO}")
   endif ()
-  if (NOT DOXYGEN_PROJECT_PROVIDER_NAME)
-    set (DOXYGEN_PROJECT_PROVIDER_NAME "${PROJECT_PROVIDER_NAME}")
+  if (NOT DOXYGEN_PROJECT_PROVIDER)
+    set (DOXYGEN_PROJECT_PROVIDER "${PROJECT_PROVIDER}")
   endif ()
+  
+  # if any of the optional files are defined by the user, make sure it exists
+  basis_variable_check(
+    REQUIRED
+      # @todo consider removing the required items, are they all really required?
+      PROJECT_PROVIDER
+      DOXYGEN_PROJECT_PROVIDER
+      DOXYGEN_PROJECT_PROVIDER_WEBSITE
+    OPTIONAL_PATH_EXISTS
+      DOXYGEN_HTML_STYLESHEET
+      DOXYGEN_HTML_HEADER
+      DOXYGEN_HTML_FOOTER
+      DOXYGEN_PROJECT_PROVIDER_LOGO
+      DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO
+  )
+  
   # standard input files
   list (APPEND DOXYGEN_INPUT "${PROJECT_SOURCE_DIR}/BasisProject.cmake")
   if (EXISTS "${PROJECT_CONFIG_DIR}/Depends.cmake")
@@ -589,12 +643,8 @@ function (basis_add_doxygen_doc TARGET_NAME)
     set (DOXYGEN_COLS_IN_ALPHA_INDEX 1)
   endif ()
   basis_list_to_delimited_string (DOXYGEN_IGNORE_PREFIX " " ${DOXYGEN_IGNORE_PREFIX})
-  # HTML style
-  configure_file ("${BASIS_MODULE_PATH}/doxygen_header.html.in" "${CMAKE_CURRENT_BINARY_DIR}/doxygen_header.html" @ONLY)
-  configure_file ("${BASIS_MODULE_PATH}/doxygen_header.html.in" "${CMAKE_CURRENT_BINARY_DIR}/doxygen_footer.html" @ONLY)
-  set (DOXYGEN_HTML_STYLESHEET "${BASIS_MODULE_PATH}/doxygen_style.css")
-  set (DOXYGEN_HTML_HEADER     "${CMAKE_CURRENT_BINARY_DIR}/doxygen_header.html")
-  set (DOXYGEN_HTML_FOOTER     "${CMAKE_CURRENT_BINARY_DIR}/doxygen_footer.html")
+  
+  
   # click & jump in emacs and Visual Studio
   if (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
     set (DOXYGEN_WARN_FORMAT "\"$file($line) : $text \"")
@@ -621,25 +671,85 @@ function (basis_add_doxygen_doc TARGET_NAME)
       endif ()
     endif ()
   endforeach ()
+  
+  # determine tool to generate pdf documentation, see USE_PDFLATEX in Doxyfile.in
+  find_package(LATEX)
+  if(PDFLATEX_COMPILER)
+    set(DOXYGEN_PDFLATEX_COMPILER YES)
+  else()
+    set(DOXYGEN_PDFLATEX_COMPILER NO)
+    message(STATUS "PDFLATEX_COMPILER: ${PDFLATEX_COMPILER}. Enable pdflatex for higher quality pdf Doxygen documentation.")
+  endif()
+  # add target
+  
+  # Handle LOGOS in doxygen documentation
+  set (OUTPUT_PROVIDER_LOGO) # clear the variable
+  set (OUTPUT_PROVIDER_DIVISION_LOGO) #clear the variable
+  if (DOXYGEN_GENERATE_HTML)
+    if(DOXYGEN_PROJECT_PROVIDER_LOGO)
+      # provider (or company) logo
+      get_filename_component(DOXYGEN_PROJECT_PROVIDER_LOGO_FILENAME "${DOXYGEN_PROJECT_PROVIDER_LOGO}" NAME)
+      set (OUTPUT_PROVIDER_LOGO "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/${DOXYGEN_PROJECT_PROVIDER_LOGO_FILENAME}")
+      add_custom_command (
+        OUTPUT   "${OUTPUT_PROVIDER_LOGO}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                  "${DOXYGEN_PROJECT_PROVIDER_LOGO}"
+                  "${OUTPUT_PROVIDER_LOGO}"
+        COMMENT "Copying provider logo to ${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/..."
+      )
+      # add flag to ENABLED_SECTIONS in Doxyfile.in so the provider logo will appear
+      list(APPEND DOXYGEN_ENABLED_SECTIONS BASIS_PROJECT_PROVIDER_LOGO)
+    endif()
+
+    if(DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO)
+      # division logo
+      get_filename_component(DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO_FILENAME "${DOXYGEN_PROJECT_PROVIDER_LOGO}" NAME)
+      set (OUTPUT_PROVIDER_DIVISION_LOGO "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/${DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO_FILENAME}")
+      add_custom_command (
+        OUTPUT  "${OUTPUT_PROVIDER_DIVISION_LOGO}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                  "${DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO}"
+                  "${OUTPUT_PROVIDER_DIVISION_LOGO}"
+        COMMENT "Copying division logo to ${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/..."
+      )
+       # add flag to ENABLED_SECTIONS in Doxyfile.in so the provider logo will appear
+      list(APPEND DOXYGEN_ENABLED_SECTIONS BASIS_PROJECT_PROVIDER_DIVISION_LOGO)
+    endif()
+
+    # set default styles
+    if(NOT DOXYGEN_HTML_STYLESHEET AND EXISTS "${PROJECT_SOURCE_DIR}/doc/doxygen_style.css.in")
+      set (DOXYGEN_HTML_STYLESHEET "${PROJECT_SOURCE_DIR}/doc/doxygen_style.css.in")
+    endif()
+    if(NOT DOXYGEN_HTML_HEADER AND EXISTS "${PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in")
+      set (DOXYGEN_HTML_HEADER     "${PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in")
+    endif()
+    if(NOT DOXYGEN_HTML_FOOTER AND EXISTS "${PROJECT_SOURCE_DIR}/doc/doxygen_footer.html.in")
+      set (DOXYGEN_HTML_FOOTER     "${PROJECT_SOURCE_DIR}/doc/doxygen_footer.html.in")
+    endif()
+
+    # Do cmake substitutions (configuration) on doxygen files
+    # then set the variables that will be placed into Doxyfile.in
+    if(EXISTS ${DOXYGEN_HTML_STYLESHEET})
+      configure_file (${DOXYGEN_HTML_STYLESHEET} "${CMAKE_CURRENT_BINARY_DIR}/doxygen_style.css" @ONLY)
+      set (DOXYGEN_HTML_STYLESHEET "\"${CMAKE_CURRENT_BINARY_DIR}/doxygen_style.css\"")
+    endif()
+    if(EXISTS ${DOXYGEN_HTML_HEADER})
+      configure_file (${DOXYGEN_HTML_HEADER} "${CMAKE_CURRENT_BINARY_DIR}/doxygen_header.html" @ONLY)
+    set (DOXYGEN_HTML_HEADER     "\"${CMAKE_CURRENT_BINARY_DIR}/doxygen_header.html\"")
+    endif()
+    if(EXISTS ${DOXYGEN_HTML_FOOTER})
+      configure_file (${DOXYGEN_HTML_FOOTER} "${CMAKE_CURRENT_BINARY_DIR}/doxygen_footer.html" @ONLY)
+      set (DOXYGEN_HTML_FOOTER     "\"${CMAKE_CURRENT_BINARY_DIR}/doxygen_footer.html\"")
+    endif()
+  endif (DOXYGEN_GENERATE_HTML)
+
+  # set sections that will be enabled, see ENABLED_SECTIONS in Doxyfile.in
+  basis_join("${DOXYGEN_ENABLED_SECTIONS}" " " DOXYGEN_ENABLED_SECTIONS)
+  
   # configure Doxyfile
   set (DOXYFILE "${DOXYGEN_OUTPUT_DIRECTORY}/Doxyfile.${TARGET_NAME_L}")
   configure_file ("${DOXYGEN_DOXYFILE}" "${DOXYFILE}" @ONLY)
-  # add target
-  set (LOGOS)
-  if (DOXYGEN_GENERATE_HTML)
-    set (LOGOS "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_logo.png"
-               "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_division_logo.png")
-    add_custom_command (
-      OUTPUT   ${LOGOS}
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-                "${PROJECT_PROVIDER_DIVISION_LOGO}"
-                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_division_logo.png"
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-                "${PROJECT_PROVIDER_LOGO}"
-                "${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/provider_logo.png"
-      COMMENT "Copying logos to ${DOXYGEN_OUTPUT_DIRECTORY}/${DOXYGEN_HTML_OUTPUT}/..."
-    )
-  endif ()
+  
   set (OPTALL)
   if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)
     set (OPTALL "ALL")
@@ -647,7 +757,9 @@ function (basis_add_doxygen_doc TARGET_NAME)
   file (MAKE_DIRECTORY "${DOXYGEN_OUTPUT_DIRECTORY}")
   add_custom_target (
     ${TARGET_UID} ${OPTALL} "${DOXYGEN_EXECUTABLE}" "${DOXYFILE}"
-    DEPENDS ${LOGOS}
+    DEPENDS # target depends on each logo, if they exist, otherwise the string will be blank
+      ${OUTPUT_PROVIDER_LOGO} 
+      ${OUTPUT_PROVIDER_DIVISION_LOGO}
     WORKING_DIRECTORY "${DOXYGEN_OUTPUT_DIRECTORY}"
     COMMENT "Building documentation ${TARGET_UID}..."
   )
