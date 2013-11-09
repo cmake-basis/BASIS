@@ -46,7 +46,7 @@ $mathjax
     </tbody>
   </table>
   <div id="">
-   <a href="@DOXYGEN_PROJECT_PROVIDER_WEBSITE@"><img alt="@DOXYGEN_PROJECT_PROVIDER_NAME@" src="provider_logo.png"></a>
+   <a href="@DOXYGEN_PROJECT_PROVIDER_WEBSITE@"><img alt="@DOXYGEN_PROJECT_PROVIDER@" src="provider_logo.png"></a>
   </div>
   <div id="sbialogo">
     <a href="@DOXYGEN_PROJECT_PROVIDER_DIVISION_WEBSITE@"><img alt="@DOXYGEN_PROJECT_PROVIDER_DIVISION_NAME@" src="provider_division_logo.png"></a>
