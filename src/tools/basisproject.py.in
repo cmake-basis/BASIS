@@ -1124,6 +1124,7 @@ template files in the .basis/ subdirectory.
         acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_footer.html.in',args)
         acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_header.html.in',args)
         acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_style.css.in',args)
+        acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_extra_style.css.in',args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/index.rst',        args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/changelog.rst',    args)
         acc.call(addordel, opts.get('doc-rst', None), 'doc/download.rst',     args)
