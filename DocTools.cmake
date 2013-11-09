@@ -328,6 +328,19 @@ endfunction ()
 #         </td>
 #   </tr>
 #   <tr>
+#     @tp @b HTML_EXTRA_STYLESHEET stylesheet_input_file_path @endtp
+#     <td>The HTML_EXTRA_STYLESHEET tag can be used to specify a user-defined cascading 
+#         style sheet that is used by each HTML page. It can be used to 
+#         fine-tune the look of the HTML output. If the tag is left blank BASIS will
+#         check for ${BASIS_PROJECT_SOURCE_DIR}/doc/doxygen_extra_style.css,
+#         if it is not present doxygen will generate a default style sheet. 
+#         Note that doxygen will try to copy the style sheet file to the HTML output 
+#         directory, so don't put your own stylesheet in the HTML output directory 
+#         as well, or it will be erased!
+#         @see http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_html_footer @n
+#         </td>
+#   </tr>
+#   <tr>
 #     @tp @b HTML_STYLESHEET stylesheet_input_file_path @endtp
 #     <td>The HTML_STYLESHEET tag can be used to specify a user-defined cascading 
 #         style sheet that is used by each HTML page. It can be used to 
@@ -337,6 +350,9 @@ endfunction ()
 #         Note that doxygen will try to copy the style sheet file to the HTML output 
 #         directory, so don't put your own stylesheet in the HTML output directory 
 #         as well, or it will be erased!
+#         @note It is recommended to use HTML_EXTRA_STYLESHEET instead of this tag, as
+#         it is more robust and this tag (HTML_STYLESHEET) will in the future become
+#         obsolete.
 #         @see http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_html_footer @n
 #         </td>
 #   </tr>
@@ -436,7 +452,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
       DOXYGEN_PROJECT_PROVIDER
       DOXYGEN_PROJECT_PROVIDER_WEBSITE
     OPTIONAL_PATH_EXISTS
-      DOXYGEN_HTML_STYLESHEET
+      DOXYGEN_HTML_EXTRA_STYLESHEET
       DOXYGEN_HTML_HEADER
       DOXYGEN_HTML_FOOTER
       DOXYGEN_PROJECT_PROVIDER_LOGO
@@ -720,6 +736,9 @@ function (basis_add_doxygen_doc TARGET_NAME)
     if(NOT DOXYGEN_HTML_STYLESHEET AND EXISTS "${PROJECT_SOURCE_DIR}/doc/doxygen_style.css.in")
       set (DOXYGEN_HTML_STYLESHEET "${PROJECT_SOURCE_DIR}/doc/doxygen_style.css.in")
     endif()
+    if(NOT DOXYGEN_HTML_EXTRA_STYLESHEET AND EXISTS "${PROJECT_SOURCE_DIR}/doc/doxygen_extra_style.css.in")
+      set (DOXYGEN_HTML_EXTRA_STYLESHEET "${PROJECT_SOURCE_DIR}/doc/doxygen_extra_style.css.in")
+    endif()
     if(NOT DOXYGEN_HTML_HEADER AND EXISTS "${PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in")
       set (DOXYGEN_HTML_HEADER     "${PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in")
     endif()
@@ -732,6 +751,10 @@ function (basis_add_doxygen_doc TARGET_NAME)
     if(EXISTS ${DOXYGEN_HTML_STYLESHEET})
       configure_file (${DOXYGEN_HTML_STYLESHEET} "${CMAKE_CURRENT_BINARY_DIR}/doxygen_style.css" @ONLY)
       set (DOXYGEN_HTML_STYLESHEET "\"${CMAKE_CURRENT_BINARY_DIR}/doxygen_style.css\"")
+    endif()
+    if(EXISTS ${DOXYGEN_HTML_EXTRA_STYLESHEET})
+      configure_file (${DOXYGEN_HTML_EXTRA_STYLESHEET} "${CMAKE_CURRENT_BINARY_DIR}/doxygen_extra_style.css" @ONLY)
+      set (DOXYGEN_HTML_EXTRA_STYLESHEET "\"${CMAKE_CURRENT_BINARY_DIR}/doxygen_extra_style.css\"")
     endif()
     if(EXISTS ${DOXYGEN_HTML_HEADER})
       configure_file (${DOXYGEN_HTML_HEADER} "${CMAKE_CURRENT_BINARY_DIR}/doxygen_header.html" @ONLY)
