@@ -19,7 +19,7 @@
 #   </tr>
 #   <tr>
 #     @tp @b AFNI_FIND_OPTIONAL_COMPONENTS @endp
-#     <td>List of optional components, i.e., AFNI programs, to look for.</td>
+#     <td>List of optional components, i.e., AFNI programs, to look for.
 #         Specify using OPTIONAL_COMPONENTS argument of find_package() command.</td>
 #   </tr>
 # </table>
