@@ -189,7 +189,9 @@ int RegressionTestImage (const char*  testImageFilename,
     extract_region.SetIndex(extract_index);
     extract_region.SetSize (extract_size);
     extractor->SetExtractionRegion(extract_region);
+#if !defined(ITK_VERSION_MAJOR) || ITK_VERSION_MAJOR > 3
     extractor->SetDirectionCollapseToSubmatrix();
+#endif
 
     orienter->UseImageDirectionOn();
     orienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPI);
@@ -319,7 +321,9 @@ int RegressionTestImage (const char*  testImageFilename,
 
         extract->SetInput(rescale->GetOutput());
         extract->SetExtractionRegion(region);
+#if !defined(ITK_VERSION_MAJOR) || ITK_VERSION_MAJOR > 3
         extract->SetDirectionCollapseToIdentity();
+#endif
 
         WriterType::Pointer writer = WriterType::New();
         writer->SetInput(extract->GetOutput());
