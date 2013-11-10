@@ -85,21 +85,25 @@ file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
 unset (TEMPLATE)
 
 basis_add_doc (
-  apidoc           ${APIDOC_OPTIONS}
-  GENERATOR        Doxygen
-  INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
-  EXCLUDE_PATTERNS # external libraries packaged with BASIS
-                   "*/gmock/*"            # Google Mock
-                   "*/gtest/*"            # Google Test
-                   "*/tclap/*"            # TCLAP library
-                   "*/breathe/*"          # Sphinx extension
-                   "*/doxylink/*"         # Sphinx extension
-                   "*/argh/*"             # Python Argh
-                   "*/test.cxx"           # Google Mock and Test
-                   "*/test_main.cxx"      # main() of unit tests based on GMock
-                   # testdriver which includes *.inc files
-                   "*/testdriver.cxx"
-  HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
+  apidoc                         ${APIDOC_OPTIONS}
+  GENERATOR                      Doxygen
+  INPUT                          "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
+  EXCLUDE_PATTERNS               # external libraries packaged with BASIS
+                                 "*/gmock/*"            # Google Mock
+                                 "*/gtest/*"            # Google Test
+                                 "*/tclap/*"            # TCLAP library
+                                 "*/breathe/*"          # Sphinx extension
+                                 "*/doxylink/*"         # Sphinx extension
+                                 "*/argh/*"             # Python Argh
+                                 "*/test.cxx"           # Google Mock and Test
+                                 "*/test_main.cxx"      # main() of unit tests based on GMock
+                                 # testdriver which includes *.inc files
+                                 "*/testdriver.cxx"
+  HTML_DESTINATION               "${INSTALL_DOC_DIR}/apidoc"
+                                 # SBIA theme
+  HTML_EXTRA_STYLESHEET          "static/doxygen_sbia.css"
+  PROJECT_PROVIDER_LOGO          "static/penn_logo.gif"
+  PROJECT_PROVIDER_DIVISION_LOGO "static/sbia_logo.png"
 )
 
 # ============================================================================
