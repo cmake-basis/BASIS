@@ -59,6 +59,9 @@ set (
     "ModuleConfigUse.cmake.in"            # default <Pkg>Use.cmake template for modules
     "GenerateConfig.cmake"                # generation/configuration of <Pkg>Config.cmake et al.
     # documentation generation
+    "doxygen_header.html.in"              # default HTML header of Doxygen documentation
+    "doxygen_footer.html.in"              # default HTML footer of Doxygen documentation
+    "doxygen_extra.css.in"                # default HTML extra stylesheet of Doxygen documentation
     "sphinx_conf.py.in"                   # default Sphinx configuration
     # other
     "buildtimestamp.cmd"                  # get build timestamp on Windows
