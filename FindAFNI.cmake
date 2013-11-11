@@ -13,13 +13,13 @@
 #         are considered. This variable can also be set as environment variable.</td>
 #   </tr>
 #   <tr>
-#     @tp @b AFNI_FIND_COMPONENTS @endp
+#     @tp @b AFNI_FIND_COMPONENTS @endtp
 #     <td>List of components, i.e., AFNI programs, to look for.
 #         Specify using COMPONENTS argument of find_package() command.</td>
 #   </tr>
 #   <tr>
-#     @tp @b AFNI_FIND_OPTIONAL_COMPONENTS @endp
-#     <td>List of optional components, i.e., AFNI programs, to look for.</td>
+#     @tp @b AFNI_FIND_OPTIONAL_COMPONENTS @endtp
+#     <td>List of optional components, i.e., AFNI programs, to look for.
 #         Specify using OPTIONAL_COMPONENTS argument of find_package() command.</td>
 #   </tr>
 # </table>
