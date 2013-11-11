@@ -823,7 +823,7 @@ dl.bug
     vertical-align: bottom;
     border-collapse: separate;
     width: 175px;
-	height: 55px;
+	height: 60px;
     margin-left: 20px;
     margin-right: 20px;
     background-color: #660000;
@@ -850,10 +850,11 @@ dl.bug
  
 #projectlogo img
 { 
+    height: 60px;
     border: 0px none;
     background-color: #660000;
 }
- 
+
 #projectname
 {
     font: 300% Tahoma, Arial,sans-serif;
@@ -863,7 +864,15 @@ dl.bug
     background-color: #660000;
     text-shadow: #C1C7DD 1px 1px 2px;
 }
-    
+
+#projectname a
+{
+    color:   #fff;
+    margin:  0px;
+    padding: 0px;
+    text-decoration: none;
+}
+
 #projectbrief
 {
     font: 120% Tahoma, Arial,sans-serif;
@@ -982,3 +991,7 @@ dl.bug
     text-shadow: none;
 }
 
+#MSearchBox {
+    position: absolute;
+    right:    80px;
+}

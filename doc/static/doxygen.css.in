@@ -654,10 +654,58 @@ table.doxtable th {
     font-size: 13px;
 }
 
-.navpath
+.navpath ul
 {
-  display: none;
+    font-size: 11px;
+    background-image:url('tab_b.png');
+    background-repeat:repeat-x;
+    height:30px;
+    line-height:30px;
+    color:#8AA0CC;
+    border:solid 1px #C2CDE4;
+    overflow:hidden;
+    margin:0px;
+    padding:0px;
 }
+
+.navpath li
+{
+    list-style-type:none;
+    float:left;
+    padding-left:10px;
+    padding-right:15px;
+    background-image:url('bc_s.png');
+    background-repeat:no-repeat;
+    background-position:right;
+    color:#364D7C;
+}
+
+.navpath li.navelem a
+{
+    height:32px;
+    display:block;
+    text-decoration: none;
+    outline: none;
+}
+
+.navpath li.navelem a:hover
+{
+    color:#6884BD;
+}
+
+.navpath li.footer
+{
+        list-style-type:none;
+        float:right;
+        padding-left:10px;
+        padding-right:15px;
+        background-image:none;
+        background-repeat:no-repeat;
+        background-position:right;
+        color:#364D7C;
+        font-size: 8pt;
+}
+
 
 div.summary
 {
@@ -801,7 +849,8 @@ dl.bug
 }
  
 #projectlogo img
-{ 
+{
+	height: 60px;
     border: 0px none;
     background-color: #660000;
 }
@@ -815,7 +864,16 @@ dl.bug
     background-color: #660000;
     text-shadow: #C1C7DD 1px 1px 2px;
 }
-    
+ 
+#projectname a
+{
+    color:   #fff;
+    margin:  0px;
+    padding: 0px;
+    display: @DOXYGEN_PROJECT_NAME_DISPLAY@;
+    text-decoration: none;
+}
+
 #projectbrief
 {
     font: 120% Tahoma, Arial,sans-serif;
@@ -935,6 +993,6 @@ dl.bug
 }
 
 #MSearchBox {
-  position: absolute;
-  right:    80px;
+    position: absolute;
+    right:    80px;
 }

@@ -23,17 +23,6 @@
 # common settings
 # ============================================================================
 
-# if a project does not specify the following in the BasisProject.cmake
-# file as argument to basis_project(), the defaults are used which are the
-# corresponding settings of BASIS itself
-
-## @brief Default package vendor used if none specified by BASIS-based project.
-set (PACKAGE_VENDOR_CONFIG "${PROJECT_PACKAGE_VENDOR}")
-## @brief Default copyright used if none specified by BASIS-based project.
-set (COPYRIGHT_CONFIG "${PROJECT_COPYRIGHT}")
-## @brief Default contact used if none specified by BASIS-based project.
-set (CONTACT_CONFIG "${PROJECT_CONTACT}")
-
 ## @brief List of enabled BASIS utilities.
 set (UTILITIES_ENABLED ${BASIS_UTILITIES_ENABLED})
 

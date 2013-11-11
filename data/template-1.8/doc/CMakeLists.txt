@@ -15,7 +15,7 @@
 # supported by BASIS for the generation of documentation from plain text files
 # and in-source code comments.
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) <year> University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -35,6 +35,10 @@ set (APIDOC_OPTIONS)
 set (SITE_OPTIONS)
 set (MANUAL_OPTIONS)
 set (GUIDE_OPTIONS)
+
+if (PROJECT_PACKAGE_VENDOR)
+  list (APPEND SITE_OPTIONS "HTML_THEME" "${PROJECT_PACKAGE_VENDOR_L}")
+endif ()
 
 # ============================================================================
 # pre-generated output files
@@ -77,28 +81,9 @@ endforeach ()
 # API documentation (in-source code comments)
 # ============================================================================
 
-# replace <year> pattern in template file which shall be included in documentation
-# to avoid unrecognized xml/html tags warning of Doxygen
-file (READ "${PROJECT_DATA_DIR}/template-1.3/config/Depends.cmake" TEMPLATE)
-string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
-file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
-unset (TEMPLATE)
-
 basis_add_doc (
   apidoc           ${APIDOC_OPTIONS}
   GENERATOR        Doxygen
-  INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
-  EXCLUDE_PATTERNS # external libraries packaged with BASIS
-                   "*/gmock/*"            # Google Mock
-                   "*/gtest/*"            # Google Test
-                   "*/tclap/*"            # TCLAP library
-                   "*/breathe/*"          # Sphinx extension
-                   "*/doxylink/*"         # Sphinx extension
-                   "*/argh/*"             # Python Argh
-                   "*/test.cxx"           # Google Mock and Test
-                   "*/test_main.cxx"      # main() of unit tests based on GMock
-                   # testdriver which includes *.inc files
-                   "*/testdriver.cxx"
   HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
 )
 
@@ -113,16 +98,11 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst")
     GENERATOR        Sphinx
     BUILDER          pdf html dirhtml man
     MAN_SECTION      7
-    HTML_THEME       sbia
-    RELLINKS         download installation manual help people
-    SIDEBARWIDTH     300
-    HTML_LOGO        logo.png
+    RELLINKS         download installation manual publications people
     HTML_SIDEBARS    searchbox globaltoc
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
     LATEX_TITLE      "${PROJECT_NAME} Software Manual"
     OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
-    DOXYLINK         apidoc
-    DOXYLINK_URL     http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
   )
 
   basis_add_custom_target (site)
@@ -146,10 +126,9 @@ else ()
       GENERATOR     Sphinx
       BUILDER       html dirhtml pdf man
       MAN_SECTION   7
-      HTML_THEME    sbia
       RELLINKS      download installation manual publications people
       HTML_SIDEBARS searchbox globaltoc
-      LATEX_TITLE   "${PROJECT_NAME}"
+      LATEX_TITLE   "${PROJECT_NAME} Web Site"
       OUTPUT_NAME   "${SITE_OUTPUT_NAME}"
     )
   endif ()
@@ -161,6 +140,7 @@ else ()
       GENERATOR        Sphinx
       BUILDER          pdf html
       HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
+      LATEX_TITLE      "${PROJECT_NAME} Software Manual"
       OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
     )
   endif ()
