@@ -183,6 +183,13 @@ def load_config(config_file, parser):
             'desc' : 'Choose project template with all optional files.',
             'args' : config.options.keys()
         }
+    if not hasattr(config, 'substitutions'):
+        setattr(config, 'substitutions', [])
+    for key in config.substitutions:
+        value = config.substitutions[key]
+        if value == None:
+            parser.add_argument('--' + key, metavar='<value>', default=None,
+                help="Substitution value for <" + key + ">.")
     return [config, parser]
 
 # ----------------------------------------------------------------------------
@@ -337,14 +344,16 @@ def alter(filename, args, backup=True, update=False):
             else:
                 authors = ('\n' + prefix).join(authors)
                 out = out.replace('<author>', authors)
-    # <year>
-    year = None
-    if hasattr(args, 'year') and args.year:
-        year = args.year
-    elif not update:
-        year = datetime.datetime.now().year
-    if year:
-        out = out.replace('<year>', str(year))
+    # substitutions defined by template configuration
+    if not update:
+        for key in config.substitutions:
+            value = config.substitutions[key]
+            arg   = key.replace('-', '_')
+            if value == None and hasattr(args, arg):
+                value = getattr(args, arg, None)
+            if not value == None:
+                if type(value) is not str: value = str(value)
+                out = out.replace('<' + key + '>', value)
     # dependencies
     if filename.endswith('BasisProject.cmake'):
         if hasattr(args, 'use') and args.use:
