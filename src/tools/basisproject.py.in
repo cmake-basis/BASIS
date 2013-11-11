@@ -95,11 +95,7 @@ preset = None
 def load_config(config_file, parser):
     # load template configuration
     config = load_source('config', config_file)
-    # check required attributes
-    if not hasattr(config, 'version'):
-        sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
-        sys.stderr.write('Missing template version attribute.\n')
-        sys.exit(1)
+    # set list of required files to [] if missing
     if not hasattr(config, 'required'):
         setattr(config, 'required', [])
     # add template options
@@ -176,9 +172,17 @@ def load_config(config_file, parser):
             if not 'args' in opt: opt['args'] = []
             if not type(opt['args']) is list: opt['args'] = [opt['args']]
             if len(opt['args']) > 0:
+                for o in config.options:
+                    if not o in opt['args']:
+                        opt['args'].append('no' + o)
                 parser.add_argument('--' + name, nargs=0, action=PresetAction, help=opt['desc'])
     else:
         setattr(config, 'presets', {})
+    if not 'full' in config.presets:
+        config.presets['full'] = {
+            'desc' : 'Choose project template with all optional files.',
+            'args' : config.options.keys()
+        }
     return [config, parser]
 
 # ----------------------------------------------------------------------------
@@ -889,7 +893,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     # ----------------------------------------------------------------------------
     # parse common options
     if len(sys.argv) == 1:
-        config_file = get_template(_template + '-@TEMPLATE_VERSION@', 'config.py')
+        config_file = get_template(_template + '-@TEMPLATE_VERSION@', '_config.py')
         if os.path.isfile(config_file):
             config, parser = load_config(config_file, parser)
         parser.print_help()
@@ -900,7 +904,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
 
     # ----------------------------------------------------------------------------
     # load template configuration
-    config_file = get_template(args.template, 'config.py')
+    config_file = get_template(args.template, '_config.py')
     if not os.path.isfile(config_file):
         sys.stderr.write('Missing template configuration file: ' + config_file + '\n')
         sys.exit(1)
