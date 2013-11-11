@@ -16,16 +16,18 @@
 # modules
 # ============================================================================
 
-import os                  # file manipulation
-import sys                 # system functions
-import re                  # regular expressions
-import datetime            # now(), to get current year for copyright
-import shutil              # copyfile()
-import shlex               # lexical analysis, used for response files
+import os                   # file manipulation
+import sys                  # system functions
+import re                   # regular expressions
+import datetime             # now(), to get current year for copyright
+import shutil               # copyfile()
+import shlex                # lexical analysis, used for response files
 
-from basis import basis    # basic utilities
-from basis import argparse # command-line parsing
-from basis import diff3    # three-way diff algorithm
+from imp import load_source # i.e., template configuration
+
+from basis import basis     # basic utilities
+from basis import argparse  # command-line parsing
+from basis import diff3     # three-way diff algorithm
 
 # ============================================================================
 # constants
@@ -82,91 +84,125 @@ def ParseWithResponseFile(args, parser):
     return commands
 
 # ----------------------------------------------------------------------------
-def get_template_options(op=None):
-    return {'config-settings'     : op, # add/remove general project settings file
-            'config-components'   : op, # add/remove components configuration file
-            'config-package'      : op, # add/remove package configuration file
-            'config-find'         : op, # add/remove find package configuration file
-            'config-find_version' : op, # add/remove find package configuration version file
-            'config-script'       : op, # add/remove script configuration file
-            'config-test'         : op, # add/remove testing configuration file
-            'config-use'          : op, # add/remove package configuration use file
-            'data'                : op, # add/remove auxiliary data files
-            'doc'                 : op, # add/remove documentation
-            'doc-rst'             : op, # add/remove template reST files
-            'example'             : op, # add/remove example
-            'include'             : op, # add/remove public includes tree
-            'src'                 : op, # add/remove directory for source files
-            'modules'             : op, # add/remove support for modularization
-            'test'                : op, # add/remove testing configuration file
-            'test-internal'       : op} # add/remove internal testing configuration file
- 
-# ----------------------------------------------------------------------------
-def get_standard_template_options(opts, overwrite=False):
-    """Select standard project template."""
-    if overwrite or opts.get('config-settings')     == None: opts['config-settings']     = DEL
-    if overwrite or opts.get('config-components')   == None: opts['config-components']   = DEL
-    if overwrite or opts.get('config-package')      == None: opts['config-package']      = DEL
-    if overwrite or opts.get('config-find')         == None: opts['config-find']         = DEL
-    if overwrite or opts.get('config-find_version') == None: opts['config-find_version'] = DEL
-    if overwrite or opts.get('config-script')       == None: opts['config-script']       = DEL
-    if overwrite or opts.get('config-test')         == None: opts['config-test']         = DEL
-    if overwrite or opts.get('config-use')          == None: opts['config-use']          = DEL
-    if overwrite or opts.get('data')                == None: opts['data']                = DEL
-    if overwrite or opts.get('doc')                 == None: opts['doc']                 = ADD
-    if overwrite or opts.get('doc-rst')             == None: opts['doc-rst']             = ADD
-    if overwrite or opts.get('example')             == None: opts['example']             = ADD
-    if overwrite or opts.get('include')             == None: opts['include']             = DEL
-    if overwrite or opts.get('test')                == None: opts['test']                = ADD
-    if overwrite or opts.get('test-internal')       == None: opts['test-internal']       = DEL
-    if (overwrite
-            or (opts.get('src') == None and opts.get('modules') == None)
-            or (opts.get('src') == None and opts.get('modules') == DEL)
-            or (opts.get('src') == DEL  and opts.get('modules') == None)):
-        if overwrite or opts.get('src') != DEL:
-            opts['src']     = ADD
-            opts['modules'] = DEL
-        else:
-            opts['src']     = DEL
-            opts['modules'] = ADD
-    return opts
+def _update_deps(namespace, opts, deps, op):
+    for dep in deps:
+        namespace.ops[dep] = op
+        if dep in opts and 'deps' in opts[dep]:
+            _update_deps(namespace, opts, opts[dep]['deps'], op)
 
 # ----------------------------------------------------------------------------
-def _update_dflt_opt(root, opts, opt, paths):
-    if not type(paths) is list:
-        paths = [paths]
-    for path in paths:
-        if opt not in opts:
-            opts[opt] = None
-        if opts[opt] == None and os.path.exists(os.path.join(root, path)):
-            opts[opt] = ADD
-    return opts
-
-# ----------------------------------------------------------------------------
-def get_default_template_options(root, opts, create):
-    """Select default options."""
-    if create:
-        opts = get_standard_template_options(opts, overwrite=False)
+preset = None
+def load_config(config_file, parser):
+    # load template configuration
+    config = load_source('config', config_file)
+    # check required attributes
+    if not hasattr(config, 'version'):
+        sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
+        sys.stderr.write('Missing template version attribute.\n')
+        sys.exit(1)
+    if not hasattr(config, 'required'):
+        setattr(config, 'required', [])
+    # add template options
+    class OptAction(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string):
+            if not hasattr(namespace, 'ops'):
+                setattr(namespace, 'ops', {})
+            if option_string.startswith('--no'):
+                op  = DEL
+                opt = option_string[4:]
+            else:
+                op  = ADD
+                opt = option_string[2:]
+            namespace.ops[opt] = op
+            if op == ADD: _update_deps(namespace, config.options, config.options[opt]['deps'], op)
+    class MultiOptAction(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string):
+            if not hasattr(namespace, 'ops'):
+                setattr(namespace, 'ops', {})
+            if option_string.startswith('--no'):
+                op  = DEL
+                opt = option_string[4:]
+            else:
+                op  = ADD
+                opt = option_string[2:]
+            namespace.ops[opt] = op
+            _update_deps(namespace, config.options, config.options[opt]['deps'], op)
+    if hasattr(config, 'options'):
+        if not type(config.options) is dict:
+            sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
+            sys.stderr.write('The options attribute must be a dictionary.\n')
+            sys.exit(1)
+        for name in config.options:
+            opt = config.options[name]
+            if not 'desc' in opt: opt['desc'] = ''
+            if not 'path' in opt: opt['path'] = []
+            if not 'deps' in opt: opt['deps'] = []
+            if not type(opt['path']) is list: opt['path'] = [opt['path']]
+            if not type(opt['deps']) is list: opt['deps'] = [opt['deps']]
+            if   len(opt['path']) > 0: action = OptAction
+            elif len(opt['deps']) > 0: action = MultiOptAction
+            else:
+                sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
+                sys.stderr.write('Template option ' + name + ' has neither template paths nor dependencies.\n')
+                sys.exit(1)
+            parser.add_argument('--' + name, '--no' + name,
+                    nargs=0, action=action, help=opt['desc'])
     else:
-        if os.path.isdir(os.path.join(root, 'config')):
-            opts = _update_dflt_opt(root, opts, 'config-components',   'config/Components.cmake')
-            opts = _update_dflt_opt(root, opts, 'config-find',         'config/Config.cmake.in')
-            opts = _update_dflt_opt(root, opts, 'config-find_version', 'config/ConfigVersion.cmake.in')
-            opts = _update_dflt_opt(root, opts, 'config-test',         'config/CTestCustom.cmake.in')
-            opts = _update_dflt_opt(root, opts, 'config-package',      'config/Package.cmake')
-            opts = _update_dflt_opt(root, opts, 'config-script',       'config/ScriptConfig.cmake.in')
-            opts = _update_dflt_opt(root, opts, 'config-settings',     'config/Settings.cmake')
-            opts = _update_dflt_opt(root, opts, 'config-use',          'config/ConfigUse.cmake.in')
-        opts = _update_dflt_opt(root, opts, 'data',          'data')
-        opts = _update_dflt_opt(root, opts, 'doc',           'doc')
-        opts = _update_dflt_opt(root, opts, 'doc-rst',       'doc/index.rst')
-        opts = _update_dflt_opt(root, opts, 'example',       'example')
-        opts = _update_dflt_opt(root, opts, 'include',       'include')
-        opts = _update_dflt_opt(root, opts, 'src',           'src')
-        opts = _update_dflt_opt(root, opts, 'modules',       'modules')
-        opts = _update_dflt_opt(root, opts, 'test',          'test')
-        opts = _update_dflt_opt(root, opts, 'test-internal', 'test/internal')
-    return opts
+        setattr(config, 'options', {})
+    # add preset options
+    class PresetAction(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string):
+            if not hasattr(namespace, 'ops'):
+                setattr(namespace, 'ops', {})
+            name = option_string[2:]
+            setattr(namespace, 'preset', name)
+            for arg in config.presets[name]['args']:
+                if arg.startswith('no'):
+                    arg = arg[2:]
+                    op  = DEL
+                else:
+                    op = ADD
+                if arg in config.options:
+                    namespace.ops[arg] = op
+                    _update_deps(namespace, config.options, config.options[arg]['deps'], op)
+    if hasattr(config, 'presets'):
+        if not type(config.presets) is dict:
+            sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
+            sys.stderr.write('The presets attribute must be a dictionary.\n')
+            sys.exit(1)
+        for name in config.presets:
+            opt = config.presets[name]
+            if not 'desc' in opt: opt['desc'] = ''
+            if not 'args' in opt: opt['args'] = []
+            if not type(opt['args']) is list: opt['args'] = [opt['args']]
+            if len(opt['args']) > 0:
+                parser.add_argument('--' + name, nargs=0, action=PresetAction, help=opt['desc'])
+    else:
+        setattr(config, 'presets', {})
+    return [config, parser]
+
+# ----------------------------------------------------------------------------
+def get_config_options(root, config, args, create):
+    # use 'default' preset for project creation
+    if create and not hasattr(args, 'preset'):
+        if 'default' in config.presets and 'args' in config.presets['default']:
+            for opt in config.presets['default']['args']:
+                if opt.startswith('no'): args.ops[opt[2:]] = DEL
+                else:                    args.ops[opt    ] = ADD
+    # initialize operations such that existing project is unchanged
+    # if modification not explicitly requested
+    if hasattr(config, 'options'):
+        for name in config.options:
+            opt  = config.options[name]
+            path = opt['path']
+            for p in path:
+                if not p == None and len(p) > 0:
+                    path = p
+                    break
+            if name not in args.ops: args.ops[name] = None
+            if args.ops[name] == None and path and os.path.exists(os.path.join(root, path)):
+                args.ops[name] = ADD
+    return args.ops
 
 # ----------------------------------------------------------------------------
 def get_project_name(cmake_file):
@@ -263,7 +299,7 @@ def alter(filename, args, backup=True, update=False):
     @retval  1 if file has been modified
 
     """
-    if args.orig: return 0
+    if args.noalter: return 0
     # read file content
     fp = open(filename, 'rt')
     txt = fp.read()
@@ -543,7 +579,7 @@ def add(path, args, isdir=False):
 def remove_directory(path):
     isempty = True
     for filename in os.listdir(path):
-        if filename != '.svn' and filename != '.git' and filename != '.hg':
+        if filename != '.svn':
             isempty = False
             break
     if isempty:
@@ -659,20 +695,24 @@ def delete(path, args, isdir=False):
     return retval
 
 # ----------------------------------------------------------------------------
-def addordel(op, path, args, isdir=False):
+def addordel(op, path, args):
     """Add/update or delete file or directory depending on operation specified.
 
     @param [in] op    Operations. Either one of ADD, None, or DEL.
     @param [in] path  File path relative to template or project root, respectively.
     @param [in] args  Namespace with command-line arguments.
-    @param [in] isdir Whether @p path is a directory path that may not have
-                      a corresponding template.
 
     @retval -1 on error
     @retval  0 if nothing was done
     @retval  1 if operation was successful
 
     """
+    # determine if path is file or directory
+    if path.endswith('/'):
+        isdir = True
+        path  = path[:-1]
+    else:
+        isdir = False
     # add file/directory to project
     if op == ADD:
         return add(path, args, isdir=isdir)
@@ -744,12 +784,11 @@ if __name__ == '__main__':
   been resolved, the *.mine and *.template files must be removed before this
   tool can be used for another update of the project files. This can be done
   either manually or by running this program with the --cleanup option.""",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        argument_default=argparse.SUPPRESS)
 
     # ----------------------------------------------------------------------------
     # define command-line arguments
-
-    parser.set_defaults(opts=get_template_options())
 
     # --version
     parser.add_argument('--version', action='version',
@@ -763,15 +802,14 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
             help="Increase verbosity of output messages.")
 
     # --name/--description/--author
-    parser.add_argument('--name', metavar='<name>',
+    parser.add_argument('--name', metavar='<name>', default=None,
             help="Name of new project.")
 
-    parser.add_argument('--description', metavar='<text>',
+    parser.add_argument('--description', metavar='<text>', default=None,
             help="Brief project description.")
 
-    parser.add_argument('--author', metavar='<author>',
+    parser.add_argument('--author', metavar='<author>', default='',
             help="Name of original author of the software.")
-
 
     parser.add_argument('--responsefile', metavar='<response>',
             type=os.path.abspath, 
@@ -779,7 +817,7 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
 to parse before executing. Also works with @/path/to/responsefile.rsp""")
 
     # --root/--template
-    parser.add_argument('--root', metavar='<dir>', type=os.path.abspath,
+    parser.add_argument('--root', metavar='<dir>', type=os.path.abspath, default=None,
             help="""Project root directory. Defaults to a subdirectory named after the
 project created in the current working directory. In order to update
 an existing project, specify the root directory of this project
@@ -790,7 +828,7 @@ using this option.""")
             help="""Root directory of project template. Defaults to the template
 corresponding to this BASIS installation.""")
 
-    parser.add_argument('--original', metavar='<dir>',
+    parser.add_argument('--original', metavar='<dir>', default=None,
             type=os.path.abspath, dest='original_template',
             help="""Root directory of project template which the already existing project
 was created from or last updated to. By default, the version of the original template
@@ -816,165 +854,6 @@ Note that the package name is case sensitive.""")
     parser.add_argument('--useopttest', metavar='<pkg>', action='append', default=[],
             help="""Name of external package optionally used by tests of this project.
 Note that the package name is case sensitive.""")
-
-    # --minimal
-    class MinimalTemplateAction(argparse.Action):
-        def __call__(self, parser, namespace, value, option_string):
-            setattr(namespace, 'opts', get_template_options(DEL))
-
-    parser.add_argument('--minimal', nargs=0, action=MinimalTemplateAction,
-            help="""Choose minimal project template. Corresponds to not
-selecting any of the additional template files.""")
-
-    # --standard
-    class StandardTemplateAction(argparse.Action):
-        def __call__(self, parser, namespace, value, option_string):
-            setattr(namespace, 'opts', get_standard_template_options({}))
-
-    parser.add_argument('--standard', nargs=0, action=StandardTemplateAction,
-            help="""Choose standard project template. This is the default
-project template if no template was selected explicitly.
-Corresponds to:
-    --doc
-    --doc-rst
-    --example
-    --noconfig
-    --nodata
-    --test""")
-
-    # --full
-    class FullTemplateAction(argparse.Action):
-        def __call__(self, parser, namespace, value, option_string):
-            setattr(namespace, 'opts', get_template_options(ADD))
-
-    parser.add_argument('--full', nargs=0, action=FullTemplateAction,
-            help="""Choose full-featured project template.""")
-
-    # --toplevel
-    class TopLevelTemplateAction(argparse.Action):
-        def __call__(self, parser, namespace, value, option_string):
-            opts = get_standard_template_options({})
-            opts['modules'] = ADD
-            opts['src']     = DEL
-            opts['test']    = DEL
-            setattr(namespace, 'opts', opts)
-
-    parser.add_argument('--toplevel', nargs=0, action=TopLevelTemplateAction,
-            help="""Choose top-level project template.""")
-
-    # --module
-    class ModuleTemplateAction(argparse.Action):
-        def __call__(self, parser, namespace, value, option_string):
-            opts = get_template_options(DEL)
-            opts['include'] = ADD
-            opts['src']     = ADD
-            opts['test']    = ADD
-            setattr(namespace, 'opts', opts)
-
-    parser.add_argument('--module', nargs=0, action=ModuleTemplateAction,
-            help="""Choose project module template.""")
-
-    # --[no]config
-    class ConfigAction(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string):
-            if option_string == '--config': opts = self._get_options(ADD)
-            else:                           opts = self._get_options(DEL)
-            setattr(namespace, 'opts', opts)
-
-        def _get_options(self, op):
-            return {'config-settings':     op,
-                    'config-components':   op,
-                    'config-package':      op,
-                    'config-find':         op,
-                    'config-find_version': op,
-                    'config-script':       op,
-                    'config-test':         op,
-                    'config-use':          op}
-
-    parser.add_argument('--config', '--noconfig',
-            nargs=0, action=ConfigAction,
-            help="""Include/exclude all custom configuration files.""")
-
-    # granular template options
-    class OptAction(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string):
-            if not hasattr(namespace, 'opts'):
-                setattr(namespace, 'opts', {})
-            if option_string.startswith('--no'):
-                op  = DEL
-                opt = option_string[4:]
-            else:
-                op  = ADD
-                opt = option_string[2:]
-            namespace.opts[opt] = op
-
-    parser.add_argument('--config-components', '--noconfig-components',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom Components.cmake file.")
-
-    parser.add_argument('--config-find', '--noconfig-find',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom Config.cmake.in file.")
-
-    parser.add_argument('--config-find-version', '--noconfig-find-version',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom ConfigVersion.cmake.in file.")
-
-    parser.add_argument('--config-package', '--noconfig-package',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom Package.cmake file.")
-
-    parser.add_argument('--config-script', '--noconfig-script',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom ScriptConfig.cmake.in file.")
-
-    parser.add_argument('--config-settings', '--noconfig-settings',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom Settings.cmake file.")
-
-    parser.add_argument('--config-test', '--noconfig-test',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom CTestCustom.cmake.in file.")
-
-    parser.add_argument('--config-use', '--noconfig-use',
-            nargs=0, action=OptAction,
-            help="Include/exclude custom ConfigUse.cmake.in file.")
-
-    parser.add_argument('--data', '--nodata',
-            nargs=0, action=OptAction,
-            help="Add/remove directory for auxiliary data files.")
-
-    parser.add_argument('--doc', '--nodoc',
-            nargs=0, action=OptAction,
-            help="Add/remove directory for documentation files.")
-
-    parser.add_argument('--doc-rst', '--nodoc-rst',
-            nargs=0, action=OptAction,
-            help="Add/remove reStructuredText (.rst) files for software manual/web site.")
-
-    parser.add_argument('--example', '--noexample',
-            nargs=0, action=OptAction,
-            help="Add/remove directory for example files.")
-
-    parser.add_argument('--include', '--noinclude',
-            nargs=0, action=OptAction,
-            help="Add/remove directory for public header files.")
-
-    parser.add_argument('--modules', '--nomodules',
-            nargs=0, action=OptAction,
-            help="Add/remove support for modularization.")
-
-    parser.add_argument('--src', '--nosrc',
-            nargs=0, action=OptAction,
-            help="Add/remove directory for project source files.")
-
-    parser.add_argument('--test', '--notest',
-            nargs=0, action=OptAction,
-            help="Add/remove support for testing.")
-
-    parser.add_argument('--test-internal', '--notest-internal',
-            nargs=0, action=OptAction,
-            help="Add/remove support for internal testing.")
 
     # --update
     parser.add_argument('-u', '--update', action='store_true', default=False,
@@ -1003,22 +882,41 @@ same filename, but with the ~ character as suffix. If this option is given, such
 files are not made. In case of a merge conflict, however, existing project files are
 always backed-up, using .mine as suffix for the file name of the backup in this case.""")
 
-    # --orig
-    parser.add_argument('--orig', action='store_true', default=False,
+    # --noalter
+    parser.add_argument('--noalter', action='store_true', default=False,
             help="""Disable alteration of template files.""")
 
     # ----------------------------------------------------------------------------
-    # parse command-line arguments
+    # parse common options
     if len(sys.argv) == 1:
+        config_file = get_template(_template + '-@TEMPLATE_VERSION@', 'config.py')
+        if os.path.isfile(config_file):
+            config, parser = load_config(config_file, parser)
         parser.print_help()
         sys.exit(1)
     else:
-        args = parser.parse_args(ParseWithResponseFile(sys.argv[1:],parser))
+        #args, argv = parser.parse_known_args(ParseWithResponseFile(sys.argv[1:],parser))
+        args, argv = parser.parse_known_args(sys.argv[1:])
+
+    # ----------------------------------------------------------------------------
+    # load template configuration
+    config_file = get_template(args.template, 'config.py')
+    if not os.path.isfile(config_file):
+        sys.stderr.write('Missing template configuration file: ' + config_file + '\n')
+        sys.exit(1)
+    config, parser = load_config(config_file, parser)
+
+    # ----------------------------------------------------------------------------
+    # parse template options
+    if len(argv) > 0:
+        args = parser.parse_args(argv, args)
+    if not hasattr(args, 'ops'):
+        setattr(args, 'ops', {})
 
     # ------------------------------------------------------------------------
     # create new project or update existing one?
     # request to create new project
-    if args.name or (args.orig and args.root):
+    if args.name or (args.noalter and args.root):
         create = True
         # create subdirectory in current working directory by default
         if not args.root:
@@ -1033,7 +931,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
             sys.exit(1)
         # set path of original template to current template
         args.original_template = args.template
-        if not args.orig:
+        if not args.noalter:
             # require a project description
             if not args.description:
                 sys.stderr.write("No project description given!\n")
@@ -1092,9 +990,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
 
     # ------------------------------------------------------------------------
     # adjust template options
-    if not hasattr(args, 'opts'):
-        setattr(args, 'opts', {})
-    opts = get_default_template_options(args.root, args.opts, create)
+    args.ops = get_config_options(args.root, config, args, create)
 
     # ------------------------------------------------------------------------
     # do not update exiting project if previous conflicts are not resolved
@@ -1137,54 +1033,14 @@ template files in the .basis/ subdirectory.
     acc = AccumulatorForNumbersOfChangesAndErrors()
 
     try:
-        # ---------------------------------------------------------------------
-        # add/remove project files/directories
-
         # required project files
-        acc.call(add, 'AUTHORS.txt',        args)
-        acc.call(add, 'README.txt',         args)
-        acc.call(add, 'INSTALL.txt',        args)
-        acc.call(add, 'COPYING.txt',        args)
-        acc.call(add, 'ChangeLog.txt',      args)
-        acc.call(add, 'BasisProject.cmake', args)
-        acc.call(add, 'CMakeLists.txt',     args)
-        # additional configuration files
-        acc.call(addordel, opts.get('config-settings',     None), 'config/Settings.cmake',         args)
-        acc.call(addordel, opts.get('config-components',   None), 'config/Components.cmake',       args)
-        acc.call(addordel, opts.get('config-package',      None), 'config/Package.cmake',          args)
-        acc.call(addordel, opts.get('config-find',         None), 'config/Config.cmake.in',        args)
-        acc.call(addordel, opts.get('config-find',         None), 'config/ConfigSettings.cmake',   args)
-        acc.call(addordel, opts.get('config-find_version', None), 'config/ConfigVersion.cmake.in', args)
-        acc.call(addordel, opts.get('config-script',       None), 'config/ScriptConfig.cmake.in',  args)
-        acc.call(addordel, opts.get('config-test',         None), 'config/CTestCustom.cmake.in',   args)
-        acc.call(addordel, opts.get('config-use',          None), 'config/ConfigUse.cmake.in',     args)
-        # software configuration data
-        acc.call(addordel, opts.get('data', None), 'data/CMakeLists.txt', args)
-        # documentation
-        acc.call(addordel, opts.get('doc',     None), 'doc/CMakeLists.txt',   args)
-        acc.call(addordel, opts.get('doc',     None), 'doc/provider_logo.png',args)
-        acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_footer.html.in',args)
-        acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_header.html.in',args)
-        acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_style.css.in',args)
-        acc.call(addordel, opts.get('doc',     None), 'doc/doxygen_extra_style.css.in',args)
-        acc.call(addordel, opts.get('doc-rst', None), 'doc/index.rst',        args)
-        acc.call(addordel, opts.get('doc-rst', None), 'doc/changelog.rst',    args)
-        acc.call(addordel, opts.get('doc-rst', None), 'doc/download.rst',     args)
-        acc.call(addordel, opts.get('doc-rst', None), 'doc/installation.rst', args)
-        acc.call(addordel, opts.get('doc-rst', None), 'doc/manual.rst',       args)
-        acc.call(addordel, opts.get('doc-rst', None), 'doc/publications.rst', args)
-        acc.call(addordel, opts.get('doc-rst', None), 'doc/people.rst',       args)
-        # modularization
-        acc.call(addordel, opts.get('modules', None), 'modules', args, isdir=True)
-        # source files
-        acc.call(addordel, opts.get('include', None), 'include', args, isdir=True)
-        acc.call(addordel, opts.get('src',     None), 'src/CMakeLists.txt', args)
-        # testing tree
-        acc.call(addordel, opts.get('test',          None), 'CTestConfig.cmake',            args)
-        acc.call(addordel, opts.get('test',          None), 'test/CMakeLists.txt',          args)
-        acc.call(addordel, opts.get('test-internal', None), 'test/internal/CMakeLists.txt', args)
-        # example
-        acc.call(addordel, opts.get('example', None), 'example/CMakeLists.txt', args)
+        for path in config.required:
+            acc.call(add, path, args)
+        # optional template files
+        for opt in sorted(config.options.keys()):
+            op = args.ops.get(opt, None)
+            for path in config.options[opt].get('path', []):
+                acc.call(addordel, op, path, args)
         # update template version
         if args.update: acc.call(update_template_version, args)
 
