@@ -51,7 +51,7 @@ PROJECT_BRIEF          =
 # and the maximum width should not exceed 200 pixels. Doxygen will copy the logo
 # to the output directory.
 
-PROJECT_LOGO           =
+PROJECT_LOGO           = "@DOXYGEN_PROJECT_LOGO@"
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
@@ -1080,7 +1080,7 @@ HTML_FOOTER            = "@DOXYGEN_HTML_FOOTER@"
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 ## DEPRECATED, NOT RECOMMENDED
-HTML_STYLESHEET        = "@DOXYGEN_HTML_STYLESHEET@"
+HTML_STYLESHEET        =
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify an additional user-
 # defined cascading style sheet that is included after the standard style sheets
@@ -1659,13 +1659,13 @@ LATEX_EXTRA_FILES      =
 
 PDF_HYPERLINKS         = YES
 
-# If the LATEX_PDFLATEX tag is set to YES, doxygen will use pdflatex to generate
+# If the USE_PDFLATEX tag is set to YES, doxygen will use pdflatex to generate
 # the PDF file directly from the LaTeX files. Set this option to YES to get a
 # higher quality PDF documentation.
 # The default value is: YES.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-USE_PDFLATEX           = "@DOXYGEN_PDFLATEX_COMPILER@"
+USE_PDFLATEX           = @DOXYGEN_USE_PDFLATEX@
 
 # If the LATEX_BATCHMODE tag is set to YES, doxygen will add the \batchmode
 # command to the generated LaTeX files. This will instruct LaTeX to keep running
@@ -2085,7 +2085,7 @@ DOT_NUM_THREADS        = 0
 # The default value is: Helvetica.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_FONTNAME           = FreeSans
+DOT_FONTNAME           =
 
 # The DOT_FONTSIZE tag can be used to set the size (in points) of the font of
 # dot graphs.

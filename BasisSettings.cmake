@@ -123,19 +123,21 @@ set (
     AUTHOR
     NAME
     SUBPROJECT
-    PACKAGE
+    LOGO           # short alias for PACKAGE_LOGO
+    PACKAGE        # short alias for PACKAGE_NAME
+    WEBSITE        # short alias for PACKAGE_WEBSITE
+    VENDOR         # short alias for PACKAGE_VENDOR
+    PROVIDER       # short alias for PACKAGE_VENDOR (not PROVIDER_NAME, see basis_project!)
+    PACKAGE_NAME
+    PACKAGE_VENDOR # package vendor ID used for installation path
     PACKAGE_WEBSITE
-    PACKAGE_VENDOR
     PACKAGE_LOGO
+    PROVIDER_NAME
     PROVIDER_WEBSITE
     PROVIDER_LOGO
-    PROVIDER_DIVISION
-    PROVIDER_DIVISION_WEBSITE
-    PROVIDER_DIVISION_LOGO
-    PROVIDER                # alias for PACKAGE_VENDOR
-    PROVIDER_WEBSITE        # alias for PACKAGE_VENDOR
-    PROVIDER_LOGO           # alias for PACKAGE_VENDOR
-    PROVIDER_DIVISION       # alias for PACKAGE_VENDOR
+    DIVISION_NAME
+    DIVISION_WEBSITE
+    DIVISION_LOGO
     COPYRIGHT
     LICENSE
     CONTACT
@@ -396,7 +398,7 @@ basis_list_to_regex (BASIS_PROPERTIES_ON_TARGETS_RE ${BASIS_PROPERTIES_ON_TARGET
 # not prepended to the actual CMake build target names.
 #
 # For example, instead of the fully-qualified target UID
-# "sbia.@PROJECT_NAME_L@.target", the CMake target name will simply
+# "@PROJECT_NAME_L@.target", the CMake target name will simply
 # be "target". Only when the target is referenced from another project,
 # the fully-qualified target UID is usually required.
 basis_set_if_empty (BASIS_USE_FULLY_QUALIFIED_UIDS OFF)

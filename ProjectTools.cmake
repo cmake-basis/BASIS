@@ -62,24 +62,30 @@ macro (basis_project_check_metadata)
     set (BASIS_PROJECT_NAME_L "${PROJECT_NAME_L}")
     set (BASIS_PROJECT_NAME_U "${PROJECT_NAME_U}")
   endif ()
-  # PROJECT_PACKAGE
-  if (NOT PROJECT_PACKAGE)
+  # PROJECT_PACKAGE_NAME
+  if (PROJECT_PACKAGE AND PROJECT_PACKAGE_NAME)
+    message (FATAL_ERROR "Options PACKAGE_NAME and PACKAGE are mutually exclusive!")
+  endif ()
+  if (PROJECT_PACKAGE)
+    set (PROJECT_PACKAGE_NAME "${PROJECT_PACKAGE}")
+  endif ()
+  if (NOT PROJECT_PACKAGE_NAME)
     if (PROJECT_IS_MODULE)
-      set (PROJECT_PACKAGE "${BASIS_PROJECT_PACKAGE}")
+      set (PROJECT_PACKAGE_NAME "${BASIS_PROJECT_PACKAGE_NAME}")
     else ()
       if (PROJECT_IS_SUBPROJECT)
-        message (FATAL_ERROR "Missing PACKAGE option for SUBPROJECT ${PROJECT_NAME}!"
-                             " Note that the PACKAGE option is required for subprojects"
+        message (FATAL_ERROR "Missing PACKAGE_NAME option for SUBPROJECT ${PROJECT_NAME}!"
+                             " Note that the PACKAGE_NAME option is required for subprojects"
                              " in order to enable the independent build. It should be"
                              " set to the name of the top-level project this subproject"
                              " belongs to. Otherwise, the subproject can only be build"
                              " as part of the package it belongs to.")
       endif ()
-      set (PROJECT_PACKAGE "${PROJECT_NAME}")
+      set (PROJECT_PACKAGE_NAME "${PROJECT_NAME}")
     endif ()
   endif ()
-  if (NOT PROJECT_PACKAGE MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
-    message (FATAL_ERROR "Project ${PROJECT_NAME} declares invalid package name: ${PROJECT_PACKAGE}!\n\n"
+  if (NOT PROJECT_PACKAGE_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
+    message (FATAL_ERROR "Project ${PROJECT_NAME} declares invalid package name: ${PROJECT_PACKAGE_NAME}!\n\n"
                          "Please choose a package name with either only captial "
                          "letters in case of an acronym or a name with mixed case, "
                          "but starting with a captial letter.\n\n"
@@ -89,19 +95,24 @@ macro (basis_project_check_metadata)
                          "upper camel case notation "
                          "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
   endif ()
-  string (TOLOWER "${PROJECT_PACKAGE}" PROJECT_PACKAGE_L)
-  string (TOUPPER "${PROJECT_PACKAGE}" PROJECT_PACKAGE_U)
+  string (TOLOWER "${PROJECT_PACKAGE_NAME}" PROJECT_PACKAGE_NAME_L)
+  string (TOUPPER "${PROJECT_PACKAGE_NAME}" PROJECT_PACKAGE_NAME_U)
   if (NOT PROJECT_IS_MODULE)
-    set (BASIS_PROJECT_PACKAGE   "${PROJECT_PACKAGE}")
-    set (BASIS_PROJECT_PACKAGE_L "${PROJECT_PACKAGE_L}")
-    set (BASIS_PROJECT_PACKAGE_U "${PROJECT_PACKAGE_U}")
+    set (BASIS_PROJECT_PACKAGE_NAME   "${PROJECT_PACKAGE_NAME}")
+    set (BASIS_PROJECT_PACKAGE_NAME_L "${PROJECT_PACKAGE_NAME_L}")
+    set (BASIS_PROJECT_PACKAGE_NAME_U "${PROJECT_PACKAGE_NAME_U}")
   endif ()
   # PROJECT_PACKAGE_VENDOR
-  if (PROJECT_PROVIDER AND PROJECT_PACKAGE_VENDOR)
-    message (FATAL_ERROR "Options PROVIDER and PACKAGE_VENDOR are mutually exclusive!")
+  if (PROJECT_PROVIDER AND PROJECT_VENDOR AND PROJECT_PACKAGE_VENDOR)
+    message (FATAL_ERROR "Options PACKAGE_VENDOR, VENDOR, and PROVIDER (deprecated) are mutually exclusive!")
   endif ()
   if (PROJECT_PROVIDER)
+    message (WARNING "Option PROVIDER is deprecated and should be replaced by VENDOR!"
+                     " Consider additionally the new options PROVIDER_NAME and DIVISION_NAME")
     set (PROJECT_PACKAGE_VENDOR "${PROJECT_PROVIDER}")
+  endif ()
+  if (PROJECT_VENDOR)
+    set (PROJECT_PACKAGE_VENDOR "${PROJECT_VENDOR}")
   endif ()
   if (NOT PROJECT_PACKAGE_VENDOR)
     if (PROJECT_IS_MODULE)
@@ -116,6 +127,108 @@ macro (basis_project_check_metadata)
     set (BASIS_PROJECT_PACKAGE_VENDOR   "${PROJECT_PACKAGE_VENDOR}")
     set (BASIS_PROJECT_PACKAGE_VENDOR_L "${PROJECT_PACKAGE_VENDOR_L}")
     set (BASIS_PROJECT_PACKAGE_VENDOR_U "${PROJECT_PACKAGE_VENDOR_U}")
+  endif ()
+  # PROJECT_PACKAGE_WEBSITE
+  if (PROJECT_WEBSITE AND PROJECT_PACKAGE_WEBSITE)
+    message (FATAL_ERROR "Options PACKAGE_WEBSITE and WEBSITE are mutually exclusive!")
+  endif ()
+  if (PROJECT_WEBSITE)
+    set (PROJECT_PACKAGE_WEBSITE "${PROJECT_WEBSITE}")
+  endif ()
+  if (NOT PROJECT_PACKAGE_WEBSITE)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_PACKAGE_WEBSITE "${BASIS_PROJECT_PACKAGE_WEBSITE}")
+    else ()
+      set (PROJECT_PACKAGE_WEBSITE "${BASIS_PACKAGE_WEBSITE}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PACKAGE_WEBSITE "${PROJECT_PACKAGE_WEBSITE}")
+  endif ()
+  # PROJECT_PACKAGE_LOGO - see also basis_initialize_settings
+  if (NOT PROJECT_PACKAGE_LOGO)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_PACKAGE_LOGO "${BASIS_PROJECT_PACKAGE_LOGO}")
+    else ()
+      set (PROJECT_PACKAGE_LOGO "${BASIS_PACKAGE_LOGO}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PACKAGE_LOGO "${PROJECT_PACKAGE_LOGO}")
+  endif ()
+  # PROJECT_PROVIDER_NAME
+  if (NOT PROJECT_PROVIDER_NAME)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_PROVIDER_NAME "${BASIS_PROJECT_PROVIDER_NAME}")
+    else ()
+      set (PROJECT_PROVIDER_NAME "${BASIS_PROVIDER_NAME}")
+    endif ()
+  endif ()
+  string (TOLOWER "${PROJECT_PROVIDER_NAME}" PROJECT_PROVIDER_NAME_L)
+  string (TOUPPER "${PROJECT_PROVIDER_NAME}" PROJECT_PROVIDER_NAME_U)
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PROVIDER_NAME   "${PROJECT_PROVIDER_NAME}")
+    set (BASIS_PROJECT_PROVIDER_NAME_L "${PROJECT_PROVIDER_NAME_L}")
+    set (BASIS_PROJECT_PROVIDER_NAME_U "${PROJECT_PROVIDER_NAME_U}")
+  endif ()
+  # PROJECT_PROVIDER_WEBSITE
+  if (NOT PROJECT_PROVIDER_WEBSITE)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_PROVIDER_WEBSITE "${BASIS_PROJECT_PROVIDER_WEBSITE}")
+    else ()
+      set (PROJECT_PROVIDER_WEBSITE "${BASIS_PROVIDER_WEBSITE}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PROVIDER_WEBSITE "${PROJECT_PROVIDER_WEBSITE}")
+  endif ()
+  # PROJECT_PROVIDER_LOGO - see also basis_initialize_settings
+  if (NOT PROJECT_PROVIDER_LOGO)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_PROVIDER_LOGO "${BASIS_PROJECT_PROVIDER_LOGO}")
+    else ()
+      set (PROJECT_PROVIDER_LOGO "${BASIS_PROVIDER_LOGO}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_PROVIDER_LOGO "${PROJECT_PROVIDER_LOGO}")
+  endif ()
+  # PROJECT_DIVISION_NAME
+  if (NOT PROJECT_DIVISION_NAME)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_DIVISION_NAME "${BASIS_PROJECT_DIVISION_NAME}")
+    else ()
+      set (PROJECT_DIVISION_NAME "${BASIS_DIVISION_NAME}")
+    endif ()
+  endif ()
+  string (TOLOWER "${PROJECT_DIVISION_NAME}" PROJECT_DIVISION_NAME_L)
+  string (TOUPPER "${PROJECT_DIVISION_NAME}" PROJECT_DIVISION_NAME_U)
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_DIVISION_NAME   "${PROJECT_DIVISION_NAME}")
+    set (BASIS_PROJECT_DIVISION_NAME_L "${PROJECT_DIVISION_NAME_L}")
+    set (BASIS_PROJECT_DIVISION_NAME_U "${PROJECT_DIVISION_NAME_U}")
+  endif ()
+  # PROJECT_DIVISION_WEBSITE
+  if (NOT PROJECT_DIVISION_WEBSITE)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_DIVISION_WEBSITE "${BASIS_PROJECT_DIVISION_WEBSITE}")
+    else ()
+      set (PROJECT_DIVISION_WEBSITE "${BASIS_DIVISION_WEBSITE}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_DIVISION_WEBSITE "${PROJECT_DIVISION_WEBSITE}")
+  endif ()
+  # PROJECT_DIVISION_LOGO - see also basis_initialize_settings
+  if (NOT PROJECT_DIVISION_LOGO)
+    if (PROJECT_IS_MODULE)
+      set (PROJECT_DIVISION_LOGO "${BASIS_PROJECT_DIVISION_LOGO}")
+    else ()
+      set (PROJECT_DIVISION_LOGO "${BASIS_DIVISION_LOGO}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_IS_MODULE)
+    set (BASIS_PROJECT_DIVISION_LOGO "${PROJECT_DIVISION_LOGO}")
   endif ()
   # PROJECT_VERSION
   if (PROJECT_VERSION)
@@ -237,7 +350,7 @@ endmacro ()
 #         on the same level as the top-level project.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE pkg @endtp
+#     @tp @b PACKAGE_NAME pkg @endtp
 #     <td>Name of the package this project (module) belongs to. Defaults to the
 #         name of the (top-level) project. This option can further be used in case
 #         of a top-level project to specify a different package name for the installation.
@@ -249,13 +362,54 @@ endmacro ()
 #         as stand-alone package. (default: name of top-level package)</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_VENDOR vendor @endtp
-#     <td>The vendor of this package, used for packaging and installation.
-#         (default: vendor of top-level project or empty string)</td>
+#     @tp @b PACKAGE_VENDOR name @endtp
+#     <td>Short ID of package vendor (i.e, provider and/or division acronym) used
+#         for package identification and default installation subdirectory.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PROVIDER vendor @endtp
-#     <td>This option can be used as an alternative to @c PACKAGE_VENDOR.</td>
+#     @tp @b VENDOR name @endtp
+#     <td>Short alias for @c PACKAGE_VENDOR.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PACKAGE_WEBSITE url @endtp
+#     <td>URL of project website used for documentation and packaging.
+#         (default: project website of top-level project or empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b WEBSITE url @endtp
+#     <td>Short alias for @c PACKAGE_WEBSITE.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PROVIDER_NAME name @endtp
+#     <td>The provider/vendor of this package, used for packaging and installation.
+#         (default: provider of top-level project or empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b PROVIDER_WEBSITE url @endtp
+#     <td>URL of provider website used for documentation and packaging.
+#         (default: provider website of top-level project or empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b PROVIDER_LOGO path @endtp
+#     <td>Path to provider logo file used for documentation and packaging.
+#         Relative paths must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DIVISION_NAME name @endtp
+#     <td>The provider division of this package, used for packaging and installation.
+#         (default: provider division of top-level project or empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DIVISION_WEBSITE url @endtp
+#     <td>URL of provider division website used for documentation and packaging.
+#         (default: provider website of top-level project or empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DIVISION_LOGO path @endtp
+#     <td>Path to provider division logo file used for documentation and packaging.
+#         Relative paths must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: empty string)</td>
 #   </tr>
 #   <tr>
 #     @tp @b VERSION major[.minor[.patch]] @endtp
@@ -290,8 +444,15 @@ endmacro ()
 #
 # @returns Sets the following non-cached CMake variables:
 # @retval PROJECT_NAME                    @c NAME argument.
-# @retval PROJECT_PACKAGE                 @c PACKAGE argument.
+# @retval PROJECT_PACKAGE_NAME            @c PACKAGE_NAME argument.
 # @retval PROJECT_PACKAGE_VENDOR          @c PACKAGE_VENDOR argument.
+# @retval PROJECT_PACKAGE_WEBSITE         @c PACKAGE_WEBSITE argument.
+# @retval PROJECT_PROVIDER_NAME           @c PROVIDER_NAME argument.
+# @retval PROJECT_PROVIDER_WEBSITE        @c PROVIDER_WEBSITE argument
+# @retval PROJECT_PROVIDER_LOGO           @c PROVIDER_LOGO argument as abolute path.
+# @retval PROJECT_DIVISION_NAME           @c DIVISION_NAME argument.
+# @retval PROJECT_DIVISION_WEBSITE        @c DIVISION_WEBSITE argument.
+# @retval PROJECT_DIVISION_LOGO           @c DIVISION_LOGO argument as absolute path.
 # @retval PROJECT_VERSION                 @c VERSION argument.
 # @retval PROJECT_DESCRIPTION             @c DESCRIPTION argument.
 # @retval PROJECT_DEPENDS                 @c DEPENDS arguments.
@@ -1169,8 +1330,73 @@ macro (basis_initialize_settings)
     include ("${PROJECT_CONFIG_DIR}/Settings.cmake" NO_POLICY_SCOPE OPTIONAL)
   endif ()
   # --------------------------------------------------------------------------
+  # project logos
+  if (NOT PROJECT_PACKAGE_LOGO)
+    if (EXISTS "${PROJECT_DOCRES_DIR}/logo.png")
+      set (PROJECT_PACKAGE_LOGO "${PROJECT_DOCRES_DIR}/logo.png")
+    elseif (EXISTS "${PROJECT_DOC_DIR}/logo.png")
+      set (PROJECT_PACKAGE_LOGO "${PROJECT_DOC_DIR}/logo.png")
+    endif ()
+  endif ()
+  if (PROJECT_PACKAGE_LOGO)
+    if (NOT IS_ABSOLUTE "${PROJECT_PACKAGE_LOGO}")
+      if (EXISTS "${PROJECT_DOCRES_DIR}/${PROJECT_PACKAGE_LOGO}")
+        set (PROJECT_PACKAGE_LOGO "${PROJECT_DOCRES_DIR}/${PROJECT_PACKAGE_LOGO}")
+      elseif (EXISTS "${PROJECT_DOC_DIR}/${PROJECT_PACKAGE_LOGO}")
+        set (PROJECT_PACKAGE_LOGO "${PROJECT_DOC_DIR}/${PROJECT_PACKAGE_LOGO}")
+      else ()
+        set (PROJECT_PACKAGE_LOGO "${PROJECT_SOURCE_DIR}/${PROJECT_PACKAGE_LOGO}")
+      endif ()
+    endif ()
+    if (NOT EXISTS "${PROJECT_PACKAGE_LOGO}")
+      message (FATAL_ERROR "Project logo file not found: ${PROJECT_PACKAGE_LOGO}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_PROVIDER_LOGO)
+    if (EXISTS "${PROJECT_DOCRES_DIR}/provider_logo.png")
+      set (PROJECT_PROVIDER_LOGO "${PROJECT_DOCRES_DIR}/provider_logo.png")
+    elseif (EXISTS "${PROJECT_DOC_DIR}/provider_logo.png")
+      set (PROJECT_PROVIDER_LOGO "${PROJECT_DOC_DIR}/provider_logo.png")
+    endif ()
+  endif ()
+  if (PROJECT_PROVIDER_LOGO)
+    if (NOT IS_ABSOLUTE "${PROJECT_PROVIDER_LOGO}")
+      if (EXISTS "${PROJECT_DOCRES_DIR}/${PROJECT_PROVIDER_LOGO}")
+        set (PROJECT_PROVIDER_LOGO "${PROJECT_DOCRES_DIR}/${PROJECT_PROVIDER_LOGO}")
+      elseif (EXISTS "${PROJECT_DOC_DIR}/${PROJECT_PROVIDER_LOGO}")
+        set (PROJECT_PROVIDER_LOGO "${PROJECT_DOC_DIR}/${PROJECT_PROVIDER_LOGO}")
+      else ()
+        set (PROJECT_PROVIDER_LOGO "${PROJECT_SOURCE_DIR}/${PROJECT_PROVIDER_LOGO}")
+      endif ()
+    endif ()
+    if (NOT EXISTS "${PROJECT_PROVIDER_LOGO}")
+      message (FATAL_ERROR "Provider logo file not found: ${PROJECT_PROVIDER_LOGO}")
+    endif ()
+  endif ()
+  if (NOT PROJECT_DIVISION_LOGO)
+    if (EXISTS "${PROJECT_DOCRES_DIR}/division_logo.png")
+      set (PROJECT_DIVISION_LOGO "${PROJECT_DOCRES_DIR}/division_logo.png")
+    elseif (EXISTS "${PROJECT_DOC_DIR}/division_logo.png")
+      set (PROJECT_DIVISION_LOGO "${PROJECT_DOC_DIR}/division_logo.png")
+    endif ()
+  endif ()
+  if (PROJECT_DIVISION_LOGO)
+    if (NOT IS_ABSOLUTE "${PROJECT_DIVISION_LOGO}")
+      if (EXISTS "${PROJECT_DOCRES_DIR}/${PROJECT_DIVISION_LOGO}")
+        set (PROJECT_DIVISION_LOGO "${PROJECT_DOCRES_DIR}/${PROJECT_DIVISION_LOGO}")
+      elseif (EXISTS "${PROJECT_DOC_DIR}/${PROJECT_DIVISION_LOGO}")
+        set (PROJECT_DIVISION_LOGO "${PROJECT_DOC_DIR}/${PROJECT_DIVISION_LOGO}")
+      else ()
+        set (PROJECT_DIVISION_LOGO "${PROJECT_SOURCE_DIR}/${PROJECT_DIVISION_LOGO}")
+      endif ()
+    endif ()
+    if (NOT EXISTS "${PROJECT_DIVISION_LOGO}")
+      message (FATAL_ERROR "Division logo file not found: ${PROJECT_DIVISION_LOGO}")
+    endif ()
+  endif ()
+  # --------------------------------------------------------------------------
   # configure project specific BASIS settings
-  set (_BASIS_NAMESPACE_CMAKE "${PROJECT_PACKAGE_L}")
+  set (_BASIS_NAMESPACE_CMAKE "${PROJECT_PACKAGE_NAME_L}")
   if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
     set (_NAMESPACE_CMAKE "${_BASIS_NAMESPACE_CMAKE}.${PROJECT_NAME_L}")
   else ()
@@ -1179,9 +1405,9 @@ macro (basis_initialize_settings)
   # default namespaces used for supported programming languages
   foreach (_L IN LISTS BASIS_LANGUAGES_U)
     if (_L MATCHES "PERL")
-      set (_NAMESPACE_${_L} "${PROJECT_PACKAGE}")
+      set (_NAMESPACE_${_L} "${PROJECT_PACKAGE_NAME}")
     else ()
-      set (_NAMESPACE_${_L} "${PROJECT_PACKAGE_L}")
+      set (_NAMESPACE_${_L} "${PROJECT_PACKAGE_NAME_L}")
     endif ()
   endforeach ()
   if (PROJECT_IS_SUBPROJECT)
@@ -1194,16 +1420,16 @@ macro (basis_initialize_settings)
     endforeach ()
   endif ()
   # package configuration
-  set (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "${BASIS_PROJECT_PACKAGE}")
+  set (_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "${BASIS_PROJECT_PACKAGE_NAME}")
   if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
     set (_PROJECT_PACKAGE_CONFIG_PREFIX "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}${PROJECT_NAME}")
   else ()
     set (_PROJECT_PACKAGE_CONFIG_PREFIX "${_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX}")
   endif ()
   if (PROJECT_PACKAGE_VENDOR)
-    set (_BASIS_PROJECT_PACKAGE_UID "${PROJECT_PACKAGE_VENDOR}-${PROJECT_PACKAGE}-${PROJECT_VERSION}")
+    set (_BASIS_PROJECT_PACKAGE_UID "${PROJECT_PACKAGE_VENDOR}-${PROJECT_PACKAGE_NAME}-${PROJECT_VERSION}")
   else ()
-    set (_BASIS_PROJECT_PACKAGE_UID "${PROJECT_PACKAGE}-${PROJECT_VERSION}")
+    set (_BASIS_PROJECT_PACKAGE_UID "${PROJECT_PACKAGE_NAME}-${PROJECT_VERSION}")
   endif ()
   # configure settings file which contains the documentation of these variables
   configure_file (

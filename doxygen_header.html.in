@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <title>$title</title>
-<link href="$relpath$tabs.css"          rel="stylesheet" type="text/css"/>
+<link href="$relpath$tabs.css" rel="stylesheet" type="text/css"/>
 $treeview
 $search
 $mathjax
-<link href="$relpath$doxygen.css"       rel="stylesheet" type="text/css"/>
-<link href="$relpath$doxygen_extra.css" rel="stylesheet" type="text/css"/>
+<link href="$relpath$doxygen.css" rel="stylesheet" type="text/css"/>
+<link href="$relpath$@DOXYGEN_HTML_EXTRA_STYLESHEET_NAME@" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="main"><!-- used to set background within site boundaries to white, closed in doxygen_footer.html -->
@@ -18,12 +18,10 @@ $mathjax
   <table id="titletable" cellspacing="0" cellpadding="0">
     <tbody>
     <tr style="height: 56px;">
-      <!--BEGIN PROJECT_LOGO-->
-      <td id="projectlogo"><img alt="Logo" src="$relpath$$projectlogo"></td>
-      <!--END PROJECT_LOGO-->
+      <td id="projectlogo"><a href="@DOXYGEN_PROJECT_WEBSITE@"><img alt="$projectname" src="$relpath$$projectlogo"></a></td>
       <!--BEGIN PROJECT_NAME-->
       <td style="padding-left: 0.5em;">
-        <div id="projectname">$projectname
+        <div id="projectname"><a href="@DOXYGEN_PROJECT_WEBSITE@">$projectname</a>
         <!--BEGIN PROJECT_NUMBER-->&#160;<span id="projectnumber">$projectnumber</span><!--END PROJECT_NUMBER-->
         </div>
         <!--BEGIN PROJECT_BRIEF-->
@@ -47,10 +45,10 @@ $mathjax
     </tbody>
   </table>
   <div id="providerlogo">
-   <a href="@DOXYGEN_PROJECT_PROVIDER_WEBSITE@"><img alt="@DOXYGEN_PROJECT_PROVIDER@" src="@DOXYGEN_PROJECT_PROVIDER_LOGO@"></a>
+   <a href="@DOXYGEN_PROVIDER_WEBSITE@"><img alt="@DOXYGEN_PROVIDER_NAME@" src="@DOXYGEN_PROVIDER_LOGO@"></a>
   </div>
   <div id="divisionlogo">
-    <a href="@DOXYGEN_PROJECT_PROVIDER_DIVISION_WEBSITE@"><img alt="@DOXYGEN_PROJECT_PROVIDER_DIVISION_NAME@" src="@DOXYGEN_PROJECT_PROVIDER_DIVISION_LOGO@"></a>
+    <a href="@DOXYGEN_DIVISION_WEBSITE@"><img alt="@DOXYGEN_DIVISION_NAME@" src="@DOXYGEN_DIVISION_LOGO@"></a>
   </div>
   <div id="titleendoffloat"></div>
 </div>

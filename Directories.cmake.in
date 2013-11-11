@@ -40,6 +40,8 @@ set (PROJECT_CONFIG_DIR "@PROJECT_CONFIG_DIR@")
 set (PROJECT_DATA_DIR "@PROJECT_DATA_DIR@")
 ## @brief Absolute path of directory of documentation files in source tree.
 set (PROJECT_DOC_DIR "@PROJECT_DOC_DIR@")
+## @brief Absolute path of directory of documentation ressource files in source tree.
+set (PROJECT_DOCRES_DIR "@PROJECT_DOCRES_DIR@")
 ## @brief Absolute path of directory of example in source tree.
 set (PROJECT_EXAMPLE_DIR "@PROJECT_EXAMPLE_DIR@")
 ## @brief Absolute path of directory of public header files in source tree.

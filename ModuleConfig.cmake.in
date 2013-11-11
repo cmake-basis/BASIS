@@ -1,6 +1,6 @@
 ##############################################################################
 # @file  @CONFIG_FILE@
-# @brief CMake package configuration file of @PROJECT_NAME@ of @PROJECT_PACKAGE@.
+# @brief CMake package configuration file of @PROJECT_NAME@ of @PROJECT_PACKAGE_NAME@.
 #
 # @note The @CONFIG_FILE@ file is automatically generated
 #       by BASIS from the template file ModuleConfig.cmake.in which is part of the

@@ -39,40 +39,48 @@ div.contents {
   margin: 0px 12px;
 }
 
-#divisionlogo
+#projectname a
 {
-  vertical-align:  bottom;
-  border-collapse: separate;
-  visibility:      visible;
+  text-decoration: none;
 }
 
-#divisionlogo img
+#projectname img
 {
-  width:        300px;
-  height:        60px;
-  margin-left:   20px;
-  margin-right:  20px;
-  border:         0px none;
-  float:        right;
-  visibility:   visible;
+  height: 60px;
 }
 
 #providerlogo
 {
-  width:           175px;
-  height:           55px;
-  margin-left:      20px;
-  margin-right:     20px;
+  height:          60px;
+  margin-left:     20px;
+  margin-right:    20px;
   float:           right;
-  visibility:      visible;
   vertical-align:  bottom;
   border-collapse: separate;
+  visibility:      @DOXYGEN_PROVIDER_LOGO_VISIBILITY@;
 }
 
 #providerlogo img
 {
   border:     0px none;
-  visibility: visible;
+  visibility: @DOXYGEN_PROVIDER_LOGO_VISIBILITY@;
+}
+
+#divisionlogo
+{
+  vertical-align:  bottom;
+  border-collapse: separate;
+  visibility:      @DOXYGEN_DIVISION_LOGO_VISIBILITY@;
+}
+
+#divisionlogo img
+{
+  height:       60px;
+  margin-left:  20px;
+  margin-right: 20px;
+  border:       0px none;
+  float:        right;
+  visibility:   @DOXYGEN_DIVISION_LOGO_VISIBILITY@;
 }
 
 #titleendoffloat

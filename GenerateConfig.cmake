@@ -70,7 +70,7 @@ basis_export_targets (
 if (PROJECT_IS_MODULE)
   set (BASIS_NS "${PROJECT_NAME}")
 else ()
-  set (BASIS_NS "${PROJECT_PACKAGE}")
+  set (BASIS_NS "${PROJECT_PACKAGE_NAME}")
 endif ()
 
 set (BASIS_NS

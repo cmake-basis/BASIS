@@ -300,8 +300,8 @@ function (basis_configure_utilities)
   _basis_generate_executable_target_info(${CXX} ${PYTHON} ${PERL} ${BASH})
   # --------------------------------------------------------------------------
   # project ID -- used by print_version() in particular
-  set (PROJECT_ID "${PROJECT_PACKAGE}")
-  if (NOT PROJECT_NAME MATCHES "${PROJECT_PACKAGE}")
+  set (PROJECT_ID "${PROJECT_PACKAGE_NAME}")
+  if (NOT PROJECT_NAME MATCHES "${PROJECT_PACKAGE_NAME}")
     set (PROJECT_ID "${PROJECT_ID}, ${PROJECT_NAME}")
   endif ()
   # --------------------------------------------------------------------------
@@ -323,7 +323,7 @@ function (basis_configure_utilities)
     set (LIBRARY_PATH_CONFIG "${INSTALL_LIBRARY_DIR}")
     set (DATA_PATH_CONFIG    "${INSTALL_DATA_DIR}")
     # namespace
-    set (PROJECT_NAMESPACE_CXX_BEGIN "namespace ${PROJECT_PACKAGE_L} {")
+    set (PROJECT_NAMESPACE_CXX_BEGIN "namespace ${PROJECT_PACKAGE_NAME_L} {")
     set (PROJECT_NAMESPACE_CXX_END   "}")
     if (PROJECT_IS_SUBPROJECT)
       set (PROJECT_NAMESPACE_CXX_BEGIN "${PROJECT_NAMESPACE_CXX_BEGIN} namespace ${PROJECT_NAME_L} {")
