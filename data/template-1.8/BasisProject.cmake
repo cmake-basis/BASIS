@@ -26,9 +26,7 @@
 #   # ------------------------------------------------------------------------
 #   # meta-data
 #   NAME             MyProject
-#   PACKAGE_VENDOR   sbia
-#   PROVIDER_NAME    University of Pennsylvania
-#   DIVISION_NAME    Section of Biomedical Image Analysis
+#   VENDOR           PackageVendorID
 #   VERSION          1.1.5
 #   DESCRIPTION      "This is the description of the project named"
 #                    " MyProject which follows BASIS."
@@ -44,7 +42,7 @@
 # )
 # @endcode
 #
-# Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) <year> University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -52,47 +50,25 @@
 # @ingroup BasisSettings
 ##############################################################################
 
-# Note: The #<*dependency> patterns are required by the basisproject tool
-#       and should be kept on a separate line as last commented argument of
-#       the corresponding options of the basis_project() command.
+# Note: The #<*> patterns are required by the basisproject tool and should be
+#       kept on a separate line as last commented argument of the corresponding
+#       options of the basis_project() command.
 
 basis_project (
   # --------------------------------------------------------------------------
   # meta-data
-  NAME             "BASIS"
-  VERSION          "0.0.0"
-  DESCRIPTION      "This package implements and supports the development of "
-                   "software which follows the CMake Build system And Software "
-                   "Implementation Standard (BASIS)."
-  AUTHORS          "Andreas Schuh"
-  COPYRIGHT        "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh"
-  LICENSE          "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
-  CONTACT          "andreas.schuh.84@gmail.com"
-  WEBSITE          "http://opensource.andreasschuh.com/cmake-basis"
-  PROVIDER_NAME    "University of Pennsylvania"
-  PROVIDER_WEBSITE "http://www.upenn.edu"
-  PROVIDER_LOGO    "penn_logo.gif"
-  DIVISION_NAME    "Section of Biomedical Image Analysis"
-  DIVISION_WEBSITE "http://www.rad.upenn.edu/sbia/"
-  DIVISION_LOGO    "sbia_logo.png"
+  NAME        #<project>
+  VERSION     0.0.0
+  DESCRIPTION #<description>
+  AUTHORS     #<author>
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS
     #<dependency>
   OPTIONAL_DEPENDS
-    PythonInterp
-    JythonInterp
-    Perl
-    MATLAB{matlab}
-    BASH
-    Doxygen
-    Sphinx{build}
-    ITK # TODO required by basistest-driver, get rid of this dependency
     #<optional-dependency>
   TEST_DEPENDS
     #<test-dependency>
   OPTIONAL_TEST_DEPENDS
-    MATLAB{mex}
-    MATLAB{mcc}
     #<optional-test-dependency>
 )

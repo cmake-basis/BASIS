@@ -5,16 +5,16 @@
 # This module defines the BASIS utility functions. It uses the BASIS::Sub::Exporter
 # module to enable the generation of these functions customized to the request
 # of the particular project they are used in. This is, for example, used by
-# the @PROJECT_PACKAGE@::Basis module. The default utility functions defined by
+# the @PROJECT_PACKAGE_NAME@::Basis module. The default utility functions defined by
 # this module, i.e., without any customizaton are intended for use in Perl
 # scripts that are not build as part of a particular package. In case of a
 # BASIS package, the already customized project-specific implementations should
-# be used instead, i.e., those defined by the @PROJECT_PACKAGE@::Basis module of
+# be used instead, i.e., those defined by the @PROJECT_PACKAGE_NAME@::Basis module of
 # the project.
 #
 # @note This module exports also all other BASIS utility functions that are
 #       defined in other Perl modules. Therefore, only this or the
-#       @PROJECT_PACKAGE@::Basis module should be used.
+#       @PROJECT_PACKAGE_NAME@::Basis module should be used.
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
@@ -48,11 +48,11 @@ use BASIS::File::Which    qw(which);
 # ============================================================================
 
 ## @brief Default copyright of executables.
-use constant COPYRIGHT => "@PROJECT_COPYRIGHT@";
+use constant COPYRIGHT => '@PROJECT_COPYRIGHT@';
 ## @brief Default license of executables.
-use constant LICENSE   => "@PROJECT_LICENSE@";
+use constant LICENSE   => '@PROJECT_LICENSE@';
 ## @brief Default contact to use for help output of executables.
-use constant CONTACT   => "@PROJECT_CONTACT@";
+use constant CONTACT   => '@PROJECT_CONTACT@';
 
 # ============================================================================
 # exports

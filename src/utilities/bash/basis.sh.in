@@ -23,8 +23,8 @@
 # @ingroup BasisBashUtilities
 ##############################################################################
 
-[ "${_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED}" == 'true' ] || {
-_@PROJECT_PACKAGE_U@_@PROJECT_NAME_U@_INCLUDED='true'
+[ "${_@PROJECT_PACKAGE_NAME_U@_@PROJECT_NAME_U@_INCLUDED}" == 'true' ] || {
+_@PROJECT_PACKAGE_NAME_U@_@PROJECT_NAME_U@_INCLUDED='true'
 
 
 # ============================================================================
