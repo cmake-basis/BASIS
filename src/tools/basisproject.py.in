@@ -192,8 +192,12 @@ def get_config_options(root, config, args, create):
     if create and not hasattr(args, 'preset'):
         if 'default' in config.presets and 'args' in config.presets['default']:
             for opt in config.presets['default']['args']:
-                if opt.startswith('no'): args.ops[opt[2:]] = DEL
-                else:                    args.ops[opt    ] = ADD
+                if opt.startswith('no'):
+                    if not opt[2:] in args.ops:
+                        args.ops[opt[2:]] = DEL
+                else:
+                    if not opt in args.ops:
+                        args.ops[opt    ] = ADD
     # initialize operations such that existing project is unchanged
     # if modification not explicitly requested
     if hasattr(config, 'options'):
@@ -993,7 +997,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         print "Template: " + args.template
         print "Original: " + args.original_template
         print
-
+ 
     # ------------------------------------------------------------------------
     # adjust template options
     args.ops = get_config_options(args.root, config, args, create)
