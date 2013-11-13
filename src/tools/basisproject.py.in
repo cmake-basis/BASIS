@@ -48,40 +48,24 @@ _template = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
 # auxiliary functions
 # ============================================================================
  
-def ParseWithResponseFile(args, parser):
-    commands = []
-    
-    # handle --responsefile /path/to/response/file.rsp
-    tmpargs = parser.parse_args(args)
-    if tmpargs.responsefile:
-        try:
-            inFile = open(tmpargs.responsefile)
-        
-            for line in inFile.readlines():
-                tokens = shlex.split(line, True)
-                commands.extend(ParseWithResponseFile(tokens,parser))
-        
-        except IOError as desc:
-            print(desc)
-            pass
-    
-    # handle @/path/to/response/file.rsp
+# ----------------------------------------------------------------------------
+def read_rspargs(rspfile, argv):
+    try:
+        f = open(rspfile)
+        for arg in f.readlines():
+            argv = rspargs(shlex.split(arg, True), argv)
+        f.close()
+    except IOError as errmsg:
+        sys.stderr.write(errmsg + '\n')
+        sys.exit(1)
+    return argv
+
+# ----------------------------------------------------------------------------
+def rspargs(args, argv):
     for arg in args:
-        if arg[0] == '@':
-            try:
-                inFile = open(arg[1:])
-    
-                for line in inFile.readlines():
-                    tokens = shlex.split(line, True)
-                    commands.extend(ParseWithResponseFile(tokens,parser))
-    
-            except IOError as desc:
-                print(desc)
-                pass
-        else:
-            commands.append(arg)
- 
-    return commands
+        if arg[0] == '@': argv = read_rspargs(arg[1:], argv)
+        else:             argv.append(arg)
+    return argv
 
 # ----------------------------------------------------------------------------
 def _update_deps(namespace, opts, deps, op):
@@ -798,7 +782,16 @@ if __name__ == '__main__':
   tool can be used for another update of the project files. This can be done
   either manually or by running this program with the --cleanup option.""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        argument_default=argparse.SUPPRESS)
+        argument_default=None)
+
+    # ----------------------------------------------------------------------------
+    # read arguments from response file first
+    parser.add_argument('--responsefile', metavar='<file>', type=os.path.abspath,
+            help="""File containing additional command line parameters to parse
+before execution. Include other response files recursively using @/path/to/file.rsp""")
+
+    args, argv = parser.parse_known_args(sys.argv[1:])
+    if args.responsefile: argv = read_rspargs(args.responsefile, argv)
 
     # ----------------------------------------------------------------------------
     # define command-line arguments
@@ -807,7 +800,7 @@ if __name__ == '__main__':
     parser.add_argument('--version', action='version',
             help="Show version information and exit.",
             version="""%(prog)s (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@
-Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.
+Copyright (c) 2011, 2012 University of Pennsylvania, 2013 Andreas Schuh. All rights reserved.
 See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
 
     # --verbose
@@ -823,11 +816,6 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
 
     parser.add_argument('--author', metavar='<author>', default='',
             help="Name of original author of the software.")
-
-    parser.add_argument('--responsefile', metavar='<response>',
-            type=os.path.abspath, 
-            help="""File containing additional command line parameters for the program 
-to parse before executing. Also works with @/path/to/responsefile.rsp""")
 
     # --root/--template
     parser.add_argument('--root', metavar='<dir>', type=os.path.abspath, default=None,
@@ -901,15 +889,10 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
 
     # ----------------------------------------------------------------------------
     # parse common options
-    if len(sys.argv) == 1:
-        config_file = get_template(_template + '-@TEMPLATE_VERSION@', '_config.py')
-        if os.path.isfile(config_file):
-            config, parser = load_config(config_file, parser)
+    if len(argv) == 0:
         parser.print_help()
         sys.exit(1)
-    else:
-        #args, argv = parser.parse_known_args(ParseWithResponseFile(sys.argv[1:],parser))
-        args, argv = parser.parse_known_args(sys.argv[1:])
+    args, argv = parser.parse_known_args(argv)
 
     # ----------------------------------------------------------------------------
     # load template configuration
