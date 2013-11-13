@@ -272,13 +272,13 @@ macro (basis_find_package PACKAGE)
                                             # of multiple find invocations for the same
                                             # package with different components will be
       # ----------------------------------------------------------------------
-      # reset other <PKG>_* variables if <PKG>_DIR changed
+      # reset other <PKG>[_-]* variables if <PKG>_DIR changed
       if (_${PKG}_DIR AND ${PKG}_DIR) # internal _<PKG>_DIR cache entry set below
         basis_sanitize_for_regex (_BFP_RE "${${PKG}_DIR}")
         if (NOT _${PKG}_DIR MATCHES "^${_BFP_RE}$")
           get_cmake_property (_BFP_VARS VARIABLES)
           foreach (_BFP_VAR IN LISTS _BFP_VARS)
-            if (_BFP_VAR MATCHES "^${PKG}_" AND NOT _BFP_VAR MATCHES "^${PKG}_DIR$")
+            if (_BFP_VAR MATCHES "^${PKG}[_-]" AND NOT _BFP_VAR MATCHES "^${PKG}_DIR$")
               basis_is_cached (_BFP_CACHED ${_BFP_VAR})
               if (_BFP_CACHED)
                 get_property (_BFP_TYPE CACHE ${_BFP_VAR} PROPERTY TYPE)
