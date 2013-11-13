@@ -43,6 +43,7 @@
 
 # ----------------------------------------------------------------------------
 # default settings
+basis_set_config (PACKAGE_VENDOR   "@BASIS_PACKAGE_VENDOR@")
 basis_set_config (PROVIDER_NAME    "@BASIS_PROVIDER_NAME@")
 basis_set_config (PROVIDER_WEBSITE "@BASIS_PROVIDER_WEBSITE@")
 basis_set_config (PROVIDER_LOGO    "@BASIS_PROVIDER_LOGO@")
@@ -53,7 +54,6 @@ basis_set_config (COPYRIGHT        "@BASIS_COPYRIGHT@")
 basis_set_config (LICENSE          "@BASIS_LICENSE@")
 basis_set_config (CONTACT          "@BASIS_CONTACT@")
 
-basis_set_config (PACKAGE_VENDOR "@BASIS_PROVIDER_NAME@") # CPack compatibility
 
 # ----------------------------------------------------------------------------
 # CMake modules
