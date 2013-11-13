@@ -62,9 +62,19 @@ def read_rspargs(rspfile, argv):
 
 # ----------------------------------------------------------------------------
 def rspargs(args, argv):
-    for arg in args:
-        if arg[0] == '@': argv = read_rspargs(arg[1:], argv)
-        else:             argv.append(arg)
+    i = 0
+    while i < len(args):
+        if args[i] == '--responsefile':
+            i += 1
+            if i == len(args):
+                sys.stderr.write("Option --responsefile requires an argument\n")
+                sys.exit(1)
+            argv = read_rspargs(args[i], argv)
+        elif args[i][0] == '@':
+            argv = read_rspargs(args[i][1:], argv)
+        else:
+            argv.append(args[i])
+        i += 1
     return argv
 
 # ----------------------------------------------------------------------------
