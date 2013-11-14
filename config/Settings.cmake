@@ -111,8 +111,18 @@ set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 
 option (BUILD_PROJECT_TOOL "Request build of the basisproject command-line tool." ON)
 
-# installation directory of project template files
-set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")
+set (TEMPLATE_DIR         ""                              CACHE PATH "Directory of custom project template.")
+set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template" CACHE PATH "Installation directory of project template")
+
+if (BUILD_PROJECT_TOOL)
+  mark_as_advanced (CLEAR TEMPLATE_DIR)
+else ()
+  mark_as_advanced (TEMPLATE_DIR)
+endif ()
+mark_as_advanced (INSTALL_TEMPLATE_DIR)
+
+# remove version suffix from specified template
+string (REGEX REPLACE "-[0-9]+\\.[0-9]+$" "" TEMPLATE_DIR "${TEMPLATE_DIR}")
 
 # ============================================================================
 # utilities
