@@ -57,10 +57,20 @@
 basis_project (
   # --------------------------------------------------------------------------
   # meta-data
-  NAME        #<project>
-  VERSION     0.0.0
-  DESCRIPTION #<description>
-  AUTHORS     #<author>
+  NAME             #<project>
+  VERSION          0.0.0
+  AUTHORS          #<author>
+  DESCRIPTION      #<description>
+  VENDOR           #<vendor>
+  PROVIDER_NAME    #<provider-name>
+  PROVIDER_LOGO    #<provider-logo>
+  PROVIDER_WEBSITE #<provider-website>
+  DIVISION_NAME    #<division-name>
+  DIVISION_LOGO    #<division-logo>
+  DIVISION_WEBSITE #<division-website>
+  COPYRIGHT        #<copyright>
+  LICENSE          #<license>
+  CONTACT          #<contact>
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS
