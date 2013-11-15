@@ -984,7 +984,13 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         # is project a BASIS project?
         if not os.path.isfile(os.path.join(args.root, 'BasisProject.cmake')):
             sys.stderr.write("Could not find a BasisProject.cmake file in " + args.root +
-                    "! Are you sure this is a BASIS project?\n")
+                    "! Are you sure this path is to a BASIS project?\n\n"
+                    + "If you do not provide a project name, basisproject assumes you want to upgrade a previously created BASIS-project."
+                    + "This means that it performs a 3-way diff as described in the documentation. If any of the template files"
+                    + "have been edited, e.g., because of a newer template version with slight changes, these are merged with "
+                    + "the project files.\n\n"
+                    + "If you want to create a new project into an empty directory, you must specify the --name and --description options.\n\n"
+                    + "See the documentation section on How To Create and Modify a Project for more details.")
             sys.exit(1)
         # notify user that --description option is invalid
         if args.description:
@@ -1036,7 +1042,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                             ok = False
                     elif args.update and not filename.endswith('~'):
                         sys.stderr.write(
-"""Their occurred conflicts when updating the project files before.
+"""Conflicts occured when updating the project files before.
 
 Please resolve these conflicts first by editing the conflicted files, then remove
 the *.mine and *.template files or run this program with the --cleanup option.
