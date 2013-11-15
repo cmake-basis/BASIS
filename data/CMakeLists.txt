@@ -15,6 +15,7 @@ macro (basis_install_template VERSION)
     PATTERN     *~             EXCLUDE
     PATTERN     .svn           EXCLUDE
     PATTERN     .git           EXCLUDE
+    PATTERN     .hg            EXCLUDE
     PATTERN     .DS_Store      EXCLUDE
   )
 endmacro ()
