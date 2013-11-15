@@ -50,6 +50,7 @@ if (BUILD_PROJECT_TOOL AND INSTALL_TEMPLATE_DIR)
     #            *all* template versions are important to keep !
     #            Otherwise, the three-way diff merge used by the basisproject
     #            tool to update existing projects will fail.
+    if (BUILD_PROJECT_TOOL AND INSTALL_BASIS_TEMPLATES)
     basis_install_template (1.0)
     basis_install_template (1.1)
     basis_install_template (1.2)
@@ -59,5 +60,6 @@ if (BUILD_PROJECT_TOOL AND INSTALL_TEMPLATE_DIR)
     basis_install_template (1.6)
     basis_install_template (1.7)
     basis_install_template (1.8)
+    endif()
   endif ()
 endif ()

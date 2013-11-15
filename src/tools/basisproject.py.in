@@ -22,6 +22,7 @@ import re                   # regular expressions
 import datetime             # now(), to get current year for copyright
 import shutil               # copyfile()
 import shlex                # lexical analysis, used for response files
+import mimetypes            # to recognize configurable text files
 
 from imp import load_source # i.e., template configuration
 
@@ -33,6 +34,7 @@ from basis import diff3     # three-way diff algorithm
 # constants
 # ============================================================================
 
+
 # executable information
 _EXEC_DIR  = basis.exedir()
 _EXEC_NAME = basis.exename()
@@ -43,6 +45,14 @@ ADD =  1 # add feature/file if missing
 
 # root directory of project template
 _template = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
+
+# additional recognized MIME types of configurable text files
+mimetypes.add_type('text/cmake',            '.cmake')
+mimetypes.add_type('text/markdown',         '.md')
+mimetypes.add_type('text/markdown',         '.mdown')
+mimetypes.add_type('text/markdown',         '.markdown')
+mimetypes.add_type('text/restructuredtext', '.rst')
+mimetypes.add_type('text/doxygen',          '.dox')
 
 # ============================================================================
 # auxiliary functions
@@ -177,6 +187,7 @@ def load_config(config_file, parser):
             'desc' : 'Choose project template with all optional files.',
             'args' : config.options.keys()
         }
+    # add options for subsitutions
     if not hasattr(config, 'substitutions'):
         setattr(config, 'substitutions', [])
     for key in config.substitutions:
@@ -184,6 +195,10 @@ def load_config(config_file, parser):
         if value == None:
             parser.add_argument('--' + key, metavar='<value>', default=None,
                 help="Substitution value for <" + key + ">.")
+        elif type(value) is dict:
+            parser.add_argument('--' + key, metavar='<value>',
+                default=value.get('default', None),
+                help=value.get('help', "Substitution value for <" + key + ">."))
     return [config, parser]
 
 # ----------------------------------------------------------------------------
@@ -309,6 +324,10 @@ def alter(filename, args, backup=True, update=False):
 
     """
     if args.noalter: return 0
+    # ensure that file is a text file that can be configured
+    if not filename.endswith('.in'):
+        mtype = mimetypes.guess_type(filename)[0]
+        if not (mtype and mtype.startswith('text/')): return 0
     # read file content
     fp = open(filename, 'rt')
     txt = fp.read()
@@ -325,8 +344,8 @@ def alter(filename, args, backup=True, update=False):
         out = out.replace('<project_l>',  args.name.lower())
     # <description>
     if hasattr(args, 'description') and args.description:
-        out = out.replace('#<description>', '"' + args.description + '"')
-        out = out.replace('<description>',  args.description)
+        out = out.replace('#<description>', '"' + args.description.replace('"', '\\"') + '"')
+        out = out.replace('<description>',  '"' + args.description.replace('"', '\\"') + '"')
     # <author>
     if hasattr(args, 'author') and args.author:
         start = out.find('<author>')
@@ -349,9 +368,16 @@ def alter(filename, args, backup=True, update=False):
             arg   = key.replace('-', '_')
             if value == None and hasattr(args, arg):
                 value = getattr(args, arg, None)
+            elif type(value) is dict:
+                if 'default' in value: value = value['default']
+                else:                  value = None
             if not value == None:
-                if type(value) is not str: value = str(value)
-                out = out.replace('<' + key + '>', value)
+                if type(value) is str:
+                    value = '"' + value.replace('"', '\\"') + '"'
+                else:
+                    value = str(value)
+                out = out.replace('#<' + key + '>', value)
+                out = out.replace( '<' + key + '>', value)
     # dependencies
     if filename.endswith('BasisProject.cmake'):
         if hasattr(args, 'use') and args.use:
@@ -913,6 +939,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     config_file = get_template(args.template, '_config.py')
     if not os.path.isfile(config_file):
         sys.stderr.write('Missing template configuration file: ' + config_file + '\n')
+        sys.stderr.write('Please specify a valid project template directory using --template.\n')
         sys.exit(1)
     config, parser = load_config(config_file, parser)
 
@@ -970,7 +997,13 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         # is project a BASIS project?
         if not os.path.isfile(os.path.join(args.root, 'BasisProject.cmake')):
             sys.stderr.write("Could not find a BasisProject.cmake file in " + args.root +
-                    "! Are you sure this is a BASIS project?\n")
+                    "! Are you sure this path is to a BASIS project?\n\n"
+                    + "If you do not provide a project name, basisproject assumes you want to upgrade a previously created BASIS-project."
+                    + "This means that it performs a 3-way diff as described in the documentation. If any of the template files"
+                    + "have been edited, e.g., because of a newer template version with slight changes, these are merged with "
+                    + "the project files.\n\n"
+                    + "If you want to create a new project into an empty directory, you must specify the --name and --description options.\n\n"
+                    + "See the documentation section on How To Create and Modify a Project for more details.")
             sys.exit(1)
         # notify user that --description option is invalid
         if args.description:
@@ -1022,7 +1055,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                             ok = False
                     elif args.update and not filename.endswith('~'):
                         sys.stderr.write(
-"""Their occurred conflicts when updating the project files before.
+"""Conflicts occured when updating the project files before.
 
 Please resolve these conflicts first by editing the conflicted files, then remove
 the *.mine and *.template files or run this program with the --cleanup option.
