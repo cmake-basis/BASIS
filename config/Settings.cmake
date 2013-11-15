@@ -109,7 +109,14 @@ set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 # project template
 # ============================================================================
 
-option (BUILD_PROJECT_TOOL "Request build of the basisproject command-line tool." ON)
+option (BUILD_PROJECT_TOOL      "Request build of the basisproject command-line tool." ON)
+option (INSTALL_BASIS_TEMPLATES "Install the project templates in the data directory." ON)
+
+if (BUILD_PROJECT_TOOL)
+  mark_as_advanced (CLEAR INSTALL_BASIS_TEMPLATES)
+else ()
+  mark_as_advanced (INSTALL_BASIS_TEMPLATES)
+endif ()
 
 # installation directory of project template files
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template")

@@ -28,9 +28,7 @@ endmacro ()
 #            Otherwise, the three-way diff merge used by the basisproject
 #            tool to update existing projects will fail.
 
-option(BASIS_INSTALL_DEFAULT_TEMPLATES "Install the templates that are included with BASIS in the data folder" ON)
-
-if (BUILD_PROJECT_TOOL AND BASIS_INSTALL_DEFAULT_TEMPLATES)
+if (BUILD_PROJECT_TOOL AND INSTALL_BASIS_TEMPLATES)
   basis_install_template (1.0)
   basis_install_template (1.1)
   basis_install_template (1.2)
