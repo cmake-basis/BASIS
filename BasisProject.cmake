@@ -44,7 +44,8 @@
 # )
 # @endcode
 #
-# Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania, 2013 Andreas Schuh.<br />
+# All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -59,22 +60,16 @@
 basis_project (
   # --------------------------------------------------------------------------
   # meta-data
-  NAME             "BASIS"
-  VERSION          "0.0.0"
-  DESCRIPTION      "This package implements and supports the development of "
-                   "software which follows the CMake Build system And Software "
-                   "Implementation Standard (BASIS)."
-  AUTHORS          "Andreas Schuh"
-  COPYRIGHT        "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh"
-  LICENSE          "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
-  CONTACT          "andreas.schuh.84@gmail.com"
-  WEBSITE          "http://opensource.andreasschuh.com/cmake-basis"
-  PROVIDER_NAME    "University of Pennsylvania"
-  PROVIDER_WEBSITE "http://www.upenn.edu"
-  PROVIDER_LOGO    "penn_logo.gif"
-  DIVISION_NAME    "Section of Biomedical Image Analysis"
-  DIVISION_WEBSITE "http://www.rad.upenn.edu/sbia/"
-  DIVISION_LOGO    "sbia_logo.png"
+  NAME        "BASIS"
+  VERSION     "0.0.0"
+  AUTHORS     "Andreas Schuh"
+  DESCRIPTION "This package implements and supports the development of "
+              "software which follows the CMake Build system And Software "
+              "Implementation Standard (BASIS)."
+  WEBSITE     "http://opensource.andreasschuh.com/cmake-basis"
+  COPYRIGHT   "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh"
+  LICENSE     "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+  CONTACT     "andreas.schuh.84@gmail.com"
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS
