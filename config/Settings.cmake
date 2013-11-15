@@ -115,7 +115,7 @@ option (INSTALL_BASIS_TEMPLATES "Install the project templates in the data direc
 if (BUILD_PROJECT_TOOL)
   mark_as_advanced (CLEAR INSTALL_BASIS_TEMPLATES)
 else ()
-  mark_as_advanced (INSTALL_BASIS_TEMPLATES)
+  mark_as_advanced (FORCE INSTALL_BASIS_TEMPLATES)
 endif ()
 
 # installation directory of project template files
