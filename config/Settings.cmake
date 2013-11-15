@@ -25,67 +25,6 @@
 ##############################################################################
 
 # ============================================================================
-# default project attributes
-# ============================================================================
-
-# Note: The default values used are those of BASIS itself, i.e., the
-#       project attributes specified in the BasisProject.cmake of the
-#       BASIS package itself.
-
-set (
-  DEFAULT_PROVIDER_NAME    "${PROJECT_PROVIDER_NAME}"
-  CACHE STRING "Default package provider used if none specified by project."
-)
-
-set (
-  DEFAULT_PROVIDER_WEBSITE "${PROJECT_PROVIDER_WEBSITE}"
-  CACHE STRING "Default package provider website used if none specified by project."
-)
-
-set (
-  DEFAULT_PROVIDER_LOGO    "${PROJECT_PROVIDER_LOGO}"
-  CACHE STRING "Default package provider logo used if none specified by project."
-)
-
-set (
-  DEFAULT_DIVISION_NAME    "${PROJECT_DIVISION_NAME}"
-  CACHE STRING "Default package provider used if none specified by project."
-)
-
-set (
-  DEFAULT_DIVISION_WEBSITE "${PROJECT_DIVISION_WEBSITE}"
-  CACHE STRING "Default package provider website used if none specified by project."
-)
-
-set (
-  DEFAULT_DIVISION_LOGO    "${PROJECT_DIVISION_LOGO}"
-  CACHE STRING "Default package provider logo used if none specified by project."
-)
-
-set (
-  DEFAULT_COPYRIGHT        "${PROJECT_COPYRIGHT}"
-  CACHE STRING "Default copyright used if none specified by project."
-)
-
-set (
-  DEFAULT_LICENSE          "${PROJECT_LICENSE}"
-  CACHE STRING "Default license used if none specified by project."
-)
-
-set (
-  DEFAULT_CONTACT          "${PROJECT_CONTACT}"
-  CACHE STRING "Default contact used if none specified by project."
-)
-
-# the corresponding BASIS_* are set by BASISConfig.cmake for other projects
-# but for BASIS itself they are set here to the users choice
-foreach (attr IN ITEMS PROVIDER_NAME PROVIDER_WEBSITE PROVIDER_LOGO
-                       DIVISION_NAME DIVISION_WEBSITE DIVISION_LOGO
-                       COPYRIGHT LICENSE CONTACT)
-  set (BASIS_${attr} "${DEFAULT_${attr}}")
-endforeach ()
-
-# ============================================================================
 # directories
 # ============================================================================
 

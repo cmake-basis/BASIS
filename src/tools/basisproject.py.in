@@ -187,6 +187,7 @@ def load_config(config_file, parser):
             'desc' : 'Choose project template with all optional files.',
             'args' : config.options.keys()
         }
+    # add options for subsitutions
     if not hasattr(config, 'substitutions'):
         setattr(config, 'substitutions', [])
     for key in config.substitutions:
@@ -194,6 +195,10 @@ def load_config(config_file, parser):
         if value == None:
             parser.add_argument('--' + key, metavar='<value>', default=None,
                 help="Substitution value for <" + key + ">.")
+        elif type(value) is dict:
+            parser.add_argument('--' + key, metavar='<value>',
+                default=value.get('default', None),
+                help=value.get('help', "Substitution value for <" + key + ">."))
     return [config, parser]
 
 # ----------------------------------------------------------------------------
@@ -339,8 +344,8 @@ def alter(filename, args, backup=True, update=False):
         out = out.replace('<project_l>',  args.name.lower())
     # <description>
     if hasattr(args, 'description') and args.description:
-        out = out.replace('#<description>', '"' + args.description + '"')
-        out = out.replace('<description>',  args.description)
+        out = out.replace('#<description>', '"' + args.description.replace('"', '\\"') + '"')
+        out = out.replace('<description>',  '"' + args.description.replace('"', '\\"') + '"')
     # <author>
     if hasattr(args, 'author') and args.author:
         start = out.find('<author>')
@@ -363,9 +368,16 @@ def alter(filename, args, backup=True, update=False):
             arg   = key.replace('-', '_')
             if value == None and hasattr(args, arg):
                 value = getattr(args, arg, None)
+            elif type(value) is dict:
+                if 'default' in value: value = value['default']
+                else:                  value = None
             if not value == None:
-                if type(value) is not str: value = str(value)
-                out = out.replace('<' + key + '>', value)
+                if type(value) is str:
+                    value = '"' + value.replace('"', '\\"') + '"'
+                else:
+                    value = str(value)
+                out = out.replace('#<' + key + '>', value)
+                out = out.replace( '<' + key + '>', value)
     # dependencies
     if filename.endswith('BasisProject.cmake'):
         if hasattr(args, 'use') and args.use:
