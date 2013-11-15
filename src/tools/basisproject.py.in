@@ -927,6 +927,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     config_file = get_template(args.template, '_config.py')
     if not os.path.isfile(config_file):
         sys.stderr.write('Missing template configuration file: ' + config_file + '\n')
+        sys.stderr.write('Please specify a valid project template directory using --template.\n')
         sys.exit(1)
     config, parser = load_config(config_file, parser)
 
