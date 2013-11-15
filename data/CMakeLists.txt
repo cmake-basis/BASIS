@@ -8,15 +8,22 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-macro (basis_install_template VERSION)
+macro (_install_directory SOURCE_DIR INSTALL_DIR)
   install (
-    DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/template-${VERSION}/"
-    DESTINATION "${INSTALL_TEMPLATE_DIR}-${VERSION}"
+    DIRECTORY   "${SOURCE_DIR}/"
+    DESTINATION "${INSTALL_DIR}"
     PATTERN     *~             EXCLUDE
     PATTERN     .svn           EXCLUDE
     PATTERN     .git           EXCLUDE
     PATTERN     .hg            EXCLUDE
     PATTERN     .DS_Store      EXCLUDE
+  )
+endmacro ()
+
+macro (basis_install_template VERSION)
+  _install_directory (
+    "${CMAKE_CURRENT_SOURCE_DIR}/template-${VERSION}"
+    "${INSTALL_TEMPLATE_DIR}-${VERSION}"
   )
 endmacro ()
 
@@ -36,10 +43,10 @@ if (BUILD_PROJECT_TOOL AND INSTALL_TEMPLATE_DIR)
     if (TEMPLATE_DIRS)
       foreach (TEMPLATE_DIR IN LISTS TEMPLATE_DIRS)
         string (REGEX REPLACE "-([0-9]+\\.[0-9]+)$" "" TEMPLATE_DIR "${TEMPLATE_DIR}")
-        basis_install_directory ("${TEMPLATE_DIR}-${CMAKE_MATCH_1}" "${INSTALL_TEMPLATE_DIR}-${CMAKE_MATCH_1}")
+        _install_directory ("${TEMPLATE_DIR}-${CMAKE_MATCH_1}" "${INSTALL_TEMPLATE_DIR}-${CMAKE_MATCH_1}")
       endforeach ()
     else ()
-      basis_install_directory ("${TEMPLATE_DIR}" "${INSTALL_TEMPLATE_DIR}")
+      _install_directory ("${TEMPLATE_DIR}" "${INSTALL_TEMPLATE_DIR}")
     endif ()
   else ()
     # Attention: Whenever a template file is modified or added,
