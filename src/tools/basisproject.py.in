@@ -22,6 +22,7 @@ import re                   # regular expressions
 import datetime             # now(), to get current year for copyright
 import shutil               # copyfile()
 import shlex                # lexical analysis, used for response files
+import mimetypes            # to recognize configurable text files
 
 from imp import load_source # i.e., template configuration
 
@@ -33,6 +34,7 @@ from basis import diff3     # three-way diff algorithm
 # constants
 # ============================================================================
 
+
 # executable information
 _EXEC_DIR  = basis.exedir()
 _EXEC_NAME = basis.exename()
@@ -43,6 +45,14 @@ ADD =  1 # add feature/file if missing
 
 # root directory of project template
 _template = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
+
+# additional recognized MIME types of configurable text files
+mimetypes.add_type('text/cmake',            '.cmake')
+mimetypes.add_type('text/markdown',         '.md')
+mimetypes.add_type('text/markdown',         '.mdown')
+mimetypes.add_type('text/markdown',         '.markdown')
+mimetypes.add_type('text/restructuredtext', '.rst')
+mimetypes.add_type('text/doxygen',          '.dox')
 
 # ============================================================================
 # auxiliary functions
@@ -309,6 +319,10 @@ def alter(filename, args, backup=True, update=False):
 
     """
     if args.noalter: return 0
+    # ensure that file is a text file that can be configured
+    if not filename.endswith('.in'):
+        mtype = mimetypes.guess_type(filename)[0]
+        if not (mtype and mtype.startswith('text/')): return 0
     # read file content
     fp = open(filename, 'rt')
     txt = fp.read()
