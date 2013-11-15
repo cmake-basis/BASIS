@@ -472,8 +472,15 @@ macro (basis_use_package PACKAGE)
       message ("**     Package: ${PKG}")
     endif ()
     if (PROJECT_IS_MODULE)
+      # ignore BASIS as module dependency
+      # important if BASIS itself is a project module
+      if (PKG MATCHES "^BASIS$")
+        if (BASIS_DEBUG)
+          message ("**     Ignoring BASIS dependency as it clearly is used already by the top-level project.")
+        endif ()
+        break ()
       # allow modules to specify top-level project as dependency
-      if (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
+      elseif (PKG MATCHES "^${BASIS_PROJECT_NAME}$")
         if (BASIS_DEBUG)
           message ("**     This is the top-level project.")
         endif ()
