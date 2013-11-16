@@ -185,7 +185,7 @@ substitutions = {
   },
   'copyright' : {
     'help'    : "Copyrigth statement optionally including years, but not \". All rights reserved.\".",
-    'default' : str(substitutions['year']) + " University of Pennsylvania"
+    'default' : str(date.today().year) + " University of Pennsylvania"
   },
   'license' : {
     'help'    : "Copyrigth statement including years, but excluding \"All rights reserved.\".",
