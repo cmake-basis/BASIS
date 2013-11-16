@@ -31,34 +31,12 @@
 ## @addtogroup BasisScriptConfig
 # @{
 
-## @brief Installation directory of project template or empty
-set (INSTALL_TEMPLATE_DIR "@INSTALL_TEMPLATE_DIR@")
-
-## @brief Custom project template configured by user or empty
-set (CUSTOM_TEMPLATE_DIR "@TEMPLATE_DIR@")
-
 ## @brief Top directory of project template relative to script location.
-if (INSTALL_TEMPLATE_DIR)
-  if (CUSTOM_TEMPLATE_DIR)
-    basis_set_script_path (
-      TEMPLATE_DIR
-        "${CUSTOM_TEMPLATE_DIR}"
-        "@INSTALL_TEMPLATE_DIR@"
-    )
-  else ()
-    basis_set_script_path (
-      TEMPLATE_DIR
-        "@PROJECT_DATA_DIR@/template"
-        "@INSTALL_TEMPLATE_DIR@"
-    )
-  endif ()
-else ()
-  if (CUSTOM_TEMPLATE_DIR)
-    set (TEMPLATE_DIR "${CUSTOM_TEMPLATE_DIR}")
-  else ()
-    set (TEMPLATE_DIR "@PROJECT_DATA_DIR@/template")
-  endif ()
-endif ()
+basis_set_script_path (
+  TEMPLATE_DIR
+    "@DEFAULT_TEMPLATE_DIR@"
+    "@INSTALL_TEMPLATE_DIR@"
+)
 
 ## @brief Directory of BASIS CMake modules.
 basis_set_script_path (

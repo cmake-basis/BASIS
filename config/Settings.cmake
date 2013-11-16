@@ -48,27 +48,75 @@ set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 # project template
 # ============================================================================
 
-option (BUILD_PROJECT_TOOL      "Request build of the basisproject command-line tool." ON)
-option (INSTALL_BASIS_TEMPLATES "Install the project templates in the data directory." ON)
+# options
+option (BUILD_PROJECT_TOOL "Request build of the basisproject command-line tool."    ON)
+option (INSTALL_TEMPLATES  "Install additional project templates provided by BASIS." ON)
 
-if (BUILD_PROJECT_TOOL)
-  mark_as_advanced (CLEAR INSTALL_BASIS_TEMPLATES)
-else ()
-  mark_as_advanced (FORCE INSTALL_BASIS_TEMPLATES)
+set (DEFAULT_TEMPLATE     ""                               CACHE PATH "Name/Directory of default project template.")
+set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates" CACHE PATH "Installation directory of project templates.")
+
+# force default template to be set
+if (NOT DEFAULT_TEMPLATE)
+  set_property (CACHE DEFAULT_TEMPLATE PROPERTY VALUE "sbia/1.8")
+endif ()
+# disable installation of templates if no destination specified
+if (NOT INSTALL_TEMPLATE_DIR)
+  message (WARNING "No installation directory for project templates specified."
+                   " Disabling installation of templates. To enable the installation"
+                   " of the project templates again, set INSTALL_TEMPLATE_DIR to"
+                   " the desired destination such as \"share/templates\" and the"
+                   " option INSTALL_TEMPLATES to ON.")
+  set_property (CACHE INSTALL_TEMPLATES PROPERTY VALUE OFF)
 endif ()
 
-set (TEMPLATE_DIR         ""                              CACHE PATH "Directory of custom project template.")
-set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/template" CACHE PATH "Installation directory of project template")
-
+# mark cache entires as advanced if unused
 if (BUILD_PROJECT_TOOL)
-  mark_as_advanced (CLEAR TEMPLATE_DIR)
+  mark_as_advanced (CLEAR DEFAULT_TEMPLATE INSTALL_TEMPLATES)
 else ()
-  mark_as_advanced (TEMPLATE_DIR)
+  mark_as_advanced (FORCE DEFAULT_TEMPLATE INSTALL_TEMPLATES)
 endif ()
 mark_as_advanced (INSTALL_TEMPLATE_DIR)
 
-# remove version suffix from specified template
-string (REGEX REPLACE "-[0-9]+\\.[0-9]+$" "" TEMPLATE_DIR "${TEMPLATE_DIR}")
+if (BUILD_PROJECT_TOOL)
+  # make default template path absolute
+  if (NOT IS_ABSOLUTE "${DEFAULT_TEMPLATE}")
+    if (IS_DIRECTORY "${PROJECT_DATA_DIR}/templates/${DEFAULT_TEMPLATE}")
+      set (DEFAULT_TEMPLATE "${PROJECT_DATA_DIR}/templates/${DEFAULT_TEMPLATE}")
+    else ()
+      set (DEFAULT_TEMPLATE "${CMAKE_BINARY_DIR}/${DEFAULT_TEMPLATE}")
+      if (NOT IS_DIRECTORY "${DEFAULT_TEMPLATE}")
+        message (FATAL_ERROR "Invalid default project template. The directory"
+                             " ${DEFAULT_TEMPLATE} does not exist. Please specify"
+                             " either the name of a template included with BASIS as"
+                             " \"<name>/<version>\" or use an absolute path to the"
+                             " specific project template to use, i.e., \"/<path>/<name>/<version>\"")
+      endif ()
+    endif ()
+  endif ()
+  if (NOT EXISTS "${DEFAULT_TEMPLATE}/_config.py")
+    message (FATAL_ERROR "Invalid default project template. Missing template configuration file:"
+                         "\n    ${DEFAULT_TEMPLATE}/_config.py\n")
+  endif ()
+  # split default template path into parts
+  if (DEFAULT_TEMPLATE MATCHES "^(.*)/([^/]*)/([0-9]+\\.[0-9]+)$")
+    set (DEFAULT_TEMPLATE_DIR     "${CMAKE_MATCH_1}")
+    set (DEFAULT_TEMPLATE_NAME    "${CMAKE_MATCH_2}")
+    set (DEFAULT_TEMPLATE_VERSION "${CMAKE_MATCH_3}")
+  else ()
+    message (FATAL_ERROR "Invalid default project template. The absolute template directory path "
+                         " must match the pattern \"/<path>/<name>/<major>.<minor>\", where"
+                         " <name> is the template name and <major>.<minor> is the template version."
+                         "\nInstead DEFAULT_TEMPLATE is set to the following absolute path:"
+                         "\n    ${DEFAULT_TEMPLATE}\n")
+  endif ()
+  # install default project template
+  if (INSTALL_TEMPLATE_DIR)
+    basis_install_template (
+      "${DEFAULT_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
+      "${INSTALL_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
+    )
+  endif ()
+endif ()
 
 # ============================================================================
 # utilities

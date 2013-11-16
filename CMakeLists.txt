@@ -29,13 +29,9 @@
 cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
-# version of BASIS template used by this project
-set (TEMPLATE_VERSION 1.8)
+# Absolute path to template used to create/update this project
+set (PROJECT_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/data/templates/sbia/1.7")
 
-# Note that this version in case of the BASIS project itself defines the
-# current version of the project template. Thus, this version number has to
-# be changed whenever a new (modified) project template was added.
-#
 # A patch version number is not used here because subtle changes of the
 # template files do not need to be tracked. This version number may only
 # become of importance in case the project template is noticably extended or
