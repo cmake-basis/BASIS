@@ -13,10 +13,6 @@
 cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
-# Absolute path to template used to create/update this project
-set (PROJECT_TEMPLATE "<template>")
-
-# ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
 
 # circumvent issue with CMake's find_package() interpreting these variables

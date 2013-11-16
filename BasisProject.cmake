@@ -70,6 +70,7 @@ basis_project (
   COPYRIGHT   "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh"
   LICENSE     "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
   CONTACT     "andreas.schuh.84@gmail.com"
+  TEMPLATE    "sbia/1.7"
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS

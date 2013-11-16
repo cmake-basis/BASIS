@@ -44,7 +44,8 @@ DEL = -1 # remove feature/file if present
 ADD =  1 # add feature/file if missing
 
 # root directory of default project template
-_template = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@/@DEFAULT_TEMPLATE_NAME@/@DEFAULT_TEMPLATE_VERSION@'))
+_template_dir = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
+_template     = os.path.join(_template_dir, '@DEFAULT_TEMPLATE_NAME@/@DEFAULT_TEMPLATE_VERSION@')
 
 # additional recognized MIME types of configurable text files
 mimetypes.add_type('text/cmake',            '.cmake')
@@ -239,14 +240,15 @@ def get_project_name(cmake_file):
     return None
 
 # ----------------------------------------------------------------------------
-def get_original_template(cmake_file):
-    """Extract PROJECT_TEMPLATE path from root CMakeLists.cmake file of existing project."""
-    fp = open(cmake_file, 'rt')
+def get_original_template(args):
+    """Extract TEMPLATE from BasisProject.cmake file of existing project."""
+    fp = open(os.path.join(args.root, 'BasisProject.cmake'), 'rt')
     txt = fp.read()
     fp.close()
-    m = re.search(r'\s*set\s*\(\s*PROJECT_TEMPLATE\s+"(.*)"', txt)
-    if m: return m.group(1).replace('${CMAKE_CURRENT_SOURCE_DIR}', os.path.dirname(cmake_file))
-    else: return None
+    #m = re.search(r'\s+TEMPLATE\s+"(?P<template>[^"]*)"', txt)
+    m = re.search(r'\s*(basis_project|basis_slicer_module)\s*\([^)]*TEMPLATE\s+"(?P<template>[^"]+)"', txt)
+    if m: return os.path.join(_template_dir, m.group('template'))
+    return None
 
 # ============================================================================
 # add / remove project file
@@ -339,17 +341,22 @@ def alter(filename, args, backup=True, update=False):
     out = txt
     # <template>
     if not update:
-        out = out.replace('<template>', args.template)
+        template = args.template
+        if args.template.startswith(_template_dir):
+            m = re.search(r'/(?P<name>[^/]+)/(?P<version>[0-9]+\.[0-9]+)$', args.template)
+            if m: template = m.group('name') + '/' + m.group('version')
+        out = out.replace('#<template>', '"' + template + '"')
+        out = out.replace( '<template>',       template)
     # <project> or <project_l>
     if hasattr(args, 'name') and args.name:
-        out = out.replace('#<project>',   args.name)
-        out = out.replace('<project>',    args.name)
-        out = out.replace('#<project_l>', args.name.lower())
-        out = out.replace('<project_l>',  args.name.lower())
+        out = out.replace('#<project>',   '"' + args.name + '"')
+        out = out.replace( '<project>',         args.name)
+        out = out.replace('#<project_l>', '"' + args.name.lower() + '"')
+        out = out.replace( '<project_l>',       args.name.lower())
     # <description>
     if hasattr(args, 'description') and args.description:
         out = out.replace('#<description>', '"' + args.description.replace('"', '\\"') + '"')
-        out = out.replace('<description>',  '"' + args.description.replace('"', '\\"') + '"')
+        out = out.replace( '<description>',       args.description.replace('"', '\\"'))
     # <author>
     if hasattr(args, 'author') and args.author:
         start = out.find('<author>')
@@ -381,11 +388,11 @@ def alter(filename, args, backup=True, update=False):
                 value = None
         if not value == None:
             if type(value) is str:
-                value = '"' + value.replace('"', '\\"') + '"'
+                value = value.replace('"', '\\"')
             else:
                 value = str(value)
-            out = out.replace('#<' + key + '>', value)
-            out = out.replace( '<' + key + '>', value)
+            out = out.replace('#<' + key + '>', '"' + value + '"')
+            out = out.replace( '<' + key + '>',       value)
     # dependencies
     if filename.endswith('BasisProject.cmake'):
         if hasattr(args, 'use') and args.use:
@@ -415,18 +422,21 @@ def alter(filename, args, backup=True, update=False):
 
 # ----------------------------------------------------------------------------
 def update_project_template(args):
-    """Update PROJECT_TEMPLATE set in root CMakeLists.txt file of project."""
+    """Update TEMPLATE argument in BasisProject.cmake file."""
     ok = True
-    filename = os.path.join(args.root, 'CMakeLists.txt')
+    filename = os.path.join(args.root, 'BasisProject.cmake')
     fp = open(filename, 'rt')
     if fp:
         txt = fp.read()
         fp.close()
-        if re.search(r'set\s+\(PROJECT_TEMPLATE\s+"' + args.template + '"\s*\)', txt):
+        template = args.template
+        if args.template.startswith(_template_dir):
+            m = re.search(r'/(?P<name>[^/]+)/(?P<version>[0-9]+\.[0-9]+)$', args.template)
+            if m: template = m.group('name') + '/' + m.group('version')
+        if re.search(r'\s+TEMPLATE\s+"' + template + '"', txt):
             return 0
         else:
-            out = re.sub('set\s+\(PROJECT_TEMPLATE\s+"[^"]*"\s*\)',
-                         'set (PROJECT_TEMPLATE "' + args.template + '")', txt)
+            out = re.sub(r'(\s+)TEMPLATE(\s+)"[^"]*"', '\1TEMPLATE\2"' + template + '")', txt)
     else:
         ok = False
     if ok and out != txt:
@@ -442,7 +452,7 @@ def update_project_template(args):
         sys.stderr.write("G %s\n" % filename)
         return 1
     else:
-        sys.stderr.write("E %s - failed to update PROJECT_TEMPLATE\n" % filename)
+        sys.stderr.write("E %s - failed to update TEMPLATE argument\n" % filename)
         return -1
 
 # ----------------------------------------------------------------------------
@@ -1025,7 +1035,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                 sys.exit(1)
         # get original template directory
         if not args.original_template:
-            args.original_template = get_original_template(os.path.join(args.root, 'CMakeLists.txt'))
+            args.original_template = get_original_template(args)
             if not args.original_template:
                 sys.stderr.write("Failed to determine original template directory and version!\n")
                 sys.exit(1)
