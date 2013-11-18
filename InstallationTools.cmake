@@ -220,6 +220,23 @@ function (basis_install_directory)
 endfunction ()
 
 # ----------------------------------------------------------------------------
+## @brief Add installation rule for project template.
+function (basis_install_template TEMPLATE DESTINATION)
+  if (NOT IS_ABSOLUTE "${TEMPLATE}")
+    set (TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/${TEMPLATE}")
+  endif ()
+  install (
+    DIRECTORY   "${TEMPLATE}/"
+    DESTINATION "${DESTINATION}"
+    PATTERN     *~             EXCLUDE
+    PATTERN     .svn           EXCLUDE
+    PATTERN     .git           EXCLUDE
+    PATTERN     .hg            EXCLUDE
+    PATTERN     .DS_Store      EXCLUDE
+  )
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Add installation rule to create a symbolic link.
 #
 # Note that the installation rule will only be effective on a Unix-like
