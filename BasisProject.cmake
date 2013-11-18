@@ -61,6 +61,7 @@ basis_project (
   # --------------------------------------------------------------------------
   # meta-data
   NAME        "BASIS"
+  LOGO        "${CMAKE_CURRENT_SOURCE_DIR}/doc/basis_logo.svg"
   VERSION     "0.0.0"
   AUTHORS     "Andreas Schuh"
   DESCRIPTION "This package implements and supports the development of "
