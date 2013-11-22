@@ -118,12 +118,12 @@ set (
 )
 
 ## @brief Names of project meta-data with only one argument.
+#  @see basis_project() in ProjectTools.cmake
 set (
   BASIS_METADATA_LIST_SINGLE
     AUTHOR
     NAME
     SUBPROJECT
-    LOGO           # short alias for PACKAGE_LOGO
     PACKAGE        # short alias for PACKAGE_NAME
     WEBSITE        # short alias for PACKAGE_WEBSITE
     VENDOR         # short alias for PACKAGE_VENDOR
