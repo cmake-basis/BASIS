@@ -142,6 +142,7 @@ set (
     LICENSE
     CONTACT
     VERSION
+    TEMPLATE       # used by basisproject tool
 )
 
 ## @brief Names of project meta-data with multiple arguments.
