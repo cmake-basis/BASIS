@@ -423,6 +423,8 @@ endmacro ()
 # @retval PROJECT_IS_SUBPROJECT           @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
 #
 # @ingroup CMakeAPI
+#
+# @see BasisSettings.cmake
 macro (basis_project)
   CMAKE_PARSE_ARGUMENTS (
     PROJECT

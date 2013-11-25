@@ -494,7 +494,7 @@ macro (basis_use_package PACKAGE)
           include ("${${PKG}_USE_FILE}")
           break () # instead of return()
         else ()
-          message (FATAL_ERROR "Module ${PKG} not found! This must be a mistake of BASIS."
+          message (FATAL_ERROR "Module ${PKG} not found! This must be an error in BASIS."
                                " Report this issue to the maintainer of this package.")
         endif ()
       endif ()
