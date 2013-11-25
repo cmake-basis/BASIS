@@ -31,11 +31,10 @@
 ## @addtogroup BasisScriptConfig
 # @{
 
-
 ## @brief Top directory of project template relative to script location.
 basis_set_script_path (
   TEMPLATE_DIR
-    "@PROJECT_DATA_DIR@/template"
+    "@DEFAULT_TEMPLATE_DIR@"
     "@INSTALL_TEMPLATE_DIR@"
 )
 
