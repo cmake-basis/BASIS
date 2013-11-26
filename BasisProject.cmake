@@ -61,7 +61,6 @@ basis_project (
   # --------------------------------------------------------------------------
   # meta-data
   NAME          "BASIS"
-  PACKAGE_LOGO  "${CMAKE_CURRENT_SOURCE_DIR}/doc/static/basis_logo.svg"
   VERSION       "0.0.0"
   AUTHORS       "Andreas Schuh"
   DESCRIPTION   "This package implements and supports the development of "
@@ -72,8 +71,7 @@ basis_project (
   LICENSE       "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
   CONTACT       "andreas.schuh.84@gmail.com"
   TEMPLATE      "sbia/1.7"
-  PROVIDER_LOGO   "${CMAKE_CURRENT_SOURCE_DIR}/doc/static/penn_logo.gif"
-  DIVISION_LOGO "${CMAKE_CURRENT_SOURCE_DIR}/doc/static/sbia_logo.png"
+  PACKAGE_LOGO  "doc/static/logo.svg"
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS
