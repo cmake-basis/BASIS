@@ -8,6 +8,6 @@
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
-if (BUILD_PROJECT_TOOL AND INSTALL_TEMPLATES AND INSTALL_TEMPLATE_DIR)
+if (BUILD_PROJECT_TOOL AND INSTALL_ALL_TEMPLATES AND INSTALL_TEMPLATE_DIR)
   add_subdirectory (templates)
 endif ()
