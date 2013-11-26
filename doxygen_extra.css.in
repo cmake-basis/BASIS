@@ -39,6 +39,11 @@ div.contents {
   margin: 0px 12px;
 }
 
+#projectlogo img
+{
+  display: @DOXYGEN_PROJECT_LOGO_DISPLAY@;
+}
+
 #projectname a
 {
   text-decoration: none;
@@ -58,20 +63,18 @@ div.contents {
   float:           right;
   vertical-align:  bottom;
   border-collapse: separate;
-  visibility:      @DOXYGEN_PROVIDER_LOGO_VISIBILITY@;
 }
 
 #providerlogo img
 {
-  border:     0px none;
-  visibility: @DOXYGEN_PROVIDER_LOGO_VISIBILITY@;
+  border:  0px none;
+  display: @DOXYGEN_PROVIDER_LOGO_DISPLAY@;
 }
 
 #divisionlogo
 {
   vertical-align:  bottom;
   border-collapse: separate;
-  visibility:      @DOXYGEN_DIVISION_LOGO_VISIBILITY@;
 }
 
 #divisionlogo img
@@ -81,7 +84,7 @@ div.contents {
   margin-right: 20px;
   border:       0px none;
   float:        right;
-  visibility:   @DOXYGEN_DIVISION_LOGO_VISIBILITY@;
+  display:      @DOXYGEN_DIVISION_LOGO_DISPLAY@;
 }
 
 #titleendoffloat
