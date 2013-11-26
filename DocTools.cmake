@@ -496,7 +496,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   if(DOXYGEN_DISABLE_PROJECT_NAME_DISPLAY)
     set (DOXYGEN_PROJECT_NAME_DISPLAY "none")
   else()
-    set (DOXYGEN_PROJECT_NAME_DISPLAY "inherit")
+    set (DOXYGEN_PROJECT_NAME_DISPLAY "inline")
   endif()
   # standard input files
   list (APPEND DOXYGEN_INPUT "${PROJECT_SOURCE_DIR}/BasisProject.cmake")

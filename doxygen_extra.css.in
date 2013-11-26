@@ -42,6 +42,7 @@ div.contents {
 #projectname a
 {
   text-decoration: none;
+  display:         @DOXYGEN_PROJECT_NAME_DISPLAY@;
 }
 
 #projectname img
