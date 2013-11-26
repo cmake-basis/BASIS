@@ -23,7 +23,7 @@
          </dc:title>
          <dc:description>
             <rdf:Alt>
-               <rdf:li xml:lang="x-default">This is the logo of the CMake BASIS Logo.&#xA;&#xA;The initial design was created by Andrew Hundt. Two bass clefs overlayed on top of each other. The pronounciation for the base cleff symbol is similar to the English word "base". Given two, the plural becomes "bases" which again is similar in pronounciation to the word "basis".</rdf:li>
+               <rdf:li xml:lang="x-default">This is the logo of the CMake BASIS software package.&#xA;&#xA;The initial design was created by Andrew Hundt. Two bass clefs overlayed on top of each other. The pronounciation for the base cleff symbol is similar to the English word "base". Given two, the plural becomes "bases" which again is similar in pronounciation to the word "basis".</rdf:li>
             </rdf:Alt>
          </dc:description>
          <dc:subject>
