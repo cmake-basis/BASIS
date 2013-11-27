@@ -335,6 +335,13 @@ endfunction ()
 #         fine-tune the look of the HTML output. If none specified, the
 #         @c "PROJECT_SOURCE_DIR/doc/doxygen_extra.css(.in)?" file is used if present.</td>
 #   </tr>
+#   <tr>
+#     @tp @b DISABLE_PROJECT_NAME_DISPLAY@endtp
+#     <td>The DISABLE_PROJECT_NAME_DISPLAY option causes Doxygen's 
+#         @c PROJECT_NAME text not to be displayed in the header.
+#         Use this if the project name is already part of the logo 
+#         so it won't be there twice in the logo image and title text.</td>
+#   </tr>
 # </table>
 # @n
 # See <a href="http://www.stack.nl/~dimitri/doxygen/manual/config.html">here</a> for a
@@ -399,7 +406,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
   )
   CMAKE_PARSE_ARGUMENTS (
     DOXYGEN
-      "EXCLUDE_FROM_DOC"
+      "EXCLUDE_FROM_DOC;DISABLE_PROJECT_NAME_DISPLAY"
       "${VALUEARGS};${OPTIONAL_FILE_OPTIONS}"
       "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX;ENABLED_SECTIONS"
       ${ARGN}
@@ -475,22 +482,27 @@ function (basis_add_doxygen_doc TARGET_NAME)
     set (DOXYGEN_DIVISION_LOGO "${PROJECT_DIVISION_LOGO}")
   endif ()
   # set visibility property of project logos
-  if (DOXYGEN_PROVIDER_LOGO)
-    set (DOXYGEN_PROVIDER_LOGO_VISIBILITY "visible")
+  if (DOXYGEN_PROJECT_LOGO)
+    set (DOXYGEN_PROJECT_LOGO_DISPLAY "block")
   else ()
-    set (DOXYGEN_PROVIDER_LOGO_VISIBILITY "hidden")
+    set (DOXYGEN_PROJECT_LOGO_DISPLAY "none")
+  endif ()
+  if (DOXYGEN_PROVIDER_LOGO)
+    set (DOXYGEN_PROVIDER_LOGO_DISPLAY "inline")
+  else ()
+    set (DOXYGEN_PROVIDER_LOGO_DISPLAY "block")
   endif ()
   if (DOXYGEN_DIVISION_LOGO)
-    set (DOXYGEN_DIVISION_LOGO_VISIBILITY "visible")
+    set (DOXYGEN_DIVISION_LOGO_DISPLAY "inline")
   else ()
-    set (DOXYGEN_DIVISION_LOGO_VISIBILITY "hidden")
+    set (DOXYGEN_DIVISION_LOGO_DISPLAY "block")
   endif ()
-  # display either logo or project name, but not both using default header
-  if (DOXYGEN_PROJECT_LOGO)
+  # allow the user to disable the text header if desired
+  if(DOXYGEN_DISABLE_PROJECT_NAME_DISPLAY)
     set (DOXYGEN_PROJECT_NAME_DISPLAY "none")
-  else ()
-    set (DOXYGEN_PROJECT_NAME_DISPLAY "inherit")
-  endif ()
+  else()
+    set (DOXYGEN_PROJECT_NAME_DISPLAY "inline")
+  endif()
   # standard input files
   list (APPEND DOXYGEN_INPUT "${PROJECT_SOURCE_DIR}/BasisProject.cmake")
   if (EXISTS "${PROJECT_CONFIG_DIR}/Depends.cmake")

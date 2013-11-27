@@ -337,12 +337,18 @@ endmacro ()
 #         (default: project website of top-level project or empty string)</td>
 #   </tr>
 #   <tr>
+#     @tp @b PACKAGE_LOGO path @endtp
+#     <td>Path to package logo file for this installable package. Used in documentation and packaging.
+#         Relative paths must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: empty string)</td>
+#   </tr>
+#   <tr>
 #     @tp @b WEBSITE url @endtp
 #     <td>Short alias for @c PACKAGE_WEBSITE.</td>
 #   </tr>
 #   <tr>
 #     @tp @b PROVIDER_NAME name @endtp
-#     <td>The provider/vendor of this package, used for packaging and installation.
+#     <td>The provider/vendor/creator of this package, used for packaging and installation.
 #         (default: provider of top-level project or empty string)</td>
 #   </tr>
 #   <tr>
@@ -408,6 +414,7 @@ endmacro ()
 # @retval PROJECT_PACKAGE_NAME            @c PACKAGE_NAME argument.
 # @retval PROJECT_PACKAGE_VENDOR          @c PACKAGE_VENDOR argument.
 # @retval PROJECT_PACKAGE_WEBSITE         @c PACKAGE_WEBSITE argument.
+# @retval PROJECT_PACKAGE_LOGO            @c PACKAGE_LOGO argument as abolute path.
 # @retval PROJECT_PROVIDER_NAME           @c PROVIDER_NAME argument.
 # @retval PROJECT_PROVIDER_WEBSITE        @c PROVIDER_WEBSITE argument
 # @retval PROJECT_PROVIDER_LOGO           @c PROVIDER_LOGO argument as abolute path.
@@ -426,6 +433,8 @@ endmacro ()
 #
 # @see BasisSettings.cmake
 macro (basis_project)
+  # @see BasisSettings.cmake for parameter lists.
+  # @see basis_project_check_metadata() above for implementation details
   CMAKE_PARSE_ARGUMENTS (
     PROJECT
       "${BASIS_METADATA_LIST_SWITCH}"
