@@ -1,3 +1,6 @@
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
+
 .. raw:: html
 
    <!--
@@ -13,12 +16,16 @@
 
    -->
 
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
+
 .. title:: Home
 
 .. meta::
-    :description: The Build system And Software Implementation Standard (BASIS)
-                  is a meta-project with the goal to minimize and standardize
-                  the software development efforts in a research environment.
+    :description: BASIS makes it easy to create sharable software and libraries 
+                  that work together. This is accomplished by combining and 
+                  documenting some of the best practices and utilities available. 
+                  More importantly, BASIS supplies a fully integrated suite of 
+                  functionality to make the whole process seamless!
     :google-site-verification: FEpJ4EO1PvGXLyfXp-Q6EJsypA0xGqYctXtmoP3pLJw
 
 .. raw:: latex
@@ -29,37 +36,162 @@
 Overview
 ========
 
-The **Build system And Software Implementation Standard (BASIS)** project was
-started early in 2011 in order to improve and standardize the software packages
-developed at SBIA_. Based on the decision to use CMake_ and its accompanying
-tools for testing and packaging software, the standard for building software
-from source code was based on this popular, easy to use, and yet powerful
-cross-platform, open-source build system. The previously used CMake Project
-Template was entirely reworked and became a major component of BASIS.
-In fact, the BASIS project evolved from this initial project template
-and greatly improved it. See the :doc:`standard/template` of the
-:doc:`standard/buildsystem` for details on the template.
+.. _Description:
 
-See the :doc:`standard/implementation` for details on the standard for
-implementing software.
+Description
+===========
 
-:ref:`HowToGuides` which help to understand the standard and how to comply
-with it can be found here as well.
+BASIS makes it easy to create sharable software and libraries that work together. This is accomplished by combining and documenting some of the best practices and utilities available. More importantly, BASIS supplies a fully integrated suite of functionality to make the whole process seamless! 
 
-Projects following the standard include the `BASIS Modules`_ and make use of the
-`BASIS Utilities`_. They are hence dependent on the BASIS package, similarly to
-a software implemented in C++ depends on third-party libraries used by this
-implementation, for example. Therefore, in order to be able to build a BASIS
-project, the BASIS package has to be installed. Note, however, that BASIS is not
-necessarily required during the runtime, i.e., for executing the software.
-This depends on which utilities are used by the software.
+.. _Features:
 
-The :download:`BASIS Introduction <BASIS_Introduction.pptx>` slides
-further explain its purpose and the parts it is made of
-(`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS_Introduction.pptx>`__).
+Features
+========
+- Project Creation
+   - Super easy mad-libs project creation tool
+   - Customizable project templates
+- Filesystem layout standards
+- `Build system utilities`_
+   - New `CMake Module APIs`_
+   - Version Control Integration
+   - Automatic Packaging
+- :doc:`standard/style`
+- Unit testing
+- Documentation generation tools
+   - Manuals
+   - API Docs
+   - PDF and html output of each
+   - Integrated with CMake APIs
+- Command line standards
+   - Parsing library
+   - Command execution library
+      - Unix philosophy
+      - one tool can run others
+- Continuous Integration
+- Executable testing frameworks
+
+Most functionality in BASIS is optional so you get to choose what you want to use.
+
+.. _Standards:
+       
+Standards
+=========
+
+.. toctree::
+    :maxdepth: 2
+
+    standard/buildsystem
+    standard/implementation
+    standard/style
+
+.. _ProgrammingLanguages:
+
+Supported Programming Languages
+===============================
+ - C++
+ - BASH
+ - MATLAB
+ - Python
+
+.. _SupportedPackages:
+ 
+Supported Packages
+==================
+ - CMake_
+ - CPack
+ - CDash
+ - Doxygen
+ - Sphinx
+ - Git
+ - Svn
+ - reStructured Text
+ - gTest
+ - gFlags
+ - Boost_
+ 
+.. _QuickStartGuides:
+
+Quick Start Guides
+==================
+
+Use the quick start guide to familiarize yourself with BASIS and get started as quickly as possible.
+Then when you are ready for more detail you can try out the :ref:`Tutorials`.
+
+1. :download:`Getting Started <tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`
+   (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Quick%20Start%20Guide%20-%2001%20Getting%20Started.pptx>`__)
+
+
+.. _Tutorials:
+
+Tutorials
+=========
+
+The tutorial slides linked here for download give a slide-by-slide introduction to BASIS and
+its use including in-depth information and references to further documentation. For a less
+comprehensive tutorial-like introduction, please refer to the :ref:`QuickStartGuides`.
+
+1. download :download:`Getting Started <tutorials/BASIS Tutorial - 01 Getting Started.pptx>`
+   (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
+3. download :download:`BASIS Introduction <BASIS_Introduction.pptx>` for an explanation of the components and purpose of BASIS (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS_Introduction.pptx>`__).
 
 .. The ref link is required for the PDF version as the download directive in
    this case does not translate to a hyperlink, but text only.
+
+
+.. _HowToGuides:
+
+How-to Guides
+=============
+
+The how-to guides explain the basics of following the :ref:`Standards <Standards>`, 
+and explain common tasks like creating a new project or installation.
+
+.. toctree::
+    :maxdepth: 2
+
+    howto/create-and-modify-project
+    howto/manage-data
+    howto/document
+    howto/branch-and-release
+    howto/package
+    howto/install
+    howto/run-automated-tests
+
+
+.. _APIDocumentation:
+
+API Documentation
+=================
+
+The `API documentation <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/>`_
+is generated from in-source comments using Doxygen_ and the filters provided by BASIS
+for languages other than C++.
+
+.. _Dependencies:
+
+Dependencies
+============
+
+- CMake_ is required
+- BASIS does the hard work of integrating many 3rd party libraries and tools for you,
+  so of course they need to be installed for you to use them!
+- Projects that use the BASIS CMake Modules will depend on BASIS to compile.
+   - That means BASIS will either need to be installed on the system for your 
+package to build, or the first steps in your build can be to compile and
+install BASIS internally as part of a superbuild.
+- Projects that use the BASIS C++ command line parsing and execution libraries
+will also require a BASIS installation to be able to run.
+
+.. _History:
+
+History
+========
+
+The **Build system And Software Implementation Standard (BASIS)** project was
+started early in 2011 to improve and standardize the software packages
+developed at the University of Pennsylvania's SBIA_. They started with the decision 
+to use CMake_ as their build system, then implemented a project creation template.
+Over time, these components were transformed to important parts of BASIS.
 
 
 .. toctree::
@@ -74,7 +206,8 @@ further explain its purpose and the parts it is made of
     people
 
 
-.. _BASIS Modules: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
-.. _BASIS Utilities: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html
+.. _CMake Module APIs: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
+.. _Build system utilities: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html
 .. _CMake: http://www.cmake.org
 .. _SBIA: http://www.rad.upenn.edu/sbia/
+.. _Boost: http://www.boost.org
