@@ -840,7 +840,8 @@ if __name__ == '__main__':
   tool can be used for another update of the project files. This can be done
   either manually or by running this program with the --cleanup option.""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        argument_default=None)
+        argument_default=None,
+        add_help=False)
 
     # ----------------------------------------------------------------------------
     # read arguments from response file first
@@ -962,6 +963,9 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
 
     # ----------------------------------------------------------------------------
     # parse template options
+    parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, 
+            help="""Print help and exit.""")
+
     if len(argv) > 0:
         args = parser.parse_args(argv, args)
     if not hasattr(args, 'ops'):
