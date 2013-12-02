@@ -48,7 +48,7 @@ BASIS makes it easy to create sharable software and libraries that work together
 Features
 ========
 - Project Creation
-   - Super easy mad-libs project creation tool
+   - Quick setup with mad-libs style text substitution
    - Customizable project templates
 - Filesystem layout standards
 - `Build system utilities`_
@@ -105,8 +105,8 @@ Supported Packages
  - Git
  - Svn
  - reStructured Text
- - gTest
- - gFlags
+ - gtest_
+ - gflags_
  - Boost_
  
 .. _QuickStartGuides:
@@ -211,3 +211,5 @@ Over time, these components were transformed to important parts of BASIS.
 .. _CMake: http://www.cmake.org
 .. _SBIA: http://www.rad.upenn.edu/sbia/
 .. _Boost: http://www.boost.org
+.. _gtest: https://code.google.com/p/googletest/
+.. _gflags: https://github.com/schuhschuh/gflags
