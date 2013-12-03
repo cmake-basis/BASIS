@@ -49,8 +49,8 @@ set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 # ============================================================================
 
 # options
-option (BUILD_PROJECT_TOOL "Request build of the basisproject command-line tool."    ON)
-option (INSTALL_TEMPLATES  "Install additional project templates provided by BASIS." ON)
+option (BUILD_PROJECT_TOOL    "Request build of the basisproject command-line tool."    ON)
+option (INSTALL_ALL_TEMPLATES "Install additional project templates provided by BASIS." ON)
 
 set (DEFAULT_TEMPLATE     ""                               CACHE PATH "Name/Directory of default project template.")
 set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates" CACHE PATH "Installation directory of project templates.")
@@ -71,9 +71,9 @@ endif ()
 
 # mark cache entires as advanced if unused
 if (BUILD_PROJECT_TOOL)
-  mark_as_advanced (CLEAR DEFAULT_TEMPLATE INSTALL_TEMPLATES)
+  mark_as_advanced (CLEAR DEFAULT_TEMPLATE INSTALL_ALL_TEMPLATES)
 else ()
-  mark_as_advanced (FORCE DEFAULT_TEMPLATE INSTALL_TEMPLATES)
+  mark_as_advanced (FORCE DEFAULT_TEMPLATE INSTALL_ALL_TEMPLATES)
 endif ()
 mark_as_advanced (INSTALL_TEMPLATE_DIR)
 
