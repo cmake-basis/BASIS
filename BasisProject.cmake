@@ -60,17 +60,18 @@
 basis_project (
   # --------------------------------------------------------------------------
   # meta-data
-  NAME        "BASIS"
-  VERSION     "0.0.0"
-  AUTHORS     "Andreas Schuh"
-  DESCRIPTION "This package implements and supports the development of "
-              "software which follows the CMake Build system And Software "
-              "Implementation Standard (BASIS)."
-  WEBSITE     "http://opensource.andreasschuh.com/cmake-basis"
-  COPYRIGHT   "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh"
-  LICENSE     "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
-  CONTACT     "andreas.schuh.84@gmail.com"
-  TEMPLATE    "sbia/1.7"
+  NAME          "BASIS"
+  VERSION       "0.0.0"
+  AUTHORS       "Andreas Schuh"
+  DESCRIPTION   "This package implements and supports the development of "
+                "software which follows the CMake Build system And Software "
+                "Implementation Standard (BASIS)."
+  WEBSITE       "http://opensource.andreasschuh.com/cmake-basis"
+  COPYRIGHT     "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh"
+  LICENSE       "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+  CONTACT       "andreas.schuh.84@gmail.com"
+  TEMPLATE      "sbia/1.7"
+  PACKAGE_LOGO  "doc/static/logo.svg"
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS
