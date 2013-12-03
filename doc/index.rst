@@ -14,6 +14,7 @@
 
    ============================================================================
 
+   
    -->
 
 .. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
@@ -41,7 +42,10 @@ Overview
 Description
 ===========
 
-BASIS makes it easy to create sharable software and libraries that work together. This is accomplished by combining and documenting some of the best practices and utilities available. More importantly, BASIS supplies a fully integrated suite of functionality to make the whole process seamless! 
+BASIS makes it easy to create sharable software and libraries that work together. 
+This is accomplished by combining and documenting some of the best practices and 
+utilities available. More importantly, BASIS supplies a fully integrated suite of 
+functionality to make the whole process seamless! 
 
 .. _Features:
 
@@ -50,6 +54,7 @@ Features
 - Project Creation
    - Quick setup with mad-libs style text substitution
    - Customizable project templates
+   - :ref:`<HowToCreateAProject>`
 - Filesystem layout standards
 - `Build system utilities`_
    - New `CMake Module APIs`_

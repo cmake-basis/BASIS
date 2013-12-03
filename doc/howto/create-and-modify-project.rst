@@ -1,3 +1,6 @@
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
+
 .. raw:: html
 
    <!--
@@ -11,7 +14,10 @@
 
    ============================================================================
 
+   
    -->
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
 
 .. meta::
     :description: How to create/modify a software project based on BASIS,
@@ -22,10 +28,10 @@ Create/Modify a Project
 =======================
 
 This how-to guide introduces the ``basisproject`` command-line tool which
-is installed as part of BASIS. This tool, also simply referred to as "project tool",
-is used to create a new project based on BASIS or to modify an existing BASIS
-project. The creation of a new project based on BASIS is occasionally also
-referred to as instantiating the :doc:`/standard/template`.
+is installed as part of BASIS. This tool is used to create a new project 
+based on BASIS or to modify an existing BASIS project. The creation of a 
+new project based on BASIS is occasionally also referred to as 
+instantiating the :doc:`/standard/template`.
 
 For a detailed description and overview of the available command options,
 please refer to the output of the following command::
@@ -38,7 +44,7 @@ please refer to the output of the following command::
 Create a New Project
 ====================
 
-The fastest way to create a new project is to call the project tool with the name
+The fastest way to create a new project is to call ``basisproject`` with the name
 of the new project and a brief project description as arguments:
 
 .. code-block:: bash
@@ -65,7 +71,7 @@ named packages to the corresponding lists of dependencies.
 
 .. note::
 
-    In order for the project tool to be able to find the correct place where to insert
+    In order for ``basisproject`` to be able to find the correct place where to insert
     the new dependencies, the ``#<dependency>`` et al. placeholders have to be present.
     See the ``BasisProject.cmake`` template file.
 
@@ -75,11 +81,11 @@ named packages to the corresponding lists of dependencies.
 Modify an Existing Project
 ==========================
 
-The project tool allows a detailed selection of the features included in the project
+``basisproject`` allows a detailed selection of the features included in the project
 template for a particular BASIS project. Which of these features are needed will
 often not be known during the creation of the project, but change during the work on
 the project. Therefore, an existing BASIS project which was created as
-described :ref:`above <HowToCreateAProject>` can be modified using the project tool
+described :ref:`above <HowToCreateAProject>` can be modified using ``basisproject``
 to add or remove certain project features and to conveniently add CMake commands to
 resolve further dependencies on other software packages. How this is done is
 described in the following.
@@ -87,7 +93,7 @@ described in the following.
 General Notes
 -------------
 
-The two project attributes which cannot be modified using the project tool are the
+The two project attributes which cannot be modified using ``basisproject`` are the
 project name and its description. These attributes need to be modified manually by
 editing the project files. Be aware that changing the project name may require the
 modification of several project files including source files. Furthermore, the
@@ -109,7 +115,7 @@ Adding Features
 By features, we refer here to the set of directories and contained CMake/BASIS
 configuration files for which template files exist in the BASIS project template.
 For a list of available project features, please have a look at the help output of
-the project tool. You can either select a pre-configured project template consisting
+``basisproject``. You can either select a pre-configured project template consisting
 of a certain set of directories and configuration files and optionally modify these
 sets by removing features from them and/or adding other features, or you can simply
 remove and/or add selected features only from/to the current set of directories and
@@ -158,7 +164,7 @@ Adding Dependencies
 -------------------
 
 A dependency is either a program required by your software at runtime or an external
-software package such as the nifticlib_ or ITK_. The project tool can be used to add
+software package such as the nifticlib_ or ITK_. ``basisproject`` can be used to add
 the names of packages your project depends on to the lists of dependencies which are
 given as arguments to the `basis_project()`_ command. For each named package in this
 list, the `basis_find_package()`_ command is called to look for a corresponding
@@ -215,7 +221,7 @@ looks for executables required by BASIS, such as in particular ``matlab``, ``mcc
 Removing Dependencies
 ---------------------
 
-The project tool does at the moment not support the removal of previously added
+``basisproject`` does at the moment not support the removal of previously added
 dependencies. Therefore, please edit the ``BasisProject.cmake`` file manually
 and simply remove all CMake code referring to the particular package you do no
 longer require or use.
@@ -267,7 +273,7 @@ changes in the template files with those changes you have made to the
 corresponding files of your project. If such merge fails because both the
 template as well as the project file have been changed at the same lines,
 a merge conflict occurs which has to be resolved manually. In no case, however,
-the project tool will discard your changes. There will always be a backup of
+``basisproject`` will discard your changes. There will always be a backup of
 your current project file, before the automatic file merge is performed.
 
 To update the project files, run the following command in the root directory
@@ -312,7 +318,7 @@ the merged file which are in conflict with each other.
 
 
 In order to resolve the conflicts in one file, you have to edit the merged
-project file manually. For reference, the project tool writes the new template
+project file manually. For reference, ``basisproject`` writes the new template
 file to a file named like the project file in conflict with this project file,
 using .template as file name suffix. It further keeps a backup of your current
 project file before the update. The file name suffix for this backup file is
@@ -340,7 +346,7 @@ file, the following files are written to your project's directory.
 
 After you edited the project files which contain conflicts, possibly using
 merge tools installed on your system, you need to remove the ``.template`` and
-``.mine`` files to let the project tool know that the conflicts are resolved.
+``.mine`` files to let ``basisproject`` know that the conflicts are resolved.
 Otherwise, when you run the update command again, it will fail with an
 error message indicating that there are unresolved merge conflicts.
 You can delete those files either manually or using the following command

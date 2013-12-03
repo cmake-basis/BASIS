@@ -1,3 +1,6 @@
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
+
 .. raw:: html
 
    <!--
@@ -11,7 +14,10 @@
 
    ============================================================================
 
+   
    -->
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
 
 .. meta::
     :description: General build and installation instructions for software which

@@ -1,3 +1,6 @@
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
+
 .. raw:: html
 
    <!--
@@ -11,7 +14,10 @@
 
    ============================================================================
 
+   
    -->
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
 
 .. meta::
     :description: Download the BASIS software and manual for Unix (Linux, OS X) and Microsoft Windows.
