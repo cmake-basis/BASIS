@@ -77,9 +77,16 @@ Other than that you can use your custom template in the same manner as described
  :doc:`The How-To on Creating and Modifying a Project <create-and-modify-project>`.
 
 
+Set a Custom Template as the default for ``basisproject``
+---------------------------------------------------------
+
+When BASIS is installed it is possible to specify a custom template as the default
+used by ``basisproject`` so that it is used automatically without the --template parameter.
+See the :ref:`BasisInstallationOptions` for details.
 
 .. _TemplateLayout:
 
+===============
 Template Layout
 ===============
 
