@@ -305,36 +305,10 @@ additional project specific configuration options.
 .. note::
     The ccmake_ tool also provides a brief description to each variable in the status bar.
 
-.. _BuildOptions:
+.. toctree::
+    :hidden:
 
-Build Options
--------------
-
-The following BASIS specific options are available when building packages. For the full set of options and descriptions use the ccmake_ tool. For CMake_ specific options see the documentation for your CMake installation.
-
-+----------------------------+-----------+---------------------------------------------------------------+
-| Option                     | Type      | Description                                                   |
-+============================+===========+===============================================================+
-| BUILD_DOCUMENTATION        | BOOL      | Enable the compilation and/or installation of the package     |
-|                            |           | documentation. May still need to run make doc, make manual,   |
-|                            |           | make site, etc. by hand, this option enables those settings.  |
-+----------------------------+-----------+---------------------------------------------------------------+
-| BUILD_EXAMPLE_             | BOOL      | Build all example code included with the package.             |
-+----------------------------+-----------+---------------------------------------------------------------+
-| BUILD_TESTING              | BOOL      | Build the tree used for testing the package.                  |
-+----------------------------+-----------+---------------------------------------------------------------+
-| DEFAULT_TEMPLATE           | PATH      | Path to the directory of the default mad-libs style project   |
-|                            |           | template that will be installed with BASIS.                   |
-+----------------------------+-----------+---------------------------------------------------------------+
-| INSTALL_ALL_TEMPLATES      | BOOL      | In addition to the DEFAULT_TEMPLATE, install all additional   |
-|                            |           | project templates provided by BASIS                           |
-+----------------------------+-----------+---------------------------------------------------------------+
-| ITK_DIR                    | PATH      |  Path to the directory of your ITK installation               |
-+----------------------------+-----------+---------------------------------------------------------------+
-| MATLAB_DIR                 | PATH      |  Path to the directory of your MATLAB installation            |
-+----------------------------+-----------+---------------------------------------------------------------+
-| SPHINX_DIR                 | PATH      |  Path to the directory of your Sphinx installation            |
-+----------------------------+-----------+---------------------------------------------------------------+
+    buildoptions
 
 
 .. _Build:
