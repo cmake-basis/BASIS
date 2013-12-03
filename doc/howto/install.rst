@@ -29,10 +29,10 @@ Build and Installation
 ======================
 
 This document describes the common procedure to build and install any
-software developed at and distributed by SBIA. In particular, software built
-on top of BASIS, a meta-project which defines the Build system And Software
-Implementation Standard established in the fall of 2011. See the
-:doc:`/index` page for details on this meta-project.
+software developed on top of BASIS, a meta-project which defines 
+the Build system And Software Implementation Standard established 
+in the fall of 2011. See the :doc:`/index` page for details on 
+this meta-project.
 
 If you obtained a binary distribution package for a supported platform,
 please follow the installation instructions corresponding to your operating
