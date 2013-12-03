@@ -20,7 +20,8 @@
 CMake Options
 =============
 
-The following CMake options/variables can be configured:
+The following standard CMake_ options/variables can be configured, 
+see the documentation of CMake_ itself for more details:
 
 .. option:: -DBASIS_DIR:PATH
 
@@ -31,7 +32,9 @@ The following CMake options/variables can be configured:
 
     Whether build and installation instructions for the documentation should
     be added. If OFF, the build configuration of the doc/ directory is skipped.
-    Otherwise, the ``doc`` target is added which can be used to build the documentation.
+    Otherwise, the ``doc`` target is added which can be used to build the documentation. 
+    You may still need to run make doc, make manual, make site, etc. by hand, this option 
+    enables those settings.
 
 .. note:: Though surprising at first glance, the build of the documentation may
           often be preceeded by the build of the software itself. The reason is
@@ -67,6 +70,10 @@ The following CMake options/variables can be configured:
     such optional package a ``USE_<Package>`` option is added by BASIS if this
     package was found on your system. It can be set to OFF in order to disable
     the use of this optional dependency by this software.
+
+
+The following BASIS specific options are available when building packages. For the full set of options and descriptions use the ccmake_ tool. For CMake_ specific options see the documentation for your CMake installation.
+
 
 
 ======================
@@ -182,6 +189,32 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
     Subversion repository. It is recommended to leave this option disabled and to
     build the ``changelog`` target separate from the rest of the software package
     instead (see :ref:`Build`).
+
+.. option:: -DITK_DIR:PATH
+
+    Path to the directory of your ITK installation, if applicable.   
+    
+.. option:: -DMATLAB_DIR:PATH
+
+    Path to the directory of your MATLAB installation, if applicable. 
+    
+.. option:: -DSPHINX_DIR:PATH
+
+    Path to the directory of your Sphinx installation, if applicable. 
+
+==========================
+BASIS Installation Options
+==========================
+
+
+.. option:: -DDEFAULT_TEMPLATE:PATH
+    Path to the directory of the default mad-libs style project
+    template that will be installed with BASIS.
+
+.. option:: -DINSTALL_ALL_TEMPLATES:BOOL
+
+    In addition to the DEFAULT_TEMPLATE, install all additional project templates 
+    provided by BASIS
 
 
 .. _CMake GUI: http://www.cmake.org/cmake/help/runningcmake.html
