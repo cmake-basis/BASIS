@@ -52,10 +52,9 @@ functionality to make the whole process seamless!
 Features
 ========
 - Project Creation
-   - Quick setup with mad-libs style text substitution
-   - Customizable project templates
-   - :ref:`<HowToCreateAProject>`
-- Filesystem layout standards
+   - Quick setup with mad-libs style text substitution with :doc:`basisproject <create-and-modify-project>`
+   - :doc:`Customizable project templates <template-customization>`
+- :doc:`Filesystem layout standards <fhs>`
 - `Build system utilities`_
    - New `CMake Module APIs`_
    - Version Control Integration
@@ -161,6 +160,7 @@ and explain common tasks like creating a new project or installation.
     howto/package
     howto/install
     howto/run-automated-tests
+    howto/template-customization
 
 
 .. _APIDocumentation:

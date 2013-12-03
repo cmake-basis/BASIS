@@ -1,3 +1,6 @@
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
+
 .. raw:: html
 
    <!--
@@ -11,31 +14,29 @@
 
    ============================================================================
 
+   
    -->
+
+.. NOTE: This means do not edit the HTML output, you CAN modify the .rst file!
 
 .. meta::
     :description: This article describes the software project template of BASIS,
                   a build system and software implementation standard.
 
 =========================
-Software Project Template
+BASIS Project Template
 =========================
 
-The starting point for every project is to setup a directory structure
-which helps to organize the project files. Moreover, in order to
-configure the build system using CMake_, ``CMakeLists.txt`` files have to
-be added to the project with proper CMake code to add build targets
-with the corresponding build flags to the build system. In order to
-unify the structure of projects following common practices and further
-to simply take off the burder from the developer on setting up a
-basic project, BASIS provides a so-called (Software) Project Template.
-Please refer to the :doc:`fhs` for a definition of the common project
-directory structure. This directory structure is part of the standard
-and thus required by BASIS. The project template therefore follows this
-standard regarding the directory structure. The further purpose of the
-software project template is to provide template files concerned with
-the configuration of the build, testing, installation, and packaging.
-In the following, the role of each template file is summarized.
+The BASIS Project Template defines a standardized project directory 
+and file structure for consistency and interoperability that is required
+to follow the BASIS standard. The idea is to make projects easier for the
+developer to create, share, and use. It provides template files for the 
+configuration of the build, testing, installation, and packaging, as well 
+as a common directory structure which can be found at :doc:`fhs`.
+The Software Project Template also defines how CMake_, ``CMakeLists.txt`` 
+files are set up and the basic build flags that are required.
+The easiest way to get started is by using the ``basisproject`` utility 
+to generate a completed template for your project that follows this standard.
 
 
 Required Project Files
