@@ -18,5 +18,5 @@ macro (install_basis_template TEMPLATE_NAME)
   endif ()
 endmacro ()
 
-
+install_basis_template (basisTemplate)
 install_basis_template (sbia)

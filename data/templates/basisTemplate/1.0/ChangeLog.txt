@@ -1,0 +1,18 @@
+..
+
+<copyright>
+
+<contact>
+
+.. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
+
+
+Changes
+=======
+
+.. _v1.0.0:
+
+Release 1.0.0 (Jan 1, <year>)
+-----------------------------
+
+- First stable release.
