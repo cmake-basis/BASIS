@@ -195,9 +195,9 @@ set (INSTALL_TEXINFO_DIR "@INSTALL_TEXINFO_DIR@")
 # ============================================================================
 
 ## @brief Absolute path of root directory of source tree of top-level project.
-set (BASIS_PROJECT_SOURCE_DIR "@BASIS_PROJECT_SOURCE_DIR@")
+set (TOPLEVEL_PROJECT_SOURCE_DIR "@TOPLEVEL_PROJECT_SOURCE_DIR@")
 ## @brief Absolute path of root directory of build tree of top-level project.
-set (BASIS_PROJECT_BINARY_DIR "@BASIS_PROJECT_BINARY_DIR@")
+set (TOPLEVEL_PROJECT_BINARY_DIR "@TOPLEVEL_PROJECT_BINARY_DIR@")
 
 
 ## @}
