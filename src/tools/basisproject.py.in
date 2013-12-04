@@ -989,7 +989,10 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
             sys.exit(1)
         # set path of original template to current template
         args.original_template = args.template
-        if not args.noalter:
+        if args.noalter:
+            # if noalter is set, copy the config file as well
+            config.required.append('_config.py')
+        else:
             # require a project description
             if not args.description:
                 sys.stderr.write("No project description given!\n")
