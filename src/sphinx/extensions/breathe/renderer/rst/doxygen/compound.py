@@ -138,7 +138,7 @@ class SectionDefTypeSubRenderer(Renderer):
                 "dcop-func":  "DCOP Function",
                 "property":  "Property",
                 "event":  "Event",
-                "public-static-func": "Public Static Functons",
+                "public-static-func": "Public Static Functions",
                 "public-static-attrib": "Public Static Attributes",
                 "protected-type":  "Protected Types",
                 "protected-func":  "Protected Functions",
@@ -200,13 +200,24 @@ class SectionDefTypeSubRenderer(Renderer):
 
 class MemberDefTypeSubRenderer(Renderer):
 
-    def create_target(self, refid):
+    def create_doxygen_target(self):
+        """Can be overridden to create a target node which uses the doxygen refid information
+        which can be used for creating links between internal doxygen elements.
 
+        The default implementation should suffice most of the time.
+        """
+
+        refid = "%s%s" % (self.project_info.name(), self.data_object.id)
         return self.target_handler.create_target(refid)
 
-    def create_domain_id(self):
+    def create_domain_target(self):
+        """Should be overridden to create a target node which uses the Sphinx domain information so
+        that it can be linked to from Sphinx domain roles like cpp:func:`myFunc`
 
-        return ""
+        Returns a list so that if there is no domain active then we simply return an empty list
+        instead of some kind of special null node value"""
+
+        return []
 
     def title(self):
 
@@ -225,7 +236,6 @@ class MemberDefTypeSubRenderer(Renderer):
 
         return args
 
-
     def description(self):
 
         description_nodes = []
@@ -243,31 +253,25 @@ class MemberDefTypeSubRenderer(Renderer):
 
     def render(self):
 
-        refid = "%s%s" % (self.project_info.name(), self.data_object.id)
+        # Build targets for linking
+        term_nodes = self.create_domain_target()
+        term_nodes.extend(self.create_doxygen_target())
 
-        domain_id = self.create_domain_id()
+        # Build title nodes
+        term_nodes.extend(self.title())
+        term = self.node_factory.paragraph("", "", *term_nodes )
 
-        title = self.title()
-        target = self.create_target(refid)
-        target.extend(title)
-        term = self.node_factory.paragraph("", "", ids=[domain_id,refid], *target )
+        # Build description nodes
         definition = self.node_factory.paragraph("", "", *self.description())
+
         return [term, self.node_factory.block_quote("", definition)]
 
 
 class FuncMemberDefTypeSubRenderer(MemberDefTypeSubRenderer):
 
-    def create_target(self, refid):
+    def create_domain_target(self):
 
-        self.domain_handler.create_function_target(self.data_object)
-
-        return MemberDefTypeSubRenderer.create_target(self, refid)
-
-
-    def create_domain_id(self):
-
-        return self.domain_handler.create_function_id(self.data_object)
-
+        return self.domain_handler.create_function_target(self.data_object)
 
     def title(self):
 
@@ -314,7 +318,7 @@ class FuncMemberDefTypeSubRenderer(MemberDefTypeSubRenderer):
                     )
                 )
 
-        # Setup the line block with gathered informationo
+        # Setup the line block with gathered information
         block = self.node_factory.line_block(
                 "",
                 *lines
@@ -327,8 +331,19 @@ class DefineMemberDefTypeSubRenderer(MemberDefTypeSubRenderer):
 
     def title(self):
 
-        name = self.node_factory.strong(text=self.data_object.name)
-        return [name]
+        title = []
+
+        title.append(self.node_factory.strong(text=self.data_object.name))
+
+        if self.data_object.param:
+            title.append(self.node_factory.Text("("))
+            for i, parameter in enumerate(self.data_object.param):
+                if i: title.append(self.node_factory.Text(", "))
+                renderer = self.renderer_factory.create_renderer(self.data_object, parameter)
+                title.extend(renderer.render())
+            title.append(self.node_factory.Text(")"))
+
+        return title
 
     def description(self):
 
@@ -471,11 +486,11 @@ class ParamTypeSubRenderer(Renderer):
 
         # Parameter name
         if self.data_object.declname:
-            nodelist.append(self.node_factory.Text(" "))
+            if nodelist: nodelist.append(self.node_factory.Text(" "))
             nodelist.append(self.node_factory.Text(self.data_object.declname))
 
         if self.output_defname and self.data_object.defname:
-            nodelist.append(self.node_factory.Text(" "))
+            if nodelist: nodelist.append(self.node_factory.Text(" "))
             nodelist.append(self.node_factory.Text(self.data_object.defname))
 
         # Default value
@@ -519,6 +534,12 @@ class DocRefTextTypeSubRenderer(Renderer):
 
 
 class DocParaTypeSubRenderer(Renderer):
+    """
+    <para> tags in the Doxygen output tend to contain either text or a single other tag of interest.
+    So whilst it looks like we're combined descriptions and program listings and other things, in
+    the end we generally only deal with one per para tag. Multiple neighbouring instances of these
+    things tend to each be in a separate neighbouring para tag.
+    """
 
     def render(self):
 
@@ -527,21 +548,42 @@ class DocParaTypeSubRenderer(Renderer):
             renderer = self.renderer_factory.create_renderer(self.data_object, item)
             nodelist.extend(renderer.render())
 
-        field_nodes = []
-        for entry in self.data_object.parameterlist:        # Parameters/Exceptions
-            renderer = self.renderer_factory.create_renderer(self.data_object, entry)
-            field_nodes.extend(renderer.render())
-
-        for item in self.data_object.simplesects:           # Returns
+        for item in self.data_object.programlisting:       # Program listings
             renderer = self.renderer_factory.create_renderer(self.data_object, item)
-            field_nodes.extend(renderer.render())
+            nodelist.extend(renderer.render())
 
-        if field_nodes:
-            field_list = self.node_factory.field_list("", *field_nodes)
-            nodelist.append(field_list)
+        for item in self.data_object.images:               # Images
+            renderer = self.renderer_factory.create_renderer(self.data_object, item)
+            nodelist.extend(renderer.render())
+
+        definition_nodes = []
+        for item in self.data_object.simplesects:          # Returns, user par's, etc
+            renderer = self.renderer_factory.create_renderer(self.data_object, item)
+            definition_nodes.extend(renderer.render())
+
+        for entry in self.data_object.parameterlist:       # Parameters/Exceptions
+            renderer = self.renderer_factory.create_renderer(self.data_object, entry)
+            definition_nodes.extend(renderer.render())
+
+        if definition_nodes:
+            definition_list = self.node_factory.definition_list("", *definition_nodes)
+            nodelist.append(definition_list)
 
         return [self.node_factory.paragraph("", "", *nodelist)]
 
+
+class DocImageTypeSubRenderer(Renderer):
+    "Output docutils image node using name attribute from xml as the uri"
+
+    def render(self):
+
+        path_to_image = self.project_info.sphinx_abs_path_to_file(
+                self.data_object.name
+                )
+
+        options = { "uri" : path_to_image }
+
+        return [self.node_factory.image("", **options)]
 
 class DocMarkupTypeSubRenderer(Renderer):
 
@@ -567,7 +609,7 @@ class DocMarkupTypeSubRenderer(Renderer):
 
 
 class DocParamListTypeSubRenderer(Renderer):
-    """ Parameter/Exectpion documentation """
+    "Parameter/Exception documentation"
 
     lookup = {
             "param" : "Parameters",
@@ -586,11 +628,11 @@ class DocParamListTypeSubRenderer(Renderer):
         # Fild list entry
         nodelist_list = self.node_factory.bullet_list("", classes=["breatheparameterlist"], *nodelist)
 
-        field_name = self.lookup[self.data_object.kind]
-        field_name = self.node_factory.field_name("", field_name)
-        field_body = self.node_factory.field_body('', nodelist_list)
+        term_text = self.lookup[self.data_object.kind]
+        term = self.node_factory.term("", "", self.node_factory.strong( "", term_text ) )
+        definition = self.node_factory.definition('', nodelist_list)
 
-        return [self.node_factory.field('', field_name, field_body)]
+        return [self.node_factory.definition_list_item('', term, definition)]
 
 
 
@@ -653,7 +695,7 @@ class DocSimpleSectTypeSubRenderer(Renderer):
 
         text = self.node_factory.Text(self.data_object.kind.capitalize())
 
-        return [text]
+        return [self.node_factory.strong( "", text )]
 
     def render(self):
 
@@ -662,10 +704,10 @@ class DocSimpleSectTypeSubRenderer(Renderer):
             renderer = self.renderer_factory.create_renderer(self.data_object, item)
             nodelist.append(self.node_factory.paragraph("", "", *renderer.render()))
 
-        field_name = self.node_factory.field_name("", *self.title())
-        field_body = self.node_factory.field_body("", *nodelist)
+        term = self.node_factory.term("", "", *self.title())
+        definition = self.node_factory.definition("", *nodelist)
 
-        return [self.node_factory.field("", field_name, field_body)]
+        return [self.node_factory.definition_list_item("", term, definition)]
 
 
 class ParDocSimpleSectTypeSubRenderer(DocSimpleSectTypeSubRenderer):
@@ -674,7 +716,7 @@ class ParDocSimpleSectTypeSubRenderer(DocSimpleSectTypeSubRenderer):
 
         renderer = self.renderer_factory.create_renderer(self.data_object, self.data_object.title)
 
-        return renderer.render()
+        return [self.node_factory.strong( "", *renderer.render() )]
 
 
 class DocTitleTypeSubRenderer(Renderer):
@@ -685,6 +727,94 @@ class DocTitleTypeSubRenderer(Renderer):
 
         for item in self.data_object.content_:
             renderer = self.renderer_factory.create_renderer(self.data_object, item)
+            nodelist.extend(renderer.render())
+
+        return nodelist
+
+
+class DocForumlaTypeSubRenderer(Renderer):
+
+    def render(self):
+
+        nodelist = []
+
+        for item in self.data_object.content_:
+
+            latex = item.getValue()
+
+            # Somewhat hacky if statements to strip out the doxygen markup that slips through
+
+            node = None
+
+            # Either inline
+            if latex.startswith("$") and latex.endswith("$"):
+                latex = latex[1:-1]
+
+                # If we're inline create a math node like the :math: role
+                node = self.node_factory.math()
+            else:
+                # Else we're multiline
+                node = self.node_factory.displaymath()
+
+            # Or multiline
+            if latex.startswith("\[") and latex.endswith("\]"):
+                latex = latex[2:-2:]
+
+            # Here we steal the core of the mathbase "math" directive handling code from:
+            #    sphinx.ext.mathbase
+            node["latex"] = latex
+
+            # Required parameters which we don't have values for
+            node["label"] = None
+            node["nowrap"] = False
+            node["docname"] = self.state.document.settings.env.docname
+
+            nodelist.append(node)
+
+        return nodelist
+
+
+class ListingTypeSubRenderer(Renderer):
+
+    def render(self):
+
+        lines = []
+        nodelist = []
+        for i, entry in enumerate(self.data_object.codeline):
+            # Put new lines between the lines. There must be a more pythonic way of doing this
+            if i:
+                nodelist.append(self.node_factory.Text("\n"))
+            renderer = self.renderer_factory.create_renderer(self.data_object, entry)
+            nodelist.extend(renderer.render())
+
+        # Add blank string at the start otherwise for some reason it renders
+        # the pending_xref tags around the kind in plain text
+        block = self.node_factory.literal_block(
+                "",
+                "",
+                *nodelist
+                )
+
+        return [block]
+
+class CodeLineTypeSubRenderer(Renderer):
+
+    def render(self):
+
+        nodelist = []
+        for entry in self.data_object.highlight:
+            renderer = self.renderer_factory.create_renderer(self.data_object, entry)
+            nodelist.extend(renderer.render())
+
+        return nodelist
+
+class HighlightTypeSubRenderer(Renderer):
+
+    def render(self):
+
+        nodelist = []
+        for entry in self.data_object.content_:
+            renderer = self.renderer_factory.create_renderer(self.data_object, entry)
             nodelist.extend(renderer.render())
 
         return nodelist
@@ -784,6 +914,18 @@ class VerbatimTypeSubRenderer(Renderer):
 
             # Handle has a preformatted text
             return [self.node_factory.literal_block(text, text)]
+
+        # do we need to strip leading asterisks?
+        # NOTE: We could choose to guess this based on every line starting with '*'.
+        #   However This would have a side-effect for any users who have an rst-block
+        #   consisting of a simple bullet list.
+        #   For now we just look for an extended embed tag
+        if self.data_object.text.strip().startswith("embed:rst:leading-asterisk"):
+
+            lines = self.data_object.text.splitlines()
+            # Replace the first * on each line with a blank space
+            lines = map( lambda text: text.replace( "*", " ", 1 ), lines )
+            self.data_object.text = "\n".join( lines )
 
         rst = self.content_creator(self.data_object.text)
 

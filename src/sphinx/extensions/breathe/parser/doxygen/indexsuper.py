@@ -27,6 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ----------------------------------------------------------------------------
+#!/usr/bin/env python
 
 #
 # Generated Thu Jun 11 18:43:54 2009 by generateDS.py.
@@ -34,7 +35,6 @@
 
 import sys
 import getopt
-from string import lower as str_lower
 from xml.dom import minidom
 from xml.dom import Node
 

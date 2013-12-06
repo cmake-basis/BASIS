@@ -27,18 +27,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ----------------------------------------------------------------------------
+#!/usr/bin/env python
 
 """
 Generated Mon Feb  9 19:08:05 2009 by generateDS.py.
 """
 
-from string import lower as str_lower
 from xml.dom import minidom
 from xml.dom import Node
+from xml.parsers.expat import ExpatError
+
 from docutils import nodes
-
-
-import sys
 
 import compoundsuper as supermod
 from compoundsuper import MixedContainer
@@ -790,6 +789,8 @@ class docParaTypeSub(supermod.docParaType):
         self.parameterlist = []
         self.simplesects = []
         self.content = []
+        self.programlisting =[]
+        self.images =[]
 
     def buildChildren(self, child_, nodeName_):
         supermod.docParaType.buildChildren(self, child_, nodeName_)
@@ -813,6 +814,16 @@ class docParaTypeSub(supermod.docParaType):
             obj_ = supermod.docSimpleSectType.factory()
             obj_.build(child_)
             self.simplesects.append(obj_)
+        elif child_.nodeType == Node.ELEMENT_NODE and \
+                nodeName_ == 'programlisting':
+            obj_ = supermod.listingType.factory()
+            obj_.build(child_)
+            self.programlisting.append(obj_)
+        elif child_.nodeType == Node.ELEMENT_NODE and \
+                nodeName_ == 'image':
+            obj_ = supermod.docImageType.factory()
+            obj_.build(child_)
+            self.images.append(obj_)
         elif child_.nodeType == Node.ELEMENT_NODE and (
                 nodeName_ == 'bold' or
                 nodeName_ == 'emphasis' or
@@ -831,6 +842,13 @@ class docParaTypeSub(supermod.docParaType):
             childobj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
                 MixedContainer.TypeNone, 'verbatim', childobj_)
+            self.content.append(obj_)
+        elif child_.nodeType == Node.ELEMENT_NODE and \
+            nodeName_ == 'formula':
+            childobj_ = docFormulaTypeSub.factory()
+            childobj_.build(child_)
+            obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
+                MixedContainer.TypeNone, 'formula', childobj_)
             self.content.append(obj_)
 
 supermod.docParaType.subclass = docParaTypeSub
@@ -879,14 +897,18 @@ supermod.docTitleType.subclass = docTitleTypeSub
 class ParseError(Exception):
     pass
 
+class FileIOError(Exception):
+    pass
+
 def parse(inFilename):
 
     try:
         doc = minidom.parse(inFilename)
     except IOError, e:
-        print e
-        raise ParseError(inFilename)
-       
+        raise FileIOError(e)
+    except ExpatError, e:
+        raise ParseError(e)
+
     rootNode = doc.documentElement
     rootObj = supermod.DoxygenType.factory()
     rootObj.build(rootNode)
