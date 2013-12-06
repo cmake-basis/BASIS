@@ -604,15 +604,15 @@ set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
 set (BASIS_SPHINX_CONFIG "${CMAKE_CURRENT_LIST_DIR}/sphinx_conf.py.in")
 
 ## @brief Default Sphinx theme.
-set (BASIS_SPHINX_HTML_THEME "sbia")
+set (BASIS_SPHINX_HTML_THEME "default")
 
 ## @brief Default Sphinx theme options.
 set (BASIS_SPHINX_HTML_THEME_OPTIONS
   PROJECT_LOGO   None
-  SHOW_SBIA_LOGO true
-  SHOW_PENN_LOGO true
-  SHOW_RELBAR2   false
-  ROOT_RELLINKS  "[('home', 'index')]"
+  SHOW_SBIA_LOGO false
+  SHOW_PENN_LOGO false
+  #SHOW_RELBAR2   false
+  #ROOT_RELLINKS  "[('home', 'index')]"
 )
 
 # ============================================================================
