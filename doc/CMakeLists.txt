@@ -100,6 +100,7 @@ basis_add_doc (
                    # testdriver which includes *.inc files
                    "*/testdriver.cxx"
   HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
+  OUTPUT html xml
 )
 
 # ============================================================================
@@ -113,16 +114,15 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst")
     GENERATOR        Sphinx
     BUILDER          pdf html dirhtml man
     MAN_SECTION      7
-    HTML_THEME       sbia
-    RELLINKS         download installation manual help people
+    HTML_THEME       default
+    #RELLINKS         download installation manual help people
     SIDEBARWIDTH     300
-    HTML_LOGO        logo.png
+    HTML_LOGO        logo.svg
     HTML_SIDEBARS    searchbox globaltoc
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
     LATEX_TITLE      "${PROJECT_NAME} Software Manual"
     OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
-    DOXYLINK         apidoc
-    DOXYLINK_URL     http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
+    BREATHE          apidoc
   )
 
   basis_add_custom_target (site)
@@ -146,11 +146,12 @@ else ()
       GENERATOR     Sphinx
       BUILDER       html dirhtml pdf man
       MAN_SECTION   7
-      HTML_THEME    sbia
-      RELLINKS      download installation manual publications people
+      HTML_THEME    default
+      #RELLINKS      download installation manual publications people
       HTML_SIDEBARS searchbox globaltoc
       LATEX_TITLE   "${PROJECT_NAME}"
       OUTPUT_NAME   "${SITE_OUTPUT_NAME}"
+      BREATHE       apidoc
     )
   endif ()
 

@@ -118,7 +118,7 @@ Template Layout
     
     
 Template Versions
------------------
+=================
 
 
 The template system is designed to help automate updates of existing libraries to new template versions.
@@ -138,6 +138,7 @@ with a basic example. Below is a simplified example of a custom substitution con
 
 
 .. code:: python
+
     # project template configuration script for basisproject tool
 
     # ------------------------------------------------------------------------------

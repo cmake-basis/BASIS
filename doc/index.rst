@@ -33,6 +33,9 @@
 
     \pagebreak
 
+
+
+
 ========
 Overview
 ========
@@ -76,17 +79,6 @@ Features
 
 Most functionality in BASIS is optional so you get to choose what you want to use.
 
-.. _Standards:
-       
-Standards
-=========
-
-.. toctree::
-    :maxdepth: 2
-
-    standard/buildsystem
-    standard/implementation
-    standard/style
 
 .. _ProgrammingLanguages:
 
@@ -112,65 +104,7 @@ Supported Packages
  - gtest_
  - gflags_
  - Boost_
- 
-.. _QuickStartGuides:
 
-Quick Start Guides
-==================
-
-Use the quick start guide to familiarize yourself with BASIS and get started as quickly as possible.
-Then when you are ready for more detail you can try out the :ref:`Tutorials`.
-
-1. :download:`Getting Started <tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`
-   (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Quick%20Start%20Guide%20-%2001%20Getting%20Started.pptx>`__)
-
-
-.. _Tutorials:
-
-Tutorials
-=========
-
-The tutorial slides linked here for download give a slide-by-slide introduction to BASIS and
-its use including in-depth information and references to further documentation. For a less
-comprehensive tutorial-like introduction, please refer to the :ref:`QuickStartGuides`.
-
-1. download :download:`Getting Started <tutorials/BASIS Tutorial - 01 Getting Started.pptx>`
-   (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
-3. download :download:`BASIS Introduction <BASIS_Introduction.pptx>` for an explanation of the components and purpose of BASIS (`ref <http://www.rad.upenn.edu/sbia/software/basis/_downloads/BASIS_Introduction.pptx>`__).
-
-.. The ref link is required for the PDF version as the download directive in
-   this case does not translate to a hyperlink, but text only.
-
-
-.. _HowToGuides:
-
-How-to Guides
-=============
-
-The how-to guides explain the basics of following the :ref:`Standards <Standards>`, 
-and explain common tasks like creating a new project or installation.
-
-.. toctree::
-    :maxdepth: 2
-
-    howto/create-and-modify-project
-    howto/manage-data
-    howto/document
-    howto/branch-and-release
-    howto/package
-    howto/install
-    howto/run-automated-tests
-    howto/template-customization
-
-
-.. _APIDocumentation:
-
-API Documentation
-=================
-
-The `API documentation <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/>`_
-is generated from in-source comments using Doxygen_ and the filters provided by BASIS
-for languages other than C++.
 
 .. _Dependencies:
 
@@ -199,16 +133,74 @@ to use CMake_ as their build system, then implemented a project creation templat
 Over time, these components were transformed to important parts of BASIS.
 
 
-.. toctree::
-    :hidden:
+People
+======
 
+Advisors
+--------
+
+- `Christos Davatzikos <http://www.rad.upenn.edu/sbia/Christos.Davatzikos>`_
+- `Kilian M. Pohl <http://www.rad.upenn.edu/sbia/Kilian.Pohl>`_
+
+Software Development
+--------------------
+
+- `Andreas Schuh <http://www.rad.upenn.edu/sbia/Andreas.Schuh>`_
+- `Andrew Hundt <ahundt@cmu.edu>`_
+
+Contributors
+------------
+
+The following people notably helped to define and shape BASIS.
+
+- `Dominique Belhachemi <http://www.rad.upenn.edu/sbia/Dominique.Belhachemi>`_
+- `Kayhan N. Batmanghelich <http://www.rad.upenn.edu/sbia/Nematollah.Batmanghelich/Kayhan.Batmanghelich/Home.html>`_
+- `Luke Bloy <http://www.rad.upenn.edu/sbia/Luke.Bloy>`_
+- `Yangming Ou <http://www.rad.upenn.edu/sbia/Yangming.Ou>`_
+
+
+Table of Contents
+=================
+
+.. toctree::
+    :maxdepth: 3
+    
     self
-    download
-    changelog
+    
+.. toctree::
+    :maxdepth: 3
+    
+    Quick-Start
+    How-To
+    Standards
+    API-Documentation
+
+.. toctree::
+    :maxdepth: 3
+
     installation
-    manual
+    download
     help
-    people
+    changelog   
+
+.. .. toctree::
+..     :hidden:
+.. 
+..     self
+..     download
+..     changelog
+..     installation
+..     manual
+..     help
+..     people
+
+
+
+
+
+
+.. _Doxygen: http://www.stack.nl/~dimitri/doxygen/
+
 
 
 .. _CMake Module APIs: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
