@@ -19,14 +19,14 @@ div.title
     background-color: #660000;
 }
 
-div.sbialogo
+div.divisionlogo
 {
     vertical-align: bottom;
     border-collapse: separate;
     background-color: #660000;
 }
 
-div.sbialogo img
+div.divisionlogo img
 {
     float: left;
     border: 0px none;
@@ -37,7 +37,7 @@ div.sbialogo img
     background-color: #660000;
 }
 
-div.pennlogo
+div.vendorlogo
 {
     float: right;
     vertical-align: bottom;
@@ -49,7 +49,7 @@ div.pennlogo
     background-color: #660000;
 }
 
-div.pennlogo img
+div.vendorlogo img
 {
     border: 0px none;
     background-color: #660000;

@@ -93,6 +93,18 @@ options = {
                'doc/people.rst'
              ]
   },
+  'doc-themes' : {
+    'desc' : 'Add/remove Sphinx documentation (sphinx-doc.org) theme files for software manual/web site.',
+    'path' : [
+               'doc/sphinx/themes/sbia/layout.html',
+               'doc/sphinx/themes/sbia/pdflink.html',
+               'doc/sphinx/themes/sbia/sourcepdflink.html',
+               'doc/sphinx/themes/sbia/theme.conf',
+               'doc/sphinx/themes/sbia/static/logo_penn.gif',
+               'doc/sphinx/themes/sbia/static/logo_sbia.png',
+               'doc/sphinx/themes/sbia/static/sbia.css_t'
+             ]
+  },
   'example' : {
     'desc' : 'Add/remove directory for example files.',
     'path' : [ 'example/CMakeLists.txt' ]
@@ -132,11 +144,11 @@ presets = {
   },
   'default' : {
     'desc' : 'Choose default project template.',
-    'args' : [ 'doc', 'doc-rst', 'example', 'include', 'src', 'test' ]
+    'args' : [ 'doc', 'doc-rst', 'doc-sphinx', 'example', 'include', 'src', 'test' ]
   },
   'toplevel' : {
     'desc' : 'Create toplevel project.',
-    'args' : [ 'doc', 'doc-rst', 'example', 'modules' ]
+    'args' : [ 'doc', 'doc-rst', 'doc-sphinx', 'example', 'modules' ]
   },
   'module' : {
     'desc' : 'Create module of toplevel project.',

@@ -40,6 +40,20 @@ if (PROJECT_PACKAGE_VENDOR)
   list (APPEND SITE_OPTIONS "HTML_THEME" "${PROJECT_PACKAGE_VENDOR_L}")
 endif ()
 
+
+# Select sphinx documentation tool theme if it is available, 
+# you can remove these lines to go with the default set by  
+# BASIS_SPHINX_HTML_THEME_PATH and BASIS_SPHINX_HTML_THEME 
+# in BasisSettings.cmake and the root build configuration 
+# CMakeLists.txt file, or change the selection here to modify 
+# the selected default 
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sphinx/themes")
+  set(BASIS_SPHINX_HTML_THEME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/sphinx/themes")
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sphinx/themes/sbia")
+    set(BASIS_SPHINX_HTML_THEME "sbia")
+  endif()
+endif()
+
 # ============================================================================
 # pre-generated output files
 # ============================================================================
@@ -76,6 +90,7 @@ foreach (N IN ITEMS ${GUIDE_OUTPUT_NAME} guide DeveloperGuide DeveloperManual de
     break ()
   endif ()
 endforeach ()
+  
 
 # ============================================================================
 # API documentation (in-source code comments)
