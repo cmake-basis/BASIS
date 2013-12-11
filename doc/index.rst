@@ -55,9 +55,9 @@ functionality to make the whole process seamless!
 Features
 ========
 - Project Creation
-   - Quick setup with mad-libs style text substitution with :doc:`basisproject <create-and-modify-project>`
-   - :doc:`Customizable project templates <template-customization>`
-- :doc:`Filesystem layout standards <fhs>`
+   - Quick setup with mad-libs style text substitution with basisproject
+   - Customizable project templates
+- Filesystem layout standards
 - `Build system utilities`_
    - New `CMake Module APIs`_
    - Version Control Integration
@@ -181,6 +181,7 @@ Table of Contents
     installation
     download
     help
+    people
     changelog   
 
 .. .. toctree::

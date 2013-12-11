@@ -6,8 +6,17 @@
 API Documentation
 =================
 
-.. doxygenindex::
 
+.. toctree::
+    :maxdepth: 2
+
+    apidoc/modules
+    apidoc/namespaces
+    apidoc/classlist
+    apidoc/files
+
+Older API Documentation Versions
+--------------------------------
 
 The `API documentation <http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/>`_
 is generated from in-source comments using Doxygen_ and the filters provided by BASIS
@@ -45,6 +54,10 @@ for languages other than C++.
 
 .. role:: apilink
     :class: apilink
+    
+
+.. Breathe doxygen index, currently dumps all classes on to this page, so it isn't quite what we want
+.. .. doxygenindex::
 
 .. |Tools v2.1|              replace:: :apilink:`v2.1`
 .. |Modules v2.1|            replace:: :apilink:`v2.1`

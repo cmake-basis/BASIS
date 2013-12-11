@@ -99,7 +99,11 @@ basis_add_doc (
                    "*/test_main.cxx"      # main() of unit tests based on GMock
                    # testdriver which includes *.inc files
                    "*/testdriver.cxx"
+  
   HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
+  HTML_HEADER	"${PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in" 
+  HTML_FOOTER "${PROJECT_SOURCE_DIR}/doc/doxygen_footer.html.in" 
+  HTML_EXTRA_STYLESHEET "${PROJECT_SOURCE_DIR}/doc/doxygen_extra.css.in"
   OUTPUT html xml
 )
 
