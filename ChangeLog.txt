@@ -22,16 +22,16 @@ Changes
 Release 3.0.0 (Dec 24, 2013)
 ----------------------------
 
-- Generalized templates allow any organization to use BASIS
-- All sbia specific functionality has been separated out and is now optional
-- basisproject improvements
-   - Customizable templates and substitution parameters
-   - Set default template at install time with CMake DEFUALT_TEMPLATE parameter
-   - support for binary template files
+- Generalized templates allow any organization to use BASIS.
+- All sbia specific functionality has been separated out and is now optional.
+- basisproject improvements.
+   - Customizable templates and substitution parameters.
+   - Set default template at install time with CMake DEFUALT_TEMPLATE parameter.
+   - support for binary template files.
 - Multiple new sphinx themes availabile for html documentation.
-- Updated BASIS provided CMake variables to be more consistent with CMake
-- Updated and improved powerpoint introductory presentations
-- Improved and easier to read documentation
+- Updated BASIS provided CMake variables to be more consistent with CMake.
+- Updated and improved powerpoint introductory presentations.
+- Improved and easier to read documentation.
 
    
 .. _v2.1.4:
