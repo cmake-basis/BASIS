@@ -139,7 +139,7 @@ The corresponding source files must be named after these links. For example, giv
 above CMake code, the reStructuredText source of the page with the download
 instructions has to be saved in the file ``site/download.rst``.
 
-See the :ref:`corresponding section <Build>` of the :doc:`install`
+See the :ref:`corresponding section <Build>` of the :doc:`../install`
 guide for details on how to generate the HTML pages from the reST source
 files given the specification of a Sphinx documentation build target such as the
 ``site`` target defined by above template CMake code.

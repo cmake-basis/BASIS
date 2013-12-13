@@ -20,8 +20,7 @@ INTRODUCTION
 
   For general build and installation instructions which apply to any software
   developed on top of the SBIA Build system And Software Implementation
-  Standard (BASIS) [1], please refer to the respective how-to guide of the
-  BASIS documentation [2].
+  Standard (BASIS), see doc/install.rst for detailed install instructions.
 
 
 
@@ -147,6 +146,6 @@ BUILDING THE SOFTWARE FROM SOURCES
 REFERENCES
 ==========
 
-  [1] http://www.rad.upenn.edu/sbia/software/basis/
+  [1] https://github.com/schuhschuh/cmake-basis/
 
   [2] http://www.rad.upenn.edu/sbia/software/basis/howto/install.html

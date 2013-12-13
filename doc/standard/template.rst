@@ -90,7 +90,7 @@ INSTALL.txt
     Contains build and installation instructions. As the build
     of all projects which follow BASIS is very similar, this
     file shall only describe additional steps/CMake variables
-    which are not described in the :doc:`/howto/install` guide.
+    which are not described in the :doc:`../install` guide.
 
 .. _BasisProject:
 

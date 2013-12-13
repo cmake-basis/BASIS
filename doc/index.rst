@@ -40,86 +40,74 @@
 Overview
 ========
 
-.. _Description:
-
-Description
-===========
-
 BASIS makes it easy to create sharable software and libraries that work together. 
 This is accomplished by combining and documenting some of the best practices and 
 utilities available. More importantly, BASIS supplies a fully integrated suite of 
 functionality to make the whole process seamless! 
 
+.. toctree::
+    :maxdepth: 3
+    
+    self
+
 .. _Features:
 
 Features
 ========
-- Project Creation
-   - Quick setup with mad-libs style text substitution with basisproject
-   - Customizable project templates
+
+**Project Creation**
+
+- Quick setup with mad-libs style text substitution with basisproject
+- Customizable project templates
+
+**Standards**
+
 - Filesystem layout standards
-- `Build system utilities`_
-   - New `CMake Module APIs`_
-   - Version Control Integration
-   - Automatic Packaging
-- :doc:`standard/style`
-- Unit testing
-- Documentation generation tools
-   - Manuals
-   - API Docs
-   - PDF and html output of each
-   - Integrated with CMake APIs
+- Implementation standard
 - Command line standards
-   - Parsing library
-   - Command execution library
-      - Unix philosophy
-      - one tool can run others
+- Style Guides
+   
+**Build system utilities**
+
+- New `CMake Module APIs`_
+- Version Control Integration
+- Automatic Packaging
+   
+**Documentation**
+
+- Documentation generation tools
+- Manuals
+- API Docs
+- PDF and html output of each
+- Integrated with CMake APIs
+
+**Testing**
+
+- Unit testing
 - Continuous Integration
 - Executable testing frameworks
 
-Most functionality in BASIS is optional so you get to choose what you want to use.
+**Program Execution**
+
+- Parsing library
+- Command execution library
+- Unix philosophy
+- One tool can run others
+
+**Supported Programming Languages**
+
+C++, BASH, MATLAB, Python
 
 
-.. _ProgrammingLanguages:
+**Supported Packages**
 
-Supported Programming Languages
-===============================
- - C++
- - BASH
- - MATLAB
- - Python
-
-.. _SupportedPackages:
- 
-Supported Packages
-==================
- - CMake_
- - CPack
- - CDash
- - Doxygen
- - Sphinx
- - Git
- - Svn
- - reStructured Text
- - gtest_
- - gflags_
- - Boost_
+CMake_, CPack, CDash, Doxygen, Sphinx, Git, Svn, reStructured Text, gtest_, gflags_, Boost_
 
 
-.. _Dependencies:
+Install
+=======
 
-Dependencies
-============
-
-- CMake_ is required
-- BASIS does the hard work of integrating many 3rd party libraries and tools for you,
-  so of course they need to be installed for you to use them!
-- Projects that use the BASIS CMake Modules will depend on BASIS to compile.
-   - That means BASIS will either need to be installed on the system for your 
-package to build, or the first steps in your build can be to compile and
-install BASIS internally as part of a superbuild.
-- Projects that use the BASIS C++ command line parsing and execution libraries
-will also require a BASIS installation to be able to run.
+See :doc:`install` for installation and dependency details.
 
 .. _History:
 
@@ -128,28 +116,25 @@ History
 
 The **Build system And Software Implementation Standard (BASIS)** project was
 started early in 2011 to improve and standardize the software packages
-developed at the University of Pennsylvania's SBIA_. They started with the decision 
-to use CMake_ as their build system, then implemented a project creation template.
+developed at the University of Pennsylvania's SBIA_. It started with the decision 
+to use CMake_ as a build system, then the implementation of a project creation template.
 Over time, these components were transformed to important parts of BASIS.
 
 
 People
-======
+------
 
-Advisors
---------
+**Advisors**
 
 - `Christos Davatzikos <http://www.rad.upenn.edu/sbia/Christos.Davatzikos>`_
 - `Kilian M. Pohl <http://www.rad.upenn.edu/sbia/Kilian.Pohl>`_
 
-Software Development
---------------------
+**Software Development**
 
 - `Andreas Schuh <http://www.rad.upenn.edu/sbia/Andreas.Schuh>`_
 - `Andrew Hundt <ahundt@cmu.edu>`_
 
-Contributors
-------------
+**Contributors**
 
 The following people notably helped to define and shape BASIS.
 
@@ -159,16 +144,14 @@ The following people notably helped to define and shape BASIS.
 - `Yangming Ou <http://www.rad.upenn.edu/sbia/Yangming.Ou>`_
 
 
+.. _Dependencies:
+
+
 Table of Contents
 =================
-
-.. toctree::
-    :maxdepth: 3
-    
-    self
     
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 4
     
     Quick-Start
     How-To
@@ -178,8 +161,8 @@ Table of Contents
 .. toctree::
     :maxdepth: 3
 
-    installation
     download
+    install
     help
     people
     changelog   

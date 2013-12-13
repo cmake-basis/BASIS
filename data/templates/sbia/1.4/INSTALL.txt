@@ -56,7 +56,7 @@ BUILDING THE SOFTWARE FROM SOURCES
 
   - BASIS >= 1.3
 
-    Web Site: http://www.rad.upenn.edu/sbia/software/basis/
+    Web Site: https://github.com/schuhschuh/cmake-basis/
     Download: http://www.rad.upenn.edu/sbia/software/distributions/basis-current-source.tar.gz
 
     This project is based on BASIS, a meta-project developed at SBIA to
@@ -128,6 +128,6 @@ BUILDING THE SOFTWARE FROM SOURCES
 REFERENCES
 ==========
 
-  [1] http://www.rad.upenn.edu/sbia/software/basis/
+  [1] https://github.com/schuhschuh/cmake-basis/
 
   [2] http://www.rad.upenn.edu/sbia/software/basis/howto/install/

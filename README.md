@@ -235,5 +235,5 @@ available for the different supported programming languages can be found on
 [19]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/UtilitiesTools_8cmake.html
 [20]: http://www.rad.upenn.edu/sbia/software/basis/standard/cmdline.html
 [21]: http://www.rad.upenn.edu/sbia/software/basis/standard/execution.html
-[22]: http://www.rad.upenn.edu/sbia/software/basis/
+[22]: https://github.com/schuhschuh/cmake-basis/
 [23]: http://sphinx.pocoo.org/
