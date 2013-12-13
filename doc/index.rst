@@ -45,11 +45,6 @@ This is accomplished by combining and documenting some of the best practices and
 utilities available. More importantly, BASIS supplies a fully integrated suite of 
 functionality to make the whole process seamless! 
 
-.. toctree::
-    :maxdepth: 3
-    
-    self
-
 .. _Features:
 
 Features
@@ -149,7 +144,12 @@ The following people notably helped to define and shape BASIS.
 
 Table of Contents
 =================
-    
+
+.. toctree::
+    :maxdepth: 3
+
+    self
+
 .. toctree::
     :maxdepth: 4
     
