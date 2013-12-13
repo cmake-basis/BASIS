@@ -164,7 +164,6 @@ Table of Contents
     download
     install
     help
-    people
     changelog   
 
 .. .. toctree::
