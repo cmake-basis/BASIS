@@ -118,7 +118,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst")
     GENERATOR        Sphinx
     BUILDER          pdf html dirhtml man
     MAN_SECTION      7
-    HTML_THEME       default
+    HTML_THEME       readable-wide
     #RELLINKS         download installation manual help people
     SIDEBARWIDTH     300
     HTML_LOGO        logo.svg
@@ -150,7 +150,7 @@ else ()
       GENERATOR     Sphinx
       BUILDER       html dirhtml pdf man
       MAN_SECTION   7
-      HTML_THEME    default
+      HTML_THEME    readable-wide
       #RELLINKS      download installation manual publications people
       HTML_SIDEBARS searchbox globaltoc
       LATEX_TITLE   "${PROJECT_NAME}"
