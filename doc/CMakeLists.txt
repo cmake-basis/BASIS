@@ -42,7 +42,7 @@ set (GUIDE_OPTIONS)
 
 # API documentation
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/index.html")
-  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html" DESTINATION "${INSTALL_DOC_DIR}/apidoc")
+  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html" DESTINATION "${INSTALL_DOC_DIR}/apidoc/html")
   list (APPEND APIDOC_OPTIONS EXCLUDE_FROM_DOC)
 endif ()
 
@@ -100,7 +100,7 @@ basis_add_doc (
                    # testdriver which includes *.inc files
                    "*/testdriver.cxx"
   
-  HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
+  HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc/html"
   HTML_HEADER	"${PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in" 
   HTML_FOOTER "${PROJECT_SOURCE_DIR}/doc/doxygen_footer.html.in" 
   HTML_EXTRA_STYLESHEET "${PROJECT_SOURCE_DIR}/doc/doxygen_extra.css.in"
@@ -129,13 +129,20 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst")
     BREATHE          apidoc
   )
 
+
+  basis_add_doc (index.html )
+  # TODO: Get search.css to be replaced properly upon build step.
+  basis_add_doc (search.css DESTINATION "${INSTALL_DOC_DIR}/apidoc/html/search" )
+  
   basis_add_custom_target (site)
   basis_add_custom_target (site_dirhtml)
   basis_add_custom_target (manual)
 
-  basis_add_dependencies  (site         softwaremanual_html)
+  basis_add_dependencies  (site         softwaremanual_html index.html search.css)
   basis_add_dependencies  (site_dirhtml softwaremanual_dirhtml)
   basis_add_dependencies  (manual       softwaremanual_pdf)
+  
+  basis_add_dependencies  (doc          site manual site_dirhtml)
 
 # ============================================================================
 # separate web site and manual
@@ -186,3 +193,4 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/guide/index.rst")
     OUTPUT_NAME      "${GUIDE_OUTPUT_NAME}"
   )
 endif ()
+
