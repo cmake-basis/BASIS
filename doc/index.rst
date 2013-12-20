@@ -96,7 +96,7 @@ C++, BASH, MATLAB, Python
 
 **Supported Packages**
 
-CMake_, CPack, CDash, Doxygen, Sphinx, Git, Svn, reStructured Text, gtest_, gflags_, Boost_
+CMake_, CPack, CDash, Doxygen, Sphinx, Git, Svn, reStructured Text, gtest_, gflags_, Boost_, and many more, including custom packages.
 
 
 Install
