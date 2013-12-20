@@ -65,24 +65,7 @@ System Requirements
 
 .. _register:
 
-Register for Download
----------------------
+Download
+--------
 
-.. only:: latex
-    
-    Please |register online|_ to receive an email with the download links of the software.
-
-.. raw:: html
-    
-    <iframe class="request_form" scrolling="no" frameborder="0" src="http://www.rad.upenn.edu/sbia/software/request_form.php?software=basis">
-      The iframe tag is not supported by your browser. Please `register here <http://www.rad.upenn.edu/sbia/software/request.php?software=basis>`__ instead.
-    </iframe>
-
-
-.. |register online| replace:: **register online**
-.. _register online: http://www.rad.upenn.edu/sbia/software/basis/download.html#register
-
-
-.. raw:: latex
-
-    \clearpage
+`BASIS GitHub Page <https://github.com/schuhschuh/cmake-basis/>`__: The software is available from here.
