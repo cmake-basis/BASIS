@@ -24,8 +24,8 @@ described how the build of scripts can be configured.
 
 .. _ScriptTargets:
 
-Prerequisits and Build Steps
-============================
+Prerequisites and Build Steps
+=============================
 
 During the build of a script, the CMake variables as given by
 ``@VARIABLE_NAME@`` patterns are replaced by the value of the
