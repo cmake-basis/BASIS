@@ -16,7 +16,7 @@ Namespaces
       </script>
 
       <!-- inline, after the iframe -->
-      <iframe src="../../apidoc/html/namespaces.html" class="auto-height" width="100%" height="6000px" scrolling="no" marginheight="0" frameborder="0"></iframe>
+      <iframe src="latest/namespaces.html" class="auto-height" width="100%" height="6000px" scrolling="no" marginheight="0" frameborder="0"></iframe>
       <script>
         $('iframe.auto-height').iframeAutoHeight({minHeight: 1000});
       </script>

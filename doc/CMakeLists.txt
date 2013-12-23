@@ -22,138 +22,62 @@
 ##############################################################################
 
 # ============================================================================
-# settings
+# API reference (in-source code comments)
 # ============================================================================
 
-# output names of PDF's generated from reStructuredText sources (excl. extension)
-set (SITE_OUTPUT_NAME   "${PROJECT_NAME}_Web_Site")
-set (MANUAL_OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
-set (GUIDE_OUTPUT_NAME  "${PROJECT_NAME}_Developer_Guide")
-
-# in particular, EXCLUDE_FROM_DOC will be added if pre-generated files exist
-set (APIDOC_OPTIONS)
-set (SITE_OPTIONS)
-set (MANUAL_OPTIONS)
-set (GUIDE_OPTIONS)
-
-# ============================================================================
-# pre-generated output files
-# ============================================================================
-
-# API documentation
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/index.html")
-  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html" DESTINATION "${INSTALL_DOC_DIR}/apidoc/html")
-  list (APPEND APIDOC_OPTIONS EXCLUDE_FROM_DOC)
-endif ()
-
-# web site
-foreach (N IN ITEMS ${SITE_OUTPUT_NAME} site Site)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${SITE_OUTPUT_NAME}.pdf")
-    list (APPEND SITE_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
-
-# software manual
-foreach (N IN ITEMS ${MANUAL_OUTPUT_NAME} manual Manual UserManual SoftwareManual UserGuide userguide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${MANUAL_OUTPUT_NAME}.pdf")
-    list (APPEND MANUAL_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
-
-# developer's guide
-foreach (N IN ITEMS ${GUIDE_OUTPUT_NAME} guide DeveloperGuide DeveloperManual developerguide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${GUIDE_OUTPUT_NAME}.pdf")
-    list (APPEND GUIDE_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
-
-# ============================================================================
-# API documentation (in-source code comments)
-# ============================================================================
-
-# replace <year> pattern in template file which shall be included in documentation
-# to avoid unrecognized xml/html tags warning of Doxygen
-file (READ "${PROJECT_DATA_DIR}/templates/sbia/1.3/config/Depends.cmake" TEMPLATE)
+# replace < year > pattern in template file which shall be included in
+# documentation to avoid unrecognized xml/html tags warning of Doxygen
+file (READ "${PROJECT_DATA_DIR}/templates/basis/1.0/config/Depends.cmake" TEMPLATE)
 string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
 file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
 unset (TEMPLATE)
 
 basis_add_doc (
-  apidoc           ${APIDOC_OPTIONS}
-  GENERATOR        Doxygen
-  INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
-  EXCLUDE_PATTERNS # external libraries packaged with BASIS
-                   "*/gmock/*"            # Google Mock
-                   "*/gtest/*"            # Google Test
-                   "*/tclap/*"            # TCLAP library
-                   "*/breathe/*"          # Sphinx extension
-                   "*/doxylink/*"         # Sphinx extension
-                   "*/argh/*"             # Python Argh
-                   "*/test.cxx"           # Google Mock and Test
-                   "*/test_main.cxx"      # main() of unit tests based on GMock
-                   # testdriver which includes *.inc files
-                   "*/testdriver.cxx"
-  
-  HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc/html"
-  HTML_HEADER	"${PROJECT_SOURCE_DIR}/doc/doxygen_header.html.in" 
-  HTML_FOOTER "${PROJECT_SOURCE_DIR}/doc/doxygen_footer.html.in" 
-  HTML_EXTRA_STYLESHEET "${PROJECT_SOURCE_DIR}/doc/doxygen_extra.css.in"
-  OUTPUT html xml
+  apidoc                ${APIDOC_OPTIONS}
+  GENERATOR             Doxygen
+  INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
+  EXCLUDE_PATTERNS      # external libraries packaged with BASIS
+                        "*/gmock/*"            # Google Mock
+                        "*/gtest/*"            # Google Test
+                        "*/tclap/*"            # TCLAP library
+                        "*/breathe/*"          # Sphinx extension
+                        "*/doxylink/*"         # Sphinx extension
+                        "*/argh/*"             # Python Argh
+                        "*/test.cxx"           # Google Mock and Test
+                        "*/test_main.cxx"      # main() of unit tests based on GMock
+                        # testdriver which includes *.inc files
+                        "*/testdriver.cxx"
+  HTML_DESTINATION      "${INSTALL_DOC_DIR}/html/apidoc/latest"
+  HTML_HEADER	          "apidoc/doxygen_header.html.in" 
+  HTML_FOOTER           "apidoc/doxygen_footer.html.in" 
+  HTML_EXTRA_STYLESHEET "apidoc/doxygen_extra.css.in"
+  OUTPUT                html xml
 )
 
 # ============================================================================
-# comprehensive manual
+# software manual
 # ============================================================================
 
 basis_add_doc (
-  softwaremanual   ${MANUAL_OPTIONS}
+  softwaremanual
   GENERATOR        Sphinx
-  BUILDER          pdf html dirhtml man
+  BUILDER          html pdf man
   MAN_SECTION      7
   HTML_THEME       readable-wide
-  SIDEBARWIDTH     300
   HTML_LOGO        logo_title.svg
   HTML_SIDEBARS    searchbox globaltoc
   HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
+  SIDEBARWIDTH     300
   LATEX_MASTER_DOC "manual"
   LATEX_TITLE      "${PROJECT_NAME} Software Manual"
-  OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
-  BREATHE          apidoc
+  OUTPUT_NAME      "${PROJECT_NAME}_Software_Manual"
   DOXYLINK         apidoc
+  DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"
 )
 
-basis_add_doc (index.html )
-# TODO: Get search.css to be replaced properly upon build step.
-basis_add_doc (search.css DESTINATION "${INSTALL_DOC_DIR}/apidoc/html/search" )
-
 basis_add_custom_target (site)
-basis_add_custom_target (site_dirhtml)
 basis_add_custom_target (manual)
 
-basis_add_dependencies  (site         softwaremanual_html index.html search.css)
-basis_add_dependencies  (site_dirhtml softwaremanual_dirhtml)
-basis_add_dependencies  (manual       softwaremanual_pdf)
-
-basis_add_dependencies  (doc          site manual site_dirhtml)
-
-# ============================================================================
-# developer's guide
-# ============================================================================
-
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/guide/index.rst")
-  basis_add_doc (
-    guide            ${GUIDE_OPTIONS}
-    GENERATOR        Sphinx
-    BUILDER          pdf html
-    HTML_DESTINATION "${INSTALL_DOC_DIR}/guide"
-    LATEX_TITLE      "${PROJECT_NAME} Developer's Guide"
-    OUTPUT_NAME      "${GUIDE_OUTPUT_NAME}"
-  )
-endif ()
-
+basis_add_dependencies (site   softwaremanual_html)
+basis_add_dependencies (manual softwaremanual_pdf)
+basis_add_dependencies (doc    site manual)
