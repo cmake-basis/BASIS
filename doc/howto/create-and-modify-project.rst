@@ -359,7 +359,7 @@ Create a Custom Template
 The ``basisproject`` tool creates a new project from a set of template files which are
 modified according to the command-line options provided and a template configuration
 file named ``_config.py`` which is located in the top directory of the project template.
-Please refer to the existing default project template located in the ``data/templates/default``
+Please refer to the existing default project template located in the ``data/templates/basis``
 directory of the BASIS source package for an example of a valid project template.
 To create your own custom project template which may be customized to the needs and
 requirements of your organization, including the layout of the generated documentation,
