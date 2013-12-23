@@ -1,4 +1,4 @@
-.. title:: Home
+:orphan:
 
 .. meta::
     :description: BASIS makes it easy to create sharable software and libraries 
