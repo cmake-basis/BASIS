@@ -5,7 +5,7 @@
 # This file configures the project directory structure as defined by the
 # Filesystem Hierarchy Standard for BASIS packages.
 #
-# @sa http://www.rad.upenn.edu/sbia/software/basis/standard/fhs/
+# @sa http://opensource.andreasschuh.com/cmake-basis/standard/fhs/
 #
 # The project must follow the directory structure as defined by the
 # <tt>PROJECT_&lt;*&gt;_DIR</tt> variables.

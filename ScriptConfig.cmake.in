@@ -15,7 +15,7 @@
 # @c CONFIG_FILE option of the basis_add_executable() or basis_add_library()
 # command, respectively.
 #
-# @sa http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets.html#script-configuration
+# @sa http://opensource.andreasschuh.com/cmake-basis/standard/scripttargets.html#script-configuration
 #
 # Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.

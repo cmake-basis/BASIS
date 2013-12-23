@@ -1081,7 +1081,7 @@ endfunction ()
 #
 # Certain CMake variables within the source file are replaced during the
 # built of the script. See the
-# <a href="http://www.rad.upenn.edu/sbia/software/basis/scripttargets/>
+# <a href="http://opensource.andreasschuh.com/cmake-basis/scripttargets/>
 # Build System Standard</a> for details.
 # Note, however, that source files are only configured if the file name
 # ends in the <tt>.in</tt> suffix.
@@ -1129,7 +1129,7 @@ endfunction ()
 #     <td>CMake code which is evaluated after the inclusion of the default script
 #         configuration files. This code can be used to set the replacement text of the
 #         CMake variables ("@VAR@" patterns) used in the source file.
-#         See <a href="http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets.html#script-configuration">
+#         See <a href="http://opensource.andreasschuh.com/cmake-basis/standard/scripttargets.html#script-configuration">
 #         Build System Standard</a> for details. (default: "")</td>
 #   </tr>
 #   <tr>
@@ -2109,7 +2109,7 @@ endfunction ()
 #     <td>CMake code which is evaluated after the inclusion of the default script
 #         configuration files. This code can be used to set the replacement text of the
 #         CMake variables ("@VAR@" patterns) used in the source files.
-#         See <a href="http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets.html#script-configuration">
+#         See <a href="http://opensource.andreasschuh.com/cmake-basis/standard/scripttargets.html#script-configuration">
 #         Build System Standard</a> for details. (default: "")</td>
 #   </tr>
 #   <tr>
