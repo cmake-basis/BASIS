@@ -357,6 +357,25 @@ in the root directory of your project's source tree.
     basisproject --cleanup
 
 
+.. _HowToCreateAProjectTemplate:
+
+Create a Custom Template
+========================
+
+The ``basisproject`` tool creates a new project from a set of template files which are
+modified according to the command-line options provided and a template configuration
+file named ``_config.py`` which is located in the top directory of the project template.
+Please refer to the existing default project template located in the ``data/templates/basis``
+directory of the BASIS source package for an example of a valid project template.
+To create your own custom project template which may be customized to the needs and
+requirements of your organization, including the layout of the generated documentation,
+use the following command:
+
+::
+
+    basisproject --new-template --name MyTemplate
+
+
 .. _basis_project(): http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6
 .. _basis_find_package(): http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeAPI.html#gac9a1326ff8b06b17aebbb6b852ca73af
 .. _find_package(): http://www.cmake.org/cmake/help/v2.8.8/cmake.html#command:find_package
