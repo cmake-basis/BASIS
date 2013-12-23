@@ -68,4 +68,8 @@ System Requirements
 Download
 --------
 
-`BASIS GitHub Page <https://github.com/schuhschuh/cmake-basis/>`__: The software is available from here.
+The source code of the CMake BASIS package is hosted on `GitHub <https://github.com/schuhschuh/cmake-basis/>`__
+from where all releases and latest development versions can be downloaded.
+
+- `Download CMake BASIS v2.1.4 as .zip    <https://github.com/schuhschuh/cmake-basis/archive/v2.1.4.zip>`__
+- `Download CMake BASIS v2.1.4 as .tar.gz <https://github.com/schuhschuh/cmake-basis/archive/v2.1.4.tar.gz>`__
