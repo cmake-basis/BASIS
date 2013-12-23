@@ -10,7 +10,8 @@
     :maxdepth: 1
 
     Overview <self>
-    Contents <contents>
+    download
+    install
 
 .. toctree::
     :hidden:
@@ -25,7 +26,11 @@
     :hidden:
     :maxdepth: 3
 
-    download
-    install
     help
     changelog
+
+.. toctree::
+    :hidden:
+    :maxdepth: 1
+
+    contents
