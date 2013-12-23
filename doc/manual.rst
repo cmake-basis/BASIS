@@ -9,9 +9,9 @@
 
     features
     history
-    people
-    quickstart
     install
+    quickstart
     howto
     standard
     help
+    people
