@@ -80,10 +80,7 @@ options = {
   'doc' : {
     'desc' : 'Add/remove (basic) documentation files.',
     'path' : [
-               'doc/CMakeLists.txt',
-               'doc/doxygen_extra.css.in',
-               'doc/doxygen_header.html.in',
-               'doc/doxygen_footer.html.in',
+               'doc/CMakeLists.txt'
              ]
   },
   'doc-rst' : {
