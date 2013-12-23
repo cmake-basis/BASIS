@@ -121,7 +121,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst")
     HTML_THEME       readable-wide
     #RELLINKS         download installation manual help people
     SIDEBARWIDTH     300
-    HTML_LOGO        logo_text.svg
+    HTML_LOGO        logo_title.svg
     HTML_SIDEBARS    searchbox globaltoc
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
     LATEX_TITLE      "${PROJECT_NAME} Software Manual"
