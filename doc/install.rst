@@ -1,9 +1,9 @@
 .. meta::
     :description: Build and installation instructions for BASIS.
 
-=======
-Install
-=======
+============
+Installation
+============
 
 This page contains the instructions for both installing BASIS itself and typical packages that use BASIS.
 
