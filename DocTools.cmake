@@ -336,6 +336,11 @@ endfunction ()
 #         @c "PROJECT_SOURCE_DIR/doc/doxygen_extra.css(.in)?" file is used if present.</td>
 #   </tr>
 #   <tr>
+#     @tp @b HTML_EXTRA_FILES file1 [file2...] @endtp
+#     <td>The HTML_EXTRA_FILES tag can be used to specify additional files needed
+#         for the HTML output of the API documentation.</td>
+#   </tr>
+#   <tr>
 #     @tp @b DISABLE_PROJECT_NAME_DISPLAY@endtp
 #     <td>The DISABLE_PROJECT_NAME_DISPLAY option causes Doxygen's 
 #         @c PROJECT_NAME text not to be displayed in the header.
@@ -408,7 +413,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
     DOXYGEN
       "EXCLUDE_FROM_DOC;DISABLE_PROJECT_NAME_DISPLAY"
       "${VALUEARGS};${OPTIONAL_FILE_OPTIONS}"
-      "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX;ENABLED_SECTIONS"
+      "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX;ENABLED_SECTIONS;HTML_EXTRA_FILES"
       ${ARGN}
   )
   unset (VALUEARGS)
@@ -434,6 +439,16 @@ function (basis_add_doxygen_doc TARGET_NAME)
       endif ()
     endif ()
   endforeach ()
+  set (TMP_DOXYGEN_HTML_EXTRA_FILES)
+  foreach (path IN LISTS DOXYGEN_HTML_EXTRA_FILES)
+    get_filename_component (abspath "${path}" ABSOLUTE)
+    if (NOT EXISTS "${path}")
+      message (FATAL_ERROR "File ${path} does not exist. Check value of the HTML_EXTRA_FILES option and make sure the file is present.")
+    endif ()
+    list (APPEND TMP_DOXYGEN_HTML_EXTRA_FILES "${path}")
+  endforeach ()
+  set (DOXYGEN_HTML_EXTRA_FILES "${TMP_DOXYGEN_HTML_EXTRA_FILES}")
+  unset (TMP_DOXYGEN_HTML_EXTRA_FILES)
   # default component
   if (NOT DOXYGEN_COMPONENT)
     set (DOXYGEN_COMPONENT "${BASIS_LIBRARY_COMPONENT}")
