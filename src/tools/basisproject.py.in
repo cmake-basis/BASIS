@@ -945,12 +945,19 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     parser.add_argument('--noalter', action='store_true', default=False,
             help="""Disable alteration of template files.""")
 
+    # --new-template
+    parser.add_argument('--new-template', action='store_true', default=False,
+            help="""Create a new project template instead of a project. Implies --noalter.""")
+
     # ----------------------------------------------------------------------------
     # parse common options
     if len(argv) == 0:
         parser.print_help()
         sys.exit(1)
     args, argv = parser.parse_known_args(argv)
+
+    # option --new-template implies --noalter
+    if args.new_template: args.noalter = True
 
     # ----------------------------------------------------------------------------
     # load template configuration
@@ -960,6 +967,9 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         sys.stderr.write('Please specify a valid project template directory using --template.\n')
         sys.exit(1)
     config, parser = load_config(config_file, parser)
+
+    # require also template _config.py when creating a new project template
+    if args.new_template: config.required.insert(0, '_config.py')
 
     # ----------------------------------------------------------------------------
     # parse template options
@@ -973,8 +983,9 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
 
     # ------------------------------------------------------------------------
     # create new project or update existing one?
+
     # request to create new project
-    if args.name or (args.noalter and args.root):
+    if args.name:
         create = True
         # create subdirectory in current working directory by default
         if not args.root:
@@ -982,31 +993,43 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         # ensure that root directory is empty
         if os.path.exists(args.root) and len(os.listdir(args.root)) != 0:
             sys.stderr.write("Directory " + args.root + " exists already and is not empty.\n")
-            sys.stderr.write("Please choose another project name or a different root directory using the --root option.\n")
-            sys.stderr.write('\n')
-            sys.stderr.write("If you want to modify an existing project, please specify the root directory\n")
-            sys.stderr.write("of the existing project using the --root option and remove the --name option.\n")
+            if args.new_template:
+                sys.stderr.write("Please choose another template name or a different root directory using the --root option.\n")
+            else:
+                sys.stderr.write("Please choose another project name or a different root directory using the --root option.\n")
+                sys.stderr.write('\n')
+                sys.stderr.write("If you want to modify an existing project, please specify the root directory\n")
+                sys.stderr.write("of the existing project using the --root option and remove the --name option.\n")
             sys.exit(1)
+        # create default version subdirectory inside new template directory
+        if args.new_template: args.root = os.path.join(args.root, '1.0')
         # set path of original template to current template
         args.original_template = args.template
-        if args.noalter:
-            # if noalter is set, copy the config file as well
-            config.required.append('_config.py')
-        else:
-            # require a project description
-            if not args.description:
-                sys.stderr.write("No project description given!\n")
-                sys.exit(1)
-            # verify that project name is valid
-            if not re.match(r'^[a-zA-Z0-9]+$', args.name):
+        # require a project description
+        if args.new_template:
+            if args.description:
+                sys.stderr.write("Project description ignored. Creating a new project template.\n")
+        elif not args.description:
+            sys.stderr.write("No project description given!\n")
+            sys.exit(1)
+        # verify that name is valid
+        if not re.match(r'^[a-zA-Z0-9]+$', args.name):
+            if args.new_template:
+                sys.stderr.write("Invalid template name: " + args.name + "\n")
+                sys.stderr.write("A template name may only consist of alphanumeric characters!\n")
+            else:
                 sys.stderr.write("Invalid project name: " + args.name + "\n")
-                sys.stderr.write("Project name may only consist of alphanumeric characters!\n")
+                sys.stderr.write("A project name may only consist of alphanumeric characters!\n")
                 sys.stderr.write("If you are attempting to modify an existent project, check whether the\n")
-                sys.stderr.write("project name is correctly extracted from the root CMakeLists.txt file.\n")
-                sys.exit(1)
+                sys.stderr.write("project name is correctly extracted from the BasisProject.cmake file.\n")
+            sys.exit(1)
     # request to modify existing project
     else:
         create = False
+        # throw error if --new-template used without specifying a name for the template
+        if args.new_template:
+            sys.stderr.write("Option --new-template requires a --name for the new template to be specified!\n")
+            sys.exit(1)
         # use current working directory if root not specified
         if not args.root:
             args.root = os.getcwd()
@@ -1122,7 +1145,10 @@ template files in the .basis/ subdirectory.
     # done
     if ok:
         if create:
-            sys.stdout.write("\nCreated project\n")
+            if args.new_template:
+                sys.stdout.write("\nCreated template\n")
+            else:
+                sys.stdout.write("\nCreated project\n")
         else:
             if acc.changes > 0:
                 sys.stdout.write('\n' + str(acc.changes) + " file")
