@@ -15,7 +15,7 @@ on use of the software. The full `license`_ text is included with the distributi
 available online.
 
 .. _The Open Source Initiative: http://opensource.org/
-.. _license: http://www.rad.upenn.edu/sbia/software/license.html
+.. _license: https://github.com/schuhschuh/cmake-basis/blob/master/COPYING.txt
 
 
 Documentation
