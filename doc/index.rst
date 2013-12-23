@@ -1,3 +1,5 @@
+.. title:: Overview
+
 .. include:: intro.rst
 .. include:: features.rst
 .. include:: history.rst
