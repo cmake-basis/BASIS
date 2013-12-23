@@ -31,7 +31,7 @@ of the new template and the option ``--new-template``:
 
 This will create a subdirectory called ``MyTemplate/1.0`` under the current working directory
 and populate it with the current default project template structure and BASIS configuration.
-With this you can modify the the defualt substitutions and file contents for your needs, and
+With this you can modify the the default substitutions and file contents for your needs, and
 create new versions so that users can update their source tree automatically as you improve
 and update your customized template.
 
