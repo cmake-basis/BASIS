@@ -22,22 +22,13 @@
 .. title:: Help
 
 .. meta::
-    :description: Report any issues with BASIS or request new features on SourceForge.
+    :description: Report any issues with BASIS or request new features on GitHub.
 
 ====
 Help
 ====
 
-Please report any issues with BASIS such as bugs on GitHub_. The issue tracker can
+Please report any issues with the CMake BASIS software such as bugs on GitHub_. The issue tracker can
 further be used to request new features or to get support.
 
-.. note:: The BASIS project hosted at SourceForge is maintained by `Andreas Schuh`_ and `Andrew Hundt`_
-          `Andreas Schuh`_  worked at SBIA from 2011-2012. Andreas will respond to your 
-          BASIS-related requests and bug reports. If you do not receive a response or your
-          issue is not resolved within reasonable time, please contact us at
-          ``sbia-software at uphs.upenn.edu``.
-
-
-.. _SourceForge: https://github.com/schuhschuh/cmake-basis/
-.. _Andreas Schuh: http://www.rad.upenn.edu/sbia/Andreas.Schuh/
-.. _Andrew Hundt: http://ahundt.github.io/
+.. _GitHub: https://github.com/schuhschuh/cmake-basis/
