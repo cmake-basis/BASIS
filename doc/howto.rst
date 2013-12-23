@@ -13,10 +13,10 @@ and explain common tasks like creating a new project or installation.
     :maxdepth: 2
 
     howto/create-and-modify-project
+    howto/create-custom-template
     howto/manage-data
     howto/document
     howto/branch-and-release
     howto/package
     howto/buildoptions
     howto/run-automated-tests
-    howto/template-customization
