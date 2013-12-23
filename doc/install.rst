@@ -210,6 +210,8 @@ the output of the following command to your email:
     $ ctest -V >& test.log
 
 
+.. _BasisInstallationOptions:
+
 CMake Options
 -------------
 
@@ -231,6 +233,18 @@ and installation of any package developed with BASIS.
   it can be omitted. If a MATLAB installation was specified,
   however, the tests for the build of binaries using the MATLAB
   Compiler or the MEX script respectively can be run.
+
+.. option:: -DDEFAULT_TEMPLATE:PATH
+
+    Path to the directory and version of the default mad-libs style text substitution project
+    template that will be installed with BASIS. See the
+    :doc:`Template Customization How-To <howto/create-custom-template>` for details.
+
+.. option:: -DINSTALL_ALL_TEMPLATES:BOOL
+
+    When OFF only the DEFAULT_TEMPLATE will be installed.
+    When ON all additional project templates included with 
+    BASIS will be installed in addition to the DEFAULT_TEMPLATE.
 
 
 Advanced CMake Options

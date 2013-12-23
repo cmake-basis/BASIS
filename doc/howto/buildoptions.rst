@@ -187,25 +187,10 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Path to the directory of your Sphinx installation, if applicable. 
 
-.. _BasisInstallationOptions:
-
-==========================
-BASIS Installation Options
-==========================
 
 
-.. option:: -DDEFAULT_TEMPLATE:PATH
-    Path to the directory and version of the default mad-libs style text substitution project
-    template that will be installed with BASIS. See the
-    :doc:`Template Customization How-To <template-customization>` for details.
-
-.. option:: -DINSTALL_ALL_TEMPLATES:BOOL
-
-    When OFF only the DEFAULT_TEMPLATE will be installed.
-    When ON all additional project templates included with 
-    BASIS will be installed in addition to the DEFAULT_TEMPLATE.
-
-
+.. _CMake: http://www.cmake.org/
+.. _ccmake: http://www.cmake.org/cmake/help/runningcmake.html
 .. _CMake GUI: http://www.cmake.org/cmake/help/runningcmake.html
 .. _Git: http://git-scm.com/
 .. _MATLAB: http://www.mathworks.com/products/matlab/
