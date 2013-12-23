@@ -70,7 +70,7 @@ htmlhelp_basename = '@PROJECT_NAME_L@_doc'
 # Options for LaTeX output
 # ------------------------
 
-latex_documents     = [(master_doc, output_name + '.tex', '@SPHINX_LATEX_TITLE@', ' \\and '.join(authors), '@SPHINX_LATEX_DOCUMENT_CLASS@', False)]
+latex_documents     = [('@SPHINX_LATEX_MASTER_DOC@', output_name + '.tex', '@SPHINX_LATEX_TITLE@', ' \\and '.join(authors), '@SPHINX_LATEX_DOCUMENT_CLASS@', False)]
 latex_logo          = '@SPHINX_LATEX_LOGO@'
 if latex_logo == '': latex_logo = None
 latex_show_urls     = '@SPHINX_LATEX_SHOW_URLS@'

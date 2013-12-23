@@ -1136,6 +1136,10 @@ endfunction ()
 #         well by copying the template <tt>.html</tt> file to the @c TEMPLATES_PATH directory.</td>
 #   </tr>
 #   <tr>
+#     @tp @b LATEX_MASTER_DOC name @endtp
+#     <td>Name of master document for LaTeX builder. Defaults to <tt>MASTER_DOC</tt>.</td>
+#   </tr>
+#   <tr>
 #     @tp @b LATEX_TITLE title @endtp
 #     <td>Title for LaTeX/PDF output. Defaults to title of <tt>index.rst</tt>.</td>
 #   </tr>
@@ -1181,7 +1185,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     SOURCE_DIRECTORY OUTPUT_DIRECTORY OUTPUT_NAME TAG
     COPYRIGHT MASTER_DOC
     HTML_TITLE HTML_THEME HTML_LOGO HTML_THEME_PATH HTML_STYLE
-    LATEX_TITLE LATEX_LOGO LATEX_DOCUMENT_CLASS LATEX_SHOW_URLS LATEX_SHOW_PAGEREFS
+    LATEX_MASTER_DOC LATEX_TITLE LATEX_LOGO LATEX_DOCUMENT_CLASS LATEX_SHOW_URLS LATEX_SHOW_PAGEREFS
     MAN_SECTION
     DOXYLINK_URL DOXYLINK_PREFIX DOXYLINK_SUFFIX
   )
@@ -1384,6 +1388,9 @@ function (basis_add_sphinx_doc TARGET_NAME)
   # build configuration
   if (NOT SPHINX_MASTER_DOC)
     set (SPHINX_MASTER_DOC "index")
+  endif ()
+  if (NOT SPHINX_LATEX_MASTER_DOC)
+    set (SPHINX_LATEX_MASTER_DOC "${SPHINX_MASTER_DOC}")
   endif ()
   if (NOT SPHINX_TEMPLATES_PATH AND EXISTS "${SPHINX_SOURCE_DIRECTORY}/templates")
     set (SPHINX_TEMPLATES_PATH "'${SPHINX_SOURCE_DIRECTORY}/templates'")
