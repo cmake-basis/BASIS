@@ -29,10 +29,10 @@ Documentation
  
 .. only:: latex
     
-    `BASIS Manual <http://www.rad.upenn.edu/sbia/software/basis/manual.html>`__:
+    `BASIS Manual <http://opensource.andreasschuh.com/cmake-basis/>`__:
     Online version of this manual.
     
-    `BASIS ChangeLog <http://www.rad.upenn.edu/sbia/software/basis/changelog.html>`__:
+    `BASIS ChangeLog <http://opensource.andreasschuh.com/cmake-basis/changelog.html>`__:
     Summary of changes, new features, and bug fixes.
 
 

@@ -27,7 +27,7 @@ Prerequisites
 | BASIS_              | 3.0.0   | A meta-project developed initially at SBIA_ to standardize the software development. |
 +---------------------+---------+--------------------------------------------------------------------------------------+
 
-.. _BASIS: http://www.rad.upenn.edu/sbia/software/basis/index.html
+.. _BASIS: http://opensource.andreasschuh.com/cmake-basis/
 .. _SBIA: http://www.rad.upenn.edu/sbia/index.html
 
 
@@ -98,8 +98,8 @@ option during the configuration of the build tree::
     
 After the successful installation, the build directory can be removed again.
 
-.. _BASIS: http://www.rad.upenn.edu/sbia/software/basis/index.html
-.. _BASIS guide on software installation: http://www.rad.upenn.edu/sbia/software/basis/howto/install.html
+.. _BASIS: http://opensource.andreasschuh.com/cmake-basis/
+.. _BASIS guide on software installation: http://opensource.andreasschuh.com/cmake-basis/howto/install.html
 .. _CMake: http://www.cmake.org/
 .. _CTest: http://www.cmake.org/cmake/help/v2.8.8/ctest.html
 .. _GNU Make: http://www.gnu.org/software/make/

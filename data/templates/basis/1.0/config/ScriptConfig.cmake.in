@@ -18,7 +18,7 @@
 #
 # See documentation of basis_set_script_path() function for more details.
 #
-# @sa http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets.html#script-configuration
+# @sa http://opensource.andreasschuh.com/cmake-basis/standard/scripttargets.html#script-configuration
 #
 # Copyright (c) <copyright>
 # All rights reserved.
