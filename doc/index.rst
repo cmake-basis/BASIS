@@ -119,7 +119,7 @@ Over time, these components were transformed to important parts of BASIS.
 People
 ------
 
-**Advisors**
+**Former Advisors at SBIA**
 
 - `Christos Davatzikos <http://www.rad.upenn.edu/sbia/Christos.Davatzikos>`_
 - `Kilian M. Pohl <http://www.rad.upenn.edu/sbia/Kilian.Pohl>`_
