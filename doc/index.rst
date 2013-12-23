@@ -6,8 +6,8 @@
 .. toctree::
     :hidden:
     :maxdepth: 1
-     
-    BASIS Overview <self>
+
+    Overview <self>
     Contents <contents>
 
 .. toctree::
