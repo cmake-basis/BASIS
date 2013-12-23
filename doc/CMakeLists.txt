@@ -125,6 +125,7 @@ basis_add_doc (
   LATEX_TITLE      "${PROJECT_NAME} Software Manual"
   OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
   BREATHE          apidoc
+  DOXYLINK         apidoc
 )
 
 basis_add_doc (index.html )
