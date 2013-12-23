@@ -7,8 +7,6 @@ How-to Guides
 The how-to guides explain the basics of following the :ref:`Standards <Standards>`, 
 and explain common tasks like creating a new project or installation.
 
--  :doc:`install`
-
 .. toctree::
     :maxdepth: 2
 
@@ -18,5 +16,6 @@ and explain common tasks like creating a new project or installation.
     howto/document
     howto/branch-and-release
     howto/package
+    howto/install
     howto/buildoptions
     howto/run-automated-tests
