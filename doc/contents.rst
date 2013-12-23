@@ -7,15 +7,15 @@ CMake BASIS Documentation
 .. toctree::
     :maxdepth: 4
     
+    download
+    install
     quickstart
     howto
     standard
     apidoc
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 1
 
-    download
-    install
     help
     changelog   
