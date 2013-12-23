@@ -118,7 +118,6 @@ The following people notably helped to define and shape BASIS.
 - `Yangming Ou <http://www.rad.upenn.edu/sbia/Yangming.Ou>`_
 
 
-.. _Dependencies:
 
 
 Table of Contents
