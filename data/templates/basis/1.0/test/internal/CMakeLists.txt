@@ -9,7 +9,10 @@
 # where it is known that the tests will only run successfully within the
 # environment of the package provider.
 #
-# <copyright>
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-# <contact>
+# <license>
+#
+# Contact: <contact>
 ##############################################################################

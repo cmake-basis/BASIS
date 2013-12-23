@@ -11,10 +11,12 @@
 # place them in proper subdirectories which will be copied to the
 # @c DESTINATION directory of the basis_install() function.
 #
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-#<copyright>
+# <license>
 #
-#<contact>
+# Contact: <contact>
 ##############################################################################
 
 basis_install_directory ("." "${INSTALL_DATA_DIR}")

@@ -15,10 +15,12 @@
 # supported by BASIS for the generation of documentation from plain text files
 # and in-source code comments.
 #
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-#<copyright>
+# <license>
 #
-#<contact>
+# Contact: <contact>
 ##############################################################################
 
 # ============================================================================

@@ -1,12 +1,8 @@
 
+  Copyright (c) <copyright>
+  All rights reserved.
 
-<copyright>
-
-<contact> 
-
-History of Significant Contributions (don't put commit logs here):
-<year>-MM-DD <author>               Created file.
-YYYY-MM-DD [email]                [activities]
+  Contact: <contact>
 
 
 
@@ -56,7 +52,7 @@ PACKAGE OVERVIEW
 LICENSING
 =========
 
-  See COPYING.txt file or contact info@rec.ri.cmu.edu
+  <license>
 
 
 

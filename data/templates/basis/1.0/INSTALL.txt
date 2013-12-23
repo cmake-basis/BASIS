@@ -1,7 +1,9 @@
 
-<copyright>
+  Copyright (c) <copyright>
+  All rights reserved.
 
-<contact> 
+  Contact: <contact>
+
 
 
 INTRODUCTION

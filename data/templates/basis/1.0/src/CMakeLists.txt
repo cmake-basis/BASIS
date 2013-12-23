@@ -2,10 +2,12 @@
 # @file  CMakeLists.txt
 # @brief Build configuration of software.
 #
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-#<copyright>
+# <license>
 #
-#<contact>
+# Contact: <contact>
 ##############################################################################
 
 # ============================================================================

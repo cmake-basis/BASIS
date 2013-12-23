@@ -78,13 +78,12 @@ options = {
   },
   # documentation
   'doc' : {
-    'desc' : 'Add/remove directory for documentation files.',
+    'desc' : 'Add/remove (basic) documentation files.',
     'path' : [
                'doc/CMakeLists.txt',
                'doc/doxygen_extra.css.in',
                'doc/doxygen_header.html.in',
                'doc/doxygen_footer.html.in',
-               'doc/logo.png'
              ]
   },
   'doc-rst' : {
@@ -162,58 +161,60 @@ presets = {
 # ------------------------------------------------------------------------------
 # additional substitutions besides <project>, <template>,...
 from datetime import datetime as date
+from calendar import month_name, month_abbr
+todays = date.today()
 
 substitutions = {
   # fixed computed substitutions
-  'date'  : date.today().strftime('%x'),
-  'day'   : date.today().day,
-  'month' : date.today().month,
-  'year'  : date.today().year,
+  'date'       : todays.strftime('%x'),
+  'day'        : todays.day,
+  'month'      : todays.month,
+  'month-name' : month_name[todays.month],
+  'month-abbr' : month_abbr[todays.month],
+  'year'       : todays.year,
   # substitutions which can be overridden using a command option
   'vendor' : {
     'help'    : "Package vendor ID (e.g., acronym of provider and/or division).",
-    'default' : "basis"
+    'default' : None
   },
   'provider-name' : {
     'help'    : "Name of the package provider.",
-    'default' : "provider-name"
+    'default' : None
   },
   'provider-website' : {
     'help'    : "Website of the package provider.",
-    'default' : "http://www.provider-website.com"
+    'default' : "http://www.<vendor>.com/<project>"
   },
   'provider-logo' : {
     'help'    : "Logo of the package provider.",
-    'default' : ""
+    'default' : None
   },
   'division-name' : {
     'help'    : "Name of the package provider division, group, or project name.",
-    'default' : ""
+    'default' : None
   },
   'division-website' : {
     'help'    : "Website of the package provider division, group, or project name.",
-    'default' : ""
+    'default' : None
   },
   'division-logo' : {
     'help'    : "Logo of the package provider division, group, or project name.",
-    'default' : ""
+    'default' : None
   },
   'copyright' : {
-    'help'    : "Copyright statement optionally including years, but not \". All rights reserved.\".",
-    'default' : str(date.today().year) + " provider-name"
+    'help'    : "Copyright statement optionally including years, but not \"Copyright (c) \" or \". All rights reserved.\".",
+    'default' : str(todays.year) + " <provider-name>"
   },
   'license' : {
-    'help'    : "Package licensing terms, or where to find the detailed license.",
-    'default' : "See COPYING file."
+    'help'    : "Software licensing terms, or where to find the detailed license.",
+    'default' : "See COPYING file for license information."
   },
   'ctest-drop-site' : {
-    'help'    : "Website for ctest test execution.",
-    'default' : ""
+    'help'    : "CDash dashboard used by tests run by CTest.",
+    'default' : None
   },
   'contact' : {
-    'help'    : "Contact information to reach someone regarding this package.",
-    'default' : "Contact Name <contact@name.com>"
+    'help'    : "Contact details of person/division responsible for this software package.",
+    'default' : "<provider-name> <<project>@<vendor>.com>"
   }
 }
-
-del date

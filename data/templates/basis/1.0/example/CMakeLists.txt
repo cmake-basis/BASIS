@@ -5,10 +5,12 @@
 # By default, all content of the example folder is simply copied to the
 # example directory of the installation tree.
 #
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-#<copyright>
+# <license>
 #
-#<contact>
+# Contact: <contact>
 ##############################################################################
 
 basis_install_directory ("." "${INSTALL_EXAMPLE_DIR}")

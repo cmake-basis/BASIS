@@ -2,9 +2,12 @@
 # @file  CTestConfig.cmake
 # @brief Dashboard configuration file.
 #
-# <copyright>
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-# <contact>
+# <license>
+#
+# Contact: <contact>
 ##############################################################################
 
 # set CTest/CDash project name

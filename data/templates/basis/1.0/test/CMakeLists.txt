@@ -55,10 +55,12 @@
 # Therefore, the basis_add_test() function creates such subdirectory and sets
 # the working directory of the test to this output directory.
 #
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-#<copyright>
+# <license>
 #
-#<contact>
+# Contact: <contact>
 ##############################################################################
 
 # ============================================================================

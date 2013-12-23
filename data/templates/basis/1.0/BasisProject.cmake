@@ -63,8 +63,12 @@
 # )
 # @endcode
 #
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-# <copyright>
+# <license>
+#
+# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################

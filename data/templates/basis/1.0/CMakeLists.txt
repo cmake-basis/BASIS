@@ -2,11 +2,12 @@
 # @file  CMakeLists.txt
 # @brief Root build configuration file.
 #
-# 
+# Copyright (c) <copyright>
+# All rights reserved.
 #
-#<copyright>
+# <license>
 #
-#<contact> 
+# Contact: <contact>
 ##############################################################################
 
 # ----------------------------------------------------------------------------
