@@ -1,8 +1,8 @@
 .. _QuickStartGuides:
 
-==================
-Quick Start Guides
-==================
+===========
+Quick Start
+===========
 
 Use the quick start guide to familiarize yourself with BASIS and get started as quickly as possible.
 Then when you are ready for more detail you can try out the Tutorials.
