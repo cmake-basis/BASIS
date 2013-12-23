@@ -132,10 +132,10 @@ Table of Contents
 .. toctree::
     :maxdepth: 4
     
-    Quick-Start
-    How-To
-    Standards
-    API-Documentation
+    quickstart
+    howto
+    standard
+    apidoc
 
 .. toctree::
     :maxdepth: 3
@@ -144,20 +144,6 @@ Table of Contents
     install
     help
     changelog   
-
-.. .. toctree::
-..     :hidden:
-.. 
-..     self
-..     download
-..     changelog
-..     installation
-..     manual
-..     help
-..     people
-
-
-
 
 
 

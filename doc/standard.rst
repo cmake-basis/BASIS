@@ -7,14 +7,7 @@ Standards
 The following sections define the standards for software projects that
 follow BASIS, a build system and a software implementation standard.
 
-.. .. toctree::
-..     :maxdepth: 2
-.. 
-..     standard/buildsystem
-..     standard/implementation
-..     standard/style
-    
-    
+
 
 Build System Standard
 =====================
