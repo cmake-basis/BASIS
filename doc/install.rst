@@ -31,7 +31,7 @@ summarized by the following sequence of commands executed in a shell,
 where $package and $version are shell variables which represent the name
 of this package and the obtained version of the software.
 
-.. code:: bash
+.. code-block:: bash
 
     $ tar xzf $package-$version-source.tar.gz
     $ mkdir $package-$version-build
@@ -43,7 +43,7 @@ of this package and the obtained version of the software.
 - Continue pressing 'c' until the option 'g' is available.
 - Then press 'g' to generate the configuration files for GNU Make.
 
-.. code:: bash
+.. code-block:: bash
 
     $ make
     $ make test    (optional)
@@ -60,7 +60,7 @@ If this guide does not help you resolve the issue, please contact us at
 <sbia-software at uphs.upenn.edu>. In case of failing tests, please attach
 the output of the following command to your email:
 
-.. code:: bash
+.. code-block:: bash
 
     $ ctest -V >& test.log
 
