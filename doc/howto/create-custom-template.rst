@@ -183,7 +183,7 @@ fairly easy to understand even without much experience in using Python given the
         'default' : str(date.today().year) + " University of Pennsylvania"
       },
       'license' : {
-        'help'    : "Copyrigth statement including years, but excluding \"All rights reserved.\".",
+        'help'    : "Software license statement, e.g., \"Simplified BSD\" or reference to license text.",
         'default' : "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
       },
       'contact' : {
