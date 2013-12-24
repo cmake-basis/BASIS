@@ -105,8 +105,10 @@ Custom Substitutions
 
 The template configuration file named ``_config.py`` and located in the top directory of each project
 template defines not only which files constitute a project, but also the available substitution parameters
-and defaults used by ``basisproject``. It requires a basic understanding of the Python syntax, but is
-fairly easy to understand even without much experience in using Python given the following example.
+and defaults used by ``basisproject``. The template configuration file requires a basic understanding
+of Python syntax, but is fairly easy to understand even without much experience. To get an idea of the
+syntax, take a look at the example below. A complete example can be found in the BASIS source
+package in ``data/templates/basis/1.0/_config.py``.
 
 .. code-block:: python
 
