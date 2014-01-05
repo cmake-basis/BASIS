@@ -12,17 +12,19 @@
     Overview <self>
     quickstart
     howto
-    standard
+    standard/buildsystem
+    standard/implementation
+    standard/style
     apidoc
+    help
 
 .. toctree::
     :hidden:
     :maxdepth: 3
 
-    changelog
+    News <changelog>
     download
     install
-    help
 
 .. toctree::
     :hidden:

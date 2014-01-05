@@ -14,9 +14,6 @@
 
 .. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
 
-
-Changes
-=======
 .. _v3.0.0:
 
 Release 3.0.0 (Dec 24, 2013)

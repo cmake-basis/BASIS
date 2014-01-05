@@ -14,11 +14,12 @@ The following tutorial-like quick start guides aim to introduce you to BASIS and
 help you to get started as quickly as possible. When you are ready for more details,
 you can try out the :ref:`Tutorials` below.
 
-1. :download:`Getting Started <tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`
+.. 1. :download:`Getting Started <tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`
    (`ref <http://opensource.andreasschuh.com/cmake-basis/_downloads/BASIS%20Quick%20Start%20Guide%20-%2001%20Getting%20Started.pptx>`__)
 
 
 .. _FirstStepsIntro:
+.. _GettingStarted:
 
 Getting Started
 ---------------

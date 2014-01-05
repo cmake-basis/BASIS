@@ -8,18 +8,12 @@ Table of Contents
     :maxdepth: 4
 
     quickstart
+    howto
+    standard/buildsystem
+    standard/implementation
+    standard/style
+    apidoc
+    help
+    changelog
     download
     install
-    howto
-
-.. toctree::
-    :maxdepth: 4
-
-    standard
-    apidoc
-
-.. toctree::
-    :maxdepth: 1
-
-    help
-    changelog   

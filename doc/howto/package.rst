@@ -23,7 +23,7 @@ files except those which match one of the patterns in the
 patterns in the `BasisPack.cmake`_ module. Additional exclude patterns for
 a particular package shall be added to the ``Settings.cmake`` file of the
 project. Moreover, if the project contains different
-:doc:`modules </standard/modules>`, only the enabled modules are included.
+:doc:`modules </standard/buildsystem/modules>`, only the enabled modules are included.
 For general steps on how to configure a build tree, see the
 :ref:`common build instructions <HowToBuildTheSoftware>`. Given a configured build
 tree with a generated ``Makefile``, run the following command to generate the source
