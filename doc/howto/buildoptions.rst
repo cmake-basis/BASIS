@@ -65,7 +65,6 @@ The following BASIS specific options are available when building packages. For t
 
 .. _AdvancedCMakeOptions:
 
-======================
 Advanced CMake Options
 ======================
 
