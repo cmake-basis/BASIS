@@ -1,19 +1,18 @@
 :orphan:
 
-=================
-Table of Contents
-=================
+=============
+Documentation
+=============
 
 .. toctree::
     :maxdepth: 4
 
     quickstart
     howto
-    standard/buildsystem
-    standard/implementation
-    standard/style
+    standard
+    guideline
     apidoc
-    help
-    changelog
     download
     install
+    changelog
+    help

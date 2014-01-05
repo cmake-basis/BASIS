@@ -14,7 +14,7 @@ Features
 - Filesystem layout standards
 - Implementation standard
 - Command-line parsing standards
-- Style Guides
+- Style Guidelines
 
 **Build system utilities**
 

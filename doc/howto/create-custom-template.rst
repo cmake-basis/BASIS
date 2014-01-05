@@ -8,7 +8,7 @@ Create a Custom Template
 
 In addition to creating new projects from an existing project template,
 the ``basisproject`` command-line tool can also be used to generate a new
-:doc:`/standard/buildsystem/template` customized for your needs.
+:doc:`/standard/template` customized for your needs.
 
 For a detailed description and overview of the available command options,
 please refer to the output of the following command::

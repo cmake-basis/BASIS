@@ -10,8 +10,7 @@
     features
     quickstart
     howto
-    standard/buildsystem
-    standard/implementation
-    standard/style
+    standard
+    guideline
     help
     people

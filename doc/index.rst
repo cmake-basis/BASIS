@@ -12,9 +12,8 @@
     Overview <self>
     quickstart
     howto
-    standard/buildsystem
-    standard/implementation
-    standard/style
+    standard
+    guideline
     apidoc
     help
 

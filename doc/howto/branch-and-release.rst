@@ -10,7 +10,7 @@ Branch and Release
 This guide defines the process of creating a new development branch other
 than the trunk and the creation of a release version of a software.
 Before reading this document, you should be familiar with the basic structure
-of any revision controlled software project as described in the :doc:`/standard/buildsystem/fhs`.
+of any revision controlled software project as described in the :doc:`/standard/fhs`.
 
 
 .. _HowToBranch:

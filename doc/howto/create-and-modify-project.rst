@@ -10,7 +10,7 @@ This how-to guide introduces the ``basisproject`` command-line tool which
 is installed as part of BASIS. This tool is used to create a new project 
 based on BASIS or to modify an existing BASIS project. The creation of a 
 new project based on BASIS is occasionally also referred to as 
-instantiating the :doc:`/standard/buildsystem/template`.
+instantiating the :doc:`/standard/template`.
 
 For a detailed description and overview of the available command options,
 please refer to the output of the following command::
@@ -211,7 +211,7 @@ longer require or use.
 Add Modules
 ===========
 
-BASIS supports the :doc:`modularization </standard/buildsystem/modules>` of a project similar to the
+BASIS supports the :doc:`modularization </standard/modules>` of a project similar to the
 `ITK 4 Modularization`_, where each module is itself a BASIS project which may depends
 on other modules of the top-level project or other external packages. As each module
 itself is a project, modules are created just the same way as projects are created.

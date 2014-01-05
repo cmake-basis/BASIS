@@ -36,7 +36,7 @@ Main executables in the ``bin/`` directory call utility executables relative
 to their own location. For example, a Bash_ script called ``main`` that executes
 a utility script ``util`` in the ``lib/`` directory would do so as demonstrated
 in the following example code (for details on the ``@VAR@`` patterns, please refer
-to the :doc:`/standard/buildsystem/scripttargets` page):
+to the :doc:`scripttargets` page):
 
 .. code-block:: bash
 
