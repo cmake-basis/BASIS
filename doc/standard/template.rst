@@ -8,14 +8,15 @@ BASIS Project Template
 
 The BASIS Project Template defines a standardized project directory 
 and file structure for consistency and interoperability that is required
-to follow the BASIS standard. The idea is to make projects easier for the
-developer to create, share, and use. It provides template files for the 
+to follow the BASIS standard. The idea is to make projects easier for
+developers to create, share, and use. It provides template files for the 
 configuration of the build, testing, installation, and packaging, as well 
 as a common directory structure which can be found at :doc:`fhs`.
 The Software Project Template also defines how CMake_, ``CMakeLists.txt`` 
 files are set up and the basic build flags that are required.
 The easiest way to get started is by using the ``basisproject`` utility 
-to generate a completed template for your project that follows this standard.
+to generate a completed template for your project that follows this standard,
+see the :doc:`quickstart` section for more details on getting started.
 
 
 Required Project Files
@@ -45,8 +46,8 @@ README.txt
     \clearpage
 
 AUTHORS.txt
-    Names the authors of the software package. Moreover, people who
-    notably contributed to the software directly shall be named
+    Names the authors of the software package. People who
+    notably contributed to the software directly should also be named
     here as well, even if they did not actually edit any project
     file. Others, who mostly contributed indirectly should be
     named in the :ref:`README.txt <README>` file instead. No author names shall
@@ -274,7 +275,6 @@ config/Package.cmake
 CTestCustom.cmake.in
     This file defines CTest_ variables which
     `customize CTest <http://www.vtk.org/Wiki/CMake_Testing_With_CTest#Customizing_CTest>`_.
-
 
 .. _CMake: http://www.cmake.org/
 .. _CDash: http://www.cdash.org/
