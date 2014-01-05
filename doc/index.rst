@@ -30,4 +30,4 @@
     :hidden:
     :maxdepth: 1
 
-    Page Contents <contents>
+    Full Table of Contents <contents>
