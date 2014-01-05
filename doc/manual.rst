@@ -9,8 +9,8 @@
 
     features
     history
-    install
     quickstart
+    install
     howto
     standard
     help

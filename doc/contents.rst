@@ -6,11 +6,15 @@ Table of Contents
 
 .. toctree::
     :maxdepth: 4
-    
+
+    quickstart
     download
     install
-    quickstart
     howto
+
+.. toctree::
+    :maxdepth: 4
+
     standard
     apidoc
 

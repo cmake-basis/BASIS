@@ -10,15 +10,20 @@
     :maxdepth: 1
 
     Overview <self>
-    download
-    install
 
 .. toctree::
     :hidden:
     :maxdepth: 3
 
     quickstart
+    download
+    install
     howto
+    
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
     standard
     apidoc
 

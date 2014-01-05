@@ -16,7 +16,7 @@ The Software Project Template also defines how CMake_, ``CMakeLists.txt``
 files are set up and the basic build flags that are required.
 The easiest way to get started is by using the ``basisproject`` utility 
 to generate a completed template for your project that follows this standard,
-see the :doc:`quickstart` section for more details on getting started.
+see the :doc:`../quickstart` section for more details on getting started.
 
 
 Required Project Files
