@@ -7,15 +7,15 @@
     
 .. toctree::
     :hidden:
-    :maxdepth: 1
+    :maxdepth: 3
 
     Overview <self>
+    quickstart
 
 .. toctree::
     :hidden:
     :maxdepth: 3
 
-    quickstart
     download
     install
     howto
