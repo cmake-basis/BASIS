@@ -8,7 +8,6 @@
     :maxdepth: 2
 
     features
-    history
     quickstart
     howto
     standard/buildsystem
