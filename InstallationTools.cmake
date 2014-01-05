@@ -375,7 +375,7 @@ endfunction ()
 # is responsible for removing the registry entry again.
 function (basis_register_package)
   set (PKGDIR "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}")
-  set (PKGUID "${BASIS_PROJECT_PACKAGE_UID}")
+  set (PKGUID "${TOPLEVEL_PROJECT_PACKAGE_UID}")
   if (WIN32)
     install (CODE
       "execute_process (

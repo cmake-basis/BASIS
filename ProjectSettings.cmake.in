@@ -50,7 +50,7 @@ endif ()
 # This is the common namespace of a BASIS project and its modules.
 # It is the part of the namespace which is only required if the project's
 # targets are referenced from another project, but not within the project.
-set (BASIS_PROJECT_NAMESPACE_CMAKE "@_BASIS_NAMESPACE_CMAKE@")
+set (TOPLEVEL_PROJECT_NAMESPACE_CMAKE "@_BASIS_NAMESPACE_CMAKE@")
 
 ## @brief CMake namespace of project.
 #
@@ -143,7 +143,7 @@ set (PROJECT_NAMESPACE_MATLAB "@_NAMESPACE_MATLAB@")
 # ============================================================================
 
 ## @brief Prefix/name of CMake package configuration file of top-level project.
-set (BASIS_PROJECT_PACKAGE_CONFIG_PREFIX "@_BASIS_PROJECT_PACKAGE_CONFIG_PREFIX@")
+set (TOPLEVEL_PROJECT_PACKAGE_CONFIG_PREFIX "@_TOPLEVEL_PROJECT_PACKAGE_CONFIG_PREFIX@")
 
 ## @brief Prefix/name of CMake package configuration file.
 set (PROJECT_PACKAGE_CONFIG_PREFIX "@_PROJECT_PACKAGE_CONFIG_PREFIX@")
@@ -155,7 +155,7 @@ set (PROJECT_PACKAGE_CONFIG_PREFIX "@_PROJECT_PACKAGE_CONFIG_PREFIX@")
 # of the Windows registry key on Windows.
 #
 # @sa http://www.cmake.org/Wiki/CMake/Tutorials/Package_Registry
-set (BASIS_PROJECT_PACKAGE_UID "@_BASIS_PROJECT_PACKAGE_UID@")
+set (TOPLEVEL_PROJECT_PACKAGE_UID "@_TOPLEVEL_PROJECT_PACKAGE_UID@")
 
 
 ## @}

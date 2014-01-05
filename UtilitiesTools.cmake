@@ -55,9 +55,9 @@ function (basis_add_utilities_library UID)
       # modules, on the other side, share the library with the top-level project
       # the addition of the utilities target is in this case only required because
       # of the install(TARGETS) and install(EXPORT) commands.
-      set (CODE_DIR    "${BASIS_BINARY_CODE_DIR}")
-      set (INCLUDE_DIR "${BASIS_BINARY_INCLUDE_DIR}")
-      set (OUTPUT_DIR  "${BASIS_BINARY_ARCHIVE_DIR}")
+      set (CODE_DIR    "${TOPLEVEL_BINARY_CODE_DIR}")
+      set (INCLUDE_DIR "${TOPLEVEL_BINARY_INCLUDE_DIR}")
+      set (OUTPUT_DIR  "${TOPLEVEL_BINARY_ARCHIVE_DIR}")
       set (INSTALL_DIR "${BASIS_INSTALL_ARCHIVE_DIR}")
     endif ()
     # write dummy source files
@@ -546,7 +546,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     if (TARGET_UID MATCHES "^\\.")
       string (LENGTH "${TARGET_UID}" LENGTH)
     else ()
-      string (LENGTH "${BASIS_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}" LENGTH)
+      string (LENGTH "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}" LENGTH)
     endif ()
     if (LENGTH GREATER MAX_ALIAS_LENGTH)
       set (MAX_ALIAS_LENGTH ${LENGTH})
@@ -607,8 +607,8 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     # target UID including project namespace
     if (IMPORTED OR TARGET_UID MATCHES "^\\.")
       set (ALIAS "${TARGET_UID}")
-    elseif (NOT BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS AND BASIS_PROJECT_NAMESPACE_CMAKE)
-      set (ALIAS "${BASIS_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
+    elseif (NOT BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS AND TOPLEVEL_PROJECT_NAMESPACE_CMAKE)
+      set (ALIAS "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
     endif ()
     # indentation after dictionary key, i.e., alias
     string (LENGTH "${ALIAS}" ALIAS_LENGTH)

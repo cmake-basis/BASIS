@@ -135,7 +135,7 @@ foreach (${NS}MODULE IN LISTS ${NS}MODULES_REQUESTED)
   endif ()
   # include configuration files of modules
   set (${${NS}MODULE}_CONFIG_PREFIX "${NS}${MODULE}_")
-  include ("@MODULES_DIR_CONFIG@/@BASIS_PROJECT_PACKAGE_CONFIG_PREFIX@${${NS}MODULE}Config.cmake")
+  include ("@MODULES_DIR_CONFIG@/@TOPLEVEL_PROJECT_PACKAGE_CONFIG_PREFIX@${${NS}MODULE}Config.cmake")
   unset (${${NS}MODULE}_CONFIG_PREFIX)
   # append include directories
   if (${NS}${${NS}MODULE}_INCLUDE_DIRS)

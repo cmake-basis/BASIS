@@ -70,7 +70,7 @@ list (REVERSE MANIFEST)
 # remove package from CMake package registry
 set (REGISTERED "@BASIS_REGISTER@")
 if (WIN32 AND REGISTERED)
-  set (PKGUID "@BASIS_PROJECT_PACKAGE_UID@")
+  set (PKGUID "@TOPLEVEL_PROJECT_PACKAGE_UID@")
   execute_process (
     COMMAND reg delete "HKCU\\Software\\Kitware\\CMake\\Packages\\@PROJECT_PACKAGE_CONFIG_PREFIX@" /v "${PKGUID}" /f
     RESULT_VARIABLE RT
