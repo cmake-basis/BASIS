@@ -2,13 +2,17 @@
     :description: This BASIS style guide specifies guidelines for the formatting of
                   plain text files of a software project.
 
-================================
-Style Guide for Plain Text Files
-================================
+========================
+Guideline for Plain Text
+========================
 
-The following guide, which itself is styled according to the plain text
+.. note:: These guidelines are out-dated and a new set of rules must be defined
+          which is compatible with either Markdown or reStructuredText, nowadays
+          the preferred lightweight markup languages for plain text files.
+
+The following guideline, which itself is styled according to the plain text
 format it describes, details how plain text documentation files
-of a software project shall be formatted.
+of a software project should be formatted.
 
 ::
 

@@ -1,10 +1,13 @@
 .. _StyleGuides:
 
-============
-Style Guides
-============
+======================
+Programming Guidelines
+======================
 
-The style guides specify guidelines for the formatting of documents and programming style.
+BASIS specifies common guidelines for the formatting of documents such as
+program code and other recommended coding guidelines. Each organization
+employing BASIS, however, may define their own guidelines, possibly using
+the following guidelines as reference.
 
 .. toctree::
 
