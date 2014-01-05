@@ -1,10 +1,10 @@
-.. title:: News
+.. title:: Release Notes
 
 .. meta::
-   :description: Latest news such as summary of changes, new features, and bug fixes for each BASIS release.
+   :description: Summary of changes, new features, and bug fixes for each BASIS release.
 
-====
-News
-====
+=============
+Release Notes
+=============
 
 .. include:: ../ChangeLog.txt

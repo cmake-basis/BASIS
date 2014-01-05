@@ -12,7 +12,7 @@ Table of Contents
     standard
     guideline
     apidoc
+    help
+    changelog
     download
     install
-    changelog
-    help

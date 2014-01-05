@@ -46,7 +46,7 @@ Source Code Repository
 Git 
 ---
 
-BASIS recommends that `git <http://git-scm.com/>`_ distributed version control users follow the `nvie git-flow branching model <http://nvie.com/posts/a-successful-git-branching-model/>`_. 
+BASIS recommends that `Git <http://git-scm.com/>`_ distributed version control users follow the `nvie git-flow branching model <http://nvie.com/posts/a-successful-git-branching-model/>`_. 
 The `Atlassian Gitflow Workflow Tutorial <https://www.atlassian.com/git/workflows#!workflow-gitflow>`_ is another excellent source for this information.
 
 .. _HgRepositoryOrganization:
@@ -59,8 +59,8 @@ This is identical to the git-flow branching model explained in :ref:`GitReposito
 
 .. _SVNRepositoryOrganization:
 
-SVN
----
+Subversion
+----------
 
 Each Subversion_ (SVN) repository contains the top-level directories ``trunk/``,
 ``branches/``, and ``tags/``. No other directories may be located next to these 

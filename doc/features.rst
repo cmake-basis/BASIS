@@ -12,9 +12,9 @@ Features
 **Standards**
 
 - Filesystem layout standards
-- Implementation standard
+- Basic software implementation standards
 - Command-line parsing standards
-- Coding style guidelines
+- Guidelines on coding style
 
 **Build system utilities**
 

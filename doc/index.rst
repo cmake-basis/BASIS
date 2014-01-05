@@ -21,7 +21,7 @@
     :hidden:
     :maxdepth: 3
 
-    News <changelog>
+    changelog
     download
     install
 
