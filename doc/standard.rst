@@ -5,8 +5,7 @@ Standards
 =========
 
 The following sections detail the Build system (i.e., the **B** in BASIS)
-and Software Implementation (i.e., the **SI** in BASIS) Standard
-which is the foundation of the BASIS project.
+and Software Implementation (i.e., the **SI** in BASIS) Standard.
 
 .. toctree::
     :maxdepth: 2

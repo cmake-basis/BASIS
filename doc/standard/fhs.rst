@@ -22,24 +22,21 @@ by BASIS using CMake, and will often refer to particular directories
 of a software project. These variables should be used where possible, 
 so that directories can be renamed without breaking the build system.
 
-The :doc:`template` provides a reference implementation and automated 
-BASIS Filesystem Hierarchy Standard setup. See 
-:doc:`/howto/create-and-modify-project` for details.
+The :doc:`template` provides a reference implementation of this standard.
+See the :doc:`/howto/create-and-modify-project` How-to Guide for details
+on how to make use of this template to create a new project which is conform
+with the filesystem hierarchy standard detailed in this section.
 
-
-Legend
-======
-
-The BASIS Filesystem Heirarchy Standard uses the following definitions:
+**Legend**
 
 - ``<project>`` (``<package>``) is a placeholder for the lowercase project (or package) name
 - ``<Project>`` is the case-sensitive project name.
+- ``<major>``   is the major release number
+- ``<minor>``   is the minor update number
+- ``<patch>``   is the patch number
 - ``<version>`` is a placeholder for the project version string ``<major>.<minor>.<patch>``
-   - ``<major>`` is the major release number
-   - ``<minor>`` is the minor update number
-   - ``<patch>`` is the patch number
-- ``<source>`` is the root directory of a particular project source tree
-- ``<build>``  is the root directory of the project's build or binary tree
+- ``<source>``  is the root directory of a particular project source tree
+- ``<build>``   is the root directory of the project's build or binary tree
 
 .. _GitRepositoryOrganization:
 
