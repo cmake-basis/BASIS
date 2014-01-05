@@ -22,16 +22,14 @@ Release 3.0.0 (Dec 24, 2013)
 - Slight project name change to "CMake BASIS" (yet usually just referred to as BASIS).
 - Generalized templates allow any organization to use BASIS.
 - All SBIA specific functionality has been separated out and is now optional.
-- Improvements of basisproject tool:
-   - Customizable templates and substitution parameters.
-   - Default template configurable during installation using the CMake ``DEFAULT_TEMPLATE`` option.
-   - Support for binary template files.
+- Customizable project templates and substitution parameters.
+- Default project template configurable during installation using the ``DEFAULT_TEMPLATE`` CMake option.
+- Support for binary project template files.
 - Multiple new Sphinx themes available for HTML documentation.
 - Updated and improved introductory presentation slides.
 - Improved and easier to read documentation.
 - Hosting new web site of Open Source CMake BASIS project on GitHub.
 
-   
 .. _v2.1.4:
 
 Release 2.1.4 (Apr 20, 2013)
