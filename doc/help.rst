@@ -3,6 +3,11 @@
 .. meta::
     :description: Report any issues with BASIS or request new features on GitHub.
 
+.. raw:: latex
+
+  \clearpage
+
+
 ============
 Getting Help
 ============
