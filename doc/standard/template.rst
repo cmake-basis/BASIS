@@ -41,10 +41,6 @@ README.txt
     respectively. Furthermore, references to scientific articles related
     to the software package shall be included in this file.
 
-.. raw:: latex
-
-    \clearpage
-
 AUTHORS.txt
     Names the authors of the software package. People who
     notably contributed to the software directly should also be named

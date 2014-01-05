@@ -304,10 +304,6 @@ Note that the directory for CMake package configuration files is chosen such tha
 CMake finds these files automatically given that the ``<prefix>`` is a system default
 location or the ``INSTALL_RUNTIME_DIR`` is in the ``PATH`` environment.
 
-.. raw:: latex
-
-    \clearpage
-
 It is important to note that the include directory always contains the package name.
 This way, project header files must use an include path that avoids conflicts with 
 other packages that use identical header names. Here is a usage example:
