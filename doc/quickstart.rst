@@ -20,86 +20,91 @@ you can try out the :ref:`Tutorials` below.
 
 .. _FirstStepsIntro:
 
-Introduction
-============
+Getting Started
+---------------
 
-- Download and install BASIS on your system.
-- Use the so-called “basisproject” command line tool to create a new empty project.
-- Add some example source files and edit the build configuration files to build the executable and library files.
-- Finally, build and test the example project.
-- For a more detailed explanation of each step, have a look at the corresponding BASIS Tutorial. 
+The following brief sections will demonstrate
+
+- how to download and install BASIS on your system.
+- how to use the so-called “basisproject” command line tool to create a new empty project.
+- how to add some example source files and edit the build configuration files to build the executable and library files.
+- how to build and test the example project.
+- where to find more detailed and advanced documentation.
+
+To follow these steps, you need to have a Unix-like operating system such as Linux or Mac OS X.
+At the moment, there is no separate tutorial available for Windows users, but you can install
+CygWin as an alternative.
+
+.. note::
+
+  BASIS can also be installed and used on Windows.
+  The tools for :doc:`automated software tests <howto/run-automated-tests>` are, however, only available for Unix.
 
 
-To follow the steps in this quick start guide, you need to 
-have a Unix-like operating system such as Linux or Mac OS X. 
+Install BASIS
+-------------
 
-.. note:: BASIS can also be installed and used on Windows. The tools for creating a new project and for automated software tests are, however, only available for Unix.
+Get a copy of the sources
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-At the moment, there is no separate tutorial available for 
-Windows users, but you can install CygWin as an alternative. 
-This would also allow you to use the BASIS tools which are 
-not available for native Windows.
+Download either a pre-packaged ``.tar.gz`` of the latest BASIS release and unpack it using the following command:
 
+.. code-block:: bash
 
-Installing BASIS
-================
+    mkdir -p ~/local/src
+    cd ~/local/src
+    tar xzf /path/to/downloaded/cmake-basis-$version.tar.gz
+    cd cmake-basis-$version
 
-Get a copy of BASIS
--------------------
+or clone the Git repository as follows:
 
 .. code-block:: bash
     
     mkdir -p ~/local/src
     cd ~/local/src
     git clone https://github.com/schuhschuh/cmake-basis.git
+    cd cmake-basis
 
-Configure BASIS
----------------
+Configure the build
+~~~~~~~~~~~~~~~~~~~
 
-Before you can build BASIS, you need to configure it using CMake 2.8.4 or greater.
-
-Configure the build system using CMake:
+Configure the build system using CMake 2.8.4 or a more recent version:
 
 .. code-block:: bash
     
-    mkdir basis-build
-    cd basis-build
-    ccmake ../basis
+    mkdir build && cd build
+    ccmake ..
 
 - Hit ``c`` to configure the project.
 - Change ``INSTALL_PREFIX`` to ~/local.
-- Disable any of the ``BUILD_*_UTILITIES`` options depending on whether you have Python or Perl installed on your system and intend to use these languages.
 - Hit ``g`` to generate the Makefiles.
 
-Build BASIS
------------
+Build and install BASIS
+~~~~~~~~~~~~~~~~~~~~~~~
 
-CMake has generated Makefiles for GNU Make.
-
-Therefore, the build is triggered by the make command:
+CMake has generated Makefiles for GNU Make. The build is thus triggered by the make command:
 
 .. code-block:: bash
     
     make
 
-Install BASIS
--------------
-
-To install BASIS, we “build” the install target:
+To install BASIS after the successful build, run the following command:
 
 .. code-block:: bash
     
     make install
 
-As a result, CMake copies the built files into the installation tree as specified by the ``INSTALL_PREFIX`` variable.
+As a result, CMake copies the built files into the installation tree as specified by the
+``INSTALL_PREFIX`` variable.
 
-Additionally, BASIS may create some symbolic links on Unix systems if the ``INSTALL_LINKS`` option was set to ON during the configuration of BASIS.
+Set up the environment
+~~~~~~~~~~~~~~~~~~~~~~
 
+For the following tutorial steps, set up your environment as follows. In general, however,
+only the change of the ``PATH`` environment variable is recommended. The other environment
+variables are only needed for the tutorial sessions.
 
-Setup the Environment
----------------------
-
-Set the following environment variables:
+Using the C or TC shell (csh/tcsh):
 
 .. code-block:: bash
     
@@ -107,7 +112,7 @@ Set the following environment variables:
     setenv BASIS_EXAMPLE_DIR "~/local/share/basis/example"
     setenv HELLOBASIS_RSC_DIR "${BASIS_EXAMPLE_DIR}/hellobasis"
 
-Using BASH:
+Using the Bourne Again SHell (bash):
 
 .. code-block:: bash
     
@@ -116,107 +121,85 @@ Using BASH:
     export HELLOBASIS_RSC_DIR="${BASIS_EXAMPLE_DIR}/hellobasis"
 
 
-Creating a New Project
-======================
-
-These are the quick instructions for creating a new BASIS conforming project, you can find more detailed steps at :doc:`/howto/create-and-modify-project`.
+Create Example Project
+----------------------
 
 Create a new and empty project as follows:
 
+.. code-block:: bash
+    
+    basisproject --name HelloBasis --description "This is a BASIS project." --root ~/local/src/hellobasis
+
+The next command demonstrates that you can modify a previously created project by using the
+project tool again:
 
 .. code-block:: bash
     
-    basisproject --name HelloBasis	--description "This is a BASIS project. " --root ~/local/src/hellobasis
+    basisproject --root ~/local/src/hellobasis --noexample --config-settings
 
-The next command demonstrates that you can modify a previously created project by using the project tool again:
+Here we removed the ``example/`` subdirectory and added some configuration file used by BASIS.
+These options could also have been given to the initial command above instead.
 
-.. code-block:: bash
-    
-    basisproject --root ~/local/src/hellobasis	--noexample --config-settings
-
-Here we removed the example/ subdirectory and added some configuration file used by BASIS. These options could also have been given to the initial command above instead.
+.. note:: More details on how to use ``basisproject`` are given by the :doc:`howto/create-and-modify-project` How-to Guide.
 
 
-Installing Your Project
-=======================
+Install Your Project
+--------------------
 
-The build and installation of this BASIS project is identical to the build and installation of BASIS itself.
-
-In fact, all CMake-based projects are build this way. The Build and Installation How-to summarizes these steps.
-
-Build and install the (currently empty) project:
+The build and installation of the just created empty example project is identical to the build
+and installation of BASIS itself:
 
 .. code-block:: bash
     
-    mkdir ~/local/src/hellobasis-build
-    cd ~/local/src/hellobasis-build
-    cmake -D INSTALL_PREFIX=~/local ../hellobasis
+    mkdir ~/local/src/hellobasis/build
+    cd ~/local/src/hellobasis/build
+    cmake -D INSTALL_PREFIX=~/local ..
     make
 
+.. note:: More details on build and installation are given by the :doc:`howto/install` How-to Guide.
 
-Adding Executables
-==================
 
-Copy the source file from the example to src/:
+Add an Executable
+-----------------
+
+Copy the source file from the example to ``src/``:
 
 .. code-block:: bash
     
     cd ~/local/src/hellobasis
     cp ${HELLOBASIS_RSC_DIR}/helloc++.cxx src/
 
-Add the following line to src/CMakeLists.txt under the section “executable target(s)”:
+Add the following line to ``src/CMakeLists.txt`` under the section "executable target(s)":
 
 
 .. code-block:: cmake
     
-    basis_add_executable (helloc++.cxx)
+    basis_add_executable(helloc++.cxx)
 
 
-.. note:: Alternatively, you can use the implementation of this example executable in Python, Perl, BASH or MATLAB.
+.. note::
 
-In case of MATLAB, add also a dependency to MATLAB:
-
-
-.. code-block:: bash
-    
+  Alternatively, you can use the implementation of this example executable in
+  Python, Perl, BASH or MATLAB. In case of MATLAB, add also a dependency to MATLAB:
+  
     basisproject --root ~/local/src/hellobasis --use MATLAB
 
-Change Properties
------------------
+Change target properties
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 - The name of the output file is given by the ``OUTPUT_NAME`` property.
-- The name of the symbolic link is given by the ``SYMLINK_NAME`` property.
-- To change these properties, add the following lines to the ``src/CMakeLists.txt`` (**after** ``basis_add_executable()``):
+- To change this property, add the following line to the ``src/CMakeLists.txt`` file
+  (**after** ``basis_add_executable``):
 
 .. code-block:: cmake
     
-    basis_set_target_properties (
-        helloc++
-        PROPERTIES
-            OUTPUT_NAME  "hellobasis"
-            SYMLINK_NAME "helloworld"
-    )
+    basis_set_target_properties(helloc++ PROPERTIES OUTPUT_NAME  "hellobasis")
 
-.. note:: If you used another example, you need to replace helloc++ by the name of the source file you used excluding the extension.
-
-
-src/CMakeLists.txt
-------------------
-
-To conclude, your src/CMakeLists.txt file should now contain CMake code similar to the following snippet:
-
-.. code-block:: cmake
-    
-    basis_add_executable (helloc++.cxx)
-    basis_set_target_properties (
-        helloc++
-        PROPERTIES
-            OUTPUT_NAME  "hellobasis"
-            SYMLINK_NAME "helloworld"
-    )
+.. note:: If you used another example, you need to replace helloc++ by the name of the
+          source file you used excluding the extension.
 
 Test the Executable
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Now build the executable and test it:
 
@@ -240,105 +223,97 @@ Install the executable and test it:
 .. note:: The symbolic link named helloworld is in ``~/local/bin/`` which is already in our search path for executables (PATH).
 
 
-Adding Libraries
-================
+Add Libraries
+-------------
 
-Private Library
----------------
+Next, you will add a three kinds of libraries, i.e., collections of binary or script code, to your example project.
+We distinguish here between private, public, and script libraries. A private library is a library without
+public interface which is only used by other libraries and in particular executables of the project itself.
+A public library provides a public interface for users of your software. Therefore, the declarations of
+the interface given by ``.h`` files in case of C/C++ are copied to the installation directory along with
+the binary library file upon installation. Another kind of library is one written in a scripting
+language such as Python, Perl, or BASH. Such library is more commonly referred to as *module*.
 
-.. note:: A private library is a library without public interface.
+Add a private library
+~~~~~~~~~~~~~~~~~~~~~
 
-Copy the files from the example to src/:
+Copy the files from the example to ``src/``:
 
 .. code-block:: bash
     
     cd ~/local/src/hellobasis
     cp ${HELLOBASIS_RSC_DIR}/foo.* src/
 
-Add the following line to src/CMakeLists.txt(section “library target(s)”):
+Add the following line to ``src/CMakeLists.txt`` under the section "library target(s)":
 
 .. code-block:: cmake
     
-    basis_add_library (foo.cxx)
+    basis_add_library(foo.cxx)
 
+Add a public library
+~~~~~~~~~~~~~~~~~~~~
 
-Public Library
---------------
-
-.. note:: A public library has an installed public interface as declared in a header.
-
-In this case the public interface is declared in ``bar.h``.
-
-Create the subdirectory tree for the public header files:
+Create the subdirectory tree for the public header files declaring the public interface:
 
 .. code-block:: bash
     
     cd ~/local/src/hellobasis
     basisproject --root . --include
 
-Copy the files from the example:
+Copy the files from the example. The public interface is given by ``bar.h``.
 
 .. code-block:: bash
     
     cp ${HELLOBASIS_RSC_DIR}/bar.cxx src/
     cp ${HELLOBASIS_RSC_DIR}/bar.h include/sbia/hellobasis/
 
-Add the following line to ``src/CMakeLists.txt`` (section “library target(s)”):
+Add the following line to ``src/CMakeLists.txt`` under the section "library target(s)":
 
 .. code-block:: cmake
     
-    basis_add_library (bar.cxx)
+    basis_add_library(bar.cxx)
     
-Add a Script Module
--------------------
+Add a scripted module
+~~~~~~~~~~~~~~~~~~~~~
 
-Another kind of libraries are modules written in a scripting language such as Perl.
-
-Copy the module file to src/:
+Copy the example Perl module to ``src/``:
 
 .. code-block:: bash
     
     cd ~/local/src/hellobasis
     cp ${HELLOBASIS_RSC_DIR}/FooBar.pm.in src/
 
-Add the following line to src/CMakeLists.txt(section “library target(s)” ):
+Add the following line to ``src/CMakeLists.txt`` under the section "library target(s)":
 
 .. code-block:: cmake
     
-    basis_add_library (FooBar.pm)
+    basis_add_library(FooBar.pm)
 
+The .in suffix
+~~~~~~~~~~~~~~
 
-The .in Suffix
---------------
-
-- Note that some of these files have a .in file name suffix.
-- This suffix can be omitted in the basis_add_library() statement. It has however an impact on how this function treats this file.
-- The .in suffix indicates that the file is not usable as is, but contains patterns such as @PROJECT_NAME@ which BASIS should replace during the build of the module.
+- Note that some of these files have a ``.in`` file name suffix.
+- This suffix can be omitted in the ``basis_add_library`` statement. It has however an impact on how this function treats this file.
+- The .in suffix indicates that the file is not usable as is, but contains patterns such as ``@PROJECT_NAME@`` which BASIS should replace during the build of the module.
 - The substitution of these ``@*@`` patterns is what we refer to as “building” script files.
 
+Install the libraries
+~~~~~~~~~~~~~~~~~~~~~
 
-Install the Libraries
----------------------
-
-Now build the libraries:
-
-.. code-block:: bash
-    
-    cd ~/local/src/hellobasis-build
-    make
-
-And install them:
+Now build the libraries and install them:
 
 .. code-block:: bash
     
-    make install
+    cd ~/local/src/hellobasis/build
+    make && make install
 
 Conclusion
-==========
+----------
 
 **Congratulations, You just finished your first BASIS Quick Start Guide!**
 
-If this was not clear enough or you would like to know more, have a look at the  :ref:`Tutorials` which give more details about each of the steps described here.
+If above steps were to concise and thus not clear enough or you would simply like to know more,
+have also a look at the :ref:`Tutorials` which give many more details about each of these steps.
 
 
 .. _Tutorials:
