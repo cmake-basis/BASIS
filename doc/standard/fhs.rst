@@ -43,8 +43,8 @@ The BASIS Filesystem Heirarchy Standard uses the following definitions:
 
 .. _GitRepositoryOrganization:
 
-Source Code Repository Organization
-===================================
+Source Code Repository
+======================
 
 Git 
 ---
