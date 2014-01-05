@@ -38,15 +38,14 @@ CygWin as an alternative.
 
 .. note::
 
-  BASIS can also be installed and used on Windows.
-  The tools for :doc:`automated software tests <howto/run-automated-tests>` are, however, only available for Unix.
+  BASIS can also be used on Windows, but the tools for :doc:`automated software tests <howto/run-automated-tests>` run only on Unix.
 
 
 Install BASIS
 -------------
 
-Get a copy of the sources
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Get a copy of the source code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Download either a pre-packaged ``.tar.gz`` of the latest BASIS release and unpack it using the following command:
 
@@ -122,14 +121,15 @@ Using the Bourne Again SHell (bash):
     export HELLOBASIS_RSC_DIR="${BASIS_EXAMPLE_DIR}/hellobasis"
 
 
-Create Example Project
-----------------------
+Create an Example Project
+-------------------------
 
 Create a new and empty project as follows:
 
 .. code-block:: bash
     
-    basisproject --name HelloBasis --description "This is a BASIS project." --root ~/local/src/hellobasis
+    basisproject --name HelloBasis --description "This is a BASIS project."
+                 --root ~/local/src/hellobasis
 
 The next command demonstrates that you can modify a previously created project by using the
 project tool again:
@@ -194,10 +194,9 @@ Change target properties
 
 .. code-block:: cmake
     
-    basis_set_target_properties(helloc++ PROPERTIES OUTPUT_NAME  "hellobasis")
+    basis_set_target_properties(helloc++ PROPERTIES OUTPUT_NAME "hellobasis")
 
-.. note:: If you used another example, you need to replace helloc++ by the name of the
-          source file you used excluding the extension.
+.. note:: If you used another source file, you need to replace helloc++ by its name (excl. the extension).
 
 Test the Executable
 ~~~~~~~~~~~~~~~~~~~
@@ -206,7 +205,7 @@ Now build the executable and test it:
 
 .. code-block:: bash
     
-    cd ~/local/src/hellobasis-build
+    cd ~/local/src/hellobasis/build
     make
     bin/hellobasis
     How is it going?
@@ -218,10 +217,10 @@ Install the executable and test it:
 .. code-block:: bash
     
     make install
-    helloworld
+    hellobasis
     How is it going?
 
-.. note:: The symbolic link named helloworld is in ``~/local/bin/`` which is already in our search path for executables (PATH).
+.. note:: The executable named hellobasis is in ``~/local/bin/`` which should be already in your PATH.
 
 
 Add Libraries
@@ -260,13 +259,14 @@ Create the subdirectory tree for the public header files declaring the public in
     
     cd ~/local/src/hellobasis
     basisproject --root . --include
+    mkdir include/hellobasis
 
 Copy the files from the example. The public interface is given by ``bar.h``.
 
 .. code-block:: bash
     
     cp ${HELLOBASIS_RSC_DIR}/bar.cxx src/
-    cp ${HELLOBASIS_RSC_DIR}/bar.h include/sbia/hellobasis/
+    cp ${HELLOBASIS_RSC_DIR}/bar.h include/hellobasis/
 
 Add the following line to ``src/CMakeLists.txt`` under the section "library target(s)":
 
