@@ -6,39 +6,26 @@ Quick Start
 
 
 .. _FirstSteps:
+.. _FirstStepsIntro:
 
 First Steps
 ===========
 
-The following tutorial-like quick start guides aim to introduce you to BASIS and
-help you to get started as quickly as possible. When you are ready for more details,
-you can try out the :ref:`Tutorials` below.
+The following steps will show you how to
 
-.. 1. :download:`Getting Started <tutorials/BASIS Quick Start Guide - 01 Getting Started.pptx>`
-   (`ref <http://opensource.andreasschuh.com/cmake-basis/_downloads/BASIS%20Quick%20Start%20Guide%20-%2001%20Getting%20Started.pptx>`__)
+- download and install BASIS on your system.
+- use the so-called “basisproject” command line tool to create a new empty project.
+- add some example source files and edit the build configuration files to build the executable and library files.
+- build and test the example project.
 
-
-.. _FirstStepsIntro:
-.. _GettingStarted:
-
-Getting Started
----------------
-
-The following brief sections will demonstrate
-
-- how to download and install BASIS on your system.
-- how to use the so-called “basisproject” command line tool to create a new empty project.
-- how to add some example source files and edit the build configuration files to build the executable and library files.
-- how to build and test the example project.
-- where to find more detailed and advanced documentation.
-
-To follow these steps, you need to have a Unix-like operating system such as Linux or Mac OS X.
-At the moment, there is no separate tutorial available for Windows users, but you can install
-CygWin as an alternative.
-
-.. note::
-
-  BASIS can also be used on Windows, but the tools for :doc:`automated software tests <howto/run-automated-tests>` run only on Unix.
+You need to have a Unix-like operating system such as Linux or Mac OS X installed on your
+machine in order to follow these steps. At the moment, there is no separate tutorial
+available for Windows users, but you can install CygWin as an alternative.
+Note, however, that BASIS can also be installed and used on Windows.
+Only the tools for :doc:`automated software tests <howto/run-automated-tests>` will not
+be available then. These tools are for advanced users who want to set up an automated
+software build and test on dedicated test machines. The testing tools are not needed
+for what follows.
 
 
 Install BASIS
@@ -75,9 +62,11 @@ Configure the build system using CMake 2.8.4 or a more recent version:
     mkdir build && cd build
     ccmake ..
 
-- Hit ``c`` to configure the project.
-- Change ``INSTALL_PREFIX`` to ~/local.
-- Hit ``g`` to generate the Makefiles.
+- Press ``c`` to configure the project.
+- Change ``CMAKE_INSTALL_PREFIX`` to ``~/local``.
+- Set option ``BUILD_EXAMPLE`` to ``ON``.
+- Make sure that option ``BUILD_PROJECT_TOOL`` is enabled.
+- Press ``g`` to generate the Makefiles.
 
 Build and install BASIS
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,7 +84,9 @@ To install BASIS after the successful build, run the following command:
     make install
 
 As a result, CMake copies the built files into the installation tree as specified by the
-``INSTALL_PREFIX`` variable.
+``CMAKE_INSTALL_PREFIX`` variable.
+
+.. _GettingStartedEnvironment:
 
 Set up the environment
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -141,7 +132,7 @@ project tool again:
 Here we removed the ``example/`` subdirectory and added some configuration file used by BASIS.
 These options could also have been given to the initial command above instead.
 
-.. note:: More details on how to use ``basisproject`` are given by the :doc:`howto/create-and-modify-project` How-to Guide.
+.. seealso:: The guide on how to :doc:`howto/create-and-modify-project`.
 
 
 Install Your Project
@@ -154,10 +145,10 @@ and installation of BASIS itself:
     
     mkdir ~/local/src/hellobasis/build
     cd ~/local/src/hellobasis/build
-    cmake -D INSTALL_PREFIX=~/local ..
+    cmake -D CMAKE_INSTALL_PREFIX=~/local ..
     make
 
-.. note:: More details on build and installation are given by the :doc:`howto/install` How-to Guide.
+.. seealso:: The guide on how to :doc:`howto/install`.
 
 
 Add an Executable
@@ -172,17 +163,15 @@ Copy the source file from the example to ``src/``:
 
 Add the following line to ``src/CMakeLists.txt`` under the section "executable target(s)":
 
-
 .. code-block:: cmake
     
     basis_add_executable(helloc++.cxx)
 
+Alternatively, you can use the implementation of this example executable in
+Python, Perl, BASH or MATLAB. In case of MATLAB, add also a dependency to MATLAB:
+ 
+.. code-block:: cmake
 
-.. note::
-
-  Alternatively, you can use the implementation of this example executable in
-  Python, Perl, BASH or MATLAB. In case of MATLAB, add also a dependency to MATLAB:
-  
     basisproject --root ~/local/src/hellobasis --use MATLAB
 
 Change target properties
@@ -196,12 +185,15 @@ Change target properties
     
     basis_set_target_properties(helloc++ PROPERTIES OUTPUT_NAME "hellobasis")
 
-.. note:: If you used another source file, you need to replace helloc++ by its name (excl. the extension).
+If you used another source file, you need to replace "helloc++" by its name (excl. the extension).
 
 Test the Executable
 ~~~~~~~~~~~~~~~~~~~
 
-Now build the executable and test it:
+Now build the executable from the previously added source code. As the build system
+has been configured before using CMake, only GNU ``make`` has to be invoked.
+It will recognize the change of the ``CMakeLists.txt`` file and therefore reconfigure
+the build system before re-building the software.
 
 .. code-block:: bash
     
@@ -209,8 +201,6 @@ Now build the executable and test it:
     make
     bin/hellobasis
     How is it going?
-
-.. note:: As you configured the build system before using CMake, we only need to run GNU Make. CMake will recognize the change of src/CMakeLists.txt and reconfigure the build system automatically.
 
 Install the executable and test it:
 
@@ -220,13 +210,17 @@ Install the executable and test it:
     hellobasis
     How is it going?
 
-.. note:: The executable named hellobasis is in ``~/local/bin/`` which should be already in your PATH.
+Note that the ``hellobasis`` executable was installed into the ``~/local/bin/`` directory
+as we set the installation root directory to ``~/local`` using the ``CMAKE_INSTALL_PREFIX``
+CMake variable. This directory should be listed in your *PATH* environment variable
+when you followed the :ref:`environment set up <GettingStartedEnvironment>` steps at the
+begin of this tutorial.
 
 
 Add Libraries
 -------------
 
-Next, you will add a three kinds of libraries, i.e., collections of binary or script code, to your example project.
+Next, you will add three kinds of libraries, i.e., collections of binary or script code, to your example project.
 We distinguish here between private, public, and script libraries. A private library is a library without
 public interface which is only used by other libraries and in particular executables of the project itself.
 A public library provides a public interface for users of your software. Therefore, the declarations of
@@ -290,6 +284,12 @@ Add the following line to ``src/CMakeLists.txt`` under the section "library targ
     
     basis_add_library(FooBar.pm)
 
+
+.. raw:: latex
+
+  \clearpage
+
+
 The .in suffix
 ~~~~~~~~~~~~~~
 
@@ -308,13 +308,21 @@ Now build the libraries and install them:
     cd ~/local/src/hellobasis/build
     make && make install
 
-Conclusion
+Next Steps
 ----------
 
-**Congratulations, You just finished your first BASIS Quick Start Guide!**
+Congratulations! You just finished your first BASIS tutorial.
 
-If above steps were to concise and thus not clear enough or you would simply like to know more,
-have also a look at the :ref:`Tutorials` which give many more details about each of these steps.
+So far you have already learned how to install BASIS on your system and set up
+your own software project. You have also seen how you can add your own source
+files to your newly created project and build the respective executables
+and libraries. The essentials of any software package! Thanks to BASIS, only
+few lines of CMake code are needed to accomplish this.
+
+Now check out the :ref:`Tutorials` for more details regarding each of the
+above steps and in-depth information about the used BASIS commands
+if you like, or move on to the various :doc:`How-to Guides <howto>` which
+will introduce you to even more BASIS concepts and best practices.
 
 
 .. _Tutorials:
