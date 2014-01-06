@@ -6,7 +6,7 @@
 .. include:: people.rst
 
 .. toctree::
-    :hidden:
+    :includehidden:
     :maxdepth: 3
 
     Overview <self>
@@ -18,7 +18,7 @@
     help
 
 .. toctree::
-    :hidden:
+    :includehidden:
     :maxdepth: 3
 
     changelog
@@ -26,7 +26,7 @@
     install
 
 .. toctree::
-    :hidden:
+    :includehidden:
     :maxdepth: 1
 
     Full Table of Contents <contents>

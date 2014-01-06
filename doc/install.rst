@@ -76,7 +76,7 @@ these.
 |                            |           | for the implementation of tools and libraries following       |
 |                            |           | the BASIS standard.                                           |
 +----------------------------+-----------+---------------------------------------------------------------+
-| Sphinx_                    | 1.1.3     | This tool can be used for the generation of the documentation |
+| Sphinx_                    | 1.2       | This tool can be used for the generation of the documentation |
 |                            |           | from in-source Python comments and in particular from         |
 |                            |           | reStructuredText_.                                            |
 +----------------------------+-----------+---------------------------------------------------------------+
