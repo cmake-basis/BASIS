@@ -34,7 +34,16 @@ Install BASIS
 Get a copy of the source code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Download either a pre-packaged ``.tar.gz`` of the latest BASIS release and unpack it using the following command:
+Clone the `Git <http://git-scm.com/>`__ repository from `GitHub <https://github.com/schuhschuh/cmake-basis/>`__ as follows:
+
+.. code-block:: bash
+    
+    mkdir -p ~/local/src
+    cd ~/local/src
+    git clone https://github.com/schuhschuh/cmake-basis.git
+    cd cmake-basis
+    
+or :doc:`download` a pre-packaged ``.tar.gz`` of the latest BASIS release and unpack it using the following command:
 
 .. code-block:: bash
 
@@ -43,14 +52,6 @@ Download either a pre-packaged ``.tar.gz`` of the latest BASIS release and unpac
     tar xzf /path/to/downloaded/cmake-basis-$version.tar.gz
     cd cmake-basis-$version
 
-or clone the Git repository as follows:
-
-.. code-block:: bash
-    
-    mkdir -p ~/local/src
-    cd ~/local/src
-    git clone https://github.com/schuhschuh/cmake-basis.git
-    cd cmake-basis
 
 Configure the build
 ~~~~~~~~~~~~~~~~~~~
