@@ -9,9 +9,9 @@
 How-to Guides
 =============
 
-The how-to guides explain the basics of following the standards defined by BASIS,
-namely the :doc:`standard`, and explain common tasks such as creating a new
-project or installation.
+The how-to guides describe BASIS concepts and best practices which help to conform
+with the :doc:`standard` defined by BASIS, and explain common tasks such as creating
+a new project or its installation.
 
 .. toctree::
     :maxdepth: 2
