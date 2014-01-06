@@ -23,5 +23,4 @@ a new project or its installation.
     howto/branch-and-release
     howto/package
     howto/install
-    howto/buildoptions
     howto/run-automated-tests
