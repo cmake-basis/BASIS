@@ -8,7 +8,7 @@
 
 @section Overview
 
-<a href="http://opensource.andreasschuh.com/cmake-basis/">CMake BASIS</a> makes it easy 
+<b><a href="../../index.html">CMake BASIS</a></b> makes it easy 
 to create sharable software and libraries that work together. This is accomplished by 
 combining and documenting some of the best practices and utilities available. More 
 importantly, BASIS supplies a fully integrated suite of functionality to make the 
@@ -42,7 +42,7 @@ whole process seamless!
     - Command execution library
     - Unix philosophy and tool chains
 
-Visit the <a href="http://opensource.andreasschuh.com/cmake-basis/">CMake BASIS</a> main website for more information.
+Visit the <b><a href="../../index.html">CMake BASIS</a></b> main website for more information.
 
 */
 
