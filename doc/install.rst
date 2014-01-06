@@ -192,7 +192,7 @@ and installation of any package developed with BASIS.
 
     Path to the directory and version of the default mad-libs style text substitution project
     template that will be installed with BASIS. See the
-    :doc:`Template Customization How-To <howto/create-custom-template>` for details.
+    :doc:`Template Customization How-To <howto/use-and-customize-templates>` for details.
 
 .. option:: -DINSTALL_ALL_TEMPLATES:BOOL
 

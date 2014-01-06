@@ -17,7 +17,7 @@ a new project or its installation.
     :maxdepth: 2
 
     howto/create-and-modify-project
-    howto/create-custom-template
+    howto/use-and-customize-templates
     howto/manage-data
     howto/document
     howto/branch-and-release
