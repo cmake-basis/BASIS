@@ -1,12 +1,12 @@
-##############################################################################
+#################################################################################
 # @file  BasisProject.cmake
-# @brief Meta-data of this BASIS project.
+# @brief Sets basic information about a BASIS Project and calls basis_project().
 #
-# This file defines project meta-data by calling the basis_project() function.
-# This meta-data is used by BASIS to setup the project. Moreover, if the
-# project is a module of another BASIS project, the dependencies to other
-# modules have to be specified here such that the top-level project can analyze
-# the inter-module dependencies.
+# This file defines basic information about a project (metadata), by calling 
+# the basis_project() function. This meta-data is used by BASIS to setup the 
+# project. Moreover, if the project is a module of another BASIS project, 
+# the dependencies to other modules have to be specified here such that the 
+# top-level project can analyze the inter-module dependencies.
 #
 # @sa http://opensource.andreasschuh.com/cmake-basis/standard/modules.html
 #
@@ -26,7 +26,7 @@
 #   # ------------------------------------------------------------------------
 #   # meta-data
 #   NAME             MyProject
-#   PACKAGE_VENDOR   sbia
+#   PACKAGE_VENDOR   sbia       # Note: PACKAGE_VENDOR will also be part of the default installation path
 #   PROVIDER_NAME    University of Pennsylvania
 #   DIVISION_NAME    Section of Biomedical Image Analysis
 #   VERSION          1.1.5
@@ -70,7 +70,7 @@ basis_project (
   COPYRIGHT     "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh, 2013 Carnegie Mellon University"
   LICENSE       "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
   CONTACT       "andreas.schuh.84@gmail.com"
-  TEMPLATE      "sbia/1.7"
+  TEMPLATE      "sbia/1.7" # note: TEMPLATE allows you to change the currently selected BASIS template
   PACKAGE_LOGO  "doc/static/logo.svg"
   # --------------------------------------------------------------------------
   # dependencies

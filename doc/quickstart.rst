@@ -133,7 +133,7 @@ project tool again:
 Here we removed the ``example/`` subdirectory and added some configuration file used by BASIS.
 These options could also have been given to the initial command above instead.
 
-.. seealso:: The guide on how to :doc:`howto/create-and-modify-project`.
+.. seealso:: The guide on how to :doc:`howto/create-and-modify-project`, :ref:`BasisProject.cmake <BasisProject>`, and `basis_project()`_.
 
 
 Install Your Project
@@ -340,6 +340,8 @@ comprehensive tutorial-like introduction, please refer to the :ref:`FirstSteps` 
 1. Download :download:`Getting Started <tutorials/BASIS Tutorial - 01 Getting Started.pptx>`
    (`ref <http://opensource.andreasschuh.com/cmake-basis/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
 
+
+.. _basis_project(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6
 
 .. The ref link is required for the PDF version as the download directive in
    this case does not translate to a hyperlink, but text only.
