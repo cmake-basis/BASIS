@@ -254,7 +254,7 @@ macro (basis_project_check_metadata)
 endmacro ()
 
 # ----------------------------------------------------------------------------
-## @brief Define project meta-data, i.e., attributes.
+## @brief Sets basic project information including the name, version, and dependencies.
 #
 # Any BASIS project has to call this macro in the file BasisProject.cmake
 # located in the top level directory of the source tree in order to define
@@ -324,8 +324,9 @@ endmacro ()
 #   </tr>
 #   <tr>
 #     @tp @b PACKAGE_VENDOR name @endtp
-#     <td>Short ID of package vendor (i.e, provider and/or division acronym) used
-#         for package identification and default installation subdirectory.</td>
+#     <td>Short ID of package vendor (i.e, provider and/or division acronym) this variable is used
+#         for package identification and is the name given to the folder that will be used as the default 
+#         installation path location subdirectory.</td>
 #   </tr>
 #   <tr>
 #     @tp @b VENDOR name @endtp
@@ -386,6 +387,31 @@ endmacro ()
 #     @tp @b DESCRIPTION description @endtp
 #     <td>Package description, used for packing. If multiple arguments are given,
 #         they are concatenated using one space character as delimiter.</td>
+#   </tr>
+#   <tr>
+#     @tp @b TEMPLATE path @endtp
+#    <td> The TEMPLATE variable stores the directory of the chosen project template along 
+#         with the template version so that the correct template is used by basisproject when a project is updated.
+#         Note that this variable is used in BASIS itself to specify the default template to use for the BASIS 
+#         installation, i.e., the default used by basisproject if no --template argument is provided.
+#         If the template is part of the BASIS installation, only the template name and version part of the 
+#         full path are needed. Otherwise, the full absolute path is used. For example,
+#               @code
+#                 basis_project (
+#                    # ...
+#                    TEMPLATE "sbia/1.8"
+#                    # ...
+#                 )
+#               @endcode
+#               @code
+#                 basis_project (
+#                    # ...
+#                    TEMPLATE "/opt/local/share/custom-basis-template/1.0"
+#                    # ...
+#                 )
+#              @endcode 
+#       The installed templates can be found in the share/templates folder of installed BASIS software,
+#       as well as the data/templates foler of the BASIS source tree.</td>
 #   </tr>
 #   <tr>
 #     @tp @b DEPENDS name[, name] @endtp
