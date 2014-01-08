@@ -1,14 +1,14 @@
-##############################################################################
+#################################################################################
 # @file  BasisProject.cmake
-# @brief Meta-data of this BASIS project.
+# @brief Sets basic information about a BASIS Project and calls basis_project().
 #
-# This file defines project meta-data by calling the basis_project() function.
-# This meta-data is used by BASIS to setup the project. Moreover, if the
-# project is a module of another BASIS project, the dependencies to other
-# modules have to be specified here such that the top-level project can analyze
-# the inter-module dependencies.
+# This file defines basic information about a project by calling 
+# the basis_project() function. This basic information, also known as metadata, 
+# is used by BASIS to setup the project. Moreover, if the project is a module 
+# of another BASIS project, the dependencies to other modules have to be specified 
+# here such that the top-level project can analyze the inter-module dependencies.
 #
-# @sa http://opensource.andreasschuh.com/cmake-basis/standard/modules/
+# @sa http://opensource.andreasschuh.com/cmake-basis/standard/modules.html
 #
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to
@@ -26,7 +26,7 @@
 #   # ------------------------------------------------------------------------
 #   # meta-data
 #   NAME              MyProject
-#   PACKAGE_VENDOR    shortvname
+#   PACKAGE_VENDOR    shortvname     # Note: PACKAGE_VENDOR will also be part of the default installation path
 #   VERSION           1.1.5
 #   DESCRIPTION       "This is the description of the project, which is useful for this"
 #                     " important thing and that important thing."
@@ -86,6 +86,7 @@ basis_project (
   VERSION          "0.0.0"
   AUTHORS          #<author>
   DESCRIPTION      #<description>
+  # Note: VENDOR will also be part of the default installation path
   VENDOR           #<vendor>
   PROVIDER_NAME    #<provider-name>
   PROVIDER_LOGO    #<provider-logo>
