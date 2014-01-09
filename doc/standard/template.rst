@@ -419,18 +419,16 @@ package in ``data/templates/basis/1.0/_config.py``.
           a substitution is another substitution tag, it will be replaced by the value of
           that respective substitution. See the ``contact`` substitution above for an example.
 
-Binary Substitutions
---------------------
+Binary Template Files
+---------------------
 
-Project templates assume that files are binary files where 
-no substitution will be performed, unless they are known to 
-be specified as a text 
-`MIME type <https://en.wikipedia.org/wiki/MIME>`_. 
-This functionality is supported using the 
-`python MIME types module <http://docs.python.org/2/library/mimetypes.html>`_.
-In addition to the default types included with python, the
-extensions .cmake, .md, .mdown, .markdown, .rst, .dox, and .in
-are also recognized as configurable text files.
+In general, template files are assumed to be binary and thus no substitution is performed,
+unless the template file is known to be a text file. Whether or not a template file is considered
+to be a text file for which subsitution takes place depends on its `MIME type <https://en.wikipedia.org/wiki/MIME>`_ . 
+The ``basisproject`` tool uses the `Python MIME types module <http://docs.python.org/2/library/mimetypes.html>`_
+in order to determine the type of each template file. In addition to the default types known
+by this module, the file name extensions .cmake, .md, .mdown, .markdown, .rst, .dox, and .in
+are treated as text files.
 
 .. _CMake: http://www.cmake.org/
 .. _CDash: http://www.cdash.org/
