@@ -20,7 +20,7 @@ Available Templates
 +============+===========+===================================================================================+
 | basis      | 1.0       | This is the default template provided by BASIS and the one we recommend.          |
 |            |           | It is easy to get started with and follows all of the BASIS :doc:`/standard`.     |
-|            |           | To use it simply follow the :doc:`quickstart`.                                    |
+|            |           | To use it simply follow the :doc:`/quickstart`.                                   |
 +------------+-----------+-----------------------------------------------------------------------------------+
 | custom     | n/a       | You can create your own custom template. For instructions see the                 |
 |            |           | :ref:`HowToCreateATemplate` section below.                                        |

@@ -18,7 +18,7 @@ of any revision controlled software project as described in the :doc:`/standard/
 Branching and Merging
 =====================
 
-See the :doc:`standard/fsh` for details.
+See the :doc:`/standard/fhs` for details.
 
 For SVN please also read the corresponding
 `SVN Book <http://svnbook.red-bean.com/en/1.5/svn.branchmerge.basicmerging.html>`_ article.
