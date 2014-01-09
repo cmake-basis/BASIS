@@ -412,8 +412,13 @@ package in ``data/templates/basis/1.0/_config.py``.
       },
       'contact' : {
         'help'    : "Package contact information.",
-        'default' : "SBIA Group <sbia-software at uphs.upenn.edu>"
+        'default' : "<vendor> <<vendor>-software at uphs.upenn.edu>"
       }
+    }
+
+.. note:: The substitutions are applied recursively up to a depth of 3. Hence, if the value of
+          a substitution is another substitution tag, it will be replaced by the value of
+          that respective substitution. See the ``contact`` substitution above for an example.
 
 .. _CMake: http://www.cmake.org/
 .. _CDash: http://www.cdash.org/
