@@ -2,13 +2,13 @@
 CMake BASIS
 ===========
 
-The (CMake Build system And Software Implementation Standard (BASIS))[http://schuhschuh.github.io/cmake-basis] makes it
+The (CMake Build system And Software Implementation Standard (BASIS))[http://opensource.andreasschuch.com/cmake-basis] makes it
 easy to create sharable software and libraries that work together. This is accomplished
 by combining and documenting some of the best practices and utilities available.
 More importantly, BASIS supplies a fully integrated suite of functionality to make
 the whole process seamless! 
 
-Web: (CMake BASIS Website)[http://schuhschuh.github.io/cmake-basis]
+Web: (CMake BASIS Website)[http://opensource.andreasschuch.com/cmake-basis]
 Code: (CMake BASIS on GitHub)[https://github.com/schuhschuh/cmake-basis]
 
 ========
@@ -66,7 +66,7 @@ DOCUMENTATION
 
 Documentation is available in several locations: 
 
-- (CMake BASIS website)[http://schuhschuh.github.io/cmake-basis]
+- (CMake BASIS website)[http://opensource.andreasschuch.com/cmake-basis]
 - (PDF software manual)[/doc/BASIS_Software_Manual.pdf]
 - BASIS install directoy's _/doc_ folder
 - (The source code documentation directory)[/doc] not recommended
@@ -81,13 +81,13 @@ you can reach the CMake BASIS developers on GitHub using the
 LICENSING
 =========
 
-See http://schuhschuh.github.io/cmake-basis/download.html or the **COPYING** file.
+See http://opensource.andreasschuch.com/cmake-basis/download.html or the **COPYING** file.
 
 
 INSTALLATION
 ============
 
-See http://schuhschuh.github.io/cmake-basis/install.html or the **INSTALL** file.
+See http://opensource.andreasschuch.com/cmake-basis/install.html or the **INSTALL** file.
 
 Details on where the executables and libraries, the auxiliary data, and the 
 documentation files are installed is also there.
