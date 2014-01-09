@@ -3,7 +3,6 @@
 .. include:: intro.rst
 .. include:: features.rst
 .. include:: history.rst
-.. include:: people.rst
 
 Table of Contents
 =================
@@ -30,3 +29,5 @@ Table of Contents
     :maxdepth: 1
 
     Full Table Of Contents <contents>
+
+.. include:: people.rst
