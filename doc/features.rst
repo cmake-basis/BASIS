@@ -1,6 +1,5 @@
 .. _Features:
 
-========
 Features
 ========
 

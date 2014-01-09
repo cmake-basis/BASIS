@@ -68,6 +68,7 @@ basis_add_doc (
   HTML_SIDEBARS    searchbox globaltoc
   HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
   SIDEBARWIDTH     300
+  MASTER_DOC       "sidebar"
   LATEX_MASTER_DOC "manual"
   LATEX_TITLE      "${PROJECT_NAME} Software Manual"
   OUTPUT_NAME      "${PROJECT_NAME}_Software_Manual"
