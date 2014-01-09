@@ -13,6 +13,120 @@ Reference
     apidoc/files
 
 
+Package Overview
+================
+
+Project Template
+----------------
+
+The :doc:`standard/template` is supplied to make it easy to generate a project 
+that follows the BASIS standards, as explained in :doc:`howto/use-and-customize-templates`.
+
+The **basisproject** command-line tool automates and simplifies the 
+instantiation of the project template for new projects as explained 
+in :doc:`howto/create-and-modify-project`.
+
+CMake Modules
+-------------
+
+The CMake modules and corresponding auxiliary files are used by 
+any BASIS project for the configuration of the CMake-based build
+system, so that many setup steps can be automated. These commands 
+often replace the versions provided by CMake, such as
+:apidoc:`basis_add_executable()`, which replaces CMake's 
+`add_executable() <http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable>`_
+command.
+
+The main CMake modules are:
+
+- :apidoc:`BasisProject.cmake`  File in every BASIS project defining basic project information.
+- :apidoc:`BasisTools.cmake`    Defines CMake functions, macros, and variables.
+- :apidoc:`BasisTest.cmake`     Replacement for the CTest.cmake module of CMake.
+- :apidoc:`BasisPack.cmake`     Replacement for the CPack.cmake module of CMake.
+
+
+Tools
+-----
+
+In order to ease certain tasks, the BASIS package also includes the following
+[command-line tools][17]:
+
+- :doc:`basisproject<howto/create-and-modify-project>`  Creates a new project or modifies an existing project in order to add or remove certain components of the project template or to upgrade to a newer BASIS template.
+- :doc:`basistest<howto/run-automated-tests>`           Implements automated software tests.
+- **doxyfilter:**                                       Doxygen filters for the supported programming languages.
+
+
+Utilities
+---------
+
+For each supported programming language, BASIS provides a library of `BASIS Utilities`_. 
+Some of these utility functions are project independent and thus
+built and installed as part of BASIS itself. Other utility implementations
+are project dependent. Therefore, the BASIS package provides only template
+files which are customized and built during the configuration and build,
+respectively, of the particular BASIS project. This customization is done
+by the functions implemented by the :apidoc:`UtilitiesTools.cmake` module which is
+included and utilized by the main :apidoc:`BasisTools.cmake` module.
+
+The BASIS utilities address the following aspects of the software
+implementation :doc:`standard`:
+
+- :doc:`standard/cmdline`
+- :doc:`standard/execution`
+- **Software Testing:**       Standard on how to implement software tests.
+
+
+Source Package
+--------------
+
+- :apidoc:`BasisProject.cmake:`        Calls :apidoc:`basis_project()` to set basic project information, such as the name and dependencies.
+- **CMakeLists.txt:**                  Root CMake configuration file.
+- **config/:**                         Package configuration files.
+- **data/template/<version>/**         Project template(s).
+- **doc/:**                            Documentation source files of BASIS.
+- **include/:**                        Public header files.
+- **src/:**                            Source code files.
+- **src/cmake/:**                      CMake implementations and corresponding auxiliary files.
+- **src/geshi/:**                      A language file written in PHP for use with GeSHi,
+                                       a source code highlighting extension for MediaWiki.
+- **src/sphinx/:**                     Themes and extensions for the `Sphinx <http://sphinx-doc.org>`_ documentation tool.
+- **src/tools/:**                      Source code of command-line tools.
+- **src/utilities/:**                  Source code of utility functions.
+- **test/:**                           Tests of the implementations in src/.
+- **AUTHORS:**                         A list of the people who contributed to this sofware.
+- **COPYING:**                         The copyright and license notices.
+- **INSTALL:**                         Build and installation instructions.
+- **README:**                          Basic summary and references to the documentation.
+
+
+.. _`Basis Utilities`: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisUtilities.html
+
+.. Old links for reference:
+[1]:  http://www.rad.upenn.edu/sbia/
+[2]:  http://www.rad.upenn.edu/sbia/software/license.html
+[3]:  http://www.rad.upenn.edu/sbia/software/basis/help.html
+[4]:  http://www.rad.upenn.edu/sbia/software/basis/standard/template.html
+[5]:  http://www.rad.upenn.edu/sbia/software/basis/standard/fhs.html
+[6]:  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
+[7]:  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html
+[8]:  http://www.rad.upenn.edu/sbia/software/basis/standard/implementation.html
+[9]:  http://www.kitware.com/products/html/BuildingExternalProjectsWithCMake2.8.html
+[10]: http://www.vtk.org/Wiki/ITK/Release_4/Modularization
+[11]: http://www.rad.upenn.edu/sbia/software/basis/howto/create-and-modify-project.html
+[12]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeAPI.html#gab7b7600c0ab4197db811f810a04670be
+[13]: http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
+[14]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/BasisTools_8cmake.html
+[15]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/BasisTest_8cmake.html
+[16]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/BasisPack_8cmake.html
+[17]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__Tools.html
+[18]: http://www.rad.upenn.edu/sbia/software/basis/howto/run-automated-tests.html
+[19]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/UtilitiesTools_8cmake.html
+[20]: http://www.rad.upenn.edu/sbia/software/basis/standard/cmdline.html
+[21]: http://www.rad.upenn.edu/sbia/software/basis/standard/execution.html
+[22]: https://github.com/schuhschuh/cmake-basis/
+[23]: http://sphinx.pocoo.org/
+
+
 Older Versions
 ==============
 
