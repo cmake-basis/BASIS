@@ -57,10 +57,34 @@ project that is currently being configured is a module of another project
 (i.e., ``PROJECT_IS_MODULE`` is ``TRUE``) or a top-level project
 (i.e., ``PROJECT_IS_MODULE`` is ``FALSE``).
 
+Future Work
+===========
+
+**TODO: The super-build methodology is not yet implemented as part of BASIS!**
+
 .. todo::
 
     Add reference to documentation of superbuild approach, which is yet not
     implemented as part of BASIS.
+
+Once the CMake BASIS package is installed it can be used to build other
+BASIS projects. Alternatively, if the package is not found, each BASIS project
+which is built on top of BASIS and implements the super-build feature,
+retrieves and builds a local copy using CMake's :apidoc:`ExternalProject.cmake`
+module This super-build methodology, which is becoming popular in
+the CMake community could be utilized by BASIS to not only ease the
+development and maintenance of separately managed software projects, but also
+enable the fusion of these more or less independently developed software
+packages into so-called superprojects. In this context, the separately managed
+software packages are considered components of the superproject.
+
+Besides the super-build of BASIS projects, BASIS helps create a tighter 
+coupling between software components. The top-level project (i.e., the 
+superproject) could contain other BASIS projects as modules, and these
+modules define the dependencies to other modules of the project. When the
+superproject is configured, a subset of these modules can be selected and only
+these will be build and installed. This type of modularization closely follows
+the [modularization approach of the ITK 4 project][10].
 
 
 .. _ITK 4: http://www.itk.org/Wiki/ITK_Release_4
