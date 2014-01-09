@@ -25,10 +25,13 @@
 # API reference (in-source code comments)
 # ============================================================================
 
-# replace < year > pattern in template file which shall be included in
-# documentation to avoid unrecognized xml/html tags warning of Doxygen
+# replace < year|contact|copyright|license > pattern in template file which
+# shall be included in documentation to avoid unrecognized xml/html tag warning
 file (READ "${PROJECT_DATA_DIR}/templates/basis/1.0/config/Depends.cmake" TEMPLATE)
-string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
+string (REGEX REPLACE "<year>"      "&lt;year&gt;"      TEMPLATE "${TEMPLATE}")
+string (REGEX REPLACE "<contact>"   "&lt;contact&gt;"   TEMPLATE "${TEMPLATE}")
+string (REGEX REPLACE "<copyright>" "&lt;copyright&gt;" TEMPLATE "${TEMPLATE}")
+string (REGEX REPLACE "<license>"   "&lt;license&gt;"   TEMPLATE "${TEMPLATE}")
 file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
 unset (TEMPLATE)
 
