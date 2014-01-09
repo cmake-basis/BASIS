@@ -1,25 +1,17 @@
 
-  Section of Biomedical Image Analysis
-  Department of Radiology
-  University of Pennsylvania
-  3600 Market Street, Suite 380
-  Philadelphia, PA 19104
-
-  Web:   http://www.rad.upenn.edu/sbia/
-  Email: sbia-software at uphs.upenn.edu
-
-  Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.
-  See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 
 
 
 INTRODUCTION
 ============
 
-  This document contains the build and installation instructions.
+  The (CMake BASIS installation instructions)[http://schuhschuh.github.io/cmake-basis/install.html] 
+  website is the best source for installation instructions. 
+  
+  This document also contains basic build and installation instructions.
 
   For general build and installation instructions which apply to any software
-  developed on top of the SBIA Build system And Software Implementation
+  developed on top of the CMake Build system And Software Implementation
   Standard (BASIS), see doc/install.rst for detailed install instructions.
 
 
@@ -148,4 +140,4 @@ REFERENCES
 
   [1] https://github.com/schuhschuh/cmake-basis/
 
-  [2] http://www.rad.upenn.edu/sbia/software/basis/howto/install.html
+  [2] http://schuhschuh.github.io/cmake-basis/install.html

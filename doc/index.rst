@@ -29,4 +29,4 @@
     :includehidden:
     :maxdepth: 1
 
-    Full Table of Contents <contents>
+    Full Table Of Contents <contents>
