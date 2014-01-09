@@ -5,8 +5,10 @@
 .. include:: history.rst
 .. include:: people.rst
 
+Table of Contents
+=================
+
 .. toctree::
-    :includehidden:
     :maxdepth: 3
 
     Overview <self>
@@ -18,7 +20,6 @@
     help
 
 .. toctree::
-    :includehidden:
     :maxdepth: 3
 
     changelog
@@ -26,7 +27,6 @@
     install
 
 .. toctree::
-    :includehidden:
     :maxdepth: 1
 
     Full Table Of Contents <contents>
