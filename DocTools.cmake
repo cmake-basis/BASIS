@@ -1151,6 +1151,18 @@ endfunction ()
 #         well by copying the template <tt>.html</tt> file to the @c TEMPLATES_PATH directory.</td>
 #   </tr>
 #   <tr>
+#     @tp @b NO_HTML_DOMAIN_INDICES @endtp
+#     <td>Set Sphinx configuration option @c html_domain_indices to @c False. (Default: @c True)</td>
+#   </tr>
+#   <tr>
+#     @tp @b NO_HTML_MODINDEX @endtp
+#     <td>Set Sphinx configuration option @c html_use_modindex to @c False. (Default: @c True)</td>
+#   </tr>
+#   <tr>
+#     @tp @b NO_HTML_INDEX @endtp
+#     <td>Set Sphinx configuration option @c html_use_index to @c False. (Default: @c True)</td>
+#   </tr>
+#   <tr>
 #     @tp @b LATEX_MASTER_DOC name @endtp
 #     <td>Name of master document for LaTeX builder. Defaults to <tt>MASTER_DOC</tt>.</td>
 #   </tr>
@@ -1207,7 +1219,12 @@ function (basis_add_sphinx_doc TARGET_NAME)
   # note that additional multiple value arguments are parsed later on below
   # this is necessary b/c all unparsed arguments are considered to be options
   # of the used HTML theme
-  CMAKE_PARSE_ARGUMENTS (SPHINX "EXCLUDE_FROM_DOC" "${ONE_ARG_OPTIONS}" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (SPHINX
+    "EXCLUDE_FROM_DOC;NO_HTML_DOMAIN_INDICES;NO_HTML_MODINDEX;NO_HTML_INDEX"
+    "${ONE_ARG_OPTIONS}"
+    ""
+    ${ARGN}
+  )
   # source directory
   if (NOT SPHINX_SOURCE_DIRECTORY)
     if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}")
@@ -1532,6 +1549,22 @@ function (basis_add_sphinx_doc TARGET_NAME)
     endif ()
     list (APPEND SPHINX_DEPENDS ${UID})
   endforeach ()
+  # HTML output options
+  if (SPHINX_NO_HTML_DOMAIN_INDICES)
+    set (SPHINX_USE_DOMAIN_INDICES False)
+  else ()
+    set (SPHINX_USE_DOMAIN_INDICES True)
+  endif ()
+  if (SPHINX_NO_HTML_MODINDEX)
+    set (SPHINX_USE_MODINDEX False)
+  else ()
+    set (SPHINX_USE_MODINDEX True)
+  endif ()
+  if (SPHINX_NO_HTML_INDEX)
+    set (SPHINX_USE_INDEX False)
+  else ()
+    set (SPHINX_USE_INDEX True)
+  endif ()
   # LaTeX output options
   if (NOT SPHINX_LATEX_SHOW_URLS)
     set (SPHINX_LATEX_SHOW_URLS "no")

@@ -66,6 +66,9 @@ if html_short_title == '': html_short_title = html_title
 
 htmlhelp_basename = '@PROJECT_NAME_L@_doc'
 
+html_use_domain_indices = '@SPHINX_HTML_DOMAIN_INDEX@'
+html_use_modindex       = '@SPHINX_HTML_USE_MODINDEX@'
+html_use_index          = '@SPHINX_HTML_USE_INDEX@'
 
 # Options for LaTeX output
 # ------------------------
