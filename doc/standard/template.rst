@@ -21,11 +21,10 @@ idea is to make projects easier for developers to create, share, and use.
 
 BASIS Standardized Templates provide and automate the following steps:
 
-- Configuration of the build, testing, installation, and packaging
+- Configuration of the build, testing, installation, and packaging.
 - Common directory structure which can be found at :doc:`fhs`.
-- CMake_'s ``CMakeLists.txt`` file setup
+- CMake_'s ``CMakeLists.txt`` file setup.
 - Basic build flags that are required.
-
 
 
 .. _TemplateLayout:
