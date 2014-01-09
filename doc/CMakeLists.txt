@@ -74,6 +74,7 @@ basis_add_doc (
   OUTPUT_NAME      "${PROJECT_NAME}_Software_Manual"
   DOXYLINK         apidoc
   DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"
+  NO_HTML_MODINDEX NO_HTML_INDEX
 )
 
 basis_add_custom_target (site)
