@@ -48,7 +48,8 @@ Download
 --------
 
 The source code of the CMake BASIS package is hosted on `GitHub <https://github.com/schuhschuh/cmake-basis/>`__
-from which all releases and latest development versions can be downloaded.
+from which all releases and latest development versions can be downloaded. See the :doc:`changelog` for a summary
+of changes in each release.
 
 Clone the Git repository as follows:
 
