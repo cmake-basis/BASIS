@@ -84,7 +84,8 @@ Installation
 
 See the [installation instructions][7] or the [INSTALL.txt](/INSTALL.txt) file.
 Information on where the executables and libraries, the auxiliary data, and the 
-documentation files get installed is also available there.
+documentation files get installed is also available there. For more concise
+installation steps, have a look at the [Quick Start Installation][9].
 
 
 Help
@@ -149,6 +150,7 @@ Path                     | Content description
 [4]: http://opensource.andreasschuh.com/cmake-basis/howto.html
 [5]: http://opensource.andreasschuh.com/cmake-basis/apidoc.html
 [8]: https://github.com/schuhschuh/cmake-basis/issues
+[9]: http://opensource.andreasschuh.com/cmake-basis/quickstart.html#install-basis
 
 <!-- Links to GitHub, see the local directory if you have downloaded the files already -->
 [6]:  http://opensource.andreasschuh.com/cmake-basis/apidoc.html#package-overview
