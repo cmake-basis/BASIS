@@ -84,8 +84,8 @@ Installation
 
 See the [installation instructions][7] or the [INSTALL.txt](/INSTALL.txt) file.
 
-Details on where the executables and libraries, the auxiliary data, and the 
-documentation files are installed is also there.
+Also for details on where the binary files, the auxiliary data, and the 
+documentation files get installed.
 
 
 Help
