@@ -15,7 +15,7 @@ Software Manual
     howto
     standard
     guideline
-    apidoc
+    reference
     help
     About <about>
 

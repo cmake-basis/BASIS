@@ -8,7 +8,7 @@
     howto
     standard
     guideline
-    apidoc
+    reference
 
 .. toctree::
    :maxdepth: 3

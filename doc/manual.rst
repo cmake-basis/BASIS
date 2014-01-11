@@ -12,5 +12,6 @@
     howto
     standard
     guideline
+    reference
     help
     people

@@ -45,6 +45,8 @@ available online.
 .. _The Open Source Initiative: http://opensource.org/
 .. _license: https://github.com/schuhschuh/cmake-basis/blob/master/COPYING.txt
 
+.. _BasisPackageContent:
+
 Package Content
 ---------------
 
