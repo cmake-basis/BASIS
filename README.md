@@ -90,7 +90,8 @@ documentation files are installed is also there.
 Source Package Content
 ----------------------
 
-
+Path               | Content description
+------------------ | ----------------------------------------------------------
 BasisProject.cmake | Meta-data used for the build configuration.
 CMakeLists.txt     | Root CMake configuration file.
 config/            | Package configuration files.
