@@ -121,7 +121,7 @@ based on a project template.
 **src/**                        Source code files.
 **test/**                       Implementations of unit and regression tests.
 AUTHORS (.txt|.md)              A list of the people who contributed to this sofware.
-:apidoc:`BasisProject.cmake:`   Calls :apidoc:`basis_project()` to set basic project information.
+:apidoc:`BasisProject.cmake`    Calls :apidoc:`basis_project()` to set basic project information.
 CMakeLists.txt                  Root CMake configuration file.
 COPYING (.txt|.md)              The copyright and license notices.
 INSTALL (.txt|.md)              Build and installation instructions.
