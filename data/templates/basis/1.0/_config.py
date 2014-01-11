@@ -80,20 +80,38 @@ options = {
   'doc' : {
     'desc' : 'Add/remove (basic) documentation files.',
     'path' : [
-               'doc/CMakeLists.txt'
+               'doc/CMakeLists.txt',
+               'doc/apidoc/apidoc.dox',
+               'doc/apidoc/classlist.rst',
+               'doc/apidoc/doxygen_extra.css.in',
+               'doc/apidoc/doxygen_footer.html.in',
+               'doc/apidoc/doxygen_header.html.in',
+               'doc/static/logo.svg'
              ]
   },
-  'doc-rst' : {
+  'rst' : {
     'desc' : 'Add/remove reStructuredText (.rst) files for software manual/web site.',
     'path' : [
-               'doc/CMakeLists.txt',
-               'doc/index.rst',
+
+               'doc/apidoc.rst',
                'doc/changelog.rst',
+               'doc/contents.rst',
                'doc/download.rst',
-               'doc/installation.rst',
+               'doc/features.rst',
+               'doc/howto.rst',
+               'doc/index.rst',
+               'doc/install.rst',
                'doc/manual.rst',
-               'doc/publications.rst',
-               'doc/people.rst'
+               'doc/people.rst',
+               'doc/quickstart.rst',
+               'doc/sidebar.rst',
+               'doc/apidoc/files.rst',
+               'doc/apidoc/modules.rst',
+               'doc/apidoc/namespaces.rst',
+               'doc/howto/buildoptions.rst',
+               'doc/howto/install.rst',
+               'doc/howto/manage-data.rst'
+               
              ]
   },
   # usage example
@@ -133,17 +151,21 @@ options = {
 # ------------------------------------------------------------------------------
 # preset template options
 presets = {
+  'doc-rst' : {
+    'desc' : 'Add/remove (basic) documentation files and reStructuredText (.rst) files for software manual/web site',
+    'args' : [ 'doc', 'rst', 'config-depends' ]
+  },
   'minimal' : {
     'desc' : 'Choose minimal project template.',
     'args' : [ 'noconfig', 'nodata', 'nodoc', 'nodoc-rst', 'noexample', 'nomodules', 'noinclude', 'src' ]
   },
   'default' : {
     'desc' : 'Choose default project template.',
-    'args' : [ 'noconfig', 'nodata', 'doc', 'doc-rst', 'noexample', 'nomodules', 'include', 'src', 'test' ]
+    'args' : [ 'noconfig', 'nodata', 'doc', 'rst', 'doc-rst', 'noexample', 'nomodules', 'include', 'src', 'test' ]
   },
   'toplevel' : {
     'desc' : 'Create toplevel project.',
-    'args' : [ 'noconfig', 'nodata', 'doc', 'doc-rst', 'noexample', 'modules', 'noinclude', 'nosrc', 'notest' ]
+    'args' : [ 'noconfig', 'nodata', 'doc', 'rst', 'doc-rst', 'noexample', 'modules', 'noinclude', 'nosrc', 'notest' ]
   },
   'module' : {
     'desc' : 'Create module of toplevel project.',
@@ -151,7 +173,7 @@ presets = {
   },
   'full' : {
     'desc' : 'Choose project template with all optional files.',
-    'args' : [ 'config', 'doc', 'doc-rst', 'example', 'data', 'nomodules', 'include', 'src', 'test', 'test-internal' ]
+    'args' : [ 'config', 'doc', 'rst', 'doc-rst', 'example', 'data', 'nomodules', 'include', 'src', 'test', 'test-internal' ]
   }
 }
 

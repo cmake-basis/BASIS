@@ -1,9 +1,14 @@
-.. title:: Manual
+.. raw:: latex
 
-.. meta::
-    :description: The documentation of the <project> software.
+    \pagebreak
 
+.. include:: intro.rst
 
-======
-Manual
-======
+.. toctree::
+    :maxdepth: 2
+
+    features
+    quickstart
+    howto
+    help
+    people

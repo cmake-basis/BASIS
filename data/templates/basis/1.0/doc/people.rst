@@ -5,11 +5,6 @@
 People
 ======
 
-Advisors
---------
-
-- Name of the advisor
-
 
 Software Development
 --------------------
@@ -21,3 +16,9 @@ Contributors
 ------------
 
 - Names of the contributors
+
+
+Advisors
+--------
+
+- Name of the advisor

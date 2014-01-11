@@ -32,136 +32,86 @@ set (SITE_OUTPUT_NAME   "${PROJECT_NAME}_Web_Site")
 set (MANUAL_OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
 set (GUIDE_OUTPUT_NAME  "${PROJECT_NAME}_Developer_Guide")
 
-# in particular, EXCLUDE_FROM_DOC will be added if pre-generated files exist
-set (APIDOC_OPTIONS)
-set (SITE_OPTIONS)
-set (MANUAL_OPTIONS)
-set (GUIDE_OPTIONS)
-
-if (PROJECT_PACKAGE_VENDOR)
-  list (APPEND SITE_OPTIONS "HTML_THEME" "${PROJECT_PACKAGE_VENDOR_L}")
-endif ()
 
 # ============================================================================
-# pre-generated output files
+# API reference (in-source code comments)
 # ============================================================================
 
-# API documentation
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/index.html")
-  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html" DESTINATION "${INSTALL_DOC_DIR}/apidoc")
-  list (APPEND APIDOC_OPTIONS EXCLUDE_FROM_DOC)
-endif ()
+# replace < year|contact|copyright|license > pattern in template file which
+# shall be included in documentation to avoid unrecognized xml/html tag warning
+if(EXISTS "${PROJECT_SOURCE_DIR}/config/Depends.cmake")
+  file (READ "${PROJECT_SOURCE_DIR}/config/Depends.cmake" TEMPLATE)
+  string (REGEX REPLACE "<year>"      "&lt;year&gt;"      TEMPLATE "${TEMPLATE}")
+  string (REGEX REPLACE "<contact>"   "&lt;contact&gt;"   TEMPLATE "${TEMPLATE}")
+  string (REGEX REPLACE "<copyright>" "&lt;copyright&gt;" TEMPLATE "${TEMPLATE}")
+  string (REGEX REPLACE "<license>"   "&lt;license&gt;"   TEMPLATE "${TEMPLATE}")
+  file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
+  unset (TEMPLATE)
+endif()
 
-# web site
-foreach (N IN ITEMS ${SITE_OUTPUT_NAME} site Site)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${SITE_OUTPUT_NAME}.pdf")
-    list (APPEND SITE_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
 
-# software manual
-foreach (N IN ITEMS ${MANUAL_OUTPUT_NAME} manual Manual UserManual SoftwareManual UserGuide userguide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${MANUAL_OUTPUT_NAME}.pdf")
-    list (APPEND MANUAL_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
+ # create a custom target so "make site" and "make manual" works on the command line
 
-# developer's guide
-foreach (N IN ITEMS ${GUIDE_OUTPUT_NAME} guide DeveloperGuide DeveloperManual developerguide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${GUIDE_OUTPUT_NAME}.pdf")
-    list (APPEND GUIDE_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
+basis_add_custom_target (site)                    
+basis_add_custom_target (manual)
 
-# ============================================================================
-# API documentation (in-source code comments)
-# ============================================================================
+# creade Doxygen documentation
 
 basis_add_doc (
-  apidoc           ${APIDOC_OPTIONS}
-  GENERATOR        Doxygen
-  HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
+  # documentation target name 
+  apidoc                ${APIDOC_OPTIONS}      # additional options specified elsewhere (todo: explain in more detail)
+  GENERATOR             Doxygen                # select doxygen as the generator, Sphinx is an alternative
+  INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake" 
+                        
+  HTML_DESTINATION      "${INSTALL_DOC_DIR}/html/apidoc/latest" # output location of html documentation
+  HTML_HEADER	          "apidoc/doxygen_header.html.in"       # custom top of page with CMake substitutions to fit with sphinx
+  HTML_FOOTER           "apidoc/doxygen_footer.html.in"         # custom bottom of page with CMake substitutions to fit with sphinx
+  HTML_EXTRA_STYLESHEET "apidoc/doxygen_extra.css.in"           # custom formatting to fit in with the sphinx docs
+  
+  OUTPUT                html xml                                # output in html for websites and xml for reprocessing, such as with the breathe sphinx extension
 )
 
-# ============================================================================
-# comprehensive manual
-# ============================================================================
+basis_add_dependencies (doc    apidoc) # make the general doc target build the apidoc
+ 
 
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst")
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sidebar.rst")
 
-  basis_add_doc (
-    softwaremanual   ${MANUAL_OPTIONS}
-    GENERATOR        Sphinx
-    BUILDER          pdf html dirhtml man
-    MAN_SECTION      7
-    HTML_THEME       ${PROJECT_PACKAGE_VENDOR_L}
-    RELLINKS         download installation manual publications people
-    HTML_SIDEBARS    searchbox globaltoc
-    HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
-    LATEX_TITLE      "${PROJECT_NAME} Software Manual"
-    OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
-  )
-
-  basis_add_custom_target (site)
-  basis_add_custom_target (site_dirhtml)
-  basis_add_custom_target (manual)
-
-  basis_add_dependencies  (site         softwaremanual_html)
-  basis_add_dependencies  (site_dirhtml softwaremanual_dirhtml)
-  basis_add_dependencies  (manual       softwaremanual_pdf)
-
-# ============================================================================
-# separate web site and manual
-# ============================================================================
-
-else ()
-
-  # web site
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
+    # ============================================================================
+    # software manual
+    # ============================================================================
+    
     basis_add_doc (
-      site          ${SITE_OPTIONS}
-      GENERATOR     Sphinx
-      BUILDER       html dirhtml pdf man
-      MAN_SECTION   7
-      HTML_THEME    ${PROJECT_PACKAGE_VENDOR_L}
-      RELLINKS      download installation manual publications people
-      HTML_SIDEBARS searchbox globaltoc
-      LATEX_TITLE   "${PROJECT_NAME} Web Site"
-      OUTPUT_NAME   "${SITE_OUTPUT_NAME}"
+      softwaremanual                                        # documenation target name, the name of what you specify when you say "make softwaremanual" in this case
+      GENERATOR        Sphinx                               # slect sphinx as the generator, doxygen is an alternative
+      BUILDER          html pdf man                         # selected output documentation formats
+      MAN_SECTION      7                                    # (todo: what is the MAN_SECTION 7 flag?)
+      
+      HTML_THEME       readable-wide                        # select the readable-wide sphinx layout theme provided by BASIS
+                                                            # this could specify a path to a theme you provide
+      HTML_LOGO        logo.svg                             # logo to use at heading of documentation
+      HTML_SIDEBARS    searchbox globaltoc                  # sidebar options to use
+      HTML_DESTINATION "${INSTALL_DOC_DIR}/html"            # output directory for completed documentation
+      SIDEBARWIDTH     300                                  # sidebar width in pixels
+      
+      MASTER_DOC       "sidebar"                            # restructured text file to start with when generating HTML documentation
+      LATEX_MASTER_DOC "manual"                             # restructured text file to start with when generating LaTeX, and thus PDF documentation                
+      LATEX_TITLE      "${PROJECT_NAME} Software Manual"    # Title to use in the PDF doc itself
+      OUTPUT_NAME      "${PROJECT_NAME}_Software_Manual"
+      
+      DOXYLINK         apidoc                               # target to use for integrated Doxygen documentation
+      DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"   # location of integrated Doxygen documentation output files
+      
+      NO_HTML_MODINDEX NO_HTML_INDEX                        # disable index page (we don't currently use it)
     )
-  endif ()
-
-  # software manual
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual/index.rst")
-    basis_add_doc (
-      manual           ${MANUAL_OPTIONS}
-      GENERATOR        Sphinx
-      BUILDER          pdf html
-      HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
-      LATEX_TITLE      "${PROJECT_NAME} Software Manual"
-      OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
-    )
-  endif ()
+    
+    
+    # set a trigger so "make site" will build softwaremanual_html, 
+    # "make manual" will build softwaremanual_pdf, 
+    # and "make doc" will build all of the above
+    
+    basis_add_dependencies (site   softwaremanual_html)    
+    basis_add_dependencies (manual softwaremanual_pdf)
+    basis_add_dependencies (doc    site manual)
 
 endif ()
 
-# ============================================================================
-# developer's guide
-# ============================================================================
-
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/guide/index.rst")
-  basis_add_doc (
-    guide            ${GUIDE_OPTIONS}
-    GENERATOR        Sphinx
-    BUILDER          pdf html
-    HTML_DESTINATION "${INSTALL_DOC_DIR}/guide"
-    LATEX_TITLE      "${PROJECT_NAME} Developer's Guide"
-    OUTPUT_NAME      "${GUIDE_OUTPUT_NAME}"
-  )
-endif ()
