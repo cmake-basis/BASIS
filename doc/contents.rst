@@ -4,8 +4,8 @@
 Table of Contents
 =================
 
-BASIS Documentation
-===================
+Software Manual
+===============
 
 .. toctree::
     :includehidden:
