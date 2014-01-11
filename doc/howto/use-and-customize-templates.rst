@@ -22,13 +22,13 @@ Available Templates
 |            |           | It is easy to get started with and follows all of the BASIS :doc:`/standard`.     |
 |            |           | To use it simply follow the :doc:`/quickstart`.                                   |
 +------------+-----------+-----------------------------------------------------------------------------------+
-| custom     | n/a       | You can create your own custom template. For instructions see the                 |
-|            |           | :ref:`HowToCreateATemplate` section below.                                        |
-+------------+-----------+-----------------------------------------------------------------------------------+
 | sbia       | 1.8       | The original template for the                                                     |
 |            |           | `Section of Biomedical Image Analysis (SBIA) <http://www.rad.upenn.edu/sbia/>`__  |
 |            |           | of the `University of Pennsylvania <http://www.upenn.edu/>`__. This template      |
 |            |           | will only be useful as an example for those that are not a member of this group.  |
++------------+-----------+-----------------------------------------------------------------------------------+
+| *custom*   | n/a       | You can create your own custom template. For instructions see the                 |
+|            |           | :ref:`HowToCreateATemplate` section below.                                        |
 +------------+-----------+-----------------------------------------------------------------------------------+
 
 You can find the actual templates provided by BASIS in the ``data/templates`` directory.
