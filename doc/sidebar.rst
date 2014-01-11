@@ -16,8 +16,3 @@
 
     download
     install
-
-.. toctree::
-    :maxdepth: 1
-
-    Full Table Of Contents <contents>
