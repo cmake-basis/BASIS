@@ -4,102 +4,56 @@
 Reference
 =========
 
-.. toctree::
-    :maxdepth: 2
-
-    apidoc/modules
-    apidoc/namespaces
-    apidoc/classlist
-    apidoc/files
-
-
-Package Overview
-================
-
-Project Template
-----------------
-
-The :doc:`standard/template` is supplied to make it easy to generate a project 
-that follows the BASIS standards, as explained in :doc:`howto/use-and-customize-templates`.
-
-The **basisproject** command-line tool automates and simplifies the 
-instantiation of the project template for new projects as explained 
-in :doc:`howto/create-and-modify-project`.
-
 CMake Modules
--------------
+=============
 
-The CMake modules and corresponding auxiliary files are used by 
-any BASIS project for the configuration of the CMake-based build
-system, so that many setup steps can be automated. These commands 
-often replace the versions provided by CMake, such as
-:apidoc:`basis_add_executable()`, which replaces CMake's 
+The CMake modules and corresponding auxiliary files are used by  any BASIS project
+for the configuration of the CMake-based build system, so that many setup steps
+can be automated. These commands often replace the standard CMake commands.
+For example, the CMake function :apidoc:`basis_add_executable()` replaces CMake's 
 `add_executable() <http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable>`_
 command.
 
 The main CMake modules are:
 
-- :apidoc:`BasisProject.cmake`  File in every BASIS project defining basic project information.
-- :apidoc:`BasisTools.cmake`    Defines CMake functions, macros, and variables.
-- :apidoc:`BasisTest.cmake`     Replacement for the CTest.cmake module of CMake.
-- :apidoc:`BasisPack.cmake`     Replacement for the CPack.cmake module of CMake.
+============================  ===============================================================
+:apidoc:`BasisProject.cmake`  File in every BASIS project defining basic project information.
+:apidoc:`BasisTools.cmake`    Defines CMake functions, macros, and variables.
+:apidoc:`BasisTest.cmake`     Replacement for the CTest.cmake module of CMake.
+:apidoc:`BasisPack.cmake`     Replacement for the CPack.cmake module of CMake.
+============================  ===============================================================
 
 
-Tools
------
+Basic Tools
+===========
 
-In order to ease certain tasks, the BASIS package also includes the following
-[command-line tools][17]:
+In order to ease certain tasks, the BASIS package also includes the following command-line tools:
 
-- :doc:`basisproject<howto/create-and-modify-project>`  Creates a new project or modifies an existing project in order to add or remove certain components of the project template or to upgrade to a newer BASIS template.
-- :doc:`basistest<howto/run-automated-tests>`           Implements automated software tests.
-- **doxyfilter:**                                       Doxygen filters for the supported programming languages.
+=================  ===============================================================================
+|basisproject|     Creates a new project or modifies an existing one in order to add
+                   or remove certain components of the template or to upgrade to a newer template.
+|basistest|        Implements automated software tests.
+*doxyfilter*       Doxygen filter for all supported languages.
+=================  ===============================================================================
 
 
 Utilities
----------
+=========
 
-For each supported programming language, BASIS provides a library of `BASIS Utilities`_. 
-Some of these utility functions are project independent and thus
-built and installed as part of BASIS itself. Other utility implementations
-are project dependent. Therefore, the BASIS package provides only template
-files which are customized and built during the configuration and build,
-respectively, of the particular BASIS project. This customization is done
-by the functions implemented by the :apidoc:`UtilitiesTools.cmake` module which is
+For each supported programming language, BASIS provides a library of
+`utility functions <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisUtilities.html>`__. 
+Some of these utilities are project independent and thus built and installed as
+part of the CMake BASIS package itself. Other utility implementations are project dependent.
+Therefore, the BASIS installation contains only template files which are customized and built
+during the configuration and build, respectively, of the particular BASIS project. This customization
+is done by the functions implemented by the :apidoc:`UtilitiesTools.cmake` module which is
 included and utilized by the main :apidoc:`BasisTools.cmake` module.
 
-The BASIS utilities address the following aspects of the software
-implementation :doc:`standard`:
+The BASIS utilities address the following aspects of the software implementation standard:
 
 - :doc:`standard/cmdline`
 - :doc:`standard/execution`
-- **Software Testing:**       Standard on how to implement software tests.
-
-
-Source Package
---------------
-
-- :apidoc:`BasisProject.cmake:`        Calls :apidoc:`basis_project()` to set basic project information, such as the name and dependencies.
-- **CMakeLists.txt:**                  Root CMake configuration file.
-- **config/:**                         Package configuration files.
-- **data/template/<version>/**         Project template(s).
-- **doc/:**                            Documentation source files of BASIS.
-- **include/:**                        Public header files.
-- **src/:**                            Source code files.
-- **src/cmake/:**                      CMake implementations and corresponding auxiliary files.
-- **src/geshi/:**                      A language file written in PHP for use with GeSHi,
-                                       a source code highlighting extension for MediaWiki.
-- **src/sphinx/:**                     Themes and extensions for the `Sphinx <http://sphinx-doc.org>`_ documentation tool.
-- **src/tools/:**                      Source code of command-line tools.
-- **src/utilities/:**                  Source code of utility functions.
-- **test/:**                           Tests of the implementations in src/.
-- **AUTHORS:**                         A list of the people who contributed to this sofware.
-- **COPYING:**                         The copyright and license notices.
-- **INSTALL:**                         Build and installation instructions.
-- **README:**                          Basic summary and references to the documentation.
-
-
-.. _`Basis Utilities`: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisUtilities.html
+- *Software Testing* (TODO)
 
 .. Old links for reference:
     [1]:  http://www.rad.upenn.edu/sbia/
@@ -126,9 +80,55 @@ Source Package
     [22]: https://github.com/schuhschuh/cmake-basis/
     [23]: http://sphinx.pocoo.org/
 
+Project Layout
+==============
+
+A brief summary of the common project layout required by all projects that follow BASIS is given below.
+Project templates are supplied by the BASIS package to make it easy for projects to follow
+this :ref:`BASIS Project Directory Layout <SourceCodeTree>` and standard :doc:`standard/template`.
+How to create and use such template is explained in the :doc:`howto/use-and-customize-templates` guide.
+The |basisproject| command-line tool further automates and simplifies the creation of new projects
+based on a project template.
+
+.. note:: Not all of the named subdirectories must exist in every project.
+
+==============================  =====================================================================
+**config/**                     Package configuration files.
+**data/**                       Data files required by the software.
+**doc/**                        Documentation source files.
+**example/**                    Example files for users to try out the software.
+**include/**                    Header files of the public API of libraries.
+**lib/**                        Module files for scripting languages.
+**modules/**                    Project :doc:`Modules <standard/modules>` (i.e., subprojects).
+**src/**                        Source code files.
+**test/**                       Implementations of unit and regression tests.
+AUTHORS (.txt|.md)              A list of the people who contributed to this sofware.
+:apidoc:`BasisProject.cmake:`   Calls :apidoc:`basis_project()` to set basic project information.
+CMakeLists.txt                  Root CMake configuration file.
+COPYING (.txt|.md)              The copyright and license notices.
+INSTALL (.txt|.md)              Build and installation instructions.
+README (.txt|.md)               Basic summary and references to the documentation.
+==============================  =====================================================================
+
+.. seealso:: The :doc:`standard/template` for a complete list of required and other standard project files.
+
+.. |basisproject|  replace:: :doc:`basisproject <howto/create-and-modify-project>`
+.. |basistest|     replace:: :doc:`basistest    <howto/run-automated-tests>`
+
+
+API Reference
+=============
+
+.. toctree::
+    :maxdepth: 2
+
+    apidoc/modules
+    apidoc/namespaces
+    apidoc/classlist
+    apidoc/files
 
 Older Versions
-==============
+--------------
 
 * Tools                     |Tools v2.1|_            |Tools v2.0|_            |Tools v1.3|_            |Tools v1.2|_            |Tools v1.1|_            |Tools v1.0|_
 * Modules                   |Modules v2.1|_          |Modules v2.0|_          |Modules v1.3|_          |Modules v1.2|_          |Modules v1.1|_          |Modules v1.0|_
