@@ -67,7 +67,8 @@ Get Started
 
 1. Get your first taste with the [Quick Start Guide][3].
 2. Check out the [How-to Guides][4] for easy introductions to common tasks.
-3. Investigate the [Reference][5] for more in-depth information.
+3. Learn more [About CMake BASIS][11], where it came from and why.
+4. Investigate the [Reference][5] for more in-depth information.
 
 Documentation
 -------------
@@ -144,13 +145,14 @@ Path                     | Content description
 [32]: /test
 
 <!-- Links to web page and online ressources -->
-[1]: http://opensource.andreasschuch.com/cmake-basis
-[2]: https://github.com/schuhschuh/cmake-basis
-[3]: http://opensource.andreasschuh.com/cmake-basis/quickstart.html
-[4]: http://opensource.andreasschuh.com/cmake-basis/howto.html
-[5]: http://opensource.andreasschuh.com/cmake-basis/apidoc.html
-[8]: https://github.com/schuhschuh/cmake-basis/issues
-[9]: http://opensource.andreasschuh.com/cmake-basis/quickstart.html#install-basis
+[1]:  http://opensource.andreasschuch.com/cmake-basis
+[2]:  https://github.com/schuhschuh/cmake-basis
+[3]:  http://opensource.andreasschuh.com/cmake-basis/quickstart.html
+[4]:  http://opensource.andreasschuh.com/cmake-basis/howto.html
+[5]:  http://opensource.andreasschuh.com/cmake-basis/apidoc.html
+[8]:  https://github.com/schuhschuh/cmake-basis/issues
+[9]:  http://opensource.andreasschuh.com/cmake-basis/quickstart.html#install-basis
+[11]: http://opensource.andreasschuh.com/cmake-basis/about.html
 
 <!-- Links to GitHub, see the local directory if you have downloaded the files already -->
 [6]:  http://opensource.andreasschuh.com/cmake-basis/apidoc.html#package-overview
