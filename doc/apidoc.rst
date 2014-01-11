@@ -1,5 +1,3 @@
-:orphan:
-
 .. _APIReference:
 
 API Reference
