@@ -90,20 +90,22 @@ documentation files are installed is also there.
 Source Package Content
 ----------------------
 
-- BasisProject.cmake         Meta-data used for the build configuration.
-- CMakeLists.txt             Root CMake configuration file.
-- config/                    Package configuration files.
-- data/templates/            Project templates.
-- doc/                       Documentation source files.
-- example/                   Example files used in the tutorials.
-- include/                   Public header files.
-- src/cmake/                 CMake implementations and corresponding auxiliary files.
-- src/geshi/                 A language file written in PHP for the use with GeSHi,
-                             a source code highlighting extension for MediaWiki.
-- src/sphinx/                Themes and extensions for the Sphinx documentation tool.
-- src/tools/                 Source code of command-line tools.
-- src/utilities/             Source code of utility functions.
-- test/                      Unit tests for the provided libraries.
+<table>
+<tr><td>   BasisProject.cmake   </td><td>   Meta-data used for the build configuration.                </td></tr>
+<tr><td>   CMakeLists.txt       </td><td>   Root CMake configuration file.                             </td></tr>
+<tr><td>   config/              </td><td>   Package configuration files.                               </td></tr>
+<tr><td>   data/templates/      </td><td>   Project templates.                                         </td></tr>
+<tr><td>   doc/                 </td><td>   Documentation source files.                                </td></tr>
+<tr><td>   example/             </td><td>   Example files used in the tutorials.                       </td></tr>
+<tr><td>   include/             </td><td>   Public header files.                                       </td></tr>
+<tr><td>   src/cmake/           </td><td>   CMake implementations and corresponding auxiliary files.   </td></tr>
+<tr><td>   src/geshi/           </td><td>   A language file written in PHP for the use with GeSHi,
+                                            a source code highlighting extension for MediaWiki.        </td></tr>
+<tr><td>   src/sphinx/          </td><td>   Themes and extensions for the Sphinx documentation tool.   </td></tr>
+<tr><td>   src/tools/           </td><td>   Source code of command-line tools.                         </td></tr>
+<tr><td>   src/utilities/       </td><td>   Source code of utility functions.                          </td></tr>
+<tr><td>   test/                </td><td>   Unit tests for the provided libraries.                     </td></tr>
+</table>
 
 Help
 ----
@@ -115,10 +117,8 @@ you can reach the CMake BASIS developers on GitHub using the [CMake BASIS Issue 
 License
 =======
 
-Copyright (c) 2011-2013 University of Pennsylvania
-
-Copyright (c) 2013-2014 Andreas Schuh
-
+Copyright (c) 2011-2013 University of Pennsylvania   <br />
+Copyright (c) 2013-2014 Andreas Schuh                <br />
 Copyright (c) 2013-2014 Carnegie Mellon University
 
 CMake BASIS is available under a BSD compatible license. The complete license text is
