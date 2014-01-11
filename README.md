@@ -119,7 +119,7 @@ Path                     | Content description
 [example/]          [25] | Example files used in the tutorials.
 [include/]          [26] | Public header files.
 [src/cmake/]        [27] | CMake implementations and corresponding auxiliary files.
-[src/geshi/]        [28] | A language file written in PHP for the use with GeSHi, a source code highlighting extension for MediaWiki.
+[src/geshi/]        [28] | A language file written in PHP for use with GeSHi, a source code highlighting extension for MediaWiki.
 [src/sphinx/]       [29] | Themes and extensions for the Sphinx documentation tool.
 [src/tools/]        [30] | Source code of command-line tools.
 [src/utilities/]    [31] | Source code of utility functions.
