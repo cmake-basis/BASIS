@@ -42,7 +42,7 @@ macro (basis_project_check_metadata)
   endif ()
   unset (PROJECT_SUBPROJECT)
   if (NOT PROJECT_NAME)
-    message (FATAL_ERROR "Project name not specified!")
+    message (FATAL_ERROR "CMake BASIS variable PROJECT_NAME not specified!")
   endif ()
   if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
     message (FATAL_ERROR "Invalid project name: ${PROJECT_NAME}!\n\n"
