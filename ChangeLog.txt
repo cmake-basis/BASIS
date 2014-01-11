@@ -16,7 +16,7 @@
 
 .. _v3.0.0:
 
-Release 3.0.0 (Dec 24, 2013)
+Release 3.0.0 (Jan 15, 2014)
 ----------------------------
 
 - Slight project name change to "CMake BASIS" (yet usually just referred to as BASIS).

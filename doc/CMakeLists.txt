@@ -71,7 +71,7 @@ basis_add_doc (
   BUILDER          html pdf man                         # selected output documentation formats
   MAN_SECTION      7                                    # (todo: what is the MAN_SECTION 7 flag?)
   
-  HTML_THEME       readable-wide                        # select the readable-wide sphinx layout theme provided by BASIS
+  HTML_THEME       cmake-basis                          # select the readable-wide sphinx layout theme provided by BASIS
                                                         # this could specify a path to a theme you provide
   HTML_LOGO        logo_title.svg                       # logo to use at heading of documentation
   HTML_SIDEBARS    searchbox globaltoc                  # sidebar options to use
