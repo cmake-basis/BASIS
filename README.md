@@ -87,27 +87,6 @@ See the [installation instructions][7] or the [INSTALL.txt](/INSTALL.txt) file.
 Details on where the executables and libraries, the auxiliary data, and the 
 documentation files are installed is also there.
 
-Source Package Content
-----------------------
-
-Path                     | Content description
------------------------- | ----------------------------------------------------------
-[BasisProject.cmake][20] | Meta-data used for the build configuration.
-[CMakeLists.txt]    [21] | Root CMake configuration file.
-[config/]           [22] | Package configuration files.
-[data/templates/]   [23] | Project templates.
-[doc/]              [24] | Documentation source files.
-[example/]          [25] | Example files used in the tutorials.
-[include/]          [26] | Public header files.
-[src/cmake/]        [27] | CMake implementations and corresponding auxiliary files.
-[src/geshi/]        [28] | A language file written in PHP for the use with GeSHi,
-                         | a source code highlighting extension for MediaWiki.
-[src/sphinx/]       [29] | Themes and extensions for the Sphinx documentation tool.
-[src/tools/]        [30] | Source code of command-line tools.
-[src/utilities/]    [31] | Source code of utility functions.
-[test/]             [32] | Unit tests for the provided libraries.
-
-
 
 Help
 ----
@@ -127,19 +106,30 @@ CMake BASIS is available under a BSD compatible license. The complete license te
 can be found on the [download page][10] and in the [COPYING.txt](/COPYING.txt) file.
 
 
-<!-- Links to web page and online ressources -->
-[1]: http://opensource.andreasschuch.com/cmake-basis
-[2]: https://github.com/schuhschuh/cmake-basis
-[3]: http://opensource.andreasschuh.com/cmake-basis/quickstart.html
-[4]: http://opensource.andreasschuh.com/cmake-basis/howto.html
-[5]: http://opensource.andreasschuh.com/cmake-basis/apidoc.html
-[8]: https://github.com/schuhschuh/cmake-basis/issues
+Package Content
+===============
+
+Path                     | Content description
+------------------------ | ----------------------------------------------------------
+[BasisProject.cmake][20] | Meta-data used for the build configuration.
+[CMakeLists.txt]    [21] | Root CMake configuration file.
+[config/]           [22] | Package configuration files.
+[data/templates/]   [23] | Project templates.
+[doc/]              [24] | Documentation source files.
+[example/]          [25] | Example files used in the tutorials.
+[include/]          [26] | Public header files.
+[src/cmake/]        [27] | CMake implementations and corresponding auxiliary files.
+[src/geshi/]        [28] | A language file written in PHP for the use with GeSHi,
+                         | a source code highlighting extension for MediaWiki.
+[src/sphinx/]       [29] | Themes and extensions for the Sphinx documentation tool.
+[src/tools/]        [30] | Source code of command-line tools.
+[src/utilities/]    [31] | Source code of utility functions.
+[test/]             [32] | Unit tests for the provided libraries.
+
+
+<!-- --------------------------------------------------------------------------------- -->
 
 <!-- Links to GitHub, see the local directory if you have downloaded the files already -->
-[6]:  http://opensource.andreasschuh.com/cmake-basis/apidoc.html#package-overview
-[7]:  http://opensource.andreasschuh.com/cmake-basis/install.html
-[10]:  http://opensource.andreasschuh.com/cmake-basis/download.html
-
 [20]: /BasisProject.cmake
 [21]: /CMakeLists.txt
 [22]: /config
@@ -153,3 +143,17 @@ can be found on the [download page][10] and in the [COPYING.txt](/COPYING.txt) f
 [30]: /src/tools
 [31]: /src/utilities
 [32]: /test
+
+<!-- Links to web page and online ressources -->
+[1]: http://opensource.andreasschuch.com/cmake-basis
+[2]: https://github.com/schuhschuh/cmake-basis
+[3]: http://opensource.andreasschuh.com/cmake-basis/quickstart.html
+[4]: http://opensource.andreasschuh.com/cmake-basis/howto.html
+[5]: http://opensource.andreasschuh.com/cmake-basis/apidoc.html
+[8]: https://github.com/schuhschuh/cmake-basis/issues
+
+<!-- Links to GitHub, see the local directory if you have downloaded the files already -->
+[6]:  http://opensource.andreasschuh.com/cmake-basis/apidoc.html#package-overview
+[7]:  http://opensource.andreasschuh.com/cmake-basis/install.html
+[10]:  http://opensource.andreasschuh.com/cmake-basis/download.html
+
