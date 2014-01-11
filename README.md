@@ -90,22 +90,23 @@ documentation files are installed is also there.
 Source Package Content
 ----------------------
 
-Path               | Content description
------------------- | ----------------------------------------------------------
-BasisProject.cmake | Meta-data used for the build configuration.
-CMakeLists.txt     | Root CMake configuration file.
-config/            | Package configuration files.
-data/templates/    | Project templates.
-doc/               | Documentation source files.
-example/           | Example files used in the tutorials.
-include/           | Public header files.
-src/cmake/         | CMake implementations and corresponding auxiliary files.
-src/geshi/         | A language file written in PHP for the use with GeSHi,
-                   | a source code highlighting extension for MediaWiki.
-src/sphinx/        | Themes and extensions for the Sphinx documentation tool.
-src/tools/         | Source code of command-line tools.
-src/utilities/     | Source code of utility functions.
-test/              | Unit tests for the provided libraries.
+Path                     | Content description
+------------------------ | ----------------------------------------------------------
+[BasisProject.cmake][20] | Meta-data used for the build configuration.
+[CMakeLists.txt]    [21] | Root CMake configuration file.
+[config/]           [22] | Package configuration files.
+[data/templates/]   [23] | Project templates.
+[doc/]              [24] | Documentation source files.
+[example/]          [25] | Example files used in the tutorials.
+[include/]          [26] | Public header files.
+[src/cmake/]        [27] | CMake implementations and corresponding auxiliary files.
+[src/geshi/]        [28] | A language file written in PHP for the use with GeSHi,
+                         | a source code highlighting extension for MediaWiki.
+[src/sphinx/]       [29] | Themes and extensions for the Sphinx documentation tool.
+[src/tools/]        [30] | Source code of command-line tools.
+[src/utilities/]    [31] | Source code of utility functions.
+[test/]             [32] | Unit tests for the provided libraries.
+
 
 
 Help
@@ -138,3 +139,16 @@ can be found on the [download page][10] and in the [COPYING.txt](/COPYING.txt) f
 [6]:  http://opensource.andreasschuh.com/cmake-basis/apidoc.html#package-overview
 [7]:  http://opensource.andreasschuh.com/cmake-basis/install.html
 [10]:  http://opensource.andreasschuh.com/cmake-basis/download.html
+
+[20]: /BasisProject.cmake
+[21]: /CMakeLists.txt
+[22]: /config
+[23]: /data/templates
+[24]: /doc
+[25]: /example
+[26]: /include
+[27]: /src/cmake
+[28]: /src/geshi
+[29]: /src/tools
+[30]: /src/utilities
+[31]: /test
