@@ -16,8 +16,6 @@ Software Manual
     standard
     guideline
     reference
-    help
-    About <about>
 
 Download and Installation
 =========================
@@ -29,3 +27,13 @@ Download and Installation
     changelog
     download
     install
+
+Support
+=======
+
+.. toctree::
+    :includehidden:
+    :maxdepth: 4
+
+    help
+    About <about>
