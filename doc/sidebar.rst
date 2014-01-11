@@ -15,5 +15,6 @@
 .. toctree::
    :maxdepth: 3
 
+   News <changelog>
    download
    install
