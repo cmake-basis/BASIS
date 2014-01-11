@@ -10,9 +10,10 @@
     guideline
     apidoc
     help
+    About <about>
 
 .. toctree::
-    :maxdepth: 3
+   :maxdepth: 3
 
-    download
-    install
+   download
+   install
