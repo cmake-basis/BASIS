@@ -4,6 +4,20 @@
 Reference
 =========
 
+
+Basic Tools
+===========
+
+In order to ease certain tasks, the BASIS package also includes the following command-line tools:
+
+=================  ===============================================================================
+|basisproject|     Creates a new project or modifies an existing one in order to add
+                   or remove certain components of the template or to upgrade to a newer template.
+|basistest|        Implements automated software tests.
+*doxyfilter*       Doxygen filter for all supported languages.
+=================  ===============================================================================
+
+
 CMake Modules
 =============
 
@@ -22,19 +36,6 @@ The main CMake modules are:
 :apidoc:`BasisTest.cmake`     Replacement for the CTest.cmake module of CMake.
 :apidoc:`BasisPack.cmake`     Replacement for the CPack.cmake module of CMake.
 ============================  ===============================================================
-
-
-Basic Tools
-===========
-
-In order to ease certain tasks, the BASIS package also includes the following command-line tools:
-
-=================  ===============================================================================
-|basisproject|     Creates a new project or modifies an existing one in order to add
-                   or remove certain components of the template or to upgrade to a newer template.
-|basistest|        Implements automated software tests.
-*doxyfilter*       Doxygen filter for all supported languages.
-=================  ===============================================================================
 
 
 Utilities
