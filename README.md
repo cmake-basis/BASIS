@@ -149,6 +149,7 @@ can be found on the [download page][10] and in the [COPYING.txt](/COPYING.txt) f
 [26]: /include
 [27]: /src/cmake
 [28]: /src/geshi
-[29]: /src/tools
-[30]: /src/utilities
-[31]: /test
+[29]: /src/sphinx
+[30]: /src/tools
+[31]: /src/utilities
+[32]: /test
