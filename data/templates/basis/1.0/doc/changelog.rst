@@ -1,8 +1,10 @@
-.. title:: ChangeLog
+.. title:: Release Notes
 
 .. meta::
    :description: Summary of changes, new features, and bug fixes for each <project> release.
 
-.. only:: html or dirhtml
+=============
+Release Notes
+=============
 
-    .. include:: ../ChangeLog.txt
+.. include:: ../ChangeLog.txt
