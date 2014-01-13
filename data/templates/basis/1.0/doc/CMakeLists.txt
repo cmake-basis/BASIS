@@ -72,7 +72,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst" AND EXISTS "${CMAKE_CURRENT_S
       BUILDER          html pdf man                         # selected output documentation formats
       MAN_SECTION      7                                    # (todo: what is the MAN_SECTION 7 flag?)
       
-      HTML_THEME       readable-wide                        # select the readable-wide sphinx layout theme provided by BASIS
+      HTML_THEME       cmake-basis                          # select the cmake-basis sphinx layout theme provided by BASIS in basis/src/sphinx/themes
                                                             # this could specify a path to a theme you provide
       HTML_LOGO        logo.svg                             # logo to use at heading of documentation
       HTML_SIDEBARS    searchbox globaltoc                  # sidebar options to use
