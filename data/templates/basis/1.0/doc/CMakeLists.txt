@@ -37,22 +37,6 @@ set(APIDOC_DEPENDS_INPUT) # clear variable
 # API reference (in-source code comments)
 # ============================================================================
 
-# replace < year|contact|copyright|license > pattern in template file which
-# shall be included in documentation to avoid unrecognized xml/html tag warning
-if(EXISTS "${PROJECT_SOURCE_DIR}/config/Depends.cmake")
-  file (READ "${PROJECT_SOURCE_DIR}/config/Depends.cmake" TEMPLATE)
-  string (REGEX REPLACE "<year>"      "&lt;year&gt;"      TEMPLATE "${TEMPLATE}")
-  string (REGEX REPLACE "<contact>"   "&lt;contact&gt;"   TEMPLATE "${TEMPLATE}")
-  string (REGEX REPLACE "<copyright>" "&lt;copyright&gt;" TEMPLATE "${TEMPLATE}")
-  string (REGEX REPLACE "<license>"   "&lt;license&gt;"   TEMPLATE "${TEMPLATE}")
-  file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
-  unset (TEMPLATE)
-  
-  # adds the depends file as an input if available
-  set(APIDOC_DEPENDS_INPUT INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake" )
-endif()
-
-
  # create a custom target so "make site" and "make manual" works on the command line
 
 basis_add_custom_target (site)                    
@@ -64,7 +48,6 @@ basis_add_doc (
   # documentation target name 
   apidoc                ${APIDOC_OPTIONS}      # additional options specified elsewhere (todo: explain in more detail)
   GENERATOR             Doxygen                # select doxygen as the generator, Sphinx is an alternative
-  ${APIDOC_DEPENDS_INPUT}                      # only set the input if the Depends.cmake file exists
                         
   HTML_DESTINATION      "${INSTALL_DOC_DIR}/html/apidoc/latest" # output location of html documentation
   HTML_HEADER	          "apidoc/doxygen_header.html.in"       # custom top of page with CMake substitutions to fit with sphinx
