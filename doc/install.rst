@@ -76,7 +76,7 @@ these.
 |                            |           | for the implementation of tools and libraries following       |
 |                            |           | the BASIS standard.                                           |
 +----------------------------+-----------+---------------------------------------------------------------+
-| Sphinx_                    | 1.1.3     | This tool can be used for the generation of the documentation |
+| Sphinx_                    | 1.2       | This tool can be used for the generation of the documentation |
 |                            |           | from in-source Python comments and in particular from         |
 |                            |           | reStructuredText_.                                            |
 +----------------------------+-----------+---------------------------------------------------------------+
@@ -192,7 +192,7 @@ and installation of any package developed with BASIS.
 
     Path to the directory and version of the default mad-libs style text substitution project
     template that will be installed with BASIS. See the
-    :doc:`Template Customization How-To <howto/create-custom-template>` for details.
+    :doc:`Template Customization How-To <howto/use-and-customize-templates>` for details.
 
 .. option:: -DINSTALL_ALL_TEMPLATES:BOOL
 

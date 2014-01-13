@@ -4,22 +4,46 @@
 
 // ---------------------------------------------------------------------------
 /**
-@mainpage
+@mainpage CMake BASIS
 
-@section Introduction
+@section Overview
 
-This is the API documentation of the
-<a href="http://www.rad.upenn.edu/sbia/software/basis/">Build system And
-Software Implementation Standard (BASIS)</a>.
+<b><a href="../../index.html">CMake BASIS</a></b> makes it easy 
+to create sharable software and libraries that work together. This is accomplished by 
+combining and documenting some of the best practices and utilities available. More 
+importantly, BASIS supplies a fully integrated suite of functionality to make the 
+whole process seamless! 
 
-Projects following the standard include the @ref BasisModules and make use
-of the @ref BasisUtilities. They are hence dependent on the BASIS package,
-similarly to a software implemented in C++ depends on third-party libraries
-used by this implementation, for example. Therefore, in order to be able
-to build a BASIS project, the BASIS package has to be installed first.
-Note, however, that BASIS is not necessarily required during the
-runtime, i.e., for executing the software. This depends on which
-utilities are used by the project.
+@subsection Features
+
+- Project Creation
+    - Quick project setup with mad-libs style text substitution
+    - Customizable project templates
+- Standards
+    - Filesystem layout standards
+    - Basic software implementation standards
+    - Command-line parsing standards
+    - Guidelines on coding style
+- Build system utilities
+    - New CMake Module APIs
+    - Version Control Integration
+    - Automatic Packaging
+- Documentation
+    - Documentation generation tools
+    - Manuals
+    - PDF and HTML output of each
+    - Integrated with CMake APIs
+- Testing
+    - Unit testing
+    - Continuous integration
+    - Executable testing frameworks
+- Program Execution
+    - Parsing library
+    - Command execution library
+    - Unix philosophy and tool chains
+
+Visit the <b><a href="../../index.html">CMake BASIS</a></b> main website for more information.
+
 */
 
 

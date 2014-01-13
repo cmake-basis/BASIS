@@ -8,10 +8,10 @@
     :maxdepth: 2
 
     features
-    history
-    install
     quickstart
     howto
     standard
+    guideline
+    reference
     help
     people

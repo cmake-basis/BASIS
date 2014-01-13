@@ -1,20 +1,18 @@
-.. _APIDocumentation:
+.. _APIReference:
 
-=============
 API Reference
 =============
 
 .. toctree::
-    :maxdepth: 2
-
-    apidoc/modules
-    apidoc/namespaces
-    apidoc/classlist
-    apidoc/files
-
+   :maxdepth: 2
+   
+   apidoc/modules
+   apidoc/namespaces
+   apidoc/classlist
+   apidoc/files
 
 Older Versions
-==============
+--------------
 
 * Tools                     |Tools v2.1|_            |Tools v2.0|_            |Tools v1.3|_            |Tools v1.2|_            |Tools v1.1|_            |Tools v1.0|_
 * Modules                   |Modules v2.1|_          |Modules v2.0|_          |Modules v1.3|_          |Modules v1.2|_          |Modules v1.1|_          |Modules v1.0|_

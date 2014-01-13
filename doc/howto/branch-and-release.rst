@@ -18,7 +18,9 @@ of any revision controlled software project as described in the :doc:`/standard/
 Branching and Merging
 =====================
 
-Please read the corresponding
+See the :doc:`/standard/fhs` for details.
+
+For SVN please also read the corresponding
 `SVN Book <http://svnbook.red-bean.com/en/1.5/svn.branchmerge.basicmerging.html>`_ article.
 
 .. todo::
@@ -48,7 +50,7 @@ version of the software.
 
    See :ref:`HowToBranch` for details on how to create a new branch.
 
-3. Edit the ``BasisProject.cmake`` file of the new release branch and change the
+3. Edit the :ref:`BasisProject.cmake <BasisProject>` file of the new release branch and change the
    ``VERSION`` argument to the proper version as described below.
 
    The version number consists of three components: the major version number,

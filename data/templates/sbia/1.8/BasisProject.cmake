@@ -1,14 +1,14 @@
-##############################################################################
+#################################################################################
 # @file  BasisProject.cmake
-# @brief Meta-data of this BASIS project.
+# @brief Sets basic information about a BASIS Project and calls basis_project().
 #
-# This file defines project meta-data by calling the basis_project() function.
-# This meta-data is used by BASIS to setup the project. Moreover, if the
-# project is a module of another BASIS project, the dependencies to other
-# modules have to be specified here such that the top-level project can analyze
-# the inter-module dependencies.
+# This file defines basic information about a project (metadata), by calling 
+# the basis_project() function. This meta-data is used by BASIS to setup the 
+# project. Moreover, if the project is a module of another BASIS project, 
+# the dependencies to other modules have to be specified here such that the 
+# top-level project can analyze the inter-module dependencies.
 #
-# @sa http://www.rad.upenn.edu/sbia/software/basis/standard/modules/
+# @sa http://opensource.andreasschuh.com/cmake-basis/standard/modules.html
 #
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to
@@ -26,7 +26,9 @@
 #   # ------------------------------------------------------------------------
 #   # meta-data
 #   NAME             MyProject
-#   VENDOR           PackageVendorID
+#   PACKAGE_VENDOR   sbia       # Note: PACKAGE_VENDOR will also be part of the default installation path
+#   PROVIDER_NAME    University of Pennsylvania
+#   DIVISION_NAME    Section of Biomedical Image Analysis
 #   VERSION          1.1.5
 #   DESCRIPTION      "This is the description of the project named"
 #                    " MyProject which follows BASIS."
@@ -42,7 +44,8 @@
 # )
 # @endcode
 #
-# Copyright (c) <year> University of Pennsylvania. All rights reserved.<br />
+# Copyright (c) 2011, 2012 University of Pennsylvania, 2013 Andreas Schuh.<br />
+# All rights reserved.<br />
 # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
 #
 # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
@@ -50,11 +53,9 @@
 # @ingroup BasisSettings
 ##############################################################################
 
-# Note: The #<*> dependency patterns are required by the basisproject tool and
-#       should be kept on a separate line as last commented argument of the
-#       corresponding options of the basis_project() command. The TEMPLATE
-#       option and set argument are also required by this tool and should not
-#       be changed manually. The argument is updated by basisproject --update.
+# Note: The #<*dependency> patterns are required by the basisproject tool
+#       and should be kept on a separate line as last commented argument of
+#       the corresponding options of the basis_project() command.
 
 basis_project (
   # --------------------------------------------------------------------------

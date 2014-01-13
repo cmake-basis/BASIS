@@ -4,18 +4,36 @@
 Table of Contents
 =================
 
+Software Manual
+===============
+
 .. toctree::
+    :includehidden:
     :maxdepth: 4
-    
-    download
-    install
+
     quickstart
     howto
     standard
-    apidoc
+    guideline
+    reference
+
+Download and Installation
+=========================
 
 .. toctree::
-    :maxdepth: 1
+    :includehidden:
+    :maxdepth: 4
+
+    changelog
+    download
+    install
+
+Support
+=======
+
+.. toctree::
+    :includehidden:
+    :maxdepth: 4
 
     help
-    changelog   
+    About <about>

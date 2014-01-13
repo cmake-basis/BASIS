@@ -1,24 +1,23 @@
 .. _Features:
 
-========
 Features
 ========
 
 **Project Creation**
 
-- Quick project setup with mad-libs style text substitution
-- Customizable project templates
+- :doc:`Quick project setup <howto/create-and-modify-project>` with mad-libs style text substitution
+- :doc:`Customizable project templates <howto/use-and-customize-templates>`
 
 **Standards**
 
-- Filesystem layout standards
-- Implementation standard
-- Command-line parsing standards
-- Style Guides
+- :doc:`Filesystem layout standards <standard/fhs>`
+- Basic software implementation standards
+- :doc:`Command-line parsing standards <standard/cmdline>`
+- :doc:`Coding Style Guidelines <guideline>`
 
 **Build system utilities**
 
-- New `CMake Module APIs`_
+- New :doc:`CMake Module APIs <standard/modules>`
 - Version Control Integration
 - Automatic Packaging
 

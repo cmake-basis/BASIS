@@ -45,14 +45,14 @@ when creating the project using the ``--use`` or ``--useopt`` option, respectivl
             --description "This is a brief description of the project." \
             --use ITK --useopt VTK
 
-The basisproject tool will in turn modify the ``BasisProject.cmake`` file to add the
+The basisproject tool will in turn modify the :ref:`BasisProject.cmake <BasisProject>` file to add the
 named packages to the corresponding lists of dependencies.
 
 .. note::
 
     In order for ``basisproject`` to be able to find the correct place where to insert
     the new dependencies, the ``#<dependency>`` et al. placeholders have to be present.
-    See the ``BasisProject.cmake`` template file.
+    See the  :ref:`BasisProject.cmake <BasisProject>` template file.
 
 
 .. _HowToModifyAProject:
@@ -78,7 +78,7 @@ editing the project files. Be aware that changing the project name may require t
 modification of several project files including source files. Furthermore, the
 project name is used to identify the project within the lab and possibly even externally.
 Therefore, it should be fixed as early as possible. In order to change the project
-description, simply edit the ``BasisProject.cmake`` file which you can find
+description, simply edit the  :ref:`BasisProject.cmake <BasisProject>` file which you can find
 in the top directory of the source tree. Specifically, the argument for the
 ``DESCRIPTION`` option of the `basis_project()`_ function.
 
@@ -201,7 +201,7 @@ Removing Dependencies
 ---------------------
 
 ``basisproject`` does at the moment not support the removal of previously added
-dependencies. Therefore, please edit the ``BasisProject.cmake`` file manually
+dependencies. Therefore, please edit the  :ref:`BasisProject.cmake <BasisProject>` file manually
 and simply remove all CMake code referring to the particular package you do no
 longer require or use.
 

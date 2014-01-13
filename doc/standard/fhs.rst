@@ -4,9 +4,9 @@
                   the directory structure of the project sources, the build tree, and
                   the installed software files.
 
-=============================
-Filesystem Hierarchy Standard
-=============================
+=================
+Filesystem Layout
+=================
 
 This document describes the filesystem hierarchy of BASIS projects, which
 is based on the `Filesystem Hierarchy Standard of Linux`_.
@@ -22,34 +22,31 @@ by BASIS using CMake, and will often refer to particular directories
 of a software project. These variables should be used where possible, 
 so that directories can be renamed without breaking the build system.
 
-The :doc:`template` provides a reference implementation and automated 
-BASIS Filesystem Hierarchy Standard setup. See 
-:doc:`/howto/create-and-modify-project` for details.
+The :doc:`template` provides a reference implementation of this standard.
+See the :doc:`/howto/create-and-modify-project` How-to Guide for details
+on how to make use of this template to create a new project which is conform
+with the filesystem hierarchy standard detailed in this section.
 
-
-Legend
-======
-
-The BASIS Filesystem Heirarchy Standard uses the following definitions:
+**Legend**
 
 - ``<project>`` (``<package>``) is a placeholder for the lowercase project (or package) name
 - ``<Project>`` is the case-sensitive project name.
+- ``<major>``   is the major release number
+- ``<minor>``   is the minor update number
+- ``<patch>``   is the patch number
 - ``<version>`` is a placeholder for the project version string ``<major>.<minor>.<patch>``
-   - ``<major>`` is the major release number
-   - ``<minor>`` is the minor update number
-   - ``<patch>`` is the patch number
-- ``<source>`` is the root directory of a particular project source tree
-- ``<build>``  is the root directory of the project's build or binary tree
+- ``<source>``  is the root directory of a particular project source tree
+- ``<build>``   is the root directory of the project's build or binary tree
 
 .. _GitRepositoryOrganization:
 
-Git, Mercurial and SVN Version Control Repository Organization
-==============================================================
+Source Code Repository
+======================
 
 Git 
 ---
 
-BASIS recommends that `git <http://git-scm.com/>`_ distributed version control users follow the `nvie git-flow branching model <http://nvie.com/posts/a-successful-git-branching-model/>`_. 
+BASIS recommends that `Git <http://git-scm.com/>`_ distributed version control users follow the `nvie git-flow branching model <http://nvie.com/posts/a-successful-git-branching-model/>`_. 
 The `Atlassian Gitflow Workflow Tutorial <https://www.atlassian.com/git/workflows#!workflow-gitflow>`_ is another excellent source for this information.
 
 .. _HgRepositoryOrganization:
@@ -62,8 +59,8 @@ This is identical to the git-flow branching model explained in :ref:`GitReposito
 
 .. _SVNRepositoryOrganization:
 
-SVN
----
+Subversion
+----------
 
 Each Subversion_ (SVN) repository contains the top-level directories ``trunk/``,
 ``branches/``, and ``tags/``. No other directories may be located next to these 
@@ -306,10 +303,6 @@ prefix that includes the package name and software version, for example,
 Note that the directory for CMake package configuration files is chosen such that
 CMake finds these files automatically given that the ``<prefix>`` is a system default
 location or the ``INSTALL_RUNTIME_DIR`` is in the ``PATH`` environment.
-
-.. raw:: latex
-
-    \clearpage
 
 It is important to note that the include directory always contains the package name.
 This way, project header files must use an include path that avoids conflicts with 

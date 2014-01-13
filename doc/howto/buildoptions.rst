@@ -1,6 +1,9 @@
 .. meta::
     :description: Common CMake options for the build configuration of BASIS-based software.
 
+
+.. _CMakeOptions:
+
 =============
 CMake Options
 =============
@@ -60,8 +63,8 @@ see the documentation of CMake_ itself for more details:
 The following BASIS specific options are available when building packages. For the full set of options and descriptions use the ccmake_ tool. For CMake_ specific options see the documentation for your CMake installation.
 
 
+.. _AdvancedCMakeOptions:
 
-======================
 Advanced CMake Options
 ======================
 

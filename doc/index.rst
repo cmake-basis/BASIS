@@ -1,36 +1,12 @@
-.. title:: Overview
+.. title:: Home
 
 .. include:: intro.rst
 .. include:: features.rst
-.. include:: history.rst
-.. include:: people.rst
-    
-.. toctree::
-    :hidden:
-    :maxdepth: 1
 
-    Overview <self>
-    download
-    install
+Get Started
+===========
 
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    quickstart
-    howto
-    standard
-    apidoc
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    help
-    changelog
-
-.. toctree::
-    :hidden:
-    :maxdepth: 1
-
-    contents
+1. Get your first taste with the :doc:`quickstart` guide.
+2. Check out the :doc:`howto` for easy introductions to common tasks.
+3. Learn more :doc:`About CMake BASIS <about>`, where it came from and why.
+4. Investigate the :doc:`reference` for more in-depth information.
