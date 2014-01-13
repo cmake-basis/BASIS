@@ -1,6 +1,5 @@
 .. _APIDocumentation:
 
-=============
 API Reference
 =============
 

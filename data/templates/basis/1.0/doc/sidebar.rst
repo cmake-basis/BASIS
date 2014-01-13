@@ -11,11 +11,7 @@
 .. toctree::
     :maxdepth: 3
 
-    help
+    News <changelog>
     download
     install
-
-.. toctree::
-    :maxdepth: 1
-
-    Full Table Of Contents <contents>
+    help

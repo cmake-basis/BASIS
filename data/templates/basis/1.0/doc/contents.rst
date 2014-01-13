@@ -1,8 +1,11 @@
 :orphan:
 
 =================
-Table of Contents
+Table Of Contents
 =================
+
+Software Manual
+===============
 
 .. toctree::
     :includehidden:
@@ -10,8 +13,26 @@ Table of Contents
 
     quickstart
     howto
-    apidoc
-    help
+    reference
+    
+
+Download and Installation
+=========================
+
+.. toctree::
+    :includehidden:
+    :maxdepth: 4
+
     changelog
     download
     install
+
+
+Support
+=======
+
+.. toctree::
+    :includehidden:
+    :maxdepth: 4
+
+    help

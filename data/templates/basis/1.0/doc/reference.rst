@@ -1,3 +1,6 @@
+=========
+Reference
+=========
 
 .. API Reference only available online, but not included in PDF manual
 

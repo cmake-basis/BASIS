@@ -15,6 +15,4 @@ feugiat ullamcorper id tempor id vitae. Mauris pretium aliquet, lectus tincidunt
 .. toctree::
     :maxdepth: 2
 
-    howto/install
-    howto/buildoptions
     howto/manage-data
