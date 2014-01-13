@@ -7,11 +7,11 @@
     quickstart
     howto
     apidoc
-    help
 
 .. toctree::
     :maxdepth: 3
 
+    help
     download
     install
 

@@ -31,7 +31,7 @@
 set (SITE_OUTPUT_NAME   "${PROJECT_NAME}_Web_Site")
 set (MANUAL_OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
 set (GUIDE_OUTPUT_NAME  "${PROJECT_NAME}_Developer_Guide")
-
+set(APIDOC_DEPENDS_INPUT) # clear variable
 
 # ============================================================================
 # API reference (in-source code comments)
@@ -47,6 +47,9 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/config/Depends.cmake")
   string (REGEX REPLACE "<license>"   "&lt;license&gt;"   TEMPLATE "${TEMPLATE}")
   file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
   unset (TEMPLATE)
+  
+  # adds the depends file as an input if available
+  set(APIDOC_DEPENDS_INPUT INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake")
 endif()
 
 
@@ -61,7 +64,7 @@ basis_add_doc (
   # documentation target name 
   apidoc                ${APIDOC_OPTIONS}      # additional options specified elsewhere (todo: explain in more detail)
   GENERATOR             Doxygen                # select doxygen as the generator, Sphinx is an alternative
-  INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake" 
+  ${APIDOC_DEPENDS_INPUT}                      # only set the input if the Depends.cmake file exists
                         
   HTML_DESTINATION      "${INSTALL_DOC_DIR}/html/apidoc/latest" # output location of html documentation
   HTML_HEADER	          "apidoc/doxygen_header.html.in"       # custom top of page with CMake substitutions to fit with sphinx

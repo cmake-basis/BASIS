@@ -16,3 +16,5 @@ feugiat ullamcorper id tempor id vitae. Mauris pretium aliquet, lectus tincidunt
     :maxdepth: 2
 
     howto/install
+    howto/buildoptions
+    howto/manage-data
