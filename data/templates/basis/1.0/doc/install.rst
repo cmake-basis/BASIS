@@ -24,11 +24,10 @@ Prerequisites
 +---------------------+---------+--------------------------------------------------------------------------------------+
 | Dependency          | Version | Description                                                                          |
 +=====================+=========+======================================================================================+
-| BASIS_              | 3.0.0   | A meta-project developed initially at SBIA_ to standardize the software development. |
+| BASIS_              | 3.0.0   | Utility to automate and standardize creating, documenting, and sharing software.     |
 +---------------------+---------+--------------------------------------------------------------------------------------+
 
 .. _BASIS: http://opensource.andreasschuh.com/cmake-basis/
-.. _SBIA: http://www.rad.upenn.edu/sbia/index.html
 
 
 .. raw:: html
