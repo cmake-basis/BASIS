@@ -13,9 +13,9 @@ Software Manual
 
     quickstart
     howto
-    apidoc
-    help
-    About <about>
+    standard
+    guideline
+    reference
 
 Download and Installation
 =========================
@@ -27,3 +27,13 @@ Download and Installation
     changelog
     download
     install
+
+Support
+=======
+
+.. toctree::
+    :includehidden:
+    :maxdepth: 4
+
+    help
+    About <about>

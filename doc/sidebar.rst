@@ -8,9 +8,7 @@
     howto
     standard
     guideline
-    apidoc
-    help
-    About <about>
+    reference
 
 .. toctree::
    :maxdepth: 3
@@ -18,3 +16,5 @@
    News <changelog>
    download
    install
+   help
+   About <about>
