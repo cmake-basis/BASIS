@@ -82,7 +82,6 @@ options = {
     'path' : [
                'doc/CMakeLists.txt',
                'doc/apidoc/apidoc.dox',
-               'doc/apidoc/classlist.rst',
                'doc/apidoc/doxygen_extra.css.in',
                'doc/apidoc/doxygen_footer.html.in',
                'doc/apidoc/doxygen_header.html.in',
@@ -105,11 +104,13 @@ options = {
                'doc/install.rst',
                'doc/manual.rst',
                'doc/people.rst',
+               'doc/help.rst',
                'doc/quickstart.rst',
                'doc/sidebar.rst',
                'doc/apidoc/files.rst',
                'doc/apidoc/modules.rst',
                'doc/apidoc/namespaces.rst',
+               'doc/apidoc/classlist.rst',
                'doc/howto/buildoptions.rst',
                'doc/howto/install.rst',
                'doc/howto/manage-data.rst'
