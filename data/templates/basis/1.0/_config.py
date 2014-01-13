@@ -100,6 +100,8 @@ options = {
                'doc/features.rst',
                'doc/howto.rst',
                'doc/index.rst',
+               'doc/intro.rst',
+               'doc/reference.rst',
                'doc/install.rst',
                'doc/manual.rst',
                'doc/people.rst',

@@ -49,7 +49,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/config/Depends.cmake")
   unset (TEMPLATE)
   
   # adds the depends file as an input if available
-  set(APIDOC_DEPENDS_INPUT INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake")
+  set(APIDOC_DEPENDS_INPUT INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake" )
 endif()
 
 
