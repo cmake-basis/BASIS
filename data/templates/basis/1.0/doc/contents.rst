@@ -10,8 +10,6 @@ Table of Contents
 
     quickstart
     howto
-    standard
-    guideline
     apidoc
     help
     changelog

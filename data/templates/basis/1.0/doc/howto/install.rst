@@ -176,8 +176,9 @@ Build and Installation
 ======================
 
 These are the build, test, and installation steps common to any BASIS based software,
-including BASIS itself. See :ref:`BasisInstallationSteps` for installation instructions
-specific to the CMake BASIS package itself.
+including BASIS itself. 
+See `Build and Installation <http://opensource.andreasschuh.com/cmake-basis/install.html#basisinstallationsteps>`_ 
+for installation instructions specific to the CMake BASIS package itself.
 
 If you obtained a binary distribution package for a supported platform,
 please follow the installation instructions corresponding to your operating

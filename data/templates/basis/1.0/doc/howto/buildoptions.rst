@@ -108,8 +108,9 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Installation scheme, i.e., filesystem hierarchy, to use for the installation of the
     software files relative to the installation prefix specified by the :option:`-DCMAKE_INSTALL_PREFIX`.
-    Valid values are ``default``, ``usr``, ``opt``, or ``win``. See :ref:`InsallationTree`
-    as defined by the :doc:`/standard/fhs` of BASIS for more details.
+    Valid values are ``default``, ``usr``, ``opt``, or ``win``. See the 
+    `Filesystem Heirarchy Standard <http://opensource.andreasschuh.com/cmake-basis/standard/fhs.html>`_ 
+    of BASIS for more details.
 
 .. option:: -DBASIS_INSTALL_SITE_DIR:PATH
 

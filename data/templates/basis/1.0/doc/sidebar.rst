@@ -6,7 +6,7 @@
     Overview <index>
     quickstart
     howto
-    apidoc
+    reference
 
 .. toctree::
     :maxdepth: 3
