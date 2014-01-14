@@ -111,8 +111,6 @@ options = {
                'doc/apidoc/modules.rst',
                'doc/apidoc/namespaces.rst',
                'doc/apidoc/classlist.rst',
-               'doc/howto/buildoptions.rst',
-               'doc/howto/install.rst',
                'doc/howto/manage-data.rst'
                
              ]
