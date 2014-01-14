@@ -1,7 +1,7 @@
 {%- extends "readable-wide/layout.html" %}
 {%- block sidebarlogo %}
 {%- if logo %}
-  <p class="logo"><a href="index.html">
+  <p class="logo"><a href="{{ pathto('index') }}">
     <img class="logo" src="{{ pathto('_static/' + logo, 1) }}" alt="Logo"/>
   </a></p>
 {%- endif %}
