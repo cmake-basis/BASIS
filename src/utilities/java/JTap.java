@@ -25,7 +25,8 @@
  *
  * @sa http://testanything.org/wiki/index.php/Tap-functions
  *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ * Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
+ *          report issues at https://github.com/schuhschuh/cmake-basis/issues
  *
  * @ingroup BasisJavaUtilities
  */
