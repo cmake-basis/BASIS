@@ -1116,6 +1116,13 @@ endfunction ()
 #     <td>Name of master document. Defaults to <tt>index</tt>.</td>
 #   </tr>
 #   <tr>
+#     @tp @b EXCLUDE_PATTERN pattern @endtp
+#     <td>A glob-style pattern that should be excluded when looking for source files.
+#         Specify this option more than once to specify multiple exclude patterns.
+#         They are matched against the source file names relative to the source directory,
+#         using slashes as directory separators on all platforms.</td>
+#   </tr>
+#   <tr>
 #     @tp @b HTML_TITLE title @endtp
 #     <td>Title of HTML web site.</td>
 #   </tr>
@@ -1274,7 +1281,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
   set (SPHINX_DEPENDS)
   set (OPTION_NAME)
   set (OPTION_VALUE)
-  set (OPTION_PATTERN "(authors?|builders?|extensions|breathe|doxylink|doxydoc|html_sidebars|templates_path|html_static_path|exclude_patterns)")
+  set (OPTION_PATTERN "(authors?|builders?|extensions|breathe|doxylink|doxydoc|html_sidebars|templates_path|html_static_path|exclude_pattern)")
   foreach (ARG IN LISTS SPHINX_UNPARSED_ARGUMENTS)
     if (NOT OPTION_NAME OR ARG MATCHES "^[A-Z_]+$")
       # SPHINX_HTML_THEME_OPTIONS
@@ -1340,8 +1347,8 @@ function (basis_add_sphinx_doc TARGET_NAME)
         set (ARG "${SPHINX_SOURCE_DIRECTORY}/${ARG}")
       endif ()
       list (APPEND SPHINX_HTML_STATIC_PATH "'${ARG}'")
-    # EXCLUDE_PATTERNS
-    elseif (OPTION_NAME MATCHES "^exclude_patterns$")
+    # EXCLUDE_PATTERN
+    elseif (OPTION_NAME MATCHES "^exclude_pattern$")
       list (APPEND SPHINX_EXCLUDE_PATTERNS "'${ARG}'")
     # value of theme option
     else ()
