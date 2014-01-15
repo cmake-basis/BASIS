@@ -7,6 +7,7 @@
     quickstart
     howto
     reference
+    API <apidoc>
 
 .. toctree::
     :maxdepth: 3

@@ -2,13 +2,6 @@
 Reference
 =========
 
-.. API Reference only available online, but not included in PDF manual
-
-.. only:: html
-
-  .. include:: apidoc.rst
-
-
 .. Package Overview is available in the manual and online documentation
 
 Package Overview
@@ -25,7 +18,7 @@ id praesent bibendum libero faucibus porta egestas, quisque praesent ipsum ferme
 
 
 Source Package
---------------
+==============
 
 .. The tabularcolumns directive is required to help with formatting the table properly
    in case of LaTeX (PDF) output.
@@ -39,7 +32,7 @@ Source Package
 **example/**                    Example files for users to try out the software.
 **include/**                    Header files of the public API of libraries.
 **lib/**                        Module files for scripting languages.
-**modules/**                    Project :doc:`Modules <standard/modules>` (i.e., subprojects).
+**modules/**                    Project modules (i.e., subprojects).
 **src/**                        Source code files.
 **test/**                       Implementations of unit and regression tests.
 AUTHORS.md                      A list of the people who contributed to this sofware.

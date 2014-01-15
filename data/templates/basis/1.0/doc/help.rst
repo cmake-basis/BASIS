@@ -8,4 +8,4 @@ Getting Help
 ============
 
 Please report any issues with <project>, including bug reports, feature requests,
-or support questions, on `GitHub <https://github.com/<vendor>/<project_l>/issues>`__.
+or support questions, on `GitHub <https://github.com/schuhschuh/<project_l>/issues>`__.
