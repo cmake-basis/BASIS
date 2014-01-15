@@ -8,7 +8,6 @@
 Reference
 =========
 
-
 Basic Tools
 ===========
 
@@ -137,9 +136,3 @@ README (.txt|.md)               Basic summary and references to the documentatio
 .. |basisproject|  replace:: :doc:`basisproject <howto/create-and-modify-project>`
 .. |basistest|     replace:: :doc:`basistest    <howto/run-automated-tests>`
 
-
-.. API Reference only available online, but not included in PDF manual
-
-.. only:: html
-
-  .. include:: apidoc.rst
