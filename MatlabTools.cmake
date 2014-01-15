@@ -308,21 +308,24 @@ function (basis_mexext)
   # otherwise, determine extension given CMake variables describing the system
   if (NOT MEXEXT)
     if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-      if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+      if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR
+          CMAKE_SIZEOF_VOID_P MATCHES 8)
         set (MEXEXT "mexa64")
       elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "x86" OR
               CMAKE_SYSTEM_PROCESSOR MATCHES "i686")
         set (MEXEXT "mexglx")
       endif ()
     elseif (CMAKE_SYSTEM_NAME MATCHES "Windows")
-      if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+      if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR
+          CMAKE_SIZEOF_VOID_P    MATCHES 8)
         set (MEXEXT "mexw64")
       elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "x86" OR
               CMAKE_SYSTEM_PROCESSOR MATCHES "i686")
         set (MEXEXT "mexw32")
       endif ()
     elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-      if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+      if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR
+          CMAKE_SIZEOF_VOID_P    MATCHES 8)
         set (MEXEXT "mexmaci64")
       else ()
         set (MEXEXT "mexmaci")
