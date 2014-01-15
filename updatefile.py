@@ -3,6 +3,15 @@
 # ATTENTION: DO NOT use the tokens used by the file update anywhere within
 #            this file. Write < basis-custom > instead, for example.
 
+# ============================================================================
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+#
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# ============================================================================
+
 ##
 # @file  updatefile.py
 # @brief Update file from template file while preserving custom sections (deprecated).
@@ -21,16 +30,6 @@
 # end of the resulting file.
 #
 # See the documentation of BasisUpdate.cmake for further details.
-#
-# Copyright (c) 2011-2012 University of Pennsylvania. <br />
-# Copyright (c) 2013-2014 Andreas Schuh.              <br />
-# All rights reserved.                                <br />
-#
-# See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license
-# or COPYING file for license information.
-#
-# Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
-#          report issues at https://github.com/schuhschuh/cmake-basis/issues
 #
 # @ingroup CMakeHelpers
 

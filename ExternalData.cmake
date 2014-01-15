@@ -5,9 +5,6 @@
 # Copyright 2010-2011 Kitware, Inc. All rights reserved.
 # File modified by Andreas Schuh.
 #
-# Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
-#          report issues at https://github.com/schuhschuh/cmake-basis/issues
-#
 # @ingroup CMakeTools
 ##############################################################################
 

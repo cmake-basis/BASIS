@@ -1,3 +1,12 @@
+:: ============================================================================
+:: Copyright (c) 2011-2012 University of Pennsylvania
+:: Copyright (c) 2013-2014 Andreas Schuh
+:: All rights reserved.
+::
+:: See COPYING file for license information or visit
+:: http://opensource.andreasschuh.com/cmake-basis/download.html#license
+:: ============================================================================
+
 rem @file  doxyfilter.bat
 rem @brief Wrapper Batch program for Doxygen input filter.
 rem
@@ -5,14 +14,4 @@ rem This Batch program simply calls the actual Doxygen filter executable.
 rem It is required on Windows because Doxygen (at least up to version 1.8.0)
 rem seems to have a problem with filter executables which have a space
 rem character in their file path.
-rem
-rem Copyright (c) 2011-2012 University of Pennsylvania. <br />
-rem Copyright (c) 2013-2014 Andreas Schuh.              <br />
-rem All rights reserved.                                <br />
-rem
-rem See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license
-rem or COPYING file for license information.
-rem
-rem Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
-rem          report issues at https://github.com/schuhschuh/cmake-basis/issues
 @"@DOXYGEN_INPUT_FILTER@" %*
