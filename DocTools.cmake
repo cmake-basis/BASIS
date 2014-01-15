@@ -2,12 +2,16 @@
 # @file  DocTools.cmake
 # @brief Tools related to gnerating or adding software documentation.
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011-2012 University of Pennsylvania. <br />
+# Copyright (c) 2013-2014 Carnegie Melon University.  <br />
+# Copyright (c) 2013-2014 Andreas Schuh.              <br />
+# All rights reserved.                                <br />
 #
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license
+# or COPYING file for license information.
 #
-# Copyright (c) 2013 Carnegie Mellon University.
+# Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
+#          report issues at https://github.com/schuhschuh/cmake-basis/issues
 #
 # @ingroup CMakeTools
 ##############################################################################
