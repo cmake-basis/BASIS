@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  ScriptConfig.cmake
 # @brief Default script configuration.
@@ -19,13 +26,6 @@
 # See documentation of basis_set_script_path() function for more details.
 #
 # @sa http://opensource.andreasschuh.com/cmake-basis/standard/scripttargets.html#script-configuration
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisScriptConfig
 ##############################################################################

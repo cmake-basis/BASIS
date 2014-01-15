@@ -1,3 +1,21 @@
+// ============================================================================
+// Copyright (c) Patrick LeBoutillier
+// Copyright (c) 2011 University of Pennsylvania
+// All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// @sa http://testanything.org/wiki/index.php/Tap-functions
+// ============================================================================
+
 /**
  * @file  JTap.java
  * @brief Unit testing framework for Java based on the Test Anything Protocol.
@@ -8,25 +26,6 @@
  *       JTap project (http://svn.solucorp.qc.ca/repos/solucorp/JTap/trunk/).
  *       The original implementation has been modified by Andreas Schuh as
  *       part of the BASIS project at SBIA.
- *
- * Copyright (c) Patrick LeBoutillier.<br />
- * Copyright (c) 2011, University of Pennsylvania.<br />
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * @sa http://testanything.org/wiki/index.php/Tap-functions
- *
- * Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
- *          report issues at https://github.com/schuhschuh/cmake-basis/issues
  *
  * @ingroup BasisJavaUtilities
  */

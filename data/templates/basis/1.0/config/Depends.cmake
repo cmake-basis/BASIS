@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  Depends.cmake
 # @brief Find additional dependencies.
@@ -29,13 +36,6 @@
 #   basis_use_package (Slicer)
 # endif ()
 # @endcode
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################

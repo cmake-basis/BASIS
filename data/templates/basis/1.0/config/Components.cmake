@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  Components.cmake
 # @brief Configuration of component-based installers.
@@ -23,13 +30,6 @@
 #   - ALL_COMPONENTS_IN_ONE   Generate single package for all components.
 #
 # @sa http://www.vtk.org/Wiki/CMake:Component_Install_With_CPack#Controlling_Differents_Ways_of_packaging_components
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################

@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  ConfigSettings.cmake
 # @brief Sets variables used in CMake package configuration.
@@ -10,13 +17,6 @@
 #       installation is included prior to this file. Hence, the variables are
 #       valid even if a custom project-specific configuration is used and
 #       default values can further be overwritten in this file.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################

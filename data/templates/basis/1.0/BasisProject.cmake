@@ -1,3 +1,10 @@
+# ===============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ===============================================================================
+
 #################################################################################
 # @file  BasisProject.cmake
 # @brief Sets basic information about a BASIS Project and calls basis_project().
@@ -62,13 +69,6 @@
 #     MATLAB{mcc}
 # )
 # @endcode
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################

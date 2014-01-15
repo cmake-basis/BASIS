@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  CMakeLists.txt
 # @brief Build configuration of software testing.
@@ -54,13 +61,6 @@
 # a subdirectory for each test should be created under this output directory.
 # Therefore, the basis_add_test() function creates such subdirectory and sets
 # the working directory of the test to this output directory.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 ##############################################################################
 
 # ============================================================================

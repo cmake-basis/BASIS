@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (C) 1988, 1989, 1992, 1993, 1994 Free Software Foundation, Inc.
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+# ============================================================================
+
 """
 
     @file  diff3.py
@@ -15,10 +22,6 @@
     The two-way file comparison procedure was based on the article:
     P. Heckel. ``A technique for isolating differences between files.''
     Communications of the ACM, Vol. 21, No. 4, page 264, April 1978.
-
-    Copyright (c) 2011-2012 University of Pennsylvania.
-    Copyrigth (c) 2013-2014 Andreas Schuh.
-    All rights reserved.
 
 """
 

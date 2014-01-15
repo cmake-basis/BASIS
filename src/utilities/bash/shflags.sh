@@ -1,3 +1,12 @@
+# ============================================================================
+# Copyright (c) 2008 Kate Ward
+# Copyright (c) 2011 University of Pennsylvania
+# Copyright (c) 2011-2014 Andreas Schuh
+# All Rights Reserved.
+#
+# Released under the LGPL (GNU Lesser General Public License)
+# ============================================================================
+
 ##############################################################################
 # @file   shflags.sh
 # @author Kate Ward <kate.ward at forestent.com>, Andreas Schuh
@@ -90,12 +99,6 @@
 #   systems, only short flags are recognized.
 #
 # - Lists of strings are space separated, and a null value is the '~' char.
-#
-# Copyright (c) 2008, Kate Ward.<br />
-# Copyright (c) 2011, University of Pennsylvania.<br />
-# All Rights Reserved.
-#
-# Released under the LGPL (GNU Lesser General Public License)
 
 # return if FLAGS already loaded
 [ -n "${FLAGS_VERSION:-}" ] && return 0

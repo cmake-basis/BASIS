@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  CMakeLists.txt
 # @brief Build configuration of internal software tests.
@@ -8,11 +15,4 @@
 # size of the distribution package and to avoid reports about failing tests,
 # where it is known that the tests will only run successfully within the
 # environment of the package provider.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 ##############################################################################

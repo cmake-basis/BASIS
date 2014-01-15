@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  CTestCustom.cmake
 # @brief Custom testing configuration.
@@ -10,13 +17,6 @@
 # are documented on the
 # <a href="http://www.vtk.org/Wiki/CMake_Testing_With_CTest#Customizing_CTest">
 # Wiki of the VTK project</a>.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################

@@ -1,16 +1,3 @@
-<!--
-
-  Copyright (C) 2011-2012 University of Pennsylvania.
-  Copyright (C) 2013-2014 Carnegie Melon University.
-  Copyright (C) 2013-2014 Andreas Schuh.
-  All rights reserved.
-  
-  Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
-           report issues at https://github.com/schuhschuh/cmake-basis/issues
-
--->
-
-
 Introduction
 ============
 

@@ -1,13 +1,3 @@
-<!--
-
-  Copyright (c) <copyright>
-  All rights reserved.
-  
-  Contact: <contact>
-
--->
-
-
 Introduction
 ============
 

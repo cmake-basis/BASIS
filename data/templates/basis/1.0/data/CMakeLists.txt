@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  CMakeLists.txt
 # @brief Build configuration of auxiliary data files.
@@ -10,13 +17,6 @@
 # @c INSTALL_DATA_DIR directory of the installation tree. To group data files,
 # place them in proper subdirectories which will be copied to the
 # @c DESTINATION directory of the basis_install() function.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 ##############################################################################
 
 basis_install_directory ("." "${INSTALL_DATA_DIR}")

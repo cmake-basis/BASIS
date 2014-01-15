@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  @VERSION_FILE@
 # @brief Package configuration version file.
@@ -64,13 +71,6 @@
 # </table>
 #
 # @sa http://www.cmake.org/Wiki/CMake_2.6_Notes
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisConfig
 ##############################################################################

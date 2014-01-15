@@ -1,26 +1,13 @@
-/**
- * @file  testdriver-itk.hxx
- * @brief ITK-based implementation of test driver.
- *
- * This implementation of the test driver utilizes the ITK.
- *
- * This file is in parts a modified version of the itkTestDriverInclude.h
- * file which is part of the TestKernel module of the ITK 4 project and
- * in other parts contains code from the ImageCompareCommand.cxx file
- * which is part of the ITK 3.20 release.
- *
- * Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen<br />
- * Copyright (c) Insight Software Consortium.<br />
- * Copyright (c) 2011 University of Pennsylvania.
- *
- * Portions of this file are subject to the VTK Toolkit Version 3 copyright.
- *
- * For complete copyright, license and disclaimer of warranty information
- * please refer to the COPYRIGHT file.
- *
- * Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
- *          report issues at https://github.com/schuhschuh/cmake-basis/issues
- */
+// ===========================================================================
+// Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
+// Copyright (c) Insight Software Consortium
+// Copyright (c) 2011 University of Pennsylvania
+//
+// Portions of this file are subject to the VTK Toolkit Version 3 copyright.
+//
+// For complete copyright, license and disclaimer of warranty information
+// please refer to the COPYRIGHT file.
+// ===========================================================================
 
  /*=========================================================================
  *
@@ -49,6 +36,20 @@
  *  please refer to the NOTICE file at the top of the ITK source tree.
  *
  *=========================================================================*/
+
+/**
+ * @file  testdriver-itk.hxx
+ * @brief ITK-based implementation of test driver.
+ *
+ * This implementation of the test driver utilizes the ITK.
+ *
+ * This file is in parts a modified version of the itkTestDriverInclude.h
+ * file which is part of the TestKernel module of the ITK 4 project and
+ * in other parts contains code from the ImageCompareCommand.cxx file
+ * which is part of the ITK 3.20 release.
+ */
+
+
 
 #pragma once
 #ifndef _BASIS_TESTDRIVER_ITK_HXX
