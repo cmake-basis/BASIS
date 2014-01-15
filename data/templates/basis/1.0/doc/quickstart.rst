@@ -28,13 +28,13 @@ Install <project>
 Get a copy of the source code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clone the `Git <http://git-scm.com/>`__ repository from `GitHub <https://github.com/<vendor>/<project_l>/>`__ as follows:
+Clone the `Git <http://git-scm.com/>`__ repository from `GitHub <https://github.com/schuhschuh/<project_l>/>`__ as follows:
 
 .. code-block:: bash
     
     mkdir -p ~/local/src
     cd ~/local/src
-    git clone https://github.com/<vendor>/<project_l>.git
+    git clone https://github.com/schuhschuh/<project_l>.git
     cd <project_l>
     
 or :doc:`download` a pre-packaged ``.tar.gz`` of the latest release and unpack it using the following command:
