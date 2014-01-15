@@ -36,11 +36,6 @@ the command-line are handled by BASIS.
     /**
      * @file  smoothimage.cxx
      * @breif Smooth image using Gaussian or anisotropic diffusion filtering.
-     *
-     * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
-     * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-     *
-     * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
      */
 
     #include <package/basis.h> // include BASIS C++ utilities
