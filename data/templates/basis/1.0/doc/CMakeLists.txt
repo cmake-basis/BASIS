@@ -24,80 +24,74 @@
 ##############################################################################
 
 # ============================================================================
-# settings
+# generic targets
 # ============================================================================
 
-# output names of PDF's generated from reStructuredText sources (excl. extension)
-set (SITE_OUTPUT_NAME   "${PROJECT_NAME}_Web_Site")
-set (MANUAL_OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
-set (GUIDE_OUTPUT_NAME  "${PROJECT_NAME}_Developer_Guide")
-set(APIDOC_DEPENDS_INPUT) # clear variable
+# create custom targets so "make site" and "make manual" always work
+# note that the "doc" target is added automatically which will trigger
+# the build of the complete documentation unless the EXCLUDE_FROM_ALL
+# option is passed to basis_add_doc
+basis_add_custom_target (site)   # build HTML pages
+basis_add_custom_target (manual) # build PDF manual
 
 # ============================================================================
-# API reference (in-source code comments)
+# API reference (Doxygen-stlye in-source code comments)
 # ============================================================================
-
- # create a custom target so "make site" and "make manual" works on the command line
-
-basis_add_custom_target (site)                    
-basis_add_custom_target (manual)
-
-# creade Doxygen documentation
 
 basis_add_doc (
-  # documentation target name 
-  apidoc                ${APIDOC_OPTIONS}      # additional options specified elsewhere (todo: explain in more detail)
-  GENERATOR             Doxygen                # select doxygen as the generator, Sphinx is an alternative
-                        
+  apidoc                                                        # documentation build target name
+  GENERATOR             Doxygen                                 # select Doxygen as the generator
   HTML_DESTINATION      "${INSTALL_DOC_DIR}/html/apidoc/latest" # output location of html documentation
-  HTML_HEADER	          "apidoc/doxygen_header.html.in"       # custom top of page with CMake substitutions to fit with sphinx
-  HTML_FOOTER           "apidoc/doxygen_footer.html.in"         # custom bottom of page with CMake substitutions to fit with sphinx
-  HTML_EXTRA_STYLESHEET "apidoc/doxygen_extra.css.in"           # custom formatting to fit in with the sphinx docs
-  
-  OUTPUT                html xml                                # output in html for websites and xml for reprocessing, such as with the breathe sphinx extension
+  HTML_HEADER	          "apidoc/doxygen_header.html.in"         # custom top of page with CMake substitutions to fit with Sphinx
+  HTML_FOOTER           "apidoc/doxygen_footer.html.in"         # custom bottom of page with CMake substitutions to fit with Sphinx
+  HTML_EXTRA_STYLESHEET "apidoc/doxygen_extra.css.in"           # custom formatting to fit in with the Sphinx docs
+  OUTPUT                html xml                                # request output in HTML for websites and XML for reprocessing,
+                                                                # such as with the breathe Sphinx extension in particular
 )
-
-basis_add_dependencies (doc    apidoc) # make the general doc target build the apidoc
  
+# ============================================================================
+# Software manual
+# ============================================================================
 
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sidebar.rst")
+# add build target for the generation of the web pages and PDF manual from
+# the same set of reStructuredText input source files
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
+    EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sidebar.rst")
 
-    # ============================================================================
-    # software manual
-    # ============================================================================
-    
-    basis_add_doc (
-      softwaremanual                                        # documenation target name, the name of what you specify when you say "make softwaremanual" in this case
-      GENERATOR        Sphinx                               # slect sphinx as the generator, doxygen is an alternative
-      BUILDER          html pdf man                         # selected output documentation formats
-      MAN_SECTION      7                                    # (todo: what is the MAN_SECTION 7 flag?)
-      
-      HTML_THEME       cmake-basis                          # select the cmake-basis sphinx layout theme provided by BASIS in basis/src/sphinx/themes
-                                                            # this could specify a path to a theme you provide
-      HTML_LOGO        logo.svg                             # logo to use at heading of documentation
-      HTML_SIDEBARS    searchbox globaltoc                  # sidebar options to use
-      HTML_DESTINATION "${INSTALL_DOC_DIR}/html"            # output directory for completed documentation
-      SIDEBARWIDTH     300                                  # sidebar width in pixels
-      
-      MASTER_DOC       "sidebar"                            # restructured text file to start with when generating HTML documentation
-      LATEX_MASTER_DOC "manual"                             # restructured text file to start with when generating LaTeX, and thus PDF documentation                
-      LATEX_TITLE      "${PROJECT_NAME} Software Manual"    # Title to use in the PDF doc itself
-      OUTPUT_NAME      "${PROJECT_NAME}_Software_Manual"
-      
-      DOXYLINK         apidoc                               # target to use for integrated Doxygen documentation
-      DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"   # location of integrated Doxygen documentation output files
-      
-      NO_HTML_MODINDEX NO_HTML_INDEX                        # disable index page (we don't currently use it)
-    )
-    
-    
-    # set a trigger so "make site" will build softwaremanual_html, 
-    # "make manual" will build softwaremanual_pdf, 
-    # and "make doc" will build all of the above
-    
-    basis_add_dependencies (site   softwaremanual_html)    
-    basis_add_dependencies (manual softwaremanual_pdf)
-    basis_add_dependencies (doc    site manual)
+  basis_add_doc (
+    softwaremanual                                        # documenation build target name
+    GENERATOR        Sphinx                               # select Sphinx as the generator
+    BUILDER          html pdf man                         # selected Sphinx output formats
+    MAN_SECTION      7                                    # http://en.wikipedia.org/wiki/Man_page#Manual_sections
+    HTML_THEME       cmake-basis                          # select the Sphinx layout theme
+    HTML_LOGO        logo.svg                             # logo to use at heading of documentation
+    HTML_SIDEBARS    searchbox globaltoc                  # sidebar options to use
+    HTML_DESTINATION "${INSTALL_DOC_DIR}/html"            # output directory for completed documentation
+    SIDEBARWIDTH     300                                  # sidebar width in pixels
+    MASTER_DOC       "sidebar"                            # .rst file to start with when generating HTML
+    LATEX_MASTER_DOC "manual"                             # .rst file to start with when generating LaTeX/PDF
+    LATEX_TITLE      "${PROJECT_NAME} Software Manual"    # title within LaTeX/PDF documents
+    OUTPUT_NAME      "${PROJECT_NAME}_Software_Manual"    # general output file name, e.g., LaTeX/PDF files
+    DOXYLINK         apidoc                               # Doxygen generator build target for integrated API reference
+    DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"   # location of Doxygen output files
+    NO_HTML_MODINDEX NO_HTML_INDEX                        # disable currently unused index page
+  )
+
+  # the Sphinx :download: link directive requires the download file to
+  # be present in the source tree; thus copy generated PDF to source tree
+  # if it contains modifications since last time
+  basis_add_custom_target (softwaremanual_pdf_update
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+      "${CMAKE_CURRENT_BINARY_DIR}/latex/${PROJECT_NAME}_Software_Manual.pdf" 
+      "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}_Software_Manual.pdf"
+  )
+  
+  # add dependency such that PDF is re-generated before copied to source tree if it differs
+  basis_add_dependencies (softwaremanual_pdf_update softwaremanual_pdf)
+  # before building the HTML documentation, ensure that source tree version of manual is up-to-date
+  basis_add_dependencies (softwaremanual_html softwaremanual_pdf_update)
+  
+  basis_add_dependencies  (site   softwaremanual_html)       # so "make site"   builds softwaremanual_html
+  basis_add_dependencies  (manual softwaremanual_pdf_update) # so "make manual" builds softwaremanual_pdf
 
 endif ()
-
