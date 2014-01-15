@@ -8,7 +8,7 @@ by combining and documenting some of the best practices and utilities available.
 More importantly, BASIS supplies a fully integrated suite of functionality to make
 the whole process seamless! 
 
-Web:  [CMake BASIS Website]  [1]
+Web:  [CMake BASIS Website]  [1] |
 Code: [CMake BASIS on GitHub][2]
 
 
