@@ -89,6 +89,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
     MAN_SECTION      7                                    # http://en.wikipedia.org/wiki/Man_page#Manual_sections
     HTML_THEME       cmake-basis                          # select the Sphinx layout theme
     HTML_LOGO        logo_title.svg                       # logo to use at heading of documentation
+    HTML_FAVICON     favicon.ico                          # icon for bookmark and tab title
     HTML_SIDEBARS    searchbox globaltoc                  # sidebar options to use
     HTML_DESTINATION "${INSTALL_DOC_DIR}/html"            # output directory for completed documentation
     SIDEBARWIDTH     300                                  # sidebar width in pixels
