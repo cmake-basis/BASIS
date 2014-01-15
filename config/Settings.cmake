@@ -30,6 +30,13 @@
 # directories
 # ============================================================================
 
+# change default installation directory as name of BASIS package has changed
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  string (REPLACE "/basis" "/cmake-basis" _PREFIX "${CMAKE_INSTALL_PREFIX}")
+  set (CMAKE_INSTALL_PREFIX "${_PREFIX}" CACHE PATH "Installation prefix." FORCE)
+  unset (_PREFIX)
+endif ()
+
 # installation directory of CMake modules
 set (INSTALL_MODULES_DIR "${INSTALL_SHARE_DIR}/cmake-modules")
 
