@@ -150,6 +150,15 @@ if(PYTHON_EXECUTABLE)
                     ERROR_QUIET)
     if(NOT _PYTHON_VERSION_RESULT)
         string(REPLACE ";" "." PYTHON_VERSION_STRING "${_VERSION}")
+        # just to make sure as some programs (i.e. pydoc) do not return a non-zero
+        # exit code even though called with unknown option. This happened by mistake
+        # once when pydoc was specified instead of python as PYTHON_EXECUTABLE
+        if(NOT PYTHON_VERSION_STRING MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+.*")
+          message(WARNING "Version string returned by Python executable\n"
+                          "\tPYTHON_EXECUTABLE     = ${PYTHON_EXECUTABLE}"
+                          "\tPYTHON_VERSION_STRING = ${PYTHON_VERSION_STRING}"
+                          "\ndoes not match the expected format: <major>.<minor>.<patch>")
+        endif()
         list(GET _VERSION 0 PYTHON_VERSION_MAJOR)
         list(GET _VERSION 1 PYTHON_VERSION_MINOR)
         list(GET _VERSION 2 PYTHON_VERSION_PATCH)
