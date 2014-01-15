@@ -57,6 +57,8 @@ if html_style == '': html_style = None
 
 html_logo = '@SPHINX_HTML_LOGO@'
 if html_logo == '': html_logo = None
+html_favicon = '@SPHINX_HTML_FAVICON@'
+if html_favicon == '': html_favicon = None
 
 html_title = '@SPHINX_HTML_TITLE@'
 if html_title == '': html_title = '@PROJECT_NAME@'

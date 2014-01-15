@@ -1143,6 +1143,11 @@ endfunction ()
 #     <td>Logo to display in sidebar of HTML pages.</td>
 #   </tr>
 #   <tr>
+#     @tp @b HTML_FAVICON file @endtp
+#     <td>Favorite square icon often displayed by browsers in the tab bar.
+#         Should be a @c .ico file.</td>
+#   </tr>
+#   <tr>
 #     @tp @b HTML_STATIC_PATH dir @endtp
 #     <td>Directory for static files of HTML pages. Defaults to <tt>SOURCE_DIRECTORY/static/</tt>.</td>
 #   </tr>
@@ -1222,7 +1227,7 @@ function (basis_add_sphinx_doc TARGET_NAME)
     CONFIG_FILE
     SOURCE_DIRECTORY OUTPUT_DIRECTORY OUTPUT_NAME TAG
     COPYRIGHT MASTER_DOC
-    HTML_TITLE HTML_THEME HTML_LOGO HTML_THEME_PATH HTML_STYLE
+    HTML_TITLE HTML_THEME HTML_LOGO HTML_FAVICON HTML_THEME_PATH HTML_STYLE
     LATEX_MASTER_DOC LATEX_TITLE LATEX_LOGO LATEX_DOCUMENT_CLASS LATEX_SHOW_URLS LATEX_SHOW_PAGEREFS
     MAN_SECTION
     DOXYLINK_URL DOXYLINK_PREFIX DOXYLINK_SUFFIX
@@ -1585,16 +1590,16 @@ function (basis_add_sphinx_doc TARGET_NAME)
   else ()
     set (SPHINX_LATEX_SHOW_PAGEREFS "False")
   endif ()
-  # turn html_logo and latex_logo into absolute file path
-  foreach (L IN ITEMS HTML LATEX)
-    if (SPHINX_${L}_LOGO AND NOT IS_ABSOLUTE "${SPHINX_${L}_LOGO}")
-      if (EXISTS "${SPHINX_SOURCE_DIRECTORY}/${SPHINX_${L}_LOGO}")
-        set (SPHINX_${L}_LOGO "${SPHINX_SOURCE_DIRECTORY}/${SPHINX_${L}_LOGO}")
-      else ()
-        foreach (D IN LISTS SPHINX_${L}_STATIC_PATH)
+  # turn html_logo, html_favicon, and latex_logo into absolute file path
+  foreach (L IN ITEMS HTML_LOGO HTML_FAVICON LATEX_LOGO)
+    if (SPHINX_${L} AND NOT IS_ABSOLUTE "${SPHINX_${L}}")
+      if (EXISTS "${SPHINX_SOURCE_DIRECTORY}/${SPHINX_${L}}")
+        set (SPHINX_${L} "${SPHINX_SOURCE_DIRECTORY}/${SPHINX_${L}}")
+      elseif (L MATCHES "^HTML|^LATEX")
+        foreach (D IN LISTS SPHINX_${CMAKE_MATCH_0}_STATIC_PATH)
           string (REGEX REPLACE "^'|'$" "" D "${D}")
-          if (EXISTS "${D}/${SPHINX_${L}_LOGO}")
-            set (SPHINX_${L}_LOGO "${D}/${SPHINX_${L}_LOGO}")
+          if (EXISTS "${D}/${SPHINX_${L}}")
+            set (SPHINX_${L} "${D}/${SPHINX_${L}}")
             break ()
           endif ()
         endforeach ()
