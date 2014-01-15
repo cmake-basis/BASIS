@@ -1743,11 +1743,19 @@ function (basis_build_mcc_target TARGET_UID)
                            "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
       )
     else ()
-      set (
-        POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy
-                           "${BUILD_DIR}/${OUTPUT_NAME}"
-                           "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
-      )
+      if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        set (
+          POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy
+                             "${BUILD_DIR}/${OUTPUT_NAME}.app/Contents/MacOS/${OUTPUT_NAME}"
+                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
+        )
+      else ()
+        set (
+          POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy
+                             "${BUILD_DIR}/${OUTPUT_NAME}"
+                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
+        )
+      endif ()
     endif ()
     # add custom command to build executable using MATLAB Compiler
     add_custom_command (
