@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  @CONFIG_FILE@
 # @brief CMake package configuration file.
@@ -22,13 +29,6 @@
 # followed by an underscore (_).
 #
 # See the Config.cmake.in file of BASIS for details.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisConfig
 ##############################################################################

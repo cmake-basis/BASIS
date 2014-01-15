@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  Settings.cmake
 # @brief Non-default project settings.
@@ -13,13 +20,6 @@
 # option()</a> command. Further, any common settings related to using a found
 # dependency can be set here if the basis_use_package() command was enable
 # to import the required configuration of a particular external package.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################

@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  CMakeLists.txt
 # @brief Build configuration of software documentation.
@@ -14,13 +21,6 @@
 # See the basis_add_doc() command for details on the documentation build tools
 # supported by BASIS for the generation of documentation from plain text files
 # and in-source code comments.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 ##############################################################################
 
 # ============================================================================

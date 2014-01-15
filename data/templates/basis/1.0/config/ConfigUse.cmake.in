@@ -1,3 +1,10 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  @USE_FILE@
 # @brief CMake package configuration use file.
@@ -19,13 +26,6 @@
 #
 # @note The CMake code which is substituted for the \@BASIS_USE\@ variable
 #       contains an include guard.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisConfig
 ##############################################################################

@@ -1,16 +1,16 @@
+# ============================================================================
+# Copyright (c) <copyright>
+# All rights reserved.
+#
+# <license>
+# ============================================================================
+
 ##############################################################################
 # @file  Package.cmake
 # @brief Package configuration.
 #
 # This file is included by the BasisPack module prior to the CPack module.
 # It can be used to overwrite or extend the default package configuration.
-#
-# Copyright (c) <copyright>
-# All rights reserved.
-#
-# <license>
-#
-# Contact: <contact>
 #
 # @ingroup BasisSettings
 ##############################################################################
