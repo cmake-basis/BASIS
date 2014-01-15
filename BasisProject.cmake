@@ -26,7 +26,7 @@
 #   # ------------------------------------------------------------------------
 #   # meta-data
 #   NAME              MyProject
-#   PACKAGE_VENDOR    shortvname     # Note: PACKAGE_VENDOR will also be part of the default installation path
+#   PACKAGE_VENDOR    shortvname  # Note: Part of default CMAKE_INSTALL_PREFIX
 #   VERSION           1.1.5
 #   DESCRIPTION       "This is the description of the project, which is useful for this"
 #                     " important thing and that important thing."
@@ -54,7 +54,6 @@
 #     BASH
 #     Doxygen
 #     Sphinx{build}
-#     ITK # TODO required by basistest-driver, get rid of this dependency
 #   TEST_DEPENDS     
 #      Perl
 #   OPTIONAL_TEST_DEPENDS
@@ -89,8 +88,9 @@ basis_project (
   COPYRIGHT     "2011-12 University of Pennsylvania, 2013-14 Andreas Schuh, 2013-14 Carnegie Mellon University"
   LICENSE       "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
   CONTACT       "andreas.schuh.84@gmail.com"
-  TEMPLATE      "sbia/1.7" # note: TEMPLATE allows you to change the currently selected BASIS template
+  TEMPLATE      "basis/1.0"
   PACKAGE_LOGO  "doc/static/logo.svg"
+
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS
