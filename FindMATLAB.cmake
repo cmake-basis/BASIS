@@ -1,3 +1,12 @@
+# ============================================================================
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+#
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# ============================================================================
+
 ##############################################################################
 # @file  FindMATLAB.cmake
 # @brief Find MATLAB installation.
@@ -110,16 +119,6 @@
 #     <td>Package libraries and prerequisite libraries.</td>
 #   </tr>
 # </table>
-#
-# Copyright (c) 2011-2012 University of Pennsylvania. <br />
-# Copyright (c) 2013-2014 Andreas Schuh.              <br />
-# All rights reserved.                                <br />
-#
-# See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license
-# or COPYING file for license information.
-#
-# Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
-#          report issues at https://github.com/schuhschuh/cmake-basis/issues
 #
 # @ingroup CMakeFindModules
 ##############################################################################
