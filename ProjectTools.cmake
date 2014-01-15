@@ -49,11 +49,11 @@ macro (basis_project_check_metadata)
   if (NOT PROJECT_NAME)
     message (FATAL_ERROR "CMake BASIS variable PROJECT_NAME not specified!")
   endif ()
-  if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
-    message (FATAL_ERROR "Invalid project name: ${PROJECT_NAME}!\n\n"
+  if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)$")
+    message (FATAL_ERROR "Invalid project name: ${PROJECT_NAME}!\n"
                          "Please choose a project name with either only captial "
                          "letters in case of an acronym or a name with mixed case, "
-                         "but starting with a captial letter.\n\n"
+                         "but starting with a captial letter.\n"
                          "Note that numbers are allowed, but not as first character. "
                          "Further, do not use characters such as '_' or '-' to "
                          "separate parts of the project name. Instead, use the "
@@ -89,11 +89,11 @@ macro (basis_project_check_metadata)
       set (PROJECT_PACKAGE_NAME "${PROJECT_NAME}")
     endif ()
   endif ()
-  if (NOT PROJECT_PACKAGE_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)")
-    message (FATAL_ERROR "Project ${PROJECT_NAME} declares invalid package name: ${PROJECT_PACKAGE_NAME}!\n\n"
+  if (NOT PROJECT_PACKAGE_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)$")
+    message (FATAL_ERROR "Project ${PROJECT_NAME} declares invalid package name: ${PROJECT_PACKAGE_NAME}!\n"
                          "Please choose a package name with either only captial "
                          "letters in case of an acronym or a name with mixed case, "
-                         "but starting with a captial letter.\n\n"
+                         "but starting with a captial letter.\n"
                          "Note that numbers are allowed, but not as first character. "
                          "Further, do not use characters such as '_' or '-' to "
                          "separate parts of the package name. Instead, use the "
