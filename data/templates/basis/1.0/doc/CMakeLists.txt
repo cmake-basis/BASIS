@@ -35,7 +35,7 @@ basis_add_custom_target (site)   # build HTML pages
 basis_add_custom_target (manual) # build PDF manual
 
 # ============================================================================
-# API reference (Doxygen-stlye in-source code comments)
+# API reference (Doxygen-style in-source code comments)
 # ============================================================================
 
 basis_add_doc (
