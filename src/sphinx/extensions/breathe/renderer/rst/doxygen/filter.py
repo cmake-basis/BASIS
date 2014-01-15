@@ -291,19 +291,38 @@ class FilterFactory(object):
 
     def create_members_filter(self, options):
 
-        try:
-            text = options["members"]
-        except KeyError:
+        section = options.get("sections", "")
+
+        if not section.strip():
+            section_filter = GlobFilter(KindAccessor(Child()), self.globber_factory.create("public*"))
+        else:
+            sections = set([x.strip() for x in section.split(",")])
+
+            section_filter = GlobFilter(
+                    KindAccessor(Child()),
+                    self.globber_factory.create(sections.pop())
+                    )
+            while len(sections) > 0:
+                section_filter = OrFilter(
+                        section_filter,
+                        GlobFilter(
+                            KindAccessor(Child()),
+                            self.globber_factory.create(sections.pop())
+                            )
+                        )
+
+        if "members" not in options:
             return OrFilter(
                     NotFilter(NameFilter(NodeTypeAccessor(Parent()), ["sectiondef"])),
                     NotFilter(NameFilter(NodeTypeAccessor(Child()), ["memberdef"]))
                     )
 
+        text = options["members"]
         if not text.strip():
             return OrFilter(
                     NotFilter(NameFilter(NodeTypeAccessor(Child()), ["sectiondef"])),
                     OrFilter(
-                        GlobFilter(KindAccessor(Child()), self.globber_factory.create("public*")),
+                        section_filter,
                         NameFilter(KindAccessor(Child()), ["user-defined"])
                         )
                     )
@@ -311,9 +330,15 @@ class FilterFactory(object):
         # Matches sphinx-autodoc behaviour of comma separated values
         members = set([x.strip() for x in text.split(",")])
 
+        # Accept any nodes which don't have a "sectiondef" as a parent or, if they do, only accept
+        # them if their names are in the members list or they are of type description. This accounts
+        # for the actual description of the sectiondef
         return OrFilter(
                 NotFilter(NameFilter(NodeTypeAccessor(Parent()),["sectiondef"])),
-                NameFilter(NameAccessor(Child()), members)
+                OrFilter(
+                    NameFilter(NodeTypeAccessor(Child()), ["description"]),
+                    NameFilter(NameAccessor(Child()), members),
+                    )
                 )
 
     def create_outline_filter(self, options):

@@ -1,3 +1,41 @@
+// ===========================================================================
+// Copyright Insight Software Consortium
+// Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
+// Copyright (c) 2011-2012 University of Pennsylvania
+// Copyright (c) 2011-2014 Andreas Schuh
+//
+// For complete copyright, license and disclaimer of warranty information
+// please refer to the COPYRIGHT file.
+// ===========================================================================
+
+/*=========================================================================
+*
+*  Copyright Insight Software Consortium
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*=========================================================================*/
+/*=========================================================================
+*
+*  Portions of this file are subject to the VTK Toolkit Version 3 copyright.
+*
+*  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
+*
+*  For complete copyright, license and disclaimer of warranty information
+*  please refer to the NOTICE file at the top of the ITK source tree.
+*
+*=========================================================================*/
+
 /**
  * @file  testdriver.h
  * @brief Default test driver include file.
@@ -18,49 +56,7 @@
  * Currently available test driver implementations included by this file are:
  * - testdriver.hxx
  * - testdriver-itk.hxx
- *
- * This file is in parts a modified version of the itkTestDriverInclude.h
- * file which is part of the TestKernel module of the ITK 4 project.
- *
- * Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen<br />
- * Copyright Insight Software Consortium.<br />
- * Copyright (c) 2011, 2012 University of Pennsylvania.
- *
- * Portions of this file are subject to the VTK Toolkit Version 3 copyright.
- *
- * For complete copyright, license and disclaimer of warranty information
- * please refer to the COPYRIGHT file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
-
- /*=========================================================================
- *
- *  Copyright Insight Software Consortium
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *=========================================================================*/
-/*=========================================================================
- *
- *  Portions of this file are subject to the VTK Toolkit Version 3 copyright.
- *
- *  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
- *
- *  For complete copyright, license and disclaimer of warranty information
- *  please refer to the NOTICE file at the top of the ITK source tree.
- *
- *=========================================================================*/
 
 #pragma once
 #ifndef _BASIS_TESTDRIVER_H

@@ -1,11 +1,6 @@
 /**
  * @file  echo.cxx
  * @brief Example MEX-file used to test build of MEX-files.
- *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
- * See http://sbia-svn.uphs.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 #include <mex.h>

@@ -3,11 +3,6 @@
  * @brief Test of subprocess.cxx module.
  *
  * @todo Extend this test and make it work on both Unix and Windows.
- *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
- * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 #include <basis/test.h>

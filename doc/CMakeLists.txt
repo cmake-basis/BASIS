@@ -1,3 +1,13 @@
+# ============================================================================
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Carnegie Melon University
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+#
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# ============================================================================
+
 ##############################################################################
 # @file  CMakeLists.txt
 # @brief Build configuration of software documentation.
@@ -14,170 +24,98 @@
 # See the basis_add_doc() command for details on the documentation build tools
 # supported by BASIS for the generation of documentation from plain text files
 # and in-source code comments.
-#
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ============================================================================
-# settings
+# generic targets
 # ============================================================================
 
-# output names of PDF's generated from reStructuredText sources (excl. extension)
-set (SITE_OUTPUT_NAME   "${PROJECT_NAME}_Web_Site")
-set (MANUAL_OUTPUT_NAME "${PROJECT_NAME}_Software_Manual")
-set (GUIDE_OUTPUT_NAME  "${PROJECT_NAME}_Developer_Guide")
-
-# in particular, EXCLUDE_FROM_DOC will be added if pre-generated files exist
-set (APIDOC_OPTIONS)
-set (SITE_OPTIONS)
-set (MANUAL_OPTIONS)
-set (GUIDE_OPTIONS)
+# create custom targets so "make site" and "make manual" always work
+# note that the "doc" target is added automatically which will trigger
+# the build of the complete documentation unless the EXCLUDE_FROM_ALL
+# option is passed to basis_add_doc
+basis_add_custom_target (site)   # build HTML pages
+basis_add_custom_target (manual) # build PDF manual
 
 # ============================================================================
-# pre-generated output files
+# API reference (in-source code comments)
 # ============================================================================
 
-# API documentation
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html/index.html")
-  basis_add_doc ("${CMAKE_CURRENT_SOURCE_DIR}/apidoc/html" DESTINATION "${INSTALL_DOC_DIR}/apidoc")
-  list (APPEND APIDOC_OPTIONS EXCLUDE_FROM_DOC)
-endif ()
-
-# web site
-foreach (N IN ITEMS ${SITE_OUTPUT_NAME} site Site)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${SITE_OUTPUT_NAME}.pdf")
-    list (APPEND SITE_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
-
-# software manual
-foreach (N IN ITEMS ${MANUAL_OUTPUT_NAME} manual Manual UserManual SoftwareManual UserGuide userguide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${MANUAL_OUTPUT_NAME}.pdf")
-    list (APPEND MANUAL_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
-
-# developer's guide
-foreach (N IN ITEMS ${GUIDE_OUTPUT_NAME} guide DeveloperGuide DeveloperManual developerguide)
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${N}.pdf")
-    basis_add_doc (${N}.pdf OUTPUT_NAME "${GUIDE_OUTPUT_NAME}.pdf")
-    list (APPEND GUIDE_OPTIONS EXCLUDE_FROM_DOC)
-    break ()
-  endif ()
-endforeach ()
-
-# ============================================================================
-# API documentation (in-source code comments)
-# ============================================================================
-
-# replace <year> pattern in template file which shall be included in documentation
-# to avoid unrecognized xml/html tags warning of Doxygen
-file (READ "${PROJECT_DATA_DIR}/template-1.3/config/Depends.cmake" TEMPLATE)
-string (REGEX REPLACE "<year>" "&lt;year&gt;" TEMPLATE "${TEMPLATE}")
+# replace < year|contact|copyright|license > pattern in template file which
+# shall be included in documentation to avoid unrecognized xml/html tag warning
+file (READ "${PROJECT_DATA_DIR}/templates/basis/1.0/config/Depends.cmake" TEMPLATE)
+string (REGEX REPLACE "<year>"      "&lt;year&gt;"      TEMPLATE "${TEMPLATE}")
+string (REGEX REPLACE "<contact>"   "&lt;contact&gt;"   TEMPLATE "${TEMPLATE}")
+string (REGEX REPLACE "<copyright>" "&lt;copyright&gt;" TEMPLATE "${TEMPLATE}")
+string (REGEX REPLACE "<license>"   "&lt;license&gt;"   TEMPLATE "${TEMPLATE}")
 file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
 unset (TEMPLATE)
 
 basis_add_doc (
-  apidoc           ${APIDOC_OPTIONS}
-  GENERATOR        Doxygen
-  INPUT            "${PROJECT_BINARY_DIR}/doc/Depends.cmake"
-  EXCLUDE_PATTERNS # external libraries packaged with BASIS
-                   "*/gmock/*"            # Google Mock
-                   "*/gtest/*"            # Google Test
-                   "*/tclap/*"            # TCLAP library
-                   "*/breathe/*"          # Sphinx extension
-                   "*/doxylink/*"         # Sphinx extension
-                   "*/argh/*"             # Python Argh
-                   "*/test.cxx"           # Google Mock and Test
-                   "*/test_main.cxx"      # main() of unit tests based on GMock
-                   # testdriver which includes *.inc files
-                   "*/testdriver.cxx"
-  HTML_DESTINATION "${INSTALL_DOC_DIR}/apidoc"
+  apidoc 
+  GENERATOR             Doxygen
+  INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake" 
+  EXCLUDE_PATTERNS      # External libraries packaged with BASIS to exclude from final documentation
+                        "*/gmock/*"            # Google Mock
+                        "*/gtest/*"            # Google Test
+                        "*/tclap/*"            # TCLAP library
+                        "*/breathe/*"          # Sphinx extension
+                        "*/doxylink/*"         # Sphinx extension
+                        "*/argh/*"             # Python Argh
+                        "*/test.cxx"           # Google Mock and Test
+                        "*/test_main.cxx"      # main() of unit tests based on GMock
+                        "*/testdriver.cxx"     # testdriver which includes *.inc files
+  HTML_DESTINATION      "${INSTALL_DOC_DIR}/html/apidoc/latest"
+  HTML_HEADER	          "apidoc/doxygen_header.html.in"
+  HTML_FOOTER           "apidoc/doxygen_footer.html.in"
+  HTML_EXTRA_STYLESHEET "apidoc/doxygen_extra.css.in"
+  OUTPUT                html xml
 )
 
 # ============================================================================
-# comprehensive manual
+# software manual
 # ============================================================================
 
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/index.rst")
+# add build target for the generation of the web pages and PDF manual from
+# the same set of reStructuredText input source files
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
+    EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sidebar.rst")
 
   basis_add_doc (
-    softwaremanual   ${MANUAL_OPTIONS}
-    GENERATOR        Sphinx
-    BUILDER          pdf html dirhtml man
-    MAN_SECTION      7
-    HTML_THEME       sbia
-    RELLINKS         download installation manual help people
-    SIDEBARWIDTH     300
-    HTML_LOGO        logo.png
-    HTML_SIDEBARS    searchbox globaltoc
-    HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
-    LATEX_TITLE      "${PROJECT_NAME} Software Manual"
-    OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
-    DOXYLINK         apidoc
-    DOXYLINK_URL     http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest
+    softwaremanual                                        # documenation build target name
+    GENERATOR        Sphinx                               # select Sphinx as the generator
+    BUILDER          html pdf man                         # selected Sphinx output formats
+    MAN_SECTION      7                                    # http://en.wikipedia.org/wiki/Man_page#Manual_sections
+    HTML_THEME       cmake-basis                          # select the Sphinx layout theme
+    HTML_LOGO        logo_title.svg                       # logo to use at heading of documentation
+    HTML_FAVICON     favicon.ico                          # icon for bookmark and tab title
+    HTML_SIDEBARS    searchbox globaltoc                  # sidebar options to use
+    HTML_DESTINATION "${INSTALL_DOC_DIR}/html"            # output directory for completed documentation
+    SIDEBARWIDTH     300                                  # sidebar width in pixels
+    MASTER_DOC       "sidebar"                            # .rst file to start with when generating HTML
+    LATEX_MASTER_DOC "manual"                             # .rst file to start with when generating LaTeX/PDF
+    LATEX_TITLE      "${PROJECT_NAME} Software Manual"    # title within LaTeX/PDF documents
+    OUTPUT_NAME      "${PROJECT_NAME}_Software_Manual"    # general output file name, e.g., LaTeX/PDF files
+    DOXYLINK         apidoc                               # Doxygen generator build target for integrated API reference
+    DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"   # location of Doxygen output files
+    NO_HTML_MODINDEX NO_HTML_INDEX                        # disable currently unused index page
   )
-
-  basis_add_custom_target (site)
-  basis_add_custom_target (site_dirhtml)
-  basis_add_custom_target (manual)
-
-  basis_add_dependencies  (site         softwaremanual_html)
-  basis_add_dependencies  (site_dirhtml softwaremanual_dirhtml)
-  basis_add_dependencies  (manual       softwaremanual_pdf)
-
-# ============================================================================
-# separate web site and manual
-# ============================================================================
-
-else ()
-
-  # web site
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/site/index.rst")
-    basis_add_doc (
-      site          ${SITE_OPTIONS}
-      GENERATOR     Sphinx
-      BUILDER       html dirhtml pdf man
-      MAN_SECTION   7
-      HTML_THEME    sbia
-      RELLINKS      download installation manual publications people
-      HTML_SIDEBARS searchbox globaltoc
-      LATEX_TITLE   "${PROJECT_NAME}"
-      OUTPUT_NAME   "${SITE_OUTPUT_NAME}"
-    )
-  endif ()
-
-  # software manual
-  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual/index.rst")
-    basis_add_doc (
-      manual           ${MANUAL_OPTIONS}
-      GENERATOR        Sphinx
-      BUILDER          pdf html
-      HTML_DESTINATION "${INSTALL_DOC_DIR}/html"
-      OUTPUT_NAME      "${MANUAL_OUTPUT_NAME}"
-    )
-  endif ()
-
-endif ()
-
-# ============================================================================
-# developer's guide
-# ============================================================================
-
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/guide/index.rst")
-  basis_add_doc (
-    guide            ${GUIDE_OPTIONS}
-    GENERATOR        Sphinx
-    BUILDER          pdf html
-    HTML_DESTINATION "${INSTALL_DOC_DIR}/guide"
-    LATEX_TITLE      "${PROJECT_NAME} Developer's Guide"
-    OUTPUT_NAME      "${GUIDE_OUTPUT_NAME}"
+  
+  # the Sphinx :download: link directive requires the download file to
+  # be present in the source tree; thus copy generated PDF to source tree
+  # if it contains modifications since last time
+  basis_add_custom_target (softwaremanual_pdf_update
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+      "${CMAKE_CURRENT_BINARY_DIR}/latex/${PROJECT_NAME}_Software_Manual.pdf" 
+      "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}_Software_Manual.pdf"
   )
+  
+  # add dependency such that PDF is re-generated before copied to source tree if it differs
+  basis_add_dependencies (softwaremanual_pdf_update softwaremanual_pdf)
+  # before building the HTML documentation, ensure that source tree version of manual is up-to-date
+  basis_add_dependencies (softwaremanual_html softwaremanual_pdf_update)
+  
+  basis_add_dependencies  (site   softwaremanual_html)       # so "make site"   builds softwaremanual_html
+  basis_add_dependencies  (manual softwaremanual_pdf_update) # so "make manual" builds softwaremanual_pdf
+
 endif ()

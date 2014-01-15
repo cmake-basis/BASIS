@@ -1,3 +1,12 @@
+// ===========================================================================
+// Copyright (c) 2011-2012 University of Pennsylvania
+// Copyright (c) 2013-2014 Andreas Schuh
+// All rights reserved.
+//
+// See COPYING file for license information or visit
+// http://opensource.andreasschuh.com/cmake-basis/download.html#license
+// ===========================================================================
+
 /**
  * @file  basis/MultiArg.h
  * @brief Extends TCLAP's MultiArg implementation.
@@ -5,11 +14,6 @@
  * Instead of always only consuming one argument after the argument name or
  * flag, this MultiArg implementation consumes N arguments, where the number
  * of arguments N is set to a fixed number at construction time.
- *
- * Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
- * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 #pragma once

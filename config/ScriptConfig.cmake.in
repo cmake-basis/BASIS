@@ -1,3 +1,12 @@
+# ============================================================================
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+#
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# ============================================================================
+
 ##############################################################################
 # @file  ScriptConfig.cmake
 # @brief Default script configuration.
@@ -18,12 +27,7 @@
 #
 # See documentation of basis_set_script_path() function for more details.
 #
-# @sa http://www.rad.upenn.edu/sbia/software/basis/standard/scripttargets.html#script-configuration
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# @sa http://opensource.andreasschuh.com/cmake-basis/standard/scripttargets.html#script-configuration
 #
 # @ingroup BasisScriptConfig
 ##############################################################################
@@ -31,11 +35,10 @@
 ## @addtogroup BasisScriptConfig
 # @{
 
-
 ## @brief Top directory of project template relative to script location.
 basis_set_script_path (
   TEMPLATE_DIR
-    "@PROJECT_DATA_DIR@/template"
+    "@DEFAULT_TEMPLATE_DIR@"
     "@INSTALL_TEMPLATE_DIR@"
 )
 

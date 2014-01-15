@@ -1,3 +1,12 @@
+// ===========================================================================
+// Copyright (c) 2011-2012 University of Pennsylvania
+// Copyright (c) 2013-2014 Andreas Schuh
+// All rights reserved.
+//
+// See COPYING file for license information or visit
+// http://opensource.andreasschuh.com/cmake-basis/download.html#license
+// ===========================================================================
+
 /**
  * @file  basis/stdio.h
  * @brief Standard I/O functions.
@@ -9,11 +18,6 @@
  * common functions of the standard C/C++ libraries, it provides some
  * additional useful auxiliary functions. Therefore, this header file
  * may be included instead of cstdio, stdio.h, or iostream.
- *
- * Copyright (c) 2012 University of Pennsylvania. All rights reserved.<br />
- * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 #pragma once

@@ -1,0 +1,105 @@
+.. meta::
+    :description: This BASIS style guide specifies guidelines for the formatting of
+                  plain text files of a software project.
+
+=================
+Plain Text Format
+=================
+
+.. note:: This guideline is out-dated and a new set of rules must be defined
+          which is compatible with either Markdown or reStructuredText, nowadays
+          the preferred lightweight markup languages for plain text files.
+
+The following guideline, which itself is styled according to the plain text
+format it describes, details how plain text documentation files
+of a software project should be formatted.
+
+::
+
+    Section of Biomedical Image Analysis
+    Department of Radiology
+    University of Pennsylvania
+    3600 Market Street, Suite 380
+    Philadelphia, PA 19104
+
+    Web:   http://www.rad.upenn.edu/sbia/
+    Email: sbia-software at uphs.upenn.edu
+
+    Copyright (c) 2011 University of Pennsylvania. All rights reserved.
+    See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+    INTRODUCTION
+    ============
+
+      This document defines guidelines on how to style plain text documentation
+      files such as the readme file and the build and installation instructions.
+      A common style makes it easier for users of software developed at SBIA to
+      navigate through the documents and recognize what is of importance to them.
+      Moreover, it serves as a branding of the software. Each individual software
+      project shall finally be integrated with all the other software projects
+      to form one unique software package. Here a common documentation style is
+      desired such that the separate subprojects nicely integrate with each other.
+
+
+
+    HEADER
+    ======
+
+      Each plain text document has to start with the following header with one
+      blank line before and each line indented by two space characters.
+
+      Section of Biomedical Image Analysis
+      Department of Radiology
+      University of Pennsylvania
+      3600 Market Street, Suite 380
+      Philadelphia, PA 19104
+
+      Web:   http://www.rad.upenn.edu/sbia/
+      Email: sbia-software at uphs.upenn.edu
+
+      Copyright (c) <year> University of Pennsylvania. All rights reserved.
+      See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+
+
+
+    HEADINGS
+    ========
+
+      Headings of level 1 are capitalized as in this document. All other headings
+      are spelled case-sensitive where the first letter of words with four or more
+      characters are started with an uppercase letter. Headings of level 1 are
+      not intended, while all other headings are intended by two space characters.
+
+      For headings of level 1, a line of = characters as long as the heading is
+      used to underline it. For headings of level 2, - characters are used instead.
+      All other headings are not underlined.
+
+      Before each heading of level 1, three blank lines are inserted.
+      Before each heading of level 2, two blank lines are inserted.
+      Before any other heading, one blank line is inserted.
+
+      A heading and its text block are indented by (level - 1) * 2 space characters.
+      Hence, headings of level 1 are not indented, while headings of level 2 are
+      indented by two space characters.
+
+
+
+    TEXT BLOCKS
+    ===========
+
+      The number of columns in a text block is limited to about 80 characters.
+      Each text block is indented equally to the indentation of its heading,
+      where at least two space characters are used to intend a text block.
+      Hence, even though headings of level 1 are not indented, so are the
+      corresponding text blocks.
+
+      There are no space characters on blank lines.
+     
+
+
+    ENUMERATIONS
+    ============
+
+      Use -, +, and * characters as bullet points.

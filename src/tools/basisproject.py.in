@@ -1,13 +1,17 @@
 #! /usr/bin/env python
 
+# ============================================================================
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+#
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# ============================================================================
+
 ##############################################################################
 # @file  basisproject.py
 # @brief Project tool used to create and/or modify a BASIS project.
-#
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup Tools
 ##############################################################################
@@ -22,6 +26,7 @@ import re                   # regular expressions
 import datetime             # now(), to get current year for copyright
 import shutil               # copyfile()
 import shlex                # lexical analysis, used for response files
+import mimetypes            # to recognize configurable text files
 
 from imp import load_source # i.e., template configuration
 
@@ -33,6 +38,7 @@ from basis import diff3     # three-way diff algorithm
 # constants
 # ============================================================================
 
+
 # executable information
 _EXEC_DIR  = basis.exedir()
 _EXEC_NAME = basis.exename()
@@ -41,8 +47,17 @@ _EXEC_NAME = basis.exename()
 DEL = -1 # remove feature/file if present
 ADD =  1 # add feature/file if missing
 
-# root directory of project template
-_template = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
+# root directory of default project template
+_template_dir = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
+_template     = os.path.join(_template_dir, '@DEFAULT_TEMPLATE_NAME@/@DEFAULT_TEMPLATE_VERSION@')
+
+# additional recognized MIME types of configurable text files
+mimetypes.add_type('text/cmake',            '.cmake')
+mimetypes.add_type('text/markdown',         '.md')
+mimetypes.add_type('text/markdown',         '.mdown')
+mimetypes.add_type('text/markdown',         '.markdown')
+mimetypes.add_type('text/restructuredtext', '.rst')
+mimetypes.add_type('text/doxygen',          '.dox')
 
 # ============================================================================
 # auxiliary functions
@@ -177,6 +192,7 @@ def load_config(config_file, parser):
             'desc' : 'Choose project template with all optional files.',
             'args' : config.options.keys()
         }
+    # add options for subsitutions
     if not hasattr(config, 'substitutions'):
         setattr(config, 'substitutions', [])
     for key in config.substitutions:
@@ -184,6 +200,10 @@ def load_config(config_file, parser):
         if value == None:
             parser.add_argument('--' + key, metavar='<value>', default=None,
                 help="Substitution value for <" + key + ">.")
+        elif type(value) is dict:
+            parser.add_argument('--' + key, metavar='<value>',
+                default=value.get('default', None),
+                help=value.get('help', "Substitution value for <" + key + ">."))
     return [config, parser]
 
 # ----------------------------------------------------------------------------
@@ -224,13 +244,14 @@ def get_project_name(cmake_file):
     return None
 
 # ----------------------------------------------------------------------------
-def get_template_version(cmake_file):
-    """Extract template version from root CMakeLists.cmake file of existing project."""
-    fp = open(cmake_file, 'rt')
+def get_original_template(args):
+    """Extract TEMPLATE from BasisProject.cmake file of existing project."""
+    fp = open(os.path.join(args.root, 'BasisProject.cmake'), 'rt')
     txt = fp.read()
     fp.close()
-    m = re.search(r'\s*set\s*\(\s*TEMPLATE_VERSION\s+"?(?P<version>[0-9.]+)"?', txt)
-    if m: return m.group('version')
+    #m = re.search(r'\s+TEMPLATE\s+"(?P<template>[^"]*)"', txt)
+    m = re.search(r'\s*(basis_project|basis_slicer_module)\s*\([^)]*TEMPLATE\s+"(?P<template>[^"]+)"', txt)
+    if m: return os.path.join(_template_dir, m.group('template'))
     return None
 
 # ============================================================================
@@ -239,20 +260,18 @@ def get_template_version(cmake_file):
 
 # ----------------------------------------------------------------------------
 def get_template(template, path):
-    m = re.match(r'(.*)-(\d+)\.(\d+)$', template)
+    m = re.match(r'(.*)/(\d+)\.(\d+)$', template)
     if not m is None:
-        prefix   = m.group(1)
-        major    = int(m.group(2))
-        minor    = int(m.group(3))
-        root     = os.path.dirname (prefix)
-        base     = os.path.basename(prefix)
+        root  = m.group(1)
+        major = int(m.group(2))
+        minor = int(m.group(3))
         # determine available template versions and stores minor version
         # numbers of each major version required to initialize minor number
         # when proceeding with the previous major version
         minors = {}
         for f in os.listdir(root):
             if os.path.isdir(os.path.join(root, f)):
-                m = re.match('%s-(\d+)\.(\d+)$' % base, f)
+                m = re.match('(\d+)\.(\d+)$', f)
                 if not m is None:
                     k = int(m.group(1))
                     v = int(m.group(2))
@@ -261,7 +280,7 @@ def get_template(template, path):
         # decrease template version until template file/directory exists
         while major > 0:
             while minor >= 0:
-                template_path = os.path.join('%s-%d.%d' % (prefix, major, minor), path)
+                template_path = os.path.join('%s/%d.%d' % (root, major, minor), path)
                 if os.path.exists(template_path):
                     return template_path
                 minor -= 1
@@ -307,26 +326,23 @@ def alter(filename, args, backup=True, update=False):
     @retval  0 if file was not modified
     @retval  1 if file has been modified
 
+    @todo What can be done about removing files which have been automatically
+          modified during project creation ? It would be best if this does not
+          result in a conflict and thus skipping of the deletion if nothing else
+          of the file content has changed. The @p update argument is currently
+          more or less useless again after the template configuration has been
+          introduced and not only fixed substitutions are performed.
     """
     if args.noalter: return 0
+    # ensure that file is a text file that can be configured
+    if not filename.endswith('.in'):
+        mtype = mimetypes.guess_type(filename)[0]
+        if not (mtype and mtype.startswith('text/')): return 0
     # read file content
     fp = open(filename, 'rt')
     txt = fp.read()
     fp.close()
     out = txt
-    # <template-version>
-    if not update:
-        out = out.replace('<template-version>', '@TEMPLATE_VERSION@')
-    # <project> or <project_l>
-    if hasattr(args, 'name') and args.name:
-        out = out.replace('#<project>',   args.name)
-        out = out.replace('<project>',    args.name)
-        out = out.replace('#<project_l>', args.name.lower())
-        out = out.replace('<project_l>',  args.name.lower())
-    # <description>
-    if hasattr(args, 'description') and args.description:
-        out = out.replace('#<description>', '"' + args.description + '"')
-        out = out.replace('<description>',  args.description)
     # <author>
     if hasattr(args, 'author') and args.author:
         start = out.find('<author>')
@@ -342,16 +358,6 @@ def alter(filename, args, backup=True, update=False):
             else:
                 authors = ('\n' + prefix).join(authors)
                 out = out.replace('<author>', authors)
-    # substitutions defined by template configuration
-    if not update:
-        for key in config.substitutions:
-            value = config.substitutions[key]
-            arg   = key.replace('-', '_')
-            if value == None and hasattr(args, arg):
-                value = getattr(args, arg, None)
-            if not value == None:
-                if type(value) is not str: value = str(value)
-                out = out.replace('<' + key + '>', value)
     # dependencies
     if filename.endswith('BasisProject.cmake'):
         if hasattr(args, 'use') and args.use:
@@ -362,6 +368,51 @@ def alter(filename, args, backup=True, update=False):
             out = add_dependencies(out, args.usetest, required=True, test=True)
         if hasattr(args, 'useopttest') and args.useopttest:
             out = add_dependencies(out, args.useopttest, required=False, test=True)
+    # iterate over remaining substitutions until nothing else changes to allow
+    # recursion but with a fixed maximum recursive depth to avoid endless recursion
+    for iter in range(0, 3):
+        last = out
+        # <template>
+        if not update:
+            template = args.template
+            if args.template.startswith(_template_dir):
+                m = re.search(r'/(?P<name>[^/]+)/(?P<version>[0-9]+\.[0-9]+)$', args.template)
+                if m: template = m.group('name') + '/' + m.group('version')
+            out = out.replace('#<template>', '"' + template + '"')
+            out = out.replace( '<template>',       template)
+        # <project> or <project_l>
+        if hasattr(args, 'name') and args.name:
+            out = out.replace('#<project>',   '"' + args.name + '"')
+            out = out.replace( '<project>',         args.name)
+            out = out.replace('#<project_l>', '"' + args.name.lower() + '"')
+            out = out.replace( '<project_l>',       args.name.lower())
+        # <description>
+        if hasattr(args, 'description') and args.description:
+            out = out.replace('#<description>', '"' + args.description.replace('"', '\\"') + '"')
+            out = out.replace( '<description>',       args.description.replace('"', '\\"'))
+        # substitutions defined by template configuration
+        for key in config.substitutions:
+            value = config.substitutions[key]
+            arg   = key.replace('-', '_')
+            if value == None:
+                if hasattr(args, arg):
+                    value = getattr(args, arg, None)
+            elif type(value) is dict:
+                if hasattr(args, arg):
+                    value = getattr(args, arg, None)
+                elif 'default' in value:
+                    value = value['default']
+                else:
+                    value = None
+            if not value == None:
+                if type(value) is str:
+                    value = value.replace('"', '\\"')
+                else:
+                    value = str(value)
+                out = out.replace('#<' + key + '>', '"' + value + '"')
+                out = out.replace( '<' + key + '>',       value)
+        # break if content no more changed
+        if out == last: break
     # return if file content is unchanged
     if out == txt: return 0
     # otherwise, backup file first
@@ -380,19 +431,22 @@ def alter(filename, args, backup=True, update=False):
     return 1
 
 # ----------------------------------------------------------------------------
-def update_template_version(args):
-    """Update template version in root CMakeLists.txt file of project."""
+def update_project_template(args):
+    """Update TEMPLATE argument in BasisProject.cmake file."""
     ok = True
-    filename = os.path.join(args.root, 'CMakeLists.txt')
+    filename = os.path.join(args.root, 'BasisProject.cmake')
     fp = open(filename, 'rt')
     if fp:
         txt = fp.read()
         fp.close()
-        if re.search('set\s+\(TEMPLATE_VERSION @TEMPLATE_VERSION@\)', txt):
+        template = args.template
+        if args.template.startswith(_template_dir):
+            m = re.search(r'/(?P<name>[^/]+)/(?P<version>[0-9]+\.[0-9]+)$', args.template)
+            if m: template = m.group('name') + '/' + m.group('version')
+        if re.search(r'\s+TEMPLATE\s+"' + template + '"', txt):
             return 0
         else:
-            out = re.sub('set\s+\(TEMPLATE_VERSION "?[0-9]+(\.[0-9]+)?"?\)',
-                         'set (TEMPLATE_VERSION @TEMPLATE_VERSION@)', txt)
+            out = re.sub(r'(\s+)TEMPLATE(\s+)"[^"]*"', '\1TEMPLATE\2"' + template + '")', txt)
     else:
         ok = False
     if ok and out != txt:
@@ -408,7 +462,7 @@ def update_template_version(args):
         sys.stderr.write("G %s\n" % filename)
         return 1
     else:
-        sys.stderr.write("E %s - failed to update template version\n" % filename)
+        sys.stderr.write("E %s - failed to update TEMPLATE argument\n" % filename)
         return -1
 
 # ----------------------------------------------------------------------------
@@ -764,8 +818,8 @@ if __name__ == '__main__':
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
   This command-line tool, also referred to as project tool, can be used to
-  create a new project from the BASIS project template version @TEMPLATE_VERSION@ or to modify a
-  previously created BASIS project.
+  create a new project from a given project template or to modify a previously
+  created BASIS project.
 
   Depending on the grade of customization or optional inclusion of template
   components, different subsets of the fully featured project template can be
@@ -796,7 +850,8 @@ if __name__ == '__main__':
   tool can be used for another update of the project files. This can be done
   either manually or by running this program with the --cleanup option.""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        argument_default=None)
+        argument_default=None,
+        add_help=False)
 
     # ----------------------------------------------------------------------------
     # read arguments from response file first
@@ -838,8 +893,7 @@ project created in the current working directory. In order to update
 an existing project, specify the root directory of this project
 using this option.""")
 
-    parser.add_argument('--template', metavar='<dir>',
-            type=os.path.abspath, default=_template + '-@TEMPLATE_VERSION@',
+    parser.add_argument('--template', metavar='<dir>', type=os.path.abspath, default=_template,
             help="""Root directory of project template. Defaults to the template
 corresponding to this BASIS installation.""")
 
@@ -901,6 +955,10 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     parser.add_argument('--noalter', action='store_true', default=False,
             help="""Disable alteration of template files.""")
 
+    # --new-template
+    parser.add_argument('--new-template', action='store_true', default=False,
+            help="""Create a new project template instead of a project. Implies --noalter.""")
+
     # ----------------------------------------------------------------------------
     # parse common options
     if len(argv) == 0:
@@ -908,16 +966,26 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         sys.exit(1)
     args, argv = parser.parse_known_args(argv)
 
+    # option --new-template implies --noalter
+    if args.new_template: args.noalter = True
+
     # ----------------------------------------------------------------------------
     # load template configuration
     config_file = get_template(args.template, '_config.py')
     if not os.path.isfile(config_file):
         sys.stderr.write('Missing template configuration file: ' + config_file + '\n')
+        sys.stderr.write('Please specify a valid project template directory using --template.\n')
         sys.exit(1)
     config, parser = load_config(config_file, parser)
 
+    # require also template _config.py when creating a new project template
+    if args.new_template: config.required.insert(0, '_config.py')
+
     # ----------------------------------------------------------------------------
     # parse template options
+    parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, 
+            help="""Print help and exit.""")
+
     if len(argv) > 0:
         args = parser.parse_args(argv, args)
     if not hasattr(args, 'ops'):
@@ -925,8 +993,9 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
 
     # ------------------------------------------------------------------------
     # create new project or update existing one?
+
     # request to create new project
-    if args.name or (args.noalter and args.root):
+    if args.name:
         create = True
         # create subdirectory in current working directory by default
         if not args.root:
@@ -934,28 +1003,43 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         # ensure that root directory is empty
         if os.path.exists(args.root) and len(os.listdir(args.root)) != 0:
             sys.stderr.write("Directory " + args.root + " exists already and is not empty.\n")
-            sys.stderr.write("Please choose another project name or a different root directory using the --root option.\n")
-            sys.stderr.write('\n')
-            sys.stderr.write("If you want to modify an existing project, please specify the root directory\n")
-            sys.stderr.write("of the existing project using the --root option and remove the --name option.\n")
+            if args.new_template:
+                sys.stderr.write("Please choose another template name or a different root directory using the --root option.\n")
+            else:
+                sys.stderr.write("Please choose another project name or a different root directory using the --root option.\n")
+                sys.stderr.write('\n')
+                sys.stderr.write("If you want to modify an existing project, please specify the root directory\n")
+                sys.stderr.write("of the existing project using the --root option and remove the --name option.\n")
             sys.exit(1)
+        # create default version subdirectory inside new template directory
+        if args.new_template: args.root = os.path.join(args.root, '1.0')
         # set path of original template to current template
         args.original_template = args.template
-        if not args.noalter:
-            # require a project description
-            if not args.description:
-                sys.stderr.write("No project description given!\n")
-                sys.exit(1)
-            # verify that project name is valid
-            if not re.match(r'^[a-zA-Z0-9]+$', args.name):
+        # require a project description
+        if args.new_template:
+            if args.description:
+                sys.stderr.write("Project description ignored. Creating a new project template.\n")
+        elif not args.description:
+            sys.stderr.write("No project description given!\n")
+            sys.exit(1)
+        # verify that name is valid
+        if not re.match(r'^[a-zA-Z0-9]+$', args.name):
+            if args.new_template:
+                sys.stderr.write("Invalid template name: " + args.name + "\n")
+                sys.stderr.write("A template name may only consist of alphanumeric characters!\n")
+            else:
                 sys.stderr.write("Invalid project name: " + args.name + "\n")
-                sys.stderr.write("Project name may only consist of alphanumeric characters!\n")
+                sys.stderr.write("A project name may only consist of alphanumeric characters!\n")
                 sys.stderr.write("If you are attempting to modify an existent project, check whether the\n")
-                sys.stderr.write("project name is correctly extracted from the root CMakeLists.txt file.\n")
-                sys.exit(1)
+                sys.stderr.write("project name is correctly extracted from the BasisProject.cmake file.\n")
+            sys.exit(1)
     # request to modify existing project
     else:
         create = False
+        # throw error if --new-template used without specifying a name for the template
+        if args.new_template:
+            sys.stderr.write("Option --new-template requires a --name for the new template to be specified!\n")
+            sys.exit(1)
         # use current working directory if root not specified
         if not args.root:
             args.root = os.getcwd()
@@ -991,11 +1075,10 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                 sys.exit(1)
         # get original template directory
         if not args.original_template:
-            original_template_version = get_template_version(os.path.join(args.root, 'CMakeLists.txt'))
-            if not original_template_version:
-                sys.stderr.write("Failed to determine original template version!\n")
+            args.original_template = get_original_template(args)
+            if not args.original_template:
+                sys.stderr.write("Failed to determine original template directory and version!\n")
                 sys.exit(1)
-            args.original_template = _template + '-' + original_template_version
 
     # print template and root path
     if args.verbose > 1:
@@ -1058,7 +1141,7 @@ template files in the .basis/ subdirectory.
             for path in config.options[opt].get('path', []):
                 acc.call(addordel, op, path, args)
         # update template version
-        if args.update: acc.call(update_template_version, args)
+        if args.update: acc.call(update_project_template, args)
 
     except Exception, e:
         sys.stderr.write("Failed to ")
@@ -1072,7 +1155,10 @@ template files in the .basis/ subdirectory.
     # done
     if ok:
         if create:
-            sys.stdout.write("\nCreated project\n")
+            if args.new_template:
+                sys.stdout.write("\nCreated template\n")
+            else:
+                sys.stdout.write("\nCreated project\n")
         else:
             if acc.changes > 0:
                 sys.stdout.write('\n' + str(acc.changes) + " file")

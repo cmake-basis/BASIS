@@ -1,3 +1,12 @@
+# ============================================================================
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+#
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# ============================================================================
+
 ##############################################################################
 # @file  CMakeLists.txt
 # @brief Root build configuration file.
@@ -6,11 +15,6 @@
 # does BASIS make use of exactly the standard it advocates and hence also the
 # CMake modules which implement this standard. Therefore, these modules are
 # considered the cornerstone of BASIS.
-#
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 # ----------------------------------------------------------------------------
@@ -27,20 +31,6 @@
 # MEX script and MATLAB Compiler targets.
 
 cmake_minimum_required (VERSION 2.8.4)
-
-# ----------------------------------------------------------------------------
-# version of BASIS template used by this project
-set (TEMPLATE_VERSION 1.8)
-
-# Note that this version in case of the BASIS project itself defines the
-# current version of the project template. Thus, this version number has to
-# be changed whenever a new (modified) project template was added.
-#
-# A patch version number is not used here because subtle changes of the
-# template files do not need to be tracked. This version number may only
-# become of importance in case the project template is noticably extended or
-# modified, which has to be done with care, however, in any case and should
-# be avoided.
 
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions

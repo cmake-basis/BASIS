@@ -1,22 +1,20 @@
-..
-  Section of Biomedical Image Analysis
-  Department of Radiology
-  University of Pennsylvania
-  3600 Market Street, Suite 380
-  Philadelphia, PA 19104
-  
-  Web:   https://www.rad.upenn.edu/sbia/
-  Email: sbia-software at uphs.upenn.edu
-  
-  Copyright (c) 2012, 2013 University of Pennsylvania. All rights reserved.
-  See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-
-
 .. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
 
+.. _v3.0.0:
 
-Changes
-=======
+Release 3.0.0 (Jan 15, 2014)
+----------------------------
+
+- Slight project name change to "CMake BASIS" (yet usually just referred to as BASIS).
+- Generalized templates allow any organization to use BASIS.
+- All SBIA specific functionality has been separated out and is now optional.
+- Customizable project templates and substitution parameters.
+- Default project template configurable during installation using the ``DEFAULT_TEMPLATE`` CMake option.
+- Support for binary project template files.
+- Multiple new Sphinx themes available for HTML documentation.
+- Updated and improved introductory presentation slides.
+- Improved and easier to read documentation.
+- Hosting new web site of Open Source CMake BASIS project on GitHub.
 
 .. _v2.1.4:
 

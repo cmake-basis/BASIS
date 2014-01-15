@@ -1,14 +1,24 @@
+# ============================================================================
+# Copyright (c) 2011-2012 University of Pennsylvania
+# Copyright (c) 2013-2014 Carnegie Melon University
+# Copyright (c) 2013-2014 Andreas Schuh
+# All rights reserved.
+#
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# ============================================================================
+
 ##############################################################################
 # @file  BasisProject.cmake
-# @brief Meta-data of this BASIS project.
+# @brief Sets basic information about a BASIS Project and calls basis_project().
 #
-# This file defines project meta-data by calling the basis_project() function.
-# This meta-data is used by BASIS to setup the project. Moreover, if the
-# project is a module of another BASIS project, the dependencies to other
-# modules have to be specified here such that the top-level project can analyze
-# the inter-module dependencies.
+# This file defines basic information about a project by calling 
+# the basis_project() function. This basic information, also known as metadata, 
+# is used by BASIS to setup the project. Moreover, if the project is a module 
+# of another BASIS project, the dependencies to other modules have to be specified 
+# here such that the top-level project can analyze the inter-module dependencies.
 #
-# @sa http://www.rad.upenn.edu/sbia/software/basis/standard/modules/
+# @sa http://opensource.andreasschuh.com/cmake-basis/standard/modules.html
 #
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to
@@ -25,29 +35,42 @@
 # basis_project (
 #   # ------------------------------------------------------------------------
 #   # meta-data
-#   NAME             MyProject
-#   PACKAGE_VENDOR   sbia
-#   PROVIDER_NAME    University of Pennsylvania
-#   DIVISION_NAME    Section of Biomedical Image Analysis
-#   VERSION          1.1.5
-#   DESCRIPTION      "This is the description of the project named"
-#                    " MyProject which follows BASIS."
-#   AUTHOR           "Max Muster"
-#   COPYRIGHT        "2012 University of Pennsylvania"
-#   LICENSE          "See COPYING file."
-#   CONTACT          "SBIA Group <sbia-software at uphs.upenn.edu>"
+#   NAME              MyProject
+#   PACKAGE_VENDOR    shortvname  # Note: Part of default CMAKE_INSTALL_PREFIX
+#   VERSION           1.1.5
+#   DESCRIPTION       "This is the description of the project, which is useful for this"
+#                     " important thing and that important thing."
+#                     " MyProject follows the BASIS implementation standard."
+#   AUTHOR            "Ima Nauthor"
+#   PROVIDER_NAME     "Great Product Co"
+#   PROVIDER_WEBSITE  "http://www.greatproductcompany.com"
+#   PROVIDER_LOGO     "${PROJECT_SOURCE_DIR}/doc/logo.png"
+#   DIVISION_NAME     "Awesome App Division"
+#   DIVISION_WEBSITE  "http://www.awesomeapp.greatproductcompany.com"
+#   DIVISION_LOGO     ""${PROJECT_SOURCE_DIR}/doc/division_logo.png""
+#   COPYRIGHT         "Copyright (c) 2014 Great Product Co"
+#   LICENSE           "See COPYING file."
+#   CONTACT           "Contact <info@greatproductcompany.com>"
 #   # ------------------------------------------------------------------------
 #   # dependencies
-#   DEPENDS          NiftiCLib PythonInterp
-#   OPTIONAL_DEPENDS MPI
-#   TEST_DEPENDS     Perl
+#   DEPENDS          
+#      NiftiCLib 
+#      PythonInterp
+#   OPTIONAL_DEPENDS 
+#     PythonInterp
+#     JythonInterp
+#     Perl
+#     MATLAB{matlab}
+#     BASH
+#     Doxygen
+#     Sphinx{build}
+#   TEST_DEPENDS     
+#      Perl
+#   OPTIONAL_TEST_DEPENDS
+#     MATLAB{mex}
+#     MATLAB{mcc}
 # )
 # @endcode
-#
-# Copyright (c) 2011, 2012, 2013 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 #
 # @ingroup BasisSettings
 ##############################################################################
@@ -59,22 +82,19 @@
 basis_project (
   # --------------------------------------------------------------------------
   # meta-data
-  NAME             "BASIS"
-  VERSION          "0.0.0"
-  DESCRIPTION      "This package implements and supports the development of "
-                   "software which follows the CMake Build system And Software "
-                   "Implementation Standard (BASIS)."
-  AUTHORS          "Andreas Schuh"
-  COPYRIGHT        "2011, 2012 University of Pennsylvania, 2013 Andreas Schuh"
-  LICENSE          "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
-  CONTACT          "andreas.schuh.84@gmail.com"
-  WEBSITE          "http://opensource.andreasschuh.com/cmake-basis"
-  PROVIDER_NAME    "University of Pennsylvania"
-  PROVIDER_WEBSITE "http://www.upenn.edu"
-  PROVIDER_LOGO    "penn_logo.gif"
-  DIVISION_NAME    "Section of Biomedical Image Analysis"
-  DIVISION_WEBSITE "http://www.rad.upenn.edu/sbia/"
-  DIVISION_LOGO    "sbia_logo.png"
+  NAME          "BASIS"
+  VERSION       "3.0.0"
+  AUTHORS       "Andreas Schuh"
+  DESCRIPTION   "This package implements and supports the development of "
+                "software which follows the CMake Build system And Software "
+                "Implementation Standard (BASIS)."
+  WEBSITE       "http://opensource.andreasschuh.com/cmake-basis"
+  COPYRIGHT     "2011-12 University of Pennsylvania, 2013-14 Andreas Schuh, 2013-14 Carnegie Mellon University"
+  LICENSE       "See http://opensource.andreasschuh.com/cmake-basis/download.html#license or COPYING file."
+  CONTACT       "andreas.schuh.84@gmail.com"
+  TEMPLATE      "basis/1.0"
+  PACKAGE_LOGO  "doc/static/logo.svg"
+
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS

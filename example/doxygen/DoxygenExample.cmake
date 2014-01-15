@@ -11,11 +11,6 @@
 # The code is intentionally uncommonly formatted to test whether the Doxygen
 # filter correctly handles these cases. Do not adapt this obfuscating code
 # formatting for your own CMake code!
-#
-# Copyright (c) 2012 University of Pennsylvania. All rights reserved.
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 include (SomeModule)

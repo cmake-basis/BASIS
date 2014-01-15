@@ -1,3 +1,12 @@
+// ===========================================================================
+// Copyright (c) 2011-2012 University of Pennsylvania
+// Copyright (c) 2013-2014 Andreas Schuh
+// All rights reserved.
+//
+// See COPYING file for license information or visit
+// http://opensource.andreasschuh.com/cmake-basis/download.html#license
+// ===========================================================================
+
 /**
  * @file  os/path.h
  * @brief File/directory path related functions.
@@ -9,11 +18,6 @@
  * they are no exact replicates of these functions. The path module which is
  * part of the BASIS utilities for Python, on the other side, provides the same
  * extended functionality.
- *
- * Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
- * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 #pragma once

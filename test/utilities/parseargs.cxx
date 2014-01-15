@@ -1,11 +1,6 @@
 /**
  * @file  parseargs.cxx
  * @breif Test program for C++ command-line parsing library.
- *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
- * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 #include <basis/basis.h> // include BASIS C++ utilities

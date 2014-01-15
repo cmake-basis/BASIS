@@ -27,6 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ----------------------------------------------------------------------------
+#!/usr/bin/env python
 
 """
 Generated Mon Feb  9 19:08:05 2009 by generateDS.py.
@@ -70,13 +71,18 @@ supermod.MemberType.subclass = MemberTypeSub
 class ParseError(Exception):
     pass
 
+class FileIOError(Exception):
+    pass
+
 def parse(inFilename):
 
     try:
         doc = minidom.parse(inFilename)
     except IOError, e:
-        raise ParseError(inFilename)
-       
+        raise FileIOError(e)
+    except ExpatError, e:
+        raise ParseError(e)
+
     rootNode = doc.documentElement
     rootObj = supermod.DoxygenType.factory()
     rootObj.build(rootNode)

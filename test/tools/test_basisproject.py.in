@@ -3,11 +3,6 @@
 ##############################################################################
 # @file  test_basisproject.py
 # @brief Test basisproject command-line tool.
-#
-# Copyright (c) 2011, 2012 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 import sys
@@ -40,7 +35,7 @@ def test_standard_empty_project(verbose=0):
     print "------------------------------------------------------------------------------"
     print "test_standard_empty_project:"
     print
-    create_project('TestProject', '--standard')
+    create_project('TestProject', '--default')
     build_project(verbose)
     print
     print "SUCCESS"
@@ -63,7 +58,7 @@ def test_minimal_to_standard_empty_project(verbose=0):
     print "test_minimal_to_standard_empty_project:"
     print
     create_project('TestProject', '--minimal')
-    update_project('TestProject', '--standard')
+    update_project('TestProject', '--default')
     build_project(verbose)
     print
     print "SUCCESS"

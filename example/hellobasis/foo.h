@@ -6,11 +6,6 @@
  *       It does not belong to the public interface. See pubfoo.h for
  *       an example of a library implementation which is part of the public
  *       interface of this project and note the differences.
- *
- * Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
- * See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
- *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
  */
 
 #pragma once

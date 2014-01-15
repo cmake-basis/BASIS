@@ -7,11 +7,6 @@
 # This test first builds the test project which is based on BASIS and then
 # triggers the execution of the separate test cases which are built as part
 # of this test project.
-#
-# Copyright (c) 2011 University of Pennsylvania. All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
-#
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
 ##############################################################################
 
 import sys

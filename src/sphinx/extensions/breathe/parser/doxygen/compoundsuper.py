@@ -27,6 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ----------------------------------------------------------------------------
+#!/usr/bin/env python
 
 #
 # Generated Thu Jun 11 18:44:25 2009 by generateDS.py.
@@ -34,7 +35,6 @@
 
 import sys
 import getopt
-from string import lower as str_lower
 from xml.dom import minidom
 from xml.dom import Node
 
@@ -2630,7 +2630,9 @@ class highlightType(GeneratedsSuper):
             value_ = []
             for text_ in child_.childNodes:
                 value_.append(text_.nodeValue)
-            valuestr_ = ''.join(value_)
+            # We make this unicode so that our unicode renderer catch-all picks it up
+            # otherwise it would go through as 'str' and we'd have to pick it up too
+            valuestr_ = u' '
             obj_ = self.mixedclass_(MixedContainer.CategorySimple,
                 MixedContainer.TypeString, 'sp', valuestr_)
             self.content_.append(obj_)
