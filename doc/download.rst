@@ -34,6 +34,9 @@ System Requirements
 **Software Packages:** See the :ref:`BasisBuildDependencies` for a full list of dependencies.
 
 
+.. This reference is used in the file headers to refer to the software license!
+.. _License:
+
 Software License
 ----------------
 
