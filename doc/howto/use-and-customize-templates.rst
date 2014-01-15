@@ -18,11 +18,11 @@ Available Templates
 +------------+-----------+-----------------------------------------------------------------------------------+
 | Template   | Version   | Description                                                                       |
 +============+===========+===================================================================================+
-| basis      | 1.0       | This is the default template provided by BASIS and the one we recommend.          |
+| basis_     | 1.0       | This is the default template provided by BASIS and the one we recommend.          |
 |            |           | It is easy to get started with and follows all of the BASIS :doc:`/standard`.     |
 |            |           | To use it simply follow the :doc:`/quickstart`.                                   |
 +------------+-----------+-----------------------------------------------------------------------------------+
-| sbia       | 1.8       | The original template for the                                                     |
+| sbia_      | 1.8       | The original template for the                                                     |
 |            |           | `Section of Biomedical Image Analysis (SBIA) <http://www.rad.upenn.edu/sbia/>`__  |
 |            |           | of the `University of Pennsylvania <http://www.upenn.edu/>`__. This template      |
 |            |           | will only be useful as an example for those that are not a member of this group.  |
@@ -32,6 +32,9 @@ Available Templates
 +------------+-----------+-----------------------------------------------------------------------------------+
 
 You can find the actual templates provided by BASIS in the ``data/templates`` directory.
+
+.. _basis: https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/basis
+.. _sbia:  https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/sbia
 
 .. _HowToUseATemplate:
 
