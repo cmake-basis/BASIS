@@ -42,7 +42,7 @@
 #         all named programs were found.</td>
 #   </tr>
 #   <tr>
-#     @tp @b AFNI_&lt;tool%gt;_EXECUTABLE @endtp
+#     @tp @b AFNI_&lt;tool&gt;_EXECUTABLE @endtp
 #     <td>Absolute path of the corresponding found AFNI program, e.g., @c AFNI_3dcalc_EXECUTABLE.</td>
 #   </tr>
 # </table>
