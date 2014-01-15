@@ -1744,9 +1744,15 @@ function (basis_build_mcc_target TARGET_UID)
       )
     else ()
       if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        # TODO: This file should be regenerated if it is missing.
+        file (WRITE "${BUILD_DIR}/${OUTPUT_NAME}" "#!/bin/bash\nexec $(dirname $BASH_SOURCE)/${OUTPUT_NAME}.app/Contents/MacOS/${OUTPUT_NAME}")
+        execute_process (COMMAND chmod +x "${BUILD_DIR}/${OUTPUT_NAME}")
         set (
-          POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy
-                             "${BUILD_DIR}/${OUTPUT_NAME}.app/Contents/MacOS/${OUTPUT_NAME}"
+          POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                             "${BUILD_DIR}/${OUTPUT_NAME}.app"
+                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}.app"
+                     COMMAND "${CMAKE_COMMAND}" -E copy
+                             "${BUILD_DIR}/${OUTPUT_NAME}"
                              "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
         )
       else ()
@@ -1834,6 +1840,14 @@ function (basis_build_mcc_target TARGET_UID)
     # TODO
   else ()
     if (RUNTIME_INSTALL_DIRECTORY)
+      if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        install (
+          DIRECTORY   "${BUILD_DIR}/${OUTPUT_NAME}.app"
+          DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
+          COMPONENT   "${RUNTIME_COMPONENT}"
+          USE_SOURCE_PERMISSIONS
+        )
+      endif ()
       install (
         PROGRAMS    "${INSTALL_FILE}"
         DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
