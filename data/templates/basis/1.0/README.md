@@ -1,80 +1,81 @@
+<!--
 
   Copyright (c) <copyright>
   All rights reserved.
 
   Contact: <contact>
 
+-->
 
 
-INTRODUCTION
+Introduction
 ============
 
-  Introduce your software package here and describe its purpose. This section
-  is very similar to an abstract of a scientific article. The focus here is,
-  however, on the software, not the mathematics. Cite any of your publications
-  which are related to this software package here as [1] and add a reference
-  to the References section at the end of this file.
+Introduce your software package here and describe its purpose. This section
+is very similar to an abstract of a scientific article. The focus here is,
+however, on the software, not the mathematics. Cite any of your publications
+which are related to this software package here as \[1] and add a reference
+to the References section at the end of this file.
+
+* \[1] Authors, Title, Journal (Year)
+* \[2] Authors, Title, Journal (Year)
 
 
 
-PACKAGE OVERVIEW
-================
 
-  Source Package
-  --------------
+License
+=======
 
-  - BasisProject.cmake   Meta-data used by BASIS to configure the project.
-  - CMakeLists.txt       Root CMake configuration file.
-  - build/               Contains CMake configuration file for bundle build.
-  - config/              Package configuration files.
-  - data/                Auxiliary data required by the executables (optional).
-  - doc/                 Software documentation such as the software manual.
-  - example/             Example input files.
-  - include/             Public header files of libraries.
-  - modules/             Additional software modules.
-  - src/                 Source code files.
-  - test/                Implementation of software tests and corresponding data.
+Copyright (c) <copyright> <br />
 
-  - AUTHORS.txt          A list of the people who contributed to this software.
-  - COPYING.txt          The copyright and license notices.
-  - INSTALL.txt          Build and installation instructions.
-  - README.txt           This readme file.
-
-
-  Binary Package
-  --------------
-
-  Please refer to the INSTALL file for details on where the built executables
-  and libraries, the auxiliary data, and the documentation files are installed.
+<license>
 
 
 
-LICENSING
-=========
-
-  <license>
-
-
-
-INSTALLATION
+Installation
 ============
 
-  See build and installation instructions given in the INSTALL file.
+See build and installation instructions given in the [INSTALL](/INSTALL.md) file.
 
 
 
-DOCUMENTATION
+Documentation
 =============
 
-  See the software manual for details on the software including a demonstration
-  of how to apply the software tools provided by this package.
+See the software manual for details on the software including a demonstration
+of how to apply the software tools provided by this package.
 
 
 
-REFERENCES
-==========
+Package Content
+===============
 
-  [1] Reference 1
-      Line 2 of this first reference.
+Path                    | Content description
+----------------------- | ----------------------------------------------------------
+[BasisProject.cmake][1] | Meta-data used for the build configuration.
+[CMakeLists.txt]    [2] | Root CMake configuration file.
+[config/]           [3] | Package configuration files.
+[data/]             [4] | Data files required by this software.
+[doc/]              [5] | Documentation source files.
+[example/]          [6] | Example files used for demonstration.
+[include/]          [7] | Public header files.
+[src/]              [8] | Source code files.
+[test/]             [9] | Regression and unit tests.
 
-  [2] Reference 2
+
+
+
+
+
+<!-- --------------------------------------------------------------------------------- -->
+
+<!-- Links to GitHub, see the local directory if you have downloaded the files already -->
+[1]: /BasisProject.cmake
+[2]: /CMakeLists.txt
+[3]: /config
+[4]: /data
+[5]: /doc
+[6]: /example
+[7]: /include
+[8]: /src
+[9]: /test

@@ -1,24 +1,24 @@
-INTRODUCTION
+Introduction
 ============
 
-  This document lists the authors of this software and further people who
-  significantly contributed to it.
+This document lists the authors of this software and further people who
+significantly contributed to it.
 
-  See the README and COPYING documents for general information,
-  acknowledgements of contributions other kind, and licensing.
+See the [README](/README.md) for general information and acknowledgements
+of contributions other kind.
 
 
 
-AUTHORS
+Authors
 =======
 
-  The original authors of this software are:
+The original authors of this software are:
 
-  - <author>
+- <author>
 
 
 
-CONTRIBUTORS
+Contributors
 ============
 
-  Listed below are the names of the ones who contributed notably to this software.
+Listed below are the names of the ones who contributed notably to this software.
