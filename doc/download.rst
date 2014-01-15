@@ -37,7 +37,7 @@ System Requirements
 Software License
 ----------------
 
-The original "BASIS" package has been developed at the
+The original "BASIS" package was developed at the
 `Section of Biomedical Image Analysis (SBIA) <http://www.rad.upenn.edu/sbia/>`__ of the
 `University of Pennsylvania <http://www.upenn.edu>`__.
 The "BASIS" package was released under the
