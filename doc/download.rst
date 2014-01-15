@@ -37,6 +37,11 @@ System Requirements
 Software License
 ----------------
 
+The CMake BASIS package is distributed under the `BSD 2-Clause License`_. A number of source files
+included and used by CMake BASIS originate from other Open Source projects and are thus bound by
+their own respective Open Source license. For a complete list of copyright and license notices,
+have a look at the COPYING_ file.
+
 The original "BASIS" package was developed at the
 `Section of Biomedical Image Analysis (SBIA) <http://www.rad.upenn.edu/sbia/>`__ of the
 `University of Pennsylvania <http://www.upenn.edu>`__.
@@ -45,10 +50,7 @@ The "BASIS" package was released under the
 a BSD-style Open Source software license. Since 2013, the forked and slightly renamed "CMake BASIS"
 package is further developed and maintained by its original author Andreas Schuh after leaving SBIA.
 Andrew Hundt from `Carnegie Melon University <http://www.cmu.edu/>`__ joined the development
-of CMake BASIS soon after. The CMake BASIS package is redistributed in accordance with the SBIA license
-under the `BSD 2-Clause License`_. A number of source files included and used by CMake BASIS originate
-from other Open Source projects. For a complete list of copyright and license notices,
-have a look at the COPYING_ file.
+of CMake BASIS soon after. 
 
 .. _BSD 2-Clause License: http://opensource.org/licenses/BSD-2-Clause
 .. _COPYING: https://github.com/schuhschuh/cmake-basis/blob/master/COPYING.txt
