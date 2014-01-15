@@ -76,7 +76,7 @@ these.
 |                            |           | for the implementation of tools and libraries following       |
 |                            |           | the BASIS standard.                                           |
 +----------------------------+-----------+---------------------------------------------------------------+
-| Sphinx_                    | 1.1.3     | This tool can be used for the generation of the documentation |
+| Sphinx_                    | 1.2       | This tool can be used for the generation of the documentation |
 |                            |           | from in-source Python comments and in particular from         |
 |                            |           | reStructuredText_.                                            |
 +----------------------------+-----------+---------------------------------------------------------------+
@@ -99,7 +99,7 @@ these.
 +----------------------------+-----------+---------------------------------------------------------------+
 | MATLAB_                    | R2009b    | The MATLAB tools are used by BASIS to build `MEX-Files`_      |
 |                            |           | from C++ sources. If ``BUILD_TESTING`` is set to ``ON``       |
-|                            |           | and the MEX script is found, the tests for the build of       |
+|                            |           | and the MEX_ script is found, the tests for the build of      |
 |                            |           | MEX files are run. Otherwise, these are excluded from         |
 |                            |           | the test.                                                     |
 +----------------------------+-----------+---------------------------------------------------------------+
@@ -135,10 +135,10 @@ of this package and the obtained version of the software.
 
 .. code-block:: bash
 
-    $ tar xzf cmake-basis-$version-source.tar.gz
-    $ mkdir cmake-basis-$version-build
-    $ cd cmake-basis-$version-build
-    $ ccmake ../cmake-basis-$version-source
+    $ tar xzf cmake-basis-$version.tar.gz
+    $ cd cmake-basis-$version
+    $ mkdir build && cd build
+    $ ccmake ..
 
 - Press 'c' to configure the build system and 'e' to ignore warnings.
 - Set CMAKE_INSTALL_PREFIX and other CMake variables and options.
@@ -182,17 +182,17 @@ and installation of any package developed with BASIS.
 
 .. option:: -DMATLAB_DIR:PATH
 
-  Specify installation root directory of MATLAB. This variable
+  Specify installation root directory of MATLAB_. This variable
   is only available if BUILD_TESTING was set to ON and setting
   it can be omitted. If a MATLAB installation was specified,
-  however, the tests for the build of binaries using the MATLAB
-  Compiler or the MEX script respectively can be run.
+  however, the tests for the build of binaries using the `MATLAB Compiler`_
+  or the MEX_ script respectively can be run.
 
 .. option:: -DDEFAULT_TEMPLATE:PATH
 
     Path to the directory and version of the default mad-libs style text substitution project
     template that will be installed with BASIS. See the
-    :doc:`Template Customization How-To <howto/create-custom-template>` for details.
+    :doc:`Template Customization How-To <howto/use-and-customize-templates>` for details.
 
 .. option:: -DINSTALL_ALL_TEMPLATES:BOOL
 
@@ -263,42 +263,23 @@ run the command:
 assuming that you added ``<prefix>/bin/`` to your :envvar:`PATH` environment variable.
 
 
-.. _APT: http://en.wikipedia.org/wiki/Advanced_Packaging_Tool
 .. _Bash: http://www.gnu.org/software/bash/
-.. _CentOS: http://www.centos.org/
 .. _CMake: http://www.cmake.org/
 .. _CMake download page: http://www.cmake.org/cmake/resources/software.html
 .. _ccmake: http://www.cmake.org/cmake/help/runningcmake.html
 .. _CTest: http://www.cmake.org/cmake/help/v2.8.8/ctest.html
-.. _Cygwin: http://www.cygwin.com/
-.. _Debian: http://www.debian.org/
 .. _Doxygen: http://www.stack.nl/~dimitri/doxygen/
-.. _Git: http://git-scm.com/
 .. _GNU Make: http://www.gnu.org/software/make/
 .. _ninja: http://martine.github.io/ninja/
 .. _GNU Compiler Collection: http://gcc.gnu.org/
 .. _Clang: http://clang.llvm.org/
 .. _LaTeX: http://www.latex-project.org/
-.. _Mac OS: http://www.apple.com/macosx/
 .. _MATLAB: http://www.mathworks.com/products/matlab/
 .. _MATLAB Compiler: http://www.mathworks.com/products/compiler/
 .. _MEX: http://www.mathworks.com/help/techdoc/ref/mex.html
 .. _MEX-Files: http://www.mathworks.com/help/techdoc/matlab_external/f7667.html
-.. _Microsoft Windows: http://windows.microsoft.com/en-US/windows/home
-.. _Microsoft Visual Studio: http://www.microsoft.com/visualstudio/en-us
-.. _Subversion: http://subversion.apache.org/
-.. _openSUSE: http://www.opensuse.org/en/
-.. _package registry: http://www.cmake.org/Wiki/index.php?title=CMake/Tutorials/Package_Registry
-.. _Red Hat Enterprise Linux: http://www.redhat.com/products/enterprise-linux/
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 .. _Sphinx: http://sphinx.pooco.org/
-.. _svn2cl: http://arthurdejong.org/svn2cl
-.. _Ubuntu: http://www.ubuntu.com/
-.. _VirtualBox: http://www.virtualbox.org
-.. _YUM: http://en.wikipedia.org/wiki/Yellowdog_Updater,_Modified
-.. _The Open Source Initiative: http://opensource.org/
 .. _ITK: http://www.itk.org/
-.. _MATLAB: http://www.mathworks.com/products/matlab/
-.. _MATLAB Compiler: http://www.mathworks.com/products/compiler/
 .. _MEX-Files: http://www.mathworks.com/help/techdoc/matlab_external/f7667.html
 .. _Python: http://www.python.org/
