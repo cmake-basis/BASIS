@@ -10,16 +10,6 @@
 # The built test executables can be found in @c TESTING_RUNTIME_DIR.
 # The test output shall be written to @c TESTING_OUTPUT_DIR. In most cases,
 # a subdirectory for each test should be created under this output directory.
-#
-# Copyright (c) 2011-2012 University of Pennsylvania. <br />
-# Copyright (c) 2013-2014 Andreas Schuh.              <br />
-# All rights reserved.                                <br />
-#
-# See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license
-# or COPYING file for license information.
-#
-# Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
-#          report issues at https://github.com/schuhschuh/cmake-basis/issues
 ##############################################################################
 
 # ============================================================================
