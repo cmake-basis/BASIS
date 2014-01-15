@@ -18,11 +18,7 @@
 #         Specify using COMPONENTS argument of find_package() command.</td>
 #   </tr>
 #   <tr>
-<<<<<<< HEAD
-#     @tp @b AFNI_FIND_OPTIONAL_COMPONENTS @endp
-=======
 #     @tp @b AFNI_FIND_OPTIONAL_COMPONENTS @endtp
->>>>>>> refs/heads/feature/custom-doc-style
 #     <td>List of optional components, i.e., AFNI programs, to look for.
 #         Specify using OPTIONAL_COMPONENTS argument of find_package() command.</td>
 #   </tr>
