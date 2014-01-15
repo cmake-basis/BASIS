@@ -45,7 +45,7 @@ def test_standard_empty_project(verbose=0):
     print "------------------------------------------------------------------------------"
     print "test_standard_empty_project:"
     print
-    create_project('TestProject', '--standard')
+    create_project('TestProject', '--default')
     build_project(verbose)
     print
     print "SUCCESS"
@@ -68,7 +68,7 @@ def test_minimal_to_standard_empty_project(verbose=0):
     print "test_minimal_to_standard_empty_project:"
     print
     create_project('TestProject', '--minimal')
-    update_project('TestProject', '--standard')
+    update_project('TestProject', '--default')
     build_project(verbose)
     print
     print "SUCCESS"
