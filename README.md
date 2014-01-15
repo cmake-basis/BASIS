@@ -145,7 +145,7 @@ Path                     | Content description
 [32]: /test
 
 <!-- Links to web page and online ressources -->
-[1]:  http://opensource.andreasschuch.com/cmake-basis
+[1]:  http://opensource.andreasschuh.com/cmake-basis
 [2]:  https://github.com/schuhschuh/cmake-basis
 [3]:  http://opensource.andreasschuh.com/cmake-basis/quickstart.html
 [4]:  http://opensource.andreasschuh.com/cmake-basis/howto.html
@@ -158,5 +158,5 @@ Path                     | Content description
 <!-- Links to GitHub, see the local directory if you have downloaded the files already -->
 [6]:  http://opensource.andreasschuh.com/cmake-basis/apidoc.html#package-overview
 [7]:  http://opensource.andreasschuh.com/cmake-basis/install.html
-[10]:  http://opensource.andreasschuh.com/cmake-basis/download.html
+[10]: http://opensource.andreasschuh.com/cmake-basis/download.html
 
