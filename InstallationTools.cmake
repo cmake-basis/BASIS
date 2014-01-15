@@ -254,7 +254,6 @@ endfunction ()
 #
 # @ingroup CMakeAPI
 function (basis_install_link OLD NEW)
-  # Attention: CMAKE_INSTALL_PREFIX must be used instead of CMAKE_INSTALL_PREFIX.
   set (CMD_IN
     "
     set (OLD \"@OLD@\")
