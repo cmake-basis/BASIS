@@ -111,7 +111,7 @@ options = {
                'doc/apidoc/modules.rst',
                'doc/apidoc/namespaces.rst',
                'doc/apidoc/classlist.rst',
-               'doc/howto/manage-data.rst'
+               'doc/howto/do-this.rst'
                
              ]
   },
