@@ -27,15 +27,25 @@ id praesent bibendum libero faucibus porta egestas, quisque praesent ipsum ferme
 Source Package
 --------------
 
-- :apidoc:`BasisProject.cmake:`        Calls :apidoc:`basis_project()` to set basic project information, such as the name and dependencies.
-- **CMakeLists.txt:**                  Root CMake configuration file.
-- **config/:**                         Package configuration files.
-- **data/template/<version>/**         Project template(s).
-- **doc/:**                            Documentation source files of BASIS.
-- **include/:**                        Public header files.
-- **src/:**                            Source code files.
-- **test/:**                           Tests of the implementations in src/.
-- **AUTHORS:**                         A list of the people who contributed to this sofware.
-- **COPYING:**                         The copyright and license notices.
-- **INSTALL:**                         Build and installation instructions.
-- **README:**                          Basic summary and references to the documentation.
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{4cm}|p{11.5cm}|
+
+==============================  =====================================================================
+**config/**                     Package configuration files.
+**data/**                       Data files required by the software.
+**doc/**                        Documentation source files.
+**example/**                    Example files for users to try out the software.
+**include/**                    Header files of the public API of libraries.
+**lib/**                        Module files for scripting languages.
+**modules/**                    Project :doc:`Modules <standard/modules>` (i.e., subprojects).
+**src/**                        Source code files.
+**test/**                       Implementations of unit and regression tests.
+AUTHORS.md                      A list of the people who contributed to this sofware.
+BasisProject.cmake              Sets basic project information and lists external dependencies.
+CMakeLists.txt                  Root CMake configuration file.
+COPYING.txt                     The copyright and license notices.
+INSTALL.md                      Build and installation instructions.
+README.md                       Basic summary and references to the documentation.
+==============================  =====================================================================
