@@ -6,7 +6,6 @@ Quick Start
 
 
 .. _FirstSteps:
-.. _FirstStepsIntro:
 
 First Steps
 ===========
@@ -14,7 +13,7 @@ First Steps
 The following steps will show you how to
 
 - download and install <project> on your system.
-- use the library to create an example
+- use the installation to create an example.
 - build and test the example project.
 
 You need to have a Unix-like operating system such as Linux or Mac OS X installed on your
@@ -29,23 +28,23 @@ Install <project>
 Get a copy of the source code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clone the `Git <http://git-scm.com/>`__ repository from `GitHub <https://github.com/schuhschuh/cmake-basis/>`__ as follows:
+Clone the `Git <http://git-scm.com/>`__ repository from `GitHub <https://github.com/<vendor>/<project_l>/>`__ as follows:
 
 .. code-block:: bash
     
     mkdir -p ~/local/src
     cd ~/local/src
-    git clone https://github.com/schuhschuh/cmake-basis.git
-    cd cmake-basis
+    git clone https://github.com/<vendor>/<project_l>.git
+    cd <project_l>
     
-or :doc:`download` a pre-packaged ``.tar.gz`` of the latest BASIS release and unpack it using the following command:
+or :doc:`download` a pre-packaged ``.tar.gz`` of the latest release and unpack it using the following command:
 
 .. code-block:: bash
 
     mkdir -p ~/local/src
     cd ~/local/src
-    tar xzf /path/to/downloaded/cmake-basis-$version.tar.gz
-    cd cmake-basis-$version
+    tar xzf /path/to/downloaded/<project_l>-$version.tar.gz
+    cd <project_l>-$version
 
 
 Configure the build
@@ -96,8 +95,7 @@ Using the C or TC shell (csh/tcsh):
 .. code-block:: bash
     
     setenv PATH "~/local/bin:${PATH}"
-    setenv <project>_EXAMPLE_DIR "~/local/share/<project>/example"
-    setenv HELLO<project>_RSC_DIR "${BASIS_EXAMPLE_DIR}/hello<project>"
+    setenv <project>_EXAMPLE_DIR "~/local/share/<project_l>/example"
 
 Using the Bourne Again SHell (bash):
 
@@ -105,7 +103,6 @@ Using the Bourne Again SHell (bash):
     
     export PATH="~/local/bin:${PATH} "
     export <project>_EXAMPLE_DIR="~/local/share/basis/example"
-    export HELLO<project>_RSC_DIR="${BASIS_EXAMPLE_DIR}/hello<project>"
 
 
 Create an Example
@@ -120,7 +117,7 @@ Create an example using <project>:
 
 
 Test the Example
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Excepteur sint occaecat cupidatat non proident, 
 sunt in culpa qui officia deserunt mollit anim 
@@ -137,16 +134,9 @@ Next Steps
 
 Congratulations! You just finished your first <project> tutorial.
 
-So far you have already learned how to install BASIS on your system and set up
-your own software project. You have also seen how you can add your own source
-files to your newly created project and build the respective executables
-and libraries. The essentials of any software package! Thanks to BASIS, only
-few lines of CMake code are needed to accomplish this.
-
 Now check out the :ref:`Tutorials` for more details regarding each of the
-above steps and in-depth information about the used BASIS commands
-if you like, or move on to the various :doc:`How-to Guides <howto>` which
-will introduce you to even more BASIS concepts and best practices.
+above steps and in-depth information about the used commands if you like,
+or move on to the various :doc:`How-to Guides <howto>`.
 
 
 .. _Tutorials:
@@ -158,6 +148,6 @@ The advanced tutorial slides give a more in-depth introduction to <project> and
 its use including in-depth information and references to further documentation. For a less
 comprehensive tutorial-like introduction, please refer to the :ref:`FirstSteps` above.
 
-.. The ref link is required for the PDF version as the download directive in
+.. ref links are required for the PDF version as the download directive in
    this case does not translate to a hyperlink, but text only.
 
