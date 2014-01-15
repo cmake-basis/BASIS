@@ -20,8 +20,8 @@ Either clone the Git repository:
 
 or download a pre-packaged ``.tar.gz`` of the latest BASIS release:
 
-- `Download CMake BASIS v2.1.4 as .zip    <https://github.com/schuhschuh/cmake-basis/archive/v2.1.4.zip>`__
-- `Download CMake BASIS v2.1.4 as .tar.gz <https://github.com/schuhschuh/cmake-basis/archive/v2.1.4.tar.gz>`__
+- `Download CMake BASIS v3.0.0 as .zip    <https://github.com/schuhschuh/cmake-basis/archive/v3.0.0.zip>`__
+- `Download CMake BASIS v3.0.0 as .tar.gz <https://github.com/schuhschuh/cmake-basis/archive/v3.0.0.tar.gz>`__
 
 .. seealso:: The :doc:`Quick Start Guide <quickstart>` can help you get up and running.
 
@@ -37,13 +37,22 @@ System Requirements
 Software License
 ----------------
 
-The CMake BASIS software is freely available under a BSD-style open source license that is compatible
-with the Open Source Definition by `The Open Source Initiative`_ and contains no restrictions
-on use of the software. The full `license`_ text is included with the distribution package and
-available online.
+The original "BASIS" package has been developed at the
+`Section of Biomedical Image Analysis (SBIA) <http://www.rad.upenn.edu/sbia/>`__ of the
+`University of Pennsylvania <http://www.upenn.edu>`__.
+The "BASIS" package was released under the
+`SBIA Contribution and Software License Agreement <http://www.rad.upenn.edu/sbia/software/license.html>`__,
+a BSD-style Open Source software license. Since 2013, the forked and slightly renamed "CMake BASIS"
+package is further developed and maintained by its original author Andreas Schuh after leaving SBIA.
+Andrew Hundt from `Carnegie Melon University <http://www.cmu.edu/>`__ joined the development
+of CMake BASIS soon after. The CMake BASIS package is redistributed in accordance with the SBIA license
+under the `BSD 2-Clause License`_. A number of source files included and used by CMake BASIS originate
+from other Open Source projects. For a complete list of copyright and license notices,
+have a look at the COPYING_ file.
 
-.. _The Open Source Initiative: http://opensource.org/
-.. _license: https://github.com/schuhschuh/cmake-basis/blob/master/COPYING.txt
+.. _BSD 2-Clause License: http://opensource.org/licenses/BSD-2-Clause
+.. _COPYING: https://github.com/schuhschuh/cmake-basis/blob/master/COPYING.txt
+
 
 .. _BasisPackageContent:
 

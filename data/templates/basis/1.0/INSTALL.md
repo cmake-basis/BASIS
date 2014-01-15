@@ -83,7 +83,7 @@ of this package and the obtained version of the software.
 An exhaustive list of minimum build dependencies, including the build tools
 along detailed step-by-step build, test, and installation instructions can
 be found in the corresponding "Building the Software from Sources" section
-of the BASIS how-to guide on software installation [2].
+of the [BASIS how-to guide on software installation][2].
 
 Please refer to this guide first if you are uncertain about above steps or
 have problems to build, test, or install the software on your system.

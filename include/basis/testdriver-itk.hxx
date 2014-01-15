@@ -18,7 +18,8 @@
  * For complete copyright, license and disclaimer of warranty information
  * please refer to the COPYRIGHT file.
  *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ * Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
+ *          report issues at https://github.com/schuhschuh/cmake-basis/issues
  */
 
  /*=========================================================================

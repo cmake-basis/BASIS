@@ -26,7 +26,7 @@
 #   # ------------------------------------------------------------------------
 #   # meta-data
 #   NAME              MyProject
-#   PACKAGE_VENDOR    shortvname     # Note: PACKAGE_VENDOR will also be part of the default installation path
+#   PACKAGE_VENDOR    shortvname  # Note: Part of default CMAKE_INSTALL_PREFIX
 #   VERSION           1.1.5
 #   DESCRIPTION       "This is the description of the project, which is useful for this"
 #                     " important thing and that important thing."
@@ -54,7 +54,6 @@
 #     BASH
 #     Doxygen
 #     Sphinx{build}
-#     ITK # TODO required by basistest-driver, get rid of this dependency
 #   TEST_DEPENDS     
 #      Perl
 #   OPTIONAL_TEST_DEPENDS
@@ -63,11 +62,16 @@
 # )
 # @endcode
 #
-# Copyright (c) 2011, 2012 University of Pennsylvania, 2013 Andreas Schuh, 2013-2014 Carnegie Mellon University.<br />
-# All rights reserved.<br />
-# See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+# Copyright (c) 2011-2012 University of Pennsylvania. <br />
+# Copyright (c) 2013-2014 Carnegie Melon University.  <br />
+# Copyright (c) 2013-2014 Andreas Schuh.              <br />
+# All rights reserved.                                <br />
 #
-# Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+# See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license
+# or COPYING file for license information.
+#
+# Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
+#          report issues at https://github.com/schuhschuh/cmake-basis/issues
 #
 # @ingroup BasisSettings
 ##############################################################################
@@ -80,17 +84,18 @@ basis_project (
   # --------------------------------------------------------------------------
   # meta-data
   NAME          "BASIS"
-  VERSION       "0.0.0"
+  VERSION       "3.0.0"
   AUTHORS       "Andreas Schuh"
   DESCRIPTION   "This package implements and supports the development of "
                 "software which follows the CMake Build system And Software "
                 "Implementation Standard (BASIS)."
   WEBSITE       "http://opensource.andreasschuh.com/cmake-basis"
   COPYRIGHT     "2011-12 University of Pennsylvania, 2013-14 Andreas Schuh, 2013-14 Carnegie Mellon University"
-  LICENSE       "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+  LICENSE       "See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license or COPYING file."
   CONTACT       "andreas.schuh.84@gmail.com"
-  TEMPLATE      "sbia/1.7" # note: TEMPLATE allows you to change the currently selected BASIS template
+  TEMPLATE      "basis/1.0"
   PACKAGE_LOGO  "doc/static/logo.svg"
+
   # --------------------------------------------------------------------------
   # dependencies
   DEPENDS

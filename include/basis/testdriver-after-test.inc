@@ -10,9 +10,10 @@
  * This file is a modified version of the itkTestDriverBeforeTest.inc file
  * which is part of the TestKernel module of the ITK 4 project.
  *
- * Copyright (c) 2011 University of Pennsylvania.<br />
- * Copyright Insight Software Consortium.<br />
- * All rights reserved.
+ * Copyright (c) Insight Software Consortium.          <br />
+ * Copyright (c) 2011-2012 University of Pennsylvania. <br />
+ * Copyright (c) 2013-2014 Andreas Schuh.              <br />
+ * All rights reserved.                                <br />
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +27,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+ * Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
+ *          report issues at https://github.com/schuhschuh/cmake-basis/issues
  */
 
 //int main(int, char*)

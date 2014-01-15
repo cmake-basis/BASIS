@@ -8,7 +8,7 @@ by combining and documenting some of the best practices and utilities available.
 More importantly, BASIS supplies a fully integrated suite of functionality to make
 the whole process seamless! 
 
-Web:  [CMake BASIS Website]  [1]
+Web:  [CMake BASIS Website]  [1] |
 Code: [CMake BASIS on GitHub][2]
 
 
@@ -83,7 +83,7 @@ Additional documentation is available in several locations:
 Installation
 ------------
 
-See the [installation instructions][7] or the [INSTALL.txt](/INSTALL.txt) file.
+See the [installation instructions][7] or the [INSTALL](/INSTALL.md) file.
 Information on where the executables and libraries, the auxiliary data, and the 
 documentation files get installed is also available there. For more concise
 installation steps, have a look at the [Quick Start Installation][9].
