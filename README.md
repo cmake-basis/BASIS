@@ -83,7 +83,7 @@ Additional documentation is available in several locations:
 Installation
 ------------
 
-See the [installation instructions][7] or the [INSTALL.txt](/INSTALL.txt) file.
+See the [installation instructions][7] or the [INSTALL](/INSTALL.md) file.
 Information on where the executables and libraries, the auxiliary data, and the 
 documentation files get installed is also available there. For more concise
 installation steps, have a look at the [Quick Start Installation][9].
