@@ -19,7 +19,6 @@
 # ============================================================================
 # modules
 # ============================================================================
-
 import os                   # file manipulation
 import sys                  # system functions
 import re                   # regular expressions
@@ -509,7 +508,7 @@ def add(path, args, isdir=False):
                 return -1
             # if update of existing files is disabled, only alter file
             # to add further dependencies or specify an author...
-            if not args.update:
+            if not args.upgrade:
                 rv = alter(project_path, args, backup=args.backup)
                 if rv == 1: print "M %s" % project_path
                 return rv
@@ -813,7 +812,7 @@ class AccumulatorForNumbersOfChangesAndErrors(object):
 # ----------------------------------------------------------------------------
 if __name__ == '__main__':
     ok = True
-
+    
     # ------------------------------------------------------------------------
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
@@ -886,7 +885,7 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
     # --verbose
     parser.add_argument('-v', '--verbose', action='count', default=0,
             help="Increase verbosity of output messages.")
-
+    
 
     parser.add_argument('--template', metavar='<dir>', type=os.path.abspath, default=_template,
             help="""Root directory of project template. Defaults to the template
@@ -980,13 +979,18 @@ Note that the package name is case sensitive.""")
     create_parser.add_argument('--author', metavar='<author>', default='',
             help="Name of original author of the software.")
 
-    # --update
-    # app
+    # update command
+    # ---------------------------------------
     update_parser = subparsers.add_parser('update', parents=[positional_shared_parser,template_parser],
-            help="""Enable update of existing project files. If this option is given,
-changes of the project file are merged with those of the
-corresponding template file if the template has been modified,
-for example, as part of a new release of BASIS.""")
+            help="""Modify an existing project.""")
+    
+    # --upgrade
+    update_parser.add_argument('--upgrade', action='store_true', default=False,
+            help="""Enable upgrade of existing project files to a new template version. 
+If this option is given, changes of the project file 
+are merged with those of the corresponding template 
+file if the template has been modified, for example, 
+as part of a new release of BASIS.""")
 
     # --cleanup
     update_parser.add_argument('--cleanup', action='store_true', default=False,
@@ -1164,7 +1168,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                             if args.verbose > 0: sys.stderr.write(': ' + str(e))
                             sys.stderr.write('\n')
                             ok = False
-                    elif args.update and not filename.endswith('~'):
+                    elif args.upgrade and not filename.endswith('~'):
                         sys.stderr.write(
 """Conflicts occured when updating the project files before.
 
@@ -1220,7 +1224,7 @@ template files in the .basis/ subdirectory.
                 if acc.changes > 1: sys.stdout.write('s')
                 sys.stdout.write(" added (A), removed (D), or modified (G, C)\n")
             elif acc.errors == 0:
-                if args.update:
+                if args.upgrade:
                     sys.stdout.write("Project is up to date\n")
                 else:
                     sys.stdout.write("No project files added, removed, or modified\n")
