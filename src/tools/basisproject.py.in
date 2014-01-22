@@ -817,38 +817,48 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------------
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
-  This command-line tool, also referred to as project tool, can be used to
-  create a new project from a given project template or to modify a previously
-  created BASIS project.
+  basisproject can create a new project from a project template or update an existing project.\n\n
+  
+  Example with all functionality:
+    basisproject create --name projName --description "does stuff" --author "authorName" --full
 
-  Depending on the grade of customization or optional inclusion of template
-  components, different subsets of the fully featured project template can be
-  selected. Additional template files and directories can be added to an existing
-  project at any time. Further, if the --no* options are given explicitly,
-  project files which were previously copied from the template are deleted.
-  Files are, however, only deleted if they were not modified by the project
-  developer since their creation and hence do not contain project related changes.
-  Similarly are directories deleted by this tool only if empty. The deletion of
-  modified files can be forced by supplying the --force option.
+  You can also select the components of a template you want in your project,
+  or update an existing project with additional template files and directories.
+  
+  Updating Projects:
+  
+    Functionality can be removed by updating a project with  the --no* options.
+    However, directories and files are only deleted if they are empty or were
+    not modified, respectively, by the project developer since their creation.
+    The deletion of modified files can be forced by supplying the --force option.
 
-  Besides the name of the new project and a brief description, names of external
-  packages required or optionally used by this project can be specified. For each
-  such package, an entry in the list of dependencies given as argument to either
-  one of the DEPENDS* options of the basis_project() command is added.
+  External Package Requirements:
 
-  An additional feature of this tool is, that it can upgrade an existing project
-  to a newer project template version, given that the existing directory structure
-  and file names were preserved. User changes to previously added template files
-  are preserved and merged with the changes of the template using a so-called
-  three-way diff similar to the Subversion tool svn. If the automatic file merge
-  is not successful, a copy of the original project file (*.mine) as well as the
-  new template file (*.template) are written to the project directory next to the
-  project file which has been overwritten with the merged content which includes
-  markers to indicate where the conflicts occurred. The project file has to be
-  edited manually in this case to resolve any conflicts. Once the conflicts have
-  been resolved, the *.mine and *.template files must be removed before this
-  tool can be used for another update of the project files. This can be done
-  either manually or by running this program with the --cleanup option.""",
+    Besides the name of the new project and a brief description, names of external
+    packages required or optionally used by this project can be specified. For each
+    such package, an entry in the list of dependencies given as argument to either
+    one of the DEPENDS* options of the basis_project() command is added.
+
+  Three way diff of updates:
+
+    basisproject can upgrade an existing project to a newer project template version, 
+    given that the existing directory structure and file names were preserved. 
+  
+    User changes to previously added template files are preserved and merged with 
+    the changes of the template using a so-called three-way diff similar to the 
+    Subversion tool svn. 
+  
+      If the automatic file merge is not successful basisproject creates: 
+  
+        - a copy of the original project file (*.mine)
+        - the new template file (*.template) 
+        - the project file which has been overwritten with the merged content including
+          markers to indicate where the conflicts occurred. 
+      
+    The project file has to be edited manually or with a merge tool such as kdiff3 to 
+    resolve any conflicts. Once the conflicts have been resolved, the *.mine and 
+    *.template files must be removed with the --cleanup option or manually 
+    before another update is possible.""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         argument_default=None,
         add_help=False)
@@ -861,6 +871,7 @@ before execution. Include other response files recursively using @/path/to/file.
 
     args, argv = parser.parse_known_args(sys.argv[1:])
     if args.responsefile: argv = read_rspargs(args.responsefile, argv)
+
 
     # ----------------------------------------------------------------------------
     # define command-line arguments
@@ -880,10 +891,6 @@ See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
     parser.add_argument('--template', metavar='<dir>', type=os.path.abspath, default=_template,
             help="""Root directory of project template. Defaults to the template
 corresponding to this BASIS installation.""")
-    
-    
-    parser.add_argument('-h', '--help', default=argparse.SUPPRESS, action='help',
-            help="""Print help and exit. For help with positional arguments type 'basisproject <arg> --help'""")
     
     
     parser.add_argument('--helpall', default=argparse.SUPPRESS, action='store_true',
@@ -961,18 +968,17 @@ Note that the package name is case sensitive.""")
 
     # --new-template
     create_parser.add_argument('--new-template', action='store_true', default=False,
-            help="""Create a new project template instead of a project. Implies --noalter.""")
+            help="""Create a new template for generating projects instead of a project. Implies --noalter.""")
 
     # --name/--description/--author
-    create_parser.add_argument('--name', metavar='<name>', default=None,
+    create_parser.add_argument('--name', metavar='<name>', default=None, required=True,
             help="Name of new project.")
 
-    create_parser.add_argument('--description', metavar='<text>', default=None,
+    create_parser.add_argument('--description', metavar='<text>', default=None, required=True,
             help="Brief project description.")
 
     create_parser.add_argument('--author', metavar='<author>', default='',
             help="Name of original author of the software.")
-    
 
     # --update
     # app
@@ -1001,8 +1007,10 @@ existing project file is modified, a backup of this file is made and saved under
 same filename, but with the ~ character as suffix. If this option is given, such backup
 files are not made. In case of a merge conflict, however, existing project files are
 always backed-up, using .mine as suffix for the file name of the backup in this case.""")
+    
 
-
+    parser.add_argument('-h', '--help', default=argparse.SUPPRESS, action='help',
+            help="""Print help and exit. For help with positional arguments type 'basisproject <arg> -h'""")
     
     
     # ----------------------------------------------------------------------------
@@ -1011,9 +1019,7 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         parser.print_help()
         sys.exit(1)
     if len(argv) > 0:
-        args = parser.parse_args(argv, args)    
-        print(args.subparser_name)
-        if hasattr(args, 'help') and args.help: print_help = True
+        args = parser.parse_args(argv, args)
     if not hasattr(args, 'ops'):
         setattr(args, 'ops', {})
     
