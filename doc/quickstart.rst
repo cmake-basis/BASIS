@@ -67,7 +67,7 @@ Configure the build system using CMake 2.8.4 or a more recent version:
 - Change ``CMAKE_INSTALL_PREFIX`` to ``~/local``.
 - Set option ``BUILD_EXAMPLE`` to ``ON``.
 - Make sure that option ``BUILD_PROJECT_TOOL`` is enabled.
-- Press ``g`` to generate the Makefiles.
+- Press ``g`` to generate the Makefiles and exit ``ccmake``.
 
 Build and install BASIS
 ~~~~~~~~~~~~~~~~~~~~~~~

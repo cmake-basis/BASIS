@@ -24,7 +24,7 @@ so that directories can be renamed without breaking the build system.
 
 The :doc:`template` provides a reference implementation of this standard.
 See the :doc:`/howto/create-and-modify-project` How-to Guide for details
-on how to make use of this template to create a new project which is conform
+on how to make use of this template to create a new project which conforms
 with the filesystem hierarchy standard detailed in this section.
 
 **Legend**
@@ -234,7 +234,7 @@ Here are CMake variables defined in place of the default name for each of the fo
 ============================   ================================================
 
 
-.. _InsallationTree:
+.. _InstallationTree:
 
 Installation Tree
 =================

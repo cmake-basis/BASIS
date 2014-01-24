@@ -343,7 +343,7 @@ build instructions of the particular software package you are building for more
 details on the particular ``<Package>_DIR`` variables that may have to be set if the
 packages were not found automatically by CMake.
 
-See the documentation of the available :doc:`CMake Options <buildoptions>` for
+See the documentation of the available :doc:`CMake Options <cmake-options>` for
 more options that can be used to configure the build of any project developed with BASIS.
 Please refer also to the package specific build instructions given in the ``INSTALL`` file
 or software manual of the corresponding package for information on available
@@ -355,7 +355,7 @@ additional project specific configuration options.
 .. toctree::
     :hidden:
 
-    buildoptions
+    cmake-options
 
 
 .. _Build:

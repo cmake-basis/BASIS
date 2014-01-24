@@ -108,7 +108,7 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Installation scheme, i.e., filesystem hierarchy, to use for the installation of the
     software files relative to the installation prefix specified by the :option:`-DCMAKE_INSTALL_PREFIX`.
-    Valid values are ``default``, ``usr``, ``opt``, or ``win``. See :ref:`InsallationTree`
+    Valid values are ``default``, ``usr``, ``opt``, or ``win``. See :ref:`InstallationTree`
     as defined by the :doc:`/standard/fhs` of BASIS for more details.
 
 .. option:: -DBASIS_INSTALL_SITE_DIR:PATH
@@ -190,7 +190,13 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Path to the directory of your Sphinx installation, if applicable. 
 
+BASIS Specific CMake Options
+============================
 
+There are a number of CMake options that are specific to BASIS listed throughout 
+the following documents:
+
+- :doc:`/standard/fhs`
 
 .. _CMake: http://www.cmake.org/
 .. _ccmake: http://www.cmake.org/cmake/help/runningcmake.html
