@@ -8,14 +8,26 @@ Calling Conventions
 ===================
 
 This document discusses and describes the conventions for calling other
-executables from a program. The calling conventions address the question
-whether to use relative or absolute file paths when calling executables
-and introduce a name mapping from build target names to actual executable
-file paths. These calling conventions are, however, hidden to the developer
+executables from a program. The calling conventions address problems
+stemming from the use of relative or absolute file paths when calling 
+executables. It also introduce a name mapping from build target names 
+to actual executable file paths. These calling conventions are handled
 through automatically generated utility functions for each supported
 programming language. See :ref:`CallingConventionsImpl` for details on the
-specific implementations in the different languages.
+specific implementations in each language.
 
+Purpose
+=======
+
+One nice feature about using the target name instead of the actual executable file allows a developer of project B to call executables of project A using the ("full qualified") target names, e.g.,
+
+.. code-block:: cmake
+    
+  execute(“projecta.utility”);
+
+This target has been imported from the export file during CMake configuration and the BASIS execute function will map this target name to the installed executable of project A. The developer of project A can rename the executable or change the installation location as they wish. They only need to keep the internal target name.
+
+The file name of executable scripts, for example, will be different on Unix and Windows. On Unix, we don’t use file name extensions and instead rely on the hashbang ("#!" aka shebang) directive such that script executables look and are used just like binary executables. On Windows, any executable script (i.e., only Python or Perl at the moment) is wrapped into a Windows Command file with the .cmd file name extension. This file contains a few lines additional Windows Command code to invoke the script interpreter with the very same file. The Windows Command code is just a comment to the Python/Perl interpreter which will ignore it.
 
 .. _RelVsAbsExecPath:
 
