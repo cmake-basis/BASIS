@@ -197,6 +197,7 @@ There are a number of CMake options that are specific to BASIS listed throughout
 the following documents:
 
 - :doc:`/standard/fhs`
+- :ref:`ModuleCMakeVariables`
 
 .. _CMake: http://www.cmake.org/
 .. _ccmake: http://www.cmake.org/cmake/help/runningcmake.html

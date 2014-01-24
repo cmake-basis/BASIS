@@ -214,12 +214,10 @@ Modularize A Project
 :doc:`Project Modularization </standard/modules>` is a 
 technique that aims to maximize code reusability, allowing 
 components to be split up as independent modules that can 
-be shared with other projects. They consist of a Top Level
+be shared with other projects while only building and 
+packaging the components that are really needed. 
+Modularized projects consist of a Top Level
 Project and one or more Project Modules.
-
-The Top Level project often excludes the ``src/`` subdirectory,
-and instead includes the ``modules/`` directory where the 
-project's modules reside.
 
 Create the Top Level Project
 ----------------------------
@@ -269,6 +267,8 @@ Configure the build system using CMake 2.8.4 or a more recent version:
 - Change ``CMAKE_INSTALL_PREFIX`` to ``~/local``.
 - Set option ``BUILD_ALL_MODULES`` to ``ON``.
 - Press ``g`` to generate the Makefiles and exit ``ccmake``.
+
+:ref:`ModuleCMakeVariables` has more details.
 
 Build the Top Level Project and its Modules
 -------------------------------------------
