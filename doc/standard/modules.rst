@@ -142,17 +142,33 @@ Super Build
 
 .. todo:: **super-build is not implemented or fully documented as part of BASIS!**
 
-CMake's ExternalProject_Add_ command is sometimes used to create a super-build, where external components are compiled separately. 
+CMake's ExternalProject_Add_ command is sometimes used to create a 
+super-build, where external components are compiled separately. 
+
+This has already been done with several projects. A super build can 
+also take care of building BASIS itself if it is not installed on the 
+system, as well as any other external library that is specified within the CMakeLists.txt.
 
 BASIS Super Build
 -----------------
 
 It is possible to automatically download and setup BASIS if it is not available. An example is in the  CMakeLists.txt file of the `DRAMMS software package`_, which uses an older version of BASIS. 
 
-This file will download, configure, and build BASIS first if missing on the target system and then recursively configure itself as the rest of the “bundle”. Note that one disadvantage here is that blasting away the build directory will require the software to be downloaded and compiled
-again. It is recommended that these commands instead be used to include and compile BASIS as a committed git subtree or mercurial subrepository.
-Be aware that there are also a number of details that become more difficult when making sure your superbuild is cross platform between operating
-systems and supports all of the generators and IDEs supported by CMake, such as Eclipse, Xcode, and Visual Studio.
+This file will download, configure, and build BASIS first if missing on the target 
+system and then recursively configure itself as the rest of the “bundle”. Note that 
+one disadvantage here is that blasting away the build directory will require the 
+software to be downloaded and compiled again. It is recommended that these commands 
+be used to include and compile BASIS as a committed git subtree or mercurial subrepository.
+
+Be aware that there are also a number of details that become more difficult when 
+making sure your superbuild is cross platform between operating systems and supports 
+all of the generators and IDEs supported by CMake, such as Eclipse, Xcode, and 
+Visual Studio, because the commands you select may only account for the platform
+you are using with the side effect of breaking others. Also, no CMake variables
+are passed to the child project, so any configuration or flags that you wish
+to keep consistent have to be specified manually.
+
+The following is a partial sample of the DRAMMS CMakeLists.txt:
 
 .. code-block:: cmake
     ##############################################################################
