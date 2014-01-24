@@ -29,7 +29,7 @@ of the new project and a brief project description as arguments:
 .. code-block:: bash
 
     basisproject --name MyProject \
-            --description "This is a brief description of the project."
+            --description "This is a brief description of the project." --full
 
 This will create a subdirectory called ``MyProject`` under the current working directory
 and populate it with the standard project directory structure and BASIS configuration.
