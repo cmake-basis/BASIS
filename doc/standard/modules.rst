@@ -124,10 +124,198 @@ The modularization concepts and part of the CMake implementation
 are from the `ITK 4`_ project. See the Wiki of this project for 
 details on `ITK 4 Modularization`_.
 
-.. todo::
 
-   Add reference to documentation of superbuild approach, which is yet not
-   implemented as part of BASIS
+Reuse
+=====
+
+Modules can be built standalone without a Top Level. 
+
+This is why the :apidoc:`BasisProject.cmake` metadata requires an explicit PACKAGE_NAME. When you compile a project module's subdirectory it will still build as if it was part of the Top Level project. It
+
+Batch execution
+---------------
+
+The variables are also important for the executable (target) referencing that is used for subprocess invocations covered in :doc:`/standard/execution`. A developer can use the target name (e.g., basis.basisproject) in the BASIS utility functions for executing a subprocess, and the path to the actually installed binary is resolved by BASIS. This allows the user to change the location/name of a binary file through the CMake configuration without the need of actually changing all code that calls this executable.
+
+Super Build
+===========
+
+.. todo:: **super-build is not implemented or fully documented as part of BASIS!**
+
+CMake's ExternalProject_Add_ command is sometimes used to create a super-build, where external components are compiled separately. 
+
+BASIS Super Build
+-----------------
+
+It is possible to automatically download and setup BASIS if it is not available. An example is in the  CMakeLists.txt file of the `DRAMMS software package`_, which uses an older version of BASIS. 
+
+This file will download, configure, and build BASIS first if missing on the target system and then recursively configure itself as the rest of the “bundle”. Note that one disadvantage here is that blasting away the build directory will require the software to be downloaded and compiled
+again. It is recommended that these commands instead be used to include and compile BASIS as a committed git subtree or mercurial subrepository.
+Be aware that there are also a number of details that become more difficult when making sure your superbuild is cross platform between operating
+systems and supports all of the generators and IDEs supported by CMake, such as Eclipse, Xcode, and Visual Studio.
+
+.. code-block:: cmake
+    ##############################################################################
+    # @file  CMakeLists.txt
+    # @brief CMake configuration of bundle.
+    #
+    # See INSTALL.txt for information on how to build the entire bundle.
+    #
+    # Copyright (c) 2012 University of Pennsylvania. All rights reserved.
+    # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+    #
+    # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+    ##############################################################################
+    
+    cmake_minimum_required (VERSION 2.8.4)
+    
+    include (ExternalProject)
+    include (CMakeParseArguments)
+    
+    project (DRAMMSBundle)
+    
+    # ============================================================================
+    # bundled packages
+    # ============================================================================
+    
+    if (NOT BUNDLE_SOURCE_DIR)
+      set (BUNDLE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif ()
+    
+    # BASIS
+    if (EXISTS "${BUNDLE_SOURCE_DIR}/basis-2.1.2-source.tar.gz")
+      set (BASIS_URL "${BUNDLE_SOURCE_DIR}/basis-2.1.2-source.tar.gz")
+    else ()
+      set (BASIS_URL "http://www.rad.upenn.edu/sbia/software/distributions/basis-2.1.2-source.tar.gz")
+    endif ()
+    set (BASIS_MD5 53196dffbf139455bffd950b77fb7d1b)
+    endif ()
+    
+    # ============================================================================
+    # meta-data
+    # ============================================================================
+    
+    # ----------------------------------------------------------------------------
+    # basis_project() macro to extract desired meta-data from BasisProject.cmake
+    macro (basis_project)
+      CMAKE_PARSE_ARGUMENTS (ARGN "" "NAME;VERSION" "" ${ARGN})
+      set (BUNDLE_NAME    "${ARGN_NAME}")
+      set (BUNDLE_VERSION "${ARGN_VERSION}")
+      string (TOLOWER "${BUNDLE_NAME}" BUNDLE_NAME_L)
+      string (TOUPPER "${BUNDLE_NAME}" BUNDLE_NAME_U)
+      unset (ARGN_VERSION)
+      unset (ARGN_UNPARSED_ARGUMENTS)
+    endmacro ()
+    
+    include ("${DRAMMS_SOURCE_DIR}/BasisProject.cmake")
+    
+    # ============================================================================
+    # global settings
+    # ============================================================================
+    
+    if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+      if (WIN32)
+        get_filename_component (CMAKE_INSTALL_PREFIX "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion;ProgramFilesDir]" ABSOLUTE)
+        if (NOT CMAKE_INSTALL_PREFIX OR CMAKE_INSTALL_PREFIX MATCHES "/registry")
+          set (CMAKE_INSTALL_PREFIX "C:/Program Files")
+        endif ()
+        set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/SBIA/DRAMMS")
+      else ()
+        set (CMAKE_INSTALL_PREFIX "/opt/sbia/dramms")
+      endif ()
+      if (BUNDLE_VERSION AND NOT BUNDLE_VERSION MATCHES "^0(\\.0)?(\\.0)?$")
+        set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${BUNDLE_VERSION}")
+      endif ()
+      set_property (CACHE CMAKE_INSTALL_PREFIX PROPERTY VALUE "${CMAKE_INSTALL_PREFIX}")
+    endif ()
+    
+    option (BUILD_DOCUMENTATION     "Whether to configure and build the documentation."  OFF)
+    option (TEST_BEFORE_INSTALL     "Whether to run the tests before installation."      OFF)
+    option (USE_SYSTEM_NiftiCLib    "Skip build of NiftiCLib if already installed."      OFF)
+    option (USE_SYSTEM_DRAMMSFastPD "Skip build of patched FastPD if already installed." OFF)
+    
+    if (NOT CMAKE_BUILD_TYPE)
+      set_property (CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
+    endif ()
+    
+    set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+    
+    if (NOT BUNDLE_PROJECTS)
+      set (BUNDLE_PROJECTS) # tells BASIS which other packages belong to the same build
+                            # each package which is build via ExternalProject_Add
+                            # shall be added to this list and passed on to CMake
+                            # for the configuration of any BASIS-based project
+                            # using -DBUNDLE_PROJECTS:INTERNAL=<names>.
+    endif ()
+    
+    # ============================================================================
+    # 1. BASIS
+    # ============================================================================
+    
+    set (BUNDLE_DEPENDS) # either BASIS or nothing if BASIS already installed
+    
+    # circumvent issue with CMake's find_package() interpreting these variables
+    # relative to the current binary directory instead of the top-level directory
+    if (BASIS_DIR AND NOT IS_ABSOLUTE "${BASIS_DIR}")
+      set (BASIS_DIR "${CMAKE_BINARY_DIR}/${BASIS_DIR}")
+      get_filename_component (BASIS_DIR "${BASIS_DIR}" ABSOLUTE)
+    endif ()
+    # moreover, users tend to specify the installation prefix instead of the
+    # actual directory containing the package configuration file
+    if (IS_DIRECTORY "${BASIS_DIR}")
+      list (INSERT CMAKE_PREFIX_PATH 0 "${BASIS_DIR}")
+    endif ()
+    
+    # find BASIS or build it as external project
+    if (DEFINED BASIS_DIR)
+      find_package (BASIS REQUIRED)
+    else ()
+      option (USE_SYSTEM_BASIS "Skip build of BASIS if already installed." OFF)
+    
+      if (USE_SYSTEM_BASIS)
+        find_package (BASIS QUIET)
+      endif ()
+    
+      if (NOT BASIS_FOUND)
+        set (BASIS_CMAKE_CACHE_ARGS)
+        if (NOT BUILD_DOCUMENTATION)
+          list (APPEND BASIS_CMAKE_CACHE_ARGS "-DUSE_Sphinx:BOOL=OFF")
+        endif ()
+        if (TEST_BEFORE_INSTALL)
+          find_package (ITK REQUIRED) # the test driver of BASIS yet requires ITK
+          list (APPEND BASIS_CMAKE_CACHE_ARGS "-DITK_DIR:PATH=${ITK_DIR}")
+        else ()
+          list (APPEND BASIS_CMAKE_CACHE_ARGS "-DUSE_ITK:BOOL=OFF")
+        endif ()
+        ExternalProject_Add (
+          BASIS
+          PREFIX           bundle
+          URL              "${BASIS_URL}"
+          URL_MD5          ${BASIS_MD5}
+          CMAKE_CACHE_ARGS "-DBUNDLE_NAME:INTERNAL=${BUNDLE_NAME}"
+                           "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+                           "-DBUILD_DOCUMENTATION:BOOL=OFF"
+                           "-DBUILD_EXAMPLE:BOOL=OFF"
+                           "-DBUILD_TESTING:BOOL=OFF"
+                           "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}"
+                           "-DBASIS_REGISTER:BOOL=OFF"
+                           "-DBUILD_PROJECT_TOOL:BOOL=OFF"
+                           "-DUSE_Bash:BOOL=ON"
+                           "-DUSE_PythonInterp:BOOL=OFF"
+                           "-DUSE_JythonInterp:BOOL=OFF"
+                           "-DUSE_Perl:BOOL=OFF"
+                           "-DUSE_MATLAB:BOOL=OFF"
+                           ${BASIS_CMAKE_CACHE_ARGS}
+        )
+        list (APPEND BUNDLE_DEPENDS  BASIS)
+        list (APPEND BUNDLE_PROJECTS BASIS)
+      endif ()
+    endif ()
+    
+
+
+
+.. todo::   Add reference to documentation of superbuild approach, which is yet not implemented as part of BASIS
 
 .. 
 .. 
@@ -163,3 +351,5 @@ details on `ITK 4 Modularization`_.
 .. _ITK 4: http://www.itk.org/Wiki/ITK_Release_4
 .. _ITK 4 Modularization: http://www.vtk.org/Wiki/ITK_Release_4/Modularization
 .. _CPack: http://www.cmake.org/cmake/help/v2.8.8/cpack.html
+.. _`DRAMMS software package`: http://www.rad.upenn.edu/sbia/software/dramms/download.html
+.. _`ExternalProject_Add`: http://www.cmake.org/cmake/help/v2.8.12/cmake.html#module:ExternalProject
