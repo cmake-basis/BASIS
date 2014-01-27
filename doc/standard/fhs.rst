@@ -376,7 +376,7 @@ Here are CMake variables defined in place of the default name for each of the fo
 Forcing Schemes
 ---------------
 
-Schemes can be selected using the CMake :ref:`CMakeOptionBASIS_INSTALL_SCHEME` variable.
+Schemes can be selected using the CMake :option:`-DBASIS_INSTALL_SCHEME` variable.
 
 You can force BASIS to use one specific scheme using ``BASIS_INSTALL_SCHEME``. 
 For example, if you want to install the software in ``/usr/<package>`` using 

@@ -104,8 +104,6 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Installation directory of the API documentation relative to the installation prefix.
 
-.. _CMakeOptionBASIS_INSTALL_SCHEME: 
-
 .. option:: -DBASIS_INSTALL_SCHEME:STRING
 
     Installation scheme, i.e., filesystem hierarchy, to use for the installation of the
