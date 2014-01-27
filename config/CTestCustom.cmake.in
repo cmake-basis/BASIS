@@ -140,7 +140,7 @@ set (
     ${CTEST_CUSTOM_COVERAGE_EXCLUDE} # keep current exclude expressions
     "/CMakeFiles/CMakeTmp/"          # exclude try_compile sources
     "./test/.*"                      # exclude test implementations
-    "./modules/.*/test/.*"           # exclude test implementations of modules
+    "./${PROJECT_MODULES_DIR}/.*/test/.*"           # exclude test implementations of modules
     # add further exclude expressions here
     "/gtest/"                        # tested by Google
     "/gmock/"                        # tested by Google
