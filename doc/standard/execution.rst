@@ -27,7 +27,7 @@ One nice feature about using the target name instead of the actual executable fi
 
 This target has been imported from the export file during CMake configuration and the BASIS execute function will map this target name to the installed executable of project A. The developer of project A can rename the executable or change the installation location as they wish. They only need to keep the internal target name.
 
-The file name of executable scripts, for example, will be different on Unix and Windows. On Unix, we don’t use file name extensions and instead rely on the hashbang ("#!" aka shebang) directive such that script executables look and are used just like binary executables. On Windows, any executable script (i.e., only Python or Perl at the moment) is wrapped into a Windows Command file with the .cmd file name extension. This file contains a few lines additional Windows Command code to invoke the script interpreter with the very same file. The Windows Command code is just a comment to the Python/Perl interpreter which will ignore it.
+The file name of executable scripts, for example, will be different on Unix and Windows. On Unix, we don’t use file name extensions and instead rely on the `hashbang/shebang #!`_ directive such that script executables look and are used just like binary executables. On Windows, any executable script (i.e., only Python or Perl at the moment) is wrapped into a Windows Command file with the .cmd file name extension. This file contains a few lines additional Windows Command code to invoke the script interpreter with the very same file. The Windows Command code is just a comment to the Python/Perl interpreter which will ignore it.
 
 .. _RelVsAbsExecPath:
 
@@ -350,3 +350,4 @@ MATLAB is yet not provided by BASIS.
 .. _LIBEXEC_DIR: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisScriptConfig.html#gab41b55712c871a1c6ef0407894d58958
 .. _BasisScriptConfig.cmake: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/BasisScriptConfig_8cmake.html
 .. _system(): http://www.cplusplus.com/reference/clibrary/cstdlib/system/
+.. _`hashbang/shebang #!`: http://en.wikipedia.org/wiki/Shebang_(Unix)
