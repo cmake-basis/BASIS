@@ -561,7 +561,7 @@ macro (basis_project_modules)
       MODULE_INFO_FILES
     RELATIVE
       "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/modules/*/BasisProject.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
   )
 
   # use function scope to avoid overwriting of this project's variables
