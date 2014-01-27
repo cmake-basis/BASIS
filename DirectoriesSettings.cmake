@@ -121,7 +121,7 @@ set (PROJECT_LIBRARY_DIR "${PROJECT_SOURCE_DIR}/lib")
 set (PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/modules")
 set (PROJECT_TESTING_DIR "${PROJECT_SOURCE_DIR}/test")
 
-set (PROJECT_SUBDIRS) # default subdirs are added to list in basis_project_impl
+# list (APPEND PROJECT_SUBDIRS ) # default subdirs are added to list in basis_project_impl and/or in config/Settings.cmake
 
 # ============================================================================
 # testing tree
