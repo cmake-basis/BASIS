@@ -49,14 +49,15 @@ Once you have the project ready the docs can be generated.
 
 .. code-block:: bash
     
-    cd ~/docProject/..
-    mkdir docProject-build && cd docProject-build
-    cmake ../docProject
+    mkdir ~/docProject-build
+    cd ~/docProject-build
+    cmake ../docProject -DBUILD_DOCUMENTATION=ON -DCMAKE_INSTALL_PREFIX=~/docProject-install
     make doc
+    make install
 
 
-The web documentation will be in ``~/docProject-build/doc/html/index.html``,
-and the PDF docs will be in ``~/docProject-build/doc/latex/docProject_Software_Manual.pdf``.
+The web documentation will be in ``~/docProject-install/doc/html/index.html``,
+and the PDF docs will be in ``~/docProject-install/doc/docProject_Software_Manual.pdf``.
 
 Serving Website Locally
 -----------------------
