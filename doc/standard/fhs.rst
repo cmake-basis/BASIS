@@ -24,7 +24,7 @@ so that directories can be renamed without breaking the build system.
 
 The :doc:`template` provides a reference implementation of this standard.
 See the :doc:`/howto/create-and-modify-project` How-to Guide for details
-on how to make use of this template to create a new project which is conform
+on how to make use of this template to create a new project which conforms
 with the filesystem hierarchy standard detailed in this section.
 
 **Legend**
@@ -234,10 +234,20 @@ Here are CMake variables defined in place of the default name for each of the fo
 ============================   ================================================
 
 
-.. _InsallationTree:
+.. _InstallationTree:
 
 Installation Tree
 =================
+
+Installation Schemes
+--------------------
+
+An installation scheme is a specific installation tree
+layout that is utilized based on contextual information.
+
+BASIS automatically switches the installation scheme if you 
+change ``CMAKE_INSTALL_PREFIX`` from ``/opt/...`` to ``/usr/...`` 
+and vice versa.
 
 The following directory structure is used when installing the software package, 
 either by building the install target with "make install",
@@ -246,6 +256,24 @@ extracting a binary distribution package, or running an installer.
 Different installation hierarchies are defined in order to account 
 for different installation schemes depending on the location
 and target system on which the software is being installed.
+
+The directory structures including the installation is defined in
+:apidoc:`DirectoriesSettings.cmake`. The default "/opt" prefix is 
+hard coded for Unix. On Windows it is "C:/Program Files" or, if the 
+registry value can be read, the corresponding directory in the 
+installation language of the OS, e.g., "C:/Programme" in German.
+
+BASIS knows about a few "installation schemes". These distinguish 
+between common filesystem hierarchy standards such as the one for 
+"/opt" or "/usr" on Unix. The difference is that under "/opt", 
+packages are installed in their own respective subdirectories which 
+contain then subdirectories such as "include", "lib", "doc", etc. 
+Under the "/usr" directory, however, the hierarchy is first divided 
+by "include", "lib", "bin", "doc", and then by package name.
+
+
+Possible Schemes
+----------------
 
 The first installation scheme is referred to as the ``usr`` scheme which is in
 compliance with the `Linux Filesystem Hierarchy Standard for /usr <http://www.pathname.com/fhs/pub/fhs-2.3.html#THEUSRHIERARCHY>`_::
@@ -343,6 +371,17 @@ Here are CMake variables defined in place of the default name for each of the fo
 ``INSTALL_MAN_DIR/man3/``   Man pages of libraries.
 ``INSTALL_SHARE_DIR``       Shared package files including required auxiliary data files.
 =========================   ===================================================================
+
+
+Forcing Schemes
+---------------
+
+Schemes can be selected using the CMake :option:`-DBASIS_INSTALL_SCHEME` variable.
+
+You can force BASIS to use one specific scheme using ``BASIS_INSTALL_SCHEME``. 
+For example, if you want to install the software in ``/usr/<package>`` using 
+the same hierarchy typically used under "/opt".
+
 
 
 .. _Filesystem Hierarchy Standard of Linux: http://www.pathname.com/fhs/pub/fhs-2.3.html
