@@ -315,6 +315,12 @@ in most cases, most of these files need not to be part of a project.
     Configures CPack_, the package generator of CMake.
     The packaging of software using CPack is currently not completely
     supported by BASIS. This template file is yet subject to change.
+    
+**config/Settings.cmake**
+    Allows CMake BASIS variables to be modified such as setting any of the
+    directory variables for the :ref:`SourceCodeTree`. For example, the line
+    ``set(PROJECT_SUBDIRS random)`` will cause BASIS to call :apidoc:`basis_add_subdirectory()`
+    on ``<source>/random`` at the appropriate time during the execution of BASIS.
 
 **CTestCustom.cmake.in**
     This file defines CTest_ variables which

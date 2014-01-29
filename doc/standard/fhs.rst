@@ -177,6 +177,7 @@ while the actual names of the directories are listed on the right::
         + PROJECT_EXAMPLE_DIR             + example/
         + PROJECT_MODULES_DIR             + modules/
         + PROJECT_TESTING_DIR             + test/
+        + PROJECT_SUBDIRS                 + <multiple additonal subdirs>
 
 Here are CMake variables defined in place of the default name for each of the following directories:
 
@@ -194,6 +195,7 @@ Here are CMake variables defined in place of the default name for each of the fo
 ``PROJECT_MODULES_DIR``     :doc:`Project Modules <modules>`, each residing in
                             its own subdirectory.
 ``PROJECT_TESTING_DIR``     Implementation of tests and test data.
+``PROJECT_SUBDIRS``         List of additional directories for source code files.
 =========================   =====================================================
 
 
