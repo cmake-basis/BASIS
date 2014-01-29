@@ -157,6 +157,11 @@ Common Project Files
     the build system, such as adding common compiler flags, or adding
     common definitions which have not yet been added by the generic code
     used by BASIS to utilize a found dependency should go into this file.
+    In particular, it allows CMake BASIS variables to be modified such as 
+    setting any of the directory variables for the :ref:`SourceCodeTree`. 
+    For example, the line ``set(PROJECT_SUBDIRS random)`` will cause BASIS 
+    to call :apidoc:`basis_add_subdirectory()` on ``<source>/random`` at 
+    the appropriate time during the execution of BASIS.
 
 **config/ScriptConfig.cmake.in**
     See the documentation on the :doc:`build of script targets <scripttargets>`
@@ -315,12 +320,6 @@ in most cases, most of these files need not to be part of a project.
     Configures CPack_, the package generator of CMake.
     The packaging of software using CPack is currently not completely
     supported by BASIS. This template file is yet subject to change.
-    
-**config/Settings.cmake**
-    Allows CMake BASIS variables to be modified such as setting any of the
-    directory variables for the :ref:`SourceCodeTree`. For example, the line
-    ``set(PROJECT_SUBDIRS random)`` will cause BASIS to call :apidoc:`basis_add_subdirectory()`
-    on ``<source>/random`` at the appropriate time during the execution of BASIS.
 
 **CTestCustom.cmake.in**
     This file defines CTest_ variables which
