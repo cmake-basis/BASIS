@@ -332,7 +332,7 @@ def alter(filename, args, backup=True, update=False):
           more or less useless again after the template configuration has been
           introduced and not only fixed substitutions are performed.
     """
-    if args.noalter: return 0
+    if  hasattr(args, 'noalter') and args.noalter: return 0
     # ensure that file is a text file that can be configured
     if not filename.endswith('.in'):
         mtype = mimetypes.guess_type(filename)[0]
@@ -899,7 +899,7 @@ corresponding to this BASIS installation.""")
     # ----------------------------------------------------------------------------
     # parse common options
     if len(argv) > 0:
-        args, argv = parser.parse_known_args(argv)
+        args, argv_remaining = parser.parse_known_args(argv)
         selected_template = args.template
     
     
@@ -1019,16 +1019,9 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     
     # ----------------------------------------------------------------------------
     # parse common options
-    if len(argv) == 0:
-        parser.print_help()
-        sys.exit(1)
-    if len(argv) > 0:
-        args = parser.parse_args(argv, args)
-    if not hasattr(args, 'ops'):
-        setattr(args, 'ops', {})
     
-# From: https://stackoverflow.com/questions/20094215/argparse-subparser-monolithic-help-output
-    if hasattr(args, 'help') and args.helpall:
+    # From: https://stackoverflow.com/questions/20094215/argparse-subparser-monolithic-help-output
+    if hasattr(args, 'helpall') and args.helpall:
         # print main help
         parser.print_help()
         # retrieve subparsers from parser
@@ -1043,6 +1036,14 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                 print("\n\nUsing the 'basisproject {}' command:".format(choice))
                 print(subparser.format_help())
         sys.exit(1)
+    if len(argv) == 0:
+        parser.print_help()
+        sys.exit(1)
+    if len(argv_remaining) > 0:
+        args = parser.parse_args(argv_remaining, args)
+    if not hasattr(args, 'ops'):
+        setattr(args, 'ops', {})
+    
                 
 
 
@@ -1052,6 +1053,8 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     # request to create new project
     if args.subparser_name == 'create':
         create = True
+        args.upgrade = False
+        args.backup = False
         
         # option --new-template implies --noalter
         if args.new_template: args.noalter = True
@@ -1122,12 +1125,12 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
                     + "See the documentation section on How To Create and Modify a Project for more details.")
             sys.exit(1)
         # notify user that --description option is invalid
-        if args.description:
+        if hasattr(args, 'description') and args.description:
             sys.stderr.write("Cannot modify description of existing project. Please edit file BasisProject.cmake.\n")
             sys.stderr.write("Do not use option --description when attempting to modify an existing project.\n")
             sys.exit(1)
         # get project name
-        if not args.name:
+        if not hasattr(args, 'description') or not args.name:
             args.name = get_project_name(os.path.join(args.root, 'BasisProject.cmake'))
             if not args.name:
                 sys.stderr.write("Failed to determine project name!\n")
@@ -1206,7 +1209,7 @@ template files in the .basis/ subdirectory.
         sys.stderr.write("Failed to ")
         if create: sys.stderr.write("create")
         else:      sys.stderr.write("modify")
-        sys.stderr.write(" project: " + str(e) + '\n')
+        sys.stderr.write(" project: " + str(e) + "\n\n Please check for existing issues related to this error. If you cannot find anything please report it. Issues are tracked at: https://github.com/schuhschuh/cmake-basis/issues/")
         ok = False
         raise e
 
