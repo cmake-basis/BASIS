@@ -29,7 +29,7 @@ of the new project and a brief project description as arguments:
 .. code-block:: bash
 
     basisproject create --name MyProject \
-            --description "This is a brief description of the project."
+            --description "This is a brief description of the project." --full
 
 This will create a subdirectory called ``MyProject`` under the current working directory
 and populate it with the standard project directory structure and BASIS configuration.
@@ -206,37 +206,83 @@ and simply remove all CMake code referring to the particular package you do no
 longer require or use.
 
 
-.. _HowToAddModules:
+.. _HowToModularizeAProject:
 
-Add Modules
-===========
+Modularize A Project
+====================
 
-BASIS supports the :doc:`modularization </standard/modules>` of a project similar to the
-`ITK 4 Modularization`_, where each module is itself a BASIS project which may depends
-on other modules of the top-level project or other external packages. As each module
-itself is a project, modules are created just the same way as projects are created.
-The only difference might be that modules may include different sets of features
-(directories and files) than the top-level project. A project which uses such
-modularization in turn often does not include source files by its own, but is
-a collection of the projects (i.e., subprojects) which are its modules.
+:doc:`Project Modularization </standard/modules>` is a 
+technique that aims to maximize code reusability, allowing 
+components to be split up as independent modules that can 
+be shared with other projects while only building and 
+packaging the components that are really needed. 
+Modularized projects consist of a Top Level
+Project and one or more Project Modules.
 
-Therefore, the top-level project often excludes the ``src/`` subdirectory,
-but includes the ``modules/`` directory instead, in which the project's modules
-reside. First create the top-level project as follows (or simply add a ``modules/``
+Create the Top Level Project
+----------------------------
+
+First create the top-level project as follows (or simply add a ``modules/``
 directory to an existing project):
 
 .. code-block:: bash
 
     basisproject create --name MyToolkit --description "A modularized project." --toplevel
 
-To now add modules to your modularized project, i.e., one which has a
-``modules/`` subdirectory, change to the modules/ subdirectory of the
+Create the Modules
+------------------
+
+To add modules to your Top Level project, which has a ``modules/`` 
+subdirectory, change to the modules/ subdirectory of the
 top-level project, and run the command:
 
 .. code-block:: bash
 
-    basisproject create --name MyModule --description "A module of MyToolkit." --module
+    cd MyToolkit/modules
+    basisproject create --name MyModule --description "A module in MyToolkit." --module
+    
+More than one module can be in the same folder:
 
+.. code-block:: bash
+
+    basisproject create --name OtherModule --description "Another module in MyToolkit." --module
+
+You may also add an existing BASIS project module to 
+the ``/modules`` folder, but not another Top Level project.
+
+
+
+Configure the build
+-------------------
+
+Configure the build system using CMake 2.8.4 or a more recent version:
+
+.. code-block:: bash
+    
+    cd ../..
+    mkdir build && cd build
+    ccmake ../MyToolkit
+
+- Press ``c`` to configure the project.
+- Change ``CMAKE_INSTALL_PREFIX`` to ``~/local``.
+- Set option ``BUILD_ALL_MODULES`` to ``ON``.
+- Press ``g`` to generate the Makefiles and exit ``ccmake``.
+
+:ref:`ModuleCMakeVariables` has more details.
+
+Build the Top Level Project and its Modules
+-------------------------------------------
+
+CMake has generated Makefiles for GNU Make. The build and installation are then thus triggered with the make command:
+
+.. code-block:: bash
+    
+    make
+    make install
+
+
+As a result, CMake copies the built files into the installation tree as specified by the
+``CMAKE_INSTALL_PREFIX`` variable.
 
 .. _HowToUpdateAProject:
 

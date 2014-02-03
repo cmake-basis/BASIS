@@ -6,87 +6,366 @@
 Project Modularization
 ======================
 
-This article details the design and implementation of the project
-modularization, where a project, also referred to as top-level project
-(note that BASIS only allows one level of submodularization),
-can have other projects as subprojects (referred to as modules in this
-context to distinguish them from the superproject/subproject relationship
-in case of the superbuild approach, see below).
-The project modules are conceptual cohesive groups of the project files.
+Project modularization is a technique that aims to maximize 
+code reusability, allowing components to be split up as
+independent modules that can be shared with other projects,
+while only building and packaging the components that are
+really needed.
 
-A top-level project can also be described as a modularized project,
-where each module of this project may depend on other modules of the
-same project or external projects (also referred to as packages).
-Note that an external project can also be another top-level project which
-utilizes the same project modularization as discussed herein.
-The idea, and partly the CMake implementation, has been borrowed from the
-`ITK 4`_ project. See the Wiki of this project for details on the
-`ITK 4 Modularization`_.
+**Top Level Project**
 
+A top level project is a project that is split into separate 
+independent subprojects, and each of those subprojects are 
+referred to as modules. A top level project will often have 
+no source files of its own, simply serving as a lightweight 
+container for its modules.
+
+**Module**
+
+A module is a completely independent BASIS project with its
+own dependencies that resides in the ``modules/`` of a
+Top Level Project. Each module will often be a separate 
+repository from the top level project that is designed 
+to be shared with other projects.
+
+.. seealso:: See :ref:`HowToModularizeAProject` for usage instructions and :doc:`template` for a reference implementation.
+
+Filesystem Layout
+=================
+
+By default each module is placed in its own ``modules/<module_name>`` 
+subdirectory, but this can be configured in ``config/Settings.cmake`` by 
+modifying the ``PROJECT_MODULES_DIR`` variable. More details can be found in 
+the :doc:`/standard/fhs`.
+
+The Top Level project often excludes the ``src/`` subdirectory,
+and instead includes the ``modules/`` directory where the 
+project's modules reside.
+
+Dependency Requirements
+=======================
+
+There are several features and limitations when one top level or subproject uses code from another.
+
+ - Modules may depend on each other. 
+ - Each module of a top level project may depend on other modules of the same project, or external projects and packages. 
+ - Only one level of submodules are allowed in a top level project
+ - An external project can also be another top-level project with its own modules.
+
+.. _ModuleCMakeVariables:
+
+Module CMake Variables
+======================
+
+CMake variables can be modified with the ``ccmake`` command. :doc:`/howto/cmake-options` describes other important CMake options.
+
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{3cm}|p{12.5cm}|
+
+=========================   =============================================================================================
+    CMake Variable                           Description
+=========================   =============================================================================================
+``MODULE_<module>``         Builds the module named ``<module>`` when set to ``ON`` and excludes it when ``OFF``.
+                            It is automatically set to ``ON`` if it is required by another module that is ``ON``.
+``BUILD_ALL_MODULES``       Global switch enabling the build of all modules. Overrides all ``MODULE_<module>`` variables.
+``PROJECT_IS_MODULE``       Specifies if the current project is a module of another project.
+=========================   =============================================================================================
+
+It is recommended that customized defaults for these variables be set in :ref:`config/Settings.cmake <Settings>`.
 
 Implementation
 ==============
 
-The modularization is mainly implemented by the :apidoc:`ProjectTools.cmake`
-module, in particular, the :apidoc:`basis_project_modules()` function which is
-called at the very top of the :apidoc:`basis_project_impl()` macro, which is
-the foundation for the root CMake configuration file (``CMakeLists.txt``) of
-every BASIS project. The :apidoc:`basis_project_modules()` function searches
-the subdirectories in the ``modules/`` directory for the presence of the
-:apidoc:`BasisProject.cmake` file. It then loads this file, to retrieve the
-meta-data of each module, i.e., its name and dependencies. It then adds for
-each module a ``MODULE_<module>`` option to the build configuration. When this
-option is set to ``OFF``, the module is excluded from both the project build
-and any package generated by CPack_. Otherwise, if it is set to ``ON``,
-the module is build as part of the top-level project. These options are
-superceded by the ``BUILD_ALL_MODULES`` option if this option is set to ``ON``,
-however.
+The modularization is mainly implemented with the following heirarchy presented 
+in the same manner as a stack trace with the top function being the last function
+called:
+
+
+    - :apidoc:`ProjectTools.cmake`     - :apidoc:`basis_project_modules()`
+    - :apidoc:`ProjectTools.cmake`     - :apidoc:`basis_project_impl()`
+    - :apidoc:`BasisProject.cmake`     - script file that is executed directly
+    - ``CMakeLists.txt``               - root file of any CMake project
+
+The script then takes the following steps:
+
+1. The :apidoc:`basis_project_modules()` function searches the subdirectories in the 
+   ``modules/`` directory for the presence of the :apidoc:`BasisProject.cmake` file. 
+2. It then loads this file, to retrieve the meta-data of each module such as its name 
+   and dependencies from :apidoc:`BasisProject.cmake`. 
+3. It then adds for each module a ``MODULE_<module>`` option to the build configuration in an order
+   that obeys the dependencies defined in :apidoc:`BasisProject.cmake`. 
+    - When this option is set to ``OFF``, the module is excluded from both the project 
+      build and any package generated by CPack_. 
+    - Otherwise, if it is set to ``ON``, the module is build as part of the top-level project.
+    - If one module requires another, the required module will automatically be set to ``ON``.
+    - All ``MODULE_<module>`` options are superceded by the ``BUILD_ALL_MODULES`` when it is set to ``ON``.
 
 Besides adding these options, the :apidoc:`basis_project_modules()`
-function ensures that the modules are configured and build in the right order,
-such that a module which is needed by another module is build prior to this
-dependent module. Moreover, it helps the :apidoc:`basis_find_package()` function
-to find the other modules, in particular their configured package configuration
-files, which are either generated from the default
+function ensures that the modules are configured with the right dependencies
+so that the generated build files will compile them correctly. 
+
+It also helps the :apidoc:`basis_find_package()` function find the other modules' package 
+configuration files, which are either generated from the default
 :apidoc:`Config.cmake.in <BASISConfig.cmake>` file or a corresponding file found
 in the ``config/`` directory of each module.
 
-The other BASIS CMake functions may further change their actual behaviour
-depending on the ``PROJECT_IS_MODULE`` variable which specifies whether the
+The other BASIS CMake functions may also change their actual behaviour
+depending on the ``PROJECT_IS_MODULE`` variable, which specifies whether the
 project that is currently being configured is a module of another project
 (i.e., ``PROJECT_IS_MODULE`` is ``TRUE``) or a top-level project
 (i.e., ``PROJECT_IS_MODULE`` is ``FALSE``).
 
-Future Work
+Origin
+------
+
+The modularization concepts and part of the CMake implementation
+are from the `ITK 4`_ project. See the Wiki of this project for 
+details on `ITK 4 Modularization`_.
+
+
+Reuse
+=====
+
+Modules can be built standalone without a Top Level. 
+
+This is why the :apidoc:`BasisProject.cmake` metadata requires an explicit PACKAGE_NAME. When you compile a project module's subdirectory it will still build as if it was part of the Top Level project. It
+
+Batch execution
+---------------
+
+The variables are also important for the executable (target) referencing that is used for subprocess invocations covered in :doc:`/standard/execution`. A developer can use the target name (e.g., basis.basisproject) in the BASIS utility functions for executing a subprocess, and the path to the actually installed binary is resolved by BASIS. This allows the user to change the location/name of a binary file through the CMake configuration without the need of actually changing all code that calls this executable.
+
+Super Build
 ===========
 
-**TODO: The super-build methodology is not yet implemented as part of BASIS!**
+.. todo:: **super-build is not implemented or fully documented as part of BASIS!**
 
-.. todo::
+CMake's ExternalProject_Add_ command is sometimes used to create a 
+super-build, where external components are compiled separately. 
 
-    Add reference to documentation of superbuild approach, which is yet not
-    implemented as part of BASIS.
+This has already been done with several projects. A super build can 
+also take care of building BASIS itself if it is not installed on the 
+system, as well as any other external library that is specified within the CMakeLists.txt.
 
-Once the CMake BASIS package is installed it can be used to build other
-BASIS projects. Alternatively, if the package is not found, each BASIS project
-which is built on top of BASIS and implements the super-build feature,
-retrieves and builds a local copy using CMake's :apidoc:`ExternalProject.cmake`
-module This super-build methodology, which is becoming popular in
-the CMake community could be utilized by BASIS to not only ease the
-development and maintenance of separately managed software projects, but also
-enable the fusion of these more or less independently developed software
-packages into so-called superprojects. In this context, the separately managed
-software packages are considered components of the superproject.
+BASIS Super Build
+-----------------
 
-Besides the super-build of BASIS projects, BASIS helps create a tighter 
-coupling between software components. The top-level project (i.e., the 
-superproject) could contain other BASIS projects as modules, and these
-modules define the dependencies to other modules of the project. When the
-superproject is configured, a subset of these modules can be selected and only
-these will be build and installed. This type of modularization closely follows
-the [modularization approach of the ITK 4 project][10].
+It is possible to automatically download and setup BASIS if it is not available. An example is in the  CMakeLists.txt file of the `DRAMMS software package`_, which uses an older version of BASIS. 
+
+This file will download, configure, and build BASIS first if missing on the target 
+system and then recursively configure itself as the rest of the “bundle”. Note that 
+one disadvantage here is that blasting away the build directory will require the 
+software to be downloaded and compiled again. It is recommended that these commands 
+be used to include and compile BASIS as a committed git subtree or mercurial subrepository.
+
+Be aware that there are also a number of details that become more difficult when 
+making sure your superbuild is cross platform between operating systems and supports 
+all of the generators and IDEs supported by CMake, such as Eclipse, Xcode, and 
+Visual Studio, because the commands you select may only account for the platform
+you are using with the side effect of breaking others. Also, no CMake variables
+are passed to the child project, so any configuration or flags that you wish
+to keep consistent have to be specified manually.
+
+The following is a partial sample of the DRAMMS CMakeLists.txt:
+
+.. code-block:: cmake
+    ##############################################################################
+    # @file  CMakeLists.txt
+    # @brief CMake configuration of bundle.
+    #
+    # See INSTALL.txt for information on how to build the entire bundle.
+    #
+    # Copyright (c) 2012 University of Pennsylvania. All rights reserved.
+    # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+    #
+    # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
+    ##############################################################################
+    
+    cmake_minimum_required (VERSION 2.8.4)
+    
+    include (ExternalProject)
+    include (CMakeParseArguments)
+    
+    project (DRAMMSBundle)
+    
+    # ============================================================================
+    # bundled packages
+    # ============================================================================
+    
+    if (NOT BUNDLE_SOURCE_DIR)
+      set (BUNDLE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif ()
+    
+    # BASIS
+    if (EXISTS "${BUNDLE_SOURCE_DIR}/basis-2.1.2-source.tar.gz")
+      set (BASIS_URL "${BUNDLE_SOURCE_DIR}/basis-2.1.2-source.tar.gz")
+    else ()
+      set (BASIS_URL "http://www.rad.upenn.edu/sbia/software/distributions/basis-2.1.2-source.tar.gz")
+    endif ()
+    set (BASIS_MD5 53196dffbf139455bffd950b77fb7d1b)
+    endif ()
+    
+    # ============================================================================
+    # meta-data
+    # ============================================================================
+    
+    # ----------------------------------------------------------------------------
+    # basis_project() macro to extract desired meta-data from BasisProject.cmake
+    macro (basis_project)
+      CMAKE_PARSE_ARGUMENTS (ARGN "" "NAME;VERSION" "" ${ARGN})
+      set (BUNDLE_NAME    "${ARGN_NAME}")
+      set (BUNDLE_VERSION "${ARGN_VERSION}")
+      string (TOLOWER "${BUNDLE_NAME}" BUNDLE_NAME_L)
+      string (TOUPPER "${BUNDLE_NAME}" BUNDLE_NAME_U)
+      unset (ARGN_VERSION)
+      unset (ARGN_UNPARSED_ARGUMENTS)
+    endmacro ()
+    
+    include ("${DRAMMS_SOURCE_DIR}/BasisProject.cmake")
+    
+    # ============================================================================
+    # global settings
+    # ============================================================================
+    
+    if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+      if (WIN32)
+        get_filename_component (CMAKE_INSTALL_PREFIX "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion;ProgramFilesDir]" ABSOLUTE)
+        if (NOT CMAKE_INSTALL_PREFIX OR CMAKE_INSTALL_PREFIX MATCHES "/registry")
+          set (CMAKE_INSTALL_PREFIX "C:/Program Files")
+        endif ()
+        set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/SBIA/DRAMMS")
+      else ()
+        set (CMAKE_INSTALL_PREFIX "/opt/sbia/dramms")
+      endif ()
+      if (BUNDLE_VERSION AND NOT BUNDLE_VERSION MATCHES "^0(\\.0)?(\\.0)?$")
+        set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${BUNDLE_VERSION}")
+      endif ()
+      set_property (CACHE CMAKE_INSTALL_PREFIX PROPERTY VALUE "${CMAKE_INSTALL_PREFIX}")
+    endif ()
+    
+    option (BUILD_DOCUMENTATION     "Whether to configure and build the documentation."  OFF)
+    option (TEST_BEFORE_INSTALL     "Whether to run the tests before installation."      OFF)
+    option (USE_SYSTEM_NiftiCLib    "Skip build of NiftiCLib if already installed."      OFF)
+    option (USE_SYSTEM_DRAMMSFastPD "Skip build of patched FastPD if already installed." OFF)
+    
+    if (NOT CMAKE_BUILD_TYPE)
+      set_property (CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
+    endif ()
+    
+    set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+    
+    if (NOT BUNDLE_PROJECTS)
+      set (BUNDLE_PROJECTS) # tells BASIS which other packages belong to the same build
+                            # each package which is build via ExternalProject_Add
+                            # shall be added to this list and passed on to CMake
+                            # for the configuration of any BASIS-based project
+                            # using -DBUNDLE_PROJECTS:INTERNAL=<names>.
+    endif ()
+    
+    # ============================================================================
+    # 1. BASIS
+    # ============================================================================
+    
+    set (BUNDLE_DEPENDS) # either BASIS or nothing if BASIS already installed
+    
+    # circumvent issue with CMake's find_package() interpreting these variables
+    # relative to the current binary directory instead of the top-level directory
+    if (BASIS_DIR AND NOT IS_ABSOLUTE "${BASIS_DIR}")
+      set (BASIS_DIR "${CMAKE_BINARY_DIR}/${BASIS_DIR}")
+      get_filename_component (BASIS_DIR "${BASIS_DIR}" ABSOLUTE)
+    endif ()
+    # moreover, users tend to specify the installation prefix instead of the
+    # actual directory containing the package configuration file
+    if (IS_DIRECTORY "${BASIS_DIR}")
+      list (INSERT CMAKE_PREFIX_PATH 0 "${BASIS_DIR}")
+    endif ()
+    
+    # find BASIS or build it as external project
+    if (DEFINED BASIS_DIR)
+      find_package (BASIS REQUIRED)
+    else ()
+      option (USE_SYSTEM_BASIS "Skip build of BASIS if already installed." OFF)
+    
+      if (USE_SYSTEM_BASIS)
+        find_package (BASIS QUIET)
+      endif ()
+    
+      if (NOT BASIS_FOUND)
+        set (BASIS_CMAKE_CACHE_ARGS)
+        if (NOT BUILD_DOCUMENTATION)
+          list (APPEND BASIS_CMAKE_CACHE_ARGS "-DUSE_Sphinx:BOOL=OFF")
+        endif ()
+        if (TEST_BEFORE_INSTALL)
+          find_package (ITK REQUIRED) # the test driver of BASIS yet requires ITK
+          list (APPEND BASIS_CMAKE_CACHE_ARGS "-DITK_DIR:PATH=${ITK_DIR}")
+        else ()
+          list (APPEND BASIS_CMAKE_CACHE_ARGS "-DUSE_ITK:BOOL=OFF")
+        endif ()
+        ExternalProject_Add (
+          BASIS
+          PREFIX           bundle
+          URL              "${BASIS_URL}"
+          URL_MD5          ${BASIS_MD5}
+          CMAKE_CACHE_ARGS "-DBUNDLE_NAME:INTERNAL=${BUNDLE_NAME}"
+                           "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+                           "-DBUILD_DOCUMENTATION:BOOL=OFF"
+                           "-DBUILD_EXAMPLE:BOOL=OFF"
+                           "-DBUILD_TESTING:BOOL=OFF"
+                           "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}"
+                           "-DBASIS_REGISTER:BOOL=OFF"
+                           "-DBUILD_PROJECT_TOOL:BOOL=OFF"
+                           "-DUSE_Bash:BOOL=ON"
+                           "-DUSE_PythonInterp:BOOL=OFF"
+                           "-DUSE_JythonInterp:BOOL=OFF"
+                           "-DUSE_Perl:BOOL=OFF"
+                           "-DUSE_MATLAB:BOOL=OFF"
+                           ${BASIS_CMAKE_CACHE_ARGS}
+        )
+        list (APPEND BUNDLE_DEPENDS  BASIS)
+        list (APPEND BUNDLE_PROJECTS BASIS)
+      endif ()
+    endif ()
+    
+
+
+
+.. todo::   Add reference to documentation of superbuild approach, which is yet not implemented as part of BASIS
+
+.. 
+.. 
+.. Future Work
+.. ===========
+.. 
+.. **TODO: super-build is not yet implemented as part of BASIS!**
+.. 
+.. modules are separate from the superproject/subproject relationship
+.. used in a superbuild approach
+.. .
+.. 
+.. Once the CMake BASIS package is installed it can be used to build other
+.. BASIS projects. Alternatively, if the package is not found, each BASIS project
+.. which is built on top of BASIS and implements the super-build feature,
+.. retrieves and builds a local copy using CMake's :apidoc:`ExternalProject.cmake`
+.. module This super-build methodology, which is becoming popular in
+.. the CMake community could be utilized by BASIS to not only ease the
+.. development and maintenance of separately managed software projects, but also
+.. enable the fusion of these more or less independently developed software
+.. packages into so-called superprojects. In this context, the separately managed
+.. software packages are considered components of the superproject.
+.. 
+.. Besides the super-build of BASIS projects, BASIS helps create a tighter 
+.. coupling between software components. The top-level project (i.e., the 
+.. superproject) could contain other BASIS projects as modules, and these
+.. modules define the dependencies to other modules of the project. When the
+.. superproject is configured, a subset of these modules can be selected and only
+.. these will be build and installed. This type of modularization closely follows
+.. the [modularization approach of the ITK 4 project][10].
 
 
 .. _ITK 4: http://www.itk.org/Wiki/ITK_Release_4
 .. _ITK 4 Modularization: http://www.vtk.org/Wiki/ITK_Release_4/Modularization
 .. _CPack: http://www.cmake.org/cmake/help/v2.8.8/cpack.html
+.. _`DRAMMS software package`: http://www.rad.upenn.edu/sbia/software/dramms/download.html
+.. _`ExternalProject_Add`: http://www.cmake.org/cmake/help/v2.8.12/cmake.html#module:ExternalProject
