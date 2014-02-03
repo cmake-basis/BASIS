@@ -1814,6 +1814,9 @@ macro (basis_project_impl)
 
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
+    if (NOT IS_ABSOLUTE "${SUBDIR}")
+      set (SUBDIR "${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}")
+    endif ()
     if (IS_DIRECTORY "${SUBDIR}")
       add_subdirectory ("${SUBDIR}")
     endif ()

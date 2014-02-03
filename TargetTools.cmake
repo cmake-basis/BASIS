@@ -2031,17 +2031,20 @@ function (basis_add_library_target TARGET_NAME)
     else ()
       set (EXPORT_OPT)
     endif ()
+    set (DESTINATION_OPTS)
+    
+    # enable runtime components
     if (ARGN_RUNTIME_DESTINATION)
-      install (
-        TARGETS ${TARGET_UID} ${EXPORT_OPT}
+       list (APPEND DESTINATION_OPTS
         RUNTIME
           DESTINATION "${ARGN_RUNTIME_DESTINATION}"
           COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
       )
     endif ()
+    
+    # enable static and shared library components
     if (ARGN_LIBRARY_DESTINATION)
-      install (
-        TARGETS ${TARGET_UID} ${EXPORT_OPT}
+      list (APPEND DESTINATION_OPTS
         LIBRARY
           DESTINATION "${ARGN_LIBRARY_DESTINATION}"
           COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
@@ -2050,6 +2053,9 @@ function (basis_add_library_target TARGET_NAME)
           COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
       )
     endif ()
+    
+    #install all enabled runtime and library components
+    install (TARGETS ${TARGET_UID} ${EXPORT_OPT} ${DESTINATION_OPTS})
   endif ()
   # done
   message (STATUS "Adding ${type} library ${TARGET_UID}... - done")
