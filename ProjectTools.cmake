@@ -1,6 +1,6 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
-# Copyright (c) 2013-2014 Carnegie Melon University
+# Copyright (c) 2013-2014 Carnegie Mellon University
 # Copyright (c) 2013-2014 Andreas Schuh
 # All rights reserved.
 #
@@ -459,6 +459,8 @@ endmacro ()
 # @retval PROJECT_TEST_DEPENDS            @c TEST_DEPENDS arguments.
 # @retval PROJECT_OPTIONAL_TEST_DEPENDS   @c OPTIONAL_TEST_DEPENDS arguments.
 # @retval PROJECT_IS_SUBPROJECT           @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
+# @retval PROJECT_CODE_DIRS               @c LIST of directories on which basis_add_subdirectory() will be called.
+# @retval PROJECT_MODULE_DIRS             @c LIST of directories that are project modules containg a BasisProject.cmake file.
 #
 # @ingroup CMakeAPI
 #
@@ -533,6 +535,25 @@ function (basis_installtree_asserts)
   endif()
 endfunction ()
 
+
+##
+# FUNCTION basis_append_to_each(output_list input_list item_to_append <>)
+#  @brief basis_append_to_each takes an input list and appends a single element to each item in that list and adds it to the output list.
+#                For example, this is useful for adding relative paths to the end of a list of paths.
+#
+# @todo move to CommonTools.cmake
+#
+function(basis_append_to_each OUTPUT_LIST INPUT_LIST ITEM_TO_APPEND)
+  set(${OUTPUT_LIST} "")
+  foreach(PATH IN LISTS ${INPUT_LIST})
+    list(APPEND ${OUTPUT_LIST} ${PATH}${ITEM_TO_APPEND} )
+  endforeach()
+  set(${OUTPUT_LIST} ${${OUTPUT_LIST}} PARENT_SCOPE)
+endfunction()
+
+
+
+
 # ----------------------------------------------------------------------------
 ## @brief Initialize project modules.
 #
@@ -551,6 +572,8 @@ macro (basis_project_modules)
   set (PROJECT_MODULES)
   set (PROJECT_MODULES_ENABLED)
   set (PROJECT_MODULES_DISABLED)
+  
+  basis_append_to_each(PROJECT_MODULE_INFO_FILES PROJECT_MODULE_DIRS "/BasisProject.cmake")
 
   # --------------------------------------------------------------------------
   # load module DAG
@@ -562,6 +585,7 @@ macro (basis_project_modules)
     RELATIVE
       "${CMAKE_CURRENT_SOURCE_DIR}"
       "${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
+      ${PROJECT_MODULE_INFO_FILES}
   )
 
   # use function scope to avoid overwriting of this project's variables
@@ -1611,6 +1635,8 @@ endmacro ()
 # @sa BasisProject.cmake
 # @sa basis_project()
 #
+# @attention: add_uninstall must be done last and using a add_subdirectory() call
+#             such that the code is executed last by the root cmake_install.cmake!
 # @ingroup CMakeAPI
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
@@ -1783,6 +1809,8 @@ macro (basis_project_impl)
   endif ()
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIR}")
+  
+  list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
 
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
@@ -1879,10 +1907,10 @@ macro (basis_project_impl)
   if (NOT PROJECT_IS_MODULE)
     # add uninstall target
     basis_add_uninstall ()
-    # add code to generate uninstaller at the end of the installation
+    ## add code to generate uninstaller at the end of the installation
     #
-    # Attention: This must be done at last and using a add_subdirectory() call
-    #            such that the code is executed at last by the root cmake_install.cmake!
+    # @attention: add_uninstall must be done last and using a add_subdirectory() call
+    #             such that the code is executed last by the root cmake_install.cmake!
     add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
   endif ()
 

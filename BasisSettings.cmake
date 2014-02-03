@@ -150,6 +150,7 @@ set (
 )
 
 ## @brief Names of project meta-data with multiple arguments.
+#  @see basis_project() in ProjectTools.cmake
 set (
   BASIS_METADATA_LIST_MULTI
     AUTHORS
@@ -158,9 +159,12 @@ set (
     OPTIONAL_DEPENDS
     TEST_DEPENDS
     OPTIONAL_TEST_DEPENDS
+    MODULE_DIRS # list paths each pointing to an individual module
+    CODE_DIRS   # list of paths to source code directories
 )
 
 ## @brief Names of project meta-data.
+#  @see basis_project() in ProjectTools.cmake
 set (
   BASIS_METADATA_LIST
     ${BASIS_METADATA_LIST_SINGLE}
