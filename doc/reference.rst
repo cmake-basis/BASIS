@@ -128,8 +128,8 @@ README (.txt|.md)               Basic summary and references to the documentatio
 ==============================  =====================================================================
 
 .. seealso:: The :doc:`standard/template` for a complete list of required and other standard project files.
-             Moreover, the layout of the :ref:`CMake BASIS Package <BasisPackageContent>` itself serves as
-             an example a project following this standard layout.
+             The :ref:`CMake BASIS Package <BasisPackageContent>` itself also serves as an example of a 
+             project following this standard layout.
 
 .. note:: Not all of the named subdirectories must exist in every project.
 

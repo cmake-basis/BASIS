@@ -36,7 +36,7 @@ cmake_minimum_required (VERSION 2.8.4)
 # include BASIS policies, settings, macros, and functions
 
 # The following variables would be set by the BASISConfig.cmake file if
-# this would be a project which uses BASIS.
+# this is a project that uses BASIS.
 
 set (BASIS_MODULE_PATH            "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
 

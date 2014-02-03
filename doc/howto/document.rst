@@ -13,7 +13,81 @@ Documenting Software
 BASIS supports two well-known and established documentation generation tools:
 Doxygen_ and Sphinx_.
 
+Documentation Quick Start
+=========================
 
+When you use the ``basisproject`` tool to generate a project as described in
+:doc:`/howto/create-and-modify-project`, you will have a tree with a ``/doc``
+directory preconfigured to generate a starter documentation website and PDF
+just like the BASIS website. 
+
+Here is how to create a new project that supports documentation:
+
+.. code-block:: bash
+    
+    basisproject --name docProject --description "This is a BASIS project." --full
+    
+We will assume that you ran this command in your ``~/`` 
+directory for simplicity in the steps below.
+
+Writing Documentation
+---------------------
+
+Now you can simply open the ``~/docProject/doc/*.rst`` files and start editing 
+the existing  reStructuredText_ files to create your Sphinx documentation. 
+
+You can also update your `doxygen mainpage`_ by opening 
+``~/docProject/doc/apidoc/apidoc.dox``. 
+
+We also suggest taking a look at the ``/doc`` folder of the BASIS source code 
+itself for more examples of how to write documentation.
+
+Generating Documentation
+------------------------
+
+Once you have the project ready the docs can be generated.
+
+.. code-block:: bash
+    
+    mkdir ~/docProject-build
+    cd ~/docProject-build
+    cmake ../docProject -DBUILD_DOCUMENTATION=ON -DCMAKE_INSTALL_PREFIX=~/docProject-install
+    make doc
+    make install
+
+
+The web documentation will be in ``~/docProject-install/doc/html/index.html``,
+and the PDF docs will be in ``~/docProject-install/doc/docProject_Software_Manual.pdf``.
+
+Serving Website Locally
+-----------------------
+
+Note that simply opening the documentation will not work correctly
+due to security settings built into modern browsers. Instead you will
+need to display your docs via a server. We have found that the
+`node.js http-sever`_ app works well for this purpose.
+
+Install ``npm``:
+
+.. code-block:: bash
+    
+    curl https://npmjs.org/install.sh | sh
+    
+Once you have ``npm``, install ``http-server``:
+
+.. code-block:: bash
+    
+    npm install http-server -g
+    
+Serve up the docs:
+
+.. code-block:: bash
+    
+    cd ~/docProject-build/doc/html
+    http-server .
+
+Then visit your documentation website by typing 
+the address `localhost:8080` into your web browser.
 
 Doxygen Documentation
 =====================
@@ -52,12 +126,13 @@ BASIS includes Doxygen filters for:
 Generating Doxygen
 ------------------
 
+The :apidoc:`basis_add_doxygen_doc()` CMake command can be used to create your own custom doxygen documentation.
 
 
 Sphinx Documentation
 ====================
 
-BASIS makes use of Sphinx for the alternative documentation
+BASIS makes use of Sphinx_ for the alternative documentation
 generation from Python source code and corresponding doc strings. The markup
 language used by Sphinx is reStructuredText_ (reST). 
 
@@ -161,7 +236,7 @@ Describes implementation details.
 API Documentation
 =================
 
-Documentation generated from source code and in-source comments.
+Documentation generated from source code and in-source comments, integrated with default template.
 
 
 Software Web Site
@@ -172,7 +247,7 @@ The main input to this tool are text files written in the lightweight markup lan
 reStructuredText_. A default theme for use at SBIA has been created which is part
 of BASIS. This theme together with the text files that define the content and
 structure of the site, the HTML pages of the software web site can be generated
-by ``sphinx-build``. The CMake function `basis_add_doc()`_ provides an easy way
+by ``sphinx-build``. The CMake function :apidoc:`basis_add_doc()`_ provides an easy way
 to add such web site target to the build configuration. For example, the
 template ``doc/CMakeLists.txt`` file contains the following section:
 
@@ -203,7 +278,7 @@ with the proper default configuration to generate a web site from the reST
 source files with file name extension ``.rst`` found in the ``site/`` subdirectory.
 The source file of the main page, the so-called master document, of the web site
 must be named ``index.rst``. The main pages which are linked in the top
-navigation bar are named using the ``RELLINKS`` option of `basis_add_sphinx_doc()`_,
+navigation bar are named using the ``RELLINKS`` option of :apidoc:`basis_add_sphinx_doc()`,
 the CMake function which implements the addition of a Sphinx documentation target.
 The corresponding source files must be named after these links. For example, given
 above CMake code, the reStructuredText source of the page with the download
@@ -214,12 +289,13 @@ guide for details on how to generate the HTML pages from the reST source
 files given the specification of a Sphinx documentation build target such as the
 ``site`` target defined by above template CMake code.
 
+
 .. _basis_add_doc(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeAPI.html#ga06f94c5d122393ad4e371f73a0803cfa
-.. _basis_add_sphinx_doc(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/DocTools_8cmake.html#a628468ae6c7b29570a73a2d63eebf257
 .. _Doxygen: http://www.doxygen.org/
-.. _Sphinx: http://sphinx.pocoo.org/
+.. _Sphinx: http://sphinx-doc.org/
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 .. _Markdown: http://daringfireball.net/projects/markdown/
 .. _Markdown Extra: http://michelf.ca/projects/php-markdown/extra/
 .. _breathe: https://github.com/michaeljones/breathe
 .. _doxylink: http://packages.python.org/sphinxcontrib-doxylink/
+.. _`node.js http-sever`: https://npmjs.org/package/http-server

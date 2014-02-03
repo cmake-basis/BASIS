@@ -170,7 +170,7 @@ CMake Options
 -------------
 
 In the following, only CMake settings available to configure the build and
-installation of BASIS itself are documented. See :doc:`howto/buildoptions`
+installation of BASIS itself are documented. See :doc:`howto/cmake-options`
 for detailed information on general CMake Options available for the build
 and installation of any package developed with BASIS.
 

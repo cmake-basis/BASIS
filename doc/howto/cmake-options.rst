@@ -8,8 +8,46 @@
 CMake Options
 =============
 
+The following BASIS specific options are available when building packages. 
+For the full set of options and descriptions use the ccmake_ tool. For CMake_ 
+specific options see the documentation for your CMake installation.
+
 The following standard CMake_ options/variables can be configured, 
 see the documentation of CMake_ itself for more details:
+
+
+Standard CMake
+==============
+
+.. option:: -DCMAKE_BUILD_TYPE:STRING
+
+    Specify the build configuration to build. If not set, the ``Release``
+    configuration will be build. Common values are ``Release`` or ``Debug``.
+
+.. option:: -DCMAKE_INSTALL_PREFIX:PATH
+
+    Prefix used for package :ref:`installation <InstallBuiltFiles>`. See also the
+    `CMake reference <http://www.cmake.org/cmake/help/v2.8.8/cmake.html#variable:CMAKE_INSTALL_PREFIX>`_.
+
+.. option:: -DUSE_<Package>:BOOL
+
+    If the software you are building has declared optional dependencies,
+    i.e., software packages which it makes use of only if available, for each
+    such optional package a ``USE_<Package>`` option is added by BASIS if this
+    package was found on your system. It can be set to OFF in order to disable
+    the use of this optional dependency by this software.
+
+BASIS Options
+==============
+
+There are a number of CMake options that are specific to BASIS listed throughout 
+the following documents:
+
+- :doc:`/standard/fhs`
+- :ref:`ModuleCMakeVariables`
+
+Frequently Used
+---------------
 
 .. option:: -DBASIS_DIR:PATH
 
@@ -41,32 +79,11 @@ see the documentation of CMake_ itself for more details:
     that execute the installed programs and compare the outputs to the expected
     results should be installed (if done so by the software package).
 
-.. option:: -DCMAKE_BUILD_TYPE:STRING
-
-    Specify the build configuration to build. If not set, the ``Release``
-    configuration will be build. Common values are ``Release`` or ``Debug``.
-
-.. option:: -DCMAKE_INSTALL_PREFIX:PATH
-
-    Prefix used for package :ref:`installation <InstallBuiltFiles>`. See also the
-    `CMake reference <http://www.cmake.org/cmake/help/v2.8.8/cmake.html#variable:CMAKE_INSTALL_PREFIX>`_.
-
-.. option:: -DUSE_<Package>:BOOL
-
-    If the software you are building has declared optional dependencies,
-    i.e., software packages which it makes use of only if available, for each
-    such optional package a ``USE_<Package>`` option is added by BASIS if this
-    package was found on your system. It can be set to OFF in order to disable
-    the use of this optional dependency by this software.
-
-
-The following BASIS specific options are available when building packages. For the full set of options and descriptions use the ccmake_ tool. For CMake_ specific options see the documentation for your CMake installation.
-
 
 .. _AdvancedCMakeOptions:
 
-Advanced CMake Options
-======================
+Advanced
+--------
 
 Advanced users may further be interested in the settings of the following options
 which in most cases are automatically derived from the non-advanced CMake options
@@ -108,7 +125,7 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Installation scheme, i.e., filesystem hierarchy, to use for the installation of the
     software files relative to the installation prefix specified by the :option:`-DCMAKE_INSTALL_PREFIX`.
-    Valid values are ``default``, ``usr``, ``opt``, or ``win``. See :ref:`InsallationTree`
+    Valid values are ``default``, ``usr``, ``opt``, or ``win``. See :ref:`InstallationTree`
     as defined by the :doc:`/standard/fhs` of BASIS for more details.
 
 .. option:: -DBASIS_INSTALL_SITE_DIR:PATH
