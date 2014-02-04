@@ -650,11 +650,12 @@ macro (basis_project_modules)
   # provide an option for all modules
   if (PROJECT_MODULES)
     option (BUILD_ALL_MODULES "Request to build all modules." OFF)
+    option (BUILD_MODULES_BY_DEFAULT "ON - Automatically request modules be built, OFF - manually request each." ON)
   endif ()
 
   # provide an option for each module
   foreach (MODULE ${PROJECT_MODULES})
-    option (MODULE_${MODULE} "Request to build the module ${MODULE}." ON)
+    option (MODULE_${MODULE} "Request to build the module ${MODULE}." ${BUILD_MODULES_BY_DEFAULT})
     if (${MODULE}_EXCLUDE_FROM_ALL)
       set (${MODULE}_IN_ALL FALSE)
     else ()
