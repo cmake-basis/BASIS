@@ -1812,7 +1812,6 @@ macro (basis_project_impl)
     list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
   endif()
   
-  message(AUTHOR_WARNING "PROJECT_SUBDIRS: ${PROJECT_SUBDIRS}")
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
     if (NOT IS_ABSOLUTE "${SUBDIR}")
