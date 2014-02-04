@@ -649,7 +649,7 @@ macro (basis_project_modules)
 
   # provide an option for all modules
   if (PROJECT_MODULES)
-    option (BUILD_ALL_MODULES "Request to build all modules." ON)
+    option (BUILD_ALL_MODULES "Request to build all modules." OFF)
   endif ()
 
   # provide an option for each module
