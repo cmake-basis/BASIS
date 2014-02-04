@@ -254,6 +254,18 @@ macro (basis_project_check_metadata)
   else ()
     set (TOPLEVEL_PROJECT_CONTACT "${PROJECT_CONTACT}")
   endif ()
+  
+  # set default variable for PROJECT_MODULES_DIR
+  if(NOT PROJECT_MODULES_DIR)
+    set (PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/modules")
+  endif()
+  # make sure PROJECT_MODULES_DIR is an absolute path
+  if(NOT IS_ABSOLUTE PROJECT_MODULES_DIR)
+    set(PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/${PROJECT_MODULES_DIR}")
+  endif()
+  
+  
+  
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
@@ -417,6 +429,22 @@ endmacro ()
 #              @endcode 
 #       The installed templates can be found in the share/templates folder of installed BASIS software,
 #       as well as the data/templates foler of the BASIS source tree.</td>
+#   </tr>
+#   <tr>
+#     @tp @b MODULES_DIR path @endtp
+#     <td>A single path to directory containing multiple module folders each containing their own 
+#         BasisProject.cmake that will each be picked up automatically. 
+#         Also see the related variable @c MODULE_DIRS.
+#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: ${PROJECT_SOURCE_DIR}/modules)</td>
+#   </tr>
+#   <tr>
+#     @tp @b MODULE_DIRS path1 [path2...] @endtp
+#     <td>Multiple paths, each to a single directory containing a 
+#         BasisProject.cmake file. Each will be picked up as a module.
+#         Also see the related variable @c MODULES_DIR.
+#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: empty string)</td>
 #   </tr>
 #   <tr>
 #     @tp @b DEPENDS name[, name] @endtp

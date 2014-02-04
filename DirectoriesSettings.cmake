@@ -118,8 +118,10 @@ set (PROJECT_DOCRES_DIR  "${PROJECT_SOURCE_DIR}/doc/static")
 set (PROJECT_EXAMPLE_DIR "${PROJECT_SOURCE_DIR}/example")
 set (PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 set (PROJECT_LIBRARY_DIR "${PROJECT_SOURCE_DIR}/lib")
-set (PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/modules")
 set (PROJECT_TESTING_DIR "${PROJECT_SOURCE_DIR}/test")
+
+# note: the related variables PROJECT_MODULES_DIR and PROJECT_MODULE_DIRS
+#       are set in each individual Top Level project's BasisProject.cmake file.
 
 set (PROJECT_SUBDIRS) # default subdirs are added to list in basis_project_impl
 
