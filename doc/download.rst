@@ -52,7 +52,7 @@ The "BASIS" package was released under the
 `SBIA Contribution and Software License Agreement <http://www.rad.upenn.edu/sbia/software/license.html>`__,
 a BSD-style Open Source software license. Since 2013, the forked and slightly renamed "CMake BASIS"
 package is further developed and maintained by its original author Andreas Schuh after leaving SBIA.
-Andrew Hundt from `Carnegie Melon University <http://www.cmu.edu/>`__ joined the development
+Andrew Hundt from `Carnegie Mellon University <http://www.cmu.edu/>`__ joined the development
 of CMake BASIS soon after. 
 
 .. _BSD 2-Clause License: http://opensource.org/licenses/BSD-2-Clause
