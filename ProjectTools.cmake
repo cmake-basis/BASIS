@@ -651,6 +651,7 @@ macro (basis_project_modules)
   if (PROJECT_MODULES)
     option (BUILD_ALL_MODULES "Request to build all modules." OFF)
     option (BUILD_MODULES_BY_DEFAULT "ON - Automatically request modules be built, OFF - manually request each." ON)
+    mark_as_advanced(BUILD_MODULES_BY_DEFAULT)
   endif ()
 
   # provide an option for each module
