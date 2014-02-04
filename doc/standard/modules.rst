@@ -64,14 +64,15 @@ CMake variables can be modified with the ``ccmake`` command. :doc:`/howto/cmake-
 
 .. tabularcolumns:: |p{3cm}|p{12.5cm}|
 
-=========================   =============================================================================================
-    CMake Variable                           Description
-=========================   =============================================================================================
-``MODULE_<module>``         Builds the module named ``<module>`` when set to ``ON`` and excludes it when ``OFF``.
-                            It is automatically set to ``ON`` if it is required by another module that is ``ON``.
-``BUILD_ALL_MODULES``       Global switch enabling the build of all modules. Overrides all ``MODULE_<module>`` variables.
-``PROJECT_IS_MODULE``       Specifies if the current project is a module of another project.
-=========================   =============================================================================================
+===========================      =============================================================================================
+    CMake Variable                              Description
+===========================      =============================================================================================
+``MODULE_<module>``              Builds the module named ``<module>`` when set to ``ON`` and excludes it when ``OFF``.
+                                 It is automatically set to ``ON`` if it is required by another module that is ``ON``.
+``BUILD_MODULES_BY_DEFAULT``     Sets the default state of each ``MODULE_<module>`` switch. ``ON`` by default.
+``BUILD_ALL_MODULES``            Global switch enabling the build of all modules. Overrides all ``MODULE_<module>`` variables.
+``PROJECT_IS_MODULE``            Specifies if the current project is a module of another project.
+============================     =============================================================================================
 
 It is recommended that customized defaults for these variables be set in :ref:`config/Settings.cmake <Settings>`.
 
