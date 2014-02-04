@@ -536,21 +536,6 @@ function (basis_installtree_asserts)
 endfunction ()
 
 
-##
-# FUNCTION basis_append_to_each(output_list input_list item_to_append <>)
-#  @brief basis_append_to_each takes an input list and appends a single element to each item in that list and adds it to the output list.
-#                For example, this is useful for adding relative paths to the end of a list of paths.
-#
-# @todo move to CommonTools.cmake
-#
-function(basis_append_to_each OUTPUT_LIST INPUT_LIST ITEM_TO_APPEND)
-  set(${OUTPUT_LIST} "")
-  foreach(PATH IN LISTS ${INPUT_LIST})
-    list(APPEND ${OUTPUT_LIST} ${PATH}${ITEM_TO_APPEND} )
-  endforeach()
-  set(${OUTPUT_LIST} ${${OUTPUT_LIST}} PARENT_SCOPE)
-endfunction()
-
 
 
 
@@ -572,9 +557,6 @@ macro (basis_project_modules)
   set (PROJECT_MODULES)
   set (PROJECT_MODULES_ENABLED)
   set (PROJECT_MODULES_DISABLED)
-  
-  basis_append_to_each(PROJECT_MODULE_INFO_FILES PROJECT_MODULE_DIRS "/BasisProject.cmake")
-
   # --------------------------------------------------------------------------
   # load module DAG
 
@@ -585,14 +567,30 @@ macro (basis_project_modules)
     RELATIVE
       "${CMAKE_CURRENT_SOURCE_DIR}"
       "${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
-      ${PROJECT_MODULE_INFO_FILES}
   )
+  
+  # add each manually specified module
+  foreach(M_PATH IN LISTS PROJECT_MODULE_DIRS)
 
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}/BasisProject.cmake")
+      list(APPEND MODULE_INFO_FILES "${M_PATH}/BasisProject.cmake")
+    else()
+      message(FATAL_ERROR "Check your Top Level ${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake file because the module ${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}/BasisProject.cmake file does not appear to exist.")
+    endif()
+  endforeach()
+  
   # use function scope to avoid overwriting of this project's variables
   function (basis_module_info F)
     set (PROJECT_IS_MODULE TRUE)
     set (BASIS_basis_project_CALLED FALSE)
-    include ("${CMAKE_CURRENT_SOURCE_DIR}/${F}")
+   
+    set(F_INC_PATH ${F})
+
+    if (NOT IS_ABSOLUTE "${F}")
+      set(F_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${F})
+    endif()
+    
+    include ("${F}")
     # make sure that basis_project() was called
     if (NOT BASIS_basis_project_CALLED)
       message (FATAL_ERROR "basis_module_info(): Missing basis_project() command in ${F}!")
@@ -1810,8 +1808,11 @@ macro (basis_project_impl)
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIR}")
   
-  list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
-
+  if(PROJECT_CODE_DIRS)
+    list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
+  endif()
+  
+  message(AUTHOR_WARNING "PROJECT_SUBDIRS: ${PROJECT_SUBDIRS}")
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
     if (NOT IS_ABSOLUTE "${SUBDIR}")
