@@ -38,12 +38,26 @@ more advanced selection of specific version and package components.
 Dependencies can also be specified multiple times if some components
 are optional, while others are required.
 
+The syntax for specifying dependencies is:
+
 .. code-block:: cmake
     
     basis_project(
       # [...]
       DEPENDS
-        <package>-<version>{<component>}
+        <package_name>[-<version>][{<componen1>,<component2>,...}]
+      # [...]
+    )
+    
+    
+In the example below, ``ITK-4{IOKernel}``, you would require version 4 of the 
+ITK package. You can also be more specific using ``ITK-4.2`` or ``ITK-3.18.0``.
+
+.. code-block:: cmake
+
+    basis_project(
+      # [...]
+      DEPENDS
         ITK-4{IOKernel}
       OPTIONAL_DEPENDS
         PythonInterp
