@@ -3012,5 +3012,24 @@ function (basis_process_generator_expressions ARGS)
 endfunction ()
 
 
+##
+#  @brief basis_append_to_each takes an input list and appends a single element to each item in that list and appends it to the output list.
+#                For example, this is useful for adding relative paths to the end of a list of paths.
+#
+#  @param OUTPUT_LIST Name of list that will be filled with appended names.
+#  @param INPUT_LIST  Name of list that contains items to have text appended.
+#  @param ITEM_TO_APPEND text to append to each item in the input list.
+#
+function(basis_append_to_each OUTPUT_LIST INPUT_LIST ITEM_TO_APPEND)
+  foreach(PATH IN LISTS ${INPUT_LIST})
+    list(APPEND ${OUTPUT_LIST} ${PATH}${ITEM_TO_APPEND} )
+  endforeach()
+
+  if(${OUTPUT_LIST})
+    set(${OUTPUT_LIST} ${${OUTPUT_LIST}} PARENT_SCOPE)
+  endif()
+endfunction()
+
+
 ## @}
 # end of Doxygen group

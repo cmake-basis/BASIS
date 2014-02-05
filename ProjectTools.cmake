@@ -1,6 +1,6 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
-# Copyright (c) 2013-2014 Carnegie Melon University
+# Copyright (c) 2013-2014 Carnegie Mellon University
 # Copyright (c) 2013-2014 Andreas Schuh
 # All rights reserved.
 #
@@ -254,6 +254,18 @@ macro (basis_project_check_metadata)
   else ()
     set (TOPLEVEL_PROJECT_CONTACT "${PROJECT_CONTACT}")
   endif ()
+  
+  # set default variable for PROJECT_MODULES_DIR
+  if(NOT PROJECT_MODULES_DIR)
+    set (PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/modules")
+  endif()
+  # make sure PROJECT_MODULES_DIR is an absolute path
+  if(NOT IS_ABSOLUTE PROJECT_MODULES_DIR)
+    set(PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/${PROJECT_MODULES_DIR}")
+  endif()
+  
+  
+  
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
@@ -419,6 +431,22 @@ endmacro ()
 #       as well as the data/templates foler of the BASIS source tree.</td>
 #   </tr>
 #   <tr>
+#     @tp @b MODULES_DIR path @endtp
+#     <td>A single path to directory containing multiple module folders each containing their own 
+#         BasisProject.cmake that will each be picked up automatically. 
+#         Also see the related variable @c MODULE_DIRS.
+#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: ${PROJECT_SOURCE_DIR}/modules)</td>
+#   </tr>
+#   <tr>
+#     @tp @b MODULE_DIRS path1 [path2...] @endtp
+#     <td>Multiple paths, each to a single directory containing a 
+#         BasisProject.cmake file. Each will be picked up as a module.
+#         Also see the related variable @c MODULES_DIR.
+#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: empty string)</td>
+#   </tr>
+#   <tr>
 #     @tp @b DEPENDS name[, name] @endtp
 #     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
 #         or names of external packages.</td>
@@ -459,6 +487,8 @@ endmacro ()
 # @retval PROJECT_TEST_DEPENDS            @c TEST_DEPENDS arguments.
 # @retval PROJECT_OPTIONAL_TEST_DEPENDS   @c OPTIONAL_TEST_DEPENDS arguments.
 # @retval PROJECT_IS_SUBPROJECT           @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
+# @retval PROJECT_CODE_DIRS               @c LIST of directories on which basis_add_subdirectory() will be called.
+# @retval PROJECT_MODULE_DIRS             @c LIST of directories that are project modules containg a BasisProject.cmake file.
 #
 # @ingroup CMakeAPI
 #
@@ -533,6 +563,10 @@ function (basis_installtree_asserts)
   endif()
 endfunction ()
 
+
+
+
+
 # ----------------------------------------------------------------------------
 ## @brief Initialize project modules.
 #
@@ -551,7 +585,6 @@ macro (basis_project_modules)
   set (PROJECT_MODULES)
   set (PROJECT_MODULES_ENABLED)
   set (PROJECT_MODULES_DISABLED)
-
   # --------------------------------------------------------------------------
   # load module DAG
 
@@ -561,14 +594,31 @@ macro (basis_project_modules)
       MODULE_INFO_FILES
     RELATIVE
       "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/modules/*/BasisProject.cmake"
+      "${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
   )
+  
+  # add each manually specified module
+  foreach(M_PATH IN LISTS PROJECT_MODULE_DIRS)
 
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}/BasisProject.cmake")
+      list(APPEND MODULE_INFO_FILES "${M_PATH}/BasisProject.cmake")
+    else()
+      message(FATAL_ERROR "Check your Top Level ${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake file because the module ${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}/BasisProject.cmake file does not appear to exist.")
+    endif()
+  endforeach()
+  
   # use function scope to avoid overwriting of this project's variables
   function (basis_module_info F)
     set (PROJECT_IS_MODULE TRUE)
     set (BASIS_basis_project_CALLED FALSE)
-    include ("${CMAKE_CURRENT_SOURCE_DIR}/${F}")
+   
+    set(F_INC_PATH ${F})
+
+    if (NOT IS_ABSOLUTE "${F}")
+      set(F_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${F})
+    endif()
+    
+    include ("${F}")
     # make sure that basis_project() was called
     if (NOT BASIS_basis_project_CALLED)
       message (FATAL_ERROR "basis_module_info(): Missing basis_project() command in ${F}!")
@@ -1593,6 +1643,8 @@ endmacro ()
 # @sa BasisProject.cmake
 # @sa basis_project()
 #
+# @attention: add_uninstall must be done last and using a add_subdirectory() call
+#             such that the code is executed last by the root cmake_install.cmake!
 # @ingroup CMakeAPI
 macro (basis_project_impl)
   # --------------------------------------------------------------------------
@@ -1765,7 +1817,11 @@ macro (basis_project_impl)
   endif ()
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIR}")
-
+  
+  if(PROJECT_CODE_DIRS)
+    list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
+  endif()
+  
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
     if (NOT IS_ABSOLUTE "${SUBDIR}")
@@ -1864,10 +1920,10 @@ macro (basis_project_impl)
   if (NOT PROJECT_IS_MODULE)
     # add uninstall target
     basis_add_uninstall ()
-    # add code to generate uninstaller at the end of the installation
+    ## add code to generate uninstaller at the end of the installation
     #
-    # Attention: This must be done at last and using a add_subdirectory() call
-    #            such that the code is executed at last by the root cmake_install.cmake!
+    # @attention: add_uninstall must be done last and using a add_subdirectory() call
+    #             such that the code is executed last by the root cmake_install.cmake!
     add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
   endif ()
 
