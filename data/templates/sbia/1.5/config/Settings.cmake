@@ -5,7 +5,7 @@
 # This file is included by basis_project_impl(), after it looked for the
 # required and optional dependencies and the CMake variables related to the
 # project directory structure were defined (see Directories.cmake file in
-# @c BINARY_CONFIG_DIR). It is further included before the BasisSettings.cmake
+# @c BINARY_CONFIG_DIR). It is also included before the BasisSettings.cmake
 # file.
 #
 # In particular build options should be added in this file using CMake's

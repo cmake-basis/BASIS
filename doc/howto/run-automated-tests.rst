@@ -129,7 +129,7 @@ basistest-slave
 
 This script wraps the execution of the CTest script used for the automated
 testing of BASIS projects including the submission of the test results to the
-CDash_ server. It mainly converts the command-line arguments to the correct
+sbiaCDash_ server. It mainly converts the command-line arguments to the correct
 command-line for the invocation of the CTest script.
 
 The `basistest.ctest`_ script performs the actual testing of a BASIS
@@ -170,6 +170,29 @@ script is at the moment the single line::
     There is another wrapper script named ``svnwrap`` owned by
     the ``svnuser`` involved which does the actual invocation of the
     ``svn`` command.
+    
+
+.. _HowToIntegrateCDash:
+    
+CDash Integration
+=================
+
+The first step for CDash_ integration is to set up a CDash server by following
+the instructions provided in the CDash documentation.
+
+Then you need to create a project on the CDash site of your server through the
+Admin interface.
+
+Finally, you can configure CTest through the :apidoc:`CTestConfig.cmake` file
+which must be in a project's top-level directory to specify the URL of the
+CDash server as well as the project to submit test results to.
+
+Running tests via ``ctest`` (**not** ``make test``) will then try to submit the
+results to the CDash server.
+
+.. todo:: Add more details about how to configure CDash Integration
+
+
 
 
 .. _AdministrationOfAutomatedTests:
@@ -439,8 +462,9 @@ for the :ref:`BasisTestMaster` script, no matter if any files were modified or n
 
 .. _basistest.ctest: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/basistest_8ctest.html
 .. _crontab: http://adminschoice.com/crontab-quick-reference
-.. _CDash: https://sbia-portal.uphs.upenn.edu/cdash
+.. _sbiaCDash: https://sbia-portal.uphs.upenn.edu/cdash
 .. _CTest: http://www.cmake.org/cmake/help/v2.8.8/ctest.html
 .. _environment modules: http://modules.sourceforge.net/
 .. _Oracle Grid Engine: http://en.wikipedia.org/wiki/Oracle_Grid_Engine
 .. _svn: http://svnbook.red-bean.com/en/1.7/svn.ref.svn.html
+.. _CDash: http://www.cdash.org/

@@ -18,6 +18,7 @@ a new project or its installation.
 
     howto/create-and-modify-project
     howto/use-and-customize-templates
+    howto/configure-project
     howto/manage-data
     howto/document
     howto/branch-and-release
