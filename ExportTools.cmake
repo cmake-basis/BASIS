@@ -212,10 +212,10 @@ function (basis_export_targets)
     message (FATAL_ERROR "basis_export_targets(): CUSTOM_FILE option is required!")
   endif ()
 
-  if (IS_ABSOLUTE ARGN_FILE)
+  if (IS_ABSOLUTE ${ARGN_FILE})
     message (FATAL_ERROR "basis_export_targets(): FILE option argument must be a relative path!")
   endif ()
-  if (IS_ABSOLUTE ARGN_CUSTOM_FILE)
+  if (IS_ABSOLUTE ${ARGN_CUSTOM_FILE})
     message (FATAL_ERROR "basis_export_targets(): CUSTOM_FILE option argument must be a relative path!")
   endif ()
 

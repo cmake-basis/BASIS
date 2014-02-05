@@ -260,7 +260,7 @@ macro (basis_project_check_metadata)
     set (PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/modules")
   endif()
   # make sure PROJECT_MODULES_DIR is an absolute path
-  if(NOT IS_ABSOLUTE PROJECT_MODULES_DIR)
+  if(NOT IS_ABSOLUTE ${PROJECT_MODULES_DIR})
     set(PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/${PROJECT_MODULES_DIR}")
   endif()
   
