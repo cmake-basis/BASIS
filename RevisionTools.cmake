@@ -40,7 +40,7 @@ find_package (Git        QUIET)
 # ----------------------------------------------------------------------------
 ## @brief Get current revision of file or directory.
 #
-# @param [in]  URL  Absolute path of directory or file. May also be a URL to the
+# @param [in]  URL  Absolute path to directory or file. May also be a URL to the
 #                   directory or file in the repository. A leading "file://" is
 #                   automatically removed such that the svn command treats it as a
 #                   local path.
@@ -79,7 +79,7 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Get revision number when directory or file was last changed.
 #
-# @param [in]  URL  Absolute path of directory or file. May also be a URL to the
+# @param [in]  URL  Absolute path to directory or file. May also be a URL to the
 #                   directory or file in the repository. A leading "file://" is
 #                   automatically removed such that the svn command treats it as a
 #                   local path.
@@ -119,7 +119,7 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Get status of revision controlled file.
 #
-# @param [in]  URL    Absolute path of directory or file. May also be a URL to
+# @param [in]  URL    Absolute path to directory or file. May also be a URL to
 #                     the directory or file in the repository.
 #                     A leading "file://" will be removed such that the svn
 #                     command treats it as a local path.

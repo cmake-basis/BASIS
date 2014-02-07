@@ -1366,6 +1366,7 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # configure BASIS directory structure
   include ("${BASIS_MODULE_PATH}/DirectoriesSettings.cmake")
+  list(APPEND PROJECT_CODE_DIRS ${PROJECT_CODE_DIR})
   configure_file (
     "${BASIS_MODULE_PATH}/Directories.cmake.in"
     "${BINARY_CONFIG_DIR}/Directories.cmake"
@@ -1805,7 +1806,7 @@ macro (basis_project_impl)
   basis_dump_variables ("${PROJECT_BINARY_DIR}/BasisCache.txt")
   basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}"
                                     "${PROJECT_INCLUDE_DIR}"
-                                    "${PROJECT_CODE_DIR}")
+                                    "${PROJECT_CODE_DIRS}")
   basis_configure_public_headers ()
   basis_configure_script_libraries ()
 
@@ -1835,11 +1836,7 @@ macro (basis_project_impl)
     list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_TESTING_DIR}")
   endif ()
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
-  list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIR}")
-  
-  if(PROJECT_CODE_DIRS)
-    list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
-  endif()
+  list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
   
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)

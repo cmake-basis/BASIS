@@ -132,7 +132,7 @@ endfunction ()
 set (BASIS_BASH___FILE__ "$(cd -- \"$(dirname -- \"\${BASH_SOURCE}\")\" && pwd -P)/$(basename -- \"$BASH_SOURCE\")")
 
 # ----------------------------------------------------------------------------
-## @brief Absolute path of directory of current BASH file.
+## @brief Absolute path to directory of current BASH file.
 #
 # @note Does not resolve symbolic links.
 #
