@@ -139,11 +139,11 @@ public:
     virtual std::string basename(const std::string& target) const = 0;
 
     /**
-     * @brief Get absolute path of directory containing executable.
+     * @brief Get absolute path to directory containing executable.
      *
      * @param [in] target Name/UID of build target.
      *
-     * @returns Absolute path of directory containing executable file.
+     * @returns Absolute path to directory containing executable file.
      */
     virtual std::string dirname(const std::string& target) const = 0;
 
@@ -259,7 +259,7 @@ std::string exename(const std::string&           name    = std::string(),
  * @param [in] name    Name of command or @c NULL.
  * @param [in] targets Structure providing information about executable targets.
  *
- * @returns Absolute path of directory containing executable or an empty string if not found.
+ * @returns Absolute path to directory containing executable or an empty string if not found.
  *          If @p name is @c NULL, the directory of this executable is returned.
  *
  * @sa exepath()

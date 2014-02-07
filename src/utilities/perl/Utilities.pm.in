@@ -355,7 +355,7 @@ sub exename
 #                       always returns false.
 # @param [in] $base     Base directory used for relative paths in @p %$targets.
 #
-# @returns Absolute path of directory containing executable or @c undef if not found.
+# @returns Absolute path to directory containing executable or @c undef if not found.
 #          If @p name is @c undef, the directory of this executable is returned.
 sub exedir
 {
