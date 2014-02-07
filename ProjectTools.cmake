@@ -1362,11 +1362,7 @@ macro (basis_project_initialize)
   # yet unused
   basis_set_project_property (PROPERTY PROJECT_USES_JAVA_UTILITIES   FALSE)
   basis_set_project_property (PROPERTY PROJECT_USES_MATLAB_UTILITIES FALSE)
-endmacro ()
 
-# ----------------------------------------------------------------------------
-## @brief Initialize project settings.
-macro (basis_initialize_settings)
   # --------------------------------------------------------------------------
   # configure BASIS directory structure
   include ("${BASIS_MODULE_PATH}/DirectoriesSettings.cmake")
@@ -1375,6 +1371,11 @@ macro (basis_initialize_settings)
     "${BINARY_CONFIG_DIR}/Directories.cmake"
     @ONLY
   )
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Initialize project settings.
+macro (basis_initialize_settings)
   # --------------------------------------------------------------------------
   # include project specific settings
   #
