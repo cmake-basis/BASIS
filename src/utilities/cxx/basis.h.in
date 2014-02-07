@@ -62,30 +62,30 @@ extern const char* CONTACT;
 // ===========================================================================
 
 /**
- * @brief Get absolute path of directory containing runtime executables.
+ * @brief Get absolute path to directory containing runtime executables.
  *
- * @returns Absolute path of directory containing runtime executables.
+ * @returns Absolute path to directory containing runtime executables.
  */
 std::string bindir();
 
 /**
- * @brief Get absolute path of directory containing auxiliary executables.
+ * @brief Get absolute path to directory containing auxiliary executables.
  *
- * @returns Absolute path of directory containing auxiliary executables.
+ * @returns Absolute path to directory containing auxiliary executables.
  */
 std::string libexecdir();
 
 /**
- * @brief Get absolute path of directory containing libraries.
+ * @brief Get absolute path to directory containing libraries.
  *
- * @returns Absolute path of directory containing libraries.
+ * @returns Absolute path to directory containing libraries.
  */
 std::string libdir();
 
 /**
- * @brief Get absolute path of directory containing auxiliary data.
+ * @brief Get absolute path to directory containing auxiliary data.
  *
- * @returns Absolute path of directory containing auxiliary data.
+ * @returns Absolute path to directory containing auxiliary data.
  */
 std::string datadir();
 
@@ -197,7 +197,7 @@ std::string exename(const std::string& name = std::string());
  *
  * @param [in] name Name of command or @c NULL.
  *
- * @returns Absolute path of directory containing executable or an empty string if not found.
+ * @returns Absolute path to directory containing executable or an empty string if not found.
  *          If @p name is @c NULL, the directory of this executable is returned.
  *
  * @sa exepath()

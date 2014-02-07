@@ -209,7 +209,7 @@ def exename(name=None, prefix=_TARGET_UID_PREFIX, targets=_EXECUTABLE_TARGETS, b
 # @param [in] targets Dictionary mapping target UIDs to executable paths.
 # @param [in] base    Base directory for relative paths in @p targets.
 #
-# @returns Absolute path of directory containing executable or @c None if not found.
+# @returns Absolute path to directory containing executable or @c None if not found.
 #         If @p name is @c None, the directory of this executable is returned.
 def exedir(name=None, prefix=_TARGET_UID_PREFIX, targets=_EXECUTABLE_TARGETS, base=_TARGETS_BASE):
     return utilities.exedir(name, prefix=prefix, targets=targets, base=base)

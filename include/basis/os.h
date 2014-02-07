@@ -65,9 +65,9 @@ std::string exepath();
 std::string exename();
 
 /**
- * @brief Get canonical path of directory containing executable file.
+ * @brief Get canonical path to directory containing executable file.
  *
- * @return Canonical path of directory containing executable file.
+ * @return Canonical path to directory containing executable file.
  *
  * @sa exepath()
  * @sa exename()
