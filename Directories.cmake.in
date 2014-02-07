@@ -36,25 +36,27 @@ set (PERL_SITELIB "@PERL_SITELIB@")
 # source tree
 # ============================================================================
 
-## @brief Absolute path of directory of project sources in source tree.
+## @brief Absolute path to directory of project sources in source tree.
 set (PROJECT_CODE_DIR "@PROJECT_CODE_DIR@")
-## @brief Absolute path of directory of BASIS project configuration in source tree.
+## @brief Absolute path to directories of project sources in source tree.
+set (PROJECT_CODE_DIRS "@PROJECT_CODE_DIRS@")
+## @brief Absolute path to directory of BASIS project configuration in source tree.
 set (PROJECT_CONFIG_DIR "@PROJECT_CONFIG_DIR@")
-## @brief Absolute path of directory of auxiliary data in source tree.
+## @brief Absolute path to directory of auxiliary data in source tree.
 set (PROJECT_DATA_DIR "@PROJECT_DATA_DIR@")
-## @brief Absolute path of directory of documentation files in source tree.
+## @brief Absolute path to directory of documentation files in source tree.
 set (PROJECT_DOC_DIR "@PROJECT_DOC_DIR@")
-## @brief Absolute path of directory of documentation ressource files in source tree.
+## @brief Absolute path to directory of documentation ressource files in source tree.
 set (PROJECT_DOCRES_DIR "@PROJECT_DOCRES_DIR@")
-## @brief Absolute path of directory of example in source tree.
+## @brief Absolute path to directory of example in source tree.
 set (PROJECT_EXAMPLE_DIR "@PROJECT_EXAMPLE_DIR@")
-## @brief Absolute path of directory of public header files in source tree.
+## @brief Absolute path to directory of public header files in source tree.
 set (PROJECT_INCLUDE_DIR "@PROJECT_INCLUDE_DIR@")
-## @brief Absolute path of directory of public scripted packages.
+## @brief Absolute path to directory of public scripted packages.
 set (PROJECT_LIBRARY_DIR "@PROJECT_LIBRARY_DIR@")
-## @brief Absolute path of directory of project modules.
+## @brief Absolute path to directory of project modules.
 set (PROJECT_MODULES_DIR "@PROJECT_MODULES_DIR@")
-## @brief Absolute path of directory of testing tree in source tree.
+## @brief Absolute path to directory of testing tree in source tree.
 set (PROJECT_TESTING_DIR "@PROJECT_TESTING_DIR@")
 ## @brief Names of additional project subdirectories at root level.
 set (PROJECT_SUBDIRS "@PROJECT_SUBDIRS@")
@@ -63,50 +65,50 @@ set (PROJECT_SUBDIRS "@PROJECT_SUBDIRS@")
 # testing tree
 # ============================================================================
 
-## @brief Absolute path of output directory for tests.
+## @brief Absolute path to output directory for tests.
 set (TESTING_OUTPUT_DIR "@TESTING_OUTPUT_DIR@")
-## @brief Absolute path of output directory for built test executables.
+## @brief Absolute path to output directory for built test executables.
 set (TESTING_RUNTIME_DIR "@TESTING_RUNTIME_DIR@")
-## @brief Absolute path of output directory for auxiliary executables used by tests.
+## @brief Absolute path to output directory for auxiliary executables used by tests.
 set (TESTING_LIBEXEC_DIR "@TESTING_LIBEXEC_DIR@")
-## @brief Absolute path of output directory for testing libraries.
+## @brief Absolute path to output directory for testing libraries.
 set (TESTING_LIBRARY_DIR "@TESTING_LIBRARY_DIR@")
 
-## @brief Absolute path of output directory for Python modules used for testing.
+## @brief Absolute path to output directory for Python modules used for testing.
 set (TESTING_PYTHON_LIBRARY_DIR "@TESTING_PYTHON_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Jython modules used for testing.
+## @brief Absolute path to output directory for Jython modules used for testing.
 set (TESTING_JYTHON_LIBRARY_DIR "@TESTING_JYTHON_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Perl modules used for testing.
+## @brief Absolute path to output directory for Perl modules used for testing.
 set (TESTING_PERL_LIBRARY_DIR "@TESTING_PERL_LIBRARY_DIR@")
-## @brief Absolute path of output directory for MATLAB modules used for testing.
+## @brief Absolute path to output directory for MATLAB modules used for testing.
 set (TESTING_MATLAB_LIBRARY_DIR "@TESTING_MATLAB_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Bash modules used for testing.
+## @brief Absolute path to output directory for Bash modules used for testing.
 set (TESTING_BASH_LIBRARY_DIR "@TESTING_BASH_LIBRARY_DIR@")
 
 # ============================================================================
 # build tree
 # ============================================================================
 
-## @brief Absolute path of output directory for main executables.
+## @brief Absolute path to output directory for main executables.
 set (BINARY_RUNTIME_DIR "@BINARY_RUNTIME_DIR@")
-## @brief Absolute path of output directory for auxiliary executables.
+## @brief Absolute path to output directory for auxiliary executables.
 set (BINARY_LIBEXEC_DIR "@BINARY_LIBEXEC_DIR@")
-## @brief Absolute path of output directory for configured public header files.
+## @brief Absolute path to output directory for configured public header files.
 set (BINARY_INCLUDE_DIR "@BINARY_INCLUDE_DIR@")
-## @brief Absolute path of output directory for shared libraries and modules.
+## @brief Absolute path to output directory for shared libraries and modules.
 set (BINARY_LIBRARY_DIR "@BINARY_LIBRARY_DIR@")
-## @brief Absolute path of output directory for static and import libraries.
+## @brief Absolute path to output directory for static and import libraries.
 set (BINARY_ARCHIVE_DIR "@BINARY_ARCHIVE_DIR@")
 
-## @brief Absolute path of output directory for Python modules.
+## @brief Absolute path to output directory for Python modules.
 set (BINARY_PYTHON_LIBRARY_DIR "@BINARY_PYTHON_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Jython modules.
+## @brief Absolute path to output directory for Jython modules.
 set (BINARY_JYTHON_LIBRARY_DIR "@BINARY_JYTHON_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Perl modules.
+## @brief Absolute path to output directory for Perl modules.
 set (BINARY_PERL_LIBRARY_DIR "@BINARY_PERL_LIBRARY_DIR@")
-## @brief Absolute path of output directory for MATLAB modules.
+## @brief Absolute path to output directory for MATLAB modules.
 set (BINARY_MATLAB_LIBRARY_DIR "@BINARY_MATLAB_LIBRARY_DIR@")
-## @brief Absolute path of output directory for Bash modules.
+## @brief Absolute path to output directory for Bash modules.
 set (BINARY_BASH_LIBRARY_DIR "@BINARY_BASH_LIBRARY_DIR@")
 
 # ============================================================================
