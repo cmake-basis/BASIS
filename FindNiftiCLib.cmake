@@ -111,7 +111,7 @@ if (NiftiCLib_DIR)
       NAMES         nifti/nifti1_io.h
       HINTS         ${NiftiCLib_DIR}
       PATH_SUFFIXES "include"
-      DOC           "Path of directory containing nifti1_io.h file."
+      DOC           "path to directory containing nifti1_io.h file."
       NO_DEFAULT_PATH
   )
 
@@ -137,7 +137,7 @@ else ()
     NiftiCLib_INCLUDE_DIR
       NAMES         nifti/nifti1_io.h
       HINTS         ENV C_INCLUDE_PATH ENV CXX_INCLUDE_PATH
-      DOC           "Path of directory containing nifti1_io.h file."
+      DOC           "path to directory containing nifti1_io.h file."
   )
 
   find_library (
