@@ -14,9 +14,25 @@
 ##############################################################################
 
 # ============================================================================
+# basis_name_check
+# ============================================================================
+# ----------------------------------------------------------------------------
+## @brief Check if a project name fits the BASIS standards.
+#
+macro (basis_name_check INPUT_PROJECT_NAME)
+  if (NOT ${INPUT_PROJECT_NAME} MATCHES "^([a-z][-_a-z0-9]*|[a-zA-Z0-9][-_a-zA-Z0-9]*)$")
+    message (FATAL_ERROR "Invalid name: ${${INPUT_PROJECT_NAME}}!\n"
+                         "We suggest that you use upper CamelCase notation."
+                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms)."
+                         "Please choose a name with either only captial letters"
+                         "in the case of an acronym or a name with mixed case, "
+                         "but starting with a captial letter.\n"
+                         "Note that numbers, "-" and "_" are allowed, but not as first character.")
+endmacro()
+
+# ============================================================================
 # meta-data
 # ============================================================================
-
 # ----------------------------------------------------------------------------
 ## @brief Check meta-data and set defaults.
 #
@@ -49,16 +65,7 @@ macro (basis_project_check_metadata)
   if (NOT PROJECT_NAME)
     message (FATAL_ERROR "CMake BASIS variable PROJECT_NAME not specified!")
   endif ()
-  if (NOT PROJECT_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)$")
-    message (FATAL_ERROR "Invalid project name: ${PROJECT_NAME}!\n"
-                         "Please choose a project name with either only captial "
-                         "letters in case of an acronym or a name with mixed case, "
-                         "but starting with a captial letter.\n"
-                         "Note that numbers are allowed, but not as first character. "
-                         "Further, do not use characters such as '_' or '-' to "
-                         "separate parts of the project name. Instead, use the "
-                         "upper camel case notation "
-                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
+  basis_name_check(PROJECT_NAME)
   endif ()
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_L)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_U)
@@ -89,17 +96,7 @@ macro (basis_project_check_metadata)
       set (PROJECT_PACKAGE_NAME "${PROJECT_NAME}")
     endif ()
   endif ()
-  if (NOT PROJECT_PACKAGE_NAME MATCHES "^([a-z][a-z0-9]*|[A-Z][a-zA-Z0-9]*)$")
-    message (FATAL_ERROR "Project ${PROJECT_NAME} declares invalid package name: ${PROJECT_PACKAGE_NAME}!\n"
-                         "Please choose a package name with either only captial "
-                         "letters in case of an acronym or a name with mixed case, "
-                         "but starting with a captial letter.\n"
-                         "Note that numbers are allowed, but not as first character. "
-                         "Further, do not use characters such as '_' or '-' to "
-                         "separate parts of the package name. Instead, use the "
-                         "upper camel case notation "
-                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms).")
-  endif ()
+  basis_name_check(PROJECT_PACKAGE_NAME)
   string (TOLOWER "${PROJECT_PACKAGE_NAME}" PROJECT_PACKAGE_NAME_L)
   string (TOUPPER "${PROJECT_PACKAGE_NAME}" PROJECT_PACKAGE_NAME_U)
   if (NOT PROJECT_IS_MODULE)
