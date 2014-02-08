@@ -1088,15 +1088,15 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
             sys.stderr.write("No project description given!\n")
             sys.exit(1)
         # verify that name is valid
-        if not re.match(r'^[a-zA-Z0-9]+$', args.name):
+        if not re.match(r'^[a-zA-Z0-9][-_a-zA-Z0-9]+$', args.name):
             if args.new_template:
                 sys.stderr.write("Invalid template name: " + args.name + "\n")
-                sys.stderr.write("A template name may only consist of alphanumeric characters!\n")
+                sys.stderr.write("A template name may only consist of alphanumeric characters, `-`, and `_`!\n")
             else:
                 sys.stderr.write("Invalid project name: " + args.name + "\n")
-                sys.stderr.write("A project name may only consist of alphanumeric characters!\n")
-                sys.stderr.write("If you are attempting to modify an existent project, check whether the\n")
-                sys.stderr.write("project name is correctly extracted from the BasisProject.cmake file.\n")
+                sys.stderr.write("A project name may only consist of alphanumeric characters, `-`, and `_`!\n")
+                sys.stderr.write("If you are attempting to modify an existing project, check if the\n")
+                sys.stderr.write("project name has been correctly extracted from the BasisProject.cmake file.\n")
             sys.exit(1)
     # request to modify existing project
     else:
