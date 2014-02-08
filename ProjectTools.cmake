@@ -27,7 +27,8 @@ macro (basis_name_check INPUT_PROJECT_NAME)
                          "Please choose a name with either only captial letters"
                          "in the case of an acronym or a name with mixed case, "
                          "but starting with a captial letter.\n"
-                         "Note that numbers, "-" and "_" are allowed, but not as first character.")
+                         "Note that numbers, `-` and `_` are allowed, but not as first character.")
+  endif()
 endmacro()
 
 # ============================================================================
@@ -66,7 +67,6 @@ macro (basis_project_check_metadata)
     message (FATAL_ERROR "CMake BASIS variable PROJECT_NAME not specified!")
   endif ()
   basis_name_check(PROJECT_NAME)
-  endif ()
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_L)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_U)
   if (NOT PROJECT_IS_MODULE)
