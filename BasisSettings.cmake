@@ -148,6 +148,7 @@ set (
     VERSION
     TEMPLATE       # used by basisproject tool
     MODULES_DIR    # single directory containing multiple modules, also see MODULE_DIRS
+    INCLUDE_DIR
 )
 
 ## @brief Names of project meta-data with multiple arguments.
@@ -161,6 +162,7 @@ set (
     TEST_DEPENDS
     OPTIONAL_TEST_DEPENDS
     MODULE_DIRS # list paths each pointing to an individual module, also see MODULES_DIR
+    INCLUDE_DIRS
     CODE_DIRS   # list of paths to source code directories
 )
 

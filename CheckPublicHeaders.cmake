@@ -66,6 +66,7 @@ if (CMAKE_FILE_DIFFERS)
   foreach (H IN LISTS _HEADERS)
     list (FIND ${VARIABLE_NAME} "${H}" IDX)
     if (IDX EQUAL -1)
+      # TODO: this hard coded /include path may break for custom include directories
       string (REGEX REPLACE "^.*/include/" "" H "${H}")
       string (REGEX REPLACE "\\.in$"       "" H "${H}")
       file (REMOVE "${BINARY_INCLUDE_DIR}/${H}")

@@ -261,7 +261,28 @@ macro (basis_project_check_metadata)
     set(PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/${PROJECT_MODULES_DIR}")
   endif()
   
+  # set default variable for PROJECT_INCLUDE_DIR
+  if(NOT PROJECT_INCLUDE_DIR)
+    set (PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+  endif()
   
+  
+  # set default variable for PROJECT_INCLUDE_DIRS
+  list(APPEND PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIR})
+  
+  # make sure each include directory is absolute
+  set(ABSOLUTE_PROJECT_INCLUDE_DIRS)
+  foreach(M_PATH IN LISTS PROJECT_INCLUDE_DIRS)
+    if(IS_ABSOLUTE ${M_PATH})
+      list(APPEND ABSOLUTE_PROJECT_INCLUDE_DIRS ${M_PATH})
+    elseif(IS_ABSOLUTE "${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}")
+      list(APPEND ABSOLUTE_PROJECT_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}")
+    else()
+      message(FATAL_ERROR "Check your INCLUDE_DIR ${M_PATH} directory because neither that nor ${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH} appears to exist.")
+    endif()
+  endforeach()
+  set(PROJECT_INCLUDE_DIRS ${ABSOLUTE_PROJECT_INCLUDE_DIRS})
+  set(ABSOLUTE_PROJECT_INCLUDE_DIRS)
   
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
@@ -440,6 +461,22 @@ endmacro ()
 #     <td>Multiple paths, each to a single directory containing a 
 #         BasisProject.cmake file. Each will be picked up as a module.
 #         Also see the related variable @c MODULES_DIR.
+#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b INCLUDE_DIR path @endtp
+#     <td>A single path to the directory to be included that contains 
+#         header files that are part of the public interface. 
+#         Also see the related variable @c INCLUDE_DIRS.
+#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
+#         (default: ${PROJECT_SOURCE_DIR}/modules)</td>
+#   </tr>
+#   <tr>
+#     @tp @b INCLUDE_DIRS path1 [path2...] @endtp
+#     <td>Multiple paths, each to a single directory containing header
+#         files that are part of the public interface.
+#         Also see the related variable @c INCLUDE_DIR.
 #         A relative path must be relative to @c PROJECT_SOURCE_DIR.
 #         (default: empty string)</td>
 #   </tr>
@@ -789,7 +826,9 @@ function (basis_configure_public_headers)
 
   # log file which lists the configured header files
   set (CMAKE_FILE "${BINARY_INCLUDE_DIR}/${PROJECT_NAME}PublicHeaders.cmake")
-  # considered extensions (excl. .in suffix)
+  
+  # ----------------------------------------------------------------------------
+  #  header files to configure excluding the .in suffix
   set (
     EXTENSIONS
       ".h"
@@ -800,9 +839,6 @@ function (basis_configure_public_headers)
       ".txx"
       ".inc"
   )
-  # considered include directories
-  basis_get_relative_path (INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
-  set (INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/${INCLUDE_DIR}")
 
   # --------------------------------------------------------------------------
   # clean up last run before the error because a file was added/removed
@@ -817,13 +853,38 @@ function (basis_configure_public_headers)
   # configure public header files
   message (STATUS "Configuring public header files...")
 
+  if (NOT PROJECT_INCLUDE_DIRS)
+    message (FATAL_ERROR "Missing argument PROJECT_INCLUDE_DIRS!")
+  endif ()
+  
+  
+  # configure all .in files with substitution
+  set (CONFIGURED_HEADERS)
+  foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
+    set (PATTERN)
+    foreach (E IN LISTS EXTENSIONS)
+      list (APPEND PATTERN "${INCLUDE_DIR}/*${E}.in")
+    endforeach ()
+    file (GLOB_RECURSE FILES RELATIVE "${INCLUDE_DIR}" ${PATTERN})
+    foreach (HEADER IN LISTS FILES)
+      get_filename_component (SOURCE "${INCLUDE_DIR}/${HEADER}" ABSOLUTE)
+      string (REGEX REPLACE "\\.in$" "" HEADER "${HEADER}")
+      configure_file ("${SOURCE}" "${BINARY_INCLUDE_DIR}/${HEADER}" @ONLY)
+      list (APPEND CONFIGURED_HEADERS "${SOURCE}")
+    endforeach ()
+  endforeach ()
+
+  # regular headers are copied separately via 
+  # execute_process to avoid a full configure step
+  # However, all headers should be checked for changes. 
+
   execute_process (
     COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
-            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+            -D "PROJECT_INCLUDE_DIRS=${PROJECT_INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
             -D "EXTENSIONS=${EXTENSIONS}"
-            -D "CACHE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
             -D "CMAKE_FILE=${CMAKE_FILE}"
+            -D "CONFIGURED_HEADERS=${CONFIGURED_HEADERS}"
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
     RESULT_VARIABLE RT
   )
@@ -849,7 +910,7 @@ function (basis_configure_public_headers)
       # from the directory tree with root PROJECT_INCLUDE_DIR also from the
       # tree with root directory BINARY_INCLUDE_DIR.
       COMMAND "${CMAKE_COMMAND}" ${COMMON_ARGS}
-              -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+              -D "PROJECT_INCLUDE_DIRS=${PROJECT_INCLUDE_DIRS}"
               -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
               -D "CMAKE_FILE=${CMAKE_FILE}.tmp"
               -D "REFERENCE_FILE=${CMAKE_FILE}"
@@ -871,7 +932,6 @@ function (basis_configure_public_headers)
   # header file is added or removed triggeres a re-configuration of the
   # build system which is required to re-execute this function and adjust
   # these custom build targets.
-
   include ("${CMAKE_FILE}")
 
   # --------------------------------------------------------------------------
@@ -893,11 +953,12 @@ function (basis_configure_public_headers)
   add_custom_command (
     OUTPUT  "${CMAKE_FILE}.tmp"
     COMMAND "${CMAKE_COMMAND}"
-            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+            -D "PROJECT_INCLUDE_DIRS=${PROJECT_INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
             -D "EXTENSIONS=${EXTENSIONS}"
             -D "CMAKE_FILE=${CMAKE_FILE}.tmp"
             -D "PREVIEW=TRUE" # do not actually configure the files
+            -D "CONFIGURED_HEADERS=${CONFIGURED_HEADERS}"
             -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
     COMMENT "${COMMENT}"
     VERBATIM
@@ -913,7 +974,7 @@ function (basis_configure_public_headers)
     # Compare current list of headers to list of previously configured files.
     # If the lists differ, the build of this target fails with the given error message.
     COMMAND "${CMAKE_COMMAND}"
-            -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+            -D "PROJECT_INCLUDE_DIRS=${PROJECT_INCLUDE_DIRS}"
             -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
             -D "CMAKE_FILE=${CMAKE_FILE}"
             -D "REFERENCE_FILE=${CMAKE_FILE}.tmp"
@@ -943,10 +1004,9 @@ function (basis_configure_public_headers)
                                       # before otherwise CMake will re-configure
                                       # the build system next time
       COMMAND "${CMAKE_COMMAND}"
-              -D "PROJECT_INCLUDE_DIRS=${INCLUDE_DIRS}"
+              -D "PROJECT_INCLUDE_DIRS=${PROJECT_INCLUDE_DIRS}"
               -D "BINARY_INCLUDE_DIR=${BINARY_INCLUDE_DIR}"
               -D "EXTENSIONS=${EXTENSIONS}"
-              -D "CACHE_FILE=${PROJECT_BINARY_DIR}/BasisCache.txt"
               -P "${BASIS_MODULE_PATH}/ConfigureIncludeFiles.cmake"
       COMMAND "${CMAKE_COMMAND}" -E touch "${CMAKE_FILE}.updated"
       DEPENDS ${PUBLIC_HEADERS}
@@ -1782,10 +1842,11 @@ macro (basis_project_impl)
 
   # dump currently defined CMake variables such that these can be used to
   # configure the .in public header and module files during the build step
-  basis_dump_variables ("${PROJECT_BINARY_DIR}/BasisCache.txt")
   basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}"
                                     "${PROJECT_INCLUDE_DIR}"
                                     "${PROJECT_CODE_DIRS}")
+  
+  
   basis_configure_public_headers ()
   basis_configure_script_libraries ()
 
