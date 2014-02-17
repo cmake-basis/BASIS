@@ -282,7 +282,7 @@ macro (basis_project_check_metadata)
     endif()
   endforeach()
   set(PROJECT_INCLUDE_DIRS ${ABSOLUTE_PROJECT_INCLUDE_DIRS})
-  set(ABSOLUTE_PROJECT_INCLUDE_DIRS)
+  unset(ABSOLUTE_PROJECT_INCLUDE_DIRS)
   
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
@@ -1632,9 +1632,10 @@ macro (basis_install_public_headers)
   # subdirectory of basis.h header file
   basis_library_prefix (_BASIS_H_PREFIX CXX)
   # install public header files from source tree
-  if (EXISTS "${PROJECT_INCLUDE_DIR}")
-    basis_install_directory ("${PROJECT_INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" PATTERN "*.in" EXCLUDE)
-  endif ()
+  foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS )
+    basis_install_directory ("${INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" PATTERN "*.in" EXCLUDE)
+  endforeach ()
+  
   # install configured public header files, excluding BASIS utilities
   file (GLOB_RECURSE _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/*")
   list (REMOVE_ITEM _CONFIGURED_PUBLIC_HEADERS "${BINARY_INCLUDE_DIR}/${_BASIS_H_PREFIX}basis.h")
@@ -1846,8 +1847,12 @@ macro (basis_project_impl)
                                     "${PROJECT_INCLUDE_DIR}"
                                     "${PROJECT_CODE_DIRS}")
   
+  option(BASIS_CONFIGURE_PUBLIC_HEADERS "Perform CMake Variable configuration on .h, .hh, .hpp, .hxx, .inl, .txx, .inc headers that end with a .in suffix" OFF)
+  mark_as_advanced(BASIS_CONFIGURE_PUBLIC_HEADERS)
   
-  basis_configure_public_headers ()
+  if(BASIS_CONFIGURE_PUBLIC_HEADERS)
+    basis_configure_public_headers ()
+  endif()
   basis_configure_script_libraries ()
 
   # --------------------------------------------------------------------------
