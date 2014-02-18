@@ -14,6 +14,15 @@
 # @ingroup CMakeTools
 ##############################################################################
 
+# ----------------------------------------------------------------------------
+# include guard
+if (__BASIS_INSTALLATIONTOOLS_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_INSTALLATIONTOOLS_INCLUDED TRUE)
+endif ()
+
+
 ## @addtogroup CMakeUtilities
 # @{
 
