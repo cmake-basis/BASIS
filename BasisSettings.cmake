@@ -32,6 +32,12 @@
 # @ingroup BasisSettings
 ##############################################################################
 
+if (__BASIS_SETTINGS_INCLUDED)
+  return ()
+else ()
+  set (__BASIS_SETTINGS_INCLUDED TRUE)
+endif ()
+
 ## @addtogroup BasisSettings
 # @{
 
@@ -60,12 +66,20 @@ if (POLICY CMP0017)
   cmake_policy (SET CMP0017 NEW)
 endif ()
 
+## @brief Only enable the CMake components necessary for the build steps.
+option (BASIS_BUILD_ONLY "Disables most BASIS components not necessary for the build step. ON may improve speed." OFF)
+mark_as_advanced(BASIS_BUILD_ONLY)
+
+## @brief Perform basic system checks, Pointer Size, Long Long, Compiler, C++11, etc.
+option (BASIS_SYSTEM_CHECKS "Perform basic system checks, Pointer Size, Long Long, Compiler, C++11, etc. OFF may improve speed" ON)
+mark_as_advanced(BASIS_SYSTEM_CHECKS)
+
 # ============================================================================
 # system checks
 # ============================================================================
 
 # used by tests to disable these checks
-if (NOT BASIS_NO_SYSTEM_CHECKS)
+if (BASIS_SYSTEM_CHECKS)
   include (CheckTypeSize)
   include (CheckIncludeFileCXX)
 
@@ -451,6 +465,7 @@ mark_as_advanced (BASIS_REVISION_INFO)
 option (BASIS_COMPILE_SCRIPTS "Enable compilation of scripts if supported by the language." OFF)
 mark_as_advanced (BASIS_COMPILE_SCRIPTS)
 
+
 ## @brief Enable the installation of scripted modules in site specific default directories.
 #
 # If this option is @c ON, scripted modules such as Python and Perl modules, in particular,
@@ -511,6 +526,14 @@ basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 ## @brief Enable/disable registration of installed package in CMake registry.
 option (BASIS_REGISTER "Request registration of installed package in CMake package registry." ON)
 mark_as_advanced (BASIS_REGISTER)
+
+
+## @brief Enable the `package` and `source_package` targets for producing final release packages.
+#
+# By defualt basis will define targets named `package` and `source_package` that can be utilized to automatically
+# generate software release packages. Disabling this feature will cause a slight performance boost.
+option (BASIS_PACKAGING "Enable the `package` and `source_package` targets for producing final release packages." ON)
+mark_as_advanced (BASIS_PACKAGING)
 
 # ============================================================================
 # programming language specific settings
