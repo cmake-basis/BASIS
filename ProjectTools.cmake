@@ -1741,10 +1741,6 @@ macro (basis_project_impl)
   endif ()
 
   # --------------------------------------------------------------------------
-  # initialize Slicer module
-  basis_slicer_module_initialize ()
-
-  # --------------------------------------------------------------------------
   # Python
 
   # In case of a Slicer Extension, the UseSlicer.cmake file of Slicer (>= 4.0)
@@ -1784,38 +1780,46 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # get interpreter versions - set to invalid version if not available
-  if (NOT PYTHON_VERSION_STRING)
+  if (USE_PythonInterp AND NOT PYTHON_VERSION_STRING)
     basis_get_python_version ()
   endif ()
-  if (NOT JYTHON_VERSION_STRING)
+  if (USE_JythonInterp AND NOT JYTHON_VERSION_STRING)
     basis_get_jython_version ()
   endif ()
-  if (NOT PERL_VERSION_STRING)
+  if (USE_Perl AND NOT PERL_VERSION_STRING)
     basis_get_perl_version ()
   endif ()
-  if (NOT BASH_VERSION_STRING)
+  if (USE_BASH AND NOT BASH_VERSION_STRING)
     basis_get_bash_version ()
   endif ()
-  if (NOT MATLAB_VERSION_STRING)
+  if (USE_MATLAB AND NOT MATLAB_VERSION_STRING)
     basis_get_matlab_version ()
   endif ()
 
-  if (PYTHON_EXECUTABLE AND PYTHON_VERSION_MAJOR EQUAL 0 OR (PYTHON_VERSION_MAJOR EQUAL 1 AND PYTHON_VERSION_MINOR EQUAL 4))
+  if (USE_PythonInterp AND PYTHON_EXECUTABLE AND PYTHON_VERSION_MAJOR EQUAL 0 OR (PYTHON_VERSION_MAJOR EQUAL 1 AND PYTHON_VERSION_MINOR EQUAL 4))
     message (WARNING "Failed to determine Python version! Check if you can run \"${PYTHON_EXECUTABLE} -E\" in a Terminal.")
   endif ()
-  if (JYTHON_EXECUTABLE AND JYTHON_VERSION_MAJOR EQUAL 0)
+  if (USE_JythonInterp AND JYTHON_EXECUTABLE AND JYTHON_VERSION_MAJOR EQUAL 0)
     message (WARNING "Failed to determine Jython version! Check if you can run \"${JYTHON_EXECUTABLE}\".")
   endif ()
-  if (PERL_EXECUTABLE AND PERL_VERSION_MAJOR EQUAL 0)
+  if (USE_Perl AND PERL_EXECUTABLE AND PERL_VERSION_MAJOR EQUAL 0)
     message (WARNING "Failed to determine Perl version! Check if you can run \"${PERL_EXECUTABLE}\".")
   endif ()
-  if (BASH_EXECUTABLE AND BASH_VERSION_MAJOR EQUAL 0)
+  if (USE_BASH AND NBASH_EXECUTABLE AND BASH_VERSION_MAJOR EQUAL 0)
     message (WARNING "Failed to determine Bash version! Check if you can run \"${BASH_EXECUTABLE}\".")
   endif ()
-  if (MATLAB_EXECUTABLE AND MATLAB_VERSION_MAJOR EQUAL 0)
+  if (USE_MATLAB AND MATLAB_EXECUTABLE AND MATLAB_VERSION_MAJOR EQUAL 0)
     message (WARNING "Failed to determine MATLAB version! Check if you can run \"${MATLAB_EXECUTABLE} -nodesktop -nosplash -r 'version,quit force'\" and try again.")
   endif ()
 
+  # initial set of USE_Python
+  # TODO: Consider making this a boolean option
+  if (USE_PythonInterp OR USE_JythonInterp)
+    set(USE_Python TRUE)
+  elseif()
+    set(USE_Python FALSE)
+  endif()
+  
   # --------------------------------------------------------------------------
   # initialize settings
   basis_initialize_settings ()
@@ -1943,64 +1947,67 @@ macro (basis_project_impl)
     endforeach ()
   endif () 
 
-  # --------------------------------------------------------------------------
-  # finalize custom targets
-  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
-    # configure the BASIS utilities
-    basis_configure_utilities ()
-    # add missing build commands for custom targets
-    basis_finalize_targets ()
-    # add build target for missing __init__.py files of Python package
-    basis_add_init_py_target ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # add installation rules for public headers
-  basis_install_public_headers ()
-
-  # --------------------------------------------------------------------------
-  # generate configuration files
-  include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
-
-  # ----------------------------------------------------------------------------
-  # change log
-  basis_add_changelog ()
-
-  # --------------------------------------------------------------------------
-  # build/install package documentation
-  #
-  # This is done after all files which may be interesting for inclusion
-  # in the documentation are generated. In particular, this has to be done
-  # after the configuration of the BASIS utilities.
-  if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
-    add_subdirectory ("${PROJECT_DOC_DIR}")
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # package software
-  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
-    include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
-  endif()
-  
-  # --------------------------------------------------------------------------
-  # add installation rule to register package with CMake
-  if (BASIS_REGISTER AND NOT PROJECT_IS_MODULE AND PROJECT_VERSION VERSION_GREATER 0.0.0)
-    basis_register_package ()
-  endif ()
-
-  # --------------------------------------------------------------------------
-  # uninstaller
-  if (NOT PROJECT_IS_MODULE)
-    # add uninstall target
-    basis_add_uninstall ()
-    ## add code to generate uninstaller at the end of the installation
+  if(NOT BASIS_BUILD_ONLY)
+    # --------------------------------------------------------------------------
+    # finalize custom targets
+    if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
+      # configure the BASIS utilities
+      basis_configure_utilities ()
+      # add missing build commands for custom targets
+      basis_finalize_targets ()
+      # add build target for missing __init__.py files of Python package
+      basis_add_init_py_target ()
+    endif ()
+    
+    # --------------------------------------------------------------------------
+    # add installation rules for public headers
+    basis_install_public_headers ()
+    
+    # --------------------------------------------------------------------------
+    # generate configuration files
+    include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
+    
+    # ----------------------------------------------------------------------------
+    # change log
+    basis_add_changelog ()
+    
+    # --------------------------------------------------------------------------
+    # build/install package documentation
     #
-    # @attention: add_uninstall must be done last and using a add_subdirectory() call
-    #             such that the code is executed last by the root cmake_install.cmake!
-    add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
-  endif ()
-
+    # This is done after all files which may be interesting for inclusion
+    # in the documentation are generated. In particular, this has to be done
+    # after the configuration of the BASIS utilities.
+    if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
+      add_subdirectory ("${PROJECT_DOC_DIR}")
+    endif ()
+    
+    # --------------------------------------------------------------------------
+    # package software
+    if ((NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT))
+      include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
+    endif()
+    
+    # --------------------------------------------------------------------------
+    # add installation rule to register package with CMake
+    if (BASIS_REGISTER AND NOT PROJECT_IS_MODULE AND PROJECT_VERSION VERSION_GREATER 0.0.0)
+      basis_register_package ()
+    endif ()
+    
+    # --------------------------------------------------------------------------
+    # uninstaller
+    if (NOT PROJECT_IS_MODULE)
+      # add uninstall target
+      basis_add_uninstall ()
+      ## add code to generate uninstaller at the end of the installation
+      #
+      # @attention: add_uninstall must be done last and using a add_subdirectory() call
+      #             such that the code is executed last by the root cmake_install.cmake!
+      add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
+    endif ()
+  endif(NOT BASIS_BUILD_ONLY)
+    
   if (BASIS_DEBUG)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFinalization.cmake")
   endif ()
+  
 endmacro ()
