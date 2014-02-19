@@ -1978,8 +1978,10 @@ macro (basis_project_impl)
 
   # --------------------------------------------------------------------------
   # package software
-  include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
-
+  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
+    include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
+  endif()
+  
   # --------------------------------------------------------------------------
   # add installation rule to register package with CMake
   if (BASIS_REGISTER AND NOT PROJECT_IS_MODULE AND PROJECT_VERSION VERSION_GREATER 0.0.0)
