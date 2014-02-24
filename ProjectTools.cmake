@@ -1974,7 +1974,9 @@ macro (basis_project_impl)
       # add missing build commands for custom targets
       basis_finalize_targets ()
       # add build target for missing __init__.py files of Python package
-      basis_add_init_py_target ()
+      if(USE_Python)
+        basis_add_init_py_target ()
+      endif()
     endif ()
     
     # --------------------------------------------------------------------------
