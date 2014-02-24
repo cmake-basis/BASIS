@@ -133,6 +133,7 @@ endif ()
 ## @brief Names of project meta-data switches.
 set (
   BASIS_METADATA_LIST_SWITCH
+  SUPER_BUILD
 )
 
 ## @brief Names of project meta-data with only one argument.

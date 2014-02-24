@@ -1341,6 +1341,9 @@ endfunction ()
 # @note This function may not work for all cases, but is used in particular
 #       to sanitize project names, target names, namespace identifiers,...
 #
+#       This takes all of the dollar signs, and other special characters and
+#       adds escape characters such as backslash as necessary.
+#
 # @param [out] OUT String that can be used in regular expression.
 # @param [in]  STR String to sanitize.
 macro (basis_sanitize_for_regex OUT STR)

@@ -345,6 +345,12 @@ endmacro ()
 #     <td>The name of the project.</td>
 #   </tr>
 #   <tr>
+#     @tp @b SUPER_BUILD @endtp
+#     <td>EXPERIMENTAL - Compile modules as part of a super buld using ExternalProject_Add().
+#         This can dramatically speed up configure time by compiling all modules
+#         as if they were independent projects.</td>
+#   </tr>
+#   <tr>
 #     @tp @b SUBPROJECT name @endtp
 #     <td>Use this option instead of @c NAME to indicate that this project is a
 #         subproject of the package @c PACKAGE. This results, for example, in target
@@ -826,7 +832,11 @@ macro (basis_project_modules)
       message ("Enabled module ${MODULE}, needed by [${${MODULE}_NEEDED_BY}].")
     endif ()
   endforeach ()
+  
 endmacro ()
+
+
+
 
 # ----------------------------------------------------------------------------
 ## @brief Configure public header files.
@@ -1830,7 +1840,7 @@ macro (basis_project_impl)
   basis_installtree_asserts ()
 
   # --------------------------------------------------------------------------
-  # defaul script configuration - see basis_configure_script()
+  # default script configuration - see basis_configure_script()
   set (BASIS_SCRIPT_CONFIG_FILE "${BINARY_CONFIG_DIR}/BasisScriptConfig.cmake")
   configure_file ("${BASIS_MODULE_PATH}/ScriptConfig.cmake.in" "${BASIS_SCRIPT_CONFIG_FILE}" @ONLY)
   if (EXISTS "${PROJECT_CONFIG_DIR}/ScriptConfig.cmake.in")
@@ -1875,12 +1885,20 @@ macro (basis_project_impl)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterInitialization.cmake")
   endif ()
 
+  if(PROJECT_SUPER_BUILD)
+    include (${BASIS_MODULE_PATH}/BasisSuperBuild.cmake)
+  endif()
+
   # build modules
   if (NOT PROJECT_IS_MODULE)
     foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
       message (STATUS "Configuring module ${MODULE}...")
       set (PROJECT_IS_MODULE TRUE)
-      add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
+      if(NOT PROJECT_SUPER_BUILD)
+        add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
+      else()
+        basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
+      endif()
       set (PROJECT_IS_MODULE FALSE)
       message (STATUS "Configuring module ${MODULE}... - done")
     endforeach ()
@@ -1895,7 +1913,7 @@ macro (basis_project_impl)
     list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_TESTING_DIR}")
   endif ()
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
-  list(INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
+  list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
   
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
