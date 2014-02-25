@@ -63,13 +63,26 @@ function(basis_super_build PACKAGE_NAME)
   # TODO: Figure out why a few intermediate files are still being put in the ${CMAKE_BINARY_DIR}/${PACKAGE_NAME}-prefix/ directory
   # TODO: Check for additional useful -D parameters.
 
-
+  # passing semicolons has odd side effects because they may be automatically
+  # dereferenced, so substitute another character, in this case pipe |
   string(REPLACE ";" "|" CMAKE_PREFIX_PATH_PIPE "${CMAKE_PREFIX_PATH}")
+  
+  # only specifiy dependencies that are actual targets
+  # otherwise there would be an error
+  set(SUPER_BUILD_TARGET_DEPENDENCIES)
+  foreach(DEPENDENCY IN ${DEPENDS})
+    if(TARGET DEPENDENCY)
+      list(APPEND SUPER_BUILD_TARGET_DEPENDENCIES ${DEPENDENCY})
+    endif()
+  endforeach()
+    
+  string(REPLACE ";" " " SUPER_BUILD_TARGET_DEPENDENCIES "${SUPER_BUILD_TARGET_DEPENDENCIES}")
+  
   if(BASIS_DEBUG)
       message(STATUS 
     "basis_super_build() Module:
       ExternalProject_Add(${PACKAGE_NAME}
-                          #DEPENDS ${${PACKAGE_NAME}_DEPENDS}
+                          DEPENDS ${SUPER_BUILD_TARGET_DEPENDENCIES}
                           SOURCE_DIR ${${PACKAGE_NAME}_DIR}
                           CMAKE_ARGS 
                             -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> 
@@ -97,7 +110,7 @@ function(basis_super_build PACKAGE_NAME)
     #elseif()
     
       ExternalProject_Add(${PACKAGE_NAME}
-                          #DEPENDS ${${PACKAGE_NAME}_DEPENDS}
+                          DEPENDS ${SUPER_BUILD_TARGET_DEPENDENCIES}
                           SOURCE_DIR ${${PACKAGE_NAME}_DIR}
                           LIST_SEPARATOR "|"
                           CMAKE_ARGS 
