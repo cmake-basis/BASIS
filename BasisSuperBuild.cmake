@@ -44,23 +44,43 @@ function(basis_super_build PACKAGE_NAME)
     set(${PACKAGE_NAME}_DIR "${MODULE_${MODULE}_SOURCE_DIR}")
   endif()
 
-  
-  #if(USE_SYSTEM_${PACKAGE_NAME})
-  #  find_package(${PACKAGE_NAME})
-  #elseif()
+  # TODO: may need to separate basis module and regular dependencies so they can specified separately for the super build. May also need additional -D parameters.
+
+  if(BASIS_DEBUG)
+      message(STATUS 
+    "basis_super_build() Module:
+        ExternalProject_Add(${PACKAGE_NAME}
+                            #DEPENDS ${${PACKAGE_NAME}_DEPENDS}
+                            SOURCE_DIR ${${PACKAGE_NAME}_DIR}
+                            CMAKE_ARGS 
+                              -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> 
+                              -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} 
+                              -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} 
+                              -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+                              ${${PACKAGE_NAME}_CMAKE_MODULE_PATH}
+                              -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+                            INSTALL_DIR
+                              ${PACKAGE_NAME}_BINARY_DIR
+                            )
+    "  )
+  endif()
+    #if(USE_SYSTEM_${PACKAGE_NAME})
+    #  find_package(${PACKAGE_NAME})
+    #elseif()
     
-    ExternalProject_Add(${PACKAGE_NAME}
-                        DEPENDS ${${PACKAGE_NAME}_DEPENDS}
-                        SOURCE_DIR ${${PACKAGE_NAME}_DIR}
-                        CMAKE_ARGS 
-                          -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> 
-                          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} 
-                          -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} 
-                          -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
-                          ${${PACKAGE_NAME}_CMAKE_MODULE_PATH}
-                        INSTALL_DIR
-                          ${PACKAGE_NAME}_BINARY_DIR
-                        )
+      ExternalProject_Add(${PACKAGE_NAME}
+                          #DEPENDS ${${PACKAGE_NAME}_DEPENDS}
+                          SOURCE_DIR ${${PACKAGE_NAME}_DIR}
+                          CMAKE_ARGS 
+                            -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> 
+                            -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} 
+                            -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} 
+                            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+                            ${${PACKAGE_NAME}_CMAKE_MODULE_PATH}
+                            -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+                          INSTALL_DIR
+                            ${PACKAGE_NAME}_BINARY_DIR
+                          )
                         
   #endif()
 endfunction()
