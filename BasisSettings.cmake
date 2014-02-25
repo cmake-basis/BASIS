@@ -536,6 +536,14 @@ mark_as_advanced (BASIS_REGISTER)
 option (BASIS_PACKAGING "Enable the `package` and `source_package` targets for producing final release packages." ON)
 mark_as_advanced (BASIS_PACKAGING)
 
+
+## @brief EXPERIMENTAL - Build project modules as part of a "super build" using the CMake ExternalProject_Add() function.
+##
+## This may improve performance of the initial configure step but comes with the caveats inherent in
+## the ExternalProject_Add function.
+option (BASIS_SUPER_BUILD "EXPERIMENTAL - Build BASIS Modules as part of a super build. May improve configure speed." OFF)
+mark_as_advanced (BASIS_SUPER_BUILD)
+
 # ============================================================================
 # programming language specific settings
 # ============================================================================
