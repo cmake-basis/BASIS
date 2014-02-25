@@ -13,6 +13,15 @@ else ()
 endif ()
 
 include(ExternalProject)
+         
+##
+# @brief When enabled CMake will always reconfigure super build modules. Slows performance but won't ignore changes in external projects.
+#
+# @note The global variable BASIS_SUPER_BUILD_ARGS is passed to the CMAKE_ARGS 
+#       parameter of ExternalProject_Add in case custom variables need to be supplied.
+#
+option(BASIS_ALWAYS_RECONFIGURE_SUPER_BUILD "Enable to always reconfigure super build modules. Slows performance but won't ignore changes." OFF)
+mark_as_advanced(BASIS_ALWAYS_RECONFIGURE_SUPER_BUILD)
 
 ##
 # @brief super build for BASIS modules
@@ -55,6 +64,7 @@ function(basis_super_build PACKAGE_NAME)
   # TODO: Check for additional useful -D parameters.
 
 
+  string(REPLACE ";" "|" CMAKE_PREFIX_PATH_PIPE "${CMAKE_PREFIX_PATH}")
   if(BASIS_DEBUG)
       message(STATUS 
     "basis_super_build() Module:
@@ -67,7 +77,9 @@ function(basis_super_build PACKAGE_NAME)
                             -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} 
                             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
                             ${${PACKAGE_NAME}_CMAKE_MODULE_PATH}
-                            -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+                            ${BASIS_SUPER_BUILD_ARGS}
+                          CMAKE_CHACHE_ARGS
+                            -DCMAKE_PREFIX_PATH:STRING=${CMAKE_PREFIX_PATH_PIPE}
                           CMAKE_GENERATOR
                             ${CMAKE_GENERATOR}
                           CMAKE_TOOLSET
@@ -87,13 +99,16 @@ function(basis_super_build PACKAGE_NAME)
       ExternalProject_Add(${PACKAGE_NAME}
                           #DEPENDS ${${PACKAGE_NAME}_DEPENDS}
                           SOURCE_DIR ${${PACKAGE_NAME}_DIR}
+                          LIST_SEPARATOR "|"
                           CMAKE_ARGS 
                             -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> 
                             -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} 
                             -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} 
                             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
                             ${${PACKAGE_NAME}_CMAKE_MODULE_PATH}
-                            -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+                            ${BASIS_SUPER_BUILD_ARGS}
+                          CMAKE_CHACHE_ARGS
+                            -DCMAKE_PREFIX_PATH:STRING=${CMAKE_PREFIX_PATH_PIPE}
                           CMAKE_GENERATOR
                             ${CMAKE_GENERATOR}
                           CMAKE_TOOLSET
@@ -104,5 +119,14 @@ function(basis_super_build PACKAGE_NAME)
                             ${${PACKAGE_NAME}_CMAKE_INSTALL_PREFIX}
                           )
                         
+  
+      if(BASIS_ALWAYS_RECONFIGURE_SUPER_BUILD)
+        ExternalProject_Add_Step(${PACKAGE_NAME} reconfigure
+          COMMAND ${CMAKE_COMMAND} -E echo "Force configure of ${PACKAGE_NAME}"
+          DEPENDEES update
+          DEPENDERS configure
+          ALWAYS 1)
+      endif()
+        
   #endif()
 endfunction()
