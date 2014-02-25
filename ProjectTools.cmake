@@ -1900,7 +1900,7 @@ macro (basis_project_impl)
       #       "${MODULE_${MODULE}_BINARY_DIR}" is the build directory for the module
       if(PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
         basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
-      elseif()
+      else()
         add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
       endif()
       set (PROJECT_IS_MODULE FALSE)
