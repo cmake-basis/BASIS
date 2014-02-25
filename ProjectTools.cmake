@@ -1885,7 +1885,6 @@ macro (basis_project_impl)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterInitialization.cmake")
   endif ()
 
-  message(STATUS "PROJECT_SUPER_BUILD:${PROJECT_SUPER_BUILD}  BASIS_SUPER_BUILD:${BASIS_SUPER_BUILD}" )
   if(PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
     include (${BASIS_MODULE_PATH}/BasisSuperBuild.cmake)
   endif()
@@ -1895,7 +1894,10 @@ macro (basis_project_impl)
     foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
       message (STATUS "Configuring module ${MODULE}...")
       set (PROJECT_IS_MODULE TRUE)
-      # set up modules, checking the super build special case first. Typically add_subdirectory will be called.
+      # Set up modules, checking the super build special case first. 
+      # By default the else case with add_subdirectory() will be called.
+      # note: ${MODULE_${MODULE}_SOURCE_DIR} is the location of the module source code
+      #       "${MODULE_${MODULE}_BINARY_DIR}" is the build directory for the module
       if(PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
         basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
       elseif()
