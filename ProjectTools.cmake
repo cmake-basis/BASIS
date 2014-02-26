@@ -31,7 +31,7 @@ endif ()
 #
 macro (basis_name_check INPUT_PROJECT_NAME)
   if (NOT ${INPUT_PROJECT_NAME} MATCHES "^([a-z][-_a-z0-9]*|[a-zA-Z0-9][-_a-zA-Z0-9]*)$")
-    message (FATAL_ERROR "Invalid name: ${${INPUT_PROJECT_NAME}}!\n"
+    message (FATAL_ERROR "Invalid name: ${${INPUT_PROJECT_NAME}}\n"
                          "We suggest that you use upper CamelCase notation."
                          "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms)."
                          "Please choose a name with either only captial letters"
