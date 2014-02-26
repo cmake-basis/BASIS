@@ -21,6 +21,7 @@ set (
     "BasisTools.cmake"              # definition of macros and functions
     "BasisTest.cmake"               # testing, wraps CTest
     "BasisSettings.cmake"           # default project-independent settings
+    "BasisSuperBuild.cmake"         # basis_super_build function
     # submodules included by BasisTools.cmake
     "CommonTools.cmake"             # common functions/macros
     "DirectoriesSettings.cmake"     # project directory structure

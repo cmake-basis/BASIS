@@ -36,7 +36,7 @@ include ("${CMAKE_CURRENT_LIST_DIR}/CommonTools.cmake")
 # ----------------------------------------------------------------------------
 # check arguments
 if (NOT PROJECT_INCLUDE_DIRS)
-  message (FATAL_ERROR "Missing argument PROJECT_INCLUDE_DIR!")
+  message (FATAL_ERROR "Missing argument PROJECT_INCLUDE_DIRS!")
 endif ()
 
 if (NOT BINARY_INCLUDE_DIR)
@@ -51,6 +51,10 @@ if (NOT VARIABLE_NAME)
   set (VARIABLE_NAME "PUBLIC_HEADERS")
 endif ()
 
+if (NOT COPY_MODE)
+  set (COPY_MODE COPYONLY)
+endif ()
+
 # ----------------------------------------------------------------------------
 # include file which defines CMake variables for use in .h.in files
 if (CACHE_FILE)
@@ -59,12 +63,7 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # configure header files
-set (CONFIGURED_HEADERS)
 foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
-  set (PATTERN)
-  foreach (E IN LISTS EXTENSIONS)
-    list (APPEND PATTERN "${INCLUDE_DIR}/*${E}.in")
-  endforeach ()
   foreach (E IN LISTS EXTENSIONS)
     list (APPEND PATTERN "${INCLUDE_DIR}/*${E}")
   endforeach ()
@@ -73,7 +72,7 @@ foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
     get_filename_component (SOURCE "${INCLUDE_DIR}/${HEADER}" ABSOLUTE)
     if (NOT PREVIEW AND HEADER MATCHES "\\.in$")
       string (REGEX REPLACE "\\.in$" "" HEADER "${HEADER}")
-      configure_file ("${SOURCE}" "${BINARY_INCLUDE_DIR}/${HEADER}" @ONLY)
+      configure_file ("${SOURCE}" "${BINARY_INCLUDE_DIR}/${HEADER}" ${COPY_MODE})
     endif ()
     list (APPEND CONFIGURED_HEADERS "${SOURCE}")
   endforeach ()

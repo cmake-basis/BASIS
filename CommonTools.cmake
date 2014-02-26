@@ -1341,6 +1341,9 @@ endfunction ()
 # @note This function may not work for all cases, but is used in particular
 #       to sanitize project names, target names, namespace identifiers,...
 #
+#       This takes all of the dollar signs, and other special characters and
+#       adds escape characters such as backslash as necessary.
+#
 # @param [out] OUT String that can be used in regular expression.
 # @param [in]  STR String to sanitize.
 macro (basis_sanitize_for_regex OUT STR)
@@ -1907,7 +1910,7 @@ function (basis_get_compiled_file CFILE SOURCE)
     basis_get_source_language (LANGUAGE "${SOURCE}")
   endif ()
   set (${CFILE} "" PARENT_SCOPE)
-  if (SOURCE)
+  if (USE_Python AND SOURCE)
     if (LANGUAGE MATCHES "PYTHON")
       set (${CFILE} "${SOURCE}c" PARENT_SCOPE)
     elseif (LANGUAGE MATCHES "JYTHON")
@@ -2144,11 +2147,11 @@ function (basis_get_source_language LANGUAGE)
       if (LANGUAGE_OUT AND NOT LANG MATCHES "^${LANGUAGE_OUT}$")
         if (LANGUAGE_OUT MATCHES "CXX" AND LANG MATCHES "MATLAB")
           # MATLAB Compiler can handle this...
-        elseif (LANGUAGE_OUT MATCHES "MATLAB" AND LANG MATCHES "CXX")
+        elseif (USE_MATLAB AND LANGUAGE_OUT MATCHES "MATLAB" AND LANG MATCHES "CXX")
           set (LANG "MATLAB") # language stays MATLAB
-        elseif (LANGUAGE_OUT MATCHES "PYTHON" AND LANG MATCHES "JYTHON")
+        elseif (USE_Python AND LANGUAGE_OUT MATCHES "PYTHON" AND LANG MATCHES "JYTHON")
           # Jython can deal with Python scripts/modules
-        elseif (LANGUAGE_OUT MATCHES "JYTHON" AND LANG MATCHES "PYTHON")
+        elseif (USE_Python AND LANGUAGE_OUT MATCHES "JYTHON" AND LANG MATCHES "PYTHON")
           set (LANG "JYTHON") # language stays JYTHON
         else ()
           # ambiguity
@@ -2444,7 +2447,7 @@ function (basis_configure_script INPUT OUTPUT)
       string (CONFIGURE "${SCRIPT}" SCRIPT @ONLY)
     endif ()
     # add code to set module search path
-    if (ARGN_LANGUAGE MATCHES "[JP]YTHON")
+    if ( USE_Python AND ARGN_LANGUAGE MATCHES "[JP]YTHON")
       if (ARGN_LINK_DEPENDS)
         set (PYTHON_CODE "import sys; import os.path; __dir__ = os.path.dirname(os.path.realpath(__file__))")
         list (REVERSE ARGN_LINK_DEPENDS)
@@ -2471,7 +2474,7 @@ function (basis_configure_script INPUT OUTPUT)
         basis_remove_blank_line (SCRIPT) # remove a blank line therefore
         set (SCRIPT "${FUTURE_STATEMENTS}${PYTHON_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
-    elseif (ARGN_LANGUAGE MATCHES "PERL")
+    elseif ( USE_Perl AND ARGN_LANGUAGE MATCHES "PERL")
       if (ARGN_LINK_DEPENDS)
         set (PERL_CODE "use Cwd qw(realpath); use File::Basename;")
         foreach (DIR ${ARGN_LINK_DEPENDS})
@@ -2490,7 +2493,7 @@ function (basis_configure_script INPUT OUTPUT)
         basis_remove_blank_line (SCRIPT) # remove a blank line therefore
         set (SCRIPT "${PERL_CODE} # <-- added by BASIS\n${SCRIPT}")
       endif ()
-    elseif (ARGN_LANGUAGE MATCHES "BASH")
+    elseif ( USE_BASH AND ARGN_LANGUAGE MATCHES "BASH")
       basis_library_prefix (PREFIX BASH)
       # In case of Bash, set BASIS_BASH_UTILITIES which is required to first source the
       # BASIS utilities modules (in particular core.sh). This variable should be set to
@@ -2547,7 +2550,7 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
       set (SCRIPT "${BASH_CODE} # <-- added by BASIS\n${SCRIPT}")
     endif ()
     # replace shebang directive
-    if (ARGN_LANGUAGE MATCHES "PYTHON" AND PYTHON_EXECUTABLE)
+    if (USE_PYTHON AND PYTHON_EXECUTABLE AND ARGN_LANGUAGE MATCHES "PYTHON")
       if (WIN32)
         set (SHEBANG "@setlocal enableextensions & \"${PYTHON_EXECUTABLE}\" -x \"%~f0\" %* & goto :EOF")
       else ()
@@ -2566,7 +2569,7 @@ BASIS_BASH_UTILITIES=\"$__DIR__/${BASH_LIBRARY_DIR}/${PREFIX}basis.sh\""
         #            -schuha
         set (SHEBANG "#! /usr/bin/env ${JYTHON_EXECUTABLE}")
       endif ()
-    elseif (ARGN_LANGUAGE MATCHES "PERL" AND PERL_EXECUTABLE)
+    elseif (USE_Perl AND PERL_EXECUTABLE AND ARGN_LANGUAGE MATCHES "PERL")
       if (WIN32)
         set (SHEBANG "@goto = \"START_OF_BATCH\" ;\n@goto = ();")
         set (SCRIPT "${SCRIPT}\n\n__END__\n\n:\"START_OF_BATCH\"\n@\"${PERL_EXECUTABLE}\" -w -S \"%~f0\" %*")
