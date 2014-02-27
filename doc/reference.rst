@@ -99,7 +99,7 @@ Project Layout
 
 A brief summary of the common project layout required by all projects that follow BASIS is given below.
 Project templates are supplied by the BASIS package to make it easy for projects to follow
-this :ref:`BASIS Project Directory Layout <SourceCodeTree>` and standard :doc:`standard/template`.
+this :ref:`BASIS Project Directory Layout <SourceCodeTree>` and standard :doc:`/standard/template`.
 How to create and use such template is explained in the :doc:`howto/use-and-customize-templates` guide.
 The |basisproject| command-line tool further automates and simplifies the creation of new projects
 based on a project template.
@@ -127,7 +127,7 @@ INSTALL (.txt|.md)              Build and installation instructions.
 README (.txt|.md)               Basic summary and references to the documentation.
 ==============================  =====================================================================
 
-.. seealso:: The :doc:`standard/template` for a complete list of required and other standard project files.
+.. seealso:: The :doc:`/standard/template` for a complete list of required and other standard project files.
              The :ref:`CMake BASIS Package <BasisPackageContent>` itself also serves as an example of a 
              project following this standard layout.
 

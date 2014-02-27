@@ -28,7 +28,7 @@ The CMake BASIS software package documents and implements a standard for
 project organization, software build, implementation and documentation. 
 We aim to provide a comprehensive way to streamline software development.
  
-CMake BASIS includes a software development standard, a :doc:`standard/template` 
+CMake BASIS includes a software development standard, a :doc:`/standard/template` 
 implementing the :doc:`standard/fhs`, `CMake Modules`_ which not only follow the Filesystem 
 Hierarchy Standard, but also implement the build system standard as well as the 
 standard for testing and packaging software developed using BASIS.
