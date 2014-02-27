@@ -110,12 +110,14 @@ Headers
 =======
 
 Headers will be part of the public API of a project if they are placed in
-modulename/include/myheader.hpp If headers are placed in src in a module of
-a toplevel project, how can we make sure the include paths still work
-correctly?
+``<module>/include/<module>/myheader.hpp``. Notice the recommended
+"stuttered" module name that helps prevent the collision of header file names.
+
+If headers are placed in src in a module of a toplevel project, 
+how can we make sure the include paths still work correctly?
 
 I know they will work if the headers are placed in but what if they are in
-modulename/src/myheader.hpp
+``modulename/src/myheader.hpp``?
 
 Header files should be in
 ``modulename/include/toplevelproject/myheader.hpp`` if the module is an
@@ -197,3 +199,39 @@ added by the basistest.ctest script if the coverage option is passed in as in
 
 The analysis of the gcov (or Bullseye) output and its conversion to the XML
 format used by CDash is done by the ``ctest_coverage`` CTest command.
+
+
+Custom Layout
+=============
+
+The BASIS layout has been battle tested and is based on standards. It is both
+reusable and cross-platform with a design that prevents subtle incompatibilities 
+and assumptions that we have encountered with other layouts. Through experience
+and standardization we settled on the receommended layout which we believe should
+be effective for most use cases.
+
+Nonetheless, we understand that requirements and existing code cannot always 
+accomodate the standard layout, so it is possible to customize the layout.
+
+.. note:: Using a custom project layout is not recommended.
+
+To set up a custom layout do one or both of the following:
+
+1. In the :apidoc:`BasisConfig.cmake` file
+      - Modify the :apidoc:`basis_project()` function
+      - The ``INCLUDE_DIRS`` parameter sets
+        additional directories that should be included.
+      - The ``MODULE_DIRS`` parameter specifies a 
+        path to each nonstandard module directory.
+        
+3. In the config/:apidoc:`Settings.cmake` file
+     - Set the CMake BASIS variables listed under SourceCodeTree_
+       with a call to ``set(VARIABLE path/to/dir)``.
+
+More information can be found in :doc:`/standard/template.rst`.
+
+Redistributable Files
+=====================
+
+In general, try to keep redistributable sources and binaries as small as possible.
+
