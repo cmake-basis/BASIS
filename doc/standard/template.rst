@@ -74,13 +74,13 @@ or even both of them. See below for a description of these directories.
        to the software package in this file.
 
 **AUTHORS.md**
-    Names the authors of the software package. People who
-    notably contributed to the software directly should also be named
-    here as well, even if they did not actually edit any project
-    file. Others, who mostly contributed indirectly should be
-    named in the :ref:`README.txt <README>` file instead. No author names shall
-    be given in any particular source code file, as these are generally
-    edited by multiple persons and updating the authors information
+    Names the authors of the software package and people who
+    dirctly made notable contributions to the software, even 
+    if they did not actually edit any project files. Others 
+    who mostly contributed indirectly should be named in the 
+    :ref:`README.txt <README>` file instead. It is not necessary
+    to list author names in each source file, as these are generally
+    edited by multiple people and updating the authors information
     within each source file is tedious.
 
 .. _COPYING:
@@ -106,12 +106,14 @@ or even both of them. See below for a description of these directories.
     Sets basic information about a BASIS Project and calls the
     :apidoc:`basis_project()` command.
     The basic project information, also known as metadata,
-    will typically include the project name and release version, 
-    its brief description which is used for the packaging, 
-    and the dependencies. Note that additional dependencies may be given 
-    by the CMake code in the :ref:`config/Depends.cmake <Depends>` file, 
-    if such file is present. If the project is a module of another project, 
-    this file is read by the top-level project to be able to identify its 
+    will typically include:
+      - the project name and release version
+      - a brief description which is used for the packaging
+      - dependencies 
+    Note that additional dependencies may optionally be specified using 
+    by the CMake code in the :ref:`config/Depends.cmake <Depends>` file. 
+    If the project is a module of another project, this file is read by 
+    the top-level project to be able to identify its 
     modules and the dependencies among them.
     
     :seealso:`ConfigureBasisProject` explains using this file to configure your project.
