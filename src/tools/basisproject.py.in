@@ -816,49 +816,56 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------------
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
-  basisproject can create a new project from a project template or update an existing project.\n\n
+  This tool can create a new project from a template or update an existing project.\n\n
   
-  Example with all functionality:
-    basisproject create --name projName --description "does stuff" --author "authorName" --full
+  Example for creating a new project which contains the full functionality
+  provided by the default project template:
+
+    basisproject create --name        ProjectName
+                        --description "Brief description of what it does."
+                        --author      "Author Name1, Author Name2"
+                        --full
 
   You can also select the components of a template you want in your project,
   or update an existing project with additional template files and directories.
-  
-  Updating Projects:
-  
-    Functionality can be removed by updating a project with  the --no* options.
+
+  Updating projects:
+ 
+    Functionality can be removed by updating a project with the --no* options.
     However, directories and files are only deleted if they are empty or were
     not modified, respectively, by the project developer since their creation.
     The deletion of modified files can be forced by supplying the --force option.
 
-  External Package Requirements:
+  External package requirements:
 
     Besides the name of the new project and a brief description, names of external
     packages required or optionally used by this project can be specified. For each
     such package, an entry in the list of dependencies given as argument to either
-    one of the DEPENDS* options of the basis_project() command is added.
+    one of the DEPENDS* options of the basis_project() command is added. The call
+    to this command can be found in the BasisProject.cmake file of the project.
 
-  Three way diff of updates:
+  Three-way diff of updates:
 
-    basisproject can upgrade an existing project to a newer project template version, 
-    given that the existing directory structure and file names were preserved. 
+    The basisproject tool can upgrade an existing project to a newer template version, 
+    given that the existing directory structure and file names were preserved.
   
-    User changes to previously added template files are preserved and merged with 
-    the changes of the template using a so-called three-way diff similar to the 
-    Subversion tool svn. 
+    User changes to previously added template files are kept and merged with the
+    changes of the project template using a so-called three-way diff. This update
+    process is similar to how remote changes are merged with your working copy changes
+    by version control systems such as Subversion or Git.
   
-      If the automatic file merge is not successful basisproject creates: 
+    If the automatic file merge is not successful, basisproject creates:
   
         - a copy of the original project file (*.mine)
         - the new template file (*.template) 
-        - the project file which has been overwritten with the merged content including
-          markers to indicate where the conflicts occurred. 
-      
+        - the project file which has been overwritten with the merged content
+          including markers to indicate where the conflicts occurred.
+
     The project file has to be edited manually or with a merge tool such as kdiff3 to 
     resolve any conflicts. Once the conflicts have been resolved, the *.mine and 
-    *.template files must be removed with the --cleanup option or manually 
+    *.template files must be removed either with the --cleanup option or manually 
     before another update is possible.""",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        formatter_class=argparse.RawTextHelpFormatter,
         argument_default=None,
         add_help=False)
 
