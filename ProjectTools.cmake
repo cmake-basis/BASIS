@@ -26,6 +26,7 @@ endif ()
 # ============================================================================
 # basis_name_check
 # ============================================================================
+
 # ----------------------------------------------------------------------------
 ## @brief Check if a project name fits the BASIS standards.
 #
@@ -346,7 +347,7 @@ endmacro ()
 #   </tr>
 #   <tr>
 #     @tp @b SUPER_BUILD @endtp
-#     <td>EXPERIMENTAL - Compile modules as part of a super buld using ExternalProject_Add().
+#     <td>EXPERIMENTAL - Compile modules as part of a super build using ExternalProject_Add().
 #         This can dramatically speed up configure time by compiling all modules
 #         as if they were independent projects.</td>
 #   </tr>
@@ -613,10 +614,6 @@ function (basis_installtree_asserts)
   endif()
 endfunction ()
 
-
-
-
-
 # ----------------------------------------------------------------------------
 ## @brief Initialize project modules.
 #
@@ -835,9 +832,6 @@ macro (basis_project_modules)
   
 endmacro ()
 
-
-
-
 # ----------------------------------------------------------------------------
 ## @brief Configure public header files.
 function (basis_configure_public_headers)
@@ -876,8 +870,7 @@ function (basis_configure_public_headers)
   if (NOT PROJECT_INCLUDE_DIRS)
     message (FATAL_ERROR "Missing argument PROJECT_INCLUDE_DIRS!")
   endif ()
-  
-  
+
   # configure all .in files with substitution
   set (CONFIGURED_HEADERS)
   foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
@@ -1652,7 +1645,7 @@ macro (basis_install_public_headers)
   # subdirectory of basis.h header file
   basis_library_prefix (_BASIS_H_PREFIX CXX)
   # install public header files from source tree
-  foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS )
+  foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
     basis_install_directory ("${INCLUDE_DIR}" "${INSTALL_INCLUDE_DIR}" PATTERN "*.in" EXCLUDE)
   endforeach ()
   
@@ -1885,9 +1878,9 @@ macro (basis_project_impl)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterInitialization.cmake")
   endif ()
 
-  if(PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
+  if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
     include (${BASIS_MODULE_PATH}/BasisSuperBuild.cmake)
-  endif()
+  endif ()
 
   # build modules
   if (NOT PROJECT_IS_MODULE)
@@ -1898,11 +1891,11 @@ macro (basis_project_impl)
       # By default the else case with add_subdirectory() will be called.
       # note: ${MODULE_${MODULE}_SOURCE_DIR} is the location of the module source code
       #       "${MODULE_${MODULE}_BINARY_DIR}" is the build directory for the module
-      if(PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
+      if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
         basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
-      else()
+      else ()
         add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
-      endif()
+      endif ()
       set (PROJECT_IS_MODULE FALSE)
       message (STATUS "Configuring module ${MODULE}... - done")
     endforeach ()
@@ -1918,7 +1911,7 @@ macro (basis_project_impl)
   endif ()
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
-  
+
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
     if (NOT IS_ABSOLUTE "${SUBDIR}")
@@ -1969,7 +1962,8 @@ macro (basis_project_impl)
     endforeach ()
   endif () 
 
-  if(NOT BASIS_BUILD_ONLY)
+  if (NOT BASIS_BUILD_ONLY)
+
     # --------------------------------------------------------------------------
     # finalize custom targets
     if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
@@ -1978,7 +1972,7 @@ macro (basis_project_impl)
       # add missing build commands for custom targets
       basis_finalize_targets ()
       # add build target for missing __init__.py files of Python package
-      if(USE_Python)
+      if (USE_Python)
         basis_add_init_py_target ()
       endif()
     endif ()
@@ -2001,22 +1995,22 @@ macro (basis_project_impl)
     # This is done after all files which may be interesting for inclusion
     # in the documentation are generated. In particular, this has to be done
     # after the configuration of the BASIS utilities.
-    if (EXISTS "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
+    if (IS_DIRECTORY "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
       add_subdirectory ("${PROJECT_DOC_DIR}")
     endif ()
-    
+
     # --------------------------------------------------------------------------
     # package software
     if ((NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT))
       include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
     endif()
-    
+ 
     # --------------------------------------------------------------------------
     # add installation rule to register package with CMake
     if (BASIS_REGISTER AND NOT PROJECT_IS_MODULE AND PROJECT_VERSION VERSION_GREATER 0.0.0)
       basis_register_package ()
     endif ()
-    
+ 
     # --------------------------------------------------------------------------
     # uninstaller
     if (NOT PROJECT_IS_MODULE)
@@ -2028,8 +2022,9 @@ macro (basis_project_impl)
       #             such that the code is executed last by the root cmake_install.cmake!
       add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
     endif ()
-  endif(NOT BASIS_BUILD_ONLY)
-    
+
+  endif ()
+
   if (BASIS_DEBUG)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFinalization.cmake")
   endif ()
