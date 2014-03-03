@@ -321,7 +321,15 @@ endmacro ()
 # file and the variables set by this macro are used by the top-level project to
 # identify its modules and the dependencies among them.
 #
-# @par Project version:
+# @param [in] ARGN This list is parsed for the following arguments:
+#
+# @par General project meta-data:
+# @par
+# <table border="0">
+#   <tr>
+#     @tp @b VERSION major[.minor[.patch]] @endtp
+#     <td>Project version string. (default: 1.0.0)
+# @n
 # The version number consists of three components: the major version number,
 # the minor version number, and the patch number. The format of the version
 # string is "<major>.<minor>.<patch>", where the minor version number and patch
@@ -336,37 +344,21 @@ endmacro ()
 # - A change of the patch number indicates changes only related to bug fixes
 #   which did not change the softwares @api. It is the least important component
 #   of the version number.
-#
-# @par Dependencies:
-# Dependencies on other BASIS projects, which can be subprojects of the same
-# BASIS top-level project, as well as dependencies on external packages such as ITK
-# have to be defined here using the @p DEPENDS argument option. This will be used
-# by a top-level project to ensure that the dependencies among its subprojects are
-# resolved properly. For each external dependency, the BASIS functions
-# basis_find_package() and basis_use_package() are invoked by
-# basis_project_initialize(). If an external package is not CMake aware and
-# additional CMake code shall be executed to include the settings of the external
-# package (which is usually done in a so-called <tt>Use&lt;Pkg&gt;.cmake</tt> file
-# if the package would be CMake aware), such code should be added to the
-# <tt>Settings.cmake</tt> file of the project.
-#
-# @param [in] ARGN This list is parsed for the following arguments:
-# @par
-# <table border="0">
+#     </td>
+#   </tr>
+#   <tr>
+#     @tp @b DESCRIPTION description @endtp
+#     <td>Package description, used for packing. If multiple arguments are given,
+#         they are concatenated using one space character as delimiter.</td>
+#   </tr>
 #   <tr>
 #     @tp @b NAME name @endtp
 #     <td>The name of the project.</td>
 #   </tr>
 #   <tr>
-#     @tp @b SUPER_BUILD @endtp
-#     <td>EXPERIMENTAL - Compile modules as part of a super build using ExternalProject_Add().
-#         This can dramatically speed up configure time by compiling all modules
-#         as if they were independent projects.</td>
-#   </tr>
-#   <tr>
 #     @tp @b SUBPROJECT name @endtp
-#     <td>Use this option instead of @c NAME to indicate that this project is a
-#         subproject of the package @c PACKAGE. This results, for example, in target
+#     <td>Use this option instead of @c NAME to indicate that this project is a subproject
+#         of the package named by @c PACKAGE_NAME. This results, for example, in target
 #         UIDs such as "<package>.<name>.<target>" instead of "<package>.<target>".
 #         Moreover, the libraries and shared files of a subproject are installed
 #         in subdirectores whose name equals the name of the subproject. This option
@@ -375,7 +367,7 @@ endmacro ()
 #         on the same level as the top-level project.</td>
 #   </tr>
 #   <tr>
-#     @tp @b PACKAGE_NAME pkg @endtp
+#     @tp @b PACKAGE_NAME name @endtp
 #     <td>Name of the package this project (module) belongs to. Defaults to the
 #         name of the (top-level) project. This option can further be used in case
 #         of a top-level project to specify a different package name for the installation.
@@ -387,6 +379,10 @@ endmacro ()
 #         as stand-alone package. (default: name of top-level package)</td>
 #   </tr>
 #   <tr>
+#     @tp @b PACKAGE name @endtp
+#     <td>Short alternative for @c PACKAGE_NAME.</td>
+#   </tr>
+#   <tr>
 #     @tp @b PACKAGE_VENDOR name @endtp
 #     <td>Short ID of package vendor (i.e, provider and/or division acronym) this variable is used
 #         for package identification and is the name given to the folder that will be used as the default 
@@ -394,7 +390,7 @@ endmacro ()
 #   </tr>
 #   <tr>
 #     @tp @b VENDOR name @endtp
-#     <td>Short alias for @c PACKAGE_VENDOR.</td>
+#     <td>Short alternative for @c PACKAGE_VENDOR.</td>
 #   </tr>
 #   <tr>
 #     @tp @b PACKAGE_WEBSITE url @endtp
@@ -409,7 +405,7 @@ endmacro ()
 #   </tr>
 #   <tr>
 #     @tp @b WEBSITE url @endtp
-#     <td>Short alias for @c PACKAGE_WEBSITE.</td>
+#     <td>Short alternative for @c PACKAGE_WEBSITE.</td>
 #   </tr>
 #   <tr>
 #     @tp @b PROVIDER_NAME name @endtp
@@ -444,15 +440,6 @@ endmacro ()
 #         (default: empty string)</td>
 #   </tr>
 #   <tr>
-#     @tp @b VERSION major[.minor[.patch]] @endtp
-#     <td>Project version string. (default: 1.0.0)</td>
-#   </tr>
-#   <tr>
-#     @tp @b DESCRIPTION description @endtp
-#     <td>Package description, used for packing. If multiple arguments are given,
-#         they are concatenated using one space character as delimiter.</td>
-#   </tr>
-#   <tr>
 #     @tp @b TEMPLATE path @endtp
 #    <td> The TEMPLATE variable stores the directory of the chosen project template along 
 #         with the template version so that the correct template is used by basisproject when a project is updated.
@@ -460,22 +447,21 @@ endmacro ()
 #         installation, i.e., the default used by basisproject if no --template argument is provided.
 #         If the template is part of the BASIS installation, only the template name and version part of the 
 #         full path are needed. Otherwise, the full absolute path is used. For example,
-#               @code
-#                 basis_project (
-#                    # ...
-#                    TEMPLATE "sbia/1.8"
-#                    # ...
-#                 )
-#               @endcode
-#               @code
-#                 basis_project (
-#                    # ...
-#                    TEMPLATE "/opt/local/share/custom-basis-template/1.0"
-#                    # ...
-#                 )
-#              @endcode 
-#       The installed templates can be found in the share/templates folder of installed BASIS software,
-#       as well as the data/templates foler of the BASIS source tree.</td>
+# @code
+# basis_project (
+#   # ...
+#   TEMPLATE "sbia/1.8"
+#   # ...
+# )
+# # or
+# basis_project (
+#   # ...
+#   TEMPLATE "/opt/local/share/custom-basis-template/1.0"
+#   # ...
+# )
+# @endcode
+#         The installed templates can be found in the share/templates folder of installed BASIS software,
+#         as well as the data/templates foler of the BASIS source tree.</td>
 #   </tr>
 #   <tr>
 #     @tp @b SUPER_BUILD @endtp
