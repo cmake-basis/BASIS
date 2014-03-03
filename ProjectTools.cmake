@@ -1282,7 +1282,7 @@ endfunction ()
 #  @param SPECIFIED_LOGO the value that is already set for the logo
 #  @param DEFAULT_NAME the default filename of the logo
 #  
-function (basis_find_logo OUTPUT_VARIABLE SPECIFIED_LOGO DEFUALT_NAME)
+function (basis_find_logo OUTPUT_VARIABLE SPECIFIED_LOGO DEFAULT_NAME)
   # check for the default logo file locations
   if (NOT SPECIFIED_LOGO)
     if (EXISTS "${PROJECT_DOCRES_DIR}/${DEFAULT_NAME}")
