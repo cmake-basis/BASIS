@@ -1307,7 +1307,14 @@ function (basis_find_logo OUTPUT_VARIABLE SPECIFIED_LOGO DEFAULT_NAME)
     if (EXISTS "${${OUTPUT_VARIABLE}}")
       set(${OUTPUT_VARIABLE} "${${OUTPUT_VARIABLE}}" PARENT_SCOPE)
     else()
-      message (AUTHOR_WARNING "Problem:\n${OUTPUT_VARIABLE} file specified in the BasisProject.cmake basis_project() call of the project ${PROJECT_NAME} was not found. \nSolutions: \n  1. Add a logo file to one of the appropriate locations detailed below.\n  2. Correct the path if the logo exists. \n  3. Remove the line specifying the logo to look for if it does not exist.\n\nExpected to find file:\n  ${SPECIFIED_LOGO}\n\nDirectories checked for that file or path:\n    ${PROJECT_DOCRES_DIR}\n    ${PROJECT_DOC_DIR}\n    ${PROJECT_SOURCE_DIR}\n\n")
+      message (AUTHOR_WARNING "Problem:\n${OUTPUT_VARIABLE} file specified in the BasisProject.cmake"
+                              " basis_project() call of the project ${PROJECT_NAME} was not found.\n"
+                              "Solutions:"
+                              "\n\t1. Add a logo file to one of the appropriate locations detailed below."
+                              "\n\t2. Correct the path if the logo exists."
+                              "\n\t3. Remove the line specifying the logo to look for if it does not exist."
+                              "\n\nExpected to find file:\n\t${SPECIFIED_LOGO}\n\n"
+                              "Directories checked:\n\t${PROJECT_DOCRES_DIR}\n\t${PROJECT_DOC_DIR}\n\t${PROJECT_SOURCE_DIR}\n\n")
     endif ()
   endif ()
 endfunction()
