@@ -162,8 +162,16 @@ set (
     CONTACT
     VERSION
     TEMPLATE       # used by basisproject tool
-    MODULES_DIR    # single directory containing multiple modules, also see MODULE_DIRS
-    INCLUDE_DIR
+    INCLUDE_DIR    # alias for INCLUDE_DIRS
+    CODE_DIR       # alias for CODE_DIRS
+    MODULES_DIR    # single directory containing multiple modules, see also MODULE_DIRS
+    CONFIG_DIR     # directory containing the CMake/BASIS configuration
+    DATA_DIR       # directory containing the auxiliary program data
+    DOC_DIR        # directory containing the documentation
+    DOCRES_DIR     # directory containing the ressource files such as a project logo
+    EXAMPLE_DIR    # directory containing some example files
+    LIBRARY_DIR    # directory containing script libraries such as Perl or Python modules
+    TESTING_DIR    # directory containing the source code and data of the software tests
 )
 
 ## @brief Names of project meta-data with multiple arguments.
@@ -176,9 +184,10 @@ set (
     OPTIONAL_DEPENDS
     TEST_DEPENDS
     OPTIONAL_TEST_DEPENDS
-    MODULE_DIRS # list paths each pointing to an individual module, also see MODULES_DIR
-    INCLUDE_DIRS
-    CODE_DIRS   # list of paths to source code directories
+    INCLUDE_DIRS   # list of directories containing public header files
+    CODE_DIRS      # list of directories containing source code files, see also CODE_DIR
+    MODULE_DIRS    # list of separate module directories, see also MODULES_DIR
+    SUBDIRS        # list of additional (generic) project subdirectories
 )
 
 ## @brief Names of project meta-data.

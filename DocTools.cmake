@@ -219,8 +219,8 @@ endfunction ()
 #     <td>Value for Doxygen's @c INPUT tag which is used to specify input
 #         directories/files. Any given input path is added to the default
 #         input paths.@n
-#         Default: @c PROJECT_CODE_DIR, @c BINARY_CODE_DIR,
-#                  @c PROJECT_INCLUDE_DIR, @c BINARY_INCLUDE_DIR.</td>
+#         Default: @c PROJECT_CODE_DIRS, @c BINARY_CODE_DIR,
+#                  @c PROJECT_INCLUDE_DIRS, @c BINARY_INCLUDE_DIR.</td>
 #   </tr>
 #   <tr>
 #     @tp @b INPUT_FILTER filter @endtp
@@ -560,28 +560,17 @@ function (basis_add_doxygen_doc TARGET_NAME)
   list (APPEND DOXYGEN_INPUT "${PROJECT_BINARY_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}ConfigVersion.cmake")
   list (APPEND DOXYGEN_INPUT "${PROJECT_BINARY_DIR}/${PROJECT_PACKAGE_CONFIG_PREFIX}Use.cmake")
   # input directories
-  if (EXISTS "${PROJECT_INCLUDE_DIR}")
-    list (APPEND DOXYGEN_INPUT "${PROJECT_INCLUDE_DIR}")
-  endif ()
-  if (EXISTS "${BINARY_INCLUDE_DIR}")
-    list (APPEND DOXYGEN_INPUT "${BINARY_INCLUDE_DIR}")
-  endif ()
-  if (EXISTS "${BINARY_CODE_DIR}")
-    list (APPEND DOXYGEN_INPUT "${BINARY_CODE_DIR}")
-  endif ()
-  if (EXISTS "${PROJECT_CODE_DIRS}")
-    list (APPEND DOXYGEN_INPUT "${PROJECT_CODE_DIRS}")
-  endif ()
-  basis_get_relative_path (INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
-  basis_get_relative_path (CODE_DIR    "${PROJECT_SOURCE_DIR}" "${PROJECT_CODE_DIR}")
-  # TODO: Does this break down when modules each have custom code and include directories?
+  foreach (_DIR IN LISTS BINARY_INCLUDE_DIR PROJECT_INCLUDE_DIRS BINARY_CODE_DIR PROJECT_CODE_DIRS)
+    if (IS_DIRECTORY ${_DIR})
+      list (APPEND DOXYGEN_INPUT "${_DIR}")
+    endif ()
+  endforeach ()
   foreach (M IN LISTS PROJECT_MODULES_ENABLED)
-    if (EXISTS "${PROJECT_MODULES_DIR}/${M}/${CODE_DIR}")
-      list (APPEND DOXYGEN_INPUT "${PROJECT_MODULES_DIR}/${M}/${CODE_DIR}")
-    endif ()
-    if (EXISTS "${PROJECT_MODULES_DIR}/${M}/${INCLUDE_DIR}")
-      list (APPEND DOXYGEN_INPUT "${BINARY_MODULES_DIR}/${M}/${INCLUDE_DIR}")
-    endif ()
+    foreach (_DIR IN LISTS ${M}_INCLUDE_DIRS ${M}_CODE_DIRS)
+      if (IS_DIRECTORY ${_DIR})
+        list (APPEND DOXYGEN_INPUT "${_DIR}")
+      endif ()
+    endforeach ()
   endforeach ()
   # in case of scripts, have Doxygen process the configured versions for the
   # installation which are further located in proper subdirectories instead

@@ -36,10 +36,14 @@ set (PERL_SITELIB "@PERL_SITELIB@")
 # source tree
 # ============================================================================
 
-## @brief Absolute path to directory of project sources in source tree.
-set (PROJECT_CODE_DIR "@PROJECT_CODE_DIR@")
-## @brief Absolute path to directories of project sources in source tree.
+## @brief Absolute paths to directories of public header files in source tree.
+set (PROJECT_INCLUDE_DIRS "@PROJECT_INCLUDE_DIRS@")
+## @brief Absolute paths to directories of project sources in source tree.
 set (PROJECT_CODE_DIRS "@PROJECT_CODE_DIRS@")
+## @brief Absolute path to directory containing project modules in subdirectories.
+set (PROJECT_MODULES_DIR "@PROJECT_MODULES_DIR@")
+## @brief Absolute paths to root directories of project modules.
+set (PROJECT_MODULE_DIRS "@PROJECT_MODULE_DIRS@")
 ## @brief Absolute path to directory of BASIS project configuration in source tree.
 set (PROJECT_CONFIG_DIR "@PROJECT_CONFIG_DIR@")
 ## @brief Absolute path to directory of auxiliary data in source tree.
@@ -50,12 +54,8 @@ set (PROJECT_DOC_DIR "@PROJECT_DOC_DIR@")
 set (PROJECT_DOCRES_DIR "@PROJECT_DOCRES_DIR@")
 ## @brief Absolute path to directory of example in source tree.
 set (PROJECT_EXAMPLE_DIR "@PROJECT_EXAMPLE_DIR@")
-## @brief Absolute path to directory of public header files in source tree.
-set (PROJECT_INCLUDE_DIR "@PROJECT_INCLUDE_DIR@")
 ## @brief Absolute path to directory of public scripted packages.
 set (PROJECT_LIBRARY_DIR "@PROJECT_LIBRARY_DIR@")
-## @brief Absolute path to directory of project modules.
-set (PROJECT_MODULES_DIR "@PROJECT_MODULES_DIR@")
 ## @brief Absolute path to directory of testing tree in source tree.
 set (PROJECT_TESTING_DIR "@PROJECT_TESTING_DIR@")
 ## @brief Names of additional project subdirectories at root level.

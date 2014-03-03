@@ -107,25 +107,6 @@ if (NOT PerlLibs_FOUND)
 endif ()
 
 # ============================================================================
-# source tree
-# ============================================================================
-
-set (PROJECT_CODE_DIR    "${PROJECT_SOURCE_DIR}/src")
-set (PROJECT_CONFIG_DIR  "${PROJECT_SOURCE_DIR}/config")
-set (PROJECT_DATA_DIR    "${PROJECT_SOURCE_DIR}/data")
-set (PROJECT_DOC_DIR     "${PROJECT_SOURCE_DIR}/doc")
-set (PROJECT_DOCRES_DIR  "${PROJECT_SOURCE_DIR}/doc/static")
-set (PROJECT_EXAMPLE_DIR "${PROJECT_SOURCE_DIR}/example")
-set (PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-set (PROJECT_LIBRARY_DIR "${PROJECT_SOURCE_DIR}/lib")
-set (PROJECT_TESTING_DIR "${PROJECT_SOURCE_DIR}/test")
-
-# note: the related variables PROJECT_MODULES_DIR and PROJECT_MODULE_DIRS
-#       are set in each individual Top Level project's BasisProject.cmake file.
-
-set (PROJECT_SUBDIRS) # default subdirs are added to list in basis_project_impl
-
-# ============================================================================
 # testing tree
 # ============================================================================
 
@@ -145,14 +126,13 @@ endforeach ()
 # ============================================================================
 
 # set directories corresponding to the source tree directories
-foreach (_P CODE CONFIG DATA DOC EXAMPLE MODULES TESTING)
+foreach (_P CONFIG DATA DOC EXAMPLE MODULES TESTING)
   basis_get_relative_path (_D "${PROJECT_SOURCE_DIR}" "${PROJECT_${_P}_DIR}")
   set (BINARY_${_P}_DIR "${PROJECT_BINARY_DIR}/${_D}")
 endforeach ()
 
-basis_get_relative_path (_D "${PROJECT_SOURCE_DIR}" "${PROJECT_INCLUDE_DIR}")
-set (BINARY_INCLUDE_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/${_D}")
-
+set (BINARY_CODE_DIR    "${TOPLEVEL_PROJECT_BINARY_DIR}/src")
+set (BINARY_INCLUDE_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/include")
 set (BINARY_RUNTIME_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/bin")
 set (BINARY_LIBEXEC_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/lib${_MODULE}")
 set (BINARY_LIBRARY_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/lib${_MODULE}")

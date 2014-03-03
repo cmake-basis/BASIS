@@ -45,6 +45,36 @@ endmacro()
 # ============================================================================
 # meta-data
 # ============================================================================
+
+## @brief Auxiliary macro used by basis_project_check_metadata.
+#
+# Used by basis_project_check_metadata to check the existence of each project
+# source directory specified in the given list variable and to report an error
+# otherwise. As a side effect, this macro makes all relative paths absolute
+# with respect to PROJECT_SOURCE_DIR or sets the directory variable to the
+# default value (ARGN).
+macro (basis_check_or_set_source_paths _VAR)
+  if (${_VAR})
+    set (_PATHS)
+    foreach (_PATH IN LISTS ${_VAR})
+      if (NOT IS_ABSOLUTE "${_PATH}")
+        set (${_PATH} "${PROJECT_SOURCE_DIR}/${_PATH}")
+      endif ()
+      if (NOT IS_DIRECTORY "${_PATH}")
+        message (FATAL_ERROR "The ${_VAR} is set to the non-existing path\n\t${_PATH}\n"
+                             "Check the basis_project() arguments and keep in mind that"
+                             " relative paths have to be relative to the top-level directory"
+                             " of the project or module, respectively, i.e.\n\t${PROJECT_SOURCE_DIR}")
+      endif ()
+    endforeach ()
+    set (${_VAR} "${_PATHS}")
+    unset (_PATHS)
+    unset (_PATH)
+  else ()
+    set (${_VAR} ${ARGN})
+  endif ()
+endmacro ()
+
 # ----------------------------------------------------------------------------
 ## @brief Check meta-data and set defaults.
 #
@@ -262,39 +292,17 @@ macro (basis_project_check_metadata)
   else ()
     set (TOPLEVEL_PROJECT_CONTACT "${PROJECT_CONTACT}")
   endif ()
-  
-  # set default variable for PROJECT_MODULES_DIR
-  if(NOT PROJECT_MODULES_DIR)
-    set (PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/modules")
-  endif()
-  # make sure PROJECT_MODULES_DIR is an absolute path
-  if(NOT IS_ABSOLUTE ${PROJECT_MODULES_DIR})
-    set(PROJECT_MODULES_DIR "${PROJECT_SOURCE_DIR}/${PROJECT_MODULES_DIR}")
-  endif()
-  
-  # set default variable for PROJECT_INCLUDE_DIR
-  if(NOT PROJECT_INCLUDE_DIR)
-    set (PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-  endif()
-  
-  
-  # set default variable for PROJECT_INCLUDE_DIRS
-  list(APPEND PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIR})
-  
-  # make sure each include directory is absolute
-  set(ABSOLUTE_PROJECT_INCLUDE_DIRS)
-  foreach(M_PATH IN LISTS PROJECT_INCLUDE_DIRS)
-    if(IS_ABSOLUTE ${M_PATH})
-      list(APPEND ABSOLUTE_PROJECT_INCLUDE_DIRS ${M_PATH})
-    elseif(IS_ABSOLUTE "${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}")
-      list(APPEND ABSOLUTE_PROJECT_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}")
-    else()
-      message(FATAL_ERROR "Check your INCLUDE_DIR ${M_PATH} directory because neither that nor ${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH} appears to exist.")
-    endif()
-  endforeach()
-  set(PROJECT_INCLUDE_DIRS ${ABSOLUTE_PROJECT_INCLUDE_DIRS})
-  unset(ABSOLUTE_PROJECT_INCLUDE_DIRS)
-  
+  # source tree directories
+  basis_check_or_set_source_paths (PROJECT_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
+  basis_check_or_set_source_paths (PROJECT_CODE_DIRS    "${PROJECT_SOURCE_DIR}/src")
+  basis_check_or_set_source_paths (PROJECT_MODULES_DIR  "${PROJECT_SOURCE_DIR}/modules")
+  basis_check_or_set_source_paths (PROJECT_CONFIG_DIR   "${PROJECT_SOURCE_DIR}/config")
+  basis_check_or_set_source_paths (PROJECT_DATA_DIR     "${PROJECT_SOURCE_DIR}/data")
+  basis_check_or_set_source_paths (PROJECT_DOC_DIR      "${PROJECT_SOURCE_DIR}/doc")
+  basis_check_or_set_source_paths (PROJECT_DOCRES_DIR   "${PROJECT_DOC_DIR}/static")
+  basis_check_or_set_source_paths (PROJECT_EXAMPLE_DIR  "${PROJECT_SOURCE_DIR}/example")
+  basis_check_or_set_source_paths (PROJECT_LIBRARY_DIR  "${PROJECT_SOURCE_DIR}/lib")
+  basis_check_or_set_source_paths (PROJECT_TESTING_DIR  "${PROJECT_SOURCE_DIR}/test")
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
@@ -683,6 +691,9 @@ macro (basis_project_modules)
     set (${PROJECT_NAME}_TEST_DEPENDS          "${TEST_DEPENDS}"          PARENT_SCOPE)
     set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS "${OPTIONAL_TEST_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_DECLARED              TRUE                       PARENT_SCOPE)
+    # remember source directories - used by basis_add_doxygen_doc()
+    set (${PROJECT_NAME}_INCLUDE_DIRS "${PROJECT_INCLUDE_DIRS}")
+    set (${PROJECT_NAME}_CODE_DIRS    "${PROJECT_CODE_DIRS}")
     # remember if module depends on Slicer - used by basis_find_packages()
     if (PROJECT_IS_SLICER_MODULE)
       foreach (_D IN LISTS BASIS_SLICER_METADATA_LIST)
@@ -1476,7 +1487,7 @@ macro (basis_project_initialize)
   # --------------------------------------------------------------------------
   # configure BASIS directory structure
   include ("${BASIS_MODULE_PATH}/DirectoriesSettings.cmake")
-  list(APPEND PROJECT_CODE_DIRS ${PROJECT_CODE_DIR})
+  # configure file used for the generation of the corresponding documentation
   configure_file (
     "${BASIS_MODULE_PATH}/Directories.cmake.in"
     "${BINARY_CONFIG_DIR}/Directories.cmake"
@@ -1666,7 +1677,11 @@ macro (basis_install_public_headers)
     # get list of all public header files of project
     set (_PUBLIC_HEADERS)
     if (NOT BASIS_CONFIGURE_INCLUDES)
-      file (GLOB_RECURSE _PUBLIC_HEADERS "${PROJECT_INCLUDE_DIR}/*.h")
+      foreach (INCLUDE_DIR IN LISTS PROJECT_INCLUDE_DIRS)
+        file (GLOB_RECURSE __PUBLIC_HEADERS "${INCLUDE_DIR}/*.h")
+        list (APPEND _PUBLIC_HEADERS "${__PUBLIC_HEADERS}")
+      endforeach ()
+      unset (__PUBLIC_HEADERS)
     endif ()
     list (APPEND _PUBLIC_HEADERS ${_CONFIGURED_PUBLIC_HEADERS})
     # check include statements of each public header file
@@ -1861,7 +1876,7 @@ macro (basis_project_impl)
   # dump currently defined CMake variables such that these can be used to
   # configure the .in public header and module files during the build step
   basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}"
-                                    "${PROJECT_INCLUDE_DIR}"
+                                    "${PROJECT_INCLUDE_DIRS}"
                                     "${PROJECT_CODE_DIRS}")
   
   option(BASIS_CONFIGURE_PUBLIC_HEADERS "Perform CMake Variable configuration on .h, .hh, .hpp, .hxx, .inl, .txx, .inc headers that end with a .in suffix" OFF)
