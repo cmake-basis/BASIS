@@ -126,12 +126,11 @@ endforeach ()
 # ============================================================================
 
 # set directories corresponding to the source tree directories
-foreach (_P CONFIG DATA DOC EXAMPLE MODULES TESTING)
+foreach (_P CODE CONFIG DATA DOC EXAMPLE MODULES TESTING)
   basis_get_relative_path (_D "${PROJECT_SOURCE_DIR}" "${PROJECT_${_P}_DIR}")
   set (BINARY_${_P}_DIR "${PROJECT_BINARY_DIR}/${_D}")
 endforeach ()
 
-set (BINARY_CODE_DIR    "${TOPLEVEL_PROJECT_BINARY_DIR}/src")
 set (BINARY_INCLUDE_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/include")
 set (BINARY_RUNTIME_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/bin")
 set (BINARY_LIBEXEC_DIR "${TOPLEVEL_PROJECT_BINARY_DIR}/lib${_MODULE}")

@@ -58,14 +58,15 @@ macro (basis_check_or_set_source_paths _VAR)
     set (_PATHS)
     foreach (_PATH IN LISTS ${_VAR})
       if (NOT IS_ABSOLUTE "${_PATH}")
-        set (${_PATH} "${PROJECT_SOURCE_DIR}/${_PATH}")
+        set (_PATH "${PROJECT_SOURCE_DIR}/${_PATH}")
       endif ()
       if (NOT IS_DIRECTORY "${_PATH}")
         message (FATAL_ERROR "The ${_VAR} is set to the non-existing path\n\t${_PATH}\n"
                              "Check the basis_project() arguments and keep in mind that"
                              " relative paths have to be relative to the top-level directory"
-                             " of the project or module, respectively, i.e.\n\t${PROJECT_SOURCE_DIR}")
+                             " of the project or module, respectively, i.e.\n\t${PROJECT_SOURCE_DIR}\n")
       endif ()
+      list (APPEND _PATHS "${_PATH}")
     endforeach ()
     set (${_VAR} "${_PATHS}")
     unset (_PATHS)
@@ -303,6 +304,9 @@ macro (basis_project_check_metadata)
   basis_check_or_set_source_paths (PROJECT_EXAMPLE_DIR  "${PROJECT_SOURCE_DIR}/example")
   basis_check_or_set_source_paths (PROJECT_LIBRARY_DIR  "${PROJECT_SOURCE_DIR}/lib")
   basis_check_or_set_source_paths (PROJECT_TESTING_DIR  "${PROJECT_SOURCE_DIR}/test")
+  # extract main source code directories from lists
+  list (GET PROJECT_INCLUDE_DIRS 0 PROJECT_INCLUDE_DIR)
+  list (GET PROJECT_CODE_DIRS    0 PROJECT_CODE_DIR)
   # let basis_project_impl() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
