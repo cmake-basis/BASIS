@@ -9,8 +9,8 @@ Configure a Project
 This guide demonstrates some of the more advanced details,
 tricks, and tools to modify and configure your project.
 
- .. seealso:: The guide on how to :doc:`/howto/create-and-modify-project`, :ref:`BasisProject.cmake <BasisProject>`, 
-              and `basis_project()`_. :doc:`/standard/template` describes the typical project layout.       
+.. seealso:: The guide on how to :doc:`/howto/create-and-modify-project`, :apidoc:`BasisProject.cmake`, 
+             and :apidoc:`basis_project()`. :doc:`/standard/template` describes the typical project layout.       
 
 
 CMake Configuration
@@ -18,12 +18,11 @@ CMake Configuration
 
 .. _ConfigureBasisProject:
 
-::apidoc::`BasisProject.cmake`
-------------------------------
+:apidoc:`BasisProject.cmake`
+----------------------------
 
 The key file for any project is the BasisProject.cmake file. It sets basic information 
 about a BASIS Project and calls the :apidoc:`basis_project()` command.
-
 
 Note that there are several rules for how this works.
 
@@ -83,28 +82,28 @@ ITK package. You can also be more specific using ``ITK-4.2`` or ``ITK-3.18.0``.
 
 .. todo:: explain and give an example of what you can configure with this file
 
-:apidoc:`Config.cmake.in`
--------------------------
+:apidoc:`Config.cmake.in <BASISConfig.cmake>`
+---------------------------------------------
 
 .. todo:: explain and give an example of what you can configure with this file
 
-:apidoc:`Version.cmake.in`
---------------------------
+:apidoc:`Version.cmake.in <BASISConfigVersion.cmake>`
+-----------------------------------------------------
 
 .. todo:: explain and give an example of what you can configure with this file
 
-:apidoc:`ScriptConfig.cmake.in`
--------------------------------
+:apidoc:`ScriptConfig.cmake.in <ScriptConfig.cmake>`
+----------------------------------------------------
 
 .. todo:: explain and give an example of what you can configure with this file
 
-:apidoc:`Package.cmake`
------------------------
+Package.cmake
+-------------
 
 .. todo:: explain and give an example of what you can configure with this file
 
 :apidoc:`Depends.cmake`
-----------------------
+-----------------------
 
 Headers
 =======
@@ -216,15 +215,15 @@ accomodate the standard layout, so it is possible to customize the layout.
 
 To set up a custom layout do one or both of the following:
 
-1. In the :apidoc:`BasisConfig.cmake` file
+1. In the :apidoc:`BasisProject.cmake` file
       - Modify the :apidoc:`basis_project()` function
       - The ``INCLUDE_DIRS`` parameter sets
         additional directories that should be included.
       - The ``MODULE_DIRS`` parameter specifies a 
         path to each nonstandard module directory.
-        
-3. In the config/:apidoc:`Settings.cmake` file
-     - Set the CMake BASIS variables listed under SourceCodeTree_
+
+2. In the :apidoc:`config/Settings.cmake <Settings.cmake>` file
+     - Set the CMake BASIS variables listed under :ref:`SourceCodeTree`
        with a call to ``set(VARIABLE path/to/dir)``.
 
 More information can be found in :doc:`/standard/template`.
