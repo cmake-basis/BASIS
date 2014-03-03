@@ -639,35 +639,35 @@ macro (basis_project_modules)
   # load module DAG
 
   # glob BasisProject.cmake files in modules subdirectory
-  file (
-    GLOB
-      MODULE_INFO_FILES
-    RELATIVE
-      "${CMAKE_CURRENT_SOURCE_DIR}"
-      "${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
-  )
+  if (PROJECT_MODULES_DIR)
+    file (
+      GLOB
+        MODULE_INFO_FILES
+      RELATIVE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${PROJECT_MODULES_DIR}/*/BasisProject.cmake"
+    )
+  endif ()
   
   # add each manually specified module
-  foreach(M_PATH IN LISTS PROJECT_MODULE_DIRS)
+  foreach (_PATH IN LISTS PROJECT_MODULE_DIRS)
+    if (NOT IS_ABSOLUTE ${_PATH})
+      set (_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${_PATH}")
+    endif ()
+    if (EXISTS "${_PATH}/BasisProject.cmake")
+      list (APPEND MODULE_INFO_FILES "${_PATH}/BasisProject.cmake")
+    else ()
+      message (FATAL_ERROR "Check your top-level ${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake"
+                           " file because the module ${_PATH}/BasisProject.cmake"
+                           " file does not appear to exist.")
+    endif ()
+  endforeach ()
+  unset (_PATH)
 
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}/BasisProject.cmake")
-      list(APPEND MODULE_INFO_FILES "${M_PATH}/BasisProject.cmake")
-    else()
-      message(FATAL_ERROR "Check your Top Level ${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake file because the module ${CMAKE_CURRENT_SOURCE_DIR}/${M_PATH}/BasisProject.cmake file does not appear to exist.")
-    endif()
-  endforeach()
-  
   # use function scope to avoid overwriting of this project's variables
   function (basis_module_info F)
     set (PROJECT_IS_MODULE TRUE)
     set (BASIS_basis_project_CALLED FALSE)
-   
-    set(F_INC_PATH ${F})
-
-    if (NOT IS_ABSOLUTE "${F}")
-      set(F_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${F})
-    endif()
-    
     include ("${F}")
     # make sure that basis_project() was called
     if (NOT BASIS_basis_project_CALLED)
