@@ -15,7 +15,7 @@
 # required and optional dependencies and the CMake variables related to the
 # project directory structure were defined (see BASISDirectories.cmake file
 # in @c PROJECT_BINARY_DIR, where BASIS is here the name of the project).
-# It is further included before the BasisSettings.cmake file.
+# It is also included before the BasisSettings.cmake file.
 #
 # In particular, build options should be added in this file using CMake's
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:option">

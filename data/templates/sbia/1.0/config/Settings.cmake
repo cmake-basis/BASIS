@@ -7,7 +7,7 @@
 # project directory structure were defined (see
 # &lt;Project&gt;Directories.cmake file in @c PROJECT_BINARY_DIR, where
 # &lt;Project&gt; is the name of this project).
-# It is further included before the BasisSettings.cmake file.
+# It is also included before the BasisSettings.cmake file.
 #
 # In particular, build options should be added in this file using CMake's
 # <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:option">
