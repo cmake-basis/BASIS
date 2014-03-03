@@ -194,7 +194,7 @@ added by the basistest.ctest script if the coverage option is passed in as in
 
 .. code-block:: bash
 
- ctest -S basistest.ctest,coverage
+    ctest -S basistest.ctest,coverage
 
 The analysis of the gcov (or Bullseye) output and its conversion to the XML
 format used by CDash is done by the ``ctest_coverage`` CTest command.
