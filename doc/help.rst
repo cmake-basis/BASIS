@@ -26,7 +26,7 @@ Using Standard Calls
 Probably. However, you will definitely lose much of the useful functionality 
 that BASIS was created to provide. This kind of usage has also not been heavily 
 tested so it is not recommended. The BASIS philosophy is definitely that a 
-project that switches to BASIS uses the basis_ CMake commands wherever possible. 
+project that switches to BASIS uses the basis_* CMake commands wherever possible. 
 Consider BASIS an extension to CMake, but if you run into issues you can 
 file a ticket and we will attempt to address the problem.
 
