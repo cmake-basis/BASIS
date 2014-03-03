@@ -478,80 +478,157 @@ endmacro ()
 #       as well as the data/templates foler of the BASIS source tree.</td>
 #   </tr>
 #   <tr>
-#     @tp @b MODULES_DIR path @endtp
-#     <td>A single path to directory containing multiple module folders each containing their own 
-#         BasisProject.cmake that will each be picked up automatically. 
-#         Also see the related variable @c MODULE_DIRS.
-#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
-#         (default: ${PROJECT_SOURCE_DIR}/modules)</td>
+#     @tp @b SUPER_BUILD @endtp
+#     <td>EXPERIMENTAL - Compile modules as part of a super build using ExternalProject_Add().
+#         This can dramatically speed up configure time by compiling all modules
+#         as if they were independent projects.</td>
 #   </tr>
+# </table>
+#
+# @par Project dependencies:
+# Dependencies on other BASIS projects, which can be subprojects of the same
+# BASIS top-level project, as well as dependencies on external packages such as ITK
+# have to be defined here using the @p DEPENDS argument option. This will be used
+# by a top-level project to ensure that the dependencies among its subprojects are
+# resolved properly. For each external dependency, the BASIS functions
+# basis_find_package() and basis_use_package() are invoked by
+# basis_project_initialize(). If an external package is not CMake aware and
+# additional CMake code shall be executed to include the settings of the external
+# package (which is usually done in a so-called <tt>Use&lt;Pkg&gt;.cmake</tt> file
+# if the package would be CMake aware), such code should be added to the
+# <tt>Settings.cmake</tt> file of the project.
+# @par
+# <table border="0">
 #   <tr>
-#     @tp @b MODULE_DIRS path1 [path2...] @endtp
-#     <td>Multiple paths, each to a single directory containing a 
-#         BasisProject.cmake file. Each will be picked up as a module.
-#         Also see the related variable @c MODULES_DIR.
-#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
-#         (default: empty string)</td>
-#   </tr>
-#   <tr>
-#     @tp @b INCLUDE_DIR path @endtp
-#     <td>A single path to the directory to be included that contains 
-#         header files that are part of the public interface. 
-#         Also see the related variable @c INCLUDE_DIRS.
-#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
-#         (default: ${PROJECT_SOURCE_DIR}/modules)</td>
-#   </tr>
-#   <tr>
-#     @tp @b INCLUDE_DIRS path1 [path2...] @endtp
-#     <td>Multiple paths, each to a single directory containing header
-#         files that are part of the public interface.
-#         Also see the related variable @c INCLUDE_DIR.
-#         A relative path must be relative to @c PROJECT_SOURCE_DIR.
-#         (default: empty string)</td>
-#   </tr>
-#   <tr>
-#     @tp @b DEPENDS name[, name] @endtp
+#     @tp @b DEPENDS dep1 [dep2...] @endtp
 #     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
 #         or names of external packages.</td>
 #   </tr>
 #   <tr>
-#     @tp @b OPTIONAL_DEPENDS name[, name] @endtp
+#     @tp @b OPTIONAL_DEPENDS dep1 [dep2...] @endtp
 #     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
 #         or names of external packages which are used only if available.</td>
 #   </tr>
 #   <tr>
-#     @tp @b TEST_DEPENDS name[, name] @endtp
+#     @tp @b TEST_DEPENDS dep1 [dep2...] @endtp
 #     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
 #         or names of external packages which are only required by the tests.</td>
 #   </tr>
 #   <tr>
-#     @tp @b OPTIONAL_TEST_DEPENDS name[, name] @endtp
+#     @tp @b OPTIONAL_TEST_DEPENDS dep1 [dep2...] @endtp
 #     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
 #         or names of external packages which are used only by the tests if available.</td>
 #   </tr>
 # </table>
 #
-# @returns Sets the following non-cached CMake variables:
-# @retval PROJECT_NAME                    @c NAME argument.
-# @retval PROJECT_PACKAGE_NAME            @c PACKAGE_NAME argument.
-# @retval PROJECT_PACKAGE_VENDOR          @c PACKAGE_VENDOR argument.
-# @retval PROJECT_PACKAGE_WEBSITE         @c PACKAGE_WEBSITE argument.
-# @retval PROJECT_PACKAGE_LOGO            @c PACKAGE_LOGO argument as abolute path.
-# @retval PROJECT_PROVIDER_NAME           @c PROVIDER_NAME argument.
-# @retval PROJECT_PROVIDER_WEBSITE        @c PROVIDER_WEBSITE argument
-# @retval PROJECT_PROVIDER_LOGO           @c PROVIDER_LOGO argument as abolute path.
-# @retval PROJECT_DIVISION_NAME           @c DIVISION_NAME argument.
-# @retval PROJECT_DIVISION_WEBSITE        @c DIVISION_WEBSITE argument.
-# @retval PROJECT_DIVISION_LOGO           @c DIVISION_LOGO argument as absolute path.
-# @retval PROJECT_VERSION                 @c VERSION argument.
-# @retval PROJECT_DESCRIPTION             @c DESCRIPTION argument.
-# @retval PROJECT_DEPENDS                 @c DEPENDS arguments.
-# @retval PROJECT_OPTIONAL_DEPENDS        @c OPTIONAL_DEPENDS arguments.
-# @retval PROJECT_TEST_DEPENDS            @c TEST_DEPENDS arguments.
-# @retval PROJECT_OPTIONAL_TEST_DEPENDS   @c OPTIONAL_TEST_DEPENDS arguments.
-# @retval PROJECT_IS_SUBPROJECT           @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
-# @retval PROJECT_CODE_DIRS               @c LIST of directories on which basis_add_subdirectory() will be called.
-# @retval PROJECT_MODULE_DIRS             @c LIST of directories that are project modules containg a BasisProject.cmake file.
+# @par Source tree layout:
+# Relative directory paths have to be relative to the @c PROJECT_SOURCE_DIR, i.e.,
+# the diretory containing the @c BasisProject.cmake file which calls this command.
+# If any of the following arguments refer to non-existing directory paths,
+# the respective paths are simply ignored during the project build configuration.
+# In case of the paths passed to @p MODULE_DIRS, an error is raised if the directory
+# does not exist or is missing a BasisProject.cmake file.
+# @par
+# <table border="0">
+#   <tr>
+#     @tp @b INCLUDE_DIRS path1 [path2...] @endtp
+#     <td>A list of directories containing the header files of the public interface.
+#         (default: include)</td>
+#   </tr>
+#   <tr>
+#     @tp @b INCLUDE_DIR path @endtp
+#     <td>Alternative option for @p INCLUDE_DIRS which only accepts a single path as argument.</td>
+#   </tr>
+#   <tr>
+#     @tp @b CODE_DIRS path1 [path2...] @endtp
+#     <td>A list of directories containing the source code files. The first diretory path
+#         is used as main source directory from which the subdirectory name of the
+#         corresponding build tree directory is derived. Any configured or generated
+#         source files are written to this build tree source directory.
+#         (default: src)</td>
+#   </tr>
+#   <tr>
+#     @tp @b CODE_DIR path @endtp
+#     <td>Alternative option for @p CODE_DIRS which only accepts a single path as argument.</td>
+#   </tr>
+#   <tr>
+#     @tp @b LIBRARY_DIR path @endtp
+#     <td>Directory of public modules written in a scripting language such as Python or Perl. (default: lib)</td>
+#   </tr>
+#   <tr>
+#     @tp @b MODULES_DIR path @endtp
+#     <td>Path to directory containing multiple module subdirectories, each containing
+#         their own BasisProject.cmake file that will each be picked up automatically.
+#         (default: modules)</td>
+#   </tr>
+#   <tr>
+#     @tp @b MODULE_DIRS path1 [path2...] @endtp
+#     <td>A list of individual module directories, each containing a BasisProject.cmake file.
+#         This list differs from @c MODULES_DIR in that each listed directory is the
+#         root directory of a single module, whereas @c MODULES_DIR is the comman
+#         directory of multiple modules contained in their own respective subdirectory.
+#         (default: "")</td>
+#   </tr>
+#   <tr>
+#     @tp @b CONFIG_DIR path @endtp
+#     <td>Directory in which BASIS looks for custom CMake/BASIS configuration files. (default: config)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DATA_DIR path @endtp
+#     <td>Directory which contains auxiliary data required by the software programs. (default: data)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DOC_DIR path @endtp
+#     <td>Directory containing the software documentation (source) files. (default: doc)</td>
+#   </tr>
+#   <tr>
+#     @tp @b DOCRES_DIR path @endtp
+#     <td>Directory where the documentation ressource files such as the project logo are located. (default: @p DOC_DIR/config)</td>
+#   </tr>
+#   <tr>
+#     @tp @b EXAMPLE_DIR path @endtp
+#     <td>Directory with some example files demonstrating the usage of the software. (default: example)</td>
+#   </tr>
+#   <tr>
+#     @tp @b TESTING_DIR path @endtp
+#     <td>The root diretory of the testing source tree containing test data and implementations. (default: test)</td>
+#   </tr>
+# </table>
+#
+# @returns Sets the following non-cached CMake variables.
+#          See documentation of the corresponding parameters above for details.
+# @retval PROJECT_NAME                    See @c NAME and @p SUBPROJECT.
+# @retval PROJECT_PACKAGE_NAME            See @c PACKAGE_NAME.
+# @retval PROJECT_PACKAGE_VENDOR          See @c PACKAGE_VENDOR.
+# @retval PROJECT_PACKAGE_WEBSITE         See @c PACKAGE_WEBSITE.
+# @retval PROJECT_PACKAGE_LOGO            See @c PACKAGE_LOGO. Value is an absolute path.
+# @retval PROJECT_PROVIDER_NAME           See @c PROVIDER_NAME.
+# @retval PROJECT_PROVIDER_WEBSITE        See @c PROVIDER_WEBSITE.
+# @retval PROJECT_PROVIDER_LOGO           See @c PROVIDER_LOGO. Value is an absolute path.
+# @retval PROJECT_DIVISION_NAME           See @c DIVISION_NAME.
+# @retval PROJECT_DIVISION_WEBSITE        See @c DIVISION_WEBSITE.
+# @retval PROJECT_DIVISION_LOGO           See @c DIVISION_LOGO. Value is an absolute path.
+# @retval PROJECT_VERSION                 See @c VERSION.
+# @retval PROJECT_DESCRIPTION             See @c DESCRIPTION.
+# @retval PROJECT_DEPENDS                 See @c DEPENDS.
+# @retval PROJECT_OPTIONAL_DEPENDS        See @c OPTIONAL_DEPENDS.
+# @retval PROJECT_TEST_DEPENDS            See @c TEST_DEPENDS.
+# @retval PROJECT_OPTIONAL_TEST_DEPENDS   See @c OPTIONAL_TEST_DEPENDS.
+# @retval PROJECT_IS_SUBPROJECT           See @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
+#
+# @retval PROJECT_CODE_DIRS               See @c CODE_DIRS.
+# @retval PROJECT_CODE_DIR                First element of @c PROJECT_CODE_DIRS list.
+# @retval PROJECT_CONFIG_DIR              See @c CONFIG_DIR.
+# @retval PROJECT_DATA_DIR                See @c DATA_DIR.
+# @retval PROJECT_DOC_DIR                 See @c DOC_DIR.
+# @retval PROJECT_DOCRES_DIR              See @c DOCRES_DIR.
+# @retval PROJECT_EXAMPLE_DIR             See @c EXAMPLE_DIR.
+# @retval PROJECT_INCLUDE_DIRS            See @c INCLUDE_DIRS.
+# @retval PROJECT_INCLUDE_DIR             First element of @c PROJECT_INCLUDE_DIRS list.
+# @retval PROJECT_LIBRARY_DIR             See @c LIBRARY_DIR.
+# @retval PROJECT_MODULE_DIRS             See @c MODULE_DIRS.
+# @retval PROJECT_MODULES_DIR             See @c MODULES_DIR.
+# @retval PROJECT_TESTING_DIR             See @c TESTING_DIR.
 #
 # @ingroup CMakeAPI
 #
