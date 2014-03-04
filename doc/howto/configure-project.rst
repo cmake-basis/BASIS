@@ -120,11 +120,13 @@ standard does not allow so. But most settings can be overridden using this file.
 
 For example if you want to enable all compiler warnings for your project
 and consider them moreover as errors, you would add the following to the
-``config/Settings.cmake`` file (GCC):
+``config/Settings.cmake`` file:
 
 .. code-block:: cmake
 
-  add_definitions(-Wall -Werror)
+  if(CMAKE_COMPILER_IS_GNU_CXX)
+    add_definitions(-Wall -Werror)
+  endif()
 
 .. _option: http://www.cmake.org/cmake/help/v2.8.12/cmake.html#command:option
 
