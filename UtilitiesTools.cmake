@@ -261,7 +261,13 @@ endfunction ()
 ## @brief Configure BASIS utilities.
 #
 # This function configures the following source files which can be used
-# within the source code of the project.
+# within the source code of the project. If the BASIS utilities for a specific
+# language are not used by any of the project's build targets, no target for
+# the build of these utilities is added, unless the
+# @c BUILD_BASIS_UTILITIES_FOR_<LANGUAGE> option is set to @c ON. A reason
+# for forcing the build of the BASIS utilities is that the libraries should
+# be used by other projects which may want to make use of the BASIS Utilities
+# to get access to the project attributes.
 #
 # <table border="0">
 #   <tr>
@@ -291,11 +297,18 @@ endfunction ()
 #       necessary because CMake's add_executable() and add_library() commands
 #       raise an error if any of the specified source files does not exist.
 function (basis_configure_utilities)
-  set (CXX TRUE)
-  basis_get_project_property (PYTHON PROPERTY PROJECT_USES_PYTHON_UTILITIES)
-  basis_get_project_property (PERL   PROPERTY PROJECT_USES_PERL_UTILITIES)
-  basis_get_project_property (BASH   PROPERTY PROJECT_USES_BASH_UTILITIES)
-  if (NOT CXX AND NOT PYTHON AND NOT PERL AND NOT BASH)
+  set (SKIP TRUE)
+  foreach (L IN ITEMS CXX PYTHON PERL BASH)
+    if (BUILD_BASIS_UTILITIES_FOR_${L})
+      set (${L} ON)
+    else ()
+      basis_get_project_property (${L} PROPERTY PROJECT_USES_${L}_UTILITIES)
+    endif ()
+    if (${L})
+      set (SKIP FALSE)
+    endif ()
+  endforeach ()
+  if (SKIP)
     return ()
   endif ()
   message (STATUS "Configuring BASIS utilities...")

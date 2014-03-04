@@ -455,6 +455,20 @@ set (BASIS_RUNTIME_COMPONENT "Runtime")
 #         as dependency of an executable.
 set (BASIS_UTILITIES TRUE)
 
+## @brief Whether to always build the BASIS C++ utilities even if not required by any target
+option (BUILD_BASIS_UTILITIES_FOR_CXX    "Force the build of the BASIS C++ Utilities even if not used by this project" OFF)
+## @brief Whether to always build the BASIS Python utilities even if not required by any target
+option (BUILD_BASIS_UTILITIES_FOR_PYTHON "Force the build of the BASIS Python Utilities even if not used by this project" OFF)
+## @brief Whether to always build the BASIS Perl utilities even if not required by any target
+option (BUILD_BASIS_UTILITIES_FOR_PERL   "Force the build of the BASIS Perl Utilities even if not used by this project" OFF)
+## @brief Whether to always build the BASIS Bash utilities even if not required by any target
+option (BUILD_BASIS_UTILITIES_FOR_BASH   "Force the build of the BASIS Bash Utilities even if not used by this project" OFF)
+
+mark_as_advanced(BUILD_BASIS_UTILITIES_FOR_CXX
+                 BUILD_BASIS_UTILITIES_FOR_PYTHON
+                 BUILD_BASIS_UTILITIES_FOR_PERL
+                 BUILD_BASIS_UTILITIES_FOR_BASH)
+
 ## @brief Whether to export build targets by default.
 set (BASIS_EXPORT TRUE)
 
