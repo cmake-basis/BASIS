@@ -259,67 +259,71 @@ component definitions using aforementioned ``basis_add_`` commands.
 Header Files
 ============
 
-Header files will be part of the public API of a project if they are placed
-in ``include/<package>/header1.hpp`` for a top-level project,
-or ``<module>/include/<package>/header2.hpp`` for a project module.
-Notice the recommended subdirectory structure that helps prevent the
-collision of header file names, where ``<package>`` is usually the name of
-the top-level project which in case of a module is the argument of the
-``PACKAGE_NAME`` paramter of :apidoc:`basis_project()`.
+Header files are considered part of the public interface of a project, if they
+are placed in any of the directories specified using the ``INCLUDE_DIRS`` parameter
+of the :apidoc:`basis_project()` command, which by default is the ``include`` directory
+of the project source tree. By default, public header files should be in
+``include/<package>/`` for a top-level project or ``<module>/include/<package>/``
+for a project module (i.e. subproject).
+Notice the recommended subdirectories inside the include directory that help prevent
+the collision of header file names across packages. Here, ``<package>`` is usually
+the name of the top-level project which in case of a module is the argument of
+the ``PACKAGE_NAME`` (or short ``PACKAGE``) parameter of :apidoc:`basis_project()`
+in the ``BasisProject.cmake`` file of the module itself. In most cases, where the
+module is considered an *internal* module of the top-level project, this package
+name is identical to the project/package name of the top-level project.
+In cases where the module is imported from another package, however, using for example
+a submodule feature of the used version control system, the module is considered
+*external* to the importing top-level project which only includes the module directly
+in its source tree for convenience. Therefore the package which the module belongs
+to is the one it was imported from. Such meta top-level project need not exist,
+and may only be defined by the ``PACKAGE_NAME`` given in the ``BasisProject.cmake``
+file of the module. In general, the package name of any project should correspond
+to the *namespace* which all symbols of a software project belong to.
+It should be noted that the concept of a *namespace* can be extended to all aspects
+of a software project, not only certain programming languages which have it built in
+such as C++. Therefore, the symbols which belong to the package namespace include
+project modules, target names, C++ classes and functions, as well as script modules.
 
-If header files are placed in any other source code directory, i.e., those
-named as arguments of the ``CODE_DIRS`` parameter of :apidoc:`basis_project()`
-which is ``src`` by default, these header files can be included
-in a source code files without the need for adding these directories to
-the include search path explicitly. BASIS already adds each of these
-directories to the search path, but will not install the header files
-located in a source code directory. Only those in the ``INCLUDE_DIRS``
-will be installed automatically. Alternatively, as for these header
-files are not part of the public API and therefore there is no name
-conflict with external libraries to expect, they can be included by
-the source files relative to the location of the ``.cpp`` files as in:
+Header files which are located in a source code directory can be included in a
+source file without the need for using aforementioned subdirectory structure.
+These files are not automatically installed, however, as they are assumed
+to be only used by ``.cpp`` modules which are eventually linked to an executable binary.
+Header files which are included by other public header files or contain public
+definitions of object classes that are linked to a library for use by other projects,
+are by definition part of the public interface and therefore must be located in one
+of the include directories.
 
-.. code-block:: c++
+Private header files are generally located nearby the ``.cpp`` files that make
+use of them. These header files can be included using relative paths and the
+preprocessor directive ``#include "header.h"`` rather than ``#include <header.h>``.
+Both are valid, however, and additional include paths can always be added
+using the :apidoc:`basis_include_directories()` command. This can be done
+either in the ``CMakeLists.txt`` of the respective source code subtree or
+in the ``config/Settings.cmake`` file (recommended).
 
-  #include "private.h"
+All directories which are given as arguments of either the ``INCLUDE_DIRS``
+or the ``CODE_DIRS`` parameter of :apidoc:`basis_project()` are automatically
+added to the include search path using the ``BEFORE`` option of CMake's
+``include_directories`` command to ensure that the header files of the
+current project are preferred by the preprocessor.
 
-Header files should be in
-``modulename/include/toplevelproject/myheader.hpp`` if the module is an
-"internal" module of the top-level project, i.e., if it belongs to the
-namespace of that package. Otherwise, they should be in
-``modulename/include/package/myheader.hpp`` where package corresponds to the
-name of the ``PACKAGE`` parameter specified in :apidoc:`basis_project()` the
-module belongs to as specified in the :apidoc:`BasisProject.cmake` file of
-the module.
 
-Header files which are not part of the public API should just be somewhere
-in the PROJECT_CODE_DIR, possibly just next to the .cpp files. There is no
-need for these to have namespace specific subdirectories, but you may still
-want to organize them somehow. Use :apidoc:`basis_include_directories()` in
-config/:apidoc:`Settings.cmake` to add additional include paths.
+Installation Prefix
+===================
 
-The :apidoc:`basis_project_impl()` macro adds three directories to the
-include search path by default using the BEFORE option of CMake's
-``include_directories()`` command. This means that it will always be
-included before any paths imported from other packages or those added in
-config/Settings.cmake) with the following order of precedence:
+The ``CMAKE_INSTALL_PREFIX`` is initialized by BASIS based on the platform
+which the build is configured on and the package vendor ID, i.e., the argument
+of the ``PACKAGE_VENDOR`` (short ``VENDOR``) parameter of :apidoc:`basis_project()`.
+This package vendor ID is usually set to a combination of package provider
+and division or an acronym which the respective division is known by.
+This default installation prefix can be overriden by the project in the
+``config/Settings.cmake`` file. It can also be modified at any time from
+the command line, i.e.,
 
-- ``BINARY_INCLUDE_DIR``
-- ``PROJECT_INCLUDE_DIR``
-- ``PROJECT_CODE_DIR``
+.. code-block:: bash
 
-Install Path
-============
-
-The ``PROJECT_PACKAGE_VENDOR`` variable (i.e., short VENDOR option of the
-:apidoc:`basis_project()` command) also defines the short package ID folder
-used for the installation path.
-
-If a project developer wishes to use a different default for certain settings 
-such as the ``CMAKE_INSTALL_PREFIX``, they can always do so in the 
-config/:apidoc:`Settings.cmake` file which is included after the directory 
-variables have been initialized. ``CMAKE_INSTALL_PREFIX`` can also be modified 
-at any time from the command line via cmake's -D command-line option.
+  cmake -DCMAKE_INSTALL_PREFIX:PATH=/path/to/installation /path/to/code
 
 
 Test Configuration
@@ -328,70 +332,76 @@ Test Configuration
 CDash
 -----
 
-BASIS also integrates support provided by the continuous 
-integration tool related to CMake called CDash.
+BASIS supports the tools CTest_/CDash_ which are related to CMake
+and provide continuous integration testing.
 
 .. seealso:: :ref:`HowToIntegrateCDash` for more detailed information.
+
 
 Code Coverage
 -------------
 
-You need to upload the test results to a CDash server which can visualize the
-coverage. This is done by CTest according to the configuration file
-(CTestConfig.cmake). We had a CDash server running at SBIA, but it was barely
-used. A lot has certainly been improved for CDash since then so would be
-interesting to see how things work now...
+The test results such as the summary files generated by gcov_ are uploaded by CTest_
+to a CDash_ server which can visualize these.
+The analysis of the gcov (or Bullseye) output and its conversion to the XML
+format used by CDash is done by the ctest_coverage_ CTest command.
+The information needed by CTest for the upload is read from a configuration
+file named ``CTestConfig.cmake`` which must be located in the top-level directory of the project.
+To get a visual report without a CDash server, the command-line tool
+lcov_ can be used to transform the gcov output into an HTML page.
 
-.. seealso:: http://www.vtk.org/Wiki/CMake/Testing_With_CTest
-
-Just run the tests as usual with gcov and then use the usual command-line
-tools (I don't remember them right now and would have to search the internet
-as well) to get a graphical coverage report.
-
-Another good read is a blog on `how to use gcov and lcov`_
-to get a nice coverage report. Note, however, that CDash has its
-own built in tools to visualize the coverage data generated by gcov or other
-such tools that it supports.
-
-The relevant compiler options when using the GNU Compiler Collection are
-added by the basistest.ctest script if the coverage option is passed in as in
+The relevant compiler options when using the GNU Compiler Collection (GCC) are
+added by the ``basistest.ctest`` script when the coverage option is passed in, i.e.,
 
 .. code-block:: bash
 
     ctest -S basistest.ctest,coverage
 
-The analysis of the gcov (or Bullseye) output and its conversion to the XML
-format used by CDash is done by the ``ctest_coverage`` CTest command.
+.. seealso:: - `Introduction to CTest <http://www.vtk.org/Wiki/CMake/Testing_With_CTest>`__
+             - `How to use gcov and lcov <http://qiaomuf.wordpress.com/2011/05/26/use-gcov-and-lcov-to-know-your-test-coverage/>`__
+
+.. _CDash:          http://www.cdash.org/
+.. _CTest:          http://cmake.org/cmake/help/v2.8.12/ctest.html
+.. _ctest_coverage: http://cmake.org/cmake/help/v2.8.12/ctest.html#command:ctest_coverage
+.. _gcov:           http://gcc.gnu.org/onlinedocs/gcc/Gcov.html
+.. _lcov:           http://ltp.sourceforge.net/coverage/lcov.php
 
 
 Custom Layout
 =============
 
-The BASIS layout has been battle tested and is based on standards. It is both
-reusable and cross-platform with a design that prevents subtle incompatibilities 
+.. note:: Using a custom project layout is not recommended.
+
+The :ref:`BASIS layout <SourceCodeTree>` has been battle tested and is based
+on standards. It is both reusable and cross-platform with a design that prevents subtle incompatibilities 
 and assumptions that we have encountered with other layouts. Through experience
 and standardization we settled on the receommended layout which we believe should
 be effective for most use cases.
 
 Nonetheless, we understand that requirements and existing code cannot always 
 accomodate the standard layout, so it is possible to customize the layout.
+Therefore, the :apidoc:`basis_project()` command provides several options
+to change the default directories and add additional custom include and source
+code directories to be considered by BASIS during the build system configuration.
 
-.. note:: Using a custom project layout is not recommended.
+For example, a project may contain source code of a common static library in the
+``Common`` subdirectory, image processing related library code in ``ImageProcessing``,
+and implementations of executables in ``Tools``, while the documentation is located
+in the subdirectory named ``Documentation`` and any CMake BASIS configuration files
+in ``Configuration``. The ``BasisProject.cmake`` file of this project could contain
+the following ``basis_project()`` call:
 
-To set up a custom layout do one or both of the following:
+.. code-block:: cmake
 
-1. In the :apidoc:`BasisProject.cmake` file
-      - Modify the :apidoc:`basis_project()` function
-      - The ``INCLUDE_DIRS`` parameter sets
-        additional directories that should be included.
-      - The ``MODULE_DIRS`` parameter specifies a 
-        path to each nonstandard module directory.
+  basis_project(
+    NAME        CustomLayoutProject
+    DESCRIPTION "A project which demonstrates the use of a custom source tree layout."
+    CONFIG_DIR   Configuration
+    DOC_DIR      Documentation
+    INCLUDE_DIRS Common ImageProcessing
+    CODE_DIRS    Common ImageProcessing Tools
+  )
 
-2. In the :apidoc:`config/Settings.cmake <Settings.cmake>` file
-     - Set the CMake BASIS variables listed under :ref:`SourceCodeTree`
-       with a call to ``set(VARIABLE path/to/dir)``.
-
-More information can be found in :doc:`/standard/template`.
 
 Redistributable Files
 =====================
@@ -399,5 +409,5 @@ Redistributable Files
 In general, try to keep redistributable sources and binaries as small as possible.
 
 
-.. _how to use gcov and lcov: http://qiaomuf.wordpress.com/2011/05/26/use-gcov-and-lcov-to-know-your-test-coverage/
+
 .. _find_package:             http://www.cmake.org/cmake/help/v2.8.12/cmake.html#command:find_package
