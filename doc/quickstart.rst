@@ -166,7 +166,7 @@ Add the following line to ``src/CMakeLists.txt`` under the section "executable t
 
 .. code-block:: cmake
     
-    basis_add_executable(hellocpp helloc++.cxx)
+    basis_add_executable(helloc++.cxx)
 
 Alternatively, you can use the implementation of this example executable in
 Python, Perl, BASH or MATLAB. In case of MATLAB, add also a dependency to MATLAB:
@@ -184,9 +184,9 @@ Change target properties
 
 .. code-block:: cmake
     
-    basis_set_target_properties(hellocpp PROPERTIES OUTPUT_NAME "hellobasis")
+    basis_set_target_properties(helloc++ PROPERTIES OUTPUT_NAME "hellobasis")
 
-If you used a target name other than hellocpp, you need to replace it with the name you chose.
+If you used another source file, you need to replace "helloc++" by its name (excl. the extension).
 
 Test the Executable
 ~~~~~~~~~~~~~~~~~~~
