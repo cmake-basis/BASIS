@@ -2464,7 +2464,11 @@ function (basis_finalize_targets)
     if (NOT TARGET _${TARGET_UID})
       get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
       if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|MODULE)_LIBRARY$")
-        basis_set_target_install_rpath (${TARGET_UID})
+        if (BASIS_INSTALL_RPATH AND NOT CMAKE_SKIP_RPATH)
+          # Only if BASIS is allowed to take care of the INSTALL_RPATH property
+          # and the use of this property was not disabled by the project
+          basis_set_target_install_rpath (${TARGET_UID})
+        endif ()
       elseif (BASIS_TYPE MATCHES "SCRIPT_LIBRARY")
         basis_build_script_library (${TARGET_UID})
       elseif (BASIS_TYPE MATCHES "SCRIPT")

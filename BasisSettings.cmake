@@ -703,11 +703,20 @@ if (DEFINED CMAKE_OSX_SYSROOT)
   mark_as_advanced (CMAKE_OSX_SYSROOT)
 endif ()
 
-# use RPATH
-set (CMAKE_SKIP_RPATH                  FALSE) # use RPATH for installed project own binaries
-set (CMAKE_SKIP_BUILD_RPATH            FALSE) # use RPATH for project own binaries
-set (CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE) # do not add directories outside project to RPATH
-set (CMAKE_BUILD_WITH_INSTALL_RPATH    FALSE) # use different RPATH for build tree executables
+## @brief Whether to have BASIS set the RPATH of binaries rather than CMake
+#
+# @sa http://www.cmake.org/Wiki/CMake_RPATH_handling for details on how CMake
+#     itself handles the RPATH setting of executables and shared libraries.
+option (BASIS_INSTALL_RPATH "Whether to have BASIS set the RPATH of binaries rather than CMake" ON)
+mark_as_advanced(BASIS_INSTALL_RPATH)
+
+# use INSTALL_RPATH set by BASIS instead of CMake
+if (BASIS_INSTALL_RPATH)
+  set (CMAKE_SKIP_RPATH                  FALSE) # use RPATH for installed project own binaries
+  set (CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE) # do not add directories outside project to RPATH
+endif ()
+set (CMAKE_SKIP_BUILD_RPATH              FALSE) # use RPATH for project own binaries
+set (CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE) # use different RPATH for build tree executables
 
 
 ## @}
