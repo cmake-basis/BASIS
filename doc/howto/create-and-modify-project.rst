@@ -208,7 +208,7 @@ longer require or use.
 
 .. _HowToModularizeAProject:
 
-Modularize A Project
+Modularize a Project
 ====================
 
 :doc:`Project Modularization </standard/modules>` is a 
