@@ -402,6 +402,29 @@ the following ``basis_project()`` call:
     CODE_DIRS    Common ImageProcessing Tools
   )
 
+Another example for customization is given below for a top-level project which
+contains different subprojects named ``ModulaA``, ``ModuleB``, and ``ModuleC``.
+By default, BASIS would look for these modules in the ``modules`` directory.
+This can be changed using either of the following ``basis_project`` commands,
+where in the first case it is assumed that all modules are located in
+a common subdirectory named ``Components``:
+
+.. code-block:: cmake
+
+  basis_project(
+    NAME        TopLevelProjectWithCustomModulesDirectory
+    DESCRIPTION "A project which demonstrates the use of a custom modules directory."
+    MODULES_DIR Components
+  )
+
+.. code-block:: cmake
+
+  basis_project(
+    NAME        TopLevelProjectWithCustomModuleDirectories
+    DESCRIPTION "A project which demonstrates the use of custom module directories."
+    MODULE_DIRS ModuleA ModuleB ModuleC
+  )
+
 
 Redistributable Files
 =====================
@@ -410,4 +433,4 @@ In general, try to keep redistributable sources and binaries as small as possibl
 
 
 
-.. _find_package:             http://www.cmake.org/cmake/help/v2.8.12/cmake.html#command:find_package
+.. _find_package:  http://www.cmake.org/cmake/help/v2.8.12/cmake.html#command:find_package
