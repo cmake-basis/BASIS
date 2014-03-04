@@ -2165,7 +2165,11 @@ function (basis_get_source_language LANGUAGE)
     endif ()
   endforeach ()
   # return
-  set (${LANGUAGE} "${LANGUAGE_OUT}" PARENT_SCOPE)
+  if (LANGUAGE_OUT)
+    set (${LANGUAGE} "${LANGUAGE_OUT}" PARENT_SCOPE)
+  else ()
+    message (FATAL_ERROR "basis_get_source_language called without arguments!")
+  endif ()
 endfunction ()
 
 # ----------------------------------------------------------------------------
