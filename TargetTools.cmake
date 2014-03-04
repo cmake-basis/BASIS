@@ -677,6 +677,12 @@ function (basis_add_executable TARGET_NAME)
   if (ARGN_UNPARSED_ARGUMENTS)
     list (APPEND SOURCES ${ARGN_UNPARSED_ARGUMENTS})
   endif ()
+  if (NOT SOURCES)
+    message (FATAL_ERROR "basis_add_executable called with only one argument which does however not"
+                         " appear to be a file name. Note that the filename extension must be"
+                         " included if the target name should be derived from the base filename"
+                         " of the source file.")
+  endif ()
   # --------------------------------------------------------------------------
   # make target UID
   basis_check_target_name ("${TARGET_NAME}")
