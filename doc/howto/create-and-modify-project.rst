@@ -251,7 +251,6 @@ You may also add an existing BASIS project module to
 the ``/modules`` folder, but not another Top Level project.
 
 
-
 Configure the build
 -------------------
 
@@ -268,7 +267,8 @@ Configure the build system using CMake 2.8.4 or a more recent version:
 - Set option ``BUILD_ALL_MODULES`` to ``ON``.
 - Press ``g`` to generate the Makefiles and exit ``ccmake``.
 
-:ref:`ModuleCMakeVariables` has more details.
+.. seealso:: :ref:`ModuleCMakeVariables`
+
 
 Build the Top Level Project and its Modules
 -------------------------------------------
