@@ -173,6 +173,15 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Timeout in seconds for the build of MEX-Files_.
 
+.. option:: -DBUILD_MODULES_BY_DEFAULT::BOOL
+
+    Whether to enable project modules (i.e., subprojects) by default or not. This option
+    has only effect when given directly on the command-line when calling ``cmake`` or
+    ``ccmake``, respectively. Otherwise the default value of this option will be
+    used for the first build system configuration run which adds the ``MODULE_*``
+    options already and sets them to the respective default which cannot be overriden
+    by consecutive configuration runs unless the ``MODULE_*`` options themselves are changed.
+
 .. option:: -DBASIS_REGISTER:BOOL
 
     Whether to register installed package in CMake's `package registry`_. This option
