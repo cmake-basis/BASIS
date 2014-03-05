@@ -21,8 +21,7 @@ set (
     "BasisTools.cmake"              # definition of macros and functions
     "BasisTest.cmake"               # testing, wraps CTest
     "BasisSettings.cmake"           # default project-independent settings
-    "BasisSuperBuild.cmake"         # basis_super_build function
-    # submodules included by BasisTools.cmake
+    # submodules included by BasisTools.cmake or on demand, respectively
     "CommonTools.cmake"             # common functions/macros
     "DirectoriesSettings.cmake"     # project directory structure
     "DocTools.cmake"                # documentation generation
@@ -36,6 +35,7 @@ set (
     "ProjectTools.cmake"            # main project/module helpers
     "RevisionTools.cmake"           # revision control system support
     "SlicerTools.cmake"             # support build of Slicer Extensions
+    "SuperBuildTools.cmake"         # super-build related functions
     "TargetTools.cmake"             # addition of build target
     "TopologicalSort.cmake"         # topological sorting of build dependencies
     "UtilitiesTools.cmake"          # generation/configuration of utilities
