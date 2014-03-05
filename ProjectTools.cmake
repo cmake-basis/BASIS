@@ -1125,9 +1125,6 @@ endfunction ()
 # the <tt>&lt;LANG&gt;_LIBRARY_TARGET</tt> variables, which are set to their
 # default values in the @c BasisSettings.cmake file.
 function (basis_configure_script_libraries)
-  if (NOT IS_DIRECTORY "${PROJECT_LIBRARY_DIR}")
-    return ()
-  endif ()
   # Python
   if (PythonInterp_FOUND)
     set (PYTHON_EXT .py .py.in)
@@ -1985,7 +1982,9 @@ macro (basis_project_begin)
   if (BASIS_CONFIGURE_PUBLIC_HEADERS)
     basis_configure_public_headers ()
   endif ()
-  basis_configure_script_libraries ()
+  if (IS_DIRECTORY "${PROJECT_LIBRARY_DIR}")
+    basis_configure_script_libraries ()
+  endif ()
 
   # --------------------------------------------------------------------------
   # subdirectories
