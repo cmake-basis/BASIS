@@ -1981,9 +1981,6 @@ macro (basis_project_begin)
   basis_include_directories (BEFORE "${BINARY_INCLUDE_DIR}"
                                     "${PROJECT_INCLUDE_DIRS}"
                                     "${PROJECT_CODE_DIRS}")
-  
-  option(BASIS_CONFIGURE_PUBLIC_HEADERS "Perform CMake Variable configuration on .h, .hh, .hpp, .hxx, .inl, .txx, .inc headers that end with a .in suffix" OFF)
-  mark_as_advanced(BASIS_CONFIGURE_PUBLIC_HEADERS)
 
   if (BASIS_CONFIGURE_PUBLIC_HEADERS)
     basis_configure_public_headers ()

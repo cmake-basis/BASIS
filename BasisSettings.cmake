@@ -547,6 +547,16 @@ set (BASIS_SVN_USERS_FILE "${BASIS_MODULE_PATH}/SubversionUsers.txt")
 # @sa basis_install_public_headers()
 basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 
+## @brief Whether BASIS should configure any public header file with the .in file name suffix.
+#
+# If a project does not contain any such public header file (typically one named config.h.in),
+# this option can be set to @c FALSE in the @c "config/Settings.cmake" file of the project.
+# For better performance, if only one header file needs to be configured, this can be done
+# manually by adding a corresponding configure_file() call to the root CMakeLists.txt file
+# right after basis_project_begin(). The configured files should be written to the
+# @c BINARY_INCLUDE_DIR which is located in the build tree of the project.
+set (BASIS_CONFIGURE_PUBLIC_HEADERS FALSE)
+
 ## @brief Whether basis_project_begin() should support the configuration of Slicer modules.
 #
 # This option must be set to @c TRUE in @c "config/Settings.cmake" of a project
