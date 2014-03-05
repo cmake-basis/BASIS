@@ -645,7 +645,7 @@ endmacro ()
 # @returns Adds an executable build target. In case of an executable which is
 #          not build from C++ source files, the function basis_finalize_targets()
 #          has to be invoked to finalize the addition of the custom build target.
-#          This is done at the end of the basis_project_impl() macro.
+#          This is done by the basis_project_end() macro.
 #
 # @sa basis_add_executable_target()
 # @sa basis_add_script()
@@ -936,7 +936,7 @@ endfunction ()
 # @returns Adds a library build target. In case of a library not written in C++
 #          or MEX-file targets, basis_finalize_targets() has to be invoked
 #          to finalize the addition of the build target(s). This is done
-#          at the end of the basis_project_impl() macro.
+#          by the basis_project_end() macro.
 #
 # @sa basis_add_library_target()
 # @sa basis_add_script_library()
@@ -1102,9 +1102,8 @@ endfunction ()
 # CMake command. Before the invokation of basis_build_script(), the target
 # properties can be modified using basis_set_target_properties().
 #
-# @note Custom BASIS build targets are finalized by BASIS at the end of
-#       basis_project_impl(), i.e., the end of the root CMake configuration file
-#       of the (sub-)project.
+# @note Custom BASIS build targets are finalized by BASIS using basis_project_end(),
+#       i.e., the end of the root CMake configuration file of the (sub-)project.
 #
 # @par Properties on script targets
 # <table border=0>
@@ -2089,9 +2088,8 @@ endfunction ()
 # basis_build_script_library(), the target properties can be modified using
 # basis_set_target_properties().
 #
-# @note Custom BASIS build targets are finalized by BASIS at the end of
-#       basis_project_impl(), i.e., the end of the root CMake configuration file
-#       of the (sub-)project.
+# @note Custom BASIS build targets are finalized by BASIS using basis_project_end(),
+#       i.e., the end of the root CMake configuration file of the (sub-)project.
 #
 # @par Properties on script library targets
 # <table border=0>
@@ -2452,7 +2450,7 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Finalize custom targets by adding the missing build commands.
 #
-# This function is called by basis_project_impl() in order to finalize the
+# This function is called by basis_project_end() in order to finalize the
 # addition of the custom build targets such as, for example, build targets
 # for the build of executable scripts, Python packages, MATLAB Compiler
 # executables and shared libraries, and MEX-files.
@@ -2594,8 +2592,8 @@ endfunction ()
 ## @brief Add custom command for build of single script.
 #
 # This function is called by basis_finalize_targets() which in turn is called
-# at the end of basis_project_impl(), i.e., the end of the root CMake
-# configuration file of the (sub-)project.
+# by basis_project_end(), i.e., the end of the root CMake configuration file
+# of the (sub-)project.
 #
 # @param [in] TARGET_UID Name/UID of custom target added by basis_add_script().
 #
@@ -2908,8 +2906,8 @@ endfunction ()
 ## @brief Add custom command for build of script library.
 #
 # This function is called by basis_finalize_targets() which in turn is called
-# at the end of basis_project_impl(), i.e., the end of the root CMake
-# configuration file of the (sub-)project.
+# by basis_project_end(), i.e., the end of the root CMake configuration file
+# of the (sub-)project.
 #
 # @param [in] TARGET_UID Name/UID of custom target added by basis_add_script_library().
 #

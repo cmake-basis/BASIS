@@ -308,7 +308,7 @@ macro (basis_project_check_metadata)
   # extract main source code directories from lists
   list (GET PROJECT_INCLUDE_DIRS 0 PROJECT_INCLUDE_DIR)
   list (GET PROJECT_CODE_DIRS    0 PROJECT_CODE_DIR)
-  # let basis_project_impl() know that basis_project() was called
+  # let basis_project_begin() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
 
@@ -1382,8 +1382,7 @@ endfunction()
 # ----------------------------------------------------------------------------
 ## @brief Initialize project, calls CMake's project() command.
 #
-# @sa basis_project()
-# @sa basis_project_impl()
+# @sa basis_project(), basis_project_begin()
 #
 # @returns Sets the following non-cached CMake variables:
 # @retval PROJECT_REVISION         Revision number of Subversion controlled

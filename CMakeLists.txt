@@ -124,7 +124,7 @@ basis_install (
 # Attention: DO NOT add the uninstall subdirectory here! Instead, the
 #            CMakeLists.txt file is installed in a separate directory.
 #            This directory is added to the build configuration of each
-#            BASIS project (including BASIS) at the end of basis_project_impl().
+#            BASIS project (including BASIS) at the end of basis_project_end().
 basis_install (
   FILES       "uninstall/CMakeLists.txt"
   DESTINATION "${INSTALL_MODULES_DIR}/uninstall"

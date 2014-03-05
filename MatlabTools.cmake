@@ -577,9 +577,8 @@ endfunction ()
 # basis_build_mex_target(), the target properties can be modified using
 # basis_set_target_properties().
 #
-# @note Custom BASIS build targets are finalized by BASIS at the end of
-#       basis_project_impl(), i.e., the end of the root CMake configuration file
-#       of the (sub-)project.
+# @note Custom BASIS build targets are finalized by BASIS using basis_project_end(),
+#       i.e., the end of the root CMake configuration file of the (sub-)project.
 #
 # @par Properties on script library targets
 # <table border=0>
@@ -762,9 +761,8 @@ endfunction ()
 # basis_build_mcc_target(), the target properties can be modified using
 # basis_set_target_properties().
 #
-# @note Custom BASIS build targets are finalized by BASIS at the end of
-#       basis_project_impl(), i.e., the end of the root CMake configuration file
-#       of the (sub-)project.
+# @note Custom BASIS build targets are finalized by BASIS using basis_project_end(),
+#       i.e., the end of the root CMake configuration file of the (sub-)project.
 #
 # @par Properties on MATLAB Compiler targets
 # <table border=0>
@@ -1067,8 +1065,8 @@ endfunction ()
 ## @brief Add custom command for build of MEX-file.
 #
 # This function is called by basis_finalize_targets() which in turn is called
-# at the end of basis_project_impl(), i.e., the end of the root CMake
-# configuration file of the (sub-)project.
+# by basis_project_end(), i.e., the end of the root CMake configuration file
+# of the (sub-)project.
 #
 # @param [in] TARGET_UID Name/UID of custom target added by basis_add_mex_file().
 #
@@ -1399,8 +1397,8 @@ endfunction ()
 ## @brief Add custom command for build of MATLAB Compiler target.
 #
 # This function is called by basis_finalize_targets() which in turn is called
-# at the end of basis_project_impl(), i.e., the end of the root CMake
-# configuration file of the (sub-)project.
+# by basis_project_end(), i.e., the end of the root CMake configuration file
+# of the (sub-)project.
 #
 # @param [in] TARGET_UID Name/UID of custom target added by basis_add_mcc_target().
 #

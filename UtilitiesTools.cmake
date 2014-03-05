@@ -25,17 +25,18 @@
 # ----------------------------------------------------------------------------
 ## @brief Add build target for BASIS C++ utilities library.
 #
-# This function is called by the top-level project in order to add the "basis"
-# build target for the static project-specific BASIS utilities library for C++.
-# It is called by basis_project_impl() in the root CMakeLists.txt file of the
-# top-level project.
+# This function is called by basis_add_executable_target() and basis_add_library_target()
+# in order to add the "basis" build target for the static project-specific
+# BASIS utilities library for C++. If the target was added before, it is
+# only used to get the target UID of this build target so the newly added
+# executable or library can be linked to it.
 #
 # The CMake function add_library() checks if the specified source code files
 # exist. If a source file is not found, an error is raised by CMake. The BASIS
 # utilities can, however, only be configured at the end of the configuration
 # step. Therefore, this function simply writes dummy C++ source files in order
 # to pass the existence check. The actual source files are configured by the
-# function basis_configure_utilities().
+# function basis_configure_utilities() which is called by basis_project_end().
 #
 # After writing these dummy source files, a library build target for the
 # project-specific BASIS C++ utilities is added. This build target is not

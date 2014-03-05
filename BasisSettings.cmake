@@ -608,7 +608,7 @@ set (BASIS_NAMESPACE_DELIMITER_BASH .)
 ## @brief Name of library target which builds Python modules in @c PROJECT_LIBRARY_DIR.
 #
 # This variable is used by basis_configure_script_libraries() which is called
-# by basis_project_impl() to add a library target of the given name for the
+# by basis_project_begin() to add a library target of the given name for the
 # build of the Python modules found in the @c PROJECT_LIBRARY_DIR.
 #
 # @note The given target name is argument to the basis_add_library() command.
@@ -618,7 +618,7 @@ set (PYTHON_LIBRARY_TARGET "pythonlib")
 ## @brief Name of library target which builds Jython modules in @c PROJECT_LIBRARY_DIR.
 #
 # This variable is used by basis_configure_script_libraries() which is called
-# by basis_project_impl() to add a library target of the given name for the
+# by basis_project_begin() to add a library target of the given name for the
 # build of the Jython modules found in the @c PROJECT_LIBRARY_DIR.
 #
 # @note The given target name is argument to the basis_add_library() command.
@@ -628,7 +628,7 @@ set (JYTHON_LIBRARY_TARGET "jythonlib")
 ## @brief Name of library target which builds Perl modules in @c PROJECT_LIBRARY_DIR.
 #
 # This variable is used by basis_configure_script_libraries() which is called
-# by basis_project_impl() to add a library target of the given name for the
+# by basis_project_begin() to add a library target of the given name for the
 # build of the Perl modules found in the @c PROJECT_LIBRARY_DIR.
 #
 # @note The given target name is argument to the basis_add_library() command.
@@ -638,7 +638,7 @@ set (PERL_LIBRARY_TARGET "perllib")
 ## @brief Name of library target which builds MATLAB modules in @c PROJECT_LIBRARY_DIR.
 #
 # This variable is used by basis_configure_script_libraries() which is called
-# by basis_project_impl() to add a library target of the given name for the
+# by basis_project_begin() to add a library target of the given name for the
 # build of the MATLAB modules found in the @c PROJECT_LIBRARY_DIR.
 #
 # @note The given target name is argument to the basis_add_library() command.
@@ -648,7 +648,7 @@ set (MATLAB_LIBRARY_TARGET "matlablib")
 ## @brief Name of library target which builds Bash modules in @c PROJECT_LIBRARY_DIR.
 #
 # This variable is used by basis_configure_script_libraries() which is called
-# by basis_project_impl() to add a library target of the given name for the
+# by basis_project_begin() to add a library target of the given name for the
 # build of the Bash modules found in the @c PROJECT_LIBRARY_DIR.
 #
 # @note The given target name is argument to the basis_add_library() command.
