@@ -1798,7 +1798,6 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Add a project module.
 function (basis_add_module MODULE)
-  message (STATUS "Configuring module ${MODULE}...")
   if (PROJECT_IS_MODULE)
     message (FATAL_ERROR "A module cannot have submodules by itself!")
   endif ()
@@ -1809,11 +1808,14 @@ function (basis_add_module MODULE)
   # Note: - MODULE_${MODULE}_SOURCE_DIR is the location of the module source code.
   #       - MODULE_${MODULE}_BINARY_DIR is the build directory for the module.
   if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
+    message (STATUS "Configuring super-build of module ${MODULE}...")
     basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
+    message (STATUS "Configuring super-build of module ${MODULE}... - done")
   else ()
+    message (STATUS "Configuring module ${MODULE}...")
     add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
+    message (STATUS "Configuring module ${MODULE}... - done")
   endif ()
-  message (STATUS "Configuring module ${MODULE}... - done")
 endfunction ()
 
 # ----------------------------------------------------------------------------
