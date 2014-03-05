@@ -15,7 +15,7 @@ include (CMakeParseArguments)
 # ----------------------------------------------------------------------------
 function (basis_bootstrap)
   # parse arguments -- unparsed arguments are passed on to CMake using -D
-  CMAKE_PARSE_ARGUMENTS (BASIS "INFORM_USER" "VERSION" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS (BASIS "INFORM_USER" "VERSION;DOWNLOAD_URL" "" ${ARGN})
   if (NOT BASIS_VERSION)
     message (FATAL_ERROR "No CMake BASIS version specified! Use 'VERSION 3.0.0', for example.")
   endif ()
@@ -46,7 +46,12 @@ function (basis_bootstrap)
   else ()
     set (BASIS_ARCHIVE "cmake-basis-${BASIS_VERSION}.tar.gz")
   endif ()
-  set (BASIS_URL        "http://opensource.andreasschuh.com/cmake-basis/_downloads/${BASIS_ARCHIVE}")
+  if (NOT BASIS_DOWNLOAD_URL)
+    set (BASIS_DOWNLOAD_URL "http://opensource.andreasschuh.com/cmake-basis/_downloads")
+  endif ()
+  if (NOT BASIS_DOWNLOAD_URL MATCHES "\\.(zip|tar\\.gz)$")
+    set (BASIS_DOWNLOAD_URL "${BASIS_DOWNLOAD_URL}/${BASIS_ARCHIVE}")
+  endif ()
   set (BASIS_SOURCE_DIR "${DOWNLOAD_PATH}/cmake-basis-${BASIS_VERSION}")
   set (BASIS_BINARY_DIR "${DOWNLOAD_PATH}/cmake-basis-${BASIS_VERSION}/build")
 
@@ -61,16 +66,16 @@ function (basis_bootstrap)
       # download source code distribution package
       if (NOT EXISTS "${DOWNLOAD_PATH}/${BASIS_ARCHIVE}")
         message (STATUS "Downloading CMake BASIS v${BASIS_VERSION}...")
-        file (DOWNLOAD "${BASIS_URL}" "${DOWNLOAD_PATH}/${BASIS_ARCHIVE}" STATUS RETVAL)
+        file (DOWNLOAD "${BASIS_DOWNLOAD_URL}" "${DOWNLOAD_PATH}/${BASIS_ARCHIVE}" STATUS RETVAL)
         list (GET RETVAL 1 ERRMSG)
         list (GET RETVAL 0 RETVAL)
         if (NOT RETVAL EQUAL 0)
           message (FATAL_ERROR "Failed to download CMake BASIS v${BASIS_VERSION} from\n"
-                               "\t${BASIS_URL}\n"
+                               "\t${BASIS_DOWNLOAD_URL}\n"
                                "Error: ${ERRMSG}\n"
                                "Either try again or follow the instructions at\n"
                                "\thttp://opensource.andreasschuh.com/cmake-basis/\n"
-                               "to download and install it manually before configuring this project.")
+                               "to download and install it manually before configuring this project.\n")
         endif ()
         message (STATUS "Downloading CMake BASIS v${BASIS_VERSION}... - done")
       endif ()
