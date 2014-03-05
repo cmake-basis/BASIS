@@ -36,7 +36,7 @@ If some components of an external package are optional while others are required
 multiple dependency declarations to the same package can be used which will
 only differ in the list of package components.
 
-The syntax of the dependency declarations is as follows:
+The syntax for specifying dependencies is:
 
 .. code-block:: cmake
     
