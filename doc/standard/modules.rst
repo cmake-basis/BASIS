@@ -81,13 +81,12 @@ It is recommended that customized defaults for these variables be set in :ref:`c
 Implementation
 ==============
 
-The modularization is mainly implemented with the following heirarchy presented 
+The modularization is mainly implemented with the following hierarchy presented
 in the same manner as a stack trace with the top function being the last function
 called:
 
-
     - :apidoc:`ProjectTools.cmake`     - :apidoc:`basis_project_modules()`
-    - :apidoc:`ProjectTools.cmake`     - :apidoc:`basis_project_impl()`
+    - :apidoc:`ProjectTools.cmake`     - :apidoc:`basis_project_begin()`
     - :apidoc:`BasisProject.cmake`     - script file that is executed directly
     - ``CMakeLists.txt``               - root file of any CMake project
 
