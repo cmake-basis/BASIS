@@ -38,9 +38,21 @@ endif ()
 # otherwise, attempt to download and install it locally
 find_package (BASIS QUIET)
 if (NOT BASIS_FOUND)
-  # download and install BASIS in build tree of project
   include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisBootstrapping.cmake")
-  basis_bootstrap (INFORM_USER VERSION 3.0.0)
+  # download and install BASIS in build tree of project
+  basis_bootstrap(
+    VERSION 3.0.0          # CMake BASIS version to download
+    USE_MATLAB       FALSE # Enable/disable Matlab support
+    USE_PythonInterp FALSE # Enable/disable Python support
+    USE_JythonInterp FALSE # Enable/disable Jython support
+    USE_Perl         FALSE # Enable/disalbe Perl   support
+    USE_BASH         FALSE # Enable/disable Bash   support
+    USE_Doxygen      TRUE  # Enable/disable documentation generation using Doxygen
+    USE_Sphinx       TRUE  # Enable/disable documentation generation using Sphinx
+    USE_ITK          FALSE # Enable/disable image processing regression testing
+    INFORM_USER            # Inform user during first configure step
+                           # that BASIS needs to be bootstrapped or installed manually
+  )
   # look for local installation
   find_package (BASIS QUIET)
   if (NOT BASIS_FOUND)
