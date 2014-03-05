@@ -1790,6 +1790,40 @@ endmacro ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+## @brief Add subdirectory or ignore it if it does not exist.
+macro (basis_add_subdirectory SUBDIR)
+  if (NOT IS_ABSOLUTE "${SUBDIR}")
+    set (SUBDIR "${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}")
+  endif ()
+  if (IS_DIRECTORY "${SUBDIR}")
+    add_subdirectory ("${SUBDIR}")
+  elseif (BASIS_VERBOSE)
+    message (WARNING "Skipping non-existing subdirectory ${SUBDIR}.")
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Add a project module.
+function (basis_add_module MODULE)
+  message (STATUS "Configuring module ${MODULE}...")
+  if (PROJECT_IS_MODULE)
+    message (FATAL_ERROR "A module cannot have submodules by itself!")
+  endif ()
+  set (PROJECT_IS_MODULE TRUE)
+  # Set up modules, checking the super build special case first.
+  # By default the else case with add_subdirectory() will be called.
+  #
+  # Note: - MODULE_${MODULE}_SOURCE_DIR is the location of the module source code.
+  #       - MODULE_${MODULE}_BINARY_DIR is the build directory for the module.
+  if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
+    basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
+  else ()
+    add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
+  endif ()
+  message (STATUS "Configuring module ${MODULE}... - done")
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Marks the begin of a BASIS project.
 #
 # This macro initializes a BASIS project. It replaces CMake's project() command.
@@ -1964,24 +1998,7 @@ macro (basis_project_begin)
     include (${BASIS_MODULE_PATH}/BasisSuperBuild.cmake)
   endif ()
 
-  # build modules
-  if (NOT PROJECT_IS_MODULE)
-    foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-      message (STATUS "Configuring module ${MODULE}...")
-      set (PROJECT_IS_MODULE TRUE)
-      # Set up modules, checking the super build special case first. 
-      # By default the else case with add_subdirectory() will be called.
-      # note: ${MODULE_${MODULE}_SOURCE_DIR} is the location of the module source code
-      #       "${MODULE_${MODULE}_BINARY_DIR}" is the build directory for the module
-      if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
-        basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
-      else ()
-        add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
-      endif ()
-      set (PROJECT_IS_MODULE FALSE)
-      message (STATUS "Configuring module ${MODULE}... - done")
-    endforeach ()
-  endif ()
+
 
   # add default project directories to list of subdirectories
   # (in reverse order always at beginning of list)
@@ -2135,14 +2152,15 @@ endmacro ()
 macro (basis_project_impl)
   # initialize project
   basis_project_begin ()
+  # process modules
+  if (NOT PROJECT_IS_MODULE)
+    foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
+      basis_add_module (${MODULE})
+    endforeach ()
+  endif ()
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
-    if (NOT IS_ABSOLUTE "${SUBDIR}")
-      set (SUBDIR "${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}")
-    endif ()
-    if (IS_DIRECTORY "${SUBDIR}")
-      add_subdirectory ("${SUBDIR}")
-    endif ()
+    basis_add_subdirectory (${SUBDIR})
   endforeach ()
   # finalize project
   basis_project_end ()
