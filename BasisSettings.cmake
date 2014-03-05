@@ -559,13 +559,6 @@ set (BASIS_SUPPORT_SLICER_MODULES FALSE)
 option (BASIS_REGISTER "Request registration of installed package in CMake package registry." ON)
 mark_as_advanced (BASIS_REGISTER)
 
-## @brief Enable the `package` and `source_package` targets for producing final release packages.
-#
-# By defualt basis will define targets named `package` and `source_package` that can be utilized to automatically
-# generate software release packages. Disabling this feature will cause a slight performance boost.
-option (BASIS_PACKAGING "Enable the `package` and `source_package` targets for producing final release packages." ON)
-mark_as_advanced (BASIS_PACKAGING)
-
 ## @brief EXPERIMENTAL - Build project modules as part of a "super build" using the CMake ExternalProject_Add() function.
 ##
 ## This may improve performance of the initial configure step but comes with the caveats inherent in
