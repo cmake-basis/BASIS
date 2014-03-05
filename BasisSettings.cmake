@@ -547,10 +547,17 @@ set (BASIS_SVN_USERS_FILE "${BASIS_MODULE_PATH}/SubversionUsers.txt")
 # @sa basis_install_public_headers()
 basis_set_if_empty (BASIS_INSTALL_PUBLIC_HEADERS_OF_CXX_UTILITIES FALSE)
 
+## @brief Whether basis_project_begin() should support the configuration of Slicer modules.
+#
+# This option must be set to @c TRUE in @c "config/Settings.cmake" of a project
+# which either itself or one of its modules is a 3D Slicer Extension.
+#
+# @sa http://www.slicer.org
+set (BASIS_SUPPORT_SLICER_MODULES FALSE)
+
 ## @brief Enable/disable registration of installed package in CMake registry.
 option (BASIS_REGISTER "Request registration of installed package in CMake package registry." ON)
 mark_as_advanced (BASIS_REGISTER)
-
 
 ## @brief Enable the `package` and `source_package` targets for producing final release packages.
 #
@@ -558,7 +565,6 @@ mark_as_advanced (BASIS_REGISTER)
 # generate software release packages. Disabling this feature will cause a slight performance boost.
 option (BASIS_PACKAGING "Enable the `package` and `source_package` targets for producing final release packages." ON)
 mark_as_advanced (BASIS_PACKAGING)
-
 
 ## @brief EXPERIMENTAL - Build project modules as part of a "super build" using the CMake ExternalProject_Add() function.
 ##

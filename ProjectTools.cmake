@@ -1856,6 +1856,12 @@ macro (basis_project_begin)
   endif ()
 
   # --------------------------------------------------------------------------
+  # initialize Slicer module
+  if (BASIS_SUPPORT_SLICER_MODULES)
+    basis_slicer_module_initialize ()
+  endif ()
+
+  # --------------------------------------------------------------------------
   # Python
 
   # In case of a Slicer Extension, the UseSlicer.cmake file of Slicer (>= 4.0)
