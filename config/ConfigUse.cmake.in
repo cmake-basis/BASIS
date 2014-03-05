@@ -38,6 +38,9 @@
 # @PROJECT_NAME@ configuration
 # ============================================================================
 
+# ----------------------------------------------------------------------------
+# Import configured script executables
+
 # The following statements ensure that all scripts and modules are
 # configured/compiled using the same version of the interpreters.
 # Yet, the user can modify these variables, though this is not recommended.
@@ -83,4 +86,11 @@ if (BASIS_BASH_EXECUTABLE)
       "The BASH executable."
   )
   mark_as_advanced (BASH_EXECUTABLE)
+endif ()
+
+# ----------------------------------------------------------------------------
+# include further required BASIS CMake modules
+# base tools included by @PROJECT_NAME@Config.cmake already
+if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
+  include (${BASIS_MODULE_PATH}/SuperBuildTools.cmake)
 endif ()
