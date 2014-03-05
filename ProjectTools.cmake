@@ -1978,10 +1978,10 @@ macro (basis_project_begin)
   
   option(BASIS_CONFIGURE_PUBLIC_HEADERS "Perform CMake Variable configuration on .h, .hh, .hpp, .hxx, .inl, .txx, .inc headers that end with a .in suffix" OFF)
   mark_as_advanced(BASIS_CONFIGURE_PUBLIC_HEADERS)
-  
-  if(BASIS_CONFIGURE_PUBLIC_HEADERS)
+
+  if (BASIS_CONFIGURE_PUBLIC_HEADERS)
     basis_configure_public_headers ()
-  endif()
+  endif ()
   basis_configure_script_libraries ()
 
   # --------------------------------------------------------------------------
@@ -2025,12 +2025,6 @@ macro (basis_project_end)
   endif ()
 
   # --------------------------------------------------------------------------
-  # write convenience file to setup MATLAB environment
-  if (MATLAB_FOUND)
-    basis_create_addpaths_mfile ()
-  endif ()
-
-  # --------------------------------------------------------------------------
   # copy project properties of modules
   if (NOT PROJECT_IS_MODULE)
     # copy properties of modules
@@ -2060,21 +2054,37 @@ macro (basis_project_end)
     endforeach ()
   endif () 
 
+  # ----------------------------------------------------------------------------
+  # finalize custom targets
+  if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
+    # configure the BASIS utilities
+    basis_configure_utilities ()
+    # add missing build commands for custom targets
+    basis_finalize_targets ()
+    # add build target for missing __init__.py files of Python package
+    if (USE_Python)
+      basis_add_init_py_target ()
+    endif ()
+  endif ()
+    
+  # ----------------------------------------------------------------------------
+  # build/install package documentation
+  #
+  # This is done after all files which may be interesting for inclusion
+  # in the documentation are generated. In particular, this has to be done
+  # after the configuration of the BASIS utilities.
+  if (IS_DIRECTORY "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
+    add_subdirectory ("${PROJECT_DOC_DIR}")
+  endif ()
+
   if (NOT BASIS_BUILD_ONLY)
 
     # --------------------------------------------------------------------------
-    # finalize custom targets
-    if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
-      # configure the BASIS utilities
-      basis_configure_utilities ()
-      # add missing build commands for custom targets
-      basis_finalize_targets ()
-      # add build target for missing __init__.py files of Python package
-      if (USE_Python)
-        basis_add_init_py_target ()
-      endif()
+    # write convenience file to setup MATLAB environment
+    if (MATLAB_FOUND)
+      basis_create_addpaths_mfile ()
     endif ()
-    
+
     # --------------------------------------------------------------------------
     # add installation rules for public headers
     basis_install_public_headers ()
@@ -2083,25 +2093,15 @@ macro (basis_project_end)
     # generate configuration files
     include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
     
-    # ----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # change log
     basis_add_changelog ()
-    
-    # --------------------------------------------------------------------------
-    # build/install package documentation
-    #
-    # This is done after all files which may be interesting for inclusion
-    # in the documentation are generated. In particular, this has to be done
-    # after the configuration of the BASIS utilities.
-    if (IS_DIRECTORY "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
-      add_subdirectory ("${PROJECT_DOC_DIR}")
-    endif ()
 
     # --------------------------------------------------------------------------
     # package software
-    if ((NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT))
+    if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
       include ("${BASIS_MODULE_PATH}/BasisPack.cmake")
-    endif()
+    endif ()
  
     # --------------------------------------------------------------------------
     # add installation rule to register package with CMake
