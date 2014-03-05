@@ -9,7 +9,7 @@
 # @file  CMakeLists.txt
 # @brief Root build configuration file.
 #
-# @note This Package utilizes BASIS. For more information visit http://opensource.andreasschuh.com/cmake-basis/
+# @note This package utilizes <a href="http://opensource.andreasschuh.com/cmake-basis">CMake BASIS</a>.
 #
 ##############################################################################
 
