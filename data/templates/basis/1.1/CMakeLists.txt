@@ -18,6 +18,63 @@
 cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
+# auxiliary function used to bootstrap CMake BASIS if not available
+function (basis_bootstrap OPTION_NAME BASIS_VERSION)
+  if (NOT OPTION_NAME STREQUAL "VERSION")
+    message ("Expected VERSION as first argument of basis_bootstrap")
+  endif ()
+
+  # super-build settings
+  set (DOWNLOAD_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+  set (BASIS_URL     "http://github.com/schuhschuh/cmake-basis/archive/v${BASIS_VERSION}.zip")
+  set (BASIS_ARCHIVE "cmake-basis-${BASIS_VERSION}.zip")
+  set (BASIS_DIR     "${DOWNLOAD_PATH}/basis-install")
+  set (BASIS_BUILD   "${DOWNLOAD_PATH}/basis-build")
+
+  # download source code distribution package
+  message (STATUS "Downloading CMake BASIS v${BASIS_VERSION}...")
+  file (DOWNLOAD "${BASIS_URL}" "${DOWNLOAD_PATH}/${BASIS_ARCHIVE}" STATUS RETVAL)
+  list (GET RETVAL 1 ERRMSG)
+  list (GET RETVAL 0 RETVAL)
+  if (NOT RETVAL EQUAL 0)
+    message (FATAL_ERROR "Failed to download CMake BASIS v${BASIS_VERSION} from\n"
+                         "\t${BASIS_URL}\n"
+                         "Error: ${ERRMSG}\n"
+                         "Either try again or follow the instructions at\n"
+                         "\thttp://opensource.andreasschuh.com/cmake-basis/\n"
+                         "to download and install it manually before configuring this project.")
+  endif ()
+  message (STATUS "Downloading CMake BASIS v${BASIS_VERSION}... - done")
+
+  # extract source package
+  message (STATUS "Extracting CMake BASIS...")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xvzf ${DOWNLOAD_PATH}/${BASIS_ARCHIVE} RESULT_VARIABLE RETVAL)
+  if (NOT RETVAL EQUAL 0)
+    message (FATAL_ERROR "Failed to extract the downloaded archive file ${DOWNLOAD_PATH}/${BASIS_ARCHIVE}!")
+  endif ()
+  message (STATUS "Extracting CMake BASIS... - done")
+
+  # configure build
+  # TODO: May need to update this to support more platforms,
+  #       i.e., by adding "-G${CMAKE_GENERATOR}" to the CMake argument list.
+  file (MAKE_DIRECTORY "${DOWNLOAD_PATH}/basis-build")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} "-DCMAKE_INSTALL_PREFIX=${BASIS_DIR}"
+                             "${DOWNLOAD_PATH}/cmake-basis-${BASIS_VERSION}"
+    WORKING_DIRECTORY ${BASIS_BUILD}
+  )
+
+  # build and install (locally)
+  # TODO: May need to update this to support more platforms.
+  execute_process(
+    COMMAND ${CMAKE_BUILD_TOOL} install
+    WORKING_DIRECTORY ${BASIS_BUILD}
+  )
+
+  set (BASIS_DIR "${BASIS_DIR}" PARENT_SCOPE)
+endfunction (basis_bootstrap)
+
+# ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
 
 # circumvent issue with CMake's find_package() interpreting these variables
@@ -34,58 +91,26 @@ if (IS_DIRECTORY "${BASIS_DIR}")
   list (INSERT CMAKE_PREFIX_PATH 0 "${BASIS_DIR}")
 endif ()
 
-# if BASIS is not found, attempt to download and install it locally
+# look for an existing CMake BASIS installation and use it if found
+# otherwise, attempt to download and install it locally
 find_package (BASIS QUIET)
 if (NOT BASIS_FOUND)
-  set(DL_BASIS_VERSION 3.0.0)
-  message (STATUS "BASIS not found! Attempting to automatically download and install BASIS v${DL_BASIS_VERSION}.\n" 
-                  "Consider installing BASIS yourself by following the instructions at:\n"
-                  "     http://opensource.andreasschuh.com/cmake-basis/"
-  )
-  set(BASIS_ZIP "v${DL_BASIS_VERSION}.zip")
-  set(BASIS_URL "https://github.com/schuhschuh/cmake-basis/archive/${BASIS_ZIP}")
-  set(DOWNLOAD_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MY_EXTRACTED_FILE "path/to/extracted/file")
-  set(BASIS_DIR ${DOWNLOAD_PATH}/basis-install)
-  set(BASIS_BUILD ${DOWNLOAD_PATH}/basis-build)
-
-  file(DOWNLOAD "${BASIS_URL}" "${DOWNLOAD_PATH}/${BASIS_ZIP}" STATUS DL_STATUS)
-  
-  if(NOT DL_STATUS)
-    message(FATAL_ERROR "Failed to download BASIS, Try again or install manually from: ${BASIS_URL}")
-  endif()
-
-  execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar -xvzf ${DOWNLOAD_PATH}/${BASIS_ZIP}
-  )
-  
-  file(MAKE_DIRECTORY ${DOWNLOAD_PATH}/basis-build )
-
-  execute_process(
-     # TODO: may need to update this to support more platforms with something like: -G"${CMAKE_GENERATOR}"
-      COMMAND ${CMAKE_COMMAND}  -DCMAKE_INSTALL_PREFIX=${BASIS_DIR} ${DOWNLOAD_PATH}/cmake-basis-${DL_BASIS_VERSION}
-      WORKING_DIRECTORY ${BASIS_BUILD}
-  )
-
-
-  execute_process(
-      # TODO: may need to update this to support more platforms
-      COMMAND ${CMAKE_BUILD_TOOL} install
-      WORKING_DIRECTORY ${BASIS_BUILD}
-  )
-  
+  # download and install BASIS in build tree of project
+  basis_bootstrap (VERSION 3.0.0)
+  # look for local installation
   find_package (BASIS QUIET)
-
-  if(NOT BASIS_FOUND)
-    message(FATAL_ERROR "BASIS setup failed. Please take the following steps:"
-                        "    1. Check the BASIS website:"
-                        "          http://opensource.andreasschuh.com/cmake-basis/"
-                        "    2. Search for an existing issues:"
-                        "          https://github.com/schuhschuh/cmake-basis/issues/"
-                        "    3. If 1 and 2 didn't help, please report your problem:"
-                        "          https://github.com/schuhschuh/cmake-basis/issues/new"
-           )
-  endif()
+  if (NOT BASIS_FOUND)
+    message (FATAL_ERROR "CMake BASIS setup failed. Please take the following steps to resolve this issue:\n"
+                         "\t1. Check the CMake BASIS website:\n"
+                         "\t\thttp://opensource.andreasschuh.com/cmake-basis/\n"
+                         "\t2. Search for an existing issue:\n"
+                         "\t\thttps://github.com/schuhschuh/cmake-basis/issues/\n"
+                         "\t3. If this did not resolve the issue, please report your problem:\n"
+                         "\t\thttps://github.com/schuhschuh/cmake-basis/issues/new"
+                         "\t4. Try a manual build of CMake BASIS following the instructions at:\n"
+                         "\t\thttp://opensource.andreasschuh.com/cmake-basis/quickstart.html"
+    )
+  endif ()
 endif ()
 
 # ----------------------------------------------------------------------------
