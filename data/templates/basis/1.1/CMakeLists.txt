@@ -94,9 +94,11 @@ basis_project_begin ()
 
 # ----------------------------------------------------------------------------
 # process modules
-foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-  basis_add_module (${MODULE})
-endforeach ()
+if (NOT PROJECT_IS_MODULE)
+  foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
+    basis_add_module (${MODULE})
+  endforeach ()
+endif ()
 
 # ----------------------------------------------------------------------------
 # process subdirectories
