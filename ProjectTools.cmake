@@ -1988,9 +1988,6 @@ macro (basis_project_begin)
 
   # --------------------------------------------------------------------------
   # subdirectories
-  if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
-    include (${BASIS_MODULE_PATH}/SuperBuildTools.cmake)
-  endif ()
 
   # add default project directories to list of subdirectories
   # (in reverse order always at beginning of list)
