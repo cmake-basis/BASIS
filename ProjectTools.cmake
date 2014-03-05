@@ -2153,11 +2153,9 @@ macro (basis_project_impl)
   # initialize project
   basis_project_begin ()
   # process modules
-  if (NOT PROJECT_IS_MODULE)
-    foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-      basis_add_module (${MODULE})
-    endforeach ()
-  endif ()
+  foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
+    basis_add_module (${MODULE})
+  endforeach ()
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
     basis_add_subdirectory (${SUBDIR})
