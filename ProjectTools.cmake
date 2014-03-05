@@ -1790,25 +1790,18 @@ endmacro ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-## @brief Implementation of root <tt>CMakeLists.txt</tt> file of BASIS project.
+## @brief Marks the begin of a BASIS project.
 #
-# This macro implements the entire logic of the top-level
-# <tt>CMakeLists.txt</tt> file. At first, the project is initialized and the
-# BASIS settings configured using the project information given in the
-# <tt>BasisProject.cmake</tt> file which must be located in the same directory.
-# The, the code in the <tt>CMakeLists.txt</tt> files in the subdirectories is
-# executed in order. At the end, the configuration of the build system is
-# finalized, including in particular also the addition of custom build targets
-# which perform the actual build of custom build targets such as the ones build
-# using the MATLAB Compiler.
+# This macro initializes a BASIS project. It replaces CMake's project() command.
+# At first, the project is initialized and the BASIS settings configured using
+# the project information given in the <tt>BasisProject.cmake</tt> file which
+# must be located in the same directory.
 #
-# @sa BasisProject.cmake
-# @sa basis_project()
+# @sa BasisProject.cmake, basis_project(), basis_project_end(), basis_project_impl()
 #
-# @attention: add_uninstall must be done last and using a add_subdirectory() call
-#             such that the code is executed last by the root cmake_install.cmake!
 # @ingroup CMakeAPI
-macro (basis_project_impl)
+macro (basis_project_begin)
+
   # --------------------------------------------------------------------------
   # set CMAKE_INSTALL_PREFIX to cached invalid value to have
   # basis_initialize_settings() set it to BASIS's default rather than CMake's
@@ -2000,19 +1993,24 @@ macro (basis_project_impl)
   endif ()
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
+endmacro ()
 
-  # process subdirectories
-  foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
-    if (NOT IS_ABSOLUTE "${SUBDIR}")
-      set (SUBDIR "${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}")
-    endif ()
-    if (IS_DIRECTORY "${SUBDIR}")
-      add_subdirectory ("${SUBDIR}")
-    endif ()
-  endforeach ()
+# ----------------------------------------------------------------------------
+## @brief Marks the end of a BASIS project.
+#
+# This macro performs all the steps needed to finalize the configuration of
+# a BASIS project, including in particular also the addition of custom build
+# targets which perform the actual build of custom build targets such as
+# the ones build using the MATLAB Compiler. This command must be the last
+# in the root CMakeLists.txt file of each project.
+#
+# @sa basis_project_begin(), basis_project_impl()
+#
+# @ingroup CMakeAPI
+macro (basis_project_end)
 
   if (BASIS_DEBUG)
-    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterSubdirectories.cmake")
+    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesBeforeFinalization.cmake")
   endif ()
 
   # --------------------------------------------------------------------------
@@ -2105,10 +2103,8 @@ macro (basis_project_impl)
     if (NOT PROJECT_IS_MODULE)
       # add uninstall target
       basis_add_uninstall ()
-      ## add code to generate uninstaller at the end of the installation
-      #
-      # @attention: add_uninstall must be done last and using a add_subdirectory() call
-      #             such that the code is executed last by the root cmake_install.cmake!
+      # Attention: add_uninstall must be done last and using a add_subdirectory() call
+      #            such that the code is executed last by the root cmake_install.cmake!
       add_subdirectory ("${BASIS_MODULE_PATH}/uninstall" "${PROJECT_BINARY_DIR}/uninstall")
     endif ()
 
@@ -2118,4 +2114,36 @@ macro (basis_project_impl)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterFinalization.cmake")
   endif ()
   
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Implementation of root <tt>CMakeLists.txt</tt> file of BASIS project.
+#
+# This macro implements the entire logic of the top-level
+# <tt>CMakeLists.txt</tt> file. At first, the project is initialized and the
+# BASIS settings configured using the project information given in the
+# <tt>BasisProject.cmake</tt> file which must be located in the same directory.
+# The, the code in the <tt>CMakeLists.txt</tt> files in the subdirectories is
+# executed in order. At the end, the configuration of the build system is
+# finalized, including in particular also the addition of custom build targets
+# which perform the actual build of custom build targets such as the ones build
+# using the MATLAB Compiler.
+#
+# @sa BasisProject.cmake, basis_project(), basis_project_begin(), basis_project_end()
+#
+# @ingroup CMakeAPI
+macro (basis_project_impl)
+  # initialize project
+  basis_project_begin ()
+  # process subdirectories
+  foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
+    if (NOT IS_ABSOLUTE "${SUBDIR}")
+      set (SUBDIR "${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}")
+    endif ()
+    if (IS_DIRECTORY "${SUBDIR}")
+      add_subdirectory ("${SUBDIR}")
+    endif ()
+  endforeach ()
+  # finalize project
+  basis_project_end ()
 endmacro ()
