@@ -697,10 +697,6 @@ endfunction ()
 # CMakeLists.txt file. This file does not state any specific license, but
 # the ITK package itself is released under the Apache License Version 2.0,
 # January 2004 (http://www.apache.org/licenses/).
-#
-# @attention At this point, the project-specific variables have not been
-#            set yet. For example, use @c CMAKE_CURRENT_SOURCE_DIR instead of
-#            @c PROJECT_SOURCE_DIR.
 macro (basis_project_modules)
   # --------------------------------------------------------------------------
   # reset variables
@@ -1990,15 +1986,9 @@ macro (basis_project_begin)
 
   # --------------------------------------------------------------------------
   # subdirectories
-  if (BASIS_DEBUG)
-    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterInitialization.cmake")
-  endif ()
-
   if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
     include (${BASIS_MODULE_PATH}/BasisSuperBuild.cmake)
   endif ()
-
-
 
   # add default project directories to list of subdirectories
   # (in reverse order always at beginning of list)
@@ -2010,6 +2000,10 @@ macro (basis_project_begin)
   endif ()
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
   list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
+
+  if (BASIS_DEBUG)
+    basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterInitialization.cmake")
+  endif ()
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -2153,9 +2147,11 @@ macro (basis_project_impl)
   # initialize project
   basis_project_begin ()
   # process modules
-  foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-    basis_add_module (${MODULE})
-  endforeach ()
+  if (NOT PROJECT_IS_MODULE)
+    foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
+      basis_add_module (${MODULE})
+    endforeach ()
+  endif ()
   # process subdirectories
   foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
     basis_add_subdirectory (${SUBDIR})
