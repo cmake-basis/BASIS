@@ -24,6 +24,25 @@ function (basis_bootstrap OPTION_NAME BASIS_VERSION)
     message ("Expected VERSION as first argument of basis_bootstrap")
   endif ()
 
+  # abort the first time to give users a chance to specify where their
+  # CMake BASIS installation is located by setting BASIS_DIR in the GUI
+  if (NOT DEFINED BASIS_INSTALL_PREFIX)
+    set (BASIS_INSTALL_PREFIX "" CACHE PATH "Installation prefix for CMake BASIS.")
+    message (FATAL_ERROR "Could not find an existing CMake BASIS installation!\n"
+                         "This project uses this package for the build configuration."
+                         " Next time you configure this build by running CMake again,"
+                         " BASIS version ${BASIS_VERSION} will be automatically downloaded"
+                         " and build as part of the build configuration of this project."
+                         " If you want to install this version permanently,"
+                         " specify an installation prefix for CMake BASIS using"
+                         " BASIS_INSTALL_PREFIX. Otherwise, leave it blank.\n"
+                         "If you installed CMake BASIS already on your system, please"
+                         " specify its location by setting the BASIS_DIR variable"
+                         " before you re-configure the build system of this project.\n"
+                         "Visit http://opensource.andreasschuh.com/cmake-basis for"
+                         " more information about the CMake BASIS package.\n")
+  endif ()
+
   set (DOWNLOAD_PATH    "${CMAKE_CURRENT_BINARY_DIR}")
   if (WIN32)
     set (BASIS_ARCHIVE "cmake-basis-${BASIS_VERSION}.zip")
@@ -147,10 +166,9 @@ basis_project_impl ()
 
 # raise error if project uses the BASIS Utilities,
 # but BASIS was not installed as part of the bootstrapping
-if (NOT BASIS_INSTALL_PREFIX)
+if (DEFINED BASIS_INSTALL_PREFIX_CONFIGURED AND NOT BASIS_INSTALL_PREFIX_CONFIGURED)
   basis_get_project_uses_utilities (PROJECT_USES_BASIS_UTILITIES)
   if (PROJECT_USES_BASIS_UTILITIES)
-    set (BASIS_INSTALL_PREFIX "" CACHE PATH "Installation prefix for CMake BASIS." FORCE)
     message (FATAL_ERROR "This project uses the BASIS Utilities. Therefore CMake BASIS"
                          " must be installed permanently. Please specify the location"
                          " where to install BASIS using the BASIS_INSTALL_PREFIX"
