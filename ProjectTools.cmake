@@ -1819,7 +1819,7 @@ function (basis_add_module MODULE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Marks the begin of a BASIS project.
+## @brief Marks the begining of a BASIS project.
 #
 # This macro initializes a BASIS project. It replaces CMake's project() command.
 # At first, the project is initialized and the BASIS settings configured using
