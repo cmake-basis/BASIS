@@ -125,20 +125,31 @@ Origin
 
 The modularization concepts and part of the CMake implementation
 are from the `ITK 4`_ project. See the Wiki of this project for 
-details on `ITK 4 Modularization`_.
+details on the `ITK 4 Modularization`_.
 
 
 Reuse
 =====
 
-Modules can be built standalone without a Top Level. 
+Modules can be built standalone without a Top Level Project. 
 
-This is why the :apidoc:`BasisProject.cmake` metadata requires an explicit PACKAGE_NAME. When you compile a project module's subdirectory it will still build as if it was part of the Top Level project. It
+This is why the :apidoc:`BasisProject.cmake` meta-data requires an explicit ``PACKAGE_NAME``.
+When you configure the build system of a project module directly, i.e.,
+by using the module's subdirectory as root of the source tree, it will still
+build as if it was part of a Top Level Project with name equal to the ``PACKAGE_NAME``
+of the project.
 
-Batch execution
----------------
+The explicit package name is also important for the executable (target) referencing
+that is used for subprocess invocations covered in :doc:`/standard/execution`.
+A developer can use the target name (e.g., basis.basisproject) in the BASIS utility
+functions for executing a subprocess, and the path to the actually installed binary
+is resolved by BASIS. This allows the developer of the respective module to change
+the location/name of a binary file through the CMake configuration and other code
+which uses this module's executable can still call it by its unchanged build target name.
+As the target name includes the package name of a project to avoid name conflicts
+among packages, the package name which a module belongs to must be known even if
+the module is build independently without any Top Level Project.
 
-The variables are also important for the executable (target) referencing that is used for subprocess invocations covered in :doc:`/standard/execution`. A developer can use the target name (e.g., basis.basisproject) in the BASIS utility functions for executing a subprocess, and the path to the actually installed binary is resolved by BASIS. This allows the user to change the location/name of a binary file through the CMake configuration without the need of actually changing all code that calls this executable.
 
 Super Build
 ===========
