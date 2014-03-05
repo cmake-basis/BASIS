@@ -258,6 +258,20 @@ endfunction ()
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+## @brief Determine whether this project uses any of the BASIS Utilities.
+function (basis_get_project_uses_utilities RETVAL)
+  basis_get_project_property (CXX    PROPERTY PROJECT_USES_CXX_UTILITIES)
+  basis_get_project_property (PYTHON PROPERTY PROJECT_USES_PYTHON_UTILITIES)
+  basis_get_project_property (PERL   PROPERTY PROJECT_USES_PERL_UTILITIES)
+  basis_get_project_property (BASH   PROPERTY PROJECT_USES_BASH_UTILITIES)
+  if (CXX OR PYTHON OR PERL OR BASH)
+    set (RETVAL TRUE PARENT_SCOPE)
+  else ()
+    set (RETVAL FALSE PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Configure BASIS utilities.
 #
 # This function configures the following source files which can be used
