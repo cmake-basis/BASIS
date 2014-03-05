@@ -103,7 +103,7 @@ configuration and does not require a modification of the source code files
 which make use of this executable.
 
 
-.. SystemSearchPaths:
+.. _SystemSearchPaths:
 
 Search Paths
 ============
@@ -116,7 +116,7 @@ cons of each method to manipulate these search paths. Following these
 considerations, the solution aimed at by BASIS is detailed.
 
 
-.. UnixSearchPaths:
+.. _UnixSearchPaths:
 
 Unix
 ----

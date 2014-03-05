@@ -121,6 +121,14 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Installation directory of the API documentation relative to the installation prefix.
 
+.. option:: -DBASIS_INSTALL_RPATH:BOOL
+
+    Whether to have BASIS set the appropriate INSTALL_RPATH property of executables and
+    shared libraries instead of CMake. This option is ``ON`` by default which complies
+    with the :ref:`BASIS standard <SystemSearchPaths>`. Note that this option may be
+    overridden by the project developer or on the command-line by setting the variable
+    `CMAKE_SKIP_RPATH` to `FALSE`. This is typcially done in the `config/Settings.cmake`.
+
 .. option:: -DBASIS_INSTALL_SCHEME:STRING
 
     Installation scheme, i.e., filesystem hierarchy, to use for the installation of the

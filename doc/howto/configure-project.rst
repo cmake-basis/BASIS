@@ -309,8 +309,11 @@ added to the include search path using the ``BEFORE`` option of CMake's
 current project are preferred by the preprocessor.
 
 
-Installation Prefix
-===================
+Installation
+============
+
+Prefix
+------
 
 The ``CMAKE_INSTALL_PREFIX`` is initialized by BASIS based on the platform
 which the build is configured on and the package vendor ID, i.e., the argument
@@ -324,6 +327,27 @@ the command line, i.e.,
 .. code-block:: bash
 
   cmake -DCMAKE_INSTALL_PREFIX:PATH=/path/to/installation /path/to/code
+
+RPATH
+-----
+
+By default, BASIS sets the ``INSTALL_RPATH`` property of executables and shared libraries
+based on the dependencies of the target. For each shared library which the binary is linked
+to and belongs to the same project (or package bundle), a path relative to the location
+of the binary is added to the RPATH of the installed binary. To figure out all the
+dependencies of a build target, BASIS has to perform a depth search on the dependency
+graph which is rather costly. Therefore, this feature can be disabled if desired either
+for performance reasons or because it is preferred that CMake sets the RPATH. There
+are two CMake variables which decide whether the RPATH is set by BASIS. The first is
+the advanced option :option:`-DBASIS_INSTALL_RPATH` which can be set during the
+configuration of the build system to ``OFF``
+(or better before, i.e., on the command-line to avoid the unnecessarily longer configuration time).
+If the feature should always be disabled, add the following line to the
+``config/Settings.cmake`` file of the project.
+
+.. code-block:: cmake
+
+  set (CMAKE_SKIP_RPATH TRUE)
 
 
 Test Configuration
