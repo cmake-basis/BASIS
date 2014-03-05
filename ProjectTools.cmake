@@ -294,6 +294,7 @@ macro (basis_project_check_metadata)
     set (TOPLEVEL_PROJECT_CONTACT "${PROJECT_CONTACT}")
   endif ()
   # source tree directories
+  set (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}") # project() not called yet!
   basis_check_or_set_source_paths (PROJECT_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
   basis_check_or_set_source_paths (PROJECT_CODE_DIRS    "${PROJECT_SOURCE_DIR}/src")
   basis_check_or_set_source_paths (PROJECT_MODULES_DIR  "${PROJECT_SOURCE_DIR}/modules")
