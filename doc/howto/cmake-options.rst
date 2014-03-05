@@ -191,6 +191,16 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
 
     Enable verbose messages during build configuration.
 
+.. option:: -DBUILD_BASIS_UTILITIES_FOR_<LANG>:BOOL
+
+    By default, the BASIS Utilities for a given programming language are only build if
+    any of the project's executable or library targets build from source code in the
+    respective language makes use of these utilities. Use these options to force the
+    build of the BASIS Utilities for the respective language. Even if not used by
+    the project itself, the generated utility functions and header or scripted module
+    files can be used by another project to access the project meta-data such as its
+    name and version by including the respective project-specific BASIS Utilities.
+
 .. option:: -DBUILD_CHANGELOG:BOOL
 
     Request build of ChangeLog as part of the ``ALL`` target. Note that the ChangeLog
