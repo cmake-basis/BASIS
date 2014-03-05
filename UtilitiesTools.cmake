@@ -324,6 +324,10 @@ function (basis_configure_utilities)
   # --------------------------------------------------------------------------
   # C++
   if (CXX)
+    # make sure that library target is added which is not the case yet
+    # if the BASIS C++ utilities are not used by any project target, but
+    # their build is forced via the BUILD_BASIS_UTILITIES_FOR_CXX option
+    basis_add_utilities_library(UNUSED)
     # paths - build tree
     set (BUILD_ROOT_PATH_CONFIG    "${CMAKE_BINARY_DIR}")
     set (RUNTIME_BUILD_PATH_CONFIG "${BINARY_RUNTIME_DIR}")
