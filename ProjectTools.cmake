@@ -1801,7 +1801,7 @@ function (basis_add_module MODULE)
   #
   # Note: - MODULE_${MODULE}_SOURCE_DIR is the location of the module source code.
   #       - MODULE_${MODULE}_BINARY_DIR is the build directory for the module.
-  if (BASIS_SUPER_BUILD_MODULES)
+  if (BASIS_SUPERBUILD_MODULES)
     message (STATUS "Configuring super-build of module ${MODULE}...")
     basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
     message (STATUS "Configuring super-build of module ${MODULE}... - done")

@@ -573,8 +573,8 @@ mark_as_advanced (BASIS_REGISTER)
 #
 # This may improve performance of the initial configure step but comes with the caveats
 # inherent to the superbuild approach as implemented by the ExternalProject module.
-option (BASIS_SUPER_BUILD_MODULES "EXPERIMENTAL - Build project modules as part of a superbuild. May improve configure speed." OFF)
-mark_as_advanced (BASIS_SUPER_BUILD_MODULES)
+option (BASIS_SUPERBUILD_MODULES "EXPERIMENTAL - Build project modules as part of a superbuild. May improve configure speed." OFF)
+mark_as_advanced (BASIS_SUPERBUILD_MODULES)
 
 # ============================================================================
 # programming language specific settings
