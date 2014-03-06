@@ -58,7 +58,7 @@ component is required. You can also be more specific regarding the version
 using a dependency declaration such as ``ITK-4.2`` or ``ITK-3.18.0``. Whether
 or not an external dependency meets the version requirements is determined
 by CMake's find_package_ command. See the CMake documentation of this command
-for more details, where in particular the ``VERSION`` and ``COMPONENTS`` options
+for more details, where the ``VERSION`` and ``COMPONENTS`` options
 directly relate to the respective parts of the BASIS dependency declaration.
 
 .. code-block:: cmake
@@ -168,7 +168,7 @@ system configuration. The generated file will be named ``PackageConfig.cmake``,
 where ``Package`` is the name of the top-level project, and contain
 information about the installation, the exported library targets, and
 possibly compiler options that were used to build the project. CMake's
-find_package_ command in particular searches for this file when looking
+find_package_ command searches for this file when looking
 for the package named ``Package`` and includes it to import the build
 and installation settings. Besides the typical attributes of the build
 and installation which are written automatically by BASIS to the
@@ -260,54 +260,78 @@ component definitions using aforementioned ``basis_add_`` commands.
 Header Files
 ============
 
+Public Interface
+----------------
+
 Header files are considered part of the public interface of a project, if they
 are placed in any of the directories specified using the ``INCLUDE_DIRS`` parameter
 of the :apidoc:`basis_project()` command, which by default is the ``include`` directory
-of the project source tree. By default, public header files should be in
-``include/<package>/`` for a top-level project or ``<module>/include/<package>/``
-for a project module (i.e. subproject).
-Notice the recommended subdirectories inside the include directory that help prevent
-the collision of header file names across packages. Here, ``<package>`` is usually
-the name of the top-level project which in case of a module is the argument of
-the ``PACKAGE_NAME`` (or short ``PACKAGE``) parameter of :apidoc:`basis_project()`
-in the ``BasisProject.cmake`` file of the module itself. In most cases, where the
-module is considered an *internal* module of the top-level project, this package
-name is identical to the project/package name of the top-level project.
-In cases where the module is imported from another package, however, using for example
-a submodule feature of the used version control system, the module is considered
-*external* to the importing top-level project which only includes the module directly
-in its source tree for convenience. Therefore the package which the module belongs
-to is the one it was imported from. Such meta top-level project need not exist,
-and may only be defined by the ``PACKAGE_NAME`` given in the ``BasisProject.cmake``
-file of the module. In general, the package name of any project should correspond
-to the *namespace* which all symbols of a software project belong to.
-It should be noted that the concept of a *namespace* can be extended to all aspects
-of a software project, not only certain programming languages which have it built in
-such as C++. Therefore, the symbols which belong to the package namespace include
-project modules, target names, C++ classes and functions, as well as script modules.
+of the project source tree. Using the recommended project layout, public header files
+have to be put in
 
-Header files which are located in a source code directory can be included in a
-source file without the need for using aforementioned subdirectory structure.
-These files are not automatically installed, however, as they are assumed
-to be only used by ``.cpp`` modules which are eventually linked to an executable binary.
-Header files which are included by other public header files or contain public
-definitions of object classes that are linked to a library for use by other projects,
-are by definition part of the public interface and therefore must be located in one
-of the include directories.
+- :ref:`Top Level Project <TopLevelProjectDefinition>`: ``include/<package>/``
+- :ref:`Project Module    <ProjectModuleDefinition>`  : ``<module>/include/<package>/``
 
-Private header files are generally located nearby the ``.cpp`` files that make
-use of them. These header files can be included using relative paths and the
-preprocessor directive ``#include "header.h"`` rather than ``#include <header.h>``.
-Both are valid, however, and additional include paths can always be added
-using the :apidoc:`basis_include_directories()` command. This can be done
-either in the ``CMakeLists.txt`` of the respective source code subtree or
-in the ``config/Settings.cmake`` file (recommended).
+Notice the subdirectories inside the include directory that help prevent the collision
+of header file names across packages. Here, ``<package>`` is usually the name of the
+top-level project which in case of a module is the argument of the ``PACKAGE_NAME``
+(or short ``PACKAGE``) parameter of :apidoc:`basis_project()` in the ``BasisProject.cmake``
+file of the module itself.
+
+.. note::
+
+   In most cases, the package name of the module is identical to the project/package name of
+   the top-level project. Such module is considered an *internal* module of the top-level project.
+   
+   In cases where the module is imported from another package, using for example
+   a submodule feature of the used version control system, the module is considered
+   *external* to the importing top-level project, unless the package name of the module
+   corresponds to the (package) name of the top-level project. Even though the source
+   tree of the top-level project includes the module source tree directly,
+   external modules should still be considered part of an external package, i.e.,
+   the one named by the ``PACKAGE_NAME`` of the respective module.
+   
+   Note that a top-level project whose name is specified as ``PACKAGE_NAME`` of a module
+   does not have to exist. The package name serves rather as *namespace* for the module.
+   All symbols of a software project belong to this (package) namespace. It should be
+   emphasized that the concept of a *namespace* can be extended to all aspects of a
+   software project, not only symbols of programming languages which have it built in such
+   as C++. Therefore, the *symbols* which belong to the package namespace include project
+   modules, target names, C++ classes and functions, as well as scripted libraries.
+
+
+Private Interface
+-----------------
+
+Header files which are located in a source code directory can be included in a source
+file without the need for a subdirectory structure such as the one used for public header
+files. These files are not automatically installed as they are assumed to be only used
+by ``.cpp`` modules which are eventually linked to an executable binary.
+
+Private header files are generally located next to the ``.cpp`` files that include them.
+They can be included using paths relative to the location of the ``.cpp`` module using
+the ``#include "header.h"`` preprocessor directive. Alternatively, private header files
+can be included relative to a directory which is listed in the search path for header
+files using the syntax ``#include <header.h>`` which is also used for public header files.
+
+.. note:: Header files which are included by other public header files or contain public
+          definitions of object classes that are linked to a library for use by other projects,
+          are by definition part of the public interface and therefore must be located in one
+          of the include directories.
+
+
+Search Path
+-----------
 
 All directories which are given as arguments of either the ``INCLUDE_DIRS``
 or the ``CODE_DIRS`` parameter of :apidoc:`basis_project()` are automatically
 added to the include search path using the ``BEFORE`` option of CMake's
 ``include_directories`` command to ensure that the header files of the
 current project are preferred by the preprocessor.
+
+Additional include paths can be added using the :apidoc:`basis_include_directories()`
+command. This can be done either in the ``CMakeLists.txt`` of the respective
+source code subtree or in the ``config/Settings.cmake`` file (recommended).
 
 
 Installation Prefix
