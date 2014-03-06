@@ -491,10 +491,10 @@ if (NOT PROJECT_IS_MODULE)
   endforeach ()
   # installation
   foreach (_D IN ITEMS CONFIG INCLUDE RUNTIME LIBEXEC LIBRARY ARCHIVE DATA DOC EXAMPLE SHARE)
-    set (BASIS_INSTALL_${_D}_DIR "${INSTALL_${_D}_DIR}")
+    set (TOPLEVEL_INSTALL_${_D}_DIR "${INSTALL_${_D}_DIR}")
   endforeach ()
   foreach (_L IN ITEMS PYTHON JYTHON PERL MATLAB BASH)
-    set (BASIS_INSTALL_${_L}_LIBRARY_DIR "${INSTALL_${_L}_LIBRARY_DIR}")
+    set (TOPLEVEL_INSTALL_${_L}_LIBRARY_DIR "${INSTALL_${_L}_LIBRARY_DIR}")
   endforeach ()
 endif ()
 

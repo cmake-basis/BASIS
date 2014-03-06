@@ -63,7 +63,7 @@ function (basis_add_utilities_library UID)
       set (CODE_DIR    "${TOPLEVEL_BINARY_CODE_DIR}")
       set (INCLUDE_DIR "${TOPLEVEL_BINARY_INCLUDE_DIR}")
       set (OUTPUT_DIR  "${TOPLEVEL_BINARY_ARCHIVE_DIR}")
-      set (INSTALL_DIR "${BASIS_INSTALL_ARCHIVE_DIR}")
+      set (INSTALL_DIR "${TOPLEVEL_INSTALL_ARCHIVE_DIR}")
     endif ()
     # write dummy source files
     basis_library_prefix (PREFIX CXX)
