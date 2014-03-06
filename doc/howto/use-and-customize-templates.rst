@@ -12,13 +12,15 @@ substitution options are available when you run the ``basisproject`` command, an
 are created in a new or updated project.
 
 
+.. _AvailableTemplates:
+
 Available Templates
 ===================
 
 +------------+-----------+-----------------------------------------------------------------------------------+
 | Template   | Version   | Description                                                                       |
 +============+===========+===================================================================================+
-| basis_     | 1.0       | This is the default template provided by BASIS and the one we recommend.          |
+| basis_     | 1.1       | This is the default template provided by BASIS and the one we recommend.          |
 |            |           | It is easy to get started with and follows all of the BASIS :doc:`/standard`.     |
 |            |           | To use it simply follow the :doc:`/quickstart`.                                   |
 +------------+-----------+-----------------------------------------------------------------------------------+
