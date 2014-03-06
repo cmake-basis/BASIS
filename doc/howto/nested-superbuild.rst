@@ -1,9 +1,11 @@
-.. meta::
-    :description: Example of nested CMake superbuild script.
+:orphan:
 
-=================================
-Nested Superbuild of Dependencies
-=================================
+.. meta::
+    :description: Example of nested CMake superbuild of BASIS and other software dependencies.
+
+=================================================
+Nested Superbuild of BASIS and other Dependencies
+=================================================
 
 The following CMake script is an example of how to implement a nested
 superbuild of BASIS and other project dependencies. It is a (edited) copy

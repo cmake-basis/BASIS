@@ -499,12 +499,18 @@ which are build by the superbuild have to be specified in the CMakeLists.txt whi
 implements this superbuild. Any options and variables which a user should be able to
 modify must be passed to the respective ``ExternalProject_Add`` command in this script.
 
-.. toctree::
-  :hidden:
+.. only:: html
+  
+  .. toctree::
+    :hidden:
+  
+    nested-superbuild
+  
+  .. seealso:: :doc:`Copy of the nested superbuild script of DRAMMS <nested-superbuild>`.
 
-  nested-superbuild
+.. only:: latex
 
-.. seealso:: :doc:`Copy of the nested superbuild script of DRAMMS <nested-superbuild>`.
+  .. seealso:: `Copy of the nested superbuild script of DRAMMS <http://opensource.andreasschuh.com/cmake-basis/howto/nested-superbuild.html>`__.
 
 .. _ExternalProject: http://www.cmake.org/cmake/help/v2.8.12/cmake.html#module:ExternalProject
 .. _DRAMMS:          http://www.rad.upenn.edu/sbia/software/dramms/download.html
