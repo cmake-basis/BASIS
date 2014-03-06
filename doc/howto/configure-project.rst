@@ -342,7 +342,7 @@ Custom Layout
 The :ref:`BASIS layout <SourceCodeTree>` has been battle tested and is based
 on standards. It is both reusable and cross-platform with a design that prevents subtle incompatibilities 
 and assumptions that we have encountered with other layouts. Through experience
-and standardization we settled on the receommended layout which we believe should
+and standardization we settled on the recommended layout which we believe should
 be effective for most use cases.
 
 Nonetheless, we understand that requirements and existing code cannot always 
