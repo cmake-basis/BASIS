@@ -12,7 +12,7 @@ tricks, and tools to modify and configure your project.
 .. seealso:: The guide on how to :doc:`/howto/create-and-modify-project` and the
              :doc:`/standard/template` which defines the typical project layout.
 
-CMake Configuration
+Build Configuration
 ===================
 
 .. _ConfigureBasisProject:
