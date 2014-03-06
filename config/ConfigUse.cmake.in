@@ -91,6 +91,6 @@ endif ()
 # ----------------------------------------------------------------------------
 # include further required BASIS CMake modules
 # base tools included by @PROJECT_NAME@Config.cmake already
-if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
+if (BASIS_SUPER_BUILD_MODULES)
   include (${BASIS_MODULE_PATH}/SuperBuildTools.cmake)
 endif ()

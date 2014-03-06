@@ -160,16 +160,53 @@ the module is build independently without any Top Level Project.
 Superbuild
 ==========
 
-.. todo:: **Super-build of modules is yet experimental and not fully documented!**
+.. todo:: Finalize superbuild of modules and document it.
 
-CMake's ExternalProject_Add_ command is sometimes used to create a 
-super-build, where external components are compiled separately. 
+.. note:: **The superbuild of project modules is yet experimental and not fully documented!**
 
-This has already been done with several projects. A super build can 
-also take care of building BASIS itself if it is not installed on the 
-system, as well as any other external library that is specified within the CMakeLists.txt.
+.. seealso:: A superbuild can also take care of building BASIS itself if it is not
+             installed on the system, as well as any other external library that is
+             specified as dependency of the project.
+             See the :ref:`Superbuild of BASIS and other dependencies <SuperBuildOfDependencies>`.
+
+CMake's ExternalProject_ module is sometimes used to create a superbuild,
+where components of a software or its external dependencies are compiled separately.
+This has already been done with several projects.
+
+An experimental superbuild of project modules is implemented by the :apidoc:`basis_add_module`
+function. It is disabled by default, i.e. each module is configured right away using
+``add_subdirectory``. The :option:`-DBASIS_SUPER_BUILD_MODULES` option can be used to
+enable the superbuild of modules. This can dramatically speed up the build system
+configuration for projects which contain a large number of modules, because the
+configuration of each module is deferred until the build step. Moreover, only modules
+which were modified since the last build will be reconfigured when the top-level project
+is re-build. Without the superbuild approach, the entire build system of the top-level
+project needs to be reconfigured in such case.
+
+If the superbuild of modules should always be enabled, add the following
+CMake code to ``config/Settings.cmake``:
+
+.. code-block:: cmake
+
+    if (NOT BASIS_SUPER_BUILD_MODULES)
+      set (
+        BASIS_SUPER_BUILD_MODULES ON CACHE BOOLEAN
+          "This project always builds the modules using a superbuild approach. You cannot change this option."
+        FORCE
+      )
+      message (WARNING "Option BASIS_SUPER_BUILD_MODULES set to ON as this project"
+                       " always builds its modules using a superbuild approach."
+                       " The BASIS_SUPER_BUILD_MODULES option cannot be changed.")
+    endif ()
+
+Alternatively, the following line would be sufficient as well without feedback for the user:
+
+.. code-block:: cmake
+
+    set (BASIS_SUPER_BUILD_MODULES OFF)
+
 
 .. _ITK 4:                http://www.itk.org/Wiki/ITK_Release_4
 .. _ITK 4 Modularization: http://www.vtk.org/Wiki/ITK_Release_4/Modularization
 .. _CPack:                http://www.cmake.org/cmake/help/v2.8.8/cpack.html
-.. _ExternalProject_Add:  http://www.cmake.org/cmake/help/v2.8.12/cmake.html#module:ExternalProject
+.. _ExternalProject:      http://www.cmake.org/cmake/help/v2.8.12/cmake.html#module:ExternalProject
