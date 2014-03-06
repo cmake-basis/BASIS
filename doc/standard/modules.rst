@@ -12,6 +12,8 @@ independent modules that can be shared with other projects,
 while only building and packaging the components that are
 really needed.
 
+.. _TopLevelProjectDefinition:
+
 **Top Level Project**
 
 A top level project is a project that is split into separate 
@@ -20,9 +22,11 @@ referred to as modules. A top level project will often have
 no source files of its own, simply serving as a lightweight 
 container for its modules.
 
-**Module**
+.. _ProjectModuleDefinition:
 
-A module is a completely independent BASIS project with its
+**Project Module**
+
+A (project) module is a completely independent BASIS project with its
 own dependencies that resides in the ``modules/`` of a
 Top Level Project. Each module will often be a separate 
 repository from the top level project that is designed 
