@@ -389,11 +389,11 @@ BASIS installation was found on the system.
 The :apidoc:`basis_bootstrap` function accepts arguments which define the configuration for the
 bootstrapped BASIS build. This BASIS configuration should be such that all features of
 BASIS that are required to build the software project are enabled
-(incl. any required documentation generation support), but others disabled to not waste
-time for the configuration and build of unused BASIS features.
+(incl. any required documentation generation support). Unused BASIS features should be disabled
+to not waste time for the configuration and build of these features.
 The resulting BASIS build will be tailored towards the needs of the project and should
-also only be used by this project. Users who wish a single BASIS installation for multiple
-packages that use BASIS, should download and install BASIS manually.
+further only be used by this project. Users who wish a single BASIS installation for multiple
+packages should download and install BASIS manually.
 
 .. note:: The :apidoc:`basis_bootstrap` function will only build BASIS in the build tree of
           the project and use this build directly without installation. An installation
@@ -432,7 +432,7 @@ demonstrates the use of :apidoc:`basis_bootstrap`:
     # look for local installation
     find_package (BASIS QUIET)
     if (NOT BASIS_FOUND)
-      message (FATAL_ERROR "Automatic CMake BASIS setup failed! Please install BASIS manuall.")
+      message (FATAL_ERROR "Automatic CMake BASIS setup failed! Please install BASIS manually.")
     endif ()
   endif ()
 
