@@ -223,6 +223,7 @@ The configuration of CPack_ for the generation of installers or other
 distribution packages such as source code or binary packages, is done by
 the :apidoc:`BasisPack.cmake` module. This module includes the ``config/Package.cmake``
 file after the `CPack variables`_ have been set to the BASIS defaults if it exists.
+
 The default configuration is derived from the project information as specified in the
 ``BasisProject.cmake`` file. As the ``config/Package.cmake`` file is included before
 the CPack module, it can be used to override the default CPack configuration.
