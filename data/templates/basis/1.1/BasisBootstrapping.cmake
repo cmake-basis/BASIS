@@ -27,7 +27,7 @@ function (basis_bootstrap)
     if (DEFINED BASIS_DIR AND NOT DEFINED BASIS_INSTALL_PREFIX)
       set (BASIS_INSTALL_PREFIX "" CACHE PATH "Installation prefix for CMake BASIS.")
       message (FATAL_ERROR "Could not find an existing CMake BASIS installation!\n"
-                           "This project uses the CMake BASIS package for the build configuration."
+                           "This project uses CMake BASIS for the build configuration."
                            " Next time you configure this build by running CMake again,"
                            " BASIS version ${BASIS_VERSION} will be automatically downloaded"
                            " and build as part of the build configuration of this project."

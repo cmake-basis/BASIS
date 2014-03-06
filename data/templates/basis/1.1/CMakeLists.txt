@@ -42,7 +42,7 @@ if (NOT BASIS_FOUND)
     include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisBootstrapping.cmake")
   else ()
     message (FATAL_ERROR "Could not find an existing CMake BASIS installation!\n"
-                           "This project uses the CMake BASIS package for the build configuration."
+                           "This project uses CMake BASIS for the build configuration."
                            "Visit http://opensource.andreasschuh.com/cmake-basis for"
                            " more information about the CMake BASIS package.\n")
   endif ()
