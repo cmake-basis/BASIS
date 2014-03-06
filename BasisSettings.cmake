@@ -133,7 +133,6 @@ endif ()
 ## @brief Names of project meta-data switches.
 set (
   BASIS_METADATA_LIST_SWITCH
-    SUPER_BUILD
 )
 
 ## @brief Names of project meta-data with only one argument.
@@ -570,12 +569,12 @@ set (BASIS_SUPPORT_SLICER_MODULES FALSE)
 option (BASIS_REGISTER "Request registration of installed package in CMake package registry." ON)
 mark_as_advanced (BASIS_REGISTER)
 
-## @brief EXPERIMENTAL - Build project modules as part of a "super build" using the CMake ExternalProject_Add() function.
-##
-## This may improve performance of the initial configure step but comes with the caveats inherent in
-## the ExternalProject_Add function.
-option (BASIS_SUPER_BUILD "EXPERIMENTAL - Build BASIS Modules as part of a super build. May improve configure speed." OFF)
-mark_as_advanced (BASIS_SUPER_BUILD)
+## @brief EXPERIMENTAL - Build project modules as separate external projects.
+#
+# This may improve performance of the initial configure step but comes with the caveats
+# inherent to the superbuild approach as implemented by the ExternalProject module.
+option (BASIS_SUPER_BUILD_MODULES "EXPERIMENTAL - Build project modules as part of a superbuild. May improve configure speed." OFF)
+mark_as_advanced (BASIS_SUPER_BUILD_MODULES)
 
 # ============================================================================
 # programming language specific settings

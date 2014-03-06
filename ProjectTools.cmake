@@ -464,12 +464,6 @@ endmacro ()
 #         The installed templates can be found in the share/templates folder of installed BASIS software,
 #         as well as the data/templates foler of the BASIS source tree.</td>
 #   </tr>
-#   <tr>
-#     @tp @b SUPER_BUILD @endtp
-#     <td>EXPERIMENTAL - Compile modules as part of a super build using ExternalProject_Add().
-#         This can dramatically speed up configure time by compiling all modules
-#         as if they were independent projects.</td>
-#   </tr>
 # </table>
 #
 # @par Project dependencies:
@@ -1807,7 +1801,7 @@ function (basis_add_module MODULE)
   #
   # Note: - MODULE_${MODULE}_SOURCE_DIR is the location of the module source code.
   #       - MODULE_${MODULE}_BINARY_DIR is the build directory for the module.
-  if (PROJECT_SUPER_BUILD OR BASIS_SUPER_BUILD)
+  if (BASIS_SUPER_BUILD_MODULES)
     message (STATUS "Configuring super-build of module ${MODULE}...")
     basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
     message (STATUS "Configuring super-build of module ${MODULE}... - done")
