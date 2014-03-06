@@ -43,18 +43,25 @@ basis_add_custom_target (manual) # build PDF manual
 
 # replace < year|contact|copyright|license > pattern in template file which
 # shall be included in documentation to avoid unrecognized xml/html tag warning
-file (READ "${PROJECT_DATA_DIR}/templates/basis/1.0/config/Depends.cmake" TEMPLATE)
-string (REGEX REPLACE "<year>"      "&lt;year&gt;"      TEMPLATE "${TEMPLATE}")
-string (REGEX REPLACE "<contact>"   "&lt;contact&gt;"   TEMPLATE "${TEMPLATE}")
-string (REGEX REPLACE "<copyright>" "&lt;copyright&gt;" TEMPLATE "${TEMPLATE}")
-string (REGEX REPLACE "<license>"   "&lt;license&gt;"   TEMPLATE "${TEMPLATE}")
-file (WRITE "${PROJECT_BINARY_DIR}/doc/Depends.cmake" "${TEMPLATE}")
-unset (TEMPLATE)
+function (basis_sanitize_template_for_doxygen OUTPUT_FILE_VAR TEMPLATE_FILE)
+  get_filename_component (TEMPLATE_NAME "${TEMPLATE_FILE}" NAME)
+  file (READ "${TEMPLATE_FILE}" TEMPLATE)
+  string (REGEX REPLACE "<year>"      "&lt;year&gt;"      TEMPLATE "${TEMPLATE}")
+  string (REGEX REPLACE "<contact>"   "&lt;contact&gt;"   TEMPLATE "${TEMPLATE}")
+  string (REGEX REPLACE "<copyright>" "&lt;copyright&gt;" TEMPLATE "${TEMPLATE}")
+  string (REGEX REPLACE "<license>"   "&lt;license&gt;"   TEMPLATE "${TEMPLATE}")
+  set (OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${TEMPLATE_NAME}")
+  file (WRITE "${OUTPUT_FILE}" "${TEMPLATE}")
+  set (${OUTPUT_FILE_VAR} "${OUTPUT_FILE}" PARENT_SCOPE)
+endfunction ()
+
+basis_sanitize_template_for_doxygen (DEPENDS_MODULE   "${PROJECT_DATA_DIR}/templates/basis/1.0/config/Depends.cmake")
+basis_sanitize_template_for_doxygen (BOOTSTRAP_MODULE "${PROJECT_DATA_DIR}/templates/basis/1.1/BasisBootstrapping.cmake")
 
 basis_add_doc (
   apidoc 
   GENERATOR             Doxygen
-  INPUT                 "${PROJECT_BINARY_DIR}/doc/Depends.cmake" 
+  INPUT                 "${DEPENDS_MODULE}" "${BOOTSTRAP_MODULE}"
   EXCLUDE_PATTERNS      # External libraries packaged with BASIS to exclude from final documentation
                         "*/gmock/*"            # Google Mock
                         "*/gtest/*"            # Google Test

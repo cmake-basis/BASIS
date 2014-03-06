@@ -309,45 +309,205 @@ added to the include search path using the ``BEFORE`` option of CMake's
 current project are preferred by the preprocessor.
 
 
-Installation
-============
+Custom Layout
+=============
 
-Prefix
-------
+.. note:: Using a custom project layout is not recommended.
 
-The ``CMAKE_INSTALL_PREFIX`` is initialized by BASIS based on the platform
-which the build is configured on and the package vendor ID, i.e., the argument
-of the ``PACKAGE_VENDOR`` (short ``VENDOR``) parameter of :apidoc:`basis_project()`.
-This package vendor ID is usually set to a combination of package provider
-and division or an acronym which the respective division is known by.
-This default installation prefix can be overriden by the project in the
-``config/Settings.cmake`` file. It can also be modified at any time from
-the command line, i.e.,
+The :ref:`BASIS layout <SourceCodeTree>` has been battle tested and is based
+on standards. It is both reusable and cross-platform with a design that prevents subtle incompatibilities 
+and assumptions that we have encountered with other layouts. Through experience
+and standardization we settled on the receommended layout which we believe should
+be effective for most use cases.
 
-.. code-block:: bash
+Nonetheless, we understand that requirements and existing code cannot always 
+accomodate the standard layout, so it is possible to customize the layout.
+Therefore, the :apidoc:`basis_project()` command provides several options
+to change the default directories and add additional custom include and source
+code directories to be considered by BASIS during the build system configuration.
 
-  cmake -DCMAKE_INSTALL_PREFIX:PATH=/path/to/installation /path/to/code
-
-RPATH
------
-
-By default, BASIS sets the ``INSTALL_RPATH`` property of executables and shared libraries
-based on the dependencies of the target. For each shared library which the binary is linked
-to and belongs to the same project (or package bundle), a path relative to the location
-of the binary is added to the RPATH of the installed binary. To figure out all the
-dependencies of a build target, BASIS has to perform a depth search on the dependency
-graph which is rather costly. Therefore, this feature can be disabled if desired either
-for performance reasons or because it is preferred that CMake sets the RPATH. There
-are two CMake variables which decide whether the RPATH is set by BASIS. The first is
-the advanced option :option:`-DBASIS_INSTALL_RPATH` which can be set during the
-configuration of the build system to ``OFF``
-(or better before, i.e., on the command-line to avoid the unnecessarily longer configuration time).
-If the feature should always be disabled, add the following line to the
-``config/Settings.cmake`` file of the project.
+For example, a project may contain source code of a common static library in the
+``Common`` subdirectory, image processing related library code in ``ImageProcessing``,
+and implementations of executables in ``Tools``, while the documentation is located
+in the subdirectory named ``Documentation`` and any CMake BASIS configuration files
+in ``Configuration``. The ``BasisProject.cmake`` file of this project could contain
+the following ``basis_project()`` call:
 
 .. code-block:: cmake
 
-  set (CMAKE_SKIP_RPATH TRUE)
+  basis_project(
+    NAME        CustomLayoutProject
+    DESCRIPTION "A project which demonstrates the use of a custom source tree layout."
+    CONFIG_DIR   Configuration
+    DOC_DIR      Documentation
+    INCLUDE_DIRS Common ImageProcessing
+    CODE_DIRS    Common ImageProcessing Tools
+  )
+
+
+.. _SuperBuildOfDependencies:
+
+Superbuild
+==========
+
+CMake's ExternalProject_ module is sometimes used to create a superbuild,
+where external components are compiled separately.
+
+This has already been done with several projects. A superbuild can also take care of
+building BASIS itself if it is not installed on the system, as well as any other
+external library that is specified as dependency of the project.
+
+The default project template of BASIS implements a superbuild of BASIS itself.
+This process is referred to as :ref:`Bootstrapping BASIS <Bootstrapping>` and
+detailed below. A superbuild of other dependencies requires a custom superbuild script.
+A possible implementation of such superbuild is summarized below as well,
+including a working example.
+
+Be aware, however, that there are also a number of details that become more difficult
+when making sure your superbuild is cross platform between operating systems and
+supports all of the generators and IDEs supported by CMake, such as Eclipse, Xcode,
+and Visual Studio, because the commands you select may only account for the platform
+you are using with the side effect of breaking others.
+
+
+.. _Bootstrapping:
+
+Bootstrapping BASIS
+-------------------
+
+The bootstrapping of BASIS is implemented by the default ``basis`` template since version 1.1,
+which is included in BASIS since version 3.1. It is the recommended superbuild approach
+to automate the build of BASIS. Because BASIS is downloaded and build right away during the
+build system configuration, no separate ExternalProject_ target is required for BASIS.
+
+The :ref:`basis project template <AvailableTemplates>` includes a :apidoc:`BasisBootstrapping.cmake`
+module which is included by the root CMakeLists.txt file. This module contains the definition of the
+:apidoc:`basis_bootstrap` function which downloads, configures, and builds BASIS during the
+configuration of the project. It is called by the default root CMake configuration only if no
+BASIS installation was found on the system.
+
+The :apidoc:`basis_bootstrap` function accepts arguments which define the configuration for the
+bootstrapped BASIS build. This BASIS configuration should be such that all features of
+BASIS that are required to build the software project are enabled
+(incl. any required documentation generation support), but others disabled to not waste
+time for the configuration and build of unused BASIS features.
+The resulting BASIS build will be tailored towards the needs of the project and should
+also only be used by this project. Users who wish a single BASIS installation for multiple
+packages that use BASIS, should download and install BASIS manually.
+
+.. note:: The :apidoc:`basis_bootstrap` function will only build BASIS in the build tree of
+          the project and use this build directly without installation. An installation
+          of BASIS is required, however, if any of the project's executable or library
+          targets make use of the BASIS Utilities.
+          In this case, the ``BASIS_INSTALL_PREFIX`` must be set by the user to specify an
+          installation prefix for the bootstrapped BASIS installation. This installation
+          prefix should be either set to the ``CMAKE_INSTALL_PREFIX`` or a subdirectory
+          within it as this installation should only be used by the software it was built for.
+
+The following excerpt from the root CMakeLists.txt of the :ref:`basis project template <AvailableTemplates>`
+demonstrates the use of :apidoc:`basis_bootstrap`:
+
+.. code-block:: cmake
+
+  # look for an existing CMake BASIS installation and use it if found
+  find_package (BASIS QUIET)
+
+  if (NOT BASIS_FOUND)
+
+    # otherwise download and build BASIS in build tree of project
+    basis_bootstrap(
+      VERSION 3.1.0          # CMake BASIS version to download
+      USE_MATLAB       FALSE # Enable/disable Matlab support
+      USE_PythonInterp FALSE # Enable/disable Python support
+      USE_JythonInterp FALSE # Enable/disable Jython support
+      USE_Perl         FALSE # Enable/disalbe Perl   support
+      USE_BASH         FALSE # Enable/disable Bash   support
+      USE_Doxygen      TRUE  # Enable/disable documentation generation using Doxygen
+      USE_Sphinx       TRUE  # Enable/disable documentation generation using Sphinx
+      USE_ITK          FALSE # Enable/disable image processing regression testing
+      INFORM_USER            # Inform user during first configure step
+                             # that BASIS needs to be bootstrapped or installed manually
+    )
+
+    # look for local installation
+    find_package (BASIS QUIET)
+    if (NOT BASIS_FOUND)
+      message (FATAL_ERROR "Automatic CMake BASIS setup failed! Please install BASIS manuall.")
+    endif ()
+  endif ()
+
+The ``INFORM_USER`` option causes :apidoc:`basis_bootstrap` to display an error message during
+the very first configure step of CMake to inform the user that the CMake BASIS package is
+required to configure and build the software. It further gives users a chance to edit the
+``BASIS_DIR`` path in the CMake GUI to use an existing BASIS installation.
+
+.. attention:: Do not set the ``BASIS_INSTALL_PREFIX`` automatically in the root CMakeLists.txt
+               of your project, unless the ``INFORM_USER`` option of ``basis_bootstrap`` is used.
+               Any change of the ``BASIS_INSTALL_PREFIX`` will install BASIS in the new location
+               during the next configure run. The user would then possibly end up with (multiple)
+               obsolete BASIS installations. The ``INFORM_USER`` option gives users at least a
+               chance to edit the ``BASIS_INSTALL_PREFIX``. They must do so, however, before
+               another configure run to avoid multiple installations.
+
+
+.. _Superbuild:
+
+Superbuild of other Dependencies
+--------------------------------
+
+After the bootstrapping of BASIS, other dependencies can be build using separate external projects
+for each of the dependencies and one final external project which builds the software itself.
+This last external project will depend on all the other external projects.
+
+Please see the :doc:`nested superbuild script of DRAMMS <nested-superbuild>` for reference on how
+to use the ExternalProject_ module of CMake to implement a superbuild. As BASIS will be bootstrapped
+and available already when the external projects of the dependencies are added, no nested superbuild
+is required in this case. Thus, skip the first section of the example superbuild script
+(the one which adds the external project ``basis``) and set ``BUNDLE_EXTERNAL_PROJECTS`` to ``OFF``.
+In fact, we suggest to only copy those lines from the nested superbuild example script,
+which are relevant for the non-nested superbuild. The CMake code required for this will be
+less complex and contain considerably fewer lines of code.
+
+.. todo:: Provide example superbuild script which can be used together with the bootstrapping
+          of BASIS as the nested superbuild script is too complex to extract the only required
+          parts if you see it the first time.
+
+.. note:: One goal of future BASIS releases will be to automate this proecess such that most
+          common dependencies declared in the ``BasisProject.cmake`` file are automatically
+          downloaded and build if no existing installation was found and the superbuild is
+          enabled for this dependency. Additonal custom superbuild scripts for individual external
+          packages would enable the superbuild of non-standard packages which are not yet
+          supported by BASIS out-of-the-box as well.
+
+
+.. _NestedSuperbuild:
+
+Nested Superbuild of BASIS and other Dependencies
+-------------------------------------------------
+
+The second alternative uses CMake's ExternalProject_ module and a nested super-build approach.
+This approach has been applied first for the superbuild of the DRAMMS_ software package
+with an older version of BASIS. If no BASIS installation is found, an external project
+for BASIS is added, which downloads and installs BASIS. A second external project,
+named ``bundle`` is used to build all the other dependencies, including the software
+project itself. This second external project recursively uses the same CMake configuration
+file, but this time with a valid ``BASIS_DIR``. It adds for each package to be build
+after BASIS an external project. Note that these external projects are build targets
+of the ``bundle`` target which itself is an external project. Therefore this approach
+is referred to as *nested* superbuild. All build configurations of the various packages
+which are build by the superbuild have to be specified in the CMakeLists.txt which
+implements this superbuild. Any options and variables which a user should be able to
+modify must be passed to the respective ``ExternalProject_Add`` command in this script.
+
+.. toctree::
+  :hidden:
+
+  nested-superbuild
+
+.. seealso:: :doc:`Copy of the nested superbuild script of DRAMMS <nested-superbuild>`.
+
+.. _ExternalProject: http://www.cmake.org/cmake/help/v2.8.12/cmake.html#module:ExternalProject
+.. _DRAMMS:          http://www.rad.upenn.edu/sbia/software/dramms/download.html
 
 
 Test Configuration
@@ -391,40 +551,45 @@ added by the ``basistest.ctest`` script when the coverage option is passed in, i
 .. _lcov:           http://ltp.sourceforge.net/coverage/lcov.php
 
 
-Custom Layout
-=============
+Installation
+============
 
-.. note:: Using a custom project layout is not recommended.
+Prefix
+------
 
-The :ref:`BASIS layout <SourceCodeTree>` has been battle tested and is based
-on standards. It is both reusable and cross-platform with a design that prevents subtle incompatibilities 
-and assumptions that we have encountered with other layouts. Through experience
-and standardization we settled on the receommended layout which we believe should
-be effective for most use cases.
+The ``CMAKE_INSTALL_PREFIX`` is initialized by BASIS based on the platform
+which the build is configured on and the package vendor ID, i.e., the argument
+of the ``PACKAGE_VENDOR`` (short ``VENDOR``) parameter of :apidoc:`basis_project()`.
+This package vendor ID is usually set to a combination of package provider
+and division or an acronym which the respective division is known by.
+This default installation prefix can be overriden by the project in the
+``config/Settings.cmake`` file. It can also be modified at any time from
+the command line, i.e.,
 
-Nonetheless, we understand that requirements and existing code cannot always 
-accomodate the standard layout, so it is possible to customize the layout.
-Therefore, the :apidoc:`basis_project()` command provides several options
-to change the default directories and add additional custom include and source
-code directories to be considered by BASIS during the build system configuration.
+.. code-block:: bash
 
-For example, a project may contain source code of a common static library in the
-``Common`` subdirectory, image processing related library code in ``ImageProcessing``,
-and implementations of executables in ``Tools``, while the documentation is located
-in the subdirectory named ``Documentation`` and any CMake BASIS configuration files
-in ``Configuration``. The ``BasisProject.cmake`` file of this project could contain
-the following ``basis_project()`` call:
+  cmake -DCMAKE_INSTALL_PREFIX:PATH=/path/to/installation /path/to/code
+
+RPATH
+-----
+
+By default, BASIS sets the ``INSTALL_RPATH`` property of executables and shared libraries
+based on the dependencies of the target. For each shared library which the binary is linked
+to and belongs to the same project (or package bundle), a path relative to the location
+of the binary is added to the RPATH of the installed binary. To figure out all the
+dependencies of a build target, BASIS has to perform a depth search on the dependency
+graph which is rather costly. Therefore, this feature can be disabled if desired either
+for performance reasons or because it is preferred that CMake sets the RPATH. There
+are two CMake variables which decide whether the RPATH is set by BASIS. The first is
+the advanced option :option:`-DBASIS_INSTALL_RPATH` which can be set during the
+configuration of the build system to ``OFF``
+(or better before, i.e., on the command-line to avoid the unnecessarily longer configuration time).
+If the feature should always be disabled, add the following line to the
+``config/Settings.cmake`` file of the project.
 
 .. code-block:: cmake
 
-  basis_project(
-    NAME        CustomLayoutProject
-    DESCRIPTION "A project which demonstrates the use of a custom source tree layout."
-    CONFIG_DIR   Configuration
-    DOC_DIR      Documentation
-    INCLUDE_DIRS Common ImageProcessing
-    CODE_DIRS    Common ImageProcessing Tools
-  )
+  set (CMAKE_SKIP_RPATH TRUE)
 
 
 Redistributable Files
