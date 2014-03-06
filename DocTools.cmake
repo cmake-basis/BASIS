@@ -1976,7 +1976,7 @@ function (basis_add_changelog)
 
   install (
     FILES       "${CHANGELOG_FILE}"
-    DESTINATION "${BASIS_INSTALL_DOC_DIR}"
+    DESTINATION "${TOPLEVEL_INSTALL_DOC_DIR}"
     COMPONENT   "${BASIS_RUNTIME_COMPONENT}"
     RENAME      "${CHANGELOG_NAME}"
     OPTIONAL
