@@ -1,8 +1,10 @@
 # ============================================================================
-# Copyright (c) <copyright>
+# Copyright (c) 2014 Carnegie Mellon University
+# Copyright (c) 2014 Andreas Schuh
 # All rights reserved.
 #
-# <license>
+# See COPYING file for license information or visit
+# http://opensource.andreasschuh.com/cmake-basis/download.html#license
 # ============================================================================
 
 ##############################################################################
