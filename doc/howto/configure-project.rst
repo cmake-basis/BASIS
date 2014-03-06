@@ -191,19 +191,19 @@ template file to your project and it will be used instead.
 
 .. code-block:: cmake
 
-  # Package version as specified in BasisProject.cmake file
-  set (PACKAGE_VERSION "@PROJECT_VERSION@")
+    # Package version as specified in BasisProject.cmake file
+    set (PACKAGE_VERSION "@PROJECT_VERSION@")
 
-  # Perform compatibility check here using the input CMake variables.
-  # See example in http://www.cmake.org/Wiki/CMake_2.6_Notes.
-  set (PACKAGE_VERSION_COMPATIBLE TRUE)
-  set (PACKAGE_VERSION_UNSUITABLE FALSE)
+    # Perform compatibility check here using the input CMake variables.
+    # See example in http://www.cmake.org/Wiki/CMake_2.6_Notes.
+    set (PACKAGE_VERSION_COMPATIBLE TRUE)
+    set (PACKAGE_VERSION_UNSUITABLE FALSE)
 
-  if ("${PACKAGE_FIND_VERSION_MAJOR}" EQUAL "@PROJECT_VERSION_MAJOR@")
-    if ("${PACKAGE_FIND_VERSION_MINOR}" EQUAL "@PROJECT_VERSION_MINOR@")
-      set (PACKAGE_VERSION_EXACT TRUE)
+    if ("${PACKAGE_FIND_VERSION_MAJOR}" EQUAL "@PROJECT_VERSION_MAJOR@")
+      if ("${PACKAGE_FIND_VERSION_MINOR}" EQUAL "@PROJECT_VERSION_MINOR@")
+        set (PACKAGE_VERSION_EXACT TRUE)
+      endif ()
     endif ()
-  endif ()
 
 
 :apidoc:`ScriptConfig.cmake.in <ScriptConfig.cmake>`
@@ -335,14 +335,14 @@ the following ``basis_project()`` call:
 
 .. code-block:: cmake
 
-  basis_project(
-    NAME        CustomLayoutProject
-    DESCRIPTION "A project which demonstrates the use of a custom source tree layout."
-    CONFIG_DIR   Configuration
-    DOC_DIR      Documentation
-    INCLUDE_DIRS Common ImageProcessing
-    CODE_DIRS    Common ImageProcessing Tools
-  )
+    basis_project(
+      NAME        CustomLayoutProject
+      DESCRIPTION "A project which demonstrates the use of a custom source tree layout."
+      CONFIG_DIR   Configuration
+      DOC_DIR      Documentation
+      INCLUDE_DIRS Common ImageProcessing
+      CODE_DIRS    Common ImageProcessing Tools
+    )
 
 
 .. _SuperBuildOfDependencies:
@@ -409,32 +409,32 @@ demonstrates the use of :apidoc:`basis_bootstrap`:
 
 .. code-block:: cmake
 
-  # look for an existing CMake BASIS installation and use it if found
-  find_package (BASIS QUIET)
-
-  if (NOT BASIS_FOUND)
-
-    # otherwise download and build BASIS in build tree of project
-    basis_bootstrap(
-      VERSION 3.1.0          # CMake BASIS version to download
-      USE_MATLAB       FALSE # Enable/disable Matlab support
-      USE_PythonInterp FALSE # Enable/disable Python support
-      USE_JythonInterp FALSE # Enable/disable Jython support
-      USE_Perl         FALSE # Enable/disalbe Perl   support
-      USE_BASH         FALSE # Enable/disable Bash   support
-      USE_Doxygen      TRUE  # Enable/disable documentation generation using Doxygen
-      USE_Sphinx       TRUE  # Enable/disable documentation generation using Sphinx
-      USE_ITK          FALSE # Enable/disable image processing regression testing
-      INFORM_USER            # Inform user during first configure step
-                             # that BASIS needs to be bootstrapped or installed manually
-    )
-
-    # look for local installation
+    # look for an existing CMake BASIS installation and use it if found
     find_package (BASIS QUIET)
+    
     if (NOT BASIS_FOUND)
-      message (FATAL_ERROR "Automatic CMake BASIS setup failed! Please install BASIS manually.")
+    
+      # otherwise download and build BASIS in build tree of project
+      basis_bootstrap(
+        VERSION 3.1.0          # CMake BASIS version to download
+        USE_MATLAB       FALSE # Enable/disable Matlab support
+        USE_PythonInterp FALSE # Enable/disable Python support
+        USE_JythonInterp FALSE # Enable/disable Jython support
+        USE_Perl         FALSE # Enable/disalbe Perl   support
+        USE_BASH         FALSE # Enable/disable Bash   support
+        USE_Doxygen      TRUE  # Enable/disable documentation generation using Doxygen
+        USE_Sphinx       TRUE  # Enable/disable documentation generation using Sphinx
+        USE_ITK          FALSE # Enable/disable image processing regression testing
+        INFORM_USER            # Inform user during first configure step
+                               # that BASIS needs to be bootstrapped or installed manually
+      )
+    
+      # look for local installation
+      find_package (BASIS QUIET)
+      if (NOT BASIS_FOUND)
+        message (FATAL_ERROR "Automatic CMake BASIS setup failed! Please install BASIS manually.")
+      endif ()
     endif ()
-  endif ()
 
 The ``INFORM_USER`` option causes :apidoc:`basis_bootstrap` to display an error message during
 the very first configure step of CMake to inform the user that the CMake BASIS package is
