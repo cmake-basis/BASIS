@@ -17,10 +17,16 @@ are created in a new or updated project.
 Available Templates
 ===================
 
+
+.. The tabularcolumns directive is required to help with formatting the table properly
+   in case of LaTeX (PDF) output.
+
+.. tabularcolumns:: |p{1cm}|p{1cm}|p{13cm}|
+
 +------------+-----------+-----------------------------------------------------------------------------------+
-| Template   | Version   | Description                                                                       |
+| Name       | Version   | Description                                                                       |
 +============+===========+===================================================================================+
-| basis_     | 1.1       | This is the default template provided by BASIS and the one we recommend.          |
+| basis_     | 1.1_      | This is the default template provided by BASIS and the one we recommend.          |
 |            |           | It is easy to get started with and follows all of the BASIS :doc:`/standard`.     |
 |            |           | To use it simply follow the :doc:`/quickstart`.                                   |
 +------------+-----------+-----------------------------------------------------------------------------------+
@@ -36,6 +42,7 @@ Available Templates
 You can find the actual templates provided by BASIS in the ``data/templates`` directory.
 
 .. _basis: https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/basis
+.. _1.1:   https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/basis/1.1
 .. _sbia:  https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/sbia
 
 .. _HowToUseATemplate:

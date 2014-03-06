@@ -68,7 +68,7 @@ other important CMake options.
 .. The tabularcolumns directive is required to help with formatting the table properly
    in case of LaTeX (PDF) output.
 
-.. tabularcolumns:: |p{3cm}|p{12.5cm}|
+.. tabularcolumns:: |p{5cm}|p{10.5cm}|
 
 ============================     =============================================================================================
     CMake Variable                              Description
@@ -165,11 +165,6 @@ Superbuild
 
 .. note:: **The superbuild of project modules is yet experimental and not fully documented!**
 
-.. seealso:: A superbuild can also take care of building BASIS itself if it is not
-             installed on the system, as well as any other external library that is
-             specified as dependency of the project.
-             See the :ref:`Superbuild of BASIS and other dependencies <SuperBuildOfDependencies>`.
-
 CMake's ExternalProject_ module is sometimes used to create a superbuild,
 where components of a software or its external dependencies are compiled separately.
 This has already been done with several projects.
@@ -192,7 +187,7 @@ CMake code to ``config/Settings.cmake``:
     if (NOT BASIS_SUPERBUILD_MODULES)
       set (
         BASIS_SUPERBUILD_MODULES ON CACHE BOOLEAN
-          "This project always builds the modules using a superbuild approach. You cannot change this option."
+          "This project always builds the modules using a superbuild approach."
         FORCE
       )
       message (WARNING "Option BASIS_SUPERBUILD_MODULES set to ON as this project"
@@ -205,6 +200,11 @@ Alternatively, the following line would be sufficient as well without feedback f
 .. code-block:: cmake
 
     set (BASIS_SUPERBUILD_MODULES OFF)
+
+.. seealso:: A superbuild can also take care of building BASIS itself if it is not
+             installed on the system, as well as any other external library that is
+             specified as dependency of the project.
+             See the :ref:`Superbuild of BASIS and other dependencies <SuperBuildOfDependencies>`.
 
 
 .. _ITK 4:                http://www.itk.org/Wiki/ITK_Release_4

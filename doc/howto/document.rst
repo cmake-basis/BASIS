@@ -36,8 +36,9 @@ Writing Documentation
 Now you can simply open the ``~/docProject/doc/*.rst`` files and start editing 
 the existing  reStructuredText_ files to create your Sphinx documentation. 
 
-You can also update your `doxygen mainpage`_ by opening 
-``~/docProject/doc/apidoc/apidoc.dox``. 
+You can also update your
+`doxygen mainpage <http://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmdmainpage>`__
+by opening ``~/docProject/doc/apidoc/apidoc.dox``. 
 
 We also suggest taking a look at the ``/doc`` folder of the BASIS source code 
 itself for more examples of how to write documentation.
@@ -126,7 +127,7 @@ BASIS includes Doxygen filters for:
 Generating Doxygen
 ------------------
 
-The :apidoc:`basis_add_doxygen_doc()` CMake command can be used to create your own custom doxygen documentation.
+The :apidoc:`basis_add_doxygen_doc` CMake command can be used to create your own custom doxygen documentation.
 
 
 Sphinx Documentation
@@ -193,8 +194,8 @@ is readable-wide that is used by the BASIS website.
 - traditional
 
 You can also use your own theme from the web or include it yourself by simply providing
-a path to the theme using the HTML_THEME parameter of :apidoc:`basis_add_doc` and 
-:apidoc:`basis_add_sphinx_doc`.
+a path to the theme using the HTML_THEME parameter of :apidoc:`basis_add_doc()` and 
+:apidoc:`basis_add_sphinx_doc()`.
 
 Markdown
 ========
@@ -218,9 +219,11 @@ for generating documentation is :apidoc:`basis_add_doc()`, which can handle
 the parameters of the related :apidoc:`basis_add_sphinx_doc()` and
 :apidoc:`basis_add_doxygen_doc()` commands.
 
-Here is the code that generates the integrated Sphinx and Doxygen Documentation:
-
-.. literalinclude:: ../CMakeLists.txt
+.. only:: html
+  
+  Here is the code that generates the integrated Sphinx and Doxygen Documentation:
+  
+  .. literalinclude:: ../CMakeLists.txt
 
 
 Software Manual
@@ -228,10 +231,12 @@ Software Manual
 
 Introduces users to software tools and guides them through example application.
 
+
 Developer's Guide
 =================
 
 Describes implementation details.
+
 
 API Documentation
 =================
@@ -247,7 +252,7 @@ The main input to this tool are text files written in the lightweight markup lan
 reStructuredText_. A default theme for use at SBIA has been created which is part
 of BASIS. This theme together with the text files that define the content and
 structure of the site, the HTML pages of the software web site can be generated
-by ``sphinx-build``. The CMake function :apidoc:`basis_add_doc()`_ provides an easy way
+by ``sphinx-build``. The CMake function :apidoc:`basis_add_doc()` provides an easy way
 to add such web site target to the build configuration. For example, the
 template ``doc/CMakeLists.txt`` file contains the following section:
 
