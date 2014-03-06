@@ -179,8 +179,9 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
     has only effect when given directly on the command-line when calling ``cmake`` or
     ``ccmake``, respectively. Otherwise the default value of this option will be
     used for the first build system configuration run which adds the ``MODULE_*``
-    options already and sets them to the respective default which cannot be overriden
-    by consecutive configuration runs unless the ``MODULE_*`` options themselves are changed.
+    options already and sets them to the respective default (``TRUE``). This default
+    value cannot be overriden by consecutive configuration runs unless the ``MODULE_*``
+    options themselves are changed.
 
 .. option:: -DBASIS_REGISTER:BOOL
 
