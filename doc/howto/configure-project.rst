@@ -593,6 +593,7 @@ which the build is configured on and the package vendor ID, i.e., the argument
 of the ``PACKAGE_VENDOR`` (short ``VENDOR``) parameter of :apidoc:`basis_project()`.
 This package vendor ID is usually set to a combination of package provider
 and division or an acronym which the respective division is known by.
+
 This default installation prefix can be overriden by the project in the
 ``config/Settings.cmake`` file. It can also be modified at any time from
 the command line, i.e.,
