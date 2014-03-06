@@ -176,7 +176,7 @@ This has already been done with several projects.
 
 An experimental superbuild of project modules is implemented by the :apidoc:`basis_add_module`
 function. It is disabled by default, i.e. each module is configured right away using
-``add_subdirectory``. The :option:`-DBASIS_SUPER_BUILD_MODULES` option can be used to
+``add_subdirectory``. The :option:`-DBASIS_SUPERBUILD_MODULES` option can be used to
 enable the superbuild of modules. This can dramatically speed up the build system
 configuration for projects which contain a large number of modules, because the
 configuration of each module is deferred until the build step. Moreover, only modules
@@ -189,22 +189,22 @@ CMake code to ``config/Settings.cmake``:
 
 .. code-block:: cmake
 
-    if (NOT BASIS_SUPER_BUILD_MODULES)
+    if (NOT BASIS_SUPERBUILD_MODULES)
       set (
-        BASIS_SUPER_BUILD_MODULES ON CACHE BOOLEAN
+        BASIS_SUPERBUILD_MODULES ON CACHE BOOLEAN
           "This project always builds the modules using a superbuild approach. You cannot change this option."
         FORCE
       )
-      message (WARNING "Option BASIS_SUPER_BUILD_MODULES set to ON as this project"
+      message (WARNING "Option BASIS_SUPERBUILD_MODULES set to ON as this project"
                        " always builds its modules using a superbuild approach."
-                       " The BASIS_SUPER_BUILD_MODULES option cannot be changed.")
+                       " The BASIS_SUPERBUILD_MODULES option cannot be changed.")
     endif ()
 
 Alternatively, the following line would be sufficient as well without feedback for the user:
 
 .. code-block:: cmake
 
-    set (BASIS_SUPER_BUILD_MODULES OFF)
+    set (BASIS_SUPERBUILD_MODULES OFF)
 
 
 .. _ITK 4:                http://www.itk.org/Wiki/ITK_Release_4

@@ -187,7 +187,7 @@ summarized above. To view these options in the `CMake GUI`_, press the ``t`` key
     is enabled by default such that packages are found by CMake when required by other
     packages based on this build tool.
 
-.. option:: -DBASIS_SUPER_BUILD_MODULES:BOOL
+.. option:: -DBASIS_SUPERBUILD_MODULES:BOOL
 
     **Experimental** Enable the superbuild of project modules. For projects with a
     large number of modules, this can dramatically reduce the build system configuration
