@@ -9,7 +9,7 @@
 # @file  CMakeLists.txt
 # @brief Root build configuration file.
 #
-# @note This Package utilizes BASIS. For more information visit http://opensource.andreasschuh.com/cmake-basis/
+# @note This package utilizes <a href="http://opensource.andreasschuh.com/cmake-basis">CMake BASIS</a>.
 #
 ##############################################################################
 
@@ -34,78 +34,64 @@ if (IS_DIRECTORY "${BASIS_DIR}")
   list (INSERT CMAKE_PREFIX_PATH 0 "${BASIS_DIR}")
 endif ()
 
-# if BASIS is not found, attempt to download and install it locally
+# look for an existing CMake BASIS installation and use it if found
+# otherwise, attempt to download and install it locally
 find_package (BASIS QUIET)
 if (NOT BASIS_FOUND)
-  set(DL_BASIS_VERSION 3.0.0)
-  message (STATUS "BASIS not found! Attempting to automatically download and install BASIS v${DL_BASIS_VERSION}.\n" 
-                  "Consider installing BASIS yourself by following the instructions at:\n"
-                  "     http://opensource.andreasschuh.com/cmake-basis/"
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/BasisBootstrapping.cmake")
+    include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisBootstrapping.cmake")
+  else ()
+    message (FATAL_ERROR "Could not find an existing CMake BASIS installation!\n"
+                           "This project uses CMake BASIS for the build configuration."
+                           "Visit http://opensource.andreasschuh.com/cmake-basis for"
+                           " more information about the CMake BASIS package.\n")
+  endif ()
+  # download and install BASIS in build tree of project
+  basis_bootstrap(
+    VERSION 3.0.0          # CMake BASIS version to download
+    USE_MATLAB       FALSE # Enable/disable Matlab support
+    USE_PythonInterp FALSE # Enable/disable Python support
+    USE_JythonInterp FALSE # Enable/disable Jython support
+    USE_Perl         FALSE # Enable/disalbe Perl   support
+    USE_BASH         FALSE # Enable/disable Bash   support
+    USE_Doxygen      TRUE  # Enable/disable documentation generation using Doxygen
+    USE_Sphinx       TRUE  # Enable/disable documentation generation using Sphinx
+    USE_ITK          FALSE # Enable/disable image processing regression testing
+    INFORM_USER            # Inform user during first configure step
+                           # that BASIS needs to be bootstrapped or installed manually
   )
-  set(BASIS_ZIP "v${DL_BASIS_VERSION}.zip")
-  set(BASIS_URL "https://github.com/schuhschuh/cmake-basis/archive/${BASIS_ZIP}")
-  set(DOWNLOAD_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MY_EXTRACTED_FILE "path/to/extracted/file")
-  set(BASIS_DIR ${DOWNLOAD_PATH}/basis-install)
-  set(BASIS_BUILD ${DOWNLOAD_PATH}/basis-build)
-
-  file(DOWNLOAD "${BASIS_URL}" "${DOWNLOAD_PATH}/${BASIS_ZIP}" STATUS DL_STATUS)
-  
-  if(NOT DL_STATUS)
-    message(FATAL_ERROR "Failed to download BASIS, Try again or install manually from: ${BASIS_URL}")
-  endif()
-
-  execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar -xvzf ${DOWNLOAD_PATH}/${BASIS_ZIP}
-  )
-  
-  file(MAKE_DIRECTORY ${DOWNLOAD_PATH}/basis-build )
-
-  execute_process(
-     # TODO: may need to update this to support more platforms with something like: -G"${CMAKE_GENERATOR}"
-      COMMAND ${CMAKE_COMMAND}  -DCMAKE_INSTALL_PREFIX=${BASIS_DIR} ${DOWNLOAD_PATH}/cmake-basis-${DL_BASIS_VERSION}
-      WORKING_DIRECTORY ${BASIS_BUILD}
-  )
-
-
-  execute_process(
-      # TODO: may need to update this to support more platforms
-      COMMAND ${CMAKE_BUILD_TOOL} install
-      WORKING_DIRECTORY ${BASIS_BUILD}
-  )
-  
+  # look for local installation
   find_package (BASIS QUIET)
-
-  if(NOT BASIS_FOUND)
-    message(FATAL_ERROR "BASIS setup failed. Please take the following steps:"
-                        "    1. Check the BASIS website:"
-                        "          http://opensource.andreasschuh.com/cmake-basis/"
-                        "    2. Search for an existing issues:"
-                        "          https://github.com/schuhschuh/cmake-basis/issues/"
-                        "    3. If 1 and 2 didn't help, please report your problem:"
-                        "          https://github.com/schuhschuh/cmake-basis/issues/new"
-           )
-  endif()
+  if (NOT BASIS_FOUND)
+    message (FATAL_ERROR "CMake BASIS setup failed. Please take the following steps:\n"
+                         "\t1. Clear the CMake cache and try from scratch\n"
+                         "\t2. Check the CMake BASIS website:\n"
+                         "\t\thttp://opensource.andreasschuh.com/cmake-basis/\n"
+                         "\t3. Search for an existing issue:\n"
+                         "\t\thttps://github.com/schuhschuh/cmake-basis/issues/\n"
+                         "\t4. If this did not resolve the issue, please report your problem:\n"
+                         "\t\thttps://github.com/schuhschuh/cmake-basis/issues/new\n"
+                         "\t5. Try a manual build of CMake BASIS following the instructions at:\n"
+                         "\t\thttp://opensource.andreasschuh.com/cmake-basis/quickstart.html"
+    )
+  endif ()
+else ()
+  set (BASIS_INSTALL_PREFIX "${BASIS_DIR}")
 endif ()
 
 # ----------------------------------------------------------------------------
-# initialize project
-basis_project_begin ()
+# configure build system
+basis_project_impl ()
 
-# ----------------------------------------------------------------------------
-# process modules
-if (NOT PROJECT_IS_MODULE)
-  foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
-    basis_add_module (${MODULE})
-  endforeach ()
+# raise error if project uses the BASIS Utilities,
+# but BASIS was not installed as part of the bootstrapping
+if (DEFINED BASIS_INSTALL_PREFIX_CONFIGURED AND NOT BASIS_INSTALL_PREFIX_CONFIGURED)
+  basis_get_project_uses_utilities (PROJECT_USES_BASIS_UTILITIES)
+  if (PROJECT_USES_BASIS_UTILITIES)
+    message (FATAL_ERROR "This project uses the BASIS Utilities. Therefore CMake BASIS"
+                         " must be installed permanently. Please specify the location"
+                         " where to install BASIS using the BASIS_INSTALL_PREFIX"
+                         " variable and re-run CMake in order to first install BASIS"
+                         " and then re-configure this project to use this installation.")
+  endif ()
 endif ()
-
-# ----------------------------------------------------------------------------
-# process subdirectories
-foreach (SUBDIR IN LISTS PROJECT_SUBDIRS)
-  basis_add_subdirectory (${SUBDIR})
-endforeach ()
-
-# ----------------------------------------------------------------------------
-# finalize project
-basis_project_end ()
