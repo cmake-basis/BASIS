@@ -1584,12 +1584,7 @@ macro (basis_initialize_settings)
   
   # --------------------------------------------------------------------------
   # configure project specific BASIS settings
-  set (_BASIS_NAMESPACE_CMAKE "${PROJECT_PACKAGE_NAME_L}")
-  if (PROJECT_IS_SUBPROJECT OR PROJECT_IS_MODULE)
-    set (_NAMESPACE_CMAKE "${_BASIS_NAMESPACE_CMAKE}.${PROJECT_NAME_L}")
-  else ()
-    set (_NAMESPACE_CMAKE "${_BASIS_NAMESPACE_CMAKE}")
-  endif ()
+  set (_TOPLEVEL_NAMESPACE_CMAKE "${PROJECT_PACKAGE_NAME_L}")
   # default namespaces used for supported programming languages
   foreach (_L IN LISTS BASIS_LANGUAGES_U)
     if (_L MATCHES "PERL")
@@ -1602,7 +1597,7 @@ macro (basis_initialize_settings)
     foreach (_L IN LISTS BASIS_LANGUAGES_U)
       if (_L MATCHES "PERL")
         set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}${BASIS_NAMESPACE_DELIMITER_${_L}}${PROJECT_NAME}")
-      elseif (NOT _L MATCHES "CMAKE")
+      else ()
         set (_NAMESPACE_${_L} "${_NAMESPACE_${_L}}${BASIS_NAMESPACE_DELIMITER_${_L}}${PROJECT_NAME_L}")
       endif ()
     endforeach ()
@@ -1626,8 +1621,8 @@ macro (basis_initialize_settings)
     @ONLY
   )
   # unset local variables
+  unset (_TOPLEVEL_NAMESPACE_CMAKE)
   foreach (_L IN LISTS BASIS_LANGUAGES_U)
-    unset (_BASIS_NAMESPACE_${_L})
     unset (_NAMESPACE_${_L})
   endforeach ()
   unset (_TOPLEVEL_PROJECT_PACKAGE_UID)
@@ -2090,7 +2085,9 @@ macro (basis_project_end)
 
     # --------------------------------------------------------------------------
     # change log
-    basis_add_changelog ()
+    if (NOT PROJECT_IS_MODULE)
+      basis_add_changelog ()
+    endif ()
 
     # --------------------------------------------------------------------------
     # package software

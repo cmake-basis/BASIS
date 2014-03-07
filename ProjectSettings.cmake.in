@@ -54,7 +54,7 @@ endif ()
 # This is the common namespace of a BASIS project and its modules.
 # It is the part of the namespace which is only required if the project's
 # targets are referenced from another project, but not within the project.
-set (TOPLEVEL_PROJECT_NAMESPACE_CMAKE "@_BASIS_NAMESPACE_CMAKE@")
+set (TOPLEVEL_PROJECT_NAMESPACE_CMAKE "@_TOPLEVEL_NAMESPACE_CMAKE@")
 
 ## @brief CMake namespace of project.
 #

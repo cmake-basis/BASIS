@@ -47,12 +47,7 @@
 # @param [out] UID UID of added build target.
 function (basis_add_utilities_library UID)
   # target UID of "basis" library target
-  basis_always_make_target_uid (TARGET_UID basis)
-  # modules share the BASIS utilities library with the top-level project
-  # therefore, discard the module prefix/infix from the target name
-  if (PROJECT_IS_MODULE)
-    string (REGEX REPLACE "${PROJECT_NAME_L}\\.basis$" "basis" TARGET_UID "${TARGET_UID}")
-  endif ()
+  basis_make_target_uid (TARGET_UID basis)
   if (NOT TARGET ${TARGET_UID})
     if (NOT PROJECT_IS_MODULE)
       # a subproject has it's own version of the project-specific BASIS utilities

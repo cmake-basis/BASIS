@@ -1541,27 +1541,43 @@ function (basis_get_source_target_name TARGET_NAME SOURCE_FILE)
 endfunction ()
 
 # ----------------------------------------------------------------------------
-## @brief Make target UID from given target name.
+## @brief Strip of top-level package name from target UID if present.
 #
-# This function is intended for use by the basis_add_*() functions only.
+# If @c BASIS_USE_FULLY_QUALIFIED_TARGET_UID is @c ON, the top-level package
+# name is always preserved and this operation does nothing.
 #
-# Unlike basis_make_target_uid(), it ignores @c BASIS_USE_TARGET_UIDS and
-# always makes a target UID. It is especially used to create unique target
-# names for targets which are common to every (sub-)project such as the
-# ChangeLog target or the BASIS C++ Utilities target.
+# @param[in,out] TARGET_UID "Global" target name, i.e., actual CMake target name.
 #
-# @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
-# @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
-#
-# @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
-macro (basis_always_make_target_uid TARGET_UID TARGET_NAME)
-  set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
+# @returns Sets @p TARGET_UID to the (stripped) UID.
+macro (basis_strip_target_uid TARGET_UID)
   # optionally strip off top-level namespace part
   if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
     basis_sanitize_for_regex (_bmtu_RE "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}")
     string (REGEX REPLACE "^${_bmtu_RE}\\." "" ${TARGET_UID} "${${TARGET_UID}}")
     unset (_bmtu_RE)
   endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Make target UID from given target name.
+#
+# This function is intended for use by the basis_add_*() functions only.
+#
+# Unlike basis_make_target_uid(), it ignores @c BASIS_USE_TARGET_UIDS
+# treats modules and subprojects the same and always generates a nested
+# target UID which includes the name of the project.
+#
+# @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
+# @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
+#
+# @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
+macro (basis_make_subproject_target_uid TARGET_UID TARGET_NAME)
+  if (PROJECT_IS_MODULE)
+    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${PROJECT_NAME_L}.${TARGET_NAME}")
+  else ()
+    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
+  endif ()
+  basis_strip_target_uid (TARGET_UID)
 endmacro ()
 
 # ----------------------------------------------------------------------------
@@ -1580,7 +1596,8 @@ endmacro ()
 # @sa basis_get_target_uid()
 if (BASIS_USE_TARGET_UIDS)
   macro (basis_make_target_uid TARGET_UID TARGET_NAME)
-    basis_always_make_target_uid ("${TARGET_UID}" "${TARGET_NAME}")
+    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
+    basis_strip_target_uid (TARGET_UID)
   endmacro ()
 else ()
   macro (basis_make_target_uid TARGET_UID TARGET_NAME)
