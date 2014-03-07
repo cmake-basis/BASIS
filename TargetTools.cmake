@@ -37,6 +37,11 @@ endif ()
 # set_target_properties()</a> command and extends its functionality.
 # In particular, it maps the given target names to the corresponding target UIDs.
 #
+# @note If @c BASIS_USE_TARGET_UIDS is @c OFF and is not required by a project,
+#       it is recommended to use set_target_properties() instead. This will
+#       break when @c BASIS_USE_TARGET_UIDS is set to @c ON. It should thus only
+#       be used if the project will never use the target UID feature of BASIS.
+#
 # @note Due to a bug in CMake (http://www.cmake.org/Bug/view.php?id=12303),
 #       except of the first property given directly after the @c PROPERTIES keyword,
 #       only properties listed in @c BASIS_PROPERTIES_ON_TARGETS can be set.
