@@ -652,7 +652,6 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     else ()
       set (ALIAS "${TARGET_UID}")
     endif ()
-    message ("_basis_generate_executable_target_info: UID=${TARGET_UID} ==> ${ALIAS}")
     # indentation after dictionary key, i.e., alias
     string (LENGTH "${ALIAS}" ALIAS_LENGTH)
     math (EXPR NUM "${MAX_ALIAS_LENGTH} - ${ALIAS_LENGTH} + 1")
