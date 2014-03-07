@@ -294,7 +294,6 @@ macro (basis_project_check_metadata)
     set (TOPLEVEL_PROJECT_CONTACT "${PROJECT_CONTACT}")
   endif ()
   # source tree directories
-  set (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}") # project() not called yet!
   basis_check_or_set_source_paths (PROJECT_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
   basis_check_or_set_source_paths (PROJECT_CODE_DIRS    "${PROJECT_SOURCE_DIR}/src")
   basis_check_or_set_source_paths (PROJECT_MODULES_DIR  "${PROJECT_SOURCE_DIR}/modules")
@@ -730,6 +729,7 @@ macro (basis_project_modules)
   # use function scope to avoid overwriting of this project's variables
   function (basis_module_info F)
     set (PROJECT_IS_MODULE TRUE)
+    get_filename_component (PROJECT_SOURCE_DIR "${F}" PATH)
     set (BASIS_basis_project_CALLED FALSE)
     include ("${F}")
     # make sure that basis_project() was called
@@ -1423,6 +1423,7 @@ macro (basis_project_initialize)
   # project meta-data
   if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
     set (BASIS_basis_project_CALLED FALSE)
+    set (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
     include ("${CMAKE_CURRENT_SOURCE_DIR}/BasisProject.cmake")
     if (NOT BASIS_basis_project_CALLED)
       message (FATAL_ERROR "Missing basis_project() command in BasisProject.cmake!")
