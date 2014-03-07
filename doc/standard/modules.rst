@@ -28,7 +28,7 @@ container for its modules.
 **Project Module**
 
 A (project) module is a completely independent BASIS project with its
-own dependencies that resides in the ``modules/`` of a top-level project.
+own dependencies that resides in the ``modules/`` directory of a top-level project.
 Each module will often reside in a separate repository that is designed 
 to be shared with other projects.
 
@@ -43,7 +43,7 @@ project and its modules are of the form ``<toplevel>.<target>``, where
 ``<toplevel>`` is the package name of the top-level project which usually
 is the same as the name of the top-level project, and ``<target>`` is
 the target name argument of :apidoc:`basis_add_executable()` or
-:apidoc:`basis_add_library()`, for example.
+:apidoc:`basis_add_library()`.
 Note that if ``BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS`` is disabled (the default),
 the ``<toplevel>`` part is only used for the export of the target.
 
@@ -59,10 +59,10 @@ A subproject is very similar to a project module with a few important difference
 While project modules are lightweight subprojects which are tightly integrated
 into the top-level project, subprojects are more self-sustained and should
 be treated as separate smaller projects. The top-level project serves as
-meta-project to group multiple subprojects, for example, to bundle several
+meta-project to group multiple subprojects. A use case would be to bundle several
 more or less independent software projects in a single package. The top-level
-project can be seen as collection of related software packages, which may
-or may not depend on each other.
+project can be thus be seen as collection of related software packages,
+which may or may not depend on each other.
 
 Because subprojects are usually developed by different development teams,
 name conflicts are more likely to occur. Therefore, each subproject has
@@ -75,7 +75,7 @@ of the top-level project, the actual build target names are of the form
 ``<package>.<subproject>.<target>``, where ``<package>`` is the package name
 of the subproject which corresponds to the package name of the top-level 
 project if not specified, and ``<target>`` is the target name argument
-of :apidoc:`basis_add_executable()` or :apidoc:`basis_add_library()`, for example.
+of :apidoc:`basis_add_executable()` or :apidoc:`basis_add_library()`.
 Note that if ``BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS`` is disabled (the default),
 the ``<package>`` part is only used for the export of the target.
 
