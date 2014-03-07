@@ -271,12 +271,12 @@ have to be put in
 
 - :ref:`Top Level Project <TopLevelProjectDefinition>`: ``include/<package>/``
 - :ref:`Project Module    <ProjectModuleDefinition>`  : ``<module>/include/<package>/``
+- :ref:`Subproject        <SubprojectDefinition>`     : ``<subproject>/include/<package>/<subproject>/``
 
 Notice the subdirectories inside the include directory that help prevent the collision
-of header file names across packages. Here, ``<package>`` is usually the name of the
-top-level project which in case of a module is the argument of the ``PACKAGE_NAME``
-(or short ``PACKAGE``) parameter of :apidoc:`basis_project()` in the ``BasisProject.cmake``
-file of the module itself.
+of header file names across packages and subprojects. Here, ``<package>`` is usually
+the name of the top-level project which in case of a module or subproject is the
+argument of the ``PACKAGE_NAME`` (or short ``PACKAGE``) parameter of :apidoc:`basis_project()`.
 
 .. note::
 

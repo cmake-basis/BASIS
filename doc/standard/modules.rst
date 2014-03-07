@@ -22,17 +22,88 @@ referred to as modules. A top level project will often have
 no source files of its own, simply serving as a lightweight 
 container for its modules.
 
+
 .. _ProjectModuleDefinition:
 
 **Project Module**
 
 A (project) module is a completely independent BASIS project with its
-own dependencies that resides in the ``modules/`` of a
-Top Level Project. Each module will often be a separate 
-repository from the top level project that is designed 
+own dependencies that resides in the ``modules/`` of a top-level project.
+Each module will often reside in a separate repository that is designed 
 to be shared with other projects.
 
+Because modules are usually developed by the same development team,
+name conflicts are uncommon and can be avoided by appropriate naming
+conventions. Therefore, all modules share a common *namespace*,
+namely the one of the top-level project.
+
+For example, if ``BASIS_USE_TARGET_UIDS`` is enabled in ``config/Settings.cmake``
+of the top-level project, the actual build target names of the top-level
+project and its modules are of the form ``<toplevel>.<target>``, where
+``<toplevel>`` is the package name of the top-level project which usually
+is the same as the name of the top-level project, and ``<target>`` is
+the target name argument of :apidoc:`basis_add_executable()` or
+:apidoc:`basis_add_library()`, for example.
+Note that if ``BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS`` is disabled (the default),
+the ``<toplevel>`` part is only used for the export of the target.
+
+The :apidoc:`basis_project()` call of a module must use the ``NAME``
+parameter to set the name of the module (instead of ``SUBPROJECT``).
+
+
+.. _SubprojectDefinition:
+
+**Subproject**
+
+A subproject is very similar to a project module with a few important differences.
+While project modules are lightweight subprojects which are tightly integrated
+into the top-level project, subprojects are more self-sustained and should
+be treated as separate smaller projects. The top-level project serves as
+meta-project to group multiple subprojects, for example, to bundle several
+more or less independent software projects in a single package. The top-level
+project can be seen as collection of related software packages, which may
+or may not depend on each other.
+
+Because subprojects are usually developed by different development teams,
+name conflicts are more likely to occur. Therefore, each subproject has
+its own (nested) *namespace* inside the namespace of the package it belongs
+to, whereas the symbols of modules have no own namespace, but are directly
+defined within the namespace of the top-level project.
+
+For example, if ``BASIS_USE_TARGET_UIDS`` is enabled in ``config/Settings.cmake``
+of the top-level project, the actual build target names are of the form
+``<package>.<subproject>.<target>``, where ``<package>`` is the package name
+of the subproject which corresponds to the package name of the top-level 
+project if not specified, and ``<target>`` is the target name argument
+of :apidoc:`basis_add_executable()` or :apidoc:`basis_add_library()`, for example.
+Note that if ``BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS`` is disabled (the default),
+the ``<package>`` part is only used for the export of the target.
+
+Other differences are that BASIS will install separate uninstaller scripts
+for each subproject and also register each subproject installation if
+:option:`-DBASIS_REGISTER` is enabled. Therefore, a subproject which is
+installed by one package can be used directly by other packages as if
+the subproject was installed separate from the other subprojects and
+modules of the top-level project.
+
+The :apidoc:`basis_project()` call of a subproject must use the ``SUBPROJECT``
+parameter to set the name of the subproject (instead of ``NAME``).
+Additionally, as subprojects are likely shared by multiple top-level
+projects, it is recommended to set the ``PACKAGE_NAME`` (short ``PACKAGE``)
+to the name of the package which this subproject belongs to primarily.
+Note that this package need not actually exist. By providing this
+package name, the namespace of the subproject will always be the same
+no matter what the name of the top-level project is.
+
+.. note::
+
+   It should be noted that the concept of a *namespace* can be extended to all aspects of a
+   software project, not only symbols of programming languages which have it built in such
+   as C++. Therefore, the *symbols* which belong to the package namespace include project
+   modules, target names, C++ classes and functions, as well as scripted libraries.
+
 .. seealso:: See :ref:`HowToModularizeAProject` for usage instructions and :doc:`template` for a reference implementation.
+
 
 Filesystem Layout
 =================
