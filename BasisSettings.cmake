@@ -428,6 +428,23 @@ set (BASIS_PROPERTIES_ON_TARGETS
 # convert list of property names into regular expression
 basis_list_to_regex (BASIS_PROPERTIES_ON_TARGETS_RE ${BASIS_PROPERTIES_ON_TARGETS})
 
+## @brief Whether BASIS shall use target UIDs.
+#
+# If this option is OFF, target UIDs are idential to the target names
+# given as arguments to the "basis_add_*" functions.
+#
+# The target UIDs ensure that no name conflict between the targets
+# of this project and those of an external library which are imported
+# occurs. Another reason for using these target UIDs is to avoid
+# target name conflicts between modules or subprojects which may
+# be developed by different teams.
+#
+# The downside of using target UIDs is, however, a slower configuration
+# of the build system because every target name must be mapped to its
+# target UID and possibly vice versa. Moreover, the use of target UIDs
+# is less intuitive for those new to BASIS but experienced with CMake.
+basis_set_if_empty (BASIS_USE_TARGET_UIDS OFF)
+
 ## @brief Whether BASIS shall use fully-qualified target UIDs.
 #
 # If this option is OFF, the namespace of the top-level BASIS project is
