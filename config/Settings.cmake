@@ -164,7 +164,7 @@ endif ()
 
 # target UIDs of BASIS libraries; these would be set by the package configuration
 # file if this BASIS project would not be BASIS itself
-if (BASIS_USE_FULLY_QUALIFIED_UIDS)
+if (BASIS_USE_TARGET_UIDS AND BASIS_USE_FULLY_QUALIFIED_UIDS)
   set (NS "basis.")
 else ()
   set (NS)
