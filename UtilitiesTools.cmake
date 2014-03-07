@@ -47,9 +47,9 @@
 # @param [out] UID UID of added build target.
 function (basis_add_utilities_library UID)
   # target UID of "basis" library target
-  basis_make_target_uid (TARGET_UID basis)
+  _basis_make_target_uid (TARGET_UID basis)
   if (NOT TARGET ${TARGET_UID})
-    if (NOT PROJECT_IS_MODULE)
+    if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
       # a subproject has it's own version of the project-specific BASIS utilities
       # as the targets and functions live in a separate namespace
       set (CODE_DIR    "${BINARY_CODE_DIR}")

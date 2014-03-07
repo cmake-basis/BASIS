@@ -1561,22 +1561,16 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Make target UID from given target name.
 #
-# This function is intended for use by the basis_add_*() functions only.
-#
-# Unlike basis_make_target_uid(), it ignores @c BASIS_USE_TARGET_UIDS
-# treats modules and subprojects the same and always generates a nested
-# target UID which includes the name of the project.
+# This function is intended for internal use only.
 #
 # @param [out] TARGET_UID  "Global" target name, i.e., actual CMake target name.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
-macro (basis_make_subproject_target_uid TARGET_UID TARGET_NAME)
-  if (PROJECT_IS_MODULE)
-    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${PROJECT_NAME_L}.${TARGET_NAME}")
-  else ()
-    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
-  endif ()
+#
+# @sa basis_make_target_uid()
+macro (_basis_make_target_uid TARGET_UID TARGET_NAME)
+  set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
   basis_strip_target_uid (TARGET_UID)
 endmacro ()
 
@@ -1596,8 +1590,7 @@ endmacro ()
 # @sa basis_get_target_uid()
 if (BASIS_USE_TARGET_UIDS)
   macro (basis_make_target_uid TARGET_UID TARGET_NAME)
-    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
-    basis_strip_target_uid (TARGET_UID)
+    _basis_make_target_uid ("${TARGET_UID}" "${TARGET_NAME}")
   endmacro ()
 else ()
   macro (basis_make_target_uid TARGET_UID TARGET_NAME)
