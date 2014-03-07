@@ -38,9 +38,15 @@ endif ()
 # In particular, it maps the given target names to the corresponding target UIDs.
 #
 # @note If @c BASIS_USE_TARGET_UIDS is @c OFF and is not required by a project,
-#       it is recommended to use set_target_properties() instead. This will
-#       break when @c BASIS_USE_TARGET_UIDS is set to @c ON. It should thus only
-#       be used if the project will never use the target UID feature of BASIS.
+#       it is recommended to use _set_target_properties() instead (note that
+#       set_target_properties is overriden by the ImportTools.cmake module of BASIS).
+#       This will break the build configuration scripts when @c BASIS_USE_TARGET_UIDS
+#       is set to @c ON later. It should thus only be used if the project will
+#       never use the target UID feature of BASIS. A project can possibly define
+#       a global macro which either calls _set_target_properties or
+#       basis_set_target_properties. But be aware of the related CMake bugs
+#       which prevent basis_set_target_properties to do the same already.
+#       ARGV/ARGN do not preserve empty arguments nor list arguments!
 #
 # @note Due to a bug in CMake (http://www.cmake.org/Bug/view.php?id=12303),
 #       except of the first property given directly after the @c PROPERTIES keyword,
