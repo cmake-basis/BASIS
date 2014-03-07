@@ -369,6 +369,29 @@ the following ``basis_project()`` call:
       CODE_DIRS    Common ImageProcessing Tools
     )
 
+Another example for customization is given below for a top-level project which
+contains different subprojects named ``ModulaA``, ``ModuleB``, and ``ModuleC``.
+By default, BASIS would look for these modules in the ``modules`` directory.
+This can be changed using either of the following ``basis_project`` commands,
+where in the first case it is assumed that all modules are located in
+a common subdirectory named ``Components``:
+
+.. code-block:: cmake
+
+  basis_project(
+    NAME        TopLevelProjectWithCustomModulesDirectory
+    DESCRIPTION "A project which demonstrates the use of a custom modules directory."
+    MODULES_DIR Components
+  )
+
+.. code-block:: cmake
+
+  basis_project(
+    NAME        TopLevelProjectWithCustomModuleDirectories
+    DESCRIPTION "A project which demonstrates the use of custom module directories."
+    MODULE_DIRS ModuleA ModuleB ModuleC
+  )
+
 
 .. _SuperBuildOfDependencies:
 
@@ -622,29 +645,6 @@ If the feature should always be disabled, add the following line to the
 .. code-block:: cmake
 
   set (CMAKE_SKIP_RPATH TRUE)
-
-Another example for customization is given below for a top-level project which
-contains different subprojects named ``ModulaA``, ``ModuleB``, and ``ModuleC``.
-By default, BASIS would look for these modules in the ``modules`` directory.
-This can be changed using either of the following ``basis_project`` commands,
-where in the first case it is assumed that all modules are located in
-a common subdirectory named ``Components``:
-
-.. code-block:: cmake
-
-  basis_project(
-    NAME        TopLevelProjectWithCustomModulesDirectory
-    DESCRIPTION "A project which demonstrates the use of a custom modules directory."
-    MODULES_DIR Components
-  )
-
-.. code-block:: cmake
-
-  basis_project(
-    NAME        TopLevelProjectWithCustomModuleDirectories
-    DESCRIPTION "A project which demonstrates the use of custom module directories."
-    MODULE_DIRS ModuleA ModuleB ModuleC
-  )
 
 
 Redistributable Files
