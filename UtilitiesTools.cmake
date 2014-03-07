@@ -641,11 +641,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
       endif ()
     endforeach ()
     # target UID including project namespace
-    if (IMPORTED OR TARGET_UID MATCHES "^\\.")
-      set (ALIAS "${TARGET_UID}")
-    elseif (NOT BASIS_USE_FULLY_QUALIFIED_TARGET_UIDS AND TOPLEVEL_PROJECT_NAMESPACE_CMAKE)
-      set (ALIAS "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}.${TARGET_UID}")
-    endif ()
+    basis_get_fully_qualified_target_uid (ALIAS "${TARGET_UID}")
     # indentation after dictionary key, i.e., alias
     string (LENGTH "${ALIAS}" ALIAS_LENGTH)
     math (EXPR NUM "${MAX_ALIAS_LENGTH} - ${ALIAS_LENGTH} + 1")

@@ -1700,33 +1700,32 @@ endif ()
 ## @brief Get fully-qualified target name.
 #
 # This function always returns a fully-qualified target UID, no matter if
-# the option @c BASIS_USE_FULLY_QUALIFIED_UIDS is @c OFF. Note that
-# if this option is @c ON, the returned target UID is may not be the
-# actual name of a CMake target.
-#
-# If @c BASIS_USE_TARGET_UIDS is set to @c OFF, this operation
-# always just sets the @p TARGET_UID to the given @p TARGET_NAME.
+# the option @c BASIS_USE_TARGET_UIDS or @c BASIS_USE_FULLY_QUALIFIED_UIDS
+# is @c OFF. Note that if @c BASIS_USE_FULLY_QUALIFIED_UIDS is @c ON, the
+# returned target UID may not be the actual name of a CMake target.
 #
 # @param [out] TARGET_UID  Fully-qualified target UID.
 # @param [in]  TARGET_NAME Target name used as argument to BASIS CMake functions.
 #
 # @sa basis_get_target_uid()
-if (BASIS_USE_TARGET_UIDS)
-  function (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
+function (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
+  if (BASIS_USE_TARGET_UIDS)
     basis_get_target_uid (UID "${TARGET_NAME}")
-    if (TARGET "${UID}" AND NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
-      get_target_property (IMPORTED "${UID}" IMPORTED)
-      if (NOT IMPORTED)
+    if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
+      if (TARGET "${UID}")
+        get_target_property (IMPORTED "${UID}" IMPORTED)
+        if (NOT IMPORTED)
+          set (UID "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}.${UID}")
+        endif ()
+      else ()
         set (UID "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}.${UID}")
       endif ()
     endif ()
     set (${TARGET_UID} "${UID}" PARENT_SCOPE)
-  endfunction ()
-else ()
-  macro (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
-    set ("${TARGET_UID}" "${TARGET_NAME}")
-  endmacro ()
-endif ()
+  else ()
+    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}" PARENT_SCOPE)
+  endif ()
+endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get namespace of build target.
