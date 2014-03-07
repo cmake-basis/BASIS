@@ -600,7 +600,7 @@ mark_as_advanced (BASIS_SUPERBUILD_MODULES)
 ## @brief List of programming languages explicitly supported by BASIS.
 #
 # @todo Add full support for Java.
-set (BASIS_LANGUAGES CXX Python Jython Perl Matlab Bash)
+set (BASIS_LANGUAGES CMake CXX Python Jython Perl Matlab Bash)
 
 string (TOLOWER "${BASIS_LANGUAGES}" BASIS_LANGUAGES_L)
 string (TOUPPER "${BASIS_LANGUAGES}" BASIS_LANGUAGES_U)
@@ -609,6 +609,8 @@ string (TOUPPER "${BASIS_LANGUAGES}" BASIS_LANGUAGES_U)
 # namespace delimiters
 # ----------------------------------------------------------------------------
 
+## @brief Namespace delimiter used in CMake.
+set (BASIS_NAMESPACE_DELIMITER_CMAKE .)
 ## @brief Namespace delimiter used in C++.
 set (BASIS_NAMESPACE_DELIMITER_CXX .)
 ## @brief Namespace delimiter used in Python.
