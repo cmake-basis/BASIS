@@ -1011,7 +1011,7 @@ been edited since their creation are removed.""")
 
     # ----------------------------------------------------------------------------
     # command: upgrade
-    upgrade_parser = subparsers.add_parser('upgrade', parents=[shared_parser],
+    upgrade_parser = subparsers.add_parser('upgrade', parents=[shared_parser,template_parser],
             help="""Upgrade an existing project to a newer template version.""")
 
     # --original
