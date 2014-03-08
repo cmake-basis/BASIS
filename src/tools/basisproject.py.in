@@ -182,7 +182,7 @@ def load_config(config_file, parser):
             if len(opt['args']) > 0:
                 for o in config.options:
                     if not o in opt['args']:
-                        opt['args'].append('no' + o)
+                        opt['args'].insert(0, 'no' + o)
                 parser.add_argument('--' + name, nargs=0, action=PresetAction, help=opt['desc'])
     else:
         setattr(config, 'presets', {})
