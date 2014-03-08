@@ -445,7 +445,7 @@ def update_project_template(args):
         if re.search(r'\s+TEMPLATE\s+"' + template + '"', txt):
             return 0
         else:
-            out = re.sub(r'(\s+)TEMPLATE(\s+)"[^"]*"', '\1TEMPLATE\2"' + template + '")', txt)
+            out = re.sub(r'(\s+)TEMPLATE(\s+)"[^"]*"', '\\1TEMPLATE\\2"' + template + '"', txt)
     else:
         ok = False
     if ok and out != txt:
@@ -482,9 +482,9 @@ def add(path, args, isdir=False):
     """
     retval = 0
 
-    template_path          = get_template(args.template, path)
+    template_path          = get_template(args.template,          path)
     original_template_path = get_template(args.original_template, path)
-    project_path           = os.path.join(args.root, path)
+    project_path           = os.path.join(args.root,              path)
 
     # check existence of template
     if not isdir and not os.path.exists(template_path):
@@ -668,7 +668,7 @@ def delete(path, args, isdir=False):
     retval = 0
 
     original_template_path = get_template(args.original_template, path)
-    project_path = os.path.join(args.root, path)
+    project_path           = os.path.join(args.root,              path)
 
     # delete existing directory
     if os.path.isdir(project_path):
