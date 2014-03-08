@@ -124,7 +124,7 @@ Create a new and empty project as follows:
                  --root ~/local/src/hellobasis
 
 The next command demonstrates that you can modify a previously created project by using the
-project tool again:
+project tool again, this time with the `update` command.
 
 .. code-block:: bash
     
