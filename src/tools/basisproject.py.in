@@ -816,20 +816,25 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------------
     # program help
     parser = argparse.ArgumentParser(prog='basisproject', description="""
-  This tool can create a new project from a template or update an existing project.\n\n
+  This tool can create a new project from a template or modify an existing project.\n\n
   
-  Example for creating a new project which contains the full functionality
-  provided by the default project template:
+  Creating a new project:
 
-    basisproject create --name        ProjectName
-                        --description "Brief description of what it does."
-                        --author      "Author Name1, Author Name2"
-                        --full
+    Example for creating a new project which contains the full functionality
+    provided by the configured default project template:
 
-  You can also select the components of a template you want in your project,
-  or update an existing project with additional template files and directories.
+      basisproject create --name        ProjectName
+                          --description "Brief description of what it does."
+                          --author      "Author Name1, Author Name2"
+                          --full
 
-  Updating projects:
+    You can also select the components of a template you want in your project,
+    or update an existing project with additional template files and directories.
+
+    Note: Most projects do not need the full functionality. It is recommended to
+          start with the --default set of files and add others when needed.
+
+  Updating a project:
  
     Functionality can be removed by updating a project with the --no* options.
     However, directories and files are only deleted if they are empty or were
@@ -844,7 +849,7 @@ if __name__ == '__main__':
     one of the DEPENDS* options of the basis_project() command is added. The call
     to this command can be found in the BasisProject.cmake file of the project.
 
-  Three-way diff of updates:
+  Upgrading a project:
 
     The basisproject tool can upgrade an existing project to a newer template version, 
     given that the existing directory structure and file names were preserved.
@@ -886,18 +891,15 @@ before execution. Include other response files recursively using @/path/to/file.
     parser.add_argument('--version', action='version',
             help="Show version information and exit.",
             version="""%(prog)s (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@
-Copyright (c) 2011, 2012 University of Pennsylvania, 2013 Andreas Schuh. All rights reserved.
-See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.""")
+Copyright (c) 2011-2012 University of Pennsylvania, 2013-2014 Andreas Schuh. All rights reserved.
+See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license.""")
 
     # --verbose
     parser.add_argument('-v', '--verbose', action='count', default=0,
             help="Increase verbosity of output messages.")
-    
 
     parser.add_argument('--template', metavar='<dir>', type=os.path.abspath, default=_template,
-            help="""Root directory of project template. Defaults to the template
-corresponding to this BASIS installation.""")
-    
+            help="""Root directory of project template. Defaults to the template corresponding to this BASIS installation.""")
     
     parser.add_argument('--helpall', default=argparse.SUPPRESS, action='store_true',
             help="""Print the complete help for all commands.""")
@@ -909,9 +911,9 @@ corresponding to this BASIS installation.""")
         args, argv_remaining = parser.parse_known_args(argv)
         selected_template = args.template
     
-    
     template_parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,add_help=False)
     custom_template_group = template_parser.add_argument_group("optional arguments imported from template\n'" + selected_template + "'")
+
     # ----------------------------------------------------------------------------
     # load template configuration
     config_file = get_template(selected_template, '_config.py')
@@ -922,7 +924,6 @@ corresponding to this BASIS installation.""")
     config, custom_template_group = load_config(config_file, custom_template_group)
     
     subparsers = parser.add_subparsers(help='Commands specifying the type of modification to make', dest='subparser_name')
-    
     
     # ----------------------------------------------------------------------------
     # the positional_shared_parser is for commands that work across all subparsers
@@ -943,8 +944,6 @@ is extracted from the root CMakeLists.txt file of the project. Given this versio
 this tool determines the path of the corresponding project template which is part of
 the BASIS installation. If this previous template is not available, an automatic
 update of project files to a newer template version is not feasible.""")
-    
-    
 
     # --use et al.
     positional_shared_parser.add_argument('--use', metavar='<pkg>', action='append', default=[],
@@ -964,7 +963,8 @@ Note that the package name is case sensitive.""")
             help="""Name of external package optionally used by tests of this project.
 Note that the package name is case sensitive.""")
     
-    # create
+    # ----------------------------------------------------------------------------
+    # command: create
     create_parser = subparsers.add_parser('create', parents=[positional_shared_parser,template_parser],
             help="""Create a new project or template""")
 
@@ -986,18 +986,10 @@ Note that the package name is case sensitive.""")
     create_parser.add_argument('--author', metavar='<author>', default='',
             help="Name of original author of the software.")
 
-    # update command
-    # ---------------------------------------
+    # ----------------------------------------------------------------------------
+    # command: update
     update_parser = subparsers.add_parser('update', parents=[positional_shared_parser,template_parser],
             help="""Modify an existing project.""")
-    
-    # --upgrade
-    update_parser.add_argument('--upgrade', action='store_true', default=False,
-            help="""Enable upgrade of existing project files to a new template version. 
-If this option is given, changes of the project file 
-are merged with those of the corresponding template 
-file if the template has been modified, for example, 
-as part of a new release of BASIS.""")
 
     # --cleanup
     update_parser.add_argument('--cleanup', action='store_true', default=False,
@@ -1019,10 +1011,29 @@ same filename, but with the ~ character as suffix. If this option is given, such
 files are not made. In case of a merge conflict, however, existing project files are
 always backed-up, using .mine as suffix for the file name of the backup in this case.""")
     
+    # ----------------------------------------------------------------------------
+    # command: upgrade
+    upgrade_parser = subparsers.add_parser('upgrade', parents=[positional_shared_parser],
+            help="""Upgrade an existing project to a newer template version.""")
+    
+    # --cleanup
+    upgrade_parser.add_argument('--cleanup', action='store_true', default=False,
+            help="""Remove files resulting from merge conflicts of a previous upgrade
+of existing project files and backups. The conflicts should have
+been manually resolved before using this option.""")
 
+    # --nobackup
+    upgrade_parser.add_argument('--nobackup', action='store_false', default=True, dest='backup',
+            help="""Disable backup of existing project files. By default, whenever an
+existing project file is modified, a backup of this file is made and saved under the
+same filename, but with the ~ character as suffix. If this option is given, such backup
+files are not made. In case of a merge conflict, however, existing project files are
+always backed-up, using .mine as suffix for the file name of the backup in this case.""")
+
+    # ----------------------------------------------------------------------------
+    # help
     parser.add_argument('-h', '--help', default=argparse.SUPPRESS, action='help',
             help="""Print help and exit. For help with positional arguments type 'basisproject <arg> -h'""")
-    
     
     # ----------------------------------------------------------------------------
     # parse common options
@@ -1050,25 +1061,19 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
         args = parser.parse_args(argv_remaining, args)
     if not hasattr(args, 'ops'):
         setattr(args, 'ops', {})
-    
-                
-
 
     # ------------------------------------------------------------------------
     # create new project or update existing one?
 
     # request to create new project
     if args.subparser_name == 'create':
-        create = True
+        create       = True
         args.upgrade = False
-        args.backup = False
-        
+        args.backup  = False
         # option --new-template implies --noalter
         if args.new_template: args.noalter = True
-    
         # require also template _config.py when creating a new project template
         if args.new_template: config.required.insert(0, '_config.py')
-        
         # create subdirectory in current working directory by default
         if not args.root:
             args.root = os.path.join(os.getcwd(), args.name)
@@ -1108,7 +1113,9 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     # request to modify existing project
     else:
         create = False
-        
+        # whether to upgrade existing project files
+        if args.subparser_name == 'upgrade': args.upgrade = True
+        else:                                args.upgrade = False
         # use current working directory if root not specified
         if not args.root:
             args.root = os.getcwd()
@@ -1210,7 +1217,8 @@ template files in the .basis/ subdirectory.
             for path in config.options[opt].get('path', []):
                 acc.call(addordel, op, path, args)
         # update template version
-        if args.subparser_name == 'update': acc.call(update_project_template, args)
+        if args.subparser_name == 'upgrade':
+            acc.call(update_project_template, args)
 
     except Exception, e:
         sys.stderr.write("Failed to ")
