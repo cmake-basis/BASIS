@@ -891,7 +891,6 @@ before execution. Include other response files recursively using @/path/to/file.
     args, argv = parser.parse_known_args(sys.argv[1:])
     if args.responsefile: argv = read_rspargs(args.responsefile, argv)
 
-
     # ----------------------------------------------------------------------------
     # define command-line arguments
 
@@ -912,6 +911,11 @@ See http://opensource.andreasschuh.com/cmake-basis/download.html#software-licens
 either the current working directory or the installation directory of the
 default templates. The configured default template is used if none specified.""")
     
+    # --help
+    parser.add_argument('-h', '--help', default=argparse.SUPPRESS, action='help',
+            help="""Print help and exit. For help with subcommand arguments type 'basisproject help <command>'.""")
+
+    # --helpall
     parser.add_argument('--helpall', default=argparse.SUPPRESS, action='store_true',
             help="""Print the complete help for all commands.""")
 
@@ -1026,9 +1030,21 @@ Absolute paths are always possible. If the specified previous template is not av
 an automatic upgrade of project files to a newer template is not feasible.""")
     
     # ----------------------------------------------------------------------------
+    # command: help
+
+    class PrintHelp(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string):
+            if   values[0] == 'create':  print create_parser .format_help()
+            elif values[0] == 'update':  print update_parser .format_help()
+            elif values[0] == 'upgrade': print upgrade_parser.format_help()
+            else:                        print parser        .format_help()
+            sys.exit(0)
+
+    help_parser = subparsers.add_parser('help', help='Show command help.', add_help=False)
+    help_parser.add_argument('command', nargs=1, action=PrintHelp, default='all', help='Show help of named command.')
+
+    # ----------------------------------------------------------------------------
     # parse common options
-    parser.add_argument('-h', '--help', default=argparse.SUPPRESS, action='help',
-            help="""Print help and exit. For help with subcommand arguments type 'basisproject <command> -h'""")
     
     # @sa https://stackoverflow.com/questions/20094215/argparse-subparser-monolithic-help-output
     if hasattr(args, 'helpall') and args.helpall:
