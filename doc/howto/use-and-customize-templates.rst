@@ -100,10 +100,12 @@ the name of the new template and the option ``--new-template``. Use :
 
 This will create a subdirectory called ``MyTemplate/1.0`` under the current 
 working directory and populate it with the current default project template 
-structure and BASIS configuration.
+structure and BASIS configuration. To copy an entire existing template,
+use the ``--full`` option and possibly ``--template`` to specify the location
+or name and version of the existing template.
 
 For a detailed description and overview of the available command options,
-please refer to the output of the ``basisproject create --help`` command.
+please refer to the output of the ``basisproject help create`` command.
 The template options of the existing template can be used to specify which 
 features to copy when creating the new template.
 
