@@ -49,13 +49,14 @@ function (basis_add_utilities_library UID)
   # target UID of "basis" library target
   _basis_make_target_uid (TARGET_UID basis)
   if (NOT TARGET ${TARGET_UID})
-    if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
+    if (PROJECT_IS_SUBPROJECT)
       # a subproject has it's own version of the project-specific BASIS utilities
       # as the targets and functions live in a separate namespace
       set (CODE_DIR    "${BINARY_CODE_DIR}")
       set (INCLUDE_DIR "${BINARY_INCLUDE_DIR}")
       set (OUTPUT_DIR  "${BINARY_ARCHIVE_DIR}")
       set (INSTALL_DIR "${INSTALL_ARCHIVE_DIR}")
+      set (EXPORT_NAME "${PROJECT_NAME}")
     else ()
       # modules, on the other side, share the library with the top-level project
       # the addition of the utilities target is in this case only required because
@@ -64,6 +65,7 @@ function (basis_add_utilities_library UID)
       set (INCLUDE_DIR "${TOPLEVEL_BINARY_INCLUDE_DIR}")
       set (OUTPUT_DIR  "${TOPLEVEL_BINARY_ARCHIVE_DIR}")
       set (INSTALL_DIR "${TOPLEVEL_INSTALL_ARCHIVE_DIR}")
+      set (EXPORT_NAME "${TOPLEVEL_PROJECT_NAME}")
     endif ()
     # write dummy source files
     basis_library_prefix (PREFIX CXX)
@@ -98,7 +100,7 @@ function (basis_add_utilities_library UID)
     # add installation rule
     install (
       TARGETS ${TARGET_UID}
-      EXPORT  ${PROJECT_NAME}
+      EXPORT  ${EXPORT_NAME}
       ARCHIVE
         DESTINATION "${INSTALL_DIR}"
         COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
