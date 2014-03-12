@@ -468,9 +468,8 @@ set (BASIS_LIBRARY_COMPONENT "Development")
 # are associated with if no component was specified, explicitly.
 set (BASIS_RUNTIME_COMPONENT "Runtime")
 
-## @brief Specifies that the BASIS C++ utilities shall by default not be added
-#         as dependency of an executable.
-set (BASIS_UTILITIES TRUE)
+## @brief FALSE implies that the BASIS C++ utilities should not be added as dependency of an executable by default. FALSE is the default setting. TRUE indicates the utilities should be added as a dependency.
+basis_set_if_not_set(BASIS_UTILITIES FALSE)
 
 ## @brief Whether to always build the BASIS C++ utilities even if not required by any target
 option (BUILD_BASIS_UTILITIES_FOR_CXX    "Force the build of the BASIS C++ Utilities even if not used by this project" OFF)
