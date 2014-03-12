@@ -169,6 +169,13 @@ def load_config(config_file, parser):
                 if arg in config.options:
                     namespace.ops[arg] = op
                     _update_deps(namespace, config.options, config.options[arg]['deps'], op)
+    if not hasattr(config, 'presets'):
+        setattr(config, 'presets', {})
+    if not 'full' in config.presets:
+        config.presets['full'] = {
+            'desc' : 'Choose project template with all optional files.',
+            'args' : config.options.keys()
+        }
     if hasattr(config, 'presets'):
         if not type(config.presets) is dict:
             sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
@@ -184,13 +191,6 @@ def load_config(config_file, parser):
                     if not o in opt['args']:
                         opt['args'].insert(0, 'no' + o)
                 parser.add_argument('--' + name, nargs=0, action=PresetAction, help=opt['desc'])
-    else:
-        setattr(config, 'presets', {})
-    if not 'full' in config.presets:
-        config.presets['full'] = {
-            'desc' : 'Choose project template with all optional files.',
-            'args' : config.options.keys()
-        }
     # add options for subsitutions
     if not hasattr(config, 'substitutions'):
         setattr(config, 'substitutions', [])
