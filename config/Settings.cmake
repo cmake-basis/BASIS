@@ -130,7 +130,8 @@ endif ()
 # ============================================================================
 # utilities
 # ============================================================================
-
+# Basis needs its own utilities to be enabled, typically this defaults to FALSE.
+set (BASIS_UTILITIES TRUE)
 # list of enabled utilities
 # in case of other projects defined by BASISConfig.cmake
 set (BASIS_UTILITIES_ENABLED CXX)
