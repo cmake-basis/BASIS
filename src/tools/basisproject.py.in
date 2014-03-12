@@ -19,6 +19,7 @@
 # ============================================================================
 # modules
 # ============================================================================
+
 import os                   # file manipulation
 import sys                  # system functions
 import re                   # regular expressions
@@ -169,28 +170,28 @@ def load_config(config_file, parser):
                 if arg in config.options:
                     namespace.ops[arg] = op
                     _update_deps(namespace, config.options, config.options[arg]['deps'], op)
-    if not hasattr(config, 'presets'):
+    if hasattr(config, 'presets'):
+        if not type(config.presets) is dict:
+            sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
+            sys.stderr.write('The presets attribute must be a dictionary.\n')
+            sys.exit(1)
+    else:
         setattr(config, 'presets', {})
     if not 'full' in config.presets:
         config.presets['full'] = {
             'desc' : 'Choose project template with all optional files.',
             'args' : config.options.keys()
         }
-    if hasattr(config, 'presets'):
-        if not type(config.presets) is dict:
-            sys.stderr.write('Invalid template configuration: ' + config_file + '\n')
-            sys.stderr.write('The presets attribute must be a dictionary.\n')
-            sys.exit(1)
-        for name in config.presets:
-            opt = config.presets[name]
-            if not 'desc' in opt: opt['desc'] = ''
-            if not 'args' in opt: opt['args'] = []
-            if not type(opt['args']) is list: opt['args'] = [opt['args']]
-            if len(opt['args']) > 0:
-                for o in config.options:
-                    if not o in opt['args']:
-                        opt['args'].insert(0, 'no' + o)
-                parser.add_argument('--' + name, nargs=0, action=PresetAction, help=opt['desc'])
+    for name in config.presets:
+        opt = config.presets[name]
+        if not 'desc' in opt: opt['desc'] = ''
+        if not 'args' in opt: opt['args'] = []
+        if not type(opt['args']) is list: opt['args'] = [opt['args']]
+        if len(opt['args']) > 0:
+            for o in config.options:
+                if not o in opt['args']:
+                    opt['args'].insert(0, 'no' + o)
+            parser.add_argument('--' + name, nargs=0, action=PresetAction, help=opt['desc'])
     # add options for subsitutions
     if not hasattr(config, 'substitutions'):
         setattr(config, 'substitutions', [])
