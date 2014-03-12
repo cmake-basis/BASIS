@@ -34,7 +34,7 @@ def diff3(yourtext, origtext, theirtext):
 
     @param [in] yourtext   Array of lines of your text.
     @param [in] origtext   Array of lines of original text.
-    @param [in] theirtext   Array of lines of their text.
+    @param [in] theirtext  Array of lines of their text.
 
     @returns Array of tuples containing diff results. The tuples consist of
              (cmd, loA, hiA, loB, hiB), where cmd is either one of
