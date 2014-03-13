@@ -309,6 +309,78 @@ Now build the libraries and install them:
     cd ~/local/src/hellobasis/build
     make && make install
 
+
+Create a Modularized Repository
+-------------------------------
+
+BASIS is designed to integrate multiple BASIS libraries as 
+part of a modular build system where components can be added 
+and removed with ease. A top-level repository contains one or 
+more modules or sub-projects, then builds those modules based
+on their dependencies.
+
+.. seealso:: See :ref:`HowToModularizeAProject` for usage instructions, :doc:`template` for a reference implementation, and :doc:`/standard/modules` for the design.
+    
+Create a Top Level Project
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    export TOPLEVEL_DIR="~/local/src/HelloTopLevel"
+    basisproject create --name HelloTopLevel --description "This is a BASIS TopLevel project. It demonstrates how easy it is to create a simple BASIS project."  --root ${TOPLEVEL_DIR}  --toplevel
+
+Create a sub-project Containing a Library
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a sub-project module similarly to how helloBasis was created earlier.
+
+.. code-block:: bash
+
+    export MODA_DIR="~/local/src/HelloTopLevel/modules/moda"
+    basisproject create --name moda --description "Subproject library to be used elsewhere" --root ${MODA_DIR} --module --include
+    cp ${HELLOBASIS_RSC_DIR}/moda.cxx ${MODA_DIR}/src/
+    mkdir ${MODA_DIR}/include/moda
+    cp ${HELLOBASIS_RSC_DIR}/moda.h ${MODA_DIR}/include/moda/
+
+Add the following line to ``${MODB_DIR}/src/CMakeLists.txt`` under the section "library target(s)":
+
+.. code-block:: cmake
+    
+    basis_add_library(moda SHARED moda.cxx)
+    
+
+Create a sub-project that uses the Library
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Create a sub-project module similarly to how helloBasis was created earlier.
+
+.. code-block:: bash
+    
+    export MODB_DIR="${TOPLEVEL_DIR}/modules/modb"
+    basisproject create --name modb --description "User example subproject executable utility repository that uses the library"  --root ${MODB_DIR} --module --src --use moda
+    cp ${HELLOBASIS_RSC_DIR}/userprog.cpp ${MODB_DIR}/src/
+
+Add the following line to ``${MODB_DIR}/src/CMakeLists.txt`` under the section "executable target(s)":
+
+.. code-block:: cmake
+    
+    basis_add_executable(userprog.cpp)
+    basis_target_link_libraries(userprog moda)
+
+
+Install the Projects
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+    
+    mkdir ${TOPLEVEL_DIR}/build
+    cd ${TOPLEVEL_DIR}/build
+    cmake -D CMAKE_INSTALL_PREFIX=~/local ..
+    
+    make install
+
+    
 Next Steps
 ----------
 
