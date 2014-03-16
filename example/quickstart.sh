@@ -80,7 +80,7 @@ echo "
     cp "${HELLOBASIS_RSC_DIR}"/foo.* src/
     
     echo "
-    basis_add_library(foo.cxx)
+    basis_add_library(foo foo.cxx)
     " >> src/CMakeLists.txt
 
 echo "
@@ -93,7 +93,7 @@ echo "
     mkdir include/hellobasis
     
     echo "
-    basis_add_library(bar.cxx)
+    basis_add_library(bar bar.cxx)
     " >> src/CMakeLists.txt
     
     cp "${HELLOBASIS_RSC_DIR}/bar.cxx" src/
