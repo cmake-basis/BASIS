@@ -129,7 +129,7 @@ echo "
     basisproject create --name moda --description "Subproject library to be used elsewhere" --root "${MODA_DIR}" --module --include
     cp "${HELLOBASIS_RSC_DIR}/moda.cxx" "${MODA_DIR}/src/"
     mkdir "${MODA_DIR}/include/moda"
-    cp "${HELLOBASIS_RSC_DIR}/moda.h" "${MODA_DIR}/include/moda/"
+    cp "${HELLOBASIS_RSC_DIR}/moda.h" "${MODA_DIR}/include/hellotoplevel/"
     
     echo "
     basis_add_library(moda SHARED moda.cxx)
@@ -142,10 +142,10 @@ echo "
 "
     MODB_DIR="${LOCALDIR}/src/HelloTopLevel/modules/modb"
     basisproject create --name modb --description "User example subproject executable utility repository that uses the library"  --root "${MODB_DIR}" --module --src --use moda
-    cp "${HELLOBASIS_RSC_DIR}/userprog.cpp" "${MODB_DIR}/src/"
+    cp "${HELLOBASIS_RSC_DIR}/userprog.cxx" "${MODB_DIR}/src/"
     
     echo "
-    basis_add_executable(userprog.cpp)
+    basis_add_executable(userprog.cxx)
     basis_target_link_libraries(userprog moda)
     " >> "${MODB_DIR}/src/CMakeLists.txt"
 

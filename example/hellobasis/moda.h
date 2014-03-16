@@ -1,6 +1,13 @@
-#ifndef _moda_h
-#define _moda_h
+#pragma once
+#ifndef HelloTopLevel_moda_h_
+#define HelloTopLevel_moda_h_
+
+
+namespace hellotoplevel {
 
 void moda();
 
-#endif // _moda_h
+}
+
+
+#endif // HelloTopLevel_moda_h_

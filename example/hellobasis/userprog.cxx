@@ -1,15 +1,10 @@
-#include "moda/moda.h"
-
 #include <iostream>
-
-
-// acceptable in .cxx file
-using namespace std;
+#include <hellotoplevel/moda.h>
 
 int main(int, char**)
 {
   std::cout << "Trying ModA?" << std::endl;
-  moda();
+  hellotoplevel::moda();
 
   return 0;
 }
