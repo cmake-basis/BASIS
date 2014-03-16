@@ -66,10 +66,6 @@ if (POLICY CMP0017)
   cmake_policy (SET CMP0017 NEW)
 endif ()
 
-## @brief Only enable the CMake components necessary for the build steps.
-option (BASIS_BUILD_ONLY "Disables most BASIS components not necessary for the build step. ON may improve speed." OFF)
-mark_as_advanced(BASIS_BUILD_ONLY)
-
 ## @brief Perform basic system checks, Pointer Size, Long Long, Compiler, C++11, etc.
 option (BASIS_SYSTEM_CHECKS "Perform basic system checks, Pointer Size, Long Long, Compiler, C++11, etc. OFF may improve speed" ON)
 mark_as_advanced(BASIS_SYSTEM_CHECKS)
@@ -701,6 +697,10 @@ mark_as_advanced (BASIS_VERBOSE)
 ## @brief Request debugging messages from BASIS functions.
 option (BASIS_DEBUG "Request BASIS functions to help debugging." OFF)
 mark_as_advanced (BASIS_DEBUG)
+
+## @brief Request configuration of software build only, skipping steps related to packaging and installation.
+option (BASIS_BUILD_ONLY "Request configuration of software build only, skipping steps related to packaging and installation." OFF)
+mark_as_advanced (BASIS_BUILD_ONLY)
 
 # ============================================================================
 # build configuration
