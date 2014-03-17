@@ -361,7 +361,7 @@ endfunction ()
 # @ingroup CMakeUtilities
 function (basis_create_addpaths_mfile)
   basis_get_project_property (INCLUDE_DIRS PROPERTY PROJECT_INCLUDE_DIRS)
-  basis_write_addpaths_mfile("${CMAKE_CURRENT_BINARY_DIR}/add_${PROJECT_NAME_L}_paths.m" ${INCLUDE_DIRS})
+  basis_write_addpaths_mfile ("${CMAKE_CURRENT_BINARY_DIR}/add_${PROJECT_NAME_L}_paths.m" ${INCLUDE_DIRS})
 endfunction ()
 
 # ----------------------------------------------------------------------------
