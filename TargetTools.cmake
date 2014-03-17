@@ -1696,7 +1696,8 @@ function (basis_add_executable_target TARGET_NAME)
   if (TARGET __${TARGET_UID}) # re-glob source files
     add_dependencies (_${TARGET_UID} __${TARGET_UID})
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" LANGUAGE "CXX" OUTPUT_NAME "${TARGET_NAME}")
+  basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
   if (ARGN_LIBEXEC)
     _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC SCRIPT_DEFINITIONS LIBEXEC)
   else ()
@@ -1975,7 +1976,8 @@ function (basis_add_library_target TARGET_NAME)
   if (TARGET __${TARGET_UID}) # re-glob source files
     add_dependencies (_${TARGET_UID} __${TARGET_UID})
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" LANGUAGE "CXX" OUTPUT_NAME "${TARGET_NAME}")
+  basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
   # output directory
   if (TEST)
     _set_target_properties (
