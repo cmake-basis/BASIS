@@ -16,6 +16,7 @@ if (BASIS_UTILITIES_ENABLED MATCHES "BASH")
 endif ()
 
 basis_add_executable (parseargs.cxx)
+basis_target_link_libraries (parseargs basis)
 basis_add_test (parseargs           COMMAND parseargs foo) # to test if there is no memory leak
 basis_add_test (parseargs-help      COMMAND parseargs --help)
 basis_add_test (parseargs-helpshort COMMAND parseargs --helpshort)
