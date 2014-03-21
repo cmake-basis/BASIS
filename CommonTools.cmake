@@ -1539,18 +1539,18 @@ endfunction ()
 # @returns Sets @p TARGET_UID to the UID of the build target @p TARGET_NAME.
 #
 # @sa basis_get_target_uid()
-macro (basis_make_target_uid TARGET_UID TARGET_NAME)
+function (basis_make_target_uid TARGET_UID TARGET_NAME)
   if (TARGET_NAME MATCHES "^\\.(.*)$")
-    set (${TARGET_UID} "${CMAKE_MATCH_1}")
+    set (${TARGET_UID} "${CMAKE_MATCH_1}" PARENT_SCOPE)
   else ()
-    set (${TARGET_UID} "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
+    set (UID "${PROJECT_NAMESPACE_CMAKE}.${TARGET_NAME}")
     if (NOT BASIS_USE_FULLY_QUALIFIED_UIDS)
-      basis_sanitize_for_regex (_bmtu_RE "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}")
-      string (REGEX REPLACE "^${_bmtu_RE}\\." "" ${TARGET_UID} "${${TARGET_UID}}")
-      unset (_bmtu_RE)
+      basis_sanitize_for_regex (RE "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}")
+      string (REGEX REPLACE "^${RE}\\." "" UID "${UID}")
     endif ()
+    set (${TARGET_UID} ${UID} PARENT_SCOPE)
   endif ()
-endmacro ()
+endfunction ()
 
 # ----------------------------------------------------------------------------
 ## @brief Get "global" target name, i.e., actual CMake target name.
