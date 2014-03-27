@@ -361,7 +361,7 @@ endfunction ()
 # @ingroup CMakeUtilities
 function (basis_create_addpaths_mfile)
   basis_get_project_property (INCLUDE_DIRS PROPERTY PROJECT_INCLUDE_DIRS)
-  basis_write_addpaths_mfile("${CMAKE_CURRENT_BINARY_DIR}/add_${PROJECT_NAME_L}_paths.m" ${INCLUDE_DIRS})
+  basis_write_addpaths_mfile ("${CMAKE_CURRENT_BINARY_DIR}/add_${PROJECT_NAME_L}_paths.m" ${INCLUDE_DIRS})
 endfunction ()
 
 # ----------------------------------------------------------------------------
@@ -692,21 +692,6 @@ function (basis_add_mex_file TARGET_NAME)
   endif ()
   # configure (.in) source files
   basis_configure_sources (SOURCES ${SOURCES})
-  # link to BASIS utilities
-  if (USES_BASIS_UTILITIES)
-    if (NOT TARGET ${BASIS_CXX_UTILITIES_LIBRARY})
-      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
-                           " but BASIS was build without C++ utilities enabled."
-                           " Either specify the option NO_BASIS_UTILITIES, set the global"
-                           " variable BASIS_UTILITIES to FALSE"
-                           " (in ${PROJECT_CONFIG_DIR}/Settings.cmake) or"
-                           " rebuild BASIS with C++ utilities enabled.")
-    endif ()
-    # add project-specific library target if not present yet
-    basis_add_utilities_library (BASIS_UTILITIES_TARGET)
-    # non-project specific and project-specific utilities
-    list (APPEND LINK_DEPENDS ${BASIS_CXX_UTILITIES_LIBRARY} ${BASIS_UTILITIES_TARGET})
-  endif ()
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
   get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
@@ -734,6 +719,10 @@ function (basis_add_mex_file TARGET_NAME)
       TEST                      ${TEST}
       EXPORT                    ${EXPORT}
   )
+  # link to BASIS utilities
+  if (USES_BASIS_UTILITIES)
+    basis_target_link_libraries (.${TARGET_UID} basis)
+  endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   message (STATUS "Adding MEX-file ${TARGET_UID}... - done")
