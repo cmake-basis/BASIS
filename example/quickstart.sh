@@ -14,6 +14,15 @@ set -e
 
 LOCALDIR="${PWD}/BASIS Quick Start"
 
+if [ $# -eq 1 ]; then
+  LOCALDIR="$1"
+elif [ $# -gt 1 ]; then
+  echo "usage: `basename "$0"` [working_directory]" 1>&2
+  exit 1
+fi
+
+[ -n "$LOCALDIR" ] || { echo "Invalid working directory argument!" 1>&2; exit 1; }
+ 
 echo "
 ################################################################################
 # Clone BASIS
