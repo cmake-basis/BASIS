@@ -706,7 +706,7 @@ endif ()
 # @sa http://www.cmake.org/Wiki/CMake_RPATH_handling for details on how CMake
 #     itself handles the RPATH setting of executables and shared libraries.
 option (BASIS_INSTALL_RPATH "Whether to have BASIS set the RPATH of binaries rather than CMake" ON)
-mark_as_advanced(BASIS_INSTALL_RPATH)
+mark_as_advanced (BASIS_INSTALL_RPATH)
 
 # use INSTALL_RPATH set by BASIS instead of CMake
 if (BASIS_INSTALL_RPATH)
