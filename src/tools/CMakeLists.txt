@@ -15,8 +15,7 @@
 # ----------------------------------------------------------------------------
 # project management
 if (BUILD_PROJECT_TOOL AND PythonInterp_FOUND)
-  basis_add_executable (basisproject.py)
-  basis_target_link_libraries (utilities_python)
+  basis_add_executable (basisproject.py USE_BASIS_UTILITIES)
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -29,7 +28,7 @@ endif ()
 # ----------------------------------------------------------------------------
 # doxygen filters
 if (Perl_FOUND)
-  basis_add_library (doxyfilterlib "DoxyFilter.pm" "DoxyFilter/**.pm")
+  basis_add_library (doxyfilterlib "DoxyFilter.pm" "DoxyFilter/**.pm" USE_BASIS_UTILITIES)
   basis_library_prefix (PREFIX PERL)
   basis_set_target_properties (
     doxyfilterlib
@@ -38,7 +37,7 @@ if (Perl_FOUND)
       LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
       PREFIX                    "${PREFIX}"
   )
-  basis_add_executable (doxyfilter.pl LIBEXEC)
+  basis_add_executable (doxyfilter.pl LIBEXEC USE_BASIS_UTILITIES)
   basis_target_link_libraries (doxyfilter doxyfilterlib)
 endif ()
 
@@ -49,7 +48,7 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # testing tools
-basis_add_executable (testdriver.cxx LIBEXEC)
+basis_add_executable (testdriver.cxx USE_BASIS_UTILITIES LIBEXEC)
 if (WIN32)
   basis_target_link_libraries (testdriver Ws2_32)
 endif ()
@@ -70,9 +69,9 @@ endif ()
 basis_add_script (basistest.ctest DESTINATION "${INSTALL_MODULES_DIR}")
 
 if (BASH_FOUND)
-  basis_add_executable (basistest-svn.sh    LIBEXEC) # wraps svn command
-  basis_add_executable (basistest-slave.sh  LIBEXEC) # executes test task
-  basis_add_executable (basistest-master.sh LIBEXEC) # executes scheduled tests
-  basis_add_executable (basistest-cron.sh   LIBEXEC) # test cron job
-  basis_add_executable (basistest.sh)                # main wrapper
+  basis_add_executable (basistest-svn.sh    USE_BASIS_UTILITIES LIBEXEC) # wraps svn command
+  basis_add_executable (basistest-slave.sh  USE_BASIS_UTILITIES LIBEXEC) # executes test task
+  basis_add_executable (basistest-master.sh USE_BASIS_UTILITIES LIBEXEC) # executes scheduled tests
+  basis_add_executable (basistest-cron.sh   USE_BASIS_UTILITIES LIBEXEC) # test cron job
+  basis_add_executable (basistest.sh        USE_BASIS_UTILITIES)         # main wrapper
 endif ()
