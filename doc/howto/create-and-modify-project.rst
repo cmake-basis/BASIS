@@ -29,7 +29,10 @@ of the new project and a brief project description as arguments:
 .. code-block:: bash
 
     basisproject create --name MyProject \
-            --description "This is a brief description of the project." --full
+            --description "This is a brief description of the project."
+
+.. note:: Use the `--full` option to create a project from all template features.
+          Most projects, however, will only need the default set of features.
 
 This will create a subdirectory called ``MyProject`` under the current working directory
 and populate it with the standard project directory structure and BASIS configuration.
@@ -45,8 +48,8 @@ when creating the project using the ``--use`` or ``--useopt`` option, respectivl
             --description "This is a brief description of the project." \
             --use ITK --useopt VTK
 
-The basisproject tool will in turn modify the :ref:`BasisProject.cmake <BasisProject>` file to add the
-named packages to the corresponding lists of dependencies.
+The ``basisproject`` tool will in turn modify the :ref:`BasisProject.cmake <BasisProject>`
+file to add the named packages to the corresponding lists of dependencies.
 
 .. note::
 
@@ -286,8 +289,8 @@ As a result, CMake copies the built files into the installation tree as specifie
 
 .. _HowToUpdateAProject:
 
-Update a Project
-================
+Upgrade a Project
+=================
 
 Occasionally, the project template of BASIS may be modified as the development
 of BASIS progresses, you may want or need to upgrade the files from a previous
@@ -303,7 +306,7 @@ your current project file before the automatic file merge is performed.
 To upgrade the project files, run the following command in the root directory
 of your project's source tree::
 
-    basisproject update --upgrade
+    basisproject upgrade
 
 If the project template has not been changed since the last upgrade, no files
 will be modified by this command.
@@ -378,7 +381,7 @@ in the root directory of your project's source tree.
 
 ::
 
-    basisproject --cleanup
+    basisproject upgrade --cleanup
 
 
 .. _basis_project(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6

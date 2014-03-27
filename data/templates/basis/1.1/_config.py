@@ -113,7 +113,8 @@ options = {
                'doc/apidoc/classlist.rst',
                'doc/howto/do-this.rst'
                
-             ]
+             ],
+    'deps' : [ 'doc' ]
   },
   # usage example
   'example' : {
@@ -152,29 +153,21 @@ options = {
 # ------------------------------------------------------------------------------
 # preset template options
 presets = {
-  'doc-rst' : {
-    'desc' : 'Add/remove (basic) documentation files and reStructuredText (.rst) files for software manual/web site',
-    'args' : [ 'doc', 'rst', 'config-depends' ]
-  },
   'minimal' : {
     'desc' : 'Choose minimal project template.',
-    'args' : [ 'noconfig', 'nodata', 'nodoc', 'nodoc-rst', 'noexample', 'nomodules', 'noinclude', 'src' ]
+    'args' : [ 'src' ]
   },
   'default' : {
     'desc' : 'Choose default project template.',
-    'args' : [ 'noconfig', 'nodata', 'doc', 'rst', 'doc-rst', 'noexample', 'nomodules', 'include', 'src', 'test' ]
+    'args' : [ 'doc', 'rst', 'include', 'src', 'test' ]
   },
   'toplevel' : {
-    'desc' : 'Create toplevel project.',
-    'args' : [ 'noconfig', 'nodata', 'doc', 'rst', 'doc-rst', 'noexample', 'modules', 'noinclude', 'nosrc', 'notest' ]
+    'desc' : 'Create top-level project.',
+    'args' : [ 'doc', 'rst', 'modules' ]
   },
   'module' : {
-    'desc' : 'Create module of toplevel project.',
-    'args' : [ 'noconfig', 'nodata', 'nodoc', 'nodoc-rst', 'noexample', 'nomodules', 'include', 'src', 'test' ]
-  },
-  'full' : {
-    'desc' : 'Choose project template with all optional files.',
-    'args' : [ 'config', 'doc', 'rst', 'doc-rst', 'example', 'data', 'nomodules', 'include', 'src', 'test', 'test-internal' ]
+    'desc' : 'Create module/subproject of top-level project.',
+    'args' : [ 'include', 'src', 'test' ]
   }
 }
 
