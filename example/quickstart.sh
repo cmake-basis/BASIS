@@ -33,7 +33,7 @@ echo "
     git clone https://github.com/schuhschuh/cmake-basis.git
     cd cmake-basis
     # begin temporary workaround until after 3.1 release:
-    git fetch && git checkout feature/#365-quickstart-script
+    git fetch && git checkout feature/#365-quickstart-script--recovered
     # end temporary workaround until after 3.1 release
 
 echo "
