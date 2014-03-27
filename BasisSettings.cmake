@@ -66,66 +66,6 @@ if (POLICY CMP0017)
   cmake_policy (SET CMP0017 NEW)
 endif ()
 
-## @brief Only enable the CMake components necessary for the build steps.
-option (BASIS_BUILD_ONLY "Disables most BASIS components not necessary for the build step. ON may improve speed." OFF)
-mark_as_advanced(BASIS_BUILD_ONLY)
-
-## @brief Perform basic system checks, Pointer Size, Long Long, Compiler, C++11, etc.
-option (BASIS_SYSTEM_CHECKS "Perform basic system checks, Pointer Size, Long Long, Compiler, C++11, etc. OFF may improve speed" ON)
-mark_as_advanced(BASIS_SYSTEM_CHECKS)
-
-# ============================================================================
-# system checks
-# ============================================================================
-
-# used by tests to disable these checks
-if (BASIS_SYSTEM_CHECKS)
-  include (CheckTypeSize)
-  include (CheckIncludeFileCXX)
-
-  # check if type long long is supported
-  CHECK_TYPE_SIZE ("long long" LONG_LONG)
-
-  if (HAVE_LONG_LONG)
-    set (HAVE_LONG_LONG 1)
-  else ()
-    set (HAVE_LONG_LONG 0)
-  endif ()
-
-  # check for presence of sstream header
-  include (TestForSSTREAM)
-
-  if (CMAKE_NO_ANSI_STRING_STREAM)
-    set (HAVE_SSTREAM 0)
-  else ()
-    set (HAVE_SSTREAM 1)
-  endif ()
-
-  # check if tr/tuple header file is available
-  if (CMAKE_GENERATOR MATCHES "Visual Studio [1-9][0-9]+")
-    set (HAVE_TR1_TUPLE 1)
-  else ()
-    CHECK_INCLUDE_FILE_CXX ("tr1/tuple" HAVE_TR1_TUPLE)
-    if (HAVE_TR1_TUPLE)
-      set (HAVE_TR1_TUPLE 1)
-    else ()
-      set (HAVE_TR1_TUPLE 0)
-    endif ()
-  endif ()
-
-  # check for availibility of pthreads library
-  # defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT
-  find_package (Threads)
-
-  if (Threads_FOUND)
-    if (CMAKE_USE_PTHREADS_INIT)
-      set (HAVE_PTHREAD 1)
-    else  ()
-      set (HAVE_PTHREAD 0)
-    endif ()
-  endif ()
-endif ()
-
 # ============================================================================
 # meta-data lists
 # ============================================================================
@@ -468,8 +408,21 @@ set (BASIS_LIBRARY_COMPONENT "Development")
 # are associated with if no component was specified, explicitly.
 set (BASIS_RUNTIME_COMPONENT "Runtime")
 
-## @brief FALSE implies that the BASIS C++ utilities should not be added as dependency of an executable by default. FALSE is the default setting. TRUE indicates the utilities should be added as a dependency.
-basis_set_if_not_set(BASIS_UTILITIES FALSE)
+## @brief Enable the automatic detection of the use of the BASIS utilities.
+#
+# If @c TRUE, the basis_add_executable() and basis_add_library() commands will try to
+# automatically detect whether a given executable or library makes use of the
+# BASIS utilities. If so, it configures the utilities for this project and adds
+# a respective library build target as well as a link dependency on this target.
+# This was the default until BASIS v3.1. Since this version, it is recommended
+# to either use the @c USE_BASIS_UTILITIES option of basis_add_executable() and
+# basis_add_library() or to add a link dependency on "basis" (recommended):
+#
+# @code
+# basis_add_executable(foo.cxx)
+# basis_target_link_libraries(foo basis)
+# @endcode
+set (BASIS_UTILITIES FALSE)
 
 ## @brief Whether to always build the BASIS C++ utilities even if not required by any target
 option (BUILD_BASIS_UTILITIES_FOR_CXX    "Force the build of the BASIS C++ Utilities even if not used by this project" OFF)
@@ -480,10 +433,10 @@ option (BUILD_BASIS_UTILITIES_FOR_PERL   "Force the build of the BASIS Perl Util
 ## @brief Whether to always build the BASIS Bash utilities even if not required by any target
 option (BUILD_BASIS_UTILITIES_FOR_BASH   "Force the build of the BASIS Bash Utilities even if not used by this project" OFF)
 
-mark_as_advanced(BUILD_BASIS_UTILITIES_FOR_CXX
-                 BUILD_BASIS_UTILITIES_FOR_PYTHON
-                 BUILD_BASIS_UTILITIES_FOR_PERL
-                 BUILD_BASIS_UTILITIES_FOR_BASH)
+mark_as_advanced (BUILD_BASIS_UTILITIES_FOR_CXX
+                  BUILD_BASIS_UTILITIES_FOR_PYTHON
+                  BUILD_BASIS_UTILITIES_FOR_PERL
+                  BUILD_BASIS_UTILITIES_FOR_BASH)
 
 ## @brief Whether to export build targets by default.
 set (BASIS_EXPORT TRUE)
@@ -719,6 +672,10 @@ mark_as_advanced (BASIS_VERBOSE)
 ## @brief Request debugging messages from BASIS functions.
 option (BASIS_DEBUG "Request BASIS functions to help debugging." OFF)
 mark_as_advanced (BASIS_DEBUG)
+
+## @brief Request configuration of software build only, skipping steps related to packaging and installation.
+option (BASIS_BUILD_ONLY "Request configuration of software build only, skipping steps related to packaging and installation." OFF)
+mark_as_advanced (BASIS_BUILD_ONLY)
 
 # ============================================================================
 # build configuration

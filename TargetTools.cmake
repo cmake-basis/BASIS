@@ -446,22 +446,28 @@ function (basis_target_link_libraries TARGET_NAME)
   # get type of named target
   get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
   # substitute non-fully qualified target names
-  if (BASIS_USE_TARGET_UIDS)
-    set (ARGS)
-    foreach (ARG IN LISTS ARGN)
+  set (ARGS)
+  foreach (ARG ${ARGN})
+    if ("^${ARG}$" STREQUAL "^basis$")
+      get_target_property (LANGUAGE ${TARGET_UID} LANGUAGE)
+      if (NOT LANGUAGE OR "^${LANGUAGE}$" STREQUAL "^UNKNOWN$")
+        message (FATAL_ERROR "Target ${TARGET_UID} is of unknown LANGUAGE! Cannot add dependency on \"basis\" utilities.")
+      endif ()
+      basis_add_utilities_library (BASIS_UTILITIES_TARGET ${LANGUAGE})
+      list (APPEND ARGS ${BASIS_UTILITIES_TARGET})
+      _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES TRUE)
+    else ()
       basis_get_target_uid (UID "${ARG}")
       if (TARGET "${UID}")
-        if (UID STREQUAL "${TARGET_UID}")
-          message (FATAL_ERROR "Cannot add link library as dependency of itself!")
+        if ("^${UID}$" STREQUAL "^${TARGET_UID}$")
+          message (FATAL_ERROR "Cannot add link library ${UID} as dependency of itself!")
         endif ()
         list (APPEND ARGS "${UID}")
       else ()
         list (APPEND ARGS "${ARG}")
       endif ()
-    endforeach ()
-  else ()
-    set (ARGS "${ARGN}")
-  endif ()
+    endif ()
+  endforeach ()
   # get current link libraries
   if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|STATIC|MODULE)_LIBRARY$")
     get_target_property (DEPENDS ${TARGET_UID} BASIS_LINK_DEPENDS)
@@ -745,26 +751,26 @@ function (basis_add_executable TARGET_NAME)
   # --------------------------------------------------------------------------
   # C++
   if (ARGN_LANGUAGE MATCHES "CXX")
-    basis_add_executable_target (${TARGET_NAME} ${ARGN})
+    basis_add_executable_target (.${TARGET_UID} ${ARGN})
   # --------------------------------------------------------------------------
   # MATLAB
   elseif (ARGN_LANGUAGE MATCHES "MATLAB")
     if (ARGN_LIBEXEC)
       list (REMOVE_ITEM ARGN LIBEXEC)
-      basis_add_mcc_target (${TARGET_NAME} LIBEXEC ${ARGN})
+      basis_add_mcc_target (.${TARGET_UID} LIBEXEC ${ARGN})
     else ()
       list (REMOVE_ITEM ARGN EXECUTABLE)
-      basis_add_mcc_target (${TARGET_NAME} EXECUTABLE ${ARGN})
+      basis_add_mcc_target (.${TARGET_UID} EXECUTABLE ${ARGN})
     endif ()
   # --------------------------------------------------------------------------
   # others
   else ()
     if (ARGN_LIBEXEC)
       list (REMOVE_ITEM ARGN LIBEXEC)
-      basis_add_script (${TARGET_NAME} LIBEXEC ${ARGN})
+      basis_add_script (.${TARGET_UID} LIBEXEC ${ARGN})
     else ()
       list (REMOVE_ITEM ARGN EXECUTABLE)
-      basis_add_script (${TARGET_NAME} EXECUTABLE ${ARGN})
+      basis_add_script (.${TARGET_UID} EXECUTABLE ${ARGN})
     endif ()
   endif ()
   # --------------------------------------------------------------------------
@@ -1034,10 +1040,10 @@ function (basis_add_library TARGET_NAME)
       list (REMOVE_ITEM ARGN MODULE)
       list (REMOVE_ITEM ARGN SHARED)
       list (REMOVE_ITEM ARGN MEX)
-      basis_add_mex_file (${TARGET_NAME} ${ARGN})
+      basis_add_mex_file (.${TARGET_UID} ${ARGN})
     # library
     else ()
-      basis_add_library_target (${TARGET_NAME} ${ARGN})
+      basis_add_library_target (.${TARGET_UID} ${ARGN})
     endif ()
   # --------------------------------------------------------------------------
   # MATLAB
@@ -1047,10 +1053,10 @@ function (basis_add_library TARGET_NAME)
     endif ()
     if (ARGN_SHARED)
       list (REMOVE_ITEM ARGN SHARED)
-      basis_add_mcc_target (${TARGET_NAME} SHARED ${ARGN})
+      basis_add_mcc_target (.${TARGET_UID} SHARED ${ARGN})
     else ()
       list (REMOVE_ITEM ARGN MODULE) # optional
-      basis_add_script_library (${TARGET_NAME} ${ARGN})
+      basis_add_script_library (.${TARGET_UID} ${ARGN})
     endif ()
   # --------------------------------------------------------------------------
   # other
@@ -1059,7 +1065,7 @@ function (basis_add_library TARGET_NAME)
       message (FATAL_ERROR "Target ${TARGET_UID}: Invalid library type! Only modules can be built from scripts.")
     endif ()
     list (REMOVE_ITEM ARGN MODULE)
-    basis_add_script_library (${TARGET_NAME} ${ARGN})
+    basis_add_script_library (.${TARGET_UID} ${ARGN})
   endif ()
   # --------------------------------------------------------------------------
   # re-glob source files before each build (if necessary)
@@ -1701,7 +1707,8 @@ function (basis_add_executable_target TARGET_NAME)
   if (TARGET __${TARGET_UID}) # re-glob source files
     add_dependencies (_${TARGET_UID} __${TARGET_UID})
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" OUTPUT_NAME "${TARGET_NAME}")
+  basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
   if (ARGN_LIBEXEC)
     _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC SCRIPT_DEFINITIONS LIBEXEC)
   else ()
@@ -1724,22 +1731,10 @@ function (basis_add_executable_target TARGET_NAME)
   _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}")
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
-    if (NOT TARGET ${BASIS_CXX_UTILITIES_LIBRARY})
-      message (FATAL_ERROR "Target ${TARGET_UID} seems to make use of the BASIS C++"
-                           " utilities but BASIS was built without C++ utilities enabled."
-                           " Either specify the option NO_BASIS_UTILITIES, set the global"
-                           " variable BASIS_UTILITIES to FALSE"
-                           " (in ${PROJECT_CONFIG_DIR}/Settings.cmake) or"
-                           " rebuild BASIS with C++ utilities enabled.")
-    endif ()
-    # add project-specific library target if not present yet
-    basis_add_utilities_library (BASIS_UTILITIES_TARGET)
-    # non-project specific utilities build as part of BASIS
-    basis_target_link_libraries (${TARGET_UID} ${BASIS_CXX_UTILITIES_LIBRARY})
-    # project-specific utilities build as part of this project
-    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
+    basis_target_link_libraries (.${TARGET_UID} basis)
+  else ()
+    _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES FALSE)
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES ${USES_BASIS_UTILITIES})
   # export
   set (EXPORT_OPT)
   if (EXPORT)
@@ -1992,7 +1987,8 @@ function (basis_add_library_target TARGET_NAME)
   if (TARGET __${TARGET_UID}) # re-glob source files
     add_dependencies (_${TARGET_UID} __${TARGET_UID})
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" OUTPUT_NAME "${TARGET_NAME}")
+  basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
+  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
   # output directory
   if (TEST)
     _set_target_properties (
@@ -2022,22 +2018,10 @@ function (basis_add_library_target TARGET_NAME)
   )
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
-    if (NOT TARGET ${BASIS_CXX_UTILITIES_LIBRARY})
-      message (FATAL_ERROR "Target ${TARGET_UID} makes use of the BASIS C++ utilities"
-                           " but BASIS was build without C++ utilities enabled."
-                           " Either specify the option NO_BASIS_UTILITIES, set the global"
-                           " variable BASIS_UTILITIES to FALSE"
-                           " (in ${PROJECT_CONFIG_DIR}/Settings.cmake) or"
-                           " rebuild BASIS with C++ utilities enabled.")
-    endif ()
-    # add project-specific library target if not present yet
-    basis_add_utilities_library (BASIS_UTILITIES_TARGET)
-    # non-project specific utilities build as part of BASIS
-    basis_target_link_libraries (${TARGET_UID} ${BASIS_CXX_UTILITIES_LIBRARY})
-    # project-specific utilities build as part of this project
-    basis_target_link_libraries (${TARGET_UID} ${BASIS_UTILITIES_TARGET})
+    basis_target_link_libraries (.${TARGET_UID} basis)
+  else ()
+    _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES FALSE)
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES ${USES_BASIS_UTILITIES})
   # installation
   if (TEST)
     # TODO At the moment, no tests are installed. Once there is a way to
@@ -2420,7 +2404,7 @@ function (basis_add_script_library TARGET_NAME)
                            " detected correctly.")
     endif ()
     set (USES_BASIS_UTILITIES TRUE)
-  elseif (NOT ARGN_NO_BASIS_UTILITIES AND NOT UTILITIES_LANGUAGE MATCHES "UNKNOWN")
+  elseif (BASIS_UTILITIES AND NOT ARGN_NO_BASIS_UTILITIES AND NOT UTILITIES_LANGUAGE MATCHES "UNKNOWN")
     set (USES_BASIS_UTILITIES FALSE)
     foreach (M IN LISTS SOURCES)
       basis_utilities_check (USES_BASIS_UTILITIES "${M}" ${UTILITIES_LANGUAGE})
@@ -2430,12 +2414,6 @@ function (basis_add_script_library TARGET_NAME)
     endforeach ()
   else ()
     set (USES_BASIS_UTILITIES FALSE)
-  endif ()
-  if (USES_BASIS_UTILITIES)
-    basis_set_project_property (PROPERTY PROJECT_USES_${UTILITIES_LANGUAGE}_UTILITIES TRUE)
-    if (BASIS_DEBUG)
-      message ("** Target ${TARGET_UID} uses the BASIS utilities for ${UTILITIES_LANGUAGE}.")
-    endif ()
   endif ()
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
@@ -2458,6 +2436,13 @@ function (basis_add_script_library TARGET_NAME)
       COMPILE                   "${BASIS_COMPILE_SCRIPTS}"
       TEST                      "${TEST}"
   )
+  # link to BASIS utilities
+  if (USES_BASIS_UTILITIES)
+    basis_target_link_libraries (.${TARGET_UID} basis)
+    if (BASIS_DEBUG)
+      message ("** Target ${TARGET_UID} uses the BASIS utilities for ${UTILITIES_LANGUAGE}.")
+    endif ()
+  endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   message (STATUS "Adding script library ${TARGET_UID}... - done")
