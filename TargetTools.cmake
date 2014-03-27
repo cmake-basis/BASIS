@@ -37,6 +37,17 @@ endif ()
 # set_target_properties()</a> command and extends its functionality.
 # In particular, it maps the given target names to the corresponding target UIDs.
 #
+# @note If @c BASIS_USE_TARGET_UIDS is @c OFF and is not required by a project,
+#       it is recommended to use _set_target_properties() instead (note that
+#       set_target_properties is overriden by the ImportTools.cmake module of BASIS).
+#       This will break the build configuration scripts when @c BASIS_USE_TARGET_UIDS
+#       is set to @c ON later. It should thus only be used if the project will
+#       never use the target UID feature of BASIS. A project can possibly define
+#       a global macro which either calls _set_target_properties or
+#       basis_set_target_properties. But be aware of the related CMake bugs
+#       which prevent basis_set_target_properties to do the same already.
+#       ARGV/ARGN do not preserve empty arguments nor list arguments!
+#
 # @note Due to a bug in CMake (http://www.cmake.org/Bug/view.php?id=12303),
 #       except of the first property given directly after the @c PROPERTIES keyword,
 #       only properties listed in @c BASIS_PROPERTIES_ON_TARGETS can be set.
@@ -374,18 +385,24 @@ endfunction ()
 # @sa http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_dependencies
 #
 # @ingroup CMakeAPI
-function (basis_add_dependencies)
-  set (ARGS)
-  foreach (ARG ${ARGN})
-    basis_get_target_uid (UID "${ARG}")
-    if (TARGET "${UID}")
-      list (APPEND ARGS "${UID}")
-    else ()
-      list (APPEND ARGS "${ARG}")
-    endif ()
-  endforeach ()
-  add_dependencies (${ARGS})
-endfunction ()
+if (BASIS_USE_TARGET_UIDS)
+  function (basis_add_dependencies)
+    set (ARGS)
+    foreach (ARG ${ARGN})
+      basis_get_target_uid (UID "${ARG}")
+      if (TARGET "${UID}")
+        list (APPEND ARGS "${UID}")
+      else ()
+        list (APPEND ARGS "${ARG}")
+      endif ()
+    endforeach ()
+    add_dependencies (${ARGS})
+  endfunction ()
+else ()
+  macro (basis_add_dependencies)
+    add_dependencies (${ARGV})
+  endmacro ()
+endif ()
 
 # ----------------------------------------------------------------------------
 ## @brief Add link dependencies to build target.
@@ -442,7 +459,7 @@ function (basis_target_link_libraries TARGET_NAME)
     else ()
       basis_get_target_uid (UID "${ARG}")
       if (TARGET "${UID}")
-        if (UID STREQUAL "${TARGET_UID}")
+        if ("^${UID}$" STREQUAL "^${TARGET_UID}$")
           message (FATAL_ERROR "Cannot add link library as dependency of itself!")
         endif ()
         list (APPEND ARGS "${UID}")

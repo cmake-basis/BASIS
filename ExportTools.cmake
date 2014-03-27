@@ -223,7 +223,7 @@ function (basis_export_targets)
   # export non-custom targets
   basis_get_project_property (EXPORT_TARGETS)
   if (EXPORT_TARGETS)
-    if (BASIS_USE_FULLY_QUALIFIED_UIDS)
+    if (BASIS_USE_TARGET_UIDS AND BASIS_USE_FULLY_QUALIFIED_UIDS)
       set (NAMESPACE_OPT)
     elseif (TOPLEVEL_PROJECT_NAMESPACE_CMAKE)
       set (NAMESPACE_OPT NAMESPACE "${TOPLEVEL_PROJECT_NAMESPACE_CMAKE}.")

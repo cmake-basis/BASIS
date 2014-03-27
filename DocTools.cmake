@@ -1835,7 +1835,7 @@ endfunction ()
 # command-line tool svn2cl(.sh) is installed, it is used to output a nicer
 # formatted change log.
 function (basis_add_changelog)
-  basis_make_target_uid (TARGET_UID changelog)
+  basis_always_make_target_uid (TARGET_UID changelog)
 
   option (BUILD_CHANGELOG "Request build and/or installation of the ChangeLog." OFF)
   mark_as_advanced (BUILD_CHANGELOG)

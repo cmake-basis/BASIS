@@ -2085,11 +2085,11 @@ macro (basis_project_end)
     # --------------------------------------------------------------------------
     # add installation rules for public headers
     basis_install_public_headers ()
-    
+
     # --------------------------------------------------------------------------
     # generate configuration files
     include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
-    
+
     # --------------------------------------------------------------------------
     # change log
     basis_add_changelog ()
