@@ -169,3 +169,15 @@ echo "
     cmake .. -GNinja "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" "-DBASIS_INSTALL_SCHEME=usr"
     
     ninja install
+
+echo "
+################################################################################
+# Testing the installed example executables
+################################################################################
+"
+
+    export LD_LIBRARY_PATH="${LOCALDIR}/lib/hellotoplevel"
+    export DYLD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
+
+    "${LOCALDIR}/bin/helloc++" | grep "How is it going?"           | echo "helloc++ test passed"
+    "${LOCALDIR}/bin/userprog" | grep "Called the moda() function" | echo "userprog test passed"
