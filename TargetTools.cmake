@@ -1352,9 +1352,10 @@ function (basis_add_script TARGET_NAME)
     else ()
       basis_get_source_target_name (TARGET_NAME "${TARGET_NAME}" NAME_WE)
     endif ()
+    set (SET_OUTPUT_NAME_TO_TARGET_NAMEE FALSE)
   else ()
     set (SOURCES)
-    set (OUTPUT_NAME "${TARGET_NAME}")
+    set (SET_OUTPUT_NAME_TO_TARGET_NAME TRUE)
   endif ()
   # check target name
   basis_check_target_name ("${TARGET_NAME}")
@@ -1389,6 +1390,8 @@ function (basis_add_script TARGET_NAME)
     string (REGEX REPLACE "\\.in$" "" SOURCES "${SOURCES}")
     message (FATAL_ERROR "Target ${TARGET_UID}: Source file ${SOURCES}[.in] does not exist!")
   endif ()
+  # add custom target
+  add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
   # dump CMake variables for configuration of script
   set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
   basis_dump_variables ("${BUILD_DIR}/cache.cmake")
@@ -1415,7 +1418,9 @@ function (basis_add_script TARGET_NAME)
   endif ()
   # output name
   string (REGEX REPLACE "\\.in$" "" SOURCE_NAME "${SOURCES}")
-  if (NOT OUTPUT_NAME)
+  if (SET_OUTPUT_NAME_TO_TARGET_NAME)
+    basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
+  else ()
     get_filename_component (OUTPUT_NAME "${SOURCE_NAME}" NAME_WE)
   endif ()
   if (ARGN_MODULE)
@@ -1494,8 +1499,7 @@ function (basis_add_script TARGET_NAME)
       message ("** Target ${TARGET_UID} uses the BASIS utilities for ${UTILITIES_LANGUAGE}.")
     endif ()
   endif ()
-  # add custom target
-  add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
+  # set properties of custom build target
   _set_target_properties (
     ${TARGET_UID}
     PROPERTIES
