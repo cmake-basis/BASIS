@@ -137,7 +137,7 @@ echo "
     MODA_DIR="${LOCALDIR}/src/HelloTopLevel/modules/moda"
     basisproject create --name moda --description "Subproject library to be used elsewhere" --root "${MODA_DIR}" --module --include
     cp "${HELLOBASIS_RSC_DIR}/moda.cxx" "${MODA_DIR}/src/"
-    mkdir "${MODA_DIR}/include/moda"
+    mkdir "${MODA_DIR}/include/hellotoplevel"
     cp "${HELLOBASIS_RSC_DIR}/moda.h" "${MODA_DIR}/include/hellotoplevel/"
     
     echo "
