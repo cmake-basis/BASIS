@@ -43,12 +43,12 @@ if (NOT BASIS_FOUND)
   else ()
     message (FATAL_ERROR "Could not find an existing CMake BASIS installation!\n"
                            "This project uses CMake BASIS for the build configuration."
-                           "Visit http://opensource.andreasschuh.com/cmake-basis for"
+                           " Visit http://opensource.andreasschuh.com/cmake-basis for"
                            " more information about the CMake BASIS package.\n")
   endif ()
   # download and install BASIS in build tree of project
   basis_bootstrap(
-    VERSION 3.0.0          # CMake BASIS version to download
+    VERSION 3.1.0          # CMake BASIS version to download
     USE_MATLAB       FALSE # Enable/disable Matlab support
     USE_PythonInterp FALSE # Enable/disable Python support
     USE_JythonInterp FALSE # Enable/disable Jython support

@@ -1,5 +1,30 @@
 .. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
 
+.. _v3.1.0:
+
+Release 3.1.0 (Mar 28, 2014)
+----------------------------
+
+- Custom project layout by overriding the default directory names.
+- Revised concept of project modules vs. subprojects.
+- Enable build of each module by default.
+- Enhanced documentation of project modularization.
+- Added project configuraton how-to detailing the various configuration files.
+- Allow - and _ in project name.
+- Allow use of characters -, _, and + in target names.
+- Various improvements to reduce build configuration time.
+- Require explicit declaration of link dependency to BASIS Utilities.
+- Make RPATH setting optional.
+- Root documentation files such as README and COPYING file are now optional.
+- Conversion of target name to UID is now disabled by default.
+- Added shell script which performs the Quick Start steps.
+- Default CMakeList.txt template bootstraps BASIS if no installation found.
+- Fixed addition of shared libraries.
+- Fixed basis_set_project_property(APPEND PROJECT OtherModule ...).
+- Fixed TEST property used by basis_build_script_library.
+- Fixed help output of basisproject command.
+
+
 .. _v3.0.0:
 
 Release 3.0.0 (Jan 15, 2014)
