@@ -36,9 +36,6 @@ echo "
     mkdir -p "${LOCALDIR}/src" && cd "${LOCALDIR}/src"
     git clone https://github.com/schuhschuh/cmake-basis.git
     cd cmake-basis
-    # begin temporary workaround until after 3.1 release
-    git checkout release
-    # end temporary workaround until after 3.1 release
 
 echo "
 ################################################################################
