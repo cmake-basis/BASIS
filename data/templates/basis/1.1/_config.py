@@ -10,6 +10,11 @@ required = [
 # ------------------------------------------------------------------------------
 # optional project files
 options = {
+  # bootstrapping support
+  'bootstrapping' : {
+    'desc' : 'Enable bootstrapping of CMake BASIS if no installation found.',
+    'path' : [ 'BasisBootstrapping.cmake' ]
+  },
   # additional configuration files
   'config-settings' : {
     'desc' : 'Include/exclude custom Settings.cmake file.',
@@ -163,11 +168,11 @@ presets = {
   },
   'default' : {
     'desc' : 'Choose default project template.',
-    'args' : [ 'readme', 'changelog', 'doc', 'rst', 'include', 'src', 'test' ]
+    'args' : [ 'bootstrapping', 'readme', 'changelog', 'doc', 'rst', 'include', 'src', 'test' ]
   },
   'toplevel' : {
     'desc' : 'Create top-level project.',
-    'args' : [ 'readme', 'changelog', 'doc', 'rst', 'modules' ]
+    'args' : [ 'bootstrapping', 'readme', 'changelog', 'doc', 'rst', 'modules' ]
   },
   'module' : {
     'desc' : 'Create module/subproject of top-level project.',
