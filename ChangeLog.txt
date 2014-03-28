@@ -21,6 +21,7 @@ Release 3.1.0 (Mar 28, 2014)
 - Default CMakeList.txt template bootstraps BASIS if no installation found.
 - Fixed addition of shared libraries.
 - Fixed basis_set_project_property(APPEND PROJECT OtherModule ...).
+- Fixed TEST property used by basis_build_script_library.
 - Fixed help output of basisproject command.
 
 
