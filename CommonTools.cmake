@@ -1288,7 +1288,7 @@ function (basis_set_project_property)
   list (REMOVE_AT ARGN_PROPERTY 0) # remove property name from values
 
   if (ARGN_APPEND)
-    basis_get_project_property (CURRENT PROPERTY ${PROPERTY_NAME})
+    basis_get_project_property (CURRENT ${ARGN_PROJECT} ${PROPERTY_NAME})
     if (NOT "${CURRENT}" STREQUAL "")
       list (INSERT ARGN_PROPERTY 0 "${CURRENT}")
     endif ()
