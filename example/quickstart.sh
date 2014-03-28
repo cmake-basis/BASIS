@@ -9,7 +9,7 @@ set -e
 # It is recommended, however, to perform these steps manually in order to
 # get familiar with BASIS.
 #
-# Requirements: git, cmake, ninja
+# Requirements: git, cmake, ninja or make
 ################################################################################
 
 LOCALDIR="${PWD}/BASIS Quick Start"
@@ -23,6 +23,10 @@ fi
 
 [ -n "$LOCALDIR" ] || { echo "Invalid working directory argument!" 1>&2; exit 1; }
  
+buildtool=`which ninja` && generator='Ninja'
+[ $? -eq 0 ] || { buildtool=`which make` && generator='Unix Makefiles'; }
+[ $? -eq 0 ] || { echo "Either GNU Make or Ninja must be installed!" 1>&2; exit 1; }
+
 echo "
 ################################################################################
 # Clone BASIS
@@ -43,9 +47,9 @@ echo "
 "
 
     mkdir -p build && cd build
-    cmake .. -GNinja "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" "-DBASIS_INSTALL_SCHEME=usr" -DBUILD_EXAMPLE=ON
+    cmake .. "-G${generator}" "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" "-DBASIS_INSTALL_SCHEME=usr" -DBUILD_EXAMPLE=ON
     
-    ninja install
+    "${buildtool}" install
 
 echo "
 ################################################################################
@@ -116,9 +120,9 @@ echo "
 
     mkdir "${LOCALDIR}/src/hellobasis/build"
     cd "${LOCALDIR}/src/hellobasis/build"
-    cmake .. -GNinja -DBUILD_DOCUMENTATION=ON "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}"
+    cmake .. "-G${generator}" -DBUILD_DOCUMENTATION=ON "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}"
     
-    ninja install
+    "${buildtool}" install
 
 echo "
 ################################################################################
@@ -166,9 +170,9 @@ echo "
 
     mkdir "${TOPLEVEL_DIR}/build"
     cd "${TOPLEVEL_DIR}/build"
-    cmake .. -GNinja "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" "-DBASIS_INSTALL_SCHEME=usr"
+    cmake .. "-G${generator}" "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" "-DBASIS_INSTALL_SCHEME=usr"
     
-    ninja install
+    "${buildtool}" install
 
 echo "
 ################################################################################
