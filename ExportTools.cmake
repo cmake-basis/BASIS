@@ -26,6 +26,59 @@ endif ()
 
 
 # ----------------------------------------------------------------------------
+## @brief Add target to export set.
+#
+# Targets of a subproject are added to the export set named after the subproject
+# itself. All other targets, including in particular those of other modules,
+# are added to the export set named after the top-level project.
+#
+# @param[out] EXPORT_OPTION Export option for install() command including
+#                           the EXPORT option name. Set to an empty string
+#                           if target is not installed.
+# @param[in]  TEST          Whether given target is a test executable or library.
+# @param[in]  ARGN          Optional installation destinations.
+function (basis_add_export_target EXPORT_OPTION TARGET_UID TEST)
+  if (PROJECT_IS_SUBPROJECT)
+    set (EXPORT_SET "${PROJECT_NAME}")
+  else ()
+    set (EXPORT_SET "${TOPLEVEL_PROJECT_NAME}")
+  endif ()
+  if (TEST)
+    basis_set_project_property (PROJECT "${EXPORT_SET}" APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+  else ()
+    message ("basis_add_export_target:  ${EXPORT_SET}_EXPORT_TARGETS += ${TARGET_UID}")
+    basis_set_project_property (PROJECT "${EXPORT_SET}" APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
+    if (ARGN)
+      message ("basis_add_export_target: ${EXPORT_SET}_INSTALL_EXPORT_TARGETS += ${TARGET_UID}")
+      basis_set_project_property (PROJECT "${EXPORT_SET}" APPEND PROPERTY INSTALL_EXPORT_TARGETS "${TARGET_UID}")
+    endif ()
+    set (EXPORT_OPT "EXPORT;${EXPORT_SET}" PARENT_SCOPE)
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Add target to custom export set.
+#
+# Targets of a subproject are added to the export set named after the subproject
+# itself. All other targets, including in particular those of other modules,
+# are added to the export set named after the top-level project.
+#
+# @param[in]  TARGET_UID UID of target to add to the export set.
+# @param[in]  TEST       Whether given target is a test executable or library.
+function (basis_add_custom_export_target TARGET_UID TEST)
+  if (PROJECT_IS_SUBPROJECT)
+    set (EXPORT_SET "${PROJECT_NAME}")
+  else ()
+    set (EXPORT_SET "${TOPLEVEL_PROJECT_NAME}")
+  endif ()
+  if (TEST)
+    basis_set_project_property (PROJECT "${EXPORT_SET}" APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
+  else ()
+    basis_set_project_property (PROJECT "${EXPORT_SET}" APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------------
 ## @brief Get soname of object file.
 #
 # This function extracts the soname from object files in the ELF format on

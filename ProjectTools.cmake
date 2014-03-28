@@ -2020,9 +2020,7 @@ macro (basis_project_end)
                           PROJECT_INCLUDE_DIRS
                           PROJECT_LINK_DIRS
                           BUNDLE_LINK_DIRS
-                          TARGETS
-                          CUSTOM_EXPORT_TARGETS
-                          TEST_EXPORT_TARGETS)
+                          TARGETS)
         basis_get_project_property (V ${M} ${P})
         basis_set_project_property (APPEND PROPERTY ${P} ${V})
       endforeach ()
@@ -2040,6 +2038,9 @@ macro (basis_project_end)
 
   # ----------------------------------------------------------------------------
   # finalize custom targets
+  #
+  # Note: Must be done *after* the TARGETS project properties of the modules
+  #       were copied as basis_finalize_targets() iterates over this list.
   if (NOT PROJECT_IS_MODULE OR PROJECT_IS_SUBPROJECT)
     # configure the BASIS utilities
     basis_configure_utilities ()
@@ -2050,7 +2051,7 @@ macro (basis_project_end)
       basis_add_init_py_target ()
     endif ()
   endif ()
-    
+
   # ----------------------------------------------------------------------------
   # build/install package documentation
   #

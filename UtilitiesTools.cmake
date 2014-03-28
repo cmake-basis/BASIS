@@ -165,7 +165,6 @@ function (basis_add_cxx_utilities_library UID)
       set (INCLUDE_DIR "${BINARY_INCLUDE_DIR}")
       set (OUTPUT_DIR  "${BINARY_ARCHIVE_DIR}")
       set (INSTALL_DIR "${INSTALL_ARCHIVE_DIR}")
-      set (EXPORT_NAME "${PROJECT_NAME}")
     else ()
       # modules, on the other side, share the library with the top-level project
       # the addition of the utilities target is in this case only required because
@@ -174,7 +173,6 @@ function (basis_add_cxx_utilities_library UID)
       set (INCLUDE_DIR "${TOPLEVEL_BINARY_INCLUDE_DIR}")
       set (OUTPUT_DIR  "${TOPLEVEL_BINARY_ARCHIVE_DIR}")
       set (INSTALL_DIR "${TOPLEVEL_INSTALL_ARCHIVE_DIR}")
-      set (EXPORT_NAME "${TOPLEVEL_PROJECT_NAME}")
     endif ()
     # write dummy source files
     basis_library_prefix (PREFIX CXX)
@@ -206,16 +204,15 @@ function (basis_add_cxx_utilities_library UID)
         ARCHIVE_OUTPUT_DIRECTORY  "${OUTPUT_DIR}"
         ARCHIVE_INSTALL_DIRECTORY "${INSTALL_DIR}"
     )
-    # add installation rule
+    # export
+    basis_add_export_target (EXPORT_OPT ${TARGET_UID} FALSE ${INSTALL_DIR})
+    # installation
     install (
-      TARGETS ${TARGET_UID}
-      EXPORT  ${EXPORT_NAME}
+      TARGETS ${TARGET_UID} ${EXPORT_OPT}
       ARCHIVE
         DESTINATION "${INSTALL_DIR}"
         COMPONENT   "${BASIS_LIBRARY_COMPONENT}"
     )
-    basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS         ${TARGET_UID})
-    basis_set_project_property (APPEND PROPERTY INSTALL_EXPORT_TARGETS ${TARGET_UID})
     # debug message
     if (BASIS_DEBUG)
       message ("** Added BASIS utilities library ${TARGET_UID}")

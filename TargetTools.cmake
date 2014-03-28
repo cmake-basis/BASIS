@@ -1742,15 +1742,7 @@ function (basis_add_executable_target TARGET_NAME)
   # export
   set (EXPORT_OPT)
   if (EXPORT)
-    if (TEST)
-      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
-    else ()
-      basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
-      if (ARGN_DESTINATION)
-        basis_set_project_property (APPEND PROPERTY INSTALL_EXPORT_TARGETS "${TARGET_UID}")
-      endif ()
-      set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}") # for install() below
-    endif ()
+    basis_add_export_target (EXPORT_OPT ${TARGET_UID} ${TEST} ${ARGN_DESTINATION})
   endif ()
   # installation
   if (ARGN_DESTINATION)
@@ -2026,36 +2018,25 @@ function (basis_add_library_target TARGET_NAME)
   else ()
     _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES FALSE)
   endif ()
+  # export
+  set (EXPORT_OPT)
+  if (EXPORT)
+    basis_add_export_target (EXPORT_OPT ${TARGET_UID} ${TEST} ${ARGN_RUNTIME_DESTINATION} ${ARGN_LIBRARY_DESTINATION})
+  endif ()
   # installation
+  set (DESTINATION_OPTS)
   if (TEST)
     # TODO At the moment, no tests are installed. Once there is a way to
     #      install selected tests, the shared libraries they depend on
     #      need to be installed as well.
-    if (EXPORT)
-      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
-    endif ()
   else ()
-    if (EXPORT)
-      set (EXPORT_OPT "EXPORT" "${PROJECT_NAME}")
-      basis_set_project_property (APPEND PROPERTY EXPORT_TARGETS "${TARGET_UID}")
-      if (ARGN_RUNTIME_DESTINATION OR ARGN_LIBRARY_DESTINATION)
-        basis_set_project_property (APPEND PROPERTY INSTALL_EXPORT_TARGETS "${TARGET_UID}")
-      endif ()
-    else ()
-      set (EXPORT_OPT)
-    endif ()
-    set (DESTINATION_OPTS)
-    
-    # enable runtime components
     if (ARGN_RUNTIME_DESTINATION)
-       list (APPEND DESTINATION_OPTS
+      list (APPEND DESTINATION_OPTS
         RUNTIME
           DESTINATION "${ARGN_RUNTIME_DESTINATION}"
           COMPONENT   "${ARGN_RUNTIME_COMPONENT}"
       )
     endif ()
-    
-    # enable static and shared library components
     if (ARGN_LIBRARY_DESTINATION)
       list (APPEND DESTINATION_OPTS
         LIBRARY
@@ -2066,8 +2047,8 @@ function (basis_add_library_target TARGET_NAME)
           COMPONENT   "${ARGN_LIBRARY_COMPONENT}"
       )
     endif ()
-    
-    #install all enabled runtime and library components
+  endif ()
+  if (DESTINATION_OPTS)
     install (TARGETS ${TARGET_UID} ${EXPORT_OPT} ${DESTINATION_OPTS})
   endif ()
   # done
@@ -2860,11 +2841,7 @@ function (basis_build_script TARGET_UID)
   endforeach ()
   # export target
   if (EXPORT)
-    if (TEST)
-      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
-    else ()
-      basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
-    endif ()
+    basis_add_custom_export_target (${TARGET_UID} ${TEST})
   endif ()
   # install script
   if (INSTALL_DIRECTORY)
@@ -3100,11 +3077,7 @@ function (basis_build_script_library TARGET_UID)
   endforeach ()
   # export target
   if (EXPORT)
-    if (TEST)
-      basis_set_project_property (APPEND PROPERTY TEST_EXPORT_TARGETS "${TARGET_UID}")
-    else ()
-      basis_set_project_property (APPEND PROPERTY CUSTOM_EXPORT_TARGETS "${TARGET_UID}")
-    endif ()
+    basis_add_custom_export_target (${TARGET_UID} ${TEST})
   endif ()
   # add installation rule
   foreach (INSTALL_FILE IN LISTS FILES_TO_INSTALL)
