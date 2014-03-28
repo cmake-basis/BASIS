@@ -18,10 +18,7 @@ Either clone the Git repository:
     
     git clone https://github.com/schuhschuh/cmake-basis.git
 
-or download a pre-packaged ``.tar.gz`` of the latest BASIS release:
-
-- `Download CMake BASIS v3.0.0 as .zip    <https://github.com/schuhschuh/cmake-basis/archive/v3.0.0.zip>`__
-- `Download CMake BASIS v3.0.0 as .tar.gz <https://github.com/schuhschuh/cmake-basis/archive/v3.0.0.tar.gz>`__
+or download the `latest BASIS release package <https://github.com/schuhschuh/cmake-basis/releases>`__.
 
 .. seealso:: The :doc:`Quick Start Guide <quickstart>` can help you get up and running.
 
