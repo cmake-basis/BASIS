@@ -1014,6 +1014,7 @@ function (basis_add_mcc_target TARGET_NAME)
   basis_configure_sources (SOURCES ${SOURCES})
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
+  basis_get_target_name (OUTPUT_NAME "${TARGET_UID}")
   get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
   get_directory_property (LINK_DIRS    LINK_DIRECTORIES)
   _set_target_properties (
@@ -1032,7 +1033,7 @@ function (basis_add_mcc_target TARGET_NAME)
       RUNTIME_OUTPUT_DIRECTORY  "${RUNTIME_OUTPUT_DIRECTORY}"
       RUNTIME_INSTALL_DIRECTORY "${ARGN_RUNTIME_DESTINATION}"
       RUNTIME_COMPONENT         "${ARGN_RUNTIME_COMPONENT}"
-      OUTPUT_NAME               "${TARGET_NAME}"
+      OUTPUT_NAME               "${OUTPUT_NAME}"
       SUFFIX                    "${SUFFIX}"
       COMPILE_FLAGS             "${COMPILE_FLAGS}"
       COMPILE                   "${COMPILE}"
