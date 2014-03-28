@@ -19,4 +19,4 @@
 void foo();
 
 
-#endif FOO_H_
+#endif // FOO_H_
