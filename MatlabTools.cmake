@@ -1364,7 +1364,7 @@ function (basis_build_mex_file TARGET_UID)
   )
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} ${TEST})
+    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
   endif ()
   # install MEX-file
   if (LIBRARY_INSTALL_DIRECTORY)
@@ -1812,7 +1812,7 @@ function (basis_build_mcc_target TARGET_UID)
   endif ()
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} ${TEST})
+    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
   endif ()
   # install executable or library
   if (LIBRARY)

@@ -1742,7 +1742,7 @@ function (basis_add_executable_target TARGET_NAME)
   # export
   set (EXPORT_OPT)
   if (EXPORT)
-    basis_add_export_target (EXPORT_OPT ${TARGET_UID} ${TEST} ${ARGN_DESTINATION})
+    basis_add_export_target (EXPORT_OPT ${TARGET_UID} "${TEST}" ${ARGN_DESTINATION})
   endif ()
   # installation
   if (ARGN_DESTINATION)
@@ -2021,7 +2021,7 @@ function (basis_add_library_target TARGET_NAME)
   # export
   set (EXPORT_OPT)
   if (EXPORT)
-    basis_add_export_target (EXPORT_OPT ${TARGET_UID} ${TEST} ${ARGN_RUNTIME_DESTINATION} ${ARGN_LIBRARY_DESTINATION})
+    basis_add_export_target (EXPORT_OPT ${TARGET_UID} "${TEST}" ${ARGN_RUNTIME_DESTINATION} ${ARGN_LIBRARY_DESTINATION})
   endif ()
   # installation
   set (DESTINATION_OPTS)
@@ -2841,7 +2841,7 @@ function (basis_build_script TARGET_UID)
   endforeach ()
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} ${TEST})
+    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
   endif ()
   # install script
   if (INSTALL_DIRECTORY)
@@ -2924,6 +2924,7 @@ function (basis_build_script_library TARGET_UID)
       SCRIPT_DEFINITIONS         # CMake code to set variables used to configure modules
       SCRIPT_DEFINITIONS_FILE    # script configuration file
       LINK_DEPENDS               # paths of script modules/packages used by the modules of this library
+      TEST                       # whether this script is used for testing only
       EXPORT                     # whether to export this target
       COMPILE                    # whether to compile the modules/library if applicable
       SOURCES                    # source files of module scripts
@@ -3077,7 +3078,7 @@ function (basis_build_script_library TARGET_UID)
   endforeach ()
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} ${TEST})
+    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
   endif ()
   # add installation rule
   foreach (INSTALL_FILE IN LISTS FILES_TO_INSTALL)
