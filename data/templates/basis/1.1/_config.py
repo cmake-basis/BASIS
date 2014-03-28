@@ -3,13 +3,6 @@
 # ------------------------------------------------------------------------------
 # required project files
 required = [
-  # root documentation files
-  'AUTHORS.md',
-  'README.md',
-  'INSTALL.md',
-  'COPYING.txt',
-  'ChangeLog.txt',
-  # root CMake configuration
   'CMakeLists.txt',
   'BasisProject.cmake'
 ]
@@ -77,6 +70,19 @@ options = {
     'path' : [ 'data/CMakeLists.txt' ]
   },
   # documentation
+  'readme' : {
+    'desc' : 'Root documentation files: AUTHORS, README, INSTALL, and COPYING file.',
+    'path' : [
+               'AUTHORS.md',
+               'README.md',
+               'INSTALL.md',
+               'COPYING.txt'
+             ]
+  },
+  'changelog': {
+    'desc' : 'Add ChangeLog.txt file for release notes.',
+    'path' : [ 'ChangeLog.txt' ]
+  },
   'doc' : {
     'desc' : 'Add/remove (basic) documentation files.',
     'path' : [
@@ -91,7 +97,6 @@ options = {
   'rst' : {
     'desc' : 'Add/remove reStructuredText (.rst) files for software manual/web site.',
     'path' : [
-
                'doc/apidoc.rst',
                'doc/changelog.rst',
                'doc/contents.rst',
@@ -112,9 +117,8 @@ options = {
                'doc/apidoc/namespaces.rst',
                'doc/apidoc/classlist.rst',
                'doc/howto/do-this.rst'
-               
              ],
-    'deps' : [ 'doc' ]
+    'deps' : [ 'changelog', 'doc' ]
   },
   # usage example
   'example' : {
@@ -159,11 +163,11 @@ presets = {
   },
   'default' : {
     'desc' : 'Choose default project template.',
-    'args' : [ 'doc', 'rst', 'include', 'src', 'test' ]
+    'args' : [ 'readme', 'changelog', 'doc', 'rst', 'include', 'src', 'test' ]
   },
   'toplevel' : {
     'desc' : 'Create top-level project.',
-    'args' : [ 'doc', 'rst', 'modules' ]
+    'args' : [ 'readme', 'changelog', 'doc', 'rst', 'modules' ]
   },
   'module' : {
     'desc' : 'Create module/subproject of top-level project.',
