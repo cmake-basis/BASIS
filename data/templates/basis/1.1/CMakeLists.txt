@@ -48,7 +48,7 @@ if (NOT BASIS_FOUND)
   endif ()
   # download and install BASIS in build tree of project
   basis_bootstrap(
-    VERSION 3.0.0          # CMake BASIS version to download
+    VERSION 3.1.0          # CMake BASIS version to download
     USE_MATLAB       FALSE # Enable/disable Matlab support
     USE_PythonInterp FALSE # Enable/disable Python support
     USE_JythonInterp FALSE # Enable/disable Jython support
