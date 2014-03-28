@@ -63,7 +63,7 @@ echo "
 ################################################################################
 "
 
-    basisproject create --name HelloBasis --description "This is a BASIS project." --root "${LOCALDIR}/src/hellobasis" --full
+    basisproject create --name HelloBasis --description "This is a BASIS project." --root "${LOCALDIR}/src/hellobasis"
 
 echo "
 ################################################################################
