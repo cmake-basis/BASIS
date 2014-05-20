@@ -63,32 +63,27 @@ and the PDF docs will be in ``~/docProject-install/doc/docProject_Software_Manua
 Serving Website Locally
 -----------------------
 
-Note that simply opening the documentation will not work correctly
-due to security settings built into modern browsers. Instead you will
-need to display your docs via a server. We have found that the
-`node.js http-sever`_ app works well for this purpose.
+Note that simply opening the documentation will not render all pages
+correctly due to the use of the iframe HTML tag to embed the Doxygen
+generated API docs and the security settings built into modern browsers.
+Instead, display your docs via a server, for example, using Python by
+running the following command in the root directory of the (installed)
+documentation.
 
-Install ``npm``:
+Python 2:
 
-.. code-block:: bash
-    
-    curl https://npmjs.org/install.sh | sh
-    
-Once you have ``npm``, install ``http-server``:
+.. code-block:: python
 
-.. code-block:: bash
-    
-    npm install http-server -g
-    
-Serve up the docs:
+  python -m SimpleHTTPServer
 
-.. code-block:: bash
-    
-    cd ~/docProject-build/doc/html
-    http-server .
+Python 3:
 
-Then visit your documentation website by typing 
-the address `localhost:8080` into your web browser.
+.. code-block:: python
+
+  python -m http.server
+
+Then go to `localhost:8000 <http://localhost:8000>`__ to view the pages.
+
 
 Doxygen Documentation
 =====================
