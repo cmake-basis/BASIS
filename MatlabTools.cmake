@@ -977,8 +977,8 @@ function (basis_add_mcc_target TARGET_NAME)
     # TODO implement generation of Windows Command on Windows
     set (CONTACT)
     if (PROJECT_CONTACT)
-      set (CONTACT "\n\nYou may further want to contact ${CONTACT} in order to ask for"
-                   " a binary distribution package which contains pre-build binaries"
+      set (CONTACT "\n\nYou may further want to contact ${PROJECT_CONTACT} in order to ask"
+                   " for a binary distribution package which contains pre-build binaries"
                    " created using the MATLAB Compiler and download the MATLAB Compiler"
                    " Runtime only if no MATLAB Compiler license is available to you.")
       basis_list_to_string (CONTACT ${CONTACT})
