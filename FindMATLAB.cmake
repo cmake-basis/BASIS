@@ -215,9 +215,9 @@ if (_MATLAB_EXECUTABLE_NAMES OR _MATLAB_OPTIONAL_EXECUTABLE_NAMES)
         mark_as_advanced (MATLAB_EXECUTABLE)
       else ()
         string (TOUPPER "${_MATLAB_EXE}" _MATLAB_EXE_U)
-		if (WIN32 AND _MATLAB_EXE MATCHES "mex")
-		  list (APPEND _MATLAB_EXE "${_MATLAB_EXE}.bat")
-		endif ()
+        if (WIN32 AND _MATLAB_EXE MATCHES "mex")
+          list (APPEND _MATLAB_EXE "${_MATLAB_EXE}.bat")
+        endif ()
         find_program (
           MATLAB_${_MATLAB_EXE_U}_EXECUTABLE
             NAMES ${_MATLAB_EXE}
