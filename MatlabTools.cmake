@@ -1321,10 +1321,10 @@ function (basis_build_mex_file TARGET_UID)
     # command allows for inspection of command output for error messages
     # and specification of timeout
     COMMAND "${CMAKE_COMMAND}"
-          "-DCOMMAND=${COMMAND}"
+            "-DCOMMAND=${COMMAND}"
             "-DWORKING_DIRECTORY=${BUILD_DIR}"
             "-DTIMEOUT=${BASIS_MEX_TIMEOUT}"
-            "-DERROR_EXPRESSION=[E|e]rror"
+            "-DERROR_EXPRESSION=[E|e]rror:"
             "-DOUTPUT_FILE=${BUILD_LOG}"
             "-DERROR_FILE=${BUILD_LOG}"
             "-DVERBOSE=OFF"
