@@ -1007,7 +1007,19 @@ always backed-up, using .mine as suffix for the file name of the backup in this 
     # command: update
     update_parser = subparsers.add_parser('update', parents=[shared_parser,depends_parser,template_parser],
             help="""Modify an existing project.""")
-    
+
+    # --original
+    original_template_help="""Root directory of project template which the already existing project
+was created from or last updated to. By default, the path of the original template
+is extracted from the BasisProject.cmake file of the project. This path can be relative to
+to the installation directory of the default templates. If this option is specified
+on the command-line, paths can also be relative to the current working directory.
+Absolute paths are always possible. If the specified previous template is not available,
+an automatic upgrade of project files to a newer template is not feasible."""
+
+    update_parser.add_argument('--original', metavar='<dir>', default=None,
+            type=os.path.abspath, dest='original_template', help=original_template_help)
+
     # --force
     update_parser.add_argument('-f', '--force', action='store_true', default=False,
             help="""Enable removal of non-empty directories and modified project files.
@@ -1021,15 +1033,8 @@ been edited since their creation are removed.""")
 
     # --original
     upgrade_parser.add_argument('--original', metavar='<dir>', default=None,
-            type=os.path.abspath, dest='original_template',
-            help="""Root directory of project template which the already existing project
-was created from or last updated to. By default, the path of the original template
-is extracted from the BasisProject.cmake file of the project. This path can be relative to
-to the installation directory of the default templates. If this option is specified
-on the command-line, paths can also be relative to the current working directory.
-Absolute paths are always possible. If the specified previous template is not available,
-an automatic upgrade of project files to a newer template is not feasible.""")
-    
+            type=os.path.abspath, dest='original_template', help=original_template_help)
+
     # ----------------------------------------------------------------------------
     # command: help
 
