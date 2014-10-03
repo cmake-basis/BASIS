@@ -1186,25 +1186,27 @@ function (basis_configure_script_libraries)
         list (APPEND EXPRESSIONS "${LIB_DIR}/**${MODULE_EXT}")
       endforeach ()
       file (GLOB_RECURSE SOURCES ${EXPRESSIONS})
-      basis_get_source_language (SOURCE_LANGUAGE ${SOURCES}) # in particular required to
-                                                             # not falsely build Jython modules
-                                                             # as Python library
-      if (SOURCE_LANGUAGE MATCHES "UNKNOWN|AMBIGUOUS")
-        message (WARNING "Failed to auto-detect scripting language of modules in ${LIB_DIR}!"
-                         " Skipping source files matching one of the extensions [${${LANGUAGE}_EXT}].")
-      elseif (SOURCE_LANGUAGE MATCHES "${LANGUAGE}")
-        set (TARGET_NAME "${${LANGUAGE}_LIBRARY_TARGET}")
-        basis_add_library (${TARGET_NAME} ${EXPRESSIONS} LANGUAGE ${LANGUAGE})
-        basis_set_target_properties (
-          ${TARGET_NAME}
-          PROPERTIES
-            SOURCE_DIRECTORY          "${LIB_DIR}"
-            LIBRARY_OUTPUT_DIRECTORY  "${BINARY_${LANGUAGE}_LIBRARY_DIR}"
-            LIBRARY_INSTALL_DIRECTORY "${INSTALL_${LANGUAGE}_SITE_DIR}"
-            PREFIX                    ""
-        )
-        list (APPEND TARGETS ${TARGET_NAME})
-        break ()
+      if (SOURCES)
+        basis_get_source_language (SOURCE_LANGUAGE ${SOURCES}) # in particular required to
+                                                               # not falsely build Jython modules
+                                                               # as Python library
+        if (SOURCE_LANGUAGE MATCHES "UNKNOWN|AMBIGUOUS")
+          message (WARNING "Failed to auto-detect scripting language of modules in ${LIB_DIR}!"
+                           " Skipping source files matching one of the extensions [${${LANGUAGE}_EXT}].")
+        elseif (SOURCE_LANGUAGE MATCHES "${LANGUAGE}")
+          set (TARGET_NAME "${${LANGUAGE}_LIBRARY_TARGET}")
+          basis_add_library (${TARGET_NAME} ${EXPRESSIONS} LANGUAGE ${LANGUAGE})
+          basis_set_target_properties (
+            ${TARGET_NAME}
+            PROPERTIES
+              SOURCE_DIRECTORY          "${LIB_DIR}"
+              LIBRARY_OUTPUT_DIRECTORY  "${BINARY_${LANGUAGE}_LIBRARY_DIR}"
+              LIBRARY_INSTALL_DIRECTORY "${INSTALL_${LANGUAGE}_SITE_DIR}"
+              PREFIX                    ""
+          )
+          list (APPEND TARGETS ${TARGET_NAME})
+          break ()
+        endif ()
       endif ()
     endforeach ()
   endforeach ()
