@@ -46,6 +46,30 @@ macro (basis_remove_duplicates_config NAME)
   endif ()
 endmacro ()
 
+# ----------------------------------------------------------------------------
+macro (basis_is_cached VAR ENTRY)
+  if (DEFINED ${ENTRY})
+    get_property (${VAR} CACHE ${ENTRY} PROPERTY TYPE SET)
+  else ()
+    set (${VAR} FALSE)
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+macro (basis_set_or_update_value VAR)
+  basis_is_cached (_CACHED ${VAR})
+  if (_CACHED)
+    if (ARGC GREATER 1)
+      set_property (CACHE ${VAR} PROPERTY VALUE ${ARGN})
+    else ()
+      set (${VAR} "" CACHE INTERNAL "" FORCE)
+    endif ()
+  else ()
+    set (${VAR} ${ARGN})
+  endif ()
+  unset (_CACHED)
+endmacro ()
+
 # ============================================================================
 # general
 # ============================================================================

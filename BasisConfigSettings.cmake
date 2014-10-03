@@ -45,9 +45,26 @@ if (PKGS)
   list (REMOVE_DUPLICATES PKGS)
 endif ()
 
+if (PKGS)
+  set (DEPENDS_CONFIG "set (_depwarn \" set to different value than during the configuration of ${PROJECT_NAME}.\""
+                      "              \" Using different versions of a dependency may cause inconsistencies!\")")
+endif ()
 foreach (PKG IN LISTS PKGS)
-  set (DEPENDS_CONFIG "${DEPENDS_CONFIG}# ${PKG}\nset (${PKG}_DIR \"${${PKG}_DIR}\")\n")
+  list (APPEND DEPENDS_CONFIG
+    "# ${PKG}"
+    "if (${PKG}_DIR)"
+    "  if (NOT ${PKG}_DIR STREQUAL \"${${PKG}_DIR}\")"
+    "    message (WARNING ${PKG}_DIR \${_depwarn})"
+    "  endif ()"
+    "else ()"
+    "  basis_set_or_update_value (${PKG}_DIR \"${${PKG}_DIR}\")"
+    "endif ()"
+  )
 endforeach ()
+if (PKGS)
+  list (APPEND DEPENDS_CONFIG "unset (_depwarn)")
+endif ()
+basis_join ("${DEPENDS_CONFIG}" "\n" DEPENDS_CONFIG)
 
 # ============================================================================
 # build tree configuration settings
