@@ -1398,6 +1398,11 @@ macro (basis_project_initialize)
     cmake_policy (SET CMP0017 NEW)
   endif ()
 
+  if (POLICY CMP0048)
+    # PROJECT_VERSION et al. variables are set by basis_project instead
+    cmake_policy (SET CMP0048 OLD)
+  endif ()
+
   # --------------------------------------------------------------------------
   # reset
 
