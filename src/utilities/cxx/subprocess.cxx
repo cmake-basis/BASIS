@@ -28,10 +28,6 @@
 #    include <sys/errno.h> // errno, ECHILD
 #    include <stdio.h>     // strerror_r
 #endif
-#if MACOS
-#    include <vproc.h>     // vproc_transaction_begin, required for work-around
-                           // of a bug in libgcov in Mac OS X Snow Leopard
-#endif
 
 #include <basis/except.h>
 #include <basis/subprocess.h>
@@ -397,12 +393,6 @@ bool Subprocess::popen(const CommandLine& args,
         if (fdserr[1] != -1) close(fdserr[1]);
         return false;
     }
-
-    // On Mac OS X Snow Leopard, there is a bug in the libgcov library which
-    // is nicely traced and described at http://rachelbythebay.com/w/2011/07/12/forkcrash/
-    #if MACOS
-    vproc_transaction_begin(0);
-    #endif
 
     if (_info.pid == 0) {
 
