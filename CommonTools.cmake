@@ -2345,8 +2345,15 @@ function (basis_configure_sources LIST_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (ARGN "KEEP_DOT_IN_SUFFIX" "BINARY_DIRECTORY" "" ${ARGN})
 
-  if (ARGN_BINARY_DIRECTORY AND NOT ARGN_BINARY_DIRECTORY MATCHES "^${PROJECT_BINARY_DIR}")
-    message (FATAL_ERROR "Specified BINARY_DIRECTORY must be inside the build tree!")
+  # ensure that specified BINARY_DIRECTORY is inside build tree of project
+  if (ARGN_BINARY_DIRECTORY)
+    get_filename_component (_binpath "${ARGN_BINARY_DIRECTORY}" ABSOLUTE)
+    file (RELATIVE_PATH _relpath "${PROJECT_BINARY_DIR}" "${_binpath}")
+    if (_relpath MATCHES "^\\.\\./")
+      message (FATAL_ERROR "Specified BINARY_DIRECTORY must be inside the build tree!")
+    endif ()
+    unset (_binpath)
+    unset (_relpath)
   endif ()
 
   # configure source files
