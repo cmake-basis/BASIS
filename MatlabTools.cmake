@@ -818,9 +818,9 @@ endfunction ()
 #         (default: @c INSTALL_ARCHIVE_DIR)</td>
 #   </tr>
 #   <tr>
-#     @tp @b INCLUDE_DESTINATION dir @endtp
+#     @tp @b HEADER_DESTINATION dir @endtp
 #     <td>Installation directory of the library header file relative to
-#         @c CMAKE_INSTALL_PREFIX. If "none" (case-insensitive) is given as argument or
+#         @c INSTALL_INCLUDE_DIR. If "none" (case-insensitive) is given as argument or
 #         an executable is build, no installation rule for the library header file is added.
 #         (default: @c INSTALL_INCLUDE_DIR)</td>
 #   </tr>
@@ -875,7 +875,7 @@ function (basis_add_mcc_target TARGET_NAME)
   CMAKE_PARSE_ARGUMENTS (
     ARGN
       "SHARED;EXECUTABLE;LIBEXEC;EXPORT;NOEXPORT"
-      "COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;INCLUDE_DESTINATION"
+      "COMPONENT;RUNTIME_COMPONENT;LIBRARY_COMPONENT;DESTINATION;RUNTIME_DESTINATION;LIBRARY_DESTINATION;HEADER_DESTINATION"
       ""
     ${ARGN}
   )
@@ -943,26 +943,22 @@ function (basis_add_mcc_target TARGET_NAME)
     if (NOT ARGN_LIBRARY_DESTINATION)
       set (ARGN_LIBRARY_DESTINATION "${ARGN_DESTINATION}")
     endif ()
-    if (NOT ARGN_INCLUDE_DESTINATION)
-      set (ARGN_INCLUDE_DESTINATION "${ARGN_DESTINATION}")
+    if (NOT ARGN_HEADER_DESTINATION)
+      set (ARGN_HEADER_DESTINATION "${ARGN_DESTINATION}")
     endif ()
   endif ()
-  if (NOT ARGN_RUNTIME_DESTINATION)
-    if (TEST)
-      set (ARGN_RUNTIME_DESTINATION) # do not install
+  if (NOT ARGN_RUNTIME_DESTINATION AND NOT TEST)
+    if (ARGN_LIBEXEC)
+      set (ARGN_RUNTIME_DESTINATION "${INSTALL_LIBEXEC_DIR}")
     else ()
-      if (ARGN_LIBEXEC)
-        set (ARGN_RUNTIME_DESTINATION "${INSTALL_LIBEXEC_DIR}")
-      else ()
-        set (ARGN_RUNTIME_DESTINATION "${INSTALL_RUNTIME_DIR}")
-      endif ()
+      set (ARGN_RUNTIME_DESTINATION "${INSTALL_RUNTIME_DIR}")
     endif ()
   endif ()
-  if (NOT ARGN_LIBRARY_DESTINATION)
+  if (NOT ARGN_LIBRARY_DESTINATION AND NOT TEST)
     set (ARGN_LIBRARY_DESTINATION "${INSTALL_LIBRARY_DIR}")
   endif ()
-  if (NOT ARGN_INCLUDE_DESTINATION)
-    set (ARGN_INCLUDE_DESTINATION "${INSTALL_INCLUDE_DIR}")
+  if (NOT ARGN_HEADER_DESTINATION AND NOT TEST)
+    set (ARGN_HEADER_DESTINATION ".")
   endif ()
   if (ARGN_RUNTIME_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
     set (ARGN_RUNTIME_DESTINATION)
@@ -970,18 +966,17 @@ function (basis_add_mcc_target TARGET_NAME)
   if (ARGN_LIBRARY_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
     set (ARGN_LIBRARY_DESTINATION)
   endif ()
-  if (ARGN_INCLUDE_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
-    set (ARGN_INCLUDE_DESTINATION)
+  if (ARGN_HEADER_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
+    set (ARGN_HEADER_DESTINATION)
   endif ()
   # whether to compile and compilation flags (for mcc)
-  if (TYPE MATCHES "LIBRARY" AND NOT MATLAB_MCC_EXECUTABLE)
-    message (FATAL_ERROR "MATLAB Compiler not found! It is required to build target ${TARGET_UID}."
-                         " Set MATLAB_DIR and/or MATLAB_MCC_EXECUTABLE manually and try again.")
-  endif ()
-  if ((BASIS_COMPILE_MATLAB AND MATLAB_MCC_EXECUTABLE) OR TYPE MATCHES "LIBRARY")
+  if ("^${TYPE}$" STREQUAL "^LIBRARY$")
     set (COMPILE TRUE)
-  else ()
-    if (BASIS_COMPILE_MATLAB)
+  elseif (BASIS_COMPILE_MATLAB)
+    if (MATLAB_MCC_EXECUTABLE)
+      set (COMPILE TRUE)
+    else ()
+      set (COMPILE FALSE)
       message (WARNING "MATLAB Compiler not found. Will generate a wrapper script for target"
                        " ${TARGET_UID} which executes the MATLAB code using the -r option of"
                        " the MATLAB interpreter. It is recommended to compile the MATLAB code"
@@ -989,6 +984,7 @@ function (basis_add_mcc_target TARGET_NAME)
                        " that the MATLAB Compiler is available and check the value of the"
                        " advanced MATLAB_MCC_EXECUTABLE variable in CMake.")
     endif ()
+  else ()
     set (COMPILE FALSE)
   endif ()
   if (WIN32 AND NOT COMPILE)
@@ -1012,9 +1008,6 @@ function (basis_add_mcc_target TARGET_NAME)
                          " MATLAB_MCC_EXECUTABLE variable in CMake or use this package"
                          " on a Unix system instead.${CONTACT}")
   endif ()
-  if (EXECUTABLE)
-    set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
-  endif ()
   if (COMPILE)
     if (NOT MATLAB_MCC_EXECUTABLE)
       find_package (MATLAB COMPONENTS mcc QUIET)
@@ -1024,8 +1017,15 @@ function (basis_add_mcc_target TARGET_NAME)
       find_package (MATLAB COMPONENTS matlab QUIET)
     endif ()
   endif ()
+  if (COMPILE AND NOT MATLAB_MCC_EXECUTABLE)
+    message (FATAL_ERROR "MATLAB Compiler not found! It is required to build target ${TARGET_UID}."
+                         " Set MATLAB_DIR and/or MATLAB_MCC_EXECUTABLE manually and try again.")
+  endif ()
+  if ("^${TYPE}$" STREQUAL "^EXECUTABLE$")
+    set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
+  endif ()
   # output file name prefix/suffix
-  if (EXECUTABLE)
+  if ("^${TYPE}$" STREQUAL "^EXECUTABLE$")
     set (PREFIX)
     if (WIN32 AND "^${COMPILE_FLAGS}$" STREQUAL "^NOMCC$")
       set (SUFFIX ".cmd")
@@ -1035,7 +1035,7 @@ function (basis_add_mcc_target TARGET_NAME)
   else ()
     if (WIN32)
       set (PREFIX)
-      set (SUFFIX .dll)
+      set (SUFFIX .lib) # link library file extension
     elseif (APPLE)
       set (PREFIX lib)
       set (SUFFIX .dylib)
@@ -1063,7 +1063,7 @@ function (basis_add_mcc_target TARGET_NAME)
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       LIBRARY_OUTPUT_DIRECTORY  "${LIBRARY_OUTPUT_DIRECTORY}"
       LIBRARY_INSTALL_DIRECTORY "${ARGN_LIBRARY_DESTINATION}"
-      LIBRARY_INCLUDE_DIRECTORY "${ARGN_INCLUDE_DESTINATION}"
+      LIBRARY_HEADER_DIRECTORY  "${ARGN_HEADER_DESTINATION}"
       LIBRARY_COMPONENT         "${ARGN_LIBRARY_COMPONENT}"
       RUNTIME_OUTPUT_DIRECTORY  "${RUNTIME_OUTPUT_DIRECTORY}"
       RUNTIME_INSTALL_DIRECTORY "${ARGN_RUNTIME_DESTINATION}"
@@ -1447,8 +1447,8 @@ function (basis_build_mcc_target TARGET_UID)
       SOURCE_DIRECTORY
       BINARY_DIRECTORY
       LIBRARY_OUTPUT_DIRECTORY
-      LIBRARY_INCLUDE_DIRECTORY
       LIBRARY_INSTALL_DIRECTORY
+      LIBRARY_HEADER_DIRECTORY
       LIBRARY_COMPONENT
       RUNTIME_OUTPUT_DIRECTORY
       RUNTIME_INSTALL_DIRECTORY
@@ -1501,19 +1501,20 @@ function (basis_build_mcc_target TARGET_UID)
     set (OUTPUT_NAME "${PREFIX}${OUTPUT_NAME}")
   endif ()
   if (SUFFIX)
-    set (OUTPUT_NAME_WITH_EXTENSION "${OUTPUT_NAME}${SUFFIX}")
+    set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
+  get_filename_component (OUTPUT_NAME_WE "${OUTPUT_NAME}" NAME_WE)
   # split compile flags at spaces into list
   basis_string_to_list (MCC_USER_FLAGS "${COMPILE_FLAGS}")
   # initialize dependencies of custom build command
   set (DEPENDS ${SOURCES})
   # build output file and comment
-  file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME_WITH_EXTENSION}")
+  file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_DIR}/${OUTPUT_NAME}")
   if (LIBRARY)
-    set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WITH_EXTENSION}")
+    set (BUILD_OUTPUT "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
     set (BUILD_COMMENT "Building MATLAB library ${REL}...")
   else ()
-    set (BUILD_OUTPUT "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WITH_EXTENSION}")
+    set (BUILD_OUTPUT "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}")
     set (BUILD_COMMENT "Building MATLAB executable ${REL}...")
   endif ()
   # --------------------------------------------------------------------------
@@ -1721,7 +1722,7 @@ function (basis_build_mcc_target TARGET_UID)
       list (APPEND MCC_ARGS -m)                                 # build standalone application
     endif ()
     list (APPEND MCC_ARGS -d "${BUILD_DIR}")                    # (temp) output directory
-    list (APPEND MCC_ARGS -o "${OUTPUT_NAME}")                  # output name
+    list (APPEND MCC_ARGS -o "${OUTPUT_NAME_WE}")               # output name (excl. extension)
     list (APPEND MCC_ARGS ${MAIN_SOURCE})                       # main source M-file
     foreach (LIB ${LINK_LIBS})                                  # link libraries, e.g. MEX-files
       list (FIND MCC_ARGS "${LIB}" IDX)
@@ -1759,26 +1760,26 @@ function (basis_build_mcc_target TARGET_UID)
     if (LIBRARY)
       set (
         POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy
-                           "${BUILD_DIR}/${OUTPUT_NAME_WITH_EXTENSION}"
-                           "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WITH_EXTENSION}"
+                           "${BUILD_DIR}/${OUTPUT_NAME}"
+                           "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
                    COMMAND "${CMAKE_COMMAND}" -E copy
-                           "${BUILD_DIR}/${OUTPUT_NAME}.h"
-                           "${BINARY_INCLUDE_DIR}/${OUTPUT_NAME}.h"
+                           "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
+                           "${BINARY_INCLUDE_DIR}/${LIBRARY_HEADER_DIRECTORY}/${OUTPUT_NAME_WE}.h"
       )
       if (WIN32)
         list (APPEND POST_BUILD_COMMAND COMMAND "${CMAKE_COMMAND}" -E copy
-                                                "${BUILD_DIR}/${OUTPUT_NAME}.lib"
-                                                "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}.lib")
+                                                "${BUILD_DIR}/${OUTPUT_NAME_WE}.dll"
+                                                "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.dll")
       endif ()
     else ()
       if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         # TODO: This file should be regenerated if it is missing.
-        file (WRITE "${BUILD_DIR}/${OUTPUT_NAME}" "#!/bin/bash\nexec $(dirname $BASH_SOURCE)/${OUTPUT_NAME}.app/Contents/MacOS/${OUTPUT_NAME}")
+        file (WRITE "${BUILD_DIR}/${OUTPUT_NAME}" "#!/bin/bash\nexec $(dirname $BASH_SOURCE)/${OUTPUT_NAME_WE}.app/Contents/MacOS/${OUTPUT_NAME_WE}")
         execute_process (COMMAND chmod +x "${BUILD_DIR}/${OUTPUT_NAME}")
         set (
           POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                             "${BUILD_DIR}/${OUTPUT_NAME}.app"
-                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}.app"
+                             "${BUILD_DIR}/${OUTPUT_NAME_WE}.app"
+                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.app"
                      COMMAND "${CMAKE_COMMAND}" -E copy
                              "${BUILD_DIR}/${OUTPUT_NAME}"
                              "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
@@ -1830,57 +1831,55 @@ function (basis_build_mcc_target TARGET_UID)
   endif ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean"
-  set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${BUILD_OUTPUT})
+  set (ADDITIONAL_MAKE_CLEAN_FILES "${BUILD_OUTPUT}")
   if (COMPILE)
-    set_property (
-      DIRECTORY
-      APPEND PROPERTY
-        ADDITIONAL_MAKE_CLEAN_FILES
-          "${BUILD_DIR}/${OUTPUT_NAME}.prj"
-          "${BUILD_DIR}/mccExcludedFiles.log"
-          "${BUILD_DIR}/mccBuild.log"
-          "${BUILD_DIR}/readme.txt"
+    list (APPEND ADDITIONAL_MAKE_CLEAN_FILES
+      "${BUILD_DIR}/${OUTPUT_NAME_WE}.prj"
+      "${BUILD_DIR}/mccExcludedFiles.log"
+      "${BUILD_DIR}/mccBuild.log"
+      "${BUILD_DIR}/readme.txt"
     )
     if (LIBRARY)
-      set_property (
-        DIRECTORY
-        APPEND PROPERTY
-          ADDITIONAL_MAKE_CLEAN_FILES
-            "${BUILD_DIR}/${OUTPUT_NAME}.h"
-            "${BUILD_DIR}/${OUTPUT_NAME}.c"
-            "${BUILD_DIR}/${OUTPUT_NAME}.exports"
+      list (APPEND ADDITIONAL_MAKE_CLEAN_FILES
+        "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
+        "${BUILD_DIR}/${OUTPUT_NAME_WE}.c"
+        "${BUILD_DIR}/${OUTPUT_NAME_WE}.exports"
       )
     else ()
-      set_property (
-        DIRECTORY
-        APPEND PROPERTY
-          ADDITIONAL_MAKE_CLEAN_FILES
-            "${BUILD_DIR}/${OUTPUT_NAME}"
-            "${BUILD_DIR}/run_${OUTPUT_NAME}.sh"
-            "${BUILD_DIR}/${OUTPUT_NAME}_main.c"
-            "${BUILD_DIR}/${OUTPUT_NAME}_mcc_component_data.c"
+      list (APPEND ADDITIONAL_MAKE_CLEAN_FILES
+        "${BUILD_DIR}/${OUTPUT_NAME}"
+        "${BUILD_DIR}/run_${OUTPUT_NAME_WE}.sh"
+        "${BUILD_DIR}/${OUTPUT_NAME_WE}_main.c"
+        "${BUILD_DIR}/${OUTPUT_NAME_WE}_mcc_component_data.c"
       )
     endif ()
   endif ()
+  set_property (DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${ADDITIONAL_MAKE_CLEAN_FILES}")
+  unset (ADDITIONAL_MAKE_CLEAN_FILES)
   # export target
   if (EXPORT)
     basis_add_custom_export_target (${TARGET_UID} "${TEST}")
   endif ()
   # install executable or library
   if (LIBRARY)
-    if (LIBRARY_INCLUDE_DIRECTORY)
+    if (LIBRARY_HEADER_DIRECTORY)
+      if (LIBRARY_HEADER_DIRECTORY STREQUAL ".")
+        set (INCLUDE_DIR_SUFFIX)
+      else ()
+        set (INCLUDE_DIR_SUFFIX "/${LIBRARY_HEADER_DIRECTORY}")
+      endif ()
       install (
-        FILES       "${BUILD_DIR}/${OUTPUT_NAME}.h"
-        DESTINATION "${LIBRARY_INCLUDE_DIRECTORY}"
+        FILES       "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
+        DESTINATION "${INSTALL_INCLUDE_DIR}${INCLUDE_DIR_SUFFIX}"
         COMPONENT   "${LIBRARY_COMPONENT}"
       )
     endif ()
     if (LIBRARY_INSTALL_DIRECTORY)
       if (WIN32)
         install (
-          FILES       "${BUILD_DIR}/${OUTPUT_NAME}.lib"
-          DESTINATION "${LIBRARY_INSTALL_DIRECTORY}"
-          COMPONENT   "${LIBRARY_COMPONENT}"
+          FILES       "${BUILD_DIR}/${OUTPUT_NAME_WE}.dll"
+          DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
+          COMPONENT   "${RUNTIME_COMPONENT}"
         )
       endif ()
       install (
@@ -1893,7 +1892,7 @@ function (basis_build_mcc_target TARGET_UID)
     if (RUNTIME_INSTALL_DIRECTORY)
       if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         install (
-          DIRECTORY   "${BUILD_DIR}/${OUTPUT_NAME}.app"
+          DIRECTORY   "${BUILD_DIR}/${OUTPUT_NAME_WE}.app"
           DESTINATION "${RUNTIME_INSTALL_DIRECTORY}"
           COMPONENT   "${RUNTIME_COMPONENT}"
           USE_SOURCE_PERMISSIONS
