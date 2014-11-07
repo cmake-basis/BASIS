@@ -1765,7 +1765,7 @@ function (basis_build_mcc_target TARGET_UID)
               "-DRETRY_EXPRESSION=License checkout failed"
               "-DRETRY_ATTEMPTS=${BASIS_MCC_RETRY_ATTEMPTS}"
               "-DRETRY_DELAY=${BASIS_MCC_RETRY_DELAY}"
-              "-DERROR_EXPRESSION=[E|e]rror"
+              "-DERROR_EXPRESSION=[E|e]rror:"
               "-DOUTPUT_FILE=${BUILD_LOG}"
               "-DERROR_FILE=${BUILD_LOG}"
               "-DVERBOSE=OFF"
