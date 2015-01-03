@@ -1392,8 +1392,8 @@ function (basis_add_script TARGET_NAME)
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
   # dump CMake variables for configuration of script
-  set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
-  basis_dump_variables ("${BUILD_DIR}/cache.cmake")
+  set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}")
+  basis_dump_variables ("${BUILD_DIR}.dir/cache.cmake")
   # auto-detect programming language (may be as well UNKNOWN)
   if (ARGN_LANGUAGE)
     string (TOUPPER "${ARGN_LANGUAGE}" ARGN_LANGUAGE)
@@ -1521,6 +1521,9 @@ function (basis_add_script TARGET_NAME)
       TEST                     ${TEST}
       LIBEXEC                  ${ARGN_LIBEXEC}
   )
+  if (CMAKE_MAJOR_VERSION GREATER 3 OR (CMAKE_MAJOR_VERSION EQUAL 3 AND CMAKE_MINOR_VERSION GREATER 0))
+    _set_target_properties (${TARGET_UID} PROPERTIES SOURCES "${BUILD_DIR};${SOURCES}")
+  endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   message (STATUS "Adding ${type} script ${TARGET_UID}... - done")
@@ -2268,8 +2271,8 @@ function (basis_add_script_library TARGET_NAME)
   basis_make_target_uid (TARGET_UID "${TARGET_NAME}")
   message (STATUS "Adding script library ${TARGET_UID}...")
   # dump CMake variables for configuration of script
-  set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}.dir")
-  basis_dump_variables ("${BUILD_DIR}/cache.cmake")
+  set (BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}")
+  basis_dump_variables ("${BUILD_DIR}.dir/cache.cmake")
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
@@ -2421,6 +2424,9 @@ function (basis_add_script_library TARGET_NAME)
       COMPILE                   "${BASIS_COMPILE_SCRIPTS}"
       TEST                      "${TEST}"
   )
+  if (CMAKE_MAJOR_VERSION GREATER 3 OR (CMAKE_MAJOR_VERSION EQUAL 3 AND CMAKE_MINOR_VERSION GREATER 0))
+    _set_target_properties (${TARGET_UID} PROPERTIES SOURCES "${BUILD_DIR};${SOURCES}")
+  endif ()
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
     basis_target_link_libraries (.${TARGET_UID} basis)
@@ -2954,14 +2960,15 @@ function (basis_build_script_library TARGET_UID)
   if (NOT LIBRARY_COMPONENT)
     set (LIBRARY_COMPONENT "Unspecified")
   endif ()
+  list (LENGTH SOURCES L)
+  if (NOT L GREATER 1)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Expected at least two elements in SOURCES list!"
+                         " Have you incorrectly modified this (read-only) property or"
+                         " is your (newer) CMake version not compatible with BASIS?")
+  endif ()
   list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
   list (REMOVE_AT SOURCES 0)
   set (BUILD_DIR "${BUILD_DIR}.dir")
-  if (NOT SOURCES)
-    message (FATAL_ERROR "Target ${TARGET_UID}: Empty SOURCES list!"
-                         " Have you accidentally modified this read-only property or"
-                         " is your (newer) CMake version not compatible with BASIS?")
-  endif ()
   # common arguments of build script
   set (CONFIG_FILE)
   if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
