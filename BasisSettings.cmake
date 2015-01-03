@@ -359,6 +359,7 @@ set (BASIS_PROPERTIES_ON_TARGETS
   DOXYFILE                     # Doxygen configuration file
   OUTPUT                       # Doxygen output formats
   TAGFILE                      # Doxygen tag file
+  BUILD_DIRECTORY              # CMakeFiles build directory of target
   CONFIG_DIRECTORY             # Sphinx configuration directory
   BINARY_DIRECTORY             # CMake build tree directory
   SOURCE_DIRECTORY             # CMake or Sphinx source directory

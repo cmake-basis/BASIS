@@ -1505,6 +1505,7 @@ function (basis_add_script TARGET_NAME)
       LANGUAGE                 ${ARGN_LANGUAGE}
       BASIS_TYPE               SCRIPT_${TYPE}
       BASIS_UTILITIES          ${USES_BASIS_UTILITIES}
+      BUILD_DIRECTORY          "${BUILD_DIR}"
       SOURCE_DIRECTORY         "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY         "${CMAKE_CURRENT_BINARY_DIR}"
       OUTPUT_DIRECTORY         "${OUTPUT_DIRECTORY}"
@@ -1521,9 +1522,6 @@ function (basis_add_script TARGET_NAME)
       TEST                     ${TEST}
       LIBEXEC                  ${ARGN_LIBEXEC}
   )
-  if (CMAKE_MAJOR_VERSION GREATER 3 OR (CMAKE_MAJOR_VERSION EQUAL 3 AND CMAKE_MINOR_VERSION GREATER 0))
-    _set_target_properties (${TARGET_UID} PROPERTIES SOURCES "${BUILD_DIR};${SOURCES}")
-  endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   message (STATUS "Adding ${type} script ${TARGET_UID}... - done")
@@ -2411,6 +2409,7 @@ function (basis_add_script_library TARGET_NAME)
       LANGUAGE                  "${ARGN_LANGUAGE}"
       BASIS_TYPE                "SCRIPT_LIBRARY"
       BASIS_UTILITIES           "${USES_BASIS_UTILITIES}"
+      BUILD_DIRECTORY           "${BUILD_DIR}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       LIBRARY_OUTPUT_DIRECTORY  "${OUTPUT_DIRECTORY}"
@@ -2424,9 +2423,6 @@ function (basis_add_script_library TARGET_NAME)
       COMPILE                   "${BASIS_COMPILE_SCRIPTS}"
       TEST                      "${TEST}"
   )
-  if (CMAKE_MAJOR_VERSION GREATER 3 OR (CMAKE_MAJOR_VERSION EQUAL 3 AND CMAKE_MINOR_VERSION GREATER 0))
-    _set_target_properties (${TARGET_UID} PROPERTIES SOURCES "${BUILD_DIR};${SOURCES}")
-  endif ()
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
     basis_target_link_libraries (.${TARGET_UID} basis)
@@ -2610,6 +2606,7 @@ function (basis_build_script TARGET_UID)
     PROPERTIES
       LANGUAGE                 # programming language of script
       BASIS_TYPE               # must match "^SCRIPT_(EXECUTABLE|LIBEXEC|MODULE)$"
+      BUILD_DIRECTORY          # CMakeFiles build directory
       SOURCE_DIRECTORY         # CMake source directory
       BINARY_DIRECTORY         # CMake binary directory
       OUTPUT_DIRECTORY         # output directory for built script
@@ -2650,15 +2647,18 @@ function (basis_build_script TARGET_UID)
   if (INSTALL_DIRECTORY AND NOT COMPONENT)
     set (COMPONENT "Unspecified")
   endif ()
-  list (LENGTH SOURCES L)
-  if (NOT L EQUAL 2)
-    message (FATAL_ERROR "Target ${TARGET_UID}: Expected two elements in SOURCES list!"
-                         " Have you accidentally modified this read-only property or"
-                         " is your (newer) CMake version not compatible with BASIS?")
+  list (GET SOURCES 0 BUILD_DIR) # CMake <3.1 stores path to internal build directory here
+  if (BUILD_DIR MATCHES "CMakeFiles")
+    list (REMOVE_AT SOURCES 0)
   endif ()
-  list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
-  list (GET SOURCES 1 SOURCE_FILE)
-  set (BUILD_DIR "${BUILD_DIR}.dir")
+  list (LENGTH SOURCES L)
+  if (NOT L EQUAL 1)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Expected one element in SOURCES list!"
+                         " Have you modified this (read-only) property or is your"
+                         " (newer) CMake version not compatible with BASIS?")
+  endif ()
+  set (SOURCE_FILE "${SOURCES}")
+  set (BUILD_DIR   "${BUILD_DIRECTORY}.dir")
   # output name
   if (NOT OUTPUT_NAME)
     basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
@@ -2923,6 +2923,7 @@ function (basis_build_script_library TARGET_UID)
       LANGUAGE                   # programming language of modules
       BASIS_TYPE                 # must be "SCRIPT_LIBRARY"
       BASIS_UTILITIES            # whether this target requires the BASIS utilities
+      BUILD_DIRECTORY            # CMakeFiles build directory
       SOURCE_DIRECTORY           # CMake source directory
       BINARY_DIRECTORY           # CMake binary directory
       LIBRARY_OUTPUT_DIRECTORY   # output directory for built modules
@@ -2960,15 +2961,16 @@ function (basis_build_script_library TARGET_UID)
   if (NOT LIBRARY_COMPONENT)
     set (LIBRARY_COMPONENT "Unspecified")
   endif ()
-  list (LENGTH SOURCES L)
-  if (NOT L GREATER 1)
-    message (FATAL_ERROR "Target ${TARGET_UID}: Expected at least two elements in SOURCES list!"
+  list (GET SOURCES 0 BUILD_DIR) # CMake <3.1 stores path to internal build directory here
+  if (BUILD_DIR MATCHES "CMakeFiles")
+    list (REMOVE_AT SOURCES 0)
+  endif ()
+  if (NOT SOURCES)
+    message (FATAL_ERROR "Target ${TARGET_UID}: Expected at least one element in SOURCES list!"
                          " Have you incorrectly modified this (read-only) property or"
                          " is your (newer) CMake version not compatible with BASIS?")
   endif ()
-  list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
-  list (REMOVE_AT SOURCES 0)
-  set (BUILD_DIR "${BUILD_DIR}.dir")
+  set (BUILD_DIR "${BUILD_DIRECTORY}.dir")
   # common arguments of build script
   set (CONFIG_FILE)
   if (EXISTS "${BASIS_SCRIPT_CONFIG_FILE}")
