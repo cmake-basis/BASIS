@@ -1734,6 +1734,28 @@ function (basis_get_fully_qualified_target_uid TARGET_UID TARGET_NAME)
 endfunction ()
 
 # ----------------------------------------------------------------------------
+## @brief Get namespace of build target without check of UID.
+#
+# If @c BASIS_USE_TARGET_UIDS is set to @c OFF, this operation
+# always just sets the @p TARGET_NS to an empty string.
+#
+# @param [out] TARGET_NS  Namespace part of target UID.
+# @param [in]  TARGET_UID Target UID.
+if (BASIS_USE_TARGET_UIDS)
+  function (_basis_get_target_namespace TARGET_NS TARGET_UID)
+    if (UID MATCHES "^(.*)\\.")
+      set ("${TARGET_NS}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
+    else ()
+      set ("${TARGET_NS}" "" PARENT_SCOPE)
+    endif ()
+  endfunction ()
+else ()
+  function (_basis_get_target_namespace TARGET_NS TARGET_UID)
+    set ("${TARGET_NS}" "" PARENT_SCOPE)
+  endfunction ()
+endif ()
+
+# ----------------------------------------------------------------------------
 ## @brief Get namespace of build target.
 #
 # If @c BASIS_USE_TARGET_UIDS is set to @c OFF, this operation
@@ -1743,18 +1765,39 @@ endfunction ()
 # @param [in]  TARGET_UID Target UID/name.
 if (BASIS_USE_TARGET_UIDS)
   function (basis_get_target_namespace TARGET_NS TARGET_UID)
-    # make sure we have a fully-qualified target UID
     basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
-    # return namespace part
-    if (UID MATCHES "^(.*)\\.")
-      set ("${TARGET_NS}" "${CMAKE_MATCH_1}" PARENT_SCOPE)
-    else ()
-      set ("${TARGET_NS}" "" PARENT_SCOPE)
-    endif ()
+    _basis_get_target_namespace (NS "${UID}")
+    set ("${TARGET_NS}" "${NS}" PARENT_SCOPE)
   endfunction ()
 else ()
   function (basis_get_target_namespace TARGET_NS TARGET_UID)
     set ("${TARGET_NS}" "" PARENT_SCOPE)
+  endfunction ()
+endif ()
+
+# ----------------------------------------------------------------------------
+## @brief Get "local" target name, i.e., BASIS target name without check of UID.
+#
+# If @c BASIS_USE_TARGET_UIDS is set to @c OFF, this operation
+# always just sets the @p TARGET_NAME to the given @p TARGET_UID.
+#
+# @param [out] TARGET_NAME Target name used as argument to BASIS functions.
+# @param [in]  TARGET_UID  "Global" target name, i.e., actual CMake target name.
+#
+# @returns Sets @p TARGET_NAME to the name of the build target with UID @p TARGET_UID.
+#
+# @sa basis_get_target_name(), basis_get_target_uid()
+if (BASIS_USE_TARGET_UIDS)
+  function (_basis_get_target_name TARGET_NAME TARGET_UID)
+    # strip off namespace of current project
+    basis_sanitize_for_regex (RE "${PROJECT_NAMESPACE_CMAKE}")
+    string (REGEX REPLACE "^${RE}\\." "" NAME "${UID}")
+    # return
+    set (${TARGET_NAME} "${NAME}" PARENT_SCOPE)
+  endfunction ()
+else ()
+  function (_basis_get_target_name TARGET_NAME TARGET_UID)
+    set (${TARGET_NAME} "${TARGET_UID}" PARENT_SCOPE)
   endfunction ()
 endif ()
 
@@ -1772,12 +1815,8 @@ endif ()
 # @sa basis_get_target_uid()
 if (BASIS_USE_TARGET_UIDS)
   function (basis_get_target_name TARGET_NAME TARGET_UID)
-    # make sure we have a fully-qualified target UID
     basis_get_fully_qualified_target_uid (UID "${TARGET_UID}")
-    # strip off namespace of current project
-    basis_sanitize_for_regex (RE "${PROJECT_NAMESPACE_CMAKE}")
-    string (REGEX REPLACE "^${RE}\\." "" NAME "${UID}")
-    # return
+    _basis_get_target_name (NAME "${UID}")
     set (${TARGET_NAME} "${NAME}" PARENT_SCOPE)
   endfunction ()
 else ()
@@ -2777,16 +2816,30 @@ endfunction ()
 # ----------------------------------------------------------------------------
 ## @brief Get type name of target.
 #
+# @param [out] TYPE       The target's type name or NOTFOUND.
+# @param [in]  TARGET_UID The UID of the target.
+function (_basis_get_target_type TYPE TARGET_UID)
+  get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
+  if (IMPORTED)
+    get_target_property (TYPE_OUT ${TARGET_UID} TYPE)
+  else ()
+    get_target_property (TYPE_OUT ${TARGET_UID} BASIS_TYPE)
+    if (NOT TYPE_OUT)
+      get_target_property (TYPE_OUT ${TARGET_UID} TYPE)
+    endif ()
+  endif ()
+  set ("${TYPE}" "${TYPE_OUT}" PARENT_SCOPE)
+endfunction ()
+
+# ----------------------------------------------------------------------------
+## @brief Get type name of target.
+#
 # @param [out] TYPE        The target's type name or NOTFOUND.
 # @param [in]  TARGET_NAME The name of the target.
 function (basis_get_target_type TYPE TARGET_NAME)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET ${TARGET_UID})
-    get_target_property (TYPE_OUT ${TARGET_UID} "BASIS_TYPE")
-    if (NOT TYPE_OUT)
-      # in particular imported targets may not have a BASIS_TYPE property
-      get_target_property (TYPE_OUT ${TARGET_UID} "TYPE")
-    endif ()
+    _basis_get_target_type(TYPE_OUT ${TARGET_UID})
   else ()
     set (TYPE_OUT "NOTFOUND")
   endif ()
@@ -2819,8 +2872,8 @@ endfunction ()
 function (basis_get_target_location VAR TARGET_NAME PART)
   basis_get_target_uid (TARGET_UID "${TARGET_NAME}")
   if (TARGET "${TARGET_UID}")
-    basis_get_target_name (TARGET_NAME "${TARGET_UID}")
-    basis_get_target_type (TYPE        "${TARGET_UID}")
+    _basis_get_target_name (TARGET_NAME "${TARGET_UID}")
+    _basis_get_target_type (TYPE        "${TARGET_UID}")
     get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
     # ------------------------------------------------------------------------
     # imported custom targets
