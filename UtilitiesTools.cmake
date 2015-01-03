@@ -540,7 +540,7 @@ function (basis_configure_utilities)
                            " Rebuild BASIS with Perl utilities enabled.")
     endif ()
     # make sure that library target is added which is not the case yet
-    # if the BASIS Python utilities are not used by any project target, but
+    # if the BASIS Perl utilities are not used by any project target, but
     # their build is forced via the BUILD_BASIS_UTILITIES_FOR_PERL option
     basis_add_perl_utilities_library (TARGET_UID)
     # set target properties
