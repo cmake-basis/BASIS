@@ -1346,7 +1346,6 @@ function (basis_build_mex_file TARGET_UID)
     set (BUILD_MFILE)
   endif ()
   # configure build script
-  set (COMMAND "${BUILD_CMD}")
   configure_file ("${BASIS_SCRIPT_EXECUTE_PROCESS}" "${BUILD_DIR}/build.cmake" @ONLY)
   # relative paths used for comments of commands
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_OUTPUT}")

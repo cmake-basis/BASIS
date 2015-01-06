@@ -80,9 +80,8 @@
 # @ingroup CMakeUtilities
 ##############################################################################
 
-# Do not warn about @COMMAND@ when script is used via -P option
 if (POLICY CMP0053)
-  cmake_policy (SET CMP0053 OLD)
+  cmake_policy (SET CMP0053 NEW)
 endif ()
 
 # ----------------------------------------------------------------------------
@@ -92,8 +91,10 @@ unset (ENV{PYTHONPATH})
 
 # ----------------------------------------------------------------------------
 # initialize arguments
-set (CONFIGURED_COMMAND "@COMMAND@")
-if (CONFIGURED_COMMAND)
+set (CONFIGURED_COMMAND "@BUILD_CMD@")
+
+string (REPLACE "#" "@" AT_BUILD_CMD_AT "#BUILD_CMD#")
+if (CONFIGURED_COMMAND AND NOT CONFIGURED_COMMAND STREQUAL "${AT_BUILD_CMD_AT}")
   set (COMMAND "${CONFIGURED_COMMAND}")
 elseif (NOT COMMAND)
   message (FATAL_ERROR "No command specified for execute_process(): use \"-DCOMMAND=cmd\"")
