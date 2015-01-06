@@ -80,6 +80,11 @@
 # @ingroup CMakeUtilities
 ##############################################################################
 
+# Do not warn about @COMMAND@ when script is used via -P option
+if (POLICY CMP0053)
+  cmake_policy (SET CMP0053 OLD)
+endif ()
+
 # ----------------------------------------------------------------------------
 # unset environment variables that may cause problems otherwise
 unset (ENV{PYTHONHOME})
