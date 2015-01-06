@@ -771,8 +771,8 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     # ------------------------------------------------------------------------
     # C++
     if (CXX)
-      get_filename_component (EXEC_NAME   "${BUILD_LOCATION}"   NAME)
-      get_filename_component (BUILD_DIR   "${BUILD_LOCATION}"   PATH)
+      get_filename_component (EXEC_NAME "${BUILD_LOCATION}" NAME)
+      get_filename_component (BUILD_DIR "${BUILD_LOCATION}" PATH)
       if (INSTALL_LOCATION)
         get_filename_component (INSTALL_DIR "${INSTALL_LOCATION}" PATH)
       endif ()
