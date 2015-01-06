@@ -391,9 +391,9 @@ macro (basis_find_package PACKAGE)
         # remember which components where found already
         if (${PKG}_FOUND AND ARGN_COMPONENTS)
           if (${PKG}_FOUND_COMPONENTS)
-          list (APPEND ARGN_COMPONENTS ${${PKG}_FOUND_COMPONENTS})
-          list (REMOVE_DUPLICATES ARGN_COMPONENTS)
-        endif ()
+            list (APPEND ARGN_COMPONENTS ${${PKG}_FOUND_COMPONENTS})
+            list (REMOVE_DUPLICATES ARGN_COMPONENTS)
+          endif ()
           set (${PKG}_FOUND_COMPONENTS "${ARGN_COMPONENTS}")
         endif ()
         # if previously components of this package where found and the additional
