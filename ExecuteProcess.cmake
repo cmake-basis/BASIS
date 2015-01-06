@@ -17,7 +17,7 @@
 # CMake command execute_process() can be used, i.e., a timeout can be
 # specified.
 #
-# The arguments of the execute_process() command have to specified via
+# The arguments of the execute_process() command have to be specified via
 # the -D option on the command line of cmake before the -P \<this script\>
 # option is given. The name of the CMake variables must be equal the
 # name of the arguments to the execute_process() command.
