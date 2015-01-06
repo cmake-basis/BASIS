@@ -707,6 +707,7 @@ function (basis_add_mex_file TARGET_NAME)
       BASIS_UTILITIES           ${USES_BASIS_UTILITIES}
       BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
       BASIS_LINK_DIRECTORIES    "${LINK_DIRS}"
+      BUILD_DIRECTORY           "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       LIBRARY_OUTPUT_DIRECTORY  "${BINARY_MATLAB_LIBRARY_DIR}"
@@ -1059,6 +1060,7 @@ function (basis_add_mcc_target TARGET_NAME)
       BASIS_UTILITIES           FALSE # TODO Implement utilities for MATLAB
       BASIS_INCLUDE_DIRECTORIES "${INCLUDE_DIRS}"
       BASIS_LINK_DIRECTORIES    "${LINK_DIRS}"
+      BUILD_DIRECTORY           "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TARGET_UID}"
       SOURCE_DIRECTORY          "${CMAKE_CURRENT_SOURCE_DIR}"
       BINARY_DIRECTORY          "${CMAKE_CURRENT_BINARY_DIR}"
       LIBRARY_OUTPUT_DIRECTORY  "${LIBRARY_OUTPUT_DIRECTORY}"
@@ -1116,6 +1118,7 @@ function (basis_build_mex_file TARGET_UID)
       BASIS_UTILITIES
       BASIS_INCLUDE_DIRECTORIES
       BASIS_LINK_DIRECTORIES
+      BUILD_DIRECTORY
       SOURCE_DIRECTORY
       BINARY_DIRECTORY
       LIBRARY_OUTPUT_DIRECTORY
@@ -1139,12 +1142,11 @@ function (basis_build_mex_file TARGET_UID)
   if (NOT BASIS_TYPE MATCHES "^MEX$")
     message (FATAL_ERROR "Target ${TARGET_UID}: Invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
-  list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
-  list (REMOVE_AT SOURCES 0)
-  set (BUILD_DIR "${BUILD_DIR}.dir")
-  if (NOT IS_DIRECTORY "${BUILD_DIR}")
-  file (MAKE_DIRECTORY "${BUILD_DIR}")
+  list (GET SOURCES 0 BUILD_DIR) # CMake <3.1 stores path to internal build directory here
+  if (BUILD_DIR MATCHES "CMakeFiles")
+    list (REMOVE_AT SOURCES 0)
   endif ()
+  set (BUILD_DIR "${BUILD_DIRECTORY}.dir")
   if (NOT SOURCES)
     message (FATAL_ERROR "Target ${TARGET_UID}: Empty SOURCES list!"
                          " Have you accidentally modified this read-only property or"
@@ -1444,6 +1446,7 @@ function (basis_build_mcc_target TARGET_UID)
       BASIS_UTILITIES
       BASIS_INCLUDE_DIRECTORIES
       BASIS_LINK_DIRECTORIES
+      BUILD_DIRECTORY
       SOURCE_DIRECTORY
       BINARY_DIRECTORY
       LIBRARY_OUTPUT_DIRECTORY
@@ -1478,9 +1481,11 @@ function (basis_build_mcc_target TARGET_UID)
   else ()
     message (FATAL_ERROR "Target ${TARGET_UID}: Invalid BASIS_TYPE: ${BASIS_TYPE}")
   endif ()
-  list (GET SOURCES 0 BUILD_DIR) # strange, but CMake stores path to internal build directory here
-  list (REMOVE_AT SOURCES 0)
-  set (BUILD_DIR "${BUILD_DIR}.dir")
+  list (GET SOURCES 0 BUILD_DIR) # CMake <3.1 stores path to internal build directory here
+  if (BUILD_DIR MATCHES "CMakeFiles")
+    list (REMOVE_AT SOURCES 0)
+  endif ()
+  set (BUILD_DIR "${BUILD_DIRECTORY}.dir")
   if (NOT SOURCES)
     message (FATAL_ERROR "Target ${TARGET_UID}: Empty SOURCES list!"
                          " Have you accidentally modified this read-only property or"
