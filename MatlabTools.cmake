@@ -1727,7 +1727,7 @@ function (basis_build_mcc_target TARGET_UID)
     endif ()
     list (APPEND MCC_ARGS -d "${BUILD_DIR}")                    # (temp) output directory
     list (APPEND MCC_ARGS -o "${OUTPUT_NAME_WE}")               # output name (excl. extension)
-    list (APPEND MCC_ARGS ${MAIN_SOURCE})                       # main source M-file
+    list (APPEND MCC_ARGS ${SOURCES})                           # source M-files
     foreach (LIB ${LINK_LIBS})                                  # link libraries, e.g. MEX-files
       list (FIND MCC_ARGS "${LIB}" IDX)
       if (LIB AND IDX EQUAL -1)
