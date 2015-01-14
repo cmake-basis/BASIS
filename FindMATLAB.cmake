@@ -336,6 +336,23 @@ if (_MATLAB_LIBRARY_NAMES OR _MATLAB_OPTIONAL_LIBRARY_NAMES)
 endif ()
 
 # ----------------------------------------------------------------------------
+# set MATLAB_DIR
+if (NOT MATLAB_DIR AND MATLAB_INCLUDE_DIR)
+  string (REGEX REPLACE "/extern/include/?" "" _MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
+  set (MATLAB_DIR "${_MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
+endif ()
+
+# ----------------------------------------------------------------------------
+# set MATLAB_LIBRARY_DIR
+set (MATLAB_LIBRARY_DIR)
+foreach (_MATLAB_LIB IN LISTS MATLAB_LIBRARY)
+  get_filename_component (MATLAB_LIBRARY_DIR "${_MATLAB_LIB}" PATH)
+  if (MATLAB_LIBRARY_DIR)
+    break ()
+  endif ()
+endforeach ()
+
+# ----------------------------------------------------------------------------
 # handle the QUIETLY and REQUIRED arguments and set *_FOUND to TRUE
 # if all listed variables are found or TRUE
 include (FindPackageHandleStandardArgs)
@@ -364,28 +381,12 @@ if (_MATLAB_REQUIRED_VARS)
   # MESSAGE
       DEFAULT_MSG
   # VARIABLES
+      MATLAB_DIR # for status message "Found MATLAB: ..."
       ${_MATLAB_REQUIRED_VARS}
   )
 else ()
   set (MATLAB_FOUND TRUE)
 endif ()
-
-# ----------------------------------------------------------------------------
-# set MATLAB_DIR
-if (NOT MATLAB_DIR AND MATLAB_INCLUDE_DIR)
-  string (REGEX REPLACE "/extern/include/?" "" _MATLAB_PREFIX "${MATLAB_INCLUDE_DIR}")
-  set (MATLAB_DIR "${_MATLAB_PREFIX}" CACHE PATH "Installation prefix for MATLAB." FORCE)
-endif ()
-
-# ----------------------------------------------------------------------------
-# set MATLAB_LIBRARY_DIR
-set (MATLAB_LIBRARY_DIR)
-foreach (_MATLAB_LIB IN LISTS MATLAB_LIBRARY)
-  get_filename_component (MATLAB_LIBRARY_DIR "${_MATLAB_LIB}" PATH)
-  if (MATLAB_LIBRARY_DIR)
-    break ()
-  endif ()
-endforeach ()
 
 # ----------------------------------------------------------------------------
 # unset private variables
