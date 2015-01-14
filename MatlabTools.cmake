@@ -1346,19 +1346,19 @@ function (basis_build_mex_file TARGET_UID)
     set (BUILD_MFILE)
   endif ()
   # configure build script
-  configure_file ("${BASIS_SCRIPT_EXECUTE_PROCESS}" "${BUILD_DIR}/build.cmake" @ONLY)
+  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
+  configure_file ("${BASIS_SCRIPT_EXECUTE_PROCESS}" "${BUILD_SCRIPT}" @ONLY)
   # relative paths used for comments of commands
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_OUTPUT}")
   # add custom command to build executable using MEX script
   add_custom_command (
     OUTPUT "${BUILD_OUTPUT}"
     # rebuild when input sources were modified
-    DEPENDS ${DEPENDS}
+    DEPENDS "${BUILD_SCRIPT}" "${CMAKE_CURRENT_LIST_FILE}" ${DEPENDS}
     # invoke MEX script, wrapping the command in CMake execute_process()
     # command allows for inspection of command output for error messages
     # and specification of timeout
     COMMAND "${CMAKE_COMMAND}"
-            "-DCOMMAND=${COMMAND}"
             "-DWORKING_DIRECTORY=${BUILD_DIR}"
             "-DTIMEOUT=${BASIS_MEX_TIMEOUT}"
             "-DERROR_EXPRESSION=[E|e]rror:"
@@ -1366,7 +1366,7 @@ function (basis_build_mex_file TARGET_UID)
             "-DERROR_FILE=${BUILD_LOG}"
             "-DVERBOSE=OFF"
             "-DLOG_ARGS=ON"
-            "-P" "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+            "-P" "${BUILD_SCRIPT}"
     # post-build command
     COMMAND "${CMAKE_COMMAND}" -E copy   "${BUILD_DIR}/${OUTPUT_NAME}" "${BUILD_OUTPUT}"
     COMMAND "${CMAKE_COMMAND}" -E remove "${BUILD_DIR}/${OUTPUT_NAME}"
