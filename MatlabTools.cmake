@@ -1336,6 +1336,7 @@ function (basis_build_mex_file TARGET_UID)
   list (APPEND MEX_ARGS ${SOURCES})
   # build command for invocation of MEX script
   set (BUILD_CMD     "${MATLAB_MEX_EXECUTABLE}" -v ${MEX_ARGS})
+  set (BUILD_SCRIPT  "${BUILD_DIR}/build.cmake")
   set (BUILD_LOG     "${BUILD_DIR}/build.log")
   set (BUILD_OUTPUT  "${LIBRARY_OUTPUT_DIRECTORY}${PREFIX}/${OUTPUT_NAME}")
   set (BUILD_OUTPUTS "${BUILD_OUTPUT}")
@@ -1346,7 +1347,6 @@ function (basis_build_mex_file TARGET_UID)
     set (BUILD_MFILE)
   endif ()
   # configure build script
-  set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
   configure_file ("${BASIS_SCRIPT_EXECUTE_PROCESS}" "${BUILD_SCRIPT}" @ONLY)
   # relative paths used for comments of commands
   file (RELATIVE_PATH REL "${CMAKE_BINARY_DIR}" "${BUILD_OUTPUT}")
@@ -1735,10 +1735,11 @@ function (basis_build_mcc_target TARGET_UID)
       endif ()
     endforeach ()
     # build command for invocation of MATLAB Compiler in standalone mode
-    set (BUILD_CMD   "${MATLAB_MCC_EXECUTABLE}" ${MCC_USER_ARGS} ${MCC_ARGS})
-    set (BUILD_LOG   "${BUILD_DIR}/build.log")
-    set (WORKING_DIR "${SOURCE_DIRECTORY}")
-    set (MATLAB_MODE OFF)
+    set (BUILD_CMD    "${MATLAB_MCC_EXECUTABLE}" ${MCC_USER_ARGS} ${MCC_ARGS})
+    set (BUILD_LOG    "${BUILD_DIR}/build.log")
+    set (BUILD_SCRIPT "${BUILD_DIR}/build.cmake")
+    set (WORKING_DIR  "${SOURCE_DIRECTORY}")
+    set (MATLAB_MODE  OFF)
     # build command for invocation of MATLAB Compiler in MATLAB mode
     if (BASIS_MCC_MATLAB_MODE)
       set (MATLAB_MODE ON)
@@ -1796,6 +1797,8 @@ function (basis_build_mcc_target TARGET_UID)
         )
       endif ()
     endif ()
+    # configure build script
+    configure_file ("${BASIS_SCRIPT_EXECUTE_PROCESS}" "${BUILD_SCRIPT}" @ONLY)
     # add custom command to build executable using MATLAB Compiler
     add_custom_command (
       OUTPUT ${BUILD_OUTPUT}
@@ -1806,7 +1809,6 @@ function (basis_build_mcc_target TARGET_UID)
       # wrapping command in CMake execute_process() command allows for inspection
       # of command output for error messages and specification of timeout
       COMMAND "${CMAKE_COMMAND}"
-              "-DCOMMAND=${BUILD_CMD}"
               "-DWORKING_DIRECTORY=${WORKING_DIR}"
               "-DTIMEOUT=${BASIS_MCC_TIMEOUT}"
               "-DRETRY_EXPRESSION=License checkout failed"
@@ -1817,7 +1819,7 @@ function (basis_build_mcc_target TARGET_UID)
               "-DERROR_FILE=${BUILD_LOG}"
               "-DVERBOSE=OFF"
               "-DLOG_ARGS=ON"
-              "-P" "${BASIS_SCRIPT_EXECUTE_PROCESS}"
+              "-P" "${BUILD_SCRIPT}"
       # post build command(s)
       COMMAND ${POST_BUILD_COMMAND}
       # inform user where build log can be found
