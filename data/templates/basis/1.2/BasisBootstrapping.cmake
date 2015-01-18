@@ -183,7 +183,6 @@ function (basis_bootstrap)
     endif ()
 
     # configure
-    # TODO: Does this work on Windows as well ? Do we need "-G${CMAKE_GENERATOR}" ?
     file (MAKE_DIRECTORY "${BASIS_BINARY_DIR}")
 
     set (CMAKE_ARGUMENTS "-DBASIS_REGISTER:BOOL=OFF") # do not register this BASIS build/installation
@@ -200,14 +199,14 @@ function (basis_bootstrap)
       math (EXPR N "${N} - 2")
     endwhile ()
     execute_process (
-      COMMAND "${CMAKE_COMMAND}" ${CMAKE_ARGUMENTS} "${BASIS_SOURCE_DIR}"
+      COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" ${CMAKE_ARGUMENTS} "${BASIS_SOURCE_DIR}"
       WORKING_DIRECTORY "${BASIS_BINARY_DIR}"
     )
     # build
-    execute_process (COMMAND "${CMAKE_BUILD_TOOL}" all WORKING_DIRECTORY "${BASIS_BINARY_DIR}")
+    execute_process (COMMAND "${CMAKE_COMMAND}" --build "${BASIS_BINARY_DIR}" --config Release --target all)
     # install
     if (BASIS_INSTALL_PREFIX)
-      execute_process (COMMAND "${CMAKE_BUILD_TOOL}" install WORKING_DIRECTORY "${BASIS_BINARY_DIR}")
+      execute_process (COMMAND "${CMAKE_COMMAND}" --build "${BASIS_BINARY_DIR}" --config Release --target install)
       set (BASIS_DIR "${BASIS_INSTALL_PREFIX}" PARENT_SCOPE)
     else ()
       set (BASIS_DIR "${BASIS_BINARY_DIR}" PARENT_SCOPE)
