@@ -2082,6 +2082,10 @@ macro (basis_project_end)
     add_subdirectory ("${PROJECT_DOC_DIR}")
   endif ()
 
+  # --------------------------------------------------------------------------
+  # generate configuration files
+  include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
+
   if (NOT BASIS_BUILD_ONLY)
 
     # --------------------------------------------------------------------------
@@ -2093,10 +2097,6 @@ macro (basis_project_end)
     # --------------------------------------------------------------------------
     # add installation rules for public headers
     basis_install_public_headers ()
-
-    # --------------------------------------------------------------------------
-    # generate configuration files
-    include ("${BASIS_MODULE_PATH}/GenerateConfig.cmake")
 
     # --------------------------------------------------------------------------
     # change log

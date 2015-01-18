@@ -135,26 +135,30 @@ include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 string (CONFIGURE "${BASIS_TEMPLATE}" BASIS_CONFIG @ONLY)
 configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${CONFIG_FILE}" @ONLY)
 
-# ----------------------------------------------------------------------------
-# install tree related configuration
+if (NOT BASIS_BUILD_ONLY)
 
-set (BUILD_CONFIG_SETTINGS 0)
-include ("${CMAKE_CURRENT_LIST_DIR}/BasisConfigSettings.cmake")
-include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
+  # --------------------------------------------------------------------------
+  # install tree related configuration
 
-# ----------------------------------------------------------------------------
-# configure project configuration file for install tree
+  set (BUILD_CONFIG_SETTINGS 0)
+  include ("${CMAKE_CURRENT_LIST_DIR}/BasisConfigSettings.cmake")
+  include ("${PROJECT_CONFIG_DIR}/ConfigSettings.cmake" OPTIONAL)
 
-string (CONFIGURE "${BASIS_TEMPLATE}" BASIS_CONFIG @ONLY)
-configure_file ("${TEMPLATE}" "${BINARY_CONFIG_DIR}/${CONFIG_FILE}" @ONLY)
+  # --------------------------------------------------------------------------
+  # configure project configuration file for install tree
+  
+  string (CONFIGURE "${BASIS_TEMPLATE}" BASIS_CONFIG @ONLY)
+  configure_file ("${TEMPLATE}" "${BINARY_CONFIG_DIR}/${CONFIG_FILE}" @ONLY)
+  
+  # --------------------------------------------------------------------------
+  # install project configuration file
+  
+  install (
+    FILES       "${BINARY_CONFIG_DIR}/${CONFIG_FILE}"
+    DESTINATION "${INSTALL_CONFIG_DIR}"
+  )
 
-# ----------------------------------------------------------------------------
-# install project configuration file
-
-install (
-  FILES       "${BINARY_CONFIG_DIR}/${CONFIG_FILE}"
-  DESTINATION "${INSTALL_CONFIG_DIR}"
-)
+endif ()
 
 # ============================================================================
 # project version file
@@ -177,10 +181,12 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${VERSION_FILE}" @ONLY)
 # ----------------------------------------------------------------------------
 # install project configuration version file
 
-install (
-  FILES       "${PROJECT_BINARY_DIR}/${VERSION_FILE}"
-  DESTINATION "${INSTALL_CONFIG_DIR}"
-)
+if (NOT BASIS_BUILD_ONLY)
+  install (
+    FILES       "${PROJECT_BINARY_DIR}/${VERSION_FILE}"
+    DESTINATION "${INSTALL_CONFIG_DIR}"
+  )
+endif ()
 
 # ============================================================================
 # project use file
@@ -224,10 +230,12 @@ configure_file ("${TEMPLATE}" "${PROJECT_BINARY_DIR}/${USE_FILE}" @ONLY)
 # ----------------------------------------------------------------------------
 # install project use file
 
-install (
-  FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
-  DESTINATION "${INSTALL_CONFIG_DIR}"
-)
+if (NOT BASIS_BUILD_ONLY)
+  install (
+    FILES       "${PROJECT_BINARY_DIR}/${USE_FILE}"
+    DESTINATION "${INSTALL_CONFIG_DIR}"
+  )
+endif ()
 
 unset (BASIS_NS)
 unset (BASIS_TEMPLATE)
