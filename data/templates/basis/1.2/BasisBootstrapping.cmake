@@ -203,7 +203,7 @@ function (basis_bootstrap)
       WORKING_DIRECTORY "${BASIS_BINARY_DIR}"
     )
     # build
-    execute_process (COMMAND "${CMAKE_COMMAND}" --build "${BASIS_BINARY_DIR}" --config Release --target all)
+    execute_process (COMMAND "${CMAKE_COMMAND}" --build "${BASIS_BINARY_DIR}" --config Release)
     # install
     if (BASIS_INSTALL_PREFIX)
       execute_process (COMMAND "${CMAKE_COMMAND}" --build "${BASIS_BINARY_DIR}" --config Release --target install)
