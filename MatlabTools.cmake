@@ -980,6 +980,8 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
   if (ARGN_HEADER_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
     set (ARGN_HEADER_DESTINATION)
+  elseif (NOT IS_ABSOLUTE ARGN_HEADER_DESTINATION)
+    set (ARGN_HEADER_DESTINATION "${BINARY_INCLUDE_DIR}/${ARGN_HEADER_DESTINATION}")
   endif ()
   # whether to compile and compilation flags (for mcc)
   if ("^${TYPE}$" STREQUAL "^LIBRARY$")
@@ -1800,7 +1802,7 @@ function (basis_build_mcc_target TARGET_UID)
                 "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy
                 "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
-                "${BINARY_INCLUDE_DIR}/${LIBRARY_HEADER_DIRECTORY}/${OUTPUT_NAME_WE}.h"
+                "${LIBRARY_HEADER_DIRECTORY}/${OUTPUT_NAME_WE}.h"
       )
       if (WIN32)
         list (APPEND POST_BUILD_COMMAND
@@ -1903,16 +1905,20 @@ function (basis_build_mcc_target TARGET_UID)
   # install executable or library
   if (LIBRARY)
     if (LIBRARY_HEADER_DIRECTORY)
-      if (LIBRARY_HEADER_DIRECTORY STREQUAL ".")
-        set (INCLUDE_DIR_SUFFIX)
-      else ()
-        set (INCLUDE_DIR_SUFFIX "/${LIBRARY_HEADER_DIRECTORY}")
+      file (RELATIVE_PATH INCLUDE_DIR_SUFFIX "${BINARY_INCLUDE_DIR}" "${LIBRARY_HEADER_DIRECTORY}")
+      if (NOT INCLUDE_DIR_SUFFIX MATCHES "^../")
+        string (REGEX REPLACE "/$" "" INCLUDE_DIR_SUFFIX "${INCLUDE_DIR_SUFFIX}")
+        if (INCLUDE_DIR_SUFFIX STREQUAL ".")
+          set (INCLUDE_DIR_SUFFIX)
+        else ()
+          set (INCLUDE_DIR_SUFFIX "/${INCLUDE_DIR_SUFFIX}")
+        endif ()
+        install (
+          FILES       "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
+          DESTINATION "${INSTALL_INCLUDE_DIR}${INCLUDE_DIR_SUFFIX}"
+          COMPONENT   "${LIBRARY_COMPONENT}"
+        )
       endif ()
-      install (
-        FILES       "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
-        DESTINATION "${INSTALL_INCLUDE_DIR}${INCLUDE_DIR_SUFFIX}"
-        COMPONENT   "${LIBRARY_COMPONENT}"
-      )
     endif ()
     if (LIBRARY_INSTALL_DIRECTORY)
       if (WIN32)
