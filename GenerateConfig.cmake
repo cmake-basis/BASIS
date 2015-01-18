@@ -28,6 +28,8 @@
 # @ingroup CMakeTools
 ##############################################################################
 
+basis_sanitize_for_regex (CMAKE_CURRENT_LIST_DIR_RE "${CMAKE_CURRENT_LIST_DIR}")
+
 # ============================================================================
 # names of output files
 # ============================================================================
@@ -107,7 +109,7 @@ endif ()
 # ----------------------------------------------------------------------------
 # provide code of BASIS config file as variable
 
-if (NOT TEMPLATE MATCHES "^${CMAKE_CURRENT_LIST_DIR}/")
+if (NOT TEMPLATE MATCHES "^${CMAKE_CURRENT_LIST_DIR_RE}/")
   if (PROJECT_IS_MODULE)
     file (READ "${CMAKE_CURRENT_LIST_DIR}/ModuleConfig.cmake.in" BASIS_TEMPLATE)
   else ()
@@ -200,7 +202,7 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # provide code of BASIS use file as variable
-if (NOT TEMPLATE MATCHES "^${CMAKE_CURRENT_LIST_DIR}/")
+if (NOT TEMPLATE MATCHES "^${CMAKE_CURRENT_LIST_DIR_RE}/")
   if (PROJECT_IS_MODULE)
     file (READ "${CMAKE_CURRENT_LIST_DIR}/ModuleConfigUse.cmake.in" BASIS_USE)
   else ()
@@ -231,3 +233,4 @@ unset (BASIS_NS)
 unset (BASIS_TEMPLATE)
 unset (BASIS_CONFIG)
 unset (BASIS_USE)
+unset (CMAKE_CURRENT_LIST_DIR_RE)
