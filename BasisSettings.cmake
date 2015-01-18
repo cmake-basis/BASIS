@@ -330,6 +330,7 @@ set (BASIS_PROPERTIES_ON_TARGETS
   LIBRARY_COMPONENT            # package component of the library component
   RUNTIME_COMPONENT            # package component of the runtime component
   ARCHIVE_INSTALL_DIRECTORY    # installation directory of library
+  LIBRARY_HEADER_DIRECTORY     # output directory of generated header files
   LIBRARY_INSTALL_DIRECTORY    # installation directory of library
   RUNTIME_INSTALL_DIRECTORY    # installation directory of runtime
   OUTPUT_DIRECTORY             # output directory for generated files
