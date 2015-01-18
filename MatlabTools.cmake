@@ -45,8 +45,9 @@ option (BASIS_COMPILE_MATLAB "Enable compilation of MATLAB sources if MATLAB Com
 ## @brief Enable/Disable invocation of MATLAB Compiler in MATLAB mode.
 option (
   BASIS_MCC_MATLAB_MODE
-  "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler."
-  "ON" # prefer as it releases the license immediately once done
+  "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler to release MCC licence ASAP."
+  OFF # using MATLAB mode is preferred when the license is shared
+      # among users as it releases the license immediately once done
 )
 
 mark_as_advanced (BASIS_COMPILE_MATLAB)
