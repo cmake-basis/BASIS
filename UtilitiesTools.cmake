@@ -57,7 +57,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
     file (READ "${SOURCE_FILE}" SOURCE)
     # match use/require statements
     basis_library_prefix (PREFIX ${LANGUAGE})
-    set (RE "[ \\t]*#[ \\t]*include[ \\t]+[<\"](${PREFIX})?basis.h[\">]") # e.g., #include "basis.h", #include <pkg/basis.h>
+    basis_sanitize_for_regex (RE "[ \\t]*#[ \\t]*include[ \\t]+[<\"](${PREFIX})?basis.h[\">]") # e.g., #include "basis.h", #include <pkg/basis.h>
     if (SCRIPT MATCHES "(^|\n)[ \t]*${RE}([ \t]*//.*|[ \t]*)(\n|$)")
       set (UTILITIES_USED TRUE)
       break ()
@@ -118,7 +118,7 @@ function (basis_utilities_check VAR SOURCE_FILE)
       message (FATAL_ERROR "Script ${SOURCE_FILE} uses the deprecated BASIS macro \@BASIS_BASH_UTILITIES\@!")
     endif ()
     # match source/. built-ins
-    set (RE "(source|\\.)[ \\t]+\\\"?\\\${?BASIS_BASH_UTILITIES}?\\\"?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?") # e.g., . ${BASIS_BASH_UTILITIES} || exit 1
+    set (RE "(source|\\.)[ \\t]+\\\"?\\\${BASIS_BASH_UTILITIES}?\\\"?[ \\t]*(\\|\\|.*|&&.*)?(#.*)?") # e.g., . ${BASIS_BASH_UTILITIES} || exit 1
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*(${RE})[ \t]*(;|\n|$)")
       set (UTILITIES_USED TRUE)
     endif ()
@@ -450,7 +450,7 @@ function (basis_configure_utilities)
   # --------------------------------------------------------------------------
   # project ID -- used by print_version() in particular
   set (PROJECT_ID "${PROJECT_PACKAGE_NAME}")
-  if (NOT PROJECT_NAME MATCHES "${PROJECT_PACKAGE_NAME}")
+  if (NOT PROJECT_NAME MATCHES "${PROJECT_PACKAGE_NAME_RE}")
     set (PROJECT_ID "${PROJECT_ID}, ${PROJECT_NAME}")
   endif ()
   # --------------------------------------------------------------------------
@@ -511,7 +511,7 @@ function (basis_configure_utilities)
          set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_B}\")
        endif ()"
     )
-    if ("^${PROJECT_NAME}" STREQUAL "^BASIS")
+    if ("^${PROJECT_NAME}$" STREQUAL "^BASIS$")
       set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BINARY_PYTHON_LIBRARY_DIR}\" \"${INSTALL_PYTHON_LIBRARY_DIR}\")")
     elseif (BUNDLE_PROJECTS MATCHES "(^|;)BASIS(;|$)")
       set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_PYTHONPATH \"${BASIS_PYTHONPATH}\")")
@@ -587,7 +587,7 @@ function (basis_configure_utilities)
        endif ()
        set (EXECUTABLE_ALIASES \"${EXECUTABLE_TARGET_INFO_BASH_A}\n\n    # define short aliases for this project's targets\n    ${EXECUTABLE_TARGET_INFO_BASH_S}\")"
     )
-    if ("^${PROJECT_NAME}" STREQUAL "^BASIS")
+    if ("^${PROJECT_NAME}$" STREQUAL "^BASIS$")
       set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BINARY_BASH_LIBRARY_DIR}\" \"${INSTALL_BASH_LIBRARY_DIR}\")")
     elseif (BUNDLE_PROJECTS MATCHES "(^|;)BASIS(;|$)")
       set (SCRIPT_DEFINITIONS "${SCRIPT_DEFINITIONS}\nbasis_set_script_path (_BASIS_BASH_LIBRARY_DIR \"${BASIS_BASHPATH}\")")

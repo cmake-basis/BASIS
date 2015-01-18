@@ -31,14 +31,15 @@ endif ()
 ## @brief Check if a project name fits the BASIS standards.
 #
 macro (basis_name_check INPUT_PROJECT_NAME)
-  if (NOT ${INPUT_PROJECT_NAME} MATCHES "^([a-z][-_a-z0-9]*|[a-zA-Z0-9][-_a-zA-Z0-9]*)$")
+  if (NOT ${INPUT_PROJECT_NAME} MATCHES "^[a-zA-Z][-+_a-zA-Z0-9]*$")
     message (FATAL_ERROR "Invalid name: ${${INPUT_PROJECT_NAME}}\n"
-                         "We suggest that you use upper CamelCase notation."
-                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms)."
-                         "Please choose a name with either only captial letters"
+                         "We suggest that you use upper CamelCase notation. "
+                         "(see http://en.wikipedia.org/wiki/CamelCase#Variations_and_synonyms). "
+                         "Please choose a name with either only captial letters "
                          "in the case of an acronym or a name with mixed case, "
-                         "but starting with a captial letter.\n"
-                         "Note that numbers, `-` and `_` are allowed, but not as first character.")
+                         "but starting with a (captial) letter.\n"
+                         "Note that numbers, `-`, `+`, and `_` are allowed, "
+                         "but not as first character.")
   endif()
 endmacro()
 
@@ -111,10 +112,16 @@ macro (basis_project_check_metadata)
   basis_name_check(PROJECT_NAME)
   string (TOLOWER "${PROJECT_NAME}" PROJECT_NAME_L)
   string (TOUPPER "${PROJECT_NAME}" PROJECT_NAME_U)
+  basis_sanitize_for_regex(PROJECT_NAME_RE "${PROJECT_NAME}")
+  string (TOLOWER "${PROJECT_NAME_RE}" PROJECT_NAME_RE_L)
+  string (TOUPPER "${PROJECT_NAME_RE}" PROJECT_NAME_RE_U)
   if (NOT PROJECT_IS_MODULE)
-    set (TOPLEVEL_PROJECT_NAME   "${PROJECT_NAME}")
-    set (TOPLEVEL_PROJECT_NAME_L "${PROJECT_NAME_L}")
-    set (TOPLEVEL_PROJECT_NAME_U "${PROJECT_NAME_U}")
+    set (TOPLEVEL_PROJECT_NAME      "${PROJECT_NAME}")
+    set (TOPLEVEL_PROJECT_NAME_L    "${PROJECT_NAME_L}")
+    set (TOPLEVEL_PROJECT_NAME_U    "${PROJECT_NAME_U}")
+    set (TOPLEVEL_PROJECT_NAME_RE   "${PROJECT_NAME_RE}")
+    set (TOPLEVEL_PROJECT_NAME_RE_L "${PROJECT_NAME_RE_L}")
+    set (TOPLEVEL_PROJECT_NAME_RE_U "${PROJECT_NAME_RE_U}")
   endif ()
   # PROJECT_PACKAGE_NAME
   if (PROJECT_PACKAGE AND PROJECT_PACKAGE_NAME)
@@ -141,10 +148,16 @@ macro (basis_project_check_metadata)
   basis_name_check(PROJECT_PACKAGE_NAME)
   string (TOLOWER "${PROJECT_PACKAGE_NAME}" PROJECT_PACKAGE_NAME_L)
   string (TOUPPER "${PROJECT_PACKAGE_NAME}" PROJECT_PACKAGE_NAME_U)
+  basis_sanitize_for_regex(PROJECT_PACKAGE_NAME_RE "${PROJECT_PACKAGE_NAME}")
+  string (TOLOWER "${PROJECT_PACKAGE_NAME_RE}" PROJECT_PACKAGE_NAME_RE_L)
+  string (TOUPPER "${PROJECT_PACKAGE_NAME_RE}" PROJECT_PACKAGE_NAME_RE_U)
   if (NOT PROJECT_IS_MODULE)
-    set (TOPLEVEL_PROJECT_PACKAGE_NAME   "${PROJECT_PACKAGE_NAME}")
-    set (TOPLEVEL_PROJECT_PACKAGE_NAME_L "${PROJECT_PACKAGE_NAME_L}")
-    set (TOPLEVEL_PROJECT_PACKAGE_NAME_U "${PROJECT_PACKAGE_NAME_U}")
+    set (TOPLEVEL_PROJECT_PACKAGE_NAME      "${PROJECT_PACKAGE_NAME}")
+    set (TOPLEVEL_PROJECT_PACKAGE_NAME_L    "${PROJECT_PACKAGE_NAME_L}")
+    set (TOPLEVEL_PROJECT_PACKAGE_NAME_U    "${PROJECT_PACKAGE_NAME_U}")
+    set (TOPLEVEL_PROJECT_PACKAGE_NAME_RE   "${PROJECT_PACKAGE_NAME_RE}")
+    set (TOPLEVEL_PROJECT_PACKAGE_NAME_RE_L "${PROJECT_PACKAGE_NAME_RE_L}")
+    set (TOPLEVEL_PROJECT_PACKAGE_NAME_RE_U "${PROJECT_PACKAGE_NAME_RE_U}")
   endif ()
   # PROJECT_PACKAGE_VENDOR
   if (PROJECT_PROVIDER AND PROJECT_VENDOR AND PROJECT_PACKAGE_VENDOR)

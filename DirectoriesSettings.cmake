@@ -44,7 +44,7 @@ endif ()
 # local variables
 # ============================================================================
 
-if (BUNDLE_NAME AND NOT BUNDLE_NAME MATCHES "${PROJECT_PACKAGE_NAME}")
+if (BUNDLE_NAME AND NOT BUNDLE_NAME MATCHES "${PROJECT_PACKAGE_NAME_RE}")
   set (_BUNDLE "/${BUNDLE_NAME}")
 else ()
   set (_BUNDLE)
@@ -187,21 +187,23 @@ set_property(CACHE BASIS_INSTALL_SCHEME PROPERTY STRINGS default opt usr win)
 mark_as_advanced (BASIS_INSTALL_SCHEME)
 
 if (BASIS_INSTALL_SCHEME MATCHES "default")
-  string (TOLOWER "${CMAKE_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX_L)
-  string (TOLOWER "${BUNDLE_NAME}" BUNDLE_NAME_L)
-  string (TOUPPER "${BUNDLE_NAME}" BUNDLE_NAME_U)
+  string (TOLOWER "${CMAKE_INSTALL_PREFIX}" _CMAKE_INSTALL_PREFIX_L)
+  basis_sanitize_for_regex (_BUNDLE_NAME_RE "${BUNDLE_NAME}")
+  string (TOLOWER "{_BUNDLE_NAME_RE}" _BUNDLE_NAME_RE_L)
+  string (TOUPPER "{_BUNDLE_NAME_RE}" _BUNDLE_NAME_RE_U)
   if (WIN32)
     set (BASIS_INSTALL_SCHEME win)
-  elseif (NOT _BUNDLE AND CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${PROJECT_NAME}|${PROJECT_NAME_L}|${PROJECT_NAME_U})[_-]?") # e.g. /opt/<package>[-<version>]
+  elseif (NOT _BUNDLE AND _CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${PROJECT_NAME_RE}|${PROJECT_NAME_RE_L}|${PROJECT_NAME_RE_U})[_-]?") # e.g. /opt/<package>[-<version>]
     set (BASIS_INSTALL_SCHEME opt)
-  elseif (_BUNDLE AND CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${BUNDLE_NAME}|${BUNDLE_NAME_L}|${BUNDLE_NAME_U})[_-]?") # e.g. /opt/<bundle>[-<version>]
+  elseif (_BUNDLE AND _CMAKE_INSTALL_PREFIX_L MATCHES "/(.*[_-])?(${_BUNDLE_NAME_RE}|${_BUNDLE_NAME_RE_L}|${_BUNDLE_NAME_RE_U})[_-]?") # e.g. /opt/<bundle>[-<version>]
     set (BASIS_INSTALL_SCHEME opt)
   else ()
     set (BASIS_INSTALL_SCHEME usr)
   endif ()
-  unset (CMAKE_INSTALL_PREFIX_L)
-  unset (BUNDLE_NAME_L)
-  unset (BUNDLE_NAME_U)
+  unset (_CMAKE_INSTALL_PREFIX_L)
+  unset (_BUNDLE_NAME_RE)
+  unset (_BUNDLE_NAME_RE_L)
+  unset (_BUNDLE_NAME_RE_U)
 endif ()
 
 if (NOT BASIS_INSTALL_SCHEME MATCHES "^(opt|usr|win|bundle)$")
