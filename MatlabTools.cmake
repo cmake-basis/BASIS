@@ -1519,6 +1519,9 @@ function (basis_build_mcc_target TARGET_UID)
     set (OUTPUT_NAME "${OUTPUT_NAME}${SUFFIX}")
   endif ()
   get_filename_component (OUTPUT_NAME_WE "${OUTPUT_NAME}" NAME_WE)
+  # MCC only allows alpha-numeric characters and underscores
+  string (REGEX REPLACE "\\+|-" "_" MCC_OUTPUT_NAME "${OUTPUT_NAME}")
+  get_filename_component (MCC_OUTPUT_NAME_WE "${MCC_OUTPUT_NAME}" NAME_WE)
   # split compile flags at spaces into list
   basis_string_to_list (MCC_USER_FLAGS "${COMPILE_FLAGS}")
   # initialize dependencies of custom build command
@@ -1737,7 +1740,7 @@ function (basis_build_mcc_target TARGET_UID)
       list (APPEND MCC_ARGS -m)                                 # build standalone application
     endif ()
     list (APPEND MCC_ARGS -d "${BUILD_DIR}")                    # (temp) output directory
-    list (APPEND MCC_ARGS -o "${OUTPUT_NAME_WE}")               # output name (excl. extension)
+    list (APPEND MCC_ARGS -o "${MCC_OUTPUT_NAME_WE}")           # output name (excl. extension)
     list (APPEND MCC_ARGS ${SOURCES})                           # source M-files
     foreach (LIB ${LINK_LIBS})                                  # link libraries, e.g. MEX-files
       list (FIND MCC_ARGS "${LIB}" IDX)
@@ -1773,38 +1776,50 @@ function (basis_build_mcc_target TARGET_UID)
       endif ()
     endif ()
     # post-build command
+    set (POST_BUILD_COMMAND)
+    if (NOT "^${MCC_OUTPUT_NAME}$" STREQUAL "^${OUTPUT_NAME}$")
+      list (APPEND POST_BUILD_COMMAND
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${BUILD_DIR}/${MCC_OUTPUT_NAME}"
+                "${BUILD_DIR}/${OUTPUT_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${BUILD_DIR}/${MCC_OUTPUT_NAME_WE}.h"
+                "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
+      )
+    endif ()
     if (LIBRARY)
-      set (
-        POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy
-                           "${BUILD_DIR}/${OUTPUT_NAME}"
-                           "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
-                   COMMAND "${CMAKE_COMMAND}" -E copy
-                           "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
-                           "${BINARY_INCLUDE_DIR}/${LIBRARY_HEADER_DIRECTORY}/${OUTPUT_NAME_WE}.h"
+      list (APPEND POST_BUILD_COMMAND
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${BUILD_DIR}/${OUTPUT_NAME}"
+                "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
+                "${BINARY_INCLUDE_DIR}/${LIBRARY_HEADER_DIRECTORY}/${OUTPUT_NAME_WE}.h"
       )
       if (WIN32)
-        list (APPEND POST_BUILD_COMMAND COMMAND "${CMAKE_COMMAND}" -E copy
-                                                "${BUILD_DIR}/${OUTPUT_NAME_WE}.dll"
-                                                "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.dll")
+        list (APPEND POST_BUILD_COMMAND
+          COMMAND "${CMAKE_COMMAND}" -E copy
+                  "${BUILD_DIR}/${OUTPUT_NAME_WE}.dll"
+                  "${LIBRARY_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.dll")
       endif ()
     else ()
       if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         # TODO: This file should be regenerated if it is missing.
-        file (WRITE "${BUILD_DIR}/${OUTPUT_NAME}" "#!/bin/bash\nexec $(dirname $BASH_SOURCE)/${OUTPUT_NAME_WE}.app/Contents/MacOS/${OUTPUT_NAME_WE}")
+        file (WRITE "${BUILD_DIR}/${OUTPUT_NAME}" "#!/bin/bash\nexec $(dirname $BASH_SOURCE)/${OUTPUT_NAME_WE}.app/Contents/MacOS/${MCC_OUTPUT_NAME_WE}")
         execute_process (COMMAND chmod +x "${BUILD_DIR}/${OUTPUT_NAME}")
-        set (
-          POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                             "${BUILD_DIR}/${OUTPUT_NAME_WE}.app"
-                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.app"
-                     COMMAND "${CMAKE_COMMAND}" -E copy
-                             "${BUILD_DIR}/${OUTPUT_NAME}"
-                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
+        list (APPEND POST_BUILD_COMMAND
+          COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                  "${BUILD_DIR}/${OUTPUT_NAME_WE}.app"
+                  "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME_WE}.app"
+          COMMAND "${CMAKE_COMMAND}" -E copy
+                  "${BUILD_DIR}/${OUTPUT_NAME}"
+                  "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
         )
       else ()
-        set (
-          POST_BUILD_COMMAND "${CMAKE_COMMAND}" -E copy
-                             "${BUILD_DIR}/${OUTPUT_NAME}"
-                             "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
+        list (APPEND POST_BUILD_COMMAND
+          COMMAND "${CMAKE_COMMAND}" -E copy
+                  "${BUILD_DIR}/${OUTPUT_NAME}"
+                  "${RUNTIME_OUTPUT_DIRECTORY}/${OUTPUT_NAME}"
         )
       endif ()
     endif ()
@@ -1832,7 +1847,7 @@ function (basis_build_mcc_target TARGET_UID)
               "-DLOG_ARGS=ON"
               "-P" "${BUILD_SCRIPT}"
       # post build command(s)
-      COMMAND ${POST_BUILD_COMMAND}
+      ${POST_BUILD_COMMAND}
       # inform user where build log can be found
       COMMAND "${CMAKE_COMMAND}" -E echo "Build log written to ${BUILD_LOG}"
       # comment
@@ -1851,7 +1866,7 @@ function (basis_build_mcc_target TARGET_UID)
   set (ADDITIONAL_MAKE_CLEAN_FILES "${BUILD_OUTPUT}")
   if (COMPILE)
     list (APPEND ADDITIONAL_MAKE_CLEAN_FILES
-      "${BUILD_DIR}/${OUTPUT_NAME_WE}.prj"
+      "${BUILD_DIR}/${MCC_OUTPUT_NAME_WE}.prj"
       "${BUILD_DIR}/mccExcludedFiles.log"
       "${BUILD_DIR}/mccBuild.log"
       "${BUILD_DIR}/readme.txt"
@@ -1859,15 +1874,17 @@ function (basis_build_mcc_target TARGET_UID)
     if (LIBRARY)
       list (APPEND ADDITIONAL_MAKE_CLEAN_FILES
         "${BUILD_DIR}/${OUTPUT_NAME_WE}.h"
-        "${BUILD_DIR}/${OUTPUT_NAME_WE}.c"
-        "${BUILD_DIR}/${OUTPUT_NAME_WE}.exports"
+        "${BUILD_DIR}/${MCC_OUTPUT_NAME_WE}.h"
+        "${BUILD_DIR}/${MCC_OUTPUT_NAME_WE}.c"
+        "${BUILD_DIR}/${MCC_OUTPUT_NAME_WE}.exports"
       )
     else ()
       list (APPEND ADDITIONAL_MAKE_CLEAN_FILES
         "${BUILD_DIR}/${OUTPUT_NAME}"
-        "${BUILD_DIR}/run_${OUTPUT_NAME_WE}.sh"
-        "${BUILD_DIR}/${OUTPUT_NAME_WE}_main.c"
-        "${BUILD_DIR}/${OUTPUT_NAME_WE}_mcc_component_data.c"
+        "${BUILD_DIR}/${MCC_OUTPUT_NAME}"
+        "${BUILD_DIR}/run_${MCC_OUTPUT_NAME_WE}.sh"
+        "${BUILD_DIR}/${MCC_OUTPUT_NAME_WE}_main.c"
+        "${BUILD_DIR}/${MCC_OUTPUT_NAME_WE}_mcc_component_data.c"
       )
     endif ()
   endif ()
