@@ -1035,6 +1035,8 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
   if ("^${TYPE}$" STREQUAL "^EXECUTABLE$")
     set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
+  else ()
+    set (COMPILE_FLAGS "")
   endif ()
   # output file name prefix/suffix
   if ("^${TYPE}$" STREQUAL "^EXECUTABLE$")
@@ -1148,6 +1150,9 @@ function (basis_build_mex_file TARGET_UID)
   )
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
+    if (NOT ${PROPERTY})
+      set (${PROPERTY})
+    endif ()
   endforeach ()
   # sanity check of property values
   if (NOT BASIS_TYPE MATCHES "^MEX$")
@@ -1478,6 +1483,9 @@ function (basis_build_mcc_target TARGET_UID)
   )
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
+    if (NOT ${PROPERTY})
+      set (${PROPERTY})
+    endif ()
   endforeach ()
   # sanity checks of property values
   set (EXECUTABLE FALSE)
@@ -1522,8 +1530,6 @@ function (basis_build_mcc_target TARGET_UID)
   # MCC only allows alpha-numeric characters and underscores
   string (REGEX REPLACE "\\+|-" "_" MCC_OUTPUT_NAME "${OUTPUT_NAME}")
   get_filename_component (MCC_OUTPUT_NAME_WE "${MCC_OUTPUT_NAME}" NAME_WE)
-  # split compile flags at spaces into list
-  basis_string_to_list (MCC_USER_FLAGS "${COMPILE_FLAGS}")
   # initialize dependencies of custom build command
   set (DEPENDS ${SOURCES})
   # build output file and comment
