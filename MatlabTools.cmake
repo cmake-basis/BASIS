@@ -1530,8 +1530,18 @@ function (basis_build_mcc_target TARGET_UID)
   endif ()
   get_filename_component (OUTPUT_NAME_WE "${OUTPUT_NAME}" NAME_WE)
   # MCC only allows alpha-numeric characters and underscores
-  string (REGEX REPLACE "\\+|-" "_" MCC_OUTPUT_NAME "${OUTPUT_NAME}")
-  get_filename_component (MCC_OUTPUT_NAME_WE "${MCC_OUTPUT_NAME}" NAME_WE)
+  # TODO: Figure out how to build a shared library without this restriction
+  #       (cf. https://github.com/schuhschuh/cmake-basis/issues/410).
+  if (NOT OUTPUT_NAME MATCHES "[a-zA-Z][_a-zA-Z0-9]*")
+    message (FATAL_ERROR "Target ${TARGET_UID} has invalid output name ${OUTPUT_NAME}."
+                         "MCC only allows alpha-numeric characters and underscores. "
+                         "See GitHub issue #410 for updates on this restriction at\n"
+                         "https://github.com/schuhschuh/cmake-basis/issues/410")
+  endif ()
+  set (MCC_OUTPUT_NAME    "${OUTPUT_NAME}")
+  set (MCC_OUTPUT_NAME_WE "${OUTPUT_NAME_WE}")
+  #string (REGEX REPLACE "\\+|-" "_" MCC_OUTPUT_NAME "${OUTPUT_NAME}")
+  #get_filename_component (MCC_OUTPUT_NAME_WE "${MCC_OUTPUT_NAME}" NAME_WE)
   # initialize dependencies of custom build command
   set (DEPENDS ${SOURCES})
   # build output file and comment
