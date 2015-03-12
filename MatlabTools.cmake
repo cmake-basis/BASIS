@@ -1404,9 +1404,6 @@ function (basis_build_mex_file TARGET_UID)
   endif ()
   # add custom target
   add_custom_target (_${TARGET_UID} DEPENDS ${BUILD_OUTPUTS} SOURCES ${SOURCES})
-  if (TARGET __${TARGET_UID}) # re-glob source files
-    add_dependencies (_${TARGET_UID} __${TARGET_UID})
-  endif ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean"
   set_property (
@@ -1876,9 +1873,6 @@ function (basis_build_mcc_target TARGET_UID)
   # --------------------------------------------------------------------------
   # add custom target
   add_custom_target (_${TARGET_UID} DEPENDS ${BUILD_OUTPUT} SOURCES ${SOURCES})
-  if (TARGET __${TARGET_UID}) # re-glob source files
-    add_dependencies (_${TARGET_UID} __${TARGET_UID})
-  endif ()
   add_dependencies (${TARGET_UID} _${TARGET_UID})
   # cleanup on "make clean"
   set (ADDITIONAL_MAKE_CLEAN_FILES "${BUILD_OUTPUT}")
