@@ -3179,7 +3179,7 @@ function (basis_add_init_py_target)
       # directories for which to build a __init__.py file
       foreach (L IN LISTS LOCATION)
         basis_get_filename_component (DIR "${L}" PATH)
-        if (L MATCHES "/__init__.py$")
+        if (L MATCHES "/__init__\\.py$")
           list (APPEND EXCLUDE "${DIR}")
         else ()
           list (APPEND DEPENDENTS ${TARGET_UID}) # depends on _initpy
@@ -3199,7 +3199,7 @@ function (basis_add_init_py_target)
       # directories for which to install a __init__.py file
       foreach (L IN LISTS INSTALL_LOCATION)
         basis_get_filename_component (DIR "${L}" PATH)
-        if (L MATCHES "/__init__.py$")
+        if (L MATCHES "/__init__\\.py$")
           list (APPEND INSTALL_EXCLUDE "${DIR}")
         else ()
           list (APPEND DEPENDENTS ${TARGET_UID}) # depends on _initpy
