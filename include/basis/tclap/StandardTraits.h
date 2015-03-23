@@ -124,7 +124,7 @@ struct ArgTraits<unsigned char> {
 };
 
 // Microsoft implements size_t awkwardly. 
-#if defined(_MSC_VER) && defined(_M_X64)
+#if defined(_MSC_VER) && defined(_M_X64) && !defined(_WIN64)
 /**
  * size_ts have value-like semantics.
  */
