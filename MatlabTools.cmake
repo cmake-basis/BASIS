@@ -143,18 +143,12 @@ function (basis_get_full_matlab_version VERSION)
   # run matlab command to write return value of "version" command to text file
   if (NOT _MATLAB_VERSION)
     message (STATUS "Determining MATLAB version...")
-    set (CMD "${MATLAB_EXECUTABLE}" -nodesktop -nosplash -nojvm -singleCompThread)
+    set (CMD "${MATLAB_EXECUTABLE}" -nodesktop -nosplash -singleCompThread)
     if (WIN32)
       list (APPEND CMD -automation)
+    else ()
+      list (APPEND CMD -nojvm)
     endif ()
-    # The following direct command works on Mac OS, but not Cent OS Linux because
-    # of the surrounding double quotes which are needed on Mac OS, but not Linux.
-    # Therefore, write MATLAB script first to file and execute it in order to
-    # have the same CMake code on all platforms. Furthermore, if the quotes might
-    # no longer be required also on Mac OS, we do not have to worry about it here.
-    # -schuha
-    #list (APPEND CMD -r "\"fid = fopen('${OUTPUT_FILE}', 'w'), [...], fclose(fid), quit force\"")
-    list (APPEND CMD "-r" basis_get_full_matlab_version)
     file (WRITE "${WORKING_DIR}/basis_get_full_matlab_version.m" 
 "% DO NOT EDIT. Automatically created by BASIS (basis_get_full_matlab_version).
 fid = fopen ('${OUTPUT_FILE}', 'w')
@@ -165,7 +159,7 @@ quit force
 "
     )
     execute_process (
-      COMMAND           ${CMD}
+      COMMAND           ${CMD} -r "cd('${WORKING_DIR}');basis_get_full_matlab_version;"
       WORKING_DIRECTORY "${WORKING_DIR}"
       RESULT_VARIABLE   RETVAL
       TIMEOUT           600 # MATLAB startup can be *very* slow the first time
@@ -184,6 +178,21 @@ quit force
       message (STATUS "Determining MATLAB version... - failed${REASON}")
       return ()
     endif ()
+    # wait until MATLAB process terminated entirely and wrote the (buffered?) file
+    set (nsleep_count 0)
+    set (nsleep_max  30)
+    while (NOT EXISTS "${OUTPUT_FILE}")
+      math (EXPR nsleep_count "${nsleep_count}+1")
+      if (nsleep_count GREATER nsleep_max)
+        message (STATUS "Determining MATLAB version... - failed: File ${OUTPUT_FILE} still non-existent after ${nsleep_max}s of successful MATLAB termination")
+        return ()
+      endif ()
+      if (WIN32)
+        execute_process (COMMAND ping 1.1.1.1 -n 1 -w 1000 OUTPUT_QUIET)
+      else ()
+        execute_process (COMMAND sleep 1 OUTPUT_QUIET)
+      endif ()
+    endwhile ()
     # read MATLAB version from text file
     file (READ "${OUTPUT_FILE}" LINES)
     string (REGEX REPLACE "\n"    ";" LINES "${LINES}")
