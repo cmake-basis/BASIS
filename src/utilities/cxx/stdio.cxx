@@ -15,6 +15,7 @@
 #include <basis/config.h> // WINDOWS macro
 #include <basis/assert.h> // assert()
 
+#include <algorithm>      // min<T>()
 #include <stdlib.h>       // getenv()
 
 #if WINDOWS
