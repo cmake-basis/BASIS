@@ -3156,7 +3156,10 @@ function (basis_add_init_py_target)
           set (LOCATION         "${LOCATION}/${PREFIX}")
           set (INSTALL_LOCATION "${INSTALL_LOCATION}/${PREFIX}")
         endif ()
-        list (REMOVE_AT SOURCES 0) # strange, but this is a CMakeFiles/ subdirectory
+        list (GET SOURCES 0 BINARY_DIR) # CMake <3.1 stores path to internal build directory here
+        if (BINARY_DIR MATCHES "CMakeFiles")
+          list (REMOVE_AT SOURCES 0)
+        endif ()
         foreach (SOURCE IN LISTS SOURCES)
           file (RELATIVE_PATH SOURCE "${SOURCE_DIRECTORY}" "${SOURCE}")
           list (APPEND _LOCATION         "${LOCATION}/${SOURCE}")
