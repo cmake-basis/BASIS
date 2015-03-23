@@ -3336,6 +3336,9 @@ function (basis_add_init_py_target)
       foreach (DIR IN LISTS INSTALL_${LANGUAGE}_DIRS_${COMPONENT})
         list (FIND INSTALL_EXCLUDE "${DIR}" IDX)
         if (IDX EQUAL -1)
+          if (BASIS_DEBUG AND BASIS_VERBOSE)
+            message("**    Copy ${${LANGUAGE}_INSTALL_FILE} to ${DIR} upon installation of ${COMPONENT} component")
+          endif ()
           install (
             FILES       "${${LANGUAGE}_INSTALL_FILE}"
             DESTINATION "${DIR}"
