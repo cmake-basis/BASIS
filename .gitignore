@@ -2,4 +2,4 @@
 *.pyc
 *.autosave
 CMakeLists.txt.user.*
-xcode
+xcode/CMakeLists.txt.user
