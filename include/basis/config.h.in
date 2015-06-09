@@ -24,25 +24,41 @@
 /// @def   LINUX
 /// @brief Whether the sources are compiled on a Linux system.
 #ifndef LINUX
-#  define LINUX (defined (linux) || defined (__linux))
+#  if defined (linux) || defined (__linux)
+#    define LINUX 1
+#  else
+#    define LINUX 0
+#  endif
 #endif
 
 /// @def   WINDOWS
 /// @brief Whether the sources are compiled on a Windows system.
 #ifndef WINDOWS
-#  define WINDOWS (defined (_WIN32) || defined (WIN32) || defined (_WINDOWS))
+#  if defined (_WIN32) || defined (WIN32) || defined (_WINDOWS)
+#    define WINDOWS 1
+#  else
+#    define WINDOWS 0
+#  endif
 #endif
 
 /// @def   MACOS
 /// @brief Whether the sources are compiled on a Mac OS system.
 #ifndef MACOS
-#  define MACOS (defined (__APPLE__) || defined (__OSX__))
+#  if defined (__APPLE__) || defined (__OSX__)
+#    define MACOS 1
+#  else
+#    define MACOS 0
+#  endif
 #endif
 
 /// @def   UNIX
 /// @brief Whether the sources are compiled on a Unix-based system.
 #ifndef UNIX
-#  define UNIX (!WINDOWS)
+#  if WINDOWS
+#    define UNIX 0
+#  else
+#    define UNIX 1
+#  endif
 #endif
 
 /// @def   HAVE_LONG_LONG
