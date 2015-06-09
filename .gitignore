@@ -1,5 +1,5 @@
 /build*
 *.pyc
 *.autosave
-CMakeLists.txt.user.*
-xcode/CMakeLists.txt.user
+CMakeLists.txt.user*
+xcode
