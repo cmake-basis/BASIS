@@ -1349,9 +1349,9 @@ function (basis_build_mex_file TARGET_UID)
   if (MEX_LIBPATH)
     list (REMOVE_DUPLICATES MEX_LIBPATH)
   endif ()
-  if (MEX_LIBS)
-    list (REMOVE_DUPLICATES MEX_LIBS)
-  endif ()
+  # do not remove duplicate entries in MEX_LIBS which may be needed
+  # to resolve (cyclic) dependencies between statically linked libraries
+  # (cf. https://github.com/schuhschuh/cmake-basis/issues/444)
   if (MEX_LIBPATH OR MEX_LIBS)
     if (WIN32)
       basis_list_to_delimited_string (MEX_LIBPATH " " NOAUTOQUOTE ${MEX_LIBPATH})
