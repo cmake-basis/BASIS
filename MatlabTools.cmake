@@ -638,6 +638,12 @@ endfunction ()
 #         and hence a link dependency on the BASIS utilities must be added.
 #         (default: @c BASIS_UTILITIES)</td>
 #   </tr>
+#   <tr>
+#     @tp @b PRIVATE @endtp
+#     <td>Declare this MEX-file has private, i.e., only intended for use by
+#         applications and libraries of this package. This option mainly
+#         changes the default installation location.</td>
+#   </tr>
 # </table>
 #
 # @returns Adds custom target to build MEX-file using the MEX script.
@@ -658,7 +664,7 @@ function (basis_add_mex_file TARGET_NAME)
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
-      "USE_BASIS_UTILITIES;NO_BASIS_UTILITIES;EXPORT;NOEXPORT"
+      "USE_BASIS_UTILITIES;NO_BASIS_UTILITIES;EXPORT;NOEXPORT;PRIVATE"
       "COMPONENT;DESTINATION"
       ""
     ${ARGN}
@@ -698,7 +704,11 @@ function (basis_add_mex_file TARGET_NAME)
       file (RELATIVE_PATH ARGN_DESTINATION "${CMAKE_INSTALL_PREFIX}" "${ARGN_DESTINATION}")
     endif ()
   else ()
-    set (ARGN_DESTINATION "${INSTALL_MATLAB_LIBRARY_DIR}")
+    if (ARGN_PRIVATE)
+      set (ARGN_DESTINATION "${INSTALL_MATLAB_LIBRARY_DIR}")
+    else ()
+      set (ARGN_DESTINATION "${INSTALL_MATLAB_SITE_DIR}")
+    endif ()
   endif ()
   # configure (.in) source files
   basis_configure_sources (SOURCES ${SOURCES})
