@@ -485,9 +485,9 @@ bool Subprocess::poll() const
     if (_info.pid > 0) {
         pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
         if (pid == -1 && errno != ECHILD) {
-#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+#if defined(__APPLE__) || ((_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE)
             char errormsg[256];
-            strerror_r(errno, errormsg, sizeof(errormsg))
+            strerror_r(errno, errormsg, sizeof(errormsg));
 #else
             char buf[256];
             char * const errormsg = strerror_r(errno, buf, sizeof(buf));
@@ -592,7 +592,7 @@ bool Subprocess::signaled() const
         pid_t pid = waitpid(_info.pid, &_status, WNOHANG | WUNTRACED | WCONTINUED);
         int errnum = errno;
         if (pid == -1 && errnum != ECHILD) {
-#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+#if defined(__APPLE__) || ((_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE)
             char errormsg[256];
             strerror_r(errnum, errormsg, sizeof(errormsg));
 #else
