@@ -2946,7 +2946,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # libraries
       elseif (TYPE MATCHES "LIBRARY|MODULE|MEX")
-        if (TYPE MATCHES "STATIC" OR TYPE MATCHES "SHARED_LIBRARY")
+        if (TYPE MATCHES "STATIC")
           if (PART MATCHES "POST_INSTALL")
             get_target_property (DIRECTORY ${TARGET_UID} ARCHIVE_INSTALL_DIRECTORY)
           else ()
