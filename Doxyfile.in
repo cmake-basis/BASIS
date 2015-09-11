@@ -274,7 +274,11 @@ OPTIMIZE_OUTPUT_VHDL   = NO
 
 EXTENSION_MAPPING      = inl=C++ \
                          txx=C++ \
-                         inc=C++
+                         inc=C++ \
+                         sh=C++ \
+                         m=C++ \
+                         cmake=C++ \
+                         ctest=C++
 
 # If the MARKDOWN_SUPPORT tag is enabled then doxygen pre-processes all comments
 # according to the Markdown format, which allows for more readable
