@@ -37,7 +37,7 @@
 # script attributes
 # ============================================================================
 
-# Note: The following set() commands are required for the API documentatoin.
+# Note: The following set() commands are required for the API documentation.
 
 ## @brief Detected scripting language or UNKNOWN.
 set (LANGUAGE "${LANGUAGE}")
@@ -46,21 +46,32 @@ set (LANGUAGE "${LANGUAGE}")
 #
 # @note Mainly used in script configuration itself to make relative paths
 #       absolute. In particular, basis_set_script_path() uses this variable.
-set (DIR "${__DIR__}")
+set (__DIR__ "${__DIR__}")
 
 ## @brief Absolute path of script file.
 #
 # @note As this path is fixed after the build, it should be used only if
 #       it is not otherwise possible to determine the path of the current
 #       script file. It prohibits the relocation of the installation.
-set (FILE "${FILE}")
+set (__FILE__ "${__FILE__}")
 
 ## @brief Name of script file.
-set (NAME "${NAME}")
+set (__NAME__ "${__NAME__}")
+
 ## @brief Name of script file in uppercase only.
-set (NAME_U "${NAME_U}")
+string (TOUPPER "${__NAME__}" __NAME_U__)
 ## @brief Name of script file in lowercase only.
-set (NAME_L "${NAME_L}")
+string (TOLOWER "${__NAME__}" __NAME_L__)
+
+# ============================================================================
+# aliases of script attributes for backward compatibility
+# ============================================================================
+
+set (DIR    ${__DIR__})
+set (FILE   ${__FILE__})
+set (NAME   ${__NAME__})
+set (NAME_U ${__NAME_U__})
+set (NAME_L ${__NAME_L__})
 
 # ============================================================================
 # directories
