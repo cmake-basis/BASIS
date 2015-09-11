@@ -1,5 +1,3 @@
-:orphan:
-
 Frequently Asked Questions
 ==========================
 
