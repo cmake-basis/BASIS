@@ -505,7 +505,8 @@ function (basis_configure_utilities)
     basis_add_python_utilities_library (TARGET_UID)
     # set target properties
     set (SCRIPT_DEFINITIONS
-      "if (BUILD_INSTALL_SCRIPT)
+      "set (PROJECT_ID \"${PROJECT_ID}\")
+       if (BUILD_INSTALL_SCRIPT)
          set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_I}\")
        else ()
          set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PYTHON_B}\")
@@ -554,7 +555,8 @@ function (basis_configure_utilities)
         LIBRARY_INSTALL_DIRECTORY "${INSTALL_PERL_LIBRARY_DIR}"
         PREFIX                    "${PREFIX}"
         SCRIPT_DEFINITIONS
-          "if (BUILD_INSTALL_SCRIPT)
+          "set (PROJECT_ID \"${PROJECT_ID}\")
+           if (BUILD_INSTALL_SCRIPT)
              set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_I}\")
            else ()
              set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_PERL_B}\")
@@ -580,7 +582,8 @@ function (basis_configure_utilities)
     basis_add_bash_utilities_library (TARGET_UID)
     # set target properties
     set (SCRIPT_DEFINITIONS
-      "if (BUILD_INSTALL_SCRIPT)
+      "set (PROJECT_ID \"${PROJECT_ID}\")
+       if (BUILD_INSTALL_SCRIPT)
          set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_I}\")
        else ()
          set (EXECUTABLE_TARGET_INFO \"${EXECUTABLE_TARGET_INFO_BASH_B}\")
