@@ -454,7 +454,7 @@ option (BASIS_EXPORTS_FILE "Create <Package>Exports.cmake file so other projects
 mark_as_advanced (BASIS_EXPORTS_FILE)
 
 ## @brief Disable use of the revision information obtained from the revision
-#         control software such as Subversion.
+#         control software such as Subversion or Git.
 #
 # If this option is @c TRUE, the revision information is not included in the
 # @c PROJECT_RELEASE information.
