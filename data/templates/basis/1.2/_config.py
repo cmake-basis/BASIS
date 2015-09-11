@@ -164,7 +164,7 @@ options = {
 presets = {
   'minimal' : {
     'desc' : 'Choose minimal project template.',
-    'args' : [ 'src' ]
+    'args' : [ 'bootstrapping', 'src' ]
   },
   'default' : {
     'desc' : 'Choose default project template.',
