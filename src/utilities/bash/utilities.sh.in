@@ -79,6 +79,12 @@ import basis.shflags # command-line parsing library
 [ -n "${PROJECT}" ] || readonly PROJECT=''
 ## @brief Project version.
 [ -n "${VERSION}" ] || readonly VERSION=''
+## @brief Major project version.
+[ -n "${VERSION_MAJOR}" ] || VERSION_MAJOR=''
+## @brief Minor project version.
+[ -n "${VERSION_MINOR}" ] || VERSION_MINOR=''
+## @brief Project patch number.
+[ -n "${VERSION_PATCH}" ] || VERSION_PATCH=''
 ## @brief Project release.
 [ -n "${RELEASE}" ] || readonly RELEASE=''
 ## @brief Default copyright of executables.
@@ -90,9 +96,23 @@ import basis.shflags # command-line parsing library
 
 
 # common prefix of target UIDs belonging to this project
-[ -n "${_BASIS_TARGET_UID_PREFIX}" ] || readonly _BASIS_TARGET_UID_PREFIX=''
+[ -n "${_BASIS_TARGET_UID_PREFIX}" ] || _BASIS_TARGET_UID_PREFIX=''
 # used to make relative paths in executable target information map absolute
-[ -n "${_BASIS_EXECUTABLE_TARGETS_BASE}" ] || readonly _BASIS_EXECUTABLE_TARGETS_BASE="${BASIS_UTILITIES_DIR}"
+[ -n "${_BASIS_EXECUTABLE_TARGETS_BASE}" ] || _BASIS_EXECUTABLE_TARGETS_BASE="${BASIS_UTILITIES_DIR}"
+
+# declare constants as readonly
+readonly PROJECT
+readonly VERSION
+readonly VERSION_MAJOR
+readonly VERSION_MINOR
+readonly VERSION_PATCH
+readonly RELEASE
+readonly COPYRIGHT
+readonly LICENSE
+readonly CONTACT
+
+readonly _BASIS_TARGET_UID_PREFIX
+readonly _BASIS_EXECUTABLE_TARGETS_BASE
 
 
 ## @addtogroup BasisBashUtilities
