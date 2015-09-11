@@ -1,5 +1,3 @@
-:orphan:
-
 .. meta::
     :description: BASIS makes it easy to create sharable software and libraries 
                   that work together. This is accomplished by combining and 

@@ -106,6 +106,9 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
     DOXYLINK         apidoc                               # Doxygen generator build target for integrated API reference
     DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"   # location of Doxygen output files
     NO_HTML_MODINDEX NO_HTML_INDEX                        # disable currently unused index page
+    EXCLUDE_PATTERN  intro.rst                            # .rst files explicitly included only
+    EXCLUDE_PATTERN  faq.rst
+    EXCLUDE_PATTERN  features.rst
   )
   
   # the Sphinx :download: link directive requires the download file to

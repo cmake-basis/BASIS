@@ -1,3 +1,5 @@
+:orphan:
+
 .. raw:: latex
 
     \pagebreak
@@ -7,7 +9,7 @@
 .. toctree::
     :maxdepth: 2
 
-    features
+    features_manual
     quickstart
     howto
     standard

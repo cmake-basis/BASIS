@@ -1,3 +1,5 @@
+:orphan:
+
 .. title:: Home
 
 .. include:: intro.rst
