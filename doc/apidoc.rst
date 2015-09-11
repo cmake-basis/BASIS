@@ -52,19 +52,19 @@ Older Versions
 .. |Perl Utilities v2.1|     replace:: :apilink:`v2.1`
 .. |BASH Utilities v2.1|     replace:: :apilink:`v2.1`
 
-.. _Tools v2.1:              http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__Tools.html
-.. _Modules v2.1:            http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisModules.html
-.. _CMake API v2.1:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__CMakeAPI.html
-.. _Find Modules v2.1:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__CMakeFindModules.html
-.. _Settings v2.1:           http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisSettings.html
-.. _Config v2.1:             http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisConfig.html
-.. _Directories v2.1:        http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisDirectories.html
-.. _ScriptConfig v2.1:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisScriptConfig.html
-.. _Utilities v2.1:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisUtilities.html
-.. _C++ Utilities v2.1:      http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisCxxUtilities.html
-.. _Python Utilities v2.1:   http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisPythonUtilities.html
-.. _Perl Utilities v2.1:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisPerlUtilities.html
-.. _BASH Utilities v2.1:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisBASHUtilities.html
+.. _Tools v2.1:              http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__Tools.html
+.. _Modules v2.1:            http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisModules.html
+.. _CMake API v2.1:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__CMakeAPI.html
+.. _Find Modules v2.1:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__CMakeFindModules.html
+.. _Settings v2.1:           http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisSettings.html
+.. _Config v2.1:             http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisConfig.html
+.. _Directories v2.1:        http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisDirectories.html
+.. _ScriptConfig v2.1:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisScriptConfig.html
+.. _Utilities v2.1:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisUtilities.html
+.. _C++ Utilities v2.1:      http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisCxxUtilities.html
+.. _Python Utilities v2.1:   http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisPythonUtilities.html
+.. _Perl Utilities v2.1:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisPerlUtilities.html
+.. _BASH Utilities v2.1:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.1/group__BasisBASHUtilities.html
 
 
 .. |Tools v2.0|              replace:: :apilink:`v2.0`
@@ -81,19 +81,19 @@ Older Versions
 .. |Perl Utilities v2.0|     replace:: :apilink:`v2.0`
 .. |BASH Utilities v2.0|     replace:: :apilink:`v2.0`
 
-.. _Tools v2.0:              http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__Tools.html
-.. _Modules v2.0:            http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisModules.html
-.. _CMake API v2.0:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__CMakeAPI.html
-.. _Find Modules v2.0:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__CMakeFindModules.html
-.. _Settings v2.0:           http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisSettings.html
-.. _Config v2.0:             http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisConfig.html
-.. _Directories v2.0:        http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisDirectories.html
-.. _ScriptConfig v2.0:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisScriptConfig.html
-.. _Utilities v2.0:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisUtilities.html
-.. _C++ Utilities v2.0:      http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisCxxUtilities.html
-.. _Python Utilities v2.0:   http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html
-.. _Perl Utilities v2.0:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html
-.. _BASH Utilities v2.0:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisBASHUtilities.html
+.. _Tools v2.0:              http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__Tools.html
+.. _Modules v2.0:            http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisModules.html
+.. _CMake API v2.0:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__CMakeAPI.html
+.. _Find Modules v2.0:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__CMakeFindModules.html
+.. _Settings v2.0:           http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisSettings.html
+.. _Config v2.0:             http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisConfig.html
+.. _Directories v2.0:        http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisDirectories.html
+.. _ScriptConfig v2.0:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisScriptConfig.html
+.. _Utilities v2.0:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisUtilities.html
+.. _C++ Utilities v2.0:      http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisCxxUtilities.html
+.. _Python Utilities v2.0:   http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPythonUtilities.html
+.. _Perl Utilities v2.0:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisPerlUtilities.html
+.. _BASH Utilities v2.0:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v2.0/group__BasisBASHUtilities.html
 
 
 .. |Tools v1.3|              replace:: :apilink:`v1.3`
@@ -110,19 +110,19 @@ Older Versions
 .. |Perl Utilities v1.3|     replace:: :apilink:`v1.3`
 .. |BASH Utilities v1.3|     replace:: :apilink:`v1.3`
 
-.. _Tools v1.3:              http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__Tools.html
-.. _Modules v1.3:            http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisModules.html
-.. _CMake API v1.3:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__CMakeAPI.html
-.. _Find Modules v1.3:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__CMakeFindModules.html
-.. _Settings v1.3:           http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisSettings.html
-.. _Config v1.3:             http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisConfig.html
-.. _Directories v1.3:        http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisDirectories.html
-.. _ScriptConfig v1.3:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisScriptConfig.html
-.. _Utilities v1.3:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisUtilities.html
-.. _C++ Utilities v1.3:      http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html
-.. _Python Utilities v1.3:   http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisPythonUtilities.html
-.. _Perl Utilities v1.3:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisPerlUtilities.html
-.. _BASH Utilities v1.3:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBASHUtilities.html
+.. _Tools v1.3:              http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__Tools.html
+.. _Modules v1.3:            http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisModules.html
+.. _CMake API v1.3:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__CMakeAPI.html
+.. _Find Modules v1.3:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__CMakeFindModules.html
+.. _Settings v1.3:           http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisSettings.html
+.. _Config v1.3:             http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisConfig.html
+.. _Directories v1.3:        http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisDirectories.html
+.. _ScriptConfig v1.3:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisScriptConfig.html
+.. _Utilities v1.3:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisUtilities.html
+.. _C++ Utilities v1.3:      http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisCxxUtilities.html
+.. _Python Utilities v1.3:   http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.3:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.3:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.3/group__BasisBASHUtilities.html
 
 
 .. |Tools v1.2|              replace:: :apilink:`v1.2`
@@ -139,19 +139,19 @@ Older Versions
 .. |Perl Utilities v1.2|     replace:: :apilink:`v1.2`
 .. |BASH Utilities v1.2|     replace:: :apilink:`v1.2`
 
-.. _Tools v1.2:              http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__Tools.html
-.. _Modules v1.2:            http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisModules.html
-.. _CMake API v1.2:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__CMakeAPI.html
-.. _Find Modules v1.2:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__CMakeFindModules.html
-.. _Settings v1.2:           http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisSettings.html
-.. _Config v1.2:             http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisConfig.html
-.. _Directories v1.2:        http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisDirectories.html
-.. _ScriptConfig v1.2:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisScriptConfig.html
-.. _Utilities v1.2:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisUtilities.html
-.. _C++ Utilities v1.2:      http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisCxxUtilities.html
-.. _Python Utilities v1.2:   http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisPythonUtilities.html
-.. _Perl Utilities v1.2:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisPerlUtilities.html
-.. _BASH Utilities v1.2:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisBASHUtilities.html
+.. _Tools v1.2:              http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__Tools.html
+.. _Modules v1.2:            http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisModules.html
+.. _CMake API v1.2:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__CMakeAPI.html
+.. _Find Modules v1.2:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__CMakeFindModules.html
+.. _Settings v1.2:           http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisSettings.html
+.. _Config v1.2:             http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisConfig.html
+.. _Directories v1.2:        http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisDirectories.html
+.. _ScriptConfig v1.2:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisScriptConfig.html
+.. _Utilities v1.2:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisUtilities.html
+.. _C++ Utilities v1.2:      http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisCxxUtilities.html
+.. _Python Utilities v1.2:   http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.2:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.2:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.2/group__BasisBASHUtilities.html
 
 
 .. |Tools v1.1|              replace:: :apilink:`v1.1`
@@ -168,19 +168,19 @@ Older Versions
 .. |Perl Utilities v1.1|     replace:: :apilink:`v1.1`
 .. |BASH Utilities v1.1|     replace:: :apilink:`v1.1`
 
-.. _Tools v1.1:              http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__Tools.html
-.. _Modules v1.1:            http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisModules.html
-.. _CMake API v1.1:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__CMakeAPI.html
-.. _Find Modules v1.1:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__CMakeFindModules.html
-.. _Settings v1.1:           http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisSettings.html
-.. _Config v1.1:             http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisConfig.html
-.. _Directories v1.1:        http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisDirectories.html
-.. _ScriptConfig v1.1:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisScriptConfig.html
-.. _Utilities v1.1:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisUtilities.html
-.. _C++ Utilities v1.1:      http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisCxxUtilities.html
-.. _Python Utilities v1.1:   http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisPythonUtilities.html
-.. _Perl Utilities v1.1:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisPerlUtilities.html
-.. _BASH Utilities v1.1:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisBASHUtilities.html
+.. _Tools v1.1:              http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__Tools.html
+.. _Modules v1.1:            http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisModules.html
+.. _CMake API v1.1:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__CMakeAPI.html
+.. _Find Modules v1.1:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__CMakeFindModules.html
+.. _Settings v1.1:           http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisSettings.html
+.. _Config v1.1:             http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisConfig.html
+.. _Directories v1.1:        http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisDirectories.html
+.. _ScriptConfig v1.1:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisScriptConfig.html
+.. _Utilities v1.1:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisUtilities.html
+.. _C++ Utilities v1.1:      http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisCxxUtilities.html
+.. _Python Utilities v1.1:   http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.1:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.1:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.1/group__BasisBASHUtilities.html
 
 
 .. |Tools v1.0|              replace:: :apilink:`v1.0`
@@ -197,16 +197,16 @@ Older Versions
 .. |Perl Utilities v1.0|     replace:: :apilink:`v1.0`
 .. |BASH Utilities v1.0|     replace:: :apilink:`v1.0`
 
-.. _Tools v1.0:              http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__Tools.html
-.. _Modules v1.0:            http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisModules.html
-.. _CMake API v1.0:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__CMakeAPI.html
-.. _Find Modules v1.0:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__CMakeFindModules.html
-.. _Settings v1.0:           http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisSettings.html
-.. _Config v1.0:             http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisConfig.html
-.. _Directories v1.0:        http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisDirectories.html
-.. _ScriptConfig v1.0:       http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisScriptConfig.html
-.. _Utilities v1.0:          http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisUtilities.html
-.. _C++ Utilities v1.0:      http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisCxxUtilities.html
-.. _Python Utilities v1.0:   http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisPythonUtilities.html
-.. _Perl Utilities v1.0:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisPerlUtilities.html
-.. _BASH Utilities v1.0:     http://www.rad.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisBASHUtilities.html
+.. _Tools v1.0:              http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__Tools.html
+.. _Modules v1.0:            http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisModules.html
+.. _CMake API v1.0:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__CMakeAPI.html
+.. _Find Modules v1.0:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__CMakeFindModules.html
+.. _Settings v1.0:           http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisSettings.html
+.. _Config v1.0:             http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisConfig.html
+.. _Directories v1.0:        http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisDirectories.html
+.. _ScriptConfig v1.0:       http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisScriptConfig.html
+.. _Utilities v1.0:          http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisUtilities.html
+.. _C++ Utilities v1.0:      http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisCxxUtilities.html
+.. _Python Utilities v1.0:   http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisPythonUtilities.html
+.. _Perl Utilities v1.0:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisPerlUtilities.html
+.. _BASH Utilities v1.0:     http://www.cbica.upenn.edu/sbia/software/basis/apidoc/v1.0/group__BasisBASHUtilities.html

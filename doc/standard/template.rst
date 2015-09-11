@@ -458,7 +458,7 @@ package in ``data/templates/basis/1.0/_config.py``.
       },
       'license' : {
         'help'    : "Software license statement, e.g., \"Simplified BSD\".",
-        'default' : "See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file."
+        'default' : "See http://www.cbica.upenn.edu/sbia/software/license.html or COPYING file."
       },
       'contact' : {
         'help'    : "Package contact information.",

@@ -31,7 +31,7 @@ Available Templates
 |            |           | To use it simply follow the :doc:`/quickstart`.                                   |
 +------------+-----------+-----------------------------------------------------------------------------------+
 | sbia_      | 1.8       | The original template for the                                                     |
-|            |           | `Section of Biomedical Image Analysis (SBIA) <http://www.rad.upenn.edu/sbia/>`__  |
+|            |           | `Section of Biomedical Image Analysis (SBIA) <http://www.cbica.upenn.edu/sbia/>`__  |
 |            |           | of the `University of Pennsylvania <http://www.upenn.edu/>`__. This template      |
 |            |           | will only be useful as an example for those that are not a member of this group.  |
 +------------+-----------+-----------------------------------------------------------------------------------+

@@ -10,7 +10,7 @@ Nested Superbuild of BASIS and other Dependencies
 The following CMake script is an example of how to implement a nested
 superbuild of BASIS and other project dependencies. It is a (edited) copy
 of the ``CMakeLists.txt`` file which implements the superbuild of the
-`DRAMMS software package <http://www.rad.upenn.edu/sbia/software/dramms/download.html>`__.
+`DRAMMS software package <http://www.cbica.upenn.edu/sbia/software/dramms/download.html>`__.
 
 .. code-block:: cmake
   :linenos:
@@ -20,7 +20,7 @@ of the ``CMakeLists.txt`` file which implements the superbuild of the
   # @brief CMake configuration of bundle.
   #
   # Copyright (c) 2012 University of Pennsylvania. All rights reserved.
-  # See http://www.rad.upenn.edu/sbia/software/license.html or COPYING file.
+  # See http://www.cbica.upenn.edu/sbia/software/license.html or COPYING file.
   #
   # Contact: SBIA Group <sbia-software at uphs.upenn.edu>
   ##############################################################################

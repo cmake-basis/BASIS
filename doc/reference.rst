@@ -70,27 +70,27 @@ The BASIS utilities address the following aspects of the software implementation
 - *Software Testing* (TODO)
 
 .. Old links for reference:
-    [1]:  http://www.rad.upenn.edu/sbia/
-    [2]:  http://www.rad.upenn.edu/sbia/software/license.html
-    [3]:  http://www.rad.upenn.edu/sbia/software/basis/help.html
-    [4]:  http://www.rad.upenn.edu/sbia/software/basis/standard/template.html
-    [5]:  http://www.rad.upenn.edu/sbia/software/basis/standard/fhs.html
-    [6]:  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
-    [7]:  http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html
-    [8]:  http://www.rad.upenn.edu/sbia/software/basis/standard/implementation.html
+    [1]:  http://www.cbica.upenn.edu/sbia/
+    [2]:  http://www.cbica.upenn.edu/sbia/software/license.html
+    [3]:  http://www.cbica.upenn.edu/sbia/software/basis/help.html
+    [4]:  http://www.cbica.upenn.edu/sbia/software/basis/standard/template.html
+    [5]:  http://www.cbica.upenn.edu/sbia/software/basis/standard/fhs.html
+    [6]:  http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisModules.html
+    [7]:  http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/group__BasisUtilities.html
+    [8]:  http://www.cbica.upenn.edu/sbia/software/basis/standard/implementation.html
     [9]:  http://www.kitware.com/products/html/BuildingExternalProjectsWithCMake2.8.html
     [10]: http://www.vtk.org/Wiki/ITK/Release_4/Modularization
-    [11]: http://www.rad.upenn.edu/sbia/software/basis/howto/create-and-modify-project.html
-    [12]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeAPI.html#gab7b7600c0ab4197db811f810a04670be
+    [11]: http://www.cbica.upenn.edu/sbia/software/basis/howto/create-and-modify-project.html
+    [12]: http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/group__CMakeAPI.html#gab7b7600c0ab4197db811f810a04670be
     [13]: http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:add_executable
-    [14]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/BasisTools_8cmake.html
-    [15]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/BasisTest_8cmake.html
-    [16]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/BasisPack_8cmake.html
-    [17]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/group__Tools.html
-    [18]: http://www.rad.upenn.edu/sbia/software/basis/howto/run-automated-tests.html
-    [19]: http://www.rad.upenn.edu/sbia/software/basis/apidoc/latest/UtilitiesTools_8cmake.html
-    [20]: http://www.rad.upenn.edu/sbia/software/basis/standard/cmdline.html
-    [21]: http://www.rad.upenn.edu/sbia/software/basis/standard/execution.html
+    [14]: http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/BasisTools_8cmake.html
+    [15]: http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/BasisTest_8cmake.html
+    [16]: http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/BasisPack_8cmake.html
+    [17]: http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/group__Tools.html
+    [18]: http://www.cbica.upenn.edu/sbia/software/basis/howto/run-automated-tests.html
+    [19]: http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/UtilitiesTools_8cmake.html
+    [20]: http://www.cbica.upenn.edu/sbia/software/basis/standard/cmdline.html
+    [21]: http://www.cbica.upenn.edu/sbia/software/basis/standard/execution.html
     [22]: https://github.com/schuhschuh/cmake-basis/
     [23]: http://sphinx.pocoo.org/
 

@@ -43,10 +43,10 @@ their own respective Open Source license. For a complete list of copyright and l
 have a look at the COPYING_ file.
 
 The original "BASIS" package was developed at the
-`Section of Biomedical Image Analysis (SBIA) <http://www.rad.upenn.edu/sbia/>`__ of the
+`Section of Biomedical Image Analysis (SBIA) <http://www.cbica.upenn.edu/sbia/>`__ of the
 `University of Pennsylvania <http://www.upenn.edu>`__.
 The "BASIS" package was released under the
-`SBIA Contribution and Software License Agreement <http://www.rad.upenn.edu/sbia/software/license.html>`__,
+`SBIA Contribution and Software License Agreement <http://www.cbica.upenn.edu/sbia/software/license.html>`__,
 a BSD-style Open Source software license. Since 2013, the forked and slightly renamed "CMake BASIS"
 package is further developed and maintained by its original author Andreas Schuh after leaving SBIA.
 Andrew Hundt from `Carnegie Mellon University <http://www.cmu.edu/>`__ joined the development
