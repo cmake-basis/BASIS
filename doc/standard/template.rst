@@ -63,15 +63,15 @@ or even both of them. See below for a description of these directories.
 
 **README.md**
     This is the main (root) documentation file. 
-     - Every user is assumed to first read this file, which in turn will refer
-       them to the more extensive documentation.
-     - Briefly introduces the software package, including a
-       summary of the package files. 
-     - Refer to the :ref:`INSTALL.txt <INSTALL>` and :ref:`COPYING.txt <COPYING>`
-       files for details on the build and installation and software license,
-       respectively. 
-     - Include references to scientific articles related
-       to the software package in this file.
+      - Every user is assumed to first read this file, which in turn will refer
+        them to the more extensive documentation.
+      - Briefly introduces the software package, including a
+        summary of the package files. 
+      - Refer to the :ref:`INSTALL.txt <INSTALL>` and :ref:`COPYING.txt <COPYING>`
+        files for details on the build and installation and software license,
+        respectively. 
+      - Include references to scientific articles related
+        to the software package in this file.
 
 **AUTHORS.md**
     Names the authors of the software package and people who
@@ -105,11 +105,12 @@ or even both of them. See below for a description of these directories.
 :apidoc:`BasisProject.cmake`
     Sets basic information about a BASIS Project and calls the
     :apidoc:`basis_project()` command.
-    The basic project information, also known as metadata,
-    will typically include:
+    
+    The basic project information, also known as metadata, will typically include:
       - the project name and release version
       - a brief description which is used for the packaging
       - dependencies 
+    
     Note that additional dependencies may optionally be specified using 
     by the CMake code in the :ref:`config/Depends.cmake <Depends>` file. 
     If the project is a module of another project, this file is read by 
@@ -136,16 +137,18 @@ Common Project Files
     This is the main CMake script file used to configure the build
     system, and BASIS. Put CMake code required to configure
     the build system in this file. 
+    
     You may want to:
-        - Add common compiler flags
-        - Add new variable definitions or modifying existing CMake BASIS variables
-        - Write specialized code required to utilize dependencies
-        - Make CMake ``configure_file()`` calls
+      - Add common compiler flags
+      - Add new variable definitions or modifying existing CMake BASIS variables
+      - Write specialized code required to utilize dependencies
+      - Make CMake ``configure_file()`` calls
+    
     Examples:
-        - Setting the project directory variables. The line ``set(PROJECT_SUBDIRS random)`` 
-          will cause BASIS to call :apidoc:`basis_add_subdirectory()` on ``<source>/random`` at 
-          the appropriate time during the execution of BASIS.
-        - See basis/config/Settings.cmake for more examples.
+      - Setting the project directory variables. The line ``set(PROJECT_SUBDIRS random)`` 
+        will cause BASIS to call :apidoc:`basis_add_subdirectory()` on ``<source>/random`` at 
+        the appropriate time during the execution of BASIS.
+      - See basis/config/Settings.cmake for more examples.
 
 **modules/**
     This directory contains independent project modules.
@@ -192,16 +195,16 @@ CMakeLists.txt Build Files
 
 **src/CMakeLists.txt**
     This is the CMake file where your primary software packages are built.
-     - Use the command :apidoc:`basis_add_library()` to add a shared, static,
-       or module library, which can also be a module written in a scripting language. 
-     - Use the command :apidoc:`basis_add_executable()` to add an executable target,
-       which can be either a binary or a script file.
-     - All targets can added to the ``src/CMakeLists.txt``
-       file using relative paths.
-     - If necessary, source code files may be organized in subdirectories
-       of the ``src/`` directory. 
-     - Typically subdirectories aren't necessary for less than 20 files.
-     - Separate ``CMakeLists.txt`` files can be used for each subdirectory.
+      - Use the command :apidoc:`basis_add_library()` to add a shared, static,
+        or module library, which can also be a module written in a scripting language. 
+      - Use the command :apidoc:`basis_add_executable()` to add an executable target,
+        which can be either a binary or a script file.
+      - All targets can added to the ``src/CMakeLists.txt``
+        file using relative paths.
+      - If necessary, source code files may be organized in subdirectories
+        of the ``src/`` directory. 
+      - Typically subdirectories aren't necessary for less than 20 files.
+      - Separate ``CMakeLists.txt`` files can be used for each subdirectory.
 
 **test/CMakeLists.txt**
     Tests are added to this build configuration file using the
@@ -215,12 +218,13 @@ CMakeLists.txt Build Files
 **test/internal/CMakeLists.txt**
     Tests for internal use only that require data specific to your work organization.
     These files are expected to be excluded from the public source distribution package
-    are configured using this CMake configuration file. Reasons for excluding
-    tests from a public distribution include:
-     - some tests may depend on the internal software environment
-     - may require a particular machine architecture. 
-     - The size of the downloadable distribution
-       packages my otherwise be excessively large.
+    are configured using this CMake configuration file.
+    
+    Reasons for excluding tests from a public distribution include:
+      - some tests may depend on the internal software environment
+      - may require a particular machine architecture. 
+      - The size of the downloadable distribution
+        packages my otherwise be excessively large.
     
 Documenation Files
 ------------------
@@ -297,6 +301,7 @@ in most cases, most of these files need not to be part of a project.
     :ref:`config/Config.cmake.in <Config_in>`,
     which is used by other packages to set all the CMake 
     variables they need to utilize your package. 
+    
     Example:
       - The package configuration sets a variable to a list of include directories
         have to be added to the include search path. ConfigUse.cmake.in would then contain
