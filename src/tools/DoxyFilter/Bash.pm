@@ -66,7 +66,9 @@ sub _source
 sub _constant
 {
     my ($self, $unused1, $unused2, $name, $value) = @_;
-    if (not $name =~ m/^_/) {
+    if ($name =~ m/^_/) {
+        $self->_noneblank();
+    } else {
         $value =~ s/^\s*[\"']?//;
         $value =~ s/[\"']?\s*$//;
         if ($value =~ /^[+-]?[0-9]+$/) {
@@ -84,7 +86,9 @@ sub _fndef
 {
     my ($self, $unused, $name1, $name2) = @_;
     my $name = $name1 ? $name1 : $name2;
-    if (not $name =~ m/^_/) {
+    if ($name =~ m/^_/) {
+        $self->_noneblank();
+    } else {
         my @params = ();
         foreach my $paramdoc (@{$self->{'params'}}) {
             push @params, $paramdoc->{'dir'} . " " . $paramdoc->{'name'};

@@ -197,7 +197,11 @@ sub _set_end
 sub _fndef
 {
     my ($self, $dummy, $name) = @_;
-    $self->_fndef_append($self->{'line'}) unless $name =~ m/^_/;
+    if ($name =~ m/^_/) {
+        $self->_noneblank();
+    } else {
+        $self->_fndef_append($self->{'line'});
+    }
 }
 
 # ----------------------------------------------------------------------------
@@ -222,11 +226,12 @@ sub _fndef_line
 sub _fndef_end
 {
     my $self = shift;
-    if (not $self->{'skip'}) {
+    if ($self->{'skip'}) {
+        $self->_noneblank();
+        $self->{'skip'} = 0;
+    } else {
         $self->{'buffer'} .= " $self->{'line'}";
         $self->_fndef_append($self->{'buffer'});
-    } else {
-        $self->{'skip'} = 0;
     }
 }
 
