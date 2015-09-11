@@ -35,6 +35,7 @@ endif ()
 # @param[out] EXPORT_OPTION Export option for install() command including
 #                           the EXPORT option name. Set to an empty string
 #                           if target is not installed.
+# @param[in]  TARGET_UID    UID of target to be exported.
 # @param[in]  TEST          Whether given target is a test executable or library.
 # @param[in]  ARGN          Optional installation destinations.
 function (basis_add_export_target EXPORT_OPTION TARGET_UID TEST)

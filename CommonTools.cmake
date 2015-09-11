@@ -707,33 +707,28 @@ function (basis_get_relative_path REL BASE PATH)
   set (${REL} "${P}" PARENT_SCOPE)
 endfunction ()
 
-##
-#  @brief Create a string from a list of variables indicating if they are defined and their values. Useful for debug and user errors.
+## @brief Create a string from a list of variables indicating if they are defined and their values.
 #
-#  @param VAR_INFO_STRING[out] The output string variable that will set with the debug string.
+# Useful for debug and user errors, for example:
+# @code
+# set(VAR1 "I'm a string")
+# set(VAR2 2)
+# basis_variable_value_status(VAR_INFO_STRING VAR1 VAR2 VAR3)
+# message(STATUS ${VAR_INFO_STRING})
+# @endcode
 #
-#  @param ARGN[in]        List of variables to be put into a string along with their value.
-#
-#  @code
-#    set(VAR1 "I'm a string")
-#    set(VAR2 2)
-#    basis_variable_value_status(VAR_INFO_STRING VAR1 VAR2 VAR3)
-#    message(STATUS ${VAR_INFO_STRING})
-#    
-#  @endcode
+# @param[out] VAR_INFO_STRING The output string variable that will set with the debug string.
+# @param[in]  ARGN            List of variables to be put into a string along with their value.
 function(basis_variable_value_status VAR_INFO_STRING)
-  set(OUTPUT_STRING)
-  foreach(VARIABLE_NAME IN ITEMS ${ARGN})
-     if(DEFINED ${VARIABLE_NAME})
-        set(OUTPUT_STRING "${OUTPUT_STRING}\n  variable name: ${VARIABLE_NAME}  value: ${${VARIABLE_NAME}}")
-     else()
-        set(OUTPUT_STRING "${OUTPUT_STRING}\n  variable name: ${VARIABLE_NAME}  value is not defined")
-     endif()
-  endforeach()
-  set(${VAR_INFO_STRING} ${OUTPUT_STRING} PARENT_SCOPE)
-  # debug:
-  #message(STATUS "OUTPUT_STRING:${OUTPUT_STRING}")
-  #message(STATUS "VAR_INFO_STRING:${VAR_INFO_STRING}:${${VAR_INFO_STRING}}")
+  set (OUTPUT_STRING)
+  foreach (VARIABLE_NAME IN ITEMS ${ARGN})
+    if (DEFINED ${VARIABLE_NAME})
+      set (OUTPUT_STRING "${OUTPUT_STRING}\n  variable name: ${VARIABLE_NAME}  value: ${${VARIABLE_NAME}}")
+    else ()
+      set (OUTPUT_STRING "${OUTPUT_STRING}\n  variable name: ${VARIABLE_NAME}  value is not defined")
+    endif ()
+  endforeach ()
+  set (${VAR_INFO_STRING} ${OUTPUT_STRING} PARENT_SCOPE)
 endfunction()
 
 ##########################################################
