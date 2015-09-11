@@ -84,6 +84,7 @@ latex_show_pagerefs = @SPHINX_LATEX_SHOW_PAGEREFS@
 PREAMBLE = """
 \setcounter{page}{1}
 \pagenumbering{arabic}
+\pagestyle{plain}
 """
 
 latex_elements = {'printindex': '', 'preamble': PREAMBLE}
