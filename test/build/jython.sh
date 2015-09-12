@@ -3,7 +3,7 @@ set -ev
 
 ## Travis script to install Sphinx
 
-if [[ $doc == yes ]]; then
+if [ -n "$jython_version" ]; then
 
   [ -n "$prefix" ] || prefix="/tmp/local"
 
@@ -14,14 +14,14 @@ if [[ $doc == yes ]]; then
   else
     export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
   fi
- 
+
   # Install from binary package if possible
-  if [ -z "$sphinx_version" ] || [[ $sphinx_version == any ]]; then
+  if [[ $jython_version == any ]]; then
     if [[ $TRAVIS_OS_NAME == linux ]]; then
-      sudo apt-get install -qq texlive-fonts-recommended python-sphinx
+      sudo apt-get install -qq jython
     fi
   fi
-
-  # TODO: Install sphinx-build from sources
+ 
+  # TODO: Install from sources otherwise
 
 fi
