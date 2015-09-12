@@ -10,7 +10,7 @@ the whole process seamless!
 
 Web:  [CMake BASIS Website]  [1] |
 Code: [CMake BASIS on GitHub][2]
-
+[![Build Status](https://travis-ci.org/schuhschuh/cmake-basis.svg?branch=develop)](https://travis-ci.org/schuhschuh/cmake-basis)
 
 Features
 ========
