@@ -321,7 +321,7 @@ def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simula
                 if stdout:
                     output = ''.join([output, line])
                 if not quiet:
-                    print line.rstrip()
+                    print(line.rstrip())
                     sys.stdout.flush()
             # wait until subprocess terminated and set exit code
             (out, err) = process.communicate()
@@ -329,9 +329,9 @@ def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simula
             for line in err: sys.stderr.write(line);
             # get exit code
             status = process.returncode
-        except OSError, e:
+        except OSError as e:
             raise SubprocessError(args[0] + ': ' + str(e))
-        except Exception, e:
+        except Exception as e:
             msg  = "Exception while executing \"" + args[0] + "\"!\n"
             msg += "\tArguments: " + tostring(args[1:]) + '\n'
             msg += '\t' + str(e)

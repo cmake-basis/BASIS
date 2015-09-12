@@ -52,7 +52,7 @@ def parse_arguments(flags='v', options=['verbose'], allow_args=False):
             sys.stderr.write("Unhandled positional parameters given!\n")
             sys.stderr.write("Arguments: " + repr(args) + "\n")
             sys.exit(1)
-    except getopt.GetoptError, e:
+    except getopt.GetoptError as e:
         sys.stderr.write(str(e) + '\n')
         sys.exit(1)
     if allow_args: return opts, args
@@ -61,7 +61,7 @@ def parse_arguments(flags='v', options=['verbose'], allow_args=False):
 # ----------------------------------------------------------------------------
 def create_project(name, *args, **kwargs):
     "Create test project."
-    print "Creating test project..."
+    print("Creating test project...")
     description = kwargs.get('description', 'This is a test project.')
     use = kwargs.get('use', [])
     useopt = kwargs.get('useopt', [])
@@ -77,12 +77,12 @@ def create_project(name, *args, **kwargs):
     for pkg in useopt:
         create_cmd.extend(['--useopt', pkg])
     basis.execute(create_cmd, verbose=True)
-    print "Creating test project... - done"
+    print("Creating test project... - done")
 
 # ----------------------------------------------------------------------------
 def update_project(name, *args, **kwargs):
     "Update test project."
-    print "Updating test project..."
+    print("Updating test project...")
     use = kwargs.get('use', [])
     useopt = kwargs.get('useopt', [])
     if not os.path.isdir(SOURCE_DIR):
@@ -94,12 +94,12 @@ def update_project(name, *args, **kwargs):
     for pkg in useopt:
         update_cmd.extend(['--useopt', pkg])
     basis.execute(update_cmd, verbose=True)
-    print "Updating test project... - done"
+    print("Updating test project... - done")
 
 # ----------------------------------------------------------------------------
 def build_project(verbose=0, cmakeopts=None):
     "Build test project."
-    print "Configuring test project..."
+    print("Configuring test project...")
     if os.path.exists(BUILD_DIR): shutil.rmtree(BUILD_DIR)
     os.makedirs(BUILD_DIR)
     wd=os.getcwd()
@@ -127,8 +127,8 @@ def build_project(verbose=0, cmakeopts=None):
         config_cmd.append('-DBASIS_DEBUG:BOOL=ON')
     config_cmd.append(SOURCE_DIR)
     basis.execute(config_cmd, verbose=True)
-    print "Configuring test project... - done"
-    print "Building test project..."
+    print("Configuring test project... - done")
+    print("Building test project...")
     build_cmd = None
     if sys.platform == 'win32':
         solution_file = False
@@ -144,7 +144,7 @@ def build_project(verbose=0, cmakeopts=None):
         build_cmd = ['make']
         if verbose > 0: build_cmd.append('VERBOSE=1')
     basis.execute(build_cmd, verbose=True)
-    print "Building test project... - done"
+    print("Building test project... - done")
     os.chdir(wd)
 
 # ----------------------------------------------------------------------------
@@ -179,7 +179,7 @@ def add_file(file, prefix='.', name=None):
         os.makedirs(dstdir)
     dst = os.path.join(dstdir, name)
     shutil.copy(os.path.join(RESSOURCES_DIR, file), dst)
-    print "Added file " + dst
+    print("Added file " + dst)
 
 # ----------------------------------------------------------------------------
 def add_dependency(package, required=True):
@@ -194,8 +194,8 @@ def add_dependency(package, required=True):
     fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "w")
     fp.write(code)
     fp.close()
-    if required: print "Added dependency on " + package
-    else: print "Added optional dependency on " + package
+    if required: print("Added dependency on " + package)
+    else: print("Added optional dependency on " + package)
 
 # ----------------------------------------------------------------------------
 def add_cmake_code(cmakefile, code):
@@ -206,7 +206,7 @@ def add_cmake_code(cmakefile, code):
     fp = open(os.path.join(SOURCE_DIR, cmakefile), 'a')
     fp.write(code + '\n')
     fp.close()
-    print "Modified file " + cmakefile
+    print("Modified file " + cmakefile)
 
 # ----------------------------------------------------------------------------
 def cleanup():
