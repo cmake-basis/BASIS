@@ -2,6 +2,7 @@ language: cpp
 compiler:
   - g++
 before_install:
+  - test/build/update.sh
   - test/build/cmake.sh
   - test/build/itk.sh
   - test/build/jython.sh
