@@ -2,17 +2,23 @@ language: cpp
 compiler:
   - g++
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install jython graphviz doxygen python-sphinx texlive-fonts-recommended libgdcm2-dev libvtkgdcm2-dev libfftw3-dev libvtk5-dev libinsighttoolkit3-dev
+  - [[ $TRAVIS_OS_NAME == linux ]] && sudo apt-get update -qq
+  - [[ $TRAVIS_OS_NAME == linux ]] && sudo apt-get install jython
+  - [ -z "$cmake_version" ] || test/build/cmake.sh
+  - [ -z "$itk_version"   ] || test/build/itk.sh
+  - [[ $doc == no ]]        || test/build/doxygen.sh
+  - [[ $doc == no ]]        || test/build/sphinx.sh
 script:
-  - mkdir build
-  - cd build
-  - cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_TESTING=ON -DBUILD_DOCUMENTATION=ON -DBASIS_ALL_DOC=ON -DBUILD_BASIS_UTILITIES_FOR_CXX=ON -DBUILD_BASIS_UTILITIES_FOR_BASH=ON -DBUILD_BASIS_UTILITIES_FOR_PERL=ON  -DBUILD_BASIS_UTILITIES_FOR_PYTHON=ON ..
-  - make install
-after_success:
-  - ctest -C Release -V
+  - test/build/basis.sh
 branches:
   only:
     - develop
 os:
   - linux
+  - osx
+env:
+  - prefix=/tmp/local cmake_version=2.8.12 doxygen_version=1.8.10 utilities=yes tools=yes example=yes doc=yes tests=yes
+  - prefix=/tmp/local cmake_version=3.3.1  doxygen_version=1.8.10 utilities=no  tools=no  example=no  doc=no  tests=no 
+  - prefix=/tmp/local cmake_version=3.3.1  doxygen_version=1.8.10 utilities=yes tools=no  example=no  doc=no  tests=no 
+  - prefix=/tmp/local cmake_version=3.3.1  doxygen_version=1.8.10 utilities=yes tools=yes example=yes doc=yes tests=no 
+  - prefix=/tmp/local cmake_version=3.3.1  doxygen_version=1.8.10 utilities=yes tools=yes example=no  doc=no  tests=yes
