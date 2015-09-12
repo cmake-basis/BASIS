@@ -60,7 +60,6 @@ function (basis_utilities_check VAR SOURCE_FILE)
     basis_sanitize_for_regex (RE "[ \\t]*#[ \\t]*include[ \\t]+[<\"](${PREFIX})?basis.h[\">]") # e.g., #include "basis.h", #include <pkg/basis.h>
     if (SCRIPT MATCHES "(^|\n)[ \t]*${RE}([ \t]*//.*|[ \t]*)(\n|$)")
       set (UTILITIES_USED TRUE)
-      break ()
     endif ()
   # --------------------------------------------------------------------------
   # Python/Jython
@@ -106,7 +105,6 @@ function (basis_utilities_check VAR SOURCE_FILE)
     set (RE "(use|require)[ \\t]+${PERL_PACKAGE}::Basis([ \\t]+.*)?") # e.g., use <Package>::Basis qw(:everything);
     if (SCRIPT MATCHES "(^|\n|;)[ \t]*${RE}([ \t]*#.*|[ \t]*)(;|\n|$)")
       set (UTILITIES_USED TRUE)
-      break ()
     endif ()
   # --------------------------------------------------------------------------
   # Bash
