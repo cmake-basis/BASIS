@@ -67,7 +67,7 @@ def create_project(name, *args, **kwargs):
     useopt = kwargs.get('useopt', [])
     if os.path.exists(SOURCE_DIR): shutil.rmtree(SOURCE_DIR)
     # attention: changing the project name will affect the tests!
-    create_cmd = ['basis.basisproject',
+    create_cmd = ['basis.basisproject', 'create',
             '--name', name,
             '--description', description,
             '--root', SOURCE_DIR]
@@ -87,7 +87,7 @@ def update_project(name, *args, **kwargs):
     useopt = kwargs.get('useopt', [])
     if not os.path.isdir(SOURCE_DIR):
         raise Exception("Cannot update non-existing project in %s" % SOURCE_DIR)
-    update_cmd = ['basis.basisproject', '--root', SOURCE_DIR]
+    update_cmd = ['basis.basisproject', 'update', '--root', SOURCE_DIR]
     update_cmd.extend(args)
     for pkg in use:
         update_cmd.extend(['--use', pkg])
@@ -111,15 +111,15 @@ def build_project(verbose=0, cmakeopts=None):
             '-DBASIS_DIR:PATH=' + BASIS_DIR,
             '-DCMAKE_BUILD_TYPE:STRING=@TESTING_BUILD_TYPE@']
     if cmakeopts != None: config_cmd.extend(cmakeopts)
-    if '@TESTING_C_FLAGS@' != '':
+    if '@TESTING_C_FLAGS@'.strip() != '':
         config_cmd.append('-DCMAKE_C_FLAGS:STRING=@TESTING_C_FLAGS@')
-    if '@TESTING_CXX_FLAGS@' != '':
+    if '@TESTING_CXX_FLAGS@'.strip() != '':
         config_cmd.append('-DCMAKE_CXX_FLAGS:STRING=@TESTING_CXX_FLAGS@')
-    if '@TESTING_EXE_LINKER_FLAGS@' != '':
+    if '@TESTING_EXE_LINKER_FLAGS@'.strip() != '':
         config_cmd.append('-DCMAKE_EXE_LINKER_FLAGS:STRING=@TESTING_EXE_LINKER_FLAGS@')
-    if '@TESTING_SHARED_LINKER_FLAGS@' != '':
+    if '@TESTING_SHARED_LINKER_FLAGS@'.strip() != '':
         config_cmd.append('-DCMAKE_SHARED_LINKER_FLAGS:STRING=@TESTING_SHARED_LINKER_FLAGS@')
-    if '@TESTING_MODULE_LINKER_FLAGS@' != '':
+    if '@TESTING_MODULE_LINKER_FLAGS@'.strip() != '':
         config_cmd.append('-DCMAKE_MODULE_LINKER_FLAGS:STRING=@TESTING_MODULE_LINKER_FLAGS@')
     if verbose > 0:
         config_cmd.append('-DBASIS_VERBOSE:BOOL=ON')

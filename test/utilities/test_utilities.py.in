@@ -49,6 +49,7 @@ if __name__ == '__main__':
         add_file('test_executabletargetinfo.sh.in', prefix='test')
         add_file('test_stdaux.sh.in', prefix='test')
     # edit CMakeLists.txt files
+    add_file('Settings.cmake', prefix='config')
     add_cmake_code('src/CMakeLists.txt',  'basis_add_executable(helloworld.cxx)')
     add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_ExecutableTargetInfo.cxx UNITTEST)')
     add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.cxx UNITTEST)')
