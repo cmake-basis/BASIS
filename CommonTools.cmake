@@ -731,46 +731,48 @@ function(basis_variable_value_status VAR_INFO_STRING)
   set (${VAR_INFO_STRING} ${OUTPUT_STRING} PARENT_SCOPE)
 endfunction()
 
-##########################################################
-# ------- Variable Check ---------------
-##########################################################
+## @brief Checks for a list of variables required later in the script.
 #
-# @brief VariableCheck checks for a list of variables 
-#        required later in the script and produces a clear error 
-#        message explaining the problem and how to fix it if they 
-#        are not present.
-#  
-# Multi Arg Params:
-#
-#     @param REQUIRED[in]         List of variables that MUST be set to run this script correctly. 
-#                                 Will produce a FATAL_ERROR message explaining which variables 
-#                                 are misisng and exit the cmake script.
-#
-#     @param OPTIONAL[in]         List of variables that be OPTIONALLY set to run this script with additional features. 
-#                                 Will produce an AUTHOR_WARNING message explaining which variables 
-#                                 are misisng and continue running the cmake script.
-#
-#
-#     @param PATH_EXISTS[in]      List of path variables that MUST be set to a location that exists.
-#
-#
-#     @param OPTIONAL_PATH_EXISTS[in]   LIST of path variables that are optional, but once set must be empty or provide a path to location that exists.
+# Produces a clear error message explaining the problem and how to fix it if they are not present.
 #
 # @code
-#     basis_variable_check(
-#        REQUIRED
-#           LIBRARY1_INCLUDE_DIRS
-#           LIBRARY2_INCLUDE_DIRS
-#           LIBRARY2_LIBRARIES
-#        OPTIONAL
-#           LIBRARY3_INCLUDE_DIRS
-#           LIBRARY3_LIBRARIES
-#        OPTIONAL_PATH
-#           
-#     )
+# basis_variable_check(
+#    REQUIRED
+#       LIBRARY1_INCLUDE_DIRS
+#       LIBRARY2_INCLUDE_DIRS
+#       LIBRARY2_LIBRARIES
+#    OPTIONAL
+#       LIBRARY3_INCLUDE_DIRS
+#       LIBRARY3_LIBRARIES
+#    OPTIONAL_PATH
+#       
+# )
 # @endcode
 #
-##########################################################
+# @param [in] ARGN This argument list is parsed and the following
+#                  arguments are extracted.
+# @par
+# <table border="0">
+#   <tr>
+#     @tp @b REQUIRED var... @endtp
+#     <td>List of variables that MUST be set to run this script correctly. 
+#         Will produce a FATAL_ERROR message explaining which variables 
+#         are misisng and exit the cmake script.</td>
+#   </tr>
+#   <tr>
+#     @tp @b OPTIONAL var... @endtp
+#     <td>List of variables need not be set to run this script correctly.</td>
+#   </tr>
+#   <tr>
+#     @tp @b PATH_EXISTS var... @endtp
+#     <td>List of path variables that MUST be set to a location that exists.</td>
+#   </tr>
+#   <tr>
+#     @tp @b OPTIONAL_PATH_EXISTS var... @endtp
+#     <td>List of path variables that are optional, but once set must be empty
+#         or provide a path to location that exists.</td>
+#   </tr>
+# </table>
 function(basis_variable_check)
 
   set(options ) # currently none
