@@ -1,0 +1,16 @@
+language: cpp
+compiler:
+  - g++
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install graphviz doxygen python-sphinx libinsighttoolkit4-dev
+script:
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_TESTING=ON -DBUILD_DOCUMENTATION=ON -DBASIS_ALL_DOC=ON -DBUILD_BASIS_UTILITIES_FOR_CXX=ON -DBUILD_BASIS_UTILITIES_FOR_BASH=ON -DBUILD_BASIS_UTILITIES_FOR_PERL=ON  -DBUILD_BASIS_UTILITIES_FOR_PYTHON=ON ..
+  - make
+branches:
+  only:
+    - develop
+os:
+  - linux
