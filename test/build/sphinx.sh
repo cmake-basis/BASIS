@@ -12,7 +12,7 @@ fi
 
 # Install pdflatex and fonts
 if [[ $TRAVIS_OS_NAME == linux ]]; then
-  sudo apt-get install -y texlive-fonts-recommended
+  sudo apt-get install -y texlive-full
 elif [[ $TRAVIS_OS_NAME == osx ]]; then
   wget http://tug.org/cgi-bin/mactex-download/BasicTeX.pkg
   sudo installer -pkg BasicTeX.pkg -target /

@@ -6,6 +6,11 @@ set -e
 version=${1:-1.8.10}
 prefix=${2:-/opt/doxygen-$version}
 
+# Install prerequisites
+[[ $TRAVIS_OS_NAME != linux ]] || sudo apt-get install -y graphviz
+[[ $TRAVIS_OS_NAME != osx   ]] || brew install graphviz
+
+# Install binary distribution package if available
 if [[ $version == any ]]; then
   [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -y doxygen
   [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install doxygen

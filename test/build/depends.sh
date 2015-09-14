@@ -32,8 +32,6 @@ export PATH="$prefix/bin:$PATH"
 }
 
 if [[ $doc == yes ]]; then
-  [[ $TRAVIS_OS_NAME != linux ]] || sudo apt-get install -y graphviz
-  [[ $TRAVIS_OS_NAME != osx   ]] || brew install graphviz
   $TRAVIS_BUILD_DIR/test/build/doxygen.sh "$doxygen" $prefix
   $TRAVIS_BUILD_DIR/test/build/sphinx.sh  "$sphinx"  $prefix
 fi
