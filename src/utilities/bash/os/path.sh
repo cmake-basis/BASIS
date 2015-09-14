@@ -110,8 +110,6 @@ realpath()
     # make path absolute and resolve '..' references
     local _basis_grp_path=`abspath "$1"`
     if ! [ -e "${_basis_grp_path}" ]; then echo -n "${_basis_grp_path}"; return; fi
-    # resolve symbolic links within path
-    _basis_grp_path=`cd -P -- $(dirname -- "${_basis_grp_path}") && pwd -P`/`basename -- "${_basis_grp_path}"`
     # if path itself is a symbolic link, follow it
     local _basis_grp_i=0
     local _basis_grp_cur="${_basis_grp_path}"
@@ -124,7 +122,9 @@ realpath()
     # If symbolic link could entirely be resolved in less than 100 iterations,
     # return the obtained canonical file path. Otherwise, return the original
     # link which could not be resolved due to some probable cycle.
-    if [ ${_basis_grp_i} -lt 100 ]; then _basis_grp_path="${_basis_grp_cur}"; fi
+    [ ${_basis_grp_i} -ge 100 ] || _basis_grp_path="${_basis_grp_cur}"
+    # resolve symbolic links within linked path
+    _basis_grp_path=`cd -P -- $(dirname -- "${_basis_grp_path}") && pwd -P`/`basename -- "${_basis_grp_path}"`
     # return
     echo -n "${_basis_grp_path}"
 }
