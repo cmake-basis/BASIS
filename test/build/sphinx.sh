@@ -1,27 +1,30 @@
 #!/bin/bash
-set -ev
+set -e
 
 ## Travis script to install Sphinx
 
-if [[ $doc == yes ]]; then
-
-  [ -n "$prefix" ] || prefix="/tmp/local"
-
-  # Use dependencies built and installed from sources
-  export PATH="$INSTALL_PREFIX/bin:$PATH"
-  if [[ $TRAVIS_OS_NAME == linux ]]; then
-    export LD_LIBRARY_PATH="$prefix/lib:$LD_LIBRARY_PATH"
-  else
-    export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
-  fi
+version=${1:-any}
  
-  # Install from binary package if possible
-  if [ -z "$sphinx_version" ] || [[ $sphinx_version == any ]]; then
-    if [[ $TRAVIS_OS_NAME == linux ]]; then
-      sudo apt-get install -qq texlive-fonts-recommended python-sphinx
-    fi
-  fi
+if [[ $version != any ]]; then
+  echo "Can only use Sphinx version provided by PyPI or Ubuntu (i.e., version argument must be 'any')" 1>&2
+  exit 1
+fi
 
-  # TODO: Install sphinx-build from sources
+# Install pdflatex and fonts
+if [[ $TRAVIS_OS_NAME == linux ]]; then
+  sudo apt-get install -y texlive-fonts-recommended
+elif [[ $TRAVIS_OS_NAME == osx ]]; then
+  wget http://tug.org/cgi-bin/mactex-download/BasicTeX.pkg
+  sudo installer -pkg BasicTeX.pkg -target /
+fi
 
+# Install Sphinx
+which pip
+if [ $? -eq 0 ]; then
+  pip install -U Sphinx
+elif [[ $TRAVIS_OS_NAME == linux ]]; then
+  sudo apt-get install -y python-sphinx
+else
+  echo "pip required for installation of Sphinx on $TARVIS_OS_NAME" 1>&2
+  exit 1
 fi

@@ -1,32 +1,26 @@
 #!/bin/bash
-set -ev
+set -e
 
-## Travis script to build CMake from sources
+## Travis script to install CMake
 
-if [ -n "$cmake_version" ]; then
+version=${1:-3.3.1}
+prefix="${2:-/opt/cmake-$version}"
 
-  [ -n "$prefix" ] || prefix="/tmp/local"
-
-  # Use dependencies built and installed from sources
-  export PATH="$INSTALL_PREFIX/bin:$PATH"
-  if [[ $TRAVIS_OS_NAME == linux ]]; then
-    export LD_LIBRARY_PATH="$prefix/lib:$LD_LIBRARY_PATH"
-  else
-    export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
-  fi
-
-  # Download and extract source files
-  wget http://www.cmake.org/files/v${cmake_version%.*}/cmake-${cmake_version}.tar.gz
-  tar xzf cmake-${cmake_version}.tar.gz
-
-  # Configure build
-  cd cmake-${cmake_version}
-  mkdir build && cd build
-  cmake -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="$prefix" \
-        ..
- 
-  # Build and install
-  make install
-
+if [[ $version == any ]]; then
+  [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -y cmake
+  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install cmake
 fi
+
+# Download and extract source files
+wget http://www.cmake.org/files/v${version%.*}/cmake-${version}.tar.gz
+tar xzf cmake-${version}.tar.gz
+
+# Configure build
+cd cmake-$version
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX="$prefix" \
+      ..
+
+# Build and install
+make install

@@ -1,27 +1,20 @@
 #!/bin/bash
-set -ev
+set -e
 
 ## Travis script to install Sphinx
 
-if [ -n "$jython_version" ]; then
+version=${1:-any}
+prefix=${2:-/opt/jython-$version}
 
-  [ -n "$prefix" ] || prefix="/tmp/local"
-
-  # Use dependencies built and installed from sources
-  export PATH="$INSTALL_PREFIX/bin:$PATH"
-  if [[ $TRAVIS_OS_NAME == linux ]]; then
-    export LD_LIBRARY_PATH="$prefix/lib:$LD_LIBRARY_PATH"
-  else
-    export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
-  fi
-
-  # Install from binary package if possible
-  if [[ $jython_version == any ]]; then
-    if [[ $TRAVIS_OS_NAME == linux ]]; then
-      sudo apt-get install -qq jython
-    fi
-  fi
- 
-  # TODO: Install from sources otherwise
-
+# Install from binary package if possible
+if [[ $version == any ]]; then
+  [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -qq jython
+  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install jython
 fi
+
+# Download installer
+wget -O jython-installer-${version}.jar \
+     http://search.maven.org/remotecontent?filepath=org/python/jython-installer/$version/jython-installer-${version}.jar
+
+# Install Jython
+java -jar jython-installer-${version}.jar -s -d "$prefix" -t minimum

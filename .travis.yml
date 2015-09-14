@@ -1,15 +1,7 @@
 language: cpp
-compiler:
-  - g++
-before_install:
-  - test/build/update.sh
-  - test/build/cmake.sh
-  - test/build/itk.sh
-  - test/build/jython.sh
-  - test/build/doxygen.sh
-  - test/build/sphinx.sh
-script:
-  - test/build/basis.sh
+compiler: g++
+install:  test/build/depends.sh
+script:   test/build/basis.sh
 branches:
   only:
     - develop
@@ -17,8 +9,9 @@ os:
   - linux
   - osx
 env:
-  - prefix=/tmp/local cmake_version=2.8.12 jython_version=any doxygen_version=1.8.10 sphinx_version=any utilities=yes tools=yes example=yes doc=yes tests=yes
-  - prefix=/tmp/local cmake_version=3.3.1  jython_version=any doxygen_version=1.8.10 sphinx_version=any utilities=no  tools=no  example=no  doc=no  tests=no 
-  - prefix=/tmp/local cmake_version=3.3.1  jython_version=any doxygen_version=1.8.10 sphinx_version=any utilities=yes tools=no  example=no  doc=no  tests=no 
-  - prefix=/tmp/local cmake_version=3.3.1  jython_version=any doxygen_version=1.8.10 sphinx_version=any utilities=yes tools=yes example=yes doc=yes tests=no 
-  - prefix=/tmp/local cmake_version=3.3.1  jython_version=any doxygen_version=1.8.10 sphinx_version=any utilities=yes tools=yes example=no  doc=no  tests=yes
+#  - prefix=/tmp/local cmake=2.8.12 itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=yes tests=yes
+#  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=no  tools=no  example=no  doc=no  tests=no 
+  - prefix=/tmp/local cmake=3.3.1  itk=none jython=none doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=no  tests=no 
+#  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=no  tests=no 
+#  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=yes tests=no 
+#  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=no  doc=no  tests=yes

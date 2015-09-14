@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ev
+set -e
 
 ## Travis build script for BASIS itself
 
@@ -9,14 +9,6 @@ set -ev
 [ -n "$example"   ] || example=yes
 [ -n "$doc"       ] || doc=no
 [ -n "$tests"     ] || tests=no
-
-# Use dependencies built and installed from sources
-export PATH="$INSTALL_PREFIX/bin:$PATH"
-if [[ $TRAVIS_OS_NAME == linux ]]; then
-  export LD_LIBRARY_PATH="$prefix/lib:$LD_LIBRARY_PATH"
-else
-  export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
-fi
 
 # Configure build
 cmake -DBUILD_TESTING=$tests \
