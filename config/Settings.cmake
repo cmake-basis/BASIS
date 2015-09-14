@@ -66,7 +66,7 @@ set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates" CACHE PATH "Installat
 
 # force default template to be set
 if (NOT DEFAULT_TEMPLATE)
-  set_property (CACHE DEFAULT_TEMPLATE PROPERTY VALUE "basis/1.1")
+  set_property (CACHE DEFAULT_TEMPLATE PROPERTY VALUE "basis/1.3")
 endif ()
 # disable installation of templates if no destination specified
 if (NOT INSTALL_TEMPLATE_DIR)
