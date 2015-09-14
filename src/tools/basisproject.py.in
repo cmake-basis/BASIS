@@ -166,7 +166,6 @@ def load_config(config_file, parser):
             name = option_string[2:]
             setattr(namespace, 'preset', name)
             for arg in config.presets[name]['args']:
-                print("config.presets[" + name + "]['args'] = " + repr(arg))
                 if arg.startswith('no'):
                     arg = arg[2:]
                     op  = DEL
