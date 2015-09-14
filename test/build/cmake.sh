@@ -27,7 +27,7 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
   # Copy extracted files to installation prefix
   for d in bin doc man share; do
     mkdir -p "$prefix/$d"
-    mv -f "cmake-${version}-Darwin-x86_64/$d/*" "$prefix/$d/"
+    mv -f "cmake-${version}-Darwin-x86_64/$d/"* "$prefix/$d/"
   done
 
 else
