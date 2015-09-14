@@ -19,12 +19,13 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
 fi
 
 # Install Sphinx
-which pip
-if [ $? -eq 0 ]; then
+if [[ $TRAVIS_OS_NAME == linux ]]; then
+  which pip
+  if [ $? -eq 0 ]; then
+    sudo pip install -U Sphinx
+  else
+    sudo apt-get install -y python-sphinx
+  fi
+elif [[ $TRAVIS_OS_NAME == osx ]]; then
   pip install -U Sphinx
-elif [[ $TRAVIS_OS_NAME == linux ]]; then
-  sudo apt-get install -y python-sphinx
-else
-  echo "pip required for installation of Sphinx on $TARVIS_OS_NAME" 1>&2
-  exit 1
 fi

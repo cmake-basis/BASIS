@@ -14,6 +14,12 @@ if [[ $TRAVIS_OS_NAME == linux ]]; then
   fi
 fi
 
+if [[ $version == 3 ]]; then
+  version=3.20.1
+elif [[ $version == 4 ]]; then
+  version=4.8.0
+fi
+
 # Download and extract source files
 wget -O InsightToolkit-$version http://sourceforge.net/projects/itk/files/itk/${version%.*}/InsightToolkit-${version}.tar.gz/download
 tar xzf InsightToolkit-$version
