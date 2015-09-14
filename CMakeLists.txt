@@ -68,6 +68,7 @@ set (
     "doxygen_footer.html.in"              # default HTML footer of Doxygen documentation
     "doxygen_extra.css.in"                # default HTML extra stylesheet of Doxygen documentation
     "sphinx_conf.py.in"                   # default Sphinx configuration
+    "sphinx_make.sh.in"                   # custom "make" script for PDF generation
     # other
     "buildtimestamp.cmd"                  # get build timestamp on Windows
     "CheckPublicHeaders.cmake"            # check if header files were added/removed
