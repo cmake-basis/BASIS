@@ -9,7 +9,7 @@ set -e
 # BASIS configuration
 [ -n "$utilities" ] || utilities=yes
 [ -n "$tools"     ] || tools=yes
-[ -n "$example"   ] || example=yes
+[ -n "$example"   ] || example=no
 [ -n "$doc"       ] || doc=no
 [ -n "$tests"     ] || tests=no
 
