@@ -12,7 +12,7 @@ if [[ $version == any ]]; then
     sudo apt-get install -qq libgdcm2-dev libvtkgdcm2-dev libfftw3-dev libvtk5-dev libinsighttoolkit3-dev
     exit 0
   elif [[ $TRAVIS_OS_NAME == osx ]]; then
-    brew install homebrew/science/insighttoolkit
+    brew install homebrew/science/vtk homebrew/science/insighttoolkit
     exit 0
   fi
   version=4.8.0
