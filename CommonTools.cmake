@@ -2105,7 +2105,7 @@ function (basis_get_compiled_file CFILE SOURCE)
     basis_get_source_language (LANGUAGE "${SOURCE}")
   endif ()
   set (${CFILE} "" PARENT_SCOPE)
-  if (USE_Python AND SOURCE)
+  if (SOURCE)
     if (LANGUAGE MATCHES "PYTHON")
       set (${CFILE} "${SOURCE}c" PARENT_SCOPE)
     elseif (LANGUAGE MATCHES "JYTHON")
@@ -2342,11 +2342,11 @@ function (basis_get_source_language LANGUAGE)
       if (LANGUAGE_OUT AND NOT "^${LANG}$" STREQUAL "^${LANGUAGE_OUT}$")
         if (LANGUAGE_OUT MATCHES "CXX" AND LANG MATCHES "MATLAB")
           # MATLAB Compiler can handle this...
-        elseif (USE_MATLAB AND LANGUAGE_OUT MATCHES "MATLAB" AND LANG MATCHES "CXX")
+        elseif (LANGUAGE_OUT MATCHES "MATLAB" AND LANG MATCHES "CXX")
           set (LANG "MATLAB") # language stays MATLAB
-        elseif (USE_Python AND LANGUAGE_OUT MATCHES "PYTHON" AND LANG MATCHES "JYTHON")
+        elseif (LANGUAGE_OUT MATCHES "PYTHON" AND LANG MATCHES "JYTHON")
           # Jython can deal with Python scripts/modules
-        elseif (USE_Python AND LANGUAGE_OUT MATCHES "JYTHON" AND LANG MATCHES "PYTHON")
+        elseif (LANGUAGE_OUT MATCHES "JYTHON" AND LANG MATCHES "PYTHON")
           set (LANG "JYTHON") # language stays JYTHON
         else ()
           # ambiguity
