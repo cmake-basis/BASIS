@@ -18,3 +18,6 @@ wget -O jython-installer-${version}.jar \
 
 # Install Jython
 java -jar jython-installer-${version}.jar -s -d "$prefix" -t minimum
+
+# Remove installer
+rm -f jython-installer-${version}.jar

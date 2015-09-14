@@ -16,6 +16,7 @@ fi
 # Download and extract source files
 wget -O InsightToolkit-${version}.tar.gz http://sourceforge.net/projects/itk/files/itk/${version%.*}/InsightToolkit-${version}.tar.gz/download
 tar xzf InsightToolkit-${version}.tar.gz
+rm -f InsightToolkit-${version}.tar.gz
 
 # Configure build
 cd InsightToolkit-$version
@@ -44,3 +45,6 @@ fi
 
 # Build and install
 make -j8 install
+
+# Remove sources and temporary build files
+cd ../.. && rm -f InsightToolkit-$version

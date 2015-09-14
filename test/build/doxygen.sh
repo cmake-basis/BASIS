@@ -19,6 +19,7 @@ fi
 # Download and extract source files
 wget ftp://ftp.stack.nl/pub/users/dimitri/doxygen-${version}.src.tar.gz
 tar xzf doxygen-${version}.src.tar.gz
+rm -f doxygen-${version}.src.tar.gz
 
 # Configure build
 cd doxygen-$version
@@ -31,3 +32,6 @@ cmake -Dbuild_wizard=OFF \
 
 # Build and install
 make -j8 install
+
+# Remove sources and temporary build files
+cd ../.. && rm -f doxygen-$version

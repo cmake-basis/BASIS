@@ -17,6 +17,7 @@ if [[ $TRAVIS_OS_NAME == linux ]]; then
   mkdir -p "$prefix"
   wget http://www.cmake.org/files/v${version%.*}/cmake-${version}-Linux-x86_64.tar.gz
   tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-Linux-x86_64.tar.gz
+  rm -f cmake-${version}-Linux-x86_64.tar.gz
 
 elif [[ $TRAVIS_OS_NAME == osx ]]; then
 
@@ -30,12 +31,16 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
     mv -f "cmake-${version}-Darwin-x86_64/CMake.app/Contents/$d/"* "$prefix/$d/"
   done
 
+  # Remove unused files
+  rm -f cmake-${version}-Darwin-x86_64
+
 else
 
   # Download and extract source files
   wget http://www.cmake.org/files/v${version%.*}/cmake-${version}.tar.gz
   tar xzf cmake-${version}.tar.gz
-  
+  rm -f cmake-${version}.tar.gz
+
   # Configure build
   cd cmake-$version
   mkdir build && cd build
@@ -45,5 +50,8 @@ else
   
   # Build and install
   make install
+
+  # Remove sources and temporary build files
+  cd ../.. && rm -f cmake-$version
 
 fi
