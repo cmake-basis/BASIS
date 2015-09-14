@@ -129,11 +129,8 @@ def test_required_arguments(verbose=0):
             allow_fail=True, verbose=True) == 0:
         raise Exception('Expected non-zero return code')
     if basis.execute('basis.basisproject create --name TestProject',
-            allow_fail=True, verbose=True) == 0:
-        raise Exception('Expected non-zero return code')
-    if basis.execute('basis.basisproject create --description noname',
-            allow_fail=True, verbose=True) == 0:
-        raise Exception('Expected non-zero return code')
+            allow_fail=True, verbose=True) != 0:
+        raise Exception('Expected zero return code')
     print
     print("SUCCESS")
 
