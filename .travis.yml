@@ -9,22 +9,22 @@ os:
   - linux
   - osx
 
-# Common environment variables for all test builds
+# Environment variables used by before_install and build script
+#
+# Dependencies:
 # - prefix:    Installation prefix for dependencies and BASIS itself (writeable by build user)
-env: prefix=/tmp/local
-
-# Build matrix, choose version of dependencies to use via environment variables
 # - cmake|itk|jython|doxygen|sphinx: Version of dependency to install (if needed)
 #   + x.x.x:   Use this particular version
 #   + any:     Use latest version available through the package manager
 #   + none:    Do not install dependency before building BASIS
+#
+# Modules to build:
 # - utilities: Build BASIS Utilities (yes|no)
 # - tools:     Build BASIS Tools (yes|no)
 # - example:   Build BASIS Examples (yes|no)
 # - doc:       Build BASIS Documentation (HTML) (yes|no)
 # - manual:    Build BASIS User Manual (PDF) (yes|no)
 # - test:      Build and run tests (yes|no)
-matrix:
-  include:
-    - env: cmake=2.8.12 itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
-    - env: cmake=3.3.1  itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes 
+env:
+  - prefix=/tmp/local cmake=2.8.12 itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
+  - prefix=/tmp/local cmake=3.3.1  itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes 
