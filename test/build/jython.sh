@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-## Travis script to install Sphinx
+## Travis script to install Jython
 
 version=${1:-any}
 prefix=${2:-/opt/jython-$version}
