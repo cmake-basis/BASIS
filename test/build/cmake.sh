@@ -24,10 +24,10 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
   wget http://www.cmake.org/files/v${version%.*}/cmake-${version}-Darwin-x86_64.tar.gz
   tar -xzf cmake-${version}-Darwin-x86_64.tar.gz
 
-  # Copy extracted files to installation prefix
-  mkdir -p "$prefix"
+  # Move extracted files to installation prefix
   for d in bin doc man share; do
-    cp -f "cmake-${version}-Darwin-x86_64/$d" "$prefix/"
+    mkdir -p "$prefix/$d"
+    mv -f "cmake-${version}-Darwin-x86_64/CMake.app/Contents/$d/"* "$prefix/$d/"
   done
 
 else
