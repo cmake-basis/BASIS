@@ -222,5 +222,10 @@ set (BASIS_BASH_UTILITIES_LIBRARY   "${NS}utilities_bash")
 set (BASIS_TEST_LIBRARY             "${NS}testlib")
 set (BASIS_TEST_MAIN_LIBRARY        "${NS}testmain")
 
-configure_file(include/basis/config.h.in ${BINARY_INCLUDE_DIR}/basis/config.h)
+# ============================================================================
+# configure public header files
+# ============================================================================
 
+if (NOT BASIS_CONFIGURE_PUBLIC_HEADERS)
+  configure_file ("include/basis/config.h.in" "${BINARY_INCLUDE_DIR}/basis/config.h")
+endif ()
