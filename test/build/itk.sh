@@ -21,8 +21,8 @@ elif [[ $version == 4 ]]; then
 fi
 
 # Download and extract source files
-wget -O InsightToolkit-$version http://sourceforge.net/projects/itk/files/itk/${version%.*}/InsightToolkit-${version}.tar.gz/download
-tar xzf InsightToolkit-$version
+wget -O InsightToolkit-${version}.tar.gz http://sourceforge.net/projects/itk/files/itk/${version%.*}/InsightToolkit-${version}.tar.gz/download
+tar xzf InsightToolkit-${version}.tar.gz
 
 # Configure build
 cd InsightToolkit-$version
@@ -39,8 +39,10 @@ if [ ${version/.*} -ge 4 ]; then
         -DITKGroup_IO=ON \
         ..
 else
-  cmake -DCMAKE_BUILD_TYPE=Release \
+  cmake -Wno-dev \
+        -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="$prefix" \
+        -DITK_USE_SYSTEM_TIFF=ON \
         -DBUILD_EXAMPLES=OFF \
         -DBUILD_TESTING=OFF \
         -DBUILD_SHARED_LIBS=ON \
@@ -48,4 +50,4 @@ else
 fi
 
 # Build and install
-make install
+make -j8 install

@@ -30,7 +30,7 @@ cmake -DBUILD_TESTING=$tests \
       ..
 
 # Build and install
-make install
+make -j8 install
 
 # Run tests
 [[ $tests == no ]] || ctest -C Release -V

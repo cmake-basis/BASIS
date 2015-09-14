@@ -25,4 +25,4 @@ cmake -Dbuild_wizard=OFF \
       ..
 
 # Build and install
-make install
+make -j8 install
