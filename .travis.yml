@@ -1,7 +1,7 @@
-language: cpp
-compiler: g++
-install:  test/build/depends.sh
-script:   test/build/basis.sh
+language:       cpp
+compiler:       g++
+before_install: test/build/depends.sh
+script:         test/build/basis.sh
 branches:
   only:
     - develop
