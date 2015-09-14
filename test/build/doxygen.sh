@@ -40,4 +40,4 @@ cmake -Dbuild_wizard=OFF \
 make -j8 install
 
 # Remove sources and temporary build files
-cd ../.. && rm -f doxygen-$version
+cd ../.. && rm -rf doxygen-$version

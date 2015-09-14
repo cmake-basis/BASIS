@@ -52,4 +52,4 @@ fi
 make -j8 install
 
 # Remove sources and temporary build files
-cd ../.. && rm -f InsightToolkit-$version
+cd ../.. && rm -rf InsightToolkit-$version

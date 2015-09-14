@@ -38,7 +38,7 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
   done
 
   # Remove unused files
-  rm -f cmake-${version}-Darwin-x86_64
+  rm -rf cmake-${version}-Darwin-x86_64
 
 else
 
@@ -58,6 +58,6 @@ else
   make install
 
   # Remove sources and temporary build files
-  cd ../.. && rm -f cmake-$version
+  cd ../.. && rm -rf cmake-$version
 
 fi
