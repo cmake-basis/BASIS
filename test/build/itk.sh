@@ -9,7 +9,7 @@ prefix=${2:-/opt/itk-$version}
 # Install from binary package
 if [[ $version == any ]]; then
   [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -qq libgdcm2-dev libvtkgdcm2-dev libfftw3-dev libvtk5-dev libinsighttoolkit3-dev
-  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install insighttoolkit
+  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install homebrew/science/insighttoolkit
 fi
 [[ $version != any ]] || version=4.8.0
 
