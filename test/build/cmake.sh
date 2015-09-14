@@ -7,8 +7,14 @@ version=${1:-3.3.1}
 prefix="${2:-/opt/cmake-$version}"
 
 if [[ $version == any ]]; then
-  [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -y cmake
-  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install cmake
+  if [[ $TRAVIS_OS_NAME == linux ]]; then
+    sudo apt-get install -y cmake
+    exit 0
+  elif [[ $TRAVIS_OS_NAME == osx   ]]; then
+    brew install cmake
+    exit 0
+  fi
+  version=3.3.1
 fi
 
 if [[ $TRAVIS_OS_NAME == linux ]]; then

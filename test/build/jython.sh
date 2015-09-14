@@ -3,21 +3,22 @@ set -e
 
 ## Travis script to install Jython
 
-version=${1:-any}
+version=${1:-2.7.0}
 prefix=${2:-/opt/jython-$version}
 
 # Install from binary package if possible
 if [[ $version == any ]]; then
-  [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -qq jython
-  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install jython
+  if [[ $TRAVIS_OS_NAME == linux ]]; then
+    sudo apt-get install -qq jython
+    exit 0
+  elif [[ $TRAVIS_OS_NAME == osx ]]; then
+    brew install jython
+    exit 0
+  fi
+  version=2.7.0
 fi
 
-# Download installer
-wget -O jython-installer-${version}.jar \
-     http://search.maven.org/remotecontent?filepath=org/python/jython-installer/$version/jython-installer-${version}.jar
-
-# Install Jython
+# Download and run installer
+wget -O jython-installer-${version}.jar http://search.maven.org/remotecontent?filepath=org/python/jython-installer/$version/jython-installer-${version}.jar
 java -jar jython-installer-${version}.jar -s -d "$prefix" -t minimum
-
-# Remove installer
 rm -f jython-installer-${version}.jar

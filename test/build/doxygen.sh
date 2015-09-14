@@ -12,8 +12,14 @@ prefix=${2:-/opt/doxygen-$version}
 
 # Install binary distribution package if available
 if [[ $version == any ]]; then
-  [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -y doxygen
-  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install doxygen
+  if [[ $TRAVIS_OS_NAME == linux ]]; then
+    sudo apt-get install -y doxygen
+    exit 0
+  elif [[ $TRAVIS_OS_NAME == osx ]]; then
+    brew install doxygen
+    exit 0
+  fi
+  version=1.8.10
 fi
 
 # Download and extract source files
