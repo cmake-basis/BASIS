@@ -450,8 +450,8 @@ set (BASIS_EXPORT TRUE)
 ## @brief Whether to create "<Package>Exports.cmake" file so other projects can import the exported targets.
 #
 # @sa GenerateConfig.cmake, ExportTools.cmake, http://www.cmake.org/cmake/help/v2.8.12/cmake.html#command:export
-option (BASIS_EXPORTS_FILE "Create <Package>Exports.cmake file so other projects can import the build targets from this one. OFF may reduce configure time." ON)
-mark_as_advanced (BASIS_EXPORTS_FILE)
+option (BASIS_CREATE_EXPORTS_FILE "Create <Package>Exports.cmake file so other projects can import the build targets from this one. OFF may reduce configure time." ON)
+mark_as_advanced (BASIS_CREATE_EXPORTS_FILE)
 
 ## @brief Disable use of the revision information obtained from the revision
 #         control software such as Subversion or Git.
