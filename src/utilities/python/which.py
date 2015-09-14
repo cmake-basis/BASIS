@@ -53,6 +53,8 @@ of where the match was found. For example:
     from HKLM\SOFTWARE\...\perl.exe
 """
 
+from __future__ import unicode_literals
+
 _cmdlnUsage = """
     Show the full path of commands.
 

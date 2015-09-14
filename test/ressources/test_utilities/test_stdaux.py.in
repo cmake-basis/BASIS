@@ -5,10 +5,13 @@
 # @brief Test standard auxiliary functions of BASIS utilities.
 ##############################################################################
 
+from __future__ import unicode_literals
+
 import unittest
 import re
 import os
 import sys
+import io
 
 from utilitiestest import basis
 
@@ -30,22 +33,22 @@ class TestProcessExecution(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_return_type(self):
         """Test type of return value of execute()."""
-        self.assertEquals(int,   type(basis.execute('basis.dummy_command')))
-        self.assertEquals(int,   type(basis.execute('basis.dummy_command', allow_fail=False)))
-        self.assertEquals(int,   type(basis.execute('basis.dummy_command', allow_fail=True)))
-        self.assertEquals(int,   type(basis.execute('basis.dummy_command', stdout=False)))
-        self.assertEquals(tuple, type(basis.execute('basis.dummy_command', stdout=True)))
-        self.assertEquals(tuple, type(basis.execute('basis.dummy_command', allow_fail=True, stdout=True)))
+        self.assertEqual(int,   type(basis.execute('basis.dummy_command')))
+        self.assertEqual(int,   type(basis.execute('basis.dummy_command', allow_fail=False)))
+        self.assertEqual(int,   type(basis.execute('basis.dummy_command', allow_fail=True)))
+        self.assertEqual(int,   type(basis.execute('basis.dummy_command', stdout=False)))
+        self.assertEqual(tuple, type(basis.execute('basis.dummy_command', stdout=True)))
+        self.assertEqual(tuple, type(basis.execute('basis.dummy_command', allow_fail=True, stdout=True)))
  
     # ------------------------------------------------------------------------
     def test_target_execution(self):
         """Test execution of executable target."""
-        self.assertEquals(0, basis.execute(['basis.dummy_command']))
+        self.assertEqual(0, basis.execute(['basis.dummy_command']))
         if sys.platform == 'win32':
             msg = 'Hello, BASIS!\r\n'
         else:
             msg = 'Hello, BASIS!\n'
-        self.assertEquals(
+        self.assertEqual(
                 (0, msg),
                 basis.execute(['basis.dummy_command', '--greet'],
                         stdout=True, quiet=True))
@@ -55,15 +58,15 @@ class TestProcessExecution(unittest.TestCase):
         """Test allow_fail keyword argument of basis.execute()."""
         self.assertRaises(basis.SubprocessError, basis.execute, 'basis.dummy_command --exit 1')
         self.assertRaises(basis.SubprocessError, basis.execute, 'basis.dummy_command --exit 1', allow_fail=False)
-        self.assertEquals(1, basis.execute('basis.dummy_command --exit 1', allow_fail=True))
+        self.assertEqual(1, basis.execute('basis.dummy_command --exit 1', allow_fail=True))
 
     # ------------------------------------------------------------------------
     def test_redirection(self):
         """Test redirection of STDOUT and STDERR."""
         stdout = sys.stdout
         stderr = sys.stderr
-        outlog = open('test_stdaux_py.stdout', 'w')
-        errlog = open('test_stdaux_py.stderr', 'w')
+        outlog = io.open('test_stdaux_py.stdout', 'w')
+        errlog = io.open('test_stdaux_py.stderr', 'w')
         sys.stdout = outlog
         sys.stderr = errlog
         basis.execute('basis.dummy_command --greet --warn', quiet=True)
@@ -71,38 +74,38 @@ class TestProcessExecution(unittest.TestCase):
         sys.stderr = stderr
         outlog.close()
         errlog.close()
-        outlog = open('test_stdaux_py.stdout', 'r')
+        outlog = io.open('test_stdaux_py.stdout', 'r')
         log = outlog.readlines()
         outlog.close()
         os.remove('test_stdaux_py.stdout')
-        self.assertEquals(0, len(log))
-        errlog = open('test_stdaux_py.stderr', 'r')
+        self.assertEqual(0, len(log))
+        errlog = io.open('test_stdaux_py.stderr', 'r')
         log = errlog.readlines()
         errlog.close()
         os.remove('test_stdaux_py.stderr')
-        self.assertEquals(1, len(log))
-        self.assertEquals('WARNING: Cannot greet in other languages!', log[0].strip())
+        self.assertEqual(1, len(log))
+        self.assertEqual('WARNING: Cannot greet in other languages!', log[0].strip())
 
     # ------------------------------------------------------------------------
     def test_verbose(self):
         """Test verbose keyword argument of basis.execute()."""
         (status, stdout) = basis.execute('basis.dummy_command', verbose=True, quiet=True, stdout=True, allow_fail=True)
-        self.assertEquals(0, status)
-        self.assertEquals('', stdout)
+        self.assertEqual(0, status)
+        self.assertEqual('', stdout)
         (status, stdout) = basis.execute('basis.dummy_command', verbose=2, quiet=True, stdout=True, allow_fail=True)
-        self.assertEquals(0, status)
-        self.assertEquals('', stdout)
+        self.assertEqual(0, status)
+        self.assertEqual('', stdout)
 
     # ------------------------------------------------------------------------
     def test_command_execution(self):
         """Test execution of some non-target command."""
         directory = basis.exedir()
         if (os.name == 'posix'):
-            self.assertEquals(0, basis.execute(['ls', directory], quiet=True))
-            self.assertEquals(0, basis.execute('ls ' + directory, quiet=True))
+            self.assertEqual(0, basis.execute(['ls', directory], quiet=True))
+            self.assertEqual(0, basis.execute('ls ' + directory, quiet=True))
         else:
-            self.assertEquals(0, basis.execute(['dir', directory], quiet=True))
-            self.assertEquals(0, basis.execute('dir "' + directory + '"', quiet=True))
+            self.assertEqual(0, basis.execute(['dir', directory], quiet=True))
+            self.assertEqual(0, basis.execute('dir "' + directory + '"', quiet=True))
 
 # ============================================================================
 # main

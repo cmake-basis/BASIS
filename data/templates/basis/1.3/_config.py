@@ -1,5 +1,7 @@
 # project template configuration script for basisproject tool
 
+from __future__ import unicode_literals
+
 # ------------------------------------------------------------------------------
 # required project files
 required = [

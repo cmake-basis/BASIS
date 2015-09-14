@@ -24,6 +24,8 @@
 # @ingroup BasisPythonUtilities
 ##############################################################################
 
+from __future__ import unicode_literals
+
 __all__ = [] # use of import * is discouraged
 
 import os
@@ -34,21 +36,40 @@ import subprocess
 
 from . import which
 
+# ============================================================================
+# Python 2 and 3 compatibility
+# ============================================================================
+
+if sys.version_info < (3,):
+    text_type   = unicode
+    binary_type = str
+else:
+    text_type   = str
+    binary_type = bytes
 
 # ============================================================================
 # constants
 # ============================================================================
 
 ## @brief Default copyright of executables.
-COPYRIGHT = "@PROJECT_COPYRIGHT@"
+COPYRIGHT = """@PROJECT_COPYRIGHT@"""
 ## @brief Default license of executables.
-LICENSE = "@PROJECT_LICENSE@"
+LICENSE = """@PROJECT_LICENSE@"""
 ## @brief Default contact to use for help output of executables.
-CONTACT = "@PROJECT_CONTACT@"
+CONTACT = """@PROJECT_CONTACT@"""
 
 
 # used to make base argument of functions absolute
 _MODULE_DIR = os.path.dirname(os.path.realpath(__file__))
+
+# ============================================================================
+# Python 2 and 3 compatibility
+# ============================================================================
+
+def decode(s):
+    if isinstance(s, binary_type): return s.decode()
+    elif isinstance(s, text_type): return s.decode()
+    else:                          return s
 
 # ============================================================================
 # executable information
@@ -59,7 +80,7 @@ _MODULE_DIR = os.path.dirname(os.path.realpath(__file__))
 #
 # @param [in] contact Name of contact.
 def print_contact(contact=CONTACT):
-    sys.stdout.write("Contact:\n  " + contact + "\n")
+    sys.stdout.write('Contact:\n  ' + contact + '\n')
 
 # ----------------------------------------------------------------------------
 ## @brief Print version information including copyright and license notices.
@@ -232,7 +253,7 @@ class SubprocessError(Exception):
 # ----------------------------------------------------------------------------
 ## @brief Convert array of arguments to quoted string.
 #
-# @param [in] args Array of arguments.
+# @param [in] args Array of arguments, bytes, or non-string type.
 #
 # @returns Double quoted string, i.e., string where arguments are separated
 #          by a space character and surrounded by double quotes if necessary.
@@ -240,15 +261,22 @@ class SubprocessError(Exception):
 #
 # @sa split_quoted_string()
 def tostring(args):
-    qargs = []
-    re_quote_or_not = re.compile(r"'|\s|^$")
-    for arg in args:
-        # escape double quotes
-        arg = arg.replace('"', '\\"')
-        # surround element by double quotes if necessary
-        if re_quote_or_not.search(arg): qargs.append(''.join(['"', arg, '"']))
-        else:                           qargs.append(arg)
-    return ' '.join(qargs)
+    if type(args) is list:
+        qargs = []
+        re_quote_or_not = re.compile(r"'|\s|^$")
+        for arg in args:
+            # escape double quotes
+            arg = arg.replace('"', '\\"')
+            # surround element by double quotes if necessary
+            if re_quote_or_not.search(arg): qargs.append(''.join(['"', arg, '"']))
+            else:                           qargs.append(arg)
+        return ' '.join(qargs)
+    elif type(args) is binary_type:
+        return args.decode()
+    elif type(args) is text_type:
+        return args
+    else:
+        return text_type(args)
 
 # ----------------------------------------------------------------------------
 ## @brief Split quoted string of arguments.
@@ -295,9 +323,8 @@ def qsplit(args):
 def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simulate=False,
                   prefix=None, targets=None, base='.'):
     # convert args to list of strings
-    if   type(args) is list:            args = [str(i) for i in args]
-    elif type(args) in (str, unicode):  args = qsplit(args);
-    else:              raise Exception("execute(): Argument args must be either list or string, but %s given" % type(args))
+    if type(args) is list: args = [tostring(i) for i in args]
+    else:                  args = qsplit(tostring(args))
     if len(args) == 0: raise Exception("execute(): No command specified for execution")
     # get absolute path of executable
     path = exepath(args[0], prefix=prefix, targets=targets, base=base)
@@ -319,22 +346,22 @@ def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simula
             # read stdout until EOF
             for line in process.stdout:
                 if stdout:
-                    output = ''.join([output, line])
+                    output = ''.join([output, tostring(line)])
                 if not quiet:
-                    print(line.rstrip())
+                    sys.stdout.buffer.write(line)
                     sys.stdout.flush()
             # wait until subprocess terminated and set exit code
-            (out, err) = process.communicate()
+            _, err = process.communicate()
             # print error messages of subprocess
-            for line in err: sys.stderr.write(line);
+            sys.stderr.buffer.write(err)
             # get exit code
             status = process.returncode
         except OSError as e:
-            raise SubprocessError(args[0] + ': ' + str(e))
+            raise SubprocessError(args[0] + ': ' + text_type(e))
         except Exception as e:
             msg  = "Exception while executing \"" + args[0] + "\"!\n"
             msg += "\tArguments: " + tostring(args[1:]) + '\n'
-            msg += '\t' + str(e)
+            msg += '\t' + text_type(e)
             raise SubprocessError(msg)
     # if command failed, throw an exception
     if status != 0 and not allow_fail:

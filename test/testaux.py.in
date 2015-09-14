@@ -18,7 +18,10 @@
 # modules
 # ============================================================================
 
+from __future__ import unicode_literals
+
 import os
+import io
 import sys
 import shutil
 import getopt
@@ -53,7 +56,7 @@ def parse_arguments(flags='v', options=['verbose'], allow_args=False):
             sys.stderr.write("Arguments: " + repr(args) + "\n")
             sys.exit(1)
     except getopt.GetoptError as e:
-        sys.stderr.write(str(e) + '\n')
+        sys.stderr.write(basis.tostring(e) + '\n')
         sys.exit(1)
     if allow_args: return opts, args
     else: return opts
@@ -184,14 +187,14 @@ def add_file(file, prefix='.', name=None):
 # ----------------------------------------------------------------------------
 def add_dependency(package, required=True):
     "Add package to list of project dependencies."
-    fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "r")
+    fp = io.open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "r")
     code = fp.read()
     fp.close()
     if required:
         code = code.replace('#<dependency>', package + '\n    #<dependency>')
     else:
         code = code.replace('#<optional-dependency>', package + '\n    #<optional-dependency>')
-    fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "w")
+    fp = io.open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), "w")
     fp.write(code)
     fp.close()
     if required: print("Added dependency on " + package)
@@ -203,7 +206,7 @@ def add_cmake_code(cmakefile, code):
     cmakefile = os.path.join(SOURCE_DIR, cmakefile)
     if not os.path.exists(cmakefile):
         raise Exception('File ' + cmakefile + ' does not exist!')
-    fp = open(os.path.join(SOURCE_DIR, cmakefile), 'a')
+    fp = io.open(os.path.join(SOURCE_DIR, cmakefile), 'a')
     fp.write(code + '\n')
     fp.close()
     print("Modified file " + cmakefile)

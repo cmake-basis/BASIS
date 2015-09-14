@@ -5,6 +5,8 @@
 # @brief Test executable target related functions of BASIS utilities.
 ##############################################################################
 
+from __future__ import unicode_literals
+
 import unittest
 import re
 import os
@@ -21,21 +23,21 @@ class TestExecutableTargetInfo(unittest.TestCase):
     
     # ------------------------------------------------------------------------
     def test_targetuid(self):
-        self.assertEquals (
+        self.assertEqual (
                 basis.targetuid ('basisproject'),
                 'basisproject')
-        self.assertEquals (
+        self.assertEqual (
                 basis.targetuid ('unknown'),
                 'unknown')
-        self.assertEquals (
+        self.assertEqual (
                 basis.targetuid ('basis.basisproject'),
                 'basis.basisproject')
-        self.assertEquals (
+        self.assertEqual (
                 basis.targetuid ('hammer.hammer'),
                 'hammer.hammer')
-        self.assertEquals (basis.targetuid ('.hello'), '.hello')
-        self.assertEquals (basis.targetuid (None), None)
-        self.assertEquals (basis.targetuid (''), None)
+        self.assertEqual (basis.targetuid ('.hello'), '.hello')
+        self.assertEqual (basis.targetuid (None), None)
+        self.assertEqual (basis.targetuid (''), None)
     
     # ------------------------------------------------------------------------
     def test_istarget(self):
@@ -71,11 +73,11 @@ class TestExecutableTargetInfo(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_exepath(self):
         # path of this executable
-        self.assertEquals (basis.exepath (),
+        self.assertEqual (basis.exepath (),
                 os.path.join (basis.exedir (), basis.exename ()))
         # path of executable built by some target
         target = 'basis.basisproject'
-        self.assertEquals (basis.exepath (target),
+        self.assertEqual (basis.exepath (target),
                 os.path.join (basis.exedir (target), basis.exename (target)))
         # path of some system command
         if (os.name != 'posix'):
@@ -84,7 +86,7 @@ class TestExecutableTargetInfo(unittest.TestCase):
         else:
             target = 'ls'
             expected = '/bin/ls'
-        self.assertEquals(basis.exepath (target).lower(), expected)
+        self.assertEqual(basis.exepath (target).lower(), expected)
 
 # ============================================================================
 # main

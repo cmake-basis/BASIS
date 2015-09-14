@@ -9,6 +9,8 @@
 # of this test project.
 ##############################################################################
 
+from __future__ import unicode_literals
+
 import sys
 
 from testaux import *

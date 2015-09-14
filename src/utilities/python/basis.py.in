@@ -26,9 +26,10 @@
 # @ingroup BasisPythonUtilities
 ##############################################################################
 
+from __future__ import unicode_literals
+
 import os
 import sys
-
 
 __all__ = [] # use of import * is discouraged
 
@@ -80,6 +81,13 @@ del imp
 ## @addtogroup BasisPythonUtilities
 # @{
 
+
+# ============================================================================
+# Python 2 and 3 compatibility
+# ============================================================================
+
+text_type   = utilities.text_type
+binary_type = utilities.binary_type
 
 # ============================================================================
 # constants
