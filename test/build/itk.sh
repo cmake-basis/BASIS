@@ -6,19 +6,12 @@ set -e
 version=${1:-4.8.0}
 prefix=${2:-/opt/itk-$version}
 
-# Install from binary package when $version equals major version number only
-# and if binary package for given OS is available
-if [[ $TRAVIS_OS_NAME == linux ]]; then
-  if [[ $version == any ]] || [[ $version == 3 ]]; then
-    exec sudo apt-get install -qq libgdcm2-dev libvtkgdcm2-dev libfftw3-dev libvtk5-dev libinsighttoolkit3-dev
-  fi
+# Install from binary package
+if [[ $version == any ]]; then
+  [[ $TRAVIS_OS_NAME != linux ]] || exec sudo apt-get install -qq libgdcm2-dev libvtkgdcm2-dev libfftw3-dev libvtk5-dev libinsighttoolkit3-dev
+  [[ $TRAVIS_OS_NAME != osx   ]] || exec brew install insighttoolkit
 fi
-
-if [[ $version == any ]] || [[ $version == 4 ]]; then
-  version=4.8.0
-elif [[ $version == 3 ]]; then
-  version=3.20.1
-fi
+[[ $version != any ]] || version=4.8.0
 
 # Download and extract source files
 wget -O InsightToolkit-${version}.tar.gz http://sourceforge.net/projects/itk/files/itk/${version%.*}/InsightToolkit-${version}.tar.gz/download
