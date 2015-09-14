@@ -16,6 +16,7 @@ export PATH="$prefix/bin:$PATH"
 [[ $TRAVIS_OS_NAME != osx   ]] || export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
 
 # Configure build
+mkdir build && cd build
 cmake -DBUILD_TESTING=$tests \
       -DBUILD_DOCUMENTATION=$doc \
       -DBASIS_ALL_DOC=yes \
