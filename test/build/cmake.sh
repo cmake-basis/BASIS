@@ -22,13 +22,12 @@ minor=${version#*.}
 minor=${minor/.*}
 
 # 64-bit binaries are only available since CMake 3.1
-if [ $major -lt 3 ] || [ $major -eq 3 -a $minor -eq 0 ]; then
-  arch=i386
-else
-  arch=x86_64
+if [ $major -gt 3 ] || [ $major -eq 3 -a $minor -gt 0 ]; then
+  os=$TRAVIS_OS_NAME
 fi
+arch=x86_64
 
-if [[ $TRAVIS_OS_NAME == linux ]]; then
+if [[ $os == linux ]]; then
 
   # Download and extract binary distribution package
   mkdir -p "$prefix"
@@ -36,7 +35,7 @@ if [[ $TRAVIS_OS_NAME == linux ]]; then
   tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-Linux-${arch}.tar.gz
   rm -f cmake-${version}-Linux-${arch}.tar.gz
 
-elif [[ $TRAVIS_OS_NAME == osx ]]; then
+elif [[ $os == osx ]]; then
 
   # Download and extract binary distribution package
   wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Darwin-${arch}.tar.gz
@@ -66,7 +65,7 @@ else
         ..
   
   # Build and install
-  make install
+  make -j8 install
 
   # Remove sources and temporary build files
   cd ../.. && rm -rf cmake-$version

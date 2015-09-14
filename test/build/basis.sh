@@ -16,9 +16,6 @@ export PATH="$prefix/bin:$PATH"
 [[ $TRAVIS_OS_NAME != linux ]] || export   LD_LIBRARY_PATH="$prefix/lib:$LD_LIBRARY_PATH"
 [[ $TRAVIS_OS_NAME != osx   ]] || export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
 
-echo "List executables installed in $prefix/bin"
-ls "$prefix/bin"
-
 # Configure build
 if [[ $doc == yes ]] || [[ $manual == yes ]]; then
   enable_doc=yes

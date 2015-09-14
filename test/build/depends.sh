@@ -36,6 +36,3 @@ if [[ $doc == yes ]] || [[ $manual == yes ]]; then
   $TRAVIS_BUILD_DIR/test/build/doxygen.sh "$doxygen" "$prefix"
   $TRAVIS_BUILD_DIR/test/build/sphinx.sh  "$sphinx"  "$prefix" $manual
 fi
-
-echo "List executables installed in $prefix/bin"
-ls "$prefix/bin"
