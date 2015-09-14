@@ -11,7 +11,7 @@ os:
 env:
 #  - prefix=/tmp/local cmake=2.8.12 itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=yes tests=yes
 #  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=no  tools=no  example=no  doc=no  tests=no 
-  - prefix=/tmp/local cmake=3.3.1  itk=none jython=none doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=no  tests=no 
+#  - prefix=/tmp/local cmake=3.3.1  itk=none jython=none doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=no  tests=no 
 #  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=no  tests=no 
-#  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=yes tests=no 
+  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=yes tests=no 
 #  - prefix=/tmp/local cmake=3.3.1  itk=3    jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=no  doc=no  tests=yes
