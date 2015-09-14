@@ -14,6 +14,7 @@ fi
 if [[ $TRAVIS_OS_NAME == linux ]]; then
 
   # Download and extract binary distribution package
+  mkdir -p "$prefix"
   wget http://www.cmake.org/files/v${version%.*}/cmake-${version}-Linux-x86_64.tar.gz
   tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-Linux-x86_64.tar.gz
 
@@ -25,7 +26,8 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
 
   # Copy extracted files to installation prefix
   for d in bin doc man share; do
-    mkdir -p "$prefix/$d" && mv -f "cmake-${version}-Darwin-x86_64/$d/*" "$prefix/$d/"
+    mkdir -p "$prefix/$d"
+    mv -f "cmake-${version}-Darwin-x86_64/$d/*" "$prefix/$d/"
   done
 
 else
