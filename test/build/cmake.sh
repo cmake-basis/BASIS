@@ -17,18 +17,22 @@ if [[ $version == any ]]; then
   version=3.3.1
 fi
 
+major=${version/.*}
+minor=${version#*.}
+minor=${minor/.*}
+
 if [[ $TRAVIS_OS_NAME == linux ]]; then
 
   # Download and extract binary distribution package
   mkdir -p "$prefix"
-  wget http://www.cmake.org/files/v${version%.*}/cmake-${version}-Linux-x86_64.tar.gz
+  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Linux-x86_64.tar.gz
   tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-Linux-x86_64.tar.gz
   rm -f cmake-${version}-Linux-x86_64.tar.gz
 
 elif [[ $TRAVIS_OS_NAME == osx ]]; then
 
   # Download and extract binary distribution package
-  wget http://www.cmake.org/files/v${version%.*}/cmake-${version}-Darwin-x86_64.tar.gz
+  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Darwin-x86_64.tar.gz
   tar -xzf cmake-${version}-Darwin-x86_64.tar.gz
 
   # Move extracted files to installation prefix
@@ -43,7 +47,7 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
 else
 
   # Download and extract source files
-  wget http://www.cmake.org/files/v${version%.*}/cmake-${version}.tar.gz
+  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}.tar.gz
   tar xzf cmake-${version}.tar.gz
   rm -f cmake-${version}.tar.gz
 

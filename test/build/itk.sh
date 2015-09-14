@@ -18,8 +18,12 @@ if [[ $version == any ]]; then
   version=4.8.0
 fi
 
+major=${version/.*}
+minor=${version#*.}
+minor=${minor/.*}
+
 # Download and extract source files
-wget -O InsightToolkit-${version}.tar.gz http://sourceforge.net/projects/itk/files/itk/${version%.*}/InsightToolkit-${version}.tar.gz/download
+wget -O InsightToolkit-${version}.tar.gz http://sourceforge.net/projects/itk/files/itk/$major.$minor/InsightToolkit-${version}.tar.gz/download
 tar xzf InsightToolkit-${version}.tar.gz
 rm -f InsightToolkit-${version}.tar.gz
 
