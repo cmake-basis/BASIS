@@ -12,7 +12,7 @@ fi
 
 # Install prerequisites
 if [[ $TRAVIS_OS_NAME == linux ]]; then
-  sudo apt-get install -y python-docutils python-jinja2 python-pigments 
+  sudo apt-get install -y python-docutils python-jinja2 python-pygments 
 elif [[ $TRAVIS_OS_NAME == osx ]]; then
   wget http://tug.org/cgi-bin/mactex-download/BasicTeX.pkg
   sudo installer -pkg BasicTeX.pkg -target /
