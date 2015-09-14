@@ -21,19 +21,26 @@ major=${version/.*}
 minor=${version#*.}
 minor=${minor/.*}
 
+# 64-bit binaries are only available since CMake 3.1
+if [ $major -lt 3 ] || [ $major -eq 3 -a $minor -eq 0 ]; then
+  arch=i386
+else
+  arch=x86_64
+fi
+
 if [[ $TRAVIS_OS_NAME == linux ]]; then
 
   # Download and extract binary distribution package
   mkdir -p "$prefix"
-  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Linux-x86_64.tar.gz
-  tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-Linux-x86_64.tar.gz
-  rm -f cmake-${version}-Linux-x86_64.tar.gz
+  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Linux-${arch}.tar.gz
+  tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-Linux-${arch}.tar.gz
+  rm -f cmake-${version}-Linux-${arch}.tar.gz
 
 elif [[ $TRAVIS_OS_NAME == osx ]]; then
 
   # Download and extract binary distribution package
-  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Darwin-x86_64.tar.gz
-  tar -xzf cmake-${version}-Darwin-x86_64.tar.gz
+  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Darwin-${arch}.tar.gz
+  tar -xzf cmake-${version}-Darwin-${arch}.tar.gz
 
   # Move extracted files to installation prefix
   for d in bin doc man share; do
@@ -42,7 +49,7 @@ elif [[ $TRAVIS_OS_NAME == osx ]]; then
   done
 
   # Remove unused files
-  rm -rf cmake-${version}-Darwin-x86_64
+  rm -rf cmake-${version}-Darwin-${arch}
 
 else
 
