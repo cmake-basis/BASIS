@@ -9,15 +9,15 @@ prefix=${2:-/opt/itk-$version}
 # Install from binary package when $version equals major version number only
 # and if binary package for given OS is available
 if [[ $TRAVIS_OS_NAME == linux ]]; then
-  if [[ $version == 3 ]]; then
+  if [[ $version == any ]] || [[ $version == 3 ]]; then
     exec sudo apt-get install -qq libgdcm2-dev libvtkgdcm2-dev libfftw3-dev libvtk5-dev libinsighttoolkit3-dev
   fi
 fi
 
-if [[ $version == 3 ]]; then
-  version=3.20.1
-elif [[ $version == 4 ]]; then
+if [[ $version == any ]] || [[ $version == 4 ]]; then
   version=4.8.0
+elif [[ $version == 3 ]]; then
+  version=3.20.1
 fi
 
 # Download and extract source files
