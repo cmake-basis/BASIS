@@ -100,19 +100,20 @@ basis_project (
   DEPENDS
     #<dependency>
   OPTIONAL_DEPENDS
-    PythonInterp
-    JythonInterp
-    Perl
-    MATLAB{matlab}
-    BASH
-    Doxygen
-    Sphinx{build}
-    ITK # TODO required by basistest-driver, get rid of this dependency
+    PythonInterp    # enables support for Python if package found
+    JythonInterp    # enables support for Jython if package found
+    Perl            # enables support for Perl   if package found
+    MATLAB{matlab}  # enabled support for MATLAB if package found
+    BASH            # enables support for Bash   if package found
+    LATEX{PDFLATEX} # required to generate PDF manual using Sphinx
+    Doxygen         # required to generate API documentation
+    Sphinx{build}   # requierd to generate web pages and user manual
+    ITK             # optionally used by basistest-driver, TODO: get rid of this dependency
     #<optional-dependency>
   TEST_DEPENDS
     #<test-dependency>
   OPTIONAL_TEST_DEPENDS
-    MATLAB{mex}
-    MATLAB{mcc}
+    MATLAB{mex}     # enables test of MEX-file generation
+    MATLAB{mcc}     # enables test of MATLAB .m file compilation
     #<optional-test-dependency>
 )
