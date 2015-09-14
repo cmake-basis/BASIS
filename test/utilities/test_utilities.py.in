@@ -49,24 +49,27 @@ if __name__ == '__main__':
         add_file('test_executabletargetinfo.sh.in', prefix='test')
         add_file('test_stdaux.sh.in', prefix='test')
     # edit CMakeLists.txt files
-    add_file('Settings.cmake', prefix='config')
     add_cmake_code('src/CMakeLists.txt',  'basis_add_executable(helloworld.cxx)')
     add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_ExecutableTargetInfo.cxx UNITTEST)')
-    add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.cxx UNITTEST)')
+    add_cmake_code('test/CMakeLists.txt', 'basis_target_link_libraries(test_ExecutableTargetInfo basis)')
+    add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux.cxx UNITTEST USE_BASIS_UTILITIES)')
     if 'PythonInterp' in use:
         add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_executabletargetinfo_py test_executabletargetinfo.py)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_target_link_libraries(test_executabletargetinfo_py basis)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_executabletargetinfo_py COMMAND test_executabletargetinfo_py)')
-        add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_stdaux_py test_stdaux.py)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_stdaux_py test_stdaux.py USE_BASIS_UTILITIES)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux_py COMMAND test_stdaux_py)')
     if 'Perl' in use:
         add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_ExecutableTargetInfo_pl test_ExecutableTargetInfo.pl)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_target_link_libraries(test_ExecutableTargetInfo_pl basis)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_ExecutableTargetInfo_pl COMMAND test_ExecutableTargetInfo_pl)')
-        add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_stdaux_pl test_stdaux.pl)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_stdaux_pl test_stdaux.pl USE_BASIS_UTILITIES)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux_pl COMMAND test_stdaux_pl)')
     if 'BASH' in use:
         add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_executabletargetinfo_sh test_executabletargetinfo.sh)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_target_link_libraries(test_executabletargetinfo_sh basis)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_executabletargetinfo_sh COMMAND test_executabletargetinfo_sh)')
-        add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_stdaux_sh test_stdaux.sh)')
+        add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_stdaux_sh test_stdaux.sh USE_BASIS_UTILITIES)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux_sh COMMAND test_stdaux_sh)')
     # build project
     build_project(verbose)
