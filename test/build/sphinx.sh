@@ -10,22 +10,21 @@ if [[ $version != any ]]; then
   exit 1
 fi
 
-# Install pdflatex and fonts
+# Install prerequisites
 if [[ $TRAVIS_OS_NAME == linux ]]; then
-  sudo apt-get install -y texlive-full
+  sudo apt-get install -y python-docutils python-jinja2 python-pigments 
 elif [[ $TRAVIS_OS_NAME == osx ]]; then
   wget http://tug.org/cgi-bin/mactex-download/BasicTeX.pkg
   sudo installer -pkg BasicTeX.pkg -target /
 fi
 
 # Install Sphinx
-if [[ $TRAVIS_OS_NAME == linux ]]; then
-  which pip
-  if [ $? -eq 0 ]; then
-    sudo pip install -U Sphinx
-  else
-    sudo apt-get install -y python-sphinx
-  fi
-elif [[ $TRAVIS_OS_NAME == osx ]]; then
-  pip install -U Sphinx
+which pip
+if [ $? -eq 0 ]; then
+  sudo pip install -U Sphinx
+elif [[ $TRAVIS_OS_NAME == linux ]]; then
+  sudo apt-get install -y python-sphinx
+else
+  echo "pip required for installation of Sphinx"
+  exit 1
 fi
