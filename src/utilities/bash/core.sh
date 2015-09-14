@@ -40,8 +40,11 @@ _BASIS_CORE_INCLUDED='true'
 # (environment) variable. Modules can be prepended by the names of the
 # subdirectories they are located in relative to a directory listed in the
 # @c BASHPATH, where dots (.) can be used instead of slashes to separate the
-# parts of the relative module path. Moreover, the <tt>.sh</tt> extension of
-# the modules is appended to the module name if not specified.
+# parts of the relative module path. A <tt>.sh</tt> file name extension of the
+# modules is appended to the module name when looking for a matching Bash
+# module file. It must not be included in the \p module name to avoid
+# confusion with the dot used as path / submodule separator. The module name
+# "utils.sh" thus translates to the file path "utils/sh.sh"!
 #
 # Example:
 # @code
@@ -63,7 +66,7 @@ _BASIS_CORE_INCLUDED='true'
 #                     calls the exit function with this exit code.
 #                     It can therefore be used for optional modules, which
 #                     do not necessarily need to be imported.
-# @param [in] module  Name of the module to import.
+# @param [in] module  Name of the module to import (excl. .sh file name extension).
 #
 # @returns Only on success or if the -o option is given. Otherwise it calls
 #          the exit function if an error occurs.
