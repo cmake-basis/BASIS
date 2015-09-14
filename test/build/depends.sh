@@ -16,7 +16,7 @@ set -e
 # Update package managers
 [[ $TRAVIS_OS_NAME != linux ]] || sudo apt-get update -qq
 [[ $TRAVIS_OS_NAME != osx   ]] || brew update
-[ -z "$(which pip)" ] || pip install --upgrade pip
+[ -z "$(which pip)" ] || sudo pip install --upgrade pip
 
 # Use dependencies built and installed from sources
 export PATH="$prefix/bin:$PATH"
