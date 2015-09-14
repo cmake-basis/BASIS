@@ -11,6 +11,7 @@ set -e
 [ -n "$tools"     ] || tools=yes
 [ -n "$example"   ] || example=no
 [ -n "$doc"       ] || doc=no
+[ -n "$manual"    ] || manual=no
 [ -n "$tests"     ] || tests=no
 
 # Update package managers
@@ -31,7 +32,7 @@ export PATH="$prefix/bin:$PATH"
   export PATH="$prefix/jython-$jython/bin:$PATH"
 }
 
-if [[ $doc == yes ]]; then
-  $TRAVIS_BUILD_DIR/test/build/doxygen.sh "$doxygen" $prefix
-  $TRAVIS_BUILD_DIR/test/build/sphinx.sh  "$sphinx"  $prefix
+if [[ $doc == yes ]] || [[ $manual == yes ]]; then
+  $TRAVIS_BUILD_DIR/test/build/doxygen.sh "$doxygen" "$prefix"
+  $TRAVIS_BUILD_DIR/test/build/sphinx.sh  "$sphinx"  "$prefix" $manual
 fi

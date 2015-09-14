@@ -8,6 +8,7 @@ set -e
 [ -n "$tools"     ] || tools=yes
 [ -n "$example"   ] || example=yes
 [ -n "$doc"       ] || doc=no
+[ -n "$manual"    ] || manual=no
 [ -n "$tests"     ] || tests=no
 
 # Use dependencies built and installed from sources
@@ -16,10 +17,14 @@ export PATH="$prefix/bin:$PATH"
 [[ $TRAVIS_OS_NAME != osx   ]] || export DYLD_LIBRARY_PATH="$prefix/lib:$DYLD_LIBRARY_PATH"
 
 # Configure build
+if [[ $doc == yes ]] || [[ $manual == yes ]]; then
+  enable_doc=yes
+else
+  enable_doc=no
+fi
 mkdir build && cd build
 cmake -DBUILD_TESTING=$tests \
-      -DBUILD_DOCUMENTATION=$doc \
-      -DBASIS_ALL_DOC=yes \
+      -DBUILD_DOCUMENTATION=$enable_doc \
       -DBUILD_PROJECT_TOOL=$tools \
       -DBUILD_EXAMPLE=$example \
       -DBUILD_BASIS_UTILITIES_FOR_CXX=$utilities \
@@ -30,6 +35,9 @@ cmake -DBUILD_TESTING=$tests \
       ..
 
 # Build and install
+make -j8
+[[ $doc    == no ]] || make softwaremanual_html
+[[ $manual == no ]] || make softwaremanual_pdf
 make -j8 install
 
 # Run tests

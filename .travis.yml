@@ -9,9 +9,21 @@ os:
   - linux
   - osx
 env:
-#  - prefix=/tmp/local cmake=2.8.12 itk=any  jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=yes tests=yes
-#  - prefix=/tmp/local cmake=3.3.1  itk=any  jython=any doxygen=1.8.10 sphinx=any utilities=no  tools=no  example=no  doc=no  tests=no 
-#  - prefix=/tmp/local cmake=3.3.1  itk=none jython=none doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=no  tests=no 
-#  - prefix=/tmp/local cmake=3.3.1  itk=any  jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=no  tests=no 
-  - prefix=/tmp/local cmake=3.3.1  itk=any  jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=yes doc=yes tests=no 
-#  - prefix=/tmp/local cmake=3.3.1  itk=any  jython=any doxygen=1.8.10 sphinx=any utilities=yes tools=yes example=no  doc=no  tests=yes
+  # choose version of dependencies to use via environment variables
+  # - cmake|itk|jython|doxygen|sphinx: Version of dependency to install (if needed)
+  #   + x.x.x:   Use this particular version
+  #   + any:     Use latest version available through the package manager
+  #   + none:    Do not install dependency before building BASIS
+  # - prefix:    Installation prefix for dependencies and BASIS itself (writeable by build user)
+  # - utilities: Build BASIS Utilities (yes|no)
+  # - tools:     Build BASIS Tools (yes|no)
+  # - example:   Build BASIS Examples (yes|no)
+  # - doc:       Build BASIS Documentation (HTML) (yes|no)
+  # - manual:    Build BASIS User Manual (PDF) (yes|no)
+  # - test:      Build and run tests (yes|no)
+  #- prefix=/tmp/local cmake=2.8.12 itk=any  jython=any  doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
+  #- prefix=/tmp/local cmake=3.3.1  itk=any  jython=any  doxygen=any sphinx=any utilities=no  tools=no  example=no  doc=no  manual=no tests=no 
+  #- prefix=/tmp/local cmake=3.3.1  itk=none jython=none doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=no  manual=no tests=no 
+  #- prefix=/tmp/local cmake=3.3.1  itk=any  jython=any  doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=no  manual=no tests=no 
+  - prefix=/tmp/local cmake=3.3.1  itk=any  jython=any  doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=no 
+  #- prefix=/tmp/local cmake=3.3.1  itk=any  jython=any  doxygen=any sphinx=any utilities=yes tools=yes example=no  doc=no  manual=no tests=yes
