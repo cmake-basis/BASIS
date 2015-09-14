@@ -31,6 +31,7 @@ cmake -DBUILD_TESTING=$tests \
       -DBUILD_BASIS_UTILITIES_FOR_BASH=$utilities \
       -DBUILD_BASIS_UTILITIES_FOR_PERL=$utilities \
       -DBUILD_BASIS_UTILITIES_FOR_PYTHON=$utilities \
+      -DSOFTWAREMANUAL_PDF_UPDATE=no \
       -DCMAKE_INSTALL_PREFIX="$prefix" \
       ..
 
