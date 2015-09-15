@@ -4,7 +4,7 @@ set -e
 ################################################################################
 # This script performs the steps of the BASIS Quick Start tutorial
 #
-#   http://opensource.andreasschuh.com/cmake-basis/quickstart.html
+#   http://schuhschuh.github.io/cmake-basis/quickstart.html
 #
 # It is recommended, however, to perform these steps manually in order to
 # get familiar with BASIS.
@@ -12,20 +12,35 @@ set -e
 # Requirements: git, cmake, ninja or make
 ################################################################################
 
-LOCALDIR="${PWD}/BASIS Quick Start"
 
-if [ $# -eq 1 ]; then
-  LOCALDIR="$1"
-elif [ $# -gt 1 ]; then
-  echo "usage: `basename "$0"` [working_directory]" 1>&2
+print_help_and_exit()
+{
+  echo "usage: `basename "$0"` [working_directory] [branch]" 1>&2
   exit 1
-fi
+}
 
-[ -n "$LOCALDIR" ] || { echo "Invalid working directory argument!" 1>&2; exit 1; }
+[ $# -le 2 ] || print_help_and_exit
+
+# set working directory
+LOCALDIR="${PWD}/BASIS Quick Start"
+[ $# -lt 1 ] || LOCALDIR="$(mkdir -p "$1" 2> /dev/null && cd "$1" && pwd)"
+
+# select Git branch
+branch='master'
+[ $# -lt 2 ] || branch="$2"
  
+# choose CMake generator and corresponding build tool
 buildtool=`which ninja` && generator='Ninja'
 [ $? -eq 0 ] || { buildtool=`which make` && generator='Unix Makefiles'; }
 [ $? -eq 0 ] || { echo "Either GNU Make or Ninja must be installed!" 1>&2; exit 1; }
+
+# remove quick start example directories if they are already there
+if [ -d "${LOCALDIR}/src/hellobasis" ]; then
+  rm -rf "${LOCALDIR}/src/hellobasis"
+fi
+if [ -d "${LOCALDIR}/src/HelloTopLevel" ]; then
+  rm -rf "${LOCALDIR}/src/HelloTopLevel"
+fi
 
 echo "
 ################################################################################
@@ -34,8 +49,20 @@ echo "
 "
 
     mkdir -p "${LOCALDIR}/src" && cd "${LOCALDIR}/src"
-    git clone https://github.com/schuhschuh/cmake-basis.git
-    cd cmake-basis
+    if [ -d cmake-basis ]; then
+      current_branch="$(cd cmake-basis && git rev-parse --abbrev-ref HEAD 2> /dev/null)"
+    fi
+    if [[ $current_branch == $branch ]]; then
+      cd cmake-basis
+      git pull
+    elif [ -n "$current_branch" ]; then
+      cd cmake-basis
+      git checkout "$branch"
+      git pull
+    else
+      git clone -b "$branch" https://github.com/schuhschuh/cmake-basis.git
+      cd cmake-basis
+    fi
 
 echo "
 ################################################################################
@@ -182,3 +209,21 @@ echo "
 
     "${LOCALDIR}/bin/helloc++" | grep "How is it going?"           | echo "helloc++ test passed"
     "${LOCALDIR}/bin/userprog" | grep "Called the moda() function" | echo "userprog test passed"
+
+echo "
+################################################################################
+# Execution complete!                              
+#                                                  
+# Be sure to browse the BASIS Quick Start working directory
+#
+#    '$LOCALDIR'
+#
+# to see how BASIS sets up project repositories.
+#
+# After you run and read this script,                         
+# check out the BASIS tutorials, documentation, and website at:
+#
+#   http://schuhschuh.github.io/cmake-basis/quickstart.html 
+#
+################################################################################
+"
