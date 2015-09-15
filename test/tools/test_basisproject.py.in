@@ -108,9 +108,13 @@ def test_configuration_of_dependencies(verbose=0):
     fp = open(os.path.join(SOURCE_DIR, 'BasisProject.cmake'), 'rt')
     code = fp.read()
     fp.close()
-    if (not re.search('\s+DEPENDS\s+ITK\s+VTK\s+#<dependency>', code) or
-            not re.search('\s+OPTIONAL_DEPENDS\s+.*CUDA\s+#<optional-dependency>', code)):
+    if not re.search('\s+DEPENDS\s+ITK\s+VTK\s+#<dependency>', code):
         sys.stderr.write("Failed to add required dependency to BasisProject.cmake file\n")
+        print
+        print("FAILED")
+        sys.exit(1)
+    if not re.search('\s+OPTIONAL_DEPENDS\s+(\s|.)*\s+CUDA\s+#<optional-dependency>', code):
+        sys.stderr.write("Failed to add optional dependency to BasisProject.cmake file\n")
         print
         print("FAILED")
         sys.exit(1)
