@@ -29,7 +29,7 @@
 # constants
 # ============================================================================
 
-exedir  _EXEC_DIR  && readonly _EXEC_DIR
+exedir  _EXEC_DIR 'basistest-master' && readonly _EXEC_DIR
 exename _EXEC_NAME && readonly _EXEC_NAME
 
 # ============================================================================
