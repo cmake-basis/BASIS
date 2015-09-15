@@ -26,5 +26,5 @@ os:
 # - manual:    Build BASIS User Manual (PDF) (yes|no)
 # - test:      Build and run tests (yes|no)
 env:
-  - prefix=/tmp/local cmake=any   itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=no
-  - prefix=/tmp/local cmake=3.3.1 itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=no
+  - prefix=/tmp/local cmake=any   itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
+  - prefix=/tmp/local cmake=3.3.1 itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
