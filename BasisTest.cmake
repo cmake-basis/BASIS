@@ -537,7 +537,6 @@ function (basis_add_test TEST_NAME)
           list (APPEND ARGN_LINK_DEPENDS "${BASIS_TEST_MAIN_LIBRARY}")
         endif ()
         list (APPEND ARGN_LINK_DEPENDS "${BASIS_TEST_LIBRARY}")
-        list (APPEND ARGN_LINK_DEPENDS "${CMAKE_THREAD_LIBS_INIT}")
       endif ()
     endif ()
 
