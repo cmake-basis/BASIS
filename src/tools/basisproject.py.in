@@ -1111,13 +1111,13 @@ been edited since their creation are removed.""")
         if args.new_template and args.description:
             sys.stderr.write("Project description ignored. Creating a new project template.\n")
         # verify that name is valid
-        if not re.match(r'^[a-zA-Z0-9][-_a-zA-Z0-9]+$', args.name):
+        if not re.match(r'^[a-zA-Z0-9][-+_a-zA-Z0-9]+$', args.name):
             if args.new_template:
-                sys.stderr.write("Invalid template name: " + args.name + "\n")
-                sys.stderr.write("A template name may only consist of alphanumeric characters, `-`, and `_`!\n")
+                sys.stderr.write("Invalid template name: " + args.name + "\n\n")
+                sys.stderr.write("A template name may only consist of alphanumeric characters, `-`, `+`, and `_`!\n")
             else:
-                sys.stderr.write("Invalid project name: " + args.name + "\n")
-                sys.stderr.write("A project name may only consist of alphanumeric characters, `-`, and `_`!\n")
+                sys.stderr.write("Invalid project name: " + args.name + "\n\n")
+                sys.stderr.write("A project name may only consist of alphanumeric characters, `-`, `+`, and `_`!\n")
                 sys.stderr.write("If you are attempting to modify an existing project, check if the\n")
                 sys.stderr.write("project name has been correctly extracted from the BasisProject.cmake file.\n")
             sys.exit(1)
