@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+echo "
 ################################################################################
 # This script performs the steps of the BASIS Quick Start tutorial
 #
@@ -11,7 +12,7 @@ set -e
 #
 # Requirements: git, cmake, ninja or make
 ################################################################################
-
+"
 
 print_help_and_exit()
 {
