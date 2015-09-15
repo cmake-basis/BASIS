@@ -53,7 +53,17 @@ basis_add_doc (
 # Software manual
 # ============================================================================
 
-if (NOT LATEX_FOUND) # i.e., USE_LATEX set to OFF by user
+# LATEX_PDFLATEX_FOUND not defined by older FindLATEX.cmake modules
+if (NOT DEFINED LATEX_PDFLATEX_FOUND)
+  if (PDFLATEX_COMPILER)
+    set (LATEX_PDFLATEX_FOUND TRUE)
+  else ()
+    set (LATEX_PDFLATEX_FOUND FALSE)
+  endif ()
+endif ()
+
+# obey USE_LATEX setting of user
+if (DEFINED USE_LATEX AND NOT USE_LATEX)
   set (LATEX_PDFLATEX_FOUND FALSE)
 endif ()
 
@@ -99,6 +109,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
     DOXYLINK         apidoc                               # Doxygen generator build target for integrated API reference
     DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"   # location of Doxygen output files
     NO_HTML_MODINDEX NO_HTML_INDEX                        # disable currently unused index page
+    EXCLUDE_PATTERN  intro.rst                            # .rst files explicitly included only
+    EXCLUDE_PATTERN  features.rst
   )
 
   basis_add_dependencies (site softwaremanual_html)

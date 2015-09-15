@@ -23,7 +23,7 @@ Note, however, that <project> can also be installed and used on Windows.
 
 
 Install <project>
------------------
+--------------------------------------
 
 Get a copy of the source code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,7 +64,7 @@ Configure the build system using CMake 2.8.4 or a more recent version (> 3.0 rec
 - Press ``g`` to generate the Makefiles.
 
 Build and install <project>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 CMake has generated Makefiles for GNU Make. The build is thus triggered by the make command:
 

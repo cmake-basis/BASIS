@@ -109,6 +109,7 @@ options = {
                'doc/contents.rst',
                'doc/download.rst',
                'doc/features.rst',
+               'doc/features_manual.rst',
                'doc/howto.rst',
                'doc/index.rst',
                'doc/intro.rst',
@@ -239,7 +240,7 @@ substitutions = {
   },
   'github-user' : {
     'help'    : "GitHub user account used for project URLs.",
-    'default' : '<vendor>'
+    'default' : None
   },
   'contact' : {
     'help'    : "Contact details of person/division responsible for this software package.",
