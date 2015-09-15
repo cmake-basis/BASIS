@@ -189,13 +189,13 @@ def exepath(name=None, prefix=None, targets=None, base='.'):
         uid = targetuid(name, prefix=prefix, targets=targets)
         if uid.startswith('.'): uid = uid[1:]
         path = os.path.normpath(os.path.join(os.path.join(_MODULE_DIR, base), targets[uid]))
-        if '$(IntDir)' in path:
-            for intdir in ['Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel']:
-                tmppath = path.replace('$(IntDir)', intdir)
+        if '$<@BASIS_GE_CONFIG@>' in path:
+            for config in ['Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel']:
+                tmppath = path.replace('$<@BASIS_GE_CONFIG@>', config)
                 if os.path.isfile(tmppath):
                     path = tmppath
                     break
-            path = path.replace('$(IntDir)', '')
+            path = path.replace('$<@BASIS_GE_CONFIG@>', '')
     else:
         try:
             path = which.which(name)

@@ -360,16 +360,17 @@ exepath()
             _basis_executabletargetinfo_get _basis_exepath_path "${_basis_exepath_uid}" LOCATION
             if [ -n "${_basis_exepath_path}" ]; then
                 # replace IntDir when binary built from C++ with Xcode
-                if [[ ${_basis_exepath_path/\$(IntDir)} != ${_basis_exepath_path} ]]; then
+                if [[ ${_basis_exepath_path/\$<@BASIS_GE_CONFIG@>} != ${_basis_exepath_path} ]]; then
                     local _basis_exepath_tmp='' 
-                    for intdir in 'Release' 'Debug' 'RelWithDebInfo' 'MinSizeRel'; do
-                        _basis_exepath_tmp=${_basis_exepath_path/\$(IntDir)/$intdir}
+                    local _basis_exepath_cfg=''
+                    for _basis_exepath_cfg in 'Release' 'Debug' 'RelWithDebInfo' 'MinSizeRel'; do
+                        _basis_exepath_tmp=${_basis_exepath_path/\$<@BASIS_GE_CONFIG@>/$_basis_exepath_cfg}
                         if [ -f "${_basis_exepath_tmp}" ]; then
                             _basis_exepath_path="${_basis_exepath_tmp}"
                             break
                         fi
                     done
-                    _basis_exepath_path=${_basis_exepath_path/\$(IntDir)}
+                    _basis_exepath_path=${_basis_exepath_path/\$<@BASIS_GE_CONFIG@>}
                 fi
                 # make path absolute
                 _basis_exepath_path=`abspath "${_BASIS_EXECUTABLE_TARGETS_BASE}" "${_basis_exepath_path}"`

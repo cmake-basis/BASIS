@@ -292,18 +292,18 @@ sub exepath
         defined $uid and $uid =~ s/^[.]?(.*)/$1/;
         if (defined $uid and exists $targets->{$uid}) {
             $path = $targets->{$uid};
-            if ($path =~ m/\$\(IntDir\)/) {
+            if ($path =~ m/\$<@BASIS_GE_CONFIG@>/) {
                 my $tmppath = '';
-                my $intdir = '';
-                foreach $intdir ('Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel') {
+                my $config  = '';
+                foreach $config ('Release', 'Debug', 'RelWithDebInfo', 'MinSizeRel') {
                     $tmppath = $path;
-                    $tmppath =~ s/\$\(IntDir\)/$intdir/g;
+                    $tmppath =~ s/\$<@BASIS_GE_CONFIG@>/$config/g;
                     if (-e $tmppath) {
                         $path = $tmppath;
                         last;
                     }
                 }
-                $path =~ s/\$\(IntDir\)//g;
+                $path =~ s/\$<@BASIS_GE_CONFIG@>//g;
             }
             $path = File::Spec->rel2abs($path, File::Spec->rel2abs($base, dirname(__FILE__)));
             # the realpath() function only works for existing paths

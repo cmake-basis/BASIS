@@ -374,12 +374,17 @@ string ExecutableTargetInfo::dirname(const string& target) const
     if (executing_in_build_tree()) {
         MapIterator it = _build_dirs.find(uid);
         if (it == _build_dirs.end()) return "";
-        #if defined CMAKE_INTDIR
-            // this subdirectory is used by CMake generators for IDEs such as Visual Studio
-            return os::path::join(it->second, CMAKE_INTDIR);
-        #else
-            return it->second;
-        #endif
+#ifdef CMAKE_INTDIR
+        const char * match = "/$<@BASIS_GE_CONFIG@>";
+        const size_t n     = strlen(match);
+        if (it->second.length() >= n) {
+            const size_t pos = it->second.length() - n;
+            if (it->second.compare(pos, n, match, n) == 0) {
+                return os::path::join(it->second.substr(0, pos), CMAKE_INTDIR);
+            }
+        }
+#endif
+        return it->second;
     } else {
         MapIterator it = _install_dirs.find(uid);
         if (it == _install_dirs.end()) return "";
