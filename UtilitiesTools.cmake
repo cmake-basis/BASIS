@@ -731,8 +731,8 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     list (GET INSTALL_LOCATIONS  ${I} INSTALL_LOCATION)
     get_target_property (BUNDLED  ${TARGET_UID} BUNDLED)
     get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
-    # insert $(IntDir) for Visual Studio build location
-    if (CMAKE_GENERATOR MATCHES "Visual Studio")
+    # insert $(IntDir) for Visual Studio and Xcode build location
+    if (NOT IMPORTED AND CMAKE_GENERATOR MATCHES "Visual Studio|Xcode")
       basis_get_target_type (TYPE ${TARGET_UID})
       if (TYPE MATCHES "^EXECUTABLE$")
         get_filename_component (DIRECTORY "${BUILD_LOCATION}" PATH)
@@ -811,7 +811,7 @@ function (_basis_generate_executable_target_info CXX PYTHON PERL BASH)
     # Bash
     if (BASH)
       # hash entry
-      set (SH_B "${SH_B}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${BUILD_LOCATION}'")
+      set (SH_B "${SH_B}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${BUILD_LOCATION_WITH_INTDIR}'")
       if (INSTALL_LOCATION)
         set (SH_I "${SH_I}\n    _basis_executabletargetinfo_add '${ALIAS}'${S}LOCATION '${INSTALL_LOCATION_REL2BASH_LIBRARY}'")
       else ()
