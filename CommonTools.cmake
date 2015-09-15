@@ -614,6 +614,9 @@ endmacro ()
 #       <a href="http://www.cmake.org/cmake/help/cmake-2-8-docs.html#command:get_filename_component">
 #       get_filename_component()</a> command.
 #
+# @todo Fix issue http://public.kitware.com/Bug/view.php?id=15743 which
+#       affects also basis_get_relative_path.
+#
 # @param [in,out] ARGN Arguments as accepted by get_filename_component().
 #
 # @returns Sets the variable named by the first argument to the requested
@@ -692,6 +695,7 @@ function (basis_get_relative_path REL BASE PATH)
   if (PATH MATCHES "^$")
     set (PATH ".")
   endif ()
+  # Attention: http://public.kitware.com/Bug/view.php?id=15743
   basis_get_filename_component (PATH "${PATH}" ABSOLUTE)
   basis_get_filename_component (BASE "${BASE}" ABSOLUTE)
   if (NOT PATH)
@@ -1093,10 +1097,11 @@ function (basis_set_script_path VAR PATH)
   endif ()
   basis_get_relative_path (PATH "${__DIR__}" "${PATH}")
   if (NOT PATH)
-    set (PATH ".")
+    set (${VAR} "." PARENT_SCOPE)
+  else ()
+    string (REGEX REPLACE "/+$" "" PATH "${PATH}")
+    set (${VAR} "${PATH}" PARENT_SCOPE)
   endif ()
-  string (REGEX REPLACE "/$" "" PATH "${PATH}")
-  set (${VAR} "${PATH}" PARENT_SCOPE)
 endfunction ()
 
 # ============================================================================
