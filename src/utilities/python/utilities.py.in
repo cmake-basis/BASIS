@@ -314,8 +314,8 @@ def qsplit(args):
 #
 # @return The exit code of the subprocess if @p stdout is false (the default).
 #         Otherwise, if @p stdout is true, a tuple consisting of exit code
-#         command output is returned. Note that if @p allow_fail is false,
-#         the returned exit code will always be 0.
+#         and binary/encoded command output is returned. Note that if
+#         @p allow_fail is false, the returned exit code will always be 0.
 #
 # @throws SubprocessError If command execution failed. This exception is not
 #                         raised if the command executed with non-zero exit
@@ -338,22 +338,42 @@ def execute(args, quiet=False, stdout=False, allow_fail=False, verbose=0, simula
         sys.stdout.write('\n')
     # execute command
     status = 0
-    output = ''
+    output = b''
     if not simulate:
         try:
             # open subprocess
             process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # read stdout until EOF
-            for line in process.stdout:
-                if stdout:
-                    output = ''.join([output, tostring(line)])
-                if not quiet:
-                    sys.stdout.buffer.write(line)
-                    sys.stdout.flush()
+            if hasattr(sys.stdout, 'buffer'):
+                for line in process.stdout:
+                    if stdout:
+                        output = b''.join([output, line])
+                    if not quiet:
+                        sys.stdout.buffer.write(line)
+                        sys.stdout.flush()
+            else:
+                for line in process.stdout:
+                    if stdout:
+                        output = b''.join([output, line])
+                    if not quiet:
+                        if type(line) is text_type:
+                            line = line.encode(sys.stdout.encoding)
+                        elif type(line) is not binary_type:
+                            line = binary_type(line)
+                        sys.stdout.write(line)
+                        sys.stdout.flush()
             # wait until subprocess terminated and set exit code
             _, err = process.communicate()
             # print error messages of subprocess
-            sys.stderr.buffer.write(err)
+            if hasattr(sys.stderr, 'buffer'):
+                sys.stderr.buffer.write(err)
+            else:
+                for line in err:
+                    if type(line) is text_type:
+                        line = line.encode(sys.stderr.encoding)
+                    elif type(line) is not binary_type:
+                        line = binary_type(line)
+                    sys.stderr.write(line)
             # get exit code
             status = process.returncode
         except OSError as e:
