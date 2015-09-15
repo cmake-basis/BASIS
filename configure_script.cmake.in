@@ -33,7 +33,7 @@ set (DESTINATION          "@DESTINATION@")
 set (BUILD_LINK_DEPENDS   "@BUILD_LINK_DEPENDS@")
 set (INSTALL_LINK_DEPENDS "@INSTALL_LINK_DEPENDS@")
 set (CACHE_FILE           "@CACHE_FILE@")
-set (CONFIG_FILE          "@CONFIG_FILE@")
+set (CONFIG_FILE          "@CONFIG_FILES@")
 set (LANGUAGE             "@LANGUAGE@")
 set (OPTIONS              "@OPTIONS@")
 # configure ("build") script - always touch files to update build timestamp
