@@ -45,9 +45,9 @@ class TestProcessExecution(unittest.TestCase):
         """Test execution of executable target."""
         self.assertEqual(0, basis.execute(['basis.dummy_command']))
         if sys.platform == 'win32':
-            msg = 'Hello, BASIS!\r\n'
+            msg = b'Hello, BASIS!\r\n'
         else:
-            msg = 'Hello, BASIS!\n'
+            msg = b'Hello, BASIS!\n'
         self.assertEqual(
                 (0, msg),
                 basis.execute(['basis.dummy_command', '--greet'],
@@ -91,10 +91,10 @@ class TestProcessExecution(unittest.TestCase):
         """Test verbose keyword argument of basis.execute()."""
         (status, stdout) = basis.execute('basis.dummy_command', verbose=True, quiet=True, stdout=True, allow_fail=True)
         self.assertEqual(0, status)
-        self.assertEqual('', stdout)
+        self.assertEqual(b'', stdout)
         (status, stdout) = basis.execute('basis.dummy_command', verbose=2, quiet=True, stdout=True, allow_fail=True)
         self.assertEqual(0, status)
-        self.assertEqual('', stdout)
+        self.assertEqual(b'', stdout)
 
     # ------------------------------------------------------------------------
     def test_command_execution(self):
