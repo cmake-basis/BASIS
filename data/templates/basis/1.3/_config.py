@@ -237,6 +237,10 @@ substitutions = {
     'help'    : "CDash dashboard used by tests run by CTest.",
     'default' : None
   },
+  'github-user' : {
+    'help'    : "GitHub user account used for project URLs.",
+    'default' : '<vendor>'
+  }
   'contact' : {
     'help'    : "Contact details of person/division responsible for this software package.",
     'default' : "<provider-name> <<project>@<vendor>.com>"
