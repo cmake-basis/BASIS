@@ -731,7 +731,7 @@ _basis_executabletargetinfo_get()
         fi
         exit 1
     }
-    eval "local value='\${__BASIS_EXECUTABLETARGETINFO_${name}_${key}}'"
+    eval "local value=\${__BASIS_EXECUTABLETARGETINFO_${name}_${key}}"
 
     local "$1" && upvar $1 "${value}"
 }
