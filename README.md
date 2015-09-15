@@ -2,6 +2,8 @@
 CMake BASIS
 ===========
 
+[![Build Status](https://travis-ci.org/schuhschuh/cmake-basis.svg?branch=develop)](https://travis-ci.org/schuhschuh/cmake-basis)
+
 The [CMake Build system And Software Implementation Standard (BASIS)][1] makes it
 easy to create sharable software and libraries that work together. This is accomplished
 by combining and documenting some of the best practices and utilities available.
@@ -10,7 +12,6 @@ the whole process seamless!
 
 Web:  [CMake BASIS Website]  [1] |
 Code: [CMake BASIS on GitHub][2]
-[![Build Status](https://travis-ci.org/schuhschuh/cmake-basis.svg?branch=develop)](https://travis-ci.org/schuhschuh/cmake-basis)
 
 Features
 ========
