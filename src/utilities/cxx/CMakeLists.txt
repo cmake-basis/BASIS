@@ -47,6 +47,9 @@ endif ()
 
 basis_get_target_name (TESTLIB  "${BASIS_TEST_LIBRARY}")
 basis_add_library (${TESTLIB}  STATIC "test.cxx")
+if (HAVE_PTHREAD AND CMAKE_THREAD_LIBS_INIT)
+  basis_target_link_libraries (${TESTLIB} ${CMAKE_THREAD_LIBS_INIT})
+endif ()
 basis_set_target_properties (${TESTLIB}  PROPERTIES OUTPUT_NAME "test")
 
 basis_get_target_name (TESTMAIN "${BASIS_TEST_MAIN_LIBRARY}")
