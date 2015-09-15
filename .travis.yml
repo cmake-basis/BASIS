@@ -1,10 +1,16 @@
-language:       cpp
-compiler:       g++
+language: cpp
+compiler: g++
+
+# Build scripts
 before_install: test/build/depends.sh
 script:         test/build/basis.sh
+
+# Branches to test
 branches:
   only:
     - develop
+
+# Operating systems supported by both Travis CI and BASIS
 os:
   - linux
   - osx
@@ -26,5 +32,9 @@ os:
 # - manual:    Build BASIS User Manual (PDF) (yes|no)
 # - test:      Build and run tests (yes|no)
 env:
-  - prefix=/tmp/local cmake=any   itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
-  - prefix=/tmp/local cmake=3.3.1 itk=any jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
+  - prefix=/tmp/local cmake=any   itk=none jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
+  - prefix=/tmp/local cmake=3.3.1 itk=none jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
+ 
+# Disable email notifications
+notifications:
+ email: false
