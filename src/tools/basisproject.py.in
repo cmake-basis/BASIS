@@ -42,17 +42,12 @@ from basis.utilities import binary_type, text_type
 # constants
 # ============================================================================
 
-
-# executable information
-_EXEC_DIR  = basis.exedir()
-_EXEC_NAME = basis.exename()
-
 # constants used as values for the template options
 DEL = -1 # remove feature/file if present
 ADD =  1 # add feature/file if missing
 
 # root directory of default project template
-_template_dir = os.path.abspath(os.path.join(_EXEC_DIR, '@TEMPLATE_DIR@'))
+_template_dir = os.path.abspath(os.path.join(basis.exedir('basisproject'), '@TEMPLATE_DIR@'))
 _template     = os.path.join(_template_dir, '@DEFAULT_TEMPLATE_NAME@/@DEFAULT_TEMPLATE_VERSION@')
 
 # additional recognized MIME types of configurable text files
