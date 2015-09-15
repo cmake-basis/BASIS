@@ -59,6 +59,6 @@ endif ()
 # ----------------------------------------------------------------------------
 # test use MATLAB Compiler and MEX-script
 if (MATLAB_EXECUTABLE AND MATLAB_MEX_EXECUTABLE AND PythonInterp_FOUND)
-  basis_add_test (test_matlabtools.py)
+  basis_add_test (test_matlabtools.py LINK_DEPENDS testaux_py)
   basis_set_tests_properties (test_matlabtools PROPERTIES TIMEOUT 1500)
 endif ()

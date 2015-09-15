@@ -43,8 +43,9 @@ set (TEST_BASH_UTILITIES "${BASH_FOUND}")
 # utilities
 # ============================================================================
 
-if (BASIS_UTILITIES_ENABLED MATCHES "PYTHON")
+if (PythonInterp_FOUND)
   basis_add_script (testaux.py)
+  basis_target_link_libraries (testaux_py basis)
 endif ()
 
 # ============================================================================

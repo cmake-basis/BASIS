@@ -70,11 +70,13 @@ if (NOT DEFAULT_TEMPLATE)
 endif ()
 # disable installation of templates if no destination specified
 if (NOT INSTALL_TEMPLATE_DIR)
-  message (WARNING "No installation directory for project templates specified."
-                   " Disabling installation of templates. To enable the installation"
-                   " of the project templates again, set INSTALL_TEMPLATE_DIR to"
-                   " the desired destination such as \"share/templates\" and the"
-                   " option INSTALL_TEMPLATES to ON.")
+  if (BUILD_PROJECT_TOOL)
+    message (WARNING "No installation directory for project templates specified."
+                     " Disabling installation of templates. To enable the installation"
+                     " of the project templates again, set INSTALL_TEMPLATE_DIR to"
+                     " the desired destination such as \"share/templates\" and the"
+                     " option INSTALL_TEMPLATES to ON.")
+  endif ()
   set_property (CACHE INSTALL_TEMPLATES PROPERTY VALUE OFF)
 endif ()
 
