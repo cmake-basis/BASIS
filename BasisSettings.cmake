@@ -67,6 +67,17 @@ if (POLICY CMP0017)
 endif ()
 
 # ============================================================================
+# generator expressions
+# ============================================================================
+
+## @brief Name of build configuration ("$<CONFIG>") generator expression
+if (CMAKE_MAJOR_VERSION LESS 3)
+  set (BASIS_GE_CONFIG "CONFIGURATION")
+else ()
+  set (BASIS_GE_CONFIG "CONFIG")
+endif ()
+
+# ============================================================================
 # meta-data lists
 # ============================================================================
 

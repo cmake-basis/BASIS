@@ -2881,6 +2881,12 @@ endfunction ()
 # the path of the root directory of the library that has to be added to the
 # module search path.
 #
+# @note If the target is a binary built from C++ source files and the CMake
+#       generator is an IDE such as Visual Studio or Xcode, the absolute
+#       directory of the target location ends with the generator expression
+#       "/$<${BASIS_GE_CONFIG}>" which is to be substituted by the respective
+#       build configuration.
+#
 # @param [out] VAR         Path of build target output file.
 # @param [in]  TARGET_NAME Name of build target.
 # @param [in]  PART        Which file name component of the @c LOCATION
@@ -2901,7 +2907,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
     _basis_get_target_type (TYPE        "${TARGET_UID}")
     get_target_property (IMPORTED ${TARGET_UID} IMPORTED)
     # ------------------------------------------------------------------------
-    # imported custom targets
+    # imported targets
     #
     # Note: This might not be required though as even custom executable
     #       and library targets can be imported using CMake's
@@ -2940,9 +2946,9 @@ function (basis_get_target_location VAR TARGET_NAME PART)
         file (RELATIVE_PATH LOCATION "${CMAKE_INSTALL_PREFIX}" "${LOCATION}")
       endif ()
     # ------------------------------------------------------------------------
-    # non-imported custom targets
+    # non-imported targets
     else ()
-      # Attention: The order of the matches/if cases is matters here!
+      # Attention: The order of the matches/if cases matters here!
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # scripts
       if (TYPE MATCHES "^SCRIPT_(EXECUTABLE|MODULE)$")
@@ -2992,7 +2998,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
         if (NOT FNAME)
           get_target_property (FNAME ${TARGET_UID} OUTPUT_NAME)
         endif ()
-        if (NOT TYPE MATCHES "^SCRIPT_LIBRARY$")
+        if (NOT "^${TYPE}$" STREQUAL "^SCRIPT_LIBRARY$")
           get_target_property (PREFIX ${TARGET_UID} PREFIX)
           get_target_property (SUFFIX ${TARGET_UID} SUFFIX)
           if (FNAME)
@@ -3005,8 +3011,18 @@ function (basis_get_target_location VAR TARGET_NAME PART)
           endif ()
           if (SUFFIX)
             set (TARGET_FILE "${TARGET_FILE}${SUFFIX}")
-          elseif (WIN32 AND TYPE MATCHES "^EXECUTABLE$")
+          elseif (WIN32 AND "^${TYPE}$" STREQUAL "^EXECUTABLE$")
             set (TARGET_FILE "${TARGET_FILE}.exe")
+          endif ()
+        endif ()
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # prepend $<CONFIG> "generator expression" for non-custom binaries
+        # when built with an IDE such as Visual Studio or Xcode
+        if ("^${TYPE}$" STREQUAL "^EXECUTABLE$" OR "^${TYPE}$" STREQUAL "^LIBRARY$")
+          if (NOT PART MATCHES "INSTALL")
+            if (CMAKE_GENERATOR MATCHES "Visual Studio|Xcode")
+              set (DIRECTORY "${DIRECTORY}/$<${BASIS_GE_CONFIG}>")
+            endif ()
           endif ()
         endif ()
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1210,6 +1210,7 @@ function (basis_build_mex_file TARGET_UID)
     basis_get_target_uid (UID "${LIB}")
     if (TARGET ${UID})
       basis_get_target_location (LIB_FILE ${UID} ABSOLUTE)
+      string (REPLACE "<${BASIS_GE_CONFIG}>" "{CONFIG}" LIB_FILE "${LIB_FILE}")
       list (APPEND DEPENDS ${UID})
     else ()
       set (LIB_FILE "${LIB}")
@@ -1395,6 +1396,7 @@ function (basis_build_mex_file TARGET_UID)
     # command allows for inspection of command output for error messages
     # and specification of timeout
     COMMAND "${CMAKE_COMMAND}"
+            "-DCONFIG=$<${BASIS_GE_CONFIG}>"
             "-DWORKING_DIRECTORY=${BUILD_DIR}"
             "-DTIMEOUT=${BASIS_MEX_TIMEOUT}"
             "-DERROR_EXPRESSION=[E|e]rror:"
@@ -1739,6 +1741,7 @@ function (basis_build_mcc_target TARGET_UID)
       basis_get_target_uid (UID "${LIB}")
       if (TARGET ${UID})
         basis_get_target_location (LIB_FILE ${UID} ABSOLUTE)
+        string (REPLACE "<${BASIS_GE_CONFIG}>" "{CONFIG}" LIB_FILE "${LIB_FILE}")
         list (APPEND DEPENDS ${UID})
       else ()
         set (LIB_FILE "${LIB}")
@@ -1868,6 +1871,7 @@ function (basis_build_mcc_target TARGET_UID)
       # wrapping command in CMake execute_process() command allows for inspection
       # of command output for error messages and specification of timeout
       COMMAND "${CMAKE_COMMAND}"
+              "-DCONFIG=$<${BASIS_GE_CONFIG}>"
               "-DWORKING_DIRECTORY=${WORKING_DIR}"
               "-DTIMEOUT=${BASIS_MCC_TIMEOUT}"
               "-DRETRY_EXPRESSION=License checkout failed"
