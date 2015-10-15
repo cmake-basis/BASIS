@@ -120,8 +120,8 @@ basis_set_config (SPHINX_HTML_THEME_PATH "@SPHINX_HTML_THEME_PATH_CONFIG@")
 # ----------------------------------------------------------------------------
 # CMake tools
 
-include ("${${NS}MODULE_PATH}/BasisTools.cmake")
 include ("${${NS}MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
+include ("${${NS}MODULE_PATH}/BasisTools.cmake")
 
 
 ## @}

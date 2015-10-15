@@ -58,8 +58,8 @@ set (BASIS_BASHPATH               "${BASIS_LIBRARY_DIR}/bash")
 set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHONPATH}/basis/sphinx/ext")
 set (BASIS_SPHINX_HTML_THEME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/sphinx/themes")
 
-include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
 include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
+include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
 
 # ----------------------------------------------------------------------------
 # configure build system
