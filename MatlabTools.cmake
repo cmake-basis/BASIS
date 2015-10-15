@@ -1771,12 +1771,11 @@ function (basis_build_mcc_target TARGET_UID)
       endif ()
     endforeach ()
     if (LIBRARY)
-      list (APPEND MCC_ARGS -l)                                 # build library
+      list (APPEND MCC_ARGS -W "cpplib:${MCC_OUTPUT_NAME_WE}" -T link:lib) # build library
     else ()                                                     #      or
-      list (APPEND MCC_ARGS -m)                                 # build standalone application
+      list (APPEND MCC_ARGS -m -o "${MCC_OUTPUT_NAME_WE}")      # build standalone application
     endif ()
     list (APPEND MCC_ARGS -d "${BUILD_DIR}")                    # (temp) output directory
-    list (APPEND MCC_ARGS -o "${MCC_OUTPUT_NAME_WE}")           # output name (excl. extension)
     list (APPEND MCC_ARGS ${SOURCES})                           # source M-files
     foreach (LIB ${LINK_LIBS})                                  # link libraries, e.g. MEX-files
       list (FIND MCC_ARGS "${LIB}" IDX)
