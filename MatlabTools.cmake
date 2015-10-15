@@ -676,12 +676,12 @@ function (basis_add_mex_file TARGET_NAME)
     set (USES_BASIS_UTILITIES ${BASIS_UTILITIES})
   endif ()
   basis_mexext (MEXEXT)
-  # TEST flag
+  # IS_TEST flag
   basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
   if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
-    set (TEST TRUE)
+    set (IS_TEST TRUE)
   else ()
-    set (TEST FALSE)
+    set (IS_TEST FALSE)
   endif ()
   # installation component
   if (NOT ARGN_COMPONENT)
@@ -730,7 +730,7 @@ function (basis_add_mex_file TARGET_NAME)
       OUTPUT_NAME               ""
       SUFFIX                    ".${MEXEXT}"
       MFILE                     ""
-      TEST                      ${TEST}
+      TEST                      ${IS_TEST}
       EXPORT                    ${EXPORT}
   )
   # link to BASIS utilities
@@ -912,15 +912,15 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
   string (TOLOWER "${TYPE}" type)
   message (STATUS "Adding MATLAB ${type} ${TARGET_UID}...")
-  # TEST flag
+  # IS_TEST flag
   basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
   if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
-    set (TEST TRUE)
+    set (IS_TEST TRUE)
   else ()
-    set (TEST FALSE)
+    set (IS_TEST FALSE)
   endif ()
   # output directory
-  if (TEST)
+  if (IS_TEST)
     set (LIBRARY_OUTPUT_DIRECTORY "${TESTING_LIBRARY_DIR}")
     if (ARGN_LIBEXEC)
       set (RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
@@ -968,17 +968,17 @@ function (basis_add_mcc_target TARGET_NAME)
       set (ARGN_HEADER_DESTINATION "${ARGN_DESTINATION}")
     endif ()
   endif ()
-  if (NOT ARGN_RUNTIME_DESTINATION AND NOT TEST)
+  if (NOT ARGN_RUNTIME_DESTINATION AND NOT IS_TEST)
     if (ARGN_LIBEXEC)
       set (ARGN_RUNTIME_DESTINATION "${INSTALL_LIBEXEC_DIR}")
     else ()
       set (ARGN_RUNTIME_DESTINATION "${INSTALL_RUNTIME_DIR}")
     endif ()
   endif ()
-  if (NOT ARGN_LIBRARY_DESTINATION AND NOT TEST)
+  if (NOT ARGN_LIBRARY_DESTINATION AND NOT IS_TEST)
     set (ARGN_LIBRARY_DESTINATION "${INSTALL_LIBRARY_DIR}")
   endif ()
-  if (NOT ARGN_HEADER_DESTINATION AND NOT TEST)
+  if (NOT ARGN_HEADER_DESTINATION AND NOT IS_TEST)
     set (ARGN_HEADER_DESTINATION ".")
   endif ()
   if (ARGN_RUNTIME_DESTINATION MATCHES "^[nN][oO][nN][eE]$")
@@ -1102,7 +1102,7 @@ function (basis_add_mcc_target TARGET_NAME)
       LINK_DEPENDS              ""
       EXPORT                    ${EXPORT}
       LIBEXEC                   ${ARGN_LIBEXEC}
-      TEST                      ${TEST}
+      TEST                      ${IS_TEST}
   )
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
@@ -1155,10 +1155,10 @@ function (basis_build_mex_file TARGET_UID)
       LINK_DEPENDS
       LINK_FLAGS
       MFILE
-      TEST
       EXPORT
       SOURCES
   )
+  get_target_property (IS_TEST ${TARGET_UID} TEST)
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
     if (NOT ${PROPERTY})
@@ -1436,7 +1436,7 @@ function (basis_build_mex_file TARGET_UID)
   )
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
+    basis_add_custom_export_target (${TARGET_UID} "${IS_TEST}")
   endif ()
   # install MEX-file
   if (LIBRARY_INSTALL_DIRECTORY)
@@ -1497,9 +1497,9 @@ function (basis_build_mcc_target TARGET_UID)
       COMPILE_FLAGS
       COMPILE
       LINK_DEPENDS
-      TEST
       EXPORT
   )
+  get_target_property (IS_TEST ${TARGET_UID} TEST)
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
     if (NOT ${PROPERTY})
@@ -1926,7 +1926,7 @@ function (basis_build_mcc_target TARGET_UID)
   unset (ADDITIONAL_MAKE_CLEAN_FILES)
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
+    basis_add_custom_export_target (${TARGET_UID} "${IS_TEST}")
   endif ()
   # install executable or library
   if (LIBRARY)

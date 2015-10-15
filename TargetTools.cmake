@@ -1403,12 +1403,12 @@ function (basis_add_script TARGET_NAME)
   else ()
     basis_get_source_language (ARGN_LANGUAGE ${SOURCES})
   endif ()
-  # TEST flag
+  # IS_TEST flag
   basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
   if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
-    set (TEST TRUE)
+    set (IS_TEST TRUE)
   else ()
-    set (TEST FALSE)
+    set (IS_TEST FALSE)
   endif ()
   # default directory infix used below
   if (ARGN_MODULE)
@@ -1439,7 +1439,7 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
   # output directory
-  if (TEST)
+  if (IS_TEST)
     set (OUTPUT_DIRECTORY "${TESTING_${TYPE_INFIX}_DIR}")
   else ()
     set (OUTPUT_DIRECTORY "${BINARY_${TYPE_INFIX}_DIR}")
@@ -1462,7 +1462,7 @@ function (basis_add_script TARGET_NAME)
     elseif (IS_ABSOLUTE "${ARGN_DESTINATION}")
       file (RELATIVE_PATH ARGN_DESTINATION "${CMAKE_INSTALL_PREFIX}" "${ARGN_DESTINATION}")
     endif ()
-  elseif (TEST)
+  elseif (IS_TEST)
     set (ARGN_DESTINATION) # do not install
   else ()
     set (ARGN_DESTINATION "${INSTALL_${TYPE_INFIX}_DIR}")
@@ -1522,7 +1522,7 @@ function (basis_add_script TARGET_NAME)
       LINK_DEPENDS             "${LINK_DEPENDS}"
       EXPORT                   ${EXPORT}
       COMPILE                  ${BASIS_COMPILE_SCRIPTS}
-      TEST                     ${TEST}
+      TEST                     ${IS_TEST}
       LIBEXEC                  ${ARGN_LIBEXEC}
   )
   # add target to list of targets
@@ -1678,12 +1678,12 @@ function (basis_add_executable_target TARGET_NAME)
   else ()
     set (USES_BASIS_UTILITIES ${BASIS_UTILITIES})
   endif ()
-  # TEST flag
+  # IS_TEST flag
   basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
   if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
-    set (TEST TRUE)
+    set (IS_TEST TRUE)
   else ()
-    set (TEST FALSE)
+    set (IS_TEST FALSE)
   endif ()
   # installation component
   if (NOT ARGN_COMPONENT)
@@ -1719,9 +1719,9 @@ function (basis_add_executable_target TARGET_NAME)
   else ()
     _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES TEST ${TEST})
+  _set_target_properties (${TARGET_UID} PROPERTIES TEST ${IS_TEST})
   # output directory
-  if (TEST)
+  if (IS_TEST)
     if (ARGN_LIBEXEC)
       _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
     else ()
@@ -1743,11 +1743,11 @@ function (basis_add_executable_target TARGET_NAME)
   # export
   set (EXPORT_OPT)
   if (EXPORT)
-    basis_add_export_target (EXPORT_OPT ${TARGET_UID} "${TEST}" ${ARGN_DESTINATION})
+    basis_add_export_target (EXPORT_OPT ${TARGET_UID} "${IS_TEST}" ${ARGN_DESTINATION})
   endif ()
   # installation
   if (ARGN_DESTINATION)
-    if (TEST)
+    if (IS_TEST)
       # TODO install (selected?) tests
     else ()
       install (
@@ -1894,12 +1894,12 @@ function (basis_add_library_target TARGET_NAME)
   else ()
     set (USES_BASIS_UTILITIES ${BASIS_UTILITIES})
   endif ()
-  # TEST flag
+  # IS_TEST flag
   basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
   if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
-    set (TEST TRUE)
+    set (IS_TEST TRUE)
   else ()
-    set (TEST FALSE)
+    set (IS_TEST FALSE)
   endif ()
   # library type
   if (NOT ARGN_SHARED AND NOT ARGN_STATIC AND NOT ARGN_MODULE)
@@ -1984,7 +1984,7 @@ function (basis_add_library_target TARGET_NAME)
   basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
   _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
   # output directory
-  if (TEST)
+  if (IS_TEST)
     _set_target_properties (
       ${TARGET_UID}
       PROPERTIES
@@ -2019,11 +2019,11 @@ function (basis_add_library_target TARGET_NAME)
   # export
   set (EXPORT_OPT)
   if (EXPORT)
-    basis_add_export_target (EXPORT_OPT ${TARGET_UID} "${TEST}" ${ARGN_RUNTIME_DESTINATION} ${ARGN_LIBRARY_DESTINATION})
+    basis_add_export_target (EXPORT_OPT ${TARGET_UID} "${IS_TEST}" ${ARGN_RUNTIME_DESTINATION} ${ARGN_LIBRARY_DESTINATION})
   endif ()
   # installation
   set (DESTINATION_OPTS)
-  if (TEST)
+  if (IS_TEST)
     # TODO At the moment, no tests are installed. Once there is a way to
     #      install selected tests, the shared libraries they depend on
     #      need to be installed as well.
@@ -2278,12 +2278,12 @@ function (basis_add_script_library TARGET_NAME)
   )
   basis_set_flag (ARGN EXPORT ${BASIS_EXPORT})
   set (SOURCES "${ARGN_UNPARSED_ARGUMENTS}")
-  # TEST flag
+  # IS_TEST flag
   basis_sanitize_for_regex (RE "${PROJECT_TESTING_DIR}")
   if (CMAKE_CURRENT_SOURCE_DIR MATCHES "^${RE}")
-    set (TEST TRUE)
+    set (IS_TEST TRUE)
   else ()
-    set (TEST FALSE)
+    set (IS_TEST FALSE)
   endif ()
   # check source files
   set (_SOURCES)
@@ -2319,7 +2319,7 @@ function (basis_add_script_library TARGET_NAME)
     endif ()
   endif ()
   # output directory
-  if (TEST)
+  if (IS_TEST)
     if (DEFINED TESTING_${ARGN_LANGUAGE}_LIBRARY_DIR)
       set (OUTPUT_DIRECTORY "${TESTING_${ARGN_LANGUAGE}_LIBRARY_DIR}")
     else ()
@@ -2340,7 +2340,7 @@ function (basis_add_script_library TARGET_NAME)
     set (ARGN_COMPONENT "Unspecified")
   endif ()
   # installation directory
-  if (TEST)
+  if (IS_TEST)
     if (ARGN_DESTINATION)
       message (WARNING "Target ${TARGET_UID} is a library used for testing only."
                        " Installation to the specified directory will be skipped.")
@@ -2418,7 +2418,7 @@ function (basis_add_script_library TARGET_NAME)
       LINK_DEPENDS              ""
       EXPORT                    "${EXPORT}"
       COMPILE                   "${BASIS_COMPILE_SCRIPTS}"
-      TEST                      "${TEST}"
+      TEST                      "${IS_TEST}"
   )
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
@@ -2614,11 +2614,11 @@ function (basis_build_script TARGET_UID)
       SUFFIX                   # name suffix (e.g., extension for executable script)
       SCRIPT_DEFINITIONS       # CMake code to set variables used to configure script
       SCRIPT_DEFINITIONS_FILE  # script configuration file
-      TEST                     # whether this script is used for testing only
       EXPORT                   # whether this target shall be exported
       COMPILE                  # whether to compile script if applicable
       SOURCES                  # path of script source file
   )
+  get_target_property (IS_TEST ${TARGET_UID} TEST) # whether this script is used for testing only
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
@@ -2770,7 +2770,7 @@ function (basis_build_script TARGET_UID)
   endif ()
   list (INSERT BUILD_LINK_DEPENDS   0 "${BINARY_LIBRARY_DIR}")
   list (INSERT INSTALL_LINK_DEPENDS 0 "relative ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}")
-  if (TEST)
+  if (IS_TEST)
     list (INSERT BUILD_LINK_DEPENDS 0 "${TESTING_LIBRARY_DIR}")
   endif ()
   if (BUILD_LINK_DEPENDS)
@@ -2858,7 +2858,7 @@ function (basis_build_script TARGET_UID)
   endforeach ()
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
+    basis_add_custom_export_target (${TARGET_UID} "${IS_TEST}")
   endif ()
   # install script
   if (INSTALL_DIRECTORY)
@@ -2942,11 +2942,11 @@ function (basis_build_script_library TARGET_UID)
       SCRIPT_DEFINITIONS         # CMake code to set variables used to configure modules
       SCRIPT_DEFINITIONS_FILE    # script configuration file
       LINK_DEPENDS               # paths of script modules/packages used by the modules of this library
-      TEST                       # whether this script is used for testing only
       EXPORT                     # whether to export this target
       COMPILE                    # whether to compile the modules/library if applicable
       SOURCES                    # source files of module scripts
   )
+  get_target_property (IS_TEST ${TARGET_UID} TEST) # whether this script is used for testing only
   foreach (PROPERTY ${PROPERTIES})
     get_target_property (${PROPERTY} ${TARGET_UID} ${PROPERTY})
   endforeach ()
@@ -3108,7 +3108,7 @@ function (basis_build_script_library TARGET_UID)
   endforeach ()
   # export target
   if (EXPORT)
-    basis_add_custom_export_target (${TARGET_UID} "${TEST}")
+    basis_add_custom_export_target (${TARGET_UID} "${IS_TEST}")
   endif ()
   # add installation rule
   foreach (INSTALL_FILE IN LISTS FILES_TO_INSTALL)
