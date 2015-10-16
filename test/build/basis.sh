@@ -11,6 +11,12 @@ set -e
 [ -n "$manual"    ] || manual=no
 [ -n "$tests"     ] || tests=no
 
+cmake_python_opt=
+if [[ $TRAVIS_OS_NAME == linux ]]; then
+  [[ $python == 3 ]] || python=''
+  cmake_python_opt="-DPYTHON_EXECUTABLE=/usr/bin/python$python"
+fi
+
 # Use dependencies built and installed from sources
 export PATH="$prefix/bin:$PATH"
 [[ $TRAVIS_OS_NAME != linux ]] || export   LD_LIBRARY_PATH="$prefix/lib:$LD_LIBRARY_PATH"
@@ -33,6 +39,7 @@ cmake -DBUILD_TESTING=$tests \
       -DBUILD_BASIS_UTILITIES_FOR_PYTHON=$utilities \
       -DSOFTWAREMANUAL_PDF_UPDATE=no \
       -DCMAKE_INSTALL_PREFIX="$prefix" \
+      $cmake_python_opt \
       ..
 
 # Build and install
