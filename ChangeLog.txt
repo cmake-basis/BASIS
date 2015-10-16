@@ -1,5 +1,16 @@
 .. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
 
+.. _v3.2.0:
+
+Release 3.2.0 (Oct 16, 2015)
+----------------------------
+
+- Compatibility with CMake 3.
+- Compatibility with Python 3.
+- Enable build of shared libraries from MATLAB source files.
+- Bug fixes.
+
+
 .. _v3.1.0:
 
 Release 3.1.0 (Mar 28, 2014)
