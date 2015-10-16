@@ -22,7 +22,7 @@ set -e
 # Install Python 3
 if [[ $python == 3 ]]; then
   if [[ $TRAVIS_OS_NAME == linux ]]; then
-    sudo apt-get install python3
+    sudo apt-get install -qq python3
   elif [[ $TRAVIS_OS_NAME == osx ]]; then
     brew install python3
   fi
