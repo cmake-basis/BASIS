@@ -10,11 +10,13 @@ set -e
 [ -n "$doc"       ] || doc=no
 [ -n "$manual"    ] || manual=no
 [ -n "$tests"     ] || tests=no
+[[ $python == 3  ]] || python=''
 
 cmake_python_opt=
 if [[ $TRAVIS_OS_NAME == linux ]]; then
-  [[ $python == 3 ]] || python=''
   cmake_python_opt="-DPYTHON_EXECUTABLE=/usr/bin/python$python"
+elif [[ $TRAVIS_OS_NAME == osx ]]; then
+  cmake_python_opt="-DPYTHON_EXECUTABLE=/usr/local/bin/python$python"
 fi
 
 # Use dependencies built and installed from sources

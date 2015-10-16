@@ -19,6 +19,15 @@ set -e
 [[ $TRAVIS_OS_NAME != osx   ]] || brew update
 [ -z "$(which pip)" ] || sudo pip install --upgrade pip
 
+# Install Python 3
+if [[ $python == 3 ]]; then
+  if [[ $TRAVIS_OS_NAME == linux ]]; then
+    sudo apt-get install python3
+  elif [[ $TRAVIS_OS_NAME == osx ]]; then
+    brew install python3
+  fi
+fi
+
 # Use dependencies built and installed from sources
 export PATH="$prefix/bin:$PATH"
 [[ $TRAVIS_OS_NAME != linux ]] || export   LD_LIBRARY_PATH="$prefix/lib:$LD_LIBRARY_PATH"
