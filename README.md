@@ -104,7 +104,7 @@ License
 =======
 
 Copyright (c) 2011-2013 University of Pennsylvania   <br />
-Copyright (c) 2013-2014 Andreas Schuh                <br />
+Copyright (c) 2013-2015 Andreas Schuh                <br />
 Copyright (c) 2013-2014 Carnegie Mellon University
 
 CMake BASIS is available under a BSD compatible license. The complete license text

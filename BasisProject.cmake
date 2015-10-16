@@ -89,7 +89,7 @@ basis_project (
                 "software which follows the CMake Build system And Software "
                 "Implementation Standard (BASIS)."
   WEBSITE       "http://opensource.andreasschuh.com/cmake-basis"
-  COPYRIGHT     "2011-12 University of Pennsylvania, 2013-14 Andreas Schuh, 2013-14 Carnegie Mellon University"
+  COPYRIGHT     "2011-12 University of Pennsylvania, 2013-15 Andreas Schuh, 2013-14 Carnegie Mellon University"
   LICENSE       "See http://opensource.andreasschuh.com/cmake-basis/download.html#license or COPYING file."
   CONTACT       "andreas.schuh.84@gmail.com"
   TEMPLATE      "basis/1.0"
