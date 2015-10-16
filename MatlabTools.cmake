@@ -38,70 +38,84 @@ include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 ## @addtogroup BasisSettings
 #  @{
 
-
 ## @brief Enable/Disable compilation of MATLAB sources if the MATLAB Compiler is available.
 option (BASIS_COMPILE_MATLAB "Enable compilation of MATLAB sources if MATLAB Compiler (mcc) is available." ON)
-
-## @brief Enable/Disable invocation of MATLAB Compiler in MATLAB mode.
-option (
-  BASIS_MCC_MATLAB_MODE
-  "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler to release MCC licence ASAP."
-  OFF # using MATLAB mode is preferred when the license is shared
-      # among users as it releases the license immediately once done
-)
-
 mark_as_advanced (BASIS_COMPILE_MATLAB)
-mark_as_advanced (BASIS_MCC_MATLAB_MODE)
 
+# ----------------------------------------------------------------------------
+## @brief Add global MATLAB MEX-script options to CMake cache
+#
+# @par MATLAB MEX-script options:
+# <table border="0">
+#   <tr>
+#     @tp @b BASIS_MEX_TIMEOUT @endtp
+#     <td>Timeout for MEX script execution.</td>
+#   </tr>
+#   <tr>
+#     @tp @b BASIS_MEX_FLAGS @endtp
+#     <td>Compile flags used to build MEX-files using the MEX script.</td>
+#   </tr>
+# </table>
+macro(basis_add_mex_options)
+  if (MATLAB_MEX_EXECUTABLE)
+    set (BASIS_MEX_TIMEOUT "600" CACHE STRING "Timeout for MEX script execution")
+    set (BASIS_MEX_FLAGS   ""    CACHE STRING "Common MEX switches (separated by ' '; use '\\' to mask ' ').")
+    mark_as_advanced (BASIS_MEX_FLAGS)
+    mark_as_advanced (BASIS_MEX_TIMEOUT)
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Add global MATLAB Compiler (mcc) options to CMake cache
+#
+# @par MATLAB Compiler options:
+# <table border="0">
+#   <tr>
+#     @tp @b BASIS_MCC_MATLAB_MODE @endtp
+#     <td>Enable/Disable invocation of MATLAB Compiler in MATLAB mode.</td>
+#   </tr>
+#   <tr>
+#     @tp @b BASIS_MCC_FLAGS @endtp
+#     <td>Compile flags used to build MATLAB Compiler targets.</td>
+#   </tr>
+#   <tr>
+#     @tp @b BASIS_MCC_TIMEOUT @endtp
+#     <td>Timeout for building MATLAB Compiler targets.</td>
+#   </tr>
+#   <tr>
+#     @tp @b BASIS_MCC_RETRY_ATTEMPTS @endtp
+#     <td>Maximum number of retries on MATLAB Compiler license checkout.</td>
+#   </tr>
+#   <tr>
+#     @tp @b BASIS_MCC_RETRY_DELAY @endtp
+#     <td>Delay between retries to build MATLAB Compiler compiled targets on license checkout errors.</td>
+#   </tr>
+# </table>
+macro(basis_add_mcc_options)
+  option (
+    BASIS_MCC_MATLAB_MODE
+    "Prefer MATLAB mode over standalone mode to invoke MATLAB Compiler to release MCC licence ASAP."
+    OFF # using MATLAB mode is preferred when the license is shared
+        # among users as it releases the license immediately once done
+  )
+  set (
+    BASIS_MCC_FLAGS
+      "-R -singleCompThread"
+    CACHE STRING
+      "Common MATLAB Compiler flags (separated by ' '; use '\\' to mask ' ')."
+  )
+  set (BASIS_MCC_TIMEOUT        "1800" CACHE STRING "Timeout for MATLAB Compiler execution")
+  set (BASIS_MCC_RETRY_ATTEMPTS "4"    CACHE STRING "Maximum number of retries on MATLAB Compiler license checkout error.")
+  set (BASIS_MCC_RETRY_DELAY    "30"   CACHE STRING "Delay between retries to build MATLAB Compiler compiled targets on license checkout error.")
+  mark_as_advanced (BASIS_MCC_MATLAB_MODE)
+  mark_as_advanced (BASIS_MCC_FLAGS)
+  mark_as_advanced (BASIS_MCC_TIMEOUT)
+  mark_as_advanced (BASIS_MCC_RETRY_ATTEMPTS)
+  mark_as_advanced (BASIS_MCC_RETRY_DELAY)
+endmacro ()
 
 ## @}
 # end of Doxygen group
-
-
-# ============================================================================
-# build configuration
-# ============================================================================
-
-## @addtogroup BasisSettings
-#  @{
-
-
-## @brief Compile flags used to build MATLAB Compiler targets.
-set (
-  BASIS_MCC_FLAGS
-    "-R -singleCompThread"
-  CACHE STRING
-    "Common MATLAB Compiler flags (separated by ' '; use '\\' to mask ' ')."
-)
-
-## @brief Compile flags used to build MEX-files using the MEX script.
-set (
-  BASIS_MEX_FLAGS
-    ""
-  CACHE STRING
-    "Common MEX switches (separated by ' '; use '\\' to mask ' ')."
-)
-
-## @brief Timeout for building MATLAB Compiler targets.
-set (BASIS_MCC_TIMEOUT "1800" CACHE STRING "Timeout for MATLAB Compiler execution")
-## @brief Maximum number of retries on MATLAB Compiler license checkout.
-set (BASIS_MCC_RETRY_ATTEMPTS "4" CACHE STRING "Maximum number of retries on MATLAB Compiler license checkout error.")
-## @brief Delay between retries to build MATLAB Compiler compiled targets on license checkout errors.
-set (BASIS_MCC_RETRY_DELAY "30" CACHE STRING "Delay between retries to build MATLAB Compiler compiled targets on license checkout error.")
-## @brief Timeout for building MEX-file targets.
-set (BASIS_MEX_TIMEOUT "600" CACHE STRING "Timeout for MEX script execution")
-
-mark_as_advanced (BASIS_MCC_FLAGS)
-mark_as_advanced (BASIS_MCC_TIMEOUT)
-mark_as_advanced (BASIS_MCC_RETRY_ATTEMPTS)
-mark_as_advanced (BASIS_MCC_RETRY_DELAY)
-mark_as_advanced (BASIS_MEX_FLAGS)
-mark_as_advanced (BASIS_MEX_TIMEOUT)
-
-
-## @}
-# end of Doxygen group
-
 
 # ============================================================================
 # utilities
@@ -653,8 +667,9 @@ function (basis_add_mex_file TARGET_NAME)
   # required commands available ?
   if (NOT MATLAB_MEX_EXECUTABLE)
     message (FATAL_ERROR "MATLAB MEX script (mex) not found! It is required to build target ${TARGET_UID}."
-                         " Forgot to add MATLAB as dependency? Otherwise, set MATLAB_MEX_EXECUTABLE manually and try again.")
+                         " Forgot to add MATLAB{mex} as dependency? Otherwise, set MATLAB_MEX_EXECUTABLE manually and try again.")
   endif ()
+  basis_add_mex_options()
   # parse arguments
   CMAKE_PARSE_ARGUMENTS (
     ARGN
@@ -1005,7 +1020,8 @@ function (basis_add_mcc_target TARGET_NAME)
                        " the MATLAB interpreter. It is recommended to compile the MATLAB code"
                        " using the MATLAB Compiler if possible, however. Therefore, make sure"
                        " that the MATLAB Compiler is available and check the value of the"
-                       " advanced MATLAB_MCC_EXECUTABLE variable in CMake.")
+                       " advanced MATLAB_MCC_EXECUTABLE variable in CMake."
+                       "\nMake sure to include MATLAB{mcc} as project dependency.")
     endif ()
   else ()
     set (COMPILE FALSE)
@@ -1033,16 +1049,17 @@ function (basis_add_mcc_target TARGET_NAME)
   endif ()
   if (COMPILE)
     if (NOT MATLAB_MCC_EXECUTABLE)
-      find_package (MATLAB COMPONENTS mcc QUIET)
+      message (FATAL_ERROR "MATLAB Compiler not found! It is required to build target ${TARGET_UID}."
+                           " Ensure that MATLAB{mcc} is declared as project dependency"
+                           " and check the setting of MATLAB_DIR and/or MATLAB_MCC_EXECUTABLE.")
     endif ()
+    basis_add_mcc_options()
   else ()
     if (NOT MATLAB_EXECUTABLE)
-      find_package (MATLAB COMPONENTS matlab QUIET)
+      message (FATAL_ERROR "MATLAB not found! It is required to build target ${TARGET_UID}."
+                           " Ensure that MATLAB{matlab} is declared as project dependency"
+                           " and check the setting of MATLAB_DIR and/or MATLAB_EXECUTABLE.")
     endif ()
-  endif ()
-  if (COMPILE AND NOT MATLAB_MCC_EXECUTABLE)
-    message (FATAL_ERROR "MATLAB Compiler not found! It is required to build target ${TARGET_UID}."
-                         " Set MATLAB_DIR and/or MATLAB_MCC_EXECUTABLE manually and try again.")
   endif ()
   if ("^${TYPE}$" STREQUAL "^EXECUTABLE$")
     set (COMPILE_FLAGS "${BASIS_MCC_FLAGS}")
