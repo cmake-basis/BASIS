@@ -23,13 +23,15 @@ Installation
 ============
 
 Developers requiring only the CMake BASIS Modules are encouraged to include the
-[CMake BASIS Modules][2] Git repository as submodule into their Git controlled project
-source tree. To utilize these modules, we recommend the use of the ```basis-modules```
-project template (TODO: Add template files to CMake BASIS and link them here).
+[CMake BASIS Modules][2] Git repository as (shallow) submodule into their Git
+controlled project source tree. To utilize these modules, we recommend the use of
+the ```basis-modules``` project template.
+
+**TODO**: Add template files to CMake BASIS and link them here.
 
 
 ```bash
-git submodule add git@github.com:schuhschuh/cmake-basis-modules.git basis
+git submodule add --depth=1 https://github.com/schuhschuh/cmake-basis-modules.git basis
 git add .gitmodules
 git commit -m 'add: CMake BASIS Modules'
 ```
