@@ -66,20 +66,20 @@ set (TEST_MAIN_LIBRARY_CONFIG "${TEST_MAIN_LIBRARY_CONFIG}")
 # ============================================================================
 
 if (BUILD_CONFIG_SETTINGS)
-    # CMake module path
-    set (MODULE_PATH_CONFIG "${PROJECT_CODE_DIR}/cmake")
-    # project template
-    set (TEMPLATE_DIR_CONFIG "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}")
-    # paths to template files of BASIS utilities
-    foreach (U CXX PYTHON JYTHON PERL MATLAB BASH)
-      string (TOLOWER "${U}" L)
-      set (${U}_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/${L}")
-    endforeach ()
-    # Sphinx
-    set (SPHINX_EXTENSIONS_PATH_CONFIG "${BASIS_SPHINX_EXTENSIONS_PATH}")
-    set (SPHINX_HTML_THEME_PATH_CONFIG "${PROJECT_CODE_DIR}/sphinx/themes")
+  # CMake module path
+  set (MODULE_PATH_CONFIG "${BASIS_MODULE_PATH}")
+  # project template
+  set (TEMPLATE_DIR_CONFIG "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}")
+  # paths to template files of BASIS utilities
+  foreach (U CXX PYTHON JYTHON PERL MATLAB BASH)
+    string (TOLOWER "${U}" L)
+    set (${U}_TEMPLATES_DIR_CONFIG "${PROJECT_CODE_DIR}/utilities/${L}")
+  endforeach ()
+  # Sphinx
+  set (SPHINX_EXTENSIONS_PATH_CONFIG "${BASIS_SPHINX_EXTENSIONS_PATH}")
+  set (SPHINX_HTML_THEME_PATH_CONFIG "${PROJECT_CODE_DIR}/sphinx/themes")
 
-    return ()
+  return ()
 endif ()
 
 # ============================================================================
