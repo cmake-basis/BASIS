@@ -306,6 +306,17 @@ macro (basis_project_check_metadata)
   else ()
     set (TOPLEVEL_PROJECT_CONTACT "${PROJECT_CONTACT}")
   endif ()
+  # PROJECT_LANGUAGES
+  if (PROJECT_IS_MODULE)
+    if (NOT PROJECT_LANGUAGES)
+      set (PROJECT_LANGUAGES "${TOPLEVEL_PROJECT_LANGUAGES}")
+    endif ()
+  else ()
+    if (NOT PROJECT_LANGUAGES)
+      set (PROJECT_LANGUAGES C CXX)
+    endif ()
+    set (TOPLEVEL_PROJECT_LANGUAGES "${PROJECT_LANGUAGES}")
+  endif ()
   # source tree directories
   basis_set_if_empty (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
   basis_check_or_set_source_paths (PROJECT_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
@@ -452,6 +463,13 @@ endmacro ()
 #     <td>Path to provider division logo file used for documentation and packaging.
 #         Relative paths must be relative to @c PROJECT_SOURCE_DIR.
 #         (default: empty string)</td>
+#   </tr>
+#   <tr>
+#     @tp @b LANGUAGES lang1 [lang2...] @endtp
+#     <td>Programming languages used by the project. For example, CXX for C++ or
+#         CXX-11 for C++11. When C++11 is used, the respective compiler flag
+#         such as -std=c++11 is added to the compile flags. Those languages supported
+#         by CMake itself are further passed on to CMake's project command.</td>
 #   </tr>
 #   <tr>
 #     @tp @b TEMPLATE path @endtp
@@ -604,6 +622,7 @@ endmacro ()
 # @retval PROJECT_DIVISION_LOGO           See @c DIVISION_LOGO. Value is an absolute path.
 # @retval PROJECT_VERSION                 See @c VERSION.
 # @retval PROJECT_DESCRIPTION             See @c DESCRIPTION.
+# @retval PROJECT_LANGUAGES               See @c LANGUAGES.
 # @retval PROJECT_DEPENDS                 See @c DEPENDS.
 # @retval PROJECT_OPTIONAL_DEPENDS        See @c OPTIONAL_DEPENDS.
 # @retval PROJECT_TEST_DEPENDS            See @c TEST_DEPENDS.
@@ -1445,11 +1464,43 @@ macro (basis_project_initialize)
 
   # --------------------------------------------------------------------------
   # project()
-  project ("${PROJECT_NAME}")
+  set (LANGUAGES)
+  foreach (lang IN LISTS PROJECT_LANGUAGES)
+    if (lang MATCHES "^(C|CXX)$")
+      list (APPEND LANGUAGES ${lang})
+    elseif (lang MATCHES "^CXX-?[0-9][0-9x]+$")
+      list (APPEND LANGUAGES CXX)
+    endif ()
+  endforeach ()
+
+  project ("${PROJECT_NAME}" ${LANGUAGES})
 
   # work-around for issue with CMAKE_PROJECT_NAME always being set to 'Project'
   if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     set_property (CACHE CMAKE_PROJECT_NAME PROPERTY VALUE "${PROJECT_NAME}")
+  endif ()
+
+  # C++ standard
+  if (PROJECT_LANGUAGES MATCHES "CXX-?([0-9][0-9x]*)")
+    set (CXX_VERSION ${CMAKE_MATCH_1})
+    if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+      include(CheckCXXCompilerFlag)
+      CHECK_CXX_COMPILER_FLAG("-std=c++${CXX_VERSION}" COMPILER_SUPPORTS_CXX${CXX_VERSION})
+      if (CXX_VERSION STREQUAL "11" AND NOT COMPILER_SUPPORTS_CXX${CXX_VERSION})
+        CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX${CXX_VERSION})
+      endif ()
+      if (COMPILER_SUPPORTS_CXX${CXX_VERSION})
+        if (NOT CMAKE_CXX_FLAGS MATCHES "-std=c\\+\\+${CXX_VERSION}")
+          if (CMAKE_CXX_FLAGS)
+          set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
+          endif ()
+          set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-std=c++${CXX_VERSION}")
+        endif ()
+      else ()
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++${CXX_VERSION} support. Please use a different C++ compiler.")
+      endif ()
+    endif ()
+    unset (CXX_VERSION)
   endif ()
 
   # get revision of project
