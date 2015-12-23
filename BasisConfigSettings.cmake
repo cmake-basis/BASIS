@@ -33,10 +33,7 @@ set (DEPENDS_CONFIG)
 set (PKGS)
 foreach (DEP IN LISTS PROJECT_DEPENDS PROJECT_OPTIONAL_DEPENDS)
   basis_tokenize_dependency ("${DEP}" PKG VER CMPS)
-  if (NOT DEFINED ${PKG}_DIR)
-    string (TOUPPER "${PKG}" PKG)
-  endif ()
-  if (DEFINED ${PKG}_DIR)
+  if (DEPENDS_${PKG}_DIR)
     list (APPEND PKGS ${PKG})
   endif ()
 endforeach ()
@@ -52,12 +49,12 @@ endif ()
 foreach (PKG IN LISTS PKGS)
   list (APPEND DEPENDS_CONFIG
     "# ${PKG}"
-    "if (${PKG}_DIR)"
-    "  if (NOT ${PKG}_DIR STREQUAL \"${${PKG}_DIR}\")"
-    "    message (WARNING ${PKG}_DIR \${_depwarn})"
+    "if (DEPENDS_${PKG}_DIR)"
+    "  if (NOT DEPENDS_${PKG}_DIR STREQUAL \"${DEPENDS_${PKG}_DIR}\")"
+    "    message (WARNING DEPENDS_${PKG}_DIR \${_depwarn})"
     "  endif ()"
     "else ()"
-    "  basis_set_or_update_value (${PKG}_DIR \"${${PKG}_DIR}\")"
+    "  basis_set_or_update_value (DEPENDS_${PKG}_DIR \"${DEPENDS_${PKG}_DIR}\" PATH)"
     "endif ()"
   )
 endforeach ()
