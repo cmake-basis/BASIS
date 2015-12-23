@@ -724,7 +724,7 @@ function (basis_add_mex_file TARGET_NAME)
   if (MATLAB_LIBRARY_DIR)
     list (INSERT LINK_DIRS 0 "${MATLAB_LIBRARY_DIR}")
   endif ()
-  _set_target_properties (
+  set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       LANGUAGE                  "CXX"
@@ -1093,7 +1093,7 @@ function (basis_add_mcc_target TARGET_NAME)
   basis_get_target_name (OUTPUT_NAME "${TARGET_UID}")
   get_directory_property (INCLUDE_DIRS INCLUDE_DIRECTORIES)
   get_directory_property (LINK_DIRS    LINK_DIRECTORIES)
-  _set_target_properties (
+  set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       LANGUAGE                  "MATLAB"

@@ -38,12 +38,12 @@ endif ()
 # In particular, it maps the given target names to the corresponding target UIDs.
 #
 # @note If @c BASIS_USE_TARGET_UIDS is @c OFF and is not required by a project,
-#       it is recommended to use _set_target_properties() instead (note that
+#       it is recommended to use set_target_properties() instead (note that
 #       set_target_properties is overriden by the ImportTools.cmake module of BASIS).
 #       This will break the build configuration scripts when @c BASIS_USE_TARGET_UIDS
 #       is set to @c ON later. It should thus only be used if the project will
 #       never use the target UID feature of BASIS. A project can possibly define
-#       a global macro which either calls _set_target_properties or
+#       a global macro which either calls set_target_properties or
 #       basis_set_target_properties. But be aware of the related CMake bugs
 #       which prevent basis_set_target_properties to do the same already.
 #       ARGV/ARGN do not preserve empty arguments nor list arguments!
@@ -128,7 +128,11 @@ function (basis_set_target_properties)
       message (FATAL_ERROR "Empty property name given!")
     endif ()
     # set target property
-    _set_target_properties (${TARGET_UIDS} PROPERTIES ${PROPERTY} "${VALUE}")
+    if (COMMAND _set_target_properties) # i.e. ImportTools.cmake included
+      _set_target_properties (${TARGET_UIDS} PROPERTIES ${PROPERTY} "${VALUE}")
+    else ()
+      set_target_properties (${TARGET_UIDS} PROPERTIES ${PROPERTY} "${VALUE}")
+    endif ()
   endwhile ()
   # make sure that every property had a corresponding value
   if (NOT N EQUAL 0)
@@ -455,7 +459,7 @@ function (basis_target_link_libraries TARGET_NAME)
       endif ()
       basis_add_utilities_library (BASIS_UTILITIES_TARGET ${LANGUAGE})
       list (APPEND ARGS ${BASIS_UTILITIES_TARGET})
-      _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES TRUE)
+      set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES TRUE)
     else ()
       basis_get_target_uid (UID "${ARG}")
       if (TARGET "${UID}")
@@ -504,13 +508,13 @@ function (basis_target_link_libraries TARGET_NAME)
   endif ()
   # update LINK_DEPENDS
   if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|STATIC|MODULE)_LIBRARY$")
-    _set_target_properties (${TARGET_UID} PROPERTIES BASIS_LINK_DEPENDS "${DEPENDS}")
+    set_target_properties (${TARGET_UID} PROPERTIES BASIS_LINK_DEPENDS "${DEPENDS}")
     target_link_libraries (${TARGET_UID} ${ARGS})
   else ()
     # FIXME cannot use LINK_DEPENDS for CMake targets as these depends are
     #       otherwise added as is to the Makefile. therefore, consider renaming
     #       LINK_DEPENDS in general to BASIS_LINK_DEPENDS.
-    _set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
+    set_target_properties (${TARGET_UID} PROPERTIES LINK_DEPENDS "${DEPENDS}")
   endif ()
 endfunction ()
 
@@ -1502,7 +1506,7 @@ function (basis_add_script TARGET_NAME)
     endif ()
   endif ()
   # set properties of custom build target
-  _set_target_properties (
+  set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       LANGUAGE                 ${ARGN_LANGUAGE}
@@ -1553,7 +1557,9 @@ function (add_executable TARGET_UID)
   _add_executable (${TARGET_UID} ${ARGN})
   list (FIND ARGN IMPORTED IDX)
   if (IDX EQUAL 0)
-    basis_add_imported_target ("${TARGET_UID}" EXECUTABLE)
+    if (COMMAND basis_add_imported_target)
+      basis_add_imported_target ("${TARGET_UID}" EXECUTABLE)
+    endif ()
   else ()
     basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   endif ()
@@ -1576,7 +1582,9 @@ function (add_library TARGET_UID)
   _add_library (${TARGET_UID} ${ARGN})
   list (FIND ARGN IMPORTED IDX)
   if (IDX EQUAL 1)
-    basis_add_imported_target ("${TARGET_UID}" "${ARGV1}")
+    if (COMMAND basis_add_imported_target)
+      basis_add_imported_target ("${TARGET_UID}" "${ARGV1}")
+    endif ()
   else ()
     basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
   endif ()
@@ -1713,32 +1721,32 @@ function (basis_add_executable_target TARGET_NAME)
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
   basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
+  set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "EXECUTABLE" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
   if (ARGN_LIBEXEC)
-    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC SCRIPT_DEFINITIONS LIBEXEC)
+    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 1 COMPILE_DEFINITIONS LIBEXEC SCRIPT_DEFINITIONS LIBEXEC)
   else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
+    set_target_properties (${TARGET_UID} PROPERTIES LIBEXEC 0)
   endif ()
-  _set_target_properties (${TARGET_UID} PROPERTIES TEST ${IS_TEST})
+  set_target_properties (${TARGET_UID} PROPERTIES TEST ${IS_TEST})
   # output directory
   if (IS_TEST)
     if (ARGN_LIBEXEC)
-      _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
+      set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TESTING_LIBEXEC_DIR}")
     else ()
-      _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
+      set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}")
     endif ()
   elseif (ARGN_LIBEXEC)
-    _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}")
+    set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BINARY_LIBEXEC_DIR}")
   else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
+    set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}")
   endif ()
   # installation directory
-  _set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}")
+  set_target_properties (${TARGET_UID} PROPERTIES RUNTIME_INSTALL_DIRECTORY "${ARGN_DESTINATION}")
   # link to BASIS utilities
   if (USES_BASIS_UTILITIES)
     basis_target_link_libraries (.${TARGET_UID} basis)
   else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES FALSE)
+    set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES FALSE)
   endif ()
   # export
   set (EXPORT_OPT)
@@ -1982,10 +1990,10 @@ function (basis_add_library_target TARGET_NAME)
     add_dependencies (${TARGET_UID} ${HEADERS_TARGET})
   endif ()
   basis_get_target_name (OUTPUT_NAME ${TARGET_UID})
-  _set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
+  set_target_properties (${TARGET_UID} PROPERTIES BASIS_TYPE "${TYPE}_LIBRARY" LANGUAGE "CXX" OUTPUT_NAME "${OUTPUT_NAME}")
   # output directory
   if (IS_TEST)
-    _set_target_properties (
+    set_target_properties (
       ${TARGET_UID}
       PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${TESTING_RUNTIME_DIR}"
@@ -1993,7 +2001,7 @@ function (basis_add_library_target TARGET_NAME)
         ARCHIVE_OUTPUT_DIRECTORY "${TESTING_ARCHIVE_DIR}"
     )
   else ()
-    _set_target_properties (
+    set_target_properties (
       ${TARGET_UID}
       PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${BINARY_RUNTIME_DIR}"
@@ -2003,7 +2011,7 @@ function (basis_add_library_target TARGET_NAME)
   endif ()
   # installation directory
   # these properties are used by basis_get_target_location() in particular
-  _set_target_properties (
+  set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       RUNTIME_INSTALL_DIRECTORY "${ARGN_RUNTIME_DESTINATION}"
@@ -2014,7 +2022,7 @@ function (basis_add_library_target TARGET_NAME)
   if (USES_BASIS_UTILITIES)
     basis_target_link_libraries (.${TARGET_UID} basis)
   else ()
-    _set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES FALSE)
+    set_target_properties (${TARGET_UID} PROPERTIES BASIS_UTILITIES FALSE)
   endif ()
   # export
   set (EXPORT_OPT)
@@ -2400,7 +2408,7 @@ function (basis_add_script_library TARGET_NAME)
   endif ()
   # add custom target
   add_custom_target (${TARGET_UID} ALL SOURCES ${SOURCES})
-  _set_target_properties (
+  set_target_properties (
     ${TARGET_UID}
     PROPERTIES
       LANGUAGE                  "${ARGN_LANGUAGE}"
@@ -2568,7 +2576,7 @@ function (basis_set_target_install_rpath TARGET_NAME)
   endif ()
   # set INSTALL_RPATH property
   string (REPLACE ";" ":" INSTALL_RPATH "${INSTALL_RPATH}")
-  _set_target_properties (${TARGET_UID} PROPERTIES INSTALL_RPATH "${INSTALL_RPATH}")
+  set_target_properties (${TARGET_UID} PROPERTIES INSTALL_RPATH "${INSTALL_RPATH}")
   if (BASIS_DEBUG)
     message ("**    INSTALL_RPATH: [${INSTALL_RPATH}]")
   endif ()

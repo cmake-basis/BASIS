@@ -55,5 +55,23 @@ include ("${CMAKE_CURRENT_LIST_DIR}/RevisionTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/SlicerTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/TargetTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/ExportTools.cmake")
-include ("${CMAKE_CURRENT_LIST_DIR}/ImportTools.cmake")
 include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
+
+# Issues/limitations of CMake's "function" command complicate the definition
+# of a custom set_target_properties function which can be used to collect
+# "global" information about targets imported from the CMake package
+# configuration of project dependencies. The workaround in the custom
+# set_target_properties function defined in the ImportTools.cmake is
+# extremely inefficient and slows down the configuration step a lot
+# (cf. https://github.com/schuhschuh/cmake-basis/issues/494).
+# 
+# The only need for collecting this information for all (executable)
+# targets imported from dependencies is for generating the executable
+# target info table for the BASIS Utilities (cf. UtilitiesTools.cmake).
+# Hence, when these are not used, the ImportTools.cmake are not needed.
+# Further, when a project does not consist of modules, the imported
+# targets are available in the scope of the project.
+#
+# Therefore, a project has to include the ImportTools.cmake file explicitly
+# in its root CMakeLists.txt file before basis_project_begin() or
+# basis_project_impl(), respectively.
