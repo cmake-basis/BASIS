@@ -73,7 +73,7 @@ endif ()
 # namespace
 # ============================================================================
 
-# code used at top of packing configuration and use files to set package
+# code used at top of package configuration and use files to set package
 # namespace prefix used for configuration variables
 if (PROJECT_IS_MODULE)
   set (BASIS_NS "${PROJECT_NAME}")
