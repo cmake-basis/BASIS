@@ -179,10 +179,6 @@ macro (basis_find_package PACKAGE)
     endif ()
   endif ()
   # ------------------------------------------------------------------------
-  # preserve (internal) <PKG>_DIR variable which might get reset if different
-  # versions of the package are searched or if package is optional and deselected
-  #set (PKG_DIR "${${PKG}_DIR}")
-  # ------------------------------------------------------------------------
   # some debugging output
   if (BASIS_DEBUG)
     message ("** basis_find_package()")
@@ -194,81 +190,81 @@ macro (basis_find_package PACKAGE)
     message ("**     Components: [${ARGN_COMPONENTS}]")
     endif ()
   endif ()
-  # --------------------------------------------------------------------------
-  # provide option which allows users to request use of optional packages
-  #
-  # - WITH_<PKG>  == ON:  optional dependency is required
-  # - WITH_<PKG>  == OFF:
-  #   - USE_<PKG> == ON:  dependency is looked for and used if available
-  #   - USE_<PKG> == OFF: dependency is ignored
-  if (NOT ARGN_REQUIRED)
-    option (WITH_${PKG} "Build with optional ${PKG} dependency" OFF)
-    if (WITH_${PKG})
-      set (ARGN_REQUIRED TRUE)
-    endif ()
-  endif ()
-  if (ARGN_REQUIRED OR USE_${PKG})
-    # ------------------------------------------------------------------------
-    # find other modules of same project
-    set (PKG_IS_MODULE FALSE)
-    if (PROJECT_IS_MODULE)
-      # allow modules to specify top-level project as dependency
-      if ("^${PKG}$" STREQUAL "^${TOPLEVEL_PROJECT_NAME}$")
-        if (BASIS_DEBUG)
-          message ("**     This is the top-level project.")
-        endif ()
-        set (${PKG}_FOUND TRUE)
-      # look for other module of top-level project
-      else ()
-        list (FIND PROJECT_MODULES "${PKG}" PKGIDX)
-        if (NOT PKGIDX EQUAL -1)
-          set (PKG_IS_MODULE TRUE)
-          list (FIND PROJECT_MODULES_ENABLED "${PKG}" PKGIDX)
-          if (NOT PKGIDX EQUAL -1)
-            if (BASIS_DEBUG)
-              message ("**     Identified it as other module of this project.")
-            endif ()
-            include ("${${PKG}_DIR}/${TOPLEVEL_PROJECT_PACKAGE_CONFIG_PREFIX}${PKG}Config.cmake")
-            set (${PKG}_FOUND TRUE)
-          else ()
-            set (${PKG}_FOUND FALSE)
-          endif ()
-        endif ()
-        unset (PKGIDX)
+  # ------------------------------------------------------------------------
+  # find other modules of same project
+  set (PKG_IS_MODULE FALSE)
+  if (PROJECT_IS_MODULE)
+    # allow modules to specify top-level project as dependency
+    if ("^${PKG}$" STREQUAL "^${TOPLEVEL_PROJECT_NAME}$")
+      if (BASIS_DEBUG)
+        message ("**     This is the top-level project.")
       endif ()
-    # ------------------------------------------------------------------------
-    # find bundled packages
+      set (${PKG}_FOUND TRUE)
+    # look for other module of top-level project
     else ()
-      list (FIND BUNDLE_PROJECTS "${PKG}" PKGIDX)
+      list (FIND PROJECT_MODULES "${PKG}" PKGIDX)
       if (NOT PKGIDX EQUAL -1)
-        if  (EXISTS "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG}Config.cmake")
-          set (PKG_CONFIG_FILE "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG}Config.cmake")
-        else ()
-          string (TOLOWER "${PKG}" PKG_L)
-          if (EXISTS "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG_L}-config.cmake")
-            set (PKG_CONFIG_FILE "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG_L}-config.cmake")
-          else ()
-            set (PKG_CONFIG_FILE)
-          endif ()
-          unset (PKG_L)
-        endif ()
-        if (PKG_CONFIG_FILE)
+        set (PKG_IS_MODULE TRUE)
+        list (FIND PROJECT_MODULES_ENABLED "${PKG}" PKGIDX)
+        if (NOT PKGIDX EQUAL -1)
           if (BASIS_DEBUG)
-            message ("**     Identified it as other package of this bundle.")
+            message ("**     Identified it as other module of this project.")
           endif ()
-          get_filename_component (PKG_CONFIG_DIR "${PKG_CONFIG_FILE}" PATH)
-          basis_set_or_update_value (DEPENDS_${PKG}_DIR "${PKG_CONFIG_DIR}" PATH)
-          include ("${PKG_CONFIG_FILE}")
+          include ("${${PKG}_DIR}/${TOPLEVEL_PROJECT_PACKAGE_CONFIG_PREFIX}${PKG}Config.cmake")
           set (${PKG}_FOUND TRUE)
-          unset (PKG_CONFIG_DIR)
+        else ()
+          set (${PKG}_FOUND FALSE)
         endif ()
-        unset (PKG_CONFIG_FILE)
       endif ()
       unset (PKGIDX)
     endif ()
+  # --------------------------------------------------------------------------
+  # find bundled packages
+  else ()
+    list (FIND BUNDLE_PROJECTS "${PKG}" PKGIDX)
+    if (NOT PKGIDX EQUAL -1)
+      if  (EXISTS "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG}Config.cmake")
+        set (PKG_CONFIG_FILE "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG}Config.cmake")
+      else ()
+        string (TOLOWER "${PKG}" PKG_L)
+        if (EXISTS "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG_L}-config.cmake")
+          set (PKG_CONFIG_FILE "${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}/${PKG_L}-config.cmake")
+        else ()
+          set (PKG_CONFIG_FILE)
+        endif ()
+        unset (PKG_L)
+      endif ()
+      if (PKG_CONFIG_FILE)
+        if (BASIS_DEBUG)
+          message ("**     Identified it as other package of this bundle.")
+        endif ()
+        get_filename_component (PKG_CONFIG_DIR "${PKG_CONFIG_FILE}" PATH)
+        basis_set_or_update_value (DEPENDS_${PKG}_DIR "${PKG_CONFIG_DIR}" PATH)
+        include ("${PKG_CONFIG_FILE}")
+        set (${PKG}_FOUND TRUE)
+        unset (PKG_CONFIG_DIR)
+      endif ()
+      unset (PKG_CONFIG_FILE)
+    endif ()
+    unset (PKGIDX)
+  endif ()
+  # --------------------------------------------------------------------------
+  # otherwise, look for external package
+  if (NOT PKG_IS_MODULE)
     # ------------------------------------------------------------------------
-    # otherwise, look for external package
-    if (NOT PKG_IS_MODULE)
+    # provide option which allows users to request use of optional packages
+    #
+    # - WITH_<PKG>  == ON:  optional dependency is required
+    # - WITH_<PKG>  == OFF:
+    #   - USE_<PKG> == ON:  dependency is looked for and used if available
+    #   - USE_<PKG> == OFF: dependency is ignored
+    if (NOT ARGN_REQUIRED)
+      option (WITH_${PKG} "Build with optional ${PKG} dependency" OFF)
+      if (WITH_${PKG})
+        set (ARGN_REQUIRED TRUE)
+      endif ()
+    endif ()
+    if (ARGN_REQUIRED OR NOT DEFINED USE_${PKG} OR USE_${PKG})
       # ----------------------------------------------------------------------
       # add DEPENDS_<PKG>_DIR cache entry and set it to <PKG>_DIR supplied on
       # CMake command-line. Make <PKG>_DIR internal cache entry.
@@ -485,11 +481,6 @@ macro (basis_find_package PACKAGE)
           endif ()
         endif ()
         # --------------------------------------------------------------------
-        # reset <PKG>_DIR variable for possible search of different package version
-        #if (PKG_DIR)
-        #  basis_update_value (${PKG}_DIR "${PKG_DIR}")
-        #endif ()
-        # --------------------------------------------------------------------
         # remember current/previous DEPENDS_<PKG>_DIR
         # (used above to reset other <PKG>_* variables whenever DEPENDS_<PKG>_DIR changed)
         if (DEFINED DEPENDS_${PKG}_DIR)
@@ -505,8 +496,6 @@ macro (basis_find_package PACKAGE)
     unset (USE_PKG_OPTION)
     unset (PKG_IS_MODULE)
     unset (FIND_ADDITIONAL_COMPONENTS)
-  else ()
-    set (${PKG}_FOUND FALSE)
   endif ()
 endmacro ()
 
@@ -568,17 +557,12 @@ macro (basis_use_package PACKAGE)
       # use other module of top-level project
       else ()
         list (FIND PROJECT_MODULES "${PKG}" PKGIDX)
-        if (NOT PKGIDX EQUAL -1)
-          if (${PKG}_FOUND)
-            if (BASIS_DEBUG)
-              message ("**     Include package use file of other module.")
-            endif ()
-            include ("${${PKG}_USE_FILE}")
-            break () # instead of return()
-          else ()
-            message (FATAL_ERROR "Module ${PKG} not found! This must be an error in BASIS."
-                                 " Report this issue to the maintainer of this package.")
+        if (NOT PKGIDX EQUAL -1 AND ${PKG}_FOUND)
+          if (BASIS_DEBUG)
+            message ("**     Include package use file of other module.")
           endif ()
+          include ("${${PKG}_USE_FILE}")
+          break () # instead of return()
         endif ()
         unset (PKGIDX)
       endif ()
@@ -2353,7 +2337,7 @@ function (basis_get_source_language LANGUAGE)
       # determine language based on extension for those without shebang
       set (LANG)
       # C++
-      if (SOURCE_FILE MATCHES "\\.(c|cc|cpp|cxx|h|hpp|hxx|txx|inl)(\\.in)?$")
+      if (SOURCE_FILE MATCHES "\\.(c|cc|cpp|cxx|h|hh|hpp|hxx|txx|inl)(\\.in)?$")
         set (LANG "CXX")
       # Java
       elseif (SOURCE_FILE MATCHES "\\.java(\\.in)?$")
