@@ -1745,10 +1745,6 @@ endmacro ()
 macro (basis_find_packages)
   set (BASIS_SET_TARGET_PROPERTIES_IMPORT TRUE) # see set_target_properties()
 
-  # Attention: This function is used before the Directories.cmake.in and
-  #            Settings.cmake.in files were configured and included.
-  set (PROJECT_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
-
   # --------------------------------------------------------------------------
   # add project config directory to CMAKE_MODULE_PATH
   set (CMAKE_MODULE_PATH "${PROJECT_CONFIG_DIR}" ${CMAKE_MODULE_PATH})
