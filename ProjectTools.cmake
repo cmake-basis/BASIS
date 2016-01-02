@@ -908,7 +908,18 @@ macro (basis_project_modules)
 
   # order list to satisfy dependencies
   include (${BASIS_MODULE_PATH}/TopologicalSort.cmake)
-  topological_sort (PROJECT_MODULES_ENABLED "" "_DEPENDS")
+  foreach (MODULE ${PROJECT_MODULES})
+    set (${MODULE}_USES
+      ${${MODULE}_DEPENDS}
+      ${${MODULE}_OPTIONAL_DEPENDS}
+      ${${MODULE}_TEST_DEPENDS}
+      ${${MODULE}_OPTIONAL_TEST_DEPENDS}
+    )
+  endforeach ()
+  topological_sort (PROJECT_MODULES_ENABLED "" "_USES")
+  foreach (MODULE ${PROJECT_MODULES})
+    unset (${MODULE}_USES)
+  endforeach ()
 
   # remove external dependencies
   set (L)
