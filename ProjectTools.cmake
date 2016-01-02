@@ -908,11 +908,6 @@ macro (basis_project_modules)
   set (PROJECT_MODULES_ENABLED "${L}")
   unset (L)
 
-  # report what will be built
-  if (PROJECT_MODULES_ENABLED)
-    message (STATUS "Enabled modules [${PROJECT_MODULES_ENABLED}].")
-  endif ()
-
   # turn options ON for modules that are required by other modules
   foreach (MODULE ${PROJECT_MODULES})
     if (DEFINED MODULE_${MODULE} # there was an option for the user
@@ -923,7 +918,12 @@ macro (basis_project_modules)
       message ("Enabled module ${MODULE}, needed by [${${MODULE}_NEEDED_BY}].")
     endif ()
   endforeach ()
-  
+ 
+  # report what will be built
+  if (PROJECT_MODULES_ENABLED)
+    message (STATUS "Enabled modules [${PROJECT_MODULES_ENABLED}].")
+  endif ()
+
 endmacro ()
 
 # ----------------------------------------------------------------------------
