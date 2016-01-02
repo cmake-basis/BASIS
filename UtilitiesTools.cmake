@@ -194,7 +194,7 @@ function (basis_add_cxx_utilities_library UID)
     # matters; this will help CMake to get the order right
     target_link_libraries (${TARGET_UID} ${BASIS_CXX_UTILITIES_LIBRARY})
     # set target properties
-    _set_target_properties (
+    set_target_properties (
       ${TARGET_UID}
       PROPERTIES
         BASIS_TYPE                STATIC_LIBRARY
