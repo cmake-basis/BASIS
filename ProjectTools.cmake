@@ -27,7 +27,7 @@ endif ()
 # basis_name_check
 # ============================================================================
 
-# ----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 ## @brief Check if a project name fits the BASIS standards.
 #
 macro (basis_name_check INPUT_PROJECT_NAME)
@@ -765,10 +765,16 @@ macro (basis_project_modules)
     foreach (V IN ITEMS DEPENDS OPTIONAL_DEPENDS TEST_DEPENDS OPTIONAL_TEST_DEPENDS)
       set (${V})
       foreach (D ${PROJECT_${V}})
-        basis_tokenize_dependency ("${D}" PKG VER CMP)
-        list (APPEND ${V} "${PKG}")
+        basis_tokenize_dependency ("${D}" PKG VER CMPS)
+        if ("^${PKG}$" STREQUAL "^${TOPLEVEL_PROJECT_NAME}$")
+          list (APPEND ${V} ${CMPS})
+        else ()
+          list (APPEND ${V} "${PKG}")
+        endif ()
       endforeach ()
     endforeach ()
+    # do not use MODULE instead of PROJECT_NAME in this function as it is not
+    # set in the scope of this function but its parent scope only
     set (${PROJECT_NAME}_DEPENDS               "${DEPENDS}"               PARENT_SCOPE)
     set (${PROJECT_NAME}_OPTIONAL_DEPENDS      "${OPTIONAL_DEPENDS}"      PARENT_SCOPE)
     set (${PROJECT_NAME}_TEST_DEPENDS          "${TEST_DEPENDS}"          PARENT_SCOPE)
@@ -788,8 +794,6 @@ macro (basis_project_modules)
     else ()
       set (${PROJECT_NAME}_IS_SLICER_MODULE FALSE PARENT_SCOPE)
     endif ()
-    # do not use MODULE instead of PROJECT_NAME in this function as it is not
-    # set in the scope of this function but its parent scope only
     set (MODULE "${PROJECT_NAME}" PARENT_SCOPE)
   endfunction ()
 
@@ -931,6 +935,14 @@ macro (basis_project_modules)
   if (PROJECT_MODULES_ENABLED)
     message (STATUS "Enabled modules [${PROJECT_MODULES_ENABLED}].")
   endif ()
+
+  # undefine locally used variables
+  unset (M)
+  unset (MSG)
+  unset (D)
+  unset (PKG)
+  unset (VER)
+  unset (CMPS)
 
 endmacro ()
 
