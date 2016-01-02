@@ -903,7 +903,7 @@ macro (basis_project_modules)
       endif ()
     endif ()
   endforeach ()
-  list (SORT PROJECT_MODULES_ENABLED) # Deterministic order.
+  list (SORT PROJECT_MODULES_ENABLED)  # Deterministic order.
   list (SORT PROJECT_MODULES_DISABLED) # Deterministic order.
 
   # order list to satisfy dependencies
@@ -916,16 +916,20 @@ macro (basis_project_modules)
       ${${MODULE}_OPTIONAL_TEST_DEPENDS}
     )
   endforeach ()
-  topological_sort (PROJECT_MODULES_ENABLED "" "_USES")
+  set (PROJECT_MODULES_SORTED "${PROJECT_MODULES}")
+  topological_sort (PROJECT_MODULES_SORTED "" "_USES")
   foreach (MODULE ${PROJECT_MODULES})
     unset (${MODULE}_USES)
   endforeach ()
 
-  # remove external dependencies
+  # remove disabled modules and external dependencies
   set (L)
-  foreach (MODULE ${PROJECT_MODULES_ENABLED})
+  foreach (MODULE IN LISTS PROJECT_MODULES_SORTED)
     if (${MODULE}_DECLARED)
-      list (APPEND L "${MODULE}")
+      list (FIND PROJECT_MODULES_ENABLED "${MODULE}" IDX)
+      if (NOT IDX EQUAL -1)
+        list (APPEND L "${MODULE}")
+      endif ()
     endif ()
   endforeach ()
   set (PROJECT_MODULES_ENABLED "${L}")
