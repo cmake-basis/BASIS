@@ -36,12 +36,12 @@
 # ============================================================================
 
 ## @brief Request build/installation of documentation.
-if (EXISTS "${PROJECT_DOC_DIR}")
+if (EXISTS "${PROJECT_DOC_DIR}/CMakeLists.txt")
   option (BUILD_DOCUMENTATION "Request build and/or installation of documentation." OFF)
 endif ()
 
 ## @brief Request build/installation of example.
-if (EXISTS "${PROJECT_EXAMPLE_DIR}")
+if (EXISTS "${PROJECT_EXAMPLE_DIR}/CMakeLists.txt")
   option (BUILD_EXAMPLE "Request build and/or installation of example." OFF)
 endif ()
 
