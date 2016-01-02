@@ -733,9 +733,9 @@ macro (basis_project_modules)
 
   # glob BasisProject.cmake files in modules subdirectory
   if (PROJECT_MODULES_DIR)
-    file (GLOB MODULE_INFO_FILES "${PROJECT_MODULES_DIR}/*/BasisProject.cmake")
+    file (GLOB_RECURSE MODULE_INFO_FILES "${PROJECT_MODULES_DIR}/*/BasisProject.cmake")
   endif ()
-  
+
   # add each manually specified module
   foreach (_PATH IN LISTS PROJECT_MODULE_DIRS)
     if (NOT IS_ABSOLUTE ${_PATH})
