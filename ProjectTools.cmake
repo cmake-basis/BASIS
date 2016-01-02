@@ -1983,7 +1983,7 @@ macro (basis_project_begin)
     basis_get_matlab_version ()
   endif ()
 
-  if (PYTHON_EXECUTABLE AND PYTHON_VERSION_MAJOR EQUAL 0 OR (PYTHON_VERSION_MAJOR EQUAL 1 AND PYTHON_VERSION_MINOR EQUAL 4))
+  if (PYTHON_EXECUTABLE AND (PYTHON_VERSION_MAJOR EQUAL 0 OR (PYTHON_VERSION_MAJOR EQUAL 1 AND PYTHON_VERSION_MINOR EQUAL 4)))
     message (WARNING "Failed to determine Python version! Check if you can run \"${PYTHON_EXECUTABLE} -E\" in a Terminal.")
   endif ()
   if (JYTHON_EXECUTABLE AND JYTHON_VERSION_MAJOR EQUAL 0)
