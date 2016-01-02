@@ -262,7 +262,9 @@ function (basis_include_directories)
   # make relative paths absolute
   set (DIRS)
   foreach (P IN LISTS ARGN_UNPARSED_ARGUMENTS)
-    get_filename_component (P "${P}" ABSOLUTE)
+    if (NOT P MATCHES "^\\$<") # preserve generator expressions
+      get_filename_component (P "${P}" ABSOLUTE)
+    endif ()
     list (APPEND DIRS "${P}")
   endforeach ()
 
@@ -335,7 +337,9 @@ function (basis_link_directories)
   # make relative paths absolute
   set (DIRS)
   foreach (P IN LISTS ARGN)
-    get_filename_component (P "${P}" ABSOLUTE)
+    if (NOT P MATCHES "^\\$<") # preserve generator expressions
+      get_filename_component (P "${P}" ABSOLUTE)
+    endif ()
     list (APPEND DIRS "${P}")
   endforeach ()
   if (DIRS)

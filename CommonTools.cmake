@@ -2311,19 +2311,21 @@ function (basis_add_glob_target TARGET_UID SOURCES)
   # make paths absolute and turn directories into recursive globbing expressions
   set (EXPRESSIONS)
   foreach (EXPRESSION IN LISTS ARGN)
-    if (NOT IS_ABSOLUTE "${EXPRESSION}")
-      # prefer configured/generated files in the build tree, but disallow
-      # globbing within the build tree; glob only files in source tree
-      if (NOT EXPRESSION MATCHES "[*?]|\\[[0-9]+-[0-9]+\\]"            AND
-          EXISTS           "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}" AND
-          NOT IS_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}")
-        set (EXPRESSION "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}")
-      else ()
-        set (EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${EXPRESSION}")
+    if (NOT EXPRESSION MATCHES "^\\$<") # preserve generator expressions
+      if (NOT IS_ABSOLUTE "${EXPRESSION}")
+        # prefer configured/generated files in the build tree, but disallow
+        # globbing within the build tree; glob only files in source tree
+        if (NOT EXPRESSION MATCHES "[*?]|\\[[0-9]+-[0-9]+\\]"            AND
+            EXISTS           "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}" AND
+            NOT IS_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}")
+          set (EXPRESSION "${CMAKE_CURRENT_BINARY_DIR}/${EXPRESSION}")
+        else ()
+          set (EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${EXPRESSION}")
+        endif ()
       endif ()
-    endif ()
-    if (IS_DIRECTORY "${EXPRESSION}")
-      set (EXPRESSION "${EXPRESSION}/**")
+      if (IS_DIRECTORY "${EXPRESSION}")
+        set (EXPRESSION "${EXPRESSION}/**")
+      endif ()
     endif ()
     list (APPEND EXPRESSIONS "${EXPRESSION}")
   endforeach ()
@@ -2388,6 +2390,12 @@ function (basis_get_source_language LANGUAGE)
   set (LANGUAGE_OUT)
   # iterate over source files
   foreach (SOURCE_FILE ${ARGN})
+    
+    # skip generator expressions
+    if (SOURCE_FILE MATCHES "^\\$<")
+      continue()
+    endif ()
+
     get_filename_component (SOURCE_FILE "${SOURCE_FILE}" ABSOLUTE)
 
     if (IS_DIRECTORY "${SOURCE_FILE}")
