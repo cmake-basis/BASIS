@@ -823,7 +823,10 @@ macro (basis_project_modules)
       elseif (NOT ${MODULE}_CHECK_STARTED)
         # traverse dependencies of this module
         set (${MODULE}_CHECK_STARTED TRUE)
-        foreach (D IN LISTS ${MODULE}_DEPENDS)
+        foreach (D IN LISTS ${MODULE}_DEPENDS
+                            ${MODULE}_OPTIONAL_DEPENDS
+                            ${MODULE}_TEST_DEPENDS
+                            ${MODULE}_OPTIONAL_TEST_DEPENDS)
           basis_module_check (${D} ${MODULE} "${MODULE};${STACK}")
         endforeach ()
         set (${MODULE}_CHECK_FINISHED TRUE)
@@ -869,6 +872,11 @@ macro (basis_project_modules)
         foreach (D IN LISTS ${MODULE}_DEPENDS)
           basis_module_enable (${D} ${MODULE})
         endforeach ()
+        if (BUILD_TESTING)
+          foreach (D IN LISTS ${MODULE}_TEST_DEPENDS)
+            basis_module_enable (${D} ${MODULE})
+          endforeach ()
+        endif ()
       endif ()
     endif ()
   endmacro ()
