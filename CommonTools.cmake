@@ -1164,6 +1164,22 @@ macro (basis_set_if_not_set VAR)
 endmacro ()
 
 # ----------------------------------------------------------------------------
+## @brief Set value of variable to either 0 or 1 based on option value
+#
+# This function can be used to convert option values from TRUE/ON to 1 and
+# FALSE/OFF to 0 such that they can be used to configure a config.h.in header.
+#
+# @param [out] VAR Name of configuration header variable.
+# @param [in]  OPT Value of CMake option.
+macro (basis_set_config_option VAR OPT)
+  if (${OPT})
+    set ("${VAR}" 1)
+  else ()
+    set ("${VAR}" 0)
+  endif ()
+endmacro ()
+
+# ----------------------------------------------------------------------------
 ## @brief Set path relative to script file.
 #
 # This function can be used in script configurations. It takes a variable
