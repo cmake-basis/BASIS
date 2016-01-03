@@ -2116,10 +2116,6 @@ macro (basis_project_begin)
   if (NOT PROJECT_IS_MODULE)
     include ("${BASIS_MODULE_PATH}/BasisTest.cmake")
     basis_disable_testing_if_no_tests ()
-    if (BUILD_TESTING AND NOT EXISTS "${PROJECT_SOURCE_DIR}/CTestConfig.cmake")
-      message (WARNING "Missing CTestConfig.cmake file in top directory of source tree!"
-                       " You will not be able to submit test results to the CDash dashboard.")
-    endif ()
   endif ()
 
   # --------------------------------------------------------------------------
