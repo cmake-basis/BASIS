@@ -289,15 +289,22 @@ macro (basis_find_package PACKAGE)
     # - WITH_<PKG>  == OFF:
     #   - USE_<PKG> == ON:  dependency is looked for and used if available
     #   - USE_<PKG> == OFF: dependency is ignored
+    #
+    # The default of the WITH_<PKG> option is OFF unless WITH_<PKG>_DEFAULT
+    # is set in the Depends.cmake, the CMake command-line using the -D switch
+    # or the root CMakeLists.txt file before the basis_project_begin call.
+    # The (uncached) WITH_${PKG}_DEFAULT variable can be used by a project
+    # to require optional dependencies by default, e.g., to enable optional
+    # program features that depend on these external packages.
     if (NOT ARGN_REQUIRED)
-      option (WITH_${PKG} "Build with optional ${PKG} dependency" OFF)
-      if (WITH_${PKG})
-        set (ARGN_REQUIRED TRUE)
+      if (NOT DEFINED WITH_${PKG}_DEFAULT)
+        set (WITH_${PKG}_DEFAULT OFF)
       endif ()
+      option (WITH_${PKG} "Build with optional ${PKG} dependency" ${WITH_${PKG}_DEFAULT})
     endif ()
     # look for external package only if required, built with optional dependency
     # enabled by user (cf. WITH_<PKG> option above) or deprecated -DUSE_<PKG>=ON
-    if (ARGN_REQUIRED OR USE_${PKG})
+    if (ARGN_REQUIRED OR WITH_${PKG} OR USE_${PKG})
       # ----------------------------------------------------------------------
       # add DEPENDS_<PKG>_DIR cache entry and set it to <PKG>_DIR supplied on
       # CMake command-line. Make <PKG>_DIR internal cache entry.
@@ -329,7 +336,7 @@ macro (basis_find_package PACKAGE)
       # look for external package if not found or additional components needed
       if (NOT ${PKG}_FOUND OR FIND_ADDITIONAL_COMPONENTS)
         set (_${PKG}_FOUND "${${PKG}_FOUND}") # used to decide what the intersection of
-                                              # of multiple find invocations for the same
+                                              # multiple find invocations for the same
                                               # package with different components will be
         # --------------------------------------------------------------------
         # reset other <PKG>[_-]* variables if DEPENDS_<PKG>_DIR changed
@@ -466,24 +473,33 @@ macro (basis_find_package PACKAGE)
             endif ()
             message (STATUS "${_STATUS}")
           endif ()
-          if (NOT ${PKG}_FOUND AND ARGN_REQUIRED)
+          if (NOT ${PKG}_FOUND AND (ARGN_REQUIRED OR WITH_${PKG}))
             set (msg)
             if (PROJECT_IS_MODULE)
               set (msg "Module")
             else ()
               set (msg "Project")
             endif ()
-            set (msg "${msg} ${PROJECT_NAME} requires ${PKG}")
+            set (msg "${msg} ${PROJECT_NAME}")
+            if (ARGN_REQUIRED)
+              set (msg "${msg} requires ${PKG}")
+            else ()
+              set (msg "${msg} was requested to be build with ${PKG}")
+            endif ()
             if (VER)
               set (msg "${msg} version ${VER}")
             endif ()
             set (msg "${msg}. Please ensure that the package is installed in a standard"
                      " system location or set DEPENDS_${PKG}_DIR to the installation"
                      " prefix (i.e., top-level directory of the installation).")
+            if (NOT ARGN_REQUIRED AND DEFINED WITH_${PKG})
+              set (msg "${msg} To disable features which require this optional dependency,"
+                       " set the WITH_${PKG} option to OFF and try again.")
+            endif ()
             if (DEFINED ${PKG}_DIR)
               string (TOLOWER "${PKG}" PKG_L)
-              set (msg "${msg}\nAlternatively, set DEPENDS_${PKG}_DIR to the directory"
-                       " containing a ${PKG}Config.cmake or ${PKG_L}-config.cmake"
+              set (msg "${msg}\nThe DEPENDS_${PKG}_DIR variable can alternatively be set"
+                       " to the directory containing a ${PKG}Config.cmake or ${PKG_L}-config.cmake"
                        " file. If no such file exists, contact either the developer of"
                        " this project or CMake BASIS to provide a Find${PKG}.cmake file.")
             endif ()
@@ -500,7 +516,7 @@ macro (basis_find_package PACKAGE)
           endif ()
           # if previously components of this package where found and the additional
           # components are only optional, set <PKG>_FOUND to TRUE again
-          if (_${PKG}_FOUND AND NOT ARGN_REQUIRED)
+          if (_${PKG}_FOUND AND NOT ARGN_REQUIRED AND NOT WITH_${PKG})
             set (${PKG}_FOUND TRUE)
           endif ()
         endif ()
