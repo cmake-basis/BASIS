@@ -88,6 +88,7 @@ endif ()
 ## @brief Names of project meta-data switches.
 set (
   BASIS_METADATA_LIST_SWITCH
+    EXCLUDE_FROM_ALL # exclude module from BUILD_ALL_MODULES
 )
 
 ## @brief Names of project meta-data with only one argument.
@@ -135,6 +136,7 @@ set (
     AUTHORS
     DESCRIPTION
     LANGUAGES
+    DEFAULT_MODULES # list of modules to be enabled by default
     DEPENDS
     OPTIONAL_DEPENDS
     TEST_DEPENDS
