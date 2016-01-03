@@ -332,15 +332,6 @@ macro (basis_find_package PACKAGE)
                                               # of multiple find invocations for the same
                                               # package with different components will be
         # --------------------------------------------------------------------
-        # hide or show already defined DEPENDS_<PKG>_DIR cache entry
-        if (DEFINED DEPENDS_${PKG}_DIR AND DEFINED USE_${PKG})
-          if (USE_${PKG})
-            mark_as_advanced (CLEAR DEPENDS_${PKG}_DIR)
-          else ()
-            mark_as_advanced (FORCE DEPENDS_${PKG}_DIR)
-          endif ()
-        endif ()
-        # --------------------------------------------------------------------
         # reset other <PKG>[_-]* variables if DEPENDS_<PKG>_DIR changed
         if (_${PKG}_DIR AND DEPENDS_${PKG}_DIR) # internal _<PKG>_DIR cache entry set below
           basis_sanitize_for_regex (_BFP_RE "${DEPENDS_${PKG}_DIR}")
@@ -518,6 +509,17 @@ macro (basis_find_package PACKAGE)
         # (used above to reset other <PKG>_* variables whenever DEPENDS_<PKG>_DIR changed)
         if (DEFINED DEPENDS_${PKG}_DIR)
           set (_${PKG}_DIR "${DEPENDS_${PKG}_DIR}" CACHE INTERNAL "(Previous) Installation directory of ${PKG}." FORCE)
+        endif ()
+      endif ()
+      # --------------------------------------------------------------------
+      # show/hide DEPENDS_<PKG>_DIR cache entry
+      if (DEFINED DEPENDS_${PKG}_DIR)
+        if (DEPENDS_${PKG}_DIR
+            OR (NOT ARGN_REQUIRED AND NOT WITH_${PKG})
+            OR (DEFINED USE_${PKG} AND NOT USE_${PKG}))
+          mark_as_advanced (FORCE DEPENDS_${PKG}_DIR)
+        else ()
+          mark_as_advanced (CLEAR DEPENDS_${PKG}_DIR)
         endif ()
       endif ()
     endif ()
