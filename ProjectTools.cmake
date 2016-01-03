@@ -317,6 +317,29 @@ macro (basis_project_check_metadata)
     endif ()
     set (TOPLEVEL_PROJECT_LANGUAGES "${PROJECT_LANGUAGES}")
   endif ()
+  # PROJECT_DEFAULT_MODULES
+  if (PROJECT_IS_MODULE)
+    if (PROJECT_DEFAULT_MODULES)
+      message (FATAL_ERROR "Module ${PROJECT_NAME} specified DEFAULT_MODULES, but a module cannot have itself modules.")
+    else ()
+      set (PROJECT_DEFAULT_MODULES "${TOPLEVEL_PROJECT_DEFAULT_MODULES}")
+    endif ()
+  else ()
+    if (NOT PROJECT_DEFAULT_MODULES)
+      set (PROJECT_DEFAULT_MODULES "")
+    endif ()
+    set (TOPLEVEL_PROJECT_DEFAULT_MODULES "${PROJECT_DEFAULT_MODULES}")
+  endif ()
+  # PROJECT_EXCLUDE_FROM_ALL
+  if (PROJECT_IS_MODULE)
+    if (NOT DEFINED PROJECT_EXCLUDE_FROM_ALL)
+      set (PROJECT_EXCLUDE_FROM_ALL FALSE)
+    endif ()
+  else ()
+    if (PROJECT_EXCLUDE_FROM_ALL)
+      message (FATAL_ERROR "EXCLUDE_FROM_ALL option only valid for project modules.")
+    endif ()
+  endif ()
   # source tree directories
   basis_set_if_empty (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
   basis_check_or_set_source_paths (PROJECT_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
@@ -470,6 +493,15 @@ endmacro ()
 #         CXX-11 for C++11. When C++11 is used, the respective compiler flag
 #         such as -std=c++11 is added to the compile flags. Those languages supported
 #         by CMake itself are further passed on to CMake's project command.</td>
+#   </tr>
+#   <tr>
+#     @tp @b DEFAULT_MODULES module1 [module2...] @endtp
+#     <td>List of project modules that should be enabled by default.
+#         The single value "ALL" can be used to enable all modules.<.td>
+#   </tr>
+#   <tr>
+#     @tp @b EXCLUDE_FROM_ALL @endtp
+#     <td>Exclude this project module from @c BUILD_ALL_MODULES.</td>
 #   </tr>
 #   <tr>
 #     @tp @b TEMPLATE path @endtp
@@ -628,6 +660,7 @@ endmacro ()
 # @retval PROJECT_TEST_DEPENDS            See @c TEST_DEPENDS.
 # @retval PROJECT_OPTIONAL_TEST_DEPENDS   See @c OPTIONAL_TEST_DEPENDS.
 # @retval PROJECT_IS_SUBPROJECT           See @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
+# @retval PROJECT_DEFAULT_MODULES         See @c DEFAULT_MODULES.
 #
 # @retval PROJECT_CODE_DIRS               See @c CODE_DIRS.
 # @retval PROJECT_CODE_DIR                First element of @c PROJECT_CODE_DIRS list.
@@ -794,6 +827,9 @@ macro (basis_project_modules)
     else ()
       set (${PROJECT_NAME}_IS_SLICER_MODULE FALSE PARENT_SCOPE)
     endif ()
+    # whether to always exclude module from BUILD_ALL_MODULES
+    set (${PROJECT_NAME}_EXCLUDE_FROM_ALL "${PROJECT_EXCLUDE_FROM_ALL}" PARENT_SCOPE)
+    # module name
     set (MODULE "${PROJECT_NAME}" PARENT_SCOPE)
   endfunction ()
 
@@ -808,8 +844,11 @@ macro (basis_project_modules)
     set (MODULE_${MODULE}_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/modules/${MODULE}")
     # help modules to find each other using basis_find_package()
     set (${MODULE}_DIR "${MODULE_${MODULE}_BINARY_DIR}")
+    # only set EXCLUDE_<MODULE>_FROM_ALL when not specified on command-line using -D switch
+    if (NOT DEFINED EXCLUDE_${MODULE}_FROM_ALL)
+      set (EXCLUDE_${MODULE}_FROM_ALL "${${MODULE}_EXCLUDE_FROM_ALL}")
+    endif ()
   endforeach()
-  unset (MODULE)
 
   # validate the module DAG to identify cyclic dependencies
   macro (basis_module_check MODULE NEEDED_BY STACK)
@@ -842,24 +881,39 @@ macro (basis_project_modules)
     basis_module_check ("${MODULE}" "" "")
   endforeach ()
 
+  # check if list of PROJECT_DEFAULT_MODULES contains invalid module name
+  if (NOT "^${PROJECT_DEFAULT_MODULES}$" STREQUAL "^ALL$")
+    foreach (MODULE IN LISTS PROJECT_DEFAULT_MODULES)
+      list (FIND PROJECT_MODULES "${MODULE}" IDX)
+      if (IDX EQUAL -1)
+        message (FATAL_ERROR "List of DEFAULT_MODULES specified in BasisProject.cmake file"
+                             " contains non-existing module ${MODULE}.")
+      endif ()
+    endforeach ()
+  endif ()
+
   # --------------------------------------------------------------------------
   # determine list of enabled modules
 
   # provide an option for all modules
   if (PROJECT_MODULES)
     option (BUILD_ALL_MODULES "Request to build all modules." OFF)
-    option (BUILD_MODULES_BY_DEFAULT "ON - Automatically request modules be built, OFF - manually request each." ON)
-    mark_as_advanced(BUILD_MODULES_BY_DEFAULT)
   endif ()
 
   # provide an option for each module
   foreach (MODULE ${PROJECT_MODULES})
-    option (MODULE_${MODULE} "Request to build the module ${MODULE}." ${BUILD_MODULES_BY_DEFAULT})
-    if (${MODULE}_EXCLUDE_FROM_ALL)
-      set (${MODULE}_IN_ALL FALSE)
+    if ("^${PROJECT_DEFAULT_MODULES}$" STREQUAL "^ALL$")
+      set (MODULE_${MODULE}_DEFAULT ON)
     else ()
-      set (${MODULE}_IN_ALL ${BUILD_ALL_MODULES})
+      list (FIND PROJECT_DEFAULT_MODULES "${MODULE}" IDX)
+      if (IDX EQUAL -1)
+        set (MODULE_${MODULE}_DEFAULT OFF)
+      else ()
+        set (MODULE_${MODULE}_DEFAULT ON)
+      endif ()
     endif ()
+    option (MODULE_${MODULE} "Request to build the module ${MODULE}." ${MODULE_${MODULE}_DEFAULT})
+    unset (MODULE_${MODULE}_DEFAULT)
   endforeach ()
 
   # follow dependencies
@@ -886,7 +940,10 @@ macro (basis_project_modules)
   endmacro ()
 
   foreach (MODULE ${PROJECT_MODULES})
-    if (MODULE_${MODULE} OR ${MODULE}_IN_ALL)
+    # EXCLUDE_<MODULE>_FROM_ALL can be set on command-line via cmake -D switch
+    # in conjunction with -D BUILD_ALL_MODULES=ON. the default value of
+    # EXCLUDE_<MODULE>_FROM_ALL is set from the EXCLUDE_FROM_ALL basis_project option.
+    if (MODULE_${MODULE} OR (BUILD_ALL_MODULES AND NOT EXCLUDE_${MODULE}_FROM_ALL))
       basis_module_enable ("${MODULE}" "")
     endif ()
   endforeach ()
@@ -952,6 +1009,9 @@ macro (basis_project_modules)
   endif ()
 
   # undefine locally used variables
+  unset (F)
+  unset (MODULE)
+  unset (IDX)
   unset (M)
   unset (MSG)
   unset (D)
