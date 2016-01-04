@@ -252,6 +252,10 @@ endfunction ()
 #         Default: No exclude patterns.</td>
 #   </tr>
 #   <tr>
+#     @tp @b PREDEFINED name1|name1=value1 [name2|name2=value2...] @endtp
+#     <td>Add preprocessor definitions to be expanded by Doxygen.</td>
+#   </tr>
+#   <tr>
 #     @tp @b OUTPUT fmt @endtp
 #     <td>Specify output formats in which to generate the documentation.
 #         Currently, only @c html and @c xml are supported.</td>
@@ -416,7 +420,7 @@ function (basis_add_doxygen_doc TARGET_NAME)
     DOXYGEN
       "EXCLUDE_FROM_DOC;DISABLE_PROJECT_NAME_DISPLAY"
       "${VALUEARGS};${OPTIONAL_FILE_OPTIONS}"
-      "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX;ENABLED_SECTIONS;HTML_EXTRA_FILES"
+      "INPUT;OUTPUT;INPUT_FILTER;FILTER_PATTERNS;EXCLUDE_PATTERNS;INCLUDE_PATH;IGNORE_PREFIX;ENABLED_SECTIONS;PREDEFINED;HTML_EXTRA_FILES"
       ${ARGN}
   )
   unset (VALUEARGS)
@@ -636,6 +640,11 @@ function (basis_add_doxygen_doc TARGET_NAME)
     DOXYGEN_INPUT "\"\nINPUT                 += \"" ${DOXYGEN_INPUT}
   )
   set (DOXYGEN_INPUT "\"${DOXYGEN_INPUT}\"")
+  # preprocessor definitions
+  basis_list_to_delimited_string (
+    DOXYGEN_PREDEFINED "\"\nPREDEFINED            += \"" ${DOXYGEN_PREDEFINED}
+  )
+  set (DOXYGEN_PREDEFINED "\"${DOXYGEN_PREDEFINED}\"")
   # outputs
   if (NOT DOXYGEN_OUTPUT_DIRECTORY)
     set (DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME_L}")
