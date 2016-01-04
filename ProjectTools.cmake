@@ -330,6 +330,19 @@ macro (basis_project_check_metadata)
     endif ()
     set (TOPLEVEL_PROJECT_DEFAULT_MODULES "${PROJECT_DEFAULT_MODULES}")
   endif ()
+  # PROJECT_EXTERNAL_MODULES
+  if (PROJECT_IS_MODULE)
+    if (PROJECT_EXTERNAL_MODULES)
+      message (FATAL_ERROR "Module ${PROJECT_NAME} specified EXTERNAL_MODULES, but a module cannot have itself modules.")
+    else ()
+      set (PROJECT_EXTERNAL_MODULES "${TOPLEVEL_PROJECT_EXTERNAL_MODULES}")
+    endif ()
+  else ()
+    if (NOT PROJECT_EXTERNAL_MODULES)
+      set (PROJECT_EXTERNAL_MODULES "")
+    endif ()
+    set (TOPLEVEL_PROJECT_EXTERNAL_MODULES "${PROJECT_EXTERNAL_MODULES}")
+  endif ()
   # PROJECT_EXCLUDE_FROM_ALL
   if (PROJECT_IS_MODULE)
     if (NOT DEFINED PROJECT_EXCLUDE_FROM_ALL)
@@ -520,6 +533,12 @@ endmacro ()
 #         The single value "ALL" can be used to enable all modules.<.td>
 #   </tr>
 #   <tr>
+#     @tp @b EXTERNAL_MODULES module1 [module2...] @endtp
+#     <td>List of external project modules. Only required when directory of external
+#         modules may be empty (i.e., not contain a BasisProject.cmake file) as in
+#         case of an uninitialized Git submodule.<.td>
+#   </tr>
+#   <tr>
 #     @tp @b EXCLUDE_FROM_ALL @endtp
 #     <td>Exclude this project module from @c BUILD_ALL_MODULES.</td>
 #   </tr>
@@ -696,6 +715,7 @@ endmacro ()
 # @retval PROJECT_OPTIONAL_TEST_DEPENDS   See @c OPTIONAL_TEST_DEPENDS.
 # @retval PROJECT_IS_SUBPROJECT           See @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
 # @retval PROJECT_DEFAULT_MODULES         See @c DEFAULT_MODULES.
+# @retval PROJECT_EXTERNAL_MODULES        See @c EXTERNAL_MODULES.
 #
 # @retval PROJECT_CODE_DIRS               See @c CODE_DIRS.
 # @retval PROJECT_CODE_DIR                First element of @c PROJECT_CODE_DIRS list.
@@ -852,6 +872,7 @@ macro (basis_project_modules)
     set (${PROJECT_NAME}_TEST_DEPENDS          "${TEST_DEPENDS}"          PARENT_SCOPE)
     set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS "${OPTIONAL_TEST_DEPENDS}" PARENT_SCOPE)
     set (${PROJECT_NAME}_DECLARED              TRUE                       PARENT_SCOPE)
+    set (${PROJECT_NAME}_MISSING               FALSE                      PARENT_SCOPE)
     # remember source directories - used by basis_add_doxygen_doc()
     set (${PROJECT_NAME}_INCLUDE_DIRS "${PROJECT_INCLUDE_DIRS}")
     set (${PROJECT_NAME}_CODE_DIRS    "${PROJECT_CODE_DIRS}")
@@ -888,6 +909,19 @@ macro (basis_project_modules)
       set (EXCLUDE_${MODULE}_FROM_ALL "${${MODULE}_EXCLUDE_FROM_ALL}")
     endif ()
   endforeach()
+
+  # add non-existing external modules to list
+  foreach (MODULE IN LISTS PROJECT_EXTERNAL_MODULES)
+    if (NOT ${MODULE}_DECLARED)
+      list (APPEND PROJECT_MODULES "${MODULE}")
+      set (${MODULE}_DEPENDS)
+      set (${MODULE}_OPTIONAL_DEPENDS)
+      set (${MODULE}_TEST_DEPENDS)
+      set (${MODULE}_OPTIONAL_TEST_DEPENDS)
+      set (${MODULE}_DECLARED TRUE)
+      set (${MODULE}_MISSING  TRUE)
+    endif ()
+  endforeach ()
 
   # validate the module DAG to identify cyclic dependencies
   macro (basis_module_check MODULE NEEDED_BY STACK)
@@ -951,7 +985,13 @@ macro (basis_project_modules)
         set (MODULE_${MODULE}_DEFAULT ON)
       endif ()
     endif ()
-    option (MODULE_${MODULE} "Request to build the module ${MODULE}." ${MODULE_${MODULE}_DEFAULT})
+    if (${MODULE}_MISSING AND NOT MODULE_${MODULE}_DEFAULT)
+      set (MODULE_${MODULE} NOTFOUND CACHE STRING "Request to build the module ${MODULE}.")
+      set_property (CACHE MODULE_${MODULE} PROPERTY STRINGS "NOTFOUND;ON")
+    else ()
+      option (MODULE_${MODULE} "Request to build the module ${MODULE}." ${MODULE_${MODULE}_DEFAULT})
+      set_property (CACHE MODULE_${MODULE} PROPERTY TYPE BOOL)
+    endif ()
     unset (MODULE_${MODULE}_DEFAULT)
   endforeach ()
 
@@ -1041,11 +1081,25 @@ macro (basis_project_modules)
       message ("Enabled module ${MODULE}, needed by [${${MODULE}_NEEDED_BY}].")
     endif ()
   endforeach ()
- 
+
   # report what will be built
   if (PROJECT_MODULES_ENABLED)
     message (STATUS "Enabled modules [${PROJECT_MODULES_ENABLED}].")
   endif ()
+
+  # check that all enabled external modules do exist
+  foreach (MODULE IN LISTS PROJECT_EXTERNAL_MODULES)
+    if (MODULE_${MODULE} AND ${MODULE}_MISSING)
+      set (msg "External module ${MODULE} is enabled but missing.")
+      if (EXISTS "${PROJECT_SOURCE_DIR}/.gitmodules")
+        set (msg "${msg} If the module is a Git submodule, ensure that it"
+                 " is properly initialized, i.e.,\n"
+                 "\tgit submodule update --init -- <module_dir>\n")
+      endif ()
+      basis_list_to_string(msg ${msg})
+      message (FATAL_ERROR "${msg}")
+    endif ()
+  endforeach ()
 
   # undefine locally used variables
   unset (F)

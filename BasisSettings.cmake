@@ -137,7 +137,8 @@ set (
     AUTHORS
     DESCRIPTION
     LANGUAGES
-    DEFAULT_MODULES # list of modules to be enabled by default
+    DEFAULT_MODULES  # list of modules to be enabled by default
+    EXTERNAL_MODULES # list of external project modules
     DEPENDS
     OPTIONAL_DEPENDS
     TEST_DEPENDS
