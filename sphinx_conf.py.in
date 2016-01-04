@@ -17,7 +17,8 @@ import os
 # General configuration
 # ---------------------
 
-sys.path.insert(0, '@BASIS_SPHINX_EXTENSIONS_PATH@')
+if '@BASIS_SPHINX_EXTENSIONS_PATH@' != '':
+    sys.path.insert(0, '@BASIS_SPHINX_EXTENSIONS_PATH@')
 extensions = ['sphinx.ext.todo'] + [@SPHINX_EXTENSIONS@]
 
 authors = [@SPHINX_AUTHORS@]
