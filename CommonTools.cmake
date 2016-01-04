@@ -318,26 +318,33 @@ macro (basis_find_package PACKAGE)
       basis_update_type_of_variable (${PKG}_DIR INTERNAL)
       # ----------------------------------------------------------------------
       # determine if additional components of found package should be discovered
-      set (FIND_ADDITIONAL_COMPONENTS FALSE)
+      set (_${PKG}_FOUND "${${PKG}_FOUND}") # used to decide what the intersection of
+                                            # multiple find invocations for the same
+                                            # package with different components will be
       if (${PKG}_FOUND)
         if (${PKG}_FOUND_COMPONENTS AND ARGN_COMPONENTS)
+          set (FIND_ADDITIONAL_COMPONENTS)
           foreach (_C ${ARGN_COMPONENTS})
             list (FIND ${PKG}_FOUND_COMPONENTS "${_C}" _IDX)
             if (_IDX EQUAL -1)
-              set (FIND_ADDITIONAL_COMPONENTS TRUE)
-              break ()
+              list (APPEND FIND_ADDITIONAL_COMPONENTS "${_C}")
             endif ()
           endforeach ()
+          if (FIND_ADDITIONAL_COMPONENTS)
+            set (${PKG}_FOUND FALSE)
+          endif ()
         elseif (${PKG}_FOUND_COMPONENTS OR ARGN_COMPONENTS)
-          set (FIND_ADDITIONAL_COMPONENTS TRUE)
+          set (FIND_ADDITIONAL_COMPONENTS "${ARGN_COMPONENTS}")
+          set (${PKG}_FOUND FALSE)
+        else ()
+          set (FIND_ADDITIONAL_COMPONENTS)
         endif ()
+      else ()
+        set (FIND_ADDITIONAL_COMPONENTS "${ARGN_COMPONENTS}")
       endif ()
       # ----------------------------------------------------------------------
       # look for external package if not found or additional components needed
-      if (NOT ${PKG}_FOUND OR FIND_ADDITIONAL_COMPONENTS)
-        set (_${PKG}_FOUND "${${PKG}_FOUND}") # used to decide what the intersection of
-                                              # multiple find invocations for the same
-                                              # package with different components will be
+      if (NOT ${PKG}_FOUND)
         # --------------------------------------------------------------------
         # reset other <PKG>[_-]* variables if DEPENDS_<PKG>_DIR changed
         if (_${PKG}_DIR AND DEPENDS_${PKG}_DIR) # internal _<PKG>_DIR cache entry set below
@@ -390,8 +397,8 @@ macro (basis_find_package PACKAGE)
           if (ARGN_QUIET)
             list (APPEND FIND_ARGN "QUIET")
           endif ()
-          if (ARGN_COMPONENTS)
-            list (APPEND FIND_ARGN "COMPONENTS" ${ARGN_COMPONENTS})
+          if (FIND_ADDITIONAL_COMPONENTS)
+            list (APPEND FIND_ARGN "COMPONENTS" ${${PKG}_FOUND_COMPONENTS} ${FIND_ADDITIONAL_COMPONENTS})
           endif ()
           if (PKG MATCHES "^(MFC|wxWidgets)$")
             # if Find<Pkg>.cmake prints status message, don't do it here
@@ -401,8 +408,8 @@ macro (basis_find_package PACKAGE)
             if (VER)
               set (_STATUS "${_STATUS} ${VER}")
             endif ()
-            if (ARGN_COMPONENTS)
-              set (_STATUS "${_STATUS} [${ARGN_COMPONENTS}]")
+            if (FIND_ADDITIONAL_COMPONENTS)
+              set (_STATUS "${_STATUS} [${FIND_ADDITIONAL_COMPONENTS}]")
             endif ()
             if (NOT ARGN_REQUIRED)
               set (_STATUS "${_STATUS} (optional)")
@@ -507,12 +514,20 @@ macro (basis_find_package PACKAGE)
             message (FATAL_ERROR "\n${msg}\n")
           endif ()
           # remember which components where found already
-          if (${PKG}_FOUND AND ARGN_COMPONENTS)
+          if (${PKG}_FOUND AND FIND_ADDITIONAL_COMPONENTS)
             if (${PKG}_FOUND_COMPONENTS)
-              list (APPEND ARGN_COMPONENTS ${${PKG}_FOUND_COMPONENTS})
-              list (REMOVE_DUPLICATES ARGN_COMPONENTS)
+              list (APPEND ${PKG}_FOUND_COMPONENTS ${FIND_ADDITIONAL_COMPONENTS})
+              list (REMOVE_DUPLICATES ${PKG}_FOUND_COMPONENTS)
+            else ()
+              set (${PKG}_FOUND_COMPONENTS "${FIND_ADDITIONAL_COMPONENTS}")
             endif ()
-            set (${PKG}_FOUND_COMPONENTS "${ARGN_COMPONENTS}")
+            # force reinclusion of package use file
+            if (${PKG}_USE_FILE_INCLUDED)
+              set (${PKG}_USE_FILE_INCLUDED 0)
+            endif ()
+            if (BASIS_USE_${PKG}_INCLUDED)
+              set (BASIS_USE_${PKG}_INCLUDED FALSE)
+            endif ()
           endif ()
           # if previously components of this package where found and the additional
           # components are only optional, set <PKG>_FOUND to TRUE again
