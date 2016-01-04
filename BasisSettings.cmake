@@ -141,6 +141,8 @@ set (
     EXTERNAL_MODULES # list of external project modules
     DEPENDS
     OPTIONAL_DEPENDS
+    TOOLS_DEPENDS
+    OPTIONAL_TOOLS_DEPENDS
     TEST_DEPENDS
     OPTIONAL_TEST_DEPENDS
     INCLUDE_DIRS   # list of directories containing public header files

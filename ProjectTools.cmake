@@ -593,6 +593,17 @@ endmacro ()
 #         or names of external packages which are used only if available.</td>
 #   </tr>
 #   <tr>
+#     @tp @b TOOLS_DEPENDS dep1 [dep2...] @endtp
+#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
+#         or names of external packages required when BUILD_APPLICATIONS is ON.</td>
+#   </tr>
+#   <tr>
+#     @tp @b OPTIONAL_TOOLS_DEPENDS dep1 [dep2...] @endtp
+#     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
+#         or names of external packages which are used only if available
+#         when BUILD_APPLICATIONS is ON.</td>
+#   </tr>
+#   <tr>
 #     @tp @b TEST_DEPENDS dep1 [dep2...] @endtp
 #     <td>List of dependencies, i.e., either names of other BASIS (sub)projects
 #         or names of external packages which are only required by the tests.</td>
@@ -711,6 +722,8 @@ endmacro ()
 # @retval PROJECT_LANGUAGES               See @c LANGUAGES.
 # @retval PROJECT_DEPENDS                 See @c DEPENDS.
 # @retval PROJECT_OPTIONAL_DEPENDS        See @c OPTIONAL_DEPENDS.
+# @retval PROJECT_TOOLS_DEPENDS           See @c TOOLS_DEPENDS.
+# @retval PROJECT_OPTIONAL_TOOLS_DEPENDS  See @c OPTIONAL_TOOLS_DEPENDS.
 # @retval PROJECT_TEST_DEPENDS            See @c TEST_DEPENDS.
 # @retval PROJECT_OPTIONAL_TEST_DEPENDS   See @c OPTIONAL_TEST_DEPENDS.
 # @retval PROJECT_IS_SUBPROJECT           See @c TRUE if @c IS_SUBPROJECT option given or @c FALSE otherwise.
@@ -854,7 +867,7 @@ macro (basis_project_modules)
       message (FATAL_ERROR "basis_module_info(): Missing basis_project() command in ${F}!")
     endif ()
     # remember dependencies
-    foreach (V IN ITEMS DEPENDS OPTIONAL_DEPENDS TEST_DEPENDS OPTIONAL_TEST_DEPENDS)
+    foreach (V IN ITEMS DEPENDS OPTIONAL_DEPENDS TOOLS_DEPENDS OPTIONAL_TOOLS_DEPENDS TEST_DEPENDS OPTIONAL_TEST_DEPENDS)
       set (${V})
       foreach (D ${PROJECT_${V}})
         basis_tokenize_dependency ("${D}" PKG VER CMPS)
@@ -867,15 +880,17 @@ macro (basis_project_modules)
     endforeach ()
     # do not use MODULE instead of PROJECT_NAME in this function as it is not
     # set in the scope of this function but its parent scope only
-    set (${PROJECT_NAME}_DEPENDS               "${DEPENDS}"               PARENT_SCOPE)
-    set (${PROJECT_NAME}_OPTIONAL_DEPENDS      "${OPTIONAL_DEPENDS}"      PARENT_SCOPE)
-    set (${PROJECT_NAME}_TEST_DEPENDS          "${TEST_DEPENDS}"          PARENT_SCOPE)
-    set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS "${OPTIONAL_TEST_DEPENDS}" PARENT_SCOPE)
-    set (${PROJECT_NAME}_DECLARED              TRUE                       PARENT_SCOPE)
-    set (${PROJECT_NAME}_MISSING               FALSE                      PARENT_SCOPE)
+    set (${PROJECT_NAME}_DEPENDS                "${DEPENDS}"                PARENT_SCOPE)
+    set (${PROJECT_NAME}_OPTIONAL_DEPENDS       "${OPTIONAL_DEPENDS}"       PARENT_SCOPE)
+    set (${PROJECT_NAME}_TOOLS_DEPENDS          "${TOOL_DEPENDS}"           PARENT_SCOPE)
+    set (${PROJECT_NAME}_OPTIONAL_TOOLS_DEPENDS "${OPTIONAL_TOOLS_DEPENDS}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_TEST_DEPENDS           "${TEST_DEPENDS}"           PARENT_SCOPE)
+    set (${PROJECT_NAME}_OPTIONAL_TEST_DEPENDS  "${OPTIONAL_TEST_DEPENDS}"  PARENT_SCOPE)
+    set (${PROJECT_NAME}_DECLARED               TRUE                        PARENT_SCOPE)
+    set (${PROJECT_NAME}_MISSING                FALSE                       PARENT_SCOPE)
     # remember source directories - used by basis_add_doxygen_doc()
-    set (${PROJECT_NAME}_INCLUDE_DIRS "${PROJECT_INCLUDE_DIRS}")
-    set (${PROJECT_NAME}_CODE_DIRS    "${PROJECT_CODE_DIRS}")
+    set (${PROJECT_NAME}_INCLUDE_DIRS "${PROJECT_INCLUDE_DIRS}" PARENT_SCOPE)
+    set (${PROJECT_NAME}_CODE_DIRS    "${PROJECT_CODE_DIRS}"    PARENT_SCOPE)
     # remember if module depends on Slicer - used by basis_find_packages()
     if (PROJECT_IS_SLICER_MODULE)
       foreach (_D IN LISTS BASIS_SLICER_METADATA_LIST)
@@ -916,6 +931,8 @@ macro (basis_project_modules)
       list (APPEND PROJECT_MODULES "${MODULE}")
       set (${MODULE}_DEPENDS)
       set (${MODULE}_OPTIONAL_DEPENDS)
+      set (${MODULE}_TOOLS_DEPENDS)
+      set (${MODULE}_OPTIONAL_TOOLS_DEPENDS)
       set (${MODULE}_TEST_DEPENDS)
       set (${MODULE}_OPTIONAL_TEST_DEPENDS)
       set (${MODULE}_DECLARED TRUE)
@@ -941,6 +958,8 @@ macro (basis_project_modules)
         set (${MODULE}_CHECK_STARTED TRUE)
         foreach (D IN LISTS ${MODULE}_DEPENDS
                             ${MODULE}_OPTIONAL_DEPENDS
+                            ${MODULE}_TOOLS_DEPENDS
+                            ${MODULE}_OPTIONAL_TOOLS_DEPENDS
                             ${MODULE}_TEST_DEPENDS
                             ${MODULE}_OPTIONAL_TEST_DEPENDS)
           basis_module_check (${D} ${MODULE} "${MODULE};${STACK}")
@@ -1009,6 +1028,11 @@ macro (basis_project_modules)
         foreach (D IN LISTS ${MODULE}_DEPENDS)
           basis_module_enable (${D} ${MODULE})
         endforeach ()
+        if (BUILD_APPLICATIONS)
+          foreach (D IN LISTS ${MODULE}_TOOLS_DEPENDS)
+            basis_module_enable (${D} ${MODULE})
+          endforeach ()
+        endif ()
         if (BUILD_TESTING)
           foreach (D IN LISTS ${MODULE}_TEST_DEPENDS)
             basis_module_enable (${D} ${MODULE})
@@ -1048,6 +1072,8 @@ macro (basis_project_modules)
     set (${MODULE}_USES
       ${${MODULE}_DEPENDS}
       ${${MODULE}_OPTIONAL_DEPENDS}
+      ${${MODULE}_TOOLS_DEPENDS}
+      ${${MODULE}_OPTIONAL_TOOLS_DEPENDS}
       ${${MODULE}_TEST_DEPENDS}
       ${${MODULE}_OPTIONAL_TEST_DEPENDS}
     )
@@ -1929,6 +1955,33 @@ macro (basis_find_packages)
     basis_find_package ("${P}" QUIET)
     basis_use_package  ("${P}")
   endforeach ()
+
+  # --------------------------------------------------------------------------
+  # application dependencies
+  if (BUILD_APPLICATIONS)
+    # required application dependencies
+    foreach (P IN LISTS PROJECT_TOOLS_DEPENDS)
+      basis_find_package ("${P}") # do not use REQUIRED here to be able to show
+      basis_use_package ("${P}")  # error message below
+      basis_tokenize_dependency ("${P}" P VER CMPS)
+      string (TOUPPER "${P}" U)
+      if (NOT ${P}_FOUND AND NOT ${U}_FOUND)
+        message (FATAL_ERROR "Could not find package ${P}! It is required by "
+                             "the applications of ${PROJECT_NAME}. Either specify "
+                             "package location manually and try again or "
+                             "disable testing by setting BUILD_APPLICATIONS to OFF.")
+        
+      endif ()
+      unset (U)
+      unset (VER)
+      unset (CMPS)
+    endforeach ()
+    # optional application dependencies
+    foreach (P IN LISTS PROJECT_OPTIONAL_TOOLS_DEPENDS)
+      basis_find_package ("${P}" QUIET)
+      basis_use_package ("${P}")
+    endforeach ()
+  endif ()
 
   # --------------------------------------------------------------------------
   # test dependencies
