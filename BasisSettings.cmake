@@ -119,6 +119,7 @@ set (
     TEMPLATE       # used by basisproject tool
     INCLUDE_DIR    # alias for INCLUDE_DIRS
     CODE_DIR       # alias for CODE_DIRS
+    TOOLS_DIR      # alias for TOOLS_DIRS
     MODULES_DIR    # single directory containing multiple modules, see also MODULE_DIRS
     CONFIG_DIR     # directory containing the CMake/BASIS configuration
     DATA_DIR       # directory containing the auxiliary program data
@@ -143,6 +144,7 @@ set (
     OPTIONAL_TEST_DEPENDS
     INCLUDE_DIRS   # list of directories containing public header files
     CODE_DIRS      # list of directories containing source code files, see also CODE_DIR
+    TOOLS_DIRS     # list of directories containing source code files of applications, see also TOOLS_DIR
     MODULE_DIRS    # list of separate module directories, see also MODULES_DIR
     SUBDIRS        # list of additional (generic) project subdirectories
 )

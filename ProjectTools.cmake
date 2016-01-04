@@ -340,11 +340,22 @@ macro (basis_project_check_metadata)
       message (FATAL_ERROR "EXCLUDE_FROM_ALL option only valid for project modules.")
     endif ()
   endif ()
+  # source tree directories aliases
+  if (PROJECT_INCLUDE_DIR)
+    list (INSERT PROJECT_INCLUDE_DIRS 0 "${PROJECT_INCLUDE_DIR}")
+  endif ()
+  if (PROJECT_CODE_DIR)
+    list (INSERT PROJECT_CODE_DIRS 0 "${PROJECT_CODE_DIR}")
+  endif ()
+  if (PROJECT_TOOLS_DIR)
+    list (INSERT PROJECT_TOOLS_DIRS 0 "${PROJECT_TOOLS_DIR}")
+  endif ()
   # source tree directories
   basis_set_if_empty (PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
   basis_check_or_set_source_paths (PROJECT_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
   basis_check_or_set_source_paths (PROJECT_CODE_DIRS    "${PROJECT_SOURCE_DIR}/src")
   basis_check_or_set_source_paths (PROJECT_MODULES_DIR  "${PROJECT_SOURCE_DIR}/modules")
+  basis_check_or_set_source_paths (PROJECT_TOOLS_DIRS   "${PROJECT_SOURCE_DIR}/tools")
   basis_check_or_set_source_paths (PROJECT_CONFIG_DIR   "${PROJECT_SOURCE_DIR}/config")
   basis_check_or_set_source_paths (PROJECT_DATA_DIR     "${PROJECT_SOURCE_DIR}/data")
   basis_check_or_set_source_paths (PROJECT_DOC_DIR      "${PROJECT_SOURCE_DIR}/doc")
@@ -352,9 +363,18 @@ macro (basis_project_check_metadata)
   basis_check_or_set_source_paths (PROJECT_EXAMPLE_DIR  "${PROJECT_SOURCE_DIR}/example")
   basis_check_or_set_source_paths (PROJECT_LIBRARY_DIR  "${PROJECT_SOURCE_DIR}/lib")
   basis_check_or_set_source_paths (PROJECT_TESTING_DIR  "${PROJECT_SOURCE_DIR}/test")
+  # PROJECT_HAS_APPLICATIONS
+  set (PROJECT_HAS_APPLICATIONS FALSE)
+  foreach (DIR IN LISTS PROJECT_TOOLS_DIRS)
+    if (EXISTS "${DIR}/CMakeLists.txt")
+      set (PROJECT_HAS_APPLICATIONS TRUE)
+      break()
+    endif ()
+  endforeach ()
   # extract main source code directories from lists
   list (GET PROJECT_INCLUDE_DIRS 0 PROJECT_INCLUDE_DIR)
   list (GET PROJECT_CODE_DIRS    0 PROJECT_CODE_DIR)
+  list (GET PROJECT_TOOLS_DIRS   0 PROJECT_TOOLS_DIR)
   # let basis_project_begin() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
@@ -596,6 +616,21 @@ endmacro ()
 #     <td>Alternative option for @p CODE_DIRS which only accepts a single path as argument.</td>
 #   </tr>
 #   <tr>
+#     @tp @b TOOLS_DIRS path1 [path2...] @endtp
+#     <td>A list of directories containing the source code files of applications.
+#         The first diretory path is used as main source directory from which the
+#         subdirectory name of the corresponding build tree directory is derived.
+#         Any configured or generated source files are written to this build tree
+#         source directory. The source files in the specified directories are only
+#         build when the BUILD_APPLICATIONS option is enabled. This option is
+#         automatically added when any of the directories contains a CMakeLists.txt
+#         file. (default: tools)</td>
+#   </tr>
+#   <tr>
+#     @tp @b TOOLS_DIR path @endtp
+#     <td>Alternative option for @p TOOLS_DIRS which only accepts a single path as argument.</td>
+#   </tr>
+#   <tr>
 #     @tp @b LIBRARY_DIR path @endtp
 #     <td>Directory of public modules written in a scripting language such as Python or Perl. (default: lib)</td>
 #   </tr>
@@ -664,6 +699,8 @@ endmacro ()
 #
 # @retval PROJECT_CODE_DIRS               See @c CODE_DIRS.
 # @retval PROJECT_CODE_DIR                First element of @c PROJECT_CODE_DIRS list.
+# @retval PROJECT_TOOLS_DIRS              See @c TOOLS_DIRS.
+# @retval PROJECT_TOOLS_DIR               First element of @c PROJECT_TOOLS_DIRS list.
 # @retval PROJECT_CONFIG_DIR              See @c CONFIG_DIR.
 # @retval PROJECT_DATA_DIR                See @c DATA_DIR.
 # @retval PROJECT_DOC_DIR                 See @c DOC_DIR.
@@ -675,6 +712,8 @@ endmacro ()
 # @retval PROJECT_MODULE_DIRS             See @c MODULE_DIRS.
 # @retval PROJECT_MODULES_DIR             See @c MODULES_DIR.
 # @retval PROJECT_TESTING_DIR             See @c TESTING_DIR.
+#
+# @retval PROJECT_HAS_APPLICATIONS Whether any of the PROJECT_TOOLS_DIRS has a CMakeLists.txt file.
 #
 # @ingroup CMakeAPI
 #
@@ -2142,14 +2181,35 @@ macro (basis_project_begin)
 
   # add default project directories to list of subdirectories
   # (in reverse order always at beginning of list)
-  if (BUILD_EXAMPLE)
+  if (EXISTS "${PROJECT_EXAMPLE_DIR}/CMakeLists.txt" AND BUILD_EXAMPLE)
     list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_EXAMPLE_DIR}")
   endif ()
-  if (BUILD_TESTING)
+  if (EXISTS "${PROJECT_TESTING_DIR}/CMakeLists.txt" AND BUILD_TESTING)
     list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_TESTING_DIR}")
   endif ()
-  list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
-  list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_CODE_DIRS}")
+  if (EXISTS "${PROJECT_DATA_DIR}/CMakeLists.txt")
+    list (INSERT PROJECT_SUBDIRS 0 "${PROJECT_DATA_DIR}")
+  endif ()
+  if (BUILD_APPLICATIONS)
+    set (_TOOLS_DIRS)
+    foreach (_TOOLS_DIR IN LISTS PROJECT_TOOLS_DIRS)
+      if (EXISTS "${_TOOLS_DIR}/CMakeLists.txt")
+        list (APPEND _TOOLS_DIRS "${_TOOLS_DIR}")
+      endif ()
+    endforeach ()
+    list (INSERT PROJECT_SUBDIRS 0 "${_TOOLS_DIRS}")
+    unset (_TOOLS_DIR)
+    unset (_TOOLS_DIRS)
+  endif ()
+  set (_CODE_DIRS)
+  foreach (_CODE_DIR IN LISTS PROJECT_CODE_DIRS)
+    if (EXISTS "${_CODE_DIR}/CMakeLists.txt")
+      list (APPEND _CODE_DIRS "${_CODE_DIR}")
+    endif ()
+  endforeach ()
+  list (INSERT PROJECT_SUBDIRS 0 "${_CODE_DIRS}")
+  unset (_CODE_DIR)
+  unset (_CODE_DIRS)
 
   if (BASIS_DEBUG)
     basis_dump_variables ("${PROJECT_BINARY_DIR}/VariablesAfterInitialization.cmake")
@@ -2224,7 +2284,7 @@ macro (basis_project_end)
   # This is done after all files which may be interesting for inclusion
   # in the documentation are generated. In particular, this has to be done
   # after the configuration of the BASIS utilities.
-  if (IS_DIRECTORY "${PROJECT_DOC_DIR}" AND BUILD_DOCUMENTATION)
+  if (EXISTS "${PROJECT_DOC_DIR}/CMakeLists.txt" AND BUILD_DOCUMENTATION)
     add_subdirectory ("${PROJECT_DOC_DIR}")
   endif ()
 
