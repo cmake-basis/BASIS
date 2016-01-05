@@ -199,10 +199,12 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS (
 
 # ----------------------------------------------------------------------------
 # set Sphinx_DIR
-if (NOT Sphinx_DIR AND Sphinx-build_EXECUTABLE)
+if (Sphinx-build_EXECUTABLE)
   get_filename_component (Sphinx_DIR "${Sphinx-build_EXECUTABLE}" PATH)
   string (REGEX REPLACE "/bin/?" "" Sphinx_DIR "${Sphinx_DIR}")
-  set (Sphinx_DIR "${Sphinx_DIR}" CACHE PATH "Installation directory of Sphinx tools." FORCE)
+elseif (Sphinx-apidoc_EXECUTABLE)
+  get_filename_component (Sphinx_DIR "${Sphinx-apidoc_EXECUTABLE}" PATH)
+  string (REGEX REPLACE "/bin/?" "" Sphinx_DIR "${Sphinx_DIR}")
 endif ()
 
 unset (_Sphinx_VERSION)
