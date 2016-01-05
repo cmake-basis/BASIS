@@ -257,8 +257,21 @@ macro (basis_project_check_metadata)
   else ()
     set (TOPLEVEL_PROJECT_DIVISION_LOGO "${PROJECT_DIVISION_LOGO}")
   endif ()
+  # PROJECT_SOVERSION -- **BEFORE** setting PROJECT_VERSION!
+  if ("^${PROJECT_SOVERSION}$" STREQUAL "^$")
+    if (PROJECT_IS_MODULE AND "^${PROJECT_VERSION}$" STREQUAL "^$")
+      set (PROJECT_SOVERSION "${TOPLEVEL_PROJECT_SOVERSION}")
+    endif ()
+  else ()
+    if (NOT PROJECT_SOVERSION MATCHES "^[0-9]+(\\.[0-9]+)?$")
+      message (FATAL_ERROR "Project ${PROJECT_NAME} has invalid API version: ${PROJECT_SOVERSION}!")
+    endif ()
+    if (NOT PROJECT_IS_MODULE)
+      set (TOPLEVEL_PROJECT_SOVERSION "${PROJECT_SOVERSION}")
+    endif ()
+  endif ()
   # PROJECT_VERSION
-  if (PROJECT_VERSION)
+  if (NOT "^${PROJECT_VERSION}$" STREQUAL "^$")
     if (NOT PROJECT_VERSION MATCHES "^[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(rc[0-9]+|[a-z])?$")
       message (FATAL_ERROR "Project ${PROJECT_NAME} has invalid version: ${PROJECT_VERSION}!")
     endif ()
@@ -426,6 +439,12 @@ endmacro ()
 #   which did not change the softwares @api. It is the least important component
 #   of the version number.
 #     </td>
+#   </tr>
+#   <tr>
+#     @tp @b SOVERSION major @endtp
+#     <td>Explicit SOVERSION of shared libraries, must be an integer.
+#         A value of 0 indicates that the API is yet unstable.
+#         (default: PROJECT_VERSION_MAJOR)</td>
 #   </tr>
 #   <tr>
 #     @tp @b DESCRIPTION description @endtp
@@ -718,6 +737,7 @@ endmacro ()
 # @retval PROJECT_DIVISION_WEBSITE        See @c DIVISION_WEBSITE.
 # @retval PROJECT_DIVISION_LOGO           See @c DIVISION_LOGO. Value is an absolute path.
 # @retval PROJECT_VERSION                 See @c VERSION.
+# @retval PROJECT_SOVERSION               See @c SOVERSION.
 # @retval PROJECT_DESCRIPTION             See @c DESCRIPTION.
 # @retval PROJECT_LANGUAGES               See @c LANGUAGES.
 # @retval PROJECT_DEPENDS                 See @c DEPENDS.
@@ -1741,7 +1761,9 @@ macro (basis_project_initialize)
       PROJECT_VERSION_PATCH
   )
 
-  set (PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+  if (NOT DEFINED PROJECT_SOVERSION OR PROJECT_SOVERSION STREQUAL "")
+    set (PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}")
+  endif ()
 
   # version information string
   if (PROJECT_VERSION MATCHES "^0+(\\.0+)?(\\.0+)?")

@@ -116,6 +116,7 @@ set (
     LICENSE
     CONTACT
     VERSION
+    SOVERSION
     TEMPLATE       # used by basisproject tool
     INCLUDE_DIR    # alias for INCLUDE_DIRS
     CODE_DIR       # alias for CODE_DIRS
