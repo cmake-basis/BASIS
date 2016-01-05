@@ -2121,7 +2121,7 @@ endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Add a project module.
-function (basis_add_module MODULE)
+macro (basis_add_module MODULE)
   if (PROJECT_IS_MODULE)
     message (FATAL_ERROR "A module cannot have submodules by itself!")
   endif ()
@@ -2131,6 +2131,7 @@ function (basis_add_module MODULE)
   #
   # Note: - MODULE_${MODULE}_SOURCE_DIR is the location of the module source code.
   #       - MODULE_${MODULE}_BINARY_DIR is the build directory for the module.
+  #       - ${MODULE}_INCLUDE_DIRS are the locations of public header files.
   if (BASIS_SUPERBUILD_MODULES)
     message (STATUS "Configuring super-build of module ${MODULE}...")
     basis_super_build (${MODULE}) # automatically uses: "${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}"
@@ -2140,7 +2141,16 @@ function (basis_add_module MODULE)
     add_subdirectory ("${MODULE_${MODULE}_SOURCE_DIR}" "${MODULE_${MODULE}_BINARY_DIR}")
     message (STATUS "Configuring module ${MODULE}... - done")
   endif ()
-endfunction ()
+  set (PROJECT_IS_MODULE FALSE)
+  include ("${${MODULE}_DIR}/${TOPLEVEL_PROJECT_PACKAGE_CONFIG_PREFIX}${MODULE}Config.cmake")
+endmacro ()
+
+# ----------------------------------------------------------------------------
+## @brief Use a previously added project module.
+macro (basis_use_module MODULE)
+  include ("${${MODULE}_USE_FILE}")
+  add_definitions(-DHAVE_${PROJECT_PACKAGE_NAME}_${MODULE})
+endmacro ()
 
 # ----------------------------------------------------------------------------
 ## @brief Marks the begining of a BASIS project.
@@ -2495,6 +2505,7 @@ macro (basis_project_impl)
   if (NOT PROJECT_IS_MODULE)
     foreach (MODULE IN LISTS PROJECT_MODULES_ENABLED)
       basis_add_module (${MODULE})
+      basis_use_module (${MODULE})
     endforeach ()
   endif ()
   # process subdirectories
