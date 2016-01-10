@@ -484,6 +484,10 @@ endforeach ()
 # ============================================================================
 
 if (NOT PROJECT_IS_MODULE)
+  # source tree
+  foreach (_D CODE CONFIG DATA DOC EXAMPLE INCLUDE MODULES TESTING)
+    set (TOPLEVEL_PROJECT_${_D}_DIR "${PROJECT_${_D}_DIR}")
+  endforeach ()
   # build tree
   foreach (_D CODE CONFIG DATA DOC EXAMPLE INCLUDE MODULES TESTING RUNTIME LIBEXEC LIBRARY ARCHIVE)
     set (TOPLEVEL_BINARY_${_D}_DIR "${BINARY_${_D}_DIR}")
