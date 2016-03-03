@@ -163,7 +163,7 @@ endif ()
 
 foreach (${NS}MODULE IN LISTS ${NS}MODULES_REQUESTED)
   # check if requested module is available
-  list (FIND ${NS}MODULES_ENABLED ${NS}MODULE IDX)
+  list (FIND ${NS}MODULES_ENABLED "${${NS}MODULE}" IDX)
   if (IDX EQUAL -1)
     # set <Pkg>_<Module>_FOUND = FALSE
     set(${NS}${${NS}MODULE}_FOUND FALSE)
