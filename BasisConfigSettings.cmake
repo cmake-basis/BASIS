@@ -114,4 +114,4 @@ set (MATLABPATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_MATLAB_LIBRARY_DIR}")
 ## @brief Directory of Bash modules.
 set (BASHPATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_BASH_LIBRARY_DIR}")
 ## @brief Directory of CMake package configuration files of project modules.
-set (MODULES_DIR_CONFIG "${INSTALL_CONFIG_DIR}")
+set (MODULES_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_CONFIG_DIR}")
