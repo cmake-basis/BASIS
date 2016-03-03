@@ -2175,6 +2175,7 @@ endmacro ()
 # ----------------------------------------------------------------------------
 ## @brief Use a previously added project module.
 macro (basis_use_module MODULE)
+  set (NO_${MODULE}_IMPORTS TRUE)
   include ("${${MODULE}_USE_FILE}")
   add_definitions(-DHAVE_${PROJECT_PACKAGE_NAME}_${MODULE})
 endmacro ()
