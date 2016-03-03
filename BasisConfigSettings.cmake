@@ -54,7 +54,7 @@ foreach (PKG IN LISTS PKGS)
     "    message (WARNING DEPENDS_${PKG}_DIR \${_depwarn})"
     "  endif ()"
     "else ()"
-    "  basis_set_or_update_value (DEPENDS_${PKG}_DIR \"${DEPENDS_${PKG}_DIR}\" PATH)"
+    "  basis_set_or_update_value (DEPENDS_${PKG}_DIR \"${DEPENDS_${PKG}_DIR}\")"
     "endif ()"
   )
 endforeach ()
