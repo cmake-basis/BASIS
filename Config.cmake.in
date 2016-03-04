@@ -149,13 +149,13 @@ file (GLOB _CONFIG_FILES "${CMAKE_CURRENT_LIST_DIR}/@TOPLEVEL_PROJECT_PACKAGE_CO
 foreach (_CONFIG_FILE IN LISTS _CONFIG_FILES)
   if (_CONFIG_FILE MATCHES "^@TOPLEVEL_PROJECT_PACKAGE_CONFIG_PREFIX@([^ ][^ ]*)Config.cmake")
     set (_MODULE_NAME ${CMAKE_MATCH_1})
-    basis_find_config (MODULES ${_MODULE_NAME} _MODULE_IDX)
-    if (_MODULE_IDX EQUAL -1)
-      basis_append_config (MODULES         ${_MODULE_NAME})
-      basis_append_config (MODULES_ENABLED ${_MODULE_NAME})
-    endif ()
+    basis_append_config (MODULES         ${_MODULE_NAME})
+    basis_append_config (MODULES_ENABLED ${_MODULE_NAME})
   endif ()
 endforeach ()
+
+basis_remove_duplicates_config (MODULES)
+basis_remove_duplicates_config (MODULES_ENABLED)
 
 unset (_CONFIG_FILES)
 unset (_CONFIG_FILE)
