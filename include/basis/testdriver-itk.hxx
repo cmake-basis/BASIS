@@ -62,6 +62,7 @@
 #  undef ITK_IO_FACTORY_REGISTER_MANAGER
 #endif
 
+#include <iostream>
 
 #include <itkImage.h>
 #include <itkImageFileReader.h>
@@ -330,7 +331,7 @@ int RegressionTestImage (const char*  testImageFilename,
         WriterType::Pointer writer = WriterType::New();
         writer->SetInput(extract->GetOutput());
 
-        itksys_ios::ostringstream diffName;
+        std::ostringstream diffName;
         diffName << testImageFilename << ".diff.png";
         try {
             rescale->SetInput(diff->GetOutput());
@@ -362,7 +363,7 @@ int RegressionTestImage (const char*  testImageFilename,
     std::cout << diffName.str();
     std::cout << "</DartMeasurementFile>" << std::endl;
 
-    itksys_ios::ostringstream baseName;
+    std::ostringstream baseName;
     baseName << testImageFilename << ".base.png";
     try
       {
@@ -397,7 +398,7 @@ int RegressionTestImage (const char*  testImageFilename,
     std::cout << baseName.str();
     std::cout << "</DartMeasurementFile>" << std::endl;
 
-    itksys_ios::ostringstream testName;
+    std::ostringstream testName;
     testName << testImageFilename << ".test.png";
     try
       {
