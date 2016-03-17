@@ -17,6 +17,10 @@
 #     <td>Path to the Perl interpreter.</td>
 #   </tr>
 #   <tr>
+#     @tp @b Perl_DIR @endtp
+#     <td>Installation prefix of the Perl interpreter.</td>
+#   </tr>
+#   <tr>
 #     @tp @b PERL_VERSION_STRING @endtp
 #     <td>Perl version found e.g. 5.12.4.</td>
 #   </tr>
@@ -91,6 +95,7 @@ endif ()
 find_program (PERL_EXECUTABLE NAMES perl PATHS ${PERL_POSSIBLE_BIN_PATHS})
 
 if (PERL_EXECUTABLE)
+  string (REGEX REPLACE "/bin/[pP]erl[^/]*" "" Perl_DIR "${PERL_EXECUTABLE}")
   execute_process (COMMAND "${PERL_EXECUTABLE}" --version OUTPUT_VARIABLE _Perl_STDOUT ERROR_VARIABLE _Perl_STDERR)
   if (_Perl_STDOUT MATCHES "[( ]v([0-9]+)\\.([0-9]+)\\.([0-9]+)[ )]")
     set (PERL_VERSION_MAJOR "${CMAKE_MATCH_1}")
