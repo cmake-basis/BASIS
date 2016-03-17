@@ -348,6 +348,12 @@ macro (basis_find_package PACKAGE)
         DEPENDS_${PKG}_DIR "${DEPENDS_${PKG}_DIR}" CACHE PATH
         "Top-level installation directory of ${PKG} or directory containing ${PKG}Config.cmake file."
       )
+      if (DEPENDS_${PKG}_DIR)
+        file (TO_CMAKE_PATH "${DEPENDS_${PKG}_DIR}" _BFP_PREFIX)
+        if (NOT "^${DEPENDS_${PKG}_DIR}$" STREQUAL "^${_BFP_PREFIX}$")
+          basis_update_value (DEPENDS_${PKG}_DIR "${_BFP_PREFIX}")
+        endif ()
+      endif ()
       # Names of considered alternative find search path variables excl. <PKG>_DIR
       set (_BFP_PKG_DIR_VARS
         ${PKG}_ROOT     ${PKG_U}_ROOT
@@ -367,7 +373,7 @@ macro (basis_find_package PACKAGE)
       # 2. <PKG>_ROOT... CMake variable
       # 3. <PKG>_ROOT... environment variable
       foreach (_BFP_VAR IN LISTS _BFP_PKG_DIR_VARS)
-        set (_BFP_PREFIX "${${_BFP_VAR}}") # CMake (cache) variable
+        file (TO_CMAKE_PATH "${${_BFP_VAR}}" _BFP_PREFIX) # CMake (cache) variable
         if (_BFP_PREFIX)
           # first configure run or new value specified using -D option of cmake command
           if (NOT DEFINED _DEPENDS_${PKG}_DIR OR (DEFINED _DEPENDS_${PKG}_DIR AND NOT "^${_BFP_PREFIX}$" STREQUAL "^${_DEPENDS_${PKG}_DIR}$"))
@@ -379,7 +385,8 @@ macro (basis_find_package PACKAGE)
       if (${PKG}_DIR) # find_package CONFIG mode variable
         # first configure run or new value specified using -D option of cmake command
         if (NOT DEFINED _${PKG}_DIR OR (DEFINED _${PKG}_DIR AND NOT "^${${PKG}_DIR}$" STREQUAL "^${_${PKG}_DIR}$"))
-          _basis_config_to_prefix_dir(${PKG} "${${PKG}_DIR}" _BFP_PREFIX)
+          file (TO_CMAKE_PATH "${${PKG}_DIR}" _BFP_PREFIX)
+          _basis_config_to_prefix_dir(${PKG} "${_BFP_PREFIX}" _BFP_PREFIX)
           basis_update_value (DEPENDS_${PKG}_DIR "${_BFP_PREFIX}")
         endif ()
       endif ()
@@ -393,7 +400,7 @@ macro (basis_find_package PACKAGE)
       # if still not set, use common environment variables to set DEPENDS_<PKG>_DIR
       if (NOT DEPENDS_${PKG}_DIR)
         foreach (_BFP_VAR IN LISTS _BFP_PKG_DIR_VARS)
-          set (_BFP_PREFIX "$ENV{${_BFP_VAR}}") # shell environment variable
+          file (TO_CMAKE_PATH "$ENV{${_BFP_VAR}}" _BFP_PREFIX) # shell environment variable
           if (_BFP_PREFIX)
             basis_update_value (DEPENDS_${PKG}_DIR "${_BFP_PREFIX}")
             break()
