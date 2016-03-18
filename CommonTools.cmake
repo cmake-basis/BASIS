@@ -57,9 +57,12 @@ macro (find_package)
   # map obsolete <PKG>_* variables to case-sensitive <Pkg>_*
   string (TOUPPER "${ARGV0}" _FP_ARGV0_U)
   foreach (_FP_VAR IN ITEMS FOUND DIR USE_FILE
-                            VERSION VERSION_STRING VERSION_MAJOR VERSION_MINOR VERSION_PATCH
+                            VERSION VERSION_STRING
+                            VERSION_MAJOR VERSION_MINOR VERSION_SUBMINOR VERSION_PATCH
+                            MAJOR_VERSION MINOR_VERSION SUBMINOR_VERSION PATCH_VERSION_PATCH
                             INCLUDE_DIR INCLUDE_DIRS INCLUDE_PATH
-                            LIBRARY_DIR LIBRARY_DIRS LIBRARY_PATH)
+                            LIBRARY_DIR LIBRARY_DIRS LIBRARY_PATH
+                            EXECUTABLE COMPILER CONVERTER)
     if (NOT DEFINED ${ARGV0}_${_FP_VAR} AND DEFINED ${_FP_ARGV0_U}_${_FP_VAR})
       set (${ARGV0}_${_FP_VAR} "${${_FP_ARGV0_U}_${_FP_VAR}}")
     endif ()
@@ -701,11 +704,8 @@ macro (basis_find_package PACKAGE)
             else ()
               set (_BFP_VARS
                 ${PKG}_EXECUTABLE   # e.g., FindBash
-                ${PKG_U}_EXECUTABLE # e.g., FindPerl
                 ${PKG}_COMPILER     # e.g., FindLATEX
-                ${PKG_U}_COMPILER
                 ${PKG}_CONVERTER    # e.g., FindLATEX
-                ${PKG_U}_CONVERTER
               )
               list (REMOVE_DUPLICATES _BFP_VARS)
               foreach (_BFP_VAR IN LISTS _BFP_VARS)
