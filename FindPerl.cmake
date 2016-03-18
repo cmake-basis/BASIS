@@ -76,10 +76,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-include (FindCygwin)
+include ("${CMAKE_ROOT}/Modules/FindCygwin.cmake")
 
 set (PERL_POSSIBLE_BIN_PATHS "${CYGWIN_INSTALL_PATH}/bin")
-
 if (WIN32)
   get_filename_component (
     ActivePerl_CurrentVersion 
@@ -90,9 +89,11 @@ if (WIN32)
     "C:/Perl/bin" 
     "[HKEY_LOCAL_MACHINE\\SOFTWARE\\ActiveState\\ActivePerl\\${ActivePerl_CurrentVersion}]/bin"
   )
+  unset (ActivePerl_CurrentVersion)
 endif ()
 
 find_program (PERL_EXECUTABLE NAMES perl PATHS ${PERL_POSSIBLE_BIN_PATHS})
+unset (PERL_POSSIBLE_BIN_PATHS)
 
 if (PERL_EXECUTABLE)
   string (REGEX REPLACE "/bin/[pP]erl[^/]*" "" Perl_DIR "${PERL_EXECUTABLE}")
@@ -110,6 +111,17 @@ if (PERL_EXECUTABLE)
 endif ()
 
 include (FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS (Perl DEFAULT_MSG PERL_EXECUTABLE)
+
+find_package_handle_standard_args (
+  Perl
+  REQUIRED_VARS
+    PERL_EXECUTABLE
+  VERSION_VAR
+    PERL_VERSION_STRING
+)
+
+if (NOT DEFINED Perl_FOUND AND DEFINED PERL_FOUND)
+  set (Perl_FOUND "${PERL_FOUND}")
+endif ()
 
 mark_as_advanced (PERL_EXECUTABLE)
