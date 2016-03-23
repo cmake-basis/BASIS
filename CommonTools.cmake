@@ -3077,12 +3077,9 @@ function (basis_configure_script INPUT OUTPUT)
     include ("${_F}")
   endforeach ()
   # --------------------------------------------------------------------------
-  # set general variables for use in scripts
-  set (__FILE__ "${_OUTPUT_FILE}")
-  get_filename_component (__NAME__ "${_OUTPUT_FILE}" NAME)
-  # --------------------------------------------------------------------------
-  # variables mainly intended for use in script configurations, in particular,
-  # these are used by basis_set_script_path() to make absolute paths relative
+  # general variables for use in scripts and those intended for use in script
+  # configurations. The __DIR__ is in particular used by basis_set_script_path()
+  # to make absolute paths relative to the script file location
   if (ARGN_DESTINATION)
     if (NOT IS_ABSOLUTE "${ARGN_DESTINATION}")
       set (ARGN_DESTINATION "${CMAKE_INSTALL_PREFIX}/${ARGN_DESTINATION}")
@@ -3093,6 +3090,8 @@ function (basis_configure_script INPUT OUTPUT)
     set (BUILD_INSTALL_SCRIPT FALSE)
     get_filename_component (__DIR__ "${_OUTPUT_FILE}" PATH)
   endif ()
+  get_filename_component (__NAME__ "${_OUTPUT_FILE}" NAME)
+  set (__FILE__ "${__DIR__}/${__NAME__}")
   # --------------------------------------------------------------------------
   # include script configuration files
   foreach (_F IN LISTS ARGN_CONFIG_FILE)
