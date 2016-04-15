@@ -1611,6 +1611,17 @@ function (basis_finalize_targets)
     endforeach ()
   else ()
     basis_get_project_property (TARGETS PROPERTY TARGETS)
+    # targets of BASIS utilities are finalized separately
+    # because some properties still have to be set by
+    # basis_configure_utilities, see UtilitiesTools module
+    basis_make_target_uid (TARGET_UID_basis_sh basis_sh)
+    basis_make_target_uid (TARGET_UID_basis_py basis_py)
+    basis_make_target_uid (TARGET_UID_Basis_pm Basis_pm)
+    list (REMOVE_ITEM TARGETS
+      ${TARGET_UID_basis_sh}
+      ${TARGET_UID_basis_py}
+      ${TARGET_UID_Basis_pm}
+    )
   endif ()
   foreach (TARGET_UID ${TARGETS})
     if (NOT TARGET _${TARGET_UID})
