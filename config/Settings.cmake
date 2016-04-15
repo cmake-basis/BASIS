@@ -58,35 +58,29 @@ set (INSTALL_SPHINX_THEMES_DIR "${INSTALL_SHARE_DIR}/sphinx-themes")
 # ============================================================================
 
 # options
-option (BUILD_PROJECT_TOOL    "Request build of the basisproject command-line tool."    ON)
-option (INSTALL_ALL_TEMPLATES "Install additional project templates provided by BASIS." ON)
+option (BUILD_PROJECT_TOOL       "Request build of the basisproject command-line tool."    ON)
+option (INSTALL_DEFAULT_TEMPLATE "Install default project template."                       ON)
+option (INSTALL_ALL_TEMPLATES    "Install additional project templates provided by BASIS." ON)
 
-set (DEFAULT_TEMPLATE     ""                               CACHE PATH "Name/Directory of default project template.")
-set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates" CACHE PATH "Installation directory of project templates.")
+set (DEFAULT_TEMPLATE     "" CACHE PATH "Name/Directory of default project template.")
+set (INSTALL_TEMPLATE_DIR "" CACHE PATH "Non-default installation directory of project templates.")
+
+if (NOT INSTALL_TEMPLATE_DIR)
+  set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates")
+endif ()
 
 # force default template to be set
 if (NOT DEFAULT_TEMPLATE)
   set_property (CACHE DEFAULT_TEMPLATE PROPERTY VALUE "basis/1.4")
 endif ()
-# disable installation of templates if no destination specified
-if (NOT INSTALL_TEMPLATE_DIR)
-  if (BUILD_PROJECT_TOOL)
-    message (WARNING "No installation directory for project templates specified."
-                     " Disabling installation of templates. To enable the installation"
-                     " of the project templates again, set INSTALL_TEMPLATE_DIR to"
-                     " the desired destination such as \"share/templates\" and the"
-                     " option INSTALL_TEMPLATES to ON.")
-  endif ()
-  set_property (CACHE INSTALL_TEMPLATES PROPERTY VALUE OFF)
-endif ()
 
 # mark cache entires as advanced if unused
 if (BUILD_PROJECT_TOOL)
-  mark_as_advanced (CLEAR DEFAULT_TEMPLATE INSTALL_ALL_TEMPLATES)
+  mark_as_advanced (CLEAR DEFAULT_TEMPLATE)
 else ()
-  mark_as_advanced (FORCE DEFAULT_TEMPLATE INSTALL_ALL_TEMPLATES)
+  mark_as_advanced (FORCE DEFAULT_TEMPLATE)
 endif ()
-mark_as_advanced (INSTALL_TEMPLATE_DIR)
+mark_as_advanced (INSTALL_DEFAULT_TEMPLATE INSTALL_TEMPLATE_DIR INSTALL_ALL_TEMPLATES)
 
 if (BUILD_PROJECT_TOOL)
   # make default template path absolute
@@ -121,7 +115,7 @@ if (BUILD_PROJECT_TOOL)
                          "\n    ${DEFAULT_TEMPLATE}\n")
   endif ()
   # install default project template
-  if (INSTALL_TEMPLATE_DIR)
+  if (INSTALL_DEFAULT_TEMPLATE)
     basis_install_template (
       "${DEFAULT_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
       "${INSTALL_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
