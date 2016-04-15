@@ -105,9 +105,6 @@ basis_project (
     Perl            # enables support for Perl   if package found
     MATLAB{matlab}  # enabled support for MATLAB if package found
     BASH            # enables support for Bash   if package found
-    LATEX{PDFLATEX} # required to generate PDF manual using Sphinx
-    Doxygen         # required to generate API documentation
-    Sphinx{build}   # requierd to generate web pages and user manual
     ITK             # optionally used by basistest-driver, TODO: get rid of this dependency
     #<optional-dependency>
   TEST_DEPENDS
