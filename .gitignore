@@ -1,5 +1,6 @@
 /build*
 *.pyc
 *.autosave
+.*.swp
 CMakeLists.txt.user*
 xcode
