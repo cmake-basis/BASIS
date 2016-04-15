@@ -89,9 +89,9 @@ set (_Sphinx_REQUIRED_VARS)
 # initialize search
 if (NOT Sphinx_DIR)
   if (NOT $ENV{Sphinx_DIR} STREQUAL "")
-    set (Sphinx_DIR "$ENV{Sphinx_DIR}" CACHE PATH "Installation prefix of Sphinx (docutils)." FORCE)
+    set (Sphinx_DIR "$ENV{Sphinx_DIR}")
   else ()
-    set (Sphinx_DIR "$ENV{SPHINX_DIR}" CACHE PATH "Installation prefix of Sphinx (docutils)." FORCE)
+    set (Sphinx_DIR "$ENV{SPHINX_DIR}")
   endif ()
 endif ()
 
