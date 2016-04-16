@@ -1,6 +1,6 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
-# Copyright (c) 2013-2014 Andreas Schuh
+# Copyright (c) 2013-2016 Andreas Schuh
 # All rights reserved.
 #
 # See COPYING file for license information or visit
@@ -9,8 +9,12 @@
 
 ##############################################################################
 # @file  CMakeLists.txt
-# @brief Build configuration of CMake modules and utilities.
+# @brief Build configuration of CMake BASIS Modules.
 ##############################################################################
+
+if (NOT INSTALL_BASIS_MODULES_DIR)
+  return ()
+endif ()
 
 # ----------------------------------------------------------------------------
 # modules
@@ -119,7 +123,7 @@ set (
 # install files
 basis_install (
   FILES       ${CMAKE_MODULES} ${CMAKE_FIND_MODULES} ${CMAKE_MODULES_AUXILIARY_FILES}
-  DESTINATION "${INSTALL_MODULES_DIR}"
+  DESTINATION "${INSTALL_BASIS_MODULES_DIR}"
 )
 
 # Attention: DO NOT add the uninstall subdirectory here! Instead, the
@@ -128,7 +132,7 @@ basis_install (
 #            BASIS project (including BASIS) at the end of basis_project_end().
 basis_install (
   FILES       "uninstall/CMakeLists.txt"
-  DESTINATION "${INSTALL_MODULES_DIR}/uninstall"
+  DESTINATION "${INSTALL_BASIS_MODULES_DIR}/uninstall"
 )
 
 # ----------------------------------------------------------------------------
