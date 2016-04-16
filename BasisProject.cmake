@@ -54,18 +54,17 @@
 #   # ------------------------------------------------------------------------
 #   # dependencies
 #   DEPENDS          
-#      NiftiCLib 
-#      PythonInterp
+#     NiftiCLib 
+#     Python{Interp}
 #   OPTIONAL_DEPENDS 
-#     PythonInterp
-#     JythonInterp
+#     Jython{Interp}
 #     Perl
 #     MATLAB{matlab}
 #     BASH
 #     Doxygen
 #     Sphinx{build}
 #   TEST_DEPENDS     
-#      Perl
+#     Perl
 #   OPTIONAL_TEST_DEPENDS
 #     MATLAB{mex}
 #     MATLAB{mcc}
@@ -100,8 +99,8 @@ basis_project (
   DEPENDS
     #<dependency>
   OPTIONAL_DEPENDS
-    PythonInterp    # enables support for Python if package found
-    JythonInterp    # enables support for Jython if package found
+    Python{Interp}  # enables support for Python if package found
+    Jython{Interp}  # enables support for Jython if package found
     Perl            # enables support for Perl   if package found
     MATLAB{matlab}  # enabled support for MATLAB if package found
     BASH            # enables support for Bash   if package found
