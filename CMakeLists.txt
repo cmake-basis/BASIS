@@ -33,12 +33,7 @@
 cmake_minimum_required (VERSION 2.8.4)
 
 # ----------------------------------------------------------------------------
-# include BASIS policies, settings, macros, and functions
-
-# The following variables would be set by the BASISConfig.cmake file if
-# this is a project that uses BASIS.
-
-set (BASIS_MODULE_PATH            "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
+# BASIS Utilities settings from BASISConfig.cmake
 
 set (BASIS_CXX_TEMPLATES_DIR      "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/cxx")
 set (BASIS_PYTHON_TEMPLATES_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/python")
@@ -57,6 +52,11 @@ set (BASIS_BASHPATH               "${BASIS_LIBRARY_DIR}/bash")
 
 set (BASIS_SPHINX_EXTENSIONS_PATH "${BASIS_PYTHONPATH}/basis/sphinx/ext")
 set (BASIS_SPHINX_HTML_THEME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/sphinx/themes")
+
+# ----------------------------------------------------------------------------
+# include BASIS policies, settings, macros, and functions
+
+set (BASIS_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake")
 
 include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
