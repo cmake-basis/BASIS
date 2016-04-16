@@ -83,6 +83,8 @@ set (
     "doxyfilter.bat.in"                   # wraps Doxygen filter command on Windows
     "ExecuteProcess.cmake"                # wraps CMake's execute_process() function
     "generate_matlab_executable.cmake.in" # build command for alternative build of MCC targets
+    "GenerateExportHeader.cmake"          # GenerateExportHeader module of CMake 3.6
+    "exportheader.cmake.in"               # template header file used by GenerateExportHeader
     "get_python_lib.py"                   # auxiliary script to determine site-packages directory
     "glob.cmake"                          # used to glob for source files
     "ScriptConfig.cmake.in"               # default script configuration file
@@ -100,8 +102,8 @@ set (
     "FindBLAS.cmake"
     "FindBoostNumericBindings.cmake"
     "FindGMock.cmake"
-    "FindGTest.cmake"
     "FindITK.cmake"
+    "FindJython.cmake"
     "FindJythonInterp.cmake"
     "FindLIBLINEAR.cmake"
     "FindMATLAB.cmake"
@@ -111,6 +113,7 @@ set (
     "FindOpenCV.cmake"
     "FindPerl.cmake"
     "FindPerlLibs.cmake"
+    "FindPython.cmake"
     "FindPythonInterp.cmake"
     "FindPythonModules.cmake"
     "FindSparseBayes.cmake"
