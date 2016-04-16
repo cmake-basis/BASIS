@@ -69,6 +69,8 @@ find_program(JYTHON_EXECUTABLE
   PATHS ${_JythonInterp_PATHS}
 )
 
+mark_as_advanced(JYTHON_EXECUTABLE)
+
 # determine jython version
 if (JYTHON_EXECUTABLE)
   execute_process (COMMAND "${JYTHON_EXECUTABLE}" -c "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
