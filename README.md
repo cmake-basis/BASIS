@@ -90,6 +90,6 @@ recorded in your main repository to point to the latest commit of the CMake BASI
 Modules.
 
 
-[1]: http://opensource.andreasschuh.com/cmake-basis
+[1]: https://cmake-basis.github.io
 [2]: https://github.com/schuhschuh/cmake-basis-modules
 [3]: https://github.com/schuhschuh/cmake-basis
