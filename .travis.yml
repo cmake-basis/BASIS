@@ -1,5 +1,6 @@
 language: cpp
 compiler: g++
+sudo: required
 
 # Build scripts
 before_install: test/build/depends.sh
