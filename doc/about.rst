@@ -43,5 +43,5 @@ other open source software projects and integrated with BASIS.
 .. include:: people.rst
 
 .. _CMake: http://www.cmake.org
-.. _`CMake Modules`: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisModules.html
-.. _`utility functions`: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisUtilities.html
+.. _`CMake Modules`: https://cmake-basis.github.io/apidoc/latest/group__BasisModules.html
+.. _`utility functions`: https://cmake-basis.github.io/apidoc/latest/group__BasisUtilities.html

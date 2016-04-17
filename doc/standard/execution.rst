@@ -230,7 +230,7 @@ C++
 ---
 
 For C++ programs, the BASIS C++ utilities provide the function
-`exepath() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisCxxUtilities.html>`__
+`exepath() <https://cmake-basis.github.io/apidoc/latest/group__BasisCxxUtilities.html>`__
 which maps a build target name to the absolute path of the executable file
 built by this target. This function makes use of an implementation of the
 :apidoc:`basis::util::IExecutableTargetInfo` interface whose constructor is automatically
@@ -240,7 +240,7 @@ Note that BASIS generates different implementations of this module for different
 the whose documentation is linked here is the one generated for BASIS itself.
 
 The project implementations will, however, mainly make use of the
-`execute() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisCxxUtilities.html>`__
+`execute() <https://cmake-basis.github.io/apidoc/latest/group__BasisCxxUtilities.html>`__
 function which accepts either an actual executable file
 path or a build target name as first argument of the command-line to execute.
 This function shall be used in C++ code as a substitution for the commonly
@@ -267,9 +267,9 @@ Python
 A Python module named basis.py_ stores the location of the executables relative
 to its own path in a dictionary where the UIDs of the corresponding build targets
 are used as keys. The functions
-`exename() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisPythonUtilities.html#gad832403b77ea714613fe9d8792fc2d76>`__,
-`exedir() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisPythonUtilities.html#gae4a179b411575e221d6363bdc5e08946>`__,
-and `exepath() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisPythonUtilities.html#ga300b1dc5bb4d6d7d13dc8ac4fec9a368>`__
+`exename() <https://cmake-basis.github.io/apidoc/latest/group__BasisPythonUtilities.html#gad832403b77ea714613fe9d8792fc2d76>`__,
+`exedir() <https://cmake-basis.github.io/apidoc/latest/group__BasisPythonUtilities.html#gae4a179b411575e221d6363bdc5e08946>`__,
+and `exepath() <https://cmake-basis.github.io/apidoc/latest/group__BasisPythonUtilities.html#ga300b1dc5bb4d6d7d13dc8ac4fec9a368>`__
 can be used to get the name, directory, or path, respectively, of the executable file built by the
 specified target. If no target is specified, the name, directory, or path of the
 calling executable itself is returned.
@@ -282,9 +282,9 @@ Perl
 
 The Basis.pm_ Perl module uses a hash reference to store the locations of the
 executable files relative to the module itself. The functions
-`exename() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisPerlUtilities.html#gabcdbfcbc0a8f61d74af795ec1cc3201c>`__,
-`exedir() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisPerlUtilities.html#gae2fad71a402bbbe877cc62e6c8dad4d7>`__, and
-`exepath() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisPerlUtilities.html#gaaafd1e575a71a6eb230c712f1ae9f72b>`__ can be used to get the name, directory, or path,
+`exename() <https://cmake-basis.github.io/apidoc/latest/group__BasisPerlUtilities.html#gabcdbfcbc0a8f61d74af795ec1cc3201c>`__,
+`exedir() <https://cmake-basis.github.io/apidoc/latest/group__BasisPerlUtilities.html#gae2fad71a402bbbe877cc62e6c8dad4d7>`__, and
+`exepath() <https://cmake-basis.github.io/apidoc/latest/group__BasisPerlUtilities.html#gaaafd1e575a71a6eb230c712f1ae9f72b>`__ can be used to get the name, directory, or path,
 respectively, of the executable file built by the specified target.
 If no target is specified, the name, directory, or path of the calling
 executable itself is returned.
@@ -297,9 +297,9 @@ Bash
 
 The module basis.sh_ imitates associative arrays to store the location
 of the built executable files relative to this module. The functions
-`exename() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisBashUtilities.html#gae51069427c675de3fdc22e3b8edbd282>`__,
-`exedir() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisBashUtilities.html#ga910356e76596e5bdbedb544186ff395b>`__,
-and `exepath() <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisBashUtilities.html#ga40ae56f084f0786fe49bfc98e2fabf1f>`__
+`exename() <https://cmake-basis.github.io/apidoc/latest/group__BasisBashUtilities.html#gae51069427c675de3fdc22e3b8edbd282>`__,
+`exedir() <https://cmake-basis.github.io/apidoc/latest/group__BasisBashUtilities.html#ga910356e76596e5bdbedb544186ff395b>`__,
+and `exepath() <https://cmake-basis.github.io/apidoc/latest/group__BasisBashUtilities.html#ga40ae56f084f0786fe49bfc98e2fabf1f>`__
 can be used to get the name, directory, or path, respectively, of the
 executable file built by the specified target. If no target is specified,
 the name, directory, or path of the calling executable itself is returned.
@@ -339,15 +339,15 @@ of applications in MATLAB_. An implementation of the ``execute()`` function in
 MATLAB is yet not provided by BASIS.
 
 
-.. _basis.py: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/basis_8py.html
-.. _basis.sh: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/basis_8sh.html
-.. _Basis.pm: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/Basis_8pm.html
-.. _BASIS Utilities: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisUtilities.html
+.. _basis.py: https://cmake-basis.github.io/apidoc/latest/basis_8py.html
+.. _basis.sh: https://cmake-basis.github.io/apidoc/latest/basis_8sh.html
+.. _Basis.pm: https://cmake-basis.github.io/apidoc/latest/Basis_8pm.html
+.. _BASIS Utilities: https://cmake-basis.github.io/apidoc/latest/group__BasisUtilities.html
 .. _Bash: http://www.gnu.org/software/bash/
 .. _Mac OS Bundles: http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
 .. _MathWorks: http://www.mathworks.com/
 .. _MATLAB: http://www.mathworks.com/products/matlab/
-.. _LIBEXEC_DIR: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisScriptConfig.html#gab41b55712c871a1c6ef0407894d58958
-.. _BasisScriptConfig.cmake: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/BasisScriptConfig_8cmake.html
+.. _LIBEXEC_DIR: https://cmake-basis.github.io/apidoc/latest/group__BasisScriptConfig.html#gab41b55712c871a1c6ef0407894d58958
+.. _BasisScriptConfig.cmake: https://cmake-basis.github.io/apidoc/latest/BasisScriptConfig_8cmake.html
 .. _system(): http://www.cplusplus.com/reference/clibrary/cstdlib/system/
 .. _`hashbang/shebang #!`: http://en.wikipedia.org/wiki/Shebang_(Unix)

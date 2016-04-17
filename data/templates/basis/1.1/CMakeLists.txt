@@ -9,7 +9,7 @@
 # @file  CMakeLists.txt
 # @brief Root build configuration file.
 #
-# @note This package utilizes <a href="http://opensource.andreasschuh.com/cmake-basis">CMake BASIS</a>.
+# @note This package utilizes <a href="https://cmake-basis.github.io">CMake BASIS</a>.
 #
 ##############################################################################
 
@@ -43,7 +43,7 @@ if (NOT BASIS_FOUND)
   else ()
     message (FATAL_ERROR "Could not find an existing CMake BASIS installation!\n"
                            "This project uses CMake BASIS for the build configuration."
-                           " Visit http://opensource.andreasschuh.com/cmake-basis for"
+                           " Visit https://cmake-basis.github.io for"
                            " more information about the CMake BASIS package.\n")
   endif ()
   # download and install BASIS in build tree of project
@@ -66,13 +66,13 @@ if (NOT BASIS_FOUND)
     message (FATAL_ERROR "CMake BASIS setup failed. Please take the following steps:\n"
                          "\t1. Clear the CMake cache and try from scratch\n"
                          "\t2. Check the CMake BASIS website:\n"
-                         "\t\thttp://opensource.andreasschuh.com/cmake-basis/\n"
+                         "\t\thttps://cmake-basis.github.io/\n"
                          "\t3. Search for an existing issue:\n"
                          "\t\thttps://github.com/schuhschuh/cmake-basis/issues/\n"
                          "\t4. If this did not resolve the issue, please report your problem:\n"
                          "\t\thttps://github.com/schuhschuh/cmake-basis/issues/new\n"
                          "\t5. Try a manual build of CMake BASIS following the instructions at:\n"
-                         "\t\thttp://opensource.andreasschuh.com/cmake-basis/quickstart.html"
+                         "\t\thttps://cmake-basis.github.io/quickstart.html"
     )
   endif ()
 else ()

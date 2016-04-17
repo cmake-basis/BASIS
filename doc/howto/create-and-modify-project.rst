@@ -384,15 +384,15 @@ in the root directory of your project's source tree.
     basisproject upgrade --cleanup
 
 
-.. _basis_project(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6
-.. _basis_find_package(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeAPI.html#gac9a1326ff8b06b17aebbb6b852ca73af
+.. _basis_project(): https://cmake-basis.github.io/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6
+.. _basis_find_package(): https://cmake-basis.github.io/apidoc/latest/group__CMakeAPI.html#gac9a1326ff8b06b17aebbb6b852ca73af
 .. _find_package(): http://www.cmake.org/cmake/help/v2.8.8/cmake.html#command:find_package
-.. _Find modules: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeFindModules.html
-.. _FindMATLAB.cmake: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/FindMATLAB_8cmake.html
-.. _FindNiftiCLib.cmake: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/FindNiftiCLib_8cmake.html
+.. _Find modules: https://cmake-basis.github.io/apidoc/latest/group__CMakeFindModules.html
+.. _FindMATLAB.cmake: https://cmake-basis.github.io/apidoc/latest/FindMATLAB_8cmake.html
+.. _FindNiftiCLib.cmake: https://cmake-basis.github.io/apidoc/latest/FindNiftiCLib_8cmake.html
 .. _MATLAB Compiler: http://www.mathworks.com/products/compiler/
 .. _nifticlib: http://niftilib.sourceforge.net/
-.. _PROJECT_CONFIG_DIR: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisDirectories.html#ga6eca623aced1386555dcea2557fb8747
+.. _PROJECT_CONFIG_DIR: https://cmake-basis.github.io/apidoc/latest/group__BasisDirectories.html#ga6eca623aced1386555dcea2557fb8747
 .. _ITK: http://www.itk.org/
 .. _ITK 4 Modularization: http://www.vtk.org/Wiki/ITK/Release_4/Modularization
 .. _VTK: http://www.vtk.org/

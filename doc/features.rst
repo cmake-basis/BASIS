@@ -50,7 +50,7 @@ Features
 
 
 
-.. _CMake Module APIs: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisModules.html
+.. _CMake Module APIs: https://cmake-basis.github.io/apidoc/latest/group__BasisModules.html
 .. _Doxygen: http://www.stack.nl/~dimitri/doxygen/
 .. _CMake: http://www.cmake.org
 .. _CPack: http://www.cmake.org/Wiki/CMake:Packaging_With_CPack

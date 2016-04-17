@@ -10,4 +10,4 @@ Parsing the Command-line Arguments in Bash
           reference until this guide is completed, keeping in mind, though, that
           this module will have to be revised.
 
-.. _shflags.sh: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/shflags_8sh.html
+.. _shflags.sh: https://cmake-basis.github.io/apidoc/latest/shflags_8sh.html

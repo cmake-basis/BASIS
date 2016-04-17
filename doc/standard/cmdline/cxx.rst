@@ -20,7 +20,7 @@ also be found as part of this documentation.
     which is also named ``CmdLine``, but in the ``basis`` namespace, i.e.,
     ``basis::CmdLine``. Most of the argument implementations are, however,
     simply typedefs of the commonly used ``TCLAP::Arg`` subclasses.
-    See the `API documentation <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CxxCmdLine.html>`_
+    See the `API documentation <https://cmake-basis.github.io/apidoc/latest/group__CxxCmdLine.html>`_
     for a list of command-line arguments which are made available as part of
     the ``basis`` namespace.
 

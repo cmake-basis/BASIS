@@ -423,12 +423,12 @@ its use including in-depth information and references to further documentation. 
 comprehensive tutorial-like introduction, please refer to the :ref:`FirstSteps` above.
 
 0. Download :download:`BASIS Introduction <BASIS_Introduction.pptx>` for an explanation of the components and purpose of BASIS
-   (`ref <http://opensource.andreasschuh.com/cmake-basis/_downloads/BASIS_Introduction.pptx>`__).
+   (`ref <https://cmake-basis.github.io/_downloads/BASIS_Introduction.pptx>`__).
 1. Download :download:`Getting Started <tutorials/BASIS Tutorial - 01 Getting Started.pptx>`
-   (`ref <http://opensource.andreasschuh.com/cmake-basis/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
+   (`ref <https://cmake-basis.github.io/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
 
 
-.. _basis_project(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6
+.. _basis_project(): https://cmake-basis.github.io/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6
 
 .. The ref link is required for the PDF version as the download directive in
    this case does not translate to a hyperlink, but text only.

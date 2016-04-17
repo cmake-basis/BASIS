@@ -6,7 +6,7 @@
 # All rights reserved.
 #
 # See COPYING file for license information or visit
-# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# https://cmake-basis.github.io/download.html#license
 # ============================================================================
 
 ##############################################################################
@@ -901,7 +901,7 @@ before execution. Include other response files recursively using @/path/to/file.
             help="Show version information and exit.",
             version="""%(prog)s (@PROJECT_NAME@) @PROJECT_VERSION_AND_REVISION@
 Copyright (c) 2011-2012 University of Pennsylvania, 2013-2014 Andreas Schuh. All rights reserved.
-See http://opensource.andreasschuh.com/cmake-basis/download.html#software-license.""")
+See https://cmake-basis.github.io/download.html#software-license.""")
 
     # --verbose
     parser.add_argument('-v', '--verbose', action='count', default=0,

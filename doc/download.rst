@@ -109,5 +109,5 @@ Documentation
  
 .. only:: latex
     
-    `BASIS Manual <http://opensource.andreasschuh.com/cmake-basis/>`__:
+    `BASIS Manual <https://cmake-basis.github.io/>`__:
     Online version of this manual

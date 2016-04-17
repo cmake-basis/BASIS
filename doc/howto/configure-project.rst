@@ -558,7 +558,7 @@ modify must be passed to the respective ``ExternalProject_Add`` command in this 
 
 .. only:: latex
 
-  .. seealso:: `Copy of the nested superbuild script of DRAMMS <http://opensource.andreasschuh.com/cmake-basis/howto/nested-superbuild.html>`__.
+  .. seealso:: `Copy of the nested superbuild script of DRAMMS <https://cmake-basis.github.io/howto/nested-superbuild.html>`__.
 
 .. _ExternalProject: http://www.cmake.org/cmake/help/v2.8.12/cmake.html#module:ExternalProject
 .. _DRAMMS:          http://www.cbica.upenn.edu/sbia/software/dramms/download.html

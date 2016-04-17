@@ -460,7 +460,7 @@ night, a week, a month,... depending on the
 for the :ref:`BasisTestMaster` script, no matter if any files were modified or not.
 
 
-.. _basistest.ctest: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/basistest_8ctest.html
+.. _basistest.ctest: https://cmake-basis.github.io/apidoc/latest/basistest_8ctest.html
 .. _crontab: http://adminschoice.com/crontab-quick-reference
 .. _sbiaCDash: https://sbia-portal.uphs.upenn.edu/cdash
 .. _CTest: http://www.cmake.org/cmake/help/v2.8.8/ctest.html

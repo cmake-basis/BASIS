@@ -55,7 +55,7 @@ Utilities
 =========
 
 For each supported programming language, BASIS provides a library of
-`utility functions <http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__BasisUtilities.html>`__. 
+`utility functions <https://cmake-basis.github.io/apidoc/latest/group__BasisUtilities.html>`__. 
 Some of these utilities are project independent and thus built and installed as
 part of the CMake BASIS package itself. Other utility implementations are project dependent.
 Therefore, the BASIS installation contains only template files which are customized and built

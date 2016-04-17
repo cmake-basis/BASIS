@@ -8,7 +8,7 @@
 # the dependencies to other modules have to be specified here such that the 
 # top-level project can analyze the inter-module dependencies.
 #
-# @sa http://opensource.andreasschuh.com/cmake-basis/standard/modules.html
+# @sa https://cmake-basis.github.io/standard/modules.html
 #
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to

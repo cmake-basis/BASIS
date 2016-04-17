@@ -110,5 +110,5 @@ USE_BASH         |  Whether to build/enable the BASH utilities.
 
 <!-- REFERENCES -->
 [1]: http://www.itk.org
-[2]: http://opensource.andreasschuh.com/cmake-basis/howto/install.html
-[3]: http://opensource.andreasschuh.com/cmake-basis/howto/install.html#binary-distribution-package
+[2]: https://cmake-basis.github.io/howto/install.html
+[3]: https://cmake-basis.github.io/howto/install.html#binary-distribution-package

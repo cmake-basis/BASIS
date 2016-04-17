@@ -290,7 +290,7 @@ files given the specification of a Sphinx documentation build target such as the
 ``site`` target defined by above template CMake code.
 
 
-.. _basis_add_doc(): http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/group__CMakeAPI.html#ga06f94c5d122393ad4e371f73a0803cfa
+.. _basis_add_doc(): https://cmake-basis.github.io/apidoc/latest/group__CMakeAPI.html#ga06f94c5d122393ad4e371f73a0803cfa
 .. _Doxygen: http://www.doxygen.org/
 .. _Sphinx: http://sphinx-doc.org/
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html

@@ -25,7 +25,7 @@
 #
 # See documentation of basis_set_script_path() function for more details.
 #
-# @sa http://opensource.andreasschuh.com/cmake-basis/standard/scripttargets.html#script-configuration
+# @sa https://cmake-basis.github.io/standard/scripttargets.html#script-configuration
 #
 # @ingroup BasisScriptConfig
 ##############################################################################

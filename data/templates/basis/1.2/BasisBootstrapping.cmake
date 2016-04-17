@@ -37,7 +37,7 @@ include (CMakeParseArguments)
 #        a remote directory which contains the CMake BASIS packages named
 #        cmake-basis-version.zip (for Windows) and cmake-basis-version.tar.gz
 #        (for Unix), or the URL of a Git repository.
-#        (default: http://opensource.andreasschuh.com/cmake-basis/_downloads
+#        (default: https://cmake-basis.github.io/_downloads
 #                  or git@github.com:schuhschuh/cmake-basis.git)</td>
 #  </tr>
 #  <tr>
@@ -83,7 +83,7 @@ function (basis_bootstrap)
                            "If you installed CMake BASIS already on your system, please"
                            " specify its location by setting the BASIS_DIR variable"
                            " before you re-configure the build system of this project.\n"
-                           "Visit http://opensource.andreasschuh.com/cmake-basis for"
+                           "Visit https://cmake-basis.github.io for"
                            " more information about the CMake BASIS package.\n")
     endif ()
   endif ()
@@ -96,7 +96,7 @@ function (basis_bootstrap)
       set (BASIS_ARCHIVE "cmake-basis-${BASIS_VERSION}.tar.gz")
     endif ()
     if (NOT BASIS_DOWNLOAD_URL)
-      set (BASIS_DOWNLOAD_URL "http://opensource.andreasschuh.com/cmake-basis/_downloads")
+      set (BASIS_DOWNLOAD_URL "https://cmake-basis.github.io/_downloads")
     endif ()
     if (NOT BASIS_DOWNLOAD_URL MATCHES "\\.(zip|tar\\.gz)$")
       set (BASIS_DOWNLOAD_URL "${BASIS_DOWNLOAD_URL}/${BASIS_ARCHIVE}")
@@ -148,7 +148,7 @@ function (basis_bootstrap)
                                "\t${BASIS_DOWNLOAD_URL}\n"
                                "Error: ${ERRMSG}\n"
                                "Ensure GIT_EXECUTABLE is set and try again or follow the instructions at\n"
-                               "\thttp://opensource.andreasschuh.com/cmake-basis/\n"
+                               "\thttps://cmake-basis.github.io/\n"
                                "to download and install it manually before configuring this project.\n")
         endif ()
 
@@ -165,7 +165,7 @@ function (basis_bootstrap)
                                  "\t${BASIS_DOWNLOAD_URL}\n"
                                  "Error: ${ERRMSG}\n"
                                  "Either try again or follow the instructions at\n"
-                                 "\thttp://opensource.andreasschuh.com/cmake-basis/\n"
+                                 "\thttps://cmake-basis.github.io/\n"
                                  "to download and install it manually before configuring this project.\n")
           endif ()
           message (STATUS "Downloading CMake BASIS v${BASIS_VERSION}... - done")

@@ -5,7 +5,7 @@
 # All rights reserved.
 #
 # See COPYING file for license information or visit
-# http://opensource.andreasschuh.com/cmake-basis/download.html#license
+# https://cmake-basis.github.io/download.html#license
 # ============================================================================
 
 ##############################################################################
@@ -18,7 +18,7 @@
 # of another BASIS project, the dependencies to other modules have to be specified 
 # here such that the top-level project can analyze the inter-module dependencies.
 #
-# @sa http://opensource.andreasschuh.com/cmake-basis/standard/modules.html
+# @sa https://cmake-basis.github.io/standard/modules.html
 #
 # However, not only dependencies to other modules can be specified here,
 # but also dependencies on external packages. A more flexible alternative to
@@ -87,9 +87,9 @@ basis_project (
   DESCRIPTION   "This package implements and supports the development of "
                 "software which follows the CMake Build system And Software "
                 "Implementation Standard (BASIS)."
-  WEBSITE       "http://opensource.andreasschuh.com/cmake-basis"
+  WEBSITE       "https://cmake-basis.github.io"
   COPYRIGHT     "2011-12 University of Pennsylvania, 2013-15 Andreas Schuh, 2013-14 Carnegie Mellon University"
-  LICENSE       "See http://opensource.andreasschuh.com/cmake-basis/download.html#license or COPYING file."
+  LICENSE       "See https://cmake-basis.github.io/download.html#license or COPYING file."
   CONTACT       "andreas.schuh.84@gmail.com"
   TEMPLATE      "basis/1.0"
   PACKAGE_LOGO  "doc/static/logo.svg"

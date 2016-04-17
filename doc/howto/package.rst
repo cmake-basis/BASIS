@@ -33,4 +33,4 @@ distribution package::
 
 
 .. _CPack: http://www.cmake.org/cmake/help/cpack-2-8-docs.html
-.. _BasisPack.cmake: http://opensource.andreasschuh.com/cmake-basis/apidoc/latest/BasisPack_8cmake.html
+.. _BasisPack.cmake: https://cmake-basis.github.io/apidoc/latest/BasisPack_8cmake.html
