@@ -146,12 +146,19 @@ With the release of CMake BASIS version 3.3.0, the history of the Git repository
 been rewritten using [git filter-branch](https://git-scm.com/docs/git-filter-branch).
 Moreover, the CMake modules have been separated from the complete suite of BASIS tools
 using [git subtree split](https://makingsoftware.wordpress.com/2013/02/16/using-git-subtrees-for-repository-separation/).
-This reduced the size of the repositories considerably from more than 200MB to about
-15MB and supports the use of only the CMake modules in a project that does not require
-the complete functionality. The CMake BASIS Modules repository is less than 5MB in size
-when including all revisions. A shallow clone with `--depth=1` is less than 1.5MB.
-Changes of the CMake modules are first pushed to this main repository and then to the
-[CMake BASIS Modules](https://github.com/cmake-basis/modules) project using
+This reduced the size of the repositories considerably from more than 200MB to less
+than 10MB and supports the use of only the CMake modules in a project that does
+not require the complete functionality.
+The [CMake BASIS Modules](https://github.com/cmake-basis/modules) repository is
+about 2MB in size when including all revisions. A shallow clone with `--depth=1` is
+less than 1MB. The [CMake BASIS Find](https://github.com/cmake-basis/find) modules
+for use by the `find_package` command are hosted in another GitHub repository.
+Developers may copy only those Find modules needed by their project or install the
+complete set of modules as part of [CMake BASIS](https://github.com/cmake-basis/basis).
+The shared CMake modules repositories are integrated into the main project with the
+[git subtree add](https://makingsoftware.wordpress.com/2013/02/16/using-git-subtrees-for-repository-separation/)
+command. Changes of the CMake modules are first pushed to the main repository and
+then to the respective subtree repositories using
 [git subtree push](https://makingsoftware.wordpress.com/2013/02/16/using-git-subtrees-for-repository-separation/).
 
 CMake BASIS versions prior to version 3.3.0 have to be downloaded from the
