@@ -65,5 +65,8 @@ basis_install_template (
   "${INSTALL_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
 )
 
+# install other templates
+add_subdirectory (templates)
+
 # add executable target
 basis_add_executable (basisproject.py USE_BASIS_UTILITIES)
