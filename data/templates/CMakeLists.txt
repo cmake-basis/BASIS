@@ -22,4 +22,3 @@ macro (install_basis_template TEMPLATE_NAME)
 endmacro ()
 
 install_basis_template (basis)
-install_basis_template (sbia)
