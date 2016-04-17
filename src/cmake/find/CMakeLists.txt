@@ -20,9 +20,12 @@ endif ()
 # install files
 set (CMAKE_FIND_MODULES
   "FindAFNI.cmake"
+  "FindARPACK.cmake"
   "FindBASH.cmake"
   "FindBLAS.cmake"
   "FindBoostNumericBindings.cmake"
+  "FindEigen3.cmake"
+  "FindFLANN.cmake"
   "FindGMock.cmake"
   "FindITK.cmake"
   "FindJython.cmake"
@@ -41,6 +44,8 @@ set (CMAKE_FIND_MODULES
   "FindSparseBayes.cmake"
   "FindSphinx.cmake"
   "FindSVMTorch.cmake"
+  "FindTBB.cmake"
+  "FindUMFPACK.cmake"
   "FindWeka.cmake"
 )
 
