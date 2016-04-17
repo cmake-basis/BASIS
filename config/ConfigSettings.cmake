@@ -1,6 +1,6 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
-# Copyright (c) 2013-2014 Andreas Schuh
+# Copyright (c) 2013-2016 Andreas Schuh
 # All rights reserved.
 #
 # See COPYING file for license information or visit
@@ -68,8 +68,6 @@ set (TEST_MAIN_LIBRARY_CONFIG "${TEST_MAIN_LIBRARY_CONFIG}")
 if (BUILD_CONFIG_SETTINGS)
   # CMake module path
   set (MODULE_PATH_CONFIG "${BASIS_MODULE_PATH}")
-  # project template
-  set (TEMPLATE_DIR_CONFIG "${PROJECT_DATA_DIR}/template-${TEMPLATE_VERSION}")
   # paths to template files of BASIS utilities
   foreach (U CXX PYTHON JYTHON PERL MATLAB BASH)
     string (TOLOWER "${U}" L)
@@ -78,7 +76,6 @@ if (BUILD_CONFIG_SETTINGS)
   # Sphinx
   set (SPHINX_EXTENSIONS_PATH_CONFIG "${BASIS_SPHINX_EXTENSIONS_PATH}")
   set (SPHINX_HTML_THEME_PATH_CONFIG "${PROJECT_CODE_DIR}/sphinx/themes")
-
   return ()
 endif ()
 
@@ -88,8 +85,6 @@ endif ()
 
 ## @brief Directory of BASIS CMake modules.
 set (MODULE_PATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_MODULES_DIR}")
-## @brief Dirctory of project template.
-set (TEMPLATE_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_TEMPLATE_DIR}-${TEMPLATE_VERSION}")
 # paths to templates files of utilities
 foreach (U CXX PYTHON JYTHON PERL MATLAB BASH)
   set (${U}_TEMPLATES_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_${U}_TEMPLATES_DIR}")
