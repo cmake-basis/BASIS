@@ -12,7 +12,7 @@
 # or COPYING file for license information.
 #
 # Contact: Andreas Schuh <andreas.schuh.84@gmail.com>,
-#          report issues at https://github.com/schuhschuh/cmake-basis/issues
+#          report issues at https://github.com/cmake-basis/BASIS/issues
 ##############################################################################
 
 print "How is it going?\n"

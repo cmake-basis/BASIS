@@ -154,9 +154,9 @@ resolved by providing a suitable ``FindPackage.cmake`` module for the
 external dependency. This module can then be added to BASIS,
 or put in the ``config/`` directory of the project.
 If you have a CMake module to contribute to BASIS,
-we encourage you to `open an issue <https://github.com/schuhschuh/cmake-basis/issues>`__
+we encourage you to `open an issue <https://github.com/cmake-basis/BASIS/issues>`__
 with a patch attached or to send a pull request on
-`GitHub <https://github.com/schuhschuh/cmake-basis>`__.
+`GitHub <https://github.com/cmake-basis/BASIS>`__.
 
 
 :apidoc:`Config.cmake.in <BASISConfig.cmake>`

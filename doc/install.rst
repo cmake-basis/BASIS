@@ -155,7 +155,7 @@ Please refer to the detailed :doc:`Build and Installation How-To Guide <howto/in
 which applies to any project developed using BASIS if you are uncertain about above
 steps or have problems to build, test, or install the software on your system.
 If this guide does not help you resolve the issue, please
-`Report the Issue on GitHub <https://github.com/schuhschuh/cmake-basis/issues>`__.
+`Report the Issue on GitHub <https://github.com/cmake-basis/BASIS/issues>`__.
 In case of failing tests, please attach the output of the following
 command:
 

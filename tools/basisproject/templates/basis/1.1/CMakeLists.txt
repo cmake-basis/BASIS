@@ -68,9 +68,9 @@ if (NOT BASIS_FOUND)
                          "\t2. Check the CMake BASIS website:\n"
                          "\t\thttps://cmake-basis.github.io/\n"
                          "\t3. Search for an existing issue:\n"
-                         "\t\thttps://github.com/schuhschuh/cmake-basis/issues/\n"
+                         "\t\thttps://github.com/cmake-basis/BASIS/issues/\n"
                          "\t4. If this did not resolve the issue, please report your problem:\n"
-                         "\t\thttps://github.com/schuhschuh/cmake-basis/issues/new\n"
+                         "\t\thttps://github.com/cmake-basis/BASIS/issues/new\n"
                          "\t5. Try a manual build of CMake BASIS following the instructions at:\n"
                          "\t\thttps://cmake-basis.github.io/quickstart.html"
     )

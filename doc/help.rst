@@ -9,7 +9,7 @@ Getting Help
 
 Please report any issues with BASIS, including bug reports, feature requests, or support questions, on GitHub_.
 
-.. _GitHub: https://github.com/schuhschuh/cmake-basis/issues
+.. _GitHub: https://github.com/cmake-basis/BASIS/issues
 
 .. only:: html
     

@@ -91,7 +91,7 @@ The BASIS utilities address the following aspects of the software implementation
     [19]: http://www.cbica.upenn.edu/sbia/software/basis/apidoc/latest/UtilitiesTools_8cmake.html
     [20]: http://www.cbica.upenn.edu/sbia/software/basis/standard/cmdline.html
     [21]: http://www.cbica.upenn.edu/sbia/software/basis/standard/execution.html
-    [22]: https://github.com/schuhschuh/cmake-basis/
+    [22]: https://github.com/cmake-basis/BASIS/
     [23]: http://sphinx.pocoo.org/
 
 Project Layout

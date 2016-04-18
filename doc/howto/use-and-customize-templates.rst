@@ -41,9 +41,9 @@ Available Templates
 
 You can find the actual templates provided by BASIS in the ``data/templates`` directory.
 
-.. _basis: https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/basis
-.. _1.1:   https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/basis/1.1
-.. _sbia:  https://github.com/schuhschuh/cmake-basis/tree/master/data/templates/sbia
+.. _basis: https://github.com/cmake-basis/BASIS/tree/master/data/templates/basis
+.. _1.1:   https://github.com/cmake-basis/BASIS/tree/master/data/templates/basis/1.1
+.. _sbia:  https://github.com/cmake-basis/BASIS/tree/master/data/templates/sbia
 
 .. _HowToUseATemplate:
 

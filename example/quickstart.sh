@@ -61,7 +61,7 @@ echo "
       git checkout "$branch"
       git pull
     else
-      git clone -b "$branch" https://github.com/schuhschuh/cmake-basis.git
+      git clone -b "$branch" https://github.com/cmake-basis/BASIS.git
       cd cmake-basis
     fi
 

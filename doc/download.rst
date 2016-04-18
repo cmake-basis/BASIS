@@ -8,7 +8,7 @@ Download
 Source Code
 ===========
 
-The source code of the CMake BASIS package is hosted on `GitHub <https://github.com/schuhschuh/cmake-basis/>`__
+The source code of the CMake BASIS package is hosted on `GitHub <https://github.com/cmake-basis/BASIS/>`__
 from which all releases and latest development versions can be downloaded. See the :doc:`changelog` for a summary
 of changes in each release.
 
@@ -16,9 +16,9 @@ Either clone the Git repository:
 
 .. code-block:: bash
     
-    git clone https://github.com/schuhschuh/cmake-basis.git
+    git clone https://github.com/cmake-basis/BASIS.git
 
-or download the `latest BASIS release package <https://github.com/schuhschuh/cmake-basis/releases>`__.
+or download the `latest BASIS release package <https://github.com/cmake-basis/BASIS/releases>`__.
 
 .. seealso:: The :doc:`Quick Start Guide <quickstart>` can help you get up and running.
 
@@ -53,7 +53,7 @@ Andrew Hundt from `Carnegie Mellon University <http://www.cmu.edu/>`__ joined th
 of CMake BASIS soon after. 
 
 .. _BSD 2-Clause License: http://opensource.org/licenses/BSD-2-Clause
-.. _COPYING: https://github.com/schuhschuh/cmake-basis/blob/master/COPYING.txt
+.. _COPYING: https://github.com/cmake-basis/BASIS/blob/master/COPYING.txt
 
 
 .. _BasisPackageContent:
@@ -79,19 +79,18 @@ CMakeLists.txt_        Root CMake configuration file.
 `test/`_               Unit tests for the provided libraries.
 ====================   ============================================================
 
-.. _master branch:      https://github.com/schuhschuh/cmake-basis/tree/master
-.. _BasisProject.cmake: https://github.com/schuhschuh/cmake-basis/tree/master/BasisProject.cmake
-.. _CMakeLists.txt:     https://github.com/schuhschuh/cmake-basis/tree/master/CMakeLists.txt
-.. _config/:            https://github.com/schuhschuh/cmake-basis/tree/master/config
-.. _doc/:               https://github.com/schuhschuh/cmake-basis/tree/master/doc
-.. _example/:           https://github.com/schuhschuh/cmake-basis/tree/master/example
-.. _include/:           https://github.com/schuhschuh/cmake-basis/tree/master/include
-.. _src/cmake/:         https://github.com/schuhschuh/cmake-basis/tree/master/src/cmake
-.. _src/geshi/:         https://github.com/schuhschuh/cmake-basis/tree/master/src/geshi
-.. _src/sphinx/:        https://github.com/schuhschuh/cmake-basis/tree/master/src/sphinx
-.. _tools/:             https://github.com/schuhschuh/cmake-basis/tree/master/tools
-.. _src/utilities/:     https://github.com/schuhschuh/cmake-basis/tree/master/src/utilities
-.. _test/:              https://github.com/schuhschuh/cmake-basis/tree/master/test
+.. _master branch:      https://github.com/cmake-basis/BASIS/tree/master
+.. _BasisProject.cmake: https://github.com/cmake-basis/BASIS/tree/master/BasisProject.cmake
+.. _CMakeLists.txt:     https://github.com/cmake-basis/BASIS/tree/master/CMakeLists.txt
+.. _config/:            https://github.com/cmake-basis/BASIS/tree/master/config
+.. _doc/:               https://github.com/cmake-basis/BASIS/tree/master/doc
+.. _example/:           https://github.com/cmake-basis/BASIS/tree/master/example
+.. _include/:           https://github.com/cmake-basis/BASIS/tree/master/include
+.. _src/cmake/:         https://github.com/cmake-basis/BASIS/tree/master/src/cmake
+.. _src/sphinx/:        https://github.com/cmake-basis/BASIS/tree/master/src/sphinx
+.. _src/utilities/:     https://github.com/cmake-basis/BASIS/tree/master/src/utilities
+.. _tools/:             https://github.com/cmake-basis/BASIS/tree/master/tools
+.. _test/:              https://github.com/cmake-basis/BASIS/tree/master/test
 
 
 Documentation
