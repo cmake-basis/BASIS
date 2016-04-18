@@ -87,10 +87,10 @@ configure the build and installation of this software are documented.
 CMake Options
 -------------
 
-Option           | Description
----------------- | -------------------------------------------------------------------
-ITK_DIR          | Specify directory of ITKConfig.cmake file. The ITK library is used by the basistest-driver executable if available. See Build Dependencies for more details.
-MATLAB_DIR       | Specify installation root directory of MATLAB. This variable is only available if BUILD_TESTING was set to ON and setting it can be omitted. If a MATLAB installation was specified, however, the tests for the build of binaries using the MATLAB Compiler or the MEX script respectively can be run.
+Option             | Description
+------------------ | -------------------------------------------------------------------
+DEPENDS_ITK_DIR    | Specify directory of ITKConfig.cmake file. The ITK library is used by the basistest-driver executable if available. See Build Dependencies for more details.
+DEPENDS_MATLAB_DIR | Specify installation root directory of MATLAB. This variable is only available if BUILD_TESTING was set to ON and setting it can be omitted. If a MATLAB installation was specified, however, the tests for the build of binaries using the MATLAB Compiler or the MEX script respectively can be run.
 
 
 Advanced CMake Options
@@ -99,12 +99,12 @@ Advanced CMake Options
 Depending on which language interpreters are installed on your system,
 the following CMake options are available:
 
-Option           | Description
----------------- | -------------------------------------------------------------
-USE_ITK          |  Whether to utilize the found ITK.
-USE_PythonInterp |  Whether to build/enable the Python utilities.
-USE_Perl         |  Whether to build/enable the Perl utilities.
-USE_BASH         |  Whether to build/enable the BASH utilities.
+Option      | Description
+----------- | -------------------------------------------------------------
+WITH_ITK    |  Whether to link standalone test driver with ITK.
+WITH_Python |  Whether to build/enable the Python utilities.
+WITH_Perl   |  Whether to build/enable the Perl utilities.
+WITH_BASH   |  Whether to build/enable the BASH utilities.
 
 
 

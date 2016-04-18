@@ -29,7 +29,7 @@ BASIS can be build and installed from its sources.
 +----------------------------+-----------+---------------------------------------------------------------+
 | Package                    | Version   | Description                                                   |
 +============================+===========+===============================================================+
-| CMake_                     | 2.8.4     | A cross-platform, open-source build tool used to generate     |
+| CMake_                     | 2.8.12    | A cross-platform, open-source build tool used to generate     |
 |                            |           | platform specific build configurations. It configures the     |
 |                            |           | system for the various build tools which perform the actual   |
 |                            |           | build of the software.                                        |
@@ -174,31 +174,29 @@ installation of BASIS itself are documented. See :doc:`howto/cmake-options`
 for detailed information on general CMake Options available for the build
 and installation of any package developed with BASIS.
 
-.. option:: -DITK_DIR:PATH
+.. option:: -DDEPENDS_ITK_DIR:PATH
 
-  Specify directory of ITKConfig.cmake file. The ITK library is
-  used by the basistest-driver executable if available. See
-  Build Dependencies for more details.
+   Specify directory of ITKConfig.cmake file. The ITK library is
+   used by the basistest-driver executable if available. See
+   Build Dependencies for more details.
 
-.. option:: -DMATLAB_DIR:PATH
+.. option:: -DDEPENDS_MATLAB_DIR:PATH
 
-  Specify installation root directory of MATLAB_. This variable
-  is only available if BUILD_TESTING was set to ON and setting
-  it can be omitted. If a MATLAB installation was specified,
-  however, the tests for the build of binaries using the `MATLAB Compiler`_
-  or the MEX_ script respectively can be run.
+   Specify installation root directory of MATLAB_. This variable
+   is only available if BUILD_TESTING was set to ON and setting
+   it can be omitted. If a MATLAB installation was specified,
+   however, the tests for the build of binaries using the `MATLAB Compiler`_
+   or the MEX_ script respectively can be run.
 
 .. option:: -DDEFAULT_TEMPLATE:PATH
 
-    Path to the directory and version of the default mad-libs style text substitution project
-    template that will be installed with BASIS. See the
-    :doc:`Template Customization How-To <howto/use-and-customize-templates>` for details.
+   Path to the directory and version of the default mad-libs style text substitution project
+   template that will be installed with BASIS. See the
+   :doc:`Template Customization How-To <howto/use-and-customize-templates>` for details.
 
-.. option:: -DINSTALL_ALL_TEMPLATES:BOOL
+.. option:: -DINSTALL_TEMPLATE_DIR:BOOL
 
-    When OFF only the DEFAULT_TEMPLATE will be installed.
-    When ON all additional project templates included with 
-    BASIS will be installed in addition to the DEFAULT_TEMPLATE.
+   Custom installation directory for project templates.
 
 
 Advanced CMake Options
@@ -207,21 +205,21 @@ Advanced CMake Options
 Depending on which language interpreters are installed on your system,
 the following CMake options are available:
 
-.. option:: -DUSE_ITK:BOOLEAN
+.. option:: -DWITH_ITK:BOOLEAN
 
-  Whether to utilize the found ITK.
+   Whether to link the standalone test driver with ITK.
 
-.. option:: -DUSE_PythonInterp:BOOLEAN
+.. option:: -DWITH_Python:BOOLEAN
 
-  Whether to build/enable the Python utilities.
+   Whether to build/enable the Python utilities.
 
-.. option:: -DUSE_Perl:BOOLEAN
+.. option:: -DWITH_Perl:BOOLEAN
 
-  Whether to build/enable the Perl utilities.
+   Whether to build/enable the Perl utilities.
 
-.. option:: -DUSE_BASH:BOOLEAN
+.. option:: -DWITH_BASH:BOOLEAN
 
-  Whether to build/enable the BASH utilities.
+   Whether to build/enable the BASH utilities.
 
 
 .. _BasisEnvironmentSetUp:
