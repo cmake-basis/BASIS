@@ -57,8 +57,9 @@ function (basis_sanitize_template_for_doxygen OUTPUT_FILE_VAR TEMPLATE_FILE)
   set (${OUTPUT_FILE_VAR} "${OUTPUT_FILE}" PARENT_SCOPE)
 endfunction ()
 
-basis_sanitize_template_for_doxygen (DEPENDS_MODULE   "${PROJECT_DATA_DIR}/templates/basis/1.0/config/Depends.cmake")
-basis_sanitize_template_for_doxygen (BOOTSTRAP_MODULE "${PROJECT_DATA_DIR}/templates/basis/1.1/BasisBootstrapping.cmake")
+set (BASIS_TEMPLATE_DIR "${PROJECT_TOOLS_DIR}/basisproject/templates/basis")
+basis_sanitize_template_for_doxygen (DEPENDS_MODULE   "${BASIS_TEMPLATE_DIR}/1.0/config/Depends.cmake")
+basis_sanitize_template_for_doxygen (BOOTSTRAP_MODULE "${BASIS_TEMPLATE_DIR}/1.1/BasisBootstrapping.cmake")
 
 basis_add_doc (
   apidoc 

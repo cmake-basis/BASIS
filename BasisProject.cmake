@@ -1,7 +1,7 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
 # Copyright (c) 2013-2014 Carnegie Mellon University
-# Copyright (c) 2013-2014 Andreas Schuh
+# Copyright (c) 2013-2016 Andreas Schuh
 # All rights reserved.
 #
 # See COPYING file for license information or visit
@@ -104,8 +104,12 @@ basis_project (
     Perl            # enables support for Perl   if package found
     MATLAB{matlab}  # enabled support for MATLAB if package found
     BASH            # enables support for Bash   if package found
-    ITK             # optionally used by basistest-driver, TODO: get rid of this dependency
     #<optional-dependency>
+  TOOLS_DEPENDS
+    Perl
+    Python{Interp}
+  OPTIONAL_TOOLS_DEPENDS
+    ITK             # optionally used by basistest-driver, TODO: get rid of this dependency
   TEST_DEPENDS
     #<test-dependency>
   OPTIONAL_TEST_DEPENDS

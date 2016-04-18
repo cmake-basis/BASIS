@@ -1,6 +1,6 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
-# Copyright (c) 2013-2014 Andreas Schuh
+# Copyright (c) 2013-2016 Andreas Schuh
 # All rights reserved.
 #
 # See COPYING file for license information or visit
@@ -50,12 +50,6 @@
 
 ## @brief Absolute path to CMake modules.
 basis_set_config (MODULE_PATH "@MODULE_PATH_CONFIG@")
-
-# ----------------------------------------------------------------------------
-# project template
-
-## @brief Top directory of project template.
-basis_set_config (TEMPLATE_DIR "@TEMPLATE_DIR_CONFIG@")
 
 # ----------------------------------------------------------------------------
 # utilities
