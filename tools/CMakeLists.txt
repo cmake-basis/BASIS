@@ -17,8 +17,7 @@ add_subdirectory (basistest)
 add_subdirectory (doxyfilter)
 
 # platform independent "which" command - not required on Unix
-if (NOT UNIX AND PythonInterp_FOUND)
+if (NOT UNIX)
   basis_add_executable (which "${PROJECT_CODE_DIR}/utilities/python/which.py")
   basis_set_target_properties (which PROPERTIES SYMLINK_NAME NONE)
 endif ()
-

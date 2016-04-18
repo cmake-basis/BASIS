@@ -106,6 +106,7 @@ basis_project (
     BASH            # enables support for Bash   if package found
     #<optional-dependency>
   TOOLS_DEPENDS
+    Perl
     Python{Interp}
   OPTIONAL_TOOLS_DEPENDS
     ITK             # optionally used by basistest-driver, TODO: get rid of this dependency
