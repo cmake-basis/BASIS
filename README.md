@@ -119,15 +119,13 @@ Path                     | Content description
 [BasisProject.cmake][20] | Meta-data used for the build configuration.
 [CMakeLists.txt]    [21] | Root CMake configuration file.
 [config/]           [22] | Package configuration files.
-[data/templates/]   [23] | Project templates.
 [doc/]              [24] | Documentation source files.
 [example/]          [25] | Example files used in the tutorials.
 [include/]          [26] | Public header files.
-[src/cmake/]        [27] | CMake implementations and corresponding auxiliary files.
-[src/geshi/]        [28] | A language file written in PHP for use with GeSHi, a source code highlighting extension for MediaWiki.
+[src/cmake/]        [27] | CMake modules and corresponding auxiliary files.
 [src/sphinx/]       [29] | Themes and extensions for the Sphinx documentation tool.
-[src/tools/]        [30] | Source code of command-line tools.
-[src/utilities/]    [31] | Source code of utility functions.
+[src/utilities/]    [30] | Source code of utility functions.
+[tools/]            [31] | Source code of command-line tools and project template.
 [test/]             [32] | Unit tests for the provided libraries.
 
 
@@ -171,15 +169,13 @@ intrusive history changes broke the integrity of previous versions.
 [20]: /BasisProject.cmake
 [21]: /CMakeLists.txt
 [22]: /config
-[23]: /data/templates
 [24]: /doc
 [25]: /example
 [26]: /include
 [27]: /src/cmake
-[28]: /src/geshi
 [29]: /src/sphinx
-[30]: /src/tools
-[31]: /src/utilities
+[30]: /src/utilities
+[31]: /tools
 [32]: /test
 
 <!-- Links to web page and online ressources -->
