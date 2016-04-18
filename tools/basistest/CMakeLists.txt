@@ -32,12 +32,22 @@ endif ()
 
 # ----------------------------------------------------------------------------
 # automated testing
-basis_add_script (basistest.ctest DESTINATION "${INSTALL_MODULES_DIR}")
+basis_add_script (basistest.ctest DESTINATION "${INSTALL_MODULES_DIR}" FINAL)
 
 if (BASH_FOUND)
-  basis_add_executable (basistest-svn.sh    USE_BASIS_UTILITIES LIBEXEC) # wraps svn command
-  basis_add_executable (basistest-slave.sh  USE_BASIS_UTILITIES LIBEXEC) # executes test task
-  basis_add_executable (basistest-master.sh USE_BASIS_UTILITIES LIBEXEC) # executes scheduled tests
-  basis_add_executable (basistest-cron.sh   USE_BASIS_UTILITIES LIBEXEC) # test cron job
   basis_add_executable (basistest.sh        USE_BASIS_UTILITIES)         # main wrapper
+  basis_add_executable (basistest-master.sh USE_BASIS_UTILITIES LIBEXEC) # executes scheduled tests
+  basis_add_executable (basistest-slave.sh  USE_BASIS_UTILITIES LIBEXEC) # executes test task
+  basis_add_executable (basistest-cron.sh   USE_BASIS_UTILITIES LIBEXEC) # cron job which triggers tests
+  basis_add_executable (basistest-svn.sh    USE_BASIS_UTILITIES LIBEXEC) # wraps svn command
+
+  basis_set_target_properties (basistest-cron PROPERTIES SCRIPT_DEFINITIONS
+    "basis_set_script_path (MODULES_DIR \"${PROJECT_CODE_DIR}/cmake\" \"${INSTALL_MODULES_DIR}\")"
+  )
+
+  basis_set_target_properties (basistest-slave PROPERTIES SCRIPT_DEFINITIONS
+    "basis_set_script_path (BASISTEST_CTEST_SCRIPT_DIR \"${BINARY_LIBEXEC_DIR}\" \"${INSTALL_MODULES_DIR}\")"
+  )
+
+  basis_finalize_targets (basistest basistest-master basistest-slave basistest-cron basistest-svn)
 endif ()

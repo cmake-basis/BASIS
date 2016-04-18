@@ -12,18 +12,19 @@
 # @brief Build configuration of basisproject tool.
 ##############################################################################
 
-# advanced options
-set (DEFAULT_TEMPLATE     "" CACHE PATH "Name/Directory of default project template.")
+# project template settings
+set (DEFAULT_TEMPLATE     "" CACHE PATH "Name/Directory of non-default project template.")
 set (INSTALL_TEMPLATE_DIR "" CACHE PATH "Non-default installation directory of project templates.")
 mark_as_advanced (DEFAULT_TEMPLATE INSTALL_TEMPLATE_DIR)
 
-if (NOT INSTALL_TEMPLATE_DIR)
-  set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates")
+if (DEFAULT_TEMPLATE)
+  file (TO_CMAKE_PATH "${DEFAULT_TEMPLATE}" DEFAULT_TEMPLATE)
+else ()
+  set (DEFAULT_TEMPLATE "basis/1.4")
 endif ()
 
-# force default template to be set
-if (NOT DEFAULT_TEMPLATE)
-  set_property (CACHE DEFAULT_TEMPLATE PROPERTY VALUE "basis/1.4")
+if (NOT INSTALL_TEMPLATE_DIR)
+  set (INSTALL_TEMPLATE_DIR "${INSTALL_SHARE_DIR}/templates")
 endif ()
 
 # make default template path absolute
@@ -59,14 +60,20 @@ else ()
                        "\n    ${DEFAULT_TEMPLATE}\n")
 endif ()
 
-# install default project template
-basis_install_template (
-  "${DEFAULT_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
-  "${INSTALL_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
-)
-
-# install other templates
+# install project templates
 add_subdirectory (templates)
+if (NOT "^${DEFAULT_TEMPLATE_DIR}$" STREQUAL "^${CMAKE_CURRENT_SOURCE_DIR}/templates$")
+  basis_install_template (
+    "${DEFAULT_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
+    "${INSTALL_TEMPLATE_DIR}/${DEFAULT_TEMPLATE_NAME}"
+  )
+endif ()
 
 # add executable target
 basis_add_executable (basisproject.py USE_BASIS_UTILITIES)
+
+basis_set_target_properties (basisproject PROPERTIES SCRIPT_DEFINITIONS
+  "basis_set_script_path (TEMPLATE_DIR \"${DEFAULT_TEMPLATE_DIR}\" \"${INSTALL_TEMPLATE_DIR}\")"
+)
+
+basis_finalize_targets (basisproject)
