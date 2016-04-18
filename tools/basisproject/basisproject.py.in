@@ -1236,7 +1236,7 @@ template files in the .basis/ subdirectory.
         sys.stderr.write("Failed to ")
         if create: sys.stderr.write("create")
         else:      sys.stderr.write("modify")
-        sys.stderr.write(" project: " + text_type(e) + "\n\n\tPlease check for existing issues related to this error.\t\tIf you cannot find anything please file a report at:\n\thttps://github.com/schuhschuh/cmake-basis/issues/")
+        sys.stderr.write(" project: " + text_type(e) + "\n\n\tPlease check for existing issues related to this error.\t\tIf you cannot find anything please file a report at:\n\thttps://github.com/cmake-basis/BASIS/issues/")
         ok = False
         raise e
 

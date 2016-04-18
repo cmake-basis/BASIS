@@ -687,7 +687,7 @@ mark_as_advanced (BASIS_SUPERBUILD_MODULES)
 # configuration of project dependencies. The workaround in the custom
 # set_target_properties function defined in the ImportTools.cmake is
 # extremely inefficient and slows down the configuration step a lot
-# (cf. https://github.com/schuhschuh/cmake-basis/issues/494).
+# (cf. https://github.com/cmake-basis/BASIS/issues/494).
 # 
 # The only need for collecting this information for all (executable)
 # targets imported from dependencies is for generating the executable
