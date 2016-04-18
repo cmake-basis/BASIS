@@ -1,7 +1,7 @@
 Introduction
 ============
 
-The online [CMake BASIS Installation Guide](http://schuhschuh.github.io/cmake-basis/install.html) 
+The online [CMake BASIS Installation Guide](http://cmake-basis.github.io/install.html) 
 is the best source for installation instructions. This document only contains basic build and
 installation instructions for offline use.
 

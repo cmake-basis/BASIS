@@ -5,7 +5,7 @@ echo "
 ################################################################################
 # This script performs the steps of the BASIS Quick Start tutorial
 #
-#   http://schuhschuh.github.io/cmake-basis/quickstart.html
+#   http://cmake-basis.github.io/quickstart.html
 #
 # It is recommended, however, to perform these steps manually in order to
 # get familiar with BASIS.
@@ -224,7 +224,7 @@ echo "
 # After you run and read this script,                         
 # check out the BASIS tutorials, documentation, and website at:
 #
-#   http://schuhschuh.github.io/cmake-basis/quickstart.html 
+#   http://cmake-basis.github.io/quickstart.html 
 #
 ################################################################################
 "
