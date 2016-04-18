@@ -2010,6 +2010,8 @@ macro (basis_project_initialize)
   basis_set_project_property (PROPERTY BUNDLE_LINK_DIRS  "")
   # see add_executable(), add_library()
   basis_set_project_property (PROPERTY TARGETS "")
+  # see basis_finalize_targets()
+  basis_set_project_property (PROPERTY FINALIZED_TARGETS "")
   # see basis_add_*() functions
   basis_set_project_property (PROPERTY EXPORT_TARGETS                "")
   basis_set_project_property (PROPERTY INSTALL_EXPORT_TARGETS        "")
