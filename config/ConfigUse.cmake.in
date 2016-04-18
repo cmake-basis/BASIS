@@ -32,6 +32,26 @@
 # @ingroup BasisConfig
 ##############################################################################
 
+# ============================================================================
+# additional BASIS modules
+# ============================================================================
+
+# The basic tools are included by @PROJECT_NAME@Config.cmake already.
+# Additional modules required by this project are included here.
+# The include of the ImportTools must occur **before** the include of
+# the exported CMake BASIS targets itself below.
+
+if (BASIS_IMPORT_TARGETS)
+  include (${BASIS_MODULE_PATH}/ImportTools.cmake)
+endif ()
+if (BASIS_SUPER_BUILD_MODULES)
+  include (${BASIS_MODULE_PATH}/SuperBuildTools.cmake)
+endif ()
+
+# ============================================================================
+# Basic configuration
+# ============================================================================
+
 @BASIS_USE@
 
 # ============================================================================
@@ -91,11 +111,4 @@ if (BASIS_BASH_EXECUTABLE)
       "The BASH executable."
   )
   mark_as_advanced (BASH_EXECUTABLE)
-endif ()
-
-# ----------------------------------------------------------------------------
-# include further required BASIS CMake modules
-# base tools included by @PROJECT_NAME@Config.cmake already
-if (BASIS_SUPER_BUILD_MODULES)
-  include (${BASIS_MODULE_PATH}/SuperBuildTools.cmake)
 endif ()

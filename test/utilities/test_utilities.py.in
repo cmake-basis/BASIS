@@ -74,6 +74,6 @@ if __name__ == '__main__':
         add_cmake_code('test/CMakeLists.txt', 'basis_add_executable(test_stdaux_sh test_stdaux.sh USE_BASIS_UTILITIES)')
         add_cmake_code('test/CMakeLists.txt', 'basis_add_test(test_stdaux_sh COMMAND test_stdaux_sh)')
     # build project
-    build_project(verbose)
+    build_project(verbose=verbose, cmakeopts=['-DBASIS_IMPORT_TARGETS=ON'])
     # run tests
-    run_tests(verbose)
+    run_tests(verbose=verbose)
