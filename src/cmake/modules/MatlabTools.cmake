@@ -765,7 +765,7 @@ function (basis_add_mex_file TARGET_NAME)
   endif ()
   # finalize target
   if (ARGN_FINAL)
-    basis_build_mex_file(${TARGET_UID})
+    basis_finalize_targets (${TARGET_UID})
   endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
@@ -1149,7 +1149,7 @@ function (basis_add_mcc_target TARGET_NAME)
   )
   # finalize target
   if (ARGN_FINAL)
-    basis_build_mcc_target(${TARGET_UID})
+    basis_finalize_targets (${TARGET_UID})
   endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
