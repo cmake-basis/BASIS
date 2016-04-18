@@ -206,7 +206,7 @@ template file to your project and it will be used instead.
     endif ()
 
 
-:apidoc:`ScriptConfig.cmake.in <ScriptConfig.cmake>`
+:apidoc:`ScriptConfig.cmake.in <BasisScriptConfig.cmake>`
 ----------------------------------------------------
 
 The so-called script configuration file sets CMake variables which can be

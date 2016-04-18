@@ -86,41 +86,17 @@ basis_add_doc (
 # software manual
 # ============================================================================
 
-# add build target for the generation of the web pages and PDF manual from
-# the same set of reStructuredText input source files
+# add build target for the generation of the web pages and PDF manual
+# from the same set of reStructuredText input source files
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sidebar.rst")
 
   set (USE_LATEX TRUE) # no WITH_LATEX option
-
   basis_find_package (Sphinx REQUIRED COMPONENTS build)
-  basis_find_package (LATEX  COMPONENTS PDFLATEX)
-
-  # LATEX_PDFLATEX_FOUND not defined by older FindLATEX.cmake modules
-  if (NOT DEFINED LATEX_PDFLATEX_FOUND)
-    if (PDFLATEX_COMPILER)
-      set (LATEX_PDFLATEX_FOUND TRUE)
-    else ()
-      set (LATEX_PDFLATEX_FOUND FALSE)
-    endif ()
-  endif ()
- 
-  # option to auto-update PDF manual in source tree
-  option (
-    SOFTWAREMANUAL_PDF_UPDATE
-    "Whether to update software manual PDF file in source tree"
-    ${LATEX_PDFLATEX_FOUND}
-  )
-  mark_as_advanced (SOFTWAREMANUAL_PDF_UPDATE)
+  basis_find_package (LATEX  REQUIRED COMPONENTS PDFLATEX)
  
   # software manual output formats
-  set (SOFTWAREMANUAl_BUILDER html)
-  if (LATEX_PDFLATEX_FOUND)
-    list (APPEND SOFTWAREMANUAl_BUILDER pdf)
-  elseif (SOFTWAREMANUAL_PDF_UPDATE)
-    message (WARNING "pdflatex not found, disabling option SOFTWAREMANUAL_PDF_UPDATE")
-    set_property (CACHE SOFTWAREMANUAL_PDF_UPDATE PROPERTY VALUE OFF)
-  endif ()
+  set (SOFTWAREMANUAl_BUILDER pdf html)
   if (UNIX)
     list (APPEND SOFTWAREMANUAL_BUILDER man)
   endif ()
@@ -144,32 +120,24 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
     DOXYLINK         apidoc                               # Doxygen generator build target for integrated API reference
     DOXYLINK_URL     "${PROJECT_WEBSITE}/apidoc/latest"   # location of Doxygen output files
     NO_HTML_MODINDEX NO_HTML_INDEX                        # disable currently unused index page
-    EXCLUDE_PATTERN  intro.rst                            # .rst files explicitly included only
-    EXCLUDE_PATTERN  faq.rst
+    EXCLUDE_PATTERN  intro.rst                            # .rst files which are included by other .rst
+    EXCLUDE_PATTERN  faq.rst                              # each pattern must be preceeded by EXCLUDE_PATTERN
     EXCLUDE_PATTERN  features.rst
   )
 
-  basis_add_dependencies (site softwaremanual_html)
+  # PDF manual required for build of HTML download page
+  #
+  # Note that the Sphinx :download: link directive requires the download file
+  # to be present in the source tree; thus copy generated PDF to source tree
+  add_custom_command (TARGET softwaremanual_pdf POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+      "${CMAKE_CURRENT_BINARY_DIR}/latex/${PROJECT_NAME}_Software_Manual.pdf" 
+      "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}_Software_Manual.pdf"
+  )
+  basis_add_dependencies (softwaremanual_html softwaremanual_pdf)
 
-  # add target to update PDF file in source tree
-  if (TARGET softwaremanual_pdf)
-    if (SOFTWAREMANUAL_PDF_UPDATE)
-      # the Sphinx :download: link directive requires the download file to
-      # be present in the source tree; thus copy generated PDF to source tree
-      # if it contains modifications since last time
-      basis_add_custom_target (softwaremanual_pdf_update
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-          "${CMAKE_CURRENT_BINARY_DIR}/latex/${PROJECT_NAME}_Software_Manual.pdf" 
-          "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}_Software_Manual.pdf"
-      )
-      # add dependency such that PDF is re-generated before copied to source tree if it differs
-      basis_add_dependencies (softwaremanual_pdf_update softwaremanual_pdf)
-      basis_add_dependencies (manual softwaremanual_pdf_update)
-      # before building the HTML documentation, ensure that source tree version of manual is up-to-date
-      basis_add_dependencies (softwaremanual_html softwaremanual_pdf_update)
-    else ()
-      basis_add_dependencies (manual softwaremanual_pdf)
-    endif ()
-  endif ()
+  # add dependency to more readable target names
+  basis_add_dependencies (manual softwaremanual_pdf)
+  basis_add_dependencies (site   softwaremanual_html)
 
 endif ()

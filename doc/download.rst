@@ -69,16 +69,13 @@ browsing through the files online.
 BasisProject.cmake_    Meta-data used for the build configuration.
 CMakeLists.txt_        Root CMake configuration file.
 `config/`_             Package configuration files.
-`data/templates/`_     Project templates.
 `doc/`_                Documentation source files.
 `example/`_            Example files used in the tutorials.
 `include/`_            Public header files.
-`src/cmake/`_          CMake implementations and corresponding auxiliary files.
-`src/geshi/`_          A language file written in PHP for use with GeSHi_,
-                       a source code highlighting extension for MediaWiki_.
+`src/cmake/`_          CMake modules and corresponding auxiliary files.
 `src/sphinx/`_         Themes and extensions for the Sphinx documentation tool.
-`src/tools/`_          Source code of command-line tools.
 `src/utilities/`_      Source code of utility functions.
+`tools/`_              Source code of command-line tools and project templates.
 `test/`_               Unit tests for the provided libraries.
 ====================   ============================================================
 
@@ -86,18 +83,15 @@ CMakeLists.txt_        Root CMake configuration file.
 .. _BasisProject.cmake: https://github.com/schuhschuh/cmake-basis/tree/master/BasisProject.cmake
 .. _CMakeLists.txt:     https://github.com/schuhschuh/cmake-basis/tree/master/CMakeLists.txt
 .. _config/:            https://github.com/schuhschuh/cmake-basis/tree/master/config
-.. _data/templates/:    https://github.com/schuhschuh/cmake-basis/tree/master/data/templates
 .. _doc/:               https://github.com/schuhschuh/cmake-basis/tree/master/doc
 .. _example/:           https://github.com/schuhschuh/cmake-basis/tree/master/example
 .. _include/:           https://github.com/schuhschuh/cmake-basis/tree/master/include
 .. _src/cmake/:         https://github.com/schuhschuh/cmake-basis/tree/master/src/cmake
 .. _src/geshi/:         https://github.com/schuhschuh/cmake-basis/tree/master/src/geshi
 .. _src/sphinx/:        https://github.com/schuhschuh/cmake-basis/tree/master/src/sphinx
-.. _src/tools/:         https://github.com/schuhschuh/cmake-basis/tree/master/src/tools
+.. _tools/:             https://github.com/schuhschuh/cmake-basis/tree/master/tools
 .. _src/utilities/:     https://github.com/schuhschuh/cmake-basis/tree/master/src/utilities
 .. _test/:              https://github.com/schuhschuh/cmake-basis/tree/master/test
-.. _GeSHi:              http://qbnz.com/highlighter/
-.. _MediaWiki:          http://www.mediawiki.org/wiki/MediaWiki
 
 
 Documentation
