@@ -81,7 +81,7 @@ set (NS \"${PROJECT_CONFIG_PREFIX}_\")
 
 # allow caller to change namespace - used by projects with modules
 if (\${NS}CONFIG_PREFIX)
-  set (NS \"\${\${NS}CONFIG_PREFIX}\")
+  set (NS \"\${\${NS}CONFIG_PREFIX}_\")
 endif ()"
 )
 
