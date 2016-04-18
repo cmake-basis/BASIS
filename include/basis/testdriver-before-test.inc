@@ -1,7 +1,7 @@
 // ===========================================================================
 // Copyright (c) Insight Software Consortium
 // Copyright (c) 2011-2012 University of Pennsylvania
-// Copyright (c) 2013-2014 Andreas Schuh
+// Copyright (c) 2013-2016 Andreas Schuh
 // All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

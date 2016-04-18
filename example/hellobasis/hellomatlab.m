@@ -2,7 +2,7 @@
 % @brief The not so typical Hello World! example program.
 %
 % Copyright (c) 2011-2012 University of Pennsylvania. <br />
-% Copyright (c) 2013-2014 Andreas Schuh.              <br />
+% Copyright (c) 2013-2016 Andreas Schuh.              <br />
 % All rights reserved.                                <br />
 %
 % See https://cmake-basis.github.io/download.html#software-license
