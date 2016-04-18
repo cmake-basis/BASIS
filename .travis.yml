@@ -31,8 +31,8 @@ os:
 # - test:      Build and run tests (yes|no)
 env:
   - prefix=/tmp/local cmake=any   itk=none python=2 jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
-  - prefix=/tmp/local cmake=3.5.0 itk=none python=2 jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
-  - prefix=/tmp/local cmake=3.5.0 itk=none python=3 jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=yes manual=no tests=yes
+  - prefix=/tmp/local cmake=3.5.0 itk=none python=2 jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=no  manual=no tests=yes
+  - prefix=/tmp/local cmake=3.5.0 itk=none python=3 jython=any doxygen=any sphinx=any utilities=yes tools=yes example=yes doc=no  manual=no tests=yes
  
 # Disable email notifications
 notifications:
