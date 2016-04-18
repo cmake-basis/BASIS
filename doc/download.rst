@@ -87,10 +87,9 @@ CMakeLists.txt_        Root CMake configuration file.
 .. _example/:           https://github.com/cmake-basis/BASIS/tree/master/example
 .. _include/:           https://github.com/cmake-basis/BASIS/tree/master/include
 .. _src/cmake/:         https://github.com/cmake-basis/BASIS/tree/master/src/cmake
-.. _src/geshi/:         https://github.com/cmake-basis/BASIS/tree/master/src/geshi
 .. _src/sphinx/:        https://github.com/cmake-basis/BASIS/tree/master/src/sphinx
-.. _tools/:             https://github.com/cmake-basis/BASIS/tree/master/tools
 .. _src/utilities/:     https://github.com/cmake-basis/BASIS/tree/master/src/utilities
+.. _tools/:             https://github.com/cmake-basis/BASIS/tree/master/tools
 .. _test/:              https://github.com/cmake-basis/BASIS/tree/master/test
 
 
