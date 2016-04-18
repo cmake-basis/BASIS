@@ -773,9 +773,8 @@ set (BASIS_BASH_LIBRARY_TARGET "bashlib")
 # documentation
 # ============================================================================
 
-## @brief Advanced option to request build of documentation targets as part of ALL target.
-option (BASIS_ALL_DOC  "Request build of documentation targets as part of ALL target."  OFF)
-mark_as_advanced (BASIS_ALL_DOC)
+## @brief Advanced non-cached variable to request build of documentation targets as part of ALL target.
+basis_set_if_not_set (BASIS_ALL_DOC OFF)
 
 ## @brief Default Doxygen configuration.
 set (BASIS_DOXYGEN_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
