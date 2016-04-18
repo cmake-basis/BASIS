@@ -97,7 +97,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
   basis_find_package (LATEX  REQUIRED COMPONENTS PDFLATEX)
  
   # software manual output formats
-  set (SOFTWAREMANUAl_BUILDER pdf html)
+  set (SOFTWAREMANUAl_BUILDER html pdf)
   if (UNIX)
     list (APPEND SOFTWAREMANUAL_BUILDER man)
   endif ()
