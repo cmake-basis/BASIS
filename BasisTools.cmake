@@ -68,6 +68,5 @@ include ("${CMAKE_CURRENT_LIST_DIR}/UtilitiesTools.cmake")
 # Further, when a project does not consist of modules, the imported
 # targets are available in the scope of the project.
 #
-# Therefore, a project has to include the ImportTools.cmake file explicitly
-# in its root CMakeLists.txt file before basis_project_begin() or
-# basis_project_impl(), respectively.
+# A project has to set BASIS_IMPORT_TARGETS to TRUE in its root CMakeLists.txt
+# file before basis_project_begin() or basis_project_impl(), respectively.
