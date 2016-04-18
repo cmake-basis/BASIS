@@ -3,7 +3,7 @@
 # @brief Test basis_set_target_properites() and basis_get_target_properties().
 ##############################################################################
 
-cmake_minimum_required (VERSION 2.8.4)
+cmake_minimum_required (VERSION 2.8.12 FATAL_ERROR)
 
 find_package (BASIS REQUIRED)
 basis_use_package (BASIS)
