@@ -30,10 +30,6 @@ else ()
 endif ()
 
 # ----------------------------------------------------------------------------
-# append CMake module path of BASIS to CMAKE_MODULE_PATH
-set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}" ${CMAKE_MODULE_PATH})
-
-# ----------------------------------------------------------------------------
 # externally developed modules
 
 # ExternalData.cmake module - yet only part of ITK, not CMake

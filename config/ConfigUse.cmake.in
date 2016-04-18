@@ -39,6 +39,11 @@
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+# Add CMake BASIS Find Modules path to CMAKE_MODULE_PATH
+list (INSERT CMAKE_MODULE_PATH 0 "${BASIS_FIND_MODULE_PATH}")
+list (REMOVE_DUPLICATES CMAKE_MODULE_PATH)
+
+# ----------------------------------------------------------------------------
 # Import configured script executables
 
 # The following statements ensure that all scripts and modules are

@@ -2418,9 +2418,7 @@ macro (basis_project_begin)
   # any package use file must be included after PROJECT_NAME was set as the
   # imported targets are added to the <Project>_IMPORTED_TARGETS property
   # using basis_set_project_property() in add_executable() and add_library()
-  if (NOT BASIS_MODULE_PATH)
-    basis_use_package (BASIS)
-  endif ()
+  basis_use_package (BASIS)
   basis_find_packages ()
 
   if (BASIS_DEBUG)
