@@ -12,5 +12,8 @@
 # @brief Build configuration of CMake modules.
 ##############################################################################
 
+set (INSTALL_BASIS_MODULES_DIR "${INSTALL_MODULES_DIR}")
 add_subdirectory (modules)
+
+set (INSTALL_BASIS_MODULES_DIR "${INSTALL_FIND_MODULES_DIR}")
 add_subdirectory (find)

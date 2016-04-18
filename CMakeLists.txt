@@ -56,8 +56,10 @@ set (BASIS_SPHINX_HTML_THEME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/sphinx/themes
 # ----------------------------------------------------------------------------
 # include BASIS policies, settings, macros, and functions
 
-set (BASIS_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake/modules")
-set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake/find")
+set (BASIS_MODULE_PATH      "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake/modules")
+set (BASIS_FIND_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake/find")
+
+list (INSERT CMAKE_MODULE_PATH 0 "${BASIS_FIND_MODULE_PATH}")
 
 include ("${BASIS_MODULE_PATH}/BasisSettings.cmake" NO_POLICY_SCOPE)
 include ("${BASIS_MODULE_PATH}/BasisTools.cmake")

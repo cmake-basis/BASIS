@@ -51,6 +51,9 @@
 ## @brief Absolute path to CMake modules.
 basis_set_config (MODULE_PATH "@MODULE_PATH_CONFIG@")
 
+## @brief Absolute path to CMake Find modules.
+basis_set_config (FIND_MODULE_PATH "@FIND_MODULE_PATH_CONFIG@")
+
 # ----------------------------------------------------------------------------
 # utilities
 

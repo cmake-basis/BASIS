@@ -88,10 +88,11 @@ basis_add_doc (
 
 # add build target for the generation of the web pages and PDF manual
 # from the same set of reStructuredText input source files
+basis_set_if_not_set (BUILD_SOFTWAREMANUAL ON)
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/manual.rst" AND
-    EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sidebar.rst")
+    EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/sidebar.rst" AND
+    BUILD_SOFTWAREMANUAL)
 
-  set (USE_LATEX TRUE) # no WITH_LATEX option
   basis_find_package (Sphinx REQUIRED COMPONENTS build)
   basis_find_package (LATEX  REQUIRED COMPONENTS PDFLATEX)
  

@@ -67,7 +67,8 @@ set (TEST_MAIN_LIBRARY_CONFIG "${TEST_MAIN_LIBRARY_CONFIG}")
 
 if (BUILD_CONFIG_SETTINGS)
   # CMake module path
-  set (MODULE_PATH_CONFIG "${BASIS_MODULE_PATH}")
+  set (MODULE_PATH_CONFIG      "${BASIS_MODULE_PATH}")
+  set (FIND_MODULE_PATH_CONFIG "${BASIS_FIND_MODULE_PATH}")
   # paths to template files of BASIS utilities
   foreach (U CXX PYTHON JYTHON PERL MATLAB BASH)
     string (TOLOWER "${U}" L)
@@ -84,7 +85,8 @@ endif ()
 # ============================================================================
 
 ## @brief Directory of BASIS CMake modules.
-set (MODULE_PATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_MODULES_DIR}")
+set (MODULE_PATH_CONFIG      "\${\${NS}INSTALL_PREFIX}/${INSTALL_MODULES_DIR}")
+set (FIND_MODULE_PATH_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_MODULES_DIR}")
 # paths to templates files of utilities
 foreach (U CXX PYTHON JYTHON PERL MATLAB BASH)
   set (${U}_TEMPLATES_DIR_CONFIG "\${\${NS}INSTALL_PREFIX}/${INSTALL_${U}_TEMPLATES_DIR}")

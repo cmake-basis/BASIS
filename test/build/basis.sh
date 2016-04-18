@@ -11,6 +11,22 @@ set -e
 [ -n "$manual"    ] || manual=no
 [ -n "$tests"     ] || tests=no
 
+with_bash=$utilities
+with_perl=$utilities
+with_python=$utilities
+
+if [ -z "$jython" ] || [[ $jython == none ]]; then
+  with_jython=off
+else
+  with_jython=on
+fi
+
+if [ -z "$itk" ] || [[ $itk == none ]] || [[ $tools == no ]]; then
+  with_itk=off
+else
+  with_itk=on
+fi
+
 cmake_python_opt=
 if [[ $TRAVIS_OS_NAME == linux ]]; then
   if [[ $python == 3 ]]; then
@@ -40,12 +56,19 @@ fi
 mkdir build && cd build
 cmake -DBUILD_TESTING=$tests \
       -DBUILD_DOCUMENTATION=$enable_doc \
+      -DBUILD_SOFTWAREMANUAL=$manual \
       -DBUILD_APPLICATIONS=$tools \
       -DBUILD_EXAMPLE=$example \
       -DBUILD_BASIS_UTILITIES_FOR_CXX=$utilities \
       -DBUILD_BASIS_UTILITIES_FOR_BASH=$utilities \
       -DBUILD_BASIS_UTILITIES_FOR_PERL=$utilities \
       -DBUILD_BASIS_UTILITIES_FOR_PYTHON=$utilities \
+      -DWITH_BASH=$with_bash \
+      -DWITH_Perl=$with_perl \
+      -DWITH_Python=$with_python \
+      -DWITH_Jython=$with_jython \
+      -DWITH_ITK=$with_itk \
+      -DWITH_MATLAB=off \
       -DSOFTWAREMANUAL_PDF_UPDATE=no \
       -DCMAKE_INSTALL_PREFIX="$prefix" \
       $cmake_python_opt \
@@ -53,8 +76,11 @@ cmake -DBUILD_TESTING=$tests \
 
 # Build and install
 make -j8
-[[ $doc    == no ]] || make softwaremanual_html
-[[ $manual == no ]] || make softwaremanual_pdf
+if [[ $manual == yes ]]; then
+  make softwaremanual # manual + site
+elif [[ $doc == yes ]]; then
+  make apidoc
+fi
 make -j8 install
 
 # Run tests

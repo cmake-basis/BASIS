@@ -38,8 +38,8 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif ()
 
 # installation directory of CMake modules
-set (INSTALL_MODULES_DIR       "${INSTALL_SHARE_DIR}/cmake-modules")
-set (INSTALL_BASIS_MODULES_DIR "${INSTALL_MODULES_DIR}")
+set (INSTALL_MODULES_DIR      "${INSTALL_SHARE_DIR}/modules")
+set (INSTALL_FIND_MODULES_DIR "${INSTALL_SHARE_DIR}/find-modules")
 
 # installation directory of utilities template files
 set (INSTALL_CXX_TEMPLATES_DIR    "${INSTALL_SHARE_DIR}/utilities")
