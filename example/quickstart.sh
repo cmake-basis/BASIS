@@ -5,7 +5,7 @@ echo "
 ################################################################################
 # This script performs the steps of the BASIS Quick Start tutorial
 #
-#   http://cmake-basis.github.io/quickstart.html
+#   https://cmake-basis.github.io/quickstart.html
 #
 # It is recommended, however, to perform these steps manually in order to
 # get familiar with BASIS.
@@ -61,8 +61,8 @@ echo "
       git checkout "$branch"
       git pull
     else
-      git clone -b "$branch" https://github.com/cmake-basis/BASIS.git
-      cd cmake-basis
+      git clone --depth=1 -b "$branch" https://github.com/cmake-basis/BASIS.git
+      cd BASIS
     fi
 
 echo "
@@ -72,7 +72,12 @@ echo "
 "
 
     mkdir -p build && cd build
-    cmake .. "-G${generator}" "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" "-DBASIS_INSTALL_SCHEME=usr" -DBUILD_EXAMPLE=ON
+    cmake "-G${generator}" \
+        "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" \
+        "-DBASIS_INSTALL_SCHEME=usr" \
+        "-DBUILD_APPLICATIONS=ON" \
+        "-DBUILD_EXAMPLE=ON" \
+        ..
     
     "${buildtool}" install
 
@@ -145,7 +150,7 @@ echo "
 
     mkdir "${LOCALDIR}/src/hellobasis/build"
     cd "${LOCALDIR}/src/hellobasis/build"
-    cmake .. "-G${generator}" -DBUILD_DOCUMENTATION=ON "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}"
+    cmake .. "-G${generator}" -DBUILD_DOCUMENTATION=OFF "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}"
     
     "${buildtool}" install
 
@@ -195,7 +200,12 @@ echo "
 
     mkdir "${TOPLEVEL_DIR}/build"
     cd "${TOPLEVEL_DIR}/build"
-    cmake .. "-G${generator}" "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" "-DBASIS_INSTALL_SCHEME=usr"
+    cmake "-G${generator}" \
+        "-DMODULE_moda=ON" \
+        "-DMODULE_modb=ON" \
+        "-DCMAKE_INSTALL_PREFIX=${LOCALDIR}" \
+        "-DBASIS_INSTALL_SCHEME=usr" \
+        ..
     
     "${buildtool}" install
 
@@ -224,7 +234,7 @@ echo "
 # After you run and read this script,                         
 # check out the BASIS tutorials, documentation, and website at:
 #
-#   http://cmake-basis.github.io/quickstart.html 
+#   https://cmake-basis.github.io/quickstart.html 
 #
 ################################################################################
 "
