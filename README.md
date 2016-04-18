@@ -103,12 +103,14 @@ you can reach the CMake BASIS developers on GitHub using the [CMake BASIS Issue 
 License
 =======
 
-Copyright (c) 2011-2013 University of Pennsylvania   <br />
-Copyright (c) 2013-2015 Andreas Schuh                <br />
-Copyright (c) 2013-2014 Carnegie Mellon University
+Copyright (c) 2011-2013 University of Pennsylvania <br />
+Copyright (c) 2013-2014 Carnegie Mellon University <br />
+Copyright (c) 2013-2016 Andreas Schuh
 
-CMake BASIS is available under a BSD compatible license. The complete license text
-can be found on the [download page][10] and in the [COPYING.txt](/COPYING.txt) file.
+CMake BASIS is distributed under the terms of the
+[BSD 2-clause License](http://opensource.org/licenses/BSD-2-Clause).
+The complete license text can be found on the [download page][10] and in the
+[COPYING.txt](/COPYING.txt) file.
 
 
 Package Content
