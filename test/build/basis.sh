@@ -56,6 +56,7 @@ fi
 mkdir build && cd build
 cmake -DBUILD_TESTING=$tests \
       -DBUILD_DOCUMENTATION=$enable_doc \
+      -DBUILD_SOFTWAREMANUAL=$manual \
       -DBUILD_APPLICATIONS=$tools \
       -DBUILD_EXAMPLE=$example \
       -DBUILD_BASIS_UTILITIES_FOR_CXX=$utilities \
