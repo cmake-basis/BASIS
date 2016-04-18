@@ -2,15 +2,16 @@
 set -e
 
 ## Travis script to install CMake
+os=$TRAVIS_OS_NAME
 
 version=${1:-3.3.1}
 prefix="${2:-/opt/cmake-$version}"
 
 if [[ $version == any ]]; then
-  if [[ $TRAVIS_OS_NAME == linux ]]; then
+  if [[ $os == linux ]]; then
     sudo apt-get install -y cmake
     exit 0
-  elif [[ $TRAVIS_OS_NAME == osx   ]]; then
+  elif [[ $os == osx   ]]; then
     brew install cmake
     exit 0
   fi
@@ -21,30 +22,35 @@ major=${version/.*}
 minor=${version#*.}
 minor=${minor/.*}
 
-# 64-bit binaries are only available since CMake 3.1
-if [ $major -gt 3 ] || [ $major -eq 3 -a $minor -gt 0 ]; then
-  os=$TRAVIS_OS_NAME
-fi
-arch=x86_64
-
 if [[ $os == linux ]]; then
 
   # Download and extract binary distribution package
+  if [ $major -gt 3 ] || [ $major -eq 3 -a $minor -gt 0 ]; then
+    os_and_arch=Linux-x86_64
+  else
+    os_and_arch=Linux-i386
+  fi
+
   mkdir -p "$prefix"
-  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Linux-${arch}.tar.gz
-  tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-Linux-${arch}.tar.gz
-  rm -f cmake-${version}-Linux-${arch}.tar.gz
+  wget --no-check-certificate https://www.cmake.org/files/v$major.$minor/cmake-${version}-${os_and_arch}.tar.gz
+  tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-${os_and_arch}.tar.gz
+  rm -f cmake-${version}-${os_and_arch}.tar.gz
 
 elif [[ $os == osx ]]; then
 
   # Download and extract binary distribution package
-  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}-Darwin-${arch}.tar.gz
-  tar -xzf cmake-${version}-Darwin-${arch}.tar.gz
+  if [ $major -gt 3 ] || [ $major -eq 3 -a $minor -gt 0 ]; then
+    os_and_arch=Darwin-x86_64
+  else
+    os_and_arch=Darwin64-universal
+  fi
+  wget --no-check-certificate https://www.cmake.org/files/v$major.$minor/cmake-${version}-${os_and_arch}.tar.gz
+  tar -xzf cmake-${version}-${os_and_arch}.tar.gz
 
   # Move extracted files to installation prefix
   for d in bin doc man share; do
     mkdir -p "$prefix/$d"
-    mv -f "cmake-${version}-Darwin-x86_64/CMake.app/Contents/$d/"* "$prefix/$d/"
+    mv -f "cmake-${version}-${os_and_arch}/CMake.app/Contents/$d/"* "$prefix/$d/"
   done
 
   # Remove unused files
@@ -53,7 +59,7 @@ elif [[ $os == osx ]]; then
 else
 
   # Download and extract source files
-  wget http://www.cmake.org/files/v$major.$minor/cmake-${version}.tar.gz
+  wget --no-check-certificate https://www.cmake.org/files/v$major.$minor/cmake-${version}.tar.gz
   tar xzf cmake-${version}.tar.gz
   rm -f cmake-${version}.tar.gz
 
