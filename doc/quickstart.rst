@@ -407,29 +407,8 @@ files to your newly created project and build the respective executables
 and libraries. The essentials of any software package! Thanks to BASIS, only
 few lines of CMake code are needed to accomplish this.
 
-Now check out the :ref:`Tutorials` for more details regarding each of the
-above steps and in-depth information about the used BASIS commands
-if you like, or move on to the various :doc:`How-to Guides <howto>` which
-will introduce you to even more BASIS concepts and best practices.
-
-
-.. _Tutorials:
-
-Advanced Tutorials
-==================
-
-The tutorial slides linked here for download give a slide-by-slide introduction to BASIS and
-its use including in-depth information and references to further documentation. For a less
-comprehensive tutorial-like introduction, please refer to the :ref:`FirstSteps` above.
-
-0. Download :download:`BASIS Introduction <BASIS_Introduction.pptx>` for an explanation of the components and purpose of BASIS
-   (`ref <https://cmake-basis.github.io/_downloads/BASIS_Introduction.pptx>`__).
-1. Download :download:`Getting Started <tutorials/BASIS Tutorial - 01 Getting Started.pptx>`
-   (`ref <https://cmake-basis.github.io/_downloads/BASIS%20Tutorial%20-%2001%20Getting%20Started.pptx>`__)
+Now check out the various :doc:`How-to Guides <howto>` which will introduce
+you to even more BASIS concepts and best practices.
 
 
 .. _basis_project(): https://cmake-basis.github.io/apidoc/latest/group__CMakeAPI.html#gad82d479d14499d09c5aeda3af646b9f6
-
-.. The ref link is required for the PDF version as the download directive in
-   this case does not translate to a hyperlink, but text only.
-

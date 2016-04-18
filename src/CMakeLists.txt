@@ -14,7 +14,4 @@
 
 add_subdirectory (cmake)     # CMake modules
 add_subdirectory (utilities) # implementation utilities
-
-if (Sphinx_FOUND)
-  add_subdirectory (sphinx)  # Sphinx extensions and themes
-endif ()
+add_subdirectory (sphinx)    # Sphinx extensions and themes

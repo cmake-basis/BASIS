@@ -1,4 +1,5 @@
 /build*
+/doc/BASIS_Software_Manual.pdf
 *.pyc
 *.autosave
 .*.swp
