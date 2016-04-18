@@ -2,7 +2,7 @@
 CMake BASIS
 ===========
 
-[![Build Status](https://travis-ci.org/cmake-basis/basis.svg?branch=master)](https://travis-ci.org/cmake-basis/basis)
+[![Build Status](https://travis-ci.org/cmake-basis/BASIS.svg?branch=master)](https://travis-ci.org/cmake-basis/BASIS)
 
 The [CMake Build system And Software Implementation Standard (BASIS)][1] makes it
 easy to create sharable software and libraries that work together. This is accomplished
@@ -11,10 +11,10 @@ More importantly, BASIS supplies a fully integrated suite of functionality to ma
 the whole process seamless! 
 
   [Homepage][1]
-| [GitHub](https://github.com/cmake-basis/basis "CMake BASIS on GitHub")
+| [GitHub](https://github.com/cmake-basis/BASIS "CMake BASIS on GitHub")
 | [SourceForge](http://sourceforge.net/projects/sbia-basis/ "CMake BASIS on SourceForge")
 | [Open Hub (Ohloh)](https://www.openhub.net/p/cmake-basis "CMake BASIS Statistics on Open Hub (Ohloh)")
-| [Travis CI](https://travis-ci.org/cmake-basis/basis/builds "CMake BASIS Continuous Integration Tests")
+| [Travis CI](https://travis-ci.org/cmake-basis/BASIS/builds "CMake BASIS Continuous Integration Tests")
 
 Features
 ========
@@ -149,10 +149,10 @@ than 10MB and supports the use of only the CMake modules in a project that does
 not require the complete functionality.
 The [CMake BASIS Modules](https://github.com/cmake-basis/modules) repository is
 about 2MB in size when including all revisions. A shallow clone with `--depth=1` is
-less than 1MB. The [CMake BASIS Find](https://github.com/cmake-basis/find) modules
+less than 1MB. The [CMake BASIS Find Modules](https://github.com/cmake-basis/find-modules)
 for use by the `find_package` command are hosted in another GitHub repository.
 Developers may copy only those Find modules needed by their project or install the
-complete set of modules as part of [CMake BASIS](https://github.com/cmake-basis/basis).
+complete set of modules as part of [CMake BASIS](https://github.com/cmake-basis/BASIS).
 The shared CMake modules repositories are integrated into the main project with the
 [git subtree add](https://makingsoftware.wordpress.com/2013/02/16/using-git-subtrees-for-repository-separation/)
 command. Changes of the CMake modules are first pushed to the main repository and
@@ -184,7 +184,7 @@ intrusive history changes broke the integrity of previous versions.
 [4]:  https://cmake-basis.github.io/howto.html
 [5]:  https://cmake-basis.github.io/reference.html
 [12]: https://cmake-basis.github.io/apidoc.html
-[8]:  https://github.com/cmake-basis/basis/issues
+[8]:  https://github.com/cmake-basis/BASIS/issues
 [9]:  https://cmake-basis.github.io/quickstart.html#install-basis
 [11]: https://cmake-basis.github.io/about.html
 
