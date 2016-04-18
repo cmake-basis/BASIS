@@ -16,7 +16,7 @@ Either clone the Git repository:
 
 .. code-block:: bash
     
-    git clone https://github.com/cmake-basis/BASIS.git
+    git clone --depth=1 https://github.com/cmake-basis/BASIS.git
 
 or download the `latest BASIS release package <https://github.com/cmake-basis/BASIS/releases>`__.
 
