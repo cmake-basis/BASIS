@@ -80,7 +80,7 @@ Documentation
 Additional documentation is available in several locations: 
 
 - First and foremost on the [CMake BASIS website][1].
-- The [software manual as PDF](https://github.com/cmake-basis/cmake-basis.github.io/raw/gh-pages/_downloads/BASIS_Software_Manual.pdf).
+- The [software manual as PDF](https://github.com/cmake-basis/cmake-basis.github.io/raw/master/_downloads/BASIS_Software_Manual.pdf).
 - The documentation installed in the _doc_ directory for offline access.
 - The [source package documentation directory](/doc) works in a pinch as well.
 
