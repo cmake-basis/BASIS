@@ -58,7 +58,7 @@ basis_install (
 # make sure that we did not forget to install a file... very easy to forget!
 file (GLOB MODULES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
 foreach (F IN LISTS MODULES)
-  if (NOT F MATCHES "^(COPYING\\.txt|README\\.md|CMakeLists\\.txt|\\..*|.*\\.bak|.*~)$")
+  if (NOT F MATCHES "^(COPYING\\.txt|README\\.md|CMakeLists\\.txt|\\..*|.*\\.bak|.*\\.autosave|.*~)$")
     list (FIND CMAKE_FIND_MODULES "${F}" IDX)
     if (IDX EQUAL -1)
       message (WARNING "Seems like ${CMAKE_CURRENT_SOURCE_DIR}/${F} will not be installed!")

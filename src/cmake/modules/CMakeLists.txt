@@ -108,7 +108,7 @@ basis_install (
 # make sure that we did not forget to install a file... very easy to forget!
 file (GLOB MODULES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
 foreach (F IN LISTS MODULES)
-  if (NOT F MATCHES "^(CMakeLists\\.txt|COPYING\\.txt|README\\.md|\\..*|.*\\.bak|.*\\.pyc|.*~|uninstall)$")
+  if (NOT F MATCHES "^(CMakeLists\\.txt|COPYING\\.txt|README\\.md|\\..*|.*\\.bak|.*\\.autosave|.*\\.pyc|.*~|uninstall)$")
     list (FIND CMAKE_MODULES "${F}" IDX)
     if (IDX EQUAL -1)
       list (FIND CMAKE_MODULES_AUXILIARY_FILES "${F}" IDX)
