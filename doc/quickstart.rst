@@ -40,8 +40,8 @@ Clone the `Git <http://git-scm.com/>`__ repository from `GitHub <https://github.
     
     mkdir -p ~/local/src
     cd ~/local/src
-    git clone https://github.com/cmake-basis/BASIS.git
-    cd cmake-basis
+    git clone --depth=1 https://github.com/cmake-basis/BASIS.git
+    cd BASIS
     
 or :doc:`download` a pre-packaged ``.tar.gz`` of the latest BASIS release and unpack it using the following command:
 
@@ -65,7 +65,7 @@ Configure the build system using CMake 2.8.4 or a more recent version:
 
 - Press ``c`` to configure the project.
 - Change ``CMAKE_INSTALL_PREFIX`` to ``~/local``.
-- Set option ``BUILD_EXAMPLE`` to ``ON``.
+- Set options ``BUILD_APPLICATIONS`` and ``BUILD_EXAMPLE`` to ``ON``.
 - Make sure that option ``BUILD_PROJECT_TOOL`` is enabled.
 - Press ``g`` to generate the Makefiles and exit ``ccmake``.
 
@@ -391,7 +391,7 @@ Install the Projects
     
     mkdir ${TOPLEVEL_DIR}/build
     cd ${TOPLEVEL_DIR}/build
-    cmake -D CMAKE_INSTALL_PREFIX=~/local ..
+    cmake -D CMAKE_INSTALL_PREFIX=~/local -D MODULE_moda=ON -D MODULE_modb=ON  ..
     
     make install
 
