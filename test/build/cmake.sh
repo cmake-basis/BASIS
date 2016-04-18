@@ -32,7 +32,7 @@ if [[ $os == linux ]]; then
   fi
 
   mkdir -p "$prefix"
-  wget --no-check-certificate https://www.cmake.org/files/v$major.$minor/cmake-${version}-${os_and_arch}.tar.gz
+  wget --no-check-certificate https://cmake.org/files/v$major.$minor/cmake-${version}-${os_and_arch}.tar.gz
   tar --strip-components 1 -C "$prefix" -xzf cmake-${version}-${os_and_arch}.tar.gz
   rm -f cmake-${version}-${os_and_arch}.tar.gz
 
@@ -44,7 +44,7 @@ elif [[ $os == osx ]]; then
   else
     os_and_arch=Darwin64-universal
   fi
-  wget --no-check-certificate https://www.cmake.org/files/v$major.$minor/cmake-${version}-${os_and_arch}.tar.gz
+  wget --no-check-certificate https://cmake.org/files/v$major.$minor/cmake-${version}-${os_and_arch}.tar.gz
   tar -xzf cmake-${version}-${os_and_arch}.tar.gz
 
   # Move extracted files to installation prefix
@@ -59,7 +59,7 @@ elif [[ $os == osx ]]; then
 else
 
   # Download and extract source files
-  wget --no-check-certificate https://www.cmake.org/files/v$major.$minor/cmake-${version}.tar.gz
+  wget --no-check-certificate https://cmake.org/files/v$major.$minor/cmake-${version}.tar.gz
   tar xzf cmake-${version}.tar.gz
   rm -f cmake-${version}.tar.gz
 
