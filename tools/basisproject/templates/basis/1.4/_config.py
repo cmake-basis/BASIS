@@ -6,7 +6,8 @@ from __future__ import unicode_literals
 # required project files
 required = [
   'CMakeLists.txt',
-  'BasisProject.cmake'
+  'BasisProject.cmake',
+  'config/FindBASIS.cmake'
 ]
 
 # ------------------------------------------------------------------------------
@@ -15,7 +16,7 @@ options = {
   # bootstrapping support
   'bootstrapping' : {
     'desc' : 'Enable bootstrapping of CMake BASIS if no installation found.',
-    'path' : [ 'BasisBootstrapping.cmake' ]
+    'path' : [ 'config/BasisBootstrapping.cmake' ]
   },
   # additional configuration files
   'config-settings' : {
