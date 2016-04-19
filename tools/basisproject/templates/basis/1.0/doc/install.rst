@@ -27,7 +27,7 @@ Prerequisites
 | BASIS_              | 3.0.0   | Utility to automate and standardize creating, documenting, and sharing software.     |
 +---------------------+---------+--------------------------------------------------------------------------------------+
 
-.. _BASIS: https://cmake-basis.github.io/
+.. _BASIS: http://opensource.andreasschuh.com/cmake-basis/
 
 
 .. raw:: html
@@ -97,8 +97,8 @@ option during the configuration of the build tree::
     
 After the successful installation, the build directory can be removed again.
 
-.. _BASIS: https://cmake-basis.github.io/
-.. _BASIS guide on software installation: https://cmake-basis.github.io/howto/install.html
+.. _BASIS: http://opensource.andreasschuh.com/cmake-basis/
+.. _BASIS guide on software installation: http://opensource.andreasschuh.com/cmake-basis/howto/install.html
 .. _CMake: http://www.cmake.org/
 .. _CTest: http://www.cmake.org/cmake/help/v2.8.8/ctest.html
 .. _GNU Make: http://www.gnu.org/software/make/

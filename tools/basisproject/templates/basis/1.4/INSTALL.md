@@ -100,6 +100,6 @@ Advanced CMake Options
 
 
 <!-- REFERENCES -->
-[1]: http://opensource.andreasschuh.com/cmake-basis/
-[2]: http://opensource.andreasschuh.com/cmake-basis/howto/install.html
-[3]: http://opensource.andreasschuh.com/cmake-basis/howto/install.html#binary-distribution-package
+[1]: https://cmake-basis.github.io/
+[2]: https://cmake-basis.github.io/howto/install.html
+[3]: https://cmake-basis.github.io/howto/install.html#binary-distribution-package
