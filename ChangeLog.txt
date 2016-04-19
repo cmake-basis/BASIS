@@ -1,5 +1,45 @@
 .. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
 
+.. _v3.3.0:
+
+Release 3.3.0 (Apr 19, 2016)
+----------------------------
+
+- Changed license to standard BSD 2-clause License without SBIA specific terms.
+- Moved project to new GitHub repositories with big objects from history removed.
+- Moved SBIA project template to separate repository.
+- CMake BASIS Modules and Find modules available in separate Git repositories.
+- Enhanced project modularization support.
+- Add C++11 compiler flags by specifying ``LANGUAGES CXX-11`` in ``BasisProject.cmake`` file.
+- Added Find modules for: TBB, ARPACK, UMFPACK, Eigen3, FLANN, Python, Jython.
+- Added ``basis_project`` attributes: ``SOVERSION``, ``DEFAULT_MODULES``, ``TOOLS_DIR``, ``OTHER_DIRS``.
+- Support separate ``CODE_DIR`` and ``TOOLS_DIR`` for library and application code.
+- Added ``BUILD_APPLICATIONS`` option when ``TOOLS_DIR/CMakeLists.txt`` exists.
+- Added ``HAVE_<Package>`` and ``HAVE_<Package>_<Module>`` defines.
+- Replace ``USE_<Package>`` by more common ``WITH_<Package>`` options.
+- Changed order of dependencies discovery and inclusion of ``Depends.cmake`` file
+- Use file of other module included when declared as dependency of a module.
+- Modified ``basis_add_subdirectory`` to support specification of module directory.
+- Added ``basis_find_package`` option: ``OPTIONAL_COMPONENTS``.
+- Modified ``basis_find_package`` to add ``DEPENDS_<Package>_DIR`` cache entry
+  instead of ``<Package>_DIR`` for either root installation directory or location of
+  ``<Package>Config.cmake`` file. Allow alternative ``cmake`` command-line arguments
+  such as ``<Package>_ROOT`` and ``<Package>_DIR`` to initialize package search paths.
+- Support specification of alternative package versions of dependencies.
+- Declare dependencies on other modules using ``<Package>{<Module1>,<Module2>}`` syntax.
+- Enable use of system installation of Sphinx extensions.
+- The ``ImportTools`` module is by default no longer included to reduce configure time.
+- New ``basis_add_doc`` Doxygen options: ``PREDEFINED``, ``EXCLUDE_BASIS_MODULES``, ``EXCLUDE_BASIS_UTILITIES``.
+- Allow generator expressions in list of source files and include directories.
+- Updated included GTest and GMock source files.
+- Download release packages from GitHub directly during bootstrapping.
+- Fixed import of project modules from project configuration file.
+- Fixed update of script configuration cache and build script.
+- Fixed re-inclusion of package use file when additional components are needed/discovered.
+- Fixed missing dependencies in module dependency DAG analysis.
+- Removed warning about missing ``CTestConfig.cmake`` file.
+
+
 .. _v3.2.0:
 
 Release 3.2.0 (Oct 16, 2015)

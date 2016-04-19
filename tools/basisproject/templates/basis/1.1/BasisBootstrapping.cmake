@@ -36,7 +36,7 @@ include (CMakeParseArguments)
 #        package name (which must end with .tar.gz or .zip) or the path of
 #        a remote directory which contains the CMake BASIS packages named
 #        cmake-basis-version.zip (for Windows) and cmake-basis-version.tar.gz (for Unix).
-#        (default: https://cmake-basis.github.io/_downloads)</td>
+#        (default: http://opensource.andreasschuh.com/cmake-basis/_downloads)</td>
 #  </tr>
 #  <tr>
 #    @tp @b INFORM_USER @endtp
@@ -81,7 +81,7 @@ function (basis_bootstrap)
                            "If you installed CMake BASIS already on your system, please"
                            " specify its location by setting the BASIS_DIR variable"
                            " before you re-configure the build system of this project.\n"
-                           "Visit https://cmake-basis.github.io for"
+                           "Visit http://opensource.andreasschuh.com/cmake-basis for"
                            " more information about the CMake BASIS package.\n")
     endif ()
   endif ()
@@ -93,7 +93,7 @@ function (basis_bootstrap)
     set (BASIS_ARCHIVE "cmake-basis-${BASIS_VERSION}.tar.gz")
   endif ()
   if (NOT BASIS_DOWNLOAD_URL)
-    set (BASIS_DOWNLOAD_URL "https://cmake-basis.github.io/_downloads")
+    set (BASIS_DOWNLOAD_URL "http://opensource.andreasschuh.com/cmake-basis/_downloads")
   endif ()
   if (NOT BASIS_DOWNLOAD_URL MATCHES "\\.(zip|tar\\.gz)$")
     set (BASIS_DOWNLOAD_URL "${BASIS_DOWNLOAD_URL}/${BASIS_ARCHIVE}")
@@ -120,7 +120,7 @@ function (basis_bootstrap)
                                "\t${BASIS_DOWNLOAD_URL}\n"
                                "Error: ${ERRMSG}\n"
                                "Either try again or follow the instructions at\n"
-                               "\thttps://cmake-basis.github.io/\n"
+                               "\thttp://opensource.andreasschuh.com/cmake-basis/\n"
                                "to download and install it manually before configuring this project.\n")
         endif ()
         message (STATUS "Downloading CMake BASIS v${BASIS_VERSION}... - done")
