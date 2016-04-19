@@ -259,6 +259,14 @@ def template_abspath(template):
     path = os.path.abspath(template)
     if not os.path.isdir(path):
         path = os.path.join(_template_dir, template)
+    # if top-level template directory given, choose most recent version subdirectory
+    if re.match(r'(.*)' + os.path.sep.replace('\\', '\\\\') + r'(\d+)\.(\d+)$', path) is None:
+        try:
+            versions = [subdir for subdir in os.listdir(path) if os.path.isdir(os.path.join(path, subdir))]
+            versions.sort(key=lambda s: map(int, s.split('.'))) # fails if any subdir is not a version number
+            path = os.path.join(path, versions[-1])
+        except:
+            pass
     return path
 
 # ============================================================================
@@ -267,7 +275,7 @@ def template_abspath(template):
 
 # ----------------------------------------------------------------------------
 def get_template(template, path):
-    m = re.match(r'(.*)/(\d+)\.(\d+)$', template)
+    m = re.match(r'(.*)' + os.path.sep.replace('\\', '\\\\') + r'(\d+)\.(\d+)$', template)
     if not m is None:
         root  = m.group(1)
         major = int(m.group(2))
@@ -913,6 +921,15 @@ See https://cmake-basis.github.io/download.html#software-license.""")
 either the current working directory or the installation directory of the
 default templates. The configured default template is used if none specified.""")
     
+    # --templates-dir
+    class PrintTemplatesDir(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string):
+            print(_template_dir)
+            sys.exit(0)
+
+    parser.add_argument('--templates-dir', nargs=0, default=argparse.SUPPRESS, action=PrintTemplatesDir,
+            help="""Print default templates directory and exit.""")
+
     # --help
     parser.add_argument('-h', '--help', default=argparse.SUPPRESS, action='help',
             help="""Print help and exit. For help with subcommand arguments type 'basisproject help <command>'.""")
@@ -936,8 +953,8 @@ default templates. The configured default template is used if none specified."""
     # load template configuration
     config_file = get_template(args.template, '_config.py')
     if not os.path.isfile(config_file):
-        sys.stderr.write('Missing template configuration file: ' + config_file + '\n')
-        sys.stderr.write('Please specify a valid project template directory using --template.\n')
+        sys.stderr.write('Unknown template or missing template configuration file:\n' + config_file + '\n')
+        sys.stderr.write('\nPlease specify a valid project template directory using --template.\n')
         sys.exit(1)
     config, custom_template_group = load_config(config_file, custom_template_group)
     
