@@ -1,6 +1,3 @@
-Frequently Asked Questions
-==========================
-
 Standard CMake Commands
 -----------------------
 
