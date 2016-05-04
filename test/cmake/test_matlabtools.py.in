@@ -10,9 +10,6 @@
 # of this test project.
 ##############################################################################
 
-import sys
-sys.path.insert(0, '@BINARY_PYTHON_LIBRARY_DIR@')
-sys.path.insert(0, '@TESTING_PYTHON_LIBRARY_DIR@')
 from testaux import *
 
 # ============================================================================

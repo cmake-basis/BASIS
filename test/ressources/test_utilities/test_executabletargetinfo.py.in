@@ -61,13 +61,12 @@ class TestExecutableTargetInfo(unittest.TestCase):
     # ------------------------------------------------------------------------
     def test_exedir(self):
         # directory of this executable
-        print("Executable directory: " + basis.exedir())
         self.assertTrue (re.search (
                     r"[/\\]Testing[/\\]Temporary[/\\]test_utilities[/\\]build[/\\]Testing[/\\]bin",
                     basis.exedir ()))
         # directory of executable built by some target
         self.assertTrue (re.match (
-                    r"([a-zA-Z]:)?[/\\].*[/\\]bin([/\\]basis)?",
+                    r"([a-zA-Z]:)?[/\\].*[/\\]bin([/\\](Release|Debug|RelWithDebInfo|MinSizeRel))?([/\\]basis)?$",
                     basis.exedir ('basis.basisproject')))
     
     # ------------------------------------------------------------------------

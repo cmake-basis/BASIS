@@ -68,7 +68,7 @@ like (Basis::exedir (),
     "directory of this executable");
 # directory of executable built by some target
 like (Basis::exedir ('basis.basisproject'),
-    qr/^([A-Z]:)?[\/\\].*[\/\\]bin([\/\\]basis)?$/,
+    qr/^([A-Z]:)?[\/\\].*[\/\\]bin([\/\\](Release|Debug|RelWithDebInfo|MinSizeRel))?([\/\\]basis)?$/,
     "directory of basis.basisproject executable");
 
 # ----------------------------------------------------------------------------

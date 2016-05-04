@@ -98,7 +98,7 @@ like "${dir}" '/Testing/Temporary/test_utilities/build/Testing/bin' 'directory o
 # directory of executable built by other target
 exedir dir 'basis.basisproject'
 is $? 0 'return value is 0'
-like "${dir}" '^/.*/bin(/basis)?$' 'directory of other executable'
+like "${dir}" '^/.*/bin(/(Release|Debug|RelWithDebInfo|MinSizeRel))?(/basis)?$' 'directory of other executable'
 
 # ----------------------------------------------------------------------------
 # test exepath()
