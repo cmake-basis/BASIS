@@ -23,4 +23,4 @@ if [[ $latex == yes ]]; then
 fi
 
 # Install Sphinx
-sudo pip install -U Sphinx
+sudo -H pip install -U Sphinx

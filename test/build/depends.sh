@@ -17,7 +17,7 @@ set -e
 # Update package managers
 [[ $TRAVIS_OS_NAME != linux ]] || sudo apt-get update -qq
 [[ $TRAVIS_OS_NAME != osx   ]] || brew update
-[ -z "$(which pip)" ] || sudo pip install --upgrade pip
+[ -z "$(which pip)" ] || sudo -H pip install --upgrade pip
 
 # Install Python 3
 if [[ $python == 3 ]]; then
