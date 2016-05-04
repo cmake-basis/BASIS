@@ -3188,7 +3188,7 @@ function (basis_configure_script INPUT OUTPUT)
         # insert extra Python code near top, but after any future statement
         # (http://docs.python.org/2/reference/simple_stmts.html#future)
         set (FUTURE_STATEMENTS)
-        if (SCRIPT MATCHES "^(.*from[ \t]+__future__[ \t]+import[ \t]+[a-z_]+([ \t]+as[ \t]+[a-zA-Z_]+)?[ \t]*\n)(.*)$")
+        if (SCRIPT MATCHES "^(.*from[ \t]+__future__[ \t]+import[ \t]+[a-z_]+[^\n]*\n)(.*)$")
           set (FUTURE_STATEMENTS "${CMAKE_MATCH_1}")
           set (SCRIPT            "${CMAKE_MATCH_3}")
         endif ()
