@@ -27,6 +27,12 @@ else
   with_itk=on
 fi
 
+cmake_generator_opt=
+if [[ $TRAVIS_OS_NAME == osx ]]; then
+  # Use Xcode generator to test handling of IDE $<CONFIG> subdirectories
+  cmake_generator_opt="-GXcode"
+fi
+
 cmake_python_opt=
 if [[ $TRAVIS_OS_NAME == linux ]]; then
   if [[ $python == 3 ]]; then
@@ -54,7 +60,8 @@ else
   enable_doc=no
 fi
 mkdir build && cd build
-cmake -DBUILD_TESTING=$tests \
+cmake $cmake_generator_opt \
+      -DBUILD_TESTING=$tests \
       -DBUILD_DOCUMENTATION=$enable_doc \
       -DBUILD_SOFTWAREMANUAL=$manual \
       -DBUILD_APPLICATIONS=$tools \
@@ -74,14 +81,16 @@ cmake -DBUILD_TESTING=$tests \
       $cmake_python_opt \
       ..
 
-# Build and install
-make -j8
+# Build
+cmake --build . --config Release
 if [[ $manual == yes ]]; then
-  make softwaremanual # manual + site
+  cmake --build . --config Release --target softwaremanual # manual + site
 elif [[ $doc == yes ]]; then
-  make apidoc
+  cmake --build . --config Release --target apidoc # Doxygen
 fi
-make -j8 install
 
 # Run tests
 [[ $tests == no ]] || ctest -C Release -V
+
+# Install
+cmake --build . --config Release --target install
