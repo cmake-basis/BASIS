@@ -1617,11 +1617,13 @@ function (basis_finalize_targets)
     basis_make_target_uid (TARGET_UID_basis_sh basis_sh)
     basis_make_target_uid (TARGET_UID_basis_py basis_py)
     basis_make_target_uid (TARGET_UID_Basis_pm Basis_pm)
-    list (REMOVE_ITEM TARGETS
-      ${TARGET_UID_basis_sh}
-      ${TARGET_UID_basis_py}
-      ${TARGET_UID_Basis_pm}
-    )
+    if (TARGETS)
+      list (REMOVE_ITEM TARGETS
+        ${TARGET_UID_basis_sh}
+        ${TARGET_UID_basis_py}
+        ${TARGET_UID_Basis_pm}
+      )
+    endif ()
   endif ()
   basis_get_project_property (FINALIZED_TARGETS PROPERTY FINALIZED_TARGETS)
   if (FINALIZED_TARGETS)
