@@ -66,7 +66,6 @@ Configure the build system using CMake 2.8.4 or a more recent version:
 - Press ``c`` to configure the project.
 - Change ``CMAKE_INSTALL_PREFIX`` to ``~/local``.
 - Set options ``BUILD_APPLICATIONS`` and ``BUILD_EXAMPLE`` to ``ON``.
-- Make sure that option ``BUILD_PROJECT_TOOL`` is enabled.
 - Press ``g`` to generate the Makefiles and exit ``ccmake``.
 
 Build and install BASIS
@@ -100,16 +99,16 @@ Using the C or TC shell (csh/tcsh):
 
 .. code-block:: bash
     
-    setenv PATH "~/local/bin:${PATH}"
-    setenv BASIS_EXAMPLE_DIR "~/local/share/basis/example"
+    setenv PATH "${HOME}/local/bin:${PATH}"
+    setenv BASIS_EXAMPLE_DIR "${HOME}/local/share/basis/example"
     setenv HELLOBASIS_RSC_DIR "${BASIS_EXAMPLE_DIR}/hellobasis"
 
 Using the Bourne Again SHell (bash):
 
 .. code-block:: bash
     
-    export PATH="~/local/bin:${PATH} "
-    export BASIS_EXAMPLE_DIR="~/local/share/basis/example"
+    export PATH="${HOME}/local/bin:${PATH} "
+    export BASIS_EXAMPLE_DIR="${HOME}/local/share/basis/example"
     export HELLOBASIS_RSC_DIR="${BASIS_EXAMPLE_DIR}/hellobasis"
 
 
@@ -120,7 +119,7 @@ Create a new and empty project as follows:
 
 .. code-block:: bash
     
-    basisproject create --name HelloBasis --description "This is a BASIS project."
+    basisproject create --name HelloBasis --description "This is a BASIS project." \
                  --root ~/local/src/hellobasis
 
 The next command demonstrates that you can modify a previously created project by using the
@@ -341,7 +340,7 @@ Create a Top Level Project
 
 .. code-block:: bash
 
-    export TOPLEVEL_DIR="~/local/src/HelloTopLevel"
+    export TOPLEVEL_DIR="${HOME}/local/src/HelloTopLevel"
     basisproject create --name HelloTopLevel --description "This is a BASIS TopLevel project. It demonstrates how easy it is to create a simple BASIS project."  --root ${TOPLEVEL_DIR}  --toplevel
 
 Create a sub-project Containing a Library
@@ -351,13 +350,13 @@ Create a sub-project module similarly to how helloBasis was created earlier.
 
 .. code-block:: bash
 
-    export MODA_DIR="~/local/src/HelloTopLevel/modules/moda"
+    export MODA_DIR="${HOME}/local/src/HelloTopLevel/modules/moda"
     basisproject create --name moda --description "Subproject library to be used elsewhere" --root ${MODA_DIR} --module --include
     cp ${HELLOBASIS_RSC_DIR}/moda.cxx ${MODA_DIR}/src/
     mkdir ${MODA_DIR}/include/moda
     cp ${HELLOBASIS_RSC_DIR}/moda.h ${MODA_DIR}/include/moda/
 
-Add the following line to ``${MODB_DIR}/src/CMakeLists.txt`` under the section "library target(s)":
+Add the following line to ``${MODA_DIR}/src/CMakeLists.txt`` under the section "library target(s)":
 
 .. code-block:: cmake
     
@@ -374,13 +373,13 @@ Create a sub-project module similarly to how helloBasis was created earlier.
     
     export MODB_DIR="${TOPLEVEL_DIR}/modules/modb"
     basisproject create --name modb --description "User example subproject executable utility repository that uses the library"  --root ${MODB_DIR} --module --src --use moda
-    cp ${HELLOBASIS_RSC_DIR}/userprog.cpp ${MODB_DIR}/src/
+    cp ${HELLOBASIS_RSC_DIR}/userprog.cxx ${MODB_DIR}/src/
 
 Add the following line to ``${MODB_DIR}/src/CMakeLists.txt`` under the section "executable target(s)":
 
 .. code-block:: cmake
     
-    basis_add_executable(userprog.cpp)
+    basis_add_executable(userprog.cxx)
     basis_target_link_libraries(userprog moda)
 
 
