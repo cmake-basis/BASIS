@@ -37,7 +37,6 @@ set (CMAKE_FIND_MODULES
   "FindMIRTK.cmake"
   "FindMOSEK.cmake"
   "FindNiftiCLib.cmake"
-  "FindOpenCV.cmake"
   "FindPerl.cmake"
   "FindPerlLibs.cmake"
   "FindPython.cmake"
