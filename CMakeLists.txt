@@ -20,9 +20,13 @@ endif ()
 # install files
 set (CMAKE_FIND_MODULES
   "FindAFNI.cmake"
+  "FindARPACK.cmake"
   "FindBASH.cmake"
+  "FindBASIS.cmake"
   "FindBLAS.cmake"
   "FindBoostNumericBindings.cmake"
+  "FindEigen3.cmake"
+  "FindFLANN.cmake"
   "FindGMock.cmake"
   "FindITK.cmake"
   "FindJython.cmake"
@@ -30,9 +34,9 @@ set (CMAKE_FIND_MODULES
   "FindLIBLINEAR.cmake"
   "FindMATLAB.cmake"
   "FindMatlabNiftiTools.cmake"
+  "FindMIRTK.cmake"
   "FindMOSEK.cmake"
   "FindNiftiCLib.cmake"
-  "FindOpenCV.cmake"
   "FindPerl.cmake"
   "FindPerlLibs.cmake"
   "FindPython.cmake"
@@ -41,6 +45,8 @@ set (CMAKE_FIND_MODULES
   "FindSparseBayes.cmake"
   "FindSphinx.cmake"
   "FindSVMTorch.cmake"
+  "FindTBB.cmake"
+  "FindUMFPACK.cmake"
   "FindWeka.cmake"
 )
 
@@ -53,7 +59,7 @@ basis_install (
 # make sure that we did not forget to install a file... very easy to forget!
 file (GLOB MODULES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
 foreach (F IN LISTS MODULES)
-  if (NOT F MATCHES "^(COPYING\\.txt|README\\.md|CMakeLists\\.txt|\\..*|.*\\.bak|.*~)$")
+  if (NOT F MATCHES "^(COPYING\\.txt|README\\.md|CMakeLists\\.txt|\\..*|.*\\.bak|.*\\.autosave|.*~)$")
     list (FIND CMAKE_FIND_MODULES "${F}" IDX)
     if (IDX EQUAL -1)
       message (WARNING "Seems like ${CMAKE_CURRENT_SOURCE_DIR}/${F} will not be installed!")
