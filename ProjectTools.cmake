@@ -431,9 +431,18 @@ macro (basis_project_check_metadata)
   list (GET PROJECT_INCLUDE_DIRS 0 PROJECT_INCLUDE_DIR)
   list (GET PROJECT_CODE_DIRS    0 PROJECT_CODE_DIR)
   list (GET PROJECT_TOOLS_DIRS   0 PROJECT_TOOLS_DIR)
-  # deprecated SUBDIRS argument -- use OTHER_DIRS instead
-  list (APPEND PROJECT_OTHER_DIRS ${PROJECT_SUBDIRS})
+  # make OTHER_DIRS paths absolute and append deprecated SUBDIRS argument
+  set (_OTHER_DIRS)
+  foreach (_PATH IN LISTS PROJECT_OTHER_DIRS PROJECT_SUBDIRS)
+    if (NOT IS_ABSOLUTE "${_PATH}")
+      set (_PATH "${PROJECT_SOURCE_DIR}/${_PATH}")
+    endif ()
+    list (APPEND _OTHER_DIRS "${_PATH}")
+  endforeach ()
+  set (PROJECT_OTHER_DIRS ${_OTHER_DIRS})
   unset(PROJECT_SUBDIRS)
+  unset(_OTHER_DIRS)
+  unset(_PATH)
   # let basis_project_begin() know that basis_project() was called
   set (BASIS_basis_project_CALLED TRUE)
 endmacro ()
@@ -1631,7 +1640,9 @@ function (basis_configure_script_libraries)
   endforeach ()
   if (TARGETS)
     basis_make_target_uid (LIBRARY_TARGET lib)
-    add_custom_target (${LIBRARY_TARGET} ALL)
+    if (NOT TARGET ${LIBRARY_TARGET})
+      add_custom_target (${LIBRARY_TARGET} ALL)
+    endif ()
     basis_add_dependencies (${LIBRARY_TARGET} ${TARGETS})
   endif ()
 endfunction ()
@@ -2010,6 +2021,8 @@ macro (basis_project_initialize)
   basis_set_project_property (PROPERTY BUNDLE_LINK_DIRS  "")
   # see add_executable(), add_library()
   basis_set_project_property (PROPERTY TARGETS "")
+  # see basis_finalize_targets()
+  basis_set_project_property (PROPERTY FINALIZED_TARGETS "")
   # see basis_add_*() functions
   basis_set_project_property (PROPERTY EXPORT_TARGETS                "")
   basis_set_project_property (PROPERTY INSTALL_EXPORT_TARGETS        "")
@@ -2416,9 +2429,7 @@ macro (basis_project_begin)
   # any package use file must be included after PROJECT_NAME was set as the
   # imported targets are added to the <Project>_IMPORTED_TARGETS property
   # using basis_set_project_property() in add_executable() and add_library()
-  if (NOT BASIS_MODULE_PATH)
-    basis_use_package (BASIS)
-  endif ()
+  basis_use_package (BASIS)
   basis_find_packages ()
 
   if (BASIS_DEBUG)
@@ -2566,14 +2577,15 @@ macro (basis_project_end)
   if (NOT PROJECT_IS_MODULE)
     # copy properties of modules
     foreach (M IN LISTS PROJECT_MODULES_ENABLED)
-      foreach (P IN ITEMS IMPORTED_TARGETS
+      foreach (P IN ITEMS TARGETS
+                          FINALIZED_TARGETS
+                          IMPORTED_TARGETS
                           IMPORTED_TYPES
                           IMPORTED_LOCATIONS
                           IMPORTED_RANKS
                           PROJECT_INCLUDE_DIRS
                           PROJECT_LINK_DIRS
-                          BUNDLE_LINK_DIRS
-                          TARGETS)
+                          BUNDLE_LINK_DIRS)
         basis_get_project_property (V ${M} ${P})
         basis_set_project_property (APPEND PROPERTY ${P} ${V})
       endforeach ()

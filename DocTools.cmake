@@ -1,7 +1,7 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
 # Copyright (c) 2013-2014 Carnegie Mellon University
-# Copyright (c) 2013-2014 Andreas Schuh
+# Copyright (c) 2013-2016 Andreas Schuh
 # All rights reserved.
 #
 # See COPYING file for license information or visit
@@ -605,9 +605,10 @@ function (basis_add_doxygen_doc TARGET_NAME)
           list (REMOVE_AT SOURCES 0)
         endif ()
         get_target_property (BUILD_DIR ${T} BUILD_DIRECTORY)
-        list (APPEND DOXYGEN_INPUT "${BUILD_DIR}.dir/build")
+        list (APPEND DOXYGEN_INPUT "${BUILD_DIR}.dir/install")
         foreach (S IN LISTS SOURCES)
           list (APPEND DOXYGEN_EXCLUDE_PATTERNS "${S}")
+          list (APPEND DOXYGEN_EXCLUDE_PATTERNS "${BUILD_DIR}.dir/build")
         endforeach ()
       endif ()
     endif ()
@@ -854,6 +855,16 @@ function (basis_add_doxygen_doc TARGET_NAME)
   # configure Doxygen configuration file
   set (DOXYFILE "${DOXYGEN_OUTPUT_DIRECTORY}/Doxyfile.${TARGET_NAME_L}")
   configure_file ("${DOXYGEN_DOXYFILE}" "${DOXYFILE}" @ONLY)
+  if (CMAKE_GENERATOR MATCHES "Visual Studio|Xcode")
+    file (READ "${DOXYFILE}" DOXYFILE_CONTENT)
+    foreach (CONFIG IN LISTS CMAKE_CONFIGURATION_TYPES)
+      string (REPLACE "$<${BASIS_GE_CONFIG}>" "${CONFIG}" DOXYFILE_CONTENT_CONFIG "${DOXYFILE_CONTENT}")
+      file (WRITE "${DOXYFILE}.${CONFIG}" "${DOXYFILE_CONTENT_CONFIG}")
+    endforeach ()
+    unset (DOXYFILE_CONTENT)
+    unset (DOXYFILE_CONTENT_CONFIG)
+    set (DOXYFILE "${DOXYFILE}.$<${BASIS_GE_CONFIG}>")
+  endif ()
   # add build target
   set (OPTALL)
   if (BUILD_DOCUMENTATION AND BASIS_ALL_DOC)

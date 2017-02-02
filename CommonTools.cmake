@@ -116,7 +116,7 @@ function (basis_tokenize_dependency DEP PKG VER CMP)
       list (APPEND CMPS ${C})
     endforeach ()
   endif ()
-  if (DEP MATCHES "^([^-]*)-(.*)$")
+  if (DEP MATCHES "^(.*)-([0-9]+(\\.[0-9]+)?(\\.[0-9]+)?(\\|[0-9]+(\\.[0-9]+)?(\\.[0-9]+)?)*)$")
     string (REPLACE "|" ";" CMAKE_MATCH_2 "${CMAKE_MATCH_2}")
     set (${PKG} "${CMAKE_MATCH_1}" PARENT_SCOPE)
     set (${VER} "${CMAKE_MATCH_2}" PARENT_SCOPE)
@@ -194,11 +194,10 @@ endfunction ()
 # @retval &lt;PACKAGE&gt;_FOUND            Whether the given package was found.
 # @retval &lt;PACKAGE&gt;_COMPONENTS_FOUND Names of found components.
 #                                          Optional components are only included when
-#                                          <tt>&lt;PACKAGE&gt;_&lt;COMPONENT&gt;_FOUND</tt>
-#                                          is set to @c TRUE for each found component by
-#                                          the find_package call, i.e., either the
-#                                          <tt>Find&lt;PACKAGE&gt;</tt> module or the
-#                                          <tt>&lt;PACKAGE&gt;Config</tt> file.
+#                                          "<PACKAGE>_<COMPONENT>_FOUND" is set to @c TRUE
+#                                          for each found component by the find_package call,
+#                                          i.e., either the "Find<PACKAGE>" module or the
+#                                          "<PACKAGE>Config" file.
 #
 # @sa https://cmake.org/cmake/help/v2.8.12/cmake.html#command:find_package
 #
@@ -640,11 +639,13 @@ macro (basis_find_package PACKAGE)
             # or "texbin" (i.e., MacTeX's "/Library/TeX/texbin" path)
             if (DEPENDS_${PKG}_DIR MATCHES "/([bB]in|sbin|texbin)/+$")
               list (INSERT CMAKE_PROGRAM_PATH 0 "${DEPENDS_${PKG}_DIR}")
+              list (REMOVE_DUPLICATES CMAKE_PROGRAM_PATH)
             # add directory to CMAKE_PREFIX_PATH otherwise as users
             # tend to specify the installation prefix instead of the
             # actual directory containing the package configuration file
             else ()
               list (INSERT CMAKE_PREFIX_PATH 0 "${DEPENDS_${PKG}_DIR}")
+              list (REMOVE_DUPLICATES CMAKE_PREFIX_PATH)
             endif ()
           endif ()
           # now look for the package using find_package
@@ -662,12 +663,24 @@ macro (basis_find_package PACKAGE)
           endif ()
           if (${_BFP_VERSIONS_COUNT} GREATER 1)
             list (APPEND _BFP_FIND_PACKAGE_ARGS CONFIG)
-            foreach (_BFP_VERSION ${_BFP_VERSIONS})
-              find_package (${PKG} ${_BFP_VERSION} ${_BFP_FIND_PACKAGE_ARGS} QUIET)
-              if (${PKG}_FOUND)
-                break ()
-              endif ()
-            endforeach ()
+            if (DEPENDS_${PKG}_DIR)
+              foreach (_BFP_VERSION ${_BFP_VERSIONS})
+                find_package (${PKG} ${_BFP_VERSION} ${_BFP_FIND_PACKAGE_ARGS} QUIET
+                  PATHS ${DEPENDS_${PKG}_DIR} NO_DEFAULT_PATH
+                )
+                if (${PKG}_FOUND)
+                  break ()
+                endif ()
+              endforeach ()
+            endif ()
+            if (NOT ${PKG}_FOUND)
+              foreach (_BFP_VERSION ${_BFP_VERSIONS})
+                find_package (${PKG} ${_BFP_VERSION} ${_BFP_FIND_PACKAGE_ARGS} QUIET)
+                if (${PKG}_FOUND)
+                  break ()
+                endif ()
+              endforeach ()
+            endif ()
           else ()
             if (_BFP_ARGN_MODULE)
               list (APPEND _BFP_FIND_PACKAGE_ARGS MODULE)
@@ -3022,7 +3035,7 @@ endmacro ()
 #         format exists for the specific scripting language. For example,
 #         Python modules can be compiled.</td>
 #   </tr>
-#     @tp @b CONFIGURATION <name> @endtp
+#     @tp @b CONFIGURATION name @endtp
 #     <td>Name of build configuration.</td>
 #   </tr>
 #   <tr>
@@ -3129,7 +3142,7 @@ function (basis_configure_script INPUT OUTPUT)
         message (FATAL_ERROR "Build tree script DIRECTORY must be an absolute path")
       endif ()
       set (__DIR__ "${ARGN_DIRECTORY}")
-      string (REPLACE "$<CONFIGURATION>" "${ARGN_CONFIGURATION}" __DIR__ "${__DIR__}")
+      string (REPLACE "$<${BASIS_GE_CONFIG}>" "${ARGN_CONFIGURATION}" __DIR__ "${__DIR__}")
     else ()
       get_filename_component (__DIR__ "${_OUTPUT_FILE}" PATH)
     endif ()
@@ -3137,6 +3150,9 @@ function (basis_configure_script INPUT OUTPUT)
   get_filename_component (__NAME__ "${_OUTPUT_FILE}" NAME)
   set (__FILE__   "${__DIR__}/${__NAME__}")
   set (__CONFIG__ "${ARGN_CONFIGURATION}")
+  # --------------------------------------------------------------------------
+  # replace $<CONFIG> (deprecated $<CONFIGURATION>) in paths of link dependencies
+  string (REPLACE "$<${BASIS_GE_CONFIG}>" "${ARGN_CONFIGURATION}" ARGN_LINK_DEPENDS "${ARGN_LINK_DEPENDS}")
   # --------------------------------------------------------------------------
   # include script configuration files
   foreach (_F IN LISTS ARGN_CONFIG_FILE)
@@ -3189,9 +3205,9 @@ function (basis_configure_script INPUT OUTPUT)
         # insert extra Python code near top, but after any future statement
         # (http://docs.python.org/2/reference/simple_stmts.html#future)
         set (FUTURE_STATEMENTS)
-        if (SCRIPT MATCHES "^(.*from[ \t]+__future__[ \t]+import[ \t]+[a-z_]+([ \t]+as[ \t]+[a-zA-Z_]+)?[ \t]*\n)(.*)$")
+        if (SCRIPT MATCHES "^(.*from[ \t]+__future__[ \t]+import[ \t]+[a-z_]+[^\n]*\n)(.*)$")
           set (FUTURE_STATEMENTS "${CMAKE_MATCH_1}")
-          set (SCRIPT            "${CMAKE_MATCH_3}")
+          set (SCRIPT            "${CMAKE_MATCH_2}")
         endif ()
         basis_remove_blank_line (SCRIPT) # remove a blank line therefore
         set (SCRIPT "${FUTURE_STATEMENTS}${PYTHON_CODE} # <-- added by BASIS\n${SCRIPT}")
@@ -3465,7 +3481,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
         else ()
           get_target_property (DIRECTORY ${TARGET_UID} OUTPUT_DIRECTORY)
           if (DIRECTORY AND CMAKE_GENERATOR MATCHES "Visual Studio|Xcode")
-            set (DIRECTORY "${DIRECTORY}/$<CONFIGURATION>")
+            set (DIRECTORY "${DIRECTORY}/$<${BASIS_GE_CONFIG}>")
           endif ()
         endif ()
         get_target_property (FNAME ${TARGET_UID} OUTPUT_NAME)
@@ -3476,7 +3492,7 @@ function (basis_get_target_location VAR TARGET_NAME PART)
           get_target_property (COMPILE   ${TARGET_UID} COMPILE)
           get_target_property (DIRECTORY ${TARGET_UID} OUTPUT_DIRECTORY)
           if (DIRECTORY AND (COMPILE OR CMAKE_GENERATOR MATCHES "Visual Studio|Xcode"))
-            set (DIRECTORY "${DIRECTORY}/$<CONFIGURATION>")
+            set (DIRECTORY "${DIRECTORY}/$<${BASIS_GE_CONFIG}>")
           endif ()
         endif ()
         get_target_property (FNAME ${TARGET_UID} OUTPUT_NAME)

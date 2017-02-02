@@ -1,6 +1,6 @@
 # ============================================================================
 # Copyright (c) 2011-2012 University of Pennsylvania
-# Copyright (c) 2013-2014 Andreas Schuh
+# Copyright (c) 2013-2016 Andreas Schuh
 # All rights reserved.
 #
 # See COPYING file for license information or visit
@@ -1571,7 +1571,7 @@ function (basis_add_script TARGET_NAME)
   )
   # finalize target
   if (ARGN_FINAL)
-    basis_build_script(${TARGET_UID})
+    basis_finalize_targets (${TARGET_UID})
   endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
@@ -1611,6 +1611,9 @@ function (basis_finalize_targets)
     endforeach ()
   else ()
     basis_get_project_property (TARGETS PROPERTY TARGETS)
+    if (NOT TARGETS)
+      return()
+    endif ()
     # targets of BASIS utilities are finalized separately
     # because some properties still have to be set by
     # basis_configure_utilities, see UtilitiesTools module
@@ -1623,26 +1626,37 @@ function (basis_finalize_targets)
       ${TARGET_UID_Basis_pm}
     )
   endif ()
+  basis_get_project_property (FINALIZED_TARGETS PROPERTY FINALIZED_TARGETS)
+  if (FINALIZED_TARGETS)
+    list (REMOVE_ITEM TARGETS ${FINALIZED_TARGETS})
+  endif ()
+  if (BASIS_DEBUG)
+    message (
+      "** basis_finalize_targets:"
+      "\n     TARGETS:   [${TARGETS}]"
+      "\n     FINALIZED: [${FINALIZED_TARGETS}]"
+    )
+  endif ()
   foreach (TARGET_UID ${TARGETS})
-    if (NOT TARGET _${TARGET_UID})
-      get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
-      if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|MODULE)_LIBRARY$")
-        if (BASIS_INSTALL_RPATH AND NOT CMAKE_SKIP_RPATH)
-          # Only if BASIS is allowed to take care of the INSTALL_RPATH property
-          # and the use of this property was not disabled by the project
-          basis_set_target_install_rpath (${TARGET_UID})
-        endif ()
-      elseif (BASIS_TYPE MATCHES "SCRIPT_LIBRARY")
-        basis_build_script_library (${TARGET_UID})
-      elseif (BASIS_TYPE MATCHES "SCRIPT")
-        basis_build_script (${TARGET_UID})
-      elseif (BASIS_TYPE MATCHES "MEX")
-        basis_build_mex_file (${TARGET_UID})
-      elseif (BASIS_TYPE MATCHES "MCC")
-        basis_build_mcc_target (${TARGET_UID})
+    get_target_property (BASIS_TYPE ${TARGET_UID} BASIS_TYPE)
+    if (BASIS_TYPE MATCHES "^EXECUTABLE$|^(SHARED|MODULE)_LIBRARY$")
+      if (BASIS_INSTALL_RPATH AND NOT CMAKE_SKIP_RPATH)
+        # Only if BASIS is allowed to take care of the INSTALL_RPATH property
+        # and the use of this property was not disabled by the project
+        basis_set_target_install_rpath (${TARGET_UID})
       endif ()
+    elseif (BASIS_TYPE MATCHES "SCRIPT_LIBRARY")
+      basis_build_script_library (${TARGET_UID})
+    elseif (BASIS_TYPE MATCHES "SCRIPT")
+      basis_build_script (${TARGET_UID})
+    elseif (BASIS_TYPE MATCHES "MEX")
+      basis_build_mex_file (${TARGET_UID})
+    elseif (BASIS_TYPE MATCHES "MCC")
+      basis_build_mcc_target (${TARGET_UID})
     endif ()
+    list (APPEND FINALIZED_TARGETS ${TARGET_UID})
   endforeach ()
+  basis_set_project_property (PROPERTY FINALIZED_TARGETS ${FINALIZED_TARGETS})
 endfunction ()
 
 # ============================================================================
@@ -2559,7 +2573,7 @@ function (basis_add_script_library TARGET_NAME)
   endif ()
   # finalize target
   if (ARGN_FINAL)
-    basis_build_script_library(${TARGET_UID})
+    basis_finalize_targets (${TARGET_UID})
   endif ()
   # add target to list of targets
   basis_set_project_property (APPEND PROPERTY TARGETS "${TARGET_UID}")
@@ -2765,7 +2779,7 @@ function (basis_build_script TARGET_UID)
   endif ()
   if (CMAKE_GENERATOR MATCHES "Visual Studio|Xcode")
     set (OUTPUT_FILE "${BUILD_DIR}/build/${OUTPUT_NAME}")
-    set (OUTPUT_DIR  "${OUTPUT_DIRECTORY}/$<CONFIGURATION>")
+    set (OUTPUT_DIR  "${OUTPUT_DIRECTORY}/$<${BASIS_GE_CONFIG}>")
   elseif (MODULE AND COMPILE)
     set (OUTPUT_FILE "${BUILD_DIR}/build/${OUTPUT_NAME}")
     set (OUTPUT_DIR  "${OUTPUT_DIRECTORY}")
@@ -2930,7 +2944,7 @@ function (basis_build_script TARGET_UID)
   endif ()
   add_custom_command (
     OUTPUT          ${OUTPUT_FILES}
-    COMMAND         "${CMAKE_COMMAND}" -D "CONFIGURATION:STRING=$<CONFIGURATION>" -P "${BUILD_SCRIPT}"
+    COMMAND         "${CMAKE_COMMAND}" -D "CONFIGURATION:STRING=$<${BASIS_GE_CONFIG}>" -P "${BUILD_SCRIPT}"
     MAIN_DEPENDENCY "${SOURCE_FILE}"
     DEPENDS         "${BUILD_SCRIPT}" "${BASIS_MODULE_PATH}/CommonTools.cmake" # basis_configure_script() definition
     COMMENT         "${COMMENT}"
@@ -3216,7 +3230,7 @@ function (basis_build_script_library TARGET_UID)
     set (COMMENT "Building ${LANGUAGE} module ${REL}...")
     add_custom_command (
       OUTPUT          ${_OUTPUT_FILES}
-      COMMAND         "${CMAKE_COMMAND}" -D "CONFIGURATION=$<CONFIGURATION>" -P "${BUILD_SCRIPT}"
+      COMMAND         "${CMAKE_COMMAND}" -D "CONFIGURATION=$<${BASIS_GE_CONFIG}>" -P "${BUILD_SCRIPT}"
       MAIN_DEPENDENCY "${SOURCE_FILE}"
       DEPENDS         "${BUILD_SCRIPT}" "${BASIS_MODULE_PATH}/CommonTools.cmake" # basis_configure_script() definition
       COMMENT         "${COMMENT}"
