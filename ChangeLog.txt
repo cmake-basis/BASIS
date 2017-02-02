@@ -1,5 +1,27 @@
 .. This file is formatted using reStructuredText (reST) and included by doc/changelog.rst !
 
+.. _v3.3.1:
+
+Release 3.3.1 (Feb 2, 2017)
+---------------------------
+
+- doc: Update Quickstart documentation
+- fix: Support package names with dashes
+- fix: Build of Python script with future statements
+- fix: Ensure that order of `basis_install` arguments does not matter
+- fix: Use `BASIS_GE_CONFIG` instead of (deprecated) `$<CONFIGURATION>`
+- fix: `BASIS_DIR` used to configure test projects
+- fix: Consider `$<CONFIG>` subdirectory in executable target info path
+- fix: Use per-configuration Doxygen configuration file with `$<CONFIG>` replaced
+- fix: Have Doxygen ignore script target `<target_build_tmp>.dir/build/` directories
+- fix: Build of Python script with future statements
+- fix: Skip `list(REMOVE_ITEMS)` in `basis_finalize_targets` when `TARGETS` list empty
+- fix: Make `[PROJECT_]OTHER_DIRS` absolute
+- fix: Duplicate ‘lib’ target issue
+- fix: When looking for multiple package versions, look in user `DEPENDS` path first
+- del: Remove obsolete `FindOpenCV` module
+
+
 .. _v3.3.0:
 
 Release 3.3.0 (Apr 19, 2016)
