@@ -39,8 +39,8 @@ buildtool=`which ninja` && generator='Ninja'
 if [ -d "${LOCALDIR}/src/hellobasis" ]; then
   rm -rf "${LOCALDIR}/src/hellobasis"
 fi
-if [ -d "${LOCALDIR}/src/HelloTopLevel" ]; then
-  rm -rf "${LOCALDIR}/src/HelloTopLevel"
+if [ -d "${LOCALDIR}/src/collection" ]; then
+  rm -rf "${LOCALDIR}/src/collection"
 fi
 
 echo "
@@ -61,13 +61,13 @@ echo "
       git checkout "$branch"
       git pull
     else
-      git clone --depth=1 -b "$branch" https://github.com/cmake-basis/BASIS.git
-      cd BASIS
+      git clone --depth=1 -b "$branch" https://github.com/cmake-basis/BASIS.git basis
+      cd basis
     fi
 
 echo "
 ################################################################################
-# Build and Install BASIS
+# Build and install BASIS
 ################################################################################
 "
 
@@ -101,7 +101,7 @@ echo "
 
 echo "
 ################################################################################
-# Add an Executable
+# Add an executable
 ################################################################################
 "
 
@@ -144,7 +144,7 @@ echo "
     
 echo "
 ################################################################################
-# Compile HelloBasis Module
+# Compile HelloBasis project
 ################################################################################
 "
 
@@ -156,23 +156,23 @@ echo "
 
 echo "
 ################################################################################
-# Create a top-level project
+# Create a top-level project for collection of related modules
 ################################################################################
 "
-    TOPLEVEL_DIR="${LOCALDIR}/src/HelloTopLevel"
-    basisproject create --name HelloTopLevel --description "This is a BASIS TopLevel project. It demonstrates how easy it is to create a simple BASIS project." --root "${TOPLEVEL_DIR}" --toplevel
+    TOPLEVEL_DIR="${LOCALDIR}/src/collection"
+    basisproject create --name Collection --description "This is a BASIS top-level project. It demonstrates a modular project organization." --root "${TOPLEVEL_DIR}" --toplevel
 
     
 echo "
 ################################################################################
-# Create a subproject which provides a library
+# Create a project module which provides a library
 ################################################################################
 "
-    MODA_DIR="${LOCALDIR}/src/HelloTopLevel/modules/moda"
+    MODA_DIR="${TOPLEVEL_DIR}/modules/moda"
     basisproject create --name moda --description "Subproject library to be used elsewhere" --root "${MODA_DIR}" --module --include
     cp "${HELLOBASIS_RSC_DIR}/moda.cxx" "${MODA_DIR}/src/"
-    mkdir "${MODA_DIR}/include/hellotoplevel"
-    cp "${HELLOBASIS_RSC_DIR}/moda.h" "${MODA_DIR}/include/hellotoplevel/"
+    mkdir "${MODA_DIR}/include/moda"
+    cp "${HELLOBASIS_RSC_DIR}/moda.h" "${MODA_DIR}/include/moda/"
     
     echo "
     basis_add_library(moda SHARED moda.cxx)
@@ -180,10 +180,10 @@ echo "
     
 echo "
 ################################################################################
-# Create another subproject which uses the library of the first module
+# Create another project module which uses the library of the first module
 ################################################################################
 "
-    MODB_DIR="${LOCALDIR}/src/HelloTopLevel/modules/modb"
+    MODB_DIR="${TOPLEVEL_DIR}/modules/modb"
     basisproject create --name modb --description "User example subproject executable utility repository that uses the library"  --root "${MODB_DIR}" --module --src --use moda
     cp "${HELLOBASIS_RSC_DIR}/userprog.cxx" "${MODB_DIR}/src/"
     
@@ -194,7 +194,7 @@ echo "
 
 echo "
 ################################################################################
-# Compile HelloTopLevel Module
+# Compile collection of modules
 ################################################################################
 "
 
@@ -215,7 +215,7 @@ echo "
 ################################################################################
 "
 
-    export LD_LIBRARY_PATH="${LOCALDIR}/lib/hellotoplevel"
+    export LD_LIBRARY_PATH="${LOCALDIR}/lib/collection"
     export DYLD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
 
     "${LOCALDIR}/bin/helloc++" | grep "How is it going?"           | echo "helloc++ test passed"
