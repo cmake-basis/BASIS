@@ -40,8 +40,8 @@ Clone the `Git <http://git-scm.com/>`__ repository from `GitHub <https://github.
     
     mkdir -p ~/local/src
     cd ~/local/src
-    git clone --depth=1 https://github.com/cmake-basis/BASIS.git
-    cd BASIS
+    git clone --depth=1 https://github.com/cmake-basis/BASIS.git basis
+    cd basis
     
 or :doc:`download` a pre-packaged ``.tar.gz`` of the latest BASIS release and unpack it using the following command:
 
@@ -340,17 +340,17 @@ Create a Top Level Project
 
 .. code-block:: bash
 
-    export TOPLEVEL_DIR="${HOME}/local/src/HelloTopLevel"
-    basisproject create --name HelloTopLevel --description "This is a BASIS TopLevel project. It demonstrates how easy it is to create a simple BASIS project."  --root ${TOPLEVEL_DIR}  --toplevel
+    export TOPLEVEL_DIR="${HOME}/local/src/collection"
+    basisproject create --name Collection --description "This is a BASIS TopLevel project. It demonstrates a modular project organization."  --root ${TOPLEVEL_DIR}  --toplevel
 
-Create a sub-project Containing a Library
+Create a Sub-project Containing a Library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create a sub-project module similarly to how helloBasis was created earlier.
 
 .. code-block:: bash
 
-    export MODA_DIR="${HOME}/local/src/HelloTopLevel/modules/moda"
+    export MODA_DIR="${HOME}/local/src/collection/modules/moda"
     basisproject create --name moda --description "Subproject library to be used elsewhere" --root ${MODA_DIR} --module --include
     cp ${HELLOBASIS_RSC_DIR}/moda.cxx ${MODA_DIR}/src/
     mkdir ${MODA_DIR}/include/moda
@@ -363,7 +363,7 @@ Add the following line to ``${MODA_DIR}/src/CMakeLists.txt`` under the section "
     basis_add_library(moda SHARED moda.cxx)
     
 
-Create a sub-project that uses the Library
+Create a Sub-project that uses the Library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
