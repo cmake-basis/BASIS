@@ -82,7 +82,7 @@ basis_project (
   # --------------------------------------------------------------------------
   # meta-data
   NAME          "BASIS"
-  VERSION       "3.3.1"
+  VERSION       "0.0.0"
   AUTHORS       "Andreas Schuh"
   DESCRIPTION   "This package implements and supports the development of "
                 "software which follows the CMake Build system And Software "
