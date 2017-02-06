@@ -1375,7 +1375,7 @@ function (basis_build_mex_file TARGET_UID)
     get_filename_component (LINK_DIR "${LIBRARY}" PATH)         # as specified via basis_target_link_libraries()
     get_filename_component (LINK_LIB "${LIBRARY}" NAME)
     string (REGEX REPLACE "\\.(so|dylib)(\\.[0-9]+)*$" "" LINK_LIB "${LINK_LIB}")
-    if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    if (NOT MATLAB_RELEASE STREQUAL "R2014a" OR CMAKE_SYSTEM_NAME MATCHES "Darwin")
       # cf. https://github.com/cmake-basis/BASIS/issues/443
       string (REGEX REPLACE "\\.a(\\.[0-9]+)*$" "" LINK_LIB "${LINK_LIB}")
     endif ()
