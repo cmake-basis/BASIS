@@ -132,8 +132,25 @@ endmacro ()
 # @ingroup CMakeUtilities
 function (basis_get_full_matlab_version VERSION)
   if (NOT MATLAB_EXECUTABLE)
-    set (${VERSION} "" PARENT_SCOPE)
-    return ()
+    if (MATLAB_DIR AND IS_ABSOLUTE "${MATLAB_DIR}")
+      if (WIN32)
+        if (EXISTS "${MATLAB_DIR}/bin/matlab.exe")
+          set (MATLAB_EXECUTABLE "${MATLAB_DIR}/bin/matlab.exe")
+        elseif (EXISTS "${MATLAB_DIR}/matlab.exe")
+          set (MATLAB_EXECUTABLE "${MATLAB_DIR}/matlab.exe")
+        endif ()
+      else ()
+        if (EXISTS "${MATLAB_DIR}/bin/matlab")
+          set (MATLAB_EXECUTABLE "${MATLAB_DIR}/bin/matlab")
+        elseif (EXISTS "${MATLAB_DIR}/matlab")
+          set (MATLAB_EXECUTABLE "${MATLAB_DIR}/matlab")
+        endif ()
+      endif ()
+    endif ()
+    if (NOT MATLAB_EXECUTABLE)
+      set (${VERSION} "" PARENT_SCOPE)
+      return ()
+    endif ()
   endif ()
   set (WORKING_DIR "${CMAKE_BINARY_DIR}/CMakeFiles")
   set (OUTPUT_FILE "${WORKING_DIR}/MatlabVersion.txt")
@@ -316,16 +333,35 @@ function (basis_mexext)
   # default return value
   set (MEXEXT "${MEX_EXT}")
   # use MEXEXT if possible
-  if (NOT MEXEXT AND MATLAB_MEXEXT_EXECUTABLE)
-    execute_process (
-      COMMAND         "${MATLAB_MEXEXT_EXECUTABLE}"
-      RESULT_VARIABLE RETVAL
-      OUTPUT_VARIABLE MEXEXT
-      ERROR_QUIET
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    if (RETVAL)
-      set (MEXEXT "")
+  if (NOT MEXEXT)
+    if (NOT MATLAB_MEX_EXECUTABLE)
+      if (MATLAB_DIR AND IS_ABSOLUTE "${MATLAB_DIR}")
+        if (WIN32)
+          if (EXISTS "${MATLAB_DIR}/bin/mexext.exe")
+            set (MATLAB_MEX_EXECUTABLE "${MATLAB_DIR}/bin/mexext.exe")
+          elseif (EXISTS "${MATLAB_DIR}/mexext.exe")
+            set (MATLAB_MEX_EXECUTABLE "${MATLAB_DIR}/mexext.exe")
+          endif ()
+        else ()
+          if (EXISTS "${MATLAB_DIR}/bin/mexext")
+            set (MATLAB_MEX_EXECUTABLE "${MATLAB_DIR}/bin/mexext")
+          elseif (EXISTS "${MATLAB_DIR}/mexext")
+            set (MATLAB_MEX_EXECUTABLE "${MATLAB_DIR}/mexext")
+          endif ()
+        endif ()
+      endif ()
+    endif ()
+    if (MATLAB_MEX_EXECUTABLE)
+      execute_process (
+        COMMAND         "${MATLAB_MEXEXT_EXECUTABLE}"
+        RESULT_VARIABLE RETVAL
+        OUTPUT_VARIABLE MEXEXT
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      if (RETVAL)
+        set (MEXEXT "")
+      endif ()
     endif ()
   endif ()
   # otherwise, determine extension given CMake variables describing the system
