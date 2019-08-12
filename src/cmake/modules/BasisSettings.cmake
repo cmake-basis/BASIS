@@ -64,6 +64,10 @@ if (POLICY CMP0042)
   cmake_policy (SET CMP0042 NEW)
 endif ()
 
+if (POLICY CMP0074)
+  cmake_policy (SET CMP0074 NEW)
+endif ()
+
 # ============================================================================
 # required modules
 # ============================================================================
@@ -832,6 +836,10 @@ mark_as_advanced (BASIS_DEBUG)
 ## @brief Request configuration of software build only, skipping steps related to packaging and installation.
 option (BASIS_BUILD_ONLY "Request configuration of software build only, skipping steps related to packaging and installation." OFF)
 mark_as_advanced (BASIS_BUILD_ONLY)
+
+## @brief Request generation of package uninstaller script upon installation.
+option (BASIS_UNINSTALLER "Request generation of default package uninstall script upon installation." OFF)
+mark_as_advanced (BASIS_UNINSTALLER)
 
 # ============================================================================
 # build configuration
