@@ -66,4 +66,10 @@ include ("${BASIS_MODULE_PATH}/BasisTools.cmake")
 
 # ----------------------------------------------------------------------------
 # configure build system
+
+# CMake >=3.15 warns if top-level CMakeLists.txt contains no project command
+basis_project_args(ARGS)
+project(${ARGS})
+unset(ARGS)
+
 basis_project_impl ()
