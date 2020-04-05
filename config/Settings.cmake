@@ -94,7 +94,7 @@ endif ()
 
 # check for availibility of pthreads library
 # defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT
-find_package (Threads)
+find_package (Threads QUIET)
 
 if (Threads_FOUND)
   if (CMAKE_USE_PTHREADS_INIT)
