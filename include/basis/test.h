@@ -44,7 +44,7 @@
 #ifdef GTEST_HAS_PTHREAD
 #  undef GTEST_HAS_PTHREAD
 #endif
-#if HAVE_PTHREAD
+#if HAVE_PTHREAD && !(defined(__MINGW__) || defined(__MINGW32__))
 #  define GTEST_HAS_PTHREAD 1
 #else
 #  define GTEST_HAS_PTHREAD 0
