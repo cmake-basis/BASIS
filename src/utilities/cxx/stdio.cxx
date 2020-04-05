@@ -46,6 +46,14 @@ void get_terminal_size(int& lines, int& columns)
             columns = csbi.dwSize.X;
             lines   = csbi.dwSize.Y;
         }
+    #else
+        struct winsize w;
+        if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
+            columns = w.ws_col;
+            lines   = w.ws_row;
+        }
+    #endif
+    #ifdef __MSC_VER
         if (columns == 0) {
             char* COLUMNS;
             size_t sz;
@@ -63,11 +71,6 @@ void get_terminal_size(int& lines, int& columns)
             }
         }
     #else
-        struct winsize w;
-        if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
-            columns = w.ws_col;
-            lines   = w.ws_row;
-        }
         if (columns == 0) {
             const char* COLUMNS = getenv("COLUMNS");
             if (COLUMNS) columns = atoi(COLUMNS);
