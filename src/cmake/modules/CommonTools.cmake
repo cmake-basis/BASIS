@@ -2789,7 +2789,7 @@ function (basis_get_source_language LANGUAGE)
         # determine language based on extension for those without shebang
         set (LANG)
         # C++
-        if (SOURCE_FILE MATCHES "\\.(c|cc|cpp|cxx|h|hh|hpp|hxx|txx|inl)(\\.in)?$")
+        if (SOURCE_FILE MATCHES "\\.(c|cc|cpp|cxx|cu|h|hh|hpp|hxx|txx|inl|cuh)(\\.in)?$")
           set (LANG "CXX")
         # Java
         elseif (SOURCE_FILE MATCHES "\\.java(\\.in)?$")
