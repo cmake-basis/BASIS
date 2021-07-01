@@ -30,7 +30,7 @@ import shutil               # copyfile()
 import shlex                # lexical analysis, used for response files
 import mimetypes            # to recognize configurable text files
 
-from imp import load_source # i.e., template configuration
+from importlib.machinery import SourceFileLoader # i.e., template configuration
 
 from basis import basis     # basic utilities
 from basis import argparse  # command-line parsing
@@ -102,7 +102,7 @@ def _update_deps(namespace, opts, deps, op):
 preset = None
 def load_config(config_file, parser):
     # load template configuration
-    config = load_source('config', config_file)
+    config = SourceFileLoader('config', config_file)
     # set list of required files to [] if missing
     if not hasattr(config, 'required'):
         setattr(config, 'required', [])
