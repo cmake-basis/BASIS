@@ -102,7 +102,7 @@ def _update_deps(namespace, opts, deps, op):
 preset = None
 def load_config(config_file, parser):
     # load template configuration
-    config = SourceFileLoader('config', config_file)
+    config = SourceFileLoader('config', config_file).load_module()
     # set list of required files to [] if missing
     if not hasattr(config, 'required'):
         setattr(config, 'required', [])
